@@ -1,0 +1,25 @@
+package net.minecraft.client.render.entity;
+
+import com.mojang.blaze3d.platform.GlStateManager;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.entity.mob.GuardianEntity;
+import net.minecraft.util.Identifier;
+
+@Environment(EnvType.CLIENT)
+public class ElderGuardianEntityRenderer extends GuardianEntityRenderer {
+	private static final Identifier SKIN = new Identifier("textures/entity/guardian_elder.png");
+
+	public ElderGuardianEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
+		super(entityRenderDispatcher);
+	}
+
+	protected void method_3910(GuardianEntity guardianEntity, float f) {
+		GlStateManager.scalef(2.35F, 2.35F, 2.35F);
+	}
+
+	@Override
+	protected Identifier getTexture(GuardianEntity guardianEntity) {
+		return SKIN;
+	}
+}

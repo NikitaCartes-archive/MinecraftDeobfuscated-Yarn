@@ -1,0 +1,48 @@
+package net.minecraft.datafixers.schemas;
+
+import com.mojang.datafixers.DSL;
+import com.mojang.datafixers.schemas.Schema;
+import com.mojang.datafixers.types.templates.TypeTemplate;
+import java.util.Map;
+import java.util.function.Supplier;
+import net.minecraft.datafixers.TypeReferences;
+
+public class Schema703 extends Schema {
+	public Schema703(int i, Schema schema) {
+		super(i, schema);
+	}
+
+	@Override
+	public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
+		Map<String, Supplier<TypeTemplate>> map = super.registerEntities(schema);
+		map.remove("EntityHorse");
+		schema.register(
+			map,
+			"Horse",
+			(Supplier<TypeTemplate>)(() -> DSL.optionalFields(
+					"ArmorItem", TypeReferences.ITEM_STACK.in(schema), "SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.method_5196(schema)
+				))
+		);
+		schema.register(
+			map,
+			"Donkey",
+			(Supplier<TypeTemplate>)(() -> DSL.optionalFields(
+					"Items", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.method_5196(schema)
+				))
+		);
+		schema.register(
+			map,
+			"Mule",
+			(Supplier<TypeTemplate>)(() -> DSL.optionalFields(
+					"Items", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.method_5196(schema)
+				))
+		);
+		schema.register(
+			map, "ZombieHorse", (Supplier<TypeTemplate>)(() -> DSL.optionalFields("SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.method_5196(schema)))
+		);
+		schema.register(
+			map, "SkeletonHorse", (Supplier<TypeTemplate>)(() -> DSL.optionalFields("SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema100.method_5196(schema)))
+		);
+		return map;
+	}
+}
