@@ -1,0 +1,140 @@
+package net.minecraft.block;
+
+import java.util.Random;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.EnderChestBlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.inventory.EnderChestInventory;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.stat.Stats;
+import net.minecraft.state.StateFactory;
+import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Mirror;
+import net.minecraft.util.Rotation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
+
+public class EnderChestBlock extends BlockWithEntity implements Waterloggable {
+	public static final DirectionProperty field_10966 = HorizontalFacingBlock.field_11177;
+	public static final BooleanProperty field_10968 = Properties.WATERLOGGED;
+	protected static final VoxelShape field_10967 = Block.createCubeShape(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
+
+	protected EnderChestBlock(Block.Settings settings) {
+		super(settings);
+		this.setDefaultState(this.stateFactory.getDefaultState().with(field_10966, Direction.NORTH).with(field_10968, Boolean.valueOf(false)));
+	}
+
+	@Override
+	public VoxelShape getBoundingShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		return field_10967;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public boolean hasBlockEntityBreakingRender(BlockState blockState) {
+		return true;
+	}
+
+	@Override
+	public RenderTypeBlock getRenderType(BlockState blockState) {
+		return RenderTypeBlock.field_11456;
+	}
+
+	@Override
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getPos());
+		return this.getDefaultState()
+			.with(field_10966, itemPlacementContext.method_8042().getOpposite())
+			.with(field_10968, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
+	}
+
+	@Override
+	public boolean method_9534(
+		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
+	) {
+		EnderChestInventory enderChestInventory = playerEntity.getEnderChestInventory();
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
+		if (enderChestInventory != null && blockEntity instanceof EnderChestBlockEntity) {
+			BlockPos blockPos2 = blockPos.up();
+			if (world.getBlockState(blockPos2).isSimpleFullBlock(world, blockPos2)) {
+				return true;
+			} else if (world.isRemote) {
+				return true;
+			} else {
+				enderChestInventory.setCurrentBlockEntity((EnderChestBlockEntity)blockEntity);
+				playerEntity.openInventory(enderChestInventory);
+				playerEntity.method_7281(Stats.field_15424);
+				return true;
+			}
+		} else {
+			return true;
+		}
+	}
+
+	@Override
+	public BlockEntity createBlockEntity(BlockView blockView) {
+		return new EnderChestBlockEntity();
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		for (int i = 0; i < 3; i++) {
+			int j = random.nextInt(2) * 2 - 1;
+			int k = random.nextInt(2) * 2 - 1;
+			double d = (double)blockPos.getX() + 0.5 + 0.25 * (double)j;
+			double e = (double)((float)blockPos.getY() + random.nextFloat());
+			double f = (double)blockPos.getZ() + 0.5 + 0.25 * (double)k;
+			double g = (double)(random.nextFloat() * (float)j);
+			double h = ((double)random.nextFloat() - 0.5) * 0.125;
+			double l = (double)(random.nextFloat() * (float)k);
+			world.method_8406(ParticleTypes.field_11214, d, e, f, g, h, l);
+		}
+	}
+
+	@Override
+	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
+		return blockState.with(field_10966, rotation.method_10503(blockState.get(field_10966)));
+	}
+
+	@Override
+	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
+		return blockState.applyRotation(mirror.method_10345(blockState.get(field_10966)));
+	}
+
+	@Override
+	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+		builder.with(field_10966, field_10968);
+	}
+
+	@Override
+	public FluidState getFluidState(BlockState blockState) {
+		return blockState.get(field_10968) ? Fluids.WATER.getState(false) : super.getFluidState(blockState);
+	}
+
+	@Override
+	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+		if ((Boolean)blockState.get(field_10968)) {
+			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
+		}
+
+		return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+	}
+
+	@Override
+	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, PlacementEnvironment placementEnvironment) {
+		return false;
+	}
+}

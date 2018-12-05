@@ -1,0 +1,258 @@
+package net.minecraft.advancement;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
+import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.advancement.criterion.CriterionProgress;
+import net.minecraft.util.JsonHelper;
+import net.minecraft.util.PacketByteBuf;
+
+public class AdvancementProgress implements Comparable<AdvancementProgress> {
+	private final Map<String, CriterionProgress> criteriaProgresses = Maps.<String, CriterionProgress>newHashMap();
+	private String[][] requirements = new String[0][];
+
+	public void method_727(Map<String, AdvancementCriterion> map, String[][] strings) {
+		Set<String> set = map.keySet();
+		this.criteriaProgresses.entrySet().removeIf(entry -> !set.contains(entry.getKey()));
+
+		for (String string : set) {
+			if (!this.criteriaProgresses.containsKey(string)) {
+				this.criteriaProgresses.put(string, new CriterionProgress());
+			}
+		}
+
+		this.requirements = strings;
+	}
+
+	public boolean isDone() {
+		if (this.requirements.length == 0) {
+			return false;
+		} else {
+			for (String[] strings : this.requirements) {
+				boolean bl = false;
+
+				for (String string : strings) {
+					CriterionProgress criterionProgress = this.getCriterionProgress(string);
+					if (criterionProgress != null && criterionProgress.isObtained()) {
+						bl = true;
+						break;
+					}
+				}
+
+				if (!bl) {
+					return false;
+				}
+			}
+
+			return true;
+		}
+	}
+
+	public boolean isAnyObtained() {
+		for (CriterionProgress criterionProgress : this.criteriaProgresses.values()) {
+			if (criterionProgress.isObtained()) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public boolean obtain(String string) {
+		CriterionProgress criterionProgress = (CriterionProgress)this.criteriaProgresses.get(string);
+		if (criterionProgress != null && !criterionProgress.isObtained()) {
+			criterionProgress.obtain();
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean reset(String string) {
+		CriterionProgress criterionProgress = (CriterionProgress)this.criteriaProgresses.get(string);
+		if (criterionProgress != null && criterionProgress.isObtained()) {
+			criterionProgress.reset();
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public String toString() {
+		return "AdvancementProgress{criteria=" + this.criteriaProgresses + ", requirements=" + Arrays.deepToString(this.requirements) + '}';
+	}
+
+	public void serialize(PacketByteBuf packetByteBuf) {
+		packetByteBuf.writeVarInt(this.criteriaProgresses.size());
+
+		for (Entry<String, CriterionProgress> entry : this.criteriaProgresses.entrySet()) {
+			packetByteBuf.writeString((String)entry.getKey());
+			((CriterionProgress)entry.getValue()).serialize(packetByteBuf);
+		}
+	}
+
+	public static AdvancementProgress deserialize(PacketByteBuf packetByteBuf) {
+		AdvancementProgress advancementProgress = new AdvancementProgress();
+		int i = packetByteBuf.readVarInt();
+
+		for (int j = 0; j < i; j++) {
+			advancementProgress.criteriaProgresses.put(packetByteBuf.readString(32767), CriterionProgress.deserialize(packetByteBuf));
+		}
+
+		return advancementProgress;
+	}
+
+	@Nullable
+	public CriterionProgress getCriterionProgress(String string) {
+		return (CriterionProgress)this.criteriaProgresses.get(string);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public float method_735() {
+		if (this.criteriaProgresses.isEmpty()) {
+			return 0.0F;
+		} else {
+			float f = (float)this.requirements.length;
+			float g = (float)this.method_736();
+			return g / f;
+		}
+	}
+
+	@Nullable
+	@Environment(EnvType.CLIENT)
+	public String method_728() {
+		if (this.criteriaProgresses.isEmpty()) {
+			return null;
+		} else {
+			int i = this.requirements.length;
+			if (i <= 1) {
+				return null;
+			} else {
+				int j = this.method_736();
+				return j + "/" + i;
+			}
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	private int method_736() {
+		int i = 0;
+
+		for (String[] strings : this.requirements) {
+			boolean bl = false;
+
+			for (String string : strings) {
+				CriterionProgress criterionProgress = this.getCriterionProgress(string);
+				if (criterionProgress != null && criterionProgress.isObtained()) {
+					bl = true;
+					break;
+				}
+			}
+
+			if (bl) {
+				i++;
+			}
+		}
+
+		return i;
+	}
+
+	public Iterable<String> getAllUnobtained() {
+		List<String> list = Lists.<String>newArrayList();
+
+		for (Entry<String, CriterionProgress> entry : this.criteriaProgresses.entrySet()) {
+			if (!((CriterionProgress)entry.getValue()).isObtained()) {
+				list.add(entry.getKey());
+			}
+		}
+
+		return list;
+	}
+
+	public Iterable<String> getAllObtained() {
+		List<String> list = Lists.<String>newArrayList();
+
+		for (Entry<String, CriterionProgress> entry : this.criteriaProgresses.entrySet()) {
+			if (((CriterionProgress)entry.getValue()).isObtained()) {
+				list.add(entry.getKey());
+			}
+		}
+
+		return list;
+	}
+
+	@Nullable
+	public Date method_741() {
+		Date date = null;
+
+		for (CriterionProgress criterionProgress : this.criteriaProgresses.values()) {
+			if (criterionProgress.isObtained() && (date == null || criterionProgress.getObtainedDate().before(date))) {
+				date = criterionProgress.getObtainedDate();
+			}
+		}
+
+		return date;
+	}
+
+	public int method_738(AdvancementProgress advancementProgress) {
+		Date date = this.method_741();
+		Date date2 = advancementProgress.method_741();
+		if (date == null && date2 != null) {
+			return 1;
+		} else if (date != null && date2 == null) {
+			return -1;
+		} else {
+			return date == null && date2 == null ? 0 : date.compareTo(date2);
+		}
+	}
+
+	public static class Serializer implements JsonDeserializer<AdvancementProgress>, JsonSerializer<AdvancementProgress> {
+		public JsonElement serialize(AdvancementProgress advancementProgress, Type type, JsonSerializationContext jsonSerializationContext) {
+			JsonObject jsonObject = new JsonObject();
+			JsonObject jsonObject2 = new JsonObject();
+
+			for (Entry<String, CriterionProgress> entry : advancementProgress.criteriaProgresses.entrySet()) {
+				CriterionProgress criterionProgress = (CriterionProgress)entry.getValue();
+				if (criterionProgress.isObtained()) {
+					jsonObject2.add((String)entry.getKey(), criterionProgress.serialize());
+				}
+			}
+
+			if (!jsonObject2.entrySet().isEmpty()) {
+				jsonObject.add("criteria", jsonObject2);
+			}
+
+			jsonObject.addProperty("done", advancementProgress.isDone());
+			return jsonObject;
+		}
+
+		public AdvancementProgress deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "advancement");
+			JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "criteria", new JsonObject());
+			AdvancementProgress advancementProgress = new AdvancementProgress();
+
+			for (Entry<String, JsonElement> entry : jsonObject2.entrySet()) {
+				String string = (String)entry.getKey();
+				advancementProgress.criteriaProgresses.put(string, CriterionProgress.create(JsonHelper.asString((JsonElement)entry.getValue(), string)));
+			}
+
+			return advancementProgress;
+		}
+	}
+}

@@ -1,0 +1,43 @@
+package net.minecraft.world.gen.decorator;
+
+import com.mojang.datafixers.Dynamic;
+import java.util.Objects;
+import java.util.Random;
+import java.util.function.Function;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
+import net.minecraft.world.gen.config.decorator.NoiseHeightmapDecoratorConfig;
+
+public class NoiseHeightmapDoubleDecorator extends Decorator<NoiseHeightmapDecoratorConfig> {
+	public NoiseHeightmapDoubleDecorator(Function<Dynamic<?>, ? extends NoiseHeightmapDecoratorConfig> function) {
+		super(function);
+	}
+
+	public Stream<BlockPos> method_15934(
+		IWorld iWorld,
+		ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator,
+		Random random,
+		NoiseHeightmapDecoratorConfig noiseHeightmapDecoratorConfig,
+		BlockPos blockPos
+	) {
+		double d = Biome.FOLIAGE_NOISE.sample((double)blockPos.getX() / 200.0, (double)blockPos.getZ() / 200.0);
+		int i = d < noiseHeightmapDecoratorConfig.noiseLevel ? noiseHeightmapDecoratorConfig.belowNoise : noiseHeightmapDecoratorConfig.aboveNoise;
+		return IntStream.range(0, i).mapToObj(ix -> {
+			int j = random.nextInt(16);
+			int k = random.nextInt(16);
+			int l = iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(j, 0, k)).getY() * 2;
+			if (l <= 0) {
+				return null;
+			} else {
+				int m = random.nextInt(l);
+				return blockPos.add(j, m, k);
+			}
+		}).filter(Objects::nonNull);
+	}
+}

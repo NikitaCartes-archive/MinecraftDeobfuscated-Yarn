@@ -1,0 +1,249 @@
+package net.minecraft.client.font;
+
+import com.google.common.collect.Maps;
+import com.google.gson.JsonObject;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Map;
+import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.class_383;
+import net.minecraft.class_390;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.resource.Resource;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+@Environment(EnvType.CLIENT)
+public class UnicodeTextureFont implements class_390 {
+	private static final Logger LOGGER = LogManager.getLogger();
+	private final ResourceManager field_2302;
+	private final byte[] widths;
+	private final String field_2300;
+	private final Map<Identifier, NativeImage> field_2299 = Maps.<Identifier, NativeImage>newHashMap();
+
+	public UnicodeTextureFont(ResourceManager resourceManager, byte[] bs, String string) {
+		this.field_2302 = resourceManager;
+		this.widths = bs;
+		this.field_2300 = string;
+
+		for (int i = 0; i < 256; i++) {
+			char c = (char)(i * 256);
+			Identifier identifier = this.method_2041(c);
+
+			try {
+				Resource resource = this.field_2302.getResource(identifier);
+				Throwable var8 = null;
+
+				try (NativeImage nativeImage = NativeImage.fromInputStream(NativeImage.Format.field_4997, resource.getInputStream())) {
+					if (nativeImage.getWidth() == 256 && nativeImage.getHeight() == 256) {
+						for (int j = 0; j < 256; j++) {
+							byte b = bs[c + j];
+							if (b != 0 && method_2043(b) > method_2044(b)) {
+								bs[c + j] = 0;
+							}
+						}
+						continue;
+					}
+				} catch (Throwable var41) {
+					var8 = var41;
+					throw var41;
+				} finally {
+					if (resource != null) {
+						if (var8 != null) {
+							try {
+								resource.close();
+							} catch (Throwable var37) {
+								var8.addSuppressed(var37);
+							}
+						} else {
+							resource.close();
+						}
+					}
+				}
+			} catch (IOException var43) {
+			}
+
+			Arrays.fill(bs, c, c + 256, (byte)0);
+		}
+	}
+
+	@Override
+	public void close() {
+		this.field_2299.values().forEach(NativeImage::close);
+	}
+
+	private Identifier method_2041(char c) {
+		Identifier identifier = new Identifier(String.format(this.field_2300, String.format("%02x", c / 256)));
+		return new Identifier(identifier.getNamespace(), "textures/" + identifier.getPath());
+	}
+
+	@Nullable
+	@Override
+	public class_383 method_2040(char c) {
+		byte b = this.widths[c];
+		if (b != 0) {
+			NativeImage nativeImage = (NativeImage)this.field_2299.computeIfAbsent(this.method_2041(c), this::method_2042);
+			if (nativeImage != null) {
+				int i = method_2043(b);
+				return new UnicodeTextureFont.class_393(c % 16 * 16 + i, (c & 255) / 16 * 16, method_2044(b) - i, 16, nativeImage);
+			}
+		}
+
+		return null;
+	}
+
+	@Nullable
+	private NativeImage method_2042(Identifier identifier) {
+		try {
+			Resource resource = this.field_2302.getResource(identifier);
+			Throwable var3 = null;
+
+			NativeImage var4;
+			try {
+				var4 = NativeImage.fromInputStream(NativeImage.Format.field_4997, resource.getInputStream());
+			} catch (Throwable var14) {
+				var3 = var14;
+				throw var14;
+			} finally {
+				if (resource != null) {
+					if (var3 != null) {
+						try {
+							resource.close();
+						} catch (Throwable var13) {
+							var3.addSuppressed(var13);
+						}
+					} else {
+						resource.close();
+					}
+				}
+			}
+
+			return var4;
+		} catch (IOException var16) {
+			LOGGER.error("Couldn't load texture {}", identifier, var16);
+			return null;
+		}
+	}
+
+	private static int method_2043(byte b) {
+		return b >> 4 & 15;
+	}
+
+	private static int method_2044(byte b) {
+		return (b & 15) + 1;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class Loader implements FontLoader {
+		private final Identifier field_2304;
+		private final String field_2305;
+
+		public Loader(Identifier identifier, String string) {
+			this.field_2304 = identifier;
+			this.field_2305 = string;
+		}
+
+		public static FontLoader method_2046(JsonObject jsonObject) {
+			return new UnicodeTextureFont.Loader(new Identifier(JsonHelper.getString(jsonObject, "sizes")), JsonHelper.getString(jsonObject, "template"));
+		}
+
+		@Nullable
+		@Override
+		public class_390 load(ResourceManager resourceManager) {
+			try {
+				Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(this.field_2304);
+				Throwable var3 = null;
+
+				UnicodeTextureFont var5;
+				try {
+					byte[] bs = new byte[65536];
+					resource.getInputStream().read(bs);
+					var5 = new UnicodeTextureFont(resourceManager, bs, this.field_2305);
+				} catch (Throwable var15) {
+					var3 = var15;
+					throw var15;
+				} finally {
+					if (resource != null) {
+						if (var3 != null) {
+							try {
+								resource.close();
+							} catch (Throwable var14) {
+								var3.addSuppressed(var14);
+							}
+						} else {
+							resource.close();
+						}
+					}
+				}
+
+				return var5;
+			} catch (IOException var17) {
+				UnicodeTextureFont.LOGGER.error("Cannot load {}, unicode glyphs will not render correctly", this.field_2304);
+				return null;
+			}
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	static class class_393 implements class_383 {
+		private final int field_2309;
+		private final int field_2308;
+		private final int field_2307;
+		private final int field_2306;
+		private final NativeImage image;
+
+		private class_393(int i, int j, int k, int l, NativeImage nativeImage) {
+			this.field_2309 = k;
+			this.field_2308 = l;
+			this.field_2307 = i;
+			this.field_2306 = j;
+			this.image = nativeImage;
+		}
+
+		@Override
+		public float method_2035() {
+			return 2.0F;
+		}
+
+		@Override
+		public int method_2031() {
+			return this.field_2309;
+		}
+
+		@Override
+		public int method_2032() {
+			return this.field_2308;
+		}
+
+		@Override
+		public float getAdvance() {
+			return (float)(this.field_2309 / 2 + 1);
+		}
+
+		@Override
+		public void method_2030(int i, int j) {
+			this.image.upload(0, i, j, this.field_2307, this.field_2306, this.field_2309, this.field_2308, false);
+		}
+
+		@Override
+		public boolean method_2033() {
+			return this.image.getFormat().getBytesPerPixel() > 1;
+		}
+
+		@Override
+		public float getShadowOffset() {
+			return 0.5F;
+		}
+
+		@Override
+		public float getBoldOffset() {
+			return 0.5F;
+		}
+	}
+}

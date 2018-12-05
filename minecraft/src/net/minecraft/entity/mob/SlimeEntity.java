@@ -1,0 +1,509 @@
+package net.minecraft.entity.mob;
+
+import javax.annotation.Nullable;
+import net.minecraft.class_1398;
+import net.minecraft.class_2919;
+import net.minecraft.class_3730;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.control.MoveControl;
+import net.minecraft.entity.ai.goal.FindNearestPlayerGoal;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.passive.IronGolemEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.particle.Particle;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.chunk.ChunkPos;
+import net.minecraft.world.level.LevelGeneratorType;
+import net.minecraft.world.loot.LootTables;
+
+public class SlimeEntity extends MobEntity implements Monster {
+	private static final TrackedData<Integer> SLIME_SIZE = DataTracker.registerData(SlimeEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	public float field_7389;
+	public float field_7388;
+	public float field_7387;
+	private boolean field_7391;
+
+	protected SlimeEntity(EntityType<?> entityType, World world) {
+		super(entityType, world);
+		this.moveControl = new SlimeEntity.SlimeMoveControl(this);
+	}
+
+	public SlimeEntity(World world) {
+		this(EntityType.SLIME, world);
+	}
+
+	@Override
+	protected void method_5959() {
+		this.goalSelector.add(1, new SlimeEntity.class_1623(this));
+		this.goalSelector.add(2, new SlimeEntity.class_1622(this));
+		this.goalSelector.add(3, new SlimeEntity.class_1626(this));
+		this.goalSelector.add(5, new SlimeEntity.class_1624(this));
+		this.targetSelector.add(1, new FindNearestPlayerGoal(this));
+		this.targetSelector.add(3, new class_1398(this, IronGolemEntity.class));
+	}
+
+	@Override
+	protected void initDataTracker() {
+		super.initDataTracker();
+		this.dataTracker.startTracking(SLIME_SIZE, 1);
+	}
+
+	protected void method_7161(int i, boolean bl) {
+		this.dataTracker.set(SLIME_SIZE, i);
+		this.setSize(0.51000005F * (float)i, 0.51000005F * (float)i);
+		this.setPosition(this.x, this.y, this.z);
+		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue((double)(i * i));
+		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue((double)(0.2F + 0.1F * (float)i));
+		if (bl) {
+			this.setHealth(this.getHealthMaximum());
+		}
+
+		this.experiencePoints = i;
+	}
+
+	public int getSize() {
+		return this.dataTracker.get(SLIME_SIZE);
+	}
+
+	@Override
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		compoundTag.putInt("Size", this.getSize() - 1);
+		compoundTag.putBoolean("wasOnGround", this.field_7391);
+	}
+
+	@Override
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		int i = compoundTag.getInt("Size");
+		if (i < 0) {
+			i = 0;
+		}
+
+		this.method_7161(i + 1, false);
+		this.field_7391 = compoundTag.getBoolean("wasOnGround");
+	}
+
+	public boolean method_7157() {
+		return this.getSize() <= 1;
+	}
+
+	protected Particle method_7162() {
+		return ParticleTypes.field_11246;
+	}
+
+	@Override
+	public void update() {
+		if (!this.world.isRemote && this.world.getDifficulty() == Difficulty.PEACEFUL && this.getSize() > 0) {
+			this.invalid = true;
+		}
+
+		this.field_7388 = this.field_7388 + (this.field_7389 - this.field_7388) * 0.5F;
+		this.field_7387 = this.field_7388;
+		super.update();
+		if (this.onGround && !this.field_7391) {
+			int i = this.getSize();
+
+			for (int j = 0; j < i * 8; j++) {
+				float f = this.random.nextFloat() * (float) (Math.PI * 2);
+				float g = this.random.nextFloat() * 0.5F + 0.5F;
+				float h = MathHelper.sin(f) * (float)i * 0.5F * g;
+				float k = MathHelper.cos(f) * (float)i * 0.5F * g;
+				World var10000 = this.world;
+				Particle var10001 = this.method_7162();
+				double var10002 = this.x + (double)h;
+				double var10004 = this.z + (double)k;
+				var10000.method_8406(var10001, var10002, this.getBoundingBox().minY, var10004, 0.0, 0.0, 0.0);
+			}
+
+			this.playSoundAtEntity(this.method_7160(), this.getSoundVolume(), ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) / 0.8F);
+			this.field_7389 = -0.5F;
+		} else if (!this.onGround && this.field_7391) {
+			this.field_7389 = 1.0F;
+		}
+
+		this.field_7391 = this.onGround;
+		this.method_7156();
+	}
+
+	protected void method_7156() {
+		this.field_7389 *= 0.6F;
+	}
+
+	protected int method_7154() {
+		return this.random.nextInt(20) + 10;
+	}
+
+	@Override
+	public void onTrackedDataSet(TrackedData<?> trackedData) {
+		if (SLIME_SIZE.equals(trackedData)) {
+			int i = this.getSize();
+			this.setSize(0.51000005F * (float)i, 0.51000005F * (float)i);
+			this.yaw = this.headPitch;
+			this.field_6283 = this.headPitch;
+			if (this.isInsideWater() && this.random.nextInt(20) == 0) {
+				this.onSwimmingStart();
+			}
+		}
+
+		super.onTrackedDataSet(trackedData);
+	}
+
+	@Override
+	public EntityType<? extends SlimeEntity> getType() {
+		return (EntityType<? extends SlimeEntity>)super.getType();
+	}
+
+	@Override
+	public void invalidate() {
+		int i = this.getSize();
+		if (!this.world.isRemote && i > 1 && this.getHealth() <= 0.0F) {
+			int j = 2 + this.random.nextInt(3);
+
+			for (int k = 0; k < j; k++) {
+				float f = ((float)(k % 2) - 0.5F) * (float)i / 4.0F;
+				float g = ((float)(k / 2) - 0.5F) * (float)i / 4.0F;
+				SlimeEntity slimeEntity = this.getType().create(this.world);
+				if (this.hasCustomName()) {
+					slimeEntity.setCustomName(this.getCustomName());
+				}
+
+				if (this.isPersistent()) {
+					slimeEntity.setPersistent();
+				}
+
+				slimeEntity.method_7161(i / 2, true);
+				slimeEntity.setPositionAndAngles(this.x + (double)f, this.y + 0.5, this.z + (double)g, this.random.nextFloat() * 360.0F, 0.0F);
+				this.world.spawnEntity(slimeEntity);
+			}
+		}
+
+		super.invalidate();
+	}
+
+	@Override
+	public void pushAwayFrom(Entity entity) {
+		super.pushAwayFrom(entity);
+		if (entity instanceof IronGolemEntity && this.method_7163()) {
+			this.method_7155((LivingEntity)entity);
+		}
+	}
+
+	@Override
+	public void method_5694(PlayerEntity playerEntity) {
+		if (this.method_7163()) {
+			this.method_7155(playerEntity);
+		}
+	}
+
+	protected void method_7155(LivingEntity livingEntity) {
+		int i = this.getSize();
+		if (this.canSee(livingEntity)
+			&& this.squaredDistanceTo(livingEntity) < 0.6 * (double)i * 0.6 * (double)i
+			&& livingEntity.damage(DamageSource.mob(this), (float)this.method_7158())) {
+			this.playSoundAtEntity(SoundEvents.field_14863, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+			this.method_5723(this, livingEntity);
+		}
+	}
+
+	@Override
+	public float getEyeHeight() {
+		return 0.625F * this.height;
+	}
+
+	protected boolean method_7163() {
+		return !this.method_7157() && this.method_6034();
+	}
+
+	protected int method_7158() {
+		return this.getSize();
+	}
+
+	@Override
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
+		return this.method_7157() ? SoundEvents.field_14620 : SoundEvents.field_15014;
+	}
+
+	@Override
+	protected SoundEvent getDeathSound() {
+		return this.method_7157() ? SoundEvents.field_14849 : SoundEvents.field_14763;
+	}
+
+	protected SoundEvent method_7160() {
+		return this.method_7157() ? SoundEvents.field_15148 : SoundEvents.field_15095;
+	}
+
+	@Override
+	protected Identifier getLootTableId() {
+		return this.getSize() == 1 ? this.getType().getLootTableId() : LootTables.EMPTY;
+	}
+
+	@Override
+	public boolean method_5979(IWorld iWorld, class_3730 arg) {
+		BlockPos blockPos = new BlockPos(MathHelper.floor(this.x), 0, MathHelper.floor(this.z));
+		if (iWorld.getLevelProperties().getGeneratorType() == LevelGeneratorType.FLAT && this.random.nextInt(4) != 1) {
+			return false;
+		} else {
+			if (iWorld.getDifficulty() != Difficulty.PEACEFUL) {
+				Biome biome = iWorld.getBiome(blockPos);
+				if (biome == Biomes.field_9471
+					&& this.y > 50.0
+					&& this.y < 70.0
+					&& this.random.nextFloat() < 0.5F
+					&& this.random.nextFloat() < iWorld.method_8391()
+					&& iWorld.method_8602(new BlockPos(this)) <= this.random.nextInt(8)) {
+					return super.method_5979(iWorld, arg);
+				}
+
+				ChunkPos chunkPos = new ChunkPos(blockPos);
+				boolean bl = class_2919.method_12662(chunkPos.x, chunkPos.z, iWorld.getSeed(), 987234911L).nextInt(10) == 0;
+				if (this.random.nextInt(10) == 0 && bl && this.y < 40.0) {
+					return super.method_5979(iWorld, arg);
+				}
+			}
+
+			return false;
+		}
+	}
+
+	@Override
+	protected float getSoundVolume() {
+		return 0.4F * (float)this.getSize();
+	}
+
+	@Override
+	public int method_5978() {
+		return 0;
+	}
+
+	protected boolean method_7159() {
+		return this.getSize() > 0;
+	}
+
+	@Override
+	protected void method_6043() {
+		this.velocityY = 0.42F;
+		this.velocityDirty = true;
+	}
+
+	@Nullable
+	@Override
+	public EntityData method_5943(
+		IWorld iWorld, LocalDifficulty localDifficulty, class_3730 arg, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	) {
+		int i = this.random.nextInt(3);
+		if (i < 2 && this.random.nextFloat() < 0.5F * localDifficulty.method_5458()) {
+			i++;
+		}
+
+		int j = 1 << i;
+		this.method_7161(j, true);
+		return super.method_5943(iWorld, localDifficulty, arg, entityData, compoundTag);
+	}
+
+	protected SoundEvent method_7153() {
+		return this.method_7157() ? SoundEvents.field_14694 : SoundEvents.field_14919;
+	}
+
+	static class SlimeMoveControl extends MoveControl {
+		private float field_7397;
+		private int field_7399;
+		private final SlimeEntity slime;
+		private boolean field_7398;
+
+		public SlimeMoveControl(SlimeEntity slimeEntity) {
+			super(slimeEntity);
+			this.slime = slimeEntity;
+			this.field_7397 = 180.0F * slimeEntity.yaw / (float) Math.PI;
+		}
+
+		public void method_7165(float f, boolean bl) {
+			this.field_7397 = f;
+			this.field_7398 = bl;
+		}
+
+		public void method_7164(double d) {
+			this.field_6372 = d;
+			this.field_6374 = MoveControl.class_1336.field_6378;
+		}
+
+		@Override
+		public void tick() {
+			this.entity.yaw = this.method_6238(this.entity.yaw, this.field_7397, 90.0F);
+			this.entity.headPitch = this.entity.yaw;
+			this.entity.field_6283 = this.entity.yaw;
+			if (this.field_6374 != MoveControl.class_1336.field_6378) {
+				this.entity.method_5930(0.0F);
+			} else {
+				this.field_6374 = MoveControl.class_1336.field_6377;
+				if (this.entity.onGround) {
+					this.entity.method_6125((float)(this.field_6372 * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()));
+					if (this.field_7399-- <= 0) {
+						this.field_7399 = this.slime.method_7154();
+						if (this.field_7398) {
+							this.field_7399 /= 3;
+						}
+
+						this.slime.getJumpControl().setActive();
+						if (this.slime.method_7159()) {
+							this.slime
+								.playSoundAtEntity(
+									this.slime.method_7153(), this.slime.getSoundVolume(), ((this.slime.getRand().nextFloat() - this.slime.getRand().nextFloat()) * 0.2F + 1.0F) * 0.8F
+								);
+						}
+					} else {
+						this.slime.field_6212 = 0.0F;
+						this.slime.field_6250 = 0.0F;
+						this.entity.method_6125(0.0F);
+					}
+				} else {
+					this.entity.method_6125((float)(this.field_6372 * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()));
+				}
+			}
+		}
+	}
+
+	static class class_1622 extends Goal {
+		private final SlimeEntity field_7393;
+		private int field_7392;
+
+		public class_1622(SlimeEntity slimeEntity) {
+			this.field_7393 = slimeEntity;
+			this.setControlBits(2);
+		}
+
+		@Override
+		public boolean canStart() {
+			LivingEntity livingEntity = this.field_7393.getTarget();
+			if (livingEntity == null) {
+				return false;
+			} else if (!livingEntity.isValid()) {
+				return false;
+			} else {
+				return livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).abilities.invulnerable
+					? false
+					: this.field_7393.getMoveControl() instanceof SlimeEntity.SlimeMoveControl;
+			}
+		}
+
+		@Override
+		public void start() {
+			this.field_7392 = 300;
+			super.start();
+		}
+
+		@Override
+		public boolean shouldContinue() {
+			LivingEntity livingEntity = this.field_7393.getTarget();
+			if (livingEntity == null) {
+				return false;
+			} else if (!livingEntity.isValid()) {
+				return false;
+			} else {
+				return livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).abilities.invulnerable ? false : --this.field_7392 > 0;
+			}
+		}
+
+		@Override
+		public void tick() {
+			this.field_7393.method_5951(this.field_7393.getTarget(), 10.0F, 10.0F);
+			((SlimeEntity.SlimeMoveControl)this.field_7393.getMoveControl()).method_7165(this.field_7393.yaw, this.field_7393.method_7163());
+		}
+	}
+
+	static class class_1623 extends Goal {
+		private final SlimeEntity field_7394;
+
+		public class_1623(SlimeEntity slimeEntity) {
+			this.field_7394 = slimeEntity;
+			this.setControlBits(5);
+			slimeEntity.getNavigation().method_6354(true);
+		}
+
+		@Override
+		public boolean canStart() {
+			return this.field_7394.isInsideWater() || this.field_7394.isTouchingLava();
+		}
+
+		@Override
+		public void tick() {
+			if (this.field_7394.getRand().nextFloat() < 0.8F) {
+				this.field_7394.getJumpControl().setActive();
+			}
+
+			((SlimeEntity.SlimeMoveControl)this.field_7394.getMoveControl()).method_7164(1.2);
+		}
+	}
+
+	static class class_1624 extends Goal {
+		private final SlimeEntity field_7395;
+
+		public class_1624(SlimeEntity slimeEntity) {
+			this.field_7395 = slimeEntity;
+			this.setControlBits(5);
+		}
+
+		@Override
+		public boolean canStart() {
+			return !this.field_7395.hasVehicle();
+		}
+
+		@Override
+		public void tick() {
+			((SlimeEntity.SlimeMoveControl)this.field_7395.getMoveControl()).method_7164(1.0);
+		}
+	}
+
+	static class class_1626 extends Goal {
+		private final SlimeEntity field_7402;
+		private float field_7400;
+		private int field_7401;
+
+		public class_1626(SlimeEntity slimeEntity) {
+			this.field_7402 = slimeEntity;
+			this.setControlBits(2);
+		}
+
+		@Override
+		public boolean canStart() {
+			return this.field_7402.getTarget() == null
+				&& (
+					this.field_7402.onGround
+						|| this.field_7402.isInsideWater()
+						|| this.field_7402.isTouchingLava()
+						|| this.field_7402.hasPotionEffect(StatusEffects.field_5902)
+				);
+		}
+
+		@Override
+		public void tick() {
+			if (--this.field_7401 <= 0) {
+				this.field_7401 = 40 + this.field_7402.getRand().nextInt(60);
+				this.field_7400 = (float)this.field_7402.getRand().nextInt(360);
+			}
+
+			((SlimeEntity.SlimeMoveControl)this.field_7402.getMoveControl()).method_7165(this.field_7400, false);
+		}
+	}
+}
