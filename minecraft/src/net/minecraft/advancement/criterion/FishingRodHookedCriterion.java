@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.advancement.ServerAdvancementManager;
+import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.projectile.FishHookEntity;
 import net.minecraft.item.ItemStack;
@@ -21,7 +21,7 @@ import net.minecraft.util.Identifier;
 
 public class FishingRodHookedCriterion implements Criterion<FishingRodHookedCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("fishing_rod_hooked");
-	private final Map<ServerAdvancementManager, FishingRodHookedCriterion.class_2059> field_9618 = Maps.<ServerAdvancementManager, FishingRodHookedCriterion.class_2059>newHashMap();
+	private final Map<PlayerAdvancementTracker, FishingRodHookedCriterion.class_2059> field_9618 = Maps.<PlayerAdvancementTracker, FishingRodHookedCriterion.class_2059>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -29,34 +29,34 @@ public class FishingRodHookedCriterion implements Criterion<FishingRodHookedCrit
 	}
 
 	@Override
-	public void addCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions> conditionsContainer
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions> conditionsContainer
 	) {
-		FishingRodHookedCriterion.class_2059 lv = (FishingRodHookedCriterion.class_2059)this.field_9618.get(serverAdvancementManager);
+		FishingRodHookedCriterion.class_2059 lv = (FishingRodHookedCriterion.class_2059)this.field_9618.get(playerAdvancementTracker);
 		if (lv == null) {
-			lv = new FishingRodHookedCriterion.class_2059(serverAdvancementManager);
-			this.field_9618.put(serverAdvancementManager, lv);
+			lv = new FishingRodHookedCriterion.class_2059(playerAdvancementTracker);
+			this.field_9618.put(playerAdvancementTracker, lv);
 		}
 
 		lv.method_8943(conditionsContainer);
 	}
 
 	@Override
-	public void removeCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions> conditionsContainer
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions> conditionsContainer
 	) {
-		FishingRodHookedCriterion.class_2059 lv = (FishingRodHookedCriterion.class_2059)this.field_9618.get(serverAdvancementManager);
+		FishingRodHookedCriterion.class_2059 lv = (FishingRodHookedCriterion.class_2059)this.field_9618.get(playerAdvancementTracker);
 		if (lv != null) {
 			lv.method_8945(conditionsContainer);
 			if (lv.method_8944()) {
-				this.field_9618.remove(serverAdvancementManager);
+				this.field_9618.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void removePlayer(ServerAdvancementManager serverAdvancementManager) {
-		this.field_9618.remove(serverAdvancementManager);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.field_9618.remove(playerAdvancementTracker);
 	}
 
 	public FishingRodHookedCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -121,7 +121,7 @@ public class FishingRodHookedCriterion implements Criterion<FishingRodHookedCrit
 		}
 
 		@Override
-		public JsonElement method_807() {
+		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("rod", this.rod.serialize());
 			jsonObject.add("entity", this.entity.serialize());
@@ -131,11 +131,11 @@ public class FishingRodHookedCriterion implements Criterion<FishingRodHookedCrit
 	}
 
 	static class class_2059 {
-		private final ServerAdvancementManager field_9620;
+		private final PlayerAdvancementTracker field_9620;
 		private final Set<Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions>> field_9619 = Sets.<Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions>>newHashSet();
 
-		public class_2059(ServerAdvancementManager serverAdvancementManager) {
-			this.field_9620 = serverAdvancementManager;
+		public class_2059(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.field_9620 = playerAdvancementTracker;
 		}
 
 		public boolean method_8944() {

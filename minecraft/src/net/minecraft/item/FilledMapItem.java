@@ -49,7 +49,7 @@ public class FilledMapItem extends MapItem {
 	@Nullable
 	public static MapState method_8001(ItemStack itemStack, World world) {
 		MapState mapState = method_7997(world, "map_" + method_8003(itemStack));
-		if (mapState == null && !world.isRemote) {
+		if (mapState == null && !world.isClient) {
 			mapState = method_8000(
 				itemStack, world, world.getLevelProperties().getSpawnX(), world.getLevelProperties().getSpawnZ(), 3, false, false, world.dimension.getType()
 			);
@@ -64,10 +64,10 @@ public class FilledMapItem extends MapItem {
 	}
 
 	private static MapState method_8000(ItemStack itemStack, World world, int i, int j, int k, boolean bl, boolean bl2, DimensionType dimensionType) {
-		int l = world.method_8645(DimensionType.field_13072, "map");
+		int l = world.getNextAvailableId(DimensionType.field_13072, "map");
 		MapState mapState = new MapState("map_" + l);
 		mapState.method_105(i, j, k, bl, bl2, dimensionType);
-		world.method_8647(DimensionType.field_13072, mapState.getKey(), mapState);
+		world.method_8647(DimensionType.field_13072, mapState.getId(), mapState);
 		itemStack.getOrCreateTag().putInt("map", l);
 		return mapState;
 	}
@@ -78,14 +78,14 @@ public class FilledMapItem extends MapItem {
 	}
 
 	public void method_7998(World world, Entity entity, MapState mapState) {
-		if (world.dimension.getType() == mapState.field_118 && entity instanceof PlayerEntity) {
+		if (world.dimension.getType() == mapState.dimension && entity instanceof PlayerEntity) {
 			int i = 1 << mapState.scale;
-			int j = mapState.field_116;
-			int k = mapState.field_115;
+			int j = mapState.xCenter;
+			int k = mapState.zCenter;
 			int l = MathHelper.floor(entity.x - (double)j) / i + 64;
 			int m = MathHelper.floor(entity.z - (double)k) / i + 64;
 			int n = 128 / i;
-			if (world.dimension.method_12467()) {
+			if (world.dimension.isNether()) {
 				n /= 2;
 			}
 
@@ -106,14 +106,14 @@ public class FilledMapItem extends MapItem {
 							int s = (j / i + o - 64) * i;
 							int t = (k / i + p - 64) * i;
 							Multiset<MaterialColor> multiset = LinkedHashMultiset.create();
-							WorldChunk worldChunk = world.getChunk(new BlockPos(s, 0, t));
-							if (!worldChunk.method_12223()) {
+							WorldChunk worldChunk = world.getWorldChunk(new BlockPos(s, 0, t));
+							if (!worldChunk.isEmpty()) {
 								ChunkPos chunkPos = worldChunk.getPos();
 								int u = s & 15;
 								int v = t & 15;
 								int w = 0;
 								double e = 0.0;
-								if (world.dimension.method_12467()) {
+								if (world.dimension.isNether()) {
 									int x = s + t * 231871;
 									x = x * x * 31287121 + x * 11;
 									if ((x >> 20 & 1) == 0) {
@@ -205,7 +205,7 @@ public class FilledMapItem extends MapItem {
 
 	private BlockState method_7995(World world, BlockState blockState, BlockPos blockPos) {
 		FluidState fluidState = blockState.getFluidState();
-		return !fluidState.isEmpty() && !Block.method_9501(blockState.method_11628(world, blockPos), Direction.UP) ? fluidState.getBlockState() : blockState;
+		return !fluidState.isEmpty() && !Block.isFaceFullCube(blockState.getCollisionShape(world, blockPos), Direction.UP) ? fluidState.getBlockState() : blockState;
 	}
 
 	private static boolean method_8004(Biome[] biomes, int i, int j, int k) {
@@ -215,11 +215,11 @@ public class FilledMapItem extends MapItem {
 	public static void method_8002(World world, ItemStack itemStack) {
 		MapState mapState = method_8001(itemStack, world);
 		if (mapState != null) {
-			if (world.dimension.getType() == mapState.field_118) {
+			if (world.dimension.getType() == mapState.dimension) {
 				int i = 1 << mapState.scale;
-				int j = mapState.field_116;
-				int k = mapState.field_115;
-				Biome[] biomes = world.getChunkManager().getChunkGenerator().getBiomeSource().method_8760((j / i - 64) * i, (k / i - 64) * i, 128 * i, 128 * i, false);
+				int j = mapState.xCenter;
+				int k = mapState.zCenter;
+				Biome[] biomes = world.getChunkManager().getChunkGenerator().getBiomeSource().sampleBiomes((j / i - 64) * i, (k / i - 64) * i, 128 * i, 128 * i, false);
 
 				for (int l = 0; l < 128; l++) {
 					for (int m = 0; m < 128; m++) {
@@ -300,7 +300,7 @@ public class FilledMapItem extends MapItem {
 
 	@Override
 	public void onUpdate(ItemStack itemStack, World world, Entity entity, int i, boolean bl) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			MapState mapState = method_8001(itemStack, world);
 			if (entity instanceof PlayerEntity) {
 				PlayerEntity playerEntity = (PlayerEntity)entity;
@@ -334,19 +334,19 @@ public class FilledMapItem extends MapItem {
 			method_8000(
 				itemStack,
 				world,
-				mapState.field_116,
-				mapState.field_115,
+				mapState.xCenter,
+				mapState.zCenter,
 				MathHelper.clamp(mapState.scale + i, 0, 4),
 				mapState.showIcons,
-				mapState.field_113,
-				mapState.field_118
+				mapState.unlimitedTracking,
+				mapState.dimension
 			);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void addInformation(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
 		if (tooltipOptions.isAdvanced()) {
 			MapState mapState = world == null ? null : method_8001(itemStack, world);
 			if (mapState != null) {
@@ -374,7 +374,7 @@ public class FilledMapItem extends MapItem {
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		BlockState blockState = itemUsageContext.getWorld().getBlockState(itemUsageContext.getPos());
 		if (blockState.matches(BlockTags.field_15501)) {
-			if (!itemUsageContext.world.isRemote) {
+			if (!itemUsageContext.world.isClient) {
 				MapState mapState = method_8001(itemUsageContext.getItemStack(), itemUsageContext.getWorld());
 				mapState.method_108(itemUsageContext.getWorld(), itemUsageContext.getPos());
 			}

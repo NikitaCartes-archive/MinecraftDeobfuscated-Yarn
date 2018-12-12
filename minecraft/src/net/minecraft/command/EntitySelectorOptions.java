@@ -15,7 +15,7 @@ import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import net.minecraft.advancement.AdvancementProgress;
-import net.minecraft.advancement.ServerAdvancementManager;
+import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.advancement.criterion.CriterionProgress;
 import net.minecraft.entity.Entity;
@@ -27,6 +27,7 @@ import net.minecraft.scoreboard.AbstractScoreboardTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
+import net.minecraft.server.ServerAdvancementLoader;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sortme.JsonLikeTagParser;
@@ -375,7 +376,7 @@ public class EntitySelectorOptions {
 				stringReader.expect('}');
 				if (!map.isEmpty()) {
 					entitySelectorReader.setPredicate(entity -> {
-						Scoreboard scoreboard = entity.getServer().method_3845();
+						Scoreboard scoreboard = entity.getServer().getScoreboard();
 						String stringx = entity.getEntityName();
 
 						for (Entry<String, NumberRange.Integer> entry : map.entrySet()) {
@@ -464,12 +465,12 @@ public class EntitySelectorOptions {
 							return false;
 						} else {
 							ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
-							ServerAdvancementManager serverAdvancementManager = serverPlayerEntity.getAdvancementManager();
-							net.minecraft.server.ServerAdvancementManager serverAdvancementManager2 = serverPlayerEntity.getServer().getAdvancementManager();
+							PlayerAdvancementTracker playerAdvancementTracker = serverPlayerEntity.getAdvancementManager();
+							ServerAdvancementLoader serverAdvancementLoader = serverPlayerEntity.getServer().method_3851();
 
 							for (Entry<Identifier, Predicate<AdvancementProgress>> entry : map.entrySet()) {
-								SimpleAdvancement simpleAdvancement = serverAdvancementManager2.get((Identifier)entry.getKey());
-								if (simpleAdvancement == null || !((Predicate)entry.getValue()).test(serverAdvancementManager.method_12882(simpleAdvancement))) {
+								SimpleAdvancement simpleAdvancement = serverAdvancementLoader.get((Identifier)entry.getKey());
+								if (simpleAdvancement == null || !((Predicate)entry.getValue()).test(playerAdvancementTracker.getProgress(simpleAdvancement))) {
 									return false;
 								}
 							}

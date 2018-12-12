@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.HopperBlockEntity;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.container.Container;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -28,22 +27,22 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class HopperBlock extends BlockWithEntity {
-	public static final DirectionProperty field_11129 = Properties.field_12545;
+	public static final DirectionProperty field_11129 = Properties.FACING_HOPPER;
 	public static final BooleanProperty field_11126 = Properties.ENABLED;
 	private static final VoxelShape field_11131 = Block.createCubeShape(0.0, 10.0, 0.0, 16.0, 16.0, 16.0);
 	private static final VoxelShape field_11127 = Block.createCubeShape(4.0, 4.0, 4.0, 12.0, 10.0, 12.0);
-	private static final VoxelShape field_11121 = VoxelShapes.method_1084(field_11127, field_11131);
-	private static final VoxelShape field_11132 = VoxelShapes.method_1072(field_11121, Hopper.SHAPE_INSIDE, BooleanBiFunction.ONLY_FIRST);
-	private static final VoxelShape field_11120 = VoxelShapes.method_1084(field_11132, Block.createCubeShape(6.0, 0.0, 6.0, 10.0, 4.0, 10.0));
-	private static final VoxelShape field_11134 = VoxelShapes.method_1084(field_11132, Block.createCubeShape(12.0, 4.0, 6.0, 16.0, 8.0, 10.0));
-	private static final VoxelShape field_11124 = VoxelShapes.method_1084(field_11132, Block.createCubeShape(6.0, 4.0, 0.0, 10.0, 8.0, 4.0));
-	private static final VoxelShape field_11122 = VoxelShapes.method_1084(field_11132, Block.createCubeShape(6.0, 4.0, 12.0, 10.0, 8.0, 16.0));
-	private static final VoxelShape field_11130 = VoxelShapes.method_1084(field_11132, Block.createCubeShape(0.0, 4.0, 6.0, 4.0, 8.0, 10.0));
+	private static final VoxelShape field_11121 = VoxelShapes.union(field_11127, field_11131);
+	private static final VoxelShape field_11132 = VoxelShapes.combine(field_11121, Hopper.SHAPE_INSIDE, BooleanBiFunction.ONLY_FIRST);
+	private static final VoxelShape field_11120 = VoxelShapes.union(field_11132, Block.createCubeShape(6.0, 0.0, 6.0, 10.0, 4.0, 10.0));
+	private static final VoxelShape field_11134 = VoxelShapes.union(field_11132, Block.createCubeShape(12.0, 4.0, 6.0, 16.0, 8.0, 10.0));
+	private static final VoxelShape field_11124 = VoxelShapes.union(field_11132, Block.createCubeShape(6.0, 4.0, 0.0, 10.0, 8.0, 4.0));
+	private static final VoxelShape field_11122 = VoxelShapes.union(field_11132, Block.createCubeShape(6.0, 4.0, 12.0, 10.0, 8.0, 16.0));
+	private static final VoxelShape field_11130 = VoxelShapes.union(field_11132, Block.createCubeShape(0.0, 4.0, 6.0, 4.0, 8.0, 10.0));
 	private static final VoxelShape field_11125 = Hopper.SHAPE_INSIDE;
-	private static final VoxelShape field_11133 = VoxelShapes.method_1084(Hopper.SHAPE_INSIDE, Block.createCubeShape(12.0, 8.0, 6.0, 16.0, 10.0, 10.0));
-	private static final VoxelShape field_11123 = VoxelShapes.method_1084(Hopper.SHAPE_INSIDE, Block.createCubeShape(6.0, 8.0, 0.0, 10.0, 10.0, 4.0));
-	private static final VoxelShape field_11128 = VoxelShapes.method_1084(Hopper.SHAPE_INSIDE, Block.createCubeShape(6.0, 8.0, 12.0, 10.0, 10.0, 16.0));
-	private static final VoxelShape field_11135 = VoxelShapes.method_1084(Hopper.SHAPE_INSIDE, Block.createCubeShape(0.0, 8.0, 6.0, 4.0, 10.0, 10.0));
+	private static final VoxelShape field_11133 = VoxelShapes.union(Hopper.SHAPE_INSIDE, Block.createCubeShape(12.0, 8.0, 6.0, 16.0, 10.0, 10.0));
+	private static final VoxelShape field_11123 = VoxelShapes.union(Hopper.SHAPE_INSIDE, Block.createCubeShape(6.0, 8.0, 0.0, 10.0, 10.0, 4.0));
+	private static final VoxelShape field_11128 = VoxelShapes.union(Hopper.SHAPE_INSIDE, Block.createCubeShape(6.0, 8.0, 12.0, 10.0, 10.0, 16.0));
+	private static final VoxelShape field_11135 = VoxelShapes.union(Hopper.SHAPE_INSIDE, Block.createCubeShape(0.0, 8.0, 6.0, 4.0, 10.0, 10.0));
 
 	public HopperBlock(Block.Settings settings) {
 		super(settings);
@@ -88,7 +87,7 @@ public class HopperBlock extends BlockWithEntity {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		Direction direction = itemPlacementContext.method_8038().getOpposite();
+		Direction direction = itemPlacementContext.getFacing().getOpposite();
 		return this.getDefaultState()
 			.with(field_11129, direction.getAxis() == Direction.Axis.Y ? Direction.DOWN : direction)
 			.with(field_11126, Boolean.valueOf(true));
@@ -122,16 +121,16 @@ public class HopperBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
-		if (world.isRemote) {
+		if (world.isClient) {
 			return true;
 		} else {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof HopperBlockEntity) {
 				playerEntity.openInventory((HopperBlockEntity)blockEntity);
-				playerEntity.method_7281(Stats.field_15366);
+				playerEntity.increaseStat(Stats.field_15366);
 			}
 
 			return true;
@@ -164,8 +163,8 @@ public class HopperBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public RenderTypeBlock getRenderType(BlockState blockState) {
-		return RenderTypeBlock.MODEL;
+	public BlockRenderType method_9604(BlockState blockState) {
+		return BlockRenderType.field_11458;
 	}
 
 	@Override
@@ -190,7 +189,7 @@ public class HopperBlock extends BlockWithEntity {
 
 	@Override
 	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.method_10345(blockState.get(field_11129)));
+		return blockState.applyRotation(mirror.getRotation(blockState.get(field_11129)));
 	}
 
 	@Override
@@ -202,7 +201,7 @@ public class HopperBlock extends BlockWithEntity {
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof HopperBlockEntity) {
-			((HopperBlockEntity)blockEntity).method_11236(entity);
+			((HopperBlockEntity)blockEntity).onEntityCollided(entity);
 		}
 	}
 

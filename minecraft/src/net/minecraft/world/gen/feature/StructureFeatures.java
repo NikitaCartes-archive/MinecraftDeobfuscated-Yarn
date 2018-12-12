@@ -3,11 +3,11 @@ package net.minecraft.world.gen.feature;
 import java.util.Locale;
 import javax.annotation.Nullable;
 import net.minecraft.class_3443;
-import net.minecraft.class_3449;
-import net.minecraft.class_3485;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.sortme.StructurePiece;
+import net.minecraft.sortme.structures.StructureManager;
+import net.minecraft.sortme.structures.StructureStart;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
@@ -45,10 +45,12 @@ public class StructureFeatures {
 	}
 
 	@Nullable
-	public static class_3449 method_14842(ChunkGenerator<?> chunkGenerator, class_3485 arg, BiomeSource biomeSource, CompoundTag compoundTag) {
+	public static StructureStart method_14842(
+		ChunkGenerator<?> chunkGenerator, StructureManager structureManager, BiomeSource biomeSource, CompoundTag compoundTag
+	) {
 		String string = compoundTag.getString("id");
 		if ("INVALID".equals(string)) {
-			return class_3449.field_16713;
+			return StructureStart.field_16713;
 		} else {
 			StructureFeature<?> structureFeature = Registry.STRUCTURE_FEATURE.get(new Identifier(string.toLowerCase(Locale.ROOT)));
 			if (structureFeature == null) {
@@ -59,14 +61,14 @@ public class StructureFeatures {
 				int j = compoundTag.getInt("ChunkZ");
 				Biome biome = compoundTag.containsKey("biome")
 					? Registry.BIOME.get(new Identifier(compoundTag.getString("biome")))
-					: biomeSource.method_8758(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
+					: biomeSource.getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
 				MutableIntBoundingBox mutableIntBoundingBox = compoundTag.containsKey("BB")
 					? new MutableIntBoundingBox(compoundTag.getIntArray("BB"))
 					: MutableIntBoundingBox.maxSize();
 				ListTag listTag = compoundTag.getList("Children", 10);
 
 				try {
-					class_3449 lv = structureFeature.method_14016().create(structureFeature, i, j, biome, mutableIntBoundingBox, 0, chunkGenerator.getSeed());
+					StructureStart structureStart = structureFeature.method_14016().create(structureFeature, i, j, biome, mutableIntBoundingBox, 0, chunkGenerator.getSeed());
 
 					for (int k = 0; k < listTag.size(); k++) {
 						CompoundTag compoundTag2 = listTag.getCompoundTag(k);
@@ -76,15 +78,15 @@ public class StructureFeatures {
 							logger.error("Unknown structure piece id: {}", string2);
 						} else {
 							try {
-								class_3443 lv2 = structurePiece.load(arg, compoundTag2);
-								lv.children.add(lv2);
+								class_3443 lv = structurePiece.load(structureManager, compoundTag2);
+								structureStart.children.add(lv);
 							} catch (Exception var17) {
 								logger.error("Exception loading structure piece with id {}", string2, var17);
 							}
 						}
 					}
 
-					return lv;
+					return structureStart;
 				} catch (Exception var18) {
 					logger.error("Failed Start with id {}", string, var18);
 					return null;

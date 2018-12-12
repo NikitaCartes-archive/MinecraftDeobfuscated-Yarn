@@ -18,15 +18,15 @@ public class BodyControl {
 		double e = this.entity.z - this.entity.prevZ;
 		if (d * d + e * e > 2.5000003E-7F) {
 			this.entity.field_6283 = this.entity.yaw;
-			this.entity.headPitch = this.method_6223(this.entity.field_6283, this.entity.headPitch, (float)((MobEntity)this.entity).method_5986());
-			this.field_6354 = this.entity.headPitch;
+			this.entity.headYaw = this.method_6223(this.entity.field_6283, this.entity.headYaw, (float)((MobEntity)this.entity).method_5986());
+			this.field_6354 = this.entity.headYaw;
 			this.field_6355 = 0;
 		} else {
 			if (this.entity.getPassengerList().isEmpty() || !(this.entity.getPassengerList().get(0) instanceof MobEntity)) {
 				float f = 75.0F;
-				if (Math.abs(this.entity.headPitch - this.field_6354) > 15.0F) {
+				if (Math.abs(this.entity.headYaw - this.field_6354) > 15.0F) {
 					this.field_6355 = 0;
-					this.field_6354 = this.entity.headPitch;
+					this.field_6354 = this.entity.headYaw;
 				} else {
 					this.field_6355++;
 					int i = 10;
@@ -35,7 +35,7 @@ public class BodyControl {
 					}
 				}
 
-				this.entity.field_6283 = this.method_6223(this.entity.headPitch, this.entity.field_6283, f);
+				this.entity.field_6283 = this.method_6223(this.entity.headYaw, this.entity.field_6283, f);
 			}
 		}
 	}

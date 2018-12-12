@@ -34,7 +34,7 @@ public class ClockItem extends Item {
 				} else {
 					double d;
 					if (world.dimension.hasVisibleSky()) {
-						d = (double)world.method_8400(1.0F);
+						d = (double)world.getSkyAngle(1.0F);
 					} else {
 						d = Math.random();
 					}

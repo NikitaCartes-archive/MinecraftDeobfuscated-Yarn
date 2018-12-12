@@ -3,15 +3,15 @@ package net.minecraft.inventory;
 import com.google.common.collect.Lists;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.class_1662;
-import net.minecraft.class_1737;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.recipe.RecipeInputProvider;
 import net.minecraft.text.TextComponent;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.InventoryUtil;
 
-public class BasicInventory implements Inventory, class_1737 {
+public class BasicInventory implements Inventory, RecipeInputProvider {
 	private final TextComponent name;
 	private final int size;
 	private final DefaultedList<ItemStack> stackList;
@@ -51,7 +51,7 @@ public class BasicInventory implements Inventory, class_1737 {
 		return itemStack;
 	}
 
-	public ItemStack method_5491(ItemStack itemStack) {
+	public ItemStack add(ItemStack itemStack) {
 		ItemStack itemStack2 = itemStack.copy();
 
 		for (int i = 0; i < this.size; i++) {
@@ -125,18 +125,14 @@ public class BasicInventory implements Inventory, class_1737 {
 		return this.customName != null ? this.customName : this.name;
 	}
 
+	@Nullable
 	@Override
-	public boolean hasCustomName() {
-		return this.customName != null;
+	public TextComponent getCustomName() {
+		return this.customName;
 	}
 
 	public void setCustomName(@Nullable TextComponent textComponent) {
 		this.customName = textComponent;
-	}
-
-	@Override
-	public int getInvMaxStackAmount() {
-		return 64;
 	}
 
 	@Override
@@ -154,41 +150,14 @@ public class BasicInventory implements Inventory, class_1737 {
 	}
 
 	@Override
-	public void onInvOpen(PlayerEntity playerEntity) {
-	}
-
-	@Override
-	public void onInvClose(PlayerEntity playerEntity) {
-	}
-
-	@Override
-	public boolean isValidInvStack(int i, ItemStack itemStack) {
-		return true;
-	}
-
-	@Override
-	public int getInvProperty(int i) {
-		return 0;
-	}
-
-	@Override
-	public void setInvProperty(int i, int j) {
-	}
-
-	@Override
-	public int getInvPropertyCount() {
-		return 0;
-	}
-
-	@Override
 	public void clearInv() {
 		this.stackList.clear();
 	}
 
 	@Override
-	public void method_7683(class_1662 arg) {
+	public void provideRecipeInputs(RecipeFinder recipeFinder) {
 		for (ItemStack itemStack : this.stackList) {
-			arg.method_7400(itemStack);
+			recipeFinder.addItem(itemStack);
 		}
 	}
 }

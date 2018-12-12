@@ -9,8 +9,8 @@ import com.google.gson.JsonObject;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.advancement.ServerAdvancementManager;
-import net.minecraft.item.ItemContainer;
+import net.minecraft.advancement.PlayerAdvancementTracker;
+import net.minecraft.item.ItemProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 
 public class ShotCrossbowCriterion implements Criterion<ShotCrossbowCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("shot_crossbow");
-	private final Map<ServerAdvancementManager, ShotCrossbowCriterion.class_2124> field_9744 = Maps.<ServerAdvancementManager, ShotCrossbowCriterion.class_2124>newHashMap();
+	private final Map<PlayerAdvancementTracker, ShotCrossbowCriterion.class_2124> field_9744 = Maps.<PlayerAdvancementTracker, ShotCrossbowCriterion.class_2124>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -26,34 +26,34 @@ public class ShotCrossbowCriterion implements Criterion<ShotCrossbowCriterion.Co
 	}
 
 	@Override
-	public void addCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions> conditionsContainer
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions> conditionsContainer
 	) {
-		ShotCrossbowCriterion.class_2124 lv = (ShotCrossbowCriterion.class_2124)this.field_9744.get(serverAdvancementManager);
+		ShotCrossbowCriterion.class_2124 lv = (ShotCrossbowCriterion.class_2124)this.field_9744.get(playerAdvancementTracker);
 		if (lv == null) {
-			lv = new ShotCrossbowCriterion.class_2124(serverAdvancementManager);
-			this.field_9744.put(serverAdvancementManager, lv);
+			lv = new ShotCrossbowCriterion.class_2124(playerAdvancementTracker);
+			this.field_9744.put(playerAdvancementTracker, lv);
 		}
 
 		lv.method_9116(conditionsContainer);
 	}
 
 	@Override
-	public void removeCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions> conditionsContainer
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions> conditionsContainer
 	) {
-		ShotCrossbowCriterion.class_2124 lv = (ShotCrossbowCriterion.class_2124)this.field_9744.get(serverAdvancementManager);
+		ShotCrossbowCriterion.class_2124 lv = (ShotCrossbowCriterion.class_2124)this.field_9744.get(playerAdvancementTracker);
 		if (lv != null) {
 			lv.method_9119(conditionsContainer);
 			if (lv.method_9117()) {
-				this.field_9744.remove(serverAdvancementManager);
+				this.field_9744.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void removePlayer(ServerAdvancementManager serverAdvancementManager) {
-		this.field_9744.remove(serverAdvancementManager);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.field_9744.remove(playerAdvancementTracker);
 	}
 
 	public ShotCrossbowCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -76,8 +76,8 @@ public class ShotCrossbowCriterion implements Criterion<ShotCrossbowCriterion.Co
 			this.item = itemPredicate;
 		}
 
-		public static ShotCrossbowCriterion.Conditions create(ItemContainer itemContainer) {
-			return new ShotCrossbowCriterion.Conditions(ItemPredicate.Builder.create().item(itemContainer).build());
+		public static ShotCrossbowCriterion.Conditions create(ItemProvider itemProvider) {
+			return new ShotCrossbowCriterion.Conditions(ItemPredicate.Builder.create().method_8977(itemProvider).build());
 		}
 
 		public boolean matches(ItemStack itemStack) {
@@ -85,7 +85,7 @@ public class ShotCrossbowCriterion implements Criterion<ShotCrossbowCriterion.Co
 		}
 
 		@Override
-		public JsonElement method_807() {
+		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("item", this.item.serialize());
 			return jsonObject;
@@ -93,11 +93,11 @@ public class ShotCrossbowCriterion implements Criterion<ShotCrossbowCriterion.Co
 	}
 
 	static class class_2124 {
-		private final ServerAdvancementManager field_9746;
+		private final PlayerAdvancementTracker field_9746;
 		private final Set<Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions>> field_9745 = Sets.<Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions>>newHashSet();
 
-		public class_2124(ServerAdvancementManager serverAdvancementManager) {
-			this.field_9746 = serverAdvancementManager;
+		public class_2124(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.field_9746 = playerAdvancementTracker;
 		}
 
 		public boolean method_9117() {

@@ -88,7 +88,7 @@ public class OperationArgumentType implements ArgumentType<OperationArgumentType
 					if (j == 0) {
 						throw DIVISION_ZERO_EXCEPTION.create();
 					} else {
-						return MathHelper.floorMOd(i, j);
+						return MathHelper.floorMod(i, j);
 					}
 				};
 			case "<":

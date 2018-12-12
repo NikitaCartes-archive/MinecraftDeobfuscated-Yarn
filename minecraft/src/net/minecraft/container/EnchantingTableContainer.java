@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.InfoEnchantment;
@@ -26,11 +26,6 @@ import net.minecraft.world.World;
 
 public class EnchantingTableContainer extends Container {
 	public Inventory inventory = new BasicInventory(new StringTextComponent("Enchant"), 2) {
-		@Override
-		public int getInvMaxStackAmount() {
-			return 64;
-		}
-
 		@Override
 		public void markDirty() {
 			super.markDirty();
@@ -132,7 +127,7 @@ public class EnchantingTableContainer extends Container {
 		if (inventory == this.inventory) {
 			ItemStack itemStack = inventory.getInvStack(0);
 			if (!itemStack.isEmpty() && itemStack.isEnchantable()) {
-				if (!this.world.isRemote) {
+				if (!this.world.isClient) {
 					int i = 0;
 
 					for (int j = -1; j <= 1; j++) {
@@ -211,7 +206,7 @@ public class EnchantingTableContainer extends Container {
 		} else if (this.enchantmentPower[i] > 0
 			&& !itemStack.isEmpty()
 			&& (playerEntity.experience >= j && playerEntity.experience >= this.enchantmentPower[i] || playerEntity.abilities.creativeMode)) {
-			if (!this.world.isRemote) {
+			if (!this.world.isClient) {
 				List<InfoEnchantment> list = this.getRandomEnchantments(itemStack, i, this.enchantmentPower[i]);
 				if (!list.isEmpty()) {
 					playerEntity.method_7286(itemStack, j);
@@ -237,9 +232,9 @@ public class EnchantingTableContainer extends Container {
 						}
 					}
 
-					playerEntity.method_7281(Stats.field_15420);
+					playerEntity.increaseStat(Stats.field_15420);
 					if (playerEntity instanceof ServerPlayerEntity) {
-						CriterionCriterions.ENCHANTED_ITEM.handle((ServerPlayerEntity)playerEntity, itemStack, j);
+						Criterions.ENCHANTED_ITEM.handle((ServerPlayerEntity)playerEntity, itemStack, j);
 					}
 
 					this.inventory.markDirty();
@@ -257,7 +252,7 @@ public class EnchantingTableContainer extends Container {
 
 	private List<InfoEnchantment> getRandomEnchantments(ItemStack itemStack, int i, int j) {
 		this.random.setSeed((long)(this.enchantmentSeed + i));
-		List<InfoEnchantment> list = EnchantmentHelper.method_8230(this.random, itemStack, j, false);
+		List<InfoEnchantment> list = EnchantmentHelper.getEnchantments(this.random, itemStack, j, false);
 		if (itemStack.getItem() == Items.field_8529 && list.size() > 1) {
 			list.remove(this.random.nextInt(list.size()));
 		}
@@ -274,7 +269,7 @@ public class EnchantingTableContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			this.method_7607(playerEntity, playerEntity.world, this.inventory);
 		}
 	}

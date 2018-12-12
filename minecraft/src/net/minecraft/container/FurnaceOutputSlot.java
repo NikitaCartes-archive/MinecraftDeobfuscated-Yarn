@@ -1,13 +1,13 @@
 package net.minecraft.container;
 
 import java.util.Map.Entry;
-import net.minecraft.class_1732;
-import net.minecraft.block.entity.FurnaceBlockEntity;
+import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.smelting.SmeltingRecipe;
+import net.minecraft.recipe.RecipeUnlocker;
+import net.minecraft.recipe.smelting.AbstractSmeltingRecipe;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -50,12 +50,12 @@ public class FurnaceOutputSlot extends Slot {
 	@Override
 	protected void onCrafted(ItemStack itemStack) {
 		itemStack.onCrafted(this.player.world, this.player, this.field_7819);
-		if (!this.player.world.isRemote) {
-			for (Entry<Identifier, Integer> entry : ((FurnaceBlockEntity)this.inventory).method_11198().entrySet()) {
-				SmeltingRecipe smeltingRecipe = (SmeltingRecipe)this.player.world.getRecipeManager().get((Identifier)entry.getKey());
+		if (!this.player.world.isClient) {
+			for (Entry<Identifier, Integer> entry : ((AbstractFurnaceBlockEntity)this.inventory).getRecipesUsed().entrySet()) {
+				AbstractSmeltingRecipe abstractSmeltingRecipe = (AbstractSmeltingRecipe)this.player.world.getRecipeManager().get((Identifier)entry.getKey());
 				float f;
-				if (smeltingRecipe != null) {
-					f = smeltingRecipe.getExperience();
+				if (abstractSmeltingRecipe != null) {
+					f = abstractSmeltingRecipe.getExperience();
 				} else {
 					f = 0.0F;
 				}
@@ -79,7 +79,7 @@ public class FurnaceOutputSlot extends Slot {
 				}
 			}
 
-			((class_1732)this.inventory).method_7664(this.player);
+			((RecipeUnlocker)this.inventory).unlockLastRecipe(this.player);
 		}
 
 		this.field_7819 = 0;

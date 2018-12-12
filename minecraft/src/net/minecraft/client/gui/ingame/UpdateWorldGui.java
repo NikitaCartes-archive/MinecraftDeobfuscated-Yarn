@@ -25,11 +25,11 @@ public class UpdateWorldGui extends Gui {
 		}
 	);
 	private final YesNoCallback field_3233;
-	private final WorldUpdater field_3234;
+	private final WorldUpdater updater;
 
 	public UpdateWorldGui(YesNoCallback yesNoCallback, String string, LevelStorage levelStorage) {
 		this.field_3233 = yesNoCallback;
-		this.field_3234 = new WorldUpdater(string, levelStorage, levelStorage.getLevelProperties(string));
+		this.updater = new WorldUpdater(string, levelStorage, levelStorage.getLevelProperties(string));
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class UpdateWorldGui extends Gui {
 		this.addButton(new ButtonWidget(0, this.width / 2 - 100, this.height / 4 + 150, I18n.translate("gui.cancel")) {
 			@Override
 			public void onPressed(double d, double e) {
-				UpdateWorldGui.this.field_3234.method_5402();
+				UpdateWorldGui.this.updater.cancel();
 				UpdateWorldGui.this.field_3233.handle(false, 0);
 			}
 		});
@@ -46,49 +46,49 @@ public class UpdateWorldGui extends Gui {
 
 	@Override
 	public void update() {
-		if (this.field_3234.method_5403()) {
+		if (this.updater.isDone()) {
 			this.field_3233.handle(true, 0);
 		}
 	}
 
 	@Override
 	public void onClosed() {
-		this.field_3234.method_5402();
+		this.updater.cancel();
 	}
 
 	@Override
 	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, I18n.translate("optimizeWorld.title", this.field_3234.getLevelName()), this.width / 2, 20, 16777215);
+		this.drawStringCentered(this.fontRenderer, I18n.translate("optimizeWorld.title", this.updater.getLevelName()), this.width / 2, 20, 16777215);
 		int k = this.width / 2 - 150;
 		int l = this.width / 2 + 150;
 		int m = this.height / 4 + 100;
 		int n = m + 10;
-		this.drawStringCentered(this.fontRenderer, this.field_3234.getStatus().getFormattedText(), this.width / 2, m - this.fontRenderer.FONT_HEIGHT - 2, 10526880);
-		if (this.field_3234.method_5397() > 0) {
+		this.drawStringCentered(this.fontRenderer, this.updater.getStatus().getFormattedText(), this.width / 2, m - this.fontRenderer.fontHeight - 2, 10526880);
+		if (this.updater.getTotalChunkCount() > 0) {
 			drawRect(k - 1, m - 1, l + 1, n + 1, -16777216);
-			this.drawString(this.fontRenderer, I18n.translate("optimizeWorld.info.converted", this.field_3234.method_5400()), k, 40, 10526880);
+			this.drawString(this.fontRenderer, I18n.translate("optimizeWorld.info.converted", this.updater.getUpgradedChunkCount()), k, 40, 10526880);
 			this.drawString(
-				this.fontRenderer, I18n.translate("optimizeWorld.info.skipped", this.field_3234.method_5399()), k, 40 + this.fontRenderer.FONT_HEIGHT + 3, 10526880
+				this.fontRenderer, I18n.translate("optimizeWorld.info.skipped", this.updater.getSkippedChunkCount()), k, 40 + this.fontRenderer.fontHeight + 3, 10526880
 			);
 			this.drawString(
-				this.fontRenderer, I18n.translate("optimizeWorld.info.total", this.field_3234.method_5397()), k, 40 + (this.fontRenderer.FONT_HEIGHT + 3) * 2, 10526880
+				this.fontRenderer, I18n.translate("optimizeWorld.info.total", this.updater.getTotalChunkCount()), k, 40 + (this.fontRenderer.fontHeight + 3) * 2, 10526880
 			);
 			int o = 0;
 
 			for (DimensionType dimensionType : DimensionType.getAll()) {
-				int p = MathHelper.floor(this.field_3234.method_5393(dimensionType) * (float)(l - k));
+				int p = MathHelper.floor(this.updater.getProgress(dimensionType) * (float)(l - k));
 				drawRect(k + o, m, k + o + p, n, field_3232.getInt(dimensionType));
 				o += p;
 			}
 
-			int q = this.field_3234.method_5400() + this.field_3234.method_5399();
-			this.drawStringCentered(this.fontRenderer, q + " / " + this.field_3234.method_5397(), this.width / 2, m + 2 * this.fontRenderer.FONT_HEIGHT + 2, 10526880);
+			int q = this.updater.getUpgradedChunkCount() + this.updater.getSkippedChunkCount();
+			this.drawStringCentered(this.fontRenderer, q + " / " + this.updater.getTotalChunkCount(), this.width / 2, m + 2 * this.fontRenderer.fontHeight + 2, 10526880);
 			this.drawStringCentered(
 				this.fontRenderer,
-				MathHelper.floor(this.field_3234.method_5401() * 100.0F) + "%",
+				MathHelper.floor(this.updater.getProgress() * 100.0F) + "%",
 				this.width / 2,
-				m + ((n - m) / 2 - this.fontRenderer.FONT_HEIGHT / 2),
+				m + ((n - m) / 2 - this.fontRenderer.fontHeight / 2),
 				10526880
 			);
 		}

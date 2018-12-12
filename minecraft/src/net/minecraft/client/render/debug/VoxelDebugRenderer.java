@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.Renderer;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
@@ -47,7 +47,7 @@ public class VoxelDebugRenderer implements RenderDebug.DebugRenderer {
 		GlStateManager.depthMask(false);
 
 		for (VoxelShape voxelShape : this.field_4542) {
-			Renderer.method_3240(voxelShape, -e, -g, -h, 1.0F, 1.0F, 1.0F, 1.0F);
+			WorldRenderer.drawDebugShapeOutline(voxelShape, -e, -g, -h, 1.0F, 1.0F, 1.0F, 1.0F);
 		}
 
 		GlStateManager.depthMask(true);

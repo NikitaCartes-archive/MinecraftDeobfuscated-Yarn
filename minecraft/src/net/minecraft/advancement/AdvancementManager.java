@@ -19,9 +19,9 @@ import org.apache.logging.log4j.Logger;
 public class AdvancementManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Map<Identifier, SimpleAdvancement> advancements = Maps.<Identifier, SimpleAdvancement>newHashMap();
-	private final Set<SimpleAdvancement> field_1154 = Sets.<SimpleAdvancement>newLinkedHashSet();
-	private final Set<SimpleAdvancement> field_1156 = Sets.<SimpleAdvancement>newLinkedHashSet();
-	private AdvancementManager.class_164 field_1155;
+	private final Set<SimpleAdvancement> roots = Sets.<SimpleAdvancement>newLinkedHashSet();
+	private final Set<SimpleAdvancement> dependents = Sets.<SimpleAdvancement>newLinkedHashSet();
+	private AdvancementManager.Listener listener;
 
 	@Environment(EnvType.CLIENT)
 	private void remove(SimpleAdvancement simpleAdvancement) {
@@ -32,14 +32,14 @@ public class AdvancementManager {
 		LOGGER.info("Forgot about advancement {}", simpleAdvancement.getId());
 		this.advancements.remove(simpleAdvancement.getId());
 		if (simpleAdvancement.getParent() == null) {
-			this.field_1154.remove(simpleAdvancement);
-			if (this.field_1155 != null) {
-				this.field_1155.method_720(simpleAdvancement);
+			this.roots.remove(simpleAdvancement);
+			if (this.listener != null) {
+				this.listener.onRootRemoved(simpleAdvancement);
 			}
 		} else {
-			this.field_1156.remove(simpleAdvancement);
-			if (this.field_1155 != null) {
-				this.field_1155.method_719(simpleAdvancement);
+			this.dependents.remove(simpleAdvancement);
+			if (this.listener != null) {
+				this.listener.onDependentRemoved(simpleAdvancement);
 			}
 		}
 	}
@@ -56,7 +56,7 @@ public class AdvancementManager {
 		}
 	}
 
-	public void method_711(Map<Identifier, SimpleAdvancement.Builder> map) {
+	public void load(Map<Identifier, SimpleAdvancement.Builder> map) {
 		Function<Identifier, SimpleAdvancement> function = Functions.forMap(this.advancements, null);
 
 		while (!map.isEmpty()) {
@@ -67,20 +67,20 @@ public class AdvancementManager {
 				Entry<Identifier, SimpleAdvancement.Builder> entry = (Entry<Identifier, SimpleAdvancement.Builder>)iterator.next();
 				Identifier identifier = (Identifier)entry.getKey();
 				SimpleAdvancement.Builder builder = (SimpleAdvancement.Builder)entry.getValue();
-				if (builder.method_700(function)) {
+				if (builder.findParent(function)) {
 					SimpleAdvancement simpleAdvancement = builder.build(identifier);
 					this.advancements.put(identifier, simpleAdvancement);
 					bl = true;
 					iterator.remove();
 					if (simpleAdvancement.getParent() == null) {
-						this.field_1154.add(simpleAdvancement);
-						if (this.field_1155 != null) {
-							this.field_1155.method_723(simpleAdvancement);
+						this.roots.add(simpleAdvancement);
+						if (this.listener != null) {
+							this.listener.onRootAdded(simpleAdvancement);
 						}
 					} else {
-						this.field_1156.add(simpleAdvancement);
-						if (this.field_1155 != null) {
-							this.field_1155.method_721(simpleAdvancement);
+						this.dependents.add(simpleAdvancement);
+						if (this.listener != null) {
+							this.listener.onDependentAdded(simpleAdvancement);
 						}
 					}
 				}
@@ -99,15 +99,15 @@ public class AdvancementManager {
 
 	public void clear() {
 		this.advancements.clear();
-		this.field_1154.clear();
-		this.field_1156.clear();
-		if (this.field_1155 != null) {
-			this.field_1155.method_722();
+		this.roots.clear();
+		this.dependents.clear();
+		if (this.listener != null) {
+			this.listener.onClear();
 		}
 	}
 
-	public Iterable<SimpleAdvancement> method_715() {
-		return this.field_1154;
+	public Iterable<SimpleAdvancement> getRoots() {
+		return this.roots;
 	}
 
 	public Collection<SimpleAdvancement> getAdvancements() {
@@ -120,30 +120,30 @@ public class AdvancementManager {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_717(@Nullable AdvancementManager.class_164 arg) {
-		this.field_1155 = arg;
-		if (arg != null) {
-			for (SimpleAdvancement simpleAdvancement : this.field_1154) {
-				arg.method_723(simpleAdvancement);
+	public void setListener(@Nullable AdvancementManager.Listener listener) {
+		this.listener = listener;
+		if (listener != null) {
+			for (SimpleAdvancement simpleAdvancement : this.roots) {
+				listener.onRootAdded(simpleAdvancement);
 			}
 
-			for (SimpleAdvancement simpleAdvancement : this.field_1156) {
-				arg.method_721(simpleAdvancement);
+			for (SimpleAdvancement simpleAdvancement : this.dependents) {
+				listener.onDependentAdded(simpleAdvancement);
 			}
 		}
 	}
 
-	public interface class_164 {
-		void method_723(SimpleAdvancement simpleAdvancement);
+	public interface Listener {
+		void onRootAdded(SimpleAdvancement simpleAdvancement);
 
 		@Environment(EnvType.CLIENT)
-		void method_720(SimpleAdvancement simpleAdvancement);
+		void onRootRemoved(SimpleAdvancement simpleAdvancement);
 
-		void method_721(SimpleAdvancement simpleAdvancement);
+		void onDependentAdded(SimpleAdvancement simpleAdvancement);
 
 		@Environment(EnvType.CLIENT)
-		void method_719(SimpleAdvancement simpleAdvancement);
+		void onDependentRemoved(SimpleAdvancement simpleAdvancement);
 
-		void method_722();
+		void onClear();
 	}
 }

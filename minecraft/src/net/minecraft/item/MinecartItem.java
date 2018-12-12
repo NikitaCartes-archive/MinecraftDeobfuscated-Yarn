@@ -25,7 +25,7 @@ public class MinecartItem extends Item {
 			double d = blockPointer.getX() + (double)direction.getOffsetX() * 1.125;
 			double e = Math.floor(blockPointer.getY()) + (double)direction.getOffsetY();
 			double f = blockPointer.getZ() + (double)direction.getOffsetZ() * 1.125;
-			BlockPos blockPos = blockPointer.getBlockPos().method_10093(direction);
+			BlockPos blockPos = blockPointer.getBlockPos().offset(direction);
 			BlockState blockState = world.getBlockState(blockPos);
 			RailShape railShape = blockState.getBlock() instanceof AbstractRailBlock
 				? blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty())
@@ -85,7 +85,7 @@ public class MinecartItem extends Item {
 			return ActionResult.FAILURE;
 		} else {
 			ItemStack itemStack = itemUsageContext.getItemStack();
-			if (!world.isRemote) {
+			if (!world.isClient) {
 				RailShape railShape = blockState.getBlock() instanceof AbstractRailBlock
 					? blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty())
 					: RailShape.field_12665;

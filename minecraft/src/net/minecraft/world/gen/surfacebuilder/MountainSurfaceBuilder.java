@@ -6,7 +6,6 @@ import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.config.surfacebuilder.TernarySurfaceConfig;
 
 public class MountainSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 	public MountainSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
@@ -28,9 +27,9 @@ public class MountainSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 		TernarySurfaceConfig ternarySurfaceConfig
 	) {
 		if (d > 1.0) {
-			SurfaceBuilder.DEFAULT.generate(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, SurfaceBuilder.STONE_CONFIG);
+			SurfaceBuilder.DEFAULT.method_15305(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, SurfaceBuilder.field_15670);
 		} else {
-			SurfaceBuilder.DEFAULT.generate(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, SurfaceBuilder.GRASS_CONFIG);
+			SurfaceBuilder.DEFAULT.method_15305(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, SurfaceBuilder.field_15677);
 		}
 	}
 }

@@ -61,7 +61,7 @@ public class GrindstoneContainer extends Container {
 
 			@Override
 			public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
-				if (!world.isRemote) {
+				if (!world.isClient) {
 					int i = this.method_16697();
 
 					while (i > 0) {
@@ -73,7 +73,7 @@ public class GrindstoneContainer extends Container {
 
 				GrindstoneContainer.this.craftingInventory.setInvStack(0, ItemStack.EMPTY);
 				GrindstoneContainer.this.craftingInventory.setInvStack(1, ItemStack.EMPTY);
-				world.fireWorldEvent(1043, blockPos, 0);
+				world.fireWorldEvent(1042, blockPos, 0);
 				return itemStack;
 			}
 
@@ -197,7 +197,7 @@ public class GrindstoneContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			this.method_7607(playerEntity, this.world, this.craftingInventory);
 		}
 	}

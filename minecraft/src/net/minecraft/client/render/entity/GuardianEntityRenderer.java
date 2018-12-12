@@ -5,8 +5,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_856;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.entity.model.GuardianEntityModel;
 import net.minecraft.entity.LivingEntity;
@@ -17,7 +17,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
-public class GuardianEntityRenderer extends EntityMobRenderer<GuardianEntity> {
+public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
 	private static final Identifier SKIN = new Identifier("textures/entity/guardian.png");
 	private static final Identifier EXPLOSION_BEAM_TEX = new Identifier("textures/entity/guardian_beam.png");
 
@@ -52,12 +52,12 @@ public class GuardianEntityRenderer extends EntityMobRenderer<GuardianEntity> {
 	}
 
 	public void method_3977(GuardianEntity guardianEntity, double d, double e, double f, float g, float h) {
-		super.method_4072(guardianEntity, d, e, f, g, h);
+		super.render(guardianEntity, d, e, f, g, h);
 		LivingEntity livingEntity = guardianEntity.method_7052();
 		if (livingEntity != null) {
 			float i = guardianEntity.method_7061(h);
 			Tessellator tessellator = Tessellator.getInstance();
-			VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
+			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 			this.bindTexture(EXPLOSION_BEAM_TEX);
 			GlStateManager.texParameter(3553, 10242, 10497);
 			GlStateManager.texParameter(3553, 10243, 10497);
@@ -86,7 +86,7 @@ public class GuardianEntityRenderer extends EntityMobRenderer<GuardianEntity> {
 			GlStateManager.rotatef(o * (180.0F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
 			int q = 1;
 			double r = (double)k * 0.05 * -1.5;
-			vertexBuffer.begin(7, VertexFormats.POSITION_UV_COLOR);
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 			float s = i * i;
 			int t = 64 + (int)(s * 191.0F);
 			int u = 32 + (int)(s * 191.0F);
@@ -113,23 +113,23 @@ public class GuardianEntityRenderer extends EntityMobRenderer<GuardianEntity> {
 			double aq = 0.4999;
 			double ar = (double)(-1.0F + l);
 			double as = n * 2.5 + ar;
-			vertexBuffer.vertex(ag, n, ah).texture(0.4999, as).color(t, u, v, 255).next();
-			vertexBuffer.vertex(ag, 0.0, ah).texture(0.4999, ar).color(t, u, v, 255).next();
-			vertexBuffer.vertex(ai, 0.0, aj).texture(0.0, ar).color(t, u, v, 255).next();
-			vertexBuffer.vertex(ai, n, aj).texture(0.0, as).color(t, u, v, 255).next();
-			vertexBuffer.vertex(ak, n, al).texture(0.4999, as).color(t, u, v, 255).next();
-			vertexBuffer.vertex(ak, 0.0, al).texture(0.4999, ar).color(t, u, v, 255).next();
-			vertexBuffer.vertex(am, 0.0, an).texture(0.0, ar).color(t, u, v, 255).next();
-			vertexBuffer.vertex(am, n, an).texture(0.0, as).color(t, u, v, 255).next();
+			bufferBuilder.vertex(ag, n, ah).texture(0.4999, as).color(t, u, v, 255).next();
+			bufferBuilder.vertex(ag, 0.0, ah).texture(0.4999, ar).color(t, u, v, 255).next();
+			bufferBuilder.vertex(ai, 0.0, aj).texture(0.0, ar).color(t, u, v, 255).next();
+			bufferBuilder.vertex(ai, n, aj).texture(0.0, as).color(t, u, v, 255).next();
+			bufferBuilder.vertex(ak, n, al).texture(0.4999, as).color(t, u, v, 255).next();
+			bufferBuilder.vertex(ak, 0.0, al).texture(0.4999, ar).color(t, u, v, 255).next();
+			bufferBuilder.vertex(am, 0.0, an).texture(0.0, ar).color(t, u, v, 255).next();
+			bufferBuilder.vertex(am, n, an).texture(0.0, as).color(t, u, v, 255).next();
 			double at = 0.0;
 			if (guardianEntity.age % 2 == 0) {
 				at = 0.5;
 			}
 
-			vertexBuffer.vertex(y, n, z).texture(0.5, at + 0.5).color(t, u, v, 255).next();
-			vertexBuffer.vertex(aa, n, ab).texture(1.0, at + 0.5).color(t, u, v, 255).next();
-			vertexBuffer.vertex(ae, n, af).texture(1.0, at).color(t, u, v, 255).next();
-			vertexBuffer.vertex(ac, n, ad).texture(0.5, at).color(t, u, v, 255).next();
+			bufferBuilder.vertex(y, n, z).texture(0.5, at + 0.5).color(t, u, v, 255).next();
+			bufferBuilder.vertex(aa, n, ab).texture(1.0, at + 0.5).color(t, u, v, 255).next();
+			bufferBuilder.vertex(ae, n, af).texture(1.0, at).color(t, u, v, 255).next();
+			bufferBuilder.vertex(ac, n, ad).texture(0.5, at).color(t, u, v, 255).next();
 			tessellator.draw();
 			GlStateManager.popMatrix();
 		}

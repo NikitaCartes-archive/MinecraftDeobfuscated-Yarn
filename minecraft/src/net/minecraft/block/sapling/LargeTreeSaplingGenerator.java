@@ -9,10 +9,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
-import net.minecraft.world.gen.config.feature.FeatureConfig;
-import net.minecraft.world.gen.feature.TreeFeature;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
+import net.minecraft.world.gen.feature.AbstractTreeFeature;
+import net.minecraft.world.gen.feature.DefaultFeatureConfig;
+import net.minecraft.world.gen.feature.FeatureConfig;
 
 public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 	@Override
@@ -29,11 +29,11 @@ public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 	}
 
 	@Nullable
-	protected abstract TreeFeature<DefaultFeatureConfig> createLargeTreeFeature(Random random);
+	protected abstract AbstractTreeFeature<DefaultFeatureConfig> method_11443(Random random);
 
 	public boolean method_11444(IWorld iWorld, BlockPos blockPos, BlockState blockState, Random random, int i, int j) {
-		TreeFeature<DefaultFeatureConfig> treeFeature = this.createLargeTreeFeature(random);
-		if (treeFeature == null) {
+		AbstractTreeFeature<DefaultFeatureConfig> abstractTreeFeature = this.method_11443(random);
+		if (abstractTreeFeature == null) {
 			return false;
 		} else {
 			BlockState blockState2 = Blocks.field_10124.getDefaultState();
@@ -41,12 +41,12 @@ public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 			iWorld.setBlockState(blockPos.add(i + 1, 0, j), blockState2, 4);
 			iWorld.setBlockState(blockPos.add(i, 0, j + 1), blockState2, 4);
 			iWorld.setBlockState(blockPos.add(i + 1, 0, j + 1), blockState2, 4);
-			if (treeFeature.generate(
+			if (abstractTreeFeature.method_13151(
 				iWorld,
-				(ChunkGenerator<? extends ChunkGeneratorSettings>)iWorld.getChunkManager().getChunkGenerator(),
+				(ChunkGenerator<? extends ChunkGeneratorConfig>)iWorld.getChunkManager().getChunkGenerator(),
 				random,
 				blockPos.add(i, 0, j),
-				FeatureConfig.DEFAULT
+				FeatureConfig.field_13603
 			)) {
 				return true;
 			} else {

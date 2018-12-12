@@ -17,7 +17,7 @@ public class SpongeWetBlock extends Block {
 	@Override
 	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		Direction direction = Direction.random(random);
-		BlockPos blockPos2 = blockPos.method_10093(direction);
+		BlockPos blockPos2 = blockPos.offset(direction);
 		if (direction != Direction.UP && !world.getBlockState(blockPos2).hasSolidTopSurface(world, blockPos2)) {
 			double d = (double)blockPos.getX();
 			double e = (double)blockPos.getY();

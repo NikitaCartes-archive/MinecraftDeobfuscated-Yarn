@@ -11,9 +11,9 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.ProbabilityConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class BambooFeature extends Feature<ProbabilityConfig> {
 	private static final BlockState field_13308 = Blocks.field_10211
@@ -30,8 +30,8 @@ public class BambooFeature extends Feature<ProbabilityConfig> {
 		super(function);
 	}
 
-	public boolean generate(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, Random random, BlockPos blockPos, ProbabilityConfig probabilityConfig
+	public boolean method_12718(
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, ProbabilityConfig probabilityConfig
 	) {
 		int i = 0;
 		BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
@@ -58,13 +58,13 @@ public class BambooFeature extends Feature<ProbabilityConfig> {
 
 				for (int k = 0; k < j && iWorld.isAir(mutable); k++) {
 					iWorld.setBlockState(mutable, field_13308, 2);
-					mutable.method_10104(Direction.UP, 1);
+					mutable.setOffset(Direction.UP, 1);
 				}
 
 				if (mutable.getY() - blockPos.getY() >= 3) {
 					iWorld.setBlockState(mutable, field_13311, 2);
-					iWorld.setBlockState(mutable.method_10104(Direction.DOWN, 1), field_13310, 2);
-					iWorld.setBlockState(mutable.method_10104(Direction.DOWN, 1), field_13309, 2);
+					iWorld.setBlockState(mutable.setOffset(Direction.DOWN, 1), field_13310, 2);
+					iWorld.setBlockState(mutable.setOffset(Direction.DOWN, 1), field_13309, 2);
 				}
 			}
 

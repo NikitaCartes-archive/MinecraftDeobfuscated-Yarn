@@ -12,7 +12,6 @@ import net.minecraft.class_1374;
 import net.minecraft.class_1376;
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
-import net.minecraft.class_3730;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -21,6 +20,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
@@ -42,7 +42,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.particle.ItemStackParticle;
+import net.minecraft.particle.ItemStackParticleParameters;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.Ingredient;
@@ -237,7 +237,7 @@ public class PandaEntity extends AnimalEntity {
 		this.goalSelector.add(2, new PandaEntity.class_1447(this, 2.0));
 		this.goalSelector.add(2, new PandaEntity.PandaMateGoal(this, 1.0));
 		this.goalSelector.add(3, new MeleeAttackGoal(this, 1.2F, true));
-		this.goalSelector.add(4, new TemptGoal(this, 1.0, Ingredient.ofItems(Blocks.field_10211.getItem()), false));
+		this.goalSelector.add(4, new TemptGoal(this, 1.0, Ingredient.method_8091(Blocks.field_10211.getItem()), false));
 		this.goalSelector.add(6, new PandaEntity.PandaFleeGoal(this, PlayerEntity.class, 8.0F, 2.0, 2.0));
 		this.goalSelector.add(6, new PandaEntity.PandaFleeGoal(this, HostileEntity.class, 4.0F, 2.0, 2.0));
 		this.goalSelector.add(7, new PandaEntity.class_1449());
@@ -386,9 +386,9 @@ public class PandaEntity extends AnimalEntity {
 
 		if (this.method_6527()) {
 			this.method_6512();
-			if (!this.world.isRemote && this.method_6528() > 80 && this.random.nextInt(20) == 1) {
+			if (!this.world.isClient && this.method_6528() > 80 && this.random.nextInt(20) == 1) {
 				if (this.method_6528() > 100 && this.method_16106(this.getEquippedStack(EquipmentSlot.HAND_MAIN))) {
-					if (!this.world.isRemote) {
+					if (!this.world.isClient) {
 						this.setEquippedStack(EquipmentSlot.HAND_MAIN, ItemStack.EMPTY);
 					}
 
@@ -419,7 +419,7 @@ public class PandaEntity extends AnimalEntity {
 				vec3d2 = vec3d2.add(this.x, this.y + (double)this.getEyeHeight() + 1.0, this.z);
 				this.world
 					.method_8406(
-						new ItemStackParticle(ParticleTypes.field_11218, this.getEquippedStack(EquipmentSlot.HAND_MAIN)),
+						new ItemStackParticleParameters(ParticleTypes.field_11218, this.getEquippedStack(EquipmentSlot.HAND_MAIN)),
 						vec3d2.x,
 						vec3d2.y,
 						vec3d2.z,
@@ -478,7 +478,7 @@ public class PandaEntity extends AnimalEntity {
 		if (this.field_6767 > 32) {
 			this.method_6541(false);
 		} else {
-			if (!this.world.isRemote) {
+			if (!this.world.isClient) {
 				if (this.field_6767 == 1) {
 					this.velocityY = 0.27F;
 					float f = this.yaw * (float) (Math.PI / 180.0);
@@ -522,12 +522,12 @@ public class PandaEntity extends AnimalEntity {
 		}
 
 		if (this.random.nextInt(700) == 0 && this.world.getGameRules().getBoolean("doMobLoot")) {
-			this.dropItem(Items.field_8777);
+			this.method_5706(Items.field_8777);
 		}
 	}
 
 	@Override
-	protected void method_5949(ItemEntity itemEntity) {
+	protected void pickupItem(ItemEntity itemEntity) {
 		if (this.getEquippedStack(EquipmentSlot.HAND_MAIN).isEmpty() && field_6765.test(itemEntity)) {
 			ItemStack itemStack = itemEntity.getStack();
 			this.setEquippedStack(EquipmentSlot.HAND_MAIN, itemStack);
@@ -552,9 +552,9 @@ public class PandaEntity extends AnimalEntity {
 
 			for (VillagerEntity villagerEntity : list) {
 				if (villagerEntity.isValid()) {
-					this.world.method_8421(villagerEntity, (byte)13);
+					this.world.summonParticle(villagerEntity, (byte)13);
 					if (!bl) {
-						VillageProperties villageProperties = villagerEntity.method_7232();
+						VillageProperties villageProperties = villagerEntity.getVillage();
 						if (villageProperties != null) {
 							bl = true;
 							villageProperties.addAttacker(livingEntity);
@@ -563,7 +563,7 @@ public class PandaEntity extends AnimalEntity {
 								i = -3;
 							}
 
-							villageProperties.method_6393(((PlayerEntity)livingEntity).getGameProfile().getName(), i);
+							villageProperties.changeRating(((PlayerEntity)livingEntity).getGameProfile().getName(), i);
 						}
 					}
 				}
@@ -573,13 +573,13 @@ public class PandaEntity extends AnimalEntity {
 
 	@Nullable
 	@Override
-	public EntityData method_5943(
-		IWorld iWorld, LocalDifficulty localDifficulty, class_3730 arg, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	public EntityData prepareEntityData(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		this.method_6529(this.method_6543());
 		this.method_6547(this.method_6543());
 		this.method_6538();
-		return super.method_5943(iWorld, localDifficulty, arg, entityData, compoundTag);
+		return super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	public void method_6515(PandaEntity pandaEntity, @Nullable PandaEntity pandaEntity2) {
@@ -632,7 +632,7 @@ public class PandaEntity extends AnimalEntity {
 		} else if (this.method_6514()) {
 			this.method_6505(false);
 			return true;
-		} else if (this.method_6481(itemStack)) {
+		} else if (this.isBreedingItem(itemStack)) {
 			if (this.getTarget() != null) {
 				this.field_6769 = true;
 			}
@@ -640,11 +640,11 @@ public class PandaEntity extends AnimalEntity {
 			if (this.isChild()) {
 				this.method_6475(playerEntity, itemStack);
 				this.method_5620((int)((float)(-this.getBreedingAge() / 20) * 0.1F), true);
-			} else if (!this.world.isRemote && this.getBreedingAge() == 0 && this.method_6482()) {
+			} else if (!this.world.isClient && this.getBreedingAge() == 0 && this.method_6482()) {
 				this.method_6475(playerEntity, itemStack);
 				this.method_6480(playerEntity);
 			} else {
-				if (this.world.isRemote || this.method_6535()) {
+				if (this.world.isClient || this.method_6535()) {
 					return false;
 				}
 
@@ -681,12 +681,12 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean method_6481(ItemStack itemStack) {
+	public boolean isBreedingItem(ItemStack itemStack) {
 		return itemStack.getItem() == Blocks.field_10211.getItem();
 	}
 
 	private boolean method_16106(ItemStack itemStack) {
-		return this.method_6481(itemStack) || itemStack.getItem() == Blocks.field_10183.getItem();
+		return this.isBreedingItem(itemStack) || itemStack.getItem() == Blocks.field_10183.getItem();
 	}
 
 	@Nullable
@@ -1043,7 +1043,7 @@ public class PandaEntity extends AnimalEntity {
 			List<ItemEntity> list = PandaEntity.this.world
 				.getEntities(ItemEntity.class, PandaEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), PandaEntity.field_6765);
 			if (!list.isEmpty() && PandaEntity.this.getEquippedStack(EquipmentSlot.HAND_MAIN).isEmpty()) {
-				PandaEntity.this.getNavigation().method_6335((Entity)list.get(0), 1.2F);
+				PandaEntity.this.getNavigation().startMovingTo((Entity)list.get(0), 1.2F);
 			} else if (!PandaEntity.this.getEquippedStack(EquipmentSlot.HAND_MAIN).isEmpty()) {
 				PandaEntity.this.method_6513(true);
 			}

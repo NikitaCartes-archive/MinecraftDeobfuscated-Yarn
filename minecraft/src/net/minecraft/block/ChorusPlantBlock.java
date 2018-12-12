@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.Property;
@@ -49,10 +48,12 @@ public class ChorusPlantBlock extends ConnectedPlantBlock {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if (!blockState.canPlaceAt(iWorld, blockPos)) {
 			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
-			return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		} else {
 			Block block = blockState2.getBlock();
 			boolean bl = block == this || block == Blocks.field_10528 || direction == Direction.DOWN && block == Blocks.field_10471;
@@ -73,7 +74,7 @@ public class ChorusPlantBlock extends ConnectedPlantBlock {
 		boolean bl = !viewableWorld.getBlockState(blockPos.up()).isAir() && !blockState2.isAir();
 
 		for (Direction direction : Direction.class_2353.HORIZONTAL) {
-			BlockPos blockPos2 = blockPos.method_10093(direction);
+			BlockPos blockPos2 = blockPos.offset(direction);
 			Block block = viewableWorld.getBlockState(blockPos2).getBlock();
 			if (block == this) {
 				if (bl) {

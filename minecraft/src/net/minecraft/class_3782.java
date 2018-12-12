@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.sortme.StructurePoolElement;
+import net.minecraft.sortme.structures.StructureManager;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
@@ -34,16 +35,16 @@ public class class_3782 extends class_3784 {
 	}
 
 	@Override
-	public List<class_3499.class_3501> method_16627(class_3485 arg, BlockPos blockPos, Rotation rotation, Random random) {
-		return ((class_3784)this.elements.get(0)).method_16627(arg, blockPos, rotation, random);
+	public List<class_3499.class_3501> method_16627(StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random) {
+		return ((class_3784)this.elements.get(0)).method_16627(structureManager, blockPos, rotation, random);
 	}
 
 	@Override
-	public MutableIntBoundingBox method_16628(class_3485 arg, BlockPos blockPos, Rotation rotation) {
+	public MutableIntBoundingBox method_16628(StructureManager structureManager, BlockPos blockPos, Rotation rotation) {
 		MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.maxSize();
 
 		for (class_3784 lv : this.elements) {
-			MutableIntBoundingBox mutableIntBoundingBox2 = lv.method_16628(arg, blockPos, rotation);
+			MutableIntBoundingBox mutableIntBoundingBox2 = lv.method_16628(structureManager, blockPos, rotation);
 			mutableIntBoundingBox.setFrom(mutableIntBoundingBox2);
 		}
 

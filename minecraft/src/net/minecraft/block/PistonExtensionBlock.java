@@ -28,12 +28,12 @@ import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.Parameters;
 
 public class PistonExtensionBlock extends BlockWithEntity {
-	public static final DirectionProperty field_12196 = PistonHeadBlock.field_10927;
+	public static final DirectionProperty FACING = PistonHeadBlock.field_10927;
 	public static final EnumProperty<PistonType> TYPE = PistonHeadBlock.field_12224;
 
 	public PistonExtensionBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_12196, Direction.NORTH).with(TYPE, PistonType.field_12637));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(TYPE, PistonType.field_12637));
 	}
 
 	@Nullable
@@ -42,7 +42,7 @@ public class PistonExtensionBlock extends BlockWithEntity {
 		return null;
 	}
 
-	public static BlockEntity method_11489(BlockState blockState, Direction direction, boolean bl, boolean bl2) {
+	public static BlockEntity createBlockEntityPiston(BlockState blockState, Direction direction, boolean bl, boolean bl2) {
 		return new PistonBlockEntity(blockState, direction, bl, bl2);
 	}
 
@@ -60,7 +60,7 @@ public class PistonExtensionBlock extends BlockWithEntity {
 
 	@Override
 	public void onBroken(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
-		BlockPos blockPos2 = blockPos.method_10093(((Direction)blockState.get(field_12196)).getOpposite());
+		BlockPos blockPos2 = blockPos.offset(((Direction)blockState.get(FACING)).getOpposite());
 		BlockState blockState2 = iWorld.getBlockState(blockPos2);
 		if (blockState2.getBlock() instanceof PistonBlock && (Boolean)blockState2.get(PistonBlock.field_12191)) {
 			iWorld.clearBlockState(blockPos2);
@@ -73,10 +73,10 @@ public class PistonExtensionBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
-		if (!world.isRemote && world.getBlockEntity(blockPos) == null) {
+		if (!world.isClient && world.getBlockEntity(blockPos) == null) {
 			world.clearBlockState(blockPos);
 			return true;
 		} else {
@@ -96,7 +96,7 @@ public class PistonExtensionBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public VoxelShape method_9549(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		PistonBlockEntity pistonBlockEntity = this.getBlockEntityPiston(blockView, blockPos);
 		return pistonBlockEntity != null ? pistonBlockEntity.method_11512(blockView, blockPos) : VoxelShapes.empty();
 	}
@@ -115,17 +115,17 @@ public class PistonExtensionBlock extends BlockWithEntity {
 
 	@Override
 	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
-		return blockState.with(field_12196, rotation.method_10503(blockState.get(field_12196)));
+		return blockState.with(FACING, rotation.method_10503(blockState.get(FACING)));
 	}
 
 	@Override
 	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.method_10345(blockState.get(field_12196)));
+		return blockState.applyRotation(mirror.getRotation(blockState.get(FACING)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_12196, TYPE);
+		builder.with(FACING, TYPE);
 	}
 
 	@Override

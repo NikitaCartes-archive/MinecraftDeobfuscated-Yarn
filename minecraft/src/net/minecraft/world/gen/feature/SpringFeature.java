@@ -8,8 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.SpringFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class SpringFeature extends Feature<SpringFeatureConfig> {
 	public SpringFeature(Function<Dynamic<?>, ? extends SpringFeatureConfig> function) {
@@ -17,7 +16,7 @@ public class SpringFeature extends Feature<SpringFeatureConfig> {
 	}
 
 	public boolean method_13979(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, Random random, BlockPos blockPos, SpringFeatureConfig springFeatureConfig
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, SpringFeatureConfig springFeatureConfig
 	) {
 		if (!Block.isNaturalStone(iWorld.getBlockState(blockPos.up()).getBlock())) {
 			return false;

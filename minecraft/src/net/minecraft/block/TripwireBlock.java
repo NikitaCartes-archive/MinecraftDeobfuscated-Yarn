@@ -3,7 +3,6 @@ package net.minecraft.block;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -67,10 +66,12 @@ public class TripwireBlock extends Block {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		return direction.getAxis().isHorizontal()
 			? blockState.with((Property)field_11676.get(direction), Boolean.valueOf(this.method_10778(blockState2, direction)))
-			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
@@ -94,7 +95,7 @@ public class TripwireBlock extends Block {
 
 	@Override
 	public void onBreak(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
-		if (!world.isRemote && !playerEntity.getMainHandStack().isEmpty() && playerEntity.getMainHandStack().getItem() == Items.field_8868) {
+		if (!world.isClient && !playerEntity.getMainHandStack().isEmpty() && playerEntity.getMainHandStack().getItem() == Items.field_8868) {
 			world.setBlockState(blockPos, blockState.with(field_11679, Boolean.valueOf(true)), 4);
 		}
 
@@ -104,10 +105,10 @@ public class TripwireBlock extends Block {
 	private void method_10779(World world, BlockPos blockPos, BlockState blockState) {
 		for (Direction direction : new Direction[]{Direction.SOUTH, Direction.WEST}) {
 			for (int i = 1; i < 42; i++) {
-				BlockPos blockPos2 = blockPos.method_10079(direction, i);
+				BlockPos blockPos2 = blockPos.offset(direction, i);
 				BlockState blockState2 = world.getBlockState(blockPos2);
 				if (blockState2.getBlock() == this.field_11677) {
-					if (blockState2.get(TripwireHookBlock.field_11666) == direction.getOpposite()) {
+					if (blockState2.get(TripwireHookBlock.FACING) == direction.getOpposite()) {
 						this.field_11677.method_10776(world, blockPos2, blockState2, false, true, i, blockState);
 					}
 					break;
@@ -122,7 +123,7 @@ public class TripwireBlock extends Block {
 
 	@Override
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			if (!(Boolean)blockState.get(field_11680)) {
 				this.method_10780(world, blockPos);
 			}
@@ -131,7 +132,7 @@ public class TripwireBlock extends Block {
 
 	@Override
 	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			if ((Boolean)world.getBlockState(blockPos).get(field_11680)) {
 				this.method_10780(world, blockPos);
 			}
@@ -165,7 +166,7 @@ public class TripwireBlock extends Block {
 
 	public boolean method_10778(BlockState blockState, Direction direction) {
 		Block block = blockState.getBlock();
-		return block == this.field_11677 ? blockState.get(TripwireHookBlock.field_11666) == direction.getOpposite() : block == this;
+		return block == this.field_11677 ? blockState.get(TripwireHookBlock.FACING) == direction.getOpposite() : block == this;
 	}
 
 	@Override

@@ -26,9 +26,10 @@ public class EnderPearlItem extends Item {
 			null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_14757, SoundCategory.field_15254, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F)
 		);
 		playerEntity.getItemCooldownManager().set(this, 20);
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			ThrownEnderpearlEntity thrownEnderpearlEntity = new ThrownEnderpearlEntity(world, playerEntity);
-			thrownEnderpearlEntity.method_7489(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 1.5F, 1.0F);
+			thrownEnderpearlEntity.method_16940(itemStack);
+			thrownEnderpearlEntity.calculateVelocity(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 1.5F, 1.0F);
 			world.spawnEntity(thrownEnderpearlEntity);
 		}
 

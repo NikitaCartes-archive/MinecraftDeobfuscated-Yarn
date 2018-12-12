@@ -36,7 +36,7 @@ public class EnchantCommand {
 			ServerCommandManager.literal("enchant")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.argument("targets", EntityArgumentType.method_9306())
+					ServerCommandManager.argument("targets", EntityArgumentType.multipleEntities())
 						.then(
 							ServerCommandManager.argument("enchantment", ItemEnchantmentArgumentType.create())
 								.executes(

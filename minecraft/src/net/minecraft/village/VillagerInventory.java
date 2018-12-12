@@ -1,5 +1,6 @@
 package net.minecraft.village;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -11,12 +12,11 @@ import net.minecraft.util.InventoryUtil;
 public class VillagerInventory implements Inventory {
 	private final Villager villager;
 	private final DefaultedList<ItemStack> inventory = DefaultedList.create(3, ItemStack.EMPTY);
-	private final PlayerEntity player;
+	@Nullable
 	private VillagerRecipe villagerRecipe;
 	private int recipeIndex;
 
-	public VillagerInventory(PlayerEntity playerEntity, Villager villager) {
-		this.player = playerEntity;
+	public VillagerInventory(Villager villager) {
 		this.villager = villager;
 	}
 
@@ -83,31 +83,8 @@ public class VillagerInventory implements Inventory {
 	}
 
 	@Override
-	public boolean hasCustomName() {
-		return false;
-	}
-
-	@Override
-	public int getInvMaxStackAmount() {
-		return 64;
-	}
-
-	@Override
 	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
 		return this.villager.getCurrentCustomer() == playerEntity;
-	}
-
-	@Override
-	public void onInvOpen(PlayerEntity playerEntity) {
-	}
-
-	@Override
-	public void onInvClose(PlayerEntity playerEntity) {
-	}
-
-	@Override
-	public boolean isValidInvStack(int i, ItemStack itemStack) {
-		return true;
 	}
 
 	@Override
@@ -117,30 +94,29 @@ public class VillagerInventory implements Inventory {
 
 	public void updateRecipes() {
 		this.villagerRecipe = null;
-		ItemStack itemStack = this.inventory.get(0);
-		ItemStack itemStack2 = this.inventory.get(1);
-		if (itemStack.isEmpty()) {
-			itemStack = itemStack2;
+		ItemStack itemStack;
+		ItemStack itemStack2;
+		if (this.inventory.get(0).isEmpty()) {
+			itemStack = this.inventory.get(1);
 			itemStack2 = ItemStack.EMPTY;
+		} else {
+			itemStack = this.inventory.get(0);
+			itemStack2 = this.inventory.get(1);
 		}
 
 		if (itemStack.isEmpty()) {
 			this.setInvStack(2, ItemStack.EMPTY);
 		} else {
-			VillagerRecipeList villagerRecipeList = this.villager.getRecipes(this.player);
-			if (villagerRecipeList != null) {
+			VillagerRecipeList villagerRecipeList = this.villager.getRecipes();
+			if (!villagerRecipeList.isEmpty()) {
 				VillagerRecipe villagerRecipe = villagerRecipeList.getValidRecipe(itemStack, itemStack2, this.recipeIndex);
+				if (villagerRecipe == null || villagerRecipe.isDisabled()) {
+					villagerRecipe = villagerRecipeList.getValidRecipe(itemStack2, itemStack, this.recipeIndex);
+				}
+
 				if (villagerRecipe != null && !villagerRecipe.isDisabled()) {
 					this.villagerRecipe = villagerRecipe;
 					this.setInvStack(2, villagerRecipe.getSellItem().copy());
-				} else if (!itemStack2.isEmpty()) {
-					villagerRecipe = villagerRecipeList.getValidRecipe(itemStack2, itemStack, this.recipeIndex);
-					if (villagerRecipe != null && !villagerRecipe.isDisabled()) {
-						this.villagerRecipe = villagerRecipe;
-						this.setInvStack(2, villagerRecipe.getSellItem().copy());
-					} else {
-						this.setInvStack(2, ItemStack.EMPTY);
-					}
 				} else {
 					this.setInvStack(2, ItemStack.EMPTY);
 				}
@@ -150,6 +126,7 @@ public class VillagerInventory implements Inventory {
 		}
 	}
 
+	@Nullable
 	public VillagerRecipe getVillagerRecipe() {
 		return this.villagerRecipe;
 	}
@@ -157,20 +134,6 @@ public class VillagerInventory implements Inventory {
 	public void setRecipeIndex(int i) {
 		this.recipeIndex = i;
 		this.updateRecipes();
-	}
-
-	@Override
-	public int getInvProperty(int i) {
-		return 0;
-	}
-
-	@Override
-	public void setInvProperty(int i, int j) {
-	}
-
-	@Override
-	public int getInvPropertyCount() {
-		return 0;
 	}
 
 	@Override

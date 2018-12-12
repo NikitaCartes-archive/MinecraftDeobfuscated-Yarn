@@ -52,19 +52,19 @@ public class LookControl {
 			float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;
 			float i = (float)(-(MathHelper.atan2(e, g) * 180.0F / (float)Math.PI));
 			this.entity.pitch = this.method_6229(this.entity.pitch, i, this.field_6358);
-			this.entity.headPitch = this.method_6229(this.entity.headPitch, h, this.field_6359);
+			this.entity.headYaw = this.method_6229(this.entity.headYaw, h, this.field_6359);
 		} else {
-			this.entity.headPitch = this.method_6229(this.entity.headPitch, this.entity.field_6283, 10.0F);
+			this.entity.headYaw = this.method_6229(this.entity.headYaw, this.entity.field_6283, 10.0F);
 		}
 
-		float j = MathHelper.wrapDegrees(this.entity.headPitch - this.entity.field_6283);
+		float j = MathHelper.wrapDegrees(this.entity.headYaw - this.entity.field_6283);
 		if (!this.entity.getNavigation().method_6357()) {
 			if (j < -75.0F) {
-				this.entity.headPitch = this.entity.field_6283 - 75.0F;
+				this.entity.headYaw = this.entity.field_6283 - 75.0F;
 			}
 
 			if (j > 75.0F) {
-				this.entity.headPitch = this.entity.field_6283 + 75.0F;
+				this.entity.headYaw = this.entity.field_6283 + 75.0F;
 			}
 		}
 	}

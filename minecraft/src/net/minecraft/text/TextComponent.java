@@ -23,7 +23,6 @@ import java.util.Map.Entry;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_2574;
 import net.minecraft.class_3530;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.SystemUtil;
@@ -99,22 +98,22 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 
 	Stream<TextComponent> stream();
 
-	default Stream<TextComponent> streamCloned() {
-		return this.stream().map(TextComponent::cloneWithoutChildren);
+	default Stream<TextComponent> streamCopied() {
+		return this.stream().map(TextComponent::copyWithoutChildren);
 	}
 
 	default Iterator<TextComponent> iterator() {
-		return this.streamCloned().iterator();
+		return this.streamCopied().iterator();
 	}
 
-	TextComponent cloneShallow();
+	TextComponent copyShallow();
 
-	default TextComponent clone() {
-		TextComponent textComponent = this.cloneShallow();
+	default TextComponent copy() {
+		TextComponent textComponent = this.copyShallow();
 		textComponent.setStyle(this.getStyle().clone());
 
 		for (TextComponent textComponent2 : this.getChildren()) {
-			textComponent.append(textComponent2.clone());
+			textComponent.append(textComponent2.copy());
 		}
 
 		return textComponent;
@@ -161,8 +160,8 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 		return this;
 	}
 
-	static TextComponent cloneWithoutChildren(TextComponent textComponent) {
-		TextComponent textComponent2 = textComponent.cloneShallow();
+	static TextComponent copyWithoutChildren(TextComponent textComponent) {
+		TextComponent textComponent2 = textComponent.copyShallow();
 		textComponent2.setStyle(textComponent.getStyle().copy());
 		return textComponent2;
 	}
@@ -264,13 +263,13 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 					String string = JsonHelper.getString(jsonObject, "nbt");
 					boolean bl = JsonHelper.getBoolean(jsonObject, "interpret", false);
 					if (jsonObject.has("block")) {
-						textComponent = new class_2574.class_2575(string, bl, JsonHelper.getString(jsonObject, "block"));
+						textComponent = new NbtTextComponent.BlockPosArgument(string, bl, JsonHelper.getString(jsonObject, "block"));
 					} else {
 						if (!jsonObject.has("entity")) {
 							throw new JsonParseException("Don't know how to turn " + jsonElement + " into a Component");
 						}
 
-						textComponent = new class_2574.class_2576(string, bl, JsonHelper.getString(jsonObject, "entity"));
+						textComponent = new NbtTextComponent.EntityNbtTextComponent(string, bl, JsonHelper.getString(jsonObject, "entity"));
 					}
 				}
 
@@ -349,23 +348,23 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 				KeybindTextComponent keybindTextComponent = (KeybindTextComponent)textComponent;
 				jsonObject.addProperty("keybind", keybindTextComponent.getKeybind());
 			} else {
-				if (!(textComponent instanceof class_2574)) {
+				if (!(textComponent instanceof NbtTextComponent)) {
 					throw new IllegalArgumentException("Don't know how to serialize " + textComponent + " as a Component");
 				}
 
-				class_2574 lv = (class_2574)textComponent;
-				jsonObject.addProperty("nbt", lv.method_10920());
-				jsonObject.addProperty("interpret", lv.method_10921());
-				if (textComponent instanceof class_2574.class_2575) {
-					class_2574.class_2575 lv2 = (class_2574.class_2575)textComponent;
-					jsonObject.addProperty("block", lv2.method_10922());
+				NbtTextComponent nbtTextComponent = (NbtTextComponent)textComponent;
+				jsonObject.addProperty("nbt", nbtTextComponent.getPath());
+				jsonObject.addProperty("interpret", nbtTextComponent.method_10921());
+				if (textComponent instanceof NbtTextComponent.BlockPosArgument) {
+					NbtTextComponent.BlockPosArgument blockPosArgument = (NbtTextComponent.BlockPosArgument)textComponent;
+					jsonObject.addProperty("block", blockPosArgument.getPos());
 				} else {
-					if (!(textComponent instanceof class_2574.class_2576)) {
+					if (!(textComponent instanceof NbtTextComponent.EntityNbtTextComponent)) {
 						throw new IllegalArgumentException("Don't know how to serialize " + textComponent + " as a Component");
 					}
 
-					class_2574.class_2576 lv3 = (class_2574.class_2576)textComponent;
-					jsonObject.addProperty("entity", lv3.method_10924());
+					NbtTextComponent.EntityNbtTextComponent entityNbtTextComponent = (NbtTextComponent.EntityNbtTextComponent)textComponent;
+					jsonObject.addProperty("entity", entityNbtTextComponent.getSelector());
 				}
 			}
 

@@ -1,83 +1,175 @@
 package net.minecraft.client.render.model.json;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import java.lang.reflect.Type;
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.sortme.Vector3f;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
 public class ModelTransformation {
-	public static final ModelTransformation ORIGIN = new ModelTransformation(new Vector3f(), new Vector3f(), new Vector3f(1.0F, 1.0F, 1.0F));
-	public final Vector3f field_4287;
-	public final Vector3f field_4286;
-	public final Vector3f field_4285;
+	public static final ModelTransformation ORIGIN = new ModelTransformation();
+	public static float globalTranslationX;
+	public static float globalTranslationY;
+	public static float globalTranslationZ;
+	public static float globalRotationX;
+	public static float globalRotationY;
+	public static float globalRotationZ;
+	public static float globalScaleOffsetX;
+	public static float globalScaleOffsetY;
+	public static float globalScaleOffsetZ;
+	public final Transformation thirdPersonLeftHand;
+	public final Transformation thirdPersonRightHand;
+	public final Transformation firstPersonLeftHand;
+	public final Transformation firstPersonRightHand;
+	public final Transformation head;
+	public final Transformation gui;
+	public final Transformation ground;
+	public final Transformation fixed;
 
-	public ModelTransformation(Vector3f vector3f, Vector3f vector3f2, Vector3f vector3f3) {
-		this.field_4287 = new Vector3f(vector3f);
-		this.field_4286 = new Vector3f(vector3f2);
-		this.field_4285 = new Vector3f(vector3f3);
+	private ModelTransformation() {
+		this(
+			Transformation.ORIGIN,
+			Transformation.ORIGIN,
+			Transformation.ORIGIN,
+			Transformation.ORIGIN,
+			Transformation.ORIGIN,
+			Transformation.ORIGIN,
+			Transformation.ORIGIN,
+			Transformation.ORIGIN
+		);
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
-			return true;
-		} else if (this.getClass() != object.getClass()) {
-			return false;
-		} else {
-			ModelTransformation modelTransformation = (ModelTransformation)object;
-			return this.field_4287.equals(modelTransformation.field_4287)
-				&& this.field_4285.equals(modelTransformation.field_4285)
-				&& this.field_4286.equals(modelTransformation.field_4286);
+	public ModelTransformation(ModelTransformation modelTransformation) {
+		this.thirdPersonLeftHand = modelTransformation.thirdPersonLeftHand;
+		this.thirdPersonRightHand = modelTransformation.thirdPersonRightHand;
+		this.firstPersonLeftHand = modelTransformation.firstPersonLeftHand;
+		this.firstPersonRightHand = modelTransformation.firstPersonRightHand;
+		this.head = modelTransformation.head;
+		this.gui = modelTransformation.gui;
+		this.ground = modelTransformation.ground;
+		this.fixed = modelTransformation.fixed;
+	}
+
+	public ModelTransformation(
+		Transformation transformation,
+		Transformation transformation2,
+		Transformation transformation3,
+		Transformation transformation4,
+		Transformation transformation5,
+		Transformation transformation6,
+		Transformation transformation7,
+		Transformation transformation8
+	) {
+		this.thirdPersonLeftHand = transformation;
+		this.thirdPersonRightHand = transformation2;
+		this.firstPersonLeftHand = transformation3;
+		this.firstPersonRightHand = transformation4;
+		this.head = transformation5;
+		this.gui = transformation6;
+		this.ground = transformation7;
+		this.fixed = transformation8;
+	}
+
+	public void method_3500(ModelTransformation.Type type) {
+		applyGl(this.getTransformation(type), false);
+	}
+
+	public static void applyGl(Transformation transformation, boolean bl) {
+		if (transformation != Transformation.ORIGIN) {
+			int i = bl ? -1 : 1;
+			GlStateManager.translatef(
+				(float)i * (globalTranslationX + transformation.translation.x()),
+				globalTranslationY + transformation.translation.y(),
+				globalTranslationZ + transformation.translation.z()
+			);
+			float f = globalRotationX + transformation.rotation.x();
+			float g = globalRotationY + transformation.rotation.y();
+			float h = globalRotationZ + transformation.rotation.z();
+			if (bl) {
+				g = -g;
+				h = -h;
+			}
+
+			GlStateManager.multMatrix(new Matrix4f(new Quaternion(f, g, h, true)));
+			GlStateManager.scalef(
+				globalScaleOffsetX + transformation.scale.x(), globalScaleOffsetY + transformation.scale.y(), globalScaleOffsetZ + transformation.scale.z()
+			);
 		}
 	}
 
-	public int hashCode() {
-		int i = this.field_4287.hashCode();
-		i = 31 * i + this.field_4286.hashCode();
-		return 31 * i + this.field_4285.hashCode();
+	public Transformation getTransformation(ModelTransformation.Type type) {
+		switch (type) {
+			case THIRD_PERSON_LEFT_HAND:
+				return this.thirdPersonLeftHand;
+			case THIRD_PERSON_RIGHT_HAND:
+				return this.thirdPersonRightHand;
+			case FIRST_PERSON_LEFT_HAND:
+				return this.firstPersonLeftHand;
+			case FIRST_PERSON_RIGHT_HAND:
+				return this.firstPersonRightHand;
+			case HEAD:
+				return this.head;
+			case GUI:
+				return this.gui;
+			case GROUND:
+				return this.ground;
+			case FIXED:
+				return this.fixed;
+			default:
+				return Transformation.ORIGIN;
+		}
+	}
+
+	public boolean isTransformationDefined(ModelTransformation.Type type) {
+		return this.getTransformation(type) != Transformation.ORIGIN;
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class class_805 implements JsonDeserializer<ModelTransformation> {
-		private static final Vector3f field_4288 = new Vector3f(0.0F, 0.0F, 0.0F);
-		private static final Vector3f field_4290 = new Vector3f(0.0F, 0.0F, 0.0F);
-		private static final Vector3f field_4289 = new Vector3f(1.0F, 1.0F, 1.0F);
-
-		public ModelTransformation method_3494(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+	static class Deserializer implements JsonDeserializer<ModelTransformation> {
+		public ModelTransformation method_3505(JsonElement jsonElement, java.lang.reflect.Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
-			Vector3f vector3f = this.method_3493(jsonObject, "rotation", field_4288);
-			Vector3f vector3f2 = this.method_3493(jsonObject, "translation", field_4290);
-			vector3f2.scale(0.0625F);
-			vector3f2.clamp(-5.0F, 5.0F);
-			Vector3f vector3f3 = this.method_3493(jsonObject, "scale", field_4289);
-			vector3f3.clamp(-4.0F, 4.0F);
-			return new ModelTransformation(vector3f, vector3f2, vector3f3);
-		}
-
-		private Vector3f method_3493(JsonObject jsonObject, String string, Vector3f vector3f) {
-			if (!jsonObject.has(string)) {
-				return vector3f;
-			} else {
-				JsonArray jsonArray = JsonHelper.getArray(jsonObject, string);
-				if (jsonArray.size() != 3) {
-					throw new JsonParseException("Expected 3 " + string + " values, found: " + jsonArray.size());
-				} else {
-					float[] fs = new float[3];
-
-					for (int i = 0; i < fs.length; i++) {
-						fs[i] = JsonHelper.asFloat(jsonArray.get(i), string + "[" + i + "]");
-					}
-
-					return new Vector3f(fs[0], fs[1], fs[2]);
-				}
+			Transformation transformation = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "thirdperson_righthand");
+			Transformation transformation2 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "thirdperson_lefthand");
+			if (transformation2 == Transformation.ORIGIN) {
+				transformation2 = transformation;
 			}
+
+			Transformation transformation3 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "firstperson_righthand");
+			Transformation transformation4 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "firstperson_lefthand");
+			if (transformation4 == Transformation.ORIGIN) {
+				transformation4 = transformation3;
+			}
+
+			Transformation transformation5 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "head");
+			Transformation transformation6 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "gui");
+			Transformation transformation7 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "ground");
+			Transformation transformation8 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "fixed");
+			return new ModelTransformation(
+				transformation2, transformation, transformation4, transformation3, transformation5, transformation6, transformation7, transformation8
+			);
 		}
+
+		private Transformation parseModelTransformation(JsonDeserializationContext jsonDeserializationContext, JsonObject jsonObject, String string) {
+			return jsonObject.has(string) ? jsonDeserializationContext.deserialize(jsonObject.get(string), Transformation.class) : Transformation.ORIGIN;
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static enum Type {
+		ORIGIN,
+		THIRD_PERSON_LEFT_HAND,
+		THIRD_PERSON_RIGHT_HAND,
+		FIRST_PERSON_LEFT_HAND,
+		FIRST_PERSON_RIGHT_HAND,
+		HEAD,
+		GUI,
+		GROUND,
+		FIXED;
 	}
 }

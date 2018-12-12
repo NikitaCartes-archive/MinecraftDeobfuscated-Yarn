@@ -2,16 +2,15 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_3881;
+import net.minecraft.class_3882;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.sortme.OptionMainHand;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class EvilVillagerEntityModel extends Model {
+public class EvilVillagerEntityModel<T extends IllagerEntity> extends EntityModel<T> implements class_3881, class_3882 {
 	protected final Cuboid field_3422;
 	private final Cuboid field_3419;
 	protected final Cuboid field_3425;
@@ -63,15 +62,13 @@ public class EvilVillagerEntityModel extends Model {
 		this.field_3417.setRotationPoint(5.0F, 2.0F + g, 0.0F);
 	}
 
-	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		this.setRotationAngles(f, g, h, i, j, k, entity);
+	public void method_17093(T illagerEntity, float f, float g, float h, float i, float j, float k) {
+		this.method_17094(illagerEntity, f, g, h, i, j, k);
 		this.field_3422.render(k);
 		this.field_3425.render(k);
 		this.field_3420.render(k);
 		this.field_3418.render(k);
-		IllagerEntity illagerEntity = (IllagerEntity)entity;
-		if (illagerEntity.method_6990() == IllagerEntity.class_1544.field_7207) {
+		if (illagerEntity.method_6990() == IllagerEntity.State.field_7207) {
 			this.field_3423.render(k);
 		} else {
 			this.field_3426.render(k);
@@ -79,37 +76,49 @@ public class EvilVillagerEntityModel extends Model {
 		}
 	}
 
-	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
+	public void method_17094(T illagerEntity, float f, float g, float h, float i, float j, float k) {
 		this.field_3422.yaw = i * (float) (Math.PI / 180.0);
 		this.field_3422.pitch = j * (float) (Math.PI / 180.0);
 		this.field_3423.rotationPointY = 3.0F;
 		this.field_3423.rotationPointZ = -1.0F;
 		this.field_3423.pitch = -0.75F;
-		this.field_3420.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g * 0.5F;
-		this.field_3418.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g * 0.5F;
-		this.field_3420.yaw = 0.0F;
-		this.field_3418.yaw = 0.0F;
 		if (this.isRiding) {
-			this.field_3426.pitch += (float) (-Math.PI / 5);
-			this.field_3417.pitch += (float) (-Math.PI / 5);
+			this.field_3426.pitch = (float) (-Math.PI / 5);
+			this.field_3426.yaw = 0.0F;
+			this.field_3426.roll = 0.0F;
+			this.field_3417.pitch = (float) (-Math.PI / 5);
+			this.field_3417.yaw = 0.0F;
+			this.field_3417.roll = 0.0F;
 			this.field_3420.pitch = -1.4137167F;
 			this.field_3420.yaw = (float) (Math.PI / 10);
 			this.field_3420.roll = 0.07853982F;
 			this.field_3418.pitch = -1.4137167F;
 			this.field_3418.yaw = (float) (-Math.PI / 10);
 			this.field_3418.roll = -0.07853982F;
+		} else {
+			this.field_3426.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 2.0F * g * 0.5F;
+			this.field_3426.yaw = 0.0F;
+			this.field_3426.roll = 0.0F;
+			this.field_3417.pitch = MathHelper.cos(f * 0.6662F) * 2.0F * g * 0.5F;
+			this.field_3417.yaw = 0.0F;
+			this.field_3417.roll = 0.0F;
+			this.field_3420.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g * 0.5F;
+			this.field_3420.yaw = 0.0F;
+			this.field_3420.roll = 0.04712389F;
+			this.field_3418.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g * 0.5F;
+			this.field_3418.yaw = 0.0F;
+			this.field_3418.roll = -0.04712389F;
 		}
 
-		IllagerEntity.class_1544 lv = ((IllagerEntity)entity).method_6990();
-		if (lv == IllagerEntity.class_1544.field_7211) {
+		IllagerEntity.State state = illagerEntity.method_6990();
+		if (state == IllagerEntity.State.field_7211) {
 			float l = MathHelper.sin(this.swingProgress * (float) Math.PI);
 			float m = MathHelper.sin((1.0F - (1.0F - this.swingProgress) * (1.0F - this.swingProgress)) * (float) Math.PI);
 			this.field_3426.roll = 0.0F;
 			this.field_3417.roll = 0.0F;
 			this.field_3426.yaw = (float) (Math.PI / 20);
 			this.field_3417.yaw = (float) (-Math.PI / 20);
-			if (((LivingEntity)entity).getMainHand() == OptionMainHand.field_6183) {
+			if (illagerEntity.getMainHand() == OptionMainHand.field_6183) {
 				this.field_3426.pitch = -1.8849558F + MathHelper.cos(h * 0.09F) * 0.15F;
 				this.field_3417.pitch = -0.0F + MathHelper.cos(h * 0.19F) * 0.5F;
 				this.field_3426.pitch += l * 2.2F - m * 0.4F;
@@ -125,7 +134,7 @@ public class EvilVillagerEntityModel extends Model {
 			this.field_3417.roll = this.field_3417.roll - (MathHelper.cos(h * 0.09F) * 0.05F + 0.05F);
 			this.field_3426.pitch = this.field_3426.pitch + MathHelper.sin(h * 0.067F) * 0.05F;
 			this.field_3417.pitch = this.field_3417.pitch - MathHelper.sin(h * 0.067F) * 0.05F;
-		} else if (lv == IllagerEntity.class_1544.field_7212) {
+		} else if (state == IllagerEntity.State.field_7212) {
 			this.field_3426.rotationPointZ = 0.0F;
 			this.field_3426.rotationPointX = -5.0F;
 			this.field_3417.rotationPointZ = 0.0F;
@@ -136,18 +145,18 @@ public class EvilVillagerEntityModel extends Model {
 			this.field_3417.roll = (float) (-Math.PI * 3.0 / 4.0);
 			this.field_3426.yaw = 0.0F;
 			this.field_3417.yaw = 0.0F;
-		} else if (lv == IllagerEntity.class_1544.field_7208) {
+		} else if (state == IllagerEntity.State.field_7208) {
 			this.field_3426.yaw = -0.1F + this.field_3422.yaw;
 			this.field_3426.pitch = (float) (-Math.PI / 2) + this.field_3422.pitch;
 			this.field_3417.pitch = -0.9424779F + this.field_3422.pitch;
 			this.field_3417.yaw = this.field_3422.yaw - 0.4F;
 			this.field_3417.roll = (float) (Math.PI / 2);
-		} else if (lv == IllagerEntity.class_1544.field_7213) {
+		} else if (state == IllagerEntity.State.field_7213) {
 			this.field_3426.yaw = -0.3F + this.field_3422.yaw;
 			this.field_3417.yaw = 0.6F + this.field_3422.yaw;
 			this.field_3426.pitch = (float) (-Math.PI / 2) + this.field_3422.pitch + 0.1F;
 			this.field_3417.pitch = -1.5F + this.field_3422.pitch;
-		} else if (lv == IllagerEntity.class_1544.field_7210) {
+		} else if (state == IllagerEntity.State.field_7210) {
 			this.field_3426.yaw = -0.8F;
 			this.field_3426.pitch = -0.97079635F;
 			this.field_3417.pitch = -0.97079635F;
@@ -157,13 +166,12 @@ public class EvilVillagerEntityModel extends Model {
 		}
 	}
 
-	@Override
-	public void animateModel(LivingEntity livingEntity, float f, float g, float h) {
-		this.field_3424 = (float)livingEntity.method_6048();
-		super.animateModel(livingEntity, f, g, h);
+	public void method_17092(T illagerEntity, float f, float g, float h) {
+		this.field_3424 = (float)illagerEntity.method_6048();
+		super.animateModel(illagerEntity, f, g, h);
 	}
 
-	public Cuboid method_2813(OptionMainHand optionMainHand) {
+	private Cuboid method_2813(OptionMainHand optionMainHand) {
 		return optionMainHand == OptionMainHand.field_6182 ? this.field_3417 : this.field_3426;
 	}
 
@@ -171,7 +179,13 @@ public class EvilVillagerEntityModel extends Model {
 		return this.field_3419;
 	}
 
-	public Cuboid method_16207() {
+	@Override
+	public Cuboid method_2838() {
 		return this.field_3422;
+	}
+
+	@Override
+	public void method_2803(float f, OptionMainHand optionMainHand) {
+		this.method_2813(optionMainHand).method_2847(0.0625F);
 	}
 }

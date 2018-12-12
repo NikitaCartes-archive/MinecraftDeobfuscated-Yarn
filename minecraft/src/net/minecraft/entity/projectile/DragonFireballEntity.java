@@ -9,7 +9,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.particle.Particle;
+import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -32,11 +32,11 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		if (hitResult.entity == null || !hitResult.entity.isPartOf(this.owner)) {
-			if (!this.world.isRemote) {
+			if (!this.world.isClient) {
 				List<LivingEntity> list = this.world.getVisibleEntities(LivingEntity.class, this.getBoundingBox().expand(4.0, 2.0, 4.0));
 				AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.x, this.y, this.z);
 				areaEffectCloudEntity.setOwner(this.owner);
-				areaEffectCloudEntity.setParticleType(ParticleTypes.field_11216);
+				areaEffectCloudEntity.method_5608(ParticleTypes.field_11216);
 				areaEffectCloudEntity.setRadius(3.0F);
 				areaEffectCloudEntity.setDuration(600);
 				areaEffectCloudEntity.setRadiusGrowth((7.0F - areaEffectCloudEntity.getRadius()) / (float)areaEffectCloudEntity.getDuration());
@@ -69,7 +69,7 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 	}
 
 	@Override
-	protected Particle getParticleType() {
+	protected ParticleParameters method_7467() {
 		return ParticleTypes.field_11216;
 	}
 

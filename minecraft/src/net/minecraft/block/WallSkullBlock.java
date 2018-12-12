@@ -48,13 +48,13 @@ public class WallSkullBlock extends AbstractSkullBlock {
 		BlockState blockState = this.getDefaultState();
 		BlockView blockView = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getPos();
-		Direction[] directions = itemPlacementContext.method_7718();
+		Direction[] directions = itemPlacementContext.getPlacementFacings();
 
 		for (Direction direction : directions) {
 			if (direction.getAxis().isHorizontal()) {
 				Direction direction2 = direction.getOpposite();
 				blockState = blockState.with(field_11724, direction2);
-				if (!blockView.getBlockState(blockPos.method_10093(direction)).method_11587(itemPlacementContext)) {
+				if (!blockView.getBlockState(blockPos.offset(direction)).method_11587(itemPlacementContext)) {
 					return blockState;
 				}
 			}
@@ -70,7 +70,7 @@ public class WallSkullBlock extends AbstractSkullBlock {
 
 	@Override
 	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.method_10345(blockState.get(field_11724)));
+		return blockState.applyRotation(mirror.getRotation(blockState.get(field_11724)));
 	}
 
 	@Override

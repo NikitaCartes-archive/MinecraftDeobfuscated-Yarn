@@ -10,9 +10,6 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2799;
-import net.minecraft.class_308;
-import net.minecraft.class_3469;
 import net.minecraft.class_452;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
@@ -22,16 +19,19 @@ import net.minecraft.client.gui.GuiEventListener;
 import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.gui.widget.AbstractListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.item.block.BlockItem;
+import net.minecraft.server.network.packet.ClientStatusServerPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stat;
+import net.minecraft.stat.StatHandler;
 import net.minecraft.stat.StatType;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.TextComponent;
@@ -48,13 +48,13 @@ public class StatsGui extends Gui implements class_452 {
 	private StatsGui.class_448 field_2644;
 	private StatsGui.class_449 field_2642;
 	private StatsGui.class_451 field_2646;
-	private final class_3469 field_2647;
+	private final StatHandler field_2647;
 	private AbstractListWidget field_2643;
 	private boolean field_2645 = true;
 
-	public StatsGui(Gui gui, class_3469 arg) {
+	public StatsGui(Gui gui, StatHandler statHandler) {
 		this.field_2648 = gui;
-		this.field_2647 = arg;
+		this.field_2647 = statHandler;
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class StatsGui extends Gui implements class_452 {
 	protected void onInitialized() {
 		this.field_2649 = I18n.translate("gui.stats");
 		this.field_2645 = true;
-		this.client.getNetworkHandler().sendPacket(new class_2799(class_2799.class_2800.field_12775));
+		this.client.getNetworkHandler().sendPacket(new ClientStatusServerPacket(ClientStatusServerPacket.Mode.field_12775));
 	}
 
 	public void method_2270() {
@@ -118,9 +118,9 @@ public class StatsGui extends Gui implements class_452 {
 			this.drawStringCentered(this.fontRenderer, I18n.translate("multiplayer.downloadingStats"), this.width / 2, this.height / 2, 16777215);
 			this.drawStringCentered(
 				this.fontRenderer,
-				SPOOKY_PROGRESS_STAGES[(int)(SystemUtil.getMeasuringTimeMili() / 150L % (long)SPOOKY_PROGRESS_STAGES.length)],
+				SPOOKY_PROGRESS_STAGES[(int)(SystemUtil.getMeasuringTimeMs() / 150L % (long)SPOOKY_PROGRESS_STAGES.length)],
 				this.width / 2,
-				this.height / 2 + this.fontRenderer.FONT_HEIGHT * 2,
+				this.height / 2 + this.fontRenderer.fontHeight * 2,
 				16777215
 			);
 		} else {
@@ -152,9 +152,9 @@ public class StatsGui extends Gui implements class_452 {
 	private void method_2289(int i, int j, Item item) {
 		this.method_2272(i + 1, j + 1);
 		GlStateManager.enableRescaleNormal();
-		class_308.method_1453();
+		GuiLighting.enableForItems();
 		this.itemRenderer.renderItemWithPropertyOverrides(item.getDefaultStack(), i + 2, j + 2);
-		class_308.method_1450();
+		GuiLighting.disable();
 		GlStateManager.disableRescaleNormal();
 	}
 
@@ -170,18 +170,18 @@ public class StatsGui extends Gui implements class_452 {
 		int m = 18;
 		int n = 18;
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-		vertexBuffer.begin(7, VertexFormats.POSITION_UV);
-		vertexBuffer.vertex((double)(i + 0), (double)(j + 18), (double)this.zOffset)
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+		bufferBuilder.vertex((double)(i + 0), (double)(j + 18), (double)this.zOffset)
 			.texture((double)((float)(k + 0) * 0.0078125F), (double)((float)(l + 18) * 0.0078125F))
 			.next();
-		vertexBuffer.vertex((double)(i + 18), (double)(j + 18), (double)this.zOffset)
+		bufferBuilder.vertex((double)(i + 18), (double)(j + 18), (double)this.zOffset)
 			.texture((double)((float)(k + 18) * 0.0078125F), (double)((float)(l + 18) * 0.0078125F))
 			.next();
-		vertexBuffer.vertex((double)(i + 18), (double)(j + 0), (double)this.zOffset)
+		bufferBuilder.vertex((double)(i + 18), (double)(j + 0), (double)this.zOffset)
 			.texture((double)((float)(k + 18) * 0.0078125F), (double)((float)(l + 0) * 0.0078125F))
 			.next();
-		vertexBuffer.vertex((double)(i + 0), (double)(j + 0), (double)this.zOffset)
+		bufferBuilder.vertex((double)(i + 0), (double)(j + 0), (double)this.zOffset)
 			.texture((double)((float)(k + 0) * 0.0078125F), (double)((float)(l + 0) * 0.0078125F))
 			.next();
 		tessellator.draw();
@@ -202,17 +202,17 @@ public class StatsGui extends Gui implements class_452 {
 		}
 
 		@Override
-		protected boolean isSelected(int i) {
+		protected boolean isSelectedEntry(int i) {
 			return false;
 		}
 
 		@Override
-		protected int getContentHeight() {
+		protected int getMaxScrollPosition() {
 			return this.getEntryCount() * 10;
 		}
 
 		@Override
-		protected void method_1936() {
+		protected void drawBackground() {
 			StatsGui.this.drawBackground();
 		}
 
@@ -225,7 +225,7 @@ public class StatsGui extends Gui implements class_452 {
 			Stat<Identifier> stat = (Stat<Identifier>)this.field_2650.next();
 			TextComponent textComponent = new TranslatableTextComponent("stat." + stat.getValue().toString().replace(':', '.')).applyFormat(TextFormat.GRAY);
 			this.drawString(StatsGui.this.fontRenderer, textComponent.getString(), j + 2, k + 1, i % 2 == 0 ? 16777215 : 9474192);
-			String string = stat.format(StatsGui.this.field_2647.method_15025(stat));
+			String string = stat.format(StatsGui.this.field_2647.getStat(stat));
 			this.drawString(StatsGui.this.fontRenderer, string, j + 2 + 213 - StatsGui.this.fontRenderer.getStringWidth(string), k + 1, i % 2 == 0 ? 16777215 : 9474192);
 		}
 	}
@@ -255,7 +255,7 @@ public class StatsGui extends Gui implements class_452 {
 				boolean bl = false;
 
 				for (StatType<Item> statType : this.field_2655) {
-					if (statType.method_14958(item) && StatsGui.this.field_2647.method_15025(statType.method_14956(item)) > 0) {
+					if (statType.method_14958(item) && StatsGui.this.field_2647.getStat(statType.method_14956(item)) > 0) {
 						bl = true;
 					}
 				}
@@ -269,7 +269,7 @@ public class StatsGui extends Gui implements class_452 {
 				boolean bl = false;
 
 				for (StatType<Block> statTypex : this.field_2656) {
-					if (statTypex.method_14958(block) && StatsGui.this.field_2647.method_15025(statTypex.method_14956(block)) > 0) {
+					if (statTypex.method_14958(block) && StatsGui.this.field_2647.getStat(statTypex.method_14956(block)) > 0) {
 						bl = true;
 					}
 				}
@@ -285,7 +285,7 @@ public class StatsGui extends Gui implements class_452 {
 
 		@Override
 		protected void method_1940(int i, int j, Tessellator tessellator) {
-			if (!this.client.mouse.method_1608()) {
+			if (!this.client.field_1729.method_1608()) {
 				this.field_2653 = -1;
 			}
 
@@ -327,7 +327,7 @@ public class StatsGui extends Gui implements class_452 {
 		}
 
 		@Override
-		protected boolean isSelected(int i) {
+		protected boolean isSelectedEntry(int i) {
 			return false;
 		}
 
@@ -342,7 +342,7 @@ public class StatsGui extends Gui implements class_452 {
 		}
 
 		@Override
-		protected void method_1936() {
+		protected void drawBackground() {
 			StatsGui.this.drawBackground();
 		}
 
@@ -388,14 +388,14 @@ public class StatsGui extends Gui implements class_452 {
 		}
 
 		protected void method_2292(@Nullable Stat<?> stat, int i, int j, boolean bl) {
-			String string = stat == null ? "-" : stat.format(StatsGui.this.field_2647.method_15025(stat));
+			String string = stat == null ? "-" : stat.format(StatsGui.this.field_2647.getStat(stat));
 			this.drawString(StatsGui.this.fontRenderer, string, i - StatsGui.this.fontRenderer.getStringWidth(string), j + 5, bl ? 16777215 : 9474192);
 		}
 
 		@Override
 		protected void method_1942(int i, int j) {
 			if (j >= this.y1 && j <= this.y2) {
-				int k = this.method_1956((double)i, (double)j);
+				int k = this.getSelectedEntry((double)i, (double)j);
 				int l = (this.width - this.getEntryWidth()) / 2;
 				if (k >= 0) {
 					if (i < l + 40 || i > l + 40 + 20) {
@@ -483,12 +483,12 @@ public class StatsGui extends Gui implements class_452 {
 		private final List<EntityType<?>> field_2664 = Lists.<EntityType<?>>newArrayList();
 
 		public class_451(MinecraftClient minecraftClient) {
-			super(minecraftClient, StatsGui.this.width, StatsGui.this.height, 32, StatsGui.this.height - 64, StatsGui.this.fontRenderer.FONT_HEIGHT * 4);
+			super(minecraftClient, StatsGui.this.width, StatsGui.this.height, 32, StatsGui.this.height - 64, StatsGui.this.fontRenderer.fontHeight * 4);
 			this.method_1943(false);
 
 			for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
-				if (StatsGui.this.field_2647.method_15025(Stats.field_15403.method_14956(entityType)) > 0
-					|| StatsGui.this.field_2647.method_15025(Stats.field_15411.method_14956(entityType)) > 0) {
+				if (StatsGui.this.field_2647.getStat(Stats.field_15403.method_14956(entityType)) > 0
+					|| StatsGui.this.field_2647.getStat(Stats.field_15411.method_14956(entityType)) > 0) {
 					this.field_2664.add(entityType);
 				}
 			}
@@ -500,17 +500,17 @@ public class StatsGui extends Gui implements class_452 {
 		}
 
 		@Override
-		protected boolean isSelected(int i) {
+		protected boolean isSelectedEntry(int i) {
 			return false;
 		}
 
 		@Override
-		protected int getContentHeight() {
-			return this.getEntryCount() * StatsGui.this.fontRenderer.FONT_HEIGHT * 4;
+		protected int getMaxScrollPosition() {
+			return this.getEntryCount() * StatsGui.this.fontRenderer.fontHeight * 4;
 		}
 
 		@Override
-		protected void method_1936() {
+		protected void drawBackground() {
 			StatsGui.this.drawBackground();
 		}
 
@@ -518,12 +518,12 @@ public class StatsGui extends Gui implements class_452 {
 		protected void drawEntry(int i, int j, int k, int l, int m, int n, float f) {
 			EntityType<?> entityType = (EntityType<?>)this.field_2664.get(i);
 			String string = I18n.translate(SystemUtil.createTranslationKey("entity", EntityType.getId(entityType)));
-			int o = StatsGui.this.field_2647.method_15025(Stats.field_15403.method_14956(entityType));
-			int p = StatsGui.this.field_2647.method_15025(Stats.field_15411.method_14956(entityType));
+			int o = StatsGui.this.field_2647.getStat(Stats.field_15403.method_14956(entityType));
+			int p = StatsGui.this.field_2647.getStat(Stats.field_15411.method_14956(entityType));
 			this.drawString(StatsGui.this.fontRenderer, string, j + 2 - 10, k + 1, 16777215);
-			this.drawString(StatsGui.this.fontRenderer, this.method_2299(string, o), j + 2, k + 1 + StatsGui.this.fontRenderer.FONT_HEIGHT, o == 0 ? 6316128 : 9474192);
+			this.drawString(StatsGui.this.fontRenderer, this.method_2299(string, o), j + 2, k + 1 + StatsGui.this.fontRenderer.fontHeight, o == 0 ? 6316128 : 9474192);
 			this.drawString(
-				StatsGui.this.fontRenderer, this.method_2298(string, p), j + 2, k + 1 + StatsGui.this.fontRenderer.FONT_HEIGHT * 2, p == 0 ? 6316128 : 9474192
+				StatsGui.this.fontRenderer, this.method_2298(string, p), j + 2, k + 1 + StatsGui.this.fontRenderer.fontHeight * 2, p == 0 ? 6316128 : 9474192
 			);
 		}
 

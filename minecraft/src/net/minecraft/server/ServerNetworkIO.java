@@ -39,19 +39,19 @@ import net.minecraft.server.network.IntegratedServerHandshakeNetworkHandler;
 import net.minecraft.server.network.ServerHandshakeNetworkHandler;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TextComponent;
-import net.minecraft.util.LazyCachedSupplier;
+import net.minecraft.util.Lazy;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportElement;
+import net.minecraft.util.crash.CrashReportSection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ServerNetworkIO {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final LazyCachedSupplier<NioEventLoopGroup> field_14111 = new LazyCachedSupplier<>(
+	public static final Lazy<NioEventLoopGroup> field_14111 = new Lazy<>(
 		() -> new NioEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Server IO #%d").setDaemon(true).build())
 	);
-	public static final LazyCachedSupplier<EpollEventLoopGroup> field_14105 = new LazyCachedSupplier<>(
+	public static final Lazy<EpollEventLoopGroup> field_14105 = new Lazy<>(
 		() -> new EpollEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Epoll Server IO #%d").setDaemon(true).build())
 	);
 	private final MinecraftServer server;
@@ -67,14 +67,14 @@ public class ServerNetworkIO {
 	public void method_14354(@Nullable InetAddress inetAddress, int i) throws IOException {
 		synchronized (this.field_14106) {
 			Class<? extends ServerSocketChannel> class_;
-			LazyCachedSupplier<? extends EventLoopGroup> lazyCachedSupplier;
+			Lazy<? extends EventLoopGroup> lazy;
 			if (Epoll.isAvailable() && this.server.isUsingNativeTransport()) {
 				class_ = EpollServerSocketChannel.class;
-				lazyCachedSupplier = field_14105;
+				lazy = field_14105;
 				LOGGER.info("Using epoll channel type");
 			} else {
 				class_ = NioServerSocketChannel.class;
-				lazyCachedSupplier = field_14111;
+				lazy = field_14111;
 				LOGGER.info("Using default channel type");
 			}
 
@@ -105,7 +105,7 @@ public class ServerNetworkIO {
 								}
 							}
 						)
-						.group(lazyCachedSupplier.get())
+						.group(lazy.get())
 						.localAddress(inetAddress, i)
 						.bind()
 						.syncUninterruptibly()
@@ -157,8 +157,8 @@ public class ServerNetworkIO {
 						} catch (Exception var8) {
 							if (clientConnection.isLocal()) {
 								CrashReport crashReport = CrashReport.create(var8, "Ticking memory connection");
-								CrashReportElement crashReportElement = crashReport.addElement("Ticking connection");
-								crashReportElement.add("Connection", clientConnection::toString);
+								CrashReportSection crashReportSection = crashReport.method_562("Ticking connection");
+								crashReportSection.add("Connection", clientConnection::toString);
 								throw new CrashException(crashReport);
 							}
 

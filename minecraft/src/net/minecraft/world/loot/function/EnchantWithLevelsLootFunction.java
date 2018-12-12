@@ -26,7 +26,7 @@ public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
 		Random random = lootContext.getRandom();
-		return EnchantmentHelper.method_8233(random, itemStack, this.field_1026.next(random), this.treasureEnchantmentsAllowed);
+		return EnchantmentHelper.enchant(random, itemStack, this.field_1026.next(random), this.treasureEnchantmentsAllowed);
 	}
 
 	public static EnchantWithLevelsLootFunction.class_107 method_481(LootTableRange lootTableRange) {

@@ -2,7 +2,7 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.particle.TexturedParticle;
+import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
@@ -31,7 +31,7 @@ public class ExplosionSmokeParticle extends Particle {
 
 		this.setSpriteIndex(7 - this.age * 8 / this.maxAge);
 		this.velocityY += 0.004;
-		this.addPos(this.velocityX, this.velocityY, this.velocityZ);
+		this.move(this.velocityX, this.velocityY, this.velocityZ);
 		this.velocityX *= 0.9F;
 		this.velocityY *= 0.9F;
 		this.velocityZ *= 0.9F;
@@ -42,8 +42,8 @@ public class ExplosionSmokeParticle extends Particle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Factory implements FactoryParticle<TexturedParticle> {
-		public Particle createParticle(TexturedParticle texturedParticle, World world, double d, double e, double f, double g, double h, double i) {
+	public static class Factory implements ParticleFactory<DefaultParticleType> {
+		public Particle method_3023(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new ExplosionSmokeParticle(world, d, e, f, g, h, i);
 		}
 	}

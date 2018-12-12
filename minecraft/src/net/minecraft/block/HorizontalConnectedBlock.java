@@ -26,16 +26,16 @@ public class HorizontalConnectedBlock extends Block implements Waterloggable {
 		.stream()
 		.filter(entry -> ((Direction)entry.getKey()).getAxis().isHorizontal())
 		.collect(SystemUtil.toMap());
-	protected final VoxelShape[] field_10901;
-	protected final VoxelShape[] field_10906;
+	protected final VoxelShape[] collisionShapes;
+	protected final VoxelShape[] boundingShapes;
 
 	protected HorizontalConnectedBlock(float f, float g, float h, float i, float j, Block.Settings settings) {
 		super(settings);
-		this.field_10901 = this.method_9984(f, g, j, 0.0F, j);
-		this.field_10906 = this.method_9984(f, g, h, 0.0F, i);
+		this.collisionShapes = this.createShapes(f, g, j, 0.0F, j);
+		this.boundingShapes = this.createShapes(f, g, h, 0.0F, i);
 	}
 
-	protected VoxelShape[] method_9984(float f, float g, float h, float i, float j) {
+	protected VoxelShape[] createShapes(float f, float g, float h, float i, float j) {
 		float k = 8.0F - f;
 		float l = 8.0F + f;
 		float m = 8.0F - g;
@@ -45,69 +45,69 @@ public class HorizontalConnectedBlock extends Block implements Waterloggable {
 		VoxelShape voxelShape3 = Block.createCubeShape((double)m, (double)i, (double)m, (double)n, (double)j, 16.0);
 		VoxelShape voxelShape4 = Block.createCubeShape(0.0, (double)i, (double)m, (double)n, (double)j, (double)n);
 		VoxelShape voxelShape5 = Block.createCubeShape((double)m, (double)i, (double)m, 16.0, (double)j, (double)n);
-		VoxelShape voxelShape6 = VoxelShapes.method_1084(voxelShape2, voxelShape5);
-		VoxelShape voxelShape7 = VoxelShapes.method_1084(voxelShape3, voxelShape4);
+		VoxelShape voxelShape6 = VoxelShapes.union(voxelShape2, voxelShape5);
+		VoxelShape voxelShape7 = VoxelShapes.union(voxelShape3, voxelShape4);
 		VoxelShape[] voxelShapes = new VoxelShape[]{
 			VoxelShapes.empty(),
 			voxelShape3,
 			voxelShape4,
 			voxelShape7,
 			voxelShape2,
-			VoxelShapes.method_1084(voxelShape3, voxelShape2),
-			VoxelShapes.method_1084(voxelShape4, voxelShape2),
-			VoxelShapes.method_1084(voxelShape7, voxelShape2),
+			VoxelShapes.union(voxelShape3, voxelShape2),
+			VoxelShapes.union(voxelShape4, voxelShape2),
+			VoxelShapes.union(voxelShape7, voxelShape2),
 			voxelShape5,
-			VoxelShapes.method_1084(voxelShape3, voxelShape5),
-			VoxelShapes.method_1084(voxelShape4, voxelShape5),
-			VoxelShapes.method_1084(voxelShape7, voxelShape5),
+			VoxelShapes.union(voxelShape3, voxelShape5),
+			VoxelShapes.union(voxelShape4, voxelShape5),
+			VoxelShapes.union(voxelShape7, voxelShape5),
 			voxelShape6,
-			VoxelShapes.method_1084(voxelShape3, voxelShape6),
-			VoxelShapes.method_1084(voxelShape4, voxelShape6),
-			VoxelShapes.method_1084(voxelShape7, voxelShape6)
+			VoxelShapes.union(voxelShape3, voxelShape6),
+			VoxelShapes.union(voxelShape4, voxelShape6),
+			VoxelShapes.union(voxelShape7, voxelShape6)
 		};
 
 		for (int o = 0; o < 16; o++) {
-			voxelShapes[o] = VoxelShapes.method_1084(voxelShape, voxelShapes[o]);
+			voxelShapes[o] = VoxelShapes.union(voxelShape, voxelShapes[o]);
 		}
 
 		return voxelShapes;
 	}
 
 	@Override
-	public boolean method_9579(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean isTranslucent(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return false;
 	}
 
 	@Override
 	public VoxelShape getBoundingShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return this.field_10906[this.method_9987(blockState)];
+		return this.boundingShapes[this.getShapeIndex(blockState)];
 	}
 
 	@Override
-	public VoxelShape method_9549(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return this.field_10901[this.method_9987(blockState)];
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+		return this.collisionShapes[this.getShapeIndex(blockState)];
 	}
 
-	private static int method_9985(Direction direction) {
+	private static int getDirectionMask(Direction direction) {
 		return 1 << direction.getHorizontal();
 	}
 
-	protected int method_9987(BlockState blockState) {
+	protected int getShapeIndex(BlockState blockState) {
 		int i = 0;
 		if ((Boolean)blockState.get(NORTH)) {
-			i |= method_9985(Direction.NORTH);
+			i |= getDirectionMask(Direction.NORTH);
 		}
 
 		if ((Boolean)blockState.get(EAST)) {
-			i |= method_9985(Direction.EAST);
+			i |= getDirectionMask(Direction.EAST);
 		}
 
 		if ((Boolean)blockState.get(SOUTH)) {
-			i |= method_9985(Direction.SOUTH);
+			i |= getDirectionMask(Direction.SOUTH);
 		}
 
 		if ((Boolean)blockState.get(WEST)) {
-			i |= method_9985(Direction.WEST);
+			i |= getDirectionMask(Direction.WEST);
 		}
 
 		return i;

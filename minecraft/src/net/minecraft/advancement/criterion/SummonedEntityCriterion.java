@@ -9,7 +9,7 @@ import com.google.gson.JsonObject;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.advancement.ServerAdvancementManager;
+import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.entity.Entity;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -17,7 +17,7 @@ import net.minecraft.util.Identifier;
 
 public class SummonedEntityCriterion implements Criterion<SummonedEntityCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("summoned_entity");
-	private final Map<ServerAdvancementManager, SummonedEntityCriterion.Handler> handlers = Maps.<ServerAdvancementManager, SummonedEntityCriterion.Handler>newHashMap();
+	private final Map<PlayerAdvancementTracker, SummonedEntityCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, SummonedEntityCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -25,34 +25,34 @@ public class SummonedEntityCriterion implements Criterion<SummonedEntityCriterio
 	}
 
 	@Override
-	public void addCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<SummonedEntityCriterion.Conditions> conditionsContainer
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<SummonedEntityCriterion.Conditions> conditionsContainer
 	) {
-		SummonedEntityCriterion.Handler handler = (SummonedEntityCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		SummonedEntityCriterion.Handler handler = (SummonedEntityCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new SummonedEntityCriterion.Handler(serverAdvancementManager);
-			this.handlers.put(serverAdvancementManager, handler);
+			handler = new SummonedEntityCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void removeCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<SummonedEntityCriterion.Conditions> conditionsContainer
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<SummonedEntityCriterion.Conditions> conditionsContainer
 	) {
-		SummonedEntityCriterion.Handler handler = (SummonedEntityCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		SummonedEntityCriterion.Handler handler = (SummonedEntityCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(serverAdvancementManager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void removePlayer(ServerAdvancementManager serverAdvancementManager) {
-		this.handlers.remove(serverAdvancementManager);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
 	public SummonedEntityCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -84,7 +84,7 @@ public class SummonedEntityCriterion implements Criterion<SummonedEntityCriterio
 		}
 
 		@Override
-		public JsonElement method_807() {
+		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("entity", this.entity.serialize());
 			return jsonObject;
@@ -92,11 +92,11 @@ public class SummonedEntityCriterion implements Criterion<SummonedEntityCriterio
 	}
 
 	static class Handler {
-		private final ServerAdvancementManager manager;
+		private final PlayerAdvancementTracker field_9751;
 		private final Set<Criterion.ConditionsContainer<SummonedEntityCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<SummonedEntityCriterion.Conditions>>newHashSet();
 
-		public Handler(ServerAdvancementManager serverAdvancementManager) {
-			this.manager = serverAdvancementManager;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.field_9751 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
@@ -126,7 +126,7 @@ public class SummonedEntityCriterion implements Criterion<SummonedEntityCriterio
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<SummonedEntityCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
+					conditionsContainerx.apply(this.field_9751);
 				}
 			}
 		}

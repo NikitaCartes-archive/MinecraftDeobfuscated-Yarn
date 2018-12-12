@@ -19,9 +19,8 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1310;
 import net.minecraft.class_2259;
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.pattern.BlockProxy;
@@ -32,6 +31,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.enchantment.UnbreakingEnchantment;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -86,12 +86,12 @@ public final class ItemStack {
 		return decimalFormat;
 	}
 
-	public ItemStack(ItemContainer itemContainer) {
-		this(itemContainer, 1);
+	public ItemStack(ItemProvider itemProvider) {
+		this(itemProvider, 1);
 	}
 
-	public ItemStack(ItemContainer itemContainer, int i) {
-		this.item = itemContainer == null ? null : itemContainer.getItem();
+	public ItemStack(ItemProvider itemProvider, int i) {
+		this.item = itemProvider == null ? null : itemProvider.getItem();
 		this.amount = i;
 		this.updateEmptyFlag();
 	}
@@ -240,7 +240,7 @@ public final class ItemStack {
 			}
 
 			if (serverPlayerEntity != null && i != 0) {
-				CriterionCriterions.ITEM_DURABILITY_CHANGED.handle(serverPlayerEntity, this, this.getDamage() + i);
+				Criterions.ITEM_DURABILITY_CHANGED.handle(serverPlayerEntity, this, this.getDamage() + i);
 			}
 
 			int j = this.getDamage() + i;
@@ -505,7 +505,7 @@ public final class ItemStack {
 		}
 
 		if ((i & 32) == 0) {
-			this.getItem().addInformation(this, playerEntity == null ? null : playerEntity.world, list, tooltipOptions);
+			this.getItem().buildTooltip(this, playerEntity == null ? null : playerEntity.world, list, tooltipOptions);
 		}
 
 		if (this.hasTag()) {
@@ -563,7 +563,7 @@ public final class ItemStack {
 					if (playerEntity != null) {
 						if (entityAttributeModifier.getId() == Item.MODIFIER_DAMAGE) {
 							d += playerEntity.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getBaseValue();
-							d += (double)EnchantmentHelper.getAttackDamage(this, class_1310.field_6290);
+							d += (double)EnchantmentHelper.getAttackDamage(this, EntityGroup.DEFAULT);
 							bl = true;
 						} else if (entityAttributeModifier.getId() == Item.MODIFIER_SWING_SPEED) {
 							d += playerEntity.getAttributeInstance(EntityAttributes.ATTACK_SPEED).getBaseValue();

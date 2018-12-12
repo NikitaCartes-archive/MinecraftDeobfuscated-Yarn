@@ -69,15 +69,15 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public RenderTypeBlock getRenderType(BlockState blockState) {
-		return RenderTypeBlock.field_11456;
+	public BlockRenderType method_9604(BlockState blockState) {
+		return BlockRenderType.field_11456;
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
-		if (world.isRemote) {
+		if (world.isClient) {
 			return true;
 		} else if (playerEntity.isSpectator()) {
 			return true;
@@ -93,13 +93,13 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 							(double)(0.5F * (float)direction2.getOffsetX()), (double)(0.5F * (float)direction2.getOffsetY()), (double)(0.5F * (float)direction2.getOffsetZ())
 						)
 						.method_1002((double)direction2.getOffsetX(), (double)direction2.getOffsetY(), (double)direction2.getOffsetZ());
-					bl = world.method_8587(null, boundingBox.offset(blockPos.method_10093(direction2)));
+					bl = world.method_8587(null, boundingBox.offset(blockPos.offset(direction2)));
 				} else {
 					bl = true;
 				}
 
 				if (bl) {
-					playerEntity.method_7281(Stats.field_15418);
+					playerEntity.increaseStat(Stats.field_15418);
 					playerEntity.openInventory((Inventory)blockEntity);
 				}
 
@@ -112,7 +112,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(field_11496, itemPlacementContext.method_8038());
+		return this.getDefaultState().with(field_11496, itemPlacementContext.getFacing());
 	}
 
 	@Override
@@ -188,7 +188,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 						j++;
 						if (i <= 4) {
 							i++;
-							TextComponent textComponent = itemStack2.getDisplayName().clone();
+							TextComponent textComponent = itemStack2.getDisplayName().copy();
 							textComponent.append(" x").append(String.valueOf(itemStack2.getAmount()));
 							list.add(textComponent);
 						}
@@ -314,6 +314,6 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 	@Override
 	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.method_10345(blockState.get(field_11496)));
+		return blockState.applyRotation(mirror.getRotation(blockState.get(field_11496)));
 	}
 }

@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_308;
 import net.minecraft.class_3229;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
@@ -17,18 +16,19 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.widget.AbstractListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemContainer;
+import net.minecraft.item.ItemProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.chunk.ChunkGeneratorType;
-import net.minecraft.world.gen.chunk.FlatChunkGeneratorSettings;
+import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 
 @Environment(EnvType.CLIENT)
 public class NewLevelPresetsGui extends Gui {
@@ -118,21 +118,21 @@ public class NewLevelPresetsGui extends Gui {
 		return this.field_2521.field_2531 > -1 && this.field_2521.field_2531 < field_2518.size() || this.field_2523.getText().length() > 1;
 	}
 
-	private static void method_2195(String string, ItemContainer itemContainer, Biome biome, List<String> list, class_3229... args) {
-		FlatChunkGeneratorSettings flatChunkGeneratorSettings = ChunkGeneratorType.field_12766.createSettings();
+	private static void method_2195(String string, ItemProvider itemProvider, Biome biome, List<String> list, class_3229... args) {
+		FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.field_12766.method_12117();
 
 		for (int i = args.length - 1; i >= 0; i--) {
-			flatChunkGeneratorSettings.method_14327().add(args[i]);
+			flatChunkGeneratorConfig.getLayers().add(args[i]);
 		}
 
-		flatChunkGeneratorSettings.method_14325(biome);
-		flatChunkGeneratorSettings.method_14330();
+		flatChunkGeneratorConfig.setBiome(biome);
+		flatChunkGeneratorConfig.method_14330();
 
 		for (String string2 : list) {
-			flatChunkGeneratorSettings.method_14333().put(string2, Maps.newHashMap());
+			flatChunkGeneratorConfig.getStructures().put(string2, Maps.newHashMap());
 		}
 
-		field_2518.add(new NewLevelPresetsGui.class_431(itemContainer.getItem(), string, flatChunkGeneratorSettings.toString()));
+		field_2518.add(new NewLevelPresetsGui.class_431(itemProvider.getItem(), string, flatChunkGeneratorConfig.toString()));
 	}
 
 	static {
@@ -248,9 +248,9 @@ public class NewLevelPresetsGui extends Gui {
 		private void method_2200(int i, int j, Item item) {
 			this.method_2198(i + 1, j + 1);
 			GlStateManager.enableRescaleNormal();
-			class_308.method_1453();
+			GuiLighting.enableForItems();
 			NewLevelPresetsGui.this.itemRenderer.renderItemWithPropertyOverrides(new ItemStack(item), i + 2, j + 2);
-			class_308.method_1450();
+			GuiLighting.disable();
 			GlStateManager.disableRescaleNormal();
 		}
 
@@ -266,18 +266,18 @@ public class NewLevelPresetsGui extends Gui {
 			int m = 18;
 			int n = 18;
 			Tessellator tessellator = Tessellator.getInstance();
-			VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-			vertexBuffer.begin(7, VertexFormats.POSITION_UV);
-			vertexBuffer.vertex((double)(i + 0), (double)(j + 18), (double)this.zOffset)
+			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+			bufferBuilder.vertex((double)(i + 0), (double)(j + 18), (double)this.zOffset)
 				.texture((double)((float)(k + 0) * 0.0078125F), (double)((float)(l + 18) * 0.0078125F))
 				.next();
-			vertexBuffer.vertex((double)(i + 18), (double)(j + 18), (double)this.zOffset)
+			bufferBuilder.vertex((double)(i + 18), (double)(j + 18), (double)this.zOffset)
 				.texture((double)((float)(k + 18) * 0.0078125F), (double)((float)(l + 18) * 0.0078125F))
 				.next();
-			vertexBuffer.vertex((double)(i + 18), (double)(j + 0), (double)this.zOffset)
+			bufferBuilder.vertex((double)(i + 18), (double)(j + 0), (double)this.zOffset)
 				.texture((double)((float)(k + 18) * 0.0078125F), (double)((float)(l + 0) * 0.0078125F))
 				.next();
-			vertexBuffer.vertex((double)(i + 0), (double)(j + 0), (double)this.zOffset)
+			bufferBuilder.vertex((double)(i + 0), (double)(j + 0), (double)this.zOffset)
 				.texture((double)((float)(k + 0) * 0.0078125F), (double)((float)(l + 0) * 0.0078125F))
 				.next();
 			tessellator.draw();
@@ -289,7 +289,7 @@ public class NewLevelPresetsGui extends Gui {
 		}
 
 		@Override
-		protected boolean method_1937(int i, int j, double d, double e) {
+		protected boolean selectEntry(int i, int j, double d, double e) {
 			this.field_2531 = i;
 			NewLevelPresetsGui.this.method_2191();
 			NewLevelPresetsGui.this.field_2523
@@ -299,12 +299,12 @@ public class NewLevelPresetsGui extends Gui {
 		}
 
 		@Override
-		protected boolean isSelected(int i) {
+		protected boolean isSelectedEntry(int i) {
 			return i == this.field_2531;
 		}
 
 		@Override
-		protected void method_1936() {
+		protected void drawBackground() {
 		}
 
 		@Override

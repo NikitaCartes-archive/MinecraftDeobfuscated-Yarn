@@ -11,8 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class BlueIceFeature extends Feature<DefaultFeatureConfig> {
 	public BlueIceFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
@@ -20,7 +19,7 @@ public class BlueIceFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean method_12818(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		if (blockPos.getY() > iWorld.getSeaLevel() - 1) {
 			return false;
@@ -30,7 +29,7 @@ public class BlueIceFeature extends Feature<DefaultFeatureConfig> {
 			boolean bl = false;
 
 			for (Direction direction : Direction.values()) {
-				if (direction != Direction.DOWN && iWorld.getBlockState(blockPos.method_10093(direction)).getBlock() == Blocks.field_10225) {
+				if (direction != Direction.DOWN && iWorld.getBlockState(blockPos.offset(direction)).getBlock() == Blocks.field_10225) {
 					bl = true;
 					break;
 				}
@@ -54,7 +53,7 @@ public class BlueIceFeature extends Feature<DefaultFeatureConfig> {
 						Block block = blockState.getBlock();
 						if (blockState.getMaterial() == Material.AIR || block == Blocks.field_10382 || block == Blocks.field_10225 || block == Blocks.field_10295) {
 							for (Direction direction2 : Direction.values()) {
-								Block block2 = iWorld.getBlockState(blockPos2.method_10093(direction2)).getBlock();
+								Block block2 = iWorld.getBlockState(blockPos2.offset(direction2)).getBlock();
 								if (block2 == Blocks.field_10384) {
 									iWorld.setBlockState(blockPos2, Blocks.field_10384.getDefaultState(), 2);
 									break;

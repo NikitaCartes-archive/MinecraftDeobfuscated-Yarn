@@ -100,7 +100,7 @@ public class TemptGoal extends Goal {
 		if (this.field_6616.squaredDistanceTo(this.field_6617) < 6.25) {
 			this.field_6616.getNavigation().method_6340();
 		} else {
-			this.field_6616.getNavigation().method_6335(this.field_6617, this.field_6615);
+			this.field_6616.getNavigation().startMovingTo(this.field_6617, this.field_6615);
 		}
 	}
 

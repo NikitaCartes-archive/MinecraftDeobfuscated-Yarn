@@ -5,20 +5,20 @@ import java.time.temporal.ChronoField;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1310;
 import net.minecraft.class_1344;
 import net.minecraft.class_1361;
 import net.minecraft.class_1376;
 import net.minecraft.class_1384;
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
-import net.minecraft.class_3730;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.RangedAttacker;
 import net.minecraft.entity.ai.goal.BowAttackGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
@@ -103,8 +103,8 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	abstract SoundEvent method_6998();
 
 	@Override
-	public class_1310 method_6046() {
-		return class_1310.field_6289;
+	public EntityGroup getGroup() {
+		return EntityGroup.UNDEAD;
 	}
 
 	@Override
@@ -149,14 +149,14 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 
 	@Nullable
 	@Override
-	public EntityData method_5943(
-		IWorld iWorld, LocalDifficulty localDifficulty, class_3730 arg, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	public EntityData prepareEntityData(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.method_5943(iWorld, localDifficulty, arg, entityData, compoundTag);
+		entityData = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		this.initEquipment(localDifficulty);
 		this.method_5984(localDifficulty);
 		this.method_6997();
-		this.setCanPickUpLoot(this.random.nextFloat() < 0.55F * localDifficulty.method_5458());
+		this.setCanPickUpLoot(this.random.nextFloat() < 0.55F * localDifficulty.getClampedLocalDifficulty());
 		if (this.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
 			LocalDate localDate = LocalDate.now();
 			int i = localDate.get(ChronoField.DAY_OF_MONTH);
@@ -171,7 +171,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	}
 
 	public void method_6997() {
-		if (this.world != null && !this.world.isRemote) {
+		if (this.world != null && !this.world.isClient) {
 			this.goalSelector.remove(this.field_7221);
 			this.goalSelector.remove(this.field_7220);
 			ItemStack itemStack = this.getMainHandStack();
@@ -216,7 +216,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	@Override
 	public void setEquippedStack(EquipmentSlot equipmentSlot, ItemStack itemStack) {
 		super.setEquippedStack(equipmentSlot, itemStack);
-		if (!this.world.isRemote && equipmentSlot == EquipmentSlot.HAND_MAIN) {
+		if (!this.world.isClient && equipmentSlot == EquipmentSlot.HAND_MAIN) {
 			this.method_6997();
 		}
 	}
@@ -232,7 +232,8 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean isAiming() {
+	@Override
+	public boolean hasArmsRaised() {
 		return this.dataTracker.get(AIMING);
 	}
 

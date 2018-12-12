@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.sortme.OptionMainHand;
 
@@ -58,33 +57,29 @@ public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
 	}
 
 	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
-		super.setRotationAngles(f, g, h, i, j, k, entity);
-		if (entity instanceof ArmorStandEntity) {
-			ArmorStandEntity armorStandEntity = (ArmorStandEntity)entity;
-			this.armLeft.visible = armorStandEntity.shouldShowArms();
-			this.armRight.visible = armorStandEntity.shouldShowArms();
-			this.field_3312.visible = !armorStandEntity.shouldHideBasePlate();
-			this.legLeft.setRotationPoint(1.9F, 12.0F, 0.0F);
-			this.legRight.setRotationPoint(-1.9F, 12.0F, 0.0F);
-			this.field_3314.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getX();
-			this.field_3314.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getY();
-			this.field_3314.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getZ();
-			this.field_3315.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getX();
-			this.field_3315.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getY();
-			this.field_3315.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getZ();
-			this.field_3313.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getX();
-			this.field_3313.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getY();
-			this.field_3313.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getZ();
-			this.field_3312.pitch = 0.0F;
-			this.field_3312.yaw = (float) (Math.PI / 180.0) * -entity.yaw;
-			this.field_3312.roll = 0.0F;
-		}
+	public void method_17066(ArmorStandEntity armorStandEntity, float f, float g, float h, float i, float j, float k) {
+		super.method_17066(armorStandEntity, f, g, h, i, j, k);
+		this.armLeft.visible = armorStandEntity.shouldShowArms();
+		this.armRight.visible = armorStandEntity.shouldShowArms();
+		this.field_3312.visible = !armorStandEntity.shouldHideBasePlate();
+		this.legLeft.setRotationPoint(1.9F, 12.0F, 0.0F);
+		this.legRight.setRotationPoint(-1.9F, 12.0F, 0.0F);
+		this.field_3314.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getX();
+		this.field_3314.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getY();
+		this.field_3314.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getZ();
+		this.field_3315.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getX();
+		this.field_3315.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getY();
+		this.field_3315.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getZ();
+		this.field_3313.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getX();
+		this.field_3313.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getY();
+		this.field_3313.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getZ();
+		this.field_3312.pitch = 0.0F;
+		this.field_3312.yaw = (float) (Math.PI / 180.0) * -armorStandEntity.yaw;
+		this.field_3312.roll = 0.0F;
 	}
 
-	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		super.render(entity, f, g, h, i, j, k);
+	public void method_17067(ArmorStandEntity armorStandEntity, float f, float g, float h, float i, float j, float k) {
+		super.method_17088(armorStandEntity, f, g, h, i, j, k);
 		GlStateManager.pushMatrix();
 		if (this.isChild) {
 			float l = 2.0F;
@@ -95,7 +90,7 @@ public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
 			this.field_3313.render(k);
 			this.field_3312.render(k);
 		} else {
-			if (entity.isSneaking()) {
+			if (armorStandEntity.isSneaking()) {
 				GlStateManager.translatef(0.0F, 0.2F, 0.0F);
 			}
 

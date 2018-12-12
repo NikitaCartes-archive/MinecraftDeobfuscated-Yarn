@@ -6,7 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.font.FontRenderer;
-import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.entity.Entity;
@@ -79,7 +79,7 @@ public abstract class BlockEntityRenderer<T extends BlockEntity> {
 			float h = this.renderManager.cameraYaw;
 			float j = this.renderManager.cameraPitch;
 			boolean bl = false;
-			WorldRenderer.method_3179(this.getFontRenderer(), string, (float)d + 0.5F, (float)e + 1.5F, (float)f + 0.5F, 0, h, j, false, false);
+			GameRenderer.method_3179(this.getFontRenderer(), string, (float)d + 0.5F, (float)e + 1.5F, (float)f + 0.5F, 0, h, j, false, false);
 		}
 	}
 }

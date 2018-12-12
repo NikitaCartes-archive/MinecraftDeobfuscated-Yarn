@@ -2,15 +2,14 @@ package net.minecraft.client.font;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_383;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.util.SystemUtil;
 
 @Environment(EnvType.CLIENT)
-public enum BlankGlyph implements class_383 {
+public enum BlankGlyph implements RenderableGlyph {
 	INSTANCE;
 
-	private static final NativeImage field_2281 = SystemUtil.consume(new NativeImage(NativeImage.Format.field_4997, 5, 8, false), nativeImage -> {
+	private static final NativeImage IMAGE = SystemUtil.consume(new NativeImage(NativeImage.Format.field_4997, 5, 8, false), nativeImage -> {
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 5; j++) {
 				boolean bl = j == 0 || j + 1 == 5 || i == 0 || i + 1 == 8;
@@ -22,12 +21,12 @@ public enum BlankGlyph implements class_383 {
 	});
 
 	@Override
-	public int method_2031() {
+	public int getWidth() {
 		return 5;
 	}
 
 	@Override
-	public int method_2032() {
+	public int getHeight() {
 		return 8;
 	}
 
@@ -37,17 +36,17 @@ public enum BlankGlyph implements class_383 {
 	}
 
 	@Override
-	public float method_2035() {
+	public float getOversample() {
 		return 1.0F;
 	}
 
 	@Override
-	public void method_2030(int i, int j) {
-		field_2281.upload(0, i, j, false);
+	public void upload(int i, int j) {
+		IMAGE.upload(0, i, j, false);
 	}
 
 	@Override
-	public boolean method_2033() {
+	public boolean hasColor() {
 		return true;
 	}
 }

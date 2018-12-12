@@ -41,7 +41,7 @@ public class ChunkDataClientPacket implements Packet<ClientPlayPacketListener> {
 		this.containsVerticalStrip = i == 65535;
 		this.field_16416 = new CompoundTag();
 
-		for (Entry<Heightmap.Type, Heightmap> entry : worldChunk.method_12011()) {
+		for (Entry<Heightmap.Type, Heightmap> entry : worldChunk.getHeightmaps()) {
 			if (((Heightmap.Type)entry.getKey()).method_16137()) {
 				this.field_16416.put(((Heightmap.Type)entry.getKey()).getName(), new LongArrayTag(((Heightmap)entry.getValue()).asLongArray()));
 			}

@@ -3,12 +3,10 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.SheepEntity;
 
 @Environment(EnvType.CLIENT)
-public class SheepEntityModel extends QuadrupedEntityModel {
+public class SheepEntityModel<T extends SheepEntity> extends QuadrupedEntityModel<T> {
 	private float field_3541;
 
 	public SheepEntityModel() {
@@ -34,16 +32,14 @@ public class SheepEntityModel extends QuadrupedEntityModel {
 		this.leg4.setRotationPoint(3.0F, 12.0F, -5.0F);
 	}
 
-	@Override
-	public void animateModel(LivingEntity livingEntity, float f, float g, float h) {
-		super.animateModel(livingEntity, f, g, h);
-		this.head.rotationPointY = 6.0F + ((SheepEntity)livingEntity).method_6628(h) * 9.0F;
-		this.field_3541 = ((SheepEntity)livingEntity).method_6641(h);
+	public void method_17118(T sheepEntity, float f, float g, float h) {
+		super.animateModel(sheepEntity, f, g, h);
+		this.head.rotationPointY = 6.0F + sheepEntity.method_6628(h) * 9.0F;
+		this.field_3541 = sheepEntity.method_6641(h);
 	}
 
-	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
-		super.setRotationAngles(f, g, h, i, j, k, entity);
+	public void method_17119(T sheepEntity, float f, float g, float h, float i, float j, float k) {
+		super.setAngles(sheepEntity, f, g, h, i, j, k);
 		this.head.pitch = this.field_3541;
 	}
 }

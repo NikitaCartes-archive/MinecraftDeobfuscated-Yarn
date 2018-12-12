@@ -2,8 +2,8 @@ package net.minecraft.client.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.math.Vec3d;
 
@@ -38,7 +38,7 @@ public class Polygon {
 		this.vertices = vertexs;
 	}
 
-	public void render(VertexBuffer vertexBuffer, float f) {
+	public void render(BufferBuilder bufferBuilder, float f) {
 		Vec3d vec3d = this.vertices[1].pos.reverseSubtract(this.vertices[0].pos);
 		Vec3d vec3d2 = this.vertices[1].pos.reverseSubtract(this.vertices[2].pos);
 		Vec3d vec3d3 = vec3d2.crossProduct(vec3d).normalize();
@@ -51,11 +51,11 @@ public class Polygon {
 			i = -i;
 		}
 
-		vertexBuffer.begin(7, VertexFormats.field_1580);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV_NORMAL_2);
 
 		for (int j = 0; j < 4; j++) {
 			Vertex vertex = this.vertices[j];
-			vertexBuffer.vertex(vertex.pos.x * (double)f, vertex.pos.y * (double)f, vertex.pos.z * (double)f)
+			bufferBuilder.vertex(vertex.pos.x * (double)f, vertex.pos.y * (double)f, vertex.pos.z * (double)f)
 				.texture((double)vertex.u, (double)vertex.v)
 				.normal(g, h, i)
 				.next();

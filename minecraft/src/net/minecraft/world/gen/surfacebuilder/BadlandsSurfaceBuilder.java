@@ -4,7 +4,6 @@ import com.mojang.datafixers.Dynamic;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.class_2919;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -12,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.config.surfacebuilder.TernarySurfaceConfig;
+import net.minecraft.world.gen.ChunkRandom;
 
 public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 	private static final BlockState field_15624 = Blocks.field_10611.getDefaultState();
@@ -49,7 +48,7 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 		int n = i & 15;
 		int o = j & 15;
 		BlockState blockState3 = field_15624;
-		BlockState blockState4 = biome.getSurfaceConfig().getUnderMaterial();
+		BlockState blockState4 = biome.method_8722().getUnderMaterial();
 		int p = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
 		boolean bl = Math.cos(d / 3.0 * Math.PI) > 0.0;
 		int q = -1;
@@ -71,7 +70,7 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 							blockState4 = blockState;
 						} else if (s >= l - 4 && s <= l + 1) {
 							blockState3 = field_15624;
-							blockState4 = biome.getSurfaceConfig().getUnderMaterial();
+							blockState4 = biome.method_8722().getUnderMaterial();
 						}
 
 						if (s < l && (blockState3 == null || blockState3.isAir())) {
@@ -81,7 +80,7 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 						q = p + Math.max(0, s - l);
 						if (s >= l - 1) {
 							if (s <= l + 3 + p) {
-								chunk.setBlockState(mutable, biome.getSurfaceConfig().getTopMaterial(), false);
+								chunk.setBlockState(mutable, biome.method_8722().getTopMaterial(), false);
 								bl2 = true;
 							} else {
 								BlockState blockState6;
@@ -139,7 +138,7 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 		}
 
 		if (this.field_15622 != l || this.field_15623 == null || this.field_15618 == null) {
-			Random random = new class_2919(l);
+			Random random = new ChunkRandom(l);
 			this.field_15623 = new OctaveSimplexNoiseSampler(random, 4);
 			this.field_15618 = new OctaveSimplexNoiseSampler(random, 1);
 		}
@@ -150,7 +149,7 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 	protected void method_15209(long l) {
 		this.field_15627 = new BlockState[64];
 		Arrays.fill(this.field_15627, field_15625);
-		Random random = new class_2919(l);
+		Random random = new ChunkRandom(l);
 		this.field_15619 = new OctaveSimplexNoiseSampler(random, 1);
 
 		for (int i = 0; i < 64; i++) {

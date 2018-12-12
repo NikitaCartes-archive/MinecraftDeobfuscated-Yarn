@@ -15,11 +15,10 @@ public interface Villager {
 	@Nullable
 	PlayerEntity getCurrentCustomer();
 
-	@Nullable
-	VillagerRecipeList getRecipes(PlayerEntity playerEntity);
+	VillagerRecipeList getRecipes();
 
 	@Environment(EnvType.CLIENT)
-	void setRecipeList(@Nullable VillagerRecipeList villagerRecipeList);
+	void setServerRecipes(@Nullable VillagerRecipeList villagerRecipeList);
 
 	void useRecipe(VillagerRecipe villagerRecipe);
 

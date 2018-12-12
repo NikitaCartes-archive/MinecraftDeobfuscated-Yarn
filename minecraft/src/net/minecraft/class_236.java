@@ -83,7 +83,7 @@ public class class_236<T> {
 		this.field_1312.clear();
 		this.field_1311 = UnsignedLong.ZERO;
 		if (!listTag.isEmpty()) {
-			if (listTag.getType() != 10) {
+			if (listTag.getListType() != 10) {
 				LOGGER.warn("Invalid format of events: " + listTag);
 			} else {
 				for (Tag tag : listTag) {

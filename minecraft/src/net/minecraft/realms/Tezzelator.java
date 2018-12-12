@@ -14,40 +14,40 @@ public class Tezzelator {
 	}
 
 	public Tezzelator vertex(double d, double e, double f) {
-		field_5668.getVertexBuffer().vertex(d, e, f);
+		field_5668.getBufferBuilder().vertex(d, e, f);
 		return this;
 	}
 
 	public void color(float f, float g, float h, float i) {
-		field_5668.getVertexBuffer().color(f, g, h, i);
+		field_5668.getBufferBuilder().color(f, g, h, i);
 	}
 
 	public void tex2(short s, short t) {
-		field_5668.getVertexBuffer().texture(s, t);
+		field_5668.getBufferBuilder().texture(s, t);
 	}
 
 	public void normal(float f, float g, float h) {
-		field_5668.getVertexBuffer().normal(f, g, h);
+		field_5668.getBufferBuilder().normal(f, g, h);
 	}
 
 	public void begin(int i, RealmsVertexFormat realmsVertexFormat) {
-		field_5668.getVertexBuffer().begin(i, realmsVertexFormat.getVertexFormat());
+		field_5668.getBufferBuilder().begin(i, realmsVertexFormat.getVertexFormat());
 	}
 
 	public void endVertex() {
-		field_5668.getVertexBuffer().next();
+		field_5668.getBufferBuilder().next();
 	}
 
 	public void offset(double d, double e, double f) {
-		field_5668.getVertexBuffer().setOffset(d, e, f);
+		field_5668.getBufferBuilder().setOffset(d, e, f);
 	}
 
 	public RealmsBufferBuilder color(int i, int j, int k, int l) {
-		return new RealmsBufferBuilder(field_5668.getVertexBuffer().color(i, j, k, l));
+		return new RealmsBufferBuilder(field_5668.getBufferBuilder().color(i, j, k, l));
 	}
 
 	public Tezzelator tex(double d, double e) {
-		field_5668.getVertexBuffer().texture(d, e);
+		field_5668.getBufferBuilder().texture(d, e);
 		return this;
 	}
 }

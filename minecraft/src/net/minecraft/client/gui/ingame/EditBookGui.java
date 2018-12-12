@@ -1,86 +1,74 @@
 package net.minecraft.client.gui.ingame;
 
-import com.google.common.collect.Lists;
-import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.platform.GlStateManager;
+import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
+import java.util.ListIterator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_341;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.WrittenBookGui;
+import net.minecraft.client.gui.widget.BookPageButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.network.packet.BookUpdateServerPacket;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormat;
-import net.minecraft.text.event.ClickEvent;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class EditBookGui extends Gui {
-	private static final Identifier TEXTURE = new Identifier("textures/gui/book.png");
 	private final PlayerEntity player;
 	private final ItemStack stack;
-	private final boolean field_2838;
 	private boolean field_2837;
 	private boolean field_2828;
 	private int field_2844;
-	private int field_2842 = 1;
 	private int field_2840;
-	private ListTag pageTag;
+	private final List<String> field_17116 = new ArrayList();
 	private String title = "";
-	private List<TextComponent> field_2846;
-	private int field_2836 = -1;
 	private int field_2833 = 0;
 	private int field_2829 = 0;
 	private long field_2830;
 	private int field_2827 = -1;
-	private EditBookGui.class_474 field_2843;
-	private EditBookGui.class_474 field_2839;
+	private BookPageButtonWidget field_2843;
+	private BookPageButtonWidget field_2839;
 	private ButtonWidget field_2848;
 	private ButtonWidget field_2831;
 	private ButtonWidget field_2841;
 	private ButtonWidget field_2849;
 	private final Hand field_2832;
 
-	public EditBookGui(PlayerEntity playerEntity, ItemStack itemStack, boolean bl, Hand hand) {
+	public EditBookGui(PlayerEntity playerEntity, ItemStack itemStack, Hand hand) {
 		this.player = playerEntity;
 		this.stack = itemStack;
-		this.field_2838 = bl;
 		this.field_2832 = hand;
-		if (itemStack.hasTag()) {
-			CompoundTag compoundTag = itemStack.getTag();
-			this.pageTag = compoundTag.getList("pages", 8).copy();
-			this.field_2842 = this.pageTag.size();
-			if (this.field_2842 < 1) {
-				this.pageTag.add((Tag)(new StringTag("")));
-				this.field_2842 = 1;
+		CompoundTag compoundTag = itemStack.getTag();
+		if (compoundTag != null) {
+			ListTag listTag = compoundTag.getList("pages", 8).copy();
+
+			for (int i = 0; i < listTag.size(); i++) {
+				this.field_17116.add(listTag.getString(i));
 			}
 		}
 
-		if (this.pageTag == null && bl) {
-			this.pageTag = new ListTag();
-			this.pageTag.add((Tag)(new StringTag("")));
-			this.field_2842 = 1;
+		if (this.field_17116.isEmpty()) {
+			this.field_17116.add("");
 		}
+	}
+
+	private int method_17046() {
+		return this.field_17116.size();
 	}
 
 	@Override
@@ -92,59 +80,48 @@ public class EditBookGui extends Gui {
 	@Override
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
-		if (this.field_2838) {
-			this.field_2831 = this.addButton(new ButtonWidget(3, this.width / 2 - 100, 196, 98, 20, I18n.translate("book.signButton")) {
-				@Override
-				public void onPressed(double d, double e) {
-					EditBookGui.this.field_2828 = true;
-					EditBookGui.this.method_2413();
-				}
-			});
-			this.field_2848 = this.addButton(new ButtonWidget(0, this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.done")) {
-				@Override
-				public void onPressed(double d, double e) {
+		this.field_2831 = this.addButton(new ButtonWidget(3, this.width / 2 - 100, 196, 98, 20, I18n.translate("book.signButton")) {
+			@Override
+			public void onPressed(double d, double e) {
+				EditBookGui.this.field_2828 = true;
+				EditBookGui.this.method_2413();
+			}
+		});
+		this.field_2848 = this.addButton(new ButtonWidget(0, this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.done")) {
+			@Override
+			public void onPressed(double d, double e) {
+				EditBookGui.this.client.openGui(null);
+				EditBookGui.this.method_2407(false);
+			}
+		});
+		this.field_2841 = this.addButton(new ButtonWidget(5, this.width / 2 - 100, 196, 98, 20, I18n.translate("book.finalizeButton")) {
+			@Override
+			public void onPressed(double d, double e) {
+				if (EditBookGui.this.field_2828) {
+					EditBookGui.this.method_2407(true);
 					EditBookGui.this.client.openGui(null);
-					EditBookGui.this.method_2407(false);
 				}
-			});
-			this.field_2841 = this.addButton(new ButtonWidget(5, this.width / 2 - 100, 196, 98, 20, I18n.translate("book.finalizeButton")) {
-				@Override
-				public void onPressed(double d, double e) {
-					if (EditBookGui.this.field_2828) {
-						EditBookGui.this.method_2407(true);
-						EditBookGui.this.client.openGui(null);
-					}
+			}
+		});
+		this.field_2849 = this.addButton(new ButtonWidget(4, this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.cancel")) {
+			@Override
+			public void onPressed(double d, double e) {
+				if (EditBookGui.this.field_2828) {
+					EditBookGui.this.field_2828 = false;
 				}
-			});
-			this.field_2849 = this.addButton(new ButtonWidget(4, this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.cancel")) {
-				@Override
-				public void onPressed(double d, double e) {
-					if (EditBookGui.this.field_2828) {
-						EditBookGui.this.field_2828 = false;
-					}
 
-					EditBookGui.this.method_2413();
-				}
-			});
-		} else {
-			this.field_2848 = this.addButton(new ButtonWidget(0, this.width / 2 - 100, 196, 200, 20, I18n.translate("gui.done")) {
-				@Override
-				public void onPressed(double d, double e) {
-					EditBookGui.this.client.openGui(null);
-					EditBookGui.this.method_2407(false);
-				}
-			});
-		}
-
+				EditBookGui.this.method_2413();
+			}
+		});
 		int i = (this.width - 192) / 2;
 		int j = 2;
-		this.field_2843 = this.addButton(new EditBookGui.class_474(1, i + 116, 159, true) {
+		this.field_2843 = this.addButton(new BookPageButtonWidget(1, i + 116, 159, true) {
 			@Override
 			public void onPressed(double d, double e) {
 				EditBookGui.this.method_2444();
 			}
 		});
-		this.field_2839 = this.addButton(new EditBookGui.class_474(2, i + 43, 159, false) {
+		this.field_2839 = this.addButton(new BookPageButtonWidget(2, i + 43, 159, false) {
 			@Override
 			public void onPressed(double d, double e) {
 				EditBookGui.this.method_2437();
@@ -176,13 +153,13 @@ public class EditBookGui extends Gui {
 	}
 
 	private void method_2444() {
-		if (this.field_2840 < this.field_2842 - 1) {
+		if (this.field_2840 < this.method_17046() - 1) {
 			this.field_2840++;
 			this.field_2833 = 0;
 			this.field_2829 = this.field_2833;
-		} else if (this.field_2838) {
+		} else {
 			this.method_2436();
-			if (this.field_2840 < this.field_2842 - 1) {
+			if (this.field_2840 < this.method_17046() - 1) {
 				this.field_2840++;
 			}
 
@@ -199,44 +176,43 @@ public class EditBookGui extends Gui {
 	}
 
 	private void method_2413() {
-		this.field_2843.visible = !this.field_2828 && (this.field_2840 < this.field_2842 - 1 || this.field_2838);
 		this.field_2839.visible = !this.field_2828 && this.field_2840 > 0;
-		this.field_2848.visible = !this.field_2838 || !this.field_2828;
-		if (this.field_2838) {
-			this.field_2831.visible = !this.field_2828;
-			this.field_2849.visible = this.field_2828;
-			this.field_2841.visible = this.field_2828;
-			this.field_2841.enabled = !this.title.trim().isEmpty();
+		this.field_2848.visible = !this.field_2828;
+		this.field_2831.visible = !this.field_2828;
+		this.field_2849.visible = this.field_2828;
+		this.field_2841.visible = this.field_2828;
+		this.field_2841.enabled = !this.title.trim().isEmpty();
+	}
+
+	private void method_17047() {
+		ListIterator<String> listIterator = this.field_17116.listIterator(this.field_17116.size());
+
+		while (listIterator.hasPrevious() && ((String)listIterator.previous()).isEmpty()) {
+			listIterator.remove();
 		}
 	}
 
 	private void method_2407(boolean bl) {
-		if (this.field_2838 && this.field_2837) {
-			if (this.pageTag != null) {
-				while (this.pageTag.size() > 1) {
-					String string = this.pageTag.getString(this.pageTag.size() - 1);
-					if (!string.isEmpty()) {
-						break;
-					}
-
-					this.pageTag.remove(this.pageTag.size() - 1);
-				}
-
-				this.stack.setChildTag("pages", this.pageTag);
-				if (bl) {
-					this.stack.setChildTag("author", new StringTag(this.player.getGameProfile().getName()));
-					this.stack.setChildTag("title", new StringTag(this.title.trim()));
-				}
-
-				this.client.getNetworkHandler().sendPacket(new BookUpdateServerPacket(this.stack, bl, this.field_2832));
+		if (this.field_2837) {
+			this.method_17047();
+			ListTag listTag = new ListTag();
+			this.field_17116.stream().map(StringTag::new).forEach(listTag::add);
+			if (!this.field_17116.isEmpty()) {
+				this.stack.setChildTag("pages", listTag);
 			}
+
+			if (bl) {
+				this.stack.setChildTag("author", new StringTag(this.player.getGameProfile().getName()));
+				this.stack.setChildTag("title", new StringTag(this.title.trim()));
+			}
+
+			this.client.getNetworkHandler().sendPacket(new BookUpdateServerPacket(this.stack, bl, this.field_2832));
 		}
 	}
 
 	private void method_2436() {
-		if (this.pageTag != null && this.pageTag.size() < 100) {
-			this.pageTag.add((Tag)(new StringTag("")));
-			this.field_2842++;
+		if (this.method_17046() < 100) {
+			this.field_17116.add("");
 			this.field_2837 = true;
 		}
 	}
@@ -245,19 +221,8 @@ public class EditBookGui extends Gui {
 	public boolean keyPressed(int i, int j, int k) {
 		if (super.keyPressed(i, j, k)) {
 			return true;
-		} else if (this.field_2838) {
-			return this.field_2828 ? this.method_2446(i, j, k) : this.method_2411(i, j, k);
 		} else {
-			switch (i) {
-				case 266:
-					this.field_2839.onPressed(0.0, 0.0);
-					return true;
-				case 267:
-					this.field_2843.onPressed(0.0, 0.0);
-					return true;
-				default:
-					return false;
-			}
+			return this.field_2828 ? this.method_2446(i, j, k) : this.method_2411(i, j, k);
 		}
 	}
 
@@ -265,22 +230,18 @@ public class EditBookGui extends Gui {
 	public boolean charTyped(char c, int i) {
 		if (super.charTyped(c, i)) {
 			return true;
-		} else if (this.field_2838) {
-			if (this.field_2828) {
-				if (this.title.length() < 16 && SharedConstants.isValidChar(c)) {
-					this.title = this.title + Character.toString(c);
-					this.method_2413();
-					this.field_2837 = true;
-					return true;
-				} else {
-					return false;
-				}
-			} else if (SharedConstants.isValidChar(c)) {
-				this.method_2431(Character.toString(c));
+		} else if (this.field_2828) {
+			if (this.title.length() < 16 && SharedConstants.isValidChar(c)) {
+				this.title = this.title + Character.toString(c);
+				this.method_2413();
+				this.field_2837 = true;
 				return true;
 			} else {
 				return false;
 			}
+		} else if (SharedConstants.isValidChar(c)) {
+			this.method_2431(Character.toString(c));
+			return true;
 		} else {
 			return false;
 		}
@@ -293,14 +254,14 @@ public class EditBookGui extends Gui {
 			this.field_2833 = string.length();
 			return true;
 		} else if (Gui.isCopyShortcutPressed(i)) {
-			this.client.keyboard.setClipbord(this.method_2442());
+			this.client.keyboard.setClipboard(this.method_2442());
 			return true;
 		} else if (Gui.isPasteShortcutPressed(i)) {
 			this.method_2431(this.method_16345(TextFormat.stripFormatting(this.client.keyboard.getClipboard().replaceAll("\\r", ""))));
 			this.field_2829 = this.field_2833;
 			return true;
 		} else if (Gui.isCutShortcutPressed(i)) {
-			this.client.keyboard.setClipbord(this.method_2442());
+			this.client.keyboard.setClipboard(this.method_2442());
 			this.method_2410();
 			return true;
 		} else {
@@ -372,7 +333,7 @@ public class EditBookGui extends Gui {
 	private void method_2440(String string) {
 		int i = this.fontRenderer.isRightToLeft() ? 1 : -1;
 		if (Gui.isControlPressed()) {
-			this.field_2833 = this.fontRenderer.method_16196(string, i, this.field_2833, true);
+			this.field_2833 = this.fontRenderer.findWordEdge(string, i, this.field_2833, true);
 		} else {
 			this.field_2833 = Math.max(0, this.field_2833 + i);
 		}
@@ -385,7 +346,7 @@ public class EditBookGui extends Gui {
 	private void method_2408(String string) {
 		int i = this.fontRenderer.isRightToLeft() ? -1 : 1;
 		if (Gui.isControlPressed()) {
-			this.field_2833 = this.fontRenderer.method_16196(string, i, this.field_2833, true);
+			this.field_2833 = this.fontRenderer.findWordEdge(string, i, this.field_2833, true);
 		} else {
 			this.field_2833 = Math.min(string.length(), this.field_2833 + i);
 		}
@@ -405,7 +366,7 @@ public class EditBookGui extends Gui {
 				}
 			} else {
 				int i = this.method_2404(
-					string, new EditBookGui.class_475(lv.field_2854 + this.method_2412(string, this.field_2833) / 3, lv.field_2853 - this.fontRenderer.FONT_HEIGHT)
+					string, new EditBookGui.class_475(lv.field_2854 + this.method_2412(string, this.field_2833) / 3, lv.field_2853 - this.fontRenderer.fontHeight)
 				);
 				if (i >= 0) {
 					this.field_2833 = i;
@@ -421,14 +382,14 @@ public class EditBookGui extends Gui {
 		if (!string.isEmpty()) {
 			EditBookGui.class_475 lv = this.method_2416(string, this.field_2833);
 			int i = this.fontRenderer.getStringBoundedHeight(string + "" + TextFormat.BLACK + "_", 114);
-			if (lv.field_2853 + this.fontRenderer.FONT_HEIGHT == i) {
+			if (lv.field_2853 + this.fontRenderer.fontHeight == i) {
 				this.field_2833 = string.length();
 				if (!Gui.isShiftPressed()) {
 					this.field_2829 = this.field_2833;
 				}
 			} else {
 				int j = this.method_2404(
-					string, new EditBookGui.class_475(lv.field_2854 + this.method_2412(string, this.field_2833) / 3, lv.field_2853 + this.fontRenderer.FONT_HEIGHT)
+					string, new EditBookGui.class_475(lv.field_2854 + this.method_2412(string, this.field_2833) / 3, lv.field_2853 + this.fontRenderer.fontHeight)
 				);
 				if (j >= 0) {
 					this.field_2833 = j;
@@ -493,12 +454,12 @@ public class EditBookGui extends Gui {
 	}
 
 	private String method_2427() {
-		return this.pageTag != null && this.field_2840 >= 0 && this.field_2840 < this.pageTag.size() ? this.pageTag.getString(this.field_2840) : "";
+		return this.field_2840 >= 0 && this.field_2840 < this.field_17116.size() ? (String)this.field_17116.get(this.field_2840) : "";
 	}
 
 	private void method_2439(String string) {
-		if (this.pageTag != null && this.field_2840 >= 0 && this.field_2840 < this.pageTag.size()) {
-			this.pageTag.set(this.field_2840, (Tag)(new StringTag(string)));
+		if (this.field_2840 >= 0 && this.field_2840 < this.field_17116.size()) {
+			this.field_17116.set(this.field_2840, string);
 			this.field_2837 = true;
 		}
 	}
@@ -521,18 +482,16 @@ public class EditBookGui extends Gui {
 	@Override
 	public void draw(int i, int j, float f) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.getTextureManager().bindTexture(TEXTURE);
+		this.client.getTextureManager().bindTexture(WrittenBookGui.field_17117);
 		int k = (this.width - 192) / 2;
 		int l = 2;
 		this.drawTexturedRect(k, 2, 0, 0, 192, 192);
 		if (this.field_2828) {
 			String string = this.title;
-			if (this.field_2838) {
-				if (this.field_2844 / 6 % 2 == 0) {
-					string = string + "" + TextFormat.BLACK + "_";
-				} else {
-					string = string + "" + TextFormat.GRAY + "_";
-				}
+			if (this.field_2844 / 6 % 2 == 0) {
+				string = string + "" + TextFormat.BLACK + "_";
+			} else {
+				string = string + "" + TextFormat.GRAY + "_";
 			}
 
 			String string2 = I18n.translate("book.editTitle");
@@ -546,60 +505,24 @@ public class EditBookGui extends Gui {
 			String string4 = I18n.translate("book.finalizeWarning");
 			this.fontRenderer.drawStringBounded(string4, k + 36, 82, 114, 0);
 		} else {
-			String string = I18n.translate("book.pageIndicator", this.field_2840 + 1, this.field_2842);
-			String string2 = "";
-			if (this.pageTag != null && this.field_2840 >= 0 && this.field_2840 < this.pageTag.size()) {
-				string2 = this.pageTag.getString(this.field_2840);
-			}
-
-			if (!this.field_2838 && this.field_2836 != this.field_2840) {
-				if (WrittenBookItem.method_8053(this.stack.getTag())) {
-					try {
-						TextComponent textComponent = TextComponent.Serializer.fromJsonString(string2);
-						this.field_2846 = textComponent != null ? class_341.method_1850(textComponent, 114, this.fontRenderer, true, true) : null;
-					} catch (JsonParseException var13) {
-						this.field_2846 = null;
-					}
-				} else {
-					StringTextComponent stringTextComponent = new StringTextComponent(TextFormat.DARK_RED + "* Invalid book tag *");
-					this.field_2846 = Lists.<TextComponent>newArrayList(stringTextComponent);
-				}
-
-				this.field_2836 = this.field_2840;
-			}
-
+			String string = I18n.translate("book.pageIndicator", this.field_2840 + 1, this.method_17046());
+			String string2 = this.method_2427();
 			int m = this.method_2424(string);
 			this.fontRenderer.draw(string, (float)(k - m + 192 - 44), 18.0F, 0);
-			if (this.field_2846 == null) {
-				this.fontRenderer.drawStringBounded(string2, k + 36, 32, 114, 0);
-				if (this.field_2838) {
-					this.method_2441(string2);
-					if (this.field_2844 / 6 % 2 == 0) {
-						EditBookGui.class_475 lv = this.method_2416(string2, this.field_2833);
-						if (this.fontRenderer.isRightToLeft()) {
-							this.method_2429(lv);
-							lv.field_2854 -= 4;
-						}
-
-						this.method_2415(lv);
-						if (this.field_2833 < string2.length()) {
-							Drawable.drawRect(lv.field_2854, lv.field_2853 - 1, lv.field_2854 + 1, lv.field_2853 + this.fontRenderer.FONT_HEIGHT, -16777216);
-						} else {
-							this.fontRenderer.draw("_", (float)lv.field_2854, (float)lv.field_2853, 0);
-						}
-					}
-				}
-			} else {
-				int n = Math.min(128 / this.fontRenderer.FONT_HEIGHT, this.field_2846.size());
-
-				for (int p = 0; p < n; p++) {
-					TextComponent textComponent2 = (TextComponent)this.field_2846.get(p);
-					this.fontRenderer.draw(textComponent2.getFormattedText(), (float)(k + 36), (float)(32 + p * this.fontRenderer.FONT_HEIGHT), 0);
+			this.fontRenderer.drawStringBounded(string2, k + 36, 32, 114, 0);
+			this.method_2441(string2);
+			if (this.field_2844 / 6 % 2 == 0) {
+				EditBookGui.class_475 lv = this.method_2416(string2, this.field_2833);
+				if (this.fontRenderer.isRightToLeft()) {
+					this.method_2429(lv);
+					lv.field_2854 -= 4;
 				}
 
-				TextComponent textComponent3 = this.method_2433((double)i, (double)j);
-				if (textComponent3 != null) {
-					this.drawTextComponentHover(textComponent3, i, j);
+				this.method_2415(lv);
+				if (this.field_2833 < string2.length()) {
+					Drawable.drawRect(lv.field_2854, lv.field_2853 - 1, lv.field_2854 + 1, lv.field_2853 + this.fontRenderer.fontHeight, -16777216);
+				} else {
+					this.fontRenderer.draw("_", (float)lv.field_2854, (float)lv.field_2853, 0);
 				}
 			}
 		}
@@ -627,13 +550,13 @@ public class EditBookGui extends Gui {
 			int i = Math.min(this.field_2833, this.field_2829);
 			int j = Math.max(this.field_2833, this.field_2829);
 			String string2 = string.substring(i, j);
-			int k = this.fontRenderer.method_16196(string, 1, j, true);
+			int k = this.fontRenderer.findWordEdge(string, 1, j, true);
 			String string3 = string.substring(i, k);
 			EditBookGui.class_475 lv = this.method_2416(string, i);
 
-			for (EditBookGui.class_475 lv2 = new EditBookGui.class_475(lv.field_2854, lv.field_2853 + this.fontRenderer.FONT_HEIGHT);
+			for (EditBookGui.class_475 lv2 = new EditBookGui.class_475(lv.field_2854, lv.field_2853 + this.fontRenderer.fontHeight);
 				!string2.isEmpty();
-				lv2.field_2853 = lv2.field_2853 + this.fontRenderer.FONT_HEIGHT
+				lv2.field_2853 = lv2.field_2853 + this.fontRenderer.fontHeight
 			) {
 				int l = this.method_2417(string3, 114 - lv.field_2854);
 				if (string2.length() <= l) {
@@ -651,7 +574,7 @@ public class EditBookGui extends Gui {
 				lv2.field_2854 = lv.field_2854 + this.method_2424(string4 + " ");
 				this.method_2409(lv, lv2);
 				lv.field_2854 = 0;
-				lv.field_2853 = lv.field_2853 + this.fontRenderer.FONT_HEIGHT;
+				lv.field_2853 = lv.field_2853 + this.fontRenderer.fontHeight;
 			}
 		}
 	}
@@ -670,16 +593,16 @@ public class EditBookGui extends Gui {
 		this.method_2415(lv);
 		this.method_2415(lv2);
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		GlStateManager.color4f(0.0F, 0.0F, 255.0F, 255.0F);
 		GlStateManager.disableTexture();
 		GlStateManager.enableColorLogicOp();
 		GlStateManager.logicOp(GlStateManager.LogicOp.OR_REVERSE);
-		vertexBuffer.begin(7, VertexFormats.POSITION);
-		vertexBuffer.vertex((double)lv.field_2854, (double)lv2.field_2853, 0.0).next();
-		vertexBuffer.vertex((double)lv2.field_2854, (double)lv2.field_2853, 0.0).next();
-		vertexBuffer.vertex((double)lv2.field_2854, (double)lv.field_2853, 0.0).next();
-		vertexBuffer.vertex((double)lv.field_2854, (double)lv.field_2853, 0.0).next();
+		bufferBuilder.begin(7, VertexFormats.POSITION);
+		bufferBuilder.vertex((double)lv.field_2854, (double)lv2.field_2853, 0.0).next();
+		bufferBuilder.vertex((double)lv2.field_2854, (double)lv2.field_2853, 0.0).next();
+		bufferBuilder.vertex((double)lv2.field_2854, (double)lv.field_2853, 0.0).next();
+		bufferBuilder.vertex((double)lv.field_2854, (double)lv.field_2853, 0.0).next();
 		tessellator.draw();
 		GlStateManager.disableColorLogicOp();
 		GlStateManager.enableTexture();
@@ -709,7 +632,7 @@ public class EditBookGui extends Gui {
 				break;
 			}
 
-			lv.field_2853 = lv.field_2853 + this.fontRenderer.FONT_HEIGHT;
+			lv.field_2853 = lv.field_2853 + this.fontRenderer.fontHeight;
 		}
 
 		return lv;
@@ -769,15 +692,15 @@ public class EditBookGui extends Gui {
 	}
 
 	private int method_2404(String string, EditBookGui.class_475 arg) {
-		int i = 16 * this.fontRenderer.FONT_HEIGHT;
+		int i = 16 * this.fontRenderer.fontHeight;
 		if (arg.field_2853 > i) {
 			return -1;
 		} else {
 			int j = Integer.MIN_VALUE;
-			int k = this.fontRenderer.FONT_HEIGHT;
+			int k = this.fontRenderer.fontHeight;
 			int l = 0;
 
-			for (String string2 = string; !string2.isEmpty() && j < i; k += this.fontRenderer.FONT_HEIGHT) {
+			for (String string2 = string; !string2.isEmpty() && j < i; k += this.fontRenderer.fontHeight) {
 				int m = this.method_2417(string2, 114);
 				if (m < string2.length()) {
 					String string3 = string2.substring(0, m);
@@ -805,12 +728,7 @@ public class EditBookGui extends Gui {
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
 		if (i == 0) {
-			long l = SystemUtil.getMeasuringTimeMili();
-			TextComponent textComponent = this.method_2433(d, e);
-			if (textComponent != null && this.handleTextComponentClick(textComponent)) {
-				return true;
-			}
-
+			long l = SystemUtil.getMeasuringTimeMs();
 			String string = this.method_2427();
 			if (!string.isEmpty()) {
 				EditBookGui.class_475 lv = new EditBookGui.class_475((int)d, (int)e);
@@ -824,8 +742,8 @@ public class EditBookGui extends Gui {
 							this.field_2829 = this.field_2833;
 						}
 					} else if (this.field_2829 == this.field_2833) {
-						this.field_2829 = this.fontRenderer.method_16196(string, -1, j, false);
-						this.field_2833 = this.fontRenderer.method_16196(string, 1, j, false);
+						this.field_2829 = this.fontRenderer.findWordEdge(string, -1, j, false);
+						this.field_2833 = this.fontRenderer.findWordEdge(string, 1, j, false);
 					} else {
 						this.field_2829 = 0;
 						this.field_2833 = this.method_2427().length();
@@ -843,8 +761,8 @@ public class EditBookGui extends Gui {
 
 	@Override
 	public boolean mouseDragged(double d, double e, int i, double f, double g) {
-		if (i == 0 && this.pageTag != null && this.field_2840 >= 0 && this.field_2840 < this.pageTag.size()) {
-			String string = this.pageTag.getString(this.field_2840);
+		if (i == 0 && this.field_2840 >= 0 && this.field_2840 < this.field_17116.size()) {
+			String string = (String)this.field_17116.get(this.field_2840);
 			EditBookGui.class_475 lv = new EditBookGui.class_475((int)d, (int)e);
 			this.method_2443(lv);
 			this.method_2429(lv);
@@ -855,100 +773,6 @@ public class EditBookGui extends Gui {
 		}
 
 		return super.mouseDragged(d, e, i, f, g);
-	}
-
-	@Override
-	public boolean handleTextComponentClick(TextComponent textComponent) {
-		ClickEvent clickEvent = textComponent.getStyle().getClickEvent();
-		if (clickEvent == null) {
-			return false;
-		} else if (clickEvent.getAction() == ClickEvent.Action.CHANGE_PAGE) {
-			String string = clickEvent.getValue();
-
-			try {
-				int i = Integer.parseInt(string) - 1;
-				if (i >= 0 && i < this.field_2842 && i != this.field_2840) {
-					this.field_2840 = i;
-					this.method_2413();
-					return true;
-				}
-			} catch (Exception var5) {
-			}
-
-			return false;
-		} else {
-			boolean bl = super.handleTextComponentClick(textComponent);
-			if (bl && clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
-				this.client.openGui(null);
-			}
-
-			return bl;
-		}
-	}
-
-	@Nullable
-	public TextComponent method_2433(double d, double e) {
-		if (this.field_2846 == null) {
-			return null;
-		} else {
-			int i = MathHelper.floor(d - (double)((this.width - 192) / 2) - 36.0);
-			int j = MathHelper.floor(e - 2.0 - 16.0 - 16.0);
-			if (i >= 0 && j >= 0) {
-				int k = Math.min(128 / this.fontRenderer.FONT_HEIGHT, this.field_2846.size());
-				if (i <= 114 && j < this.client.fontRenderer.FONT_HEIGHT * k + k) {
-					int l = j / this.client.fontRenderer.FONT_HEIGHT;
-					if (l >= 0 && l < this.field_2846.size()) {
-						TextComponent textComponent = (TextComponent)this.field_2846.get(l);
-						int m = 0;
-
-						for (TextComponent textComponent2 : textComponent) {
-							if (textComponent2 instanceof StringTextComponent) {
-								m += this.client.fontRenderer.getStringWidth(textComponent2.getFormattedText());
-								if (m > i) {
-									return textComponent2;
-								}
-							}
-						}
-					}
-
-					return null;
-				} else {
-					return null;
-				}
-			} else {
-				return null;
-			}
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	abstract static class class_474 extends ButtonWidget {
-		private final boolean field_2851;
-
-		public class_474(int i, int j, int k, boolean bl) {
-			super(i, j, k, 23, 13, "");
-			this.field_2851 = bl;
-		}
-
-		@Override
-		public void draw(int i, int j, float f) {
-			if (this.visible) {
-				boolean bl = i >= this.x && j >= this.y && i < this.x + this.width && j < this.y + this.height;
-				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-				MinecraftClient.getInstance().getTextureManager().bindTexture(EditBookGui.TEXTURE);
-				int k = 0;
-				int l = 192;
-				if (bl) {
-					k += 23;
-				}
-
-				if (!this.field_2851) {
-					l += 13;
-				}
-
-				this.drawTexturedRect(this.x, this.y, k, l, 23, 13);
-			}
-		}
 	}
 
 	@Environment(EnvType.CLIENT)

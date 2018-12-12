@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3684;
+import net.minecraft.client.render.entity.feature.CatCollarFeatureRenderer;
 import net.minecraft.client.render.entity.model.CatEntityModel;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -13,10 +13,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 
 @Environment(EnvType.CLIENT)
-public class CatEntityRenderer extends EntityMobRenderer<CatEntity> {
+public class CatEntityRenderer extends MobEntityRenderer<CatEntity, CatEntityModel<CatEntity>> {
 	public CatEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new CatEntityModel(0.0F), 0.4F);
-		this.addLayer(new class_3684(this));
+		super(entityRenderDispatcher, new CatEntityModel<>(0.0F), 0.4F);
+		this.addFeature(new CatCollarFeatureRenderer(this));
 	}
 
 	@Nullable
@@ -29,8 +29,8 @@ public class CatEntityRenderer extends EntityMobRenderer<CatEntity> {
 		GlStateManager.scalef(0.8F, 0.8F, 0.8F);
 	}
 
-	protected void method_16045(CatEntity catEntity, float f, float g, float h) {
-		super.method_4058(catEntity, f, g, h);
+	protected void setupTransforms(CatEntity catEntity, float f, float g, float h) {
+		super.setupTransforms(catEntity, f, g, h);
 		float i = catEntity.method_16082(h);
 		if (i > 0.0F) {
 			GlStateManager.translatef(0.4F * i, 0.15F * i, 0.1F * i);

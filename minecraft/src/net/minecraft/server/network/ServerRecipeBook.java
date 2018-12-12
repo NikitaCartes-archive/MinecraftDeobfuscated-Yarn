@@ -4,8 +4,8 @@ import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import net.minecraft.class_2713;
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.client.network.packet.UnlockRecipesClientPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -25,45 +25,49 @@ public class ServerRecipeBook extends RecipeBook {
 		this.manager = recipeManager;
 	}
 
-	public int method_14903(Collection<Recipe> collection, ServerPlayerEntity serverPlayerEntity) {
+	public int unlockRecipes(Collection<Recipe> collection, ServerPlayerEntity serverPlayerEntity) {
 		List<Identifier> list = Lists.<Identifier>newArrayList();
 		int i = 0;
 
 		for (Recipe recipe : collection) {
 			Identifier identifier = recipe.getId();
 			if (!this.recipes.contains(identifier) && !recipe.isIgnoredInRecipeBook()) {
-				this.method_14881(identifier);
-				this.method_14877(identifier);
+				this.add(identifier);
+				this.display(identifier);
 				list.add(identifier);
-				CriterionCriterions.RECIPE_UNLOCKED.handle(serverPlayerEntity, recipe);
+				Criterions.RECIPE_UNLOCKED.handle(serverPlayerEntity, recipe);
 				i++;
 			}
 		}
 
-		this.method_14899(class_2713.class_2714.field_12415, serverPlayerEntity, list);
+		this.sendUnlockRecipesPacket(UnlockRecipesClientPacket.Action.field_12415, serverPlayerEntity, list);
 		return i;
 	}
 
-	public int method_14900(Collection<Recipe> collection, ServerPlayerEntity serverPlayerEntity) {
+	public int lockRecipes(Collection<Recipe> collection, ServerPlayerEntity serverPlayerEntity) {
 		List<Identifier> list = Lists.<Identifier>newArrayList();
 		int i = 0;
 
 		for (Recipe recipe : collection) {
 			Identifier identifier = recipe.getId();
 			if (this.recipes.contains(identifier)) {
-				this.method_14879(identifier);
+				this.remove(identifier);
 				list.add(identifier);
 				i++;
 			}
 		}
 
-		this.method_14899(class_2713.class_2714.field_12417, serverPlayerEntity, list);
+		this.sendUnlockRecipesPacket(UnlockRecipesClientPacket.Action.field_12417, serverPlayerEntity, list);
 		return i;
 	}
 
-	private void method_14899(class_2713.class_2714 arg, ServerPlayerEntity serverPlayerEntity, List<Identifier> list) {
+	private void sendUnlockRecipesPacket(UnlockRecipesClientPacket.Action action, ServerPlayerEntity serverPlayerEntity, List<Identifier> list) {
 		serverPlayerEntity.networkHandler
-			.sendPacket(new class_2713(arg, list, Collections.emptyList(), this.guiOpen, this.filteringCraftable, this.furnaceGuiOpen, this.furnaceFilteringCraftable));
+			.sendPacket(
+				new UnlockRecipesClientPacket(
+					action, list, Collections.emptyList(), this.guiOpen, this.filteringCraftable, this.furnaceGuiOpen, this.furnaceFilteringCraftable
+				)
+			);
 	}
 
 	public CompoundTag toTag() {
@@ -102,7 +106,7 @@ public class ServerRecipeBook extends RecipeBook {
 			if (recipe == null) {
 				LOGGER.error("Tried to load unrecognized recipe: {} removed now.", identifier);
 			} else {
-				this.method_14876(recipe);
+				this.add(recipe);
 			}
 		}
 
@@ -114,16 +118,16 @@ public class ServerRecipeBook extends RecipeBook {
 			if (recipe2 == null) {
 				LOGGER.error("Tried to load unrecognized recipe: {} removed now.", identifier2);
 			} else {
-				this.method_14885(recipe2);
+				this.display(recipe2);
 			}
 		}
 	}
 
-	public void method_14904(ServerPlayerEntity serverPlayerEntity) {
+	public void sendInitRecipesPacket(ServerPlayerEntity serverPlayerEntity) {
 		serverPlayerEntity.networkHandler
 			.sendPacket(
-				new class_2713(
-					class_2713.class_2714.field_12416,
+				new UnlockRecipesClientPacket(
+					UnlockRecipesClientPacket.Action.field_12416,
 					this.recipes,
 					this.toBeDisplayed,
 					this.guiOpen,

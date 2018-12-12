@@ -8,8 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.decorator.ChanceDecoratorConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class ChanceHeightmapDoubleDecorator extends Decorator<ChanceDecoratorConfig> {
 	public ChanceHeightmapDoubleDecorator(Function<Dynamic<?>, ? extends ChanceDecoratorConfig> function) {
@@ -17,7 +16,7 @@ public class ChanceHeightmapDoubleDecorator extends Decorator<ChanceDecoratorCon
 	}
 
 	public Stream<BlockPos> method_14342(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, Random random, ChanceDecoratorConfig chanceDecoratorConfig, BlockPos blockPos
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, ChanceDecoratorConfig chanceDecoratorConfig, BlockPos blockPos
 	) {
 		if (random.nextFloat() < 1.0F / (float)chanceDecoratorConfig.chance) {
 			int i = random.nextInt(16);

@@ -38,7 +38,7 @@ public class EndCrystalItem extends Item {
 				if (!list.isEmpty()) {
 					return ActionResult.FAILURE;
 				} else {
-					if (!world.isRemote) {
+					if (!world.isClient) {
 						EnderCrystalEntity enderCrystalEntity = new EnderCrystalEntity(world, d + 0.5, e, f + 0.5);
 						enderCrystalEntity.setShowBottom(false);
 						world.spawnEntity(enderCrystalEntity);

@@ -24,7 +24,7 @@ public class ChargingPlayerPhase extends AbstractPhase {
 			this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
 		} else {
 			double d = this.target.squaredDistanceTo(this.dragon.x, this.dragon.y, this.dragon.z);
-			if (d < 100.0 || d > 22500.0 || this.dragon.field_5976 || this.dragon.field_5992) {
+			if (d < 100.0 || d > 22500.0 || this.dragon.horizontalCollision || this.dragon.verticalCollision) {
 				this.field_7037++;
 			}
 		}

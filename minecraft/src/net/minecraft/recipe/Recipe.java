@@ -24,8 +24,8 @@ public interface Recipe {
 
 		for (int i = 0; i < defaultedList.size(); i++) {
 			Item item = inventory.getInvStack(i).getItem();
-			if (item.hasContainerItem()) {
-				defaultedList.set(i, new ItemStack(item.getContainerItem()));
+			if (item.hasRecipeRemainder()) {
+				defaultedList.set(i, new ItemStack(item.getRecipeRemainder()));
 			}
 		}
 

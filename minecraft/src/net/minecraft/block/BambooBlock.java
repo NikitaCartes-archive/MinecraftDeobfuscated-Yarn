@@ -3,7 +3,6 @@ package net.minecraft.block;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.BambooLeaves;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -49,7 +48,7 @@ public class BambooBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public boolean method_9579(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean isTranslucent(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return false;
 	}
 
@@ -61,7 +60,7 @@ public class BambooBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public VoxelShape method_9549(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		Vec3d vec3d = blockState.getOffsetPos(blockView, blockPos);
 		return field_9913.method_1096(vec3d.x, vec3d.y, vec3d.z);
 	}
@@ -93,7 +92,7 @@ public class BambooBlock extends Block implements Fertilizable {
 	@Override
 	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if ((Integer)blockState.get(field_9916) == 0) {
-			if (random.nextInt(3) == 0 && world.isAir(blockPos.up()) && world.method_8624(blockPos.up(), 0) >= 9) {
+			if (random.nextInt(3) == 0 && world.isAir(blockPos.up()) && world.getLightLevel(blockPos.up(), 0) >= 9) {
 				int i = this.method_9386(world, blockPos) + 1;
 				if (i < 16) {
 					this.method_9385(blockState, world, blockPos, random, i);
@@ -108,7 +107,9 @@ public class BambooBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if (!blockState.canPlaceAt(iWorld, blockPos)) {
 			return Blocks.field_10124.getDefaultState();
 		} else {
@@ -116,7 +117,7 @@ public class BambooBlock extends Block implements Fertilizable {
 				iWorld.setBlockState(blockPos, blockState.method_11572(field_9914), 2);
 			}
 
-			return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		}
 	}
 

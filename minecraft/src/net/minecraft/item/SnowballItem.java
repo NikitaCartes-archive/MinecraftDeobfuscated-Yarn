@@ -25,9 +25,10 @@ public class SnowballItem extends Item {
 		world.playSound(
 			null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_14873, SoundCategory.field_15254, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F)
 		);
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			SnowballEntity snowballEntity = new SnowballEntity(world, playerEntity);
-			snowballEntity.method_7489(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 1.5F, 1.0F);
+			snowballEntity.method_16940(itemStack);
+			snowballEntity.calculateVelocity(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 1.5F, 1.0F);
 			world.spawnEntity(snowballEntity);
 		}
 

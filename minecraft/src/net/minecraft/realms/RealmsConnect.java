@@ -37,7 +37,7 @@ public class RealmsConnect {
 							return;
 						}
 
-						RealmsConnect.this.connection = ClientConnection.connect(inetAddress, i, MinecraftClient.getInstance().options.shouldUseNativeTransport());
+						RealmsConnect.this.connection = ClientConnection.connect(inetAddress, i, MinecraftClient.getInstance().field_1690.shouldUseNativeTransport());
 						if (RealmsConnect.this.aborted) {
 							return;
 						}

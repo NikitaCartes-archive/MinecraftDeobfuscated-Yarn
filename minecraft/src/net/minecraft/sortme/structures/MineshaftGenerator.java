@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.class_3443;
-import net.minecraft.class_3485;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FenceBlock;
@@ -80,7 +79,7 @@ public class MineshaftGenerator {
 		private boolean field_14414;
 		private int field_14413;
 
-		public MineshaftCorridor(class_3485 arg, CompoundTag compoundTag) {
+		public MineshaftCorridor(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16969, compoundTag);
 			this.field_14416 = compoundTag.getBoolean("hr");
 			this.field_14415 = compoundTag.getBoolean("sc");
@@ -103,7 +102,7 @@ public class MineshaftGenerator {
 			this.structureBounds = mutableIntBoundingBox;
 			this.field_14416 = random.nextInt(3) == 0;
 			this.field_14415 = !this.field_14416 && random.nextInt(23) == 0;
-			if (this.method_14934().getAxis() == Direction.Axis.Z) {
+			if (this.getFacing().getAxis() == Direction.Axis.Z) {
 				this.field_14413 = mutableIntBoundingBox.getBlockCountZ() / 5;
 			} else {
 				this.field_14413 = mutableIntBoundingBox.getBlockCountX() / 5;
@@ -147,7 +146,7 @@ public class MineshaftGenerator {
 		public void method_14918(class_3443 arg, List<class_3443> list, Random random) {
 			int i = this.method_14923();
 			int j = random.nextInt(4);
-			Direction direction = this.method_14934();
+			Direction direction = this.getFacing();
 			if (direction != null) {
 				switch (direction) {
 					case NORTH:
@@ -245,7 +244,7 @@ public class MineshaftGenerator {
 					.with(RailBlock.field_11369, random.nextBoolean() ? RailShape.field_12665 : RailShape.field_12674);
 				this.addBlock(iWorld, blockState, i, j, k, mutableIntBoundingBox);
 				ChestMinecartEntity chestMinecartEntity = new ChestMinecartEntity(
-					iWorld.method_8410(), (double)((float)blockPos.getX() + 0.5F), (double)((float)blockPos.getY() + 0.5F), (double)((float)blockPos.getZ() + 0.5F)
+					iWorld.getWorld(), (double)((float)blockPos.getX() + 0.5F), (double)((float)blockPos.getY() + 0.5F), (double)((float)blockPos.getZ() + 0.5F)
 				);
 				chestMinecartEntity.setLootTable(identifier, random.nextLong());
 				iWorld.spawnEntity(chestMinecartEntity);
@@ -327,7 +326,7 @@ public class MineshaftGenerator {
 					for (int oxx = 0; oxx <= m; oxx++) {
 						BlockState blockState4 = this.getBlockAt(iWorld, 1, -1, oxx, mutableIntBoundingBox);
 						if (!blockState4.isAir()
-							&& blockState4.method_11598(iWorld, new BlockPos(this.applyXTransform(1, oxx), this.applyYTransform(-1), this.applyZTransform(1, oxx)))) {
+							&& blockState4.isFullOpaque(iWorld, new BlockPos(this.applyXTransform(1, oxx), this.applyYTransform(-1), this.applyZTransform(1, oxx)))) {
 							float f = this.isUnderSeaLevel(iWorld, 1, 0, oxx, mutableIntBoundingBox) ? 0.7F : 0.9F;
 							this.addBlockWithRandomThreshold(iWorld, mutableIntBoundingBox, random, f, 1, 0, oxx, blockState3);
 						}
@@ -350,10 +349,10 @@ public class MineshaftGenerator {
 				} else {
 					this.fillWithOutline(iWorld, mutableIntBoundingBox, i, l, k, m, l, k, blockState, blockAir, false);
 					this.addBlockWithRandomThreshold(
-						iWorld, mutableIntBoundingBox, random, 0.05F, i + 1, l, k - 1, Blocks.field_10099.getDefaultState().with(WallTorchBlock.field_11731, Direction.NORTH)
+						iWorld, mutableIntBoundingBox, random, 0.05F, i + 1, l, k - 1, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.NORTH)
 					);
 					this.addBlockWithRandomThreshold(
-						iWorld, mutableIntBoundingBox, random, 0.05F, i + 1, l, k + 1, Blocks.field_10099.getDefaultState().with(WallTorchBlock.field_11731, Direction.SOUTH)
+						iWorld, mutableIntBoundingBox, random, 0.05F, i + 1, l, k + 1, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.SOUTH)
 					);
 				}
 			}
@@ -370,7 +369,7 @@ public class MineshaftGenerator {
 		private Direction field_14420;
 		private boolean field_14419;
 
-		public MineshaftCrossing(class_3485 arg, CompoundTag compoundTag) {
+		public MineshaftCrossing(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16919, compoundTag);
 			this.field_14419 = compoundTag.getBoolean("tf");
 			this.field_14420 = Direction.fromHorizontal(compoundTag.getInt("D"));
@@ -691,7 +690,7 @@ public class MineshaftGenerator {
 			this.structureBounds = new MutableIntBoundingBox(j, 50, k, j + 7 + random.nextInt(6), 54 + random.nextInt(6), k + 7 + random.nextInt(6));
 		}
 
-		public MineshaftRoom(class_3485 arg, CompoundTag compoundTag) {
+		public MineshaftRoom(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16915, compoundTag);
 			ListTag listTag = compoundTag.getList("Entrances", 11);
 
@@ -918,7 +917,7 @@ public class MineshaftGenerator {
 			this.structureBounds = mutableIntBoundingBox;
 		}
 
-		public MineshaftStairs(class_3485 arg, CompoundTag compoundTag) {
+		public MineshaftStairs(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16968, compoundTag);
 		}
 
@@ -949,7 +948,7 @@ public class MineshaftGenerator {
 		@Override
 		public void method_14918(class_3443 arg, List<class_3443> list, Random random) {
 			int i = this.method_14923();
-			Direction direction = this.method_14934();
+			Direction direction = this.getFacing();
 			if (direction != null) {
 				switch (direction) {
 					case NORTH:

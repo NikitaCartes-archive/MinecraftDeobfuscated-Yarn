@@ -73,7 +73,7 @@ public class TutorialManager {
 			this.destroyHandler();
 		}
 
-		this.currentHandler = this.client.options.tutorialStep.createHandler(this);
+		this.currentHandler = this.client.field_1690.tutorialStep.createHandler(this);
 	}
 
 	public void tick() {
@@ -89,8 +89,8 @@ public class TutorialManager {
 	}
 
 	public void setStep(TutorialStep tutorialStep) {
-		this.client.options.tutorialStep = tutorialStep;
-		this.client.options.write();
+		this.client.field_1690.tutorialStep = tutorialStep;
+		this.client.field_1690.write();
 		if (this.currentHandler != null) {
 			this.currentHandler.destroy();
 			this.currentHandler = tutorialStep.createHandler(this);

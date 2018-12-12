@@ -8,8 +8,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_301;
-import net.minecraft.class_308;
-import net.minecraft.sortme.Matrix4f;
+import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.util.math.Matrix4f;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
@@ -557,7 +557,7 @@ public class GlStateManager {
 		GL11.glGetFloatv(i, MATRIX_BUFFER);
 		MATRIX_BUFFER.rewind();
 		Matrix4f matrix4f = new Matrix4f();
-		matrix4f.method_4928(MATRIX_BUFFER);
+		matrix4f.setFromBuffer(MATRIX_BUFFER);
 		MATRIX_BUFFER.rewind();
 		return matrix4f;
 	}
@@ -595,7 +595,7 @@ public class GlStateManager {
 	}
 
 	public static void multMatrix(Matrix4f matrix4f) {
-		matrix4f.method_4932(MATRIX_BUFFER);
+		matrix4f.putIntoBuffer(MATRIX_BUFFER);
 		MATRIX_BUFFER.rewind();
 		GL11.glMultMatrixf(MATRIX_BUFFER);
 	}
@@ -981,18 +981,18 @@ public class GlStateManager {
 				GlStateManager.disableAlphaTest();
 				GlStateManager.alphaFunc(519, 0.0F);
 				GlStateManager.disableLighting();
-				GlStateManager.lightModel(2899, class_308.method_1451(0.2F, 0.2F, 0.2F, 1.0F));
+				GlStateManager.lightModel(2899, GuiLighting.singletonBuffer(0.2F, 0.2F, 0.2F, 1.0F));
 
 				for (int i = 0; i < 8; i++) {
 					GlStateManager.disableLight(i);
-					GlStateManager.light(16384 + i, 4608, class_308.method_1451(0.0F, 0.0F, 0.0F, 1.0F));
-					GlStateManager.light(16384 + i, 4611, class_308.method_1451(0.0F, 0.0F, 1.0F, 0.0F));
+					GlStateManager.light(16384 + i, 4608, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 1.0F));
+					GlStateManager.light(16384 + i, 4611, GuiLighting.singletonBuffer(0.0F, 0.0F, 1.0F, 0.0F));
 					if (i == 0) {
-						GlStateManager.light(16384 + i, 4609, class_308.method_1451(1.0F, 1.0F, 1.0F, 1.0F));
-						GlStateManager.light(16384 + i, 4610, class_308.method_1451(1.0F, 1.0F, 1.0F, 1.0F));
+						GlStateManager.light(16384 + i, 4609, GuiLighting.singletonBuffer(1.0F, 1.0F, 1.0F, 1.0F));
+						GlStateManager.light(16384 + i, 4610, GuiLighting.singletonBuffer(1.0F, 1.0F, 1.0F, 1.0F));
 					} else {
-						GlStateManager.light(16384 + i, 4609, class_308.method_1451(0.0F, 0.0F, 0.0F, 1.0F));
-						GlStateManager.light(16384 + i, 4610, class_308.method_1451(0.0F, 0.0F, 0.0F, 1.0F));
+						GlStateManager.light(16384 + i, 4609, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 1.0F));
+						GlStateManager.light(16384 + i, 4610, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 1.0F));
 					}
 				}
 
@@ -1012,7 +1012,7 @@ public class GlStateManager {
 				GlStateManager.fogDensity(1.0F);
 				GlStateManager.fogStart(0.0F);
 				GlStateManager.fogEnd(1.0F);
-				GlStateManager.fog(2918, class_308.method_1451(0.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.fog(2918, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
 				if (GL.getCapabilities().GL_NV_fog_distance) {
 					GlStateManager.fog(2917, 34140);
 				}
@@ -1022,20 +1022,20 @@ public class GlStateManager {
 				GlStateManager.logicOp(5379);
 				GlStateManager.disableTexGen(GlStateManager.TexCoord.S);
 				GlStateManager.texGenMode(GlStateManager.TexCoord.S, 9216);
-				GlStateManager.texGenParam(GlStateManager.TexCoord.S, 9474, class_308.method_1451(1.0F, 0.0F, 0.0F, 0.0F));
-				GlStateManager.texGenParam(GlStateManager.TexCoord.S, 9217, class_308.method_1451(1.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.texGenParam(GlStateManager.TexCoord.S, 9474, GuiLighting.singletonBuffer(1.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.texGenParam(GlStateManager.TexCoord.S, 9217, GuiLighting.singletonBuffer(1.0F, 0.0F, 0.0F, 0.0F));
 				GlStateManager.disableTexGen(GlStateManager.TexCoord.T);
 				GlStateManager.texGenMode(GlStateManager.TexCoord.T, 9216);
-				GlStateManager.texGenParam(GlStateManager.TexCoord.T, 9474, class_308.method_1451(0.0F, 1.0F, 0.0F, 0.0F));
-				GlStateManager.texGenParam(GlStateManager.TexCoord.T, 9217, class_308.method_1451(0.0F, 1.0F, 0.0F, 0.0F));
+				GlStateManager.texGenParam(GlStateManager.TexCoord.T, 9474, GuiLighting.singletonBuffer(0.0F, 1.0F, 0.0F, 0.0F));
+				GlStateManager.texGenParam(GlStateManager.TexCoord.T, 9217, GuiLighting.singletonBuffer(0.0F, 1.0F, 0.0F, 0.0F));
 				GlStateManager.disableTexGen(GlStateManager.TexCoord.R);
 				GlStateManager.texGenMode(GlStateManager.TexCoord.R, 9216);
-				GlStateManager.texGenParam(GlStateManager.TexCoord.R, 9474, class_308.method_1451(0.0F, 0.0F, 0.0F, 0.0F));
-				GlStateManager.texGenParam(GlStateManager.TexCoord.R, 9217, class_308.method_1451(0.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.texGenParam(GlStateManager.TexCoord.R, 9474, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.texGenParam(GlStateManager.TexCoord.R, 9217, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
 				GlStateManager.disableTexGen(GlStateManager.TexCoord.Q);
 				GlStateManager.texGenMode(GlStateManager.TexCoord.Q, 9216);
-				GlStateManager.texGenParam(GlStateManager.TexCoord.Q, 9474, class_308.method_1451(0.0F, 0.0F, 0.0F, 0.0F));
-				GlStateManager.texGenParam(GlStateManager.TexCoord.Q, 9217, class_308.method_1451(0.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.texGenParam(GlStateManager.TexCoord.Q, 9474, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.texGenParam(GlStateManager.TexCoord.Q, 9217, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
 				GlStateManager.activeTexture(0);
 				GlStateManager.texParameter(3553, 10240, 9729);
 				GlStateManager.texParameter(3553, 10241, 9986);
@@ -1046,7 +1046,7 @@ public class GlStateManager {
 				GlStateManager.texParameter(3553, 33082, -1000);
 				GlStateManager.texParameter(3553, 34049, 0.0F);
 				GlStateManager.texEnv(8960, 8704, 8448);
-				GlStateManager.texEnv(8960, 8705, class_308.method_1451(0.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.texEnv(8960, 8705, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
 				GlStateManager.texEnv(8960, 34161, 8448);
 				GlStateManager.texEnv(8960, 34162, 8448);
 				GlStateManager.texEnv(8960, 34176, 5890);

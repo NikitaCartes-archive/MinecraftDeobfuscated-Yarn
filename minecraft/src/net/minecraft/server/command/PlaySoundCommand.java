@@ -40,7 +40,7 @@ public class PlaySoundCommand {
 	private static LiteralArgumentBuilder<ServerCommandSource> method_13497(SoundCategory soundCategory) {
 		return ServerCommandManager.literal(soundCategory.getName())
 			.then(
-				ServerCommandManager.argument("targets", EntityArgumentType.method_9308())
+				ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
 					.executes(
 						commandContext -> method_13504(
 								commandContext.getSource(),

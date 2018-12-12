@@ -15,7 +15,6 @@ import net.minecraft.block.SkullBlock;
 import net.minecraft.block.WallSkullBlock;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.model.Model;
 import net.minecraft.client.render.entity.model.DragonHeadEntityModel;
 import net.minecraft.client.render.entity.model.SkullEntityModel;
 import net.minecraft.client.render.entity.model.SkullOverlayEntityModel;
@@ -28,17 +27,19 @@ import net.minecraft.util.math.Direction;
 @Environment(EnvType.CLIENT)
 public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEntity> {
 	public static SkullBlockEntityRenderer INSTANCE;
-	private static final Map<SkullBlock.SkullType, Model> MODELS = SystemUtil.consume(Maps.<SkullBlock.SkullType, Model>newHashMap(), hashMap -> {
-		SkullEntityModel skullEntityModel = new SkullEntityModel(0, 0, 64, 32);
-		SkullEntityModel skullEntityModel2 = new SkullOverlayEntityModel();
-		DragonHeadEntityModel dragonHeadEntityModel = new DragonHeadEntityModel(0.0F);
-		hashMap.put(SkullBlock.Type.SKELETON, skullEntityModel);
-		hashMap.put(SkullBlock.Type.WITHER_SKELETON, skullEntityModel);
-		hashMap.put(SkullBlock.Type.PLAYER, skullEntityModel2);
-		hashMap.put(SkullBlock.Type.ZOMBIE, skullEntityModel2);
-		hashMap.put(SkullBlock.Type.CREEPER, skullEntityModel);
-		hashMap.put(SkullBlock.Type.DRAGON, dragonHeadEntityModel);
-	});
+	private static final Map<SkullBlock.SkullType, SkullEntityModel> MODELS = SystemUtil.consume(
+		Maps.<SkullBlock.SkullType, SkullEntityModel>newHashMap(), hashMap -> {
+			SkullEntityModel skullEntityModel = new SkullEntityModel(0, 0, 64, 32);
+			SkullEntityModel skullEntityModel2 = new SkullOverlayEntityModel();
+			DragonHeadEntityModel dragonHeadEntityModel = new DragonHeadEntityModel(0.0F);
+			hashMap.put(SkullBlock.Type.SKELETON, skullEntityModel);
+			hashMap.put(SkullBlock.Type.WITHER_SKELETON, skullEntityModel);
+			hashMap.put(SkullBlock.Type.PLAYER, skullEntityModel2);
+			hashMap.put(SkullBlock.Type.ZOMBIE, skullEntityModel2);
+			hashMap.put(SkullBlock.Type.CREEPER, skullEntityModel);
+			hashMap.put(SkullBlock.Type.DRAGON, dragonHeadEntityModel);
+		}
+	);
 	private static final Map<SkullBlock.SkullType, Identifier> TEXTURES = SystemUtil.consume(Maps.<SkullBlock.SkullType, Identifier>newHashMap(), hashMap -> {
 		hashMap.put(SkullBlock.Type.SKELETON, new Identifier("textures/entity/skeleton/skeleton.png"));
 		hashMap.put(SkullBlock.Type.WITHER_SKELETON, new Identifier("textures/entity/skeleton/wither_skeleton.png"));
@@ -54,7 +55,7 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 		boolean bl = blockState.getBlock() instanceof WallSkullBlock;
 		Direction direction = bl ? blockState.get(WallSkullBlock.field_11724) : null;
 		float j = 22.5F * (float)(bl ? (2 + direction.getHorizontal()) * 4 : (Integer)blockState.get(SkullBlock.field_11505));
-		this.method_3581((float)d, (float)e, (float)f, direction, j, ((AbstractSkullBlock)blockState.getBlock()).getSkullType(), skullBlockEntity.getOwner(), i, h);
+		this.renderSkull((float)d, (float)e, (float)f, direction, j, ((AbstractSkullBlock)blockState.getBlock()).getSkullType(), skullBlockEntity.getOwner(), i, h);
 	}
 
 	@Override
@@ -63,10 +64,10 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 		INSTANCE = this;
 	}
 
-	public void method_3581(
+	public void renderSkull(
 		float f, float g, float h, @Nullable Direction direction, float i, SkullBlock.SkullType skullType, @Nullable GameProfile gameProfile, int j, float k
 	) {
-		Model model = (Model)MODELS.get(skullType);
+		SkullEntityModel skullEntityModel = (SkullEntityModel)MODELS.get(skullType);
 		if (j >= 0) {
 			this.bindTexture(DESTROY_STAGE_TEXTURES[j]);
 			GlStateManager.matrixMode(5890);
@@ -106,7 +107,7 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 			GlStateManager.setProfile(GlStateManager.RenderMode.PLAYER_SKIN);
 		}
 
-		model.render(null, k, 0.0F, 0.0F, i, 0.0F, 0.0625F);
+		skullEntityModel.setRotationAngles(k, 0.0F, 0.0F, i, 0.0F, 0.0625F);
 		GlStateManager.popMatrix();
 		if (j >= 0) {
 			GlStateManager.matrixMode(5890);

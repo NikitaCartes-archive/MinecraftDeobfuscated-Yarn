@@ -4,16 +4,16 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1310;
 import net.minecraft.class_1361;
 import net.minecraft.class_1370;
 import net.minecraft.class_1376;
 import net.minecraft.class_1379;
-import net.minecraft.class_3730;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.control.LookControl;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
@@ -107,8 +107,8 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	public class_1310 method_6046() {
-		return class_1310.field_6292;
+	public EntityGroup getGroup() {
+		return EntityGroup.AQUATIC;
 	}
 
 	public boolean method_7058() {
@@ -135,7 +135,7 @@ public class GuardianEntity extends HostileEntity {
 	public LivingEntity method_7052() {
 		if (!this.method_7063()) {
 			return null;
-		} else if (this.world.isRemote) {
+		} else if (this.world.isClient) {
 			if (this.field_7288 != null) {
 				return this.field_7288;
 			} else {
@@ -168,17 +168,17 @@ public class GuardianEntity extends HostileEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return this.method_5816() ? SoundEvents.field_14714 : SoundEvents.field_14968;
+		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.field_14714 : SoundEvents.field_14968;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return this.method_5816() ? SoundEvents.field_14679 : SoundEvents.field_14758;
+		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.field_14679 : SoundEvents.field_14758;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return this.method_5816() ? SoundEvents.field_15138 : SoundEvents.field_15232;
+		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.field_15138 : SoundEvents.field_15232;
 	}
 
 	@Override
@@ -200,7 +200,7 @@ public class GuardianEntity extends HostileEntity {
 
 	@Override
 	public void updateMovement() {
-		if (this.world.isRemote) {
+		if (this.world.isClient) {
 			this.field_7284 = this.field_7286;
 			if (!this.isInsideWater()) {
 				this.field_7281 = 2.0F;
@@ -208,7 +208,7 @@ public class GuardianEntity extends HostileEntity {
 					this.world.playSound(this.x, this.y, this.z, this.method_7062(), this.getSoundCategory(), 1.0F, 1.0F, false);
 				}
 
-				this.field_7283 = this.velocityY < 0.0 && this.world.method_8515(new BlockPos(this).down());
+				this.field_7283 = this.velocityY < 0.0 && this.world.doesBlockHaveSolidTopSurface(new BlockPos(this).down());
 			} else if (this.method_7058()) {
 				if (this.field_7281 < 0.5F) {
 					this.field_7281 = 4.0F;
@@ -221,7 +221,7 @@ public class GuardianEntity extends HostileEntity {
 
 			this.field_7286 = this.field_7286 + this.field_7281;
 			this.field_7287 = this.field_7285;
-			if (!this.method_5816()) {
+			if (!this.isInsideWaterOrBubbleColumn()) {
 				this.field_7285 = this.random.nextFloat();
 			} else if (this.method_7058()) {
 				this.field_7285 = this.field_7285 + (0.0F - this.field_7285) * 0.25F;
@@ -273,7 +273,7 @@ public class GuardianEntity extends HostileEntity {
 			}
 		}
 
-		if (this.method_5816()) {
+		if (this.isInsideWaterOrBubbleColumn()) {
 			this.setBreath(300);
 		} else if (this.onGround) {
 			this.velocityY += 0.5;
@@ -285,7 +285,7 @@ public class GuardianEntity extends HostileEntity {
 		}
 
 		if (this.method_7063()) {
-			this.yaw = this.headPitch;
+			this.yaw = this.headYaw;
 		}
 
 		super.updateMovement();
@@ -310,7 +310,7 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	protected boolean method_7075() {
+	protected boolean checkLightLevelForSpawn() {
 		return true;
 	}
 
@@ -320,13 +320,13 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	public boolean method_5979(IWorld iWorld, class_3730 arg) {
-		return (this.random.nextInt(20) == 0 || !iWorld.method_8626(new BlockPos(this))) && super.method_5979(iWorld, arg);
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
+		return (this.random.nextInt(20) == 0 || !iWorld.method_8626(new BlockPos(this))) && super.canSpawn(iWorld, spawnType);
 	}
 
 	@Override
 	public boolean damage(DamageSource damageSource, float f) {
-		if (!this.method_7058() && !damageSource.setMagic() && damageSource.getSource() instanceof LivingEntity) {
+		if (!this.method_7058() && !damageSource.getMagic() && damageSource.getSource() instanceof LivingEntity) {
 			LivingEntity livingEntity = (LivingEntity)damageSource.getSource();
 			if (!damageSource.isExplosive()) {
 				livingEntity.damage(DamageSource.thorns(this), 2.0F);
@@ -460,7 +460,7 @@ public class GuardianEntity extends HostileEntity {
 				this.field_7291++;
 				if (this.field_7291 == 0) {
 					this.field_7293.method_7060(this.field_7293.getTarget().getEntityId());
-					this.field_7293.world.method_8421(this.field_7293, (byte)21);
+					this.field_7293.world.summonParticle(this.field_7293, (byte)21);
 				} else if (this.field_7291 >= this.field_7293.method_7055()) {
 					float f = 1.0F;
 					if (this.field_7293.world.getDifficulty() == Difficulty.HARD) {

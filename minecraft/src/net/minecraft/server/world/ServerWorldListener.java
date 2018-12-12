@@ -1,14 +1,14 @@
 package net.minecraft.server.world;
 
 import javax.annotation.Nullable;
-import net.minecraft.class_2765;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.network.packet.BlockBreakingProgressClientPacket;
 import net.minecraft.client.network.packet.PlaySoundClientPacket;
+import net.minecraft.client.network.packet.PlaySoundFromEntityClientPacket;
 import net.minecraft.client.network.packet.WorldEventClientPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particle.Particle;
+import net.minecraft.particle.ParticleParameters;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -27,11 +27,11 @@ public class ServerWorldListener implements WorldListener {
 	}
 
 	@Override
-	public void addParticle(Particle particle, boolean bl, double d, double e, double f, double g, double h, double i) {
+	public void method_8568(ParticleParameters particleParameters, boolean bl, double d, double e, double f, double g, double h, double i) {
 	}
 
 	@Override
-	public void addParticle(Particle particle, boolean bl, boolean bl2, double d, double e, double f, double g, double h, double i) {
+	public void method_8563(ParticleParameters particleParameters, boolean bl, boolean bl2, double d, double e, double f, double g, double h, double i) {
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class ServerWorldListener implements WorldListener {
 	@Override
 	public void onEntityRemoved(Entity entity) {
 		this.world.getEntityTracker().remove(entity);
-		this.world.method_14170().resetEntityScore(entity);
+		this.world.getScoreboard().resetEntityScore(entity);
 		if (entity instanceof ServerPlayerEntity) {
 			this.world.dimension.method_12458((ServerPlayerEntity)entity);
 		}
@@ -54,7 +54,7 @@ public class ServerWorldListener implements WorldListener {
 	@Override
 	public void onSound(@Nullable PlayerEntity playerEntity, SoundEvent soundEvent, SoundCategory soundCategory, double d, double e, double f, float g, float h) {
 		this.server
-			.getConfigurationManager()
+			.getPlayerManager()
 			.sendToAround(
 				playerEntity,
 				d,
@@ -67,9 +67,9 @@ public class ServerWorldListener implements WorldListener {
 	}
 
 	@Override
-	public void method_8565(@Nullable PlayerEntity playerEntity, SoundEvent soundEvent, SoundCategory soundCategory, Entity entity, float f, float g) {
+	public void onSoundFromEntity(@Nullable PlayerEntity playerEntity, SoundEvent soundEvent, SoundCategory soundCategory, Entity entity, float f, float g) {
 		this.server
-			.getConfigurationManager()
+			.getPlayerManager()
 			.sendToAround(
 				playerEntity,
 				entity.x,
@@ -77,7 +77,7 @@ public class ServerWorldListener implements WorldListener {
 				entity.z,
 				f > 1.0F ? (double)(16.0F * f) : 16.0,
 				this.world.dimension.getType(),
-				new class_2765(soundEvent, soundCategory, entity, f, g)
+				new PlaySoundFromEntityClientPacket(soundEvent, soundCategory, entity, f, g)
 			);
 	}
 
@@ -93,7 +93,7 @@ public class ServerWorldListener implements WorldListener {
 	@Override
 	public void onWorldEvent(PlayerEntity playerEntity, int i, BlockPos blockPos, int j) {
 		this.server
-			.getConfigurationManager()
+			.getPlayerManager()
 			.sendToAround(
 				playerEntity,
 				(double)blockPos.getX(),
@@ -107,12 +107,12 @@ public class ServerWorldListener implements WorldListener {
 
 	@Override
 	public void onGlobalWorldEvent(int i, BlockPos blockPos, int j) {
-		this.server.getConfigurationManager().sendToAll(new WorldEventClientPacket(i, blockPos, j, true));
+		this.server.getPlayerManager().sendToAll(new WorldEventClientPacket(i, blockPos, j, true));
 	}
 
 	@Override
 	public void onBlockBreakingStage(int i, BlockPos blockPos, int j) {
-		for (ServerPlayerEntity serverPlayerEntity : this.server.getConfigurationManager().getPlayerList()) {
+		for (ServerPlayerEntity serverPlayerEntity : this.server.getPlayerManager().getPlayerList()) {
 			if (serverPlayerEntity != null && serverPlayerEntity.world == this.world && serverPlayerEntity.getEntityId() != i) {
 				double d = (double)blockPos.getX() - serverPlayerEntity.x;
 				double e = (double)blockPos.getY() - serverPlayerEntity.y;

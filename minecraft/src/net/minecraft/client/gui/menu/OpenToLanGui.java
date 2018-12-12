@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.sortme.NetworkUtils;
+import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.world.GameMode;
@@ -28,9 +28,9 @@ public class OpenToLanGui extends Gui {
 			@Override
 			public void onPressed(double d, double e) {
 				OpenToLanGui.this.client.openGui(null);
-				int i = NetworkUtils.choosePort();
+				int i = NetworkUtils.findLocalPort();
 				TextComponent textComponent;
-				if (OpenToLanGui.this.client.getServer().method_3763(GameMode.byName(OpenToLanGui.this.gameMode), OpenToLanGui.this.allowCommands, i)) {
+				if (OpenToLanGui.this.client.getServer().openToLan(GameMode.byName(OpenToLanGui.this.gameMode), OpenToLanGui.this.allowCommands, i)) {
 					textComponent = new TranslatableTextComponent("commands.publish.started", i);
 				} else {
 					textComponent = new TranslatableTextComponent("commands.publish.failed");

@@ -2,7 +2,6 @@ package net.minecraft.container;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1662;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -11,6 +10,7 @@ import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -19,12 +19,12 @@ public class CraftingTableContainer extends CraftingContainer {
 	public CraftingResultInventory resultInv = new CraftingResultInventory();
 	private final World world;
 	private final BlockPos pos;
-	private final PlayerEntity field_7797;
+	private final PlayerEntity player;
 
 	public CraftingTableContainer(PlayerInventory playerInventory, World world, BlockPos blockPos) {
 		this.world = world;
 		this.pos = blockPos;
-		this.field_7797 = playerInventory.player;
+		this.player = playerInventory.player;
 		this.addSlot(new CraftingResultSlot(playerInventory.player, this.craftingInv, this.resultInv, 0, 124, 35));
 
 		for (int i = 0; i < 3; i++) {
@@ -46,12 +46,12 @@ public class CraftingTableContainer extends CraftingContainer {
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
-		this.method_7599(this.world, this.field_7797, this.craftingInv, this.resultInv);
+		this.onCraftingContentChanged(this.world, this.player, this.craftingInv, this.resultInv);
 	}
 
 	@Override
-	public void method_7654(class_1662 arg) {
-		this.craftingInv.method_7683(arg);
+	public void populateRecipeFinder(RecipeFinder recipeFinder) {
+		this.craftingInv.provideRecipeInputs(recipeFinder);
 	}
 
 	@Override
@@ -62,13 +62,13 @@ public class CraftingTableContainer extends CraftingContainer {
 
 	@Override
 	public boolean matches(Recipe recipe) {
-		return recipe.matches(this.craftingInv, this.field_7797.world);
+		return recipe.matches(this.craftingInv, this.player.world);
 	}
 
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			this.method_7607(playerEntity, this.world, this.craftingInv);
 		}
 	}
@@ -141,13 +141,13 @@ public class CraftingTableContainer extends CraftingContainer {
 	}
 
 	@Override
-	public int getCrafitngHeight() {
+	public int getCraftingHeight() {
 		return this.craftingInv.getInvHeight();
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int method_7658() {
+	public int getCraftingSlotCount() {
 		return 10;
 	}
 }

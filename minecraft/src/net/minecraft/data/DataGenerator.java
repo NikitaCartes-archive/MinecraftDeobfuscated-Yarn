@@ -32,7 +32,7 @@ public class DataGenerator {
 
 	public void run() throws IOException {
 		DataCache dataCache = new DataCache(this.output, "cache");
-		dataCache.method_16674(this.getOutput().resolve("version.json"));
+		dataCache.ignore(this.getOutput().resolve("version.json"));
 		Stopwatch stopwatch = Stopwatch.createUnstarted();
 
 		for (DataProvider dataProvider : this.providers) {

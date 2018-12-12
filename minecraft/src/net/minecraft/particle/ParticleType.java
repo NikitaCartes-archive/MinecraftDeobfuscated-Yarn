@@ -1,19 +1,19 @@
 package net.minecraft.particle;
 
-public class ParticleType<T extends Particle> {
-	private final boolean alwaysShow;
-	private final Particle.class_2395<T> field_11197;
+public class ParticleType<T extends ParticleParameters> {
+	private final boolean shouldAlwaysSpawn;
+	private final ParticleParameters.Factory<T> parametersFactory;
 
-	protected ParticleType(boolean bl, Particle.class_2395<T> arg) {
-		this.alwaysShow = bl;
-		this.field_11197 = arg;
+	protected ParticleType(boolean bl, ParticleParameters.Factory<T> factory) {
+		this.shouldAlwaysSpawn = bl;
+		this.parametersFactory = factory;
 	}
 
-	public boolean alwaysShow() {
-		return this.alwaysShow;
+	public boolean shouldAlwaysSpawn() {
+		return this.shouldAlwaysSpawn;
 	}
 
-	public Particle.class_2395<T> method_10298() {
-		return this.field_11197;
+	public ParticleParameters.Factory<T> getParametersFactory() {
+		return this.parametersFactory;
 	}
 }

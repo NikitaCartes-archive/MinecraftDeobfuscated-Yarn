@@ -31,7 +31,7 @@ public class TagEntry extends LeafEntry {
 		this.name.values().forEach(item -> consumer.accept(new ItemStack(item)));
 	}
 
-	private boolean doExpand(LootContext lootContext, Consumer<LootChoice> consumer) {
+	private boolean method_447(LootContext lootContext, Consumer<LootChoice> consumer) {
 		if (!this.test(lootContext)) {
 			return false;
 		} else {
@@ -50,7 +50,7 @@ public class TagEntry extends LeafEntry {
 
 	@Override
 	public boolean expand(LootContext lootContext, Consumer<LootChoice> consumer) {
-		return this.expand ? this.doExpand(lootContext, consumer) : super.expand(lootContext, consumer);
+		return this.expand ? this.method_447(lootContext, consumer) : super.expand(lootContext, consumer);
 	}
 
 	public static LeafEntry.Builder<?> create(Tag<Item> tag) {

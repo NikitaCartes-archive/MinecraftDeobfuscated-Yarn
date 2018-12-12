@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.minecraft.class_2919;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -15,21 +14,22 @@ import net.minecraft.util.math.noise.SimplexNoiseSampler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.chunk.ChunkPos;
+import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class TheEndBiomeSource extends BiomeSource {
 	private final SimplexNoiseSampler field_9831;
-	private final class_2919 field_9829;
+	private final ChunkRandom field_9829;
 	private final Biome[] field_9830 = new Biome[]{Biomes.field_9411, Biomes.field_9442, Biomes.field_9447, Biomes.field_9457, Biomes.field_9465};
 
 	public TheEndBiomeSource(TheEndBiomeSourceConfig theEndBiomeSourceConfig) {
-		this.field_9829 = new class_2919(theEndBiomeSourceConfig.method_9204());
-		this.field_9829.method_12660(17292);
+		this.field_9829 = new ChunkRandom(theEndBiomeSourceConfig.method_9204());
+		this.field_9829.consume(17292);
 		this.field_9831 = new SimplexNoiseSampler(this.field_9829);
 	}
 
 	@Override
-	public Biome method_16359(int i, int j) {
+	public Biome getBiome(int i, int j) {
 		if ((long)i * (long)i + (long)j * (long)j <= 4096L) {
 			return Biomes.field_9411;
 		} else {
@@ -45,7 +45,7 @@ public class TheEndBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	public Biome[] method_8760(int i, int j, int k, int l, boolean bl) {
+	public Biome[] sampleBiomes(int i, int j, int k, int l, boolean bl) {
 		Biome[] biomes = new Biome[k * l];
 		Long2ObjectMap<Biome> long2ObjectMap = new Long2ObjectOpenHashMap<>();
 
@@ -56,7 +56,7 @@ public class TheEndBiomeSource extends BiomeSource {
 				long q = ChunkPos.toLong(o, p);
 				Biome biome = long2ObjectMap.get(q);
 				if (biome == null) {
-					biome = this.method_16359(o, p);
+					biome = this.getBiome(o, p);
 					long2ObjectMap.put(q, biome);
 				}
 
@@ -68,26 +68,26 @@ public class TheEndBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	public Set<Biome> method_8763(int i, int j, int k) {
+	public Set<Biome> getBiomesInArea(int i, int j, int k) {
 		int l = i - k >> 2;
 		int m = j - k >> 2;
 		int n = i + k >> 2;
 		int o = j + k >> 2;
 		int p = n - l + 1;
 		int q = o - m + 1;
-		return Sets.<Biome>newHashSet(this.method_8756(l, m, p, q));
+		return Sets.<Biome>newHashSet(this.sampleBiomes(l, m, p, q));
 	}
 
 	@Nullable
 	@Override
-	public BlockPos method_8762(int i, int j, int k, List<Biome> list, Random random) {
+	public BlockPos locateBiome(int i, int j, int k, List<Biome> list, Random random) {
 		int l = i - k >> 2;
 		int m = j - k >> 2;
 		int n = i + k >> 2;
 		int o = j + k >> 2;
 		int p = n - l + 1;
 		int q = o - m + 1;
-		Biome[] biomes = this.method_8756(l, m, p, q);
+		Biome[] biomes = this.sampleBiomes(l, m, p, q);
 		BlockPos blockPos = null;
 		int r = 0;
 
@@ -135,7 +135,7 @@ public class TheEndBiomeSource extends BiomeSource {
 
 	@Override
 	public boolean hasStructureFeature(StructureFeature<?> structureFeature) {
-		return (Boolean)this.STRUCTURE_FEATURES.computeIfAbsent(structureFeature, structureFeaturex -> {
+		return (Boolean)this.structureFeatures.computeIfAbsent(structureFeature, structureFeaturex -> {
 			for (Biome biome : this.field_9830) {
 				if (biome.hasStructureFeature(structureFeaturex)) {
 					return true;
@@ -150,7 +150,7 @@ public class TheEndBiomeSource extends BiomeSource {
 	public Set<BlockState> getTopMaterials() {
 		if (this.topMaterials.isEmpty()) {
 			for (Biome biome : this.field_9830) {
-				this.topMaterials.add(biome.getSurfaceConfig().getTopMaterial());
+				this.topMaterials.add(biome.method_8722().getTopMaterial());
 			}
 		}
 

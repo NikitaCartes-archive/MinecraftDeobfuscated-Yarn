@@ -9,11 +9,11 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class MagmaCubeEntityRenderer extends EntityMobRenderer<MagmaCubeEntity> {
+public class MagmaCubeEntityRenderer extends MobEntityRenderer<MagmaCubeEntity, MagmaCubeEntityModel<MagmaCubeEntity>> {
 	private static final Identifier SKIN = new Identifier("textures/entity/slime/magmacube.png");
 
 	public MagmaCubeEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new MagmaCubeEntityModel(), 0.25F);
+		super(entityRenderDispatcher, new MagmaCubeEntityModel<>(), 0.25F);
 	}
 
 	protected Identifier getTexture(MagmaCubeEntity magmaCubeEntity) {

@@ -22,7 +22,7 @@ public class GameModeCommand {
 					ServerCommandManager.literal(gameMode.getName())
 						.executes(commandContext -> method_13387(commandContext, Collections.singleton(commandContext.getSource().getPlayer()), gameMode))
 						.then(
-							ServerCommandManager.argument("target", EntityArgumentType.method_9308())
+							ServerCommandManager.argument("target", EntityArgumentType.multiplePlayer())
 								.executes(commandContext -> method_13387(commandContext, EntityArgumentType.method_9312(commandContext, "target"), gameMode))
 						)
 				);

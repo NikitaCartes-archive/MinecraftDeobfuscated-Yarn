@@ -15,7 +15,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.minecraft.class_2430;
-import net.minecraft.class_2432;
 import net.minecraft.class_2434;
 import net.minecraft.class_2437;
 import net.minecraft.class_3714;
@@ -38,7 +37,7 @@ public class LootTablesProvider implements DataProvider {
 	private final DataGenerator root;
 	private final List<Pair<Supplier<Consumer<BiConsumer<Identifier, LootSupplier.Builder>>>, LootContextType>> field_11354 = ImmutableList.of(
 		Pair.of(class_2437::new, LootContextTypes.FISHING),
-		Pair.of(class_2432::new, LootContextTypes.CHEST),
+		Pair.of(ChestLootTableGenerator::new, LootContextTypes.CHEST),
 		Pair.of(class_2434::new, LootContextTypes.ENTITY),
 		Pair.of(class_2430::new, LootContextTypes.BLOCK),
 		Pair.of(class_3714::new, LootContextTypes.GIFT)
@@ -73,7 +72,7 @@ public class LootTablesProvider implements DataProvider {
 				Path path2 = getOutput(path, identifierx);
 
 				try {
-					DataProvider.method_10320(GSON, dataCache, LootManager.toJson(lootSupplier), path2);
+					DataProvider.writeToPath(GSON, dataCache, LootManager.toJson(lootSupplier), path2);
 				} catch (IOException var6) {
 					LOGGER.error("Couldn't save loot table {}", path2, var6);
 				}

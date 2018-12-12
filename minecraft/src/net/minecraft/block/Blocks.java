@@ -322,7 +322,7 @@ public class Blocks {
 		"black_wool", new Block(Block.Settings.of(Material.WOOL, MaterialColor.BLACK).strength(0.8F).sounds(BlockSoundGroup.WOOL))
 	);
 	public static final Block field_10008 = register(
-		"moving_piston", new PistonExtensionBlock(Block.Settings.of(Material.PISTON).strength(-1.0F).isPistonExtension().dropsNothing())
+		"moving_piston", new PistonExtensionBlock(Block.Settings.of(Material.PISTON).strength(-1.0F).hasDynamicBounds().dropsNothing())
 	);
 	public static final Block field_10182 = register(
 		"dandelion", new FlowerBlock(StatusEffects.field_5922, 5, Block.Settings.of(Material.PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS))
@@ -1312,7 +1312,7 @@ public class Blocks {
 		"chain_command_block", new CommandBlock(Block.Settings.of(Material.METAL, MaterialColor.GREEN).strength(-1.0F, 3600000.0F).dropsNothing())
 	);
 	public static final Block field_10110 = register(
-		"frosted_ice", new IceFrostedBlock(Block.Settings.of(Material.ICE).friction(0.98F).ticksRandomly().strength(0.5F).sounds(BlockSoundGroup.GLASS))
+		"frosted_ice", new FrostedIceBlock(Block.Settings.of(Material.ICE).friction(0.98F).ticksRandomly().strength(0.5F).sounds(BlockSoundGroup.GLASS))
 	);
 	public static final Block field_10092 = register(
 		"magma_block", new MagmaBlock(Block.Settings.of(Material.STONE, MaterialColor.NETHER).lightLevel(3).ticksRandomly().strength(0.5F))
@@ -1327,59 +1327,59 @@ public class Blocks {
 	);
 	public static final Block field_10282 = register("observer", new ObserverBlock(Block.Settings.of(Material.STONE).strength(3.0F)));
 	public static final Block field_10603 = register(
-		"shulker_box", new ShulkerBoxBlock(null, Block.Settings.of(Material.SHULKER_BOX).strength(2.0F).isPistonExtension())
+		"shulker_box", new ShulkerBoxBlock(null, Block.Settings.of(Material.SHULKER_BOX).strength(2.0F).hasDynamicBounds())
 	);
 	public static final Block field_10199 = register(
-		"white_shulker_box", new ShulkerBoxBlock(DyeColor.WHITE, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.WHITE).strength(2.0F).isPistonExtension())
+		"white_shulker_box", new ShulkerBoxBlock(DyeColor.WHITE, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.WHITE).strength(2.0F).hasDynamicBounds())
 	);
 	public static final Block field_10407 = register(
-		"orange_shulker_box", new ShulkerBoxBlock(DyeColor.ORANGE, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.ORANGE).strength(2.0F).isPistonExtension())
+		"orange_shulker_box", new ShulkerBoxBlock(DyeColor.ORANGE, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.ORANGE).strength(2.0F).hasDynamicBounds())
 	);
 	public static final Block field_10063 = register(
 		"magenta_shulker_box",
-		new ShulkerBoxBlock(DyeColor.MAGENTA, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.MAGENTA).strength(2.0F).isPistonExtension())
+		new ShulkerBoxBlock(DyeColor.MAGENTA, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.MAGENTA).strength(2.0F).hasDynamicBounds())
 	);
 	public static final Block field_10203 = register(
 		"light_blue_shulker_box",
-		new ShulkerBoxBlock(DyeColor.LIGHT_BLUE, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.LIGHT_BLUE).strength(2.0F).isPistonExtension())
+		new ShulkerBoxBlock(DyeColor.LIGHT_BLUE, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.LIGHT_BLUE).strength(2.0F).hasDynamicBounds())
 	);
 	public static final Block field_10600 = register(
-		"yellow_shulker_box", new ShulkerBoxBlock(DyeColor.YELLOW, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.YELLOW).strength(2.0F).isPistonExtension())
+		"yellow_shulker_box", new ShulkerBoxBlock(DyeColor.YELLOW, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.YELLOW).strength(2.0F).hasDynamicBounds())
 	);
 	public static final Block field_10275 = register(
-		"lime_shulker_box", new ShulkerBoxBlock(DyeColor.LIME, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.LIME).strength(2.0F).isPistonExtension())
+		"lime_shulker_box", new ShulkerBoxBlock(DyeColor.LIME, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.LIME).strength(2.0F).hasDynamicBounds())
 	);
 	public static final Block field_10051 = register(
-		"pink_shulker_box", new ShulkerBoxBlock(DyeColor.PINK, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.PINK).strength(2.0F).isPistonExtension())
+		"pink_shulker_box", new ShulkerBoxBlock(DyeColor.PINK, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.PINK).strength(2.0F).hasDynamicBounds())
 	);
 	public static final Block field_10140 = register(
-		"gray_shulker_box", new ShulkerBoxBlock(DyeColor.GRAY, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.GRAY).strength(2.0F).isPistonExtension())
+		"gray_shulker_box", new ShulkerBoxBlock(DyeColor.GRAY, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.GRAY).strength(2.0F).hasDynamicBounds())
 	);
 	public static final Block field_10320 = register(
 		"light_gray_shulker_box",
-		new ShulkerBoxBlock(DyeColor.LIGHT_GRAY, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.LIGHT_GRAY).strength(2.0F).isPistonExtension())
+		new ShulkerBoxBlock(DyeColor.LIGHT_GRAY, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.LIGHT_GRAY).strength(2.0F).hasDynamicBounds())
 	);
 	public static final Block field_10532 = register(
-		"cyan_shulker_box", new ShulkerBoxBlock(DyeColor.CYAN, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.CYAN).strength(2.0F).isPistonExtension())
+		"cyan_shulker_box", new ShulkerBoxBlock(DyeColor.CYAN, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.CYAN).strength(2.0F).hasDynamicBounds())
 	);
 	public static final Block field_10268 = register(
 		"purple_shulker_box",
-		new ShulkerBoxBlock(DyeColor.PURPLE, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.PURPLE_TERRACOTTA).strength(2.0F).isPistonExtension())
+		new ShulkerBoxBlock(DyeColor.PURPLE, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.PURPLE_TERRACOTTA).strength(2.0F).hasDynamicBounds())
 	);
 	public static final Block field_10605 = register(
-		"blue_shulker_box", new ShulkerBoxBlock(DyeColor.BLUE, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.BLUE).strength(2.0F).isPistonExtension())
+		"blue_shulker_box", new ShulkerBoxBlock(DyeColor.BLUE, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.BLUE).strength(2.0F).hasDynamicBounds())
 	);
 	public static final Block field_10373 = register(
-		"brown_shulker_box", new ShulkerBoxBlock(DyeColor.BROWN, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.BROWN).strength(2.0F).isPistonExtension())
+		"brown_shulker_box", new ShulkerBoxBlock(DyeColor.BROWN, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.BROWN).strength(2.0F).hasDynamicBounds())
 	);
 	public static final Block field_10055 = register(
-		"green_shulker_box", new ShulkerBoxBlock(DyeColor.GREEN, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.GREEN).strength(2.0F).isPistonExtension())
+		"green_shulker_box", new ShulkerBoxBlock(DyeColor.GREEN, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.GREEN).strength(2.0F).hasDynamicBounds())
 	);
 	public static final Block field_10068 = register(
-		"red_shulker_box", new ShulkerBoxBlock(DyeColor.RED, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.RED).strength(2.0F).isPistonExtension())
+		"red_shulker_box", new ShulkerBoxBlock(DyeColor.RED, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.RED).strength(2.0F).hasDynamicBounds())
 	);
 	public static final Block field_10371 = register(
-		"black_shulker_box", new ShulkerBoxBlock(DyeColor.BLACK, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.BLACK).strength(2.0F).isPistonExtension())
+		"black_shulker_box", new ShulkerBoxBlock(DyeColor.BLACK, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.BLACK).strength(2.0F).hasDynamicBounds())
 	);
 	public static final Block field_10595 = register(
 		"white_glazed_terracotta", new GlazedTerracottaBlock(Block.Settings.of(Material.STONE, DyeColor.WHITE).strength(1.4F))

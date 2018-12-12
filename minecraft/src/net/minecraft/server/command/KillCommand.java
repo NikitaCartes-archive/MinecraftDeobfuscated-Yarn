@@ -12,7 +12,7 @@ public class KillCommand {
 			ServerCommandManager.literal("kill")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.argument("targets", EntityArgumentType.method_9306())
+					ServerCommandManager.argument("targets", EntityArgumentType.multipleEntities())
 						.executes(commandContext -> method_13430(commandContext.getSource(), EntityArgumentType.method_9317(commandContext, "targets")))
 				)
 		);

@@ -4,11 +4,12 @@ import com.google.gson.JsonObject;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.AdvancementRewards;
+import net.minecraft.advancement.CriteriaMerger;
 import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemContainer;
+import net.minecraft.item.ItemProvider;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -16,7 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class class_2454 {
-	private static final Logger field_11420 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private final Item field_11417;
 	private final Ingredient field_11418;
 	private final float field_11414;
@@ -24,15 +25,15 @@ public class class_2454 {
 	private final SimpleAdvancement.Builder field_11416 = SimpleAdvancement.Builder.create();
 	private String field_11419;
 
-	public class_2454(Ingredient ingredient, ItemContainer itemContainer, float f, int i) {
-		this.field_11417 = itemContainer.getItem();
+	public class_2454(Ingredient ingredient, ItemProvider itemProvider, float f, int i) {
+		this.field_11417 = itemProvider.getItem();
 		this.field_11418 = ingredient;
 		this.field_11414 = f;
 		this.field_11415 = i;
 	}
 
-	public static class_2454 method_10473(Ingredient ingredient, ItemContainer itemContainer, float f, int i) {
-		return new class_2454(ingredient, itemContainer, f, i);
+	public static class_2454 method_10473(Ingredient ingredient, ItemProvider itemProvider, float f, int i) {
+		return new class_2454(ingredient, itemProvider, f, i);
 	}
 
 	public class_2454 method_10469(String string, CriterionConditions criterionConditions) {
@@ -58,8 +59,8 @@ public class class_2454 {
 		this.field_11416
 			.parent(new Identifier("recipes/root"))
 			.criterion("has_the_recipe", new RecipeUnlockedCriterion.Conditions(identifier))
-			.method_703(AdvancementRewards.Builder.method_753(identifier))
-			.method_704(class_193.OR);
+			.rewards(AdvancementRewards.Builder.recipe(identifier))
+			.criteriaMerger(CriteriaMerger.OR);
 		consumer.accept(
 			new class_2454.class_2455(
 				identifier,
@@ -75,18 +76,18 @@ public class class_2454 {
 	}
 
 	private void method_10471(Identifier identifier) {
-		if (this.field_11416.method_710().isEmpty()) {
+		if (this.field_11416.getCriteria().isEmpty()) {
 			throw new IllegalStateException("No way of obtaining recipe " + identifier);
 		}
 	}
 
 	public static class class_2455 implements class_2444 {
 		private final Identifier field_11424;
-		private final String field_11426;
-		private final Ingredient field_11425;
-		private final Item field_11428;
-		private final float field_11421;
-		private final int field_11422;
+		private final String group;
+		private final Ingredient ingredient;
+		private final Item result;
+		private final float experience;
+		private final int cookingTime;
 		private final SimpleAdvancement.Builder field_11423;
 		private final Identifier field_11427;
 
@@ -94,11 +95,11 @@ public class class_2454 {
 			Identifier identifier, String string, Ingredient ingredient, Item item, float f, int i, SimpleAdvancement.Builder builder, Identifier identifier2
 		) {
 			this.field_11424 = identifier;
-			this.field_11426 = string;
-			this.field_11425 = ingredient;
-			this.field_11428 = item;
-			this.field_11421 = f;
-			this.field_11422 = i;
+			this.group = string;
+			this.ingredient = ingredient;
+			this.result = item;
+			this.experience = f;
+			this.cookingTime = i;
 			this.field_11423 = builder;
 			this.field_11427 = identifier2;
 		}
@@ -107,14 +108,14 @@ public class class_2454 {
 		public JsonObject method_10416() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.addProperty("type", "smelting");
-			if (!this.field_11426.isEmpty()) {
-				jsonObject.addProperty("group", this.field_11426);
+			if (!this.group.isEmpty()) {
+				jsonObject.addProperty("group", this.group);
 			}
 
-			jsonObject.add("ingredient", this.field_11425.toJson());
-			jsonObject.addProperty("result", Registry.ITEM.getId(this.field_11428).toString());
-			jsonObject.addProperty("experience", this.field_11421);
-			jsonObject.addProperty("cookingtime", this.field_11422);
+			jsonObject.add("ingredient", this.ingredient.toJson());
+			jsonObject.addProperty("result", Registry.ITEM.getId(this.result).toString());
+			jsonObject.addProperty("experience", this.experience);
+			jsonObject.addProperty("cookingtime", this.cookingTime);
 			return jsonObject;
 		}
 
@@ -126,7 +127,7 @@ public class class_2454 {
 		@Nullable
 		@Override
 		public JsonObject method_10415() {
-			return this.field_11423.method_698();
+			return this.field_11423.toJson();
 		}
 
 		@Nullable

@@ -11,8 +11,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.decorator.NoiseHeightmapDecoratorConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class NoiseHeightmap32Decorator extends Decorator<NoiseHeightmapDecoratorConfig> {
 	public NoiseHeightmap32Decorator(Function<Dynamic<?>, ? extends NoiseHeightmapDecoratorConfig> function) {
@@ -21,7 +20,7 @@ public class NoiseHeightmap32Decorator extends Decorator<NoiseHeightmapDecorator
 
 	public Stream<BlockPos> method_15936(
 		IWorld iWorld,
-		ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator,
+		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,
 		NoiseHeightmapDecoratorConfig noiseHeightmapDecoratorConfig,
 		BlockPos blockPos

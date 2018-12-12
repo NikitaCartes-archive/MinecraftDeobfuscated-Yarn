@@ -7,8 +7,8 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiEventListener;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.VideoSettingsListWidget;
+import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.settings.GameOptions;
 
 @Environment(EnvType.CLIENT)
 public class VideoSettingsGui extends Gui {
@@ -51,7 +51,7 @@ public class VideoSettingsGui extends Gui {
 		this.addButton(new ButtonWidget(200, this.width / 2 - 100, this.height - 27, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
-				VideoSettingsGui.this.client.options.write();
+				VideoSettingsGui.this.client.field_1690.write();
 				VideoSettingsGui.this.client.window.method_4475();
 				VideoSettingsGui.this.client.openGui(VideoSettingsGui.this.parent);
 			}
@@ -62,7 +62,7 @@ public class VideoSettingsGui extends Gui {
 
 	@Override
 	public void close() {
-		this.client.options.write();
+		this.client.field_1690.write();
 		super.close();
 	}
 

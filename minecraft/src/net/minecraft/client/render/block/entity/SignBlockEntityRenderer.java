@@ -13,8 +13,8 @@ import net.minecraft.block.WallSignBlock;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.font.FontRenderer;
 import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.entity.model.SignBlockEntityModel;
 import net.minecraft.tag.BlockTags;
@@ -42,7 +42,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 			this.model.getSignpostModel().visible = true;
 		} else {
 			GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
-			GlStateManager.rotatef(-((Direction)blockState.get(WallSignBlock.field_11726)).asRotation(), 0.0F, 1.0F, 0.0F);
+			GlStateManager.rotatef(-((Direction)blockState.get(WallSignBlock.FACING)).asRotation(), 0.0F, 1.0F, 0.0F);
 			GlStateManager.translatef(0.0F, -0.3125F, -0.4375F);
 			this.model.getSignpostModel().visible = false;
 		}
@@ -69,7 +69,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		GlStateManager.scalef(0.010416667F, -0.010416667F, 0.010416667F);
 		GlStateManager.normal3f(0.0F, 0.0F, -0.010416667F);
 		GlStateManager.depthMask(false);
-		int k = signBlockEntity.method_16126().method_16357();
+		int k = signBlockEntity.getTextColor().method_16357();
 		if (i < 0) {
 			for (int l = 0; l < 4; l++) {
 				String string = signBlockEntity.method_11300(l, textComponent -> {
@@ -78,25 +78,25 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 				});
 				if (string != null) {
 					fontRenderer.draw(string, (float)(-fontRenderer.getStringWidth(string) / 2), (float)(l * 10 - signBlockEntity.text.length * 5), k);
-					if (l == signBlockEntity.method_16334() && signBlockEntity.method_16336() >= 0) {
-						int m = fontRenderer.getStringWidth(string.substring(0, Math.max(Math.min(signBlockEntity.method_16336(), string.length()), 0)));
+					if (l == signBlockEntity.getCurrentRow() && signBlockEntity.getSelectionStart() >= 0) {
+						int m = fontRenderer.getStringWidth(string.substring(0, Math.max(Math.min(signBlockEntity.getSelectionStart(), string.length()), 0)));
 						int n = fontRenderer.isRightToLeft() ? -1 : 1;
 						int o = (m - fontRenderer.getStringWidth(string) / 2) * n;
 						int p = l * 10 - signBlockEntity.text.length * 5;
-						if (signBlockEntity.method_16331()) {
-							if (signBlockEntity.method_16336() < string.length()) {
-								Drawable.drawRect(o, p - 1, o + 1, p + fontRenderer.FONT_HEIGHT, 0xFF000000 | k);
+						if (signBlockEntity.isCaretVisible()) {
+							if (signBlockEntity.getSelectionStart() < string.length()) {
+								Drawable.drawRect(o, p - 1, o + 1, p + fontRenderer.fontHeight, 0xFF000000 | k);
 							} else {
 								fontRenderer.draw("_", (float)o, (float)p, k);
 							}
 						}
 
-						if (signBlockEntity.method_16333() != signBlockEntity.method_16336()) {
-							int q = Math.min(signBlockEntity.method_16336(), signBlockEntity.method_16333());
-							int r = Math.max(signBlockEntity.method_16336(), signBlockEntity.method_16333());
+						if (signBlockEntity.getSelectionEnd() != signBlockEntity.getSelectionStart()) {
+							int q = Math.min(signBlockEntity.getSelectionStart(), signBlockEntity.getSelectionEnd());
+							int r = Math.max(signBlockEntity.getSelectionStart(), signBlockEntity.getSelectionEnd());
 							int s = (fontRenderer.getStringWidth(string.substring(0, q)) - fontRenderer.getStringWidth(string) / 2) * n;
 							int t = (fontRenderer.getStringWidth(string.substring(0, r)) - fontRenderer.getStringWidth(string) / 2) * n;
-							this.method_16210(Math.min(s, t), p, Math.max(s, t), p + fontRenderer.FONT_HEIGHT);
+							this.method_16210(Math.min(s, t), p, Math.max(s, t), p + fontRenderer.fontHeight);
 						}
 					}
 				}
@@ -131,16 +131,16 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 
 	private void method_16210(int i, int j, int k, int l) {
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		GlStateManager.color4f(0.0F, 0.0F, 255.0F, 255.0F);
 		GlStateManager.disableTexture();
 		GlStateManager.enableColorLogicOp();
 		GlStateManager.logicOp(GlStateManager.LogicOp.OR_REVERSE);
-		vertexBuffer.begin(7, VertexFormats.POSITION);
-		vertexBuffer.vertex((double)i, (double)l, 0.0).next();
-		vertexBuffer.vertex((double)k, (double)l, 0.0).next();
-		vertexBuffer.vertex((double)k, (double)j, 0.0).next();
-		vertexBuffer.vertex((double)i, (double)j, 0.0).next();
+		bufferBuilder.begin(7, VertexFormats.POSITION);
+		bufferBuilder.vertex((double)i, (double)l, 0.0).next();
+		bufferBuilder.vertex((double)k, (double)l, 0.0).next();
+		bufferBuilder.vertex((double)k, (double)j, 0.0).next();
+		bufferBuilder.vertex((double)i, (double)j, 0.0).next();
 		tessellator.draw();
 		GlStateManager.disableColorLogicOp();
 		GlStateManager.enableTexture();

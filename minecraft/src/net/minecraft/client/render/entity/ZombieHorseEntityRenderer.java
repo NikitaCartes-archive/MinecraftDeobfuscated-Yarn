@@ -9,11 +9,10 @@ import net.minecraft.client.render.entity.model.HorseEntityModel;
 import net.minecraft.entity.mob.SkeletonHorseEntity;
 import net.minecraft.entity.mob.ZombieHorseEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
-import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class ZombieHorseEntityRenderer extends HorseBaseEntityRenderer<HorseEntity> {
+public class ZombieHorseEntityRenderer extends HorseBaseEntityRenderer<HorseBaseEntity, HorseEntityModel<HorseBaseEntity>> {
 	private static final Map<Class<?>, Identifier> TEXTURES = Maps.<Class<?>, Identifier>newHashMap(
 		ImmutableMap.of(
 			ZombieHorseEntity.class,
@@ -24,7 +23,7 @@ public class ZombieHorseEntityRenderer extends HorseBaseEntityRenderer<HorseEnti
 	);
 
 	public ZombieHorseEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new HorseEntityModel(), 1.0F);
+		super(entityRenderDispatcher, new HorseEntityModel<>(), 1.0F);
 	}
 
 	protected Identifier getTexture(HorseBaseEntity horseBaseEntity) {

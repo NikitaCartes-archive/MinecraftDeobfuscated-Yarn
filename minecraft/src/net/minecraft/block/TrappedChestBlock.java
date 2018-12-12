@@ -32,12 +32,12 @@ public class TrappedChestBlock extends ChestBlock {
 	}
 
 	@Override
-	public int method_9524(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
 		return MathHelper.clamp(ChestBlockEntity.method_11048(blockView, blockPos), 0, 15);
 	}
 
 	@Override
-	public int method_9603(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		return direction == Direction.UP ? blockState.method_11597(blockView, blockPos, direction) : 0;
+	public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+		return direction == Direction.UP ? blockState.getWeakRedstonePower(blockView, blockPos, direction) : 0;
 	}
 }

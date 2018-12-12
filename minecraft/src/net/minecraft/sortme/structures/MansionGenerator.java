@@ -6,14 +6,13 @@ import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.class_3470;
-import net.minecraft.class_3485;
 import net.minecraft.class_3492;
 import net.minecraft.class_3499;
 import net.minecraft.class_3545;
-import net.minecraft.class_3730;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.entity.mob.VindicatorEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -29,9 +28,9 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.loot.LootTables;
 
 public class MansionGenerator {
-	public static void method_15029(class_3485 arg, BlockPos blockPos, Rotation rotation, List<MansionGenerator.class_3480> list, Random random) {
+	public static void method_15029(StructureManager structureManager, BlockPos blockPos, Rotation rotation, List<MansionGenerator.class_3480> list, Random random) {
 		MansionGenerator.class_3474 lv = new MansionGenerator.class_3474(random);
-		MansionGenerator.class_3475 lv2 = new MansionGenerator.class_3475(arg, random);
+		MansionGenerator.class_3475 lv2 = new MansionGenerator.class_3475(structureManager, random);
 		lv2.method_15050(blockPos, rotation, list, lv);
 	}
 
@@ -379,13 +378,13 @@ public class MansionGenerator {
 	}
 
 	static class class_3475 {
-		private final class_3485 field_15444;
+		private final StructureManager field_15444;
 		private final Random field_15447;
 		private int field_15446;
 		private int field_15445;
 
-		public class_3475(class_3485 arg, Random random) {
-			this.field_15444 = arg;
+		public class_3475(StructureManager structureManager, Random random) {
+			this.field_15444 = structureManager;
 			this.field_15447 = random;
 		}
 
@@ -419,8 +418,8 @@ public class MansionGenerator {
 			for (int k = 0; k < lv4.field_15453 && !bl; k++) {
 				for (int l = lv4.field_15454 - 1; l >= 0 && !bl; l--) {
 					if (MansionGenerator.class_3474.method_15047(lv4, l, k)) {
-						lv5.field_15449 = lv5.field_15449.method_10079(rotation.method_10503(Direction.SOUTH), 8 + (k - this.field_15445) * 8);
-						lv5.field_15449 = lv5.field_15449.method_10079(rotation.method_10503(Direction.EAST), (l - this.field_15446) * 8);
+						lv5.field_15449 = lv5.field_15449.offset(rotation.method_10503(Direction.SOUTH), 8 + (k - this.field_15445) * 8);
+						lv5.field_15449 = lv5.field_15449.offset(rotation.method_10503(Direction.EAST), (l - this.field_15446) * 8);
 						this.method_15052(list, lv5);
 						this.method_15051(list, lv5, lv4, Direction.SOUTH, l, k, l, k);
 						bl = true;
@@ -447,13 +446,11 @@ public class MansionGenerator {
 				for (int m = 0; m < lv7.field_15453; m++) {
 					for (int n = 0; n < lv7.field_15454; n++) {
 						if (lv7.method_15066(n, m) == 1) {
-							BlockPos blockPos3 = blockPos2.method_10079(rotation.method_10503(Direction.SOUTH), 8 + (m - this.field_15445) * 8);
-							blockPos3 = blockPos3.method_10079(rotation.method_10503(Direction.EAST), (n - this.field_15446) * 8);
+							BlockPos blockPos3 = blockPos2.offset(rotation.method_10503(Direction.SOUTH), 8 + (m - this.field_15445) * 8);
+							blockPos3 = blockPos3.offset(rotation.method_10503(Direction.EAST), (n - this.field_15446) * 8);
 							list.add(new MansionGenerator.class_3480(this.field_15444, "corridor_floor", blockPos3, rotation));
 							if (lv7.method_15066(n, m - 1) == 1 || (lv6.method_15066(n, m - 1) & 8388608) == 8388608) {
-								list.add(
-									new MansionGenerator.class_3480(this.field_15444, "carpet_north", blockPos3.method_10079(rotation.method_10503(Direction.EAST), 1).up(), rotation)
-								);
+								list.add(new MansionGenerator.class_3480(this.field_15444, "carpet_north", blockPos3.offset(rotation.method_10503(Direction.EAST), 1).up(), rotation));
 							}
 
 							if (lv7.method_15066(n + 1, m) == 1 || (lv6.method_15066(n + 1, m) & 8388608) == 8388608) {
@@ -461,7 +458,7 @@ public class MansionGenerator {
 									new MansionGenerator.class_3480(
 										this.field_15444,
 										"carpet_east",
-										blockPos3.method_10079(rotation.method_10503(Direction.SOUTH), 1).method_10079(rotation.method_10503(Direction.EAST), 5).up(),
+										blockPos3.offset(rotation.method_10503(Direction.SOUTH), 1).offset(rotation.method_10503(Direction.EAST), 5).up(),
 										rotation
 									)
 								);
@@ -470,10 +467,7 @@ public class MansionGenerator {
 							if (lv7.method_15066(n, m + 1) == 1 || (lv6.method_15066(n, m + 1) & 8388608) == 8388608) {
 								list.add(
 									new MansionGenerator.class_3480(
-										this.field_15444,
-										string,
-										blockPos3.method_10079(rotation.method_10503(Direction.SOUTH), 5).method_10079(rotation.method_10503(Direction.WEST), 1),
-										rotation
+										this.field_15444, string, blockPos3.offset(rotation.method_10503(Direction.SOUTH), 5).offset(rotation.method_10503(Direction.WEST), 1), rotation
 									)
 								);
 							}
@@ -481,10 +475,7 @@ public class MansionGenerator {
 							if (lv7.method_15066(n - 1, m) == 1 || (lv6.method_15066(n - 1, m) & 8388608) == 8388608) {
 								list.add(
 									new MansionGenerator.class_3480(
-										this.field_15444,
-										string2,
-										blockPos3.method_10079(rotation.method_10503(Direction.WEST), 1).method_10079(rotation.method_10503(Direction.NORTH), 1),
-										rotation
+										this.field_15444, string2, blockPos3.offset(rotation.method_10503(Direction.WEST), 1).offset(rotation.method_10503(Direction.NORTH), 1), rotation
 									)
 								);
 							}
@@ -520,28 +511,28 @@ public class MansionGenerator {
 								direction2 = Direction.UP;
 							}
 
-							BlockPos blockPos4 = blockPos2.method_10079(rotation.method_10503(Direction.SOUTH), 8 + (o - this.field_15445) * 8);
-							blockPos4 = blockPos4.method_10079(rotation.method_10503(Direction.EAST), -1 + (p - this.field_15446) * 8);
+							BlockPos blockPos4 = blockPos2.offset(rotation.method_10503(Direction.SOUTH), 8 + (o - this.field_15445) * 8);
+							blockPos4 = blockPos4.offset(rotation.method_10503(Direction.EAST), -1 + (p - this.field_15446) * 8);
 							if (MansionGenerator.class_3474.method_15047(lv7, p - 1, o) && !arg.method_15039(lv7, p - 1, o, lx, s)) {
 								list.add(new MansionGenerator.class_3480(this.field_15444, direction2 == Direction.WEST ? string4 : string3, blockPos4, rotation));
 							}
 
 							if (lv7.method_15066(p + 1, o) == 1 && !bl2) {
-								BlockPos blockPos5 = blockPos4.method_10079(rotation.method_10503(Direction.EAST), 8);
+								BlockPos blockPos5 = blockPos4.offset(rotation.method_10503(Direction.EAST), 8);
 								list.add(new MansionGenerator.class_3480(this.field_15444, direction2 == Direction.EAST ? string4 : string3, blockPos5, rotation));
 							}
 
 							if (MansionGenerator.class_3474.method_15047(lv7, p, o + 1) && !arg.method_15039(lv7, p, o + 1, lx, s)) {
-								BlockPos blockPos5 = blockPos4.method_10079(rotation.method_10503(Direction.SOUTH), 7);
-								blockPos5 = blockPos5.method_10079(rotation.method_10503(Direction.EAST), 7);
+								BlockPos blockPos5 = blockPos4.offset(rotation.method_10503(Direction.SOUTH), 7);
+								blockPos5 = blockPos5.offset(rotation.method_10503(Direction.EAST), 7);
 								list.add(
 									new MansionGenerator.class_3480(this.field_15444, direction2 == Direction.SOUTH ? string4 : string3, blockPos5, rotation.method_10501(Rotation.ROT_90))
 								);
 							}
 
 							if (lv7.method_15066(p, o - 1) == 1 && !bl2) {
-								BlockPos blockPos5 = blockPos4.method_10079(rotation.method_10503(Direction.NORTH), 1);
-								blockPos5 = blockPos5.method_10079(rotation.method_10503(Direction.EAST), 7);
+								BlockPos blockPos5 = blockPos4.offset(rotation.method_10503(Direction.NORTH), 1);
+								blockPos5 = blockPos5.offset(rotation.method_10503(Direction.EAST), 7);
 								list.add(
 									new MansionGenerator.class_3480(this.field_15444, direction2 == Direction.NORTH ? string4 : string3, blockPos5, rotation.method_10501(Rotation.ROT_90))
 								);
@@ -608,30 +599,30 @@ public class MansionGenerator {
 		) {
 			for (int i = 0; i < arg.field_15453; i++) {
 				for (int j = 0; j < arg.field_15454; j++) {
-					BlockPos blockPos2 = blockPos.method_10079(rotation.method_10503(Direction.SOUTH), 8 + (i - this.field_15445) * 8);
-					blockPos2 = blockPos2.method_10079(rotation.method_10503(Direction.EAST), (j - this.field_15446) * 8);
+					BlockPos blockPos2 = blockPos.offset(rotation.method_10503(Direction.SOUTH), 8 + (i - this.field_15445) * 8);
+					blockPos2 = blockPos2.offset(rotation.method_10503(Direction.EAST), (j - this.field_15446) * 8);
 					boolean bl = arg2 != null && MansionGenerator.class_3474.method_15047(arg2, j, i);
 					if (MansionGenerator.class_3474.method_15047(arg, j, i) && !bl) {
 						list.add(new MansionGenerator.class_3480(this.field_15444, "roof", blockPos2.up(3), rotation));
 						if (!MansionGenerator.class_3474.method_15047(arg, j + 1, i)) {
-							BlockPos blockPos3 = blockPos2.method_10079(rotation.method_10503(Direction.EAST), 6);
+							BlockPos blockPos3 = blockPos2.offset(rotation.method_10503(Direction.EAST), 6);
 							list.add(new MansionGenerator.class_3480(this.field_15444, "roof_front", blockPos3, rotation));
 						}
 
 						if (!MansionGenerator.class_3474.method_15047(arg, j - 1, i)) {
-							BlockPos blockPos3 = blockPos2.method_10079(rotation.method_10503(Direction.EAST), 0);
-							blockPos3 = blockPos3.method_10079(rotation.method_10503(Direction.SOUTH), 7);
+							BlockPos blockPos3 = blockPos2.offset(rotation.method_10503(Direction.EAST), 0);
+							blockPos3 = blockPos3.offset(rotation.method_10503(Direction.SOUTH), 7);
 							list.add(new MansionGenerator.class_3480(this.field_15444, "roof_front", blockPos3, rotation.method_10501(Rotation.ROT_180)));
 						}
 
 						if (!MansionGenerator.class_3474.method_15047(arg, j, i - 1)) {
-							BlockPos blockPos3 = blockPos2.method_10079(rotation.method_10503(Direction.WEST), 1);
+							BlockPos blockPos3 = blockPos2.offset(rotation.method_10503(Direction.WEST), 1);
 							list.add(new MansionGenerator.class_3480(this.field_15444, "roof_front", blockPos3, rotation.method_10501(Rotation.ROT_270)));
 						}
 
 						if (!MansionGenerator.class_3474.method_15047(arg, j, i + 1)) {
-							BlockPos blockPos3 = blockPos2.method_10079(rotation.method_10503(Direction.EAST), 6);
-							blockPos3 = blockPos3.method_10079(rotation.method_10503(Direction.SOUTH), 6);
+							BlockPos blockPos3 = blockPos2.offset(rotation.method_10503(Direction.EAST), 6);
+							blockPos3 = blockPos3.offset(rotation.method_10503(Direction.SOUTH), 6);
 							list.add(new MansionGenerator.class_3480(this.field_15444, "roof_front", blockPos3, rotation.method_10501(Rotation.ROT_90)));
 						}
 					}
@@ -641,57 +632,57 @@ public class MansionGenerator {
 			if (arg2 != null) {
 				for (int i = 0; i < arg.field_15453; i++) {
 					for (int jx = 0; jx < arg.field_15454; jx++) {
-						BlockPos var17 = blockPos.method_10079(rotation.method_10503(Direction.SOUTH), 8 + (i - this.field_15445) * 8);
-						var17 = var17.method_10079(rotation.method_10503(Direction.EAST), (jx - this.field_15446) * 8);
+						BlockPos var17 = blockPos.offset(rotation.method_10503(Direction.SOUTH), 8 + (i - this.field_15445) * 8);
+						var17 = var17.offset(rotation.method_10503(Direction.EAST), (jx - this.field_15446) * 8);
 						boolean bl = MansionGenerator.class_3474.method_15047(arg2, jx, i);
 						if (MansionGenerator.class_3474.method_15047(arg, jx, i) && bl) {
 							if (!MansionGenerator.class_3474.method_15047(arg, jx + 1, i)) {
-								BlockPos blockPos3 = var17.method_10079(rotation.method_10503(Direction.EAST), 7);
+								BlockPos blockPos3 = var17.offset(rotation.method_10503(Direction.EAST), 7);
 								list.add(new MansionGenerator.class_3480(this.field_15444, "small_wall", blockPos3, rotation));
 							}
 
 							if (!MansionGenerator.class_3474.method_15047(arg, jx - 1, i)) {
-								BlockPos blockPos3 = var17.method_10079(rotation.method_10503(Direction.WEST), 1);
-								blockPos3 = blockPos3.method_10079(rotation.method_10503(Direction.SOUTH), 6);
+								BlockPos blockPos3 = var17.offset(rotation.method_10503(Direction.WEST), 1);
+								blockPos3 = blockPos3.offset(rotation.method_10503(Direction.SOUTH), 6);
 								list.add(new MansionGenerator.class_3480(this.field_15444, "small_wall", blockPos3, rotation.method_10501(Rotation.ROT_180)));
 							}
 
 							if (!MansionGenerator.class_3474.method_15047(arg, jx, i - 1)) {
-								BlockPos blockPos3 = var17.method_10079(rotation.method_10503(Direction.WEST), 0);
-								blockPos3 = blockPos3.method_10079(rotation.method_10503(Direction.NORTH), 1);
+								BlockPos blockPos3 = var17.offset(rotation.method_10503(Direction.WEST), 0);
+								blockPos3 = blockPos3.offset(rotation.method_10503(Direction.NORTH), 1);
 								list.add(new MansionGenerator.class_3480(this.field_15444, "small_wall", blockPos3, rotation.method_10501(Rotation.ROT_270)));
 							}
 
 							if (!MansionGenerator.class_3474.method_15047(arg, jx, i + 1)) {
-								BlockPos blockPos3 = var17.method_10079(rotation.method_10503(Direction.EAST), 6);
-								blockPos3 = blockPos3.method_10079(rotation.method_10503(Direction.SOUTH), 7);
+								BlockPos blockPos3 = var17.offset(rotation.method_10503(Direction.EAST), 6);
+								blockPos3 = blockPos3.offset(rotation.method_10503(Direction.SOUTH), 7);
 								list.add(new MansionGenerator.class_3480(this.field_15444, "small_wall", blockPos3, rotation.method_10501(Rotation.ROT_90)));
 							}
 
 							if (!MansionGenerator.class_3474.method_15047(arg, jx + 1, i)) {
 								if (!MansionGenerator.class_3474.method_15047(arg, jx, i - 1)) {
-									BlockPos blockPos3 = var17.method_10079(rotation.method_10503(Direction.EAST), 7);
-									blockPos3 = blockPos3.method_10079(rotation.method_10503(Direction.NORTH), 2);
+									BlockPos blockPos3 = var17.offset(rotation.method_10503(Direction.EAST), 7);
+									blockPos3 = blockPos3.offset(rotation.method_10503(Direction.NORTH), 2);
 									list.add(new MansionGenerator.class_3480(this.field_15444, "small_wall_corner", blockPos3, rotation));
 								}
 
 								if (!MansionGenerator.class_3474.method_15047(arg, jx, i + 1)) {
-									BlockPos blockPos3 = var17.method_10079(rotation.method_10503(Direction.EAST), 8);
-									blockPos3 = blockPos3.method_10079(rotation.method_10503(Direction.SOUTH), 7);
+									BlockPos blockPos3 = var17.offset(rotation.method_10503(Direction.EAST), 8);
+									blockPos3 = blockPos3.offset(rotation.method_10503(Direction.SOUTH), 7);
 									list.add(new MansionGenerator.class_3480(this.field_15444, "small_wall_corner", blockPos3, rotation.method_10501(Rotation.ROT_90)));
 								}
 							}
 
 							if (!MansionGenerator.class_3474.method_15047(arg, jx - 1, i)) {
 								if (!MansionGenerator.class_3474.method_15047(arg, jx, i - 1)) {
-									BlockPos blockPos3 = var17.method_10079(rotation.method_10503(Direction.WEST), 2);
-									blockPos3 = blockPos3.method_10079(rotation.method_10503(Direction.NORTH), 1);
+									BlockPos blockPos3 = var17.offset(rotation.method_10503(Direction.WEST), 2);
+									blockPos3 = blockPos3.offset(rotation.method_10503(Direction.NORTH), 1);
 									list.add(new MansionGenerator.class_3480(this.field_15444, "small_wall_corner", blockPos3, rotation.method_10501(Rotation.ROT_270)));
 								}
 
 								if (!MansionGenerator.class_3474.method_15047(arg, jx, i + 1)) {
-									BlockPos blockPos3 = var17.method_10079(rotation.method_10503(Direction.WEST), 1);
-									blockPos3 = blockPos3.method_10079(rotation.method_10503(Direction.SOUTH), 8);
+									BlockPos blockPos3 = var17.offset(rotation.method_10503(Direction.WEST), 1);
+									blockPos3 = blockPos3.offset(rotation.method_10503(Direction.SOUTH), 8);
 									list.add(new MansionGenerator.class_3480(this.field_15444, "small_wall_corner", blockPos3, rotation.method_10501(Rotation.ROT_180)));
 								}
 							}
@@ -702,45 +693,45 @@ public class MansionGenerator {
 
 			for (int i = 0; i < arg.field_15453; i++) {
 				for (int jxx = 0; jxx < arg.field_15454; jxx++) {
-					BlockPos var19 = blockPos.method_10079(rotation.method_10503(Direction.SOUTH), 8 + (i - this.field_15445) * 8);
-					var19 = var19.method_10079(rotation.method_10503(Direction.EAST), (jxx - this.field_15446) * 8);
+					BlockPos var19 = blockPos.offset(rotation.method_10503(Direction.SOUTH), 8 + (i - this.field_15445) * 8);
+					var19 = var19.offset(rotation.method_10503(Direction.EAST), (jxx - this.field_15446) * 8);
 					boolean bl = arg2 != null && MansionGenerator.class_3474.method_15047(arg2, jxx, i);
 					if (MansionGenerator.class_3474.method_15047(arg, jxx, i) && !bl) {
 						if (!MansionGenerator.class_3474.method_15047(arg, jxx + 1, i)) {
-							BlockPos blockPos3 = var19.method_10079(rotation.method_10503(Direction.EAST), 6);
+							BlockPos blockPos3 = var19.offset(rotation.method_10503(Direction.EAST), 6);
 							if (!MansionGenerator.class_3474.method_15047(arg, jxx, i + 1)) {
-								BlockPos blockPos4 = blockPos3.method_10079(rotation.method_10503(Direction.SOUTH), 6);
+								BlockPos blockPos4 = blockPos3.offset(rotation.method_10503(Direction.SOUTH), 6);
 								list.add(new MansionGenerator.class_3480(this.field_15444, "roof_corner", blockPos4, rotation));
 							} else if (MansionGenerator.class_3474.method_15047(arg, jxx + 1, i + 1)) {
-								BlockPos blockPos4 = blockPos3.method_10079(rotation.method_10503(Direction.SOUTH), 5);
+								BlockPos blockPos4 = blockPos3.offset(rotation.method_10503(Direction.SOUTH), 5);
 								list.add(new MansionGenerator.class_3480(this.field_15444, "roof_inner_corner", blockPos4, rotation));
 							}
 
 							if (!MansionGenerator.class_3474.method_15047(arg, jxx, i - 1)) {
 								list.add(new MansionGenerator.class_3480(this.field_15444, "roof_corner", blockPos3, rotation.method_10501(Rotation.ROT_270)));
 							} else if (MansionGenerator.class_3474.method_15047(arg, jxx + 1, i - 1)) {
-								BlockPos blockPos4 = var19.method_10079(rotation.method_10503(Direction.EAST), 9);
-								blockPos4 = blockPos4.method_10079(rotation.method_10503(Direction.NORTH), 2);
+								BlockPos blockPos4 = var19.offset(rotation.method_10503(Direction.EAST), 9);
+								blockPos4 = blockPos4.offset(rotation.method_10503(Direction.NORTH), 2);
 								list.add(new MansionGenerator.class_3480(this.field_15444, "roof_inner_corner", blockPos4, rotation.method_10501(Rotation.ROT_90)));
 							}
 						}
 
 						if (!MansionGenerator.class_3474.method_15047(arg, jxx - 1, i)) {
-							BlockPos blockPos3x = var19.method_10079(rotation.method_10503(Direction.EAST), 0);
-							blockPos3x = blockPos3x.method_10079(rotation.method_10503(Direction.SOUTH), 0);
+							BlockPos blockPos3x = var19.offset(rotation.method_10503(Direction.EAST), 0);
+							blockPos3x = blockPos3x.offset(rotation.method_10503(Direction.SOUTH), 0);
 							if (!MansionGenerator.class_3474.method_15047(arg, jxx, i + 1)) {
-								BlockPos blockPos4 = blockPos3x.method_10079(rotation.method_10503(Direction.SOUTH), 6);
+								BlockPos blockPos4 = blockPos3x.offset(rotation.method_10503(Direction.SOUTH), 6);
 								list.add(new MansionGenerator.class_3480(this.field_15444, "roof_corner", blockPos4, rotation.method_10501(Rotation.ROT_90)));
 							} else if (MansionGenerator.class_3474.method_15047(arg, jxx - 1, i + 1)) {
-								BlockPos blockPos4 = blockPos3x.method_10079(rotation.method_10503(Direction.SOUTH), 8);
-								blockPos4 = blockPos4.method_10079(rotation.method_10503(Direction.WEST), 3);
+								BlockPos blockPos4 = blockPos3x.offset(rotation.method_10503(Direction.SOUTH), 8);
+								blockPos4 = blockPos4.offset(rotation.method_10503(Direction.WEST), 3);
 								list.add(new MansionGenerator.class_3480(this.field_15444, "roof_inner_corner", blockPos4, rotation.method_10501(Rotation.ROT_270)));
 							}
 
 							if (!MansionGenerator.class_3474.method_15047(arg, jxx, i - 1)) {
 								list.add(new MansionGenerator.class_3480(this.field_15444, "roof_corner", blockPos3x, rotation.method_10501(Rotation.ROT_180)));
 							} else if (MansionGenerator.class_3474.method_15047(arg, jxx - 1, i - 1)) {
-								BlockPos blockPos4 = blockPos3x.method_10079(rotation.method_10503(Direction.SOUTH), 1);
+								BlockPos blockPos4 = blockPos3x.offset(rotation.method_10503(Direction.SOUTH), 1);
 								list.add(new MansionGenerator.class_3480(this.field_15444, "roof_inner_corner", blockPos4, rotation.method_10501(Rotation.ROT_180)));
 							}
 						}
@@ -751,30 +742,28 @@ public class MansionGenerator {
 
 		private void method_15054(List<MansionGenerator.class_3480> list, MansionGenerator.class_3476 arg) {
 			Direction direction = arg.field_15450.method_10503(Direction.WEST);
-			list.add(new MansionGenerator.class_3480(this.field_15444, "entrance", arg.field_15449.method_10079(direction, 9), arg.field_15450));
-			arg.field_15449 = arg.field_15449.method_10079(arg.field_15450.method_10503(Direction.SOUTH), 16);
+			list.add(new MansionGenerator.class_3480(this.field_15444, "entrance", arg.field_15449.offset(direction, 9), arg.field_15450));
+			arg.field_15449 = arg.field_15449.offset(arg.field_15450.method_10503(Direction.SOUTH), 16);
 		}
 
 		private void method_15052(List<MansionGenerator.class_3480> list, MansionGenerator.class_3476 arg) {
 			list.add(
-				new MansionGenerator.class_3480(
-					this.field_15444, arg.field_15448, arg.field_15449.method_10079(arg.field_15450.method_10503(Direction.EAST), 7), arg.field_15450
-				)
+				new MansionGenerator.class_3480(this.field_15444, arg.field_15448, arg.field_15449.offset(arg.field_15450.method_10503(Direction.EAST), 7), arg.field_15450)
 			);
-			arg.field_15449 = arg.field_15449.method_10079(arg.field_15450.method_10503(Direction.SOUTH), 8);
+			arg.field_15449 = arg.field_15449.offset(arg.field_15450.method_10503(Direction.SOUTH), 8);
 		}
 
 		private void method_15058(List<MansionGenerator.class_3480> list, MansionGenerator.class_3476 arg) {
-			arg.field_15449 = arg.field_15449.method_10079(arg.field_15450.method_10503(Direction.SOUTH), -1);
+			arg.field_15449 = arg.field_15449.offset(arg.field_15450.method_10503(Direction.SOUTH), -1);
 			list.add(new MansionGenerator.class_3480(this.field_15444, "wall_corner", arg.field_15449, arg.field_15450));
-			arg.field_15449 = arg.field_15449.method_10079(arg.field_15450.method_10503(Direction.SOUTH), -7);
-			arg.field_15449 = arg.field_15449.method_10079(arg.field_15450.method_10503(Direction.WEST), -6);
+			arg.field_15449 = arg.field_15449.offset(arg.field_15450.method_10503(Direction.SOUTH), -7);
+			arg.field_15449 = arg.field_15449.offset(arg.field_15450.method_10503(Direction.WEST), -6);
 			arg.field_15450 = arg.field_15450.method_10501(Rotation.ROT_90);
 		}
 
 		private void method_15060(List<MansionGenerator.class_3480> list, MansionGenerator.class_3476 arg) {
-			arg.field_15449 = arg.field_15449.method_10079(arg.field_15450.method_10503(Direction.SOUTH), 6);
-			arg.field_15449 = arg.field_15449.method_10079(arg.field_15450.method_10503(Direction.EAST), 8);
+			arg.field_15449 = arg.field_15449.offset(arg.field_15450.method_10503(Direction.SOUTH), 6);
+			arg.field_15449 = arg.field_15449.offset(arg.field_15450.method_10503(Direction.EAST), 8);
 			arg.field_15450 = arg.field_15450.method_10501(Rotation.ROT_270);
 		}
 
@@ -810,62 +799,62 @@ public class MansionGenerator {
 			boolean bl
 		) {
 			if (direction2 == Direction.EAST && direction == Direction.SOUTH) {
-				BlockPos blockPos2 = blockPos.method_10079(rotation.method_10503(Direction.EAST), 1);
+				BlockPos blockPos2 = blockPos.offset(rotation.method_10503(Direction.EAST), 1);
 				list.add(new MansionGenerator.class_3480(this.field_15444, arg.method_15033(this.field_15447, bl), blockPos2, rotation));
 			} else if (direction2 == Direction.EAST && direction == Direction.NORTH) {
-				BlockPos blockPos2 = blockPos.method_10079(rotation.method_10503(Direction.EAST), 1);
-				blockPos2 = blockPos2.method_10079(rotation.method_10503(Direction.SOUTH), 6);
+				BlockPos blockPos2 = blockPos.offset(rotation.method_10503(Direction.EAST), 1);
+				blockPos2 = blockPos2.offset(rotation.method_10503(Direction.SOUTH), 6);
 				list.add(new MansionGenerator.class_3480(this.field_15444, arg.method_15033(this.field_15447, bl), blockPos2, rotation, Mirror.LEFT_RIGHT));
 			} else if (direction2 == Direction.WEST && direction == Direction.NORTH) {
-				BlockPos blockPos2 = blockPos.method_10079(rotation.method_10503(Direction.EAST), 7);
-				blockPos2 = blockPos2.method_10079(rotation.method_10503(Direction.SOUTH), 6);
+				BlockPos blockPos2 = blockPos.offset(rotation.method_10503(Direction.EAST), 7);
+				blockPos2 = blockPos2.offset(rotation.method_10503(Direction.SOUTH), 6);
 				list.add(new MansionGenerator.class_3480(this.field_15444, arg.method_15033(this.field_15447, bl), blockPos2, rotation.method_10501(Rotation.ROT_180)));
 			} else if (direction2 == Direction.WEST && direction == Direction.SOUTH) {
-				BlockPos blockPos2 = blockPos.method_10079(rotation.method_10503(Direction.EAST), 7);
+				BlockPos blockPos2 = blockPos.offset(rotation.method_10503(Direction.EAST), 7);
 				list.add(new MansionGenerator.class_3480(this.field_15444, arg.method_15033(this.field_15447, bl), blockPos2, rotation, Mirror.FRONT_BACK));
 			} else if (direction2 == Direction.SOUTH && direction == Direction.EAST) {
-				BlockPos blockPos2 = blockPos.method_10079(rotation.method_10503(Direction.EAST), 1);
+				BlockPos blockPos2 = blockPos.offset(rotation.method_10503(Direction.EAST), 1);
 				list.add(
 					new MansionGenerator.class_3480(
 						this.field_15444, arg.method_15033(this.field_15447, bl), blockPos2, rotation.method_10501(Rotation.ROT_90), Mirror.LEFT_RIGHT
 					)
 				);
 			} else if (direction2 == Direction.SOUTH && direction == Direction.WEST) {
-				BlockPos blockPos2 = blockPos.method_10079(rotation.method_10503(Direction.EAST), 7);
+				BlockPos blockPos2 = blockPos.offset(rotation.method_10503(Direction.EAST), 7);
 				list.add(new MansionGenerator.class_3480(this.field_15444, arg.method_15033(this.field_15447, bl), blockPos2, rotation.method_10501(Rotation.ROT_90)));
 			} else if (direction2 == Direction.NORTH && direction == Direction.WEST) {
-				BlockPos blockPos2 = blockPos.method_10079(rotation.method_10503(Direction.EAST), 7);
-				blockPos2 = blockPos2.method_10079(rotation.method_10503(Direction.SOUTH), 6);
+				BlockPos blockPos2 = blockPos.offset(rotation.method_10503(Direction.EAST), 7);
+				blockPos2 = blockPos2.offset(rotation.method_10503(Direction.SOUTH), 6);
 				list.add(
 					new MansionGenerator.class_3480(
 						this.field_15444, arg.method_15033(this.field_15447, bl), blockPos2, rotation.method_10501(Rotation.ROT_90), Mirror.FRONT_BACK
 					)
 				);
 			} else if (direction2 == Direction.NORTH && direction == Direction.EAST) {
-				BlockPos blockPos2 = blockPos.method_10079(rotation.method_10503(Direction.EAST), 1);
-				blockPos2 = blockPos2.method_10079(rotation.method_10503(Direction.SOUTH), 6);
+				BlockPos blockPos2 = blockPos.offset(rotation.method_10503(Direction.EAST), 1);
+				blockPos2 = blockPos2.offset(rotation.method_10503(Direction.SOUTH), 6);
 				list.add(new MansionGenerator.class_3480(this.field_15444, arg.method_15033(this.field_15447, bl), blockPos2, rotation.method_10501(Rotation.ROT_270)));
 			} else if (direction2 == Direction.SOUTH && direction == Direction.NORTH) {
-				BlockPos blockPos2 = blockPos.method_10079(rotation.method_10503(Direction.EAST), 1);
-				blockPos2 = blockPos2.method_10079(rotation.method_10503(Direction.NORTH), 8);
+				BlockPos blockPos2 = blockPos.offset(rotation.method_10503(Direction.EAST), 1);
+				blockPos2 = blockPos2.offset(rotation.method_10503(Direction.NORTH), 8);
 				list.add(new MansionGenerator.class_3480(this.field_15444, arg.method_15031(this.field_15447, bl), blockPos2, rotation));
 			} else if (direction2 == Direction.NORTH && direction == Direction.SOUTH) {
-				BlockPos blockPos2 = blockPos.method_10079(rotation.method_10503(Direction.EAST), 7);
-				blockPos2 = blockPos2.method_10079(rotation.method_10503(Direction.SOUTH), 14);
+				BlockPos blockPos2 = blockPos.offset(rotation.method_10503(Direction.EAST), 7);
+				blockPos2 = blockPos2.offset(rotation.method_10503(Direction.SOUTH), 14);
 				list.add(new MansionGenerator.class_3480(this.field_15444, arg.method_15031(this.field_15447, bl), blockPos2, rotation.method_10501(Rotation.ROT_180)));
 			} else if (direction2 == Direction.WEST && direction == Direction.EAST) {
-				BlockPos blockPos2 = blockPos.method_10079(rotation.method_10503(Direction.EAST), 15);
+				BlockPos blockPos2 = blockPos.offset(rotation.method_10503(Direction.EAST), 15);
 				list.add(new MansionGenerator.class_3480(this.field_15444, arg.method_15031(this.field_15447, bl), blockPos2, rotation.method_10501(Rotation.ROT_90)));
 			} else if (direction2 == Direction.EAST && direction == Direction.WEST) {
-				BlockPos blockPos2 = blockPos.method_10079(rotation.method_10503(Direction.WEST), 7);
-				blockPos2 = blockPos2.method_10079(rotation.method_10503(Direction.SOUTH), 6);
+				BlockPos blockPos2 = blockPos.offset(rotation.method_10503(Direction.WEST), 7);
+				blockPos2 = blockPos2.offset(rotation.method_10503(Direction.SOUTH), 6);
 				list.add(new MansionGenerator.class_3480(this.field_15444, arg.method_15031(this.field_15447, bl), blockPos2, rotation.method_10501(Rotation.ROT_270)));
 			} else if (direction2 == Direction.UP && direction == Direction.EAST) {
-				BlockPos blockPos2 = blockPos.method_10079(rotation.method_10503(Direction.EAST), 15);
+				BlockPos blockPos2 = blockPos.offset(rotation.method_10503(Direction.EAST), 15);
 				list.add(new MansionGenerator.class_3480(this.field_15444, arg.method_15035(this.field_15447), blockPos2, rotation.method_10501(Rotation.ROT_90)));
 			} else if (direction2 == Direction.UP && direction == Direction.SOUTH) {
-				BlockPos blockPos2 = blockPos.method_10079(rotation.method_10503(Direction.EAST), 1);
-				blockPos2 = blockPos2.method_10079(rotation.method_10503(Direction.NORTH), 0);
+				BlockPos blockPos2 = blockPos.offset(rotation.method_10503(Direction.EAST), 1);
+				blockPos2 = blockPos2.offset(rotation.method_10503(Direction.NORTH), 0);
 				list.add(new MansionGenerator.class_3480(this.field_15444, arg.method_15035(this.field_15447), blockPos2, rotation));
 			}
 		}
@@ -910,13 +899,13 @@ public class MansionGenerator {
 				mirror = Mirror.FRONT_BACK;
 			}
 
-			BlockPos blockPos2 = blockPos.method_10079(rotation.method_10503(Direction.EAST), i);
-			blockPos2 = blockPos2.method_10079(rotation.method_10503(Direction.SOUTH), j);
+			BlockPos blockPos2 = blockPos.offset(rotation.method_10503(Direction.EAST), i);
+			blockPos2 = blockPos2.offset(rotation.method_10503(Direction.SOUTH), j);
 			list.add(new MansionGenerator.class_3480(this.field_15444, arg.method_15034(this.field_15447), blockPos2, rotation2, mirror));
 		}
 
 		private void method_15053(List<MansionGenerator.class_3480> list, BlockPos blockPos, Rotation rotation, MansionGenerator.class_3473 arg) {
-			BlockPos blockPos2 = blockPos.method_10079(rotation.method_10503(Direction.EAST), 1);
+			BlockPos blockPos2 = blockPos.offset(rotation.method_10503(Direction.EAST), 1);
 			list.add(new MansionGenerator.class_3480(this.field_15444, arg.method_15036(this.field_15447), blockPos2, rotation, Mirror.NONE));
 		}
 	}
@@ -1022,29 +1011,29 @@ public class MansionGenerator {
 		private final Rotation field_15457;
 		private final Mirror field_15456;
 
-		public class_3480(class_3485 arg, String string, BlockPos blockPos, Rotation rotation) {
-			this(arg, string, blockPos, rotation, Mirror.NONE);
+		public class_3480(StructureManager structureManager, String string, BlockPos blockPos, Rotation rotation) {
+			this(structureManager, string, blockPos, rotation, Mirror.NONE);
 		}
 
-		public class_3480(class_3485 arg, String string, BlockPos blockPos, Rotation rotation, Mirror mirror) {
+		public class_3480(StructureManager structureManager, String string, BlockPos blockPos, Rotation rotation, Mirror mirror) {
 			super(StructurePiece.field_16907, 0);
 			this.field_15455 = string;
 			this.field_15432 = blockPos;
 			this.field_15457 = rotation;
 			this.field_15456 = mirror;
-			this.method_15068(arg);
+			this.method_15068(structureManager);
 		}
 
-		public class_3480(class_3485 arg, CompoundTag compoundTag) {
+		public class_3480(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16907, compoundTag);
 			this.field_15455 = compoundTag.getString("Template");
 			this.field_15457 = Rotation.valueOf(compoundTag.getString("Rot"));
 			this.field_15456 = Mirror.valueOf(compoundTag.getString("Mi"));
-			this.method_15068(arg);
+			this.method_15068(structureManager);
 		}
 
-		private void method_15068(class_3485 arg) {
-			class_3499 lv = arg.method_15091(new Identifier("woodland_mansion/" + this.field_15455));
+		private void method_15068(StructureManager structureManager) {
+			class_3499 lv = structureManager.method_15091(new Identifier("woodland_mansion/" + this.field_15455));
 			class_3492 lv2 = new class_3492()
 				.method_15133(true)
 				.method_15123(this.field_15457)
@@ -1067,27 +1056,27 @@ public class MansionGenerator {
 				Rotation rotation = this.field_15434.method_15113();
 				BlockState blockState = Blocks.field_10034.getDefaultState();
 				if ("ChestWest".equals(string)) {
-					blockState = blockState.with(ChestBlock.field_10768, rotation.method_10503(Direction.WEST));
+					blockState = blockState.with(ChestBlock.FACING, rotation.method_10503(Direction.WEST));
 				} else if ("ChestEast".equals(string)) {
-					blockState = blockState.with(ChestBlock.field_10768, rotation.method_10503(Direction.EAST));
+					blockState = blockState.with(ChestBlock.FACING, rotation.method_10503(Direction.EAST));
 				} else if ("ChestSouth".equals(string)) {
-					blockState = blockState.with(ChestBlock.field_10768, rotation.method_10503(Direction.SOUTH));
+					blockState = blockState.with(ChestBlock.FACING, rotation.method_10503(Direction.SOUTH));
 				} else if ("ChestNorth".equals(string)) {
-					blockState = blockState.with(ChestBlock.field_10768, rotation.method_10503(Direction.NORTH));
+					blockState = blockState.with(ChestBlock.FACING, rotation.method_10503(Direction.NORTH));
 				}
 
 				this.addChest(iWorld, mutableIntBoundingBox, random, blockPos, LootTables.CHEST_WOODLAND_MANSION, blockState);
 			} else if ("Mage".equals(string)) {
-				EvokerEntity evokerEntity = new EvokerEntity(iWorld.method_8410());
+				EvokerEntity evokerEntity = new EvokerEntity(iWorld.getWorld());
 				evokerEntity.setPersistent();
 				evokerEntity.setPositionAndAngles(blockPos, 0.0F, 0.0F);
 				iWorld.spawnEntity(evokerEntity);
 				iWorld.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 2);
 			} else if ("Warrior".equals(string)) {
-				VindicatorEntity vindicatorEntity = new VindicatorEntity(iWorld.method_8410());
+				VindicatorEntity vindicatorEntity = new VindicatorEntity(iWorld.getWorld());
 				vindicatorEntity.setPersistent();
 				vindicatorEntity.setPositionAndAngles(blockPos, 0.0F, 0.0F);
-				vindicatorEntity.method_5943(iWorld, iWorld.getLocalDifficulty(new BlockPos(vindicatorEntity)), class_3730.field_16474, null, null);
+				vindicatorEntity.prepareEntityData(iWorld, iWorld.getLocalDifficulty(new BlockPos(vindicatorEntity)), SpawnType.field_16474, null, null);
 				iWorld.spawnEntity(vindicatorEntity);
 				iWorld.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 2);
 			}

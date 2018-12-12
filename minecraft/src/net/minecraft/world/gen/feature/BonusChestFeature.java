@@ -10,8 +10,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.loot.LootTables;
 
 public class BonusChestFeature extends Feature<DefaultFeatureConfig> {
@@ -20,7 +19,7 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean method_12817(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		for (BlockState blockState = iWorld.getBlockState(blockPos);
 			(blockState.isAir() || blockState.matches(BlockTags.field_15503)) && blockPos.getY() > 1;

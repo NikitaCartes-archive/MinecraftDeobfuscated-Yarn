@@ -4,8 +4,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_856;
-import net.minecraft.client.model.Model;
 import net.minecraft.client.render.entity.model.EndCrystalEntityModel;
+import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.decoration.EnderCrystalEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -14,8 +14,8 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class EnderCrystalEntityRenderer extends EntityRenderer<EnderCrystalEntity> {
 	private static final Identifier field_4663 = new Identifier("textures/entity/end_crystal/end_crystal.png");
-	private final Model field_4662 = new EndCrystalEntityModel(0.0F, true);
-	private final Model field_4664 = new EndCrystalEntityModel(0.0F, false);
+	private final EntityModel<EnderCrystalEntity> field_4662 = new EndCrystalEntityModel<>(0.0F, true);
+	private final EntityModel<EnderCrystalEntity> field_4664 = new EndCrystalEntityModel<>(0.0F, false);
 
 	public EnderCrystalEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
@@ -29,9 +29,9 @@ public class EnderCrystalEntityRenderer extends EntityRenderer<EnderCrystalEntit
 		this.bindTexture(field_4663);
 		float j = MathHelper.sin(i * 0.2F) / 2.0F + 0.5F;
 		j = j * j + j;
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.enableColorMaterial();
-			GlStateManager.setupSolidRenderingTextureCombine(this.method_3929(enderCrystalEntity));
+			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(enderCrystalEntity));
 		}
 
 		if (enderCrystalEntity.shouldShowBottom()) {
@@ -40,7 +40,7 @@ public class EnderCrystalEntityRenderer extends EntityRenderer<EnderCrystalEntit
 			this.field_4664.render(enderCrystalEntity, 0.0F, i * 3.0F, j * 0.2F, 0.0F, 0.0F, 0.0625F);
 		}
 
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}
@@ -48,7 +48,7 @@ public class EnderCrystalEntityRenderer extends EntityRenderer<EnderCrystalEntit
 		GlStateManager.popMatrix();
 		BlockPos blockPos = enderCrystalEntity.getBeamTarget();
 		if (blockPos != null) {
-			this.bindTexture(EnderDragonEntityRenderer.field_4668);
+			this.bindTexture(EnderDragonEntityRenderer.CRYSTAL_BEAM);
 			float k = (float)blockPos.getX() + 0.5F;
 			float l = (float)blockPos.getY() + 0.5F;
 			float m = (float)blockPos.getZ() + 0.5F;
@@ -70,7 +70,7 @@ public class EnderCrystalEntityRenderer extends EntityRenderer<EnderCrystalEntit
 			);
 		}
 
-		super.method_3936(enderCrystalEntity, d, e, f, g, h);
+		super.render(enderCrystalEntity, d, e, f, g, h);
 	}
 
 	protected Identifier getTexture(EnderCrystalEntity enderCrystalEntity) {

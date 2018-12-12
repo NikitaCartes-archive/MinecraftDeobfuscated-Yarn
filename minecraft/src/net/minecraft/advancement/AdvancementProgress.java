@@ -27,7 +27,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 	private final Map<String, CriterionProgress> criteriaProgresses = Maps.<String, CriterionProgress>newHashMap();
 	private String[][] requirements = new String[0][];
 
-	public void method_727(Map<String, AdvancementCriterion> map, String[][] strings) {
+	public void init(Map<String, AdvancementCriterion> map, String[][] strings) {
 		Set<String> set = map.keySet();
 		this.criteriaProgresses.entrySet().removeIf(entry -> !set.contains(entry.getKey()));
 
@@ -98,7 +98,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 		return "AdvancementProgress{criteria=" + this.criteriaProgresses + ", requirements=" + Arrays.deepToString(this.requirements) + '}';
 	}
 
-	public void serialize(PacketByteBuf packetByteBuf) {
+	public void toPacket(PacketByteBuf packetByteBuf) {
 		packetByteBuf.writeVarInt(this.criteriaProgresses.size());
 
 		for (Entry<String, CriterionProgress> entry : this.criteriaProgresses.entrySet()) {
@@ -107,7 +107,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 		}
 	}
 
-	public static AdvancementProgress deserialize(PacketByteBuf packetByteBuf) {
+	public static AdvancementProgress fromPacket(PacketByteBuf packetByteBuf) {
 		AdvancementProgress advancementProgress = new AdvancementProgress();
 		int i = packetByteBuf.readVarInt();
 
@@ -124,19 +124,19 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_735() {
+	public float getProgressBarPercentage() {
 		if (this.criteriaProgresses.isEmpty()) {
 			return 0.0F;
 		} else {
 			float f = (float)this.requirements.length;
-			float g = (float)this.method_736();
+			float g = (float)this.countObtainedRequirements();
 			return g / f;
 		}
 	}
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public String method_728() {
+	public String getProgressBarFraction() {
 		if (this.criteriaProgresses.isEmpty()) {
 			return null;
 		} else {
@@ -144,14 +144,14 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 			if (i <= 1) {
 				return null;
 			} else {
-				int j = this.method_736();
+				int j = this.countObtainedRequirements();
 				return j + "/" + i;
 			}
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	private int method_736() {
+	private int countObtainedRequirements() {
 		int i = 0;
 
 		for (String[] strings : this.requirements) {
@@ -173,7 +173,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 		return i;
 	}
 
-	public Iterable<String> getAllUnobtained() {
+	public Iterable<String> getUnobtainedCriteria() {
 		List<String> list = Lists.<String>newArrayList();
 
 		for (Entry<String, CriterionProgress> entry : this.criteriaProgresses.entrySet()) {
@@ -185,7 +185,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 		return list;
 	}
 
-	public Iterable<String> getAllObtained() {
+	public Iterable<String> getObtainedCriteria() {
 		List<String> list = Lists.<String>newArrayList();
 
 		for (Entry<String, CriterionProgress> entry : this.criteriaProgresses.entrySet()) {
@@ -198,7 +198,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 	}
 
 	@Nullable
-	public Date method_741() {
+	public Date getEarliestProgressObtainDate() {
 		Date date = null;
 
 		for (CriterionProgress criterionProgress : this.criteriaProgresses.values()) {
@@ -210,9 +210,9 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 		return date;
 	}
 
-	public int method_738(AdvancementProgress advancementProgress) {
-		Date date = this.method_741();
-		Date date2 = advancementProgress.method_741();
+	public int compareDate(AdvancementProgress advancementProgress) {
+		Date date = this.getEarliestProgressObtainDate();
+		Date date2 = advancementProgress.getEarliestProgressObtainDate();
 		if (date == null && date2 != null) {
 			return 1;
 		} else if (date != null && date2 == null) {

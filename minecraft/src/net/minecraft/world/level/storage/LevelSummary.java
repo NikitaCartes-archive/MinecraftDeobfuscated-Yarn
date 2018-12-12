@@ -88,10 +88,10 @@ public class LevelSummary implements Comparable<LevelSummary> {
 	}
 
 	public boolean method_256() {
-		return this.method_260() || !SharedConstants.getGameVersion().isStable() && !this.isSnapshot || this.method_254() || this.isLegacyCustomizedWorld();
+		return this.isFutureLevel() || !SharedConstants.getGameVersion().isStable() && !this.isSnapshot || this.isOutdatedLevel() || this.isLegacyCustomizedWorld();
 	}
 
-	public boolean method_260() {
+	public boolean isFutureLevel() {
 		return this.versionId > SharedConstants.getGameVersion().getWorldVersion();
 	}
 
@@ -99,7 +99,7 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		return this.generatorType == LevelGeneratorType.CUSTOMIZED && this.versionId < 1466;
 	}
 
-	public boolean method_254() {
+	public boolean isOutdatedLevel() {
 		return this.versionId < SharedConstants.getGameVersion().getWorldVersion();
 	}
 }

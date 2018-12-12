@@ -9,11 +9,11 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.feature.Feature;
 
-public class CavesChunkGenerator extends SurfaceChunkGenerator<CavesChunkGeneratorSettings> {
+public class CavesChunkGenerator extends SurfaceChunkGenerator<CavesChunkGeneratorConfig> {
 	private final double[] noiseFalloff = this.buidlNoiseFalloff();
 
-	public CavesChunkGenerator(World world, BiomeSource biomeSource, CavesChunkGeneratorSettings cavesChunkGeneratorSettings) {
-		super(world, biomeSource, 4, 8, 128, cavesChunkGeneratorSettings, false);
+	public CavesChunkGenerator(World world, BiomeSource biomeSource, CavesChunkGeneratorConfig cavesChunkGeneratorConfig) {
+		super(world, biomeSource, 4, 8, 128, cavesChunkGeneratorConfig, false);
 	}
 
 	@Override
@@ -38,13 +38,13 @@ public class CavesChunkGenerator extends SurfaceChunkGenerator<CavesChunkGenerat
 	}
 
 	private double[] buidlNoiseFalloff() {
-		double[] ds = new double[this.method_16408()];
+		double[] ds = new double[this.getNoiseSizeY()];
 
-		for (int i = 0; i < this.method_16408(); i++) {
-			ds[i] = Math.cos((double)i * Math.PI * 6.0 / (double)this.method_16408()) * 2.0;
+		for (int i = 0; i < this.getNoiseSizeY(); i++) {
+			ds[i] = Math.cos((double)i * Math.PI * 6.0 / (double)this.getNoiseSizeY()) * 2.0;
 			double d = (double)i;
-			if (i > this.method_16408() / 2) {
-				d = (double)(this.method_16408() - 1 - i);
+			if (i > this.getNoiseSizeY() / 2) {
+				d = (double)(this.getNoiseSizeY() - 1 - i);
 			}
 
 			if (d < 4.0) {
@@ -60,11 +60,11 @@ public class CavesChunkGenerator extends SurfaceChunkGenerator<CavesChunkGenerat
 	public List<Biome.SpawnEntry> getEntitySpawnList(EntityCategory entityCategory, BlockPos blockPos) {
 		if (entityCategory == EntityCategory.field_6302) {
 			if (Feature.NETHER_BRIDGE.method_14024(this.world, blockPos)) {
-				return Feature.NETHER_BRIDGE.method_13149();
+				return Feature.NETHER_BRIDGE.getMonsterSpawns();
 			}
 
 			if (Feature.NETHER_BRIDGE.method_14023(this.world, blockPos) && this.world.getBlockState(blockPos.down()).getBlock() == Blocks.field_10266) {
-				return Feature.NETHER_BRIDGE.method_13149();
+				return Feature.NETHER_BRIDGE.getMonsterSpawns();
 			}
 		}
 
@@ -72,12 +72,12 @@ public class CavesChunkGenerator extends SurfaceChunkGenerator<CavesChunkGenerat
 	}
 
 	@Override
-	public int method_12100() {
+	public int getSpawnHeight() {
 		return this.world.getSeaLevel() + 1;
 	}
 
 	@Override
-	public int method_12104() {
+	public int getMaxY() {
 		return 128;
 	}
 

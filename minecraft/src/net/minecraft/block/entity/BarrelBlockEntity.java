@@ -12,11 +12,10 @@ import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.InventoryUtil;
 
-public class BarrelBlockEntity extends LockableContainerBlockEntity {
+public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	private DefaultedList<ItemStack> inventory = DefaultedList.create(27, ItemStack.EMPTY);
-	private TextComponent customName;
 
-	protected BarrelBlockEntity(BlockEntityType<?> blockEntityType) {
+	private BarrelBlockEntity(BlockEntityType<?> blockEntityType) {
 		super(blockEntityType);
 	}
 
@@ -85,47 +84,18 @@ public class BarrelBlockEntity extends LockableContainerBlockEntity {
 	}
 
 	@Override
-	public int getInvMaxStackAmount() {
-		return 64;
-	}
-
-	@Override
-	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
-		return this.world.getBlockEntity(this.pos) != this
-			? false
-			: !(playerEntity.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) > 64.0);
-	}
-
-	@Override
-	public void onInvOpen(PlayerEntity playerEntity) {
-	}
-
-	@Override
-	public void onInvClose(PlayerEntity playerEntity) {
-	}
-
-	@Override
-	public boolean isValidInvStack(int i, ItemStack itemStack) {
-		return true;
-	}
-
-	@Override
-	public int getInvProperty(int i) {
-		return 0;
-	}
-
-	@Override
-	public void setInvProperty(int i, int j) {
-	}
-
-	@Override
-	public int getInvPropertyCount() {
-		return 5;
-	}
-
-	@Override
 	public void clearInv() {
 		this.inventory.clear();
+	}
+
+	@Override
+	protected DefaultedList<ItemStack> getInvStackList() {
+		return this.inventory;
+	}
+
+	@Override
+	protected void setInvStackList(DefaultedList<ItemStack> defaultedList) {
+		this.inventory = defaultedList;
 	}
 
 	@Override
@@ -143,11 +113,13 @@ public class BarrelBlockEntity extends LockableContainerBlockEntity {
 		return (TextComponent)(this.customName != null ? this.customName : new TranslatableTextComponent("container.barrel"));
 	}
 
+	@Nullable
 	@Override
-	public boolean hasCustomName() {
-		return this.customName != null;
+	public TextComponent getCustomName() {
+		return this.customName;
 	}
 
+	@Override
 	public void setCustomName(@Nullable TextComponent textComponent) {
 		this.customName = textComponent;
 	}

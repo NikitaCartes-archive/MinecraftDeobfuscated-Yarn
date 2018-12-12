@@ -3,18 +3,19 @@ package net.minecraft.client.render.entity;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.entity.feature.CreeperChargeFeatureRenderer;
 import net.minecraft.client.render.entity.model.CreeperEntityModel;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class CreeperEntityRenderer extends EntityMobRenderer<CreeperEntity> {
+public class CreeperEntityRenderer extends MobEntityRenderer<CreeperEntity, CreeperEntityModel<CreeperEntity>> {
 	private static final Identifier SKIN = new Identifier("textures/entity/creeper/creeper.png");
 
 	public CreeperEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new CreeperEntityModel(), 0.5F);
-		this.addLayer(new CreeperChargedEntityRenderer(this));
+		super(entityRenderDispatcher, new CreeperEntityModel<>(), 0.5F);
+		this.addFeature(new CreeperChargeFeatureRenderer(this));
 	}
 
 	protected void method_3900(CreeperEntity creeperEntity, float f) {

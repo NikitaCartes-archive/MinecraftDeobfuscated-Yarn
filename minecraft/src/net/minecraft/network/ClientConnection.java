@@ -34,14 +34,13 @@ import javax.annotation.Nullable;
 import javax.crypto.SecretKey;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2987;
 import net.minecraft.client.network.packet.DisconnectClientPacket;
 import net.minecraft.network.encryption.PacketDecryptor;
 import net.minecraft.network.encryption.PacketEncryptor;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.util.LazyCachedSupplier;
+import net.minecraft.util.Lazy;
 import net.minecraft.util.Tickable;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -54,13 +53,13 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	public static final Marker field_11641 = MarkerManager.getMarker("NETWORK");
 	public static final Marker field_11639 = MarkerManager.getMarker("NETWORK_PACKETS", field_11641);
 	public static final AttributeKey<NetworkState> ATTR_KEY_PROTOCOL = AttributeKey.valueOf("protocol");
-	public static final LazyCachedSupplier<NioEventLoopGroup> CLIENT_IO_GROUP = new LazyCachedSupplier<>(
+	public static final Lazy<NioEventLoopGroup> field_11650 = new Lazy<>(
 		() -> new NioEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Client IO #%d").setDaemon(true).build())
 	);
-	public static final LazyCachedSupplier<EpollEventLoopGroup> CLIENT_IO_GROUP_EPOLL = new LazyCachedSupplier<>(
+	public static final Lazy<EpollEventLoopGroup> field_11657 = new Lazy<>(
 		() -> new EpollEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Epoll Client IO #%d").setDaemon(true).build())
 	);
-	public static final LazyCachedSupplier<DefaultEventLoopGroup> CLIENT_IO_GROUP_LOCAL = new LazyCachedSupplier<>(
+	public static final Lazy<DefaultEventLoopGroup> field_11649 = new Lazy<>(
 		() -> new DefaultEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Local Client IO #%d").setDaemon(true).build())
 	);
 	private final NetworkSide side;
@@ -137,7 +136,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		if (this.channel.isOpen()) {
 			try {
 				method_10759(packet, this.packetListener);
-			} catch (class_2987 var4) {
+			} catch (OffThreadException var4) {
 			}
 
 			this.field_11658++;
@@ -261,17 +260,17 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	public static ClientConnection connect(InetAddress inetAddress, int i, boolean bl) {
 		final ClientConnection clientConnection = new ClientConnection(NetworkSide.CLIENT);
 		Class<? extends SocketChannel> class_;
-		LazyCachedSupplier<? extends EventLoopGroup> lazyCachedSupplier;
+		Lazy<? extends EventLoopGroup> lazy;
 		if (Epoll.isAvailable() && bl) {
 			class_ = EpollSocketChannel.class;
-			lazyCachedSupplier = CLIENT_IO_GROUP_EPOLL;
+			lazy = field_11657;
 		} else {
 			class_ = NioSocketChannel.class;
-			lazyCachedSupplier = CLIENT_IO_GROUP;
+			lazy = field_11650;
 		}
 
 		new Bootstrap()
-			.group(lazyCachedSupplier.get())
+			.group(lazy.get())
 			.handler(
 				new ChannelInitializer<Channel>() {
 					@Override
@@ -300,7 +299,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	@Environment(EnvType.CLIENT)
 	public static ClientConnection connect(SocketAddress socketAddress) {
 		final ClientConnection clientConnection = new ClientConnection(NetworkSide.CLIENT);
-		new Bootstrap().group(CLIENT_IO_GROUP_LOCAL.get()).handler(new ChannelInitializer<Channel>() {
+		new Bootstrap().group(field_11649.get()).handler(new ChannelInitializer<Channel>() {
 			@Override
 			protected void initChannel(Channel channel) throws Exception {
 				channel.pipeline().addLast("packet_handler", clientConnection);
@@ -381,12 +380,12 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_10762() {
+	public float getPacketsReceived() {
 		return this.field_11654;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_10745() {
+	public float getPacketsSent() {
 		return this.field_11653;
 	}
 

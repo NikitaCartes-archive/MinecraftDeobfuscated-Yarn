@@ -12,7 +12,7 @@ public class TellRawCommand {
 			ServerCommandManager.literal("tellraw")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.argument("targets", EntityArgumentType.method_9308())
+					ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
 						.then(
 							ServerCommandManager.argument("message", ComponentArgumentType.create())
 								.executes(

@@ -5,14 +5,11 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipOptions;
-import net.minecraft.client.network.packet.GuiSlotUpdateClientPacket;
-import net.minecraft.container.Slot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TextComponent;
@@ -60,7 +57,7 @@ public class WrittenBookItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void addInformation(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
 		if (itemStack.hasTag()) {
 			CompoundTag compoundTag = itemStack.getTag();
 			String string = compoundTag.getString("author");
@@ -75,20 +72,18 @@ public class WrittenBookItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (!world.isRemote) {
-			this.method_8054(itemStack, playerEntity);
-		}
-
-		playerEntity.openBookEditor(itemStack, hand);
+		playerEntity.openBookEditorGui(itemStack, hand);
 		playerEntity.incrementStat(Stats.field_15372.method_14956(this));
 		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 	}
 
-	private void method_8054(ItemStack itemStack, PlayerEntity playerEntity) {
+	public static boolean method_8054(ItemStack itemStack, PlayerEntity playerEntity) {
 		CompoundTag compoundTag = itemStack.getTag();
 		if (compoundTag != null && !compoundTag.getBoolean("resolved")) {
 			compoundTag.putBoolean("resolved", true);
-			if (method_8053(compoundTag)) {
+			if (!method_8053(compoundTag)) {
+				return false;
+			} else {
 				ListTag listTag = compoundTag.getList("pages", 8);
 
 				for (int i = 0; i < listTag.size(); i++) {
@@ -98,7 +93,7 @@ public class WrittenBookItem extends Item {
 					try {
 						textComponent = TextComponent.Serializer.fromLenientJsonString(string);
 						textComponent = TextFormatter.method_10881(playerEntity.getCommandSource(), textComponent, playerEntity);
-					} catch (Exception var9) {
+					} catch (Exception var8) {
 						textComponent = new StringTextComponent(string);
 					}
 
@@ -106,11 +101,10 @@ public class WrittenBookItem extends Item {
 				}
 
 				compoundTag.put("pages", listTag);
-				if (playerEntity instanceof ServerPlayerEntity && playerEntity.getMainHandStack() == itemStack) {
-					Slot slot = playerEntity.container.getMatchingSlot(playerEntity.inventory, playerEntity.inventory.selectedSlot);
-					((ServerPlayerEntity)playerEntity).networkHandler.sendPacket(new GuiSlotUpdateClientPacket(0, slot.id, itemStack));
-				}
+				return true;
 			}
+		} else {
+			return false;
 		}
 	}
 

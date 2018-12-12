@@ -9,8 +9,8 @@ import com.google.gson.JsonObject;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.advancement.ServerAdvancementManager;
-import net.minecraft.item.ItemContainer;
+import net.minecraft.advancement.PlayerAdvancementTracker;
+import net.minecraft.item.ItemProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
@@ -21,7 +21,7 @@ import net.minecraft.util.NumberRange;
 
 public class ConsumeItemCriterion implements Criterion<ConsumeItemCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("consume_item");
-	private final Map<ServerAdvancementManager, ConsumeItemCriterion.Handler> handlers = Maps.<ServerAdvancementManager, ConsumeItemCriterion.Handler>newHashMap();
+	private final Map<PlayerAdvancementTracker, ConsumeItemCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, ConsumeItemCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -29,32 +29,34 @@ public class ConsumeItemCriterion implements Criterion<ConsumeItemCriterion.Cond
 	}
 
 	@Override
-	public void addCondition(ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<ConsumeItemCriterion.Conditions> conditionsContainer) {
-		ConsumeItemCriterion.Handler handler = (ConsumeItemCriterion.Handler)this.handlers.get(serverAdvancementManager);
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<ConsumeItemCriterion.Conditions> conditionsContainer
+	) {
+		ConsumeItemCriterion.Handler handler = (ConsumeItemCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new ConsumeItemCriterion.Handler(serverAdvancementManager);
-			this.handlers.put(serverAdvancementManager, handler);
+			handler = new ConsumeItemCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void removeCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<ConsumeItemCriterion.Conditions> conditionsContainer
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<ConsumeItemCriterion.Conditions> conditionsContainer
 	) {
-		ConsumeItemCriterion.Handler handler = (ConsumeItemCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		ConsumeItemCriterion.Handler handler = (ConsumeItemCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(serverAdvancementManager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void removePlayer(ServerAdvancementManager serverAdvancementManager) {
-		this.handlers.remove(serverAdvancementManager);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
 	public ConsumeItemCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -80,9 +82,9 @@ public class ConsumeItemCriterion implements Criterion<ConsumeItemCriterion.Cond
 			return new ConsumeItemCriterion.Conditions(ItemPredicate.ANY);
 		}
 
-		public static ConsumeItemCriterion.Conditions item(ItemContainer itemContainer) {
+		public static ConsumeItemCriterion.Conditions method_8828(ItemProvider itemProvider) {
 			return new ConsumeItemCriterion.Conditions(
-				new ItemPredicate(null, itemContainer.getItem(), NumberRange.Integer.ANY, NumberRange.Integer.ANY, new EnchantmentPredicate[0], null, NbtPredicate.ANY)
+				new ItemPredicate(null, itemProvider.getItem(), NumberRange.Integer.ANY, NumberRange.Integer.ANY, new EnchantmentPredicate[0], null, NbtPredicate.ANY)
 			);
 		}
 
@@ -91,7 +93,7 @@ public class ConsumeItemCriterion implements Criterion<ConsumeItemCriterion.Cond
 		}
 
 		@Override
-		public JsonElement method_807() {
+		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("item", this.item.serialize());
 			return jsonObject;
@@ -99,11 +101,11 @@ public class ConsumeItemCriterion implements Criterion<ConsumeItemCriterion.Cond
 	}
 
 	static class Handler {
-		private final ServerAdvancementManager manager;
+		private final PlayerAdvancementTracker field_9512;
 		private final Set<Criterion.ConditionsContainer<ConsumeItemCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<ConsumeItemCriterion.Conditions>>newHashSet();
 
-		public Handler(ServerAdvancementManager serverAdvancementManager) {
-			this.manager = serverAdvancementManager;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.field_9512 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
@@ -133,7 +135,7 @@ public class ConsumeItemCriterion implements Criterion<ConsumeItemCriterion.Cond
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<ConsumeItemCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
+					conditionsContainerx.apply(this.field_9512);
 				}
 			}
 		}

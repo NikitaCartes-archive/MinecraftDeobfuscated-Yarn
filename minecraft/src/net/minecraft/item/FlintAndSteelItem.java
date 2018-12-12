@@ -1,6 +1,6 @@
 package net.minecraft.item;
 
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FireBlock;
@@ -23,14 +23,14 @@ public class FlintAndSteelItem extends Item {
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		PlayerEntity playerEntity = itemUsageContext.getPlayer();
 		IWorld iWorld = itemUsageContext.getWorld();
-		BlockPos blockPos = itemUsageContext.getPos().method_10093(itemUsageContext.method_8038());
+		BlockPos blockPos = itemUsageContext.getPos().offset(itemUsageContext.getFacing());
 		if (method_7825(iWorld, blockPos)) {
 			iWorld.playSound(playerEntity, blockPos, SoundEvents.field_15145, SoundCategory.field_15245, 1.0F, random.nextFloat() * 0.4F + 0.8F);
 			BlockState blockState = ((FireBlock)Blocks.field_10036).method_10198(iWorld, blockPos);
 			iWorld.setBlockState(blockPos, blockState, 11);
 			ItemStack itemStack = itemUsageContext.getItemStack();
 			if (playerEntity instanceof ServerPlayerEntity) {
-				CriterionCriterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos, itemStack);
+				Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos, itemStack);
 			}
 
 			if (playerEntity != null) {
@@ -48,7 +48,7 @@ public class FlintAndSteelItem extends Item {
 		boolean bl = false;
 
 		for (Direction direction : Direction.class_2353.HORIZONTAL) {
-			if (iWorld.getBlockState(blockPos.method_10093(direction)).getBlock() == Blocks.field_10540
+			if (iWorld.getBlockState(blockPos.offset(direction)).getBlock() == Blocks.field_10540
 				&& ((PortalBlock)Blocks.field_10316).method_10351(iWorld, blockPos) != null) {
 				bl = true;
 			}

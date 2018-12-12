@@ -9,7 +9,7 @@ import com.google.gson.JsonObject;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.advancement.ServerAdvancementManager;
+import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -17,7 +17,7 @@ import net.minecraft.util.Identifier;
 
 public class TameAnimalCriterion implements Criterion<TameAnimalCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("tame_animal");
-	private final Map<ServerAdvancementManager, TameAnimalCriterion.Handler> handlers = Maps.<ServerAdvancementManager, TameAnimalCriterion.Handler>newHashMap();
+	private final Map<PlayerAdvancementTracker, TameAnimalCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, TameAnimalCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -25,32 +25,34 @@ public class TameAnimalCriterion implements Criterion<TameAnimalCriterion.Condit
 	}
 
 	@Override
-	public void addCondition(ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<TameAnimalCriterion.Conditions> conditionsContainer) {
-		TameAnimalCriterion.Handler handler = (TameAnimalCriterion.Handler)this.handlers.get(serverAdvancementManager);
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<TameAnimalCriterion.Conditions> conditionsContainer
+	) {
+		TameAnimalCriterion.Handler handler = (TameAnimalCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new TameAnimalCriterion.Handler(serverAdvancementManager);
-			this.handlers.put(serverAdvancementManager, handler);
+			handler = new TameAnimalCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void removeCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<TameAnimalCriterion.Conditions> conditionsContainer
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<TameAnimalCriterion.Conditions> conditionsContainer
 	) {
-		TameAnimalCriterion.Handler handler = (TameAnimalCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		TameAnimalCriterion.Handler handler = (TameAnimalCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(serverAdvancementManager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void removePlayer(ServerAdvancementManager serverAdvancementManager) {
-		this.handlers.remove(serverAdvancementManager);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
 	public TameAnimalCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -86,7 +88,7 @@ public class TameAnimalCriterion implements Criterion<TameAnimalCriterion.Condit
 		}
 
 		@Override
-		public JsonElement method_807() {
+		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("entity", this.entity.serialize());
 			return jsonObject;
@@ -94,11 +96,11 @@ public class TameAnimalCriterion implements Criterion<TameAnimalCriterion.Condit
 	}
 
 	static class Handler {
-		private final ServerAdvancementManager manager;
+		private final PlayerAdvancementTracker field_9756;
 		private final Set<Criterion.ConditionsContainer<TameAnimalCriterion.Conditions>> Conditions = Sets.<Criterion.ConditionsContainer<TameAnimalCriterion.Conditions>>newHashSet();
 
-		public Handler(ServerAdvancementManager serverAdvancementManager) {
-			this.manager = serverAdvancementManager;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.field_9756 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
@@ -128,7 +130,7 @@ public class TameAnimalCriterion implements Criterion<TameAnimalCriterion.Condit
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<TameAnimalCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
+					conditionsContainerx.apply(this.field_9756);
 				}
 			}
 		}

@@ -7,13 +7,13 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.advancement.ServerAdvancementManager;
+import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class TickCriterion implements Criterion<TickCriterion.Conditions> {
 	public static final Identifier ID = new Identifier("tick");
-	private final Map<ServerAdvancementManager, TickCriterion.Handler> handlers = Maps.<ServerAdvancementManager, TickCriterion.Handler>newHashMap();
+	private final Map<PlayerAdvancementTracker, TickCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, TickCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -21,30 +21,34 @@ public class TickCriterion implements Criterion<TickCriterion.Conditions> {
 	}
 
 	@Override
-	public void addCondition(ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<TickCriterion.Conditions> conditionsContainer) {
-		TickCriterion.Handler handler = (TickCriterion.Handler)this.handlers.get(serverAdvancementManager);
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<TickCriterion.Conditions> conditionsContainer
+	) {
+		TickCriterion.Handler handler = (TickCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new TickCriterion.Handler(serverAdvancementManager);
-			this.handlers.put(serverAdvancementManager, handler);
+			handler = new TickCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void removeCondition(ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<TickCriterion.Conditions> conditionsContainer) {
-		TickCriterion.Handler handler = (TickCriterion.Handler)this.handlers.get(serverAdvancementManager);
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<TickCriterion.Conditions> conditionsContainer
+	) {
+		TickCriterion.Handler handler = (TickCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(serverAdvancementManager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void removePlayer(ServerAdvancementManager serverAdvancementManager) {
-		this.handlers.remove(serverAdvancementManager);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
 	public TickCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -65,11 +69,11 @@ public class TickCriterion implements Criterion<TickCriterion.Conditions> {
 	}
 
 	static class Handler {
-		private final ServerAdvancementManager manager;
+		private final PlayerAdvancementTracker field_9761;
 		private final Set<Criterion.ConditionsContainer<TickCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<TickCriterion.Conditions>>newHashSet();
 
-		public Handler(ServerAdvancementManager serverAdvancementManager) {
-			this.manager = serverAdvancementManager;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.field_9761 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
@@ -86,7 +90,7 @@ public class TickCriterion implements Criterion<TickCriterion.Conditions> {
 
 		public void handle() {
 			for (Criterion.ConditionsContainer<TickCriterion.Conditions> conditionsContainer : Lists.newArrayList(this.conditions)) {
-				conditionsContainer.apply(this.manager);
+				conditionsContainer.apply(this.field_9761);
 			}
 		}
 	}

@@ -11,7 +11,7 @@ import net.minecraft.text.TranslatableTextComponent;
 public class FunctionCommand {
 	public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> {
 		CommandFunctionManager commandFunctionManager = commandContext.getSource().getMinecraftServer().getCommandFunctionManager();
-		CommandSource.suggestIdentifiers(commandFunctionManager.method_12901().getKeys(), suggestionsBuilder, "#");
+		CommandSource.suggestIdentifiers(commandFunctionManager.getTags().getKeys(), suggestionsBuilder, "#");
 		return CommandSource.suggestIdentifiers(commandFunctionManager.getFunctions().keySet(), suggestionsBuilder);
 	};
 
@@ -31,7 +31,7 @@ public class FunctionCommand {
 		int i = 0;
 
 		for (CommandFunction commandFunction : collection) {
-			i += serverCommandSource.getMinecraftServer().getCommandFunctionManager().method_12904(commandFunction, serverCommandSource.withSilent().withMaxLevel(2));
+			i += serverCommandSource.getMinecraftServer().getCommandFunctionManager().execute(commandFunction, serverCommandSource.withSilent().withMaxLevel(2));
 		}
 
 		if (collection.size() == 1) {

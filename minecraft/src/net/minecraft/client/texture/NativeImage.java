@@ -31,11 +31,13 @@ import org.lwjgl.system.MemoryUtil;
 
 @Environment(EnvType.CLIENT)
 public final class NativeImage implements AutoCloseable {
-	private static final Set<StandardOpenOption> field_4992 = EnumSet.of(StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-	private final NativeImage.Format imageFormat;
+	private static final Set<StandardOpenOption> WRITE_TO_FILE_OPEN_OPTIONS = EnumSet.of(
+		StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
+	);
+	private final NativeImage.Format format;
 	private final int width;
 	private final int height;
-	private final boolean field_4990;
+	private final boolean isStbImage;
 	private long pointer;
 	private final int sizeBytes;
 
@@ -44,11 +46,11 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	public NativeImage(NativeImage.Format format, int i, int j, boolean bl) {
-		this.imageFormat = format;
+		this.format = format;
 		this.width = i;
 		this.height = j;
 		this.sizeBytes = i * j * format.getBytesPerPixel();
-		this.field_4990 = false;
+		this.isStbImage = false;
 		if (bl) {
 			this.pointer = MemoryUtil.nmemCalloc(1L, (long)this.sizeBytes);
 		} else {
@@ -57,16 +59,16 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	private NativeImage(NativeImage.Format format, int i, int j, boolean bl, long l) {
-		this.imageFormat = format;
+		this.format = format;
 		this.width = i;
 		this.height = j;
-		this.field_4990 = bl;
+		this.isStbImage = bl;
 		this.pointer = l;
 		this.sizeBytes = i * j * format.getBytesPerPixel();
 	}
 
 	public String toString() {
-		return "NativeImage[" + this.imageFormat + " " + this.width + "x" + this.height + "@" + this.pointer + (this.field_4990 ? "S" : "N") + "]";
+		return "NativeImage[" + this.format + " " + this.width + "x" + this.height + "@" + this.pointer + (this.isStbImage ? "S" : "N") + "]";
 	}
 
 	public static NativeImage fromInputStream(InputStream inputStream) throws IOException {
@@ -146,7 +148,7 @@ public final class NativeImage implements AutoCloseable {
 
 	public void close() {
 		if (this.pointer != 0L) {
-			if (this.field_4990) {
+			if (this.isStbImage) {
 				STBImage.nstbi_image_free(this.pointer);
 			} else {
 				MemoryUtil.nmemFree(this.pointer);
@@ -165,12 +167,12 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	public NativeImage.Format getFormat() {
-		return this.imageFormat;
+		return this.format;
 	}
 
 	public int getPixelRGBA(int i, int j) {
-		if (this.imageFormat != NativeImage.Format.field_4997) {
-			throw new IllegalArgumentException(String.format("getPixelRGBA only works on RGBA images; have %s", this.imageFormat));
+		if (this.format != NativeImage.Format.field_4997) {
+			throw new IllegalArgumentException(String.format("getPixelRGBA only works on RGBA images; have %s", this.format));
 		} else if (i <= this.width && j <= this.height) {
 			this.checkAllocated();
 			return MemoryUtil.memIntBuffer(this.pointer, this.sizeBytes).get(i + j * this.width);
@@ -180,8 +182,8 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	public void setPixelRGBA(int i, int j, int k) {
-		if (this.imageFormat != NativeImage.Format.field_4997) {
-			throw new IllegalArgumentException(String.format("getPixelRGBA only works on RGBA images; have %s", this.imageFormat));
+		if (this.format != NativeImage.Format.field_4997) {
+			throw new IllegalArgumentException(String.format("getPixelRGBA only works on RGBA images; have %s", this.format));
 		} else if (i <= this.width && j <= this.height) {
 			this.checkAllocated();
 			MemoryUtil.memIntBuffer(this.pointer, this.sizeBytes).put(i + j * this.width, k);
@@ -190,19 +192,18 @@ public final class NativeImage implements AutoCloseable {
 		}
 	}
 
-	public byte method_4311(int i, int j) {
-		if (!this.imageFormat.method_4337()) {
-			throw new IllegalArgumentException(String.format("no luminance or alpha in %s", this.imageFormat));
+	public byte getAlphaOrLuminance(int i, int j) {
+		if (!this.format.method_4337()) {
+			throw new IllegalArgumentException(String.format("no luminance or alpha in %s", this.format));
 		} else if (i <= this.width && j <= this.height) {
-			return MemoryUtil.memByteBuffer(this.pointer, this.sizeBytes)
-				.get((i + j * this.width) * this.imageFormat.getBytesPerPixel() + this.imageFormat.method_4330() / 8);
+			return MemoryUtil.memByteBuffer(this.pointer, this.sizeBytes).get((i + j * this.width) * this.format.getBytesPerPixel() + this.format.method_4330() / 8);
 		} else {
 			throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", i, j, this.width, this.height));
 		}
 	}
 
 	public void blendPixel(int i, int j, int k) {
-		if (this.imageFormat != NativeImage.Format.field_4997) {
+		if (this.format != NativeImage.Format.field_4997) {
 			throw new UnsupportedOperationException("Can only call blendPixel with RGBA format");
 		} else {
 			int l = this.getPixelRGBA(i, j);
@@ -245,7 +246,7 @@ public final class NativeImage implements AutoCloseable {
 
 	@Deprecated
 	public int[] makePixelArray() {
-		if (this.imageFormat != NativeImage.Format.field_4997) {
+		if (this.format != NativeImage.Format.field_4997) {
 			throw new UnsupportedOperationException("can only call makePixelArray for RGBA images.");
 		} else {
 			this.checkAllocated();
@@ -287,18 +288,18 @@ public final class NativeImage implements AutoCloseable {
 
 		GlStateManager.pixelStore(3316, l);
 		GlStateManager.pixelStore(3315, m);
-		this.imageFormat.method_4340();
-		GlStateManager.texSubImage2D(3553, i, j, k, n, o, this.imageFormat.method_4333(), 5121, this.pointer);
+		this.format.method_4340();
+		GlStateManager.texSubImage2D(3553, i, j, k, n, o, this.format.method_4333(), 5121, this.pointer);
 	}
 
 	public void method_4327(int i, boolean bl) {
 		this.checkAllocated();
-		this.imageFormat.method_4339();
-		GlStateManager.getTexImage(3553, i, this.imageFormat.method_4333(), 5121, this.pointer);
-		if (bl && this.imageFormat.method_4329()) {
+		this.format.method_4339();
+		GlStateManager.getTexImage(3553, i, this.format.method_4333(), 5121, this.pointer);
+		if (bl && this.format.method_4329()) {
 			for (int j = 0; j < this.getHeight(); j++) {
 				for (int k = 0; k < this.getWidth(); k++) {
-					this.setPixelRGBA(k, j, this.getPixelRGBA(k, j) | 255 << this.imageFormat.method_4332());
+					this.setPixelRGBA(k, j, this.getPixelRGBA(k, j) | 255 << this.format.method_4332());
 				}
 			}
 		}
@@ -306,12 +307,12 @@ public final class NativeImage implements AutoCloseable {
 
 	public void method_4306(boolean bl) {
 		this.checkAllocated();
-		this.imageFormat.method_4339();
+		this.format.method_4339();
 		if (bl) {
 			GlStateManager.pixelTransfer(3357, Float.MAX_VALUE);
 		}
 
-		GlStateManager.readPixels(0, 0, this.width, this.height, this.imageFormat.method_4333(), 5121, this.pointer);
+		GlStateManager.readPixels(0, 0, this.width, this.height, this.format.method_4333(), 5121, this.pointer);
 		if (bl) {
 			GlStateManager.pixelTransfer(3357, 0.0F);
 		}
@@ -325,10 +326,10 @@ public final class NativeImage implements AutoCloseable {
 		this.writeFile(file.toPath());
 	}
 
-	public void method_4316(STBTTFontinfo sTBTTFontinfo, int i, int j, int k, float f, float g, float h, float l, int m, int n) {
+	public void makeGlyphBitmapSubpixel(STBTTFontinfo sTBTTFontinfo, int i, int j, int k, float f, float g, float h, float l, int m, int n) {
 		if (m < 0 || m + j > this.getWidth() || n < 0 || n + k > this.getHeight()) {
 			throw new IllegalArgumentException(String.format("Out of bounds: start: (%s, %s) (size: %sx%s); size: %sx%s", m, n, j, k, this.getWidth(), this.getHeight()));
-		} else if (this.imageFormat.getBytesPerPixel() != 1) {
+		} else if (this.format.getBytesPerPixel() != 1) {
 			throw new IllegalArgumentException("Can only write fonts into 1-component images.");
 		} else {
 			STBTruetype.nstbtt_MakeGlyphBitmapSubpixel(
@@ -338,11 +339,11 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	public void writeFile(Path path) throws IOException {
-		if (!this.imageFormat.method_4338()) {
-			throw new UnsupportedOperationException("Don't know how to write format " + this.imageFormat);
+		if (!this.format.method_4338()) {
+			throw new UnsupportedOperationException("Don't know how to write format " + this.format);
 		} else {
 			this.checkAllocated();
-			WritableByteChannel writableByteChannel = Files.newByteChannel(path, field_4992);
+			WritableByteChannel writableByteChannel = Files.newByteChannel(path, WRITE_TO_FILE_OPEN_OPTIONS);
 			Throwable var3 = null;
 
 			try {
@@ -350,7 +351,7 @@ public final class NativeImage implements AutoCloseable {
 
 				try {
 					if (!STBImageWrite.stbi_write_png_to_func(
-						lv, 0L, this.getWidth(), this.getHeight(), this.imageFormat.getBytesPerPixel(), MemoryUtil.memByteBuffer(this.pointer, this.sizeBytes), 0
+						lv, 0L, this.getWidth(), this.getHeight(), this.format.getBytesPerPixel(), MemoryUtil.memByteBuffer(this.pointer, this.sizeBytes), 0
 					)) {
 						throw new IOException("Could not write image to the PNG file \"" + path.toAbsolutePath() + "\": " + STBImage.stbi_failure_reason());
 					}
@@ -379,10 +380,10 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	public void method_4317(NativeImage nativeImage) {
-		if (nativeImage.getFormat() != this.imageFormat) {
+		if (nativeImage.getFormat() != this.format) {
 			throw new UnsupportedOperationException("Image formats don't match.");
 		} else {
-			int i = this.imageFormat.getBytesPerPixel();
+			int i = this.format.getBytesPerPixel();
 			this.checkAllocated();
 			nativeImage.checkAllocated();
 			if (this.width == nativeImage.width) {
@@ -423,7 +424,7 @@ public final class NativeImage implements AutoCloseable {
 		this.checkAllocated();
 
 		try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-			int i = this.imageFormat.getBytesPerPixel();
+			int i = this.format.getBytesPerPixel();
 			int j = this.getWidth() * i;
 			long l = memoryStack.nmalloc(j);
 
@@ -439,10 +440,10 @@ public final class NativeImage implements AutoCloseable {
 
 	public void resizeSubRectTo(int i, int j, int k, int l, NativeImage nativeImage) {
 		this.checkAllocated();
-		if (nativeImage.getFormat() != this.imageFormat) {
+		if (nativeImage.getFormat() != this.format) {
 			throw new UnsupportedOperationException("resizeSubRectTo only works for images of the same format.");
 		} else {
-			int m = this.imageFormat.getBytesPerPixel();
+			int m = this.format.getBytesPerPixel();
 			STBImageResize.nstbir_resize_uint8(
 				this.pointer + (long)((i + j * this.getWidth()) * m), k, l, this.getWidth() * m, nativeImage.pointer, nativeImage.getWidth(), nativeImage.getHeight(), 0, m
 			);

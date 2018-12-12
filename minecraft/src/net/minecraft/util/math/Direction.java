@@ -242,7 +242,7 @@ public enum Direction implements StringRepresentable {
 		return fromHorizontal(MathHelper.floor(d / 90.0 + 0.5) & 3);
 	}
 
-	public static Direction method_10169(Direction.Axis axis, Direction.AxisDirection axisDirection) {
+	public static Direction from(Direction.Axis axis, Direction.AxisDirection axisDirection) {
 		switch (axis) {
 			case X:
 				return axisDirection == Direction.AxisDirection.POSITIVE ? EAST : WEST;
@@ -290,7 +290,7 @@ public enum Direction implements StringRepresentable {
 		return this.name;
 	}
 
-	public static Direction method_10156(Direction.AxisDirection axisDirection, Direction.Axis axis) {
+	public static Direction get(Direction.AxisDirection axisDirection, Direction.Axis axis) {
 		for (Direction direction : values()) {
 			if (direction.getDirection() == axisDirection && direction.getAxis() == axis) {
 				return direction;

@@ -4,17 +4,17 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_990;
+import net.minecraft.client.render.entity.feature.PandaHeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.PandaEntityModel;
 import net.minecraft.entity.passive.PandaEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class PandaEntityRenderer extends EntityMobRenderer<PandaEntity> {
+public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
 	public PandaEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new PandaEntityModel(9, 0.0F), 0.5F);
-		this.addLayer(new class_990(this));
+		super(entityRenderDispatcher, new PandaEntityModel<>(9, 0.0F), 0.5F);
+		this.addFeature(new PandaHeldItemFeatureRenderer(this));
 	}
 
 	@Nullable
@@ -23,7 +23,7 @@ public class PandaEntityRenderer extends EntityMobRenderer<PandaEntity> {
 	}
 
 	protected void method_4085(PandaEntity pandaEntity, float f, float g, float h) {
-		super.method_4058(pandaEntity, f, g, h);
+		super.setupTransforms(pandaEntity, f, g, h);
 		if (pandaEntity.field_6767 > 0) {
 			int i = pandaEntity.field_6767;
 			int j = i + 1;

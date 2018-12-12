@@ -47,7 +47,7 @@ public class SpreadPlayersCommand {
 										.then(
 											ServerCommandManager.argument("respectTeams", BoolArgumentType.bool())
 												.then(
-													ServerCommandManager.argument("targets", EntityArgumentType.method_9306())
+													ServerCommandManager.argument("targets", EntityArgumentType.multipleEntities())
 														.executes(
 															commandContext -> method_13656(
 																	commandContext.getSource(),
@@ -284,7 +284,7 @@ public class SpreadPlayersCommand {
 				BlockState blockState = blockView.getBlockState(blockPos);
 				if (!blockState.isAir()) {
 					Material material = blockState.getMaterial();
-					return !material.method_15797() && material != Material.FIRE;
+					return !material.isLiquid() && material != Material.FIRE;
 				}
 			}
 

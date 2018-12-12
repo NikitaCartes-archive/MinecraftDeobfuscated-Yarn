@@ -69,12 +69,12 @@ public class CompassItem extends Item {
 
 			@Environment(EnvType.CLIENT)
 			private double method_7733(ItemFrameEntity itemFrameEntity) {
-				return (double)MathHelper.wrapDegrees(180 + itemFrameEntity.field_7099.getHorizontal() * 90);
+				return (double)MathHelper.wrapDegrees(180 + itemFrameEntity.facing.getHorizontal() * 90);
 			}
 
 			@Environment(EnvType.CLIENT)
 			private double method_7734(IWorld iWorld, Entity entity) {
-				BlockPos blockPos = iWorld.method_8395();
+				BlockPos blockPos = iWorld.getSpawnPos();
 				return Math.atan2((double)blockPos.getZ() - entity.z, (double)blockPos.getX() - entity.x);
 			}
 		});

@@ -31,7 +31,7 @@ public class class_520 extends EntryListWidget.Entry<class_520> {
 	}
 
 	public void method_2686(class_523 arg) {
-		this.method_2681().getSortingDirection().locate(arg.getListeners(), this, class_520::method_2681, true);
+		this.method_2681().getSortingDirection().locate(arg.getEntries(), this, class_520::method_2681, true);
 	}
 
 	protected void method_2684() {
@@ -55,9 +55,9 @@ public class class_520 extends EntryListWidget.Entry<class_520> {
 	}
 
 	@Override
-	public void drawEntry(int i, int j, int k, int l, boolean bl, float f) {
-		int m = this.method_1906();
-		int n = this.method_1907();
+	public void draw(int i, int j, int k, int l, boolean bl, float f) {
+		int m = this.getY();
+		int n = this.getX();
 		ResourcePackCompatibility resourcePackCompatibility = this.method_2677();
 		if (!resourcePackCompatibility.isCompatible()) {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -69,7 +69,7 @@ public class class_520 extends EntryListWidget.Entry<class_520> {
 		Drawable.drawTexturedRect(n, m, 0.0F, 0.0F, 32, 32, 32.0F, 32.0F);
 		String string = this.method_2678();
 		String string2 = this.method_2679();
-		if (this.method_2687() && (this.field_3165.options.touchscreen || bl)) {
+		if (this.method_2687() && (this.field_3165.field_1690.touchscreen || bl)) {
 			this.field_3165.getTextureManager().bindTexture(field_3160);
 			Drawable.drawRect(n, m, n + 32, m + 32, -1601138544);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -139,21 +139,21 @@ public class class_520 extends EntryListWidget.Entry<class_520> {
 	}
 
 	protected boolean method_2682() {
-		List<class_520> list = this.method_1905().getListeners();
+		List<class_520> list = this.getParent().getEntries();
 		int i = list.indexOf(this);
 		return i > 0 && !((class_520)list.get(i - 1)).field_3161.sortsTillEnd();
 	}
 
 	protected boolean method_2683() {
-		List<class_520> list = this.method_1905().getListeners();
+		List<class_520> list = this.getParent().getEntries();
 		int i = list.indexOf(this);
 		return i >= 0 && i < list.size() - 1 && !((class_520)list.get(i + 1)).field_3161.sortsTillEnd();
 	}
 
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
-		double f = d - (double)this.method_1907();
-		double g = e - (double)this.method_1906();
+		double f = d - (double)this.getX();
+		double g = e - (double)this.getY();
 		if (this.method_2687() && f <= 32.0) {
 			if (this.method_2688()) {
 				this.method_2680().method_2660();
@@ -180,7 +180,7 @@ public class class_520 extends EntryListWidget.Entry<class_520> {
 			}
 
 			if (f > 16.0 && g < 16.0 && this.method_2682()) {
-				List<class_520> list = this.method_1905().getListeners();
+				List<class_520> list = this.getParent().getEntries();
 				int j = list.indexOf(this);
 				list.remove(this);
 				list.add(j - 1, this);
@@ -189,7 +189,7 @@ public class class_520 extends EntryListWidget.Entry<class_520> {
 			}
 
 			if (f > 16.0 && g > 16.0 && this.method_2683()) {
-				List<class_520> list = this.method_1905().getListeners();
+				List<class_520> list = this.getParent().getEntries();
 				int j = list.indexOf(this);
 				list.remove(this);
 				list.add(j + 1, this);

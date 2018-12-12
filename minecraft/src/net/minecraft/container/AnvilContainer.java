@@ -86,9 +86,9 @@ public class AnvilContainer extends Container {
 
 					AnvilContainer.this.field_7772 = 0;
 					BlockState blockState = world.getBlockState(blockPos);
-					if (!world.isRemote) {
+					if (!world.isClient) {
 						if (!playerEntity.abilities.creativeMode && blockState.matches(BlockTags.field_15486) && playerEntity.getRand().nextFloat() < 0.12F) {
-							BlockState blockState2 = AnvilBlock.method_9346(blockState);
+							BlockState blockState2 = AnvilBlock.getLandingState(blockState);
 							if (blockState2 == null) {
 								world.clearBlockState(blockPos);
 								world.fireWorldEvent(1029, blockPos, 0);
@@ -307,7 +307,7 @@ public class AnvilContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			this.method_7607(playerEntity, this.world, this.inventory);
 		}
 	}

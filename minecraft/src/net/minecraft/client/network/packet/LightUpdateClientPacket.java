@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2804;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.world.LightType;
+import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.light.LightingProvider;
 
@@ -33,23 +33,23 @@ public class LightUpdateClientPacket implements Packet<ClientPlayPacketListener>
 		this.blockUpdates = Lists.<byte[]>newArrayList();
 
 		for (int i = 0; i < 18; i++) {
-			class_2804 lv = lightingProvider.get(LightType.field_9284).method_15544(this.chunkX, -1 + i, this.chunkZ);
-			class_2804 lv2 = lightingProvider.get(LightType.field_9282).method_15544(this.chunkX, -1 + i, this.chunkZ);
-			if (lv != null) {
-				if (lv.method_12146()) {
+			ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.SKY_LIGHT).getChunkLightArray(this.chunkX, -1 + i, this.chunkZ);
+			ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.BLOCK_LIGHT).getChunkLightArray(this.chunkX, -1 + i, this.chunkZ);
+			if (chunkNibbleArray != null) {
+				if (chunkNibbleArray.isUninitialized()) {
 					this.field_16418 |= 1 << i;
 				} else {
 					this.field_12263 |= 1 << i;
-					this.skyUpdates.add(lv.method_12137().clone());
+					this.skyUpdates.add(chunkNibbleArray.asByteArray().clone());
 				}
 			}
 
-			if (lv2 != null) {
-				if (lv2.method_12146()) {
+			if (chunkNibbleArray2 != null) {
+				if (chunkNibbleArray2.isUninitialized()) {
 					this.field_16417 |= 1 << i;
 				} else {
 					this.field_12262 |= 1 << i;
-					this.blockUpdates.add(lv2.method_12137().clone());
+					this.blockUpdates.add(chunkNibbleArray2.asByteArray().clone());
 				}
 			}
 		}
@@ -65,24 +65,24 @@ public class LightUpdateClientPacket implements Packet<ClientPlayPacketListener>
 
 		for (int k = 0; k < 18; k++) {
 			if ((this.field_12263 & 1 << k) != 0) {
-				class_2804 lv = lightingProvider.get(LightType.field_9284).method_15544(this.chunkX, -1 + k, this.chunkZ);
-				if (lv != null && !lv.method_12146()) {
-					this.skyUpdates.add(lv.method_12137().clone());
+				ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.SKY_LIGHT).getChunkLightArray(this.chunkX, -1 + k, this.chunkZ);
+				if (chunkNibbleArray != null && !chunkNibbleArray.isUninitialized()) {
+					this.skyUpdates.add(chunkNibbleArray.asByteArray().clone());
 				} else {
 					this.field_12263 &= ~(1 << k);
-					if (lv != null) {
+					if (chunkNibbleArray != null) {
 						this.field_16418 |= 1 << k;
 					}
 				}
 			}
 
 			if ((this.field_12262 & 1 << k) != 0) {
-				class_2804 lv = lightingProvider.get(LightType.field_9282).method_15544(this.chunkX, -1 + k, this.chunkZ);
-				if (lv != null && !lv.method_12146()) {
-					this.blockUpdates.add(lv.method_12137().clone());
+				ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.BLOCK_LIGHT).getChunkLightArray(this.chunkX, -1 + k, this.chunkZ);
+				if (chunkNibbleArray != null && !chunkNibbleArray.isUninitialized()) {
+					this.blockUpdates.add(chunkNibbleArray.asByteArray().clone());
 				} else {
 					this.field_12262 &= ~(1 << k);
-					if (lv != null) {
+					if (chunkNibbleArray != null) {
 						this.field_16417 |= 1 << k;
 					}
 				}

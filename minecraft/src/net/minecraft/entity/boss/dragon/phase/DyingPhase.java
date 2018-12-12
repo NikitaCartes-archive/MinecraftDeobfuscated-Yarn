@@ -1,12 +1,12 @@
 package net.minecraft.entity.boss.dragon.phase;
 
 import javax.annotation.Nullable;
-import net.minecraft.class_3033;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.gen.feature.EndPortalFeature;
 
 public class DyingPhase extends AbstractPhase {
 	private Vec3d field_7041;
@@ -32,12 +32,12 @@ public class DyingPhase extends AbstractPhase {
 	public void method_6855() {
 		this.field_7040++;
 		if (this.field_7041 == null) {
-			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, class_3033.field_13600);
+			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.ORIGIN);
 			this.field_7041 = new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 		}
 
 		double d = this.field_7041.squaredDistanceTo(this.dragon.x, this.dragon.y, this.dragon.z);
-		if (!(d < 100.0) && !(d > 22500.0) && !this.dragon.field_5976 && !this.dragon.field_5992) {
+		if (!(d < 100.0) && !(d > 22500.0) && !this.dragon.horizontalCollision && !this.dragon.verticalCollision) {
 			this.dragon.setHealth(1.0F);
 		} else {
 			this.dragon.setHealth(0.0F);

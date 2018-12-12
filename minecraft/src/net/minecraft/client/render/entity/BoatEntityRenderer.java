@@ -3,9 +3,7 @@ package net.minecraft.client.render.entity;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.model.Model;
 import net.minecraft.client.render.entity.model.BoatEntityModel;
-import net.minecraft.client.render.entity.model.MultipassModel;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -20,31 +18,31 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 		new Identifier("textures/entity/boat/acacia.png"),
 		new Identifier("textures/entity/boat/dark_oak.png")
 	};
-	protected Model field_4647 = new BoatEntityModel();
+	protected BoatEntityModel field_4647 = new BoatEntityModel();
 
 	public BoatEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
 		this.field_4673 = 0.5F;
 	}
 
-	public void method_3888(BoatEntity boatEntity, double d, double e, double f, float g, float h) {
+	public void render(BoatEntity boatEntity, double d, double e, double f, float g, float h) {
 		GlStateManager.pushMatrix();
 		this.method_3890(d, e, f);
 		this.method_3889(boatEntity, g, h);
-		this.method_3925(boatEntity);
-		if (this.field_4674) {
+		this.bindEntityTexture(boatEntity);
+		if (this.renderOutlines) {
 			GlStateManager.enableColorMaterial();
-			GlStateManager.setupSolidRenderingTextureCombine(this.method_3929(boatEntity));
+			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(boatEntity));
 		}
 
-		this.field_4647.render(boatEntity, h, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
-		if (this.field_4674) {
+		this.field_4647.method_17071(boatEntity, h, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+		if (this.renderOutlines) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}
 
 		GlStateManager.popMatrix();
-		super.method_3936(boatEntity, d, e, f, g, h);
+		super.render(boatEntity, d, e, f, g, h);
 	}
 
 	public void method_3889(BoatEntity boatEntity, float f, float g) {
@@ -84,8 +82,8 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 		GlStateManager.pushMatrix();
 		this.method_3890(d, e, f);
 		this.method_3889(boatEntity, g, h);
-		this.method_3925(boatEntity);
-		((MultipassModel)this.field_4647).renderPass(boatEntity, h, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+		this.bindEntityTexture(boatEntity);
+		this.field_4647.renderPass(boatEntity, h, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
 		GlStateManager.popMatrix();
 	}
 }

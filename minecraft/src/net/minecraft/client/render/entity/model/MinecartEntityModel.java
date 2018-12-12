@@ -3,11 +3,10 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
 import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
-public class MinecartEntityModel extends Model {
+public class MinecartEntityModel<T extends Entity> extends EntityModel<T> {
 	private final Cuboid[] field_3432 = new Cuboid[7];
 
 	public MinecartEntityModel() {
@@ -41,7 +40,7 @@ public class MinecartEntityModel extends Model {
 	}
 
 	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
+	public void render(T entity, float f, float g, float h, float i, float j, float k) {
 		this.field_3432[5].rotationPointY = 4.0F - h;
 
 		for (int l = 0; l < 6; l++) {

@@ -19,7 +19,6 @@ import net.minecraft.class_1386;
 import net.minecraft.class_1395;
 import net.minecraft.class_1407;
 import net.minecraft.class_1432;
-import net.minecraft.class_3730;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -27,6 +26,7 @@ import net.minecraft.block.LogBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.control.ParrotMoveControl;
 import net.minecraft.entity.ai.goal.FollowMobGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
@@ -64,7 +64,7 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 		}
 	};
 	private static final Item field_6828 = Items.field_8423;
-	private static final Set<Item> field_6825 = Sets.<Item>newHashSet(Items.field_8317, Items.field_8188, Items.field_8706, Items.field_8309);
+	private static final Set<Item> TAMING_INGREDIENTS = Sets.<Item>newHashSet(Items.field_8317, Items.field_8188, Items.field_8706, Items.field_8309);
 	private static final Map<EntityType<?>, SoundEvent> field_6822 = SystemUtil.consume(Maps.<EntityType<?>, SoundEvent>newHashMap(), hashMap -> {
 		hashMap.put(EntityType.BLAZE, SoundEvents.field_15199);
 		hashMap.put(EntityType.CAVE_SPIDER, SoundEvents.field_15190);
@@ -113,11 +113,11 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 
 	@Nullable
 	@Override
-	public EntityData method_5943(
-		IWorld iWorld, LocalDifficulty localDifficulty, class_3730 arg, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	public EntityData prepareEntityData(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		this.setVariant(this.random.nextInt(5));
-		return super.method_5943(iWorld, localDifficulty, arg, entityData, compoundTag);
+		return super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	@Override
@@ -220,7 +220,7 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 	@Override
 	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (!this.isTamed() && field_6825.contains(itemStack.getItem())) {
+		if (!this.isTamed() && TAMING_INGREDIENTS.contains(itemStack.getItem())) {
 			if (!playerEntity.abilities.creativeMode) {
 				itemStack.subtractAmount(1);
 			}
@@ -232,14 +232,14 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 					);
 			}
 
-			if (!this.world.isRemote) {
+			if (!this.world.isClient) {
 				if (this.random.nextInt(10) == 0) {
 					this.method_6170(playerEntity);
 					this.method_6180(true);
-					this.world.method_8421(this, (byte)7);
+					this.world.summonParticle(this, (byte)7);
 				} else {
 					this.method_6180(false);
-					this.world.method_8421(this, (byte)6);
+					this.world.summonParticle(this, (byte)6);
 				}
 			}
 
@@ -256,7 +256,7 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 
 			return true;
 		} else {
-			if (!this.world.isRemote && !this.method_6581() && this.isTamed() && this.isOwner(playerEntity)) {
+			if (!this.world.isClient && !this.method_6581() && this.isTamed() && this.isOwner(playerEntity)) {
 				this.field_6321.method_6311(!this.isSitting());
 			}
 
@@ -265,12 +265,12 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 	}
 
 	@Override
-	public boolean method_6481(ItemStack itemStack) {
+	public boolean isBreedingItem(ItemStack itemStack) {
 		return false;
 	}
 
 	@Override
-	public boolean method_5979(IWorld iWorld, class_3730 arg) {
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
 		int i = MathHelper.floor(this.x);
 		int j = MathHelper.floor(this.getBoundingBox().minY);
 		int k = MathHelper.floor(this.z);
@@ -279,7 +279,7 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 		return block.matches(BlockTags.field_15503)
 			|| block == Blocks.field_10479
 			|| block instanceof LogBlock
-			|| block == Blocks.field_10124 && super.method_5979(iWorld, arg);
+			|| block == Blocks.field_10124 && super.canSpawn(iWorld, spawnType);
 	}
 
 	@Override
@@ -291,7 +291,7 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 	}
 
 	@Override
-	public boolean method_6474(AnimalEntity animalEntity) {
+	public boolean canBreedWith(AnimalEntity animalEntity) {
 		return false;
 	}
 
@@ -372,7 +372,7 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 	}
 
 	@Override
-	public boolean method_5810() {
+	public boolean isPushable() {
 		return true;
 	}
 

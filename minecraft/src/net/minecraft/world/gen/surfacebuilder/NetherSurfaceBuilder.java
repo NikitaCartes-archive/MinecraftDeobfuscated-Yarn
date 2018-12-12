@@ -3,14 +3,13 @@ package net.minecraft.world.gen.surfacebuilder;
 import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.class_2919;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.config.surfacebuilder.TernarySurfaceConfig;
+import net.minecraft.world.gen.ChunkRandom;
 
 public class NetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 	private static final BlockState field_15660 = Blocks.field_10543.getDefaultState();
@@ -97,7 +96,7 @@ public class NetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 	@Override
 	public void method_15306(long l) {
 		if (this.field_15661 != l || this.field_15663 == null) {
-			this.field_15663 = new OctavePerlinNoiseSampler(new class_2919(l), 4);
+			this.field_15663 = new OctavePerlinNoiseSampler(new ChunkRandom(l), 4);
 		}
 
 		this.field_15661 = l;

@@ -3,7 +3,6 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
 public class SkullOverlayEntityModel extends SkullEntityModel {
@@ -16,15 +15,12 @@ public class SkullOverlayEntityModel extends SkullEntityModel {
 	}
 
 	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		super.render(entity, f, g, h, i, j, k);
-		this.field_3377.render(k);
-	}
-
-	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
-		super.setRotationAngles(f, g, h, i, j, k, entity);
+	public void setRotationAngles(float f, float g, float h, float i, float j, float k) {
+		super.setRotationAngles(f, g, h, i, j, k);
+		this.field_3564.yaw = h * (float) (Math.PI / 180.0);
+		this.field_3564.pitch = i * (float) (Math.PI / 180.0);
 		this.field_3377.yaw = this.field_3564.yaw;
 		this.field_3377.pitch = this.field_3564.pitch;
+		this.field_3377.render(k);
 	}
 }

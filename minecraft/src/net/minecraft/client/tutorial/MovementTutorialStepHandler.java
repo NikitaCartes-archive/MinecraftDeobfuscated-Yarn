@@ -2,8 +2,8 @@ package net.minecraft.client.tutorial;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_372;
 import net.minecraft.client.input.Input;
+import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.world.GameMode;
@@ -21,8 +21,8 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 	private static final TextComponent LOOK_TITLE = new TranslatableTextComponent("tutorial.look.title");
 	private static final TextComponent LOOK_DESCRIPTION = new TranslatableTextComponent("tutorial.look.description");
 	private final TutorialManager manager;
-	private class_372 field_5622;
-	private class_372 field_5623;
+	private TutorialToast field_5622;
+	private TutorialToast field_5623;
 	private int ticks;
 	private int field_5615;
 	private int field_5627;
@@ -84,10 +84,10 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 
 		if (this.ticks >= 100) {
 			if (this.field_5626 == -1 && this.field_5622 == null) {
-				this.field_5622 = new class_372(class_372.class_373.field_2230, MOVE_TITLE, MOVE_DESCRIPTION, true);
+				this.field_5622 = new TutorialToast(TutorialToast.class_373.field_2230, MOVE_TITLE, MOVE_DESCRIPTION, true);
 				this.manager.getClient().getToastManager().add(this.field_5622);
 			} else if (this.field_5626 != -1 && this.ticks - this.field_5626 >= 20 && this.field_5625 == -1 && this.field_5623 == null) {
-				this.field_5623 = new class_372(class_372.class_373.field_2237, LOOK_TITLE, LOOK_DESCRIPTION, true);
+				this.field_5623 = new TutorialToast(TutorialToast.class_373.field_2237, LOOK_TITLE, LOOK_DESCRIPTION, true);
 				this.manager.getClient().getToastManager().add(this.field_5623);
 			}
 		}

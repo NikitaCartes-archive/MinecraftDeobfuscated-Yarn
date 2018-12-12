@@ -6,7 +6,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1310;
 import net.minecraft.class_1361;
 import net.minecraft.class_1376;
 import net.minecraft.class_1394;
@@ -15,6 +14,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -45,6 +45,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.TextComponent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 
@@ -64,7 +65,7 @@ public class EntityWither extends HostileEntity implements RangedAttacker {
 	private final ServerBossBar field_7093 = (ServerBossBar)new ServerBossBar(this.getDisplayName(), BossBar.Color.field_5783, BossBar.Overlay.field_5795)
 		.setDarkenSky(true);
 	private static final Predicate<Entity> field_7086 = entity -> entity instanceof LivingEntity
-			&& ((LivingEntity)entity).method_6046() != class_1310.field_6289
+			&& ((LivingEntity)entity).getGroup() != EntityGroup.UNDEAD
 			&& ((LivingEntity)entity).method_6102();
 
 	public EntityWither(World world) {
@@ -135,7 +136,7 @@ public class EntityWither extends HostileEntity implements RangedAttacker {
 	@Override
 	public void updateMovement() {
 		this.velocityY *= 0.6F;
-		if (!this.world.isRemote && this.getTrackedEntityId(0) > 0) {
+		if (!this.world.isClient && this.getTrackedEntityId(0) > 0) {
 			Entity entity = this.world.getEntityById(this.getTrackedEntityId(0));
 			if (entity != null) {
 				if (this.y < entity.y || !this.isAtHalfHealth() && this.y < entity.y + 5.0) {
@@ -243,7 +244,7 @@ public class EntityWither extends HostileEntity implements RangedAttacker {
 		if (this.getInvulTimer() > 0) {
 			int i = this.getInvulTimer() - 1;
 			if (i <= 0) {
-				this.world.method_8537(this, this.x, this.y + (double)this.getEyeHeight(), this.z, 7.0F, false, this.world.getGameRules().getBoolean("mobGriefing"));
+				this.world.createExplosion(this, this.x, this.y + (double)this.getEyeHeight(), this.z, 7.0F, false, this.world.getGameRules().getBoolean("mobGriefing"));
 				this.world.fireGlobalWorldEvent(1023, new BlockPos(this), 0);
 			}
 
@@ -366,7 +367,7 @@ public class EntityWither extends HostileEntity implements RangedAttacker {
 	}
 
 	@Override
-	public void slowMovement(BlockState blockState, float f, float g, float h) {
+	public void slowMovement(BlockState blockState, Vec3d vec3d) {
 	}
 
 	@Override
@@ -463,7 +464,7 @@ public class EntityWither extends HostileEntity implements RangedAttacker {
 			}
 
 			Entity entity = damageSource.getAttacker();
-			if (entity != null && !(entity instanceof PlayerEntity) && entity instanceof LivingEntity && ((LivingEntity)entity).method_6046() == this.method_6046()) {
+			if (entity != null && !(entity instanceof PlayerEntity) && entity instanceof LivingEntity && ((LivingEntity)entity).getGroup() == this.getGroup()) {
 				return false;
 			} else {
 				if (this.field_7082 <= 0) {
@@ -482,7 +483,7 @@ public class EntityWither extends HostileEntity implements RangedAttacker {
 	@Override
 	protected void dropEquipment(DamageSource damageSource, int i, boolean bl) {
 		super.dropEquipment(damageSource, i, bl);
-		ItemEntity itemEntity = this.dropItem(Items.field_8137);
+		ItemEntity itemEntity = this.method_5706(Items.field_8137);
 		if (itemEntity != null) {
 			itemEntity.method_6976();
 		}
@@ -490,7 +491,7 @@ public class EntityWither extends HostileEntity implements RangedAttacker {
 
 	@Override
 	protected void checkDespawn() {
-		this.field_6278 = 0;
+		this.despawnCounter = 0;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -548,8 +549,8 @@ public class EntityWither extends HostileEntity implements RangedAttacker {
 	}
 
 	@Override
-	public class_1310 method_6046() {
-		return class_1310.field_6289;
+	public EntityGroup getGroup() {
+		return EntityGroup.UNDEAD;
 	}
 
 	@Override
@@ -559,6 +560,12 @@ public class EntityWither extends HostileEntity implements RangedAttacker {
 
 	@Override
 	public boolean canUsePortals() {
+		return false;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public boolean hasArmsRaised() {
 		return false;
 	}
 

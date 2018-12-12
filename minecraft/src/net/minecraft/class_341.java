@@ -13,7 +13,7 @@ import net.minecraft.text.TextFormat;
 @Environment(EnvType.CLIENT)
 public class class_341 {
 	public static String method_1849(String string, boolean bl) {
-		return !bl && !MinecraftClient.getInstance().options.chatColors ? TextFormat.stripFormatting(string) : string;
+		return !bl && !MinecraftClient.getInstance().field_1690.chatColors ? TextFormat.stripFormatting(string) : string;
 	}
 
 	public static List<TextComponent> method_1850(TextComponent textComponent, int i, FontRenderer fontRenderer, boolean bl, boolean bl2) {

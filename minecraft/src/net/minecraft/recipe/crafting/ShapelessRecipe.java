@@ -5,12 +5,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1662;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeSerializers;
 import net.minecraft.util.DefaultedList;
@@ -63,7 +63,7 @@ public class ShapelessRecipe implements Recipe {
 		if (!(inventory instanceof CraftingInventory)) {
 			return false;
 		} else {
-			class_1662 lv = new class_1662();
+			RecipeFinder recipeFinder = new RecipeFinder();
 			int i = 0;
 
 			for (int j = 0; j < inventory.getInvHeight(); j++) {
@@ -71,12 +71,12 @@ public class ShapelessRecipe implements Recipe {
 					ItemStack itemStack = inventory.getInvStack(k + j * inventory.getInvWidth());
 					if (!itemStack.isEmpty()) {
 						i++;
-						lv.method_7400(new ItemStack(itemStack.getItem()));
+						recipeFinder.addItem(new ItemStack(itemStack.getItem()));
 					}
 				}
 			}
 
-			return i == this.input.size() && lv.method_7402(this, null);
+			return i == this.input.size() && recipeFinder.findRecipe(this, null);
 		}
 	}
 
@@ -110,7 +110,7 @@ public class ShapelessRecipe implements Recipe {
 
 			for (int i = 0; i < jsonArray.size(); i++) {
 				Ingredient ingredient = Ingredient.fromJson(jsonArray.get(i));
-				if (!ingredient.method_8103()) {
+				if (!ingredient.isEmpty()) {
 					defaultedList.add(ingredient);
 				}
 			}

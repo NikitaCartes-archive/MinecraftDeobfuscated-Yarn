@@ -36,7 +36,7 @@ public class MinecartTNTEntityRenderer extends MinecartEntityRenderer<TNTMinecar
 			GlStateManager.blendFunc(GlStateManager.SrcBlendFactor.SRC_ALPHA, GlStateManager.DstBlendFactor.DST_ALPHA);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, (1.0F - ((float)i - f + 1.0F) / 100.0F) * 0.8F);
 			GlStateManager.pushMatrix();
-			blockRenderManager.render(Blocks.field_10375.getDefaultState(), 1.0F);
+			blockRenderManager.renderDynamic(Blocks.field_10375.getDefaultState(), 1.0F);
 			GlStateManager.popMatrix();
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.disableBlend();

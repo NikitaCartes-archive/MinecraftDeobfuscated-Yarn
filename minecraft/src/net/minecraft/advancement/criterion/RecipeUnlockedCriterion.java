@@ -9,7 +9,7 @@ import com.google.gson.JsonObject;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.advancement.ServerAdvancementManager;
+import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -17,7 +17,7 @@ import net.minecraft.util.JsonHelper;
 
 public class RecipeUnlockedCriterion implements Criterion<RecipeUnlockedCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("recipe_unlocked");
-	private final Map<ServerAdvancementManager, RecipeUnlockedCriterion.Handler> handlers = Maps.<ServerAdvancementManager, RecipeUnlockedCriterion.Handler>newHashMap();
+	private final Map<PlayerAdvancementTracker, RecipeUnlockedCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, RecipeUnlockedCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -25,34 +25,34 @@ public class RecipeUnlockedCriterion implements Criterion<RecipeUnlockedCriterio
 	}
 
 	@Override
-	public void addCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<RecipeUnlockedCriterion.Conditions> conditionsContainer
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<RecipeUnlockedCriterion.Conditions> conditionsContainer
 	) {
-		RecipeUnlockedCriterion.Handler handler = (RecipeUnlockedCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		RecipeUnlockedCriterion.Handler handler = (RecipeUnlockedCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new RecipeUnlockedCriterion.Handler(serverAdvancementManager);
-			this.handlers.put(serverAdvancementManager, handler);
+			handler = new RecipeUnlockedCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void removeCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<RecipeUnlockedCriterion.Conditions> conditionsContainer
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<RecipeUnlockedCriterion.Conditions> conditionsContainer
 	) {
-		RecipeUnlockedCriterion.Handler handler = (RecipeUnlockedCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		RecipeUnlockedCriterion.Handler handler = (RecipeUnlockedCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(serverAdvancementManager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void removePlayer(ServerAdvancementManager serverAdvancementManager) {
-		this.handlers.remove(serverAdvancementManager);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
 	public RecipeUnlockedCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -76,7 +76,7 @@ public class RecipeUnlockedCriterion implements Criterion<RecipeUnlockedCriterio
 		}
 
 		@Override
-		public JsonElement method_807() {
+		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.addProperty("recipe", this.recipe.toString());
 			return jsonObject;
@@ -88,11 +88,11 @@ public class RecipeUnlockedCriterion implements Criterion<RecipeUnlockedCriterio
 	}
 
 	static class Handler {
-		private final ServerAdvancementManager manager;
+		private final PlayerAdvancementTracker field_9741;
 		private final Set<Criterion.ConditionsContainer<RecipeUnlockedCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<RecipeUnlockedCriterion.Conditions>>newHashSet();
 
-		public Handler(ServerAdvancementManager serverAdvancementManager) {
-			this.manager = serverAdvancementManager;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.field_9741 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
@@ -122,7 +122,7 @@ public class RecipeUnlockedCriterion implements Criterion<RecipeUnlockedCriterio
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<RecipeUnlockedCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
+					conditionsContainerx.apply(this.field_9741);
 				}
 			}
 		}

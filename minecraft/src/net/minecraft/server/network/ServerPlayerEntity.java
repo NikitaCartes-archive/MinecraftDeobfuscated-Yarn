@@ -8,10 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_2707;
-import net.minecraft.class_3442;
-import net.minecraft.advancement.ServerAdvancementManager;
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.minecraft.advancement.PlayerAdvancementTracker;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -35,6 +33,8 @@ import net.minecraft.client.network.packet.GuiSlotUpdateClientPacket;
 import net.minecraft.client.network.packet.GuiUpdateClientPacket;
 import net.minecraft.client.network.packet.HealthUpdateClientPacket;
 import net.minecraft.client.network.packet.InventoryClientPacket;
+import net.minecraft.client.network.packet.LookAtClientPacket;
+import net.minecraft.client.network.packet.OpenWrittenBookClientPacket;
 import net.minecraft.client.network.packet.PlaySoundClientPacket;
 import net.minecraft.client.network.packet.PlayerAbilitiesClientPacket;
 import net.minecraft.client.network.packet.PlayerRespawnClientPacket;
@@ -45,7 +45,6 @@ import net.minecraft.client.network.packet.SetCameraEntityClientPacket;
 import net.minecraft.client.network.packet.SignEditorOpenClientPacket;
 import net.minecraft.client.network.packet.UnloadChunkClientPacket;
 import net.minecraft.client.network.packet.WorldEventClientPacket;
-import net.minecraft.client.sortme.ChatMessageType;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
 import net.minecraft.container.Container;
 import net.minecraft.container.ContainerListener;
@@ -63,7 +62,6 @@ import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.HorseBaseEntity;
-import net.minecraft.entity.player.ChunkTicket;
 import net.minecraft.entity.player.ChunkTicketType;
 import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -73,6 +71,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.MapItem;
+import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.recipe.Recipe;
@@ -82,10 +81,13 @@ import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.ScoreboardTeam;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.packet.ClientSettingsServerPacket;
+import net.minecraft.server.world.ChunkTicket;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sortme.ChatMessageType;
 import net.minecraft.sortme.OptionMainHand;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.stat.ServerStatHandler;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.BlockTags;
@@ -101,7 +103,7 @@ import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportElement;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -121,8 +123,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	public final MinecraftServer server;
 	public final ServerPlayerInteractionManager interactionManager;
 	private final List<Integer> field_13988 = Lists.<Integer>newLinkedList();
-	private final ServerAdvancementManager advancementManager;
-	private final class_3442 field_13966;
+	private final PlayerAdvancementTracker advancementManager;
+	private final ServerStatHandler field_13966;
 	private float field_13963 = Float.MIN_VALUE;
 	private int field_13983 = Integer.MIN_VALUE;
 	private int field_13968 = Integer.MIN_VALUE;
@@ -136,7 +138,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	private int field_13998 = 60;
 	private PlayerEntity.ChatVisibility clientChatVisibility;
 	private boolean field_13971 = true;
-	private long field_13976 = SystemUtil.getMeasuringTimeMili();
+	private long field_13976 = SystemUtil.getMeasuringTimeMs();
 	private Entity field_13984;
 	private boolean field_13985;
 	private boolean seenCredits;
@@ -147,7 +149,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	private Vec3d enteredNetherPos;
 	private ChunkPos chunkPos = new ChunkPos(0, 0);
 	@Nullable
-	private ChunkTicket<PlayerEntity> chunkTicket;
+	private ChunkTicket<PlayerEntity> field_13977;
 	private int containerSyncId;
 	public boolean field_13991;
 	public int field_13967;
@@ -161,15 +163,15 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		this.interactionManager = serverPlayerInteractionManager;
 		this.server = minecraftServer;
 		this.recipeBook = new ServerRecipeBook(minecraftServer.getRecipeManager());
-		this.field_13966 = minecraftServer.getConfigurationManager().method_14583(this);
-		this.advancementManager = minecraftServer.getConfigurationManager().getAdvancementManager(this);
+		this.field_13966 = minecraftServer.getPlayerManager().method_14583(this);
+		this.advancementManager = minecraftServer.getPlayerManager().getAdvancementManager(this);
 		this.stepHeight = 1.0F;
 		this.method_14245(serverWorld);
 	}
 
 	private void method_14245(ServerWorld serverWorld) {
-		BlockPos blockPos = serverWorld.method_8395();
-		if (serverWorld.dimension.method_12451() && serverWorld.getLevelProperties().getGameMode() != GameMode.field_9216) {
+		BlockPos blockPos = serverWorld.getSpawnPos();
+		if (serverWorld.dimension.hasSkyLight() && serverWorld.getLevelProperties().getGameMode() != GameMode.field_9216) {
 			int i = Math.max(0, this.server.getSpawnRadius(serverWorld));
 			int j = MathHelper.floor(serverWorld.getWorldBorder().contains((double)blockPos.getX(), (double)blockPos.getZ()));
 			if (j < i) {
@@ -300,7 +302,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	protected void onBlockCollision(BlockState blockState) {
-		CriterionCriterions.ENTER_BLOCK.method_8885(this, blockState);
+		Criterions.ENTER_BLOCK.method_8885(this, blockState);
 	}
 
 	@Override
@@ -317,7 +319,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		}
 
 		this.container.sendContentUpdates();
-		if (!this.world.isRemote && !this.container.canUse(this)) {
+		if (!this.world.isClient && !this.container.canUse(this)) {
 			this.closeGui();
 			this.container = this.containerPlayer;
 		}
@@ -340,7 +342,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		if (entity != this) {
 			if (entity.isValid()) {
 				this.setPositionAnglesAndUpdate(entity.x, entity.y, entity.z, entity.yaw, entity.pitch);
-				this.server.getConfigurationManager().method_14575(this);
+				this.server.getPlayerManager().method_14575(this);
 				if (this.isSneaking()) {
 					this.method_14224(this);
 				}
@@ -349,12 +351,12 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			}
 		}
 
-		CriterionCriterions.TICK.handle(this);
+		Criterions.TICK.handle(this);
 		if (this.field_13992 != null) {
-			CriterionCriterions.LEVITATION.handle(this, this.field_13992, this.age - this.field_13973);
+			Criterions.LEVITATION.handle(this, this.field_13992, this.age - this.field_13973);
 		}
 
-		this.advancementManager.method_12876(this);
+		this.advancementManager.sendUpdate(this);
 	}
 
 	public void method_14226() {
@@ -418,12 +420,12 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			}
 
 			if (this.age % 20 == 0) {
-				CriterionCriterions.LOCATION.handle(this);
+				Criterions.LOCATION.handle(this);
 			}
 		} catch (Throwable var4) {
 			CrashReport crashReport = CrashReport.create(var4, "Ticking player");
-			CrashReportElement crashReportElement = crashReport.addElement("Player being ticked");
-			this.populateCrashReport(crashReportElement);
+			CrashReportSection crashReportSection = crashReport.method_562("Player being ticked");
+			this.method_5819(crashReportSection);
 			throw new CrashException(crashReport);
 		}
 	}
@@ -455,11 +457,11 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 				);
 			AbstractScoreboardTeam abstractScoreboardTeam = this.getScoreboardTeam();
 			if (abstractScoreboardTeam == null || abstractScoreboardTeam.getDeathMessageVisibilityRule() == AbstractScoreboardTeam.VisibilityRule.ALWAYS) {
-				this.server.getConfigurationManager().sendToAll(textComponent);
+				this.server.getPlayerManager().sendToAll(textComponent);
 			} else if (abstractScoreboardTeam.getDeathMessageVisibilityRule() == AbstractScoreboardTeam.VisibilityRule.HIDDEN_FOR_OTHER_TEAMS) {
-				this.server.getConfigurationManager().sendToTeam(this, textComponent);
+				this.server.getPlayerManager().sendToTeam(this, textComponent);
 			} else if (abstractScoreboardTeam.getDeathMessageVisibilityRule() == AbstractScoreboardTeam.VisibilityRule.HIDDEN_FOR_TEAM) {
-				this.server.getConfigurationManager().sendToOtherTeams(this, textComponent);
+				this.server.getPlayerManager().sendToOtherTeams(this, textComponent);
 			}
 		} else {
 			this.networkHandler.sendPacket(new CombatEventClientPacket(this.getDamageTracker(), CombatEventClientPacket.Type.DEATH));
@@ -475,7 +477,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		if (livingEntity != null) {
 			this.incrementStat(Stats.field_15411.method_14956(livingEntity.getType()));
 			livingEntity.method_5716(this, this.field_6232, damageSource);
-			if (!this.world.isRemote && livingEntity instanceof EntityWither) {
+			if (!this.world.isClient && livingEntity instanceof EntityWither) {
 				BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
 				BlockState blockState = Blocks.field_10606.getDefaultState();
 				if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
@@ -484,7 +486,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			}
 		}
 
-		this.method_7281(Stats.field_15421);
+		this.increaseStat(Stats.field_15421);
 		this.resetStat(Stats.field_15419.method_14956(Stats.field_15400));
 		this.resetStat(Stats.field_15419.method_14956(Stats.field_15429));
 		this.extinguish();
@@ -501,15 +503,15 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			String string2 = entity.getEntityName();
 			this.getScoreboard().method_1162(ScoreboardCriterion.TOTAL_KILL_COUNT, string, ScoreboardPlayerScore::incrementScore);
 			if (entity instanceof PlayerEntity) {
-				this.method_7281(Stats.field_15404);
+				this.increaseStat(Stats.field_15404);
 				this.getScoreboard().method_1162(ScoreboardCriterion.PLAYER_KILL_COUNT, string, ScoreboardPlayerScore::incrementScore);
 			} else {
-				this.method_7281(Stats.field_15414);
+				this.increaseStat(Stats.field_15414);
 			}
 
 			this.method_14227(string, string2, ScoreboardCriterion.TEAM_KILLS);
 			this.method_14227(string2, string, ScoreboardCriterion.KILLED_BY_TEAMS);
-			CriterionCriterions.PLAYER_KILLED_ENTITY.handle(this, entity, damageSource);
+			Criterions.PLAYER_KILLED_ENTITY.handle(this, entity, damageSource);
 		}
 	}
 
@@ -572,7 +574,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		}
 
 		if (this.dimension == DimensionType.field_13078 && dimensionType == DimensionType.field_13078) {
-			this.world.method_8463(this);
+			this.world.removeEntity(this);
 			if (!this.field_13989) {
 				this.field_13989 = true;
 				this.networkHandler.sendPacket(new GameStateChangeClientPacket(4, this.seenCredits ? 0.0F : 1.0F));
@@ -585,7 +587,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 				dimensionType = DimensionType.field_13078;
 			}
 
-			this.server.getConfigurationManager().method_14598(this, dimensionType);
+			this.server.getPlayerManager().method_14598(this, dimensionType);
 			this.networkHandler.sendPacket(new WorldEventClientPacket(1032, BlockPos.ORIGIN, 0, false));
 			this.field_13978 = -1;
 			this.field_13997 = -1.0F;
@@ -622,12 +624,12 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	public PlayerEntity.SleepResult trySleep(BlockPos blockPos) {
 		PlayerEntity.SleepResult sleepResult = super.trySleep(blockPos);
 		if (sleepResult == PlayerEntity.SleepResult.SUCCESS) {
-			this.method_7281(Stats.field_15381);
+			this.increaseStat(Stats.field_15381);
 			Packet<?> packet = new PlayerUseBedClientPacket(this, blockPos);
 			this.getServerWorld().getEntityTracker().method_14079(this, packet);
 			this.networkHandler.method_14363(this.x, this.y, this.z, this.yaw, this.pitch);
 			this.networkHandler.sendPacket(packet);
-			CriterionCriterions.SLEPT_IN_BED.handle(this);
+			Criterions.SLEPT_IN_BED.handle(this);
 		}
 
 		return sleepResult;
@@ -708,7 +710,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void openSignEditor(SignBlockEntity signBlockEntity) {
+	public void openSignEditorGui(SignBlockEntity signBlockEntity) {
 		signBlockEntity.setEditor(this);
 		this.networkHandler.sendPacket(new SignEditorOpenClientPacket(signBlockEntity.getPos()));
 	}
@@ -767,7 +769,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void openVillagerGui(Villager villager) {
+	public void openVillagerTrade(Villager villager) {
 		this.incrementContainerSyncId();
 		this.container = new VillagerContainer(this.inventory, villager, this.world);
 		this.container.syncId = this.containerSyncId;
@@ -775,8 +777,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		Inventory inventory = ((VillagerContainer)this.container).getVillagerInventory();
 		TextComponent textComponent = villager.getDisplayName();
 		this.networkHandler.sendPacket(new GuiOpenClientPacket(this.containerSyncId, "minecraft:villager", textComponent, inventory.getInvSize()));
-		VillagerRecipeList villagerRecipeList = villager.getRecipes(this);
-		if (villagerRecipeList != null) {
+		VillagerRecipeList villagerRecipeList = villager.getRecipes();
+		if (!villagerRecipeList.isEmpty()) {
 			PacketByteBuf packetByteBuf = new PacketByteBuf(Unpooled.buffer());
 			packetByteBuf.writeInt(this.containerSyncId);
 			villagerRecipeList.writeToBuf(packetByteBuf);
@@ -799,17 +801,19 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void openBookEditor(ItemStack itemStack, Hand hand) {
+	public void openBookEditorGui(ItemStack itemStack, Hand hand) {
 		Item item = itemStack.getItem();
 		if (item == Items.field_8360) {
-			PacketByteBuf packetByteBuf = new PacketByteBuf(Unpooled.buffer());
-			packetByteBuf.writeEnumConstant(hand);
-			this.networkHandler.sendPacket(new CustomPayloadClientPacket(CustomPayloadClientPacket.BOOK_OPEN, packetByteBuf));
+			if (WrittenBookItem.method_8054(itemStack, this)) {
+				this.container.sendContentUpdates();
+			}
+
+			this.networkHandler.sendPacket(new OpenWrittenBookClientPacket(hand));
 		}
 	}
 
 	@Override
-	public void openCommandBlock(CommandBlockBlockEntity commandBlockBlockEntity) {
+	public void openCommandBlockGui(CommandBlockBlockEntity commandBlockBlockEntity) {
 		commandBlockBlockEntity.method_11037(true);
 		this.sendBlockEntityUpdate(commandBlockBlockEntity);
 	}
@@ -818,7 +822,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	public void onContainerSlotUpdate(Container container, int i, ItemStack itemStack) {
 		if (!(container.getSlot(i) instanceof CraftingResultSlot)) {
 			if (container == this.containerPlayer) {
-				CriterionCriterions.INVENTORY_CHANGED.handle(this, this.inventory);
+				Criterions.INVENTORY_CHANGED.handle(this, this.inventory);
 			}
 
 			if (!this.field_13991) {
@@ -883,23 +887,23 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	public void incrementStat(Stat<?> stat, int i) {
-		this.field_13966.method_15022(this, stat, i);
+		this.field_13966.increaseStat(this, stat, i);
 		this.getScoreboard().method_1162(stat, this.getEntityName(), scoreboardPlayerScore -> scoreboardPlayerScore.incrementScore(i));
 	}
 
 	@Override
 	public void resetStat(Stat<?> stat) {
-		this.field_13966.method_15023(this, stat, 0);
+		this.field_13966.setStat(this, stat, 0);
 		this.getScoreboard().method_1162(stat, this.getEntityName(), ScoreboardPlayerScore::clearScore);
 	}
 
 	@Override
-	public int method_7254(Collection<Recipe> collection) {
-		return this.recipeBook.method_14903(collection, this);
+	public int unlockRecipes(Collection<Recipe> collection) {
+		return this.recipeBook.unlockRecipes(collection, this);
 	}
 
 	@Override
-	public void method_7335(Identifier[] identifiers) {
+	public void unlockRecipes(Identifier[] identifiers) {
 		List<Recipe> list = Lists.<Recipe>newArrayList();
 
 		for (Identifier identifier : identifiers) {
@@ -909,12 +913,12 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			}
 		}
 
-		this.method_7254(list);
+		this.unlockRecipes(list);
 	}
 
 	@Override
-	public int method_7333(Collection<Recipe> collection) {
-		return this.recipeBook.method_14900(collection, this);
+	public int lockRecipes(Collection<Recipe> collection) {
+		return this.recipeBook.lockRecipes(collection, this);
 	}
 
 	@Override
@@ -953,15 +957,15 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void method_5702(EntityAnchorArgumentType.EntityAnchor entityAnchor, Vec3d vec3d) {
-		super.method_5702(entityAnchor, vec3d);
-		this.networkHandler.sendPacket(new class_2707(entityAnchor, vec3d.x, vec3d.y, vec3d.z));
+	public void lookAt(EntityAnchorArgumentType.EntityAnchor entityAnchor, Vec3d vec3d) {
+		super.lookAt(entityAnchor, vec3d);
+		this.networkHandler.sendPacket(new LookAtClientPacket(entityAnchor, vec3d.x, vec3d.y, vec3d.z));
 	}
 
 	public void method_14222(EntityAnchorArgumentType.EntityAnchor entityAnchor, Entity entity, EntityAnchorArgumentType.EntityAnchor entityAnchor2) {
 		Vec3d vec3d = entityAnchor2.positionAt(entity);
-		super.method_5702(entityAnchor, vec3d);
-		this.networkHandler.sendPacket(new class_2707(entityAnchor, entity, entityAnchor2));
+		super.lookAt(entityAnchor, vec3d);
+		this.networkHandler.sendPacket(new LookAtClientPacket(entityAnchor, entity, entityAnchor2));
 	}
 
 	public void method_14203(ServerPlayerEntity serverPlayerEntity, boolean bl) {
@@ -1007,14 +1011,14 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.field_13992 = new Vec3d(this.x, this.y, this.z);
 		}
 
-		CriterionCriterions.EFFECTS_CHANGED.handle(this);
+		Criterions.EFFECTS_CHANGED.handle(this);
 	}
 
 	@Override
 	protected void method_6009(StatusEffectInstance statusEffectInstance, boolean bl) {
 		super.method_6009(statusEffectInstance, bl);
 		this.networkHandler.sendPacket(new EntityPotionEffectClientPacket(this.getEntityId(), statusEffectInstance));
-		CriterionCriterions.EFFECTS_CHANGED.handle(this);
+		Criterions.EFFECTS_CHANGED.handle(this);
 	}
 
 	@Override
@@ -1025,7 +1029,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.field_13992 = null;
 		}
 
-		CriterionCriterions.EFFECTS_CHANGED.handle(this);
+		Criterions.EFFECTS_CHANGED.handle(this);
 	}
 
 	@Override
@@ -1034,12 +1038,12 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void copyEntityData(Entity entity) {
+	public void addCritParticles(Entity entity) {
 		this.getServerWorld().getEntityTracker().method_14073(this, new EntityAnimationClientPacket(entity, 4));
 	}
 
 	@Override
-	public void method_7304(Entity entity) {
+	public void addEnchantedHitParticles(Entity entity) {
 		this.getServerWorld().getEntityTracker().method_14073(this, new EntityAnimationClientPacket(entity, 5));
 	}
 
@@ -1133,10 +1137,10 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	public void method_14234() {
-		this.field_13976 = SystemUtil.getMeasuringTimeMili();
+		this.field_13976 = SystemUtil.getMeasuringTimeMs();
 	}
 
-	public class_3442 method_14248() {
+	public ServerStatHandler method_14248() {
 		return this.field_13966;
 	}
 
@@ -1229,7 +1233,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		this.setEntityFlag(7, false);
 	}
 
-	public ServerAdvancementManager getAdvancementManager() {
+	public PlayerAdvancementTracker getAdvancementManager() {
 		return this.advancementManager;
 	}
 
@@ -1252,7 +1256,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 						this.dimension, serverWorld2.getDifficulty(), serverWorld2.getLevelProperties().getGeneratorType(), this.interactionManager.getGameMode()
 					)
 				);
-			this.server.getConfigurationManager().method_14576(this);
+			this.server.getPlayerManager().method_14576(this);
 			serverWorld2.method_8507(this);
 			this.invalid = false;
 			this.setPositionAndAngles(d, e, f, g, h);
@@ -1263,11 +1267,11 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			}
 
 			this.setWorld(serverWorld);
-			this.server.getConfigurationManager().method_14612(this, serverWorld2);
+			this.server.getPlayerManager().method_14612(this, serverWorld2);
 			this.networkHandler.method_14363(d, e, f, g, h);
 			this.interactionManager.setWorld(serverWorld);
-			this.server.getConfigurationManager().method_14606(this, serverWorld);
-			this.server.getConfigurationManager().method_14594(this);
+			this.server.getPlayerManager().method_14606(this, serverWorld);
+			this.server.getPlayerManager().method_14594(this);
 		}
 	}
 
@@ -1286,13 +1290,13 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Nullable
-	public ChunkTicket<PlayerEntity> getChunkTicket() {
-		return this.chunkTicket;
+	public ChunkTicket<PlayerEntity> method_14214() {
+		return this.field_13977;
 	}
 
 	public ChunkTicket<PlayerEntity> method_14215(long l, int i, long m) {
-		this.chunkTicket = new ChunkTicket<>(ChunkTicketType.PLAYER, i, this, m);
+		this.field_13977 = new ChunkTicket<>(ChunkTicketType.PLAYER, i, this, m);
 		this.chunkPos = new ChunkPos(l);
-		return this.chunkTicket;
+		return this.field_13977;
 	}
 }

@@ -50,7 +50,7 @@ public class TNTMinecartEntity extends AbstractMinecartEntity {
 			this.explode(this.velocityX * this.velocityX + this.velocityZ * this.velocityZ);
 		}
 
-		if (this.field_5976) {
+		if (this.horizontalCollision) {
 			double d = this.velocityX * this.velocityX + this.velocityZ * this.velocityZ;
 			if (d >= 0.01F) {
 				this.explode(d);
@@ -81,7 +81,7 @@ public class TNTMinecartEntity extends AbstractMinecartEntity {
 		if (!damageSource.isFire() && !damageSource.isExplosive() && !(d >= 0.01F)) {
 			super.dropItems(damageSource);
 			if (!damageSource.isExplosive() && this.world.getGameRules().getBoolean("doEntityDrops")) {
-				this.dropItem(Blocks.field_10375);
+				this.method_5706(Blocks.field_10375);
 			}
 		} else {
 			if (this.fuseTicks < 0) {
@@ -92,7 +92,7 @@ public class TNTMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	protected void explode(double d) {
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			double e = Math.sqrt(d);
 			if (e > 5.0) {
 				e = 5.0;
@@ -132,8 +132,8 @@ public class TNTMinecartEntity extends AbstractMinecartEntity {
 
 	public void prime() {
 		this.fuseTicks = 80;
-		if (!this.world.isRemote) {
-			this.world.method_8421(this, (byte)10);
+		if (!this.world.isClient) {
+			this.world.summonParticle(this, (byte)10);
 			if (!this.isSilent()) {
 				this.world.playSound(null, this.x, this.y, this.z, SoundEvents.field_15079, SoundCategory.field_15245, 1.0F, 1.0F);
 			}

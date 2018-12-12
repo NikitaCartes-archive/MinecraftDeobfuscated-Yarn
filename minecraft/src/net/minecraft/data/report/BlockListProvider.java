@@ -1,13 +1,10 @@
 package net.minecraft.data.report;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -21,6 +18,7 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.registry.Registry;
 
 public class BlockListProvider implements DataProvider {
+	private static final Gson field_17168 = new GsonBuilder().setPrettyPrinting().create();
 	private final DataGenerator root;
 
 	public BlockListProvider(DataGenerator dataGenerator) {
@@ -42,7 +40,7 @@ public class BlockListProvider implements DataProvider {
 					JsonArray jsonArray = new JsonArray();
 
 					for (Comparable<?> comparable : property.getValues()) {
-						jsonArray.add(SystemUtil.method_650(property, comparable));
+						jsonArray.add(SystemUtil.getValueAsString(property, comparable));
 					}
 
 					jsonObject3.add(property.getName(), jsonArray);
@@ -58,7 +56,7 @@ public class BlockListProvider implements DataProvider {
 				JsonObject jsonObject5 = new JsonObject();
 
 				for (Property<?> property2 : stateFactory.getProperties()) {
-					jsonObject5.addProperty(property2.getName(), SystemUtil.method_650(property2, blockState.get(property2)));
+					jsonObject5.addProperty(property2.getName(), SystemUtil.getValueAsString(property2, blockState.get(property2)));
 				}
 
 				if (jsonObject5.size() > 0) {
@@ -78,29 +76,7 @@ public class BlockListProvider implements DataProvider {
 		}
 
 		Path path = this.root.getOutput().resolve("reports/blocks.json");
-		Files.createDirectories(path.getParent());
-		BufferedWriter bufferedWriter = Files.newBufferedWriter(path, StandardCharsets.UTF_8);
-		Throwable var26 = null;
-
-		try {
-			String string = new GsonBuilder().setPrettyPrinting().create().toJson((JsonElement)jsonObject);
-			bufferedWriter.write(string);
-		} catch (Throwable var22) {
-			var26 = var22;
-			throw var22;
-		} finally {
-			if (bufferedWriter != null) {
-				if (var26 != null) {
-					try {
-						bufferedWriter.close();
-					} catch (Throwable var21) {
-						var26.addSuppressed(var21);
-					}
-				} else {
-					bufferedWriter.close();
-				}
-			}
-		}
+		DataProvider.writeToPath(field_17168, dataCache, jsonObject, path);
 	}
 
 	@Override

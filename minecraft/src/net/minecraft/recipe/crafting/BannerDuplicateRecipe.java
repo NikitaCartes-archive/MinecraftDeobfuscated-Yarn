@@ -83,8 +83,8 @@ public class BannerDuplicateRecipe extends AbstractRecipe {
 		for (int i = 0; i < defaultedList.size(); i++) {
 			ItemStack itemStack = inventory.getInvStack(i);
 			if (!itemStack.isEmpty()) {
-				if (itemStack.getItem().hasContainerItem()) {
-					defaultedList.set(i, new ItemStack(itemStack.getItem().getContainerItem()));
+				if (itemStack.getItem().hasRecipeRemainder()) {
+					defaultedList.set(i, new ItemStack(itemStack.getItem().getRecipeRemainder()));
 				} else if (itemStack.hasTag() && BannerBlockEntity.getPatternCount(itemStack) > 0) {
 					ItemStack itemStack2 = itemStack.copy();
 					itemStack2.setAmount(1);

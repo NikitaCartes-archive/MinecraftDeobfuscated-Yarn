@@ -27,12 +27,14 @@ public class FarmlandBlock extends Block {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if (direction == Direction.UP && !blockState.canPlaceAt(iWorld, blockPos)) {
 			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
 		}
 
-		return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
@@ -64,7 +66,7 @@ public class FarmlandBlock extends Block {
 			method_10125(blockState, world, blockPos);
 		} else {
 			int i = (Integer)blockState.get(field_11009);
-			if (!method_10126(world, blockPos) && !world.method_8520(blockPos.up())) {
+			if (!method_10126(world, blockPos) && !world.hasRain(blockPos.up())) {
 				if (i > 0) {
 					world.setBlockState(blockPos, blockState.with(field_11009, Integer.valueOf(i - 1)), 2);
 				} else if (!method_10124(world, blockPos)) {
@@ -78,7 +80,7 @@ public class FarmlandBlock extends Block {
 
 	@Override
 	public void onLandedUpon(World world, BlockPos blockPos, Entity entity, float f) {
-		if (!world.isRemote
+		if (!world.isClient
 			&& world.random.nextFloat() < f - 0.5F
 			&& entity instanceof LivingEntity
 			&& (entity instanceof PlayerEntity || world.getGameRules().getBoolean("mobGriefing"))

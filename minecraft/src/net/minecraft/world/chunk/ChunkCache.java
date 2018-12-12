@@ -30,7 +30,7 @@ public class ChunkCache implements ExtendedBlockView {
 
 		for (int l = this.minX; l <= j; l++) {
 			for (int m = this.minZ; m <= k; m++) {
-				this.chunks[l - this.minX][m - this.minZ] = world.getChunk(l, m);
+				this.chunks[l - this.minX][m - this.minZ] = world.getWorldChunk(l, m);
 			}
 		}
 
@@ -59,7 +59,7 @@ public class ChunkCache implements ExtendedBlockView {
 
 	@Override
 	public BlockState getBlockState(BlockPos blockPos) {
-		if (!World.isHeightInvaid(blockPos)) {
+		if (!World.isHeightInvalid(blockPos)) {
 			int i = (blockPos.getX() >> 4) - this.minX;
 			int j = (blockPos.getZ() >> 4) - this.minZ;
 			if (i >= 0 && i < this.chunks.length && j >= 0 && j < this.chunks[i].length) {
@@ -86,7 +86,7 @@ public class ChunkCache implements ExtendedBlockView {
 			}
 		}
 
-		return Fluids.field_15906.getDefaultState();
+		return Fluids.EMPTY.getDefaultState();
 	}
 
 	@Override

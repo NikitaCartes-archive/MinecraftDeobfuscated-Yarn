@@ -7,11 +7,12 @@ import java.util.List;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.AdvancementRewards;
+import net.minecraft.advancement.CriteriaMerger;
 import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemContainer;
+import net.minecraft.item.ItemProvider;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
@@ -27,30 +28,30 @@ public class class_2450 {
 	private final SimpleAdvancement.Builder field_11393 = SimpleAdvancement.Builder.create();
 	private String field_11398;
 
-	public class_2450(ItemContainer itemContainer, int i) {
-		this.field_11396 = itemContainer.getItem();
+	public class_2450(ItemProvider itemProvider, int i) {
+		this.field_11396 = itemProvider.getItem();
 		this.field_11395 = i;
 	}
 
-	public static class_2450 method_10447(ItemContainer itemContainer) {
-		return new class_2450(itemContainer, 1);
+	public static class_2450 method_10447(ItemProvider itemProvider) {
+		return new class_2450(itemProvider, 1);
 	}
 
-	public static class_2450 method_10448(ItemContainer itemContainer, int i) {
-		return new class_2450(itemContainer, i);
+	public static class_2450 method_10448(ItemProvider itemProvider, int i) {
+		return new class_2450(itemProvider, i);
 	}
 
 	public class_2450 method_10446(Tag<Item> tag) {
 		return this.method_10451(Ingredient.fromTag(tag));
 	}
 
-	public class_2450 method_10454(ItemContainer itemContainer) {
-		return this.method_10449(itemContainer, 1);
+	public class_2450 method_10454(ItemProvider itemProvider) {
+		return this.method_10449(itemProvider, 1);
 	}
 
-	public class_2450 method_10449(ItemContainer itemContainer, int i) {
+	public class_2450 method_10449(ItemProvider itemProvider, int i) {
 		for (int j = 0; j < i; j++) {
-			this.method_10451(Ingredient.ofItems(itemContainer));
+			this.method_10451(Ingredient.method_8091(itemProvider));
 		}
 
 		return this;
@@ -96,8 +97,8 @@ public class class_2450 {
 		this.field_11393
 			.parent(new Identifier("recipes/root"))
 			.criterion("has_the_recipe", new RecipeUnlockedCriterion.Conditions(identifier))
-			.method_703(AdvancementRewards.Builder.method_753(identifier))
-			.method_704(class_193.OR);
+			.rewards(AdvancementRewards.Builder.recipe(identifier))
+			.criteriaMerger(CriteriaMerger.OR);
 		consumer.accept(
 			new class_2450.class_2451(
 				identifier,
@@ -112,7 +113,7 @@ public class class_2450 {
 	}
 
 	private void method_10445(Identifier identifier) {
-		if (this.field_11393.method_710().isEmpty()) {
+		if (this.field_11393.getCriteria().isEmpty()) {
 			throw new IllegalStateException("No way of obtaining recipe " + identifier);
 		}
 	}
@@ -169,7 +170,7 @@ public class class_2450 {
 		@Nullable
 		@Override
 		public JsonObject method_10415() {
-			return this.field_11401.method_698();
+			return this.field_11401.toJson();
 		}
 
 		@Nullable

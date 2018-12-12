@@ -7,9 +7,9 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.KeyBindingListWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.gui.widget.OptionSliderWidget;
+import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.settings.GameOptions;
-import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.SystemUtil;
 
@@ -45,7 +45,7 @@ public class ControlsSettingsGui extends Gui {
 		this.resetButton = this.addButton(new ButtonWidget(201, this.width / 2 - 155, this.height - 29, 150, 20, I18n.translate("controls.resetAll")) {
 			@Override
 			public void onPressed(double d, double e) {
-				for (KeyBinding keyBinding : ControlsSettingsGui.this.client.options.keysAll) {
+				for (KeyBinding keyBinding : ControlsSettingsGui.this.client.field_1690.keysAll) {
 					keyBinding.setKeyCode(keyBinding.getDefaultKeyCode());
 				}
 
@@ -104,13 +104,13 @@ public class ControlsSettingsGui extends Gui {
 	public boolean keyPressed(int i, int j, int k) {
 		if (this.field_2727 != null) {
 			if (i == 256) {
-				this.settings.method_1641(this.field_2727, InputUtil.field_16237);
+				this.settings.method_1641(this.field_2727, InputUtil.UNKNOWN_KEYCODE);
 			} else {
-				this.settings.method_1641(this.field_2727, InputUtil.method_15985(i, j));
+				this.settings.method_1641(this.field_2727, InputUtil.getKeyCode(i, j));
 			}
 
 			this.field_2727 = null;
-			this.field_2723 = SystemUtil.getMeasuringTimeMili();
+			this.field_2723 = SystemUtil.getMeasuringTimeMs();
 			KeyBinding.method_1426();
 			return true;
 		} else {

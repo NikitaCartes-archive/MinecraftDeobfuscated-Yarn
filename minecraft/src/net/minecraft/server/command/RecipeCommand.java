@@ -27,12 +27,12 @@ public class RecipeCommand {
 				.then(
 					ServerCommandManager.literal("give")
 						.then(
-							ServerCommandManager.argument("targets", EntityArgumentType.method_9308())
+							ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
 								.then(
 									ServerCommandManager.argument("recipe", ResourceLocationArgumentType.create())
 										.suggests(SuggestionProviders.ALL_RECIPES)
 										.executes(
-											commandContext -> method_13520(
+											commandContext -> give(
 													commandContext.getSource(),
 													EntityArgumentType.method_9312(commandContext, "targets"),
 													Collections.singleton(ResourceLocationArgumentType.getRecipeArgument(commandContext, "recipe"))
@@ -42,7 +42,7 @@ public class RecipeCommand {
 								.then(
 									ServerCommandManager.literal("*")
 										.executes(
-											commandContext -> method_13520(
+											commandContext -> give(
 													commandContext.getSource(),
 													EntityArgumentType.method_9312(commandContext, "targets"),
 													commandContext.getSource().getMinecraftServer().getRecipeManager().values()
@@ -54,12 +54,12 @@ public class RecipeCommand {
 				.then(
 					ServerCommandManager.literal("take")
 						.then(
-							ServerCommandManager.argument("targets", EntityArgumentType.method_9308())
+							ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
 								.then(
 									ServerCommandManager.argument("recipe", ResourceLocationArgumentType.create())
 										.suggests(SuggestionProviders.ALL_RECIPES)
 										.executes(
-											commandContext -> method_13518(
+											commandContext -> take(
 													commandContext.getSource(),
 													EntityArgumentType.method_9312(commandContext, "targets"),
 													Collections.singleton(ResourceLocationArgumentType.getRecipeArgument(commandContext, "recipe"))
@@ -69,7 +69,7 @@ public class RecipeCommand {
 								.then(
 									ServerCommandManager.literal("*")
 										.executes(
-											commandContext -> method_13518(
+											commandContext -> take(
 													commandContext.getSource(),
 													EntityArgumentType.method_9312(commandContext, "targets"),
 													commandContext.getSource().getMinecraftServer().getRecipeManager().values()
@@ -81,11 +81,11 @@ public class RecipeCommand {
 		);
 	}
 
-	private static int method_13520(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Collection<Recipe> collection2) throws CommandSyntaxException {
+	private static int give(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Collection<Recipe> collection2) throws CommandSyntaxException {
 		int i = 0;
 
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
-			i += serverPlayerEntity.method_7254(collection2);
+			i += serverPlayerEntity.unlockRecipes(collection2);
 		}
 
 		if (i == 0) {
@@ -106,11 +106,11 @@ public class RecipeCommand {
 		}
 	}
 
-	private static int method_13518(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Collection<Recipe> collection2) throws CommandSyntaxException {
+	private static int take(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Collection<Recipe> collection2) throws CommandSyntaxException {
 		int i = 0;
 
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
-			i += serverPlayerEntity.method_7333(collection2);
+			i += serverPlayerEntity.lockRecipes(collection2);
 		}
 
 		if (i == 0) {

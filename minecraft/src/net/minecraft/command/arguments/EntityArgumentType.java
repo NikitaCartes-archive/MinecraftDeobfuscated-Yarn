@@ -43,15 +43,15 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 	public static final SimpleCommandExceptionType NOT_ALLOWED_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableTextComponent("argument.entity.selector.not_allowed")
 	);
-	private final boolean field_9858;
-	private final boolean field_9857;
+	private final boolean singleTarget;
+	private final boolean playerOnly;
 
 	protected EntityArgumentType(boolean bl, boolean bl2) {
-		this.field_9858 = bl;
-		this.field_9857 = bl2;
+		this.singleTarget = bl;
+		this.playerOnly = bl2;
 	}
 
-	public static EntityArgumentType create() {
+	public static EntityArgumentType oneEntity() {
 		return new EntityArgumentType(true, false);
 	}
 
@@ -59,7 +59,7 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 		return commandContext.<EntitySelector>getArgument(string, EntitySelector.class).getEntity(commandContext.getSource());
 	}
 
-	public static EntityArgumentType method_9306() {
+	public static EntityArgumentType multipleEntities() {
 		return new EntityArgumentType(false, false);
 	}
 
@@ -80,7 +80,7 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 		return commandContext.<EntitySelector>getArgument(string, EntitySelector.class).getPlayers(commandContext.getSource());
 	}
 
-	public static EntityArgumentType method_9305() {
+	public static EntityArgumentType onePlayer() {
 		return new EntityArgumentType(true, true);
 	}
 
@@ -88,7 +88,7 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 		return commandContext.<EntitySelector>getArgument(string, EntitySelector.class).getPlayer(commandContext.getSource());
 	}
 
-	public static EntityArgumentType method_9308() {
+	public static EntityArgumentType multiplePlayer() {
 		return new EntityArgumentType(false, true);
 	}
 
@@ -101,19 +101,19 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 		}
 	}
 
-	public EntitySelector method_9318(StringReader stringReader) throws CommandSyntaxException {
+	public EntitySelector parse(StringReader stringReader) throws CommandSyntaxException {
 		int i = 0;
 		EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
 		EntitySelector entitySelector = entitySelectorReader.read();
-		if (entitySelector.getLimit() > 1 && this.field_9858) {
-			if (this.field_9857) {
+		if (entitySelector.getCount() > 1 && this.singleTarget) {
+			if (this.playerOnly) {
 				stringReader.setCursor(0);
 				throw TOO_MANY_PLAYERS_EXCEPTION.createWithContext(stringReader);
 			} else {
 				stringReader.setCursor(0);
 				throw TOO_MANY_ENTITIES_EXCEPTION.createWithContext(stringReader);
 			}
-		} else if (entitySelector.includesEntities() && this.field_9857 && !entitySelector.method_9820()) {
+		} else if (entitySelector.includesEntities() && this.playerOnly && !entitySelector.method_9820()) {
 			stringReader.setCursor(0);
 			throw PLAYER_SELECTOR_HAS_ENTITIES_EXCEPTION.createWithContext(stringReader);
 		} else {
@@ -136,7 +136,7 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 
 			return entitySelectorReader.listSuggestions(suggestionsBuilder, suggestionsBuilderx -> {
 				Collection<String> collection = commandSource.getPlayerNames();
-				Iterable<String> iterable = (Iterable<String>)(this.field_9857 ? collection : Iterables.concat(collection, commandSource.method_9269()));
+				Iterable<String> iterable = (Iterable<String>)(this.playerOnly ? collection : Iterables.concat(collection, commandSource.method_9269()));
 				CommandSource.suggestMatching(iterable, suggestionsBuilderx);
 			});
 		} else {
@@ -150,27 +150,27 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 	}
 
 	public static class Serializer implements ArgumentSerializer<EntityArgumentType> {
-		public void method_9320(EntityArgumentType entityArgumentType, PacketByteBuf packetByteBuf) {
+		public void toPacket(EntityArgumentType entityArgumentType, PacketByteBuf packetByteBuf) {
 			byte b = 0;
-			if (entityArgumentType.field_9858) {
+			if (entityArgumentType.singleTarget) {
 				b = (byte)(b | 1);
 			}
 
-			if (entityArgumentType.field_9857) {
+			if (entityArgumentType.playerOnly) {
 				b = (byte)(b | 2);
 			}
 
 			packetByteBuf.writeByte(b);
 		}
 
-		public EntityArgumentType method_9321(PacketByteBuf packetByteBuf) {
+		public EntityArgumentType fromPacket(PacketByteBuf packetByteBuf) {
 			byte b = packetByteBuf.readByte();
 			return new EntityArgumentType((b & 1) != 0, (b & 2) != 0);
 		}
 
-		public void method_9319(EntityArgumentType entityArgumentType, JsonObject jsonObject) {
-			jsonObject.addProperty("amount", entityArgumentType.field_9858 ? "single" : "multiple");
-			jsonObject.addProperty("type", entityArgumentType.field_9857 ? "players" : "entities");
+		public void toJson(EntityArgumentType entityArgumentType, JsonObject jsonObject) {
+			jsonObject.addProperty("amount", entityArgumentType.singleTarget ? "single" : "multiple");
+			jsonObject.addProperty("type", entityArgumentType.playerOnly ? "players" : "entities");
 		}
 	}
 }

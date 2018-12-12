@@ -5,19 +5,17 @@ import com.mojang.datafixers.Dynamic;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.class_3145;
-import net.minecraft.class_3449;
-import net.minecraft.class_3485;
-import net.minecraft.class_3791;
 import net.minecraft.entity.EntityType;
+import net.minecraft.sortme.structures.StructureManager;
+import net.minecraft.sortme.structures.StructureStart;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.config.feature.PillagerOutpostFeatureConfig;
+import net.minecraft.world.gen.features.village.PillagerVillageData;
 
-public class PillagerOutpostFeature extends class_3145<PillagerOutpostFeatureConfig> {
+public class PillagerOutpostFeature extends AbstractTempleFeature<PillagerOutpostFeatureConfig> {
 	private static final List<Biome.SpawnEntry> field_16656 = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.PILLAGER, 1, 1, 1));
 
 	public PillagerOutpostFeature(Function<Dynamic<?>, ? extends PillagerOutpostFeatureConfig> function) {
@@ -35,7 +33,7 @@ public class PillagerOutpostFeature extends class_3145<PillagerOutpostFeatureCon
 	}
 
 	@Override
-	public List<Biome.SpawnEntry> method_13149() {
+	public List<Biome.SpawnEntry> getMonsterSpawns() {
 		return field_16656;
 	}
 
@@ -50,7 +48,7 @@ public class PillagerOutpostFeature extends class_3145<PillagerOutpostFeatureCon
 			if (random.nextInt(5) != 0) {
 				return false;
 			} else {
-				Biome biome = chunkGenerator.getBiomeSource().method_8758(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
+				Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
 				return chunkGenerator.hasStructure(biome, Feature.PILLAGER_OUTPOST);
 			}
 		} else {
@@ -68,15 +66,15 @@ public class PillagerOutpostFeature extends class_3145<PillagerOutpostFeatureCon
 		return 165745296;
 	}
 
-	public static class class_3771 extends class_3449 {
+	public static class class_3771 extends StructureStart {
 		public class_3771(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
 			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, class_3485 arg, int i, int j, Biome biome) {
+		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
 			BlockPos blockPos = new BlockPos(i * 16, 90, j * 16);
-			class_3791.method_16650(chunkGenerator, arg, blockPos, this.children, this.field_16715);
+			PillagerVillageData.method_16650(chunkGenerator, structureManager, blockPos, this.children, this.field_16715);
 			this.method_14969();
 		}
 	}

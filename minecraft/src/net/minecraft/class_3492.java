@@ -11,6 +11,7 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.chunk.ChunkPos;
+import net.minecraft.world.gen.ChunkRandom;
 
 public class class_3492 {
 	private Mirror field_15564 = Mirror.NONE;
@@ -126,9 +127,9 @@ public class class_3492 {
 		if (this.field_15570 != null) {
 			return this.field_15570;
 		} else if (this.field_15574 != null) {
-			return this.field_15574 == 0L ? new Random(SystemUtil.getMeasuringTimeMili()) : new Random(this.field_15574);
+			return this.field_15574 == 0L ? new Random(SystemUtil.getMeasuringTimeMs()) : new Random(this.field_15574);
 		} else {
-			return blockPos == null ? new Random(SystemUtil.getMeasuringTimeMili()) : class_2919.method_12662(blockPos.getX(), blockPos.getZ(), 0L, 987234911L);
+			return blockPos == null ? new Random(SystemUtil.getMeasuringTimeMs()) : ChunkRandom.method_12662(blockPos.getX(), blockPos.getZ(), 0L, 987234911L);
 		}
 	}
 

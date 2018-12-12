@@ -9,9 +9,11 @@ import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.ElderGuardianEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sortme.StructurePiece;
+import net.minecraft.sortme.structures.StructureManager;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
@@ -173,7 +175,7 @@ public class class_3366 {
 		public class_3374(Random random, int i, int j, Direction direction) {
 			super(StructurePiece.field_16922, 0);
 			this.method_14926(direction);
-			Direction direction2 = this.method_14934();
+			Direction direction2 = this.getFacing();
 			if (direction2.getAxis() == Direction.Axis.Z) {
 				this.structureBounds = new MutableIntBoundingBox(i, 39, j, i + 58 - 1, 61, j + 58 - 1);
 			} else {
@@ -242,7 +244,7 @@ public class class_3366 {
 			this.field_14465.add(new class_3366.class_3383(direction2, mutableIntBoundingBox3));
 		}
 
-		public class_3374(class_3485 arg, CompoundTag compoundTag) {
+		public class_3374(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16922, compoundTag);
 		}
 
@@ -742,7 +744,7 @@ public class class_3366 {
 			super(StructurePiece.field_16911, 1, direction, arg, 2, 2, 2);
 		}
 
-		public class_3376(class_3485 arg, CompoundTag compoundTag) {
+		public class_3376(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16911, compoundTag);
 		}
 
@@ -821,7 +823,7 @@ public class class_3366 {
 			super(StructurePiece.field_16963, 1, direction, arg, 2, 1, 1);
 		}
 
-		public class_3377(class_3485 arg, CompoundTag compoundTag) {
+		public class_3377(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16963, compoundTag);
 		}
 
@@ -892,7 +894,7 @@ public class class_3366 {
 			super(StructurePiece.field_16927, 1, direction, arg, 2, 2, 1);
 		}
 
-		public class_3378(class_3485 arg, CompoundTag compoundTag) {
+		public class_3378(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16927, compoundTag);
 		}
 
@@ -1007,7 +1009,7 @@ public class class_3366 {
 			super(StructurePiece.field_16946, 1, direction, arg, 1, 2, 1);
 		}
 
-		public class_3379(class_3485 arg, CompoundTag compoundTag) {
+		public class_3379(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16946, compoundTag);
 		}
 
@@ -1089,7 +1091,7 @@ public class class_3366 {
 			super(StructurePiece.field_16970, 1, direction, arg, 1, 2, 2);
 		}
 
-		public class_3380(class_3485 arg, CompoundTag compoundTag) {
+		public class_3380(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16970, compoundTag);
 		}
 
@@ -1202,7 +1204,7 @@ public class class_3366 {
 			super(StructurePiece.field_16925, 1, direction, arg, 1, 1, 2);
 		}
 
-		public class_3381(class_3485 arg, CompoundTag compoundTag) {
+		public class_3381(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16925, compoundTag);
 		}
 
@@ -1292,7 +1294,7 @@ public class class_3366 {
 			super(StructurePiece.field_16905, 1, direction, arg, 1, 1, 1);
 		}
 
-		public class_3382(class_3485 arg, CompoundTag compoundTag) {
+		public class_3382(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16905, compoundTag);
 		}
 
@@ -1328,7 +1330,7 @@ public class class_3366 {
 			super(StructurePiece.field_16966, direction, mutableIntBoundingBox);
 		}
 
-		public class_3383(class_3485 arg, CompoundTag compoundTag) {
+		public class_3383(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16966, compoundTag);
 		}
 
@@ -1506,10 +1508,10 @@ public class class_3366 {
 			int m = this.applyYTransform(j);
 			int n = this.applyZTransform(i, k);
 			if (mutableIntBoundingBox.contains(new BlockPos(l, m, n))) {
-				ElderGuardianEntity elderGuardianEntity = new ElderGuardianEntity(iWorld.method_8410());
+				ElderGuardianEntity elderGuardianEntity = new ElderGuardianEntity(iWorld.getWorld());
 				elderGuardianEntity.heal(elderGuardianEntity.getHealthMaximum());
 				elderGuardianEntity.setPositionAndAngles((double)l + 0.5, (double)m, (double)n + 0.5, 0.0F, 0.0F);
-				elderGuardianEntity.method_5943(iWorld, iWorld.getLocalDifficulty(new BlockPos(elderGuardianEntity)), class_3730.field_16474, null, null);
+				elderGuardianEntity.prepareEntityData(iWorld, iWorld.getLocalDifficulty(new BlockPos(elderGuardianEntity)), SpawnType.field_16474, null, null);
 				iWorld.spawnEntity(elderGuardianEntity);
 				return true;
 			} else {
@@ -1526,7 +1528,7 @@ public class class_3366 {
 			this.field_14480 = random.nextInt(3);
 		}
 
-		public class_3385(class_3485 arg, CompoundTag compoundTag) {
+		public class_3385(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16928, compoundTag);
 		}
 
@@ -1694,7 +1696,7 @@ public class class_3366 {
 			super(StructurePiece.field_16944, 1, direction, arg, 1, 1, 1);
 		}
 
-		public class_3386(class_3485 arg, CompoundTag compoundTag) {
+		public class_3386(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16944, compoundTag);
 		}
 
@@ -1750,7 +1752,7 @@ public class class_3366 {
 			this.field_14481 = i & 1;
 		}
 
-		public class_3387(class_3485 arg, CompoundTag compoundTag) {
+		public class_3387(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16957, compoundTag);
 		}
 

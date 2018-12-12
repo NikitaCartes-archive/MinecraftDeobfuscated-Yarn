@@ -34,7 +34,7 @@ public class TranslatableTextComponent extends AbstractTextComponent implements 
 		for (int i = 0; i < objects.length; i++) {
 			Object object = objects[i];
 			if (object instanceof TextComponent) {
-				TextComponent textComponent = ((TextComponent)object).clone();
+				TextComponent textComponent = ((TextComponent)object).copy();
 				this.params[i] = textComponent;
 				textComponent.getStyle().setParent(this.getStyle());
 			} else if (object == null) {
@@ -174,7 +174,7 @@ public class TranslatableTextComponent extends AbstractTextComponent implements 
 
 		for (int i = 0; i < this.params.length; i++) {
 			if (this.params[i] instanceof TextComponent) {
-				objects[i] = ((TextComponent)this.params[i]).clone();
+				objects[i] = ((TextComponent)this.params[i]).copy();
 			} else {
 				objects[i] = this.params[i];
 			}

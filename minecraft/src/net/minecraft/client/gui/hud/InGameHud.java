@@ -13,20 +13,19 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_308;
 import net.minecraft.class_336;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.FontRenderer;
 import net.minecraft.client.gui.ContainerGui;
 import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.settings.GameOptions;
-import net.minecraft.client.sortme.ChatMessageType;
 import net.minecraft.client.sortme.ClientChatListener;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -46,6 +45,7 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.ScoreboardTeam;
+import net.minecraft.sortme.ChatMessageType;
 import net.minecraft.sortme.OptionMainHand;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.text.StringTextComponent;
@@ -142,7 +142,7 @@ public class InGameHud extends Drawable {
 		}
 
 		ItemStack itemStack = this.client.player.inventory.getArmorStack(3);
-		if (this.client.options.field_1850 == 0 && itemStack.getItem() == Blocks.field_10147.getItem()) {
+		if (this.client.field_1690.field_1850 == 0 && itemStack.getItem() == Blocks.field_10147.getItem()) {
 			this.method_1761();
 		}
 
@@ -155,11 +155,11 @@ public class InGameHud extends Drawable {
 
 		if (this.client.interactionManager.getCurrentGameMode() == GameMode.field_9219) {
 			this.hudSpectator.draw(f);
-		} else if (!this.client.options.field_1842) {
+		} else if (!this.client.field_1690.field_1842) {
 			this.method_1759(f);
 		}
 
-		if (!this.client.options.field_1842) {
+		if (!this.client.field_1690.field_1842) {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			this.client.getTextureManager().bindTexture(ICONS);
 			GlStateManager.enableBlend();
@@ -171,9 +171,9 @@ public class InGameHud extends Drawable {
 				GlStateManager.SrcBlendFactor.ONE,
 				GlStateManager.DstBlendFactor.ZERO
 			);
-			this.client.getProfiler().begin("bossHealth");
+			this.client.getProfiler().push("bossHealth");
 			this.hudBossBar.draw();
-			this.client.getProfiler().end();
+			this.client.getProfiler().pop();
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			this.client.getTextureManager().bindTexture(ICONS);
 			if (this.client.interactionManager.hasStatusBars()) {
@@ -189,7 +189,7 @@ public class InGameHud extends Drawable {
 				this.method_1754(i);
 			}
 
-			if (this.client.options.heldItemTooltips && this.client.interactionManager.getCurrentGameMode() != GameMode.field_9219) {
+			if (this.client.field_1690.heldItemTooltips && this.client.interactionManager.getCurrentGameMode() != GameMode.field_9219) {
 				this.method_1749();
 			} else if (this.client.player.isSpectator()) {
 				this.hudSpectator.method_1979();
@@ -197,7 +197,7 @@ public class InGameHud extends Drawable {
 		}
 
 		if (this.client.player.getSleepTimer() > 0) {
-			this.client.getProfiler().begin("sleep");
+			this.client.getProfiler().push("sleep");
 			GlStateManager.disableDepthTest();
 			GlStateManager.disableAlphaTest();
 			float g = (float)this.client.player.getSleepTimer();
@@ -210,7 +210,7 @@ public class InGameHud extends Drawable {
 			drawRect(0, 0, this.scaledWidth, this.scaledHeight, j);
 			GlStateManager.enableAlphaTest();
 			GlStateManager.enableDepthTest();
-			this.client.getProfiler().end();
+			this.client.getProfiler().pop();
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 
@@ -219,13 +219,13 @@ public class InGameHud extends Drawable {
 		}
 
 		this.method_1765();
-		if (this.client.options.debugEnabled) {
-			this.hudDebug.method_1846();
+		if (this.client.field_1690.debugEnabled) {
+			this.hudDebug.draw();
 		}
 
-		if (!this.client.options.field_1842) {
+		if (!this.client.field_1690.field_1842) {
 			if (this.overlayRemaining > 0) {
-				this.client.getProfiler().begin("overlayMessage");
+				this.client.getProfiler().push("overlayMessage");
 				float g = (float)this.overlayRemaining - f;
 				int k = (int)(g * 255.0F / 20.0F);
 				if (k > 255) {
@@ -252,11 +252,11 @@ public class InGameHud extends Drawable {
 					GlStateManager.popMatrix();
 				}
 
-				this.client.getProfiler().end();
+				this.client.getProfiler().pop();
 			}
 
 			if (this.field_2023 > 0) {
-				this.client.getProfiler().begin("titleAndSubtitle");
+				this.client.getProfiler().push("titleAndSubtitle");
 				float gx = (float)this.field_2023 - f;
 				int kx = 255;
 				if (this.field_2023 > this.field_2036 + this.field_2017) {
@@ -292,7 +292,7 @@ public class InGameHud extends Drawable {
 					GlStateManager.popMatrix();
 				}
 
-				this.client.getProfiler().end();
+				this.client.getProfiler().pop();
 			}
 
 			this.hudSubtitles.method_1957();
@@ -321,13 +321,13 @@ public class InGameHud extends Drawable {
 			GlStateManager.disableAlphaTest();
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef(0.0F, (float)(this.scaledHeight - 48), 0.0F);
-			this.client.getProfiler().begin("chat");
+			this.client.getProfiler().push("chat");
 			this.hudChat.method_1805(this.ticks);
-			this.client.getProfiler().end();
+			this.client.getProfiler().pop();
 			GlStateManager.popMatrix();
 			scoreboardObjective2 = scoreboard.getObjectiveForSlot(0);
-			if (!this.client.options.keyPlayerList.method_1434()
-				|| this.client.method_1542() && this.client.player.networkHandler.method_2880().size() <= 1 && scoreboardObjective2 == null) {
+			if (!this.client.field_1690.keyPlayerList.method_1434()
+				|| this.client.isIntegratedServerRunning() && this.client.player.networkHandler.method_2880().size() <= 1 && scoreboardObjective2 == null) {
 				this.hudScoreboard.method_1921(false);
 			} else {
 				this.hudScoreboard.method_1921(true);
@@ -341,7 +341,7 @@ public class InGameHud extends Drawable {
 	}
 
 	private void method_1736(float f) {
-		GameOptions gameOptions = this.client.options;
+		GameOptions gameOptions = this.client.field_1690;
 		if (gameOptions.field_1850 == 0) {
 			if (this.client.interactionManager.getCurrentGameMode() == GameMode.field_9219 && this.client.field_1692 == null) {
 				HitResult hitResult = this.client.hitResult;
@@ -373,7 +373,7 @@ public class InGameHud extends Drawable {
 				);
 				int i = 15;
 				this.drawTexturedRect((float)this.scaledWidth / 2.0F - 7.5F, (float)this.scaledHeight / 2.0F - 7.5F, 0, 0, 15, 15);
-				if (this.client.options.attackIndicator == 1) {
+				if (this.client.field_1690.attackIndicator == 1) {
 					float g = this.client.player.method_7261(0.0F);
 					boolean bl = false;
 					if (this.client.field_1692 != null && this.client.field_1692 instanceof LivingEntity && g >= 1.0F) {
@@ -475,7 +475,7 @@ public class InGameHud extends Drawable {
 				GlStateManager.SrcBlendFactor.ONE,
 				GlStateManager.DstBlendFactor.ZERO
 			);
-			class_308.method_1453();
+			GuiLighting.enableForItems();
 
 			for (int l = 0; l < 9; l++) {
 				int m = i - 90 + l * 20 + 2;
@@ -492,7 +492,7 @@ public class InGameHud extends Drawable {
 				}
 			}
 
-			if (this.client.options.attackIndicator == 2) {
+			if (this.client.field_1690.attackIndicator == 2) {
 				float h = this.client.player.method_7261(0.0F);
 				if (h < 1.0F) {
 					int m = this.scaledHeight - 20;
@@ -509,14 +509,14 @@ public class InGameHud extends Drawable {
 				}
 			}
 
-			class_308.method_1450();
+			GuiLighting.disable();
 			GlStateManager.disableRescaleNormal();
 			GlStateManager.disableBlend();
 		}
 	}
 
 	public void method_1752(int i) {
-		this.client.getProfiler().begin("jumpBar");
+		this.client.getProfiler().push("jumpBar");
 		this.client.getTextureManager().bindTexture(Drawable.ICONS);
 		float f = this.client.player.method_3151();
 		int j = 182;
@@ -527,11 +527,11 @@ public class InGameHud extends Drawable {
 			this.drawTexturedRect(i, l, 0, 89, k, 5);
 		}
 
-		this.client.getProfiler().end();
+		this.client.getProfiler().pop();
 	}
 
 	public void method_1754(int i) {
-		this.client.getProfiler().begin("expBar");
+		this.client.getProfiler().push("expBar");
 		this.client.getTextureManager().bindTexture(Drawable.ICONS);
 		int j = this.client.player.method_7349();
 		if (j > 0) {
@@ -544,9 +544,9 @@ public class InGameHud extends Drawable {
 			}
 		}
 
-		this.client.getProfiler().end();
+		this.client.getProfiler().pop();
 		if (this.client.player.experience > 0) {
-			this.client.getProfiler().begin("expLevel");
+			this.client.getProfiler().push("expLevel");
 			String string = "" + this.client.player.experience;
 			int l = (this.scaledWidth - this.getFontRenderer().getStringWidth(string)) / 2;
 			int m = this.scaledHeight - 31 - 4;
@@ -555,12 +555,12 @@ public class InGameHud extends Drawable {
 			this.getFontRenderer().draw(string, (float)l, (float)(m + 1), 0);
 			this.getFontRenderer().draw(string, (float)l, (float)(m - 1), 0);
 			this.getFontRenderer().draw(string, (float)l, (float)m, 8453920);
-			this.client.getProfiler().end();
+			this.client.getProfiler().pop();
 		}
 	}
 
 	public void method_1749() {
-		this.client.getProfiler().begin("selectedItemName");
+		this.client.getProfiler().push("selectedItemName");
 		if (this.field_2040 > 0 && !this.currentStack.isEmpty()) {
 			TextComponent textComponent = new StringTextComponent("").append(this.currentStack.getDisplayName()).applyFormat(this.currentStack.getRarity().formatting);
 			if (this.currentStack.hasDisplayName()) {
@@ -594,11 +594,11 @@ public class InGameHud extends Drawable {
 			}
 		}
 
-		this.client.getProfiler().end();
+		this.client.getProfiler().pop();
 	}
 
 	public void renderDemoTimer() {
-		this.client.getProfiler().begin("demo");
+		this.client.getProfiler().push("demo");
 		String string;
 		if (this.client.world.getTime() >= 120500L) {
 			string = I18n.translate("demo.demoExpired");
@@ -608,7 +608,7 @@ public class InGameHud extends Drawable {
 
 		int i = this.getFontRenderer().getStringWidth(string);
 		this.getFontRenderer().drawWithShadow(string, (float)(this.scaledWidth - i - 10), 5.0F, 16777215);
-		this.client.getProfiler().end();
+		this.client.getProfiler().pop();
 	}
 
 	private void method_1757(ScoreboardObjective scoreboardObjective) {
@@ -636,7 +636,7 @@ public class InGameHud extends Drawable {
 			j = Math.max(j, this.getFontRenderer().getStringWidth(string2));
 		}
 
-		int k = collection.size() * this.getFontRenderer().FONT_HEIGHT;
+		int k = collection.size() * this.getFontRenderer().fontHeight;
 		int l = this.scaledHeight / 2 + k / 3;
 		int m = 3;
 		int n = this.scaledWidth - j - 3;
@@ -647,15 +647,15 @@ public class InGameHud extends Drawable {
 			ScoreboardTeam scoreboardTeam2 = scoreboard.getPlayerTeam(scoreboardPlayerScore2.getPlayerName());
 			String string3 = ScoreboardTeam.method_1142(scoreboardTeam2, new StringTextComponent(scoreboardPlayerScore2.getPlayerName())).getFormattedText();
 			String string4 = TextFormat.RED + "" + scoreboardPlayerScore2.getScore();
-			int q = l - o * this.getFontRenderer().FONT_HEIGHT;
+			int q = l - o * this.getFontRenderer().fontHeight;
 			int r = this.scaledWidth - 3 + 2;
-			drawRect(n - 2, q, r, q + this.getFontRenderer().FONT_HEIGHT, 1342177280);
+			drawRect(n - 2, q, r, q + this.getFontRenderer().fontHeight, 1342177280);
 			this.getFontRenderer().draw(string3, (float)n, (float)q, 553648127);
 			this.getFontRenderer().draw(string4, (float)(r - this.getFontRenderer().getStringWidth(string4)), (float)q, 553648127);
 			if (o == collection.size()) {
-				drawRect(n - 2, q - this.getFontRenderer().FONT_HEIGHT - 1, r, q - 1, 1610612736);
+				drawRect(n - 2, q - this.getFontRenderer().fontHeight - 1, r, q - 1, 1610612736);
 				drawRect(n - 2, q - 1, r, q, 1342177280);
-				this.getFontRenderer().draw(string, (float)(n + j / 2 - i / 2), (float)(q - this.getFontRenderer().FONT_HEIGHT), 553648127);
+				this.getFontRenderer().draw(string, (float)(n + j / 2 - i / 2), (float)(q - this.getFontRenderer().fontHeight), 553648127);
 			}
 		}
 	}
@@ -703,7 +703,7 @@ public class InGameHud extends Drawable {
 		if (playerEntity != null) {
 			int i = MathHelper.ceil(playerEntity.getHealth());
 			boolean bl = this.field_2032 > (long)this.ticks && (this.field_2032 - (long)this.ticks) / 3L % 2L == 1L;
-			long l = SystemUtil.getMeasuringTimeMili();
+			long l = SystemUtil.getMeasuringTimeMs();
 			if (i < this.field_2014 && playerEntity.field_6008 > 0) {
 				this.field_2012 = l;
 				this.field_2032 = (long)(this.ticks + 20);
@@ -740,7 +740,7 @@ public class InGameHud extends Drawable {
 				w = this.ticks % MathHelper.ceil(f + 5.0F);
 			}
 
-			this.client.getProfiler().begin("armor");
+			this.client.getProfiler().push("armor");
 
 			for (int x = 0; x < 10; x++) {
 				if (v > 0) {
@@ -759,7 +759,7 @@ public class InGameHud extends Drawable {
 				}
 			}
 
-			this.client.getProfiler().endBegin("health");
+			this.client.getProfiler().swap("health");
 
 			for (int xx = MathHelper.ceil((f + (float)p) / 2.0F) - 1; xx >= 0; xx--) {
 				int yx = 16;
@@ -823,7 +823,7 @@ public class InGameHud extends Drawable {
 			LivingEntity livingEntity = this.method_1734();
 			int yxx = this.method_1744(livingEntity);
 			if (yxx == 0) {
-				this.client.getProfiler().endBegin("food");
+				this.client.getProfiler().swap("food");
 
 				for (int zx = 0; zx < 10; zx++) {
 					int aax = o;
@@ -852,7 +852,7 @@ public class InGameHud extends Drawable {
 				t -= 10;
 			}
 
-			this.client.getProfiler().endBegin("air");
+			this.client.getProfiler().swap("air");
 			int zx = playerEntity.getBreath();
 			int aaxx = playerEntity.getMaxBreath();
 			if (playerEntity.method_5777(FluidTags.field_15517) || zx < aaxx) {
@@ -870,7 +870,7 @@ public class InGameHud extends Drawable {
 				}
 			}
 
-			this.client.getProfiler().end();
+			this.client.getProfiler().pop();
 		}
 	}
 
@@ -880,7 +880,7 @@ public class InGameHud extends Drawable {
 			int i = this.method_1744(livingEntity);
 			if (i != 0) {
 				int j = (int)Math.ceil((double)livingEntity.getHealth());
-				this.client.getProfiler().endBegin("mountHealth");
+				this.client.getProfiler().swap("mountHealth");
 				int k = this.scaledHeight - 39;
 				int l = this.scaledWidth / 2 + 91;
 				int m = k;
@@ -923,12 +923,12 @@ public class InGameHud extends Drawable {
 		GlStateManager.disableAlphaTest();
 		this.client.getTextureManager().bindTexture(PUMPKIN_BLUR);
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-		vertexBuffer.begin(7, VertexFormats.POSITION_UV);
-		vertexBuffer.vertex(0.0, (double)this.scaledHeight, -90.0).texture(0.0, 1.0).next();
-		vertexBuffer.vertex((double)this.scaledWidth, (double)this.scaledHeight, -90.0).texture(1.0, 1.0).next();
-		vertexBuffer.vertex((double)this.scaledWidth, 0.0, -90.0).texture(1.0, 0.0).next();
-		vertexBuffer.vertex(0.0, 0.0, -90.0).texture(0.0, 0.0).next();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+		bufferBuilder.vertex(0.0, (double)this.scaledHeight, -90.0).texture(0.0, 1.0).next();
+		bufferBuilder.vertex((double)this.scaledWidth, (double)this.scaledHeight, -90.0).texture(1.0, 1.0).next();
+		bufferBuilder.vertex((double)this.scaledWidth, 0.0, -90.0).texture(1.0, 0.0).next();
+		bufferBuilder.vertex(0.0, 0.0, -90.0).texture(0.0, 0.0).next();
 		tessellator.draw();
 		GlStateManager.depthMask(true);
 		GlStateManager.enableDepthTest();
@@ -967,12 +967,12 @@ public class InGameHud extends Drawable {
 
 		this.client.getTextureManager().bindTexture(VIGNETTE_TEX);
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-		vertexBuffer.begin(7, VertexFormats.POSITION_UV);
-		vertexBuffer.vertex(0.0, (double)this.scaledHeight, -90.0).texture(0.0, 1.0).next();
-		vertexBuffer.vertex((double)this.scaledWidth, (double)this.scaledHeight, -90.0).texture(1.0, 1.0).next();
-		vertexBuffer.vertex((double)this.scaledWidth, 0.0, -90.0).texture(1.0, 0.0).next();
-		vertexBuffer.vertex(0.0, 0.0, -90.0).texture(0.0, 0.0).next();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+		bufferBuilder.vertex(0.0, (double)this.scaledHeight, -90.0).texture(0.0, 1.0).next();
+		bufferBuilder.vertex((double)this.scaledWidth, (double)this.scaledHeight, -90.0).texture(1.0, 1.0).next();
+		bufferBuilder.vertex((double)this.scaledWidth, 0.0, -90.0).texture(1.0, 0.0).next();
+		bufferBuilder.vertex(0.0, 0.0, -90.0).texture(0.0, 0.0).next();
 		tessellator.draw();
 		GlStateManager.depthMask(true);
 		GlStateManager.enableDepthTest();
@@ -1009,12 +1009,12 @@ public class InGameHud extends Drawable {
 		float i = sprite.getMaxU();
 		float j = sprite.getMaxV();
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-		vertexBuffer.begin(7, VertexFormats.POSITION_UV);
-		vertexBuffer.vertex(0.0, (double)this.scaledHeight, -90.0).texture((double)g, (double)j).next();
-		vertexBuffer.vertex((double)this.scaledWidth, (double)this.scaledHeight, -90.0).texture((double)i, (double)j).next();
-		vertexBuffer.vertex((double)this.scaledWidth, 0.0, -90.0).texture((double)i, (double)h).next();
-		vertexBuffer.vertex(0.0, 0.0, -90.0).texture((double)g, (double)h).next();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+		bufferBuilder.vertex(0.0, (double)this.scaledHeight, -90.0).texture((double)g, (double)j).next();
+		bufferBuilder.vertex((double)this.scaledWidth, (double)this.scaledHeight, -90.0).texture((double)i, (double)j).next();
+		bufferBuilder.vertex((double)this.scaledWidth, 0.0, -90.0).texture((double)i, (double)h).next();
+		bufferBuilder.vertex(0.0, 0.0, -90.0).texture((double)g, (double)h).next();
 		tessellator.draw();
 		GlStateManager.depthMask(true);
 		GlStateManager.enableDepthTest();
@@ -1120,9 +1120,9 @@ public class InGameHud extends Drawable {
 		this.setOverlayMessage(textComponent.getString(), bl);
 	}
 
-	public void addChatMessage(ChatMessageType chatMessageType, TextComponent textComponent) {
+	public void method_1755(ChatMessageType chatMessageType, TextComponent textComponent) {
 		for (ClientChatListener clientChatListener : (List)this.listeners.get(chatMessageType)) {
-			clientChatListener.onChatMessage(chatMessageType, textComponent);
+			clientChatListener.method_1794(chatMessageType, textComponent);
 		}
 	}
 
@@ -1157,6 +1157,6 @@ public class InGameHud extends Drawable {
 	}
 
 	public void method_1745() {
-		this.hudDebug.method_1842();
+		this.hudDebug.resetChunk();
 	}
 }

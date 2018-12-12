@@ -41,7 +41,7 @@ public class MobSpawnClientPacket implements Packet<ClientPlayPacketListener> {
 		this.z = livingEntity.z;
 		this.velocityX = (byte)((int)(livingEntity.yaw * 256.0F / 360.0F));
 		this.velocityY = (byte)((int)(livingEntity.pitch * 256.0F / 360.0F));
-		this.velocityZ = (byte)((int)(livingEntity.headPitch * 256.0F / 360.0F));
+		this.velocityZ = (byte)((int)(livingEntity.headYaw * 256.0F / 360.0F));
 		double d = 3.9;
 		double e = livingEntity.velocityX;
 		double f = livingEntity.velocityY;

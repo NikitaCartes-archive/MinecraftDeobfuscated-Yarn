@@ -16,34 +16,32 @@ import net.minecraft.world.biome.source.BiomeSourceType;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorType;
-import net.minecraft.world.gen.chunk.FloatingIslandsChunkGeneratorSettings;
+import net.minecraft.world.gen.chunk.FloatingIslandsChunkGeneratorConfig;
 
 public class TheEndDimension extends Dimension {
 	public static final BlockPos field_13103 = new BlockPos(100, 50, 0);
-	private final EnderDragonFight field_13104;
+	private final EnderDragonFight enderDragonFight;
 
 	public TheEndDimension(World world, DimensionType dimensionType) {
 		super(world, dimensionType);
 		CompoundTag compoundTag = world.getLevelProperties().getWorldData(DimensionType.field_13078);
-		this.field_13104 = world instanceof ServerWorld ? new EnderDragonFight((ServerWorld)world, compoundTag.getCompound("DragonFight")) : null;
+		this.enderDragonFight = world instanceof ServerWorld ? new EnderDragonFight((ServerWorld)world, compoundTag.getCompound("DragonFight")) : null;
 	}
 
 	@Override
 	public ChunkGenerator<?> createChunkGenerator() {
-		FloatingIslandsChunkGeneratorSettings floatingIslandsChunkGeneratorSettings = ChunkGeneratorType.field_12770.createSettings();
-		floatingIslandsChunkGeneratorSettings.setDefaultBlock(Blocks.field_10471.getDefaultState());
-		floatingIslandsChunkGeneratorSettings.setDefaultFluid(Blocks.field_10124.getDefaultState());
-		floatingIslandsChunkGeneratorSettings.method_12651(this.getForcedSpawnPoint());
+		FloatingIslandsChunkGeneratorConfig floatingIslandsChunkGeneratorConfig = ChunkGeneratorType.field_12770.method_12117();
+		floatingIslandsChunkGeneratorConfig.setDefaultBlock(Blocks.field_10471.getDefaultState());
+		floatingIslandsChunkGeneratorConfig.setDefaultFluid(Blocks.field_10124.getDefaultState());
+		floatingIslandsChunkGeneratorConfig.withCenter(this.getForcedSpawnPoint());
 		return ChunkGeneratorType.field_12770
 			.create(
-				this.world,
-				BiomeSourceType.THE_END.applyConfig(BiomeSourceType.THE_END.getConfig().method_9205(this.world.getSeed())),
-				floatingIslandsChunkGeneratorSettings
+				this.world, BiomeSourceType.THE_END.applyConfig(BiomeSourceType.THE_END.getConfig().method_9205(this.world.getSeed())), floatingIslandsChunkGeneratorConfig
 			);
 	}
 
 	@Override
-	public float method_12464(long l, float f) {
+	public float getSkyAngle(long l, float f) {
 		return 0.0F;
 	}
 
@@ -122,10 +120,10 @@ public class TheEndDimension extends Dimension {
 	}
 
 	@Override
-	public void method_12450() {
+	public void saveWorldData() {
 		CompoundTag compoundTag = new CompoundTag();
-		if (this.field_13104 != null) {
-			compoundTag.put("DragonFight", this.field_13104.toTag());
+		if (this.enderDragonFight != null) {
+			compoundTag.put("DragonFight", this.enderDragonFight.toTag());
 		}
 
 		this.world.getLevelProperties().setWorldData(DimensionType.field_13078, compoundTag);
@@ -133,13 +131,13 @@ public class TheEndDimension extends Dimension {
 
 	@Override
 	public void method_12461() {
-		if (this.field_13104 != null) {
-			this.field_13104.method_12538();
+		if (this.enderDragonFight != null) {
+			this.enderDragonFight.method_12538();
 		}
 	}
 
 	@Nullable
 	public EnderDragonFight method_12513() {
-		return this.field_13104;
+		return this.enderDragonFight;
 	}
 }

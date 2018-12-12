@@ -7,8 +7,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.EndPortalBlockEntity;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.GlAllocationUtils;
 import net.minecraft.util.Identifier;
@@ -33,6 +34,7 @@ public class EndGatewayBlockEntityRenderer extends BlockEntityRenderer<EndPortal
 		int j = this.method_3592(h);
 		float k = this.method_3594();
 		boolean bl = false;
+		GameRenderer gameRenderer = MinecraftClient.getInstance().field_1773;
 
 		for (int l = 0; l < j; l++) {
 			GlStateManager.pushMatrix();
@@ -47,7 +49,7 @@ public class EndGatewayBlockEntityRenderer extends BlockEntityRenderer<EndPortal
 			if (l >= 1) {
 				this.bindTexture(PORTAL_TEX);
 				bl = true;
-				MinecraftClient.getInstance().worldRenderer.method_3201(true);
+				gameRenderer.method_3201(true);
 			}
 
 			if (l == 1) {
@@ -71,57 +73,57 @@ public class EndGatewayBlockEntityRenderer extends BlockEntityRenderer<EndPortal
 			GlStateManager.translatef(0.5F, 0.5F, 0.0F);
 			GlStateManager.scalef(0.5F, 0.5F, 1.0F);
 			float n = (float)(l + 1);
-			GlStateManager.translatef(17.0F / n, (2.0F + n / 1.5F) * ((float)(SystemUtil.getMeasuringTimeMili() % 800000L) / 800000.0F), 0.0F);
+			GlStateManager.translatef(17.0F / n, (2.0F + n / 1.5F) * ((float)(SystemUtil.getMeasuringTimeMs() % 800000L) / 800000.0F), 0.0F);
 			GlStateManager.rotatef((n * n * 4321.0F + n * 9.0F) * 2.0F, 0.0F, 0.0F, 1.0F);
 			GlStateManager.scalef(4.5F - n / 4.0F, 4.5F - n / 4.0F, 1.0F);
 			GlStateManager.multMatrix(field_4404);
 			GlStateManager.multMatrix(field_4408);
 			Tessellator tessellator = Tessellator.getInstance();
-			VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-			vertexBuffer.begin(7, VertexFormats.POSITION_COLOR);
+			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+			bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
 			float o = (RANDOM.nextFloat() * 0.5F + 0.1F) * m;
 			float p = (RANDOM.nextFloat() * 0.5F + 0.4F) * m;
 			float q = (RANDOM.nextFloat() * 0.5F + 0.5F) * m;
 			if (endPortalBlockEntity.method_11400(Direction.SOUTH)) {
-				vertexBuffer.vertex(d, e, f + 1.0).color(o, p, q, 1.0F).next();
-				vertexBuffer.vertex(d + 1.0, e, f + 1.0).color(o, p, q, 1.0F).next();
-				vertexBuffer.vertex(d + 1.0, e + 1.0, f + 1.0).color(o, p, q, 1.0F).next();
-				vertexBuffer.vertex(d, e + 1.0, f + 1.0).color(o, p, q, 1.0F).next();
+				bufferBuilder.vertex(d, e, f + 1.0).color(o, p, q, 1.0F).next();
+				bufferBuilder.vertex(d + 1.0, e, f + 1.0).color(o, p, q, 1.0F).next();
+				bufferBuilder.vertex(d + 1.0, e + 1.0, f + 1.0).color(o, p, q, 1.0F).next();
+				bufferBuilder.vertex(d, e + 1.0, f + 1.0).color(o, p, q, 1.0F).next();
 			}
 
 			if (endPortalBlockEntity.method_11400(Direction.NORTH)) {
-				vertexBuffer.vertex(d, e + 1.0, f).color(o, p, q, 1.0F).next();
-				vertexBuffer.vertex(d + 1.0, e + 1.0, f).color(o, p, q, 1.0F).next();
-				vertexBuffer.vertex(d + 1.0, e, f).color(o, p, q, 1.0F).next();
-				vertexBuffer.vertex(d, e, f).color(o, p, q, 1.0F).next();
+				bufferBuilder.vertex(d, e + 1.0, f).color(o, p, q, 1.0F).next();
+				bufferBuilder.vertex(d + 1.0, e + 1.0, f).color(o, p, q, 1.0F).next();
+				bufferBuilder.vertex(d + 1.0, e, f).color(o, p, q, 1.0F).next();
+				bufferBuilder.vertex(d, e, f).color(o, p, q, 1.0F).next();
 			}
 
 			if (endPortalBlockEntity.method_11400(Direction.EAST)) {
-				vertexBuffer.vertex(d + 1.0, e + 1.0, f).color(o, p, q, 1.0F).next();
-				vertexBuffer.vertex(d + 1.0, e + 1.0, f + 1.0).color(o, p, q, 1.0F).next();
-				vertexBuffer.vertex(d + 1.0, e, f + 1.0).color(o, p, q, 1.0F).next();
-				vertexBuffer.vertex(d + 1.0, e, f).color(o, p, q, 1.0F).next();
+				bufferBuilder.vertex(d + 1.0, e + 1.0, f).color(o, p, q, 1.0F).next();
+				bufferBuilder.vertex(d + 1.0, e + 1.0, f + 1.0).color(o, p, q, 1.0F).next();
+				bufferBuilder.vertex(d + 1.0, e, f + 1.0).color(o, p, q, 1.0F).next();
+				bufferBuilder.vertex(d + 1.0, e, f).color(o, p, q, 1.0F).next();
 			}
 
 			if (endPortalBlockEntity.method_11400(Direction.WEST)) {
-				vertexBuffer.vertex(d, e, f).color(o, p, q, 1.0F).next();
-				vertexBuffer.vertex(d, e, f + 1.0).color(o, p, q, 1.0F).next();
-				vertexBuffer.vertex(d, e + 1.0, f + 1.0).color(o, p, q, 1.0F).next();
-				vertexBuffer.vertex(d, e + 1.0, f).color(o, p, q, 1.0F).next();
+				bufferBuilder.vertex(d, e, f).color(o, p, q, 1.0F).next();
+				bufferBuilder.vertex(d, e, f + 1.0).color(o, p, q, 1.0F).next();
+				bufferBuilder.vertex(d, e + 1.0, f + 1.0).color(o, p, q, 1.0F).next();
+				bufferBuilder.vertex(d, e + 1.0, f).color(o, p, q, 1.0F).next();
 			}
 
 			if (endPortalBlockEntity.method_11400(Direction.DOWN)) {
-				vertexBuffer.vertex(d, e, f).color(o, p, q, 1.0F).next();
-				vertexBuffer.vertex(d + 1.0, e, f).color(o, p, q, 1.0F).next();
-				vertexBuffer.vertex(d + 1.0, e, f + 1.0).color(o, p, q, 1.0F).next();
-				vertexBuffer.vertex(d, e, f + 1.0).color(o, p, q, 1.0F).next();
+				bufferBuilder.vertex(d, e, f).color(o, p, q, 1.0F).next();
+				bufferBuilder.vertex(d + 1.0, e, f).color(o, p, q, 1.0F).next();
+				bufferBuilder.vertex(d + 1.0, e, f + 1.0).color(o, p, q, 1.0F).next();
+				bufferBuilder.vertex(d, e, f + 1.0).color(o, p, q, 1.0F).next();
 			}
 
 			if (endPortalBlockEntity.method_11400(Direction.UP)) {
-				vertexBuffer.vertex(d, e + (double)k, f + 1.0).color(o, p, q, 1.0F).next();
-				vertexBuffer.vertex(d + 1.0, e + (double)k, f + 1.0).color(o, p, q, 1.0F).next();
-				vertexBuffer.vertex(d + 1.0, e + (double)k, f).color(o, p, q, 1.0F).next();
-				vertexBuffer.vertex(d, e + (double)k, f).color(o, p, q, 1.0F).next();
+				bufferBuilder.vertex(d, e + (double)k, f + 1.0).color(o, p, q, 1.0F).next();
+				bufferBuilder.vertex(d + 1.0, e + (double)k, f + 1.0).color(o, p, q, 1.0F).next();
+				bufferBuilder.vertex(d + 1.0, e + (double)k, f).color(o, p, q, 1.0F).next();
+				bufferBuilder.vertex(d, e + (double)k, f).color(o, p, q, 1.0F).next();
 			}
 
 			tessellator.draw();
@@ -136,7 +138,7 @@ public class EndGatewayBlockEntityRenderer extends BlockEntityRenderer<EndPortal
 		GlStateManager.disableTexGen(GlStateManager.TexCoord.R);
 		GlStateManager.enableLighting();
 		if (bl) {
-			MinecraftClient.getInstance().worldRenderer.method_3201(false);
+			gameRenderer.method_3201(false);
 		}
 	}
 

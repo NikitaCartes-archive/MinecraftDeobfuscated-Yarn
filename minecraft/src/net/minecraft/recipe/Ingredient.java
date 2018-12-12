@@ -19,9 +19,8 @@ import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1662;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemContainer;
+import net.minecraft.item.ItemProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
@@ -31,14 +30,14 @@ import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
 
 public final class Ingredient implements Predicate<ItemStack> {
-	private static final Predicate<? super Ingredient.Entry> field_9020 = entry -> !entry.getStacks().stream().allMatch(ItemStack::isEmpty);
+	private static final Predicate<? super Ingredient.Entry> NON_EMPTY = entry -> !entry.getStacks().stream().allMatch(ItemStack::isEmpty);
 	public static final Ingredient EMPTY = new Ingredient(Stream.empty());
 	private final Ingredient.Entry[] entries;
 	private ItemStack[] stackArray;
-	private IntList field_9016;
+	private IntList ids;
 
 	private Ingredient(Stream<? extends Ingredient.Entry> stream) {
-		this.entries = (Ingredient.Entry[])stream.filter(field_9020).toArray(Ingredient.Entry[]::new);
+		this.entries = (Ingredient.Entry[])stream.filter(NON_EMPTY).toArray(Ingredient.Entry[]::new);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -71,19 +70,19 @@ public final class Ingredient implements Predicate<ItemStack> {
 		}
 	}
 
-	public IntList method_8100() {
-		if (this.field_9016 == null) {
+	public IntList getIds() {
+		if (this.ids == null) {
 			this.createStackArray();
-			this.field_9016 = new IntArrayList(this.stackArray.length);
+			this.ids = new IntArrayList(this.stackArray.length);
 
 			for (ItemStack itemStack : this.stackArray) {
-				this.field_9016.add(class_1662.method_7408(itemStack));
+				this.ids.add(RecipeFinder.getItemId(itemStack));
 			}
 
-			this.field_9016.sort(IntComparators.NATURAL_COMPARATOR);
+			this.ids.sort(IntComparators.NATURAL_COMPARATOR);
 		}
 
-		return this.field_9016;
+		return this.ids;
 	}
 
 	public void write(PacketByteBuf packetByteBuf) {
@@ -109,8 +108,8 @@ public final class Ingredient implements Predicate<ItemStack> {
 		}
 	}
 
-	public boolean method_8103() {
-		return this.entries.length == 0 && (this.stackArray == null || this.stackArray.length == 0) && (this.field_9016 == null || this.field_9016.isEmpty());
+	public boolean isEmpty() {
+		return this.entries.length == 0 && (this.stackArray == null || this.stackArray.length == 0) && (this.ids == null || this.ids.isEmpty());
 	}
 
 	private static Ingredient ofEntries(Stream<? extends Ingredient.Entry> stream) {
@@ -118,8 +117,8 @@ public final class Ingredient implements Predicate<ItemStack> {
 		return ingredient.entries.length == 0 ? EMPTY : ingredient;
 	}
 
-	public static Ingredient ofItems(ItemContainer... itemContainers) {
-		return ofEntries(Arrays.stream(itemContainers).map(itemContainer -> new Ingredient.StackEntry(new ItemStack(itemContainer))));
+	public static Ingredient method_8091(ItemProvider... itemProviders) {
+		return ofEntries(Arrays.stream(itemProviders).map(itemProvider -> new Ingredient.StackEntry(new ItemStack(itemProvider))));
 	}
 
 	@Environment(EnvType.CLIENT)

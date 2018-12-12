@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportElement;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.crash.ICrashCallable;
 
 @Environment(EnvType.CLIENT)
@@ -39,8 +39,8 @@ public class Sprite {
 	private float vMax;
 	protected int framePos;
 	protected int ticks;
-	private static final int[] field_5259 = new int[4];
-	private static final float[] field_5274 = SystemUtil.consume(new float[256], fs -> {
+	private static final int[] blendedPixelCache = new int[4];
+	private static final float[] srgbLinearMap = SystemUtil.consume(new float[256], fs -> {
 		for (int i = 0; i < fs.length; i++) {
 			fs[i] = (float)Math.pow((double)((float)i / 255.0F), 2.2);
 		}
@@ -99,7 +99,7 @@ public class Sprite {
 							nativeImage2.setPixelRGBA(
 								n,
 								o,
-								method_4581(
+								blendPixels(
 									nativeImage.getPixelRGBA(n * 2 + 0, o * 2 + 0),
 									nativeImage.getPixelRGBA(n * 2 + 1, o * 2 + 0),
 									nativeImage.getPixelRGBA(n * 2 + 0, o * 2 + 1),
@@ -124,23 +124,23 @@ public class Sprite {
 		this.images = nativeImages;
 	}
 
-	private static int method_4581(int i, int j, int k, int l, boolean bl) {
+	private static int blendPixels(int i, int j, int k, int l, boolean bl) {
 		if (bl) {
-			field_5259[0] = i;
-			field_5259[1] = j;
-			field_5259[2] = k;
-			field_5259[3] = l;
+			blendedPixelCache[0] = i;
+			blendedPixelCache[1] = j;
+			blendedPixelCache[2] = k;
+			blendedPixelCache[3] = l;
 			float f = 0.0F;
 			float g = 0.0F;
 			float h = 0.0F;
 			float m = 0.0F;
 
 			for (int n = 0; n < 4; n++) {
-				if (field_5259[n] >> 24 != 0) {
-					f += method_4574(field_5259[n] >> 24);
-					g += method_4574(field_5259[n] >> 16);
-					h += method_4574(field_5259[n] >> 8);
-					m += method_4574(field_5259[n] >> 0);
+				if (blendedPixelCache[n] >> 24 != 0) {
+					f += srgbToLinear(blendedPixelCache[n] >> 24);
+					g += srgbToLinear(blendedPixelCache[n] >> 16);
+					h += srgbToLinear(blendedPixelCache[n] >> 8);
+					m += srgbToLinear(blendedPixelCache[n] >> 0);
 				}
 			}
 
@@ -158,25 +158,25 @@ public class Sprite {
 
 			return nx << 24 | o << 16 | p << 8 | q;
 		} else {
-			int r = method_4600(i, j, k, l, 24);
-			int s = method_4600(i, j, k, l, 16);
-			int t = method_4600(i, j, k, l, 8);
-			int u = method_4600(i, j, k, l, 0);
+			int r = blendPixelsComponent(i, j, k, l, 24);
+			int s = blendPixelsComponent(i, j, k, l, 16);
+			int t = blendPixelsComponent(i, j, k, l, 8);
+			int u = blendPixelsComponent(i, j, k, l, 0);
 			return r << 24 | s << 16 | t << 8 | u;
 		}
 	}
 
-	private static int method_4600(int i, int j, int k, int l, int m) {
-		float f = method_4574(i >> m);
-		float g = method_4574(j >> m);
-		float h = method_4574(k >> m);
-		float n = method_4574(l >> m);
+	private static int blendPixelsComponent(int i, int j, int k, int l, int m) {
+		float f = srgbToLinear(i >> m);
+		float g = srgbToLinear(j >> m);
+		float h = srgbToLinear(k >> m);
+		float n = srgbToLinear(l >> m);
 		float o = (float)((double)((float)Math.pow((double)(f + g + h + n) * 0.25, 0.45454545454545453)));
 		return (int)((double)o * 255.0);
 	}
 
-	private static float method_4574(int i) {
-		return field_5274[i & 0xFF];
+	private static float srgbToLinear(int i) {
+		return srgbLinearMap[i & 0xFF];
 	}
 
 	private void method_4573(int i) {
@@ -299,9 +299,9 @@ public class Sprite {
 					for (int p = 0; p < m; p++) {
 						int q = this.method_4589(i, l, p, o);
 						int r = this.method_4589(k, l, p, o);
-						int s = this.method_4571(d, q >> 16 & 0xFF, r >> 16 & 0xFF);
-						int t = this.method_4571(d, q >> 8 & 0xFF, r >> 8 & 0xFF);
-						int u = this.method_4571(d, q & 0xFF, r & 0xFF);
+						int s = this.lerp(d, q >> 16 & 0xFF, r >> 16 & 0xFF);
+						int t = this.lerp(d, q >> 8 & 0xFF, r >> 8 & 0xFF);
+						int u = this.lerp(d, q & 0xFF, r & 0xFF);
 						this.interpolatedImages[l].setPixelRGBA(p, o, q & 0xFF000000 | s << 16 | t << 8 | u);
 					}
 				}
@@ -311,7 +311,7 @@ public class Sprite {
 		}
 	}
 
-	private int method_4571(double d, int i, int j) {
+	private int lerp(double d, int i, int j) {
 		return (int)(d * (double)i + (1.0 - d) * (double)j);
 	}
 
@@ -385,8 +385,8 @@ public class Sprite {
 			this.generateMipmapsInternal(i);
 		} catch (Throwable var5) {
 			CrashReport crashReport = CrashReport.create(var5, "Generating mipmaps for frame");
-			CrashReportElement crashReportElement = crashReport.addElement("Frame being iterated");
-			crashReportElement.add("Frame sizes", (ICrashCallable<String>)(() -> {
+			CrashReportSection crashReportSection = crashReport.method_562("Frame being iterated");
+			crashReportSection.add("Frame sizes", (ICrashCallable<String>)(() -> {
 				StringBuilder stringBuilder = new StringBuilder();
 
 				for (NativeImage nativeImage : this.images) {

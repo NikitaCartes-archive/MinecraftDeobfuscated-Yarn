@@ -9,7 +9,7 @@ import com.google.gson.JsonObject;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.advancement.ServerAdvancementManager;
+import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -17,7 +17,7 @@ import net.minecraft.util.NumberRange;
 
 public class ConstructBeaconCriterion implements Criterion<ConstructBeaconCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("construct_beacon");
-	private final Map<ServerAdvancementManager, ConstructBeaconCriterion.Handler> handlers = Maps.<ServerAdvancementManager, ConstructBeaconCriterion.Handler>newHashMap();
+	private final Map<PlayerAdvancementTracker, ConstructBeaconCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, ConstructBeaconCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -25,34 +25,34 @@ public class ConstructBeaconCriterion implements Criterion<ConstructBeaconCriter
 	}
 
 	@Override
-	public void addCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<ConstructBeaconCriterion.Conditions> conditionsContainer
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<ConstructBeaconCriterion.Conditions> conditionsContainer
 	) {
-		ConstructBeaconCriterion.Handler handler = (ConstructBeaconCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		ConstructBeaconCriterion.Handler handler = (ConstructBeaconCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new ConstructBeaconCriterion.Handler(serverAdvancementManager);
-			this.handlers.put(serverAdvancementManager, handler);
+			handler = new ConstructBeaconCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void removeCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<ConstructBeaconCriterion.Conditions> conditionsContainer
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<ConstructBeaconCriterion.Conditions> conditionsContainer
 	) {
-		ConstructBeaconCriterion.Handler handler = (ConstructBeaconCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		ConstructBeaconCriterion.Handler handler = (ConstructBeaconCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(serverAdvancementManager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void removePlayer(ServerAdvancementManager serverAdvancementManager) {
-		this.handlers.remove(serverAdvancementManager);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
 	public ConstructBeaconCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -84,7 +84,7 @@ public class ConstructBeaconCriterion implements Criterion<ConstructBeaconCriter
 		}
 
 		@Override
-		public JsonElement method_807() {
+		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("level", this.level.serialize());
 			return jsonObject;
@@ -92,11 +92,11 @@ public class ConstructBeaconCriterion implements Criterion<ConstructBeaconCriter
 	}
 
 	static class Handler {
-		private final ServerAdvancementManager manager;
+		private final PlayerAdvancementTracker field_9507;
 		private final Set<Criterion.ConditionsContainer<ConstructBeaconCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<ConstructBeaconCriterion.Conditions>>newHashSet();
 
-		public Handler(ServerAdvancementManager serverAdvancementManager) {
-			this.manager = serverAdvancementManager;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.field_9507 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
@@ -126,7 +126,7 @@ public class ConstructBeaconCriterion implements Criterion<ConstructBeaconCriter
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<ConstructBeaconCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
+					conditionsContainerx.apply(this.field_9507);
 				}
 			}
 		}

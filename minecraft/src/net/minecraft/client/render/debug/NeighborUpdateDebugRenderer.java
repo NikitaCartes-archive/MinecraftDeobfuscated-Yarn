@@ -11,7 +11,7 @@ import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.Renderer;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
@@ -76,7 +76,7 @@ public class NeighborUpdateDebugRenderer implements RenderDebug.DebugRenderer {
 					BlockPos blockPos = (BlockPos)entry2.getKey();
 					Integer integer = (Integer)entry2.getValue();
 					if (set.add(blockPos)) {
-						Renderer.method_3260(
+						WorldRenderer.drawBoxOutline(
 							new BoundingBox(BlockPos.ORIGIN)
 								.expand(0.002)
 								.contract(0.0025 * (double)n)

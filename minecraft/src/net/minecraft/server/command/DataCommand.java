@@ -140,7 +140,7 @@ public class DataCommand {
 								)
 								.then(
 									ServerCommandManager.literal("set")
-										.then(arg.create((commandContext, compoundTag, argx, list) -> argx.method_9368(compoundTag, Iterables.<Tag>getLast(list).copy())))
+										.then(arg.create((commandContext, compoundTag, argx, list) -> argx.method_9368(compoundTag, Iterables.getLast(list)::copy)))
 								)
 								.then(ServerCommandManager.literal("merge").then(arg.create((commandContext, compoundTag, argx, list) -> {
 									Collection<Tag> collection = argx.method_9367(compoundTag, CompoundTag::new);

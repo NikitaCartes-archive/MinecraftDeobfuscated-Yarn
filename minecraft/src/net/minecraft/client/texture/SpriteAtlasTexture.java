@@ -18,7 +18,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportElement;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.io.IOUtils;
@@ -134,9 +134,9 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 					spritex.method_4584();
 				} catch (Throwable var24) {
 					CrashReport crashReport = CrashReport.create(var24, "Stitching texture atlas");
-					CrashReportElement crashReportElement = crashReport.addElement("Texture being stitched together");
-					crashReportElement.add("Atlas path", this.pathPrefix);
-					crashReportElement.add("Sprite", spritex);
+					CrashReportSection crashReportSection = crashReport.method_562("Texture being stitched together");
+					crashReportSection.add("Atlas path", this.pathPrefix);
+					crashReportSection.add("Sprite", spritex);
 					throw new CrashException(crashReport);
 				}
 
@@ -175,11 +175,11 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 			return true;
 		} catch (Throwable var12) {
 			CrashReport crashReport = CrashReport.create(var12, "Applying mipmap");
-			CrashReportElement crashReportElement = crashReport.addElement("Sprite being mipmapped");
-			crashReportElement.add("Sprite name", (ICrashCallable<String>)(() -> sprite.getId().toString()));
-			crashReportElement.add("Sprite size", (ICrashCallable<String>)(() -> sprite.getWidth() + " x " + sprite.getHeight()));
-			crashReportElement.add("Sprite frames", (ICrashCallable<String>)(() -> sprite.method_4592() + " frames"));
-			crashReportElement.add("Mipmap levels", this.mipLevel);
+			CrashReportSection crashReportSection = crashReport.method_562("Sprite being mipmapped");
+			crashReportSection.add("Sprite name", (ICrashCallable<String>)(() -> sprite.getId().toString()));
+			crashReportSection.add("Sprite size", (ICrashCallable<String>)(() -> sprite.getWidth() + " x " + sprite.getHeight()));
+			crashReportSection.add("Sprite frames", (ICrashCallable<String>)(() -> sprite.method_4592() + " frames"));
+			crashReportSection.add("Mipmap levels", this.mipLevel);
 			throw new CrashException(crashReport);
 		}
 	}

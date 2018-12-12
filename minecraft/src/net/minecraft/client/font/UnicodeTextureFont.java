@@ -8,8 +8,6 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_383;
-import net.minecraft.class_390;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.resource.Resource;
@@ -20,7 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class UnicodeTextureFont implements class_390 {
+public class UnicodeTextureFont implements Font {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final ResourceManager field_2302;
 	private final byte[] widths;
@@ -85,13 +83,13 @@ public class UnicodeTextureFont implements class_390 {
 
 	@Nullable
 	@Override
-	public class_383 method_2040(char c) {
+	public RenderableGlyph getGlyph(char c) {
 		byte b = this.widths[c];
 		if (b != 0) {
 			NativeImage nativeImage = (NativeImage)this.field_2299.computeIfAbsent(this.method_2041(c), this::method_2042);
 			if (nativeImage != null) {
 				int i = method_2043(b);
-				return new UnicodeTextureFont.class_393(c % 16 * 16 + i, (c & 255) / 16 * 16, method_2044(b) - i, 16, nativeImage);
+				return new UnicodeTextureFont.UnicodeTextureGlyph(c % 16 * 16 + i, (c & 255) / 16 * 16, method_2044(b) - i, 16, nativeImage);
 			}
 		}
 
@@ -155,7 +153,7 @@ public class UnicodeTextureFont implements class_390 {
 
 		@Nullable
 		@Override
-		public class_390 load(ResourceManager resourceManager) {
+		public Font load(ResourceManager resourceManager) {
 			try {
 				Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(this.field_2304);
 				Throwable var3 = null;
@@ -191,48 +189,48 @@ public class UnicodeTextureFont implements class_390 {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class class_393 implements class_383 {
-		private final int field_2309;
-		private final int field_2308;
-		private final int field_2307;
-		private final int field_2306;
+	static class UnicodeTextureGlyph implements RenderableGlyph {
+		private final int width;
+		private final int height;
+		private final int unpackSkipPixels;
+		private final int unpackSkipRows;
 		private final NativeImage image;
 
-		private class_393(int i, int j, int k, int l, NativeImage nativeImage) {
-			this.field_2309 = k;
-			this.field_2308 = l;
-			this.field_2307 = i;
-			this.field_2306 = j;
+		private UnicodeTextureGlyph(int i, int j, int k, int l, NativeImage nativeImage) {
+			this.width = k;
+			this.height = l;
+			this.unpackSkipPixels = i;
+			this.unpackSkipRows = j;
 			this.image = nativeImage;
 		}
 
 		@Override
-		public float method_2035() {
+		public float getOversample() {
 			return 2.0F;
 		}
 
 		@Override
-		public int method_2031() {
-			return this.field_2309;
+		public int getWidth() {
+			return this.width;
 		}
 
 		@Override
-		public int method_2032() {
-			return this.field_2308;
+		public int getHeight() {
+			return this.height;
 		}
 
 		@Override
 		public float getAdvance() {
-			return (float)(this.field_2309 / 2 + 1);
+			return (float)(this.width / 2 + 1);
 		}
 
 		@Override
-		public void method_2030(int i, int j) {
-			this.image.upload(0, i, j, this.field_2307, this.field_2306, this.field_2309, this.field_2308, false);
+		public void upload(int i, int j) {
+			this.image.upload(0, i, j, this.unpackSkipPixels, this.unpackSkipRows, this.width, this.height, false);
 		}
 
 		@Override
-		public boolean method_2033() {
+		public boolean hasColor() {
 			return this.image.getFormat().getBytesPerPixel() > 1;
 		}
 

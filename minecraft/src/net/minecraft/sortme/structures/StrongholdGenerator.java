@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.class_3443;
-import net.minecraft.class_3485;
 import net.minecraft.block.AbstractButtonBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -19,7 +18,7 @@ import net.minecraft.block.StairsBlock;
 import net.minecraft.block.WallTorchBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
-import net.minecraft.block.enums.BlockHalf;
+import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundTag;
@@ -191,7 +190,7 @@ public class StrongholdGenerator {
 			this.structureBounds = mutableIntBoundingBox;
 		}
 
-		public class_3422(class_3485 arg, CompoundTag compoundTag) {
+		public class_3422(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16955, compoundTag);
 			this.field_15268 = compoundTag.getBoolean("Chest");
 		}
@@ -208,7 +207,7 @@ public class StrongholdGenerator {
 		}
 
 		public static StrongholdGenerator.class_3422 method_14856(List<class_3443> list, Random random, int i, int j, int k, Direction direction, int l) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -1, -1, 0, 5, 5, 7, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -1, -1, 0, 5, 5, 7, direction);
 			return method_14871(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new StrongholdGenerator.class_3422(l, random, mutableIntBoundingBox, direction)
 				: null;
@@ -250,7 +249,7 @@ public class StrongholdGenerator {
 				: mutableIntBoundingBox.getBlockCountZ();
 		}
 
-		public class_3423(class_3485 arg, CompoundTag compoundTag) {
+		public class_3423(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16965, compoundTag);
 			this.field_15269 = compoundTag.getInt("Steps");
 		}
@@ -263,16 +262,16 @@ public class StrongholdGenerator {
 
 		public static MutableIntBoundingBox method_14857(List<class_3443> list, Random random, int i, int j, int k, Direction direction) {
 			int l = 3;
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -1, -1, 0, 5, 5, 4, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -1, -1, 0, 5, 5, 4, direction);
 			class_3443 lv = class_3443.method_14932(list, mutableIntBoundingBox);
 			if (lv == null) {
 				return null;
 			} else {
 				if (lv.method_14935().minY == mutableIntBoundingBox.minY) {
 					for (int m = 3; m >= 1; m--) {
-						mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -1, -1, 0, 5, 5, m - 1, direction);
+						mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -1, -1, 0, 5, 5, m - 1, direction);
 						if (!lv.method_14935().intersects(mutableIntBoundingBox)) {
-							return MutableIntBoundingBox.method_14667(i, j, k, -1, -1, 0, 5, 5, m, direction);
+							return MutableIntBoundingBox.createRotated(i, j, k, -1, -1, 0, 5, 5, m, direction);
 						}
 					}
 				}
@@ -326,7 +325,7 @@ public class StrongholdGenerator {
 			this.field_15270 = random.nextInt(3) > 0;
 		}
 
-		public class_3424(class_3485 arg, CompoundTag compoundTag) {
+		public class_3424(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16937, compoundTag);
 			this.field_15273 = compoundTag.getBoolean("leftLow");
 			this.field_15272 = compoundTag.getBoolean("leftHigh");
@@ -347,7 +346,7 @@ public class StrongholdGenerator {
 		public void method_14918(class_3443 arg, List<class_3443> list, Random random) {
 			int i = 3;
 			int j = 5;
-			Direction direction = this.method_14934();
+			Direction direction = this.getFacing();
 			if (direction == Direction.WEST || direction == Direction.NORTH) {
 				i = 8 - i;
 				j = 8 - j;
@@ -372,7 +371,7 @@ public class StrongholdGenerator {
 		}
 
 		public static StrongholdGenerator.class_3424 method_14858(List<class_3443> list, Random random, int i, int j, int k, Direction direction, int l) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -4, -3, 0, 10, 9, 11, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -4, -3, 0, 10, 9, 11, direction);
 			return method_14871(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new StrongholdGenerator.class_3424(l, random, mutableIntBoundingBox, direction)
 				: null;
@@ -424,7 +423,7 @@ public class StrongholdGenerator {
 				Blocks.field_10136.getDefaultState().with(SlabBlock.field_11501, SlabType.field_12682),
 				false
 			);
-			this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.field_11731, Direction.SOUTH), 6, 5, 6, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.SOUTH), 6, 5, 6, mutableIntBoundingBox);
 			return true;
 		}
 	}
@@ -437,13 +436,13 @@ public class StrongholdGenerator {
 			this.structureBounds = mutableIntBoundingBox;
 		}
 
-		public class_3425(class_3485 arg, CompoundTag compoundTag) {
+		public class_3425(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16906, compoundTag);
 		}
 
 		@Override
 		public void method_14918(class_3443 arg, List<class_3443> list, Random random) {
-			Direction direction = this.method_14934();
+			Direction direction = this.getFacing();
 			if (direction != Direction.NORTH && direction != Direction.EAST) {
 				this.method_14873((StrongholdGenerator.class_3434)arg, list, random, 1, 1);
 			} else {
@@ -452,7 +451,7 @@ public class StrongholdGenerator {
 		}
 
 		public static StrongholdGenerator.class_3425 method_14859(List<class_3443> list, Random random, int i, int j, int k, Direction direction, int l) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -1, -1, 0, 5, 5, 5, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -1, -1, 0, 5, 5, 5, direction);
 			return method_14871(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new StrongholdGenerator.class_3425(l, random, mutableIntBoundingBox, direction)
 				: null;
@@ -462,7 +461,7 @@ public class StrongholdGenerator {
 		public boolean method_14931(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 4, 4, 4, true, random, StrongholdGenerator.field_15263);
 			this.method_14872(iWorld, random, mutableIntBoundingBox, this.field_15287, 1, 1, 0);
-			Direction direction = this.method_14934();
+			Direction direction = this.getFacing();
 			if (direction != Direction.NORTH && direction != Direction.EAST) {
 				this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 1, 1, 4, 3, 3, blockAir, blockAir, false);
 			} else {
@@ -484,7 +483,7 @@ public class StrongholdGenerator {
 			this.field_15274 = mutableIntBoundingBox.getBlockCountY() > 6;
 		}
 
-		public class_3426(class_3485 arg, CompoundTag compoundTag) {
+		public class_3426(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16959, compoundTag);
 			this.field_15274 = compoundTag.getBoolean("Tall");
 		}
@@ -496,9 +495,9 @@ public class StrongholdGenerator {
 		}
 
 		public static StrongholdGenerator.class_3426 method_14860(List<class_3443> list, Random random, int i, int j, int k, Direction direction, int l) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -4, -1, 0, 14, 11, 15, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -4, -1, 0, 14, 11, 15, direction);
 			if (!method_14871(mutableIntBoundingBox) || class_3443.method_14932(list, mutableIntBoundingBox) != null) {
-				mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -4, -1, 0, 14, 6, 15, direction);
+				mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -4, -1, 0, 14, 6, 15, direction);
 				if (!method_14871(mutableIntBoundingBox) || class_3443.method_14932(list, mutableIntBoundingBox) != null) {
 					return null;
 				}
@@ -526,8 +525,8 @@ public class StrongholdGenerator {
 				if ((l - 1) % 4 == 0) {
 					this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 1, l, 1, 4, l, Blocks.field_10161.getDefaultState(), Blocks.field_10161.getDefaultState(), false);
 					this.fillWithOutline(iWorld, mutableIntBoundingBox, 12, 1, l, 12, 4, l, Blocks.field_10161.getDefaultState(), Blocks.field_10161.getDefaultState(), false);
-					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.field_11731, Direction.EAST), 2, 3, l, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.field_11731, Direction.WEST), 11, 3, l, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.EAST), 2, 3, l, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.WEST), 11, 3, l, mutableIntBoundingBox);
 					if (this.field_15274) {
 						this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 6, l, 1, 9, l, Blocks.field_10161.getDefaultState(), Blocks.field_10161.getDefaultState(), false);
 						this.fillWithOutline(iWorld, mutableIntBoundingBox, 12, 6, l, 12, 9, l, Blocks.field_10161.getDefaultState(), Blocks.field_10161.getDefaultState(), false);
@@ -682,7 +681,7 @@ public class StrongholdGenerator {
 			this.structureBounds = mutableIntBoundingBox;
 		}
 
-		public class_3428(class_3485 arg, CompoundTag compoundTag) {
+		public class_3428(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16939, compoundTag);
 			this.field_15279 = compoundTag.getBoolean("Mob");
 		}
@@ -701,7 +700,7 @@ public class StrongholdGenerator {
 		}
 
 		public static StrongholdGenerator.class_3428 method_14863(List<class_3443> list, int i, int j, int k, Direction direction, int l) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -4, -1, 0, 11, 8, 16, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -4, -1, 0, 11, 8, 16, direction);
 			return method_14871(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new StrongholdGenerator.class_3428(l, mutableIntBoundingBox, direction)
 				: null;
@@ -734,7 +733,7 @@ public class StrongholdGenerator {
 				this.fillWithOutline(iWorld, mutableIntBoundingBox, j, 3, 15, j, 4, 15, blockState2, blockState2, false);
 			}
 
-			BlockState blockState3 = Blocks.field_10392.getDefaultState().with(StairsBlock.field_11571, Direction.NORTH);
+			BlockState blockState3 = Blocks.field_10392.getDefaultState().with(StairsBlock.FACING, Direction.NORTH);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 1, 5, 6, 1, 7, false, random, StrongholdGenerator.field_15263);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 2, 6, 6, 2, 7, false, random, StrongholdGenerator.field_15263);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 3, 7, 6, 3, 7, false, random, StrongholdGenerator.field_15263);
@@ -745,10 +744,10 @@ public class StrongholdGenerator {
 				this.addBlock(iWorld, blockState3, k, 3, 6, mutableIntBoundingBox);
 			}
 
-			BlockState blockState4 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.field_10954, Direction.NORTH);
-			BlockState blockState5 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.field_10954, Direction.SOUTH);
-			BlockState blockState6 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.field_10954, Direction.EAST);
-			BlockState blockState7 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.field_10954, Direction.WEST);
+			BlockState blockState4 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.PROPERTY_FACING, Direction.NORTH);
+			BlockState blockState5 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.PROPERTY_FACING, Direction.SOUTH);
+			BlockState blockState6 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.PROPERTY_FACING, Direction.EAST);
+			BlockState blockState7 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.PROPERTY_FACING, Direction.WEST);
 			boolean bl = true;
 			boolean[] bls = new boolean[12];
 
@@ -807,7 +806,7 @@ public class StrongholdGenerator {
 			this.structureBounds = mutableIntBoundingBox;
 		}
 
-		public class_3429(class_3485 arg, CompoundTag compoundTag) {
+		public class_3429(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16948, compoundTag);
 		}
 
@@ -817,7 +816,7 @@ public class StrongholdGenerator {
 		}
 
 		public static StrongholdGenerator.class_3429 method_14864(List<class_3443> list, Random random, int i, int j, int k, Direction direction, int l) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -1, -1, 0, 9, 5, 11, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -1, -1, 0, 9, 5, 11, direction);
 			return method_14871(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new StrongholdGenerator.class_3429(l, random, mutableIntBoundingBox, direction)
 				: null;
@@ -905,7 +904,10 @@ public class StrongholdGenerator {
 				mutableIntBoundingBox
 			);
 			BlockState blockState = Blocks.field_9973.getDefaultState().with(DoorBlock.field_10938, Direction.WEST);
-			BlockState blockState2 = Blocks.field_9973.getDefaultState().with(DoorBlock.field_10938, Direction.WEST).with(DoorBlock.field_10946, BlockHalf.field_12609);
+			BlockState blockState2 = Blocks.field_9973
+				.getDefaultState()
+				.with(DoorBlock.field_10938, Direction.WEST)
+				.with(DoorBlock.field_10946, DoubleBlockHalf.field_12609);
 			this.addBlock(iWorld, blockState, 4, 1, 2, mutableIntBoundingBox);
 			this.addBlock(iWorld, blockState2, 4, 2, 2, mutableIntBoundingBox);
 			this.addBlock(iWorld, blockState, 4, 1, 8, mutableIntBoundingBox);
@@ -922,13 +924,13 @@ public class StrongholdGenerator {
 			this.structureBounds = mutableIntBoundingBox;
 		}
 
-		public class_3430(class_3485 arg, CompoundTag compoundTag) {
+		public class_3430(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16958, compoundTag);
 		}
 
 		@Override
 		public void method_14918(class_3443 arg, List<class_3443> list, Random random) {
-			Direction direction = this.method_14934();
+			Direction direction = this.getFacing();
 			if (direction != Direction.NORTH && direction != Direction.EAST) {
 				this.method_14870((StrongholdGenerator.class_3434)arg, list, random, 1, 1);
 			} else {
@@ -937,7 +939,7 @@ public class StrongholdGenerator {
 		}
 
 		public static StrongholdGenerator.class_3430 method_16652(List<class_3443> list, Random random, int i, int j, int k, Direction direction, int l) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -1, -1, 0, 5, 5, 5, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -1, -1, 0, 5, 5, 5, direction);
 			return method_14871(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new StrongholdGenerator.class_3430(l, random, mutableIntBoundingBox, direction)
 				: null;
@@ -947,7 +949,7 @@ public class StrongholdGenerator {
 		public boolean method_14931(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 4, 4, 4, true, random, StrongholdGenerator.field_15263);
 			this.method_14872(iWorld, random, mutableIntBoundingBox, this.field_15287, 1, 1, 0);
-			Direction direction = this.method_14934();
+			Direction direction = this.getFacing();
 			if (direction != Direction.NORTH && direction != Direction.EAST) {
 				this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 1, 1, 0, 3, 3, blockAir, blockAir, false);
 			} else {
@@ -969,7 +971,7 @@ public class StrongholdGenerator {
 			this.field_15280 = random.nextInt(5);
 		}
 
-		public class_3431(class_3485 arg, CompoundTag compoundTag) {
+		public class_3431(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16941, compoundTag);
 			this.field_15280 = compoundTag.getInt("Type");
 		}
@@ -988,7 +990,7 @@ public class StrongholdGenerator {
 		}
 
 		public static StrongholdGenerator.class_3431 method_14865(List<class_3443> list, Random random, int i, int j, int k, Direction direction, int l) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -4, -1, 0, 11, 7, 11, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -4, -1, 0, 11, 7, 11, direction);
 			return method_14871(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new StrongholdGenerator.class_3431(l, random, mutableIntBoundingBox, direction)
 				: null;
@@ -1006,10 +1008,10 @@ public class StrongholdGenerator {
 					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 5, 1, 5, mutableIntBoundingBox);
 					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 5, 2, 5, mutableIntBoundingBox);
 					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), 5, 3, 5, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.field_11731, Direction.WEST), 4, 3, 5, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.field_11731, Direction.EAST), 6, 3, 5, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.field_11731, Direction.SOUTH), 5, 3, 4, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.field_11731, Direction.NORTH), 5, 3, 6, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.WEST), 4, 3, 5, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.EAST), 6, 3, 5, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.SOUTH), 5, 3, 4, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.NORTH), 5, 3, 6, mutableIntBoundingBox);
 					this.addBlock(iWorld, Blocks.field_10136.getDefaultState(), 4, 1, 4, mutableIntBoundingBox);
 					this.addBlock(iWorld, Blocks.field_10136.getDefaultState(), 4, 1, 5, mutableIntBoundingBox);
 					this.addBlock(iWorld, Blocks.field_10136.getDefaultState(), 4, 1, 6, mutableIntBoundingBox);
@@ -1116,7 +1118,7 @@ public class StrongholdGenerator {
 			this.field_15281 = true;
 			this.method_14926(Direction.class_2353.HORIZONTAL.random(random));
 			this.field_15287 = StrongholdGenerator.class_3437.class_3438.field_15288;
-			if (this.method_14934().getAxis() == Direction.Axis.Z) {
+			if (this.getFacing().getAxis() == Direction.Axis.Z) {
 				this.structureBounds = new MutableIntBoundingBox(j, 64, k, j + 5 - 1, 74, k + 5 - 1);
 			} else {
 				this.structureBounds = new MutableIntBoundingBox(j, 64, k, j + 5 - 1, 74, k + 5 - 1);
@@ -1136,7 +1138,7 @@ public class StrongholdGenerator {
 			this.field_15281 = compoundTag.getBoolean("Source");
 		}
 
-		public class_3433(class_3485 arg, CompoundTag compoundTag) {
+		public class_3433(StructureManager structureManager, CompoundTag compoundTag) {
 			this(StructurePiece.field_16904, compoundTag);
 		}
 
@@ -1156,7 +1158,7 @@ public class StrongholdGenerator {
 		}
 
 		public static StrongholdGenerator.class_3433 method_14866(List<class_3443> list, Random random, int i, int j, int k, Direction direction, int l) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -1, -7, 0, 5, 11, 5, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -1, -7, 0, 5, 11, 5, direction);
 			return method_14871(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new StrongholdGenerator.class_3433(l, random, mutableIntBoundingBox, direction)
 				: null;
@@ -1198,7 +1200,7 @@ public class StrongholdGenerator {
 			super(StructurePiece.field_16914, 0, random, i, j);
 		}
 
-		public class_3434(class_3485 arg, CompoundTag compoundTag) {
+		public class_3434(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16914, compoundTag);
 		}
 	}
@@ -1216,7 +1218,7 @@ public class StrongholdGenerator {
 			this.field_15285 = random.nextInt(2) == 0;
 		}
 
-		public class_3435(class_3485 arg, CompoundTag compoundTag) {
+		public class_3435(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16934, compoundTag);
 			this.field_15286 = compoundTag.getBoolean("Left");
 			this.field_15285 = compoundTag.getBoolean("Right");
@@ -1242,7 +1244,7 @@ public class StrongholdGenerator {
 		}
 
 		public static StrongholdGenerator.class_3435 method_14867(List<class_3443> list, Random random, int i, int j, int k, Direction direction, int l) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -1, -1, 0, 5, 5, 7, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -1, -1, 0, 5, 5, 7, direction);
 			return method_14871(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new StrongholdGenerator.class_3435(l, random, mutableIntBoundingBox, direction)
 				: null;
@@ -1253,8 +1255,8 @@ public class StrongholdGenerator {
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 4, 4, 6, true, random, StrongholdGenerator.field_15263);
 			this.method_14872(iWorld, random, mutableIntBoundingBox, this.field_15287, 1, 1, 0);
 			this.method_14872(iWorld, random, mutableIntBoundingBox, StrongholdGenerator.class_3437.class_3438.field_15288, 1, 1, 6);
-			BlockState blockState = Blocks.field_10099.getDefaultState().with(WallTorchBlock.field_11731, Direction.EAST);
-			BlockState blockState2 = Blocks.field_10099.getDefaultState().with(WallTorchBlock.field_11731, Direction.WEST);
+			BlockState blockState = Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.EAST);
+			BlockState blockState2 = Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.WEST);
 			this.addBlockWithRandomThreshold(iWorld, mutableIntBoundingBox, random, 0.1F, 1, 2, 1, blockState);
 			this.addBlockWithRandomThreshold(iWorld, mutableIntBoundingBox, random, 0.1F, 3, 2, 1, blockState2);
 			this.addBlockWithRandomThreshold(iWorld, mutableIntBoundingBox, random, 0.1F, 1, 2, 5, blockState);
@@ -1279,7 +1281,7 @@ public class StrongholdGenerator {
 			this.structureBounds = mutableIntBoundingBox;
 		}
 
-		public class_3436(class_3485 arg, CompoundTag compoundTag) {
+		public class_3436(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16949, compoundTag);
 		}
 
@@ -1289,7 +1291,7 @@ public class StrongholdGenerator {
 		}
 
 		public static StrongholdGenerator.class_3436 method_14868(List<class_3443> list, Random random, int i, int j, int k, Direction direction, int l) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -1, -7, 0, 5, 11, 8, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -1, -7, 0, 5, 11, 8, direction);
 			return method_14871(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new StrongholdGenerator.class_3436(l, random, mutableIntBoundingBox, direction)
 				: null;
@@ -1300,7 +1302,7 @@ public class StrongholdGenerator {
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 4, 10, 7, true, random, StrongholdGenerator.field_15263);
 			this.method_14872(iWorld, random, mutableIntBoundingBox, this.field_15287, 1, 7, 0);
 			this.method_14872(iWorld, random, mutableIntBoundingBox, StrongholdGenerator.class_3437.class_3438.field_15288, 1, 1, 7);
-			BlockState blockState = Blocks.field_10596.getDefaultState().with(StairsBlock.field_11571, Direction.SOUTH);
+			BlockState blockState = Blocks.field_10596.getDefaultState().with(StairsBlock.FACING, Direction.SOUTH);
 
 			for (int i = 0; i < 6; i++) {
 				this.addBlock(iWorld, blockState, 1, 6 - i, 1 + i, mutableIntBoundingBox);
@@ -1350,7 +1352,9 @@ public class StrongholdGenerator {
 					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), i + 2, j + 1, k, mutableIntBoundingBox);
 					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), i + 2, j, k, mutableIntBoundingBox);
 					this.addBlock(iWorld, Blocks.field_10149.getDefaultState(), i + 1, j, k, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_10149.getDefaultState().with(DoorBlock.field_10946, BlockHalf.field_12609), i + 1, j + 1, k, mutableIntBoundingBox);
+					this.addBlock(
+						iWorld, Blocks.field_10149.getDefaultState().with(DoorBlock.field_10946, DoubleBlockHalf.field_12609), i + 1, j + 1, k, mutableIntBoundingBox
+					);
 					break;
 				case field_15289:
 					this.addBlock(iWorld, Blocks.field_10543.getDefaultState(), i + 1, j, k, mutableIntBoundingBox);
@@ -1393,7 +1397,7 @@ public class StrongholdGenerator {
 					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), i + 2, j + 1, k, mutableIntBoundingBox);
 					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), i + 2, j, k, mutableIntBoundingBox);
 					this.addBlock(iWorld, Blocks.field_9973.getDefaultState(), i + 1, j, k, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_9973.getDefaultState().with(DoorBlock.field_10946, BlockHalf.field_12609), i + 1, j + 1, k, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_9973.getDefaultState().with(DoorBlock.field_10946, DoubleBlockHalf.field_12609), i + 1, j + 1, k, mutableIntBoundingBox);
 					this.addBlock(
 						iWorld, Blocks.field_10494.getDefaultState().with(AbstractButtonBlock.field_11177, Direction.NORTH), i + 2, j + 1, k + 1, mutableIntBoundingBox
 					);
@@ -1421,7 +1425,7 @@ public class StrongholdGenerator {
 
 		@Nullable
 		protected class_3443 method_14874(StrongholdGenerator.class_3434 arg, List<class_3443> list, Random random, int i, int j) {
-			Direction direction = this.method_14934();
+			Direction direction = this.getFacing();
 			if (direction != null) {
 				switch (direction) {
 					case NORTH:
@@ -1448,7 +1452,7 @@ public class StrongholdGenerator {
 
 		@Nullable
 		protected class_3443 method_14870(StrongholdGenerator.class_3434 arg, List<class_3443> list, Random random, int i, int j) {
-			Direction direction = this.method_14934();
+			Direction direction = this.getFacing();
 			if (direction != null) {
 				switch (direction) {
 					case NORTH:
@@ -1475,7 +1479,7 @@ public class StrongholdGenerator {
 
 		@Nullable
 		protected class_3443 method_14873(StrongholdGenerator.class_3434 arg, List<class_3443> list, Random random, int i, int j) {
-			Direction direction = this.method_14934();
+			Direction direction = this.getFacing();
 			if (direction != null) {
 				switch (direction) {
 					case NORTH:

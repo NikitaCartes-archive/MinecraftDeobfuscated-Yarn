@@ -26,10 +26,10 @@ public class SubtitlesHud extends Drawable implements ListenerSoundInstance {
 	}
 
 	public void method_1957() {
-		if (!this.enabled && this.client.options.showSubtitles) {
+		if (!this.enabled && this.client.field_1690.showSubtitles) {
 			this.client.getSoundLoader().registerListener(this);
 			this.enabled = true;
-		} else if (this.enabled && !this.client.options.showSubtitles) {
+		} else if (this.enabled && !this.client.field_1690.showSubtitles) {
 			this.client.getSoundLoader().unregisterListener(this);
 			this.enabled = false;
 		}
@@ -57,7 +57,7 @@ public class SubtitlesHud extends Drawable implements ListenerSoundInstance {
 
 			while (iterator.hasNext()) {
 				SubtitlesHud.SubtitleEntry subtitleEntry = (SubtitlesHud.SubtitleEntry)iterator.next();
-				if (subtitleEntry.getTime() + 3000L <= SystemUtil.getMeasuringTimeMili()) {
+				if (subtitleEntry.getTime() + 3000L <= SystemUtil.getMeasuringTimeMs()) {
 					iterator.remove();
 				} else {
 					j = Math.max(j, this.client.fontRenderer.getStringWidth(subtitleEntry.getText()));
@@ -77,11 +77,11 @@ public class SubtitlesHud extends Drawable implements ListenerSoundInstance {
 				double e = -vec3d2.dotProduct(vec3d5);
 				boolean bl = e > 0.5;
 				int l = j / 2;
-				int m = this.client.fontRenderer.FONT_HEIGHT;
+				int m = this.client.fontRenderer.fontHeight;
 				int n = m / 2;
 				float f = 1.0F;
 				int o = this.client.fontRenderer.getStringWidth(string);
-				int p = MathHelper.floor(MathHelper.lerpClamped(255.0, 75.0, (double)((float)(SystemUtil.getMeasuringTimeMili() - subtitleEntry.getTime()) / 3000.0F)));
+				int p = MathHelper.floor(MathHelper.lerpClamped(255.0, 75.0, (double)((float)(SystemUtil.getMeasuringTimeMs() - subtitleEntry.getTime()) / 3000.0F)));
 				int q = p << 16 | p << 8 | p;
 				GlStateManager.pushMatrix();
 				GlStateManager.translatef(
@@ -137,7 +137,7 @@ public class SubtitlesHud extends Drawable implements ListenerSoundInstance {
 		public SubtitleEntry(String string, Vec3d vec3d) {
 			this.text = string;
 			this.pos = vec3d;
-			this.time = SystemUtil.getMeasuringTimeMili();
+			this.time = SystemUtil.getMeasuringTimeMs();
 		}
 
 		public String getText() {
@@ -154,7 +154,7 @@ public class SubtitlesHud extends Drawable implements ListenerSoundInstance {
 
 		public void reset(Vec3d vec3d) {
 			this.pos = vec3d;
-			this.time = SystemUtil.getMeasuringTimeMili();
+			this.time = SystemUtil.getMeasuringTimeMs();
 		}
 	}
 }

@@ -7,11 +7,11 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import net.minecraft.class_3689;
-import net.minecraft.class_3696;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.profiler.DisableableProfiler;
+import net.minecraft.util.profiler.ProfileResult;
 
 public class DebugCommand {
 	private static final SimpleCommandExceptionType NORUNNING_EXCPETION = new SimpleCommandExceptionType(
@@ -32,8 +32,8 @@ public class DebugCommand {
 
 	private static int method_13159(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
 		MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
-		class_3689 lv = minecraftServer.getProfiler();
-		if (lv.method_16055().method_16057()) {
+		DisableableProfiler disableableProfiler = minecraftServer.getProfiler();
+		if (disableableProfiler.getController().method_16057()) {
 			throw ALREADYRUNNING_EXCEPTION.create();
 		} else {
 			minecraftServer.method_3832();
@@ -44,17 +44,17 @@ public class DebugCommand {
 
 	private static int method_13158(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
 		MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
-		class_3689 lv = minecraftServer.getProfiler();
-		if (!lv.method_16055().method_16057()) {
+		DisableableProfiler disableableProfiler = minecraftServer.getProfiler();
+		if (!disableableProfiler.getController().method_16057()) {
 			throw NORUNNING_EXCPETION.create();
 		} else {
-			class_3696 lv2 = lv.method_16055().method_16058();
+			ProfileResult profileResult = disableableProfiler.getController().method_16058();
 			File file = new File(minecraftServer.getFile("debug"), "profile-results-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + ".txt");
-			lv2.method_16069(file);
-			float f = (float)lv2.method_16071() / 1.0E9F;
-			float g = (float)lv2.method_16074() / f;
+			profileResult.saveToFile(file);
+			float f = (float)profileResult.getTimeSpan() / 1.0E9F;
+			float g = (float)profileResult.getTickSpan() / f;
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", f), lv2.method_16074(), String.format("%.2f", g)), true
+				new TranslatableTextComponent("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", f), profileResult.getTickSpan(), String.format("%.2f", g)), true
 			);
 			return MathHelper.floor(g);
 		}

@@ -3,9 +3,8 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.AbstractSkeletonEntity;
+import net.minecraft.entity.ai.RangedAttacker;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.sortme.OptionMainHand;
@@ -13,7 +12,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class StrayEntityModel extends BipedEntityModel {
+public class StrayEntityModel<T extends LivingEntity & RangedAttacker> extends BipedEntityModel<T> {
 	public StrayEntityModel() {
 		this(0.0F, false);
 	}
@@ -39,11 +38,11 @@ public class StrayEntityModel extends BipedEntityModel {
 	}
 
 	@Override
-	public void animateModel(LivingEntity livingEntity, float f, float g, float h) {
+	public void method_17086(T livingEntity, float f, float g, float h) {
 		this.armPoseRight = BipedEntityModel.ArmPose.field_3409;
 		this.armPoseLeft = BipedEntityModel.ArmPose.field_3409;
 		ItemStack itemStack = livingEntity.getStackInHand(Hand.MAIN);
-		if (itemStack.getItem() == Items.field_8102 && ((AbstractSkeletonEntity)livingEntity).isAiming()) {
+		if (itemStack.getItem() == Items.field_8102 && livingEntity.hasArmsRaised()) {
 			if (livingEntity.getMainHand() == OptionMainHand.field_6183) {
 				this.armPoseRight = BipedEntityModel.ArmPose.field_3403;
 			} else {
@@ -51,15 +50,14 @@ public class StrayEntityModel extends BipedEntityModel {
 			}
 		}
 
-		super.animateModel(livingEntity, f, g, h);
+		super.method_17086(livingEntity, f, g, h);
 	}
 
 	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
-		super.setRotationAngles(f, g, h, i, j, k, entity);
-		ItemStack itemStack = ((LivingEntity)entity).getMainHandStack();
-		AbstractSkeletonEntity abstractSkeletonEntity = (AbstractSkeletonEntity)entity;
-		if (abstractSkeletonEntity.isAiming() && (itemStack.isEmpty() || itemStack.getItem() != Items.field_8102)) {
+	public void method_17087(T livingEntity, float f, float g, float h, float i, float j, float k) {
+		super.method_17087(livingEntity, f, g, h, i, j, k);
+		ItemStack itemStack = livingEntity.getMainHandStack();
+		if (livingEntity.hasArmsRaised() && (itemStack.isEmpty() || itemStack.getItem() != Items.field_8102)) {
 			float l = MathHelper.sin(this.swingProgress * (float) Math.PI);
 			float m = MathHelper.sin((1.0F - (1.0F - this.swingProgress) * (1.0F - this.swingProgress)) * (float) Math.PI);
 			this.armRight.roll = 0.0F;

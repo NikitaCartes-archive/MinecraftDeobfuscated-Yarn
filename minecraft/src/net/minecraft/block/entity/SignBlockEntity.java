@@ -25,14 +25,14 @@ public class SignBlockEntity extends BlockEntity implements CommandOutput {
 	public final TextComponent[] text = new TextComponent[]{
 		new StringTextComponent(""), new StringTextComponent(""), new StringTextComponent(""), new StringTextComponent("")
 	};
-	private boolean field_16502 = false;
-	private int field_16501 = -1;
-	private int field_16500 = -1;
-	private int field_16499 = -1;
+	private boolean caretVisible = false;
+	private int currentRow = -1;
+	private int selectionStart = -1;
+	private int selectionEnd = -1;
 	private boolean editable = true;
 	private PlayerEntity editor;
-	private final String[] field_12049 = new String[4];
-	private DyeColor field_16419 = DyeColor.BLACK;
+	private final String[] textBeingEdited = new String[4];
+	private DyeColor textColor = DyeColor.BLACK;
 
 	public SignBlockEntity() {
 		super(BlockEntityType.SIGN);
@@ -47,7 +47,7 @@ public class SignBlockEntity extends BlockEntity implements CommandOutput {
 			compoundTag.putString("Text" + (i + 1), string);
 		}
 
-		compoundTag.putString("Color", this.field_16419.getName());
+		compoundTag.putString("Color", this.textColor.getName());
 		return compoundTag;
 	}
 
@@ -55,7 +55,7 @@ public class SignBlockEntity extends BlockEntity implements CommandOutput {
 	public void fromTag(CompoundTag compoundTag) {
 		this.editable = false;
 		super.fromTag(compoundTag);
-		this.field_16419 = DyeColor.byName(compoundTag.getString("Color"), DyeColor.BLACK);
+		this.textColor = DyeColor.byName(compoundTag.getString("Color"), DyeColor.BLACK);
 
 		for (int i = 0; i < 4; i++) {
 			String string = compoundTag.getString("Text" + (i + 1));
@@ -70,28 +70,28 @@ public class SignBlockEntity extends BlockEntity implements CommandOutput {
 				this.text[i] = textComponent;
 			}
 
-			this.field_12049[i] = null;
+			this.textBeingEdited[i] = null;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent method_11302(int i) {
+	public TextComponent getTextOnRow(int i) {
 		return this.text[i];
 	}
 
-	public void method_11299(int i, TextComponent textComponent) {
+	public void setTextOnRow(int i, TextComponent textComponent) {
 		this.text[i] = textComponent;
-		this.field_12049[i] = null;
+		this.textBeingEdited[i] = null;
 	}
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
 	public String method_11300(int i, Function<TextComponent, String> function) {
-		if (this.field_12049[i] == null && this.text[i] != null) {
-			this.field_12049[i] = (String)function.apply(this.text[i]);
+		if (this.textBeingEdited[i] == null && this.text[i] != null) {
+			this.textBeingEdited[i] = (String)function.apply(this.text[i]);
 		}
 
-		return this.field_12049[i];
+		return this.textBeingEdited[i];
 	}
 
 	@Nullable
@@ -179,13 +179,13 @@ public class SignBlockEntity extends BlockEntity implements CommandOutput {
 		return false;
 	}
 
-	public DyeColor method_16126() {
-		return this.field_16419;
+	public DyeColor getTextColor() {
+		return this.textColor;
 	}
 
-	public boolean method_16127(DyeColor dyeColor) {
-		if (dyeColor != this.method_16126()) {
-			this.field_16419 = dyeColor;
+	public boolean setTextColor(DyeColor dyeColor) {
+		if (dyeColor != this.getTextColor()) {
+			this.textColor = dyeColor;
 			this.markDirty();
 			this.world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), 3);
 			return true;
@@ -195,38 +195,38 @@ public class SignBlockEntity extends BlockEntity implements CommandOutput {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_16332(int i, int j, int k, boolean bl) {
-		this.field_16501 = i;
-		this.field_16500 = j;
-		this.field_16499 = k;
-		this.field_16502 = bl;
+	public void setSelectionState(int i, int j, int k, boolean bl) {
+		this.currentRow = i;
+		this.selectionStart = j;
+		this.selectionEnd = k;
+		this.caretVisible = bl;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_16335() {
-		this.field_16501 = -1;
-		this.field_16500 = -1;
-		this.field_16499 = -1;
-		this.field_16502 = false;
+	public void resetSelectionState() {
+		this.currentRow = -1;
+		this.selectionStart = -1;
+		this.selectionEnd = -1;
+		this.caretVisible = false;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_16331() {
-		return this.field_16502;
+	public boolean isCaretVisible() {
+		return this.caretVisible;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_16334() {
-		return this.field_16501;
+	public int getCurrentRow() {
+		return this.currentRow;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_16336() {
-		return this.field_16500;
+	public int getSelectionStart() {
+		return this.selectionStart;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_16333() {
-		return this.field_16499;
+	public int getSelectionEnd() {
+		return this.selectionEnd;
 	}
 }

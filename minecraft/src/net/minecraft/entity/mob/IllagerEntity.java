@@ -2,11 +2,12 @@ package net.minecraft.entity.mob;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1310;
+import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.world.World;
 
 public abstract class IllagerEntity extends RaiderEntity {
@@ -40,17 +41,17 @@ public abstract class IllagerEntity extends RaiderEntity {
 	}
 
 	@Override
-	public class_1310 method_6046() {
-		return class_1310.field_6291;
+	public EntityGroup getGroup() {
+		return EntityGroup.ILLAGER;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public IllagerEntity.class_1544 method_6990() {
-		return IllagerEntity.class_1544.field_7207;
+	public IllagerEntity.State method_6990() {
+		return IllagerEntity.State.field_7207;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static enum class_1544 {
+	public static enum State {
 		field_7207,
 		field_7211,
 		field_7212,

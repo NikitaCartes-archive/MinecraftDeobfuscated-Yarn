@@ -95,14 +95,13 @@ public class EntityMobNavigation extends EntityNavigation {
 	protected void method_6359() {
 		super.method_6359();
 		if (this.field_6686) {
-			if (this.world
-				.getSkyLightLevel(new BlockPos(MathHelper.floor(this.entity.x), (int)(this.entity.getBoundingBox().minY + 0.5), MathHelper.floor(this.entity.z)))) {
+			if (this.world.isSkyVisible(new BlockPos(MathHelper.floor(this.entity.x), (int)(this.entity.getBoundingBox().minY + 0.5), MathHelper.floor(this.entity.z)))) {
 				return;
 			}
 
 			for (int i = 0; i < this.field_6681.getPathLength(); i++) {
 				PathNode pathNode = this.field_6681.getNode(i);
-				if (this.world.getSkyLightLevel(new BlockPos(pathNode.x, pathNode.y, pathNode.z))) {
+				if (this.world.isSkyVisible(new BlockPos(pathNode.x, pathNode.y, pathNode.z))) {
 					this.field_6681.setPathLength(i - 1);
 					return;
 				}

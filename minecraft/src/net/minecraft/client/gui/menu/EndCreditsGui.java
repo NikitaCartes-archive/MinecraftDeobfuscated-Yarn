@@ -12,8 +12,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.resource.Resource;
 import net.minecraft.text.TextFormat;
@@ -123,9 +123,9 @@ public class EndCreditsGui extends Gui {
 
 	private void method_2258(int i, int j, float f) {
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		this.client.getTextureManager().bindTexture(Drawable.OPTIONS_BG);
-		vertexBuffer.begin(7, VertexFormats.POSITION_UV_COLOR);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 		int k = this.width;
 		float g = -this.field_2628 * 0.5F * this.field_2635;
 		float h = (float)this.height - this.field_2628 * 0.5F * this.field_2635;
@@ -143,13 +143,13 @@ public class EndCreditsGui extends Gui {
 
 		m *= m;
 		m = m * 96.0F / 255.0F;
-		vertexBuffer.vertex(0.0, (double)this.height, (double)this.zOffset).texture(0.0, (double)(g * 0.015625F)).color(m, m, m, 1.0F).next();
-		vertexBuffer.vertex((double)k, (double)this.height, (double)this.zOffset)
+		bufferBuilder.vertex(0.0, (double)this.height, (double)this.zOffset).texture(0.0, (double)(g * 0.015625F)).color(m, m, m, 1.0F).next();
+		bufferBuilder.vertex((double)k, (double)this.height, (double)this.zOffset)
 			.texture((double)((float)k * 0.015625F), (double)(g * 0.015625F))
 			.color(m, m, m, 1.0F)
 			.next();
-		vertexBuffer.vertex((double)k, 0.0, (double)this.zOffset).texture((double)((float)k * 0.015625F), (double)(h * 0.015625F)).color(m, m, m, 1.0F).next();
-		vertexBuffer.vertex(0.0, 0.0, (double)this.zOffset).texture(0.0, (double)(h * 0.015625F)).color(m, m, m, 1.0F).next();
+		bufferBuilder.vertex((double)k, 0.0, (double)this.zOffset).texture((double)((float)k * 0.015625F), (double)(h * 0.015625F)).color(m, m, m, 1.0F).next();
+		bufferBuilder.vertex(0.0, 0.0, (double)this.zOffset).texture(0.0, (double)(h * 0.015625F)).color(m, m, m, 1.0F).next();
 		tessellator.draw();
 	}
 
@@ -157,7 +157,7 @@ public class EndCreditsGui extends Gui {
 	public void draw(int i, int j, float f) {
 		this.method_2258(i, j, f);
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		int k = 274;
 		int l = this.width / 2 - 137;
 		int m = this.height + 50;
@@ -202,11 +202,11 @@ public class EndCreditsGui extends Gui {
 		GlStateManager.blendFunc(GlStateManager.SrcBlendFactor.ZERO, GlStateManager.DstBlendFactor.ONE_MINUS_SRC_COLOR);
 		int o = this.width;
 		int p = this.height;
-		vertexBuffer.begin(7, VertexFormats.POSITION_UV_COLOR);
-		vertexBuffer.vertex(0.0, (double)p, (double)this.zOffset).texture(0.0, 1.0).color(1.0F, 1.0F, 1.0F, 1.0F).next();
-		vertexBuffer.vertex((double)o, (double)p, (double)this.zOffset).texture(1.0, 1.0).color(1.0F, 1.0F, 1.0F, 1.0F).next();
-		vertexBuffer.vertex((double)o, 0.0, (double)this.zOffset).texture(1.0, 0.0).color(1.0F, 1.0F, 1.0F, 1.0F).next();
-		vertexBuffer.vertex(0.0, 0.0, (double)this.zOffset).texture(0.0, 0.0).color(1.0F, 1.0F, 1.0F, 1.0F).next();
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+		bufferBuilder.vertex(0.0, (double)p, (double)this.zOffset).texture(0.0, 1.0).color(1.0F, 1.0F, 1.0F, 1.0F).next();
+		bufferBuilder.vertex((double)o, (double)p, (double)this.zOffset).texture(1.0, 1.0).color(1.0F, 1.0F, 1.0F, 1.0F).next();
+		bufferBuilder.vertex((double)o, 0.0, (double)this.zOffset).texture(1.0, 0.0).color(1.0F, 1.0F, 1.0F, 1.0F).next();
+		bufferBuilder.vertex(0.0, 0.0, (double)this.zOffset).texture(0.0, 0.0).color(1.0F, 1.0F, 1.0F, 1.0F).next();
 		tessellator.draw();
 		GlStateManager.disableBlend();
 		super.draw(i, j, f);

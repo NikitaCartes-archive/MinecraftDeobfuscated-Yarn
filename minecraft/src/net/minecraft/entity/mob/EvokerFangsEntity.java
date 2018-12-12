@@ -75,7 +75,7 @@ public class EvokerFangsEntity extends Entity {
 	@Override
 	public void update() {
 		super.update();
-		if (this.world.isRemote) {
+		if (this.world.isClient) {
 			if (this.field_7608) {
 				this.field_7607--;
 				if (this.field_7607 == 14) {
@@ -98,7 +98,7 @@ public class EvokerFangsEntity extends Entity {
 			}
 
 			if (!this.field_7610) {
-				this.world.method_8421(this, (byte)4);
+				this.world.summonParticle(this, (byte)4);
 				this.field_7610 = true;
 			}
 

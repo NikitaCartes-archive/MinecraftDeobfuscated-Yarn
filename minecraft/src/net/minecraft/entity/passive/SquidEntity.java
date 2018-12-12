@@ -2,11 +2,11 @@ package net.minecraft.entity.passive;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3730;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.WaterCreatureEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -98,7 +98,7 @@ public class SquidEntity extends WaterCreatureEntity {
 		this.field_6900 = this.field_6904;
 		this.field_6908 = this.field_6908 + this.field_6912;
 		if ((double)this.field_6908 > Math.PI * 2) {
-			if (this.world.isRemote) {
+			if (this.world.isClient) {
 				this.field_6908 = (float) (Math.PI * 2);
 			} else {
 				this.field_6908 = (float)((double)this.field_6908 - (Math.PI * 2));
@@ -106,11 +106,11 @@ public class SquidEntity extends WaterCreatureEntity {
 					this.field_6912 = 1.0F / (this.random.nextFloat() + 1.0F) * 0.2F;
 				}
 
-				this.world.method_8421(this, (byte)19);
+				this.world.summonParticle(this, (byte)19);
 			}
 		}
 
-		if (this.method_5816()) {
+		if (this.isInsideWaterOrBubbleColumn()) {
 			if (this.field_6908 < (float) Math.PI) {
 				float f = this.field_6908 / (float) Math.PI;
 				this.field_6904 = MathHelper.sin(f * f * (float) Math.PI) * (float) Math.PI * 0.25F;
@@ -126,7 +126,7 @@ public class SquidEntity extends WaterCreatureEntity {
 				this.field_6913 *= 0.99F;
 			}
 
-			if (!this.world.isRemote) {
+			if (!this.world.isClient) {
 				this.velocityX = (double)(this.field_6910 * this.field_6901);
 				this.velocityY = (double)(this.field_6911 * this.field_6901);
 				this.velocityZ = (double)(this.field_6909 * this.field_6901);
@@ -139,7 +139,7 @@ public class SquidEntity extends WaterCreatureEntity {
 			this.field_6907 = this.field_6907 + (-((float)MathHelper.atan2((double)f, this.velocityY)) * (180.0F / (float)Math.PI) - this.field_6907) * 0.1F;
 		} else {
 			this.field_6904 = MathHelper.abs(MathHelper.sin(this.field_6908)) * (float) Math.PI * 0.25F;
-			if (!this.world.isRemote) {
+			if (!this.world.isClient) {
 				this.velocityX = 0.0;
 				this.velocityZ = 0.0;
 				if (this.hasPotionEffect(StatusEffects.field_5902)) {
@@ -187,7 +187,7 @@ public class SquidEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public boolean method_5979(IWorld iWorld, class_3730 arg) {
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
 		return this.y > 45.0 && this.y < (double)iWorld.getSeaLevel();
 	}
 
@@ -280,7 +280,7 @@ public class SquidEntity extends WaterCreatureEntity {
 
 		@Override
 		public void tick() {
-			int i = this.field_6917.method_6131();
+			int i = this.field_6917.getDespawnCounter();
 			if (i > 100) {
 				this.field_6917.method_6670(0.0F, 0.0F, 0.0F);
 			} else if (this.field_6917.getRand().nextInt(50) == 0 || !this.field_6917.insideWater || !this.field_6917.method_6672()) {

@@ -10,8 +10,8 @@ import net.minecraft.block.MaterialColor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.FontRenderer;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
@@ -39,10 +39,10 @@ public class class_330 implements AutoCloseable {
 	}
 
 	private class_330.class_331 method_1774(MapState mapState) {
-		class_330.class_331 lv = (class_330.class_331)this.field_2045.get(mapState.getKey());
+		class_330.class_331 lv = (class_330.class_331)this.field_2045.get(mapState.getId());
 		if (lv == null) {
 			lv = new class_330.class_331(mapState);
-			this.field_2045.put(mapState.getKey(), lv);
+			this.field_2045.put(mapState.getId(), lv);
 		}
 
 		return lv;
@@ -79,7 +79,7 @@ public class class_330 implements AutoCloseable {
 		private class_331(MapState mapState) {
 			this.field_2046 = mapState;
 			this.field_2048 = new NativeImageBackedTexture(128, 128, true);
-			this.field_2049 = class_330.this.field_2043.registerDynamicTexture("map/" + mapState.getKey(), this.field_2048);
+			this.field_2049 = class_330.this.field_2043.registerDynamicTexture("map/" + mapState.getId(), this.field_2048);
 		}
 
 		private void method_1776() {
@@ -95,14 +95,14 @@ public class class_330 implements AutoCloseable {
 				}
 			}
 
-			this.field_2048.method_4524();
+			this.field_2048.upload();
 		}
 
 		private void method_1777(boolean bl) {
 			int i = 0;
 			int j = 0;
 			Tessellator tessellator = Tessellator.getInstance();
-			VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
+			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 			float f = 0.0F;
 			class_330.this.field_2043.bindTexture(this.field_2049);
 			GlStateManager.enableBlend();
@@ -110,11 +110,11 @@ public class class_330 implements AutoCloseable {
 				GlStateManager.SrcBlendFactor.ONE, GlStateManager.DstBlendFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcBlendFactor.ZERO, GlStateManager.DstBlendFactor.ONE
 			);
 			GlStateManager.disableAlphaTest();
-			vertexBuffer.begin(7, VertexFormats.POSITION_UV);
-			vertexBuffer.vertex(0.0, 128.0, -0.01F).texture(0.0, 1.0).next();
-			vertexBuffer.vertex(128.0, 128.0, -0.01F).texture(1.0, 1.0).next();
-			vertexBuffer.vertex(128.0, 0.0, -0.01F).texture(1.0, 0.0).next();
-			vertexBuffer.vertex(0.0, 0.0, -0.01F).texture(0.0, 0.0).next();
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+			bufferBuilder.vertex(0.0, 128.0, -0.01F).texture(0.0, 1.0).next();
+			bufferBuilder.vertex(128.0, 128.0, -0.01F).texture(1.0, 1.0).next();
+			bufferBuilder.vertex(128.0, 0.0, -0.01F).texture(1.0, 0.0).next();
+			bufferBuilder.vertex(0.0, 0.0, -0.01F).texture(0.0, 0.0).next();
 			tessellator.draw();
 			GlStateManager.enableAlphaTest();
 			GlStateManager.disableBlend();
@@ -133,24 +133,24 @@ public class class_330 implements AutoCloseable {
 					float h = (float)(b / 16 + 0) / 16.0F;
 					float l = (float)(b % 16 + 1) / 16.0F;
 					float m = (float)(b / 16 + 1) / 16.0F;
-					vertexBuffer.begin(7, VertexFormats.POSITION_UV);
+					bufferBuilder.begin(7, VertexFormats.POSITION_UV);
 					GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 					float n = -0.001F;
-					vertexBuffer.vertex(-1.0, 1.0, (double)((float)k * -0.001F)).texture((double)g, (double)h).next();
-					vertexBuffer.vertex(1.0, 1.0, (double)((float)k * -0.001F)).texture((double)l, (double)h).next();
-					vertexBuffer.vertex(1.0, -1.0, (double)((float)k * -0.001F)).texture((double)l, (double)m).next();
-					vertexBuffer.vertex(-1.0, -1.0, (double)((float)k * -0.001F)).texture((double)g, (double)m).next();
+					bufferBuilder.vertex(-1.0, 1.0, (double)((float)k * -0.001F)).texture((double)g, (double)h).next();
+					bufferBuilder.vertex(1.0, 1.0, (double)((float)k * -0.001F)).texture((double)l, (double)h).next();
+					bufferBuilder.vertex(1.0, -1.0, (double)((float)k * -0.001F)).texture((double)l, (double)m).next();
+					bufferBuilder.vertex(-1.0, -1.0, (double)((float)k * -0.001F)).texture((double)g, (double)m).next();
 					tessellator.draw();
 					GlStateManager.popMatrix();
 					if (mapIcon.method_88() != null) {
 						FontRenderer fontRenderer = MinecraftClient.getInstance().fontRenderer;
 						String string = mapIcon.method_88().getFormattedText();
 						float o = (float)fontRenderer.getStringWidth(string);
-						float p = MathHelper.clamp(25.0F / o, 0.0F, 6.0F / (float)fontRenderer.FONT_HEIGHT);
+						float p = MathHelper.clamp(25.0F / o, 0.0F, 6.0F / (float)fontRenderer.fontHeight);
 						GlStateManager.pushMatrix();
 						GlStateManager.translatef(0.0F + (float)mapIcon.getX() / 2.0F + 64.0F - o * p / 2.0F, 0.0F + (float)mapIcon.getZ() / 2.0F + 64.0F + 4.0F, -0.025F);
 						GlStateManager.scalef(p, p, 1.0F);
-						InGameHud.drawRect(-1, -1, (int)o, fontRenderer.FONT_HEIGHT - 1, Integer.MIN_VALUE);
+						InGameHud.drawRect(-1, -1, (int)o, fontRenderer.fontHeight - 1, Integer.MIN_VALUE);
 						GlStateManager.translatef(0.0F, 0.0F, -0.1F);
 						fontRenderer.draw(string, 0.0F, 0.0F, -1);
 						GlStateManager.popMatrix();

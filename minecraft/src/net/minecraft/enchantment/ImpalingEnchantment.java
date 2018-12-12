@@ -1,11 +1,11 @@
 package net.minecraft.enchantment;
 
-import net.minecraft.class_1310;
+import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EquipmentSlot;
 
 public class ImpalingEnchantment extends Enchantment {
 	public ImpalingEnchantment(Enchantment.Weight weight, EquipmentSlot... equipmentSlots) {
-		super(weight, EnchantmentTarget.field_9073, equipmentSlots);
+		super(weight, EnchantmentTarget.TRIDENT, equipmentSlots);
 	}
 
 	@Override
@@ -24,7 +24,7 @@ public class ImpalingEnchantment extends Enchantment {
 	}
 
 	@Override
-	public float getAttackDamage(int i, class_1310 arg) {
-		return arg == class_1310.field_6292 ? (float)i * 2.5F : 0.0F;
+	public float getAttackDamage(int i, EntityGroup entityGroup) {
+		return entityGroup == EntityGroup.AQUATIC ? (float)i * 2.5F : 0.0F;
 	}
 }

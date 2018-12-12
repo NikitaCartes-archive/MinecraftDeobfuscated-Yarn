@@ -8,10 +8,10 @@ import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.Renderer;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -49,14 +49,14 @@ public class StructureDebugRenderer implements RenderDebug.DebugRenderer {
 		GlStateManager.disableDepthTest();
 		BlockPos blockPos = new BlockPos(playerEntity.x, 0.0, playerEntity.z);
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-		vertexBuffer.begin(3, VertexFormats.POSITION_COLOR);
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
 		GlStateManager.lineWidth(1.0F);
 		if (this.field_4626.containsKey(i)) {
 			for (MutableIntBoundingBox mutableIntBoundingBox : ((Map)this.field_4626.get(i)).values()) {
 				if (blockPos.distanceTo(mutableIntBoundingBox.minX, mutableIntBoundingBox.minY, mutableIntBoundingBox.minZ) < 500.0) {
-					Renderer.method_3258(
-						vertexBuffer,
+					WorldRenderer.buildBoxOutline(
+						bufferBuilder,
 						(double)mutableIntBoundingBox.minX - d,
 						(double)mutableIntBoundingBox.minY - e,
 						(double)mutableIntBoundingBox.minZ - g,
@@ -79,8 +79,8 @@ public class StructureDebugRenderer implements RenderDebug.DebugRenderer {
 				Boolean boolean_ = (Boolean)((Map)this.field_4625.get(i)).get(string);
 				if (blockPos.distanceTo(mutableIntBoundingBox2.minX, mutableIntBoundingBox2.minY, mutableIntBoundingBox2.minZ) < 500.0) {
 					if (boolean_) {
-						Renderer.method_3258(
-							vertexBuffer,
+						WorldRenderer.buildBoxOutline(
+							bufferBuilder,
 							(double)mutableIntBoundingBox2.minX - d,
 							(double)mutableIntBoundingBox2.minY - e,
 							(double)mutableIntBoundingBox2.minZ - g,
@@ -93,8 +93,8 @@ public class StructureDebugRenderer implements RenderDebug.DebugRenderer {
 							1.0F
 						);
 					} else {
-						Renderer.method_3258(
-							vertexBuffer,
+						WorldRenderer.buildBoxOutline(
+							bufferBuilder,
 							(double)mutableIntBoundingBox2.minX - d,
 							(double)mutableIntBoundingBox2.minY - e,
 							(double)mutableIntBoundingBox2.minZ - g,

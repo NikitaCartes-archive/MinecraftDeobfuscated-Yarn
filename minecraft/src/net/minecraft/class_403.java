@@ -50,7 +50,7 @@ public class class_403 extends Gui {
 
 		for (String string : this.field_2348) {
 			this.drawStringCentered(this.fontRenderer, string, this.width / 2, k, 16777215);
-			k += this.fontRenderer.FONT_HEIGHT;
+			k += this.fontRenderer.fontHeight;
 		}
 
 		super.draw(i, j, f);
@@ -60,7 +60,7 @@ public class class_403 extends Gui {
 	public void update() {
 		super.update();
 		if (--this.field_2347 == 0) {
-			for (ButtonWidget buttonWidget : this.buttonWidgets) {
+			for (ButtonWidget buttonWidget : this.buttons) {
 				buttonWidget.enabled = true;
 			}
 		}

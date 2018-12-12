@@ -15,7 +15,7 @@ public class MessageCommand {
 		LiteralCommandNode<ServerCommandSource> literalCommandNode = commandDispatcher.register(
 			ServerCommandManager.literal("msg")
 				.then(
-					ServerCommandManager.argument("targets", EntityArgumentType.method_9308())
+					ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
 						.then(
 							ServerCommandManager.argument("message", MessageArgumentType.create())
 								.executes(
@@ -35,11 +35,11 @@ public class MessageCommand {
 	private static int method_13462(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, TextComponent textComponent) {
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
 			serverPlayerEntity.appendCommandFeedback(
-				new TranslatableTextComponent("commands.message.display.incoming", serverCommandSource.getDisplayName(), textComponent.clone())
+				new TranslatableTextComponent("commands.message.display.incoming", serverCommandSource.getDisplayName(), textComponent.copy())
 					.applyFormat(new TextFormat[]{TextFormat.GRAY, TextFormat.ITALIC})
 			);
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), textComponent.clone())
+				new TranslatableTextComponent("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), textComponent.copy())
 					.applyFormat(new TextFormat[]{TextFormat.GRAY, TextFormat.ITALIC}),
 				false
 			);

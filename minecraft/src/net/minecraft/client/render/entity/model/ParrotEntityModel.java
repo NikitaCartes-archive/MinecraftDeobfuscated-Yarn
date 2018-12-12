@@ -3,14 +3,11 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class ParrotEntityModel extends Model {
+public class ParrotEntityModel extends EntityModel<ParrotEntity> {
 	private final Cuboid field_3458;
 	private final Cuboid field_3460;
 	private final Cuboid field_3459;
@@ -22,7 +19,6 @@ public class ParrotEntityModel extends Model {
 	private final Cuboid field_3456;
 	private final Cuboid field_3450;
 	private final Cuboid field_3457;
-	private ParrotEntityModel.class_585 field_3454 = ParrotEntityModel.class_585.field_3465;
 
 	public ParrotEntityModel() {
 		this.textureWidth = 32;
@@ -66,69 +62,86 @@ public class ParrotEntityModel extends Model {
 		this.field_3457.setRotationPoint(-1.0F, 22.0F, -1.05F);
 	}
 
-	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		this.field_3458.render(k);
-		this.field_3459.render(k);
-		this.field_3455.render(k);
-		this.field_3460.render(k);
-		this.field_3452.render(k);
-		this.field_3450.render(k);
-		this.field_3457.render(k);
+	public void method_17109(ParrotEntity parrotEntity, float f, float g, float h, float i, float j, float k) {
+		this.method_17105(k);
 	}
 
-	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
-		float l = h * 0.3F;
-		this.field_3452.pitch = j * (float) (Math.PI / 180.0);
-		this.field_3452.yaw = i * (float) (Math.PI / 180.0);
+	public void method_17112(ParrotEntity parrotEntity, float f, float g, float h, float i, float j, float k) {
+		this.method_17111(method_17107(parrotEntity), parrotEntity.age, f, g, h, i, j);
+	}
+
+	public void method_17108(ParrotEntity parrotEntity, float f, float g, float h) {
+		this.method_17110(method_17107(parrotEntity));
+	}
+
+	public void method_17106(float f, float g, float h, float i, float j, int k) {
+		this.method_17110(ParrotEntityModel.class_585.field_3464);
+		this.method_17111(ParrotEntityModel.class_585.field_3464, k, f, g, 0.0F, h, i);
+		this.method_17105(j);
+	}
+
+	private void method_17105(float f) {
+		this.field_3458.render(f);
+		this.field_3459.render(f);
+		this.field_3455.render(f);
+		this.field_3460.render(f);
+		this.field_3452.render(f);
+		this.field_3450.render(f);
+		this.field_3457.render(f);
+	}
+
+	private void method_17111(ParrotEntityModel.class_585 arg, int i, float f, float g, float h, float j, float k) {
+		this.field_3452.pitch = k * (float) (Math.PI / 180.0);
+		this.field_3452.yaw = j * (float) (Math.PI / 180.0);
 		this.field_3452.roll = 0.0F;
 		this.field_3452.rotationPointX = 0.0F;
 		this.field_3458.rotationPointX = 0.0F;
 		this.field_3460.rotationPointX = 0.0F;
 		this.field_3455.rotationPointX = -1.5F;
 		this.field_3459.rotationPointX = 1.5F;
-		if (this.field_3454 != ParrotEntityModel.class_585.field_3466) {
-			if (this.field_3454 == ParrotEntityModel.class_585.field_3463) {
-				float m = MathHelper.cos((float)entity.age);
-				float n = MathHelper.sin((float)entity.age);
-				this.field_3452.rotationPointX = m;
-				this.field_3452.rotationPointY = 15.69F + n;
+		switch (arg) {
+			case field_3466:
+				break;
+			case field_3463:
+				float l = MathHelper.cos((float)i);
+				float m = MathHelper.sin((float)i);
+				this.field_3452.rotationPointX = l;
+				this.field_3452.rotationPointY = 15.69F + m;
 				this.field_3452.pitch = 0.0F;
 				this.field_3452.yaw = 0.0F;
-				this.field_3452.roll = MathHelper.sin((float)entity.age) * 0.4F;
-				this.field_3458.rotationPointX = m;
+				this.field_3452.roll = MathHelper.sin((float)i) * 0.4F;
+				this.field_3458.rotationPointX = l;
+				this.field_3458.rotationPointY = 16.5F + m;
+				this.field_3459.roll = -0.0873F - h;
+				this.field_3459.rotationPointX = 1.5F + l;
+				this.field_3459.rotationPointY = 16.94F + m;
+				this.field_3455.roll = 0.0873F + h;
+				this.field_3455.rotationPointX = -1.5F + l;
+				this.field_3455.rotationPointY = 16.94F + m;
+				this.field_3460.rotationPointX = l;
+				this.field_3460.rotationPointY = 21.07F + m;
+				break;
+			case field_3465:
+				this.field_3450.pitch = this.field_3450.pitch + MathHelper.cos(f * 0.6662F) * 1.4F * g;
+				this.field_3457.pitch = this.field_3457.pitch + MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g;
+			case field_3462:
+			case field_3464:
+			default:
+				float n = h * 0.3F;
+				this.field_3452.rotationPointY = 15.69F + n;
+				this.field_3460.pitch = 1.015F + MathHelper.cos(f * 0.6662F) * 0.3F * g;
+				this.field_3460.rotationPointY = 21.07F + n;
 				this.field_3458.rotationPointY = 16.5F + n;
 				this.field_3459.roll = -0.0873F - h;
-				this.field_3459.rotationPointX = 1.5F + m;
 				this.field_3459.rotationPointY = 16.94F + n;
 				this.field_3455.roll = 0.0873F + h;
-				this.field_3455.rotationPointX = -1.5F + m;
 				this.field_3455.rotationPointY = 16.94F + n;
-				this.field_3460.rotationPointX = m;
-				this.field_3460.rotationPointY = 21.07F + n;
-			} else {
-				if (this.field_3454 == ParrotEntityModel.class_585.field_3465) {
-					this.field_3450.pitch = this.field_3450.pitch + MathHelper.cos(f * 0.6662F) * 1.4F * g;
-					this.field_3457.pitch = this.field_3457.pitch + MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g;
-				}
-
-				this.field_3452.rotationPointY = 15.69F + l;
-				this.field_3460.pitch = 1.015F + MathHelper.cos(f * 0.6662F) * 0.3F * g;
-				this.field_3460.rotationPointY = 21.07F + l;
-				this.field_3458.rotationPointY = 16.5F + l;
-				this.field_3459.roll = -0.0873F - h;
-				this.field_3459.rotationPointY = 16.94F + l;
-				this.field_3455.roll = 0.0873F + h;
-				this.field_3455.rotationPointY = 16.94F + l;
-				this.field_3450.rotationPointY = 22.0F + l;
-				this.field_3457.rotationPointY = 22.0F + l;
-			}
+				this.field_3450.rotationPointY = 22.0F + n;
+				this.field_3457.rotationPointY = 22.0F + n;
 		}
 	}
 
-	@Override
-	public void animateModel(LivingEntity livingEntity, float f, float g, float h) {
+	private void method_17110(ParrotEntityModel.class_585 arg) {
 		this.field_3456.pitch = -0.2214F;
 		this.field_3458.pitch = 0.4937F;
 		this.field_3459.pitch = -0.6981F;
@@ -139,17 +152,11 @@ public class ParrotEntityModel extends Model {
 		this.field_3457.pitch = -0.0299F;
 		this.field_3450.rotationPointY = 22.0F;
 		this.field_3457.rotationPointY = 22.0F;
-		if (livingEntity instanceof ParrotEntity) {
-			ParrotEntity parrotEntity = (ParrotEntity)livingEntity;
-			if (parrotEntity.method_6582()) {
-				this.field_3450.roll = (float) (-Math.PI / 9);
-				this.field_3457.roll = (float) (Math.PI / 9);
-				this.field_3454 = ParrotEntityModel.class_585.field_3463;
-				return;
-			}
-
-			if (parrotEntity.isSitting()) {
-				float i = 1.9F;
+		this.field_3450.roll = 0.0F;
+		this.field_3457.roll = 0.0F;
+		switch (arg) {
+			case field_3466:
+				float f = 1.9F;
 				this.field_3452.rotationPointY = 17.59F;
 				this.field_3460.pitch = 1.5388988F;
 				this.field_3460.rotationPointY = 22.97F;
@@ -162,24 +169,32 @@ public class ParrotEntityModel extends Model {
 				this.field_3457.rotationPointY++;
 				this.field_3450.pitch++;
 				this.field_3457.pitch++;
-				this.field_3454 = ParrotEntityModel.class_585.field_3466;
-			} else if (parrotEntity.method_6581()) {
+				break;
+			case field_3463:
+				this.field_3450.roll = (float) (-Math.PI / 9);
+				this.field_3457.roll = (float) (Math.PI / 9);
+			case field_3465:
+			case field_3464:
+			default:
+				break;
+			case field_3462:
 				this.field_3450.pitch += (float) (Math.PI * 2.0 / 9.0);
 				this.field_3457.pitch += (float) (Math.PI * 2.0 / 9.0);
-				this.field_3454 = ParrotEntityModel.class_585.field_3462;
-			} else {
-				this.field_3454 = ParrotEntityModel.class_585.field_3465;
-			}
+		}
+	}
 
-			this.field_3450.roll = 0.0F;
-			this.field_3457.roll = 0.0F;
+	private static ParrotEntityModel.class_585 method_17107(ParrotEntity parrotEntity) {
+		if (parrotEntity.method_6582()) {
+			return ParrotEntityModel.class_585.field_3463;
+		} else if (parrotEntity.isSitting()) {
+			return ParrotEntityModel.class_585.field_3466;
 		} else {
-			this.field_3454 = ParrotEntityModel.class_585.field_3464;
+			return parrotEntity.method_6581() ? ParrotEntityModel.class_585.field_3462 : ParrotEntityModel.class_585.field_3465;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	static enum class_585 {
+	public static enum class_585 {
 		field_3462,
 		field_3465,
 		field_3466,

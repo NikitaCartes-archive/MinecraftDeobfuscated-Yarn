@@ -30,7 +30,7 @@ public class FireworksItem extends Item {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		World world = itemUsageContext.getWorld();
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			BlockPos blockPos = itemUsageContext.getPos();
 			ItemStack itemStack = itemUsageContext.getItemStack();
 			FireworkEntity fireworkEntity = new FireworkEntity(
@@ -51,7 +51,7 @@ public class FireworksItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		if (playerEntity.isFallFlying()) {
 			ItemStack itemStack = playerEntity.getStackInHand(hand);
-			if (!world.isRemote) {
+			if (!world.isClient) {
 				FireworkEntity fireworkEntity = new FireworkEntity(world, itemStack, playerEntity);
 				world.spawnEntity(fireworkEntity);
 				if (!playerEntity.abilities.creativeMode) {
@@ -67,7 +67,7 @@ public class FireworksItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void addInformation(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
 		CompoundTag compoundTag = itemStack.getSubCompoundTag("Fireworks");
 		if (compoundTag != null) {
 			if (compoundTag.containsKey("Flight", 99)) {
@@ -84,7 +84,7 @@ public class FireworksItem extends Item {
 				for (int i = 0; i < listTag.size(); i++) {
 					CompoundTag compoundTag2 = listTag.getCompoundTag(i);
 					List<TextComponent> list2 = Lists.<TextComponent>newArrayList();
-					FireworkChargeItem.method_7809(compoundTag2, list2);
+					FireworkChargeItem.buildTooltip(compoundTag2, list2);
 					if (!list2.isEmpty()) {
 						for (int j = 1; j < list2.size(); j++) {
 							list2.set(j, new StringTextComponent("  ").append((TextComponent)list2.get(j)).applyFormat(TextFormat.GRAY));
@@ -97,36 +97,36 @@ public class FireworksItem extends Item {
 		}
 	}
 
-	public static enum class_1782 {
+	public static enum Type {
 		field_7976(0, "small_ball"),
 		field_7977(1, "large_ball"),
 		field_7973(2, "star"),
 		field_7974(3, "creeper"),
 		field_7970(4, "burst");
 
-		private static final FireworksItem.class_1782[] field_7975 = (FireworksItem.class_1782[])Arrays.stream(values())
-			.sorted(Comparator.comparingInt(arg -> arg.field_7972))
-			.toArray(FireworksItem.class_1782[]::new);
-		private final int field_7972;
-		private final String field_7971;
+		private static final FireworksItem.Type[] TYPES = (FireworksItem.Type[])Arrays.stream(values())
+			.sorted(Comparator.comparingInt(type -> type.id))
+			.toArray(FireworksItem.Type[]::new);
+		private final int id;
+		private final String name;
 
-		private class_1782(int j, String string2) {
-			this.field_7972 = j;
-			this.field_7971 = string2;
+		private Type(int j, String string2) {
+			this.id = j;
+			this.name = string2;
 		}
 
-		public int method_7816() {
-			return this.field_7972;
-		}
-
-		@Environment(EnvType.CLIENT)
-		public String method_7812() {
-			return this.field_7971;
+		public int getId() {
+			return this.id;
 		}
 
 		@Environment(EnvType.CLIENT)
-		public static FireworksItem.class_1782 method_7813(int i) {
-			return i >= 0 && i < field_7975.length ? field_7975[i] : field_7976;
+		public String getName() {
+			return this.name;
+		}
+
+		@Environment(EnvType.CLIENT)
+		public static FireworksItem.Type fromId(int i) {
+			return i >= 0 && i < TYPES.length ? TYPES[i] : field_7976;
 		}
 	}
 }

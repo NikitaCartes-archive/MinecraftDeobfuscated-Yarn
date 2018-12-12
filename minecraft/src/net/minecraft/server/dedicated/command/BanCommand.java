@@ -24,7 +24,7 @@ public class BanCommand {
 		commandDispatcher.register(
 			ServerCommandManager.literal("ban")
 				.requires(
-					serverCommandSource -> serverCommandSource.getMinecraftServer().getConfigurationManager().getUserBanList().isEnabled()
+					serverCommandSource -> serverCommandSource.getMinecraftServer().getPlayerManager().getUserBanList().isEnabled()
 							&& serverCommandSource.hasPermissionLevel(3)
 				)
 				.then(
@@ -45,7 +45,7 @@ public class BanCommand {
 	}
 
 	private static int method_13022(ServerCommandSource serverCommandSource, Collection<GameProfile> collection, @Nullable TextComponent textComponent) throws CommandSyntaxException {
-		BannedProfilesList bannedProfilesList = serverCommandSource.getMinecraftServer().getConfigurationManager().getUserBanList();
+		BannedProfilesList bannedProfilesList = serverCommandSource.getMinecraftServer().getPlayerManager().getUserBanList();
 		int i = 0;
 
 		for (GameProfile gameProfile : collection) {
@@ -58,9 +58,9 @@ public class BanCommand {
 				serverCommandSource.sendFeedback(
 					new TranslatableTextComponent("commands.ban.success", TextFormatter.profile(gameProfile), bannedPlayerEntry.getReason()), true
 				);
-				ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getConfigurationManager().getPlayer(gameProfile.getId());
+				ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayer(gameProfile.getId());
 				if (serverPlayerEntity != null) {
-					serverPlayerEntity.networkHandler.method_14367(new TranslatableTextComponent("multiplayer.disconnect.banned"));
+					serverPlayerEntity.networkHandler.disconnect(new TranslatableTextComponent("multiplayer.disconnect.banned"));
 				}
 			}
 		}

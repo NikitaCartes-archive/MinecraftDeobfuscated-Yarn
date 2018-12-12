@@ -3,13 +3,13 @@ package net.minecraft.client.particle;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FallingBlock;
-import net.minecraft.block.RenderTypeBlock;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.VertexBuffer;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.entity.Entity;
-import net.minecraft.particle.BlockStateParticle;
+import net.minecraft.particle.BlockStateParticleParameters;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -39,11 +39,11 @@ public class BlockFallingDustParticle extends Particle {
 	}
 
 	@Override
-	public void buildGeometry(VertexBuffer vertexBuffer, Entity entity, float f, float g, float h, float i, float j, float k) {
+	public void buildGeometry(BufferBuilder bufferBuilder, Entity entity, float f, float g, float h, float i, float j, float k) {
 		float l = ((float)this.age + f) / (float)this.maxAge * 32.0F;
 		l = MathHelper.clamp(l, 0.0F, 1.0F);
 		this.size = this.field_3810 * l;
-		super.buildGeometry(vertexBuffer, entity, f, g, h, i, j, k);
+		super.buildGeometry(bufferBuilder, entity, f, g, h, i, j, k);
 	}
 
 	@Override
@@ -62,17 +62,19 @@ public class BlockFallingDustParticle extends Particle {
 		}
 
 		this.setSpriteIndex(7 - this.age * 8 / this.maxAge);
-		this.addPos(this.velocityX, this.velocityY, this.velocityZ);
+		this.move(this.velocityX, this.velocityY, this.velocityZ);
 		this.velocityY -= 0.003F;
 		this.velocityY = Math.max(this.velocityY, -0.14F);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Factory implements FactoryParticle<BlockStateParticle> {
+	public static class Factory implements ParticleFactory<BlockStateParticleParameters> {
 		@Nullable
-		public Particle createParticle(BlockStateParticle blockStateParticle, World world, double d, double e, double f, double g, double h, double i) {
-			BlockState blockState = blockStateParticle.method_10278();
-			if (!blockState.isAir() && blockState.getRenderType() == RenderTypeBlock.NONE) {
+		public Particle method_3033(
+			BlockStateParticleParameters blockStateParticleParameters, World world, double d, double e, double f, double g, double h, double i
+		) {
+			BlockState blockState = blockStateParticleParameters.getBlockState();
+			if (!blockState.isAir() && blockState.getRenderType() == BlockRenderType.field_11455) {
 				return null;
 			} else {
 				int j = MinecraftClient.getInstance().getBlockColorMap().method_1691(blockState, world, new BlockPos(d, e, f));

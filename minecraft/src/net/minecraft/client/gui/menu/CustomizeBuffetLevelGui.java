@@ -185,7 +185,7 @@ public class CustomizeBuffetLevelGui extends Gui {
 		}
 
 		@Override
-		protected boolean method_1937(int i, int j, double d, double e) {
+		protected boolean selectEntry(int i, int j, double d, double e) {
 			CustomizeBuffetLevelGui.this.field_2440.clear();
 			CustomizeBuffetLevelGui.this.field_2440.add(CustomizeBuffetLevelGui.this.field_2435[i]);
 			CustomizeBuffetLevelGui.this.method_2151();
@@ -193,12 +193,12 @@ public class CustomizeBuffetLevelGui extends Gui {
 		}
 
 		@Override
-		protected boolean isSelected(int i) {
+		protected boolean isSelectedEntry(int i) {
 			return CustomizeBuffetLevelGui.this.field_2440.contains(CustomizeBuffetLevelGui.this.field_2435[i]);
 		}
 
 		@Override
-		protected void method_1936() {
+		protected void drawBackground() {
 		}
 
 		@Override

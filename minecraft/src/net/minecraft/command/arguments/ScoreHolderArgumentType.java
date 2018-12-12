@@ -56,7 +56,7 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 	}
 
 	public static Collection<String> method_9449(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-		return getHoldersArgument(commandContext, string, commandContext.getSource().getMinecraftServer().method_3845()::getKnownPlayers);
+		return getHoldersArgument(commandContext, string, commandContext.getSource().getMinecraftServer().getScoreboard()::getKnownPlayers);
 	}
 
 	public static Collection<String> getHoldersArgument(CommandContext<ServerCommandSource> commandContext, String string, Supplier<Collection<String>> supplier) throws CommandSyntaxException {
@@ -81,7 +81,7 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 		if (stringReader.canRead() && stringReader.peek() == '@') {
 			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
 			EntitySelector entitySelector = entitySelectorReader.read();
-			if (!this.multiple && entitySelector.getLimit() > 1) {
+			if (!this.multiple && entitySelector.getCount() > 1) {
 				throw EntityArgumentType.TOO_MANY_ENTITIES_EXCEPTION.create();
 			} else {
 				return new ScoreHolderArgumentType.SelectorScoreHolder(entitySelector);

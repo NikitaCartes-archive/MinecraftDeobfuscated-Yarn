@@ -10,9 +10,9 @@ import net.minecraft.util.SystemUtil;
 
 @Environment(EnvType.CLIENT)
 public enum FontType {
-	field_2312("bitmap", TextureFont.Loader::method_2037),
-	field_2317("ttf", FontLoaderTTF::method_2059),
-	field_2313("legacy_unicode", UnicodeTextureFont.Loader::method_2046);
+	BITMAP("bitmap", TextureFont.Loader::method_2037),
+	TTF("ttf", TrueTypeFontLoader::fromJson),
+	LEGACY_UNICODE("legacy_unicode", UnicodeTextureFont.Loader::method_2046);
 
 	private static final Map<String, FontType> REGISTRY = SystemUtil.consume(Maps.<String, FontType>newHashMap(), hashMap -> {
 		for (FontType fontType : values()) {
@@ -20,11 +20,11 @@ public enum FontType {
 		}
 	});
 	private final String id;
-	private final Function<JsonObject, FontLoader> factory;
+	private final Function<JsonObject, FontLoader> loaderFactory;
 
 	private FontType(String string2, Function<JsonObject, FontLoader> function) {
 		this.id = string2;
-		this.factory = function;
+		this.loaderFactory = function;
 	}
 
 	public static FontType byId(String string) {
@@ -36,7 +36,7 @@ public enum FontType {
 		}
 	}
 
-	public FontLoader create(JsonObject jsonObject) {
-		return (FontLoader)this.factory.apply(jsonObject);
+	public FontLoader createLoader(JsonObject jsonObject) {
+		return (FontLoader)this.loaderFactory.apply(jsonObject);
 	}
 }

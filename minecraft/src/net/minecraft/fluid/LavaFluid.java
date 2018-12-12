@@ -4,13 +4,13 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.particle.Particle;
+import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -48,7 +48,7 @@ public abstract class LavaFluid extends BaseFluid {
 	@Override
 	public void method_15776(World world, BlockPos blockPos, FluidState fluidState, Random random) {
 		BlockPos blockPos2 = blockPos.up();
-		if (world.getBlockState(blockPos2).isAir() && !world.getBlockState(blockPos2).method_11598(world, blockPos2)) {
+		if (world.getBlockState(blockPos2).isAir() && !world.getBlockState(blockPos2).isFullOpaque(world, blockPos2)) {
 			if (random.nextInt(100) == 0) {
 				double d = (double)((float)blockPos.getX() + random.nextFloat());
 				double e = (double)(blockPos.getY() + 1);
@@ -81,7 +81,7 @@ public abstract class LavaFluid extends BaseFluid {
 
 				for (int j = 0; j < i; j++) {
 					blockPos2 = blockPos2.add(random.nextInt(3) - 1, 1, random.nextInt(3) - 1);
-					if (!world.method_8477(blockPos2)) {
+					if (!world.isHeightValidAndBlockLoaded(blockPos2)) {
 						return;
 					}
 
@@ -98,7 +98,7 @@ public abstract class LavaFluid extends BaseFluid {
 			} else {
 				for (int k = 0; k < 3; k++) {
 					BlockPos blockPos3 = blockPos.add(random.nextInt(3) - 1, 0, random.nextInt(3) - 1);
-					if (!world.method_8477(blockPos3)) {
+					if (!world.isHeightValidAndBlockLoaded(blockPos3)) {
 						return;
 					}
 
@@ -112,7 +112,7 @@ public abstract class LavaFluid extends BaseFluid {
 
 	private boolean method_15819(ViewableWorld viewableWorld, BlockPos blockPos) {
 		for (Direction direction : Direction.values()) {
-			if (this.method_15817(viewableWorld, blockPos.method_10093(direction))) {
+			if (this.method_15817(viewableWorld, blockPos.offset(direction))) {
 				return true;
 			}
 		}
@@ -129,7 +129,7 @@ public abstract class LavaFluid extends BaseFluid {
 	@Nullable
 	@Environment(EnvType.CLIENT)
 	@Override
-	public Particle getParticle() {
+	public ParticleParameters method_15787() {
 		return ParticleTypes.field_11223;
 	}
 
@@ -165,7 +165,7 @@ public abstract class LavaFluid extends BaseFluid {
 
 	@Override
 	public int method_15789(ViewableWorld viewableWorld) {
-		return viewableWorld.getDimension().method_12467() ? 10 : 30;
+		return viewableWorld.getDimension().isNether() ? 10 : 30;
 	}
 
 	@Override

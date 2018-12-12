@@ -39,7 +39,7 @@ public class GameRules {
 		treeMap.put("reducedDebugInfo", new GameRules.Key("false", GameRules.Type.BOOLEAN, (minecraftServer, value) -> {
 			byte b = (byte)(value.getBoolean() ? 22 : 23);
 
-			for (ServerPlayerEntity serverPlayerEntity : minecraftServer.getConfigurationManager().getPlayerList()) {
+			for (ServerPlayerEntity serverPlayerEntity : minecraftServer.getPlayerManager().getPlayerList()) {
 				serverPlayerEntity.networkHandler.sendPacket(new EntityStatusClientPacket(serverPlayerEntity, b));
 			}
 		}));

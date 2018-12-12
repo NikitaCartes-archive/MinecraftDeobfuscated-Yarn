@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import java.util.function.Predicate;
 import net.minecraft.class_2710;
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.pattern.BlockPatternBuilder;
 import net.minecraft.block.pattern.BlockProxy;
@@ -58,7 +58,7 @@ public class PumpkinCarvedBlock extends HorizontalFacingBlock {
 			world.spawnEntity(snowmanEntity);
 
 			for (ServerPlayerEntity serverPlayerEntity : world.getVisibleEntities(ServerPlayerEntity.class, snowmanEntity.getBoundingBox().expand(5.0))) {
-				CriterionCriterions.SUMMONED_ENTITY.handle(serverPlayerEntity, snowmanEntity);
+				Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, snowmanEntity);
 			}
 
 			int j = Block.getRawIdFromState(Blocks.field_10491.getDefaultState());
@@ -85,7 +85,7 @@ public class PumpkinCarvedBlock extends HorizontalFacingBlock {
 				world.spawnEntity(ironGolemEntity);
 
 				for (ServerPlayerEntity serverPlayerEntity : world.getVisibleEntities(ServerPlayerEntity.class, ironGolemEntity.getBoundingBox().expand(5.0))) {
-					CriterionCriterions.SUMMONED_ENTITY.handle(serverPlayerEntity, ironGolemEntity);
+					Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, ironGolemEntity);
 				}
 
 				for (int j = 0; j < 120; j++) {
@@ -112,7 +112,7 @@ public class PumpkinCarvedBlock extends HorizontalFacingBlock {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(field_10748, itemPlacementContext.method_8042().getOpposite());
+		return this.getDefaultState().with(field_10748, itemPlacementContext.getPlayerHorizontalFacing().getOpposite());
 	}
 
 	@Override

@@ -7,7 +7,6 @@ import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_38;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -25,7 +24,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
-import net.minecraft.particle.Particle;
+import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.scoreboard.Scoreboard;
@@ -35,14 +34,15 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.TagManager;
 import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.util.Profiler;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportElement;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.ClientPersistentStateManager;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.LightType;
@@ -69,7 +69,7 @@ public class ClientWorld extends World {
 	) {
 		super(
 			new DummyWorldSaveHandler(),
-			new class_38(),
+			new ClientPersistentStateManager(),
 			new LevelProperties(levelInfo, "MpServer"),
 			dimensionType,
 			(world, dimension) -> new ClientChunkManager(world),
@@ -87,7 +87,7 @@ public class ClientWorld extends World {
 	public void tick(BooleanSupplier booleanSupplier) {
 		super.tick(booleanSupplier);
 		this.tickTime();
-		this.getProfiler().begin("reEntryProcessing");
+		this.getProfiler().push("reEntryProcessing");
 
 		for (int i = 0; i < 10 && !this.field_3726.isEmpty(); i++) {
 			Entity entity = (Entity)this.field_3726.iterator().next();
@@ -97,10 +97,10 @@ public class ClientWorld extends World {
 			}
 		}
 
-		this.getProfiler().endBegin("blocks");
+		this.getProfiler().swap("blocks");
 		this.chunkManager.tick(booleanSupplier);
 		this.method_2939();
-		this.getProfiler().end();
+		this.getProfiler().pop();
 	}
 
 	@Override
@@ -109,7 +109,7 @@ public class ClientWorld extends World {
 	}
 
 	private void method_2939() {
-		int i = this.client.options.viewDistance;
+		int i = this.client.field_1690.viewDistance;
 		int j = MathHelper.floor(this.client.player.x / 16.0);
 		int k = MathHelper.floor(this.client.player.z / 16.0);
 		if (this.ticksSinceLightingClient > 0) {
@@ -129,7 +129,7 @@ public class ClientWorld extends World {
 					}
 				}
 
-				WorldChunk worldChunk = this.getChunk(m, n);
+				WorldChunk worldChunk = this.getWorldChunk(m, n);
 				this.lcgBlockSeed = this.lcgBlockSeed * 3 + 1013904223;
 				int q = this.lcgBlockSeed >> 2;
 				int r = q & 15;
@@ -141,7 +141,7 @@ public class ClientWorld extends World {
 					BlockState blockState = worldChunk.getBlockState(blockPos);
 					r += o;
 					s += p;
-					if (blockState.isAir() && this.method_8624(blockPos, 0) <= this.random.nextInt(8) && this.getLightLevel(LightType.field_9284, blockPos) <= 0) {
+					if (blockState.isAir() && this.getLightLevel(blockPos, 0) <= this.random.nextInt(8) && this.getLightLevel(LightType.SKY_LIGHT, blockPos) <= 0) {
 						this.playSound(
 							(double)r + 0.5,
 							(double)t + 0.5,
@@ -175,8 +175,8 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void method_8463(Entity entity) {
-		super.method_8463(entity);
+	public void removeEntity(Entity entity) {
+		super.removeEntity(entity);
 		this.field_3728.remove(entity);
 	}
 
@@ -203,7 +203,7 @@ public class ClientWorld extends World {
 	public void method_2942(int i, Entity entity) {
 		Entity entity2 = this.getEntityById(i);
 		if (entity2 != null) {
-			this.method_8463(entity2);
+			this.removeEntity(entity2);
 		}
 
 		this.field_3728.add(entity);
@@ -225,7 +225,7 @@ public class ClientWorld extends World {
 		Entity entity = this.entitiesById.method_15312(i);
 		if (entity != null) {
 			this.field_3728.remove(entity);
-			this.method_8463(entity);
+			this.removeEntity(entity);
 		}
 
 		return entity;
@@ -269,11 +269,11 @@ public class ClientWorld extends World {
 		FluidState fluidState = this.getFluidState(mutable);
 		if (!fluidState.isEmpty()) {
 			fluidState.method_15768(this, mutable, random);
-			Particle particle = fluidState.method_15766();
-			if (particle != null && this.random.nextInt(10) == 0) {
-				boolean bl2 = Block.method_9501(blockState.method_11628(this, mutable), Direction.DOWN);
+			ParticleParameters particleParameters = fluidState.method_15766();
+			if (particleParameters != null && this.random.nextInt(10) == 0) {
+				boolean bl2 = Block.isFaceFullCube(blockState.getCollisionShape(this, mutable), Direction.DOWN);
 				BlockPos blockPos = mutable.down();
-				this.method_2938(blockPos, this.getBlockState(blockPos), particle, bl2);
+				this.method_2938(blockPos, this.getBlockState(blockPos), particleParameters, bl2);
 			}
 		}
 
@@ -282,10 +282,10 @@ public class ClientWorld extends World {
 		}
 	}
 
-	private void method_2938(BlockPos blockPos, BlockState blockState, Particle particle, boolean bl) {
+	private void method_2938(BlockPos blockPos, BlockState blockState, ParticleParameters particleParameters, boolean bl) {
 		if (blockState.getFluidState().isEmpty()) {
-			VoxelShape voxelShape = blockState.method_11628(this, blockPos);
-			double d = voxelShape.method_1105(Direction.Axis.Y);
+			VoxelShape voxelShape = blockState.getCollisionShape(this, blockPos);
+			double d = voxelShape.getMaximum(Direction.Axis.Y);
 			if (d < 1.0) {
 				if (bl) {
 					this.method_2932(
@@ -294,39 +294,39 @@ public class ClientWorld extends World {
 						(double)blockPos.getZ(),
 						(double)(blockPos.getZ() + 1),
 						(double)(blockPos.getY() + 1) - 0.05,
-						particle
+						particleParameters
 					);
 				}
 			} else if (!blockState.matches(BlockTags.field_15490)) {
-				double e = voxelShape.method_1091(Direction.Axis.Y);
+				double e = voxelShape.getMinimum(Direction.Axis.Y);
 				if (e > 0.0) {
-					this.method_2948(blockPos, particle, voxelShape, (double)blockPos.getY() + e - 0.05);
+					this.method_2948(blockPos, particleParameters, voxelShape, (double)blockPos.getY() + e - 0.05);
 				} else {
 					BlockPos blockPos2 = blockPos.down();
 					BlockState blockState2 = this.getBlockState(blockPos2);
-					VoxelShape voxelShape2 = blockState2.method_11628(this, blockPos2);
-					double f = voxelShape2.method_1105(Direction.Axis.Y);
+					VoxelShape voxelShape2 = blockState2.getCollisionShape(this, blockPos2);
+					double f = voxelShape2.getMaximum(Direction.Axis.Y);
 					if (f < 1.0 && blockState2.getFluidState().isEmpty()) {
-						this.method_2948(blockPos, particle, voxelShape, (double)blockPos.getY() - 0.05);
+						this.method_2948(blockPos, particleParameters, voxelShape, (double)blockPos.getY() - 0.05);
 					}
 				}
 			}
 		}
 	}
 
-	private void method_2948(BlockPos blockPos, Particle particle, VoxelShape voxelShape, double d) {
+	private void method_2948(BlockPos blockPos, ParticleParameters particleParameters, VoxelShape voxelShape, double d) {
 		this.method_2932(
-			(double)blockPos.getX() + voxelShape.method_1091(Direction.Axis.X),
-			(double)blockPos.getX() + voxelShape.method_1105(Direction.Axis.X),
-			(double)blockPos.getZ() + voxelShape.method_1091(Direction.Axis.Z),
-			(double)blockPos.getZ() + voxelShape.method_1105(Direction.Axis.Z),
+			(double)blockPos.getX() + voxelShape.getMinimum(Direction.Axis.X),
+			(double)blockPos.getX() + voxelShape.getMaximum(Direction.Axis.X),
+			(double)blockPos.getZ() + voxelShape.getMinimum(Direction.Axis.Z),
+			(double)blockPos.getZ() + voxelShape.getMaximum(Direction.Axis.Z),
 			d,
-			particle
+			particleParameters
 		);
 	}
 
-	private void method_2932(double d, double e, double f, double g, double h, Particle particle) {
-		this.method_8406(particle, MathHelper.lerp(this.random.nextDouble(), d, e), h, MathHelper.lerp(this.random.nextDouble(), f, g), 0.0, 0.0, 0.0);
+	private void method_2932(double d, double e, double f, double g, double h, ParticleParameters particleParameters) {
+		this.method_8406(particleParameters, MathHelper.lerp(this.random.nextDouble(), d, e), h, MathHelper.lerp(this.random.nextDouble(), f, g), 0.0, 0.0, 0.0);
 	}
 
 	public void method_2936() {
@@ -337,7 +337,7 @@ public class ClientWorld extends World {
 			int j = entity.chunkX;
 			int k = entity.chunkZ;
 			if (entity.field_6016 && this.isChunkLoaded(j, k)) {
-				this.getChunk(j, k).remove(entity);
+				this.getWorldChunk(j, k).remove(entity);
 			}
 		}
 
@@ -362,7 +362,7 @@ public class ClientWorld extends World {
 				int k = entity.chunkX;
 				int l = entity.chunkZ;
 				if (entity.field_6016 && this.isChunkLoaded(k, l)) {
-					this.getChunk(k, l).remove(entity);
+					this.getWorldChunk(k, l).remove(entity);
 				}
 
 				this.entities.remove(ix--);
@@ -372,15 +372,15 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public CrashReportElement toCrashReportElement(CrashReport crashReport) {
-		CrashReportElement crashReportElement = super.toCrashReportElement(crashReport);
-		crashReportElement.add("Forced entities", (ICrashCallable<String>)(() -> this.field_3728.size() + " total; " + this.field_3728));
-		crashReportElement.add("Retry entities", (ICrashCallable<String>)(() -> this.field_3726.size() + " total; " + this.field_3726));
-		crashReportElement.add("Server brand", (ICrashCallable<String>)(() -> this.client.player.getServerBrand()));
-		crashReportElement.add(
+	public CrashReportSection method_8538(CrashReport crashReport) {
+		CrashReportSection crashReportSection = super.method_8538(crashReport);
+		crashReportSection.add("Forced entities", (ICrashCallable<String>)(() -> this.field_3728.size() + " total; " + this.field_3728));
+		crashReportSection.add("Retry entities", (ICrashCallable<String>)(() -> this.field_3726.size() + " total; " + this.field_3726));
+		crashReportSection.add("Server brand", (ICrashCallable<String>)(() -> this.client.player.method_3135()));
+		crashReportSection.add(
 			"Server type", (ICrashCallable<String>)(() -> this.client.getServer() == null ? "Non-integrated multiplayer server" : "Integrated singleplayer server")
 		);
-		return crashReportElement;
+		return crashReportSection;
 	}
 
 	@Override
@@ -391,7 +391,7 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void method_8449(@Nullable PlayerEntity playerEntity, Entity entity, SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
+	public void playSoundFromEntity(@Nullable PlayerEntity playerEntity, Entity entity, SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
 		if (playerEntity == this.client.player) {
 			this.client.getSoundLoader().play(new EntityTrackingSoundInstance(soundEvent, soundCategory, entity));
 		}

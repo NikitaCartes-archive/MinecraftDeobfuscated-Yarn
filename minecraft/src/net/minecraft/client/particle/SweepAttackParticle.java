@@ -3,15 +3,15 @@ package net.minecraft.client.particle;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_308;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.entity.Entity;
-import net.minecraft.particle.TexturedParticle;
+import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -23,7 +23,7 @@ public class SweepAttackParticle extends Particle {
 		.add(VertexFormats.POSITION_ELEMENT)
 		.add(VertexFormats.UV_ELEMENT)
 		.add(VertexFormats.COLOR_ELEMENT)
-		.add(VertexFormats.field_1583)
+		.add(VertexFormats.LMAP_ELEMENT)
 		.add(VertexFormats.NORMAL_ELEMENT)
 		.add(VertexFormats.PADDING_ELEMENT);
 	private int age_;
@@ -43,7 +43,7 @@ public class SweepAttackParticle extends Particle {
 	}
 
 	@Override
-	public void buildGeometry(VertexBuffer vertexBuffer, Entity entity, float f, float g, float h, float i, float j, float k) {
+	public void buildGeometry(BufferBuilder bufferBuilder, Entity entity, float f, float g, float h, float i, float j, float k) {
 		int l = (int)(((float)this.age_ + f) * 3.0F / (float)this.maxAge_);
 		if (l <= 7) {
 			this.textureManager.bindTexture(TEX);
@@ -52,32 +52,32 @@ public class SweepAttackParticle extends Particle {
 			float o = (float)(l / 2) / 2.0F;
 			float p = o + 0.4995F;
 			float q = 1.0F * this.field_3785;
-			float r = (float)(MathHelper.lerp((double)f, this.prevPosX, this.posX) - lerpX);
-			float s = (float)(MathHelper.lerp((double)f, this.prevPosY, this.posY) - lerpY);
-			float t = (float)(MathHelper.lerp((double)f, this.prevPosZ, this.posZ) - lerpZ);
+			float r = (float)(MathHelper.lerp((double)f, this.prevPosX, this.posX) - cameraX);
+			float s = (float)(MathHelper.lerp((double)f, this.prevPosY, this.posY) - cameraY);
+			float t = (float)(MathHelper.lerp((double)f, this.prevPosZ, this.posZ) - cameraZ);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.disableLighting();
-			class_308.method_1450();
-			vertexBuffer.begin(7, field_3783);
-			vertexBuffer.vertex((double)(r - g * q - j * q), (double)(s - h * q * 0.5F), (double)(t - i * q - k * q))
+			GuiLighting.disable();
+			bufferBuilder.begin(7, field_3783);
+			bufferBuilder.vertex((double)(r - g * q - j * q), (double)(s - h * q * 0.5F), (double)(t - i * q - k * q))
 				.texture((double)n, (double)p)
 				.color(this.colorRed, this.colorGreen, this.colorBlue, 1.0F)
 				.texture(0, 240)
 				.normal(0.0F, 1.0F, 0.0F)
 				.next();
-			vertexBuffer.vertex((double)(r - g * q + j * q), (double)(s + h * q * 0.5F), (double)(t - i * q + k * q))
+			bufferBuilder.vertex((double)(r - g * q + j * q), (double)(s + h * q * 0.5F), (double)(t - i * q + k * q))
 				.texture((double)n, (double)o)
 				.color(this.colorRed, this.colorGreen, this.colorBlue, 1.0F)
 				.texture(0, 240)
 				.normal(0.0F, 1.0F, 0.0F)
 				.next();
-			vertexBuffer.vertex((double)(r + g * q + j * q), (double)(s + h * q * 0.5F), (double)(t + i * q + k * q))
+			bufferBuilder.vertex((double)(r + g * q + j * q), (double)(s + h * q * 0.5F), (double)(t + i * q + k * q))
 				.texture((double)m, (double)o)
 				.color(this.colorRed, this.colorGreen, this.colorBlue, 1.0F)
 				.texture(0, 240)
 				.normal(0.0F, 1.0F, 0.0F)
 				.next();
-			vertexBuffer.vertex((double)(r + g * q - j * q), (double)(s - h * q * 0.5F), (double)(t + i * q - k * q))
+			bufferBuilder.vertex((double)(r + g * q - j * q), (double)(s - h * q * 0.5F), (double)(t + i * q - k * q))
 				.texture((double)m, (double)p)
 				.color(this.colorRed, this.colorGreen, this.colorBlue, 1.0F)
 				.texture(0, 240)
@@ -110,8 +110,8 @@ public class SweepAttackParticle extends Particle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Factory implements FactoryParticle<TexturedParticle> {
-		public Particle createParticle(TexturedParticle texturedParticle, World world, double d, double e, double f, double g, double h, double i) {
+	public static class Factory implements ParticleFactory<DefaultParticleType> {
+		public Particle method_3006(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new SweepAttackParticle(MinecraftClient.getInstance().getTextureManager(), world, d, e, f, g, h, i);
 		}
 	}

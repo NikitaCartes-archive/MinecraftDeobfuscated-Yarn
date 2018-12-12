@@ -4,8 +4,8 @@ import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.entity.model.TridentEntityModel;
 import net.minecraft.entity.Entity;
@@ -23,17 +23,17 @@ public class TridentEntityRenderer extends EntityRenderer<TridentEntity> {
 	}
 
 	public void method_4133(TridentEntity tridentEntity, double d, double e, double f, float g, float h) {
-		this.method_3925(tridentEntity);
+		this.bindEntityTexture(tridentEntity);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.pushMatrix();
 		GlStateManager.disableLighting();
 		GlStateManager.translatef((float)d, (float)e, (float)f);
 		GlStateManager.rotatef(MathHelper.lerp(h, tridentEntity.prevYaw, tridentEntity.yaw) - 90.0F, 0.0F, 1.0F, 0.0F);
 		GlStateManager.rotatef(MathHelper.lerp(h, tridentEntity.prevPitch, tridentEntity.pitch) + 90.0F, 0.0F, 0.0F, 1.0F);
-		this.model.method_2835();
+		this.model.renderItem();
 		GlStateManager.popMatrix();
 		this.method_4131(tridentEntity, d, e, f, g, h);
-		super.method_3936(tridentEntity, d, e, f, g, h);
+		super.render(tridentEntity, d, e, f, g, h);
 		GlStateManager.enableLighting();
 	}
 
@@ -45,7 +45,7 @@ public class TridentEntityRenderer extends EntityRenderer<TridentEntity> {
 		Entity entity = tridentEntity.getOwner();
 		if (entity != null && tridentEntity.isNoClip()) {
 			Tessellator tessellator = Tessellator.getInstance();
-			VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
+			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 			double i = (double)(MathHelper.lerp(h * 0.5F, entity.yaw, entity.prevYaw) * (float) (Math.PI / 180.0));
 			double j = Math.cos(i);
 			double k = Math.sin(i);
@@ -68,7 +68,7 @@ public class TridentEntityRenderer extends EntityRenderer<TridentEntity> {
 			GlStateManager.disableLighting();
 			GlStateManager.disableCull();
 			GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, 255.0F, 255.0F);
-			vertexBuffer.begin(5, VertexFormats.POSITION_COLOR);
+			bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 			int aa = 37;
 			int ab = 7 - x % 7;
 			double ac = 0.1;
@@ -84,15 +84,15 @@ public class TridentEntityRenderer extends EntityRenderer<TridentEntity> {
 				float ak = 0.87F * af + 0.3F * (1.0F - af);
 				float al = 0.91F * af + 0.6F * (1.0F - af);
 				float am = 0.85F * af + 0.5F * (1.0F - af);
-				vertexBuffer.vertex(ah, ai, aj).color(ak, al, am, 1.0F).next();
-				vertexBuffer.vertex(ah + 0.1 * ag, ai + 0.1 * ag, aj).color(ak, al, am, 1.0F).next();
+				bufferBuilder.vertex(ah, ai, aj).color(ak, al, am, 1.0F).next();
+				bufferBuilder.vertex(ah + 0.1 * ag, ai + 0.1 * ag, aj).color(ak, al, am, 1.0F).next();
 				if (ad > tridentEntity.field_7649 * 2) {
 					break;
 				}
 			}
 
 			tessellator.draw();
-			vertexBuffer.begin(5, VertexFormats.POSITION_COLOR);
+			bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 
 			for (int adx = 0; adx <= 37; adx++) {
 				double ae = (double)adx / 37.0;
@@ -105,8 +105,8 @@ public class TridentEntityRenderer extends EntityRenderer<TridentEntity> {
 				float ak = 0.87F * af + 0.3F * (1.0F - af);
 				float al = 0.91F * af + 0.6F * (1.0F - af);
 				float am = 0.85F * af + 0.5F * (1.0F - af);
-				vertexBuffer.vertex(ah, ai, aj).color(ak, al, am, 1.0F).next();
-				vertexBuffer.vertex(ah + 0.1 * ag, ai, aj + 0.1 * ag).color(ak, al, am, 1.0F).next();
+				bufferBuilder.vertex(ah, ai, aj).color(ak, al, am, 1.0F).next();
+				bufferBuilder.vertex(ah + 0.1 * ag, ai, aj + 0.1 * ag).color(ak, al, am, 1.0F).next();
 				if (adx > tridentEntity.field_7649 * 2) {
 					break;
 				}

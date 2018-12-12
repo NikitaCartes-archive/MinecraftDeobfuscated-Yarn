@@ -5,11 +5,11 @@ import javax.annotation.Nullable;
 import net.minecraft.class_1394;
 import net.minecraft.class_1396;
 import net.minecraft.class_1399;
-import net.minecraft.class_3730;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -34,9 +34,9 @@ public class PigZombieEntity extends ZombieEntity {
 			field_7311, "Attacking speed boost", 0.05, EntityAttributeModifier.Operation.field_6328
 		)
 		.setSerialize(false);
-	private int field_7309;
+	private int anger;
 	private int field_7308;
-	private UUID field_7310;
+	private UUID angerTarget;
 
 	public PigZombieEntity(World world) {
 		super(EntityType.ZOMBIE_PIGMAN, world);
@@ -47,7 +47,7 @@ public class PigZombieEntity extends ZombieEntity {
 	public void setAttacker(@Nullable LivingEntity livingEntity) {
 		super.setAttacker(livingEntity);
 		if (livingEntity != null) {
-			this.field_7310 = livingEntity.getUuid();
+			this.angerTarget = livingEntity.getUuid();
 		}
 	}
 
@@ -80,7 +80,7 @@ public class PigZombieEntity extends ZombieEntity {
 				entityAttributeInstance.addModifier(field_7307);
 			}
 
-			this.field_7309--;
+			this.anger--;
 		} else if (entityAttributeInstance.hasModifier(field_7307)) {
 			entityAttributeInstance.removeModifier(field_7307);
 		}
@@ -89,8 +89,8 @@ public class PigZombieEntity extends ZombieEntity {
 			this.playSoundAtEntity(SoundEvents.field_14852, this.getSoundVolume() * 2.0F, ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) * 1.8F);
 		}
 
-		if (this.field_7309 > 0 && this.field_7310 != null && this.getAttacker() == null) {
-			PlayerEntity playerEntity = this.world.getPlayerByUuid(this.field_7310);
+		if (this.anger > 0 && this.angerTarget != null && this.getAttacker() == null) {
+			PlayerEntity playerEntity = this.world.getPlayerByUuid(this.angerTarget);
 			this.setAttacker(playerEntity);
 			this.field_6258 = playerEntity;
 			this.playerHitTimer = this.getLastAttackedTime();
@@ -100,7 +100,7 @@ public class PigZombieEntity extends ZombieEntity {
 	}
 
 	@Override
-	public boolean method_5979(IWorld iWorld, class_3730 arg) {
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
 		return iWorld.getDifficulty() != Difficulty.PEACEFUL;
 	}
 
@@ -114,9 +114,9 @@ public class PigZombieEntity extends ZombieEntity {
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putShort("Anger", (short)this.field_7309);
-		if (this.field_7310 != null) {
-			compoundTag.putString("HurtBy", this.field_7310.toString());
+		compoundTag.putShort("Anger", (short)this.anger);
+		if (this.angerTarget != null) {
+			compoundTag.putString("HurtBy", this.angerTarget.toString());
 		} else {
 			compoundTag.putString("HurtBy", "");
 		}
@@ -125,11 +125,11 @@ public class PigZombieEntity extends ZombieEntity {
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		this.field_7309 = compoundTag.getShort("Anger");
+		this.anger = compoundTag.getShort("Anger");
 		String string = compoundTag.getString("HurtBy");
 		if (!string.isEmpty()) {
-			this.field_7310 = UUID.fromString(string);
-			PlayerEntity playerEntity = this.world.getPlayerByUuid(this.field_7310);
+			this.angerTarget = UUID.fromString(string);
+			PlayerEntity playerEntity = this.world.getPlayerByUuid(this.angerTarget);
 			this.setAttacker(playerEntity);
 			if (playerEntity != null) {
 				this.field_6258 = playerEntity;
@@ -153,7 +153,7 @@ public class PigZombieEntity extends ZombieEntity {
 	}
 
 	private void copyEntityData(Entity entity) {
-		this.field_7309 = 400 + this.random.nextInt(400);
+		this.anger = 400 + this.random.nextInt(400);
 		this.field_7308 = this.random.nextInt(40);
 		if (entity instanceof LivingEntity) {
 			this.setAttacker((LivingEntity)entity);
@@ -161,7 +161,7 @@ public class PigZombieEntity extends ZombieEntity {
 	}
 
 	public boolean method_7079() {
-		return this.field_7309 > 0;
+		return this.anger > 0;
 	}
 
 	@Override

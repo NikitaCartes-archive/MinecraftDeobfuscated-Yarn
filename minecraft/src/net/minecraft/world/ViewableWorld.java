@@ -2,12 +2,11 @@ package net.minecraft.world;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
-import net.minecraft.class_251;
-import net.minecraft.class_264;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.VerticalEntityPosition;
@@ -19,10 +18,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.shape.AbstractVoxelShapeContainer;
 import net.minecraft.util.shape.BitSetVoxelShapeContainer;
+import net.minecraft.util.shape.OffsetVoxelShape;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.border.WorldBorder;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ChunkPos;
+import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.gen.Heightmap;
 
@@ -31,15 +35,15 @@ public interface ViewableWorld extends ExtendedBlockView {
 
 	default boolean method_8626(BlockPos blockPos) {
 		if (blockPos.getY() >= this.getSeaLevel()) {
-			return this.getSkyLightLevel(blockPos);
+			return this.isSkyVisible(blockPos);
 		} else {
 			BlockPos blockPos2 = new BlockPos(blockPos.getX(), this.getSeaLevel(), blockPos.getZ());
-			if (!this.getSkyLightLevel(blockPos2)) {
+			if (!this.isSkyVisible(blockPos2)) {
 				return false;
 			} else {
 				for (BlockPos var4 = blockPos2.down(); var4.getY() > blockPos.getY(); var4 = var4.down()) {
 					BlockState blockState = this.getBlockState(var4);
-					if (blockState.method_11581(this, var4) > 0 && !blockState.getMaterial().method_15797()) {
+					if (blockState.getLightSubtracted(this, var4) > 0 && !blockState.getMaterial().isLiquid()) {
 						return false;
 					}
 				}
@@ -49,7 +53,10 @@ public interface ViewableWorld extends ExtendedBlockView {
 		}
 	}
 
-	int method_8624(BlockPos blockPos, int i);
+	int getLightLevel(BlockPos blockPos, int i);
+
+	@Nullable
+	Chunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl);
 
 	boolean isChunkLoaded(int i, int j);
 
@@ -86,14 +93,26 @@ public interface ViewableWorld extends ExtendedBlockView {
 
 	boolean method_8611(@Nullable Entity entity, VoxelShape voxelShape);
 
-	int method_8596(BlockPos blockPos, Direction direction);
+	int getEmittedStrongRedstonePower(BlockPos blockPos, Direction direction);
 
-	boolean isRemote();
+	boolean isClient();
 
 	int getSeaLevel();
 
+	default Chunk getChunk(BlockPos blockPos) {
+		return this.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4);
+	}
+
+	default Chunk getChunk(int i, int j) {
+		return this.getChunk(i, j, ChunkStatus.FULL, true);
+	}
+
+	default Chunk getChunk(int i, int j, ChunkStatus chunkStatus) {
+		return this.getChunk(i, j, chunkStatus, true);
+	}
+
 	default boolean method_8628(BlockState blockState, BlockPos blockPos) {
-		VoxelShape voxelShape = blockState.method_11628(this, blockPos);
+		VoxelShape voxelShape = blockState.getCollisionShape(this, blockPos);
 		return voxelShape.isEmpty() || this.method_8611(null, voxelShape.method_1096((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
 	}
 
@@ -102,56 +121,74 @@ public interface ViewableWorld extends ExtendedBlockView {
 	}
 
 	default Stream<VoxelShape> method_8601(@Nullable Entity entity, VoxelShape voxelShape, VoxelShape voxelShape2, boolean bl) {
-		int i = MathHelper.floor(voxelShape.method_1091(Direction.Axis.X)) - 1;
-		int j = MathHelper.ceil(voxelShape.method_1105(Direction.Axis.X)) + 1;
-		int k = MathHelper.floor(voxelShape.method_1091(Direction.Axis.Y)) - 1;
-		int l = MathHelper.ceil(voxelShape.method_1105(Direction.Axis.Y)) + 1;
-		int m = MathHelper.floor(voxelShape.method_1091(Direction.Axis.Z)) - 1;
-		int n = MathHelper.ceil(voxelShape.method_1105(Direction.Axis.Z)) + 1;
+		int i = MathHelper.floor(voxelShape.getMinimum(Direction.Axis.X)) - 1;
+		int j = MathHelper.ceil(voxelShape.getMaximum(Direction.Axis.X)) + 1;
+		int k = MathHelper.floor(voxelShape.getMinimum(Direction.Axis.Y)) - 1;
+		int l = MathHelper.ceil(voxelShape.getMaximum(Direction.Axis.Y)) + 1;
+		int m = MathHelper.floor(voxelShape.getMinimum(Direction.Axis.Z)) - 1;
+		int n = MathHelper.ceil(voxelShape.getMaximum(Direction.Axis.Z)) + 1;
 		WorldBorder worldBorder = this.getWorldBorder();
 		boolean bl2 = worldBorder.getBoundWest() < (double)i
 			&& (double)j < worldBorder.getBoundEast()
 			&& worldBorder.getBoundNorth() < (double)m
 			&& (double)n < worldBorder.getBoundSouth();
-		class_251 lv = new BitSetVoxelShapeContainer(j - i, l - k, n - m);
+		AbstractVoxelShapeContainer abstractVoxelShapeContainer = new BitSetVoxelShapeContainer(j - i, l - k, n - m);
 		Predicate<VoxelShape> predicate = voxelShape2x -> !voxelShape2x.isEmpty() && VoxelShapes.compareShapes(voxelShape, voxelShape2x, BooleanBiFunction.AND);
 		VerticalEntityPosition verticalEntityPosition = VerticalEntityPosition.fromEntity(entity);
+		AtomicReference<ChunkPos> atomicReference = new AtomicReference(new ChunkPos(i >> 4, m >> 4));
+		AtomicReference<Chunk> atomicReference2 = new AtomicReference(this.getChunk(i >> 4, m >> 4, ChunkStatus.EMPTY, false));
 		Stream<VoxelShape> stream = StreamSupport.stream(BlockPos.Mutable.method_10068(i, k, m, j - 1, l - 1, n - 1).spliterator(), false).map(mutable -> {
 			int o = mutable.getX();
 			int p = mutable.getY();
 			int q = mutable.getZ();
-			boolean bl3 = o == i || o == j - 1;
-			boolean bl4 = p == k || p == l - 1;
-			boolean bl5 = q == m || q == n - 1;
-			if ((!bl3 || !bl4) && (!bl4 || !bl5) && (!bl5 || !bl3) && this.isBlockLoaded(mutable)) {
-				VoxelShape voxelShape2x;
-				if (bl && !bl2 && !worldBorder.contains(mutable)) {
-					voxelShape2x = VoxelShapes.fullCube();
+			if (World.isHeightInvalid(p)) {
+				return VoxelShapes.empty();
+			} else {
+				boolean bl3 = o == i || o == j - 1;
+				boolean bl4 = p == k || p == l - 1;
+				boolean bl5 = q == m || q == n - 1;
+				ChunkPos chunkPos = (ChunkPos)atomicReference.get();
+				int r = o >> 4;
+				int s = q >> 4;
+				Chunk chunk;
+				if (chunkPos.x == r && chunkPos.z == s) {
+					chunk = (Chunk)atomicReference2.get();
 				} else {
-					voxelShape2x = this.getBlockState(mutable).method_16337(this, mutable, verticalEntityPosition);
+					chunk = this.getChunk(r, s, ChunkStatus.EMPTY, false);
+					atomicReference.set(new ChunkPos(r, s));
+					atomicReference2.set(chunk);
 				}
 
-				VoxelShape voxelShape3 = voxelShape2.method_1096((double)(-o), (double)(-p), (double)(-q));
-				if (VoxelShapes.compareShapes(voxelShape3, voxelShape2x, BooleanBiFunction.AND)) {
-					return VoxelShapes.empty();
-				} else if (voxelShape2x == VoxelShapes.fullCube()) {
-					lv.method_1049(o - i, p - k, q - m, true, true);
-					return VoxelShapes.empty();
+				if ((!bl3 || !bl4) && (!bl4 || !bl5) && (!bl5 || !bl3) && chunk != null) {
+					VoxelShape voxelShape2x;
+					if (bl && !bl2 && !worldBorder.contains(mutable)) {
+						voxelShape2x = VoxelShapes.fullCube();
+					} else {
+						voxelShape2x = chunk.getBlockState(mutable).getCollisionShape(this, mutable, verticalEntityPosition);
+					}
+
+					VoxelShape voxelShape3 = voxelShape2.method_1096((double)(-o), (double)(-p), (double)(-q));
+					if (VoxelShapes.compareShapes(voxelShape3, voxelShape2x, BooleanBiFunction.AND)) {
+						return VoxelShapes.empty();
+					} else if (voxelShape2x == VoxelShapes.fullCube()) {
+						abstractVoxelShapeContainer.modify(o - i, p - k, q - m, true, true);
+						return VoxelShapes.empty();
+					} else {
+						return voxelShape2x.method_1096((double)o, (double)p, (double)q);
+					}
 				} else {
-					return voxelShape2x.method_1096((double)o, (double)p, (double)q);
+					return VoxelShapes.empty();
 				}
-			} else {
-				return VoxelShapes.empty();
 			}
 		}).filter(predicate);
-		return Stream.concat(stream, Stream.generate(() -> new class_264(lv, i, k, m)).limit(1L).filter(predicate));
+		return Stream.concat(stream, Stream.generate(() -> new OffsetVoxelShape(abstractVoxelShapeContainer, i, k, m)).limit(1L).filter(predicate));
 	}
 
-	default Stream<VoxelShape> method_8609(@Nullable Entity entity, BoundingBox boundingBox, double d, double e, double f) {
-		return this.method_8618(entity, boundingBox, Collections.emptySet(), d, e, f);
+	default Stream<VoxelShape> getCollisionVoxelShapes(@Nullable Entity entity, BoundingBox boundingBox, double d, double e, double f) {
+		return this.getCollisionVoxelShapes(entity, boundingBox, Collections.emptySet(), d, e, f);
 	}
 
-	default Stream<VoxelShape> method_8618(@Nullable Entity entity, BoundingBox boundingBox, Set<Entity> set, double d, double e, double f) {
+	default Stream<VoxelShape> getCollisionVoxelShapes(@Nullable Entity entity, BoundingBox boundingBox, Set<Entity> set, double d, double e, double f) {
 		double g = 1.0E-7;
 		VoxelShape voxelShape = VoxelShapes.cube(boundingBox);
 		VoxelShape voxelShape2 = VoxelShapes.cube(boundingBox.offset(d > 0.0 ? -1.0E-7 : 1.0E-7, e > 0.0 ? -1.0E-7 : 1.0E-7, f > 0.0 ? -1.0E-7 : 1.0E-7));
@@ -237,12 +274,12 @@ public interface ViewableWorld extends ExtendedBlockView {
 	default int method_8603(BlockPos blockPos, int i) {
 		if (blockPos.getX() < -30000000 || blockPos.getZ() < -30000000 || blockPos.getX() >= 30000000 || blockPos.getZ() >= 30000000) {
 			return 15;
-		} else if (this.getBlockState(blockPos).method_11593(this, blockPos)) {
-			int j = this.method_8624(blockPos.up(), i);
-			int k = this.method_8624(blockPos.east(), i);
-			int l = this.method_8624(blockPos.west(), i);
-			int m = this.method_8624(blockPos.south(), i);
-			int n = this.method_8624(blockPos.north(), i);
+		} else if (this.getBlockState(blockPos).usesNeighborLightValues(this, blockPos)) {
+			int j = this.getLightLevel(blockPos.up(), i);
+			int k = this.getLightLevel(blockPos.east(), i);
+			int l = this.getLightLevel(blockPos.west(), i);
+			int m = this.getLightLevel(blockPos.south(), i);
+			int n = this.getLightLevel(blockPos.north(), i);
 			if (k > j) {
 				j = k;
 			}
@@ -261,7 +298,7 @@ public interface ViewableWorld extends ExtendedBlockView {
 
 			return j;
 		} else {
-			return this.method_8624(blockPos, i);
+			return this.getLightLevel(blockPos, i);
 		}
 	}
 

@@ -4,28 +4,27 @@ import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
-import net.minecraft.class_3747;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.gen.Heightmap;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
 
-public class JungleGroundBushFeature extends TreeFeature<DefaultFeatureConfig> {
-	private final BlockState field_13646;
-	private final BlockState field_13647;
+public class JungleGroundBushFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
+	private final BlockState leaves;
+	private final BlockState log;
 
 	public JungleGroundBushFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, BlockState blockState, BlockState blockState2) {
 		super(function, false);
-		this.field_13647 = blockState;
-		this.field_13646 = blockState2;
+		this.log = blockState;
+		this.leaves = blockState2;
 	}
 
 	@Override
-	public boolean method_12775(Set<BlockPos> set, class_3747 arg, Random random, BlockPos blockPos) {
-		blockPos = arg.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos);
-		if (method_16430(arg, blockPos)) {
+	public boolean generate(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos) {
+		blockPos = modifiableTestableWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos);
+		if (isNaturalDirtOrGrass(modifiableTestableWorld, blockPos)) {
 			blockPos = blockPos.up();
-			this.method_12773(set, arg, blockPos, this.field_13647);
+			this.setBlockState(set, modifiableTestableWorld, blockPos, this.log);
 
 			for (int i = blockPos.getY(); i <= blockPos.getY() + 2; i++) {
 				int j = i - blockPos.getY();
@@ -38,8 +37,8 @@ public class JungleGroundBushFeature extends TreeFeature<DefaultFeatureConfig> {
 						int o = n - blockPos.getZ();
 						if (Math.abs(m) != k || Math.abs(o) != k || random.nextInt(2) != 0) {
 							BlockPos blockPos2 = new BlockPos(l, i, n);
-							if (method_16420(arg, blockPos2)) {
-								this.method_13153(arg, blockPos2, this.field_13646);
+							if (isAirOrLeaves(modifiableTestableWorld, blockPos2)) {
+								this.setBlockState(modifiableTestableWorld, blockPos2, this.leaves);
 							}
 						}
 					}

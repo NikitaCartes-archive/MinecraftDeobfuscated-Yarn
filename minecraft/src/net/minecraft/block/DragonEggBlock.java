@@ -24,7 +24,7 @@ public class DragonEggBlock extends FallingBlock {
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
 		this.method_10047(blockState, world, blockPos);
@@ -42,7 +42,7 @@ public class DragonEggBlock extends FallingBlock {
 				world.random.nextInt(16) - world.random.nextInt(16), world.random.nextInt(8) - world.random.nextInt(8), world.random.nextInt(16) - world.random.nextInt(16)
 			);
 			if (world.getBlockState(blockPos2).isAir()) {
-				if (world.isRemote) {
+				if (world.isClient) {
 					for (int j = 0; j < 128; j++) {
 						double d = world.random.nextDouble();
 						float f = (world.random.nextFloat() - 0.5F) * 0.2F;

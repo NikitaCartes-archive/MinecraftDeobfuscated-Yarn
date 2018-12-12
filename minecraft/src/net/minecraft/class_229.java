@@ -16,10 +16,10 @@ public class class_229 implements class_234<MinecraftServer> {
 
 	public void method_962(MinecraftServer minecraftServer, class_236<MinecraftServer> arg, long l) {
 		CommandFunctionManager commandFunctionManager = minecraftServer.getCommandFunctionManager();
-		Tag<CommandFunction> tag = commandFunctionManager.method_12901().getOrCreate(this.field_1303);
+		Tag<CommandFunction> tag = commandFunctionManager.getTags().getOrCreate(this.field_1303);
 
 		for (CommandFunction commandFunction : tag.values()) {
-			commandFunctionManager.method_12904(commandFunction, commandFunctionManager.method_12899());
+			commandFunctionManager.execute(commandFunction, commandFunctionManager.getFunctionCommandSource());
 		}
 	}
 

@@ -38,10 +38,10 @@ public class CakeBlock extends Block {
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			return this.method_9719(world, blockPos, blockState, playerEntity);
 		} else {
 			ItemStack itemStack = playerEntity.getStackInHand(hand);
@@ -53,7 +53,7 @@ public class CakeBlock extends Block {
 		if (!playerEntity.canConsume(false)) {
 			return false;
 		} else {
-			playerEntity.method_7281(Stats.field_15369);
+			playerEntity.increaseStat(Stats.field_15369);
 			playerEntity.getHungerManager().add(2, 0.1F);
 			int i = (Integer)blockState.get(field_10739);
 			if (i < 6) {
@@ -67,10 +67,12 @@ public class CakeBlock extends Block {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		return direction == Direction.DOWN && !blockState.canPlaceAt(iWorld, blockPos)
 			? Blocks.field_10124.getDefaultState()
-			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override

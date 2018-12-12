@@ -20,7 +20,7 @@ import javax.annotation.Nullable;
 import net.minecraft.datafixers.TypeReferences;
 
 public class ItemInstanceTheFlatteningFix extends DataFix {
-	private static final Map<String, String> damageMap = DataFixUtils.make(Maps.<String, String>newHashMap(), hashMap -> {
+	private static final Map<String, String> FLATTENING_MAP = DataFixUtils.make(Maps.<String, String>newHashMap(), hashMap -> {
 		hashMap.put("minecraft:stone.0", "minecraft:stone");
 		hashMap.put("minecraft:stone.1", "minecraft:granite");
 		hashMap.put("minecraft:stone.2", "minecraft:polished_granite");
@@ -342,11 +342,11 @@ public class ItemInstanceTheFlatteningFix extends DataFix {
 		hashMap.put("minecraft:record_wait.0", "minecraft:music_disc_wait");
 		hashMap.put("minecraft:record_ward.0", "minecraft:music_disc_ward");
 	});
-	private static final Set<String> itemNames = (Set<String>)damageMap.keySet()
+	private static final Set<String> ORIGINAL_ITEM_NAMES = (Set<String>)FLATTENING_MAP.keySet()
 		.stream()
 		.map(string -> string.substring(0, string.indexOf(46)))
 		.collect(Collectors.toSet());
-	private static final Set<String> damagedItems = Sets.<String>newHashSet(
+	private static final Set<String> DAMAGABLE_ITEMS = Sets.<String>newHashSet(
 		"minecraft:bow",
 		"minecraft:carrot_on_a_stick",
 		"minecraft:chainmail_boots",
@@ -423,7 +423,7 @@ public class ItemInstanceTheFlatteningFix extends DataFix {
 					typed2 = typed.set(opticFinder, Pair.of(TypeReferences.ITEM_NAME.typeName(), string));
 				}
 
-				if (damagedItems.contains(((Pair)optional.get()).getSecond())) {
+				if (DAMAGABLE_ITEMS.contains(((Pair)optional.get()).getSecond())) {
 					Typed<?> typed3 = typed.getOrCreateTyped(opticFinder2);
 					Dynamic<?> dynamic2 = typed3.get(DSL.remainderFinder());
 					dynamic2 = dynamic2.set("Damage", dynamic2.createInt(i));
@@ -437,9 +437,9 @@ public class ItemInstanceTheFlatteningFix extends DataFix {
 
 	@Nullable
 	public static String getItem(@Nullable String string, int i) {
-		if (itemNames.contains(string)) {
-			String string2 = (String)damageMap.get(string + '.' + i);
-			return string2 == null ? (String)damageMap.get(string + ".0") : string2;
+		if (ORIGINAL_ITEM_NAMES.contains(string)) {
+			String string2 = (String)FLATTENING_MAP.get(string + '.' + i);
+			return string2 == null ? (String)FLATTENING_MAP.get(string + ".0") : string2;
 		} else {
 			return null;
 		}

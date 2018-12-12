@@ -4,7 +4,7 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class MultishotEnchantment extends Enchantment {
 	public MultishotEnchantment(Enchantment.Weight weight, EquipmentSlot... equipmentSlots) {
-		super(weight, EnchantmentTarget.field_9081, equipmentSlots);
+		super(weight, EnchantmentTarget.CROSSBOW, equipmentSlots);
 	}
 
 	@Override

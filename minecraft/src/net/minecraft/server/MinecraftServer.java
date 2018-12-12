@@ -3,6 +3,7 @@ package net.minecraft.server;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.gson.JsonElement;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
@@ -34,7 +35,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
@@ -46,15 +51,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_1932;
 import net.minecraft.class_3004;
-import net.minecraft.class_3202;
-import net.minecraft.class_3689;
-import net.minecraft.class_37;
 import net.minecraft.class_3738;
-import net.minecraft.class_3807;
+import net.minecraft.class_3902;
 import net.minecraft.client.network.packet.WorldTimeUpdateClientPacket;
 import net.minecraft.datafixers.Schemas;
+import net.minecraft.entity.player.ChunkTicketType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.resource.DefaultResourcePackCreator;
@@ -73,8 +75,10 @@ import net.minecraft.server.config.OperatorEntry;
 import net.minecraft.server.config.WhitelistList;
 import net.minecraft.server.dedicated.EulaReader;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
+import net.minecraft.server.dedicated.ServerPropertiesLoader;
 import net.minecraft.server.function.CommandFunctionManager;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.SecondaryServerWorld;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerDemoWorld;
 import net.minecraft.server.world.ServerWorld;
@@ -84,7 +88,6 @@ import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.MetricsData;
-import net.minecraft.util.MinecraftException;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.ThreadTaskQueue;
@@ -98,12 +101,16 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.profiler.DisableableProfiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.util.snooper.SnooperListener;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.ForcedChunkState;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.PersistentStateManager;
+import net.minecraft.world.SessionLockException;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.chunk.ChunkPos;
@@ -119,14 +126,18 @@ import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implements SnooperListener, CommandOutput, Runnable {
+public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implements SnooperListener, CommandOutput, AutoCloseable, Runnable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final File USER_CACHE_FILE = new File("usercache.json");
+	private final AtomicInteger field_17201 = new AtomicInteger(1);
+	@Nullable
 	private final LevelStorage levelStorage;
-	private final Snooper snooper = new Snooper("server", this, SystemUtil.getMeasuringTimeMili());
+	private final Snooper snooper = new Snooper("server", this, SystemUtil.getMeasuringTimeMs());
+	@Nullable
 	private final File gameDir;
 	private final List<Tickable> tickables = Lists.<Tickable>newArrayList();
-	private final class_3689 profiler = new class_3689(this::getTicks);
+	private final DisableableProfiler profiler = new DisableableProfiler(this::getTicks);
+	@Nullable
 	private final ServerNetworkIO networkIO;
 	private final ServerMetadata metadata = new ServerMetadata();
 	private final Random random = new Random();
@@ -134,11 +145,12 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 	private String serverIp;
 	private int serverPort = -1;
 	private final Map<DimensionType, ServerWorld> worlds = Maps.<DimensionType, ServerWorld>newIdentityHashMap();
-	private PlayerManager serverConfigurationManager;
+	private PlayerManager playerManager;
 	private volatile boolean running = true;
 	private boolean stopped;
 	private int ticks;
 	protected final Proxy field_4599;
+	@Nullable
 	private TextComponent field_4581;
 	private boolean onlineMode;
 	private boolean preventProxyConnections;
@@ -146,14 +158,19 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 	private boolean spawnNpcs;
 	private boolean pvpEnabled;
 	private boolean flightEnabled;
+	@Nullable
 	private String motd;
 	private int worldHeight;
 	private int playerIdleTimeout;
 	public final long[] lastTickLengths = new long[100];
 	protected final Map<DimensionType, long[]> field_4600 = Maps.<DimensionType, long[]>newIdentityHashMap();
+	@Nullable
 	private KeyPair keyPair;
+	@Nullable
 	private String userName;
+	@Nullable
 	private String levelName;
+	@Nullable
 	@Environment(EnvType.CLIENT)
 	private String displayName;
 	private boolean demo;
@@ -162,9 +179,11 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 	private String resourcePackHash = "";
 	private volatile boolean field_4547;
 	private long field_4557;
+	@Nullable
 	private TextComponent field_4601;
 	private boolean field_4597;
 	private boolean forceGameMode;
+	@Nullable
 	private final YggdrasilAuthenticationService authService;
 	private final MinecraftSessionService sessionService;
 	private final GameProfileRepository gameProfileRepo;
@@ -173,25 +192,27 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 	protected final Thread serverThread = SystemUtil.consume(
 		new Thread(this, "Server thread"), thread -> thread.setUncaughtExceptionHandler((threadx, throwable) -> LOGGER.error(throwable))
 	);
-	private long timeReference = SystemUtil.getMeasuringTimeMili();
+	private long timeReference = SystemUtil.getMeasuringTimeMs();
 	@Environment(EnvType.CLIENT)
 	private boolean iconFilePresent;
 	private final ReloadableResourceManager dataManager = new ReloadableResourceManagerImpl(ResourceType.DATA);
 	private final ResourcePackContainerManager<ResourcePackContainer> field_4595 = new ResourcePackContainerManager<>(ResourcePackContainer::new);
+	@Nullable
 	private FileResourcePackCreator field_4553;
 	private final ServerCommandManager commandManager;
 	private final RecipeManager recipeManager = new RecipeManager();
 	private final TagManager tagManager = new TagManager();
-	private final ServerScoreboard field_4558 = new ServerScoreboard(this);
+	private final ServerScoreboard scoreboard = new ServerScoreboard(this);
 	private final class_3004 field_4548 = new class_3004(this);
 	private final LootManager lootManager = new LootManager();
-	private final ServerAdvancementManager advancementManager = new ServerAdvancementManager();
+	private final ServerAdvancementLoader field_4567 = new ServerAdvancementLoader();
 	private final CommandFunctionManager commandFunctionManager = new CommandFunctionManager(this);
 	private final MetricsData field_16205 = new MetricsData();
 	private final long field_16204 = SystemUtil.getMeasuringTimeNano();
 	private boolean field_4570;
 	private boolean forceWorldUpgrade;
-	private float field_4592;
+	private float tickTime;
+	private final ExecutorService field_17200;
 
 	public MinecraftServer(
 		@Nullable File file,
@@ -217,7 +238,24 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 		this.dataManager.addListener(this.recipeManager);
 		this.dataManager.addListener(this.lootManager);
 		this.dataManager.addListener(this.commandFunctionManager);
-		this.dataManager.addListener(this.advancementManager);
+		this.dataManager.addListener(this.field_4567);
+		this.field_17200 = this.method_17191(MathHelper.clamp(Runtime.getRuntime().availableProcessors() - 1, 1, 7));
+	}
+
+	private ExecutorService method_17191(int i) {
+		ExecutorService executorService;
+		if (i <= 0) {
+			executorService = MoreExecutors.newDirectExecutorService();
+		} else {
+			executorService = new ForkJoinPool(i, forkJoinPool -> {
+				ForkJoinWorkerThread forkJoinWorkerThread = new ForkJoinWorkerThread(forkJoinPool) {
+				};
+				forkJoinWorkerThread.setName("Server-Worker-" + this.field_17201.getAndIncrement());
+				return forkJoinWorkerThread;
+			}, (thread, throwable) -> LOGGER.error(String.format("Caught exception in thread %s", thread), throwable), true);
+		}
+
+		return executorService;
 	}
 
 	protected abstract boolean setupServer() throws IOException;
@@ -227,7 +265,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 			LOGGER.info("Converting map!");
 			this.method_3768(new TranslatableTextComponent("menu.convertingLevel"));
 			this.getLevelStorage().convertLevel(string, new ProgressListener() {
-				private long lastProgressUpdate = SystemUtil.getMeasuringTimeMili();
+				private long lastProgressUpdate = SystemUtil.getMeasuringTimeMs();
 
 				@Override
 				public void method_15412(TextComponent textComponent) {
@@ -240,15 +278,15 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 
 				@Override
 				public void progressStagePercentage(int i) {
-					if (SystemUtil.getMeasuringTimeMili() - this.lastProgressUpdate >= 1000L) {
-						this.lastProgressUpdate = SystemUtil.getMeasuringTimeMili();
+					if (SystemUtil.getMeasuringTimeMs() - this.lastProgressUpdate >= 1000L) {
+						this.lastProgressUpdate = SystemUtil.getMeasuringTimeMs();
 						MinecraftServer.LOGGER.info("Converting... {}%", i);
 					}
 				}
 
 				@Environment(EnvType.CLIENT)
 				@Override
-				public void method_15411() {
+				public void setDone() {
 				}
 
 				@Override
@@ -264,21 +302,21 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 				WorldUpdater worldUpdater = new WorldUpdater(this.getLevelName(), this.getLevelStorage(), levelProperties);
 				TextComponent textComponent = null;
 
-				while (!worldUpdater.method_5403()) {
+				while (!worldUpdater.isDone()) {
 					TextComponent textComponent2 = worldUpdater.getStatus();
 					if (textComponent != textComponent2) {
 						textComponent = textComponent2;
 						LOGGER.info(worldUpdater.getStatus().getString());
 					}
 
-					int i = worldUpdater.method_5397();
+					int i = worldUpdater.getTotalChunkCount();
 					if (i > 0) {
-						int j = worldUpdater.method_5400() + worldUpdater.method_5399();
+						int j = worldUpdater.getUpgradedChunkCount() + worldUpdater.getSkippedChunkCount();
 						LOGGER.info("{}% completed ({} / {} chunks)...", MathHelper.floor((float)j / (float)i * 100.0F), j, i);
 					}
 
 					if (this.isStopped()) {
-						worldUpdater.method_5402();
+						worldUpdater.cancel();
 					} else {
 						try {
 							Thread.sleep(1000L);
@@ -325,43 +363,59 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 		}
 
 		this.method_3800(worldSaveHandler.getWorldDir(), levelProperties);
-		class_37 lv = new class_37(worldSaveHandler);
-		this.method_3786(worldSaveHandler, lv, levelProperties, levelInfo);
+		PersistentStateManager persistentStateManager = new PersistentStateManager(worldSaveHandler);
+		this.createWorlds(worldSaveHandler, persistentStateManager, levelProperties, levelInfo);
 		this.setDifficulty(this.getDefaultDifficulty());
-		this.method_3774(lv);
+		this.method_3774(persistentStateManager);
 	}
 
-	protected void method_3786(WorldSaveHandler worldSaveHandler, class_37 arg, LevelProperties levelProperties, LevelInfo levelInfo) {
+	protected void createWorlds(
+		WorldSaveHandler worldSaveHandler, PersistentStateManager persistentStateManager, LevelProperties levelProperties, LevelInfo levelInfo
+	) {
 		if (this.isDemo()) {
 			this.worlds
-				.put(DimensionType.field_13072, new ServerDemoWorld(this, worldSaveHandler, arg, levelProperties, DimensionType.field_13072, this.profiler).method_14185());
+				.put(
+					DimensionType.field_13072,
+					new ServerDemoWorld(this, this.field_17200, worldSaveHandler, persistentStateManager, levelProperties, DimensionType.field_13072, this.profiler)
+						.initialize()
+				);
 		} else {
 			this.worlds
-				.put(DimensionType.field_13072, new ServerWorld(this, worldSaveHandler, arg, levelProperties, DimensionType.field_13072, this.profiler).method_14185());
+				.put(
+					DimensionType.field_13072,
+					new ServerWorld(this, this.field_17200, worldSaveHandler, persistentStateManager, levelProperties, DimensionType.field_13072, this.profiler).initialize()
+				);
 		}
 
 		ServerWorld serverWorld = this.getWorld(DimensionType.field_13072);
+		serverWorld.getChunkManager().method_14142(441);
 		serverWorld.init(levelInfo);
 		serverWorld.registerListener(new ServerWorldListener(this, serverWorld));
 		if (!this.isSinglePlayer()) {
 			serverWorld.getLevelProperties().setGameMode(this.getDefaultGameMode());
 		}
 
-		class_3202 lv = new class_3202(this, worldSaveHandler, DimensionType.field_13076, serverWorld, this.profiler).method_14033();
-		this.worlds.put(DimensionType.field_13076, lv);
-		lv.registerListener(new ServerWorldListener(this, lv));
+		SecondaryServerWorld secondaryServerWorld = new SecondaryServerWorld(
+				this, this.field_17200, worldSaveHandler, DimensionType.field_13076, serverWorld, this.profiler
+			)
+			.initializeAsSecondaryWorld();
+		this.worlds.put(DimensionType.field_13076, secondaryServerWorld);
+		secondaryServerWorld.registerListener(new ServerWorldListener(this, secondaryServerWorld));
 		if (!this.isSinglePlayer()) {
-			lv.getLevelProperties().setGameMode(this.getDefaultGameMode());
+			secondaryServerWorld.getLevelProperties().setGameMode(this.getDefaultGameMode());
 		}
 
-		class_3202 lv2 = new class_3202(this, worldSaveHandler, DimensionType.field_13078, serverWorld, this.profiler).method_14033();
-		this.worlds.put(DimensionType.field_13078, lv2);
-		lv2.registerListener(new ServerWorldListener(this, lv2));
+		SecondaryServerWorld secondaryServerWorld2 = new SecondaryServerWorld(
+				this, this.field_17200, worldSaveHandler, DimensionType.field_13078, serverWorld, this.profiler
+			)
+			.initializeAsSecondaryWorld();
+		this.worlds.put(DimensionType.field_13078, secondaryServerWorld2);
+		secondaryServerWorld2.registerListener(new ServerWorldListener(this, secondaryServerWorld2));
 		if (!this.isSinglePlayer()) {
-			lv2.getLevelProperties().setGameMode(this.getDefaultGameMode());
+			secondaryServerWorld2.getLevelProperties().setGameMode(this.getDefaultGameMode());
 		}
 
-		this.getConfigurationManager().method_14591(serverWorld);
+		this.getPlayerManager().method_14591(serverWorld);
 		if (levelProperties.getCustomBossEvents() != null) {
 			this.method_3837().method_12972(levelProperties.getCustomBossEvents());
 		}
@@ -387,21 +441,21 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 		this.reloadDataPacks(levelProperties);
 	}
 
-	protected void method_3774(class_37 arg) {
+	protected void method_3774(PersistentStateManager persistentStateManager) {
 		this.method_3768(new TranslatableTextComponent("menu.generatingTerrain"));
 		ServerWorld serverWorld = this.getWorld(DimensionType.field_13072);
 		LOGGER.info("Preparing start region for dimension " + DimensionType.getId(serverWorld.dimension.getType()));
-		BlockPos blockPos = serverWorld.method_8395();
+		BlockPos blockPos = serverWorld.getSpawnPos();
 		Stopwatch stopwatch = Stopwatch.createStarted();
 		ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
-		this.timeReference = SystemUtil.getMeasuringTimeMili();
+		serverChunkManager.getLightingProvider().method_17304(500);
+		this.timeReference = SystemUtil.getMeasuringTimeMs();
 		int i = 0;
-		serverChunkManager.method_14135(new ChunkPos(blockPos), 11);
-		serverChunkManager.method_14142(441);
+		serverChunkManager.method_17297(ChunkTicketType.START, new ChunkPos(blockPos), 11, class_3902.field_17274);
 
-		while (serverChunkManager.method_14107()) {
+		while (serverChunkManager.method_17301() != 441) {
 			this.timeReference += 100L;
-			serverChunkManager.updateLight();
+			serverChunkManager.getLightingProvider().method_17303();
 			this.method_16208();
 			if (++i % 5 == 0) {
 				this.method_3746(new TranslatableTextComponent("menu.preparingSpawn"), serverChunkManager.getProgressString());
@@ -409,17 +463,17 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 		}
 
 		this.timeReference += 100L;
-		serverChunkManager.updateLight();
+		serverChunkManager.getLightingProvider().method_17303();
 		this.method_16208();
 		this.method_3746(new TranslatableTextComponent("menu.preparingSpawn"), serverChunkManager.getProgressString());
 
 		for (DimensionType dimensionType : DimensionType.getAll()) {
-			class_1932 lv = arg.method_268(dimensionType, class_1932::new, "chunks");
-			if (lv != null) {
+			ForcedChunkState forcedChunkState = persistentStateManager.get(dimensionType, ForcedChunkState::new, "chunks");
+			if (forcedChunkState != null) {
 				ServerWorld serverWorld2 = this.getWorld(dimensionType);
-				int j = lv.method_8375().size();
+				int j = forcedChunkState.getChunks().size();
 				int k = 0;
-				LongIterator longIterator = lv.method_8375().iterator();
+				LongIterator longIterator = forcedChunkState.getChunks().iterator();
 
 				while (longIterator.hasNext()) {
 					this.method_3746(new TranslatableTextComponent("menu.loadingForcedChunks", dimensionType), Integer.toString(k++ * 100 / j));
@@ -431,10 +485,11 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 		}
 
 		this.timeReference += 100L;
-		serverChunkManager.updateLight();
+		serverChunkManager.getLightingProvider().method_17303();
 		this.method_16208();
 		LOGGER.info("Time elapsed: {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
 		this.clearSpawnAreaProgress();
+		serverChunkManager.getLightingProvider().method_17304(5);
 	}
 
 	protected void method_3861(String string, WorldSaveHandler worldSaveHandler) {
@@ -478,11 +533,15 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 
 				try {
 					serverWorld.save(null, bl2);
-				} catch (MinecraftException var6) {
+				} catch (SessionLockException var6) {
 					LOGGER.warn(var6.getMessage());
 				}
 			}
 		}
+	}
+
+	public void close() {
+		this.shutdown();
 	}
 
 	protected void shutdown() {
@@ -491,17 +550,17 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 			this.getNetworkIO().stop();
 		}
 
-		if (this.serverConfigurationManager != null) {
+		if (this.playerManager != null) {
 			LOGGER.info("Saving players");
-			this.serverConfigurationManager.saveAllPlayerData();
-			this.serverConfigurationManager.disconnectAllPlayers();
+			this.playerManager.saveAllPlayerData();
+			this.playerManager.disconnectAllPlayers();
 		}
 
 		LOGGER.info("Saving worlds");
 
 		for (ServerWorld serverWorld : this.getWorlds()) {
 			if (serverWorld != null) {
-				serverWorld.field_13957 = false;
+				serverWorld.savingDisabled = false;
 			}
 		}
 
@@ -515,6 +574,19 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 
 		if (this.snooper.isActive()) {
 			this.snooper.cancel();
+		}
+
+		this.field_17200.shutdown();
+
+		boolean bl;
+		try {
+			bl = this.field_17200.awaitTermination(3L, TimeUnit.SECONDS);
+		} catch (InterruptedException var3) {
+			bl = false;
+		}
+
+		if (!bl) {
+			this.field_17200.shutdownNow();
 		}
 	}
 
@@ -542,19 +614,19 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 	}
 
 	private boolean shouldKeepTicking() {
-		return SystemUtil.getMeasuringTimeMili() < this.timeReference;
+		return SystemUtil.getMeasuringTimeMs() < this.timeReference;
 	}
 
 	public void run() {
 		try {
 			if (this.setupServer()) {
-				this.timeReference = SystemUtil.getMeasuringTimeMili();
+				this.timeReference = SystemUtil.getMeasuringTimeMs();
 				this.metadata.setDescription(new StringTextComponent(this.motd));
 				this.metadata.setVersion(new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion()));
 				this.method_3791(this.metadata);
 
 				while (this.running) {
-					long l = SystemUtil.getMeasuringTimeMili() - this.timeReference;
+					long l = SystemUtil.getMeasuringTimeMs() - this.timeReference;
 					if (l > 2000L && this.timeReference - this.field_4557 >= 15000L) {
 						long m = l / 50L;
 						LOGGER.warn("Can't keep up! Is the server overloaded? Running {}ms or {} ticks behind", l, m);
@@ -619,7 +691,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 	public boolean executeQueuedTask() {
 		if (this.shouldKeepTicking()) {
 			for (ServerWorld serverWorld : this.getWorlds()) {
-				if (serverWorld.getChunkManager().method_16165()) {
+				if (serverWorld.getChunkManager().method_17302()) {
 					return true;
 				}
 			}
@@ -691,10 +763,10 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 		this.ticks++;
 		if (this.field_4597) {
 			this.field_4597 = false;
-			this.profiler.method_16055().method_16060();
+			this.profiler.getController().method_16060();
 		}
 
-		this.profiler.method_16065();
+		this.profiler.startTick();
 		this.tick(booleanSupplier);
 		if (l - this.field_4551 >= 5000000000L) {
 			this.field_4551 = l;
@@ -703,7 +775,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 			int i = MathHelper.nextInt(this.random, 0, this.getCurrentPlayerCount() - gameProfiles.length);
 
 			for (int j = 0; j < gameProfiles.length; j++) {
-				gameProfiles[j] = ((ServerPlayerEntity)this.serverConfigurationManager.getPlayerList().get(i + j)).getGameProfile();
+				gameProfiles[j] = ((ServerPlayerEntity)this.playerManager.getPlayerList().get(i + j)).getGameProfile();
 			}
 
 			Collections.shuffle(Arrays.asList(gameProfiles));
@@ -711,13 +783,13 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 		}
 
 		if (this.ticks % 900 == 0) {
-			this.profiler.begin("save");
-			this.serverConfigurationManager.saveAllPlayerData();
+			this.profiler.push("save");
+			this.playerManager.saveAllPlayerData();
 			this.save(true, false);
-			this.profiler.end();
+			this.profiler.pop();
 		}
 
-		this.profiler.begin("snooper");
+		this.profiler.push("snooper");
 		if (!this.snooper.isActive() && this.ticks > 100) {
 			this.snooper.method_5482();
 		}
@@ -726,43 +798,43 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 			this.snooper.update();
 		}
 
-		this.profiler.end();
-		this.profiler.begin("tallying");
+		this.profiler.pop();
+		this.profiler.push("tallying");
 		long m = this.lastTickLengths[this.ticks % 100] = SystemUtil.getMeasuringTimeNano() - l;
-		this.field_4592 = this.field_4592 * 0.8F + (float)m / 1000000.0F * 0.19999999F;
+		this.tickTime = this.tickTime * 0.8F + (float)m / 1000000.0F * 0.19999999F;
 		long n = SystemUtil.getMeasuringTimeNano();
 		this.field_16205.pushSample(n - l);
-		this.profiler.end();
-		this.profiler.method_16066();
+		this.profiler.pop();
+		this.profiler.endTick();
 	}
 
 	protected void tick(BooleanSupplier booleanSupplier) {
-		this.profiler.begin("commandFunctions");
+		this.profiler.push("commandFunctions");
 		this.getCommandFunctionManager().tick();
-		this.profiler.endBegin("levels");
+		this.profiler.swap("levels");
 
 		for (ServerWorld serverWorld : this.getWorlds()) {
 			long l = SystemUtil.getMeasuringTimeNano();
 			if (serverWorld.dimension.getType() == DimensionType.field_13072 || this.isNetherAllowed()) {
 				this.profiler
-					.begin((Supplier<String>)(() -> serverWorld.getLevelProperties().getLevelName() + " " + Registry.DIMENSION.getId(serverWorld.dimension.getType())));
+					.push((Supplier<String>)(() -> serverWorld.getLevelProperties().getLevelName() + " " + Registry.DIMENSION.getId(serverWorld.dimension.getType())));
 				if (this.ticks % 20 == 0) {
-					this.profiler.begin("timeSync");
-					this.serverConfigurationManager
+					this.profiler.push("timeSync");
+					this.playerManager
 						.sendToDimension(
 							new WorldTimeUpdateClientPacket(serverWorld.getTime(), serverWorld.getTimeOfDay(), serverWorld.getGameRules().getBoolean("doDaylightCycle")),
 							serverWorld.dimension.getType()
 						);
-					this.profiler.end();
+					this.profiler.pop();
 				}
 
-				this.profiler.begin("tick");
+				this.profiler.push("tick");
 
 				try {
 					serverWorld.tick(booleanSupplier);
 				} catch (Throwable var9) {
 					CrashReport crashReport = CrashReport.create(var9, "Exception ticking world");
-					serverWorld.toCrashReportElement(crashReport);
+					serverWorld.method_8538(crashReport);
 					throw new CrashException(crashReport);
 				}
 
@@ -770,32 +842,32 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 					serverWorld.updateEntities();
 				} catch (Throwable var8) {
 					CrashReport crashReport = CrashReport.create(var8, "Exception ticking world entities");
-					serverWorld.toCrashReportElement(crashReport);
+					serverWorld.method_8538(crashReport);
 					throw new CrashException(crashReport);
 				}
 
-				this.profiler.end();
-				this.profiler.begin("tracker");
+				this.profiler.pop();
+				this.profiler.push("tracker");
 				serverWorld.getEntityTracker().method_14078();
-				this.profiler.end();
-				this.profiler.end();
+				this.profiler.pop();
+				this.profiler.pop();
 			}
 
 			((long[])this.field_4600.computeIfAbsent(serverWorld.dimension.getType(), dimensionType -> new long[100]))[this.ticks % 100] = SystemUtil.getMeasuringTimeNano()
 				- l;
 		}
 
-		this.profiler.endBegin("connection");
+		this.profiler.swap("connection");
 		this.getNetworkIO().tick();
-		this.profiler.endBegin("players");
-		this.serverConfigurationManager.updatePlayerLatency();
-		this.profiler.endBegin("tickables");
+		this.profiler.swap("players");
+		this.playerManager.updatePlayerLatency();
+		this.profiler.swap("tickables");
 
 		for (int i = 0; i < this.tickables.size(); i++) {
 			((Tickable)this.tickables.get(i)).tick();
 		}
 
-		this.profiler.end();
+		this.profiler.pop();
 	}
 
 	public boolean isNetherAllowed() {
@@ -828,8 +900,8 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 			}
 
 			Path path = Paths.get("server.properties");
-			class_3807 lv = new class_3807(path);
-			lv.method_16719();
+			ServerPropertiesLoader serverPropertiesLoader = new ServerPropertiesLoader(path);
+			serverPropertiesLoader.store();
 			Path path2 = Paths.get("eula.txt");
 			EulaReader eulaReader = new EulaReader(path2);
 			if (optionSet.has(optionSpec2)) {
@@ -849,7 +921,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 			GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
 			UserCache userCache = new UserCache(gameProfileRepository, new File(string, USER_CACHE_FILE.getName()));
 			final MinecraftDedicatedServer minecraftDedicatedServer = new MinecraftDedicatedServer(
-				new File(string), lv, Schemas.getFixer(), yggdrasilAuthenticationService, minecraftSessionService, gameProfileRepository, userCache
+				new File(string), serverPropertiesLoader, Schemas.getFixer(), yggdrasilAuthenticationService, minecraftSessionService, gameProfileRepository, userCache
 			);
 			minecraftDedicatedServer.setUserName(optionSet.valueOf(optionSpec7));
 			minecraftDedicatedServer.setLevelName(optionSet.valueOf(optionSpec9));
@@ -884,7 +956,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_16043() {
+	public boolean isServerThreadAlive() {
 		return !this.serverThread.isAlive();
 	}
 
@@ -913,15 +985,15 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 	}
 
 	public int getCurrentPlayerCount() {
-		return this.serverConfigurationManager.getCurrentPlayerCount();
+		return this.playerManager.getCurrentPlayerCount();
 	}
 
 	public int getMaxPlayerCount() {
-		return this.serverConfigurationManager.getMaxPlayerCount();
+		return this.playerManager.getMaxPlayerCount();
 	}
 
 	public String[] getPlayerNames() {
-		return this.serverConfigurationManager.getPlayerNames();
+		return this.playerManager.getPlayerNames();
 	}
 
 	public boolean isDebuggingEnabled() {
@@ -943,19 +1015,19 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 	}
 
 	public CrashReport populateCrashReport(CrashReport crashReport) {
-		if (this.serverConfigurationManager != null) {
-			crashReport.getElement()
+		if (this.playerManager != null) {
+			crashReport.method_567()
 				.add(
 					"Player Count",
-					(ICrashCallable<String>)(() -> this.serverConfigurationManager.getCurrentPlayerCount()
+					(ICrashCallable<String>)(() -> this.playerManager.getCurrentPlayerCount()
 							+ " / "
-							+ this.serverConfigurationManager.getMaxPlayerCount()
+							+ this.playerManager.getMaxPlayerCount()
 							+ "; "
-							+ this.serverConfigurationManager.getPlayerList())
+							+ this.playerManager.getPlayerList())
 				);
 		}
 
-		crashReport.getElement().add("Data Packs", (ICrashCallable<String>)(() -> {
+		crashReport.method_567().add("Data Packs", (ICrashCallable<String>)(() -> {
 			StringBuilder stringBuilder = new StringBuilder();
 
 			for (ResourcePackContainer resourcePackContainer : this.field_4595.getEnabledContainers()) {
@@ -1081,15 +1153,15 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 	public void addSnooperInfo(Snooper snooper) {
 		snooper.addInfo("whitelist_enabled", false);
 		snooper.addInfo("whitelist_count", 0);
-		if (this.serverConfigurationManager != null) {
+		if (this.playerManager != null) {
 			snooper.addInfo("players_current", this.getCurrentPlayerCount());
 			snooper.addInfo("players_max", this.getMaxPlayerCount());
-			snooper.addInfo("players_seen", this.serverConfigurationManager.getSavedPlayerIds().length);
+			snooper.addInfo("players_seen", this.playerManager.getSavedPlayerIds().length);
 		}
 
 		snooper.addInfo("uses_auth", this.onlineMode);
 		snooper.addInfo("gui_state", this.hasGui() ? "enabled" : "disabled");
-		snooper.addInfo("run_time", (SystemUtil.getMeasuringTimeMili() - snooper.getStartTime()) / 60L * 1000L);
+		snooper.addInfo("run_time", (SystemUtil.getMeasuringTimeMs() - snooper.getStartTime()) / 60L * 1000L);
 		snooper.addInfo("avg_tick_ms", (int)(MathHelper.average(this.lastTickLengths) * 1.0E-6));
 		int i = 0;
 
@@ -1185,12 +1257,12 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 		return this.stopped;
 	}
 
-	public PlayerManager getConfigurationManager() {
-		return this.serverConfigurationManager;
+	public PlayerManager getPlayerManager() {
+		return this.playerManager;
 	}
 
-	public void setConfigurationManager(PlayerManager playerManager) {
-		this.serverConfigurationManager = playerManager;
+	public void setPlayerManager(PlayerManager playerManager) {
+		this.playerManager = playerManager;
 	}
 
 	public abstract boolean isRemote();
@@ -1201,6 +1273,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 		}
 	}
 
+	@Nullable
 	public ServerNetworkIO getNetworkIO() {
 		return this.networkIO;
 	}
@@ -1214,7 +1287,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 		return false;
 	}
 
-	public abstract boolean method_3763(GameMode gameMode, boolean bl, int i);
+	public abstract boolean openToLan(GameMode gameMode, boolean bl, int i);
 
 	public int getTicks() {
 		return this.ticks;
@@ -1307,8 +1380,8 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 		return serverWorld != null ? serverWorld.getGameRules().getInteger("spawnRadius") : 10;
 	}
 
-	public ServerAdvancementManager getAdvancementManager() {
-		return this.advancementManager;
+	public ServerAdvancementLoader method_3851() {
+		return this.field_4567;
 	}
 
 	public CommandFunctionManager getCommandFunctionManager() {
@@ -1319,10 +1392,10 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 		if (!this.isMainThread()) {
 			this.execute(this::reload);
 		} else {
-			this.getConfigurationManager().saveAllPlayerData();
+			this.getPlayerManager().saveAllPlayerData();
 			this.field_4595.callCreators();
 			this.reloadDataPacks(this.getWorld(DimensionType.field_13072).getLevelProperties());
-			this.getConfigurationManager().onDataPacksReloaded();
+			this.getPlayerManager().onDataPacksReloaded();
 		}
 	}
 
@@ -1352,12 +1425,12 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 
 	public void method_3728(ServerCommandSource serverCommandSource) {
 		if (this.method_3729()) {
-			PlayerManager playerManager = serverCommandSource.getMinecraftServer().getConfigurationManager();
+			PlayerManager playerManager = serverCommandSource.getMinecraftServer().getPlayerManager();
 			WhitelistList whitelistList = playerManager.getWhitelist();
 			if (whitelistList.isEnabled()) {
 				for (ServerPlayerEntity serverPlayerEntity : Lists.newArrayList(playerManager.getPlayerList())) {
 					if (!whitelistList.method_14653(serverPlayerEntity.getGameProfile())) {
-						serverPlayerEntity.networkHandler.method_14367(new TranslatableTextComponent("multiplayer.disconnect.not_whitelisted"));
+						serverPlayerEntity.networkHandler.disconnect(new TranslatableTextComponent("multiplayer.disconnect.not_whitelisted"));
 					}
 				}
 			}
@@ -1372,6 +1445,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 		return this.field_4595;
 	}
 
+	@Nullable
 	@Environment(EnvType.CLIENT)
 	public TextComponent method_3863() {
 		return this.field_4581;
@@ -1381,10 +1455,10 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 		return this.commandManager;
 	}
 
-	public ServerCommandSource method_3739() {
+	public ServerCommandSource getCommandSource() {
 		return new ServerCommandSource(
 			this,
-			this.getWorld(DimensionType.field_13072) == null ? Vec3d.ZERO : new Vec3d(this.getWorld(DimensionType.field_13072).method_8395()),
+			this.getWorld(DimensionType.field_13072) == null ? Vec3d.ZERO : new Vec3d(this.getWorld(DimensionType.field_13072).getSpawnPos()),
 			Vec2f.ZERO,
 			this.getWorld(DimensionType.field_13072),
 			4,
@@ -1413,8 +1487,8 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 		return this.tagManager;
 	}
 
-	public ServerScoreboard method_3845() {
-		return this.field_4558;
+	public ServerScoreboard getScoreboard() {
+		return this.scoreboard;
 	}
 
 	public LootManager getLootManager() {
@@ -1438,20 +1512,20 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_3830() {
-		return this.field_4592;
+	public float getTickTime() {
+		return this.tickTime;
 	}
 
 	public int getPermissionLevel(GameProfile gameProfile) {
-		if (this.getConfigurationManager().isOperator(gameProfile)) {
-			OperatorEntry operatorEntry = this.getConfigurationManager().getOpList().get(gameProfile);
+		if (this.getPlayerManager().isOperator(gameProfile)) {
+			OperatorEntry operatorEntry = this.getPlayerManager().getOpList().get(gameProfile);
 			if (operatorEntry != null) {
 				return operatorEntry.getPermissionLevel();
 			} else if (this.isSinglePlayer()) {
 				if (this.getUserName().equals(gameProfile.getName())) {
 					return 4;
 				} else {
-					return this.getConfigurationManager().areCheatsAllowed() ? 4 : 0;
+					return this.getPlayerManager().areCheatsAllowed() ? 4 : 0;
 				}
 			} else {
 				return this.getOpPermissionLevel();
@@ -1462,11 +1536,11 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 	}
 
 	@Environment(EnvType.CLIENT)
-	public MetricsData method_15876() {
+	public MetricsData getMetricsData() {
 		return this.field_16205;
 	}
 
-	public class_3689 getProfiler() {
+	public DisableableProfiler getProfiler() {
 		return this.profiler;
 	}
 }

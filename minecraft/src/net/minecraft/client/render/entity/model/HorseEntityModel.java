@@ -4,14 +4,11 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class HorseEntityModel extends Model {
+public class HorseEntityModel<T extends HorseBaseEntity> extends EntityModel<T> {
 	protected Cuboid field_3305;
 	protected Cuboid field_3307;
 	private final Cuboid field_3306;
@@ -96,9 +93,7 @@ public class HorseEntityModel extends Model {
 		cuboid.addChild(cuboid3);
 	}
 
-	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		HorseBaseEntity horseBaseEntity = (HorseBaseEntity)entity;
+	public void method_17085(T horseBaseEntity, float f, float g, float h, float i, float j, float k) {
 		boolean bl = horseBaseEntity.isChild();
 		float l = horseBaseEntity.method_6770();
 		boolean bl2 = horseBaseEntity.isSaddled();
@@ -144,12 +139,11 @@ public class HorseEntityModel extends Model {
 		}
 	}
 
-	@Override
-	public void animateModel(LivingEntity livingEntity, float f, float g, float h) {
-		super.animateModel(livingEntity, f, g, h);
-		float i = this.method_2790(livingEntity.field_6220, livingEntity.field_6283, h);
-		float j = this.method_2790(livingEntity.prevHeadPitch, livingEntity.headPitch, h);
-		float k = MathHelper.lerp(h, livingEntity.prevPitch, livingEntity.pitch);
+	public void method_17084(T horseBaseEntity, float f, float g, float h) {
+		super.animateModel(horseBaseEntity, f, g, h);
+		float i = this.method_2790(horseBaseEntity.field_6220, horseBaseEntity.field_6283, h);
+		float j = this.method_2790(horseBaseEntity.prevHeadYaw, horseBaseEntity.headYaw, h);
+		float k = MathHelper.lerp(h, horseBaseEntity.prevPitch, horseBaseEntity.pitch);
 		float l = j - i;
 		float m = k * (float) (Math.PI / 180.0);
 		if (l > 20.0F) {
@@ -164,13 +158,12 @@ public class HorseEntityModel extends Model {
 			m += MathHelper.cos(f * 0.4F) * 0.15F * g;
 		}
 
-		HorseBaseEntity horseBaseEntity = (HorseBaseEntity)livingEntity;
 		float n = horseBaseEntity.method_6739(h);
 		float o = horseBaseEntity.method_6767(h);
 		float p = 1.0F - o;
 		float q = horseBaseEntity.method_6772(h);
 		boolean bl = horseBaseEntity.field_6957 != 0;
-		float r = (float)livingEntity.age + h;
+		float r = (float)horseBaseEntity.age + h;
 		this.field_3307.rotationPointY = 4.0F;
 		this.field_3307.rotationPointZ = -12.0F;
 		this.field_3305.pitch = 0.0F;

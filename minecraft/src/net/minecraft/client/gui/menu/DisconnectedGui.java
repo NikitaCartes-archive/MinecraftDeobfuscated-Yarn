@@ -23,17 +23,17 @@ public class DisconnectedGui extends Gui {
 	}
 
 	@Override
-	public boolean canClose() {
+	public boolean doesEscapeKeyClose() {
 		return false;
 	}
 
 	@Override
 	protected void onInitialized() {
 		this.reasonFormatted = this.fontRenderer.wrapStringToWidthAsList(this.reason.getFormattedText(), this.width - 50);
-		this.reasonHeight = this.reasonFormatted.size() * this.fontRenderer.FONT_HEIGHT;
+		this.reasonHeight = this.reasonFormatted.size() * this.fontRenderer.fontHeight;
 		this.addButton(
 			new ButtonWidget(
-				0, this.width / 2 - 100, Math.min(this.height / 2 + this.reasonHeight / 2 + this.fontRenderer.FONT_HEIGHT, this.height - 30), I18n.translate("gui.toMenu")
+				0, this.width / 2 - 100, Math.min(this.height / 2 + this.reasonHeight / 2 + this.fontRenderer.fontHeight, this.height - 30), I18n.translate("gui.toMenu")
 			) {
 				@Override
 				public void onPressed(double d, double e) {
@@ -46,12 +46,12 @@ public class DisconnectedGui extends Gui {
 	@Override
 	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, this.title, this.width / 2, this.height / 2 - this.reasonHeight / 2 - this.fontRenderer.FONT_HEIGHT * 2, 11184810);
+		this.drawStringCentered(this.fontRenderer, this.title, this.width / 2, this.height / 2 - this.reasonHeight / 2 - this.fontRenderer.fontHeight * 2, 11184810);
 		int k = this.height / 2 - this.reasonHeight / 2;
 		if (this.reasonFormatted != null) {
 			for (String string : this.reasonFormatted) {
 				this.drawStringCentered(this.fontRenderer, string, this.width / 2, k, 16777215);
-				k += this.fontRenderer.FONT_HEIGHT;
+				k += this.fontRenderer.fontHeight;
 			}
 		}
 

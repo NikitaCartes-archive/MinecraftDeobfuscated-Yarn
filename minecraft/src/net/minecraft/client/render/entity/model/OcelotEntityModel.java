@@ -4,13 +4,11 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class OcelotEntityModel extends Model {
+public class OcelotEntityModel<T extends Entity> extends EntityModel<T> {
 	protected final Cuboid field_3439;
 	protected final Cuboid field_3441;
 	protected final Cuboid field_3440;
@@ -22,15 +20,11 @@ public class OcelotEntityModel extends Model {
 	protected int field_3434 = 1;
 
 	public OcelotEntityModel(float f) {
-		this.setTextureOffset("head.main", 0, 0);
-		this.setTextureOffset("head.nose", 0, 24);
-		this.setTextureOffset("head.ear1", 0, 10);
-		this.setTextureOffset("head.ear2", 6, 10);
 		this.field_3435 = new Cuboid(this, "head");
-		this.field_3435.addBox("main", -2.5F, -2.0F, -3.0F, 5, 4, 5, f);
-		this.field_3435.addBox("nose", -1.5F, 0.0F, -4.0F, 3, 2, 2, f);
-		this.field_3435.addBox("ear1", -2.0F, -3.0F, 0.0F, 1, 1, 2, f);
-		this.field_3435.addBox("ear2", 1.0F, -3.0F, 0.0F, 1, 1, 2, f);
+		this.field_3435.addBox("main", -2.5F, -2.0F, -3.0F, 5, 4, 5, f, 0, 0);
+		this.field_3435.addBox("nose", -1.5F, 0.0F, -4.0F, 3, 2, 2, f, 0, 24);
+		this.field_3435.addBox("ear1", -2.0F, -3.0F, 0.0F, 1, 1, 2, f, 0, 10);
+		this.field_3435.addBox("ear2", 1.0F, -3.0F, 0.0F, 1, 1, 2, f, 6, 10);
 		this.field_3435.setRotationPoint(0.0F, 15.0F, -9.0F);
 		this.field_3437 = new Cuboid(this, 20, 0);
 		this.field_3437.addBox(-2.0F, 3.0F, -8.0F, 4, 16, 6, f);
@@ -57,8 +51,8 @@ public class OcelotEntityModel extends Model {
 	}
 
 	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		this.setRotationAngles(f, g, h, i, j, k, entity);
+	public void render(T entity, float f, float g, float h, float i, float j, float k) {
+		this.setAngles(entity, f, g, h, i, j, k);
 		if (this.isChild) {
 			float l = 2.0F;
 			GlStateManager.pushMatrix();
@@ -90,7 +84,7 @@ public class OcelotEntityModel extends Model {
 	}
 
 	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
+	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
 		this.field_3435.pitch = j * (float) (Math.PI / 180.0);
 		this.field_3435.yaw = i * (float) (Math.PI / 180.0);
 		if (this.field_3434 != 3) {
@@ -116,7 +110,7 @@ public class OcelotEntityModel extends Model {
 	}
 
 	@Override
-	public void animateModel(LivingEntity livingEntity, float f, float g, float h) {
+	public void animateModel(T entity, float f, float g, float h) {
 		this.field_3437.rotationPointY = 12.0F;
 		this.field_3437.rotationPointZ = -10.0F;
 		this.field_3435.rotationPointY = 15.0F;
@@ -134,7 +128,7 @@ public class OcelotEntityModel extends Model {
 		this.field_3441.rotationPointY = 18.0F;
 		this.field_3441.rotationPointZ = 5.0F;
 		this.field_3436.pitch = 0.9F;
-		if (livingEntity.isSneaking()) {
+		if (entity.isSneaking()) {
 			this.field_3437.rotationPointY++;
 			this.field_3435.rotationPointY += 2.0F;
 			this.field_3436.rotationPointY++;
@@ -143,7 +137,7 @@ public class OcelotEntityModel extends Model {
 			this.field_3436.pitch = (float) (Math.PI / 2);
 			this.field_3442.pitch = (float) (Math.PI / 2);
 			this.field_3434 = 0;
-		} else if (livingEntity.isSprinting()) {
+		} else if (entity.isSprinting()) {
 			this.field_3442.rotationPointY = this.field_3436.rotationPointY;
 			this.field_3442.rotationPointZ += 2.0F;
 			this.field_3436.pitch = (float) (Math.PI / 2);

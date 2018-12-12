@@ -7,7 +7,7 @@ import net.minecraft.util.Identifier;
 public interface CriterionConditions {
 	Identifier getId();
 
-	default JsonElement method_807() {
+	default JsonElement toJson() {
 		return JsonNull.INSTANCE;
 	}
 }

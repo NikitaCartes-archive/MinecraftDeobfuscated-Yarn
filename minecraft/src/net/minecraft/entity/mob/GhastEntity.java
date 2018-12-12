@@ -3,9 +3,9 @@ package net.minecraft.entity.mob;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3730;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.FindNearestPlayerGoal;
 import net.minecraft.entity.ai.goal.Goal;
@@ -64,7 +64,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 	@Override
 	public void update() {
 		super.update();
-		if (!this.world.isRemote && this.world.getDifficulty() == Difficulty.PEACEFUL) {
+		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.PEACEFUL) {
 			this.invalidate();
 		}
 	}
@@ -120,8 +120,8 @@ public class GhastEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public boolean method_5979(IWorld iWorld, class_3730 arg) {
-		return this.random.nextInt(20) == 0 && super.method_5979(iWorld, arg) && iWorld.getDifficulty() != Difficulty.PEACEFUL;
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
+		return this.random.nextInt(20) == 0 && super.canSpawn(iWorld, spawnType) && iWorld.getDifficulty() != Difficulty.PEACEFUL;
 	}
 
 	@Override

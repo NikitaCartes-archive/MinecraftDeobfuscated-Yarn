@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntegerProperty;
@@ -51,10 +50,12 @@ public class SugarCaneBlock extends Block {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		return !blockState.canPlaceAt(iWorld, blockPos)
 			? Blocks.field_10124.getDefaultState()
-			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
@@ -72,8 +73,8 @@ public class SugarCaneBlock extends Block {
 				BlockPos blockPos2 = blockPos.down();
 
 				for (Direction direction : Direction.class_2353.HORIZONTAL) {
-					BlockState blockState2 = viewableWorld.getBlockState(blockPos2.method_10093(direction));
-					FluidState fluidState = viewableWorld.getFluidState(blockPos2.method_10093(direction));
+					BlockState blockState2 = viewableWorld.getBlockState(blockPos2.offset(direction));
+					FluidState fluidState = viewableWorld.getFluidState(blockPos2.offset(direction));
 					if (fluidState.matches(FluidTags.field_15517) || blockState2.getBlock() == Blocks.field_10110) {
 						return true;
 					}

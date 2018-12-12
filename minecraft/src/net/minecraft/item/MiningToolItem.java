@@ -38,7 +38,7 @@ public class MiningToolItem extends ToolItem {
 
 	@Override
 	public boolean onBlockBroken(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
-		if (!world.isRemote && blockState.getHardness(world, blockPos) != 0.0F) {
+		if (!world.isClient && blockState.getHardness(world, blockPos) != 0.0F) {
 			itemStack.applyDamage(1, livingEntity);
 		}
 

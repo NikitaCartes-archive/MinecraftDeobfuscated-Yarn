@@ -9,10 +9,10 @@ import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.Renderer;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -56,8 +56,8 @@ public class CaveDebugRenderer implements RenderDebug.DebugRenderer {
 		GlStateManager.disableTexture();
 		BlockPos blockPos = new BlockPos(playerEntity.x, 0.0, playerEntity.z);
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-		vertexBuffer.begin(5, VertexFormats.POSITION_COLOR);
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 
 		for (Entry<BlockPos, BlockPos> entry : this.field_4507.entrySet()) {
 			BlockPos blockPos2 = (BlockPos)entry.getKey();
@@ -67,8 +67,8 @@ public class CaveDebugRenderer implements RenderDebug.DebugRenderer {
 			float j = (float)(blockPos3.getZ() * 128 % 256) / 256.0F;
 			float k = (Float)this.field_4508.get(blockPos2);
 			if (blockPos.distanceTo(blockPos2) < 160.0) {
-				Renderer.renderCuboid(
-					vertexBuffer,
+				WorldRenderer.buildBox(
+					bufferBuilder,
 					(double)((float)blockPos2.getX() + 0.5F) - d - (double)k,
 					(double)((float)blockPos2.getY() + 0.5F) - e - (double)k,
 					(double)((float)blockPos2.getZ() + 0.5F) - g - (double)k,
@@ -85,8 +85,8 @@ public class CaveDebugRenderer implements RenderDebug.DebugRenderer {
 
 		for (BlockPos blockPos4 : this.field_4506) {
 			if (blockPos.distanceTo(blockPos4) < 160.0) {
-				Renderer.renderCuboid(
-					vertexBuffer,
+				WorldRenderer.buildBox(
+					bufferBuilder,
 					(double)blockPos4.getX() - d,
 					(double)blockPos4.getY() - e,
 					(double)blockPos4.getZ() - g,

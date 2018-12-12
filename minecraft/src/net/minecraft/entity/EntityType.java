@@ -9,7 +9,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_3730;
 import net.minecraft.datafixers.Schemas;
 import net.minecraft.datafixers.TypeReferences;
 import net.minecraft.entity.boss.EntityWither;
@@ -18,7 +17,7 @@ import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.decoration.EnderCrystalEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.decoration.LeadKnotEntity;
-import net.minecraft.entity.decoration.PaintingEntity;
+import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.mob.BlazeEntity;
 import net.minecraft.entity.mob.CaveSpiderEntity;
 import net.minecraft.entity.mob.CreeperEntity;
@@ -329,7 +328,7 @@ public class EntityType<T extends Entity> {
 
 	@Nullable
 	public Entity spawnFromItemStack(
-		World world, @Nullable ItemStack itemStack, @Nullable PlayerEntity playerEntity, BlockPos blockPos, class_3730 arg, boolean bl, boolean bl2
+		World world, @Nullable ItemStack itemStack, @Nullable PlayerEntity playerEntity, BlockPos blockPos, SpawnType spawnType, boolean bl, boolean bl2
 	) {
 		return this.spawn(
 			world,
@@ -337,7 +336,7 @@ public class EntityType<T extends Entity> {
 			itemStack != null && itemStack.hasDisplayName() ? itemStack.getDisplayName() : null,
 			playerEntity,
 			blockPos,
-			arg,
+			spawnType,
 			bl,
 			bl2
 		);
@@ -350,11 +349,11 @@ public class EntityType<T extends Entity> {
 		@Nullable TextComponent textComponent,
 		@Nullable PlayerEntity playerEntity,
 		BlockPos blockPos,
-		class_3730 arg,
+		SpawnType spawnType,
 		boolean bl,
 		boolean bl2
 	) {
-		T entity = this.create(world, compoundTag, textComponent, playerEntity, blockPos, arg, bl, bl2);
+		T entity = this.create(world, compoundTag, textComponent, playerEntity, blockPos, spawnType, bl, bl2);
 		world.spawnEntity(entity);
 		return entity;
 	}
@@ -366,7 +365,7 @@ public class EntityType<T extends Entity> {
 		@Nullable TextComponent textComponent,
 		@Nullable PlayerEntity playerEntity,
 		BlockPos blockPos,
-		class_3730 arg,
+		SpawnType spawnType,
 		boolean bl,
 		boolean bl2
 	) {
@@ -387,9 +386,9 @@ public class EntityType<T extends Entity> {
 			);
 			if (entity instanceof MobEntity) {
 				MobEntity mobEntity = (MobEntity)entity;
-				mobEntity.headPitch = mobEntity.yaw;
+				mobEntity.headYaw = mobEntity.yaw;
 				mobEntity.field_6283 = mobEntity.yaw;
-				mobEntity.method_5943(world, world.getLocalDifficulty(new BlockPos(mobEntity)), arg, null, compoundTag);
+				mobEntity.prepareEntityData(world, world.getLocalDifficulty(new BlockPos(mobEntity)), spawnType, null, compoundTag);
 				mobEntity.playAmbientSound();
 			}
 
@@ -409,14 +408,14 @@ public class EntityType<T extends Entity> {
 		}
 
 		Stream<VoxelShape> stream = viewableWorld.method_8607(null, boundingBox2);
-		return 1.0 + VoxelShapes.method_1085(Direction.Axis.Y, boundingBox, stream, bl ? -2.0 : -1.0);
+		return 1.0 + VoxelShapes.calculateMaxOffset(Direction.Axis.Y, boundingBox, stream, bl ? -2.0 : -1.0);
 	}
 
 	public static void loadFromEntityTag(World world, @Nullable PlayerEntity playerEntity, @Nullable Entity entity, @Nullable CompoundTag compoundTag) {
 		if (compoundTag != null && compoundTag.containsKey("EntityTag", 10)) {
 			MinecraftServer minecraftServer = world.getServer();
 			if (minecraftServer != null && entity != null) {
-				if (world.isRemote || !entity.method_5833() || playerEntity != null && minecraftServer.getConfigurationManager().isOperator(playerEntity.getGameProfile())) {
+				if (world.isClient || !entity.method_5833() || playerEntity != null && minecraftServer.getPlayerManager().isOperator(playerEntity.getGameProfile())) {
 					CompoundTag compoundTag2 = entity.toTag(new CompoundTag());
 					UUID uUID = entity.getUuid();
 					compoundTag2.copyFrom(compoundTag.getCompound("EntityTag"));

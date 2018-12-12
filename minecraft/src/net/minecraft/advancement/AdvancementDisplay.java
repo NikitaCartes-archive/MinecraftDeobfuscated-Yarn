@@ -141,7 +141,7 @@ public class AdvancementDisplay {
 		}
 	}
 
-	public void writeToBuffer(PacketByteBuf packetByteBuf) {
+	public void toPacket(PacketByteBuf packetByteBuf) {
 		packetByteBuf.writeTextComponent(this.title);
 		packetByteBuf.writeTextComponent(this.description);
 		packetByteBuf.writeItemStack(this.icon);
@@ -168,7 +168,7 @@ public class AdvancementDisplay {
 		packetByteBuf.writeFloat(this.yPos);
 	}
 
-	public static AdvancementDisplay readFromBuffer(PacketByteBuf packetByteBuf) {
+	public static AdvancementDisplay fromPacket(PacketByteBuf packetByteBuf) {
 		TextComponent textComponent = packetByteBuf.readTextComponent();
 		TextComponent textComponent2 = packetByteBuf.readTextComponent();
 		ItemStack itemStack = packetByteBuf.readItemStack();
@@ -184,7 +184,7 @@ public class AdvancementDisplay {
 
 	public JsonElement toJson() {
 		JsonObject jsonObject = new JsonObject();
-		jsonObject.add("icon", this.method_810());
+		jsonObject.add("icon", this.iconToJson());
 		jsonObject.add("title", TextComponent.Serializer.toJson(this.title));
 		jsonObject.add("description", TextComponent.Serializer.toJson(this.description));
 		jsonObject.addProperty("frame", this.frame.getId());
@@ -198,7 +198,7 @@ public class AdvancementDisplay {
 		return jsonObject;
 	}
 
-	private JsonObject method_810() {
+	private JsonObject iconToJson() {
 		JsonObject jsonObject = new JsonObject();
 		jsonObject.addProperty("item", Registry.ITEM.getId(this.icon.getItem()).toString());
 		return jsonObject;

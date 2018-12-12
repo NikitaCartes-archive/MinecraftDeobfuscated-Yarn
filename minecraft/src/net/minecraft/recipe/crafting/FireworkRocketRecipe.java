@@ -17,9 +17,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 public class FireworkRocketRecipe extends AbstractRecipe {
-	private static final Ingredient field_9007 = Ingredient.ofItems(Items.field_8407);
-	private static final Ingredient field_9006 = Ingredient.ofItems(Items.field_8054);
-	private static final Ingredient field_9008 = Ingredient.ofItems(Items.field_8450);
+	private static final Ingredient field_9007 = Ingredient.method_8091(Items.field_8407);
+	private static final Ingredient field_9006 = Ingredient.method_8091(Items.field_8054);
+	private static final Ingredient field_9008 = Ingredient.method_8091(Items.field_8450);
 
 	public FireworkRocketRecipe(Identifier identifier) {
 		super(identifier);

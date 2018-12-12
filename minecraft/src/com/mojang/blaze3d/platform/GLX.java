@@ -16,8 +16,8 @@ import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_3677;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.Window;
 import org.apache.logging.log4j.LogManager;
@@ -899,40 +899,40 @@ public class GLX {
 		GlStateManager.disableTexture();
 		GlStateManager.depthMask(false);
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		GL11.glLineWidth(4.0F);
-		vertexBuffer.begin(1, VertexFormats.POSITION_COLOR);
+		bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
 		if (bl) {
-			vertexBuffer.vertex(0.0, 0.0, 0.0).color(0, 0, 0, 255).next();
-			vertexBuffer.vertex((double)i, 0.0, 0.0).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex(0.0, 0.0, 0.0).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex((double)i, 0.0, 0.0).color(0, 0, 0, 255).next();
 		}
 
 		if (bl2) {
-			vertexBuffer.vertex(0.0, 0.0, 0.0).color(0, 0, 0, 255).next();
-			vertexBuffer.vertex(0.0, (double)i, 0.0).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex(0.0, 0.0, 0.0).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex(0.0, (double)i, 0.0).color(0, 0, 0, 255).next();
 		}
 
 		if (bl3) {
-			vertexBuffer.vertex(0.0, 0.0, 0.0).color(0, 0, 0, 255).next();
-			vertexBuffer.vertex(0.0, 0.0, (double)i).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex(0.0, 0.0, 0.0).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex(0.0, 0.0, (double)i).color(0, 0, 0, 255).next();
 		}
 
 		tessellator.draw();
 		GL11.glLineWidth(2.0F);
-		vertexBuffer.begin(1, VertexFormats.POSITION_COLOR);
+		bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
 		if (bl) {
-			vertexBuffer.vertex(0.0, 0.0, 0.0).color(255, 0, 0, 255).next();
-			vertexBuffer.vertex((double)i, 0.0, 0.0).color(255, 0, 0, 255).next();
+			bufferBuilder.vertex(0.0, 0.0, 0.0).color(255, 0, 0, 255).next();
+			bufferBuilder.vertex((double)i, 0.0, 0.0).color(255, 0, 0, 255).next();
 		}
 
 		if (bl2) {
-			vertexBuffer.vertex(0.0, 0.0, 0.0).color(0, 255, 0, 255).next();
-			vertexBuffer.vertex(0.0, (double)i, 0.0).color(0, 255, 0, 255).next();
+			bufferBuilder.vertex(0.0, 0.0, 0.0).color(0, 255, 0, 255).next();
+			bufferBuilder.vertex(0.0, (double)i, 0.0).color(0, 255, 0, 255).next();
 		}
 
 		if (bl3) {
-			vertexBuffer.vertex(0.0, 0.0, 0.0).color(127, 127, 255, 255).next();
-			vertexBuffer.vertex(0.0, 0.0, (double)i).color(127, 127, 255, 255).next();
+			bufferBuilder.vertex(0.0, 0.0, 0.0).color(127, 127, 255, 255).next();
+			bufferBuilder.vertex(0.0, 0.0, (double)i).color(127, 127, 255, 255).next();
 		}
 
 		tessellator.draw();

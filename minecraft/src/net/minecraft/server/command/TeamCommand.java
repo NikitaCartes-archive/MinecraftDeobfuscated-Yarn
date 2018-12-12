@@ -328,7 +328,7 @@ public class TeamCommand {
 	}
 
 	private static int method_13714(ServerCommandSource serverCommandSource, Collection<String> collection) {
-		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
+		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
 
 		for (String string : collection) {
 			scoreboard.clearPlayerTeam(string);
@@ -344,7 +344,7 @@ public class TeamCommand {
 	}
 
 	private static int method_13720(ServerCommandSource serverCommandSource, ScoreboardTeam scoreboardTeam, Collection<String> collection) {
-		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
+		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
 
 		for (String string : collection) {
 			scoreboard.addPlayerToTeam(string, scoreboardTeam);
@@ -452,7 +452,7 @@ public class TeamCommand {
 	}
 
 	private static int method_13723(ServerCommandSource serverCommandSource, ScoreboardTeam scoreboardTeam) throws CommandSyntaxException {
-		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
+		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
 		Collection<String> collection = Lists.<String>newArrayList(scoreboardTeam.getPlayerList());
 		if (collection.isEmpty()) {
 			throw EMPTY_UNCHANGED_EXCEPTION.create();
@@ -467,7 +467,7 @@ public class TeamCommand {
 	}
 
 	private static int method_13747(ServerCommandSource serverCommandSource, ScoreboardTeam scoreboardTeam) {
-		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
+		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
 		scoreboard.removeTeam(scoreboardTeam);
 		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.team.remove.success", scoreboardTeam.method_1148()), true);
 		return scoreboard.getTeams().size();
@@ -478,7 +478,7 @@ public class TeamCommand {
 	}
 
 	private static int method_13715(ServerCommandSource serverCommandSource, String string, TextComponent textComponent) throws CommandSyntaxException {
-		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
+		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
 		if (scoreboard.getTeam(string) != null) {
 			throw ADD_DUPLICATE_EXCEPTION.create();
 		} else if (string.length() > 16) {
@@ -506,7 +506,7 @@ public class TeamCommand {
 	}
 
 	private static int method_13728(ServerCommandSource serverCommandSource) {
-		Collection<ScoreboardTeam> collection = serverCommandSource.getMinecraftServer().method_3845().getTeams();
+		Collection<ScoreboardTeam> collection = serverCommandSource.getMinecraftServer().getScoreboard().getTeams();
 		if (collection.isEmpty()) {
 			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.team.list.teams.empty"), false);
 		} else {

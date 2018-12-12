@@ -7,12 +7,16 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.api.EnvironmentInterface;
+import net.fabricmc.api.EnvironmentInterfaces;
+import net.minecraft.class_3856;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.particle.ParticleTypes;
@@ -27,7 +31,11 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.FluidRayTraceMode;
 import net.minecraft.world.World;
 
-public class FireworkEntity extends Entity {
+@EnvironmentInterfaces({@EnvironmentInterface(
+		value = EnvType.CLIENT,
+		itf = class_3856.class
+	)})
+public class FireworkEntity extends Entity implements class_3856 {
 	private static final TrackedData<ItemStack> ITEM_STACK = DataTracker.registerData(FireworkEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 	private static final TrackedData<Optional<UUID>> field_7611 = DataTracker.registerData(FireworkEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 	private static final TrackedData<Boolean> field_7615 = DataTracker.registerData(FireworkEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -213,27 +221,27 @@ public class FireworkEntity extends Entity {
 		}
 
 		this.field_7613++;
-		if (this.world.isRemote && this.field_7613 % 2 < 2) {
+		if (this.world.isClient && this.field_7613 % 2 < 2) {
 			this.world
 				.method_8406(
 					ParticleTypes.field_11248, this.x, this.y - 0.3, this.z, this.random.nextGaussian() * 0.05, -this.velocityY * 0.5, this.random.nextGaussian() * 0.05
 				);
 		}
 
-		if (!this.world.isRemote && this.field_7613 > this.field_7612) {
+		if (!this.world.isClient && this.field_7613 > this.field_7612) {
 			this.method_16830();
 		}
 	}
 
 	private void method_16830() {
-		this.world.method_8421(this, (byte)17);
+		this.world.summonParticle(this, (byte)17);
 		this.method_7475();
 		this.invalidate();
 	}
 
 	protected void method_16828(HitResult hitResult) {
 		if (hitResult.entity != null) {
-			if (!this.world.isRemote) {
+			if (!this.world.isClient) {
 				this.method_16830();
 			}
 		} else {
@@ -313,14 +321,14 @@ public class FireworkEntity extends Entity {
 		return this.dataTracker.get(field_7611).orElse(null) != null;
 	}
 
-	private boolean method_7477() {
+	public boolean method_7477() {
 		return this.dataTracker.get(field_7615);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void method_5711(byte b) {
-		if (b == 17 && this.world.isRemote) {
+		if (b == 17 && this.world.isClient) {
 			ItemStack itemStack = this.dataTracker.get(ITEM_STACK);
 			CompoundTag compoundTag = itemStack.isEmpty() ? null : itemStack.getSubCompoundTag("Fireworks");
 			this.world.method_8547(this.x, this.y, this.z, this.velocityX, this.velocityY, this.velocityZ, compoundTag);
@@ -353,6 +361,13 @@ public class FireworkEntity extends Entity {
 		if (compoundTag.containsKey("ShotAtAngle")) {
 			this.dataTracker.set(field_7615, compoundTag.getBoolean("ShotAtAngle"));
 		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public ItemStack method_7495() {
+		ItemStack itemStack = this.dataTracker.get(ITEM_STACK);
+		return itemStack.isEmpty() ? new ItemStack(Items.field_8639) : itemStack;
 	}
 
 	@Override

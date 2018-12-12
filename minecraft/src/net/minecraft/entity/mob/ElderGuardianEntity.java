@@ -47,17 +47,17 @@ public class ElderGuardianEntity extends GuardianEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return this.method_5816() ? SoundEvents.field_15127 : SoundEvents.field_14569;
+		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.field_15127 : SoundEvents.field_14569;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return this.method_5816() ? SoundEvents.field_14868 : SoundEvents.field_14652;
+		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.field_14868 : SoundEvents.field_14652;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return this.method_5816() ? SoundEvents.field_15052 : SoundEvents.field_14973;
+		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.field_15052 : SoundEvents.field_14973;
 	}
 
 	@Override

@@ -20,7 +20,7 @@ public class MetricsData {
 			this.field_15656 = 0;
 			this.sampleCount++;
 		} else {
-			this.field_15656 = this.method_15251(this.writeIndex + 1);
+			this.field_15656 = this.wrapIndex(this.writeIndex + 1);
 		}
 	}
 
@@ -40,7 +40,7 @@ public class MetricsData {
 		return this.writeIndex;
 	}
 
-	public int method_15251(int i) {
+	public int wrapIndex(int i) {
 		return i % 240;
 	}
 

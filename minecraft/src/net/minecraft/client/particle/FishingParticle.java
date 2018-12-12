@@ -2,7 +2,7 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.particle.TexturedParticle;
+import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
@@ -30,7 +30,7 @@ public class FishingParticle extends Particle {
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;
 		this.velocityY = this.velocityY - (double)this.gravityStrength;
-		this.addPos(this.velocityX, this.velocityY, this.velocityZ);
+		this.move(this.velocityX, this.velocityY, this.velocityZ);
 		this.velocityX *= 0.98F;
 		this.velocityY *= 0.98F;
 		this.velocityZ *= 0.98F;
@@ -44,8 +44,8 @@ public class FishingParticle extends Particle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Factory implements FactoryParticle<TexturedParticle> {
-		public Particle createParticle(TexturedParticle texturedParticle, World world, double d, double e, double f, double g, double h, double i) {
+	public static class Factory implements ParticleFactory<DefaultParticleType> {
+		public Particle method_3115(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new FishingParticle(world, d, e, f, g, h, i);
 		}
 	}

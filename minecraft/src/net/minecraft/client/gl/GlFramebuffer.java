@@ -5,8 +5,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.TextureUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 
 @Environment(EnvType.CLIENT)
@@ -197,12 +197,12 @@ public class GlFramebuffer {
 			float h = (float)this.viewWidth / (float)this.texWidth;
 			float k = (float)this.viewHeight / (float)this.texHeight;
 			Tessellator tessellator = Tessellator.getInstance();
-			VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-			vertexBuffer.begin(7, VertexFormats.POSITION_UV_COLOR);
-			vertexBuffer.vertex(0.0, (double)g, 0.0).texture(0.0, 0.0).color(255, 255, 255, 255).next();
-			vertexBuffer.vertex((double)f, (double)g, 0.0).texture((double)h, 0.0).color(255, 255, 255, 255).next();
-			vertexBuffer.vertex((double)f, 0.0, 0.0).texture((double)h, (double)k).color(255, 255, 255, 255).next();
-			vertexBuffer.vertex(0.0, 0.0, 0.0).texture(0.0, (double)k).color(255, 255, 255, 255).next();
+			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+			bufferBuilder.vertex(0.0, (double)g, 0.0).texture(0.0, 0.0).color(255, 255, 255, 255).next();
+			bufferBuilder.vertex((double)f, (double)g, 0.0).texture((double)h, 0.0).color(255, 255, 255, 255).next();
+			bufferBuilder.vertex((double)f, 0.0, 0.0).texture((double)h, (double)k).color(255, 255, 255, 255).next();
+			bufferBuilder.vertex(0.0, 0.0, 0.0).texture(0.0, (double)k).color(255, 255, 255, 255).next();
 			tessellator.draw();
 			this.endRead();
 			GlStateManager.depthMask(true);

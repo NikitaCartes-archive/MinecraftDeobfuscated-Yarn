@@ -23,7 +23,7 @@ import net.minecraft.util.math.BoundingBox;
 public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 	protected final Class<T> field_6643;
 	private final int field_6641;
-	protected final FollowTargetGoal.class_1401 field_6645;
+	protected final FollowTargetGoal.ClosestSelector field_6645;
 	protected final Predicate<? super T> field_6642;
 	protected T field_6644;
 
@@ -39,7 +39,7 @@ public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 		super(mobEntityWithAi, bl, bl2);
 		this.field_6643 = class_;
 		this.field_6641 = i;
-		this.field_6645 = new FollowTargetGoal.class_1401(mobEntityWithAi);
+		this.field_6645 = new FollowTargetGoal.ClosestSelector(mobEntityWithAi);
 		this.setControlBits(1);
 		this.field_6642 = livingEntity -> {
 			if (livingEntity == null) {
@@ -57,7 +57,7 @@ public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 		if (this.field_6641 > 0 && this.entity.getRand().nextInt(this.field_6641) != 0) {
 			return false;
 		} else if (this.field_6643 != PlayerEntity.class && this.field_6643 != ServerPlayerEntity.class) {
-			List<T> list = this.entity.world.getEntities(this.field_6643, this.method_6321(this.getFollowRange()), this.field_6642);
+			List<T> list = this.entity.world.getEntities(this.field_6643, this.getSearchBox(this.getFollowRange()), this.field_6642);
 			if (list.isEmpty()) {
 				return false;
 			} else {
@@ -91,7 +91,7 @@ public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 		}
 	}
 
-	protected BoundingBox method_6321(double d) {
+	protected BoundingBox getSearchBox(double d) {
 		return this.entity.getBoundingBox().expand(d, 4.0, d);
 	}
 
@@ -101,16 +101,16 @@ public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 		super.start();
 	}
 
-	public static class class_1401 implements Comparator<Entity> {
-		private final Entity field_6646;
+	public static class ClosestSelector implements Comparator<Entity> {
+		private final Entity target;
 
-		public class_1401(Entity entity) {
-			this.field_6646 = entity;
+		public ClosestSelector(Entity entity) {
+			this.target = entity;
 		}
 
-		public int method_6322(Entity entity, Entity entity2) {
-			double d = this.field_6646.squaredDistanceTo(entity);
-			double e = this.field_6646.squaredDistanceTo(entity2);
+		public int compare(Entity entity, Entity entity2) {
+			double d = this.target.squaredDistanceTo(entity);
+			double e = this.target.squaredDistanceTo(entity2);
 			if (d < e) {
 				return -1;
 			} else {

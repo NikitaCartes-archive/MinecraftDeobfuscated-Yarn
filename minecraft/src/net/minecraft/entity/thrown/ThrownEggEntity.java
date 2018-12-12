@@ -2,18 +2,19 @@ package net.minecraft.entity.thrown;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_3857;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.ChickenEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.particle.ItemStackParticle;
+import net.minecraft.particle.ItemStackParticleParameters;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.HitResult;
 import net.minecraft.world.World;
 
-public class ThrownEggEntity extends ThrownEntity {
+public class ThrownEggEntity extends class_3857 {
 	public ThrownEggEntity(World world) {
 		super(EntityType.EGG, world);
 	}
@@ -35,7 +36,7 @@ public class ThrownEggEntity extends ThrownEntity {
 			for (int i = 0; i < 8; i++) {
 				this.world
 					.method_8406(
-						new ItemStackParticle(ParticleTypes.field_11218, new ItemStack(Items.field_8803)),
+						new ItemStackParticleParameters(ParticleTypes.field_11218, this.method_7495()),
 						this.x,
 						this.y,
 						this.z,
@@ -53,7 +54,7 @@ public class ThrownEggEntity extends ThrownEntity {
 			hitResult.entity.damage(DamageSource.thrownProjectile(this, this.getOwner()), 0.0F);
 		}
 
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			if (this.random.nextInt(8) == 0) {
 				int i = 1;
 				if (this.random.nextInt(32) == 0) {
@@ -68,8 +69,13 @@ public class ThrownEggEntity extends ThrownEntity {
 				}
 			}
 
-			this.world.method_8421(this, (byte)3);
+			this.world.summonParticle(this, (byte)3);
 			this.invalidate();
 		}
+	}
+
+	@Override
+	protected Item method_16942() {
+		return Items.field_8803;
 	}
 }

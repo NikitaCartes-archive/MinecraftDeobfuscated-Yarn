@@ -10,8 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 	public IceSpikeFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
@@ -19,7 +18,7 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean method_13408(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		while (iWorld.isAir(blockPos) && blockPos.getY() > 2) {
 			blockPos = blockPos.down();
@@ -48,14 +47,14 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 							BlockState blockState = iWorld.getBlockState(blockPos.add(m, k, n));
 							Block block = blockState.getBlock();
 							if (blockState.isAir() || Block.isNaturalDirt(block) || block == Blocks.field_10491 || block == Blocks.field_10295) {
-								this.method_13153(iWorld, blockPos.add(m, k, n), Blocks.field_10225.getDefaultState());
+								this.setBlockState(iWorld, blockPos.add(m, k, n), Blocks.field_10225.getDefaultState());
 							}
 
 							if (k != 0 && l > 1) {
 								blockState = iWorld.getBlockState(blockPos.add(m, -k, n));
 								block = blockState.getBlock();
 								if (blockState.isAir() || Block.isNaturalDirt(block) || block == Blocks.field_10491 || block == Blocks.field_10295) {
-									this.method_13153(iWorld, blockPos.add(m, -k, n), Blocks.field_10225.getDefaultState());
+									this.setBlockState(iWorld, blockPos.add(m, -k, n), Blocks.field_10225.getDefaultState());
 								}
 							}
 						}
@@ -85,7 +84,7 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 							break;
 						}
 
-						this.method_13153(iWorld, blockPos2, Blocks.field_10225.getDefaultState());
+						this.setBlockState(iWorld, blockPos2, Blocks.field_10225.getDefaultState());
 						blockPos2 = blockPos2.down();
 						if (--p <= 0) {
 							blockPos2 = blockPos2.down(random.nextInt(5) + 1);

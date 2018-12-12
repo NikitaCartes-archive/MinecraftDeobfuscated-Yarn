@@ -121,7 +121,7 @@ public class LootCommand {
 						.then(
 							ServerCommandManager.literal("kill")
 								.then(
-									ServerCommandManager.argument("target", EntityArgumentType.create())
+									ServerCommandManager.argument("target", EntityArgumentType.oneEntity())
 										.executes(commandContext -> method_13189(commandContext, EntityArgumentType.method_9313(commandContext, "target"), arg))
 								)
 						)
@@ -175,7 +175,7 @@ public class LootCommand {
 					.then(
 						ServerCommandManager.literal("entity")
 							.then(
-								ServerCommandManager.argument("entities", EntityArgumentType.method_9306())
+								ServerCommandManager.argument("entities", EntityArgumentType.multipleEntities())
 									.then(
 										arg.construct(
 												ServerCommandManager.argument("slot", ItemSlotArgumentType.create()),
@@ -246,7 +246,7 @@ public class LootCommand {
 				ServerCommandManager.literal("give")
 					.then(
 						arg.construct(
-							ServerCommandManager.argument("players", EntityArgumentType.method_9308()),
+							ServerCommandManager.argument("players", EntityArgumentType.multiplePlayer()),
 							(commandContext, list, argx) -> method_13201(EntityArgumentType.method_9312(commandContext, "players"), list, argx)
 						)
 					)

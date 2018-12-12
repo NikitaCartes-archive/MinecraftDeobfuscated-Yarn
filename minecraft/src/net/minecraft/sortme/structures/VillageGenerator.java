@@ -9,8 +9,6 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.class_3443;
-import net.minecraft.class_3485;
-import net.minecraft.class_3730;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -25,6 +23,7 @@ import net.minecraft.block.SlabBlock;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.block.WallTorchBlock;
 import net.minecraft.block.enums.SlabType;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -35,10 +34,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.MutableIntBoundingBox;
+import net.minecraft.village.VillagerType;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.Heightmap;
-import net.minecraft.world.gen.config.feature.VillageFeatureConfig;
+import net.minecraft.world.gen.feature.VillageFeatureConfig;
 import net.minecraft.world.loot.LootTables;
 
 public class VillageGenerator {
@@ -222,14 +222,14 @@ public class VillageGenerator {
 			this.structureBounds = mutableIntBoundingBox;
 		}
 
-		public class_3451(class_3485 arg, CompoundTag compoundTag) {
+		public class_3451(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16920, compoundTag);
 		}
 
 		public static VillageGenerator.class_3451 method_14989(
 			VillageGenerator.class_3461 arg, List<class_3443> list, Random random, int i, int j, int k, Direction direction, int l
 		) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, 0, 0, 0, 9, 9, 6, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, 0, 0, 0, 9, 9, 6, direction);
 			return method_15009(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new VillageGenerator.class_3451(arg, l, random, mutableIntBoundingBox, direction)
 				: null;
@@ -247,11 +247,11 @@ public class VillageGenerator {
 			}
 
 			BlockState blockState = this.method_15016(Blocks.field_10445.getDefaultState());
-			BlockState blockState2 = this.method_15016(Blocks.field_10563.getDefaultState().with(StairsBlock.field_11571, Direction.NORTH));
-			BlockState blockState3 = this.method_15016(Blocks.field_10563.getDefaultState().with(StairsBlock.field_11571, Direction.SOUTH));
-			BlockState blockState4 = this.method_15016(Blocks.field_10563.getDefaultState().with(StairsBlock.field_11571, Direction.EAST));
+			BlockState blockState2 = this.method_15016(Blocks.field_10563.getDefaultState().with(StairsBlock.FACING, Direction.NORTH));
+			BlockState blockState3 = this.method_15016(Blocks.field_10563.getDefaultState().with(StairsBlock.FACING, Direction.SOUTH));
+			BlockState blockState4 = this.method_15016(Blocks.field_10563.getDefaultState().with(StairsBlock.FACING, Direction.EAST));
 			BlockState blockState5 = this.method_15016(Blocks.field_10161.getDefaultState());
-			BlockState blockState6 = this.method_15016(Blocks.field_10596.getDefaultState().with(StairsBlock.field_11571, Direction.NORTH));
+			BlockState blockState6 = this.method_15016(Blocks.field_10596.getDefaultState().with(StairsBlock.FACING, Direction.NORTH));
 			BlockState blockState7 = this.method_15016(Blocks.field_10620.getDefaultState());
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 1, 1, 7, 5, 4, Blocks.field_10124.getDefaultState(), Blocks.field_10124.getDefaultState(), false);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 8, 0, 5, blockState, blockState, false);
@@ -456,11 +456,6 @@ public class VillageGenerator {
 			this.method_15010(iWorld, mutableIntBoundingBox, 2, 1, 2, 1);
 			return true;
 		}
-
-		@Override
-		protected int method_15011(int i, int j) {
-			return 1;
-		}
 	}
 
 	public static class class_3452 extends VillageGenerator.class_3465 {
@@ -479,7 +474,7 @@ public class VillageGenerator {
 			this.field_15331 = VillageGenerator.class_3453.method_14991(random);
 		}
 
-		public class_3452(class_3485 arg, CompoundTag compoundTag) {
+		public class_3452(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16956, compoundTag);
 			this.field_15332 = TagHelper.deserializeBlockState(compoundTag.getCompound("CA"));
 			this.field_15334 = TagHelper.deserializeBlockState(compoundTag.getCompound("CB"));
@@ -514,7 +509,7 @@ public class VillageGenerator {
 		public static VillageGenerator.class_3452 method_14990(
 			VillageGenerator.class_3461 arg, List<class_3443> list, Random random, int i, int j, int k, Direction direction, int l
 		) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, 0, 0, 0, 13, 4, 9, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, 0, 0, 0, 13, 4, 9, direction);
 			return method_15009(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new VillageGenerator.class_3452(arg, l, random, mutableIntBoundingBox, direction)
 				: null;
@@ -591,7 +586,7 @@ public class VillageGenerator {
 			this.field_15336 = method_14991(random);
 		}
 
-		public class_3453(class_3485 arg, CompoundTag compoundTag) {
+		public class_3453(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16964, compoundTag);
 			this.field_15335 = TagHelper.deserializeBlockState(compoundTag.getCompound("CA"));
 			this.field_15336 = TagHelper.deserializeBlockState(compoundTag.getCompound("CB"));
@@ -622,7 +617,7 @@ public class VillageGenerator {
 		public static VillageGenerator.class_3453 method_14993(
 			VillageGenerator.class_3461 arg, List<class_3443> list, Random random, int i, int j, int k, Direction direction, int l
 		) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, 0, 0, 0, 7, 4, 9, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, 0, 0, 0, 7, 4, 9, direction);
 			return method_15009(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new VillageGenerator.class_3453(arg, l, random, mutableIntBoundingBox, direction)
 				: null;
@@ -680,12 +675,12 @@ public class VillageGenerator {
 			this.structureBounds = mutableIntBoundingBox;
 		}
 
-		public class_3454(class_3485 arg, CompoundTag compoundTag) {
+		public class_3454(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16923, compoundTag);
 		}
 
 		public static MutableIntBoundingBox method_14994(List<class_3443> list, int i, int j, int k, Direction direction) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, 0, 0, 0, 3, 4, 2, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, 0, 0, 0, 3, 4, 2, direction);
 			return class_3443.method_14932(list, mutableIntBoundingBox) != null ? null : mutableIntBoundingBox;
 		}
 
@@ -742,14 +737,14 @@ public class VillageGenerator {
 			this.structureBounds = mutableIntBoundingBox;
 		}
 
-		public class_3456(class_3485 arg, CompoundTag compoundTag) {
+		public class_3456(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16916, compoundTag);
 		}
 
 		public static VillageGenerator.class_3456 method_14997(
 			VillageGenerator.class_3461 arg, List<class_3443> list, Random random, int i, int j, int k, Direction direction, int l
 		) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, 0, 0, 0, 9, 7, 11, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, 0, 0, 0, 9, 7, 11, direction);
 			return method_15009(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new VillageGenerator.class_3456(arg, l, random, mutableIntBoundingBox, direction)
 				: null;
@@ -767,9 +762,9 @@ public class VillageGenerator {
 			}
 
 			BlockState blockState = this.method_15016(Blocks.field_10445.getDefaultState());
-			BlockState blockState2 = this.method_15016(Blocks.field_10563.getDefaultState().with(StairsBlock.field_11571, Direction.NORTH));
-			BlockState blockState3 = this.method_15016(Blocks.field_10563.getDefaultState().with(StairsBlock.field_11571, Direction.SOUTH));
-			BlockState blockState4 = this.method_15016(Blocks.field_10563.getDefaultState().with(StairsBlock.field_11571, Direction.WEST));
+			BlockState blockState2 = this.method_15016(Blocks.field_10563.getDefaultState().with(StairsBlock.FACING, Direction.NORTH));
+			BlockState blockState3 = this.method_15016(Blocks.field_10563.getDefaultState().with(StairsBlock.FACING, Direction.SOUTH));
+			BlockState blockState4 = this.method_15016(Blocks.field_10563.getDefaultState().with(StairsBlock.FACING, Direction.WEST));
 			BlockState blockState5 = this.method_15016(Blocks.field_10161.getDefaultState());
 			BlockState blockState6 = this.method_15016(Blocks.field_10431.getDefaultState());
 			BlockState blockState7 = this.method_15016(Blocks.field_10620.getDefaultState());
@@ -907,11 +902,6 @@ public class VillageGenerator {
 			this.method_15010(iWorld, mutableIntBoundingBox, 4, 1, 2, 2);
 			return true;
 		}
-
-		@Override
-		protected int method_15011(int i, int j) {
-			return i == 0 ? 4 : super.method_15011(i, j);
-		}
 	}
 
 	public static class class_3457 extends VillageGenerator.class_3465 {
@@ -924,7 +914,7 @@ public class VillageGenerator {
 			this.field_15341 = random.nextBoolean();
 		}
 
-		public class_3457(class_3485 arg, CompoundTag compoundTag) {
+		public class_3457(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16912, compoundTag);
 			this.field_15341 = compoundTag.getBoolean("Terrace");
 		}
@@ -938,7 +928,7 @@ public class VillageGenerator {
 		public static VillageGenerator.class_3457 method_14998(
 			VillageGenerator.class_3461 arg, List<class_3443> list, Random random, int i, int j, int k, Direction direction, int l
 		) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, 0, 0, 0, 5, 6, 5, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, 0, 0, 0, 5, 6, 5, direction);
 			return class_3443.method_14932(list, mutableIntBoundingBox) != null
 				? null
 				: new VillageGenerator.class_3457(arg, l, random, mutableIntBoundingBox, direction);
@@ -957,7 +947,7 @@ public class VillageGenerator {
 
 			BlockState blockState = this.method_15016(Blocks.field_10445.getDefaultState());
 			BlockState blockState2 = this.method_15016(Blocks.field_10161.getDefaultState());
-			BlockState blockState3 = this.method_15016(Blocks.field_10596.getDefaultState().with(StairsBlock.field_11571, Direction.NORTH));
+			BlockState blockState3 = this.method_15016(Blocks.field_10596.getDefaultState().with(StairsBlock.FACING, Direction.NORTH));
 			BlockState blockState4 = this.method_15016(Blocks.field_10431.getDefaultState());
 			BlockState blockState5 = this.method_15016(Blocks.field_10620.getDefaultState());
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 4, 0, 4, blockState, blockState, false);
@@ -1072,7 +1062,7 @@ public class VillageGenerator {
 			this.field_15342 = random.nextInt(3);
 		}
 
-		public class_3458(class_3485 arg, CompoundTag compoundTag) {
+		public class_3458(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16940, compoundTag);
 			this.field_15342 = compoundTag.getInt("T");
 			this.field_15343 = compoundTag.getBoolean("C");
@@ -1088,7 +1078,7 @@ public class VillageGenerator {
 		public static VillageGenerator.class_3458 method_14999(
 			VillageGenerator.class_3461 arg, List<class_3443> list, Random random, int i, int j, int k, Direction direction, int l
 		) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, 0, 0, 0, 4, 6, 5, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, 0, 0, 0, 4, 6, 5, direction);
 			return method_15009(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new VillageGenerator.class_3458(arg, l, random, mutableIntBoundingBox, direction)
 				: null;
@@ -1107,7 +1097,7 @@ public class VillageGenerator {
 
 			BlockState blockState = this.method_15016(Blocks.field_10445.getDefaultState());
 			BlockState blockState2 = this.method_15016(Blocks.field_10161.getDefaultState());
-			BlockState blockState3 = this.method_15016(Blocks.field_10596.getDefaultState().with(StairsBlock.field_11571, Direction.NORTH));
+			BlockState blockState3 = this.method_15016(Blocks.field_10596.getDefaultState().with(StairsBlock.FACING, Direction.NORTH));
 			BlockState blockState4 = this.method_15016(Blocks.field_10431.getDefaultState());
 			BlockState blockState5 = this.method_15016(Blocks.field_10620.getDefaultState());
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 1, 1, 3, 5, 4, Blocks.field_10124.getDefaultState(), Blocks.field_10124.getDefaultState(), false);
@@ -1194,14 +1184,14 @@ public class VillageGenerator {
 			this.structureBounds = mutableIntBoundingBox;
 		}
 
-		public class_3459(class_3485 arg, CompoundTag compoundTag) {
+		public class_3459(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16947, compoundTag);
 		}
 
 		public static VillageGenerator.class_3459 method_15000(
 			VillageGenerator.class_3461 arg, List<class_3443> list, Random random, int i, int j, int k, Direction direction, int l
 		) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, 0, 0, 0, 5, 12, 9, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, 0, 0, 0, 5, 12, 9, direction);
 			return method_15009(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new VillageGenerator.class_3459(arg, l, random, mutableIntBoundingBox, direction)
 				: null;
@@ -1219,9 +1209,9 @@ public class VillageGenerator {
 			}
 
 			BlockState blockState = Blocks.field_10445.getDefaultState();
-			BlockState blockState2 = this.method_15016(Blocks.field_10596.getDefaultState().with(StairsBlock.field_11571, Direction.NORTH));
-			BlockState blockState3 = this.method_15016(Blocks.field_10596.getDefaultState().with(StairsBlock.field_11571, Direction.WEST));
-			BlockState blockState4 = this.method_15016(Blocks.field_10596.getDefaultState().with(StairsBlock.field_11571, Direction.EAST));
+			BlockState blockState2 = this.method_15016(Blocks.field_10596.getDefaultState().with(StairsBlock.FACING, Direction.NORTH));
+			BlockState blockState3 = this.method_15016(Blocks.field_10596.getDefaultState().with(StairsBlock.FACING, Direction.WEST));
+			BlockState blockState4 = this.method_15016(Blocks.field_10596.getDefaultState().with(StairsBlock.FACING, Direction.EAST));
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 1, 1, 3, 3, 7, Blocks.field_10124.getDefaultState(), Blocks.field_10124.getDefaultState(), false);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 5, 1, 3, 9, 3, Blocks.field_10124.getDefaultState(), Blocks.field_10124.getDefaultState(), false);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 0, 0, 3, 0, 8, blockState, blockState, false);
@@ -1399,11 +1389,6 @@ public class VillageGenerator {
 			this.method_15010(iWorld, mutableIntBoundingBox, 2, 1, 2, 1);
 			return true;
 		}
-
-		@Override
-		protected int method_15011(int i, int j) {
-			return 2;
-		}
 	}
 
 	public static class class_3460 extends VillageGenerator.class_3465 {
@@ -1415,7 +1400,7 @@ public class VillageGenerator {
 			this.structureBounds = mutableIntBoundingBox;
 		}
 
-		public class_3460(class_3485 arg, CompoundTag compoundTag) {
+		public class_3460(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16951, compoundTag);
 			this.field_15344 = compoundTag.getBoolean("Chest");
 		}
@@ -1423,7 +1408,7 @@ public class VillageGenerator {
 		public static VillageGenerator.class_3460 method_15001(
 			VillageGenerator.class_3461 arg, List<class_3443> list, Random random, int i, int j, int k, Direction direction, int l
 		) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, 0, 0, 0, 10, 6, 7, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, 0, 0, 0, 10, 6, 7, direction);
 			return method_15009(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new VillageGenerator.class_3460(arg, l, random, mutableIntBoundingBox, direction)
 				: null;
@@ -1447,10 +1432,10 @@ public class VillageGenerator {
 			}
 
 			BlockState blockState = Blocks.field_10445.getDefaultState();
-			BlockState blockState2 = this.method_15016(Blocks.field_10563.getDefaultState().with(StairsBlock.field_11571, Direction.NORTH));
-			BlockState blockState3 = this.method_15016(Blocks.field_10563.getDefaultState().with(StairsBlock.field_11571, Direction.WEST));
+			BlockState blockState2 = this.method_15016(Blocks.field_10563.getDefaultState().with(StairsBlock.FACING, Direction.NORTH));
+			BlockState blockState3 = this.method_15016(Blocks.field_10563.getDefaultState().with(StairsBlock.FACING, Direction.WEST));
 			BlockState blockState4 = this.method_15016(Blocks.field_10161.getDefaultState());
-			BlockState blockState5 = this.method_15016(Blocks.field_10596.getDefaultState().with(StairsBlock.field_11571, Direction.NORTH));
+			BlockState blockState5 = this.method_15016(Blocks.field_10596.getDefaultState().with(StairsBlock.FACING, Direction.NORTH));
 			BlockState blockState6 = this.method_15016(Blocks.field_10431.getDefaultState());
 			BlockState blockState7 = this.method_15016(Blocks.field_10620.getDefaultState());
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 1, 0, 9, 4, 6, Blocks.field_10124.getDefaultState(), Blocks.field_10124.getDefaultState(), false);
@@ -1483,8 +1468,8 @@ public class VillageGenerator {
 			this.addBlock(iWorld, Blocks.field_10576.getDefaultState().with(PaneBlock.NORTH, Boolean.valueOf(true)), 9, 2, 4, mutableIntBoundingBox);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 7, 2, 4, 8, 2, 5, Blocks.field_10124.getDefaultState(), Blocks.field_10124.getDefaultState(), false);
 			this.addBlock(iWorld, blockState, 6, 1, 3, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10181.getDefaultState().with(FurnaceBlock.field_11104, Direction.SOUTH), 6, 2, 3, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10181.getDefaultState().with(FurnaceBlock.field_11104, Direction.SOUTH), 6, 3, 3, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10181.getDefaultState().with(FurnaceBlock.FACING, Direction.SOUTH), 6, 2, 3, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10181.getDefaultState().with(FurnaceBlock.FACING, Direction.SOUTH), 6, 3, 3, mutableIntBoundingBox);
 			this.addBlock(iWorld, Blocks.field_10136.getDefaultState().with(SlabBlock.field_11501, SlabType.field_12682), 8, 1, 1, mutableIntBoundingBox);
 			this.addBlock(
 				iWorld,
@@ -1547,11 +1532,6 @@ public class VillageGenerator {
 			this.method_15010(iWorld, mutableIntBoundingBox, 7, 1, 1, 1);
 			return true;
 		}
-
-		@Override
-		protected int method_15011(int i, int j) {
-			return 3;
-		}
 	}
 
 	public static class class_3461 extends VillageGenerator.class_3467 {
@@ -1570,7 +1550,7 @@ public class VillageGenerator {
 			this.field_15360 = random.nextInt(50) == 0;
 		}
 
-		public class_3461(class_3485 arg, CompoundTag compoundTag) {
+		public class_3461(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16942, compoundTag);
 		}
 	}
@@ -1585,7 +1565,7 @@ public class VillageGenerator {
 			this.field_15350 = Math.max(mutableIntBoundingBox.getBlockCountX(), mutableIntBoundingBox.getBlockCountZ());
 		}
 
-		public class_3462(class_3485 arg, CompoundTag compoundTag) {
+		public class_3462(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16910, compoundTag);
 			this.field_15350 = compoundTag.getInt("Length");
 		}
@@ -1616,7 +1596,7 @@ public class VillageGenerator {
 				}
 			}
 
-			Direction direction = this.method_14934();
+			Direction direction = this.getFacing();
 			if (bl && random.nextInt(3) > 0 && direction != null) {
 				switch (direction) {
 					case NORTH:
@@ -1728,7 +1708,7 @@ public class VillageGenerator {
 			VillageGenerator.class_3461 arg, List<class_3443> list, Random random, int i, int j, int k, Direction direction
 		) {
 			for (int l = 7 * MathHelper.nextInt(random, 3, 5); l >= 7; l -= 7) {
-				MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, 0, 0, 0, 3, 3, l, direction);
+				MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, 0, 0, 0, 3, 3, l, direction);
 				if (class_3443.method_14932(list, mutableIntBoundingBox) == null) {
 					return mutableIntBoundingBox;
 				}
@@ -1752,7 +1732,7 @@ public class VillageGenerator {
 					mutable.set(i, 64, j);
 					if (mutableIntBoundingBox.contains(mutable)) {
 						int k = iWorld.getTop(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable.getX(), mutable.getZ());
-						mutable.set(mutable.getX(), k, mutable.getZ()).method_10098(Direction.DOWN);
+						mutable.set(mutable.getX(), k, mutable.getZ()).setOffset(Direction.DOWN);
 						if (mutable.getY() < iWorld.getSeaLevel()) {
 							mutable.setY(iWorld.getSeaLevel() - 1);
 						}
@@ -1765,7 +1745,7 @@ public class VillageGenerator {
 								break;
 							}
 
-							if (blockState5.getMaterial().method_15797()) {
+							if (blockState5.getMaterial().isLiquid()) {
 								iWorld.setBlockState(new BlockPos(mutable), blockState2, 2);
 								break;
 							}
@@ -1783,7 +1763,7 @@ public class VillageGenerator {
 								break;
 							}
 
-							mutable.method_10098(Direction.DOWN);
+							mutable.setOffset(Direction.DOWN);
 						}
 
 						this.structureBounds.minY = Math.min(this.structureBounds.minY, mutable.getY());
@@ -1803,14 +1783,14 @@ public class VillageGenerator {
 			this.structureBounds = mutableIntBoundingBox;
 		}
 
-		public class_3463(class_3485 arg, CompoundTag compoundTag) {
+		public class_3463(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16913, compoundTag);
 		}
 
 		public static VillageGenerator.class_3463 method_15003(
 			VillageGenerator.class_3461 arg, List<class_3443> list, Random random, int i, int j, int k, Direction direction, int l
 		) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, 0, 0, 0, 9, 7, 12, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, 0, 0, 0, 9, 7, 12, direction);
 			return method_15009(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new VillageGenerator.class_3463(arg, l, random, mutableIntBoundingBox, direction)
 				: null;
@@ -1828,10 +1808,10 @@ public class VillageGenerator {
 			}
 
 			BlockState blockState = this.method_15016(Blocks.field_10445.getDefaultState());
-			BlockState blockState2 = this.method_15016(Blocks.field_10563.getDefaultState().with(StairsBlock.field_11571, Direction.NORTH));
-			BlockState blockState3 = this.method_15016(Blocks.field_10563.getDefaultState().with(StairsBlock.field_11571, Direction.SOUTH));
-			BlockState blockState4 = this.method_15016(Blocks.field_10563.getDefaultState().with(StairsBlock.field_11571, Direction.EAST));
-			BlockState blockState5 = this.method_15016(Blocks.field_10563.getDefaultState().with(StairsBlock.field_11571, Direction.WEST));
+			BlockState blockState2 = this.method_15016(Blocks.field_10563.getDefaultState().with(StairsBlock.FACING, Direction.NORTH));
+			BlockState blockState3 = this.method_15016(Blocks.field_10563.getDefaultState().with(StairsBlock.FACING, Direction.SOUTH));
+			BlockState blockState4 = this.method_15016(Blocks.field_10563.getDefaultState().with(StairsBlock.FACING, Direction.EAST));
+			BlockState blockState5 = this.method_15016(Blocks.field_10563.getDefaultState().with(StairsBlock.FACING, Direction.WEST));
 			BlockState blockState6 = this.method_15016(Blocks.field_10161.getDefaultState());
 			BlockState blockState7 = this.method_15016(Blocks.field_10431.getDefaultState());
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 1, 1, 7, 4, 4, Blocks.field_10124.getDefaultState(), Blocks.field_10124.getDefaultState(), false);
@@ -2053,7 +2033,7 @@ public class VillageGenerator {
 
 		@Nullable
 		protected class_3443 method_15017(VillageGenerator.class_3461 arg, List<class_3443> list, Random random, int i, int j) {
-			Direction direction = this.method_14934();
+			Direction direction = this.getFacing();
 			if (direction != null) {
 				switch (direction) {
 					case NORTH:
@@ -2081,7 +2061,7 @@ public class VillageGenerator {
 
 		@Nullable
 		protected class_3443 method_15015(VillageGenerator.class_3461 arg, List<class_3443> list, Random random, int i, int j) {
-			Direction direction = this.method_14934();
+			Direction direction = this.getFacing();
 			if (direction != null) {
 				switch (direction) {
 					case NORTH:
@@ -2135,31 +2115,28 @@ public class VillageGenerator {
 					int n = this.applyXTransform(i + m, k);
 					int o = this.applyYTransform(j);
 					int p = this.applyZTransform(i + m, k);
-					if (!mutableIntBoundingBox.contains(new BlockPos(n, o, p))) {
+					BlockPos blockPos = new BlockPos(n, o, p);
+					if (!mutableIntBoundingBox.contains(blockPos)) {
 						break;
 					}
 
 					this.vCount++;
+					VillagerType villagerType = VillagerType.forBiome(iWorld.getBiome(blockPos));
 					if (this.field_15360) {
-						ZombieVillagerEntity zombieVillagerEntity = new ZombieVillagerEntity(iWorld.method_8410());
+						ZombieVillagerEntity zombieVillagerEntity = new ZombieVillagerEntity(iWorld.getWorld());
 						zombieVillagerEntity.setPositionAndAngles((double)n + 0.5, (double)o, (double)p + 0.5, 0.0F, 0.0F);
-						zombieVillagerEntity.method_5943(iWorld, iWorld.getLocalDifficulty(new BlockPos(zombieVillagerEntity)), class_3730.field_16474, null, null);
-						zombieVillagerEntity.method_7195(this.method_15011(m, 0));
+						zombieVillagerEntity.setVillagerData(zombieVillagerEntity.getVillagerData().withType(villagerType));
+						zombieVillagerEntity.prepareEntityData(iWorld, iWorld.getLocalDifficulty(new BlockPos(zombieVillagerEntity)), SpawnType.field_16474, null, null);
 						zombieVillagerEntity.setPersistent();
 						iWorld.spawnEntity(zombieVillagerEntity);
 					} else {
-						VillagerEntity villagerEntity = new VillagerEntity(iWorld.method_8410());
+						VillagerEntity villagerEntity = new VillagerEntity(iWorld.getWorld(), villagerType);
 						villagerEntity.setPositionAndAngles((double)n + 0.5, (double)o, (double)p + 0.5, 0.0F, 0.0F);
-						villagerEntity.setVillagerType(this.method_15011(m, iWorld.getRandom().nextInt(6)));
-						villagerEntity.method_7240(iWorld, iWorld.getLocalDifficulty(new BlockPos(villagerEntity)), class_3730.field_16474, null, null, false);
+						villagerEntity.prepareEntityData(iWorld, iWorld.getLocalDifficulty(new BlockPos(villagerEntity)), SpawnType.field_16474, null, null);
 						iWorld.spawnEntity(villagerEntity);
 					}
 				}
 			}
-		}
-
-		protected int method_15011(int i, int j) {
-			return j;
 		}
 
 		protected BlockState method_15016(BlockState blockState) {
@@ -2174,11 +2151,11 @@ public class VillageGenerator {
 				}
 
 				if (block == Blocks.field_10563) {
-					return Blocks.field_10142.getDefaultState().with(StairsBlock.field_11571, blockState.get(StairsBlock.field_11571));
+					return Blocks.field_10142.getDefaultState().with(StairsBlock.FACING, blockState.get(StairsBlock.FACING));
 				}
 
 				if (block == Blocks.field_10596) {
-					return Blocks.field_10142.getDefaultState().with(StairsBlock.field_11571, blockState.get(StairsBlock.field_11571));
+					return Blocks.field_10142.getDefaultState().with(StairsBlock.FACING, blockState.get(StairsBlock.FACING));
 				}
 
 				if (block == Blocks.field_10255) {
@@ -2198,7 +2175,7 @@ public class VillageGenerator {
 				}
 
 				if (block == Blocks.field_10563) {
-					return Blocks.field_10569.getDefaultState().with(StairsBlock.field_11571, blockState.get(StairsBlock.field_11571));
+					return Blocks.field_10569.getDefaultState().with(StairsBlock.FACING, blockState.get(StairsBlock.FACING));
 				}
 
 				if (block == Blocks.field_10620) {
@@ -2218,7 +2195,7 @@ public class VillageGenerator {
 				}
 
 				if (block == Blocks.field_10563) {
-					return Blocks.field_10256.getDefaultState().with(StairsBlock.field_11571, blockState.get(StairsBlock.field_11571));
+					return Blocks.field_10256.getDefaultState().with(StairsBlock.FACING, blockState.get(StairsBlock.FACING));
 				}
 
 				if (block == Blocks.field_10445) {
@@ -2247,13 +2224,13 @@ public class VillageGenerator {
 
 		protected void method_15018(IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, Random random, int i, int j, int k, Direction direction) {
 			if (!this.field_15360) {
-				this.method_14925(iWorld, mutableIntBoundingBox, random, i, j, k, Direction.NORTH, this.method_15013());
+				this.addDoor(iWorld, mutableIntBoundingBox, random, i, j, k, Direction.NORTH, this.method_15013());
 			}
 		}
 
 		protected void method_15019(IWorld iWorld, Direction direction, int i, int j, int k, MutableIntBoundingBox mutableIntBoundingBox) {
 			if (!this.field_15360) {
-				this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.field_11731, direction), i, j, k, mutableIntBoundingBox);
+				this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, direction), i, j, k, mutableIntBoundingBox);
 			}
 		}
 
@@ -2272,7 +2249,7 @@ public class VillageGenerator {
 		public class_3467(StructurePiece structurePiece, @Nullable VillageGenerator.class_3461 arg, int i, Random random, int j, int k) {
 			super(structurePiece, arg, i);
 			this.method_14926(Direction.class_2353.HORIZONTAL.random(random));
-			if (this.method_14934().getAxis() == Direction.Axis.Z) {
+			if (this.getFacing().getAxis() == Direction.Axis.Z) {
 				this.structureBounds = new MutableIntBoundingBox(j, 64, k, j + 6 - 1, 78, k + 6 - 1);
 			} else {
 				this.structureBounds = new MutableIntBoundingBox(j, 64, k, j + 6 - 1, 78, k + 6 - 1);
@@ -2283,7 +2260,7 @@ public class VillageGenerator {
 			super(structurePiece, compoundTag);
 		}
 
-		public class_3467(class_3485 arg, CompoundTag compoundTag) {
+		public class_3467(StructureManager structureManager, CompoundTag compoundTag) {
 			this(StructurePiece.field_16938, compoundTag);
 		}
 

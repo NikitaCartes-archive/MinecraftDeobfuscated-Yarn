@@ -18,16 +18,16 @@ public class ScaffoldingItem extends BlockItem {
 		BlockPos blockPos = itemPlacementContext.getPos();
 		World world = itemPlacementContext.getWorld();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (blockState.getBlock() == this.getBlock() && itemPlacementContext.method_8038().getAxis() == Direction.Axis.Y) {
-			BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos).method_10098(Direction.UP);
+		if (blockState.getBlock() == this.getBlock() && itemPlacementContext.getFacing().getAxis() == Direction.Axis.Y) {
+			BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos).setOffset(Direction.UP);
 
-			while (blockState.getBlock() == this.getBlock() && !World.isHeightInvaid(mutable)) {
+			while (blockState.getBlock() == this.getBlock() && !World.isHeightInvalid(mutable)) {
 				blockState = world.getBlockState(mutable);
 				if (blockState.isAir()) {
-					return ItemPlacementContext.method_16355(itemPlacementContext, mutable, Direction.UP);
+					return ItemPlacementContext.create(itemPlacementContext, mutable, Direction.UP);
 				}
 
-				mutable.method_10098(Direction.UP);
+				mutable.setOffset(Direction.UP);
 			}
 		}
 

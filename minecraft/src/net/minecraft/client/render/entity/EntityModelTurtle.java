@@ -5,12 +5,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
 import net.minecraft.client.render.entity.model.QuadrupedEntityModel;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class EntityModelTurtle extends QuadrupedEntityModel {
+public class EntityModelTurtle<T extends TurtleEntity> extends QuadrupedEntityModel<T> {
 	private final Cuboid field_3594;
 
 	public EntityModelTurtle(float f) {
@@ -42,10 +41,8 @@ public class EntityModelTurtle extends QuadrupedEntityModel {
 		this.leg4.setRotationPoint(5.0F, 21.0F, -4.0F);
 	}
 
-	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		this.setRotationAngles(f, g, h, i, j, k, entity);
-		TurtleEntity turtleEntity = (TurtleEntity)entity;
+	public void method_17124(T turtleEntity, float f, float g, float h, float i, float j, float k) {
+		this.method_17125(turtleEntity, f, g, h, i, j, k);
 		if (this.isChild) {
 			float l = 6.0F;
 			GlStateManager.pushMatrix();
@@ -60,7 +57,7 @@ public class EntityModelTurtle extends QuadrupedEntityModel {
 			GlStateManager.popMatrix();
 		} else {
 			GlStateManager.pushMatrix();
-			if (turtleEntity.method_6679()) {
+			if (turtleEntity.getHasEgg()) {
 				GlStateManager.translatef(0.0F, -0.08F, 0.0F);
 			}
 
@@ -72,7 +69,7 @@ public class EntityModelTurtle extends QuadrupedEntityModel {
 			GlStateManager.popMatrix();
 			this.leg3.render(k);
 			this.leg4.render(k);
-			if (turtleEntity.method_6679()) {
+			if (turtleEntity.getHasEgg()) {
 				this.field_3594.render(k);
 			}
 
@@ -80,10 +77,8 @@ public class EntityModelTurtle extends QuadrupedEntityModel {
 		}
 	}
 
-	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
-		super.setRotationAngles(f, g, h, i, j, k, entity);
-		TurtleEntity turtleEntity = (TurtleEntity)entity;
+	public void method_17125(T turtleEntity, float f, float g, float h, float i, float j, float k) {
+		super.setAngles(turtleEntity, f, g, h, i, j, k);
 		this.leg1.pitch = MathHelper.cos(f * 0.6662F * 0.6F) * 0.5F * g;
 		this.leg2.pitch = MathHelper.cos(f * 0.6662F * 0.6F + (float) Math.PI) * 0.5F * g;
 		this.leg3.roll = MathHelper.cos(f * 0.6662F * 0.6F + (float) Math.PI) * 0.5F * g;

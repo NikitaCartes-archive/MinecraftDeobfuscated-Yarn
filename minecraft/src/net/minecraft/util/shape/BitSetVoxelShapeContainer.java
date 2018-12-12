@@ -1,12 +1,11 @@
 package net.minecraft.util.shape;
 
 import java.util.BitSet;
-import net.minecraft.class_251;
 import net.minecraft.class_255;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.math.Direction;
 
-public final class BitSetVoxelShapeContainer extends class_251 {
+public final class BitSetVoxelShapeContainer extends AbstractVoxelShapeContainer {
 	private final BitSet storage;
 	private int xMin;
 	private int yMin;
@@ -30,17 +29,17 @@ public final class BitSetVoxelShapeContainer extends class_251 {
 		this.zMax = q;
 	}
 
-	public BitSetVoxelShapeContainer(class_251 arg) {
-		super(arg.field_1374, arg.field_1373, arg.field_1372);
-		if (arg instanceof BitSetVoxelShapeContainer) {
-			this.storage = (BitSet)((BitSetVoxelShapeContainer)arg).storage.clone();
+	public BitSetVoxelShapeContainer(AbstractVoxelShapeContainer abstractVoxelShapeContainer) {
+		super(abstractVoxelShapeContainer.xSize, abstractVoxelShapeContainer.ySize, abstractVoxelShapeContainer.zSize);
+		if (abstractVoxelShapeContainer instanceof BitSetVoxelShapeContainer) {
+			this.storage = (BitSet)((BitSetVoxelShapeContainer)abstractVoxelShapeContainer).storage.clone();
 		} else {
-			this.storage = new BitSet(this.field_1374 * this.field_1373 * this.field_1372);
+			this.storage = new BitSet(this.xSize * this.ySize * this.zSize);
 
-			for (int i = 0; i < this.field_1374; i++) {
-				for (int j = 0; j < this.field_1373; j++) {
-					for (int k = 0; k < this.field_1372; k++) {
-						if (arg.method_1063(i, j, k)) {
+			for (int i = 0; i < this.xSize; i++) {
+				for (int j = 0; j < this.ySize; j++) {
+					for (int k = 0; k < this.zSize; k++) {
+						if (abstractVoxelShapeContainer.contains(i, j, k)) {
 							this.storage.set(this.getIndex(i, j, k));
 						}
 					}
@@ -48,25 +47,25 @@ public final class BitSetVoxelShapeContainer extends class_251 {
 			}
 		}
 
-		this.xMin = arg.method_1055(Direction.Axis.X);
-		this.yMin = arg.method_1055(Direction.Axis.Y);
-		this.zMin = arg.method_1055(Direction.Axis.Z);
-		this.xMax = arg.method_1045(Direction.Axis.X);
-		this.yMax = arg.method_1045(Direction.Axis.Y);
-		this.zMax = arg.method_1045(Direction.Axis.Z);
+		this.xMin = abstractVoxelShapeContainer.getMin(Direction.Axis.X);
+		this.yMin = abstractVoxelShapeContainer.getMin(Direction.Axis.Y);
+		this.zMin = abstractVoxelShapeContainer.getMin(Direction.Axis.Z);
+		this.xMax = abstractVoxelShapeContainer.getMax(Direction.Axis.X);
+		this.yMax = abstractVoxelShapeContainer.getMax(Direction.Axis.Y);
+		this.zMax = abstractVoxelShapeContainer.getMax(Direction.Axis.Z);
 	}
 
 	protected int getIndex(int i, int j, int k) {
-		return (i * this.field_1373 + j) * this.field_1372 + k;
+		return (i * this.ySize + j) * this.zSize + k;
 	}
 
 	@Override
-	public boolean method_1063(int i, int j, int k) {
+	public boolean contains(int i, int j, int k) {
 		return this.storage.get(this.getIndex(i, j, k));
 	}
 
 	@Override
-	public void method_1049(int i, int j, int k, boolean bl, boolean bl2) {
+	public void modify(int i, int j, int k, boolean bl, boolean bl2) {
 		this.storage.set(this.getIndex(i, j, k), bl2);
 		if (bl && bl2) {
 			this.xMin = Math.min(this.xMin, i);
@@ -79,17 +78,17 @@ public final class BitSetVoxelShapeContainer extends class_251 {
 	}
 
 	@Override
-	public boolean method_1056() {
+	public boolean isEmpty() {
 		return this.storage.isEmpty();
 	}
 
 	@Override
-	public int method_1055(Direction.Axis axis) {
+	public int getMin(Direction.Axis axis) {
 		return axis.choose(this.xMin, this.yMin, this.zMin);
 	}
 
 	@Override
-	public int method_1045(Direction.Axis axis) {
+	public int getMax(Direction.Axis axis) {
 		return axis.choose(this.xMax, this.yMax, this.zMax);
 	}
 
@@ -98,9 +97,7 @@ public final class BitSetVoxelShapeContainer extends class_251 {
 		if (k < 0 || l < 0 || i < 0) {
 			return false;
 		} else {
-			return k < this.field_1374 && l < this.field_1373 && j <= this.field_1372
-				? this.storage.nextClearBit(this.getIndex(k, l, i)) >= this.getIndex(k, l, j)
-				: false;
+			return k < this.xSize && l < this.ySize && j <= this.zSize ? this.storage.nextClearBit(this.getIndex(k, l, i)) >= this.getIndex(k, l, j) : false;
 		}
 	}
 
@@ -110,18 +107,23 @@ public final class BitSetVoxelShapeContainer extends class_251 {
 	}
 
 	static BitSetVoxelShapeContainer method_1040(
-		class_251 arg, class_251 arg2, class_255 arg3, class_255 arg4, class_255 arg5, BooleanBiFunction booleanBiFunction
+		AbstractVoxelShapeContainer abstractVoxelShapeContainer,
+		AbstractVoxelShapeContainer abstractVoxelShapeContainer2,
+		class_255 arg,
+		class_255 arg2,
+		class_255 arg3,
+		BooleanBiFunction booleanBiFunction
 	) {
 		BitSetVoxelShapeContainer bitSetVoxelShapeContainer = new BitSetVoxelShapeContainer(
-			arg3.method_1066().size() - 1, arg4.method_1066().size() - 1, arg5.method_1066().size() - 1
+			arg.method_1066().size() - 1, arg2.method_1066().size() - 1, arg3.method_1066().size() - 1
 		);
 		int[] is = new int[]{Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE};
-		arg3.method_1065((i, j, k) -> {
+		arg.method_1065((i, j, k) -> {
 			boolean[] bls = new boolean[]{false};
-			boolean bl = arg4.method_1065((l, m, n) -> {
+			boolean bl = arg2.method_1065((l, m, n) -> {
 				boolean[] bls2 = new boolean[]{false};
-				boolean blx = arg5.method_1065((o, p, q) -> {
-					boolean blxx = booleanBiFunction.apply(arg.method_1044(i, l, o), arg2.method_1044(j, m, p));
+				boolean blx = arg3.method_1065((o, p, q) -> {
+					boolean blxx = booleanBiFunction.apply(abstractVoxelShapeContainer.method_1044(i, l, o), abstractVoxelShapeContainer2.method_1044(j, m, p));
 					if (blxx) {
 						bitSetVoxelShapeContainer.storage.set(bitSetVoxelShapeContainer.getIndex(k, n, q));
 						is[2] = Math.min(is[2], q);

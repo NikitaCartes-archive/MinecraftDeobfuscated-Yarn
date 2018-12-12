@@ -18,6 +18,8 @@ import net.minecraft.class_2447;
 import net.minecraft.class_2450;
 import net.minecraft.class_2454;
 import net.minecraft.class_2456;
+import net.minecraft.class_3891;
+import net.minecraft.class_3893;
 import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.advancement.criterion.EnterBlockCriterion;
 import net.minecraft.advancement.criterion.ImpossibleCriterion;
@@ -28,7 +30,7 @@ import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemContainer;
+import net.minecraft.item.ItemProvider;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.recipe.Ingredient;
@@ -72,7 +74,7 @@ public class RecipesProvider implements DataProvider {
 		);
 		this.method_10427(
 			dataCache,
-			SimpleAdvancement.Builder.create().criterion("impossible", new ImpossibleCriterion.Conditions()).method_698(),
+			SimpleAdvancement.Builder.create().criterion("impossible", new ImpossibleCriterion.Conditions()).toJson(),
 			path.resolve("data/minecraft/advancements/recipes/root.json")
 		);
 	}
@@ -81,7 +83,7 @@ public class RecipesProvider implements DataProvider {
 		try {
 			String string = GSON.toJson((JsonElement)jsonObject);
 			String string2 = SHA1.hashUnencodedChars(string).toString();
-			if (!Objects.equals(dataCache.method_10323(path), string2) || !Files.exists(path, new LinkOption[0])) {
+			if (!Objects.equals(dataCache.getOldSha1(path), string2) || !Files.exists(path, new LinkOption[0])) {
 				Files.createDirectories(path.getParent());
 				BufferedWriter bufferedWriter = Files.newBufferedWriter(path);
 				Throwable var7 = null;
@@ -106,7 +108,7 @@ public class RecipesProvider implements DataProvider {
 				}
 			}
 
-			dataCache.method_10325(path, string2);
+			dataCache.updateSha1(path, string2);
 		} catch (IOException var19) {
 			LOGGER.error("Couldn't save recipe {}", path, var19);
 		}
@@ -116,7 +118,7 @@ public class RecipesProvider implements DataProvider {
 		try {
 			String string = GSON.toJson((JsonElement)jsonObject);
 			String string2 = SHA1.hashUnencodedChars(string).toString();
-			if (!Objects.equals(dataCache.method_10323(path), string2) || !Files.exists(path, new LinkOption[0])) {
+			if (!Objects.equals(dataCache.getOldSha1(path), string2) || !Files.exists(path, new LinkOption[0])) {
 				Files.createDirectories(path.getParent());
 				BufferedWriter bufferedWriter = Files.newBufferedWriter(path);
 				Throwable var7 = null;
@@ -141,7 +143,7 @@ public class RecipesProvider implements DataProvider {
 				}
 			}
 
-			dataCache.method_10325(path, string2);
+			dataCache.updateSha1(path, string2);
 		} catch (IOException var19) {
 			LOGGER.error("Couldn't save recipe advancement {}", path, var19);
 		}
@@ -262,6 +264,15 @@ public class RecipesProvider implements DataProvider {
 			.method_10439("Y")
 			.method_10429("has_feather", this.method_10426(Items.field_8153))
 			.method_10429("has_flint", this.method_10426(Items.field_8145))
+			.method_10431(consumer);
+		class_2447.method_10436(Blocks.field_16328, 1)
+			.method_10433('P', ItemTags.field_15537)
+			.method_10433('S', ItemTags.field_15534)
+			.method_10439("PSP")
+			.method_10439("P P")
+			.method_10439("PSP")
+			.method_10429("has_planks", this.method_10420(ItemTags.field_15537))
+			.method_10429("has_wood_slab", this.method_10420(ItemTags.field_15534))
 			.method_10431(consumer);
 		class_2447.method_10437(Blocks.field_10327)
 			.method_10434('S', Items.field_8137)
@@ -1304,7 +1315,7 @@ public class RecipesProvider implements DataProvider {
 		class_2450.method_10448(Items.field_8814, 3)
 			.method_10454(Items.field_8054)
 			.method_10454(Items.field_8183)
-			.method_10451(Ingredient.ofItems(Items.field_8713, Items.field_8665))
+			.method_10451(Ingredient.method_8091(Items.field_8713, Items.field_8665))
 			.method_10442("has_blaze_powder", this.method_10426(Items.field_8183))
 			.method_10444(consumer);
 		class_2447.method_10437(Items.field_8378)
@@ -2970,12 +2981,12 @@ public class RecipesProvider implements DataProvider {
 			.method_10429("has_purpur_block", this.method_10426(Blocks.field_10286))
 			.method_10431(consumer);
 		class_2447.method_10436(Blocks.field_10175, 6)
-			.method_10428('#', Ingredient.ofItems(Blocks.field_10286, Blocks.field_10505))
+			.method_10428('#', Ingredient.method_8091(Blocks.field_10286, Blocks.field_10505))
 			.method_10439("###")
 			.method_10429("has_purpur_block", this.method_10426(Blocks.field_10286))
 			.method_10431(consumer);
 		class_2447.method_10436(Blocks.field_9992, 4)
-			.method_10428('#', Ingredient.ofItems(Blocks.field_10286, Blocks.field_10505))
+			.method_10428('#', Ingredient.method_8091(Blocks.field_10286, Blocks.field_10505))
 			.method_10439("#  ")
 			.method_10439("## ")
 			.method_10439("###")
@@ -2988,14 +2999,14 @@ public class RecipesProvider implements DataProvider {
 			.method_10429("has_quartz", this.method_10426(Items.field_8155))
 			.method_10431(consumer);
 		class_2447.method_10436(Blocks.field_10237, 6)
-			.method_10428('#', Ingredient.ofItems(Blocks.field_10044, Blocks.field_10153, Blocks.field_10437))
+			.method_10428('#', Ingredient.method_8091(Blocks.field_10044, Blocks.field_10153, Blocks.field_10437))
 			.method_10439("###")
 			.method_10429("has_chiseled_quartz_block", this.method_10426(Blocks.field_10044))
 			.method_10429("has_quartz_block", this.method_10426(Blocks.field_10153))
 			.method_10429("has_quartz_pillar", this.method_10426(Blocks.field_10437))
 			.method_10431(consumer);
 		class_2447.method_10436(Blocks.field_10451, 4)
-			.method_10428('#', Ingredient.ofItems(Blocks.field_10044, Blocks.field_10153, Blocks.field_10437))
+			.method_10428('#', Ingredient.method_8091(Blocks.field_10044, Blocks.field_10153, Blocks.field_10437))
 			.method_10439("#  ")
 			.method_10439("## ")
 			.method_10439("###")
@@ -3137,14 +3148,14 @@ public class RecipesProvider implements DataProvider {
 			.method_10429("has_sand", this.method_10426(Blocks.field_10534))
 			.method_10431(consumer);
 		class_2447.method_10436(Blocks.field_10624, 6)
-			.method_10428('#', Ingredient.ofItems(Blocks.field_10344, Blocks.field_10117, Blocks.field_10518))
+			.method_10428('#', Ingredient.method_8091(Blocks.field_10344, Blocks.field_10117, Blocks.field_10518))
 			.method_10439("###")
 			.method_10429("has_red_sandstone", this.method_10426(Blocks.field_10344))
 			.method_10429("has_chiseled_red_sandstone", this.method_10426(Blocks.field_10117))
 			.method_10429("has_cut_red_sandstone", this.method_10426(Blocks.field_10518))
 			.method_10431(consumer);
 		class_2447.method_10436(Blocks.field_10420, 4)
-			.method_10428('#', Ingredient.ofItems(Blocks.field_10344, Blocks.field_10117, Blocks.field_10518))
+			.method_10428('#', Ingredient.method_8091(Blocks.field_10344, Blocks.field_10117, Blocks.field_10518))
 			.method_10439("#  ")
 			.method_10439("## ")
 			.method_10439("###")
@@ -3208,14 +3219,14 @@ public class RecipesProvider implements DataProvider {
 			.method_10429("has_sand", this.method_10426(Blocks.field_10102))
 			.method_10431(consumer);
 		class_2447.method_10436(Blocks.field_10007, 6)
-			.method_10428('#', Ingredient.ofItems(Blocks.field_9979, Blocks.field_10292, Blocks.field_10361))
+			.method_10428('#', Ingredient.method_8091(Blocks.field_9979, Blocks.field_10292, Blocks.field_10361))
 			.method_10439("###")
 			.method_10429("has_sandstone", this.method_10426(Blocks.field_9979))
 			.method_10429("has_chiseled_sandstone", this.method_10426(Blocks.field_10292))
 			.method_10429("has_cut_sandstone", this.method_10426(Blocks.field_10361))
 			.method_10431(consumer);
 		class_2447.method_10436(Blocks.field_10142, 4)
-			.method_10428('#', Ingredient.ofItems(Blocks.field_9979, Blocks.field_10292, Blocks.field_10361))
+			.method_10428('#', Ingredient.method_8091(Blocks.field_9979, Blocks.field_10292, Blocks.field_10361))
 			.method_10439("#  ")
 			.method_10439("## ")
 			.method_10439("###")
@@ -3535,7 +3546,7 @@ public class RecipesProvider implements DataProvider {
 			.method_10442("has_reeds", this.method_10426(Blocks.field_10424))
 			.method_10444(consumer);
 		class_2447.method_10437(Blocks.field_10375)
-			.method_10428('#', Ingredient.ofItems(Blocks.field_10102, Blocks.field_10534))
+			.method_10428('#', Ingredient.method_8091(Blocks.field_10102, Blocks.field_10534))
 			.method_10434('X', Items.field_8054)
 			.method_10439("X#X")
 			.method_10439("#X#")
@@ -3551,7 +3562,7 @@ public class RecipesProvider implements DataProvider {
 			.method_10431(consumer);
 		class_2447.method_10436(Blocks.field_10336, 4)
 			.method_10434('#', Items.field_8600)
-			.method_10428('X', Ingredient.ofItems(Items.field_8713, Items.field_8665))
+			.method_10428('X', Ingredient.method_8091(Items.field_8713, Items.field_8665))
 			.method_10439("X")
 			.method_10439("#")
 			.method_10429("has_stone_pickaxe", this.method_10426(Items.field_8387))
@@ -4108,6 +4119,23 @@ public class RecipesProvider implements DataProvider {
 			.method_10439("# #")
 			.method_10429("has_stone_slab", this.method_10426(Blocks.field_10454))
 			.method_10431(consumer);
+		class_2447.method_10437(Blocks.field_16333)
+			.method_10434('#', Blocks.field_10360)
+			.method_10434('X', Blocks.field_10181)
+			.method_10434('I', Items.field_8620)
+			.method_10439("III")
+			.method_10439("IXI")
+			.method_10439("###")
+			.method_10429("has_smooth_stone", this.method_10426(Blocks.field_10360))
+			.method_10431(consumer);
+		class_2447.method_10437(Blocks.field_16334)
+			.method_10433('#', ItemTags.field_15539)
+			.method_10434('X', Blocks.field_10181)
+			.method_10439(" # ")
+			.method_10439("#X#")
+			.method_10439(" # ")
+			.method_10429("has_furnace", this.method_10426(Blocks.field_10181))
+			.method_10431(consumer);
 		class_2456.method_10476(RecipeSerializers.ARMOR_DYE).method_10475(consumer, "armor_dye");
 		class_2456.method_10476(RecipeSerializers.BANNER_DUPLICATE).method_10475(consumer, "banner_duplicate");
 		class_2456.method_10476(RecipeSerializers.BOOK_CLONING).method_10475(consumer, "book_cloning");
@@ -4120,68 +4148,68 @@ public class RecipesProvider implements DataProvider {
 		class_2456.method_10476(RecipeSerializers.SHULKER_BOX).method_10475(consumer, "shulker_box_coloring");
 		class_2456.method_10476(RecipeSerializers.TIPPED_ARROW).method_10475(consumer, "tipped_arrow");
 		class_2456.method_10476(RecipeSerializers.SUSPICIOUS_STEW).method_10475(consumer, "suspicious_stew");
-		class_2454.method_10473(Ingredient.ofItems(Items.field_8567), Items.field_8512, 0.35F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Items.field_8567), Items.field_8512, 0.35F, 200)
 			.method_10469("has_potato", this.method_10426(Items.field_8567))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Items.field_8696), Items.field_8621, 0.3F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Items.field_8696), Items.field_8621, 0.3F, 200)
 			.method_10469("has_clay_ball", this.method_10426(Items.field_8696))
 			.method_10470(consumer);
 		class_2454.method_10473(Ingredient.fromTag(ItemTags.field_15539), Items.field_8665, 0.15F, 200)
 			.method_10469("has_log", this.method_10420(ItemTags.field_15539))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Items.field_8233), Items.field_8882, 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Items.field_8233), Items.field_8882, 0.1F, 200)
 			.method_10469("has_chorus_fruit", this.method_10426(Items.field_8233))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10418.getItem()), Items.field_8713, 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10418.getItem()), Items.field_8713, 0.1F, 200)
 			.method_10469("has_coal_ore", this.method_10426(Blocks.field_10418))
 			.method_10472(consumer, "coal_from_smelting");
-		class_2454.method_10473(Ingredient.ofItems(Items.field_8046), Items.field_8176, 0.35F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Items.field_8046), Items.field_8176, 0.35F, 200)
 			.method_10469("has_beef", this.method_10426(Items.field_8046))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Items.field_8726), Items.field_8544, 0.35F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Items.field_8726), Items.field_8544, 0.35F, 200)
 			.method_10469("has_chicken", this.method_10426(Items.field_8726))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Items.field_8429), Items.field_8373, 0.35F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Items.field_8429), Items.field_8373, 0.35F, 200)
 			.method_10469("has_cod", this.method_10426(Items.field_8429))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_9993), Items.field_8551, 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_9993), Items.field_8551, 0.1F, 200)
 			.method_10469("has_kelp", this.method_10426(Blocks.field_9993))
 			.method_10472(consumer, "dried_kelp_from_smelting");
-		class_2454.method_10473(Ingredient.ofItems(Items.field_8209), Items.field_8509, 0.35F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Items.field_8209), Items.field_8509, 0.35F, 200)
 			.method_10469("has_salmon", this.method_10426(Items.field_8209))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Items.field_8748), Items.field_8347, 0.35F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Items.field_8748), Items.field_8347, 0.35F, 200)
 			.method_10469("has_mutton", this.method_10426(Items.field_8748))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Items.field_8389), Items.field_8261, 0.35F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Items.field_8389), Items.field_8261, 0.35F, 200)
 			.method_10469("has_porkchop", this.method_10426(Items.field_8389))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Items.field_8504), Items.field_8752, 0.35F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Items.field_8504), Items.field_8752, 0.35F, 200)
 			.method_10469("has_rabbit", this.method_10426(Items.field_8504))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10442.getItem()), Items.field_8477, 1.0F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10442.getItem()), Items.field_8477, 1.0F, 200)
 			.method_10469("has_diamond_ore", this.method_10426(Blocks.field_10442))
 			.method_10472(consumer, "diamond_from_smelting");
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10090.getItem()), Items.field_8759, 0.2F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10090.getItem()), Items.field_8759, 0.2F, 200)
 			.method_10469("has_lapis_ore", this.method_10426(Blocks.field_10090))
 			.method_10472(consumer, "lapis_from_smelting");
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10013.getItem()), Items.field_8687, 1.0F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10013.getItem()), Items.field_8687, 1.0F, 200)
 			.method_10469("has_emerald_ore", this.method_10426(Blocks.field_10013))
 			.method_10472(consumer, "emerald_from_smelting");
 		class_2454.method_10473(Ingredient.fromTag(ItemTags.field_15532), Blocks.field_10033.getItem(), 0.1F, 200)
 			.method_10469("has_sand", this.method_10420(ItemTags.field_15532))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10571.getItem()), Items.field_8695, 1.0F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10571.getItem()), Items.field_8695, 1.0F, 200)
 			.method_10469("has_gold_ore", this.method_10426(Blocks.field_10571))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10476.getItem()), Items.field_8131, 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10476.getItem()), Items.field_8131, 0.1F, 200)
 			.method_10469("has_sea_pickle", this.method_10426(Blocks.field_10476))
 			.method_10472(consumer, "lime_dye_from_smelting");
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10029.getItem()), Items.field_8408, 1.0F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10029.getItem()), Items.field_8408, 1.0F, 200)
 			.method_10469("has_cactus", this.method_10426(Blocks.field_10029))
 			.method_10470(consumer);
 		class_2454.method_10473(
-				Ingredient.ofItems(
+				Ingredient.method_8091(
 					Items.field_8335,
 					Items.field_8322,
 					Items.field_8825,
@@ -4209,7 +4237,7 @@ public class RecipesProvider implements DataProvider {
 			.method_10469("has_golden_horse_armor", this.method_10426(Items.field_8560))
 			.method_10472(consumer, "gold_nugget_from_smelting");
 		class_2454.method_10473(
-				Ingredient.ofItems(
+				Ingredient.method_8091(
 					Items.field_8403,
 					Items.field_8699,
 					Items.field_8475,
@@ -4244,102 +4272,217 @@ public class RecipesProvider implements DataProvider {
 			.method_10469("has_chainmail_leggings", this.method_10426(Items.field_8218))
 			.method_10469("has_chainmail_boots", this.method_10426(Items.field_8313))
 			.method_10472(consumer, "iron_nugget_from_smelting");
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10212.getItem()), Items.field_8620, 0.7F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10212.getItem()), Items.field_8620, 0.7F, 200)
 			.method_10469("has_iron_ore", this.method_10426(Blocks.field_10212.getItem()))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10460), Blocks.field_10415.getItem(), 0.35F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10460), Blocks.field_10415.getItem(), 0.35F, 200)
 			.method_10469("has_clay_block", this.method_10426(Blocks.field_10460))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10515), Items.field_8729, 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10515), Items.field_8729, 0.1F, 200)
 			.method_10469("has_netherrack", this.method_10426(Blocks.field_10515))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10213), Items.field_8155, 0.2F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10213), Items.field_8155, 0.2F, 200)
 			.method_10469("has_nether_quartz_ore", this.method_10426(Blocks.field_10213))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10080), Items.field_8725, 0.7F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10080), Items.field_8725, 0.7F, 200)
 			.method_10469("has_redstone_ore", this.method_10426(Blocks.field_10080))
 			.method_10472(consumer, "redstone_from_smelting");
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10562), Blocks.field_10258.getItem(), 0.15F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10562), Blocks.field_10258.getItem(), 0.15F, 200)
 			.method_10469("has_wet_sponge", this.method_10426(Blocks.field_10562))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10445), Blocks.field_10340.getItem(), 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10445), Blocks.field_10340.getItem(), 0.1F, 200)
 			.method_10469("has_cobblestone", this.method_10426(Blocks.field_10445))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10340), Blocks.field_10360.getItem(), 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10340), Blocks.field_10360.getItem(), 0.1F, 200)
 			.method_10469("has_stone", this.method_10426(Blocks.field_10340))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_9979), Blocks.field_10467.getItem(), 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_9979), Blocks.field_10467.getItem(), 0.1F, 200)
 			.method_10469("has_sandstone", this.method_10426(Blocks.field_9979))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10344), Blocks.field_10483.getItem(), 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10344), Blocks.field_10483.getItem(), 0.1F, 200)
 			.method_10469("has_red_sandstone", this.method_10426(Blocks.field_10344))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10153), Blocks.field_9978.getItem(), 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10153), Blocks.field_9978.getItem(), 0.1F, 200)
 			.method_10469("has_quartz_block", this.method_10426(Blocks.field_10153))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10056), Blocks.field_10416.getItem(), 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10056), Blocks.field_10416.getItem(), 0.1F, 200)
 			.method_10469("has_stone_bricks", this.method_10426(Blocks.field_10056))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10626), Blocks.field_10501.getItem(), 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10626), Blocks.field_10501.getItem(), 0.1F, 200)
 			.method_10469("has_black_terracotta", this.method_10426(Blocks.field_10626))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10409), Blocks.field_10550.getItem(), 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10409), Blocks.field_10550.getItem(), 0.1F, 200)
 			.method_10469("has_blue_terracotta", this.method_10426(Blocks.field_10409))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10123), Blocks.field_10004.getItem(), 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10123), Blocks.field_10004.getItem(), 0.1F, 200)
 			.method_10469("has_brown_terracotta", this.method_10426(Blocks.field_10123))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10235), Blocks.field_10078.getItem(), 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10235), Blocks.field_10078.getItem(), 0.1F, 200)
 			.method_10469("has_cyan_terracotta", this.method_10426(Blocks.field_10235))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10349), Blocks.field_10220.getItem(), 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10349), Blocks.field_10220.getItem(), 0.1F, 200)
 			.method_10469("has_gray_terracotta", this.method_10426(Blocks.field_10349))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10526), Blocks.field_10475.getItem(), 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10526), Blocks.field_10475.getItem(), 0.1F, 200)
 			.method_10469("has_green_terracotta", this.method_10426(Blocks.field_10526))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10325), Blocks.field_10345.getItem(), 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10325), Blocks.field_10345.getItem(), 0.1F, 200)
 			.method_10469("has_light_blue_terracotta", this.method_10426(Blocks.field_10325))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10590), Blocks.field_10052.getItem(), 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10590), Blocks.field_10052.getItem(), 0.1F, 200)
 			.method_10469("has_light_gray_terracotta", this.method_10426(Blocks.field_10590))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10014), Blocks.field_10046.getItem(), 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10014), Blocks.field_10046.getItem(), 0.1F, 200)
 			.method_10469("has_lime_terracotta", this.method_10426(Blocks.field_10014))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10015), Blocks.field_10538.getItem(), 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10015), Blocks.field_10538.getItem(), 0.1F, 200)
 			.method_10469("has_magenta_terracotta", this.method_10426(Blocks.field_10015))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10184), Blocks.field_10280.getItem(), 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10184), Blocks.field_10280.getItem(), 0.1F, 200)
 			.method_10469("has_orange_terracotta", this.method_10426(Blocks.field_10184))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10444), Blocks.field_10567.getItem(), 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10444), Blocks.field_10567.getItem(), 0.1F, 200)
 			.method_10469("has_pink_terracotta", this.method_10426(Blocks.field_10444))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10570), Blocks.field_10426.getItem(), 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10570), Blocks.field_10426.getItem(), 0.1F, 200)
 			.method_10469("has_purple_terracotta", this.method_10426(Blocks.field_10570))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10328), Blocks.field_10383.getItem(), 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10328), Blocks.field_10383.getItem(), 0.1F, 200)
 			.method_10469("has_red_terracotta", this.method_10426(Blocks.field_10328))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10611), Blocks.field_10595.getItem(), 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10611), Blocks.field_10595.getItem(), 0.1F, 200)
 			.method_10469("has_white_terracotta", this.method_10426(Blocks.field_10611))
 			.method_10470(consumer);
-		class_2454.method_10473(Ingredient.ofItems(Blocks.field_10143), Blocks.field_10096.getItem(), 0.1F, 200)
+		class_2454.method_10473(Ingredient.method_8091(Blocks.field_10143), Blocks.field_10096.getItem(), 0.1F, 200)
 			.method_10469("has_yellow_terracotta", this.method_10426(Blocks.field_10143))
 			.method_10470(consumer);
+		class_3891.method_17176(Ingredient.method_8091(Blocks.field_10212.getItem()), Items.field_8620, 0.7F, 100)
+			.method_17177("has_iron_ore", this.method_10426(Blocks.field_10212.getItem()))
+			.method_17178(consumer, "iron_ingot_from_blasting");
+		class_3891.method_17176(Ingredient.method_8091(Blocks.field_10571.getItem()), Items.field_8695, 1.0F, 100)
+			.method_17177("has_gold_ore", this.method_10426(Blocks.field_10571))
+			.method_17178(consumer, "gold_ingot_from_blasting");
+		class_3891.method_17176(Ingredient.method_8091(Blocks.field_10442.getItem()), Items.field_8477, 1.0F, 100)
+			.method_17177("has_diamond_ore", this.method_10426(Blocks.field_10442))
+			.method_17178(consumer, "diamond_from_blasting");
+		class_3891.method_17176(Ingredient.method_8091(Blocks.field_10090.getItem()), Items.field_8759, 0.2F, 100)
+			.method_17177("has_lapis_ore", this.method_10426(Blocks.field_10090))
+			.method_17178(consumer, "lapis_from_blasting");
+		class_3891.method_17176(Ingredient.method_8091(Blocks.field_10080), Items.field_8725, 0.7F, 100)
+			.method_17177("has_redstone_ore", this.method_10426(Blocks.field_10080))
+			.method_17178(consumer, "redstone_from_blasting");
+		class_3891.method_17176(Ingredient.method_8091(Blocks.field_10418.getItem()), Items.field_8713, 0.1F, 100)
+			.method_17177("has_coal_ore", this.method_10426(Blocks.field_10418))
+			.method_17178(consumer, "coal_from_blasting");
+		class_3891.method_17176(Ingredient.method_8091(Blocks.field_10013.getItem()), Items.field_8687, 1.0F, 100)
+			.method_17177("has_emerald_ore", this.method_10426(Blocks.field_10013))
+			.method_17178(consumer, "emerald_from_blasting");
+		class_3891.method_17176(Ingredient.method_8091(Blocks.field_10213), Items.field_8155, 0.2F, 100)
+			.method_17177("has_nether_quartz_ore", this.method_10426(Blocks.field_10213))
+			.method_17178(consumer, "quartz_from_blasting");
+		class_3891.method_17176(
+				Ingredient.method_8091(
+					Items.field_8335,
+					Items.field_8322,
+					Items.field_8825,
+					Items.field_8303,
+					Items.field_8845,
+					Items.field_8862,
+					Items.field_8678,
+					Items.field_8416,
+					Items.field_8753,
+					Items.field_8560
+				),
+				Items.field_8397,
+				0.1F,
+				100
+			)
+			.method_17177("has_golden_pickaxe", this.method_10426(Items.field_8335))
+			.method_17177("has_golden_shovel", this.method_10426(Items.field_8322))
+			.method_17177("has_golden_axe", this.method_10426(Items.field_8825))
+			.method_17177("has_golden_hoe", this.method_10426(Items.field_8303))
+			.method_17177("has_golden_sword", this.method_10426(Items.field_8845))
+			.method_17177("has_golden_helmet", this.method_10426(Items.field_8862))
+			.method_17177("has_golden_chestplate", this.method_10426(Items.field_8678))
+			.method_17177("has_golden_leggings", this.method_10426(Items.field_8416))
+			.method_17177("has_golden_boots", this.method_10426(Items.field_8753))
+			.method_17177("has_golden_horse_armor", this.method_10426(Items.field_8560))
+			.method_17178(consumer, "gold_nugget_from_blasting");
+		class_3891.method_17176(
+				Ingredient.method_8091(
+					Items.field_8403,
+					Items.field_8699,
+					Items.field_8475,
+					Items.field_8609,
+					Items.field_8371,
+					Items.field_8743,
+					Items.field_8523,
+					Items.field_8396,
+					Items.field_8660,
+					Items.field_8578,
+					Items.field_8283,
+					Items.field_8873,
+					Items.field_8218,
+					Items.field_8313
+				),
+				Items.field_8675,
+				0.1F,
+				100
+			)
+			.method_17177("has_iron_pickaxe", this.method_10426(Items.field_8403))
+			.method_17177("has_iron_shovel", this.method_10426(Items.field_8699))
+			.method_17177("has_iron_axe", this.method_10426(Items.field_8475))
+			.method_17177("has_iron_hoe", this.method_10426(Items.field_8609))
+			.method_17177("has_iron_sword", this.method_10426(Items.field_8371))
+			.method_17177("has_iron_helmet", this.method_10426(Items.field_8743))
+			.method_17177("has_iron_chestplate", this.method_10426(Items.field_8523))
+			.method_17177("has_iron_leggings", this.method_10426(Items.field_8396))
+			.method_17177("has_iron_boots", this.method_10426(Items.field_8660))
+			.method_17177("has_iron_horse_armor", this.method_10426(Items.field_8578))
+			.method_17177("has_chainmail_helmet", this.method_10426(Items.field_8283))
+			.method_17177("has_chainmail_chestplate", this.method_10426(Items.field_8873))
+			.method_17177("has_chainmail_leggings", this.method_10426(Items.field_8218))
+			.method_17177("has_chainmail_boots", this.method_10426(Items.field_8313))
+			.method_17178(consumer, "iron_nugget_from_blasting");
+		class_3893.method_17181(Ingredient.method_8091(Items.field_8046), Items.field_8176, 0.35F, 100)
+			.method_17182("has_beef", this.method_10426(Items.field_8046))
+			.method_17183(consumer, "cooked_beef_from_smoking");
+		class_3893.method_17181(Ingredient.method_8091(Items.field_8726), Items.field_8544, 0.35F, 100)
+			.method_17182("has_chicken", this.method_10426(Items.field_8726))
+			.method_17183(consumer, "cooked_chicken_from_smoking");
+		class_3893.method_17181(Ingredient.method_8091(Items.field_8429), Items.field_8373, 0.35F, 100)
+			.method_17182("has_cod", this.method_10426(Items.field_8429))
+			.method_17183(consumer, "cooked_cod_from_smoking");
+		class_3893.method_17181(Ingredient.method_8091(Blocks.field_9993), Items.field_8551, 0.1F, 100)
+			.method_17182("has_kelp", this.method_10426(Blocks.field_9993))
+			.method_17183(consumer, "dried_kelp_from_smoking");
+		class_3893.method_17181(Ingredient.method_8091(Items.field_8209), Items.field_8509, 0.35F, 100)
+			.method_17182("has_salmon", this.method_10426(Items.field_8209))
+			.method_17183(consumer, "cooked_salmon_from_smoking");
+		class_3893.method_17181(Ingredient.method_8091(Items.field_8748), Items.field_8347, 0.35F, 100)
+			.method_17182("has_mutton", this.method_10426(Items.field_8748))
+			.method_17183(consumer, "cooked_mutton_from_smoking");
+		class_3893.method_17181(Ingredient.method_8091(Items.field_8389), Items.field_8261, 0.35F, 100)
+			.method_17182("has_porkchop", this.method_10426(Items.field_8389))
+			.method_17183(consumer, "cooked_porkchop_from_smoking");
+		class_3893.method_17181(Ingredient.method_8091(Items.field_8567), Items.field_8512, 0.35F, 100)
+			.method_17182("has_potato", this.method_10426(Items.field_8567))
+			.method_17183(consumer, "baked_potato_from_smoking");
+		class_3893.method_17181(Ingredient.method_8091(Items.field_8504), Items.field_8752, 0.35F, 100)
+			.method_17182("has_rabbit", this.method_10426(Items.field_8504))
+			.method_17183(consumer, "cooked_rabbit_from_smoking");
 	}
 
 	private EnterBlockCriterion.Conditions method_10422(Block block) {
 		return new EnterBlockCriterion.Conditions(block, null);
 	}
 
-	private InventoryChangedCriterion.Conditions method_10424(NumberRange.Integer integer, ItemContainer itemContainer) {
-		return this.method_10423(ItemPredicate.Builder.create().item(itemContainer).count(integer).build());
+	private InventoryChangedCriterion.Conditions method_10424(NumberRange.Integer integer, ItemProvider itemProvider) {
+		return this.method_10423(ItemPredicate.Builder.create().method_8977(itemProvider).count(integer).build());
 	}
 
-	private InventoryChangedCriterion.Conditions method_10426(ItemContainer itemContainer) {
-		return this.method_10423(ItemPredicate.Builder.create().item(itemContainer).build());
+	private InventoryChangedCriterion.Conditions method_10426(ItemProvider itemProvider) {
+		return this.method_10423(ItemPredicate.Builder.create().method_8977(itemProvider).build());
 	}
 
 	private InventoryChangedCriterion.Conditions method_10420(Tag<Item> tag) {

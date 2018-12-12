@@ -59,7 +59,7 @@ public class MeleeAttackGoal extends Goal {
 
 	@Override
 	public void start() {
-		this.entity.getNavigation().method_6334(this.field_6509, this.field_6500);
+		this.entity.getNavigation().startMovingAlong(this.field_6509, this.field_6500);
 		this.field_6501 = 0;
 	}
 
@@ -96,7 +96,7 @@ public class MeleeAttackGoal extends Goal {
 				this.field_6501 += 5;
 			}
 
-			if (!this.entity.getNavigation().method_6335(livingEntity, this.field_6500)) {
+			if (!this.entity.getNavigation().startMovingTo(livingEntity, this.field_6500)) {
 				this.field_6501 += 15;
 			}
 		}

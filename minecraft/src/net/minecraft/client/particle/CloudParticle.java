@@ -2,10 +2,10 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.VertexBuffer;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particle.TexturedParticle;
+import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -37,11 +37,11 @@ public class CloudParticle extends Particle {
 	}
 
 	@Override
-	public void buildGeometry(VertexBuffer vertexBuffer, Entity entity, float f, float g, float h, float i, float j, float k) {
+	public void buildGeometry(BufferBuilder bufferBuilder, Entity entity, float f, float g, float h, float i, float j, float k) {
 		float l = ((float)this.age + f) / (float)this.maxAge * 32.0F;
 		l = MathHelper.clamp(l, 0.0F, 1.0F);
 		this.size = this.field_3875 * l;
-		super.buildGeometry(vertexBuffer, entity, f, g, h, i, j, k);
+		super.buildGeometry(bufferBuilder, entity, f, g, h, i, j, k);
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class CloudParticle extends Particle {
 		}
 
 		this.setSpriteIndex(7 - this.age * 8 / this.maxAge);
-		this.addPos(this.velocityX, this.velocityY, this.velocityZ);
+		this.move(this.velocityX, this.velocityY, this.velocityZ);
 		this.velocityX *= 0.96F;
 		this.velocityY *= 0.96F;
 		this.velocityZ *= 0.96F;
@@ -75,15 +75,15 @@ public class CloudParticle extends Particle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class class_705 implements FactoryParticle<TexturedParticle> {
-		public Particle createParticle(TexturedParticle texturedParticle, World world, double d, double e, double f, double g, double h, double i) {
+	public static class CloudFactory implements ParticleFactory<DefaultParticleType> {
+		public Particle method_3088(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new CloudParticle(world, d, e, f, g, h, i);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class class_706 implements FactoryParticle<TexturedParticle> {
-		public Particle createParticle(TexturedParticle texturedParticle, World world, double d, double e, double f, double g, double h, double i) {
+	public static class SneezeFactory implements ParticleFactory<DefaultParticleType> {
+		public Particle method_3089(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			Particle particle = new CloudParticle(world, d, e, f, g, h, i);
 			particle.setColor(200.0F, 50.0F, 120.0F);
 			particle.setColorAlpha(0.4F);

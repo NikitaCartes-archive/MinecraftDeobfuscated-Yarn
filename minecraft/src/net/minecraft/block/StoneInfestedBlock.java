@@ -30,7 +30,7 @@ public class StoneInfestedBlock extends Block {
 	@Override
 	public void onStacksDropped(BlockState blockState, World world, BlockPos blockPos, ItemStack itemStack) {
 		super.onStacksDropped(blockState, world, blockPos, itemStack);
-		if (!world.isRemote && world.getGameRules().getBoolean("doTileDrops") && EnchantmentHelper.getLevel(Enchantments.field_9099, itemStack) == 0) {
+		if (!world.isClient && world.getGameRules().getBoolean("doTileDrops") && EnchantmentHelper.getLevel(Enchantments.field_9099, itemStack) == 0) {
 			SilverfishEntity silverfishEntity = new SilverfishEntity(world);
 			silverfishEntity.setPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);
 			world.spawnEntity(silverfishEntity);

@@ -7,8 +7,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.debug.RenderDebug;
 import net.minecraft.entity.player.PlayerEntity;
@@ -70,69 +70,69 @@ public class class_871 implements RenderDebug.DebugRenderer {
 					float p = 0.0F;
 					float q = 0.0F;
 					float r = 0.5F;
-					if (Block.method_9501(blockState.method_11628(blockView, blockPos), Direction.WEST)) {
+					if (Block.isFaceFullCube(blockState.getCollisionShape(blockView, blockPos), Direction.WEST)) {
 						Tessellator tessellator = Tessellator.getInstance();
-						VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-						vertexBuffer.begin(5, VertexFormats.POSITION_COLOR);
-						vertexBuffer.vertex(h, i, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						vertexBuffer.vertex(h, i, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						vertexBuffer.vertex(h, m, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						vertexBuffer.vertex(h, m, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
+						bufferBuilder.vertex(h, i, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(h, i, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(h, m, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(h, m, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						tessellator.draw();
 					}
 
-					if (Block.method_9501(blockState.method_11628(blockView, blockPos), Direction.SOUTH)) {
+					if (Block.isFaceFullCube(blockState.getCollisionShape(blockView, blockPos), Direction.SOUTH)) {
 						Tessellator tessellator = Tessellator.getInstance();
-						VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-						vertexBuffer.begin(5, VertexFormats.POSITION_COLOR);
-						vertexBuffer.vertex(h, m, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						vertexBuffer.vertex(h, i, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						vertexBuffer.vertex(k, m, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						vertexBuffer.vertex(k, i, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
+						bufferBuilder.vertex(h, m, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(h, i, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(k, m, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(k, i, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						tessellator.draw();
 					}
 
-					if (Block.method_9501(blockState.method_11628(blockView, blockPos), Direction.EAST)) {
+					if (Block.isFaceFullCube(blockState.getCollisionShape(blockView, blockPos), Direction.EAST)) {
 						Tessellator tessellator = Tessellator.getInstance();
-						VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-						vertexBuffer.begin(5, VertexFormats.POSITION_COLOR);
-						vertexBuffer.vertex(k, i, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						vertexBuffer.vertex(k, i, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						vertexBuffer.vertex(k, m, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						vertexBuffer.vertex(k, m, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
+						bufferBuilder.vertex(k, i, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(k, i, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(k, m, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(k, m, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						tessellator.draw();
 					}
 
-					if (Block.method_9501(blockState.method_11628(blockView, blockPos), Direction.NORTH)) {
+					if (Block.isFaceFullCube(blockState.getCollisionShape(blockView, blockPos), Direction.NORTH)) {
 						Tessellator tessellator = Tessellator.getInstance();
-						VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-						vertexBuffer.begin(5, VertexFormats.POSITION_COLOR);
-						vertexBuffer.vertex(k, m, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						vertexBuffer.vertex(k, i, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						vertexBuffer.vertex(h, m, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						vertexBuffer.vertex(h, i, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
+						bufferBuilder.vertex(k, m, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(k, i, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(h, m, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(h, i, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						tessellator.draw();
 					}
 
-					if (Block.method_9501(blockState.method_11628(blockView, blockPos), Direction.DOWN)) {
+					if (Block.isFaceFullCube(blockState.getCollisionShape(blockView, blockPos), Direction.DOWN)) {
 						Tessellator tessellator = Tessellator.getInstance();
-						VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-						vertexBuffer.begin(5, VertexFormats.POSITION_COLOR);
-						vertexBuffer.vertex(h, i, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						vertexBuffer.vertex(k, i, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						vertexBuffer.vertex(h, i, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						vertexBuffer.vertex(k, i, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
+						bufferBuilder.vertex(h, i, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(k, i, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(h, i, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(k, i, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						tessellator.draw();
 					}
 
-					if (Block.method_9501(blockState.method_11628(blockView, blockPos), Direction.UP)) {
+					if (Block.isFaceFullCube(blockState.getCollisionShape(blockView, blockPos), Direction.UP)) {
 						Tessellator tessellator = Tessellator.getInstance();
-						VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-						vertexBuffer.begin(5, VertexFormats.POSITION_COLOR);
-						vertexBuffer.vertex(h, m, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						vertexBuffer.vertex(h, m, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						vertexBuffer.vertex(k, m, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						vertexBuffer.vertex(k, m, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
+						bufferBuilder.vertex(h, m, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(h, m, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(k, m, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(k, m, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						tessellator.draw();
 					}
 				}

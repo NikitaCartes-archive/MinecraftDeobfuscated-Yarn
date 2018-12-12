@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -41,15 +40,17 @@ public class PaneBlock extends HorizontalConnectedBlock {
 		BlockState blockState3 = blockView.getBlockState(blockPos4);
 		BlockState blockState4 = blockView.getBlockState(blockPos5);
 		return this.getDefaultState()
-			.with(NORTH, Boolean.valueOf(this.method_10281(blockState, Block.method_9501(blockState.method_11628(blockView, blockPos2), Direction.SOUTH))))
-			.with(SOUTH, Boolean.valueOf(this.method_10281(blockState2, Block.method_9501(blockState2.method_11628(blockView, blockPos3), Direction.NORTH))))
-			.with(WEST, Boolean.valueOf(this.method_10281(blockState3, Block.method_9501(blockState3.method_11628(blockView, blockPos4), Direction.EAST))))
-			.with(EAST, Boolean.valueOf(this.method_10281(blockState4, Block.method_9501(blockState4.method_11628(blockView, blockPos5), Direction.WEST))))
+			.with(NORTH, Boolean.valueOf(this.connectsTo(blockState, Block.isFaceFullCube(blockState.getCollisionShape(blockView, blockPos2), Direction.SOUTH))))
+			.with(SOUTH, Boolean.valueOf(this.connectsTo(blockState2, Block.isFaceFullCube(blockState2.getCollisionShape(blockView, blockPos3), Direction.NORTH))))
+			.with(WEST, Boolean.valueOf(this.connectsTo(blockState3, Block.isFaceFullCube(blockState3.getCollisionShape(blockView, blockPos4), Direction.EAST))))
+			.with(EAST, Boolean.valueOf(this.connectsTo(blockState4, Block.isFaceFullCube(blockState4.getCollisionShape(blockView, blockPos5), Direction.WEST))))
 			.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if ((Boolean)blockState.get(WATERLOGGED)) {
 			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
 		}
@@ -57,14 +58,14 @@ public class PaneBlock extends HorizontalConnectedBlock {
 		return direction.getAxis().isHorizontal()
 			? blockState.with(
 				(Property)FACING_PROPERTIES.get(direction),
-				Boolean.valueOf(this.method_10281(blockState2, Block.method_9501(blockState2.method_11628(iWorld, blockPos2), direction.getOpposite())))
+				Boolean.valueOf(this.connectsTo(blockState2, Block.isFaceFullCube(blockState2.getCollisionShape(iWorld, blockPos2), direction.getOpposite())))
 			)
-			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean method_9522(BlockState blockState, BlockState blockState2, Direction direction) {
+	public boolean skipRenderingSide(BlockState blockState, BlockState blockState2, Direction direction) {
 		if (blockState2.getBlock() == this) {
 			if (!direction.getAxis().isHorizontal()) {
 				return true;
@@ -76,15 +77,15 @@ public class PaneBlock extends HorizontalConnectedBlock {
 			}
 		}
 
-		return super.method_9522(blockState, blockState2, direction);
+		return super.skipRenderingSide(blockState, blockState2, direction);
 	}
 
-	public final boolean method_10281(BlockState blockState, boolean bl) {
+	public final boolean connectsTo(BlockState blockState, boolean bl) {
 		Block block = blockState.getBlock();
-		return !method_10282(block) && bl || block instanceof PaneBlock;
+		return !neverConnectsTo(block) && bl || block instanceof PaneBlock;
 	}
 
-	public static boolean method_10282(Block block) {
+	public static boolean neverConnectsTo(Block block) {
 		return block instanceof ShulkerBoxBlock
 			|| block instanceof LeavesBlock
 			|| block == Blocks.field_10327

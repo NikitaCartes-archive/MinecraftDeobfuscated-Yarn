@@ -1,8 +1,8 @@
 package net.minecraft.entity.mob;
 
-import net.minecraft.class_3730;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -27,8 +27,8 @@ public abstract class MobEntityWithAi extends MobEntity {
 	}
 
 	@Override
-	public boolean method_5979(IWorld iWorld, class_3730 arg) {
-		return super.method_5979(iWorld, arg) && this.method_6144(new BlockPos(this.x, this.getBoundingBox().minY, this.z), iWorld) >= 0.0F;
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
+		return super.canSpawn(iWorld, spawnType) && this.method_6144(new BlockPos(this.x, this.getBoundingBox().minY, this.z), iWorld) >= 0.0F;
 	}
 
 	public boolean method_6150() {
@@ -94,7 +94,7 @@ public abstract class MobEntityWithAi extends MobEntity {
 				this.goalSelector.removeBits(1);
 				float h = 2.0F;
 				Vec3d vec3d = new Vec3d(entity.x - this.x, entity.y - this.y, entity.z - this.z).normalize().multiply((double)Math.max(f - 2.0F, 0.0F));
-				this.getNavigation().method_6337(this.x + vec3d.x, this.y + vec3d.y, this.z + vec3d.z, this.method_6148());
+				this.getNavigation().startMovingTo(this.x + vec3d.x, this.y + vec3d.y, this.z + vec3d.z, this.method_6148());
 			}
 		}
 	}

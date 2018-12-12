@@ -55,7 +55,7 @@ public class class_1371 extends Goal {
 			f = 0.6;
 		}
 
-		this.field_6541.getNavigation().method_6335(this.field_6539, f);
+		this.field_6541.getNavigation().startMovingTo(this.field_6539, f);
 		this.field_6540 = Math.max(this.field_6540 - 1, 0);
 		if (!(e > d)) {
 			if (this.field_6540 <= 0) {

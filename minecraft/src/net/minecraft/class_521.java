@@ -15,7 +15,7 @@ public abstract class class_521 extends EntryListWidget<class_520> {
 		super(minecraftClient, i, j, 32, j - 55 + 4, 36);
 		this.field_3166 = minecraftClient;
 		this.field_2173 = false;
-		this.method_1927(true, (int)((float)minecraftClient.fontRenderer.FONT_HEIGHT * 1.5F));
+		this.method_1927(true, (int)((float)minecraftClient.fontRenderer.fontHeight * 1.5F));
 	}
 
 	@Override
@@ -39,6 +39,6 @@ public abstract class class_521 extends EntryListWidget<class_520> {
 	}
 
 	public void method_2690(class_520 arg) {
-		super.method_1901(arg);
+		super.addEntry(arg);
 	}
 }

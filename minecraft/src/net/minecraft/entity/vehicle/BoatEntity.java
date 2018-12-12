@@ -4,7 +4,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2836;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -27,6 +26,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.server.network.packet.BoatPaddleStateServerPacket;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
@@ -46,8 +46,8 @@ public class BoatEntity extends Entity {
 	private static final TrackedData<Integer> field_7707 = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Float> field_7705 = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Integer> BOAT_TYPE = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final TrackedData<Boolean> field_7687 = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final TrackedData<Boolean> field_7713 = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<Boolean> LEFT_PADDLE_MOVING = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<Boolean> RIGHT_PADDLE_MOVING = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> field_7691 = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private final float[] field_7704 = new float[2];
 	private float field_7692;
@@ -102,15 +102,15 @@ public class BoatEntity extends Entity {
 		this.dataTracker.startTracking(field_7707, 1);
 		this.dataTracker.startTracking(field_7705, 0.0F);
 		this.dataTracker.startTracking(BOAT_TYPE, BoatEntity.Type.OAK.ordinal());
-		this.dataTracker.startTracking(field_7687, false);
-		this.dataTracker.startTracking(field_7713, false);
+		this.dataTracker.startTracking(LEFT_PADDLE_MOVING, false);
+		this.dataTracker.startTracking(RIGHT_PADDLE_MOVING, false);
 		this.dataTracker.startTracking(field_7691, 0);
 	}
 
 	@Nullable
 	@Override
 	public BoundingBox method_5708(Entity entity) {
-		return entity.method_5810() ? entity.getBoundingBox() : null;
+		return entity.isPushable() ? entity.getBoundingBox() : null;
 	}
 
 	@Nullable
@@ -120,7 +120,7 @@ public class BoatEntity extends Entity {
 	}
 
 	@Override
-	public boolean method_5810() {
+	public boolean isPushable() {
 		return true;
 	}
 
@@ -133,7 +133,7 @@ public class BoatEntity extends Entity {
 	public boolean damage(DamageSource damageSource, float f) {
 		if (this.isInvulnerableTo(damageSource)) {
 			return false;
-		} else if (this.world.isRemote || this.invalid) {
+		} else if (this.world.isClient || this.invalid) {
 			return true;
 		} else if (damageSource instanceof ProjectileDamageSource && damageSource.getAttacker() != null && this.hasPassenger(damageSource.getAttacker())) {
 			return false;
@@ -141,11 +141,11 @@ public class BoatEntity extends Entity {
 			this.method_7540(-this.method_7543());
 			this.method_7553(10);
 			this.method_7542(this.method_7554() + f * 10.0F);
-			this.method_5785();
+			this.scheduleVelocityUpdate();
 			boolean bl = damageSource.getAttacker() instanceof PlayerEntity && ((PlayerEntity)damageSource.getAttacker()).abilities.creativeMode;
 			if (bl || this.method_7554() > 40.0F) {
 				if (!bl && this.world.getGameRules().getBoolean("doEntityDrops")) {
-					this.dropItem(this.asItem());
+					this.method_5706(this.asItem());
 				}
 
 				this.invalidate();
@@ -157,7 +157,7 @@ public class BoatEntity extends Entity {
 
 	@Override
 	public void method_5700(boolean bl) {
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			this.field_7689 = true;
 			this.field_7703 = bl;
 			if (this.method_7539() == 0) {
@@ -227,7 +227,7 @@ public class BoatEntity extends Entity {
 
 	@Override
 	public Direction method_5755() {
-		return this.method_5735().rotateYClockwise();
+		return this.getHorizontalFacing().rotateYClockwise();
 	}
 
 	@Override
@@ -240,7 +240,7 @@ public class BoatEntity extends Entity {
 			this.field_7706++;
 		}
 
-		if (!this.world.isRemote && this.field_7706 >= 60.0F) {
+		if (!this.world.isClient && this.field_7706 >= 60.0F) {
 			this.removeAllPassengers();
 		}
 
@@ -259,13 +259,13 @@ public class BoatEntity extends Entity {
 		this.method_7555();
 		if (this.method_5787()) {
 			if (this.getPassengerList().isEmpty() || !(this.getPassengerList().get(0) instanceof PlayerEntity)) {
-				this.method_7538(false, false);
+				this.setPaddleState(false, false);
 			}
 
 			this.method_7534();
-			if (this.world.isRemote) {
+			if (this.world.isClient) {
 				this.method_7549();
-				this.world.sendPacket(new class_2836(this.method_7556(0), this.method_7556(1)));
+				this.world.sendPacket(new BoatPaddleStateServerPacket(this.getPaddleState(0), this.getPaddleState(1)));
 			}
 
 			this.move(MovementType.SELF, this.velocityX, this.velocityY, this.velocityZ);
@@ -278,7 +278,7 @@ public class BoatEntity extends Entity {
 		this.method_7550();
 
 		for (int i = 0; i <= 1; i++) {
-			if (this.method_7556(i)) {
+			if (this.getPaddleState(i)) {
 				if (!this.isSilent()
 					&& (double)(this.field_7704[i] % (float) (Math.PI * 2)) <= (float) (Math.PI / 4)
 					&& ((double)this.field_7704[i] + (float) (Math.PI / 8)) % (float) (Math.PI * 2) >= (float) (Math.PI / 4)) {
@@ -300,7 +300,7 @@ public class BoatEntity extends Entity {
 		this.checkBlockCollision();
 		List<Entity> list = this.world.getEntities(this, this.getBoundingBox().expand(0.2F, -0.01F, 0.2F), EntityPredicates.method_5911(this));
 		if (!list.isEmpty()) {
-			boolean bl = !this.world.isRemote && !(this.method_5642() instanceof PlayerEntity);
+			boolean bl = !this.world.isClient && !(this.getPrimaryPassenger() instanceof PlayerEntity);
 
 			for (int j = 0; j < list.size(); j++) {
 				Entity entity = (Entity)list.get(j);
@@ -322,7 +322,7 @@ public class BoatEntity extends Entity {
 	}
 
 	private void method_7550() {
-		if (this.world.isRemote) {
+		if (this.world.isClient) {
 			int i = this.method_7539();
 			if (i > 0) {
 				this.field_7712 += 0.05F;
@@ -386,14 +386,16 @@ public class BoatEntity extends Entity {
 		}
 	}
 
-	public void method_7538(boolean bl, boolean bl2) {
-		this.dataTracker.set(field_7687, bl);
-		this.dataTracker.set(field_7713, bl2);
+	public void setPaddleState(boolean bl, boolean bl2) {
+		this.dataTracker.set(LEFT_PADDLE_MOVING, bl);
+		this.dataTracker.set(RIGHT_PADDLE_MOVING, bl2);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public float method_7551(int i, float f) {
-		return this.method_7556(i) ? (float)MathHelper.lerpClamped((double)this.field_7704[i] - (float) (Math.PI / 8), (double)this.field_7704[i], (double)f) : 0.0F;
+		return this.getPaddleState(i)
+			? (float)MathHelper.lerpClamped((double)this.field_7704[i] - (float) (Math.PI / 8), (double)this.field_7704[i], (double)f)
+			: 0.0F;
 	}
 
 	private BoatEntity.class_1691 method_7552() {
@@ -481,7 +483,7 @@ public class BoatEntity extends Entity {
 								BlockState blockState = this.world.getBlockState(pooledMutable);
 								if (!(blockState.getBlock() instanceof WaterlilyBlock)
 									&& VoxelShapes.compareShapes(
-										blockState.method_11628(this.world, pooledMutable).method_1096((double)p, (double)s, (double)q), voxelShape, BooleanBiFunction.AND
+										blockState.getCollisionShape(this.world, pooledMutable).method_1096((double)p, (double)s, (double)q), voxelShape, BooleanBiFunction.AND
 									)) {
 									f += blockState.getBlock().getFrictionCoefficient();
 									o++;
@@ -586,7 +588,7 @@ public class BoatEntity extends Entity {
 				this.field_7692 = 0.9F;
 			} else if (this.field_7702 == BoatEntity.class_1691.field_7719) {
 				this.field_7692 = this.field_7714;
-				if (this.method_5642() instanceof PlayerEntity) {
+				if (this.getPrimaryPassenger() instanceof PlayerEntity) {
 					this.field_7714 /= 2.0F;
 				}
 			}
@@ -630,7 +632,7 @@ public class BoatEntity extends Entity {
 
 			this.velocityX = this.velocityX + (double)(MathHelper.sin(-this.yaw * (float) (Math.PI / 180.0)) * f);
 			this.velocityZ = this.velocityZ + (double)(MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)) * f);
-			this.method_7538(this.field_7695 && !this.field_7710 || this.field_7709, this.field_7710 && !this.field_7695 || this.field_7709);
+			this.setPaddleState(this.field_7695 && !this.field_7710 || this.field_7709, this.field_7710 && !this.field_7695 || this.field_7709);
 		}
 	}
 
@@ -655,12 +657,12 @@ public class BoatEntity extends Entity {
 			Vec3d vec3d = new Vec3d((double)f, 0.0, 0.0).rotateY(-this.yaw * (float) (Math.PI / 180.0) - (float) (Math.PI / 2));
 			entity.setPosition(this.x + vec3d.x, this.y + (double)g, this.z + vec3d.z);
 			entity.yaw = entity.yaw + this.field_7690;
-			entity.setHeadPitch(entity.getHeadPitch() + this.field_7690);
+			entity.setHeadYaw(entity.getHeadYaw() + this.field_7690);
 			this.copyEntityData(entity);
 			if (entity instanceof AnimalEntity && this.getPassengerList().size() > 1) {
 				int j = entity.getEntityId() % 2 == 0 ? 90 : 270;
 				entity.setYaw(((AnimalEntity)entity).field_6283 + (float)j);
-				entity.setHeadPitch(entity.getHeadPitch() + (float)j);
+				entity.setHeadYaw(entity.getHeadYaw() + (float)j);
 			}
 		}
 	}
@@ -671,7 +673,7 @@ public class BoatEntity extends Entity {
 		float g = MathHelper.clamp(f, -105.0F, 105.0F);
 		entity.prevYaw += g - f;
 		entity.yaw += g - f;
-		entity.setHeadPitch(entity.yaw);
+		entity.setHeadYaw(entity.yaw);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -697,7 +699,7 @@ public class BoatEntity extends Entity {
 		if (playerEntity.isSneaking()) {
 			return false;
 		} else {
-			if (!this.world.isRemote && this.field_7706 < 60.0F) {
+			if (!this.world.isClient && this.field_7706 < 60.0F) {
 				playerEntity.startRiding(this);
 			}
 
@@ -717,15 +719,15 @@ public class BoatEntity extends Entity {
 					}
 
 					this.handleFallDamage(this.fallDistance, 1.0F);
-					if (!this.world.isRemote && !this.invalid) {
+					if (!this.world.isClient && !this.invalid) {
 						this.invalidate();
 						if (this.world.getGameRules().getBoolean("doEntityDrops")) {
 							for (int i = 0; i < 3; i++) {
-								this.dropItem(this.getBoatType().method_7560());
+								this.method_5706(this.getBoatType().method_7560());
 							}
 
 							for (int i = 0; i < 2; i++) {
-								this.dropItem(Items.field_8600);
+								this.method_5706(Items.field_8600);
 							}
 						}
 					}
@@ -738,8 +740,8 @@ public class BoatEntity extends Entity {
 		}
 	}
 
-	public boolean method_7556(int i) {
-		return this.dataTracker.get(i == 0 ? field_7687 : field_7713) && this.method_5642() != null;
+	public boolean getPaddleState(int i) {
+		return this.dataTracker.get(i == 0 ? LEFT_PADDLE_MOVING : RIGHT_PADDLE_MOVING) && this.getPrimaryPassenger() != null;
 	}
 
 	public void method_7542(float f) {
@@ -794,7 +796,7 @@ public class BoatEntity extends Entity {
 
 	@Nullable
 	@Override
-	public Entity method_5642() {
+	public Entity getPrimaryPassenger() {
 		List<Entity> list = this.getPassengerList();
 		return list.isEmpty() ? null : (Entity)list.get(0);
 	}

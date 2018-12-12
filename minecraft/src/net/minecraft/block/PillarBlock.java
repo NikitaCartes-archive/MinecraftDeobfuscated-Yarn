@@ -40,6 +40,6 @@ public class PillarBlock extends Block {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(AXIS, itemPlacementContext.method_8038().getAxis());
+		return this.getDefaultState().with(AXIS, itemPlacementContext.getFacing().getAxis());
 	}
 }

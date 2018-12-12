@@ -3,18 +3,17 @@ package net.minecraft.client.render.entity.model;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_3881;
+import net.minecraft.class_3882;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.CrossbowItem;
-import net.minecraft.item.ItemStack;
 import net.minecraft.sortme.OptionMainHand;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class BipedEntityModel extends Model {
+public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> implements class_3881, class_3882 {
 	public Cuboid head;
 	public Cuboid headwear;
 	public Cuboid body;
@@ -64,9 +63,8 @@ public class BipedEntityModel extends Model {
 		this.legLeft.setRotationPoint(1.9F, 12.0F + g, 0.0F);
 	}
 
-	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		this.setRotationAngles(f, g, h, i, j, k, entity);
+	public void method_17088(T livingEntity, float f, float g, float h, float i, float j, float k) {
+		this.method_17087(livingEntity, f, g, h, i, j, k);
 		GlStateManager.pushMatrix();
 		if (this.isChild) {
 			float l = 2.0F;
@@ -84,7 +82,7 @@ public class BipedEntityModel extends Model {
 			this.legLeft.render(k);
 			this.headwear.render(k);
 		} else {
-			if (entity.isSneaking()) {
+			if (livingEntity.isSneaking()) {
 				GlStateManager.translatef(0.0F, 0.2F, 0.0F);
 			}
 
@@ -100,17 +98,15 @@ public class BipedEntityModel extends Model {
 		GlStateManager.popMatrix();
 	}
 
-	@Override
-	public void animateModel(LivingEntity livingEntity, float f, float g, float h) {
+	public void method_17086(T livingEntity, float f, float g, float h) {
 		this.field_3396 = livingEntity.method_6024(h);
 		this.field_3393 = (float)livingEntity.method_6048();
 		super.animateModel(livingEntity, f, g, h);
 	}
 
-	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
-		boolean bl = entity instanceof LivingEntity && ((LivingEntity)entity).method_6003() > 4;
-		boolean bl2 = entity.isSwimming();
+	public void method_17087(T livingEntity, float f, float g, float h, float i, float j, float k) {
+		boolean bl = livingEntity.method_6003() > 4;
+		boolean bl2 = livingEntity.isSwimming();
 		this.head.yaw = i * (float) (Math.PI / 180.0);
 		if (bl) {
 			this.head.pitch = (float) (-Math.PI / 4);
@@ -131,7 +127,9 @@ public class BipedEntityModel extends Model {
 		this.armLeft.rotationPointX = 5.0F;
 		float l = 1.0F;
 		if (bl) {
-			l = (float)(entity.velocityX * entity.velocityX + entity.velocityY * entity.velocityY + entity.velocityZ * entity.velocityZ);
+			l = (float)(
+				livingEntity.velocityX * livingEntity.velocityX + livingEntity.velocityY * livingEntity.velocityY + livingEntity.velocityZ * livingEntity.velocityZ
+			);
 			l /= 0.2F;
 			l *= l * l;
 		}
@@ -202,7 +200,7 @@ public class BipedEntityModel extends Model {
 		}
 
 		if (this.swingProgress > 0.0F) {
-			OptionMainHand optionMainHand = this.getPreferedHand(entity);
+			OptionMainHand optionMainHand = this.getPreferedHand(livingEntity);
 			Cuboid cuboid = this.getArm(optionMainHand);
 			float m = this.swingProgress;
 			this.body.yaw = MathHelper.sin(MathHelper.sqrt(m) * (float) (Math.PI * 2)) * 0.2F;
@@ -264,12 +262,7 @@ public class BipedEntityModel extends Model {
 			this.armLeft.pitch = (float) (-Math.PI / 2) + this.head.pitch;
 		}
 
-		float p = 25.0F;
-		if (entity instanceof LivingEntity) {
-			ItemStack itemStack = ((LivingEntity)entity).getActiveItem();
-			p = (float)CrossbowItem.method_7775(itemStack);
-		}
-
+		float p = (float)CrossbowItem.method_7775(livingEntity.getActiveItem());
 		if (this.armPoseRight == BipedEntityModel.ArmPose.field_3405) {
 			this.armRight.yaw = -0.8F;
 			this.armRight.pitch = -0.97079635F;
@@ -332,7 +325,7 @@ public class BipedEntityModel extends Model {
 			this.legRight.pitch = MathHelper.lerp(this.field_3396, this.legRight.pitch, 0.3F * MathHelper.cos(f * 0.33333334F));
 		}
 
-		copyAngles(this.head, this.headwear);
+		this.headwear.method_17138(this.head);
 	}
 
 	protected float method_2804(float f, float g, float h) {
@@ -353,15 +346,11 @@ public class BipedEntityModel extends Model {
 		return -65.0F * f + f * f;
 	}
 
-	@Override
-	public void setAttributes(Model model) {
-		super.setAttributes(model);
-		if (model instanceof BipedEntityModel) {
-			BipedEntityModel bipedEntityModel = (BipedEntityModel)model;
-			this.armPoseLeft = bipedEntityModel.armPoseLeft;
-			this.armPoseRight = bipedEntityModel.armPoseRight;
-			this.isSneaking = bipedEntityModel.isSneaking;
-		}
+	public void setAttributes(BipedEntityModel<T> bipedEntityModel) {
+		super.method_17081(bipedEntityModel);
+		bipedEntityModel.armPoseLeft = this.armPoseLeft;
+		bipedEntityModel.armPoseRight = this.armPoseRight;
+		bipedEntityModel.isSneaking = this.isSneaking;
 	}
 
 	public void setVisible(boolean bl) {
@@ -374,6 +363,7 @@ public class BipedEntityModel extends Model {
 		this.legLeft.visible = bl;
 	}
 
+	@Override
 	public void method_2803(float f, OptionMainHand optionMainHand) {
 		this.getArm(optionMainHand).method_2847(f);
 	}
@@ -382,14 +372,14 @@ public class BipedEntityModel extends Model {
 		return optionMainHand == OptionMainHand.field_6182 ? this.armLeft : this.armRight;
 	}
 
-	protected OptionMainHand getPreferedHand(Entity entity) {
-		if (entity instanceof LivingEntity) {
-			LivingEntity livingEntity = (LivingEntity)entity;
-			OptionMainHand optionMainHand = livingEntity.getMainHand();
-			return livingEntity.preferredHand == Hand.MAIN ? optionMainHand : optionMainHand.getOpposite();
-		} else {
-			return OptionMainHand.field_6183;
-		}
+	@Override
+	public Cuboid method_2838() {
+		return this.head;
+	}
+
+	protected OptionMainHand getPreferedHand(T livingEntity) {
+		OptionMainHand optionMainHand = livingEntity.getMainHand();
+		return livingEntity.preferredHand == Hand.MAIN ? optionMainHand : optionMainHand.getOpposite();
 	}
 
 	@Environment(EnvType.CLIENT)

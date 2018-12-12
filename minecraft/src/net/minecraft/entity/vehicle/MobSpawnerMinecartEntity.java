@@ -14,7 +14,7 @@ public class MobSpawnerMinecartEntity extends AbstractMinecartEntity {
 	private final MobSpawnerLogic logic = new MobSpawnerLogic() {
 		@Override
 		public void method_8273(int i) {
-			MobSpawnerMinecartEntity.this.world.method_8421(MobSpawnerMinecartEntity.this, (byte)i);
+			MobSpawnerMinecartEntity.this.world.summonParticle(MobSpawnerMinecartEntity.this, (byte)i);
 		}
 
 		@Override

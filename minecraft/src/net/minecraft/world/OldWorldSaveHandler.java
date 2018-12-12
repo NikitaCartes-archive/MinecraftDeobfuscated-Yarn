@@ -9,12 +9,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import javax.annotation.Nullable;
-import net.minecraft.class_3485;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.MinecraftException;
+import net.minecraft.sortme.structures.StructureManager;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.TagHelper;
 import net.minecraft.world.dimension.Dimension;
@@ -28,9 +27,9 @@ public class OldWorldSaveHandler implements WorldSaveHandler, PlayerSaveHandler 
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final File worldDir;
 	private final File playerDataDir;
-	private final long saveStartTime = SystemUtil.getMeasuringTimeMili();
+	private final long saveStartTime = SystemUtil.getMeasuringTimeMs();
 	private final String worldName;
-	private final class_3485 field_147;
+	private final StructureManager field_147;
 	protected final DataFixer field_148;
 
 	public OldWorldSaveHandler(File file, String string, @Nullable MinecraftServer minecraftServer, DataFixer dataFixer) {
@@ -41,7 +40,7 @@ public class OldWorldSaveHandler implements WorldSaveHandler, PlayerSaveHandler 
 		this.worldName = string;
 		if (minecraftServer != null) {
 			this.playerDataDir.mkdirs();
-			this.field_147 = new class_3485(minecraftServer, this.worldDir, dataFixer);
+			this.field_147 = new StructureManager(minecraftServer, this.worldDir, dataFixer);
 		} else {
 			this.field_147 = null;
 		}
@@ -71,20 +70,20 @@ public class OldWorldSaveHandler implements WorldSaveHandler, PlayerSaveHandler 
 	}
 
 	@Override
-	public void checkSessionLock() throws MinecraftException {
+	public void checkSessionLock() throws SessionLockException {
 		try {
 			File file = new File(this.worldDir, "session.lock");
 			DataInputStream dataInputStream = new DataInputStream(new FileInputStream(file));
 
 			try {
 				if (dataInputStream.readLong() != this.saveStartTime) {
-					throw new MinecraftException("The save is being accessed from another location, aborting");
+					throw new SessionLockException("The save is being accessed from another location, aborting");
 				}
 			} finally {
 				dataInputStream.close();
 			}
 		} catch (IOException var7) {
-			throw new MinecraftException("Failed to check session lock, aborting");
+			throw new SessionLockException("Failed to check session lock, aborting");
 		}
 	}
 
@@ -210,12 +209,12 @@ public class OldWorldSaveHandler implements WorldSaveHandler, PlayerSaveHandler 
 	}
 
 	@Override
-	public class_3485 method_134() {
+	public StructureManager getStructureManager() {
 		return this.field_147;
 	}
 
 	@Override
-	public DataFixer method_130() {
+	public DataFixer getDataFixer() {
 		return this.field_148;
 	}
 }

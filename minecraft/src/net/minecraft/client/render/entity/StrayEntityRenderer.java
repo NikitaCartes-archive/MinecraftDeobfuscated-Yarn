@@ -2,6 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.entity.feature.StrayOverlayFeatureRenderer;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.util.Identifier;
 
@@ -11,7 +12,7 @@ public class StrayEntityRenderer extends SkeletonEntityRenderer {
 
 	public StrayEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
-		this.addLayer(new StrayOverlayEntityRenderer(this));
+		this.addFeature(new StrayOverlayFeatureRenderer<>(this));
 	}
 
 	@Override

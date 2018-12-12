@@ -34,7 +34,7 @@ public class RedstoneLampBlock extends Block {
 
 	@Override
 	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			boolean bl = (Boolean)blockState.get(field_11413);
 			if (bl != world.isReceivingRedstonePower(blockPos)) {
 				if (bl) {
@@ -48,7 +48,7 @@ public class RedstoneLampBlock extends Block {
 
 	@Override
 	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			if ((Boolean)blockState.get(field_11413) && !world.isReceivingRedstonePower(blockPos)) {
 				world.setBlockState(blockPos, blockState.method_11572(field_11413), 2);
 			}

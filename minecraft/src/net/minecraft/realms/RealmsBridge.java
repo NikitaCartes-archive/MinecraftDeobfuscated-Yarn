@@ -65,7 +65,7 @@ public class RealmsBridge extends RealmsScreen {
 	}
 
 	public static void setClipboard(String string) {
-		MinecraftClient.getInstance().keyboard.setClipbord(string);
+		MinecraftClient.getInstance().keyboard.setClipboard(string);
 	}
 
 	private void showMissingRealmsErrorScreen() {

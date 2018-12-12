@@ -15,7 +15,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2864;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.MinecraftServer;
@@ -140,7 +139,7 @@ public class AnvilLevelStorage extends OldLevelStorage {
 			biomeSource = biomeSourceType.applyConfig(biomeSourceType.getConfig().method_8782(Biomes.field_9451));
 		} else {
 			biomeSource = biomeSourceType2.applyConfig(
-				biomeSourceType2.getConfig().setLevelProperties(levelProperties).setGeneratorSettings(ChunkGeneratorType.field_12769.createSettings())
+				biomeSourceType2.getConfig().setLevelProperties(levelProperties).method_9004(ChunkGeneratorType.field_12769.method_12117())
 			);
 		}
 
@@ -209,11 +208,11 @@ public class AnvilLevelStorage extends OldLevelStorage {
 							CompoundTag compoundTag = NbtIo.read(dataInputStream);
 							dataInputStream.close();
 							CompoundTag compoundTag2 = compoundTag.getCompound("Level");
-							class_2864.class_2865 lv = class_2864.method_12433(compoundTag2);
+							AlphaChunkIo.AlphaChunk alphaChunk = AlphaChunkIo.readAlphaChunk(compoundTag2);
 							CompoundTag compoundTag3 = new CompoundTag();
 							CompoundTag compoundTag4 = new CompoundTag();
 							compoundTag3.put("Level", compoundTag4);
-							class_2864.method_12432(lv, compoundTag4, biomeSource);
+							AlphaChunkIo.convertAlphaChunk(alphaChunk, compoundTag4, biomeSource);
 							DataOutputStream dataOutputStream = regionFile2.getChunkDataOutputStream(k, l);
 							NbtIo.write(compoundTag3, dataOutputStream);
 							dataOutputStream.close();

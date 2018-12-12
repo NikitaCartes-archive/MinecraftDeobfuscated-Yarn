@@ -20,7 +20,7 @@ public class class_1390 extends Goal {
 			return false;
 		} else if (!this.field_6610.onGround) {
 			return false;
-		} else if (this.field_6610.field_6037) {
+		} else if (this.field_6610.velocityModified) {
 			return false;
 		} else {
 			PlayerEntity playerEntity = this.field_6610.getCurrentCustomer();

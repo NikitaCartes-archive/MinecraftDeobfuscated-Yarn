@@ -19,15 +19,15 @@ public class PlayerStatsGui extends JComponent {
 	private int memoryusePctPos;
 	private final String[] lines = new String[11];
 	private final MinecraftServer server;
-	private final Timer field_16858;
+	private final Timer timer;
 
 	public PlayerStatsGui(MinecraftServer minecraftServer) {
 		this.server = minecraftServer;
 		this.setPreferredSize(new Dimension(456, 246));
 		this.setMinimumSize(new Dimension(456, 246));
 		this.setMaximumSize(new Dimension(456, 246));
-		this.field_16858 = new Timer(500, actionEvent -> this.update());
-		this.field_16858.start();
+		this.timer = new Timer(500, actionEvent -> this.update());
+		this.timer.start();
 		this.setBackground(Color.BLACK);
 	}
 
@@ -69,7 +69,7 @@ public class PlayerStatsGui extends JComponent {
 		}
 	}
 
-	public void method_16751() {
-		this.field_16858.stop();
+	public void stop() {
+		this.timer.stop();
 	}
 }

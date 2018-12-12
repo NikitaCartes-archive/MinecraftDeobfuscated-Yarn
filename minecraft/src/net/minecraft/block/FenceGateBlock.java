@@ -26,16 +26,16 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	protected static final VoxelShape field_11016 = Block.createCubeShape(6.0, 0.0, 0.0, 10.0, 13.0, 16.0);
 	protected static final VoxelShape field_11028 = Block.createCubeShape(0.0, 0.0, 6.0, 16.0, 24.0, 10.0);
 	protected static final VoxelShape field_11019 = Block.createCubeShape(6.0, 0.0, 0.0, 10.0, 24.0, 16.0);
-	protected static final VoxelShape field_11018 = VoxelShapes.method_1084(
+	protected static final VoxelShape field_11018 = VoxelShapes.union(
 		Block.createCubeShape(0.0, 5.0, 7.0, 2.0, 16.0, 9.0), Block.createCubeShape(14.0, 5.0, 7.0, 16.0, 16.0, 9.0)
 	);
-	protected static final VoxelShape field_11023 = VoxelShapes.method_1084(
+	protected static final VoxelShape field_11023 = VoxelShapes.union(
 		Block.createCubeShape(7.0, 5.0, 0.0, 9.0, 16.0, 2.0), Block.createCubeShape(7.0, 5.0, 14.0, 9.0, 16.0, 16.0)
 	);
-	protected static final VoxelShape field_11020 = VoxelShapes.method_1084(
+	protected static final VoxelShape field_11020 = VoxelShapes.union(
 		Block.createCubeShape(0.0, 2.0, 7.0, 2.0, 13.0, 9.0), Block.createCubeShape(14.0, 2.0, 7.0, 16.0, 13.0, 9.0)
 	);
-	protected static final VoxelShape field_11027 = VoxelShapes.method_1084(
+	protected static final VoxelShape field_11027 = VoxelShapes.union(
 		Block.createCubeShape(7.0, 2.0, 0.0, 9.0, 13.0, 2.0), Block.createCubeShape(7.0, 2.0, 14.0, 9.0, 13.0, 16.0)
 	);
 
@@ -60,18 +60,20 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		Direction.Axis axis = direction.getAxis();
 		if (((Direction)blockState.get(field_11177)).rotateYClockwise().getAxis() != axis) {
-			return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		} else {
-			boolean bl = this.method_10138(blockState2) || this.method_10138(iWorld.getBlockState(blockPos.method_10093(direction.getOpposite())));
+			boolean bl = this.method_10138(blockState2) || this.method_10138(iWorld.getBlockState(blockPos.offset(direction.getOpposite())));
 			return blockState.with(field_11024, Boolean.valueOf(bl));
 		}
 	}
 
 	@Override
-	public VoxelShape method_9549(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		if ((Boolean)blockState.get(field_11026)) {
 			return VoxelShapes.empty();
 		} else {
@@ -107,7 +109,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 		World world = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getPos();
 		boolean bl = world.isReceivingRedstonePower(blockPos);
-		Direction direction = itemPlacementContext.method_8042();
+		Direction direction = itemPlacementContext.getPlayerHorizontalFacing();
 		Direction.Axis axis = direction.getAxis();
 		boolean bl2 = axis == Direction.Axis.Z
 				&& (this.method_10138(world.getBlockState(blockPos.west())) || this.method_10138(world.getBlockState(blockPos.east())))
@@ -124,14 +126,14 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
 		if ((Boolean)blockState.get(field_11026)) {
 			blockState = blockState.with(field_11026, Boolean.valueOf(false));
 			world.setBlockState(blockPos, blockState, 10);
 		} else {
-			Direction direction2 = playerEntity.method_5735();
+			Direction direction2 = playerEntity.getHorizontalFacing();
 			if (blockState.get(field_11177) == direction2.getOpposite()) {
 				blockState = blockState.with(field_11177, direction2);
 			}
@@ -146,7 +148,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 
 	@Override
 	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			boolean bl = world.isReceivingRedstonePower(blockPos);
 			if ((Boolean)blockState.get(field_11021) != bl) {
 				world.setBlockState(blockPos, blockState.with(field_11021, Boolean.valueOf(bl)).with(field_11026, Boolean.valueOf(bl)), 2);

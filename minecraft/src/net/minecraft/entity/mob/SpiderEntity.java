@@ -2,18 +2,18 @@ package net.minecraft.entity.mob;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_1310;
 import net.minecraft.class_1359;
 import net.minecraft.class_1361;
 import net.minecraft.class_1376;
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
-import net.minecraft.class_3730;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
@@ -33,6 +33,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
@@ -82,8 +83,8 @@ public class SpiderEntity extends HostileEntity {
 	@Override
 	public void update() {
 		super.update();
-		if (!this.world.isRemote) {
-			this.setCanClimb(this.field_5976);
+		if (!this.world.isClient) {
+			this.setCanClimb(this.horizontalCollision);
 		}
 	}
 
@@ -120,15 +121,15 @@ public class SpiderEntity extends HostileEntity {
 	}
 
 	@Override
-	public void slowMovement(BlockState blockState, float f, float g, float h) {
+	public void slowMovement(BlockState blockState, Vec3d vec3d) {
 		if (blockState.getBlock() != Blocks.field_10343) {
-			super.slowMovement(blockState, f, g, h);
+			super.slowMovement(blockState, vec3d);
 		}
 	}
 
 	@Override
-	public class_1310 method_6046() {
-		return class_1310.field_6293;
+	public EntityGroup getGroup() {
+		return EntityGroup.ARTHROPOD;
 	}
 
 	@Override
@@ -153,21 +154,21 @@ public class SpiderEntity extends HostileEntity {
 
 	@Nullable
 	@Override
-	public EntityData method_5943(
-		IWorld iWorld, LocalDifficulty localDifficulty, class_3730 arg, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	public EntityData prepareEntityData(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.method_5943(iWorld, localDifficulty, arg, entityData, compoundTag);
+		entityData = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		if (iWorld.getRandom().nextInt(100) == 0) {
 			SkeletonEntity skeletonEntity = new SkeletonEntity(this.world);
 			skeletonEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0F);
-			skeletonEntity.method_5943(iWorld, localDifficulty, arg, null, null);
+			skeletonEntity.prepareEntityData(iWorld, localDifficulty, spawnType, null, null);
 			iWorld.spawnEntity(skeletonEntity);
 			skeletonEntity.startRiding(this);
 		}
 
 		if (entityData == null) {
 			entityData = new SpiderEntity.class_1630();
-			if (iWorld.getDifficulty() == Difficulty.HARD && iWorld.getRandom().nextFloat() < 0.1F * localDifficulty.method_5458()) {
+			if (iWorld.getDifficulty() == Difficulty.HARD && iWorld.getRandom().nextFloat() < 0.1F * localDifficulty.getClampedLocalDifficulty()) {
 				((SpiderEntity.class_1630)entityData).method_7168(iWorld.getRandom());
 			}
 		}

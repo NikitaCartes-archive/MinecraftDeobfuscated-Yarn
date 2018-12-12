@@ -14,6 +14,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -47,15 +48,15 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		super.scheduledTick(blockState, world, blockPos, random);
 		int i = (Integer)blockState.get(AGE);
-		if (i < 3 && random.nextInt(5) == 0 && world.method_8624(blockPos.up(), 0) >= 9) {
+		if (i < 3 && random.nextInt(5) == 0 && world.getLightLevel(blockPos.up(), 0) >= 9) {
 			world.setBlockState(blockPos, blockState.with(AGE, Integer.valueOf(i + 1)), 2);
 		}
 	}
 
 	@Override
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-		entity.slowMovement(blockState, 0.8F, 0.75F, 0.8F);
-		if (!world.isRemote && (Integer)blockState.get(AGE) > 0 && (entity.prevRenderX != entity.x || entity.prevRenderZ != entity.z)) {
+		entity.slowMovement(blockState, new Vec3d(0.8F, 0.75, 0.8F));
+		if (!world.isClient && (Integer)blockState.get(AGE) > 0 && (entity.prevRenderX != entity.x || entity.prevRenderZ != entity.z)) {
 			double d = Math.abs(entity.x - entity.prevRenderX);
 			double e = Math.abs(entity.z - entity.prevRenderZ);
 			if (d >= 0.003F || e >= 0.003F) {
@@ -65,7 +66,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
 		int i = (Integer)blockState.get(AGE);
@@ -73,12 +74,12 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 		if (!bl && playerEntity.getStackInHand(hand).getItem() == Items.field_8324) {
 			return false;
 		} else if (i > 1) {
-			int j = world.random.nextInt(2) + (bl ? 2 : 1);
-			dropStack(world, blockPos, new ItemStack(Items.field_16998, j));
+			int j = 1 + world.random.nextInt(2);
+			dropStack(world, blockPos, new ItemStack(Items.field_16998, j + (bl ? 1 : 0)));
 			world.setBlockState(blockPos, blockState.with(AGE, Integer.valueOf(1)), 2);
 			return true;
 		} else {
-			return super.method_9534(blockState, world, blockPos, playerEntity, hand, direction, f, g, h);
+			return super.activate(blockState, world, blockPos, playerEntity, hand, direction, f, g, h);
 		}
 	}
 

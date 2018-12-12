@@ -16,11 +16,11 @@ import net.minecraft.datafixers.TypeReferences;
 import org.apache.commons.lang3.math.NumberUtils;
 
 public class LevelFlatGeneratorInfoFix extends DataFix {
-	private static final Splitter field_5700 = Splitter.on(';').limit(5);
-	private static final Splitter commas = Splitter.on(',');
-	private static final Splitter field_5699 = Splitter.on('x').limit(2);
-	private static final Splitter field_5698 = Splitter.on('*').limit(2);
-	private static final Splitter field_5697 = Splitter.on(':').limit(3);
+	private static final Splitter SPLIT_ON_SEMICOLON = Splitter.on(';').limit(5);
+	private static final Splitter SPLIT_ON_COMMA = Splitter.on(',');
+	private static final Splitter SPLIT_ON_LOWER_X = Splitter.on('x').limit(2);
+	private static final Splitter SPLIT_ON_ASTERISK = Splitter.on('*').limit(2);
+	private static final Splitter SPLIT_ON_COLON = Splitter.on(':').limit(3);
 
 	public LevelFlatGeneratorInfoFix(Schema schema, boolean bl) {
 		super(schema, bl);
@@ -44,7 +44,7 @@ public class LevelFlatGeneratorInfoFix extends DataFix {
 		if (string.isEmpty()) {
 			return "minecraft:bedrock,2*minecraft:dirt,minecraft:grass_block;1;village";
 		} else {
-			Iterator<String> iterator = field_5700.split(string).iterator();
+			Iterator<String> iterator = SPLIT_ON_SEMICOLON.split(string).iterator();
 			String string2 = (String)iterator.next();
 			int i;
 			String string3;
@@ -58,8 +58,8 @@ public class LevelFlatGeneratorInfoFix extends DataFix {
 
 			if (i >= 0 && i <= 3) {
 				StringBuilder stringBuilder = new StringBuilder();
-				Splitter splitter = i < 3 ? field_5699 : field_5698;
-				stringBuilder.append((String)StreamSupport.stream(commas.split(string3).spliterator(), false).map(stringx -> {
+				Splitter splitter = i < 3 ? SPLIT_ON_LOWER_X : SPLIT_ON_ASTERISK;
+				stringBuilder.append((String)StreamSupport.stream(SPLIT_ON_COMMA.split(string3).spliterator(), false).map(stringx -> {
 					List<String> list = splitter.splitToList(stringx);
 					int j;
 					String string2x;
@@ -71,10 +71,10 @@ public class LevelFlatGeneratorInfoFix extends DataFix {
 						string2x = (String)list.get(0);
 					}
 
-					List<String> list2 = field_5697.splitToList(string2x);
+					List<String> list2 = SPLIT_ON_COLON.splitToList(string2x);
 					int k = ((String)list2.get(0)).equals("minecraft") ? 1 : 0;
 					String string3x = (String)list2.get(k);
-					int l = i == 3 ? EntityBlockStateFix.method_15686("minecraft:" + string3x) : NumberUtils.toInt(string3x, 0);
+					int l = i == 3 ? EntityBlockStateFix.getNumericalBlockId("minecraft:" + string3x) : NumberUtils.toInt(string3x, 0);
 					int m = k + 1;
 					int n = list2.size() > m ? NumberUtils.toInt((String)list2.get(m), 0) : 0;
 					return (j == 1 ? "" : j + "*") + BlockStateFlattening.lookupState(l << 4 | n).getString("Name");

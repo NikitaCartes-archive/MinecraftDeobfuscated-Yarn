@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.Renderer;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.tag.FluidTags;
@@ -48,7 +48,7 @@ public class WaterDebugRenderer implements RenderDebug.DebugRenderer {
 			FluidState fluidState = viewableWorld.getFluidState(blockPos2);
 			if (fluidState.matches(FluidTags.field_15517)) {
 				double d = (double)((float)blockPos2.getY() + fluidState.method_15763());
-				Renderer.renderCuboidOutline(
+				WorldRenderer.drawBox(
 					new BoundingBox(
 							(double)((float)blockPos2.getX() + 0.01F),
 							(double)((float)blockPos2.getY() + 0.01F),

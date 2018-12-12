@@ -2,8 +2,8 @@ package net.minecraft.client.gui;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2871;
 import net.minecraft.entity.vehicle.CommandBlockMinecartEntity;
+import net.minecraft.server.network.packet.UpdateCommandBlockMinecartServerPacket;
 import net.minecraft.sortme.CommandBlockExecutor;
 
 @Environment(EnvType.CLIENT)
@@ -15,7 +15,7 @@ public class CommandBlockMinecartGui extends AbstractCommandBlockGui {
 	}
 
 	@Override
-	public CommandBlockExecutor method_2351() {
+	public CommandBlockExecutor getCommandExecutor() {
 		return this.field_2976;
 	}
 
@@ -27,9 +27,9 @@ public class CommandBlockMinecartGui extends AbstractCommandBlockGui {
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
-		this.field_2752 = this.method_2351().isTrackingOutput();
+		this.field_2752 = this.getCommandExecutor().isTrackingOutput();
 		this.method_2368();
-		this.consoleCommandTextField.setText(this.method_2351().getCommand());
+		this.consoleCommandTextField.setText(this.getCommandExecutor().getCommand());
 	}
 
 	@Override
@@ -38,7 +38,9 @@ public class CommandBlockMinecartGui extends AbstractCommandBlockGui {
 			CommandBlockMinecartEntity.class_1698 lv = (CommandBlockMinecartEntity.class_1698)commandBlockExecutor;
 			this.client
 				.getNetworkHandler()
-				.sendPacket(new class_2871(lv.method_7569().getEntityId(), this.consoleCommandTextField.getText(), commandBlockExecutor.isTrackingOutput()));
+				.sendPacket(
+					new UpdateCommandBlockMinecartServerPacket(lv.method_7569().getEntityId(), this.consoleCommandTextField.getText(), commandBlockExecutor.isTrackingOutput())
+				);
 		}
 	}
 }

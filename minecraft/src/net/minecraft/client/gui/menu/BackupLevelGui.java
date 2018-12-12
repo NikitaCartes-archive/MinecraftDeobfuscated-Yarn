@@ -124,7 +124,7 @@ public class BackupLevelGui extends Gui {
 		LevelProperties levelProperties = levelStorage.getLevelProperties(this.levelName);
 		String string = levelProperties == null ? "" : levelProperties.getLevelName();
 		this.field_3170 = new TextFieldWidget(2, this.fontRenderer, this.width / 2 - 100, 53, 200, 20);
-		this.field_3170.method_1876(true);
+		this.field_3170.setFocused(true);
 		this.field_3170.setText(string);
 		this.listeners.add(this.field_3170);
 	}

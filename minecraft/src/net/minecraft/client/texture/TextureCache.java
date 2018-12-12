@@ -71,7 +71,7 @@ public class TextureCache {
 					this.cacheMap.put(string, entry);
 				}
 
-				entry.lastRequestTimeMillis = SystemUtil.getMeasuringTimeMili();
+				entry.lastRequestTimeMillis = SystemUtil.getMeasuringTimeMs();
 				return entry.filename;
 			} else {
 				return MissingSprite.getMissingTextureId();
@@ -79,7 +79,7 @@ public class TextureCache {
 		}
 
 		private boolean removeOldEntries() {
-			long l = SystemUtil.getMeasuringTimeMili();
+			long l = SystemUtil.getMeasuringTimeMs();
 			Iterator<String> iterator = this.cacheMap.keySet().iterator();
 
 			while (iterator.hasNext()) {

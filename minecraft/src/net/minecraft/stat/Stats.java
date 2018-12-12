@@ -74,6 +74,9 @@ public class Stats {
 	public static final Identifier field_15395 = method_15021("open_chest", StatFormatter.DEFAULT);
 	public static final Identifier field_15381 = method_15021("sleep_in_bed", StatFormatter.DEFAULT);
 	public static final Identifier field_15418 = method_15021("open_shulker_box", StatFormatter.DEFAULT);
+	public static final Identifier field_17271 = method_15021("open_barrel", StatFormatter.DEFAULT);
+	public static final Identifier field_17272 = method_15021("interact_with_blast_furnace", StatFormatter.DEFAULT);
+	public static final Identifier field_17273 = method_15021("interact_with_smoker", StatFormatter.DEFAULT);
 
 	private static Identifier method_15021(String string, StatFormatter statFormatter) {
 		Identifier identifier = new Identifier(string);

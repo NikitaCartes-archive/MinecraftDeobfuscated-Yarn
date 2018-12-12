@@ -4,15 +4,12 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.RabbitEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class RabbitEntityModel extends Model {
-	private final Cuboid field_3525;
+public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
+	private final Cuboid field_3525 = new Cuboid(this, 26, 24);
 	private final Cuboid field_3532;
 	private final Cuboid field_3526;
 	private final Cuboid field_3522;
@@ -27,11 +24,6 @@ public class RabbitEntityModel extends Model {
 	private float field_3531;
 
 	public RabbitEntityModel() {
-		this.setTextureOffset("head.main", 0, 0);
-		this.setTextureOffset("head.nose", 0, 24);
-		this.setTextureOffset("head.ear1", 0, 10);
-		this.setTextureOffset("head.ear2", 6, 10);
-		this.field_3525 = new Cuboid(this, 26, 24);
 		this.field_3525.addBox(-1.0F, 5.5F, -3.7F, 2, 1, 7);
 		this.field_3525.setRotationPoint(3.0F, 17.5F, 3.7F);
 		this.field_3525.mirror = true;
@@ -99,9 +91,8 @@ public class RabbitEntityModel extends Model {
 		cuboid.roll = h;
 	}
 
-	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		this.setRotationAngles(f, g, h, i, j, k, entity);
+	public void method_17116(T rabbitEntity, float f, float g, float h, float i, float j, float k) {
+		this.method_17117(rabbitEntity, f, g, h, i, j, k);
 		if (this.isChild) {
 			float l = 1.5F;
 			GlStateManager.pushMatrix();
@@ -144,10 +135,8 @@ public class RabbitEntityModel extends Model {
 		}
 	}
 
-	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
-		float l = h - (float)entity.age;
-		RabbitEntity rabbitEntity = (RabbitEntity)entity;
+	public void method_17117(T rabbitEntity, float f, float g, float h, float i, float j, float k) {
+		float l = h - (float)rabbitEntity.age;
 		this.field_3530.pitch = j * (float) (Math.PI / 180.0);
 		this.field_3529.pitch = j * (float) (Math.PI / 180.0);
 		this.field_3523.pitch = j * (float) (Math.PI / 180.0);
@@ -165,9 +154,8 @@ public class RabbitEntityModel extends Model {
 		this.field_3521.pitch = (this.field_3531 * -40.0F - 11.0F) * (float) (Math.PI / 180.0);
 	}
 
-	@Override
-	public void animateModel(LivingEntity livingEntity, float f, float g, float h) {
-		super.animateModel(livingEntity, f, g, h);
-		this.field_3531 = MathHelper.sin(((RabbitEntity)livingEntity).method_6605(h) * (float) Math.PI);
+	public void method_17115(T rabbitEntity, float f, float g, float h) {
+		super.animateModel(rabbitEntity, f, g, h);
+		this.field_3531 = MathHelper.sin(rabbitEntity.method_6605(h) * (float) Math.PI);
 	}
 }

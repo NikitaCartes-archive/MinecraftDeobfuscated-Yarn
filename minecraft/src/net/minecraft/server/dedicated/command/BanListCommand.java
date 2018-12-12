@@ -16,14 +16,14 @@ public class BanListCommand {
 			ServerCommandManager.literal("banlist")
 				.requires(
 					serverCommandSource -> (
-								serverCommandSource.getMinecraftServer().getConfigurationManager().getUserBanList().isEnabled()
-									|| serverCommandSource.getMinecraftServer().getConfigurationManager().getIpBanList().isEnabled()
+								serverCommandSource.getMinecraftServer().getPlayerManager().getUserBanList().isEnabled()
+									|| serverCommandSource.getMinecraftServer().getPlayerManager().getIpBanList().isEnabled()
 							)
 							&& serverCommandSource.hasPermissionLevel(3)
 				)
 				.executes(
 					commandContext -> {
-						PlayerManager playerManager = commandContext.getSource().getMinecraftServer().getConfigurationManager();
+						PlayerManager playerManager = commandContext.getSource().getMinecraftServer().getPlayerManager();
 						return method_13015(
 							commandContext.getSource(), Lists.newArrayList(Iterables.concat(playerManager.getUserBanList().values(), playerManager.getIpBanList().values()))
 						);
@@ -32,17 +32,13 @@ public class BanListCommand {
 				.then(
 					ServerCommandManager.literal("ips")
 						.executes(
-							commandContext -> method_13015(
-									commandContext.getSource(), commandContext.getSource().getMinecraftServer().getConfigurationManager().getIpBanList().values()
-								)
+							commandContext -> method_13015(commandContext.getSource(), commandContext.getSource().getMinecraftServer().getPlayerManager().getIpBanList().values())
 						)
 				)
 				.then(
 					ServerCommandManager.literal("players")
 						.executes(
-							commandContext -> method_13015(
-									commandContext.getSource(), commandContext.getSource().getMinecraftServer().getConfigurationManager().getUserBanList().values()
-								)
+							commandContext -> method_13015(commandContext.getSource(), commandContext.getSource().getMinecraftServer().getPlayerManager().getUserBanList().values())
 						)
 				)
 		);

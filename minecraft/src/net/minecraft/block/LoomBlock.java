@@ -19,10 +19,10 @@ public class LoomBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
-		if (world.isRemote) {
+		if (world.isClient) {
 			return true;
 		} else {
 			playerEntity.openContainer(new LoomBlock.ContainerProvider(blockPos.add(0.5, 0.0, 0.5)));
@@ -32,7 +32,7 @@ public class LoomBlock extends HorizontalFacingBlock {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(field_11177, itemPlacementContext.method_8042());
+		return this.getDefaultState().with(field_11177, itemPlacementContext.getPlayerHorizontalFacing());
 	}
 
 	@Override
@@ -50,11 +50,6 @@ public class LoomBlock extends HorizontalFacingBlock {
 		@Override
 		public TextComponent getName() {
 			return new TranslatableTextComponent(Blocks.field_10083.getTranslationKey() + ".name");
-		}
-
-		@Override
-		public boolean hasCustomName() {
-			return false;
 		}
 
 		@Override

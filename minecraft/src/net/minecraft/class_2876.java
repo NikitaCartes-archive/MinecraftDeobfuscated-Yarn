@@ -8,8 +8,8 @@ import net.minecraft.entity.decoration.EnderCrystalEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.EndPillarFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
+import net.minecraft.world.gen.feature.EndPillarFeatureConfig;
 import net.minecraft.world.gen.feature.EndSpikeFeature;
 import net.minecraft.world.gen.feature.Feature;
 
@@ -68,9 +68,9 @@ public enum class_2876 {
 						);
 						EndPillarFeatureConfig endPillarFeatureConfig = new EndPillarFeatureConfig(true, ImmutableList.of(spike), new BlockPos(0, 128, 0));
 						Feature.field_13522
-							.generate(
+							.method_13151(
 								serverWorld,
-								(ChunkGenerator<? extends ChunkGeneratorSettings>)serverWorld.getChunkManager().getChunkGenerator(),
+								(ChunkGenerator<? extends ChunkGeneratorConfig>)serverWorld.getChunkManager().getChunkGenerator(),
 								new Random(),
 								new BlockPos(spike.getCenterX(), 45, spike.getCenterZ()),
 								endPillarFeatureConfig

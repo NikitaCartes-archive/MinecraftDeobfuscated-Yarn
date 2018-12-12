@@ -18,11 +18,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_294;
 import net.minecraft.class_848;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.GlBuffer;
-import net.minecraft.client.render.VertexBuffer;
-import net.minecraft.client.render.VertexBufferRenderer;
-import net.minecraft.client.render.block.BlockRenderLayer;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
@@ -41,8 +41,8 @@ public class ChunkBatcher {
 	private final List<Thread> workerThreads = Lists.<Thread>newArrayList();
 	private final List<ChunkRenderWorker> workers = Lists.<ChunkRenderWorker>newArrayList();
 	private final PriorityBlockingQueue<ChunkRenderDataTask> pendingChunks = Queues.newPriorityBlockingQueue();
-	private final BlockingQueue<ChunkVertexBuffer> availableBuffers;
-	private final VertexBufferRenderer field_4437 = new VertexBufferRenderer();
+	private final BlockingQueue<BlockLayeredBufferBuilder> availableBuffers;
+	private final BufferRenderer field_4437 = new BufferRenderer();
 	private final class_294 field_4441 = new class_294();
 	private final Queue<ChunkBatcher.class_847> pendingUploads = Queues.<ChunkBatcher.class_847>newPriorityQueue();
 	private final ChunkRenderWorker activeWorker;
@@ -61,13 +61,13 @@ public class ChunkBatcher {
 			}
 		}
 
-		this.availableBuffers = Queues.<ChunkVertexBuffer>newArrayBlockingQueue(this.field_4442);
+		this.availableBuffers = Queues.<BlockLayeredBufferBuilder>newArrayBlockingQueue(this.field_4442);
 
 		for (int k = 0; k < this.field_4442; k++) {
-			this.availableBuffers.add(new ChunkVertexBuffer());
+			this.availableBuffers.add(new BlockLayeredBufferBuilder());
 		}
 
-		this.activeWorker = new ChunkRenderWorker(this, new ChunkVertexBuffer());
+		this.activeWorker = new ChunkRenderWorker(this, new BlockLayeredBufferBuilder());
 	}
 
 	public String getDebugString() {
@@ -115,7 +115,7 @@ public class ChunkBatcher {
 			chunkRenderDataTask.method_3597(() -> this.pendingChunks.remove(chunkRenderDataTask));
 			boolean bl = this.pendingChunks.offer(chunkRenderDataTask);
 			if (!bl) {
-				chunkRenderDataTask.method_3596();
+				chunkRenderDataTask.cancel();
 			}
 
 			var4 = bl;
@@ -148,7 +148,7 @@ public class ChunkBatcher {
 
 	public void method_3632() {
 		this.method_3633();
-		List<ChunkVertexBuffer> list = Lists.<ChunkVertexBuffer>newArrayList();
+		List<BlockLayeredBufferBuilder> list = Lists.<BlockLayeredBufferBuilder>newArrayList();
 
 		while (list.size() != this.field_4442) {
 			this.method_3631(Long.MAX_VALUE);
@@ -162,12 +162,12 @@ public class ChunkBatcher {
 		this.availableBuffers.addAll(list);
 	}
 
-	public void addAvailableBuffer(ChunkVertexBuffer chunkVertexBuffer) {
-		this.availableBuffers.add(chunkVertexBuffer);
+	public void addAvailableBuffer(BlockLayeredBufferBuilder blockLayeredBufferBuilder) {
+		this.availableBuffers.add(blockLayeredBufferBuilder);
 	}
 
-	public ChunkVertexBuffer getNextAvailableBuffer() throws InterruptedException {
-		return (ChunkVertexBuffer)this.availableBuffers.take();
+	public BlockLayeredBufferBuilder getNextAvailableBuffer() throws InterruptedException {
+		return (BlockLayeredBufferBuilder)this.availableBuffers.take();
 	}
 
 	public ChunkRenderDataTask getNextChunkRenderDataTask() throws InterruptedException {
@@ -194,20 +194,20 @@ public class ChunkBatcher {
 	}
 
 	public ListenableFuture<Object> method_3635(
-		BlockRenderLayer blockRenderLayer, VertexBuffer vertexBuffer, ChunkRenderer chunkRenderer, ChunkRenderData chunkRenderData, double d
+		BlockRenderLayer blockRenderLayer, BufferBuilder bufferBuilder, ChunkRenderer chunkRenderer, ChunkRenderData chunkRenderData, double d
 	) {
 		if (MinecraftClient.getInstance().isMainThread()) {
 			if (GLX.useVbo()) {
-				this.method_3621(vertexBuffer, chunkRenderer.method_3656(blockRenderLayer.ordinal()));
+				this.method_3621(bufferBuilder, chunkRenderer.method_3656(blockRenderLayer.ordinal()));
 			} else {
-				this.method_3623(vertexBuffer, ((class_848)chunkRenderer).method_3639(blockRenderLayer, chunkRenderData), chunkRenderer);
+				this.method_3623(bufferBuilder, ((class_848)chunkRenderer).method_3639(blockRenderLayer, chunkRenderData), chunkRenderer);
 			}
 
-			vertexBuffer.setOffset(0.0, 0.0, 0.0);
+			bufferBuilder.setOffset(0.0, 0.0, 0.0);
 			return Futures.immediateFuture(null);
 		} else {
 			ListenableFutureTask<Object> listenableFutureTask = ListenableFutureTask.create(
-				() -> this.method_3635(blockRenderLayer, vertexBuffer, chunkRenderer, chunkRenderData, d), null
+				() -> this.method_3635(blockRenderLayer, bufferBuilder, chunkRenderer, chunkRenderData, d), null
 			);
 			synchronized (this.pendingUploads) {
 				this.pendingUploads.add(new ChunkBatcher.class_847(listenableFutureTask, d));
@@ -216,25 +216,25 @@ public class ChunkBatcher {
 		}
 	}
 
-	private void method_3623(VertexBuffer vertexBuffer, int i, ChunkRenderer chunkRenderer) {
+	private void method_3623(BufferBuilder bufferBuilder, int i, ChunkRenderer chunkRenderer) {
 		GlStateManager.newList(i, 4864);
 		GlStateManager.pushMatrix();
 		chunkRenderer.method_3664();
-		this.field_4437.draw(vertexBuffer);
+		this.field_4437.draw(bufferBuilder);
 		GlStateManager.popMatrix();
 		GlStateManager.endList();
 	}
 
-	private void method_3621(VertexBuffer vertexBuffer, GlBuffer glBuffer) {
+	private void method_3621(BufferBuilder bufferBuilder, GlBuffer glBuffer) {
 		this.field_4441.method_1372(glBuffer);
-		this.field_4441.draw(vertexBuffer);
+		this.field_4441.draw(bufferBuilder);
 	}
 
 	public void method_3633() {
 		while (!this.pendingChunks.isEmpty()) {
 			ChunkRenderDataTask chunkRenderDataTask = (ChunkRenderDataTask)this.pendingChunks.poll();
 			if (chunkRenderDataTask != null) {
-				chunkRenderDataTask.method_3596();
+				chunkRenderDataTask.cancel();
 			}
 		}
 	}

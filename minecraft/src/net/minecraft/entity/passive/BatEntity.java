@@ -3,10 +3,10 @@ package net.minecraft.entity.passive;
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
 import javax.annotation.Nullable;
-import net.minecraft.class_3730;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -64,7 +64,7 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	@Override
-	public boolean method_5810() {
+	public boolean isPushable() {
 		return false;
 	}
 
@@ -116,7 +116,7 @@ public class BatEntity extends AmbientEntity {
 		if (this.isRoosting()) {
 			if (this.world.getBlockState(blockPos2).isSimpleFullBlock(this.world, blockPos)) {
 				if (this.random.nextInt(200) == 0) {
-					this.headPitch = (float)this.random.nextInt(360);
+					this.headYaw = (float)this.random.nextInt(360);
 				}
 
 				if (this.world.getClosestSurvivalPlayer(this, 4.0) != null) {
@@ -181,7 +181,7 @@ public class BatEntity extends AmbientEntity {
 		if (this.isInvulnerableTo(damageSource)) {
 			return false;
 		} else {
-			if (!this.world.isRemote && this.isRoosting()) {
+			if (!this.world.isClient && this.isRoosting()) {
 				this.setRoosting(false);
 			}
 
@@ -202,7 +202,7 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	@Override
-	public boolean method_5979(IWorld iWorld, class_3730 arg) {
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
 		BlockPos blockPos = new BlockPos(this.x, this.getBoundingBox().minY, this.z);
 		if (blockPos.getY() >= iWorld.getSeaLevel()) {
 			return false;
@@ -215,7 +215,7 @@ public class BatEntity extends AmbientEntity {
 				return false;
 			}
 
-			return i > this.random.nextInt(j) ? false : super.method_5979(iWorld, arg);
+			return i > this.random.nextInt(j) ? false : super.canSpawn(iWorld, spawnType);
 		}
 	}
 

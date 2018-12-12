@@ -3,16 +3,16 @@ package net.minecraft.entity.mob;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1310;
 import net.minecraft.class_1361;
 import net.minecraft.class_1379;
 import net.minecraft.class_1399;
-import net.minecraft.class_3730;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.RangedAttacker;
 import net.minecraft.entity.ai.goal.BowAttackGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
@@ -83,11 +83,11 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 	}
 
 	@Override
-	public EntityData method_5943(
-		IWorld iWorld, LocalDifficulty localDifficulty, class_3730 arg, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	public EntityData prepareEntityData(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		this.setEquippedStack(EquipmentSlot.HAND_MAIN, new ItemStack(Items.field_8102));
-		return super.method_5943(iWorld, localDifficulty, arg, entityData, compoundTag);
+		return super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 	@Override
 	public void updateMovement() {
 		super.updateMovement();
-		if (this.world.isRemote && this.isInvisible()) {
+		if (this.world.isClient && this.isInvisible()) {
 			this.field_7296--;
 			if (this.field_7296 < 0) {
 				this.field_7296 = 0;
@@ -171,7 +171,7 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 		if (super.isTeammate(entity)) {
 			return true;
 		} else {
-			return entity instanceof LivingEntity && ((LivingEntity)entity).method_6046() == class_1310.field_6291
+			return entity instanceof LivingEntity && ((LivingEntity)entity).getGroup() == EntityGroup.ILLAGER
 				? this.getScoreboardTeam() == null && entity.getScoreboardTeam() == null
 				: false;
 		}
@@ -198,7 +198,7 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 	}
 
 	@Override
-	public void method_16484(int i, boolean bl) {
+	public void addBonusForWave(int i, boolean bl) {
 	}
 
 	@Override
@@ -220,7 +220,8 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_7067() {
+	@Override
+	public boolean hasArmsRaised() {
 		return this.method_6991(1);
 	}
 
@@ -231,11 +232,11 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public IllagerEntity.class_1544 method_6990() {
+	public IllagerEntity.State method_6990() {
 		if (this.method_7137()) {
-			return IllagerEntity.class_1544.field_7212;
+			return IllagerEntity.State.field_7212;
 		} else {
-			return this.method_7067() ? IllagerEntity.class_1544.field_7208 : IllagerEntity.class_1544.field_7207;
+			return this.hasArmsRaised() ? IllagerEntity.State.field_7208 : IllagerEntity.State.field_7207;
 		}
 	}
 

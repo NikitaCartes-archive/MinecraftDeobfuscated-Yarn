@@ -27,7 +27,7 @@ public class ConfirmChatLinkGui extends YesNoGui {
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
-		this.buttonWidgets.clear();
+		this.buttons.clear();
 		this.listeners.clear();
 		this.addButton(new ButtonWidget(0, this.width / 2 - 50 - 105, this.height / 6 + 96, 100, 20, this.yesTranslated) {
 			@Override
@@ -38,7 +38,7 @@ public class ConfirmChatLinkGui extends YesNoGui {
 		this.addButton(new ButtonWidget(2, this.width / 2 - 50, this.height / 6 + 96, 100, 20, this.copy) {
 			@Override
 			public void onPressed(double d, double e) {
-				ConfirmChatLinkGui.this.method_2100();
+				ConfirmChatLinkGui.this.copyToClipboard();
 				ConfirmChatLinkGui.this.callback.handle(false, ConfirmChatLinkGui.this.callbackId);
 			}
 		});
@@ -50,8 +50,8 @@ public class ConfirmChatLinkGui extends YesNoGui {
 		});
 	}
 
-	public void method_2100() {
-		this.client.keyboard.setClipbord(this.link);
+	public void copyToClipboard() {
+		this.client.keyboard.setClipboard(this.link);
 	}
 
 	@Override

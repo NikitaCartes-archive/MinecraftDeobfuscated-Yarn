@@ -42,13 +42,13 @@ public class class_866 implements RenderDebug.DebugRenderer {
 		LongSet longSet = new LongOpenHashSet();
 
 		for (BlockPos blockPos2 : iterable) {
-			int i = world.getLightLevel(LightType.field_9284, blockPos2);
+			int i = world.getLightLevel(LightType.SKY_LIGHT, blockPos2);
 			float h = (float)(15 - i) / 15.0F * 0.5F + 0.16F;
 			int j = MathHelper.hsvToRgb(h, 0.9F, 0.9F);
-			long m = BlockPos.method_10090(blockPos2.asLong());
+			long m = BlockPos.toChunkSectionOrigin(blockPos2.asLong());
 			if (longSet.add(m)) {
 				RenderDebug.method_3712(
-					world.getChunkManager().getLightingProvider().method_15564(LightType.field_9284, BlockPos.fromLong(m)),
+					world.getChunkManager().getLightingProvider().method_15564(LightType.SKY_LIGHT, BlockPos.fromLong(m)),
 					(double)(BlockPos.unpackLongX(m) + 8),
 					(double)(BlockPos.unpackLongY(m) + 8),
 					(double)(BlockPos.unpackLongZ(m) + 8),

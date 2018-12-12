@@ -8,12 +8,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.advancement.ServerAdvancementManager;
+import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.predicate.entity.EntityPredicate;
@@ -23,7 +22,7 @@ import net.minecraft.util.NumberRange;
 
 public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("killed_by_crossbow");
-	private final Map<ServerAdvancementManager, KilledByCrossbowCriterion.class_2077> field_9656 = Maps.<ServerAdvancementManager, KilledByCrossbowCriterion.class_2077>newHashMap();
+	private final Map<PlayerAdvancementTracker, KilledByCrossbowCriterion.class_2077> field_9656 = Maps.<PlayerAdvancementTracker, KilledByCrossbowCriterion.class_2077>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -31,34 +30,34 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 	}
 
 	@Override
-	public void addCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions> conditionsContainer
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions> conditionsContainer
 	) {
-		KilledByCrossbowCriterion.class_2077 lv = (KilledByCrossbowCriterion.class_2077)this.field_9656.get(serverAdvancementManager);
+		KilledByCrossbowCriterion.class_2077 lv = (KilledByCrossbowCriterion.class_2077)this.field_9656.get(playerAdvancementTracker);
 		if (lv == null) {
-			lv = new KilledByCrossbowCriterion.class_2077(serverAdvancementManager);
-			this.field_9656.put(serverAdvancementManager, lv);
+			lv = new KilledByCrossbowCriterion.class_2077(playerAdvancementTracker);
+			this.field_9656.put(playerAdvancementTracker, lv);
 		}
 
 		lv.method_8982(conditionsContainer);
 	}
 
 	@Override
-	public void removeCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions> conditionsContainer
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions> conditionsContainer
 	) {
-		KilledByCrossbowCriterion.class_2077 lv = (KilledByCrossbowCriterion.class_2077)this.field_9656.get(serverAdvancementManager);
+		KilledByCrossbowCriterion.class_2077 lv = (KilledByCrossbowCriterion.class_2077)this.field_9656.get(playerAdvancementTracker);
 		if (lv != null) {
 			lv.method_8985(conditionsContainer);
 			if (lv.method_8984()) {
-				this.field_9656.remove(serverAdvancementManager);
+				this.field_9656.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void removePlayer(ServerAdvancementManager serverAdvancementManager) {
-		this.field_9656.remove(serverAdvancementManager);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.field_9656.remove(playerAdvancementTracker);
 	}
 
 	public KilledByCrossbowCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -126,7 +125,7 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 			if (this.uniqueEntityTypes == NumberRange.Integer.ANY) {
 				return true;
 			} else {
-				Set<EntityType> set = new HashSet();
+				Set<EntityType<?>> set = Sets.<EntityType<?>>newHashSet();
 
 				for (Entity entity2 : collection) {
 					set.add(entity2.getType());
@@ -137,7 +136,7 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 		}
 
 		@Override
-		public JsonElement method_807() {
+		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("victims", EntityPredicate.serializeAll(this.victims));
 			jsonObject.add("unique_entity_types", this.uniqueEntityTypes.serialize());
@@ -146,11 +145,11 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 	}
 
 	static class class_2077 {
-		private final ServerAdvancementManager field_9658;
+		private final PlayerAdvancementTracker field_9658;
 		private final Set<Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions>> field_9657 = Sets.<Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions>>newHashSet();
 
-		public class_2077(ServerAdvancementManager serverAdvancementManager) {
-			this.field_9658 = serverAdvancementManager;
+		public class_2077(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.field_9658 = playerAdvancementTracker;
 		}
 
 		public boolean method_8984() {

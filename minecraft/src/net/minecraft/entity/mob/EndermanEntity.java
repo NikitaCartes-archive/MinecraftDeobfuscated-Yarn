@@ -122,7 +122,7 @@ public class EndermanEntity extends HostileEntity {
 
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
-		if (ANGRY.equals(trackedData) && this.isAngry() && this.world.isRemote) {
+		if (ANGRY.equals(trackedData) && this.isAngry() && this.world.isClient) {
 			this.method_7030();
 		}
 
@@ -177,7 +177,7 @@ public class EndermanEntity extends HostileEntity {
 
 	@Override
 	public void updateMovement() {
-		if (this.world.isRemote) {
+		if (this.world.isClient) {
 			for (int i = 0; i < 2; i++) {
 				this.world
 					.method_8406(
@@ -198,13 +198,13 @@ public class EndermanEntity extends HostileEntity {
 
 	@Override
 	protected void mobTick() {
-		if (this.method_5637()) {
+		if (this.isTouchingWater()) {
 			this.damage(DamageSource.DROWN, 1.0F);
 		}
 
 		if (this.world.isDaylight() && this.age >= this.ageWhenTargetSet + 600) {
 			float f = this.method_5718();
-			if (f > 0.5F && this.world.getSkyLightLevel(new BlockPos(this)) && this.random.nextFloat() * 30.0F < (f - 0.4F) * 2.0F) {
+			if (f > 0.5F && this.world.isSkyVisible(new BlockPos(this)) && this.random.nextFloat() * 30.0F < (f - 0.4F) * 2.0F) {
 				this.setTarget(null);
 				this.method_7029();
 			}
@@ -262,7 +262,7 @@ public class EndermanEntity extends HostileEntity {
 		super.dropEquipment(damageSource, i, bl);
 		BlockState blockState = this.getCarriedBlock();
 		if (blockState != null) {
-			this.dropItem(blockState.getBlock());
+			this.method_5706(blockState.getBlock());
 		}
 	}
 

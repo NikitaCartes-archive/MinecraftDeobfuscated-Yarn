@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.particle.TexturedParticle;
+import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -33,7 +33,7 @@ public class RainSplashParticle extends Particle {
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;
 		this.velocityY = this.velocityY - (double)this.gravityStrength;
-		this.addPos(this.velocityX, this.velocityY, this.velocityZ);
+		this.move(this.velocityX, this.velocityY, this.velocityZ);
 		this.velocityX *= 0.98F;
 		this.velocityY *= 0.98F;
 		this.velocityZ *= 0.98F;
@@ -59,7 +59,7 @@ public class RainSplashParticle extends Particle {
 			if (fluidState.method_15763() > 0.0F) {
 				d = (double)fluidState.method_15763();
 			} else {
-				d = blockState.method_11628(this.world, blockPos).method_1102(Direction.Axis.Y, this.posX - Math.floor(this.posX), this.posZ - Math.floor(this.posZ));
+				d = blockState.getCollisionShape(this.world, blockPos).method_1102(Direction.Axis.Y, this.posX - Math.floor(this.posX), this.posZ - Math.floor(this.posZ));
 			}
 
 			double e = (double)MathHelper.floor(this.posY) + d;
@@ -70,8 +70,8 @@ public class RainSplashParticle extends Particle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Factory implements FactoryParticle<TexturedParticle> {
-		public Particle createParticle(TexturedParticle texturedParticle, World world, double d, double e, double f, double g, double h, double i) {
+	public static class Factory implements ParticleFactory<DefaultParticleType> {
+		public Particle method_3116(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new RainSplashParticle(world, d, e, f);
 		}
 	}

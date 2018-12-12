@@ -3,88 +3,107 @@ package net.minecraft.world.chunk.light;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2804;
-import net.minecraft.class_3552;
-import net.minecraft.class_3562;
-import net.minecraft.class_3572;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.LightType;
-import net.minecraft.world.chunk.ChunkView;
+import net.minecraft.world.chunk.ChunkNibbleArray;
+import net.minecraft.world.chunk.ChunkProvider;
 
 public class LightingProvider implements LightingView {
-	private final LightStorage<?, ?> field_15814;
 	@Nullable
-	private final LightStorage<?, ?> field_15813;
+	private final ChunkLightProvider<?, ?> blockLightProvider;
+	@Nullable
+	private final ChunkLightProvider<?, ?> skyLightProvider;
 
-	public LightingProvider(ChunkView chunkView, boolean bl) {
-		this.field_15814 = new class_3552(chunkView);
-		this.field_15813 = bl ? new class_3572(chunkView) : null;
+	public LightingProvider(ChunkProvider chunkProvider, boolean bl, boolean bl2) {
+		this.blockLightProvider = bl ? new ChunkBlockLightProvider(chunkProvider) : null;
+		this.skyLightProvider = bl2 ? new ChunkSkyLightProvider(chunkProvider) : null;
 	}
 
-	public void queueLightCheck(BlockPos blockPos) {
-		this.field_15814.queueLightCheck(blockPos);
-		if (this.field_15813 != null) {
-			this.field_15813.queueLightCheck(blockPos);
+	public void enqueueLightUpdate(BlockPos blockPos) {
+		if (this.blockLightProvider != null) {
+			this.blockLightProvider.queueLightCheck(blockPos);
+		}
+
+		if (this.skyLightProvider != null) {
+			this.skyLightProvider.queueLightCheck(blockPos);
 		}
 	}
 
 	public void method_15560(BlockPos blockPos, int i) {
-		this.field_15814.method_15514(blockPos, i);
+		if (this.blockLightProvider != null) {
+			this.blockLightProvider.method_15514(blockPos, i);
+		}
 	}
 
 	public boolean method_15561() {
-		return this.field_15813 != null && this.field_15813.method_15518() ? true : this.field_15814.method_15518();
+		return this.skyLightProvider != null && this.skyLightProvider.method_15518()
+			? true
+			: this.blockLightProvider != null && this.blockLightProvider.method_15518();
 	}
 
-	public int method_15563(int i, boolean bl, boolean bl2) {
-		if (this.field_15813 != null) {
+	public int doLightUpdates(int i, boolean bl, boolean bl2) {
+		if (this.blockLightProvider != null && this.skyLightProvider != null) {
 			int j = i / 2;
-			int k = this.field_15814.method_15516(j, bl, bl2);
+			int k = this.blockLightProvider.doLightUpdates(j, bl, bl2);
 			int l = i - j + k;
-			int m = this.field_15813.method_15516(l, bl, bl2);
-			return k == 0 && m > 0 ? this.field_15814.method_15516(m, bl, bl2) : m;
+			int m = this.skyLightProvider.doLightUpdates(l, bl, bl2);
+			return k == 0 && m > 0 ? this.blockLightProvider.doLightUpdates(m, bl, bl2) : m;
+		} else if (this.blockLightProvider != null) {
+			return this.blockLightProvider.doLightUpdates(i, bl, bl2);
 		} else {
-			return this.field_15814.method_15516(i, bl, bl2);
+			return this.skyLightProvider != null ? this.skyLightProvider.doLightUpdates(i, bl, bl2) : i;
 		}
 	}
 
 	@Override
-	public void method_15551(int i, int j, int k, boolean bl) {
-		this.field_15814.method_15551(i, j, k, bl);
-		if (this.field_15813 != null) {
-			this.field_15813.method_15551(i, j, k, bl);
+	public void scheduleChunkLightUpdate(int i, int j, int k, boolean bl) {
+		if (this.blockLightProvider != null) {
+			this.blockLightProvider.scheduleChunkLightUpdate(i, j, k, bl);
+		}
+
+		if (this.skyLightProvider != null) {
+			this.skyLightProvider.scheduleChunkLightUpdate(i, j, k, bl);
 		}
 	}
 
 	public void method_15557(int i, int j, boolean bl) {
-		this.field_15814.method_15512(i, j, bl);
-		if (this.field_15813 != null) {
-			this.field_15813.method_15512(i, j, bl);
+		if (this.blockLightProvider != null) {
+			this.blockLightProvider.method_15512(i, j, bl);
+		}
+
+		if (this.skyLightProvider != null) {
+			this.skyLightProvider.method_15512(i, j, bl);
 		}
 	}
 
-	public class_3562 get(LightType lightType) {
-		if (lightType == LightType.field_9282) {
-			return this.field_15814;
+	public ChunkLightingView get(LightType lightType) {
+		if (lightType == LightType.BLOCK_LIGHT) {
+			return (ChunkLightingView)(this.blockLightProvider == null ? ChunkLightingView.Empty.field_15812 : this.blockLightProvider);
 		} else {
-			return (class_3562)(this.field_15813 == null ? class_3562.class_3563.field_15812 : this.field_15813);
+			return (ChunkLightingView)(this.skyLightProvider == null ? ChunkLightingView.Empty.field_15812 : this.skyLightProvider);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public String method_15564(LightType lightType, BlockPos blockPos) {
-		if (lightType == LightType.field_9282) {
-			return this.field_15814.method_15520(BlockPos.method_10090(blockPos.asLong()));
-		} else {
-			return this.field_15813 != null ? this.field_15813.method_15520(BlockPos.method_10090(blockPos.asLong())) : "n/a";
+		if (lightType == LightType.BLOCK_LIGHT) {
+			if (this.blockLightProvider != null) {
+				return this.blockLightProvider.method_15520(BlockPos.toChunkSectionOrigin(blockPos.asLong()));
+			}
+		} else if (this.skyLightProvider != null) {
+			return this.skyLightProvider.method_15520(BlockPos.toChunkSectionOrigin(blockPos.asLong()));
 		}
+
+		return "n/a";
 	}
 
-	public void method_15558(LightType lightType, int i, int j, int k, class_2804 arg) {
-		if (lightType == LightType.field_9282) {
-			this.field_15814.method_15515(i, j, k, arg);
-		} else if (this.field_15813 != null) {
-			this.field_15813.method_15515(i, j, k, arg);
+	public void setSection(LightType lightType, int i, int j, int k, ChunkNibbleArray chunkNibbleArray) {
+		if (lightType == LightType.BLOCK_LIGHT) {
+			if (this.blockLightProvider != null) {
+				this.blockLightProvider.setSection(i, j, k, chunkNibbleArray);
+			}
+		} else if (this.skyLightProvider != null) {
+			this.skyLightProvider.setSection(i, j, k, chunkNibbleArray);
 		}
 	}
 }

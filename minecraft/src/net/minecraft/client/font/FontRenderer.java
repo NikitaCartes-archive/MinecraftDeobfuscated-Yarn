@@ -10,10 +10,8 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_382;
-import net.minecraft.class_390;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.text.TextFormat;
@@ -22,7 +20,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class FontRenderer implements AutoCloseable {
-	public int FONT_HEIGHT = 9;
+	public int fontHeight = 9;
 	public Random random = new Random();
 	private final TextureManager textureManager;
 	private final FontStorage font;
@@ -33,7 +31,7 @@ public class FontRenderer implements AutoCloseable {
 		this.font = fontStorage;
 	}
 
-	public void method_1715(List<class_390> list) {
+	public void method_1715(List<Font> list) {
 		this.font.method_2004(list);
 	}
 
@@ -43,12 +41,12 @@ public class FontRenderer implements AutoCloseable {
 
 	public int drawWithShadow(String string, float f, float g, int i) {
 		GlStateManager.enableAlphaTest();
-		return this.drawInternal(string, f, g, i, true);
+		return this.draw(string, f, g, i, true);
 	}
 
 	public int draw(String string, float f, float g, int i) {
 		GlStateManager.enableAlphaTest();
-		return this.drawInternal(string, f, g, i, false);
+		return this.draw(string, f, g, i, false);
 	}
 
 	public String mirror(String string) {
@@ -61,7 +59,7 @@ public class FontRenderer implements AutoCloseable {
 		}
 	}
 
-	private int drawInternal(String string, float f, float g, int i, boolean bl) {
+	private int draw(String string, float f, float g, int i, boolean bl) {
 		if (string == null) {
 			return 0;
 		} else {
@@ -74,15 +72,15 @@ public class FontRenderer implements AutoCloseable {
 			}
 
 			if (bl) {
-				this.drawStringInternal(string, f, g, i, true);
+				this.drawLayer(string, f, g, i, true);
 			}
 
-			f = this.drawStringInternal(string, f, g, i, false);
+			f = this.drawLayer(string, f, g, i, false);
 			return (int)f + (bl ? 1 : 0);
 		}
 	}
 
-	private float drawStringInternal(String string, float f, float g, int i, boolean bl) {
+	private float drawLayer(String string, float f, float g, int i, boolean bl) {
 		float h = bl ? 0.25F : 1.0F;
 		float j = (float)(i >> 16 & 0xFF) / 255.0F * h;
 		float k = (float)(i >> 8 & 0xFF) / 255.0F * h;
@@ -92,15 +90,15 @@ public class FontRenderer implements AutoCloseable {
 		float o = l;
 		float p = (float)(i >> 24 & 0xFF) / 255.0F;
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		Identifier identifier = null;
-		vertexBuffer.begin(7, VertexFormats.POSITION_UV_COLOR);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 		boolean bl2 = false;
 		boolean bl3 = false;
 		boolean bl4 = false;
 		boolean bl5 = false;
 		boolean bl6 = false;
-		List<FontRenderer.CharacterRenderInfo> list = Lists.<FontRenderer.CharacterRenderInfo>newArrayList();
+		List<FontRenderer.Rectangle> list = Lists.<FontRenderer.Rectangle>newArrayList();
 
 		for (int q = 0; q < string.length(); q++) {
 			char c = string.charAt(q);
@@ -139,35 +137,31 @@ public class FontRenderer implements AutoCloseable {
 				q++;
 			} else {
 				Glyph glyph = this.font.getGlyph(c);
-				class_382 lv = bl2 && c != ' ' ? this.font.method_2013(glyph) : this.font.method_2014(c);
-				Identifier identifier2 = lv.method_2026();
+				GlyphRenderer glyphRenderer = bl2 && c != ' ' ? this.font.getObfuscatedGlyphRenderer(glyph) : this.font.getGlyphRenderer(c);
+				Identifier identifier2 = glyphRenderer.getId();
 				if (identifier2 != null) {
 					if (identifier != identifier2) {
 						tessellator.draw();
 						this.textureManager.bindTexture(identifier2);
-						vertexBuffer.begin(7, VertexFormats.POSITION_UV_COLOR);
+						bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 						identifier = identifier2;
 					}
 
 					float s = bl3 ? glyph.getBoldOffset() : 0.0F;
 					float t = bl ? glyph.getShadowOffset() : 0.0F;
-					this.method_1710(lv, bl3, bl4, s, f + t, g + t, vertexBuffer, m, n, o, p);
+					this.drawGlyph(glyphRenderer, bl3, bl4, s, f + t, g + t, bufferBuilder, m, n, o, p);
 				}
 
 				float s = glyph.getAdvance(bl3);
 				float t = bl ? 1.0F : 0.0F;
 				if (bl6) {
 					list.add(
-						new FontRenderer.CharacterRenderInfo(
-							f + t - 1.0F, g + t + (float)this.FONT_HEIGHT / 2.0F, f + t + s, g + t + (float)this.FONT_HEIGHT / 2.0F - 1.0F, m, n, o, p
-						)
+						new FontRenderer.Rectangle(f + t - 1.0F, g + t + (float)this.fontHeight / 2.0F, f + t + s, g + t + (float)this.fontHeight / 2.0F - 1.0F, m, n, o, p)
 					);
 				}
 
 				if (bl5) {
-					list.add(
-						new FontRenderer.CharacterRenderInfo(f + t - 1.0F, g + t + (float)this.FONT_HEIGHT, f + t + s, g + t + (float)this.FONT_HEIGHT - 1.0F, m, n, o, p)
-					);
+					list.add(new FontRenderer.Rectangle(f + t - 1.0F, g + t + (float)this.fontHeight, f + t + s, g + t + (float)this.fontHeight - 1.0F, m, n, o, p));
 				}
 
 				f += s;
@@ -177,10 +171,10 @@ public class FontRenderer implements AutoCloseable {
 		tessellator.draw();
 		if (!list.isEmpty()) {
 			GlStateManager.disableTexture();
-			vertexBuffer.begin(7, VertexFormats.POSITION_COLOR);
+			bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
 
-			for (FontRenderer.CharacterRenderInfo characterRenderInfo : list) {
-				characterRenderInfo.draw(vertexBuffer);
+			for (FontRenderer.Rectangle rectangle : list) {
+				rectangle.draw(bufferBuilder);
 			}
 
 			tessellator.draw();
@@ -190,10 +184,12 @@ public class FontRenderer implements AutoCloseable {
 		return f;
 	}
 
-	private void method_1710(class_382 arg, boolean bl, boolean bl2, float f, float g, float h, VertexBuffer vertexBuffer, float i, float j, float k, float l) {
-		arg.method_2025(this.textureManager, bl2, g, h, vertexBuffer, i, j, k, l);
+	private void drawGlyph(
+		GlyphRenderer glyphRenderer, boolean bl, boolean bl2, float f, float g, float h, BufferBuilder bufferBuilder, float i, float j, float k, float l
+	) {
+		glyphRenderer.draw(this.textureManager, bl2, g, h, bufferBuilder, i, j, k, l);
 		if (bl) {
-			arg.method_2025(this.textureManager, bl2, g + f, h, vertexBuffer, i, j, k, l);
+			glyphRenderer.draw(this.textureManager, bl2, g + f, h, bufferBuilder, i, j, k, l);
 		}
 	}
 
@@ -292,13 +288,13 @@ public class FontRenderer implements AutoCloseable {
 				f += (float)(k - m);
 			}
 
-			this.drawInternal(string2, f, (float)j, l, false);
-			j += this.FONT_HEIGHT;
+			this.draw(string2, f, (float)j, l, false);
+			j += this.fontHeight;
 		}
 	}
 
 	public int getStringBoundedHeight(String string, int i) {
-		return this.FONT_HEIGHT * this.wrapStringToWidthAsList(string, i).size();
+		return this.fontHeight * this.wrapStringToWidthAsList(string, i).size();
 	}
 
 	public void setRightToLeft(boolean bl) {
@@ -381,7 +377,7 @@ public class FontRenderer implements AutoCloseable {
 		return l != k && m != -1 && m < l ? m : l;
 	}
 
-	public int method_16196(String string, int i, int j, boolean bl) {
+	public int findWordEdge(String string, int i, int j, boolean bl) {
 		int k = j;
 		boolean bl2 = i < 0;
 		int l = Math.abs(i);
@@ -427,7 +423,7 @@ public class FontRenderer implements AutoCloseable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class CharacterRenderInfo {
+	static class Rectangle {
 		protected final float xMin;
 		protected final float yMin;
 		protected final float xMax;
@@ -437,7 +433,7 @@ public class FontRenderer implements AutoCloseable {
 		protected final float blue;
 		protected final float alpha;
 
-		private CharacterRenderInfo(float f, float g, float h, float i, float j, float k, float l, float m) {
+		private Rectangle(float f, float g, float h, float i, float j, float k, float l, float m) {
 			this.xMin = f;
 			this.yMin = g;
 			this.xMax = h;
@@ -448,11 +444,11 @@ public class FontRenderer implements AutoCloseable {
 			this.alpha = m;
 		}
 
-		public void draw(VertexBuffer vertexBuffer) {
-			vertexBuffer.vertex((double)this.xMin, (double)this.yMin, 0.0).color(this.red, this.green, this.blue, this.alpha).next();
-			vertexBuffer.vertex((double)this.xMax, (double)this.yMin, 0.0).color(this.red, this.green, this.blue, this.alpha).next();
-			vertexBuffer.vertex((double)this.xMax, (double)this.yMax, 0.0).color(this.red, this.green, this.blue, this.alpha).next();
-			vertexBuffer.vertex((double)this.xMin, (double)this.yMax, 0.0).color(this.red, this.green, this.blue, this.alpha).next();
+		public void draw(BufferBuilder bufferBuilder) {
+			bufferBuilder.vertex((double)this.xMin, (double)this.yMin, 0.0).color(this.red, this.green, this.blue, this.alpha).next();
+			bufferBuilder.vertex((double)this.xMax, (double)this.yMin, 0.0).color(this.red, this.green, this.blue, this.alpha).next();
+			bufferBuilder.vertex((double)this.xMax, (double)this.yMax, 0.0).color(this.red, this.green, this.blue, this.alpha).next();
+			bufferBuilder.vertex((double)this.xMin, (double)this.yMax, 0.0).color(this.red, this.green, this.blue, this.alpha).next();
 		}
 	}
 }

@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -51,8 +51,8 @@ public class BeaconBlockEntity extends LockableContainerBlockEntity implements S
 	private long field_11797;
 	@Environment(EnvType.CLIENT)
 	private float field_11802;
-	private boolean field_11794;
-	private boolean field_11792;
+	private boolean active;
+	private boolean lastActive;
 	private int levels = -1;
 	@Nullable
 	private StatusEffect primary;
@@ -69,14 +69,14 @@ public class BeaconBlockEntity extends LockableContainerBlockEntity implements S
 	public void tick() {
 		if (this.world.getTime() % 80L == 0L) {
 			this.method_10941();
-			if (this.field_11794) {
-				this.method_10938(SoundEvents.field_15045);
+			if (this.active) {
+				this.playSound(SoundEvents.field_15045);
 			}
 		}
 
-		if (!this.world.isRemote && this.field_11794 != this.field_11792) {
-			this.field_11792 = this.field_11794;
-			this.method_10938(this.field_11794 ? SoundEvents.field_14703 : SoundEvents.field_15176);
+		if (!this.world.isClient && this.active != this.lastActive) {
+			this.lastActive = this.active;
+			this.playSound(this.active ? SoundEvents.field_14703 : SoundEvents.field_15176);
 		}
 	}
 
@@ -87,12 +87,12 @@ public class BeaconBlockEntity extends LockableContainerBlockEntity implements S
 		}
 	}
 
-	public void method_10938(SoundEvent soundEvent) {
+	public void playSound(SoundEvent soundEvent) {
 		this.world.playSound(null, this.pos, soundEvent, SoundCategory.field_15245, 1.0F, 1.0F);
 	}
 
 	private void method_10940() {
-		if (this.field_11794 && this.levels > 0 && !this.world.isRemote && this.primary != null) {
+		if (this.active && this.levels > 0 && !this.world.isClient && this.primary != null) {
 			double d = (double)(this.levels * 10 + 10);
 			int i = 0;
 			if (this.levels >= 4 && this.primary == this.secondary) {
@@ -127,7 +127,7 @@ public class BeaconBlockEntity extends LockableContainerBlockEntity implements S
 		int l = this.levels;
 		this.levels = 0;
 		this.field_11796.clear();
-		this.field_11794 = true;
+		this.active = true;
 		BeaconBlockEntity.class_2581 lv = new BeaconBlockEntity.class_2581(DyeColor.WHITE.getColorComponents());
 		this.field_11796.add(lv);
 		boolean bl = true;
@@ -141,8 +141,8 @@ public class BeaconBlockEntity extends LockableContainerBlockEntity implements S
 				fs = ((StainedGlassBlock)block).getColor().getColorComponents();
 			} else {
 				if (!(block instanceof StainedGlassPaneBlock)) {
-					if (blockState.method_11581(this.world, mutable) >= 15 && block != Blocks.field_9987) {
-						this.field_11794 = false;
+					if (blockState.getLightSubtracted(this.world, mutable) >= 15 && block != Blocks.field_9987) {
+						this.active = false;
 						this.field_11796.clear();
 						break;
 					}
@@ -168,7 +168,7 @@ public class BeaconBlockEntity extends LockableContainerBlockEntity implements S
 			bl = false;
 		}
 
-		if (this.field_11794) {
+		if (this.active) {
 			for (int m = 1; m <= 4; this.levels = m++) {
 				int n = j - m;
 				if (n < 0) {
@@ -193,16 +193,16 @@ public class BeaconBlockEntity extends LockableContainerBlockEntity implements S
 			}
 
 			if (this.levels == 0) {
-				this.field_11794 = false;
+				this.active = false;
 			}
 		}
 
-		if (!this.world.isRemote && l < this.levels) {
+		if (!this.world.isClient && l < this.levels) {
 			for (ServerPlayerEntity serverPlayerEntity : this.world
 				.getVisibleEntities(
 					ServerPlayerEntity.class, new BoundingBox((double)i, (double)j, (double)k, (double)i, (double)(j - 4), (double)k).expand(10.0, 5.0, 10.0)
 				)) {
-				CriterionCriterions.CONSTRUCT_BEACON.handle(serverPlayerEntity, this);
+				Criterions.CONSTRUCT_BEACON.handle(serverPlayerEntity, this);
 			}
 		}
 	}
@@ -214,7 +214,7 @@ public class BeaconBlockEntity extends LockableContainerBlockEntity implements S
 
 	@Environment(EnvType.CLIENT)
 	public float method_10933() {
-		if (!this.field_11794) {
+		if (!this.active) {
 			return 0.0F;
 		} else {
 			int i = (int)(this.world.getTime() - this.field_11797);
@@ -337,9 +337,10 @@ public class BeaconBlockEntity extends LockableContainerBlockEntity implements S
 		return (TextComponent)(this.customName != null ? this.customName : new TranslatableTextComponent("container.beacon"));
 	}
 
+	@Nullable
 	@Override
-	public boolean hasCustomName() {
-		return this.customName != null;
+	public TextComponent getCustomName() {
+		return this.customName;
 	}
 
 	public void setCustomName(@Nullable TextComponent textComponent) {
@@ -356,14 +357,6 @@ public class BeaconBlockEntity extends LockableContainerBlockEntity implements S
 		return this.world.getBlockEntity(this.pos) != this
 			? false
 			: !(playerEntity.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) > 64.0);
-	}
-
-	@Override
-	public void onInvOpen(PlayerEntity playerEntity) {
-	}
-
-	@Override
-	public void onInvClose(PlayerEntity playerEntity) {
 	}
 
 	@Override
@@ -411,8 +404,8 @@ public class BeaconBlockEntity extends LockableContainerBlockEntity implements S
 				this.secondary = getPotionEffectById(j);
 		}
 
-		if (!this.world.isRemote && i == 1 && this.field_11794) {
-			this.method_10938(SoundEvents.field_14891);
+		if (!this.world.isClient && i == 1 && this.active) {
+			this.playSound(SoundEvents.field_14891);
 		}
 	}
 
@@ -427,27 +420,27 @@ public class BeaconBlockEntity extends LockableContainerBlockEntity implements S
 	}
 
 	@Override
-	public boolean method_11004(int i, int j) {
+	public boolean onBlockAction(int i, int j) {
 		if (i == 1) {
 			this.method_10941();
 			return true;
 		} else {
-			return super.method_11004(i, j);
+			return super.onBlockAction(i, j);
 		}
 	}
 
 	@Override
-	public int[] method_5494(Direction direction) {
+	public int[] getInvAvailableSlots(Direction direction) {
 		return new int[0];
 	}
 
 	@Override
-	public boolean method_5492(int i, ItemStack itemStack, @Nullable Direction direction) {
+	public boolean canInsertInvStack(int i, ItemStack itemStack, @Nullable Direction direction) {
 		return false;
 	}
 
 	@Override
-	public boolean method_5493(int i, ItemStack itemStack, Direction direction) {
+	public boolean canExtractInvStack(int i, ItemStack itemStack, Direction direction) {
 		return false;
 	}
 

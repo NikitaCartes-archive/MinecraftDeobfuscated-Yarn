@@ -18,7 +18,7 @@ public class ChunkRenderDataTask implements Comparable<ChunkRenderDataTask> {
 	private final double distanceToPlayerSquared;
 	@Nullable
 	private class_853 field_4414;
-	private ChunkVertexBuffer vertexBuffer;
+	private BlockLayeredBufferBuilder bufferBuilder;
 	private ChunkRenderData renderData;
 	private ChunkRenderDataTask.Stage stage = ChunkRenderDataTask.Stage.INIT;
 	private boolean field_4410;
@@ -53,12 +53,12 @@ public class ChunkRenderDataTask implements Comparable<ChunkRenderDataTask> {
 		this.renderData = chunkRenderData;
 	}
 
-	public ChunkVertexBuffer getVertexBuffer() {
-		return this.vertexBuffer;
+	public BlockLayeredBufferBuilder getBufferBuilders() {
+		return this.bufferBuilder;
 	}
 
-	public void setVertexBuffer(ChunkVertexBuffer chunkVertexBuffer) {
-		this.vertexBuffer = chunkVertexBuffer;
+	public void setBufferBuilders(BlockLayeredBufferBuilder blockLayeredBufferBuilder) {
+		this.bufferBuilder = blockLayeredBufferBuilder;
 	}
 
 	public void setStage(ChunkRenderDataTask.Stage stage) {
@@ -71,13 +71,13 @@ public class ChunkRenderDataTask implements Comparable<ChunkRenderDataTask> {
 		}
 	}
 
-	public void method_3596() {
+	public void cancel() {
 		this.lock.lock();
 
 		try {
 			this.field_4414 = null;
 			if (this.mode == ChunkRenderDataTask.Mode.field_4426 && this.stage != ChunkRenderDataTask.Stage.field_4423) {
-				this.chunkRenderer.markRenderUpdate(false);
+				this.chunkRenderer.scheduleRender(false);
 			}
 
 			this.field_4410 = true;

@@ -22,9 +22,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.minecraft.class_3508;
 import net.minecraft.datafixers.TypeReferences;
 import net.minecraft.util.Int2ObjectBiMap;
+import net.minecraft.util.PackedIntegerArray;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -975,13 +975,13 @@ public class ChunkPalettedStorageFix extends DataFix {
 			} else {
 				dynamic = dynamic.set("Palette", this.paletteData);
 				int i = Math.max(4, DataFixUtils.ceillog2(this.seenStates.size()));
-				class_3508 lv = new class_3508(i, 4096);
+				PackedIntegerArray packedIntegerArray = new PackedIntegerArray(i, 4096);
 
 				for (int j = 0; j < this.states.length; j++) {
-					lv.method_15210(j, this.states[j]);
+					packedIntegerArray.set(j, this.states[j]);
 				}
 
-				dynamic = dynamic.set("BlockStates", dynamic.createLongList(Arrays.stream(lv.asLongArray())));
+				dynamic = dynamic.set("BlockStates", dynamic.createLongList(Arrays.stream(packedIntegerArray.getStorage())));
 				dynamic = dynamic.remove("Blocks");
 				dynamic = dynamic.remove("Data");
 				return dynamic.remove("Add");

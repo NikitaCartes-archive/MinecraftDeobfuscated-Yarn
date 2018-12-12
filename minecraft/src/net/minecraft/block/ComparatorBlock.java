@@ -71,17 +71,17 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	protected int method_9991(World world, BlockPos blockPos, BlockState blockState) {
 		int i = super.method_9991(world, blockPos, blockState);
 		Direction direction = blockState.get(field_11177);
-		BlockPos blockPos2 = blockPos.method_10093(direction);
+		BlockPos blockPos2 = blockPos.offset(direction);
 		BlockState blockState2 = world.getBlockState(blockPos2);
 		if (blockState2.hasComparatorOutput()) {
 			i = blockState2.getComparatorOutput(world, blockPos2);
 		} else if (i < 15 && blockState2.isSimpleFullBlock(world, blockPos2)) {
-			blockPos2 = blockPos2.method_10093(direction);
+			blockPos2 = blockPos2.offset(direction);
 			blockState2 = world.getBlockState(blockPos2);
 			if (blockState2.hasComparatorOutput()) {
 				i = blockState2.getComparatorOutput(world, blockPos2);
 			} else if (blockState2.isAir()) {
-				ItemFrameEntity itemFrameEntity = this.method_9774(world, direction, blockPos2);
+				ItemFrameEntity itemFrameEntity = this.getAttachedItemFrame(world, direction, blockPos2);
 				if (itemFrameEntity != null) {
 					i = itemFrameEntity.method_6938();
 				}
@@ -92,7 +92,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	}
 
 	@Nullable
-	private ItemFrameEntity method_9774(World world, Direction direction, BlockPos blockPos) {
+	private ItemFrameEntity getAttachedItemFrame(World world, Direction direction, BlockPos blockPos) {
 		List<ItemFrameEntity> list = world.getEntities(
 			ItemFrameEntity.class,
 			new BoundingBox(
@@ -103,13 +103,13 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 				(double)(blockPos.getY() + 1),
 				(double)(blockPos.getZ() + 1)
 			),
-			itemFrameEntity -> itemFrameEntity != null && itemFrameEntity.method_5735() == direction
+			itemFrameEntity -> itemFrameEntity != null && itemFrameEntity.getHorizontalFacing() == direction
 		);
 		return list.size() == 1 ? (ItemFrameEntity)list.get(0) : null;
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
 		if (!playerEntity.abilities.allowModifyWorld) {
@@ -169,7 +169,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	public boolean onBlockAction(BlockState blockState, World world, BlockPos blockPos, int i, int j) {
 		super.onBlockAction(blockState, world, blockPos, i, j);
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
-		return blockEntity != null && blockEntity.method_11004(i, j);
+		return blockEntity != null && blockEntity.onBlockAction(i, j);
 	}
 
 	@Override

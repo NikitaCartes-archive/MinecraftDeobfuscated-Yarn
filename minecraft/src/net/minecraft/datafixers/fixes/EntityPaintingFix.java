@@ -10,7 +10,7 @@ import com.mojang.datafixers.types.Type;
 import net.minecraft.datafixers.TypeReferences;
 
 public class EntityPaintingFix extends DataFix {
-	private static final int[][] offsets = new int[][]{{0, 0, 1}, {-1, 0, 0}, {0, 0, -1}, {1, 0, 0}};
+	private static final int[][] OFFSETS = new int[][]{{0, 0, 1}, {-1, 0, 0}, {0, 0, -1}, {1, 0, 0}};
 
 	public EntityPaintingFix(Schema schema, boolean bl) {
 		super(schema, bl);
@@ -20,8 +20,8 @@ public class EntityPaintingFix extends DataFix {
 		if ((bl || bl2) && !dynamic.get("Facing").flatMap(Dynamic::getNumberValue).isPresent()) {
 			int i;
 			if (dynamic.get("Direction").flatMap(Dynamic::getNumberValue).isPresent()) {
-				i = dynamic.getByte("Direction") % offsets.length;
-				int[] is = offsets[i];
+				i = dynamic.getByte("Direction") % OFFSETS.length;
+				int[] is = OFFSETS[i];
 				dynamic = dynamic.set("TileX", dynamic.createInt(dynamic.getInt("TileX") + is[0]));
 				dynamic = dynamic.set("TileY", dynamic.createInt(dynamic.getInt("TileY") + is[1]));
 				dynamic = dynamic.set("TileZ", dynamic.createInt(dynamic.getInt("TileZ") + is[2]));
@@ -30,7 +30,7 @@ public class EntityPaintingFix extends DataFix {
 					dynamic = dynamic.set("ItemRotation", dynamic.createByte((byte)(dynamic.getByte("ItemRotation") * 2)));
 				}
 			} else {
-				i = dynamic.getByte("Dir") % offsets.length;
+				i = dynamic.getByte("Dir") % OFFSETS.length;
 				dynamic = dynamic.remove("Dir");
 			}
 

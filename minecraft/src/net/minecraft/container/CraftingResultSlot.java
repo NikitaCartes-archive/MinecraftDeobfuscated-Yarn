@@ -1,10 +1,10 @@
 package net.minecraft.container;
 
-import net.minecraft.class_1732;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.RecipeUnlocker;
 import net.minecraft.util.DefaultedList;
 
 public class CraftingResultSlot extends Slot {
@@ -49,7 +49,7 @@ public class CraftingResultSlot extends Slot {
 			itemStack.onCrafted(this.player.world, this.player, this.field_7869);
 		}
 
-		((class_1732)this.inventory).method_7664(this.player);
+		((RecipeUnlocker)this.inventory).unlockLastRecipe(this.player);
 		this.field_7869 = 0;
 	}
 

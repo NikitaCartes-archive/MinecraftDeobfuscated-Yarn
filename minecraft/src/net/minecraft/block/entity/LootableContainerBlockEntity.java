@@ -82,16 +82,12 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 		this.lootTableSeed = l;
 	}
 
-	@Override
-	public boolean hasCustomName() {
-		return this.customName != null;
-	}
-
 	public void setCustomName(@Nullable TextComponent textComponent) {
 		this.customName = textComponent;
 	}
 
 	@Nullable
+	@Override
 	public TextComponent getCustomName() {
 		return this.customName;
 	}
@@ -138,38 +134,11 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 	}
 
 	@Override
-	public void onInvOpen(PlayerEntity playerEntity) {
-	}
-
-	@Override
-	public void onInvClose(PlayerEntity playerEntity) {
-	}
-
-	@Override
-	public boolean isValidInvStack(int i, ItemStack itemStack) {
-		return true;
-	}
-
-	@Override
-	public int getInvProperty(int i) {
-		return 0;
-	}
-
-	@Override
-	public void setInvProperty(int i, int j) {
-	}
-
-	@Override
-	public int getInvPropertyCount() {
-		return 0;
-	}
-
-	@Override
 	public void clearInv() {
 		this.getInvStackList().clear();
 	}
 
 	protected abstract DefaultedList<ItemStack> getInvStackList();
 
-	protected abstract void method_11281(DefaultedList<ItemStack> defaultedList);
+	protected abstract void setInvStackList(DefaultedList<ItemStack> defaultedList);
 }

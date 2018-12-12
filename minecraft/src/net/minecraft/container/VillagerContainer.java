@@ -16,7 +16,7 @@ public class VillagerContainer extends Container {
 	public VillagerContainer(PlayerInventory playerInventory, Villager villager, World world) {
 		this.villager = villager;
 		this.world = world;
-		this.villagerInventory = new VillagerInventory(playerInventory.player, villager);
+		this.villagerInventory = new VillagerInventory(villager);
 		this.addSlot(new Slot(this.villagerInventory, 0, 36, 53));
 		this.addSlot(new Slot(this.villagerInventory, 1, 62, 53));
 		this.addSlot(new VillagerOutputSlot(playerInventory.player, villager, this.villagerInventory, 2, 120, 53));
@@ -97,7 +97,7 @@ public class VillagerContainer extends Container {
 		super.close(playerEntity);
 		this.villager.setCurrentCustomer(null);
 		super.close(playerEntity);
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			ItemStack itemStack = this.villagerInventory.removeInvStack(0);
 			if (!itemStack.isEmpty()) {
 				playerEntity.dropItem(itemStack, false);

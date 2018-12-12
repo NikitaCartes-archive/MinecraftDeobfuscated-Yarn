@@ -4,8 +4,8 @@ import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.client.gl.GlBuffer;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.client.render.chunk.ChunkRenderer;
 
 @Environment(EnvType.CLIENT)

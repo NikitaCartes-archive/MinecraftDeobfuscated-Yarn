@@ -28,7 +28,7 @@ public class SpectralArrowEntity extends ProjectileEntity {
 	@Override
 	public void update() {
 		super.update();
-		if (this.world.isRemote && !this.inGround) {
+		if (this.world.isClient && !this.inGround) {
 			this.world.method_8406(ParticleTypes.field_11213, this.x, this.y, this.z, 0.0, 0.0, 0.0);
 		}
 	}

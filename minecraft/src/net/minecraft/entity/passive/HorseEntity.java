@@ -4,9 +4,9 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3730;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -139,7 +139,7 @@ public class HorseEntity extends HorseBaseEntity {
 		HorseArmorType horseArmorType = HorseArmorType.getByStack(itemStack);
 		this.dataTracker.set(ARMOR_TYPE, horseArmorType.getOrdinal());
 		this.clearTextureInfo();
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			this.getAttributeInstance(EntityAttributes.ARMOR).removeModifier(field_6985);
 			int i = horseArmorType.getProtectionAmount();
 			if (i != 0) {
@@ -182,7 +182,7 @@ public class HorseEntity extends HorseBaseEntity {
 	@Override
 	public void update() {
 		super.update();
-		if (this.world.isRemote && this.dataTracker.isDirty()) {
+		if (this.world.isClient && this.dataTracker.isDirty()) {
 			this.dataTracker.clearDirty();
 			this.clearTextureInfo();
 		}
@@ -266,7 +266,7 @@ public class HorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public boolean method_6474(AnimalEntity animalEntity) {
+	public boolean canBreedWith(AnimalEntity animalEntity) {
 		if (animalEntity == this) {
 			return false;
 		} else {
@@ -322,10 +322,10 @@ public class HorseEntity extends HorseBaseEntity {
 
 	@Nullable
 	@Override
-	public EntityData method_5943(
-		IWorld iWorld, LocalDifficulty localDifficulty, class_3730 arg, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	public EntityData prepareEntityData(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.method_5943(iWorld, localDifficulty, arg, entityData, compoundTag);
+		entityData = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		int i;
 		if (entityData instanceof HorseEntity.class_1499) {
 			i = ((HorseEntity.class_1499)entityData).field_6994;

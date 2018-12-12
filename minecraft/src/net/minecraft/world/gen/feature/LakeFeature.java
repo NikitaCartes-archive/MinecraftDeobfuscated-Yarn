@@ -12,8 +12,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.LightType;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.LakeFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class LakeFeature extends Feature<LakeFeatureConfig> {
 	private static final BlockState field_13668 = Blocks.field_10543.getDefaultState();
@@ -23,7 +22,7 @@ public class LakeFeature extends Feature<LakeFeatureConfig> {
 	}
 
 	public boolean method_13471(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, Random random, BlockPos blockPos, LakeFeatureConfig lakeFeatureConfig
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, LakeFeatureConfig lakeFeatureConfig
 	) {
 		while (blockPos.getY() > 5 && iWorld.isAir(blockPos)) {
 			blockPos = blockPos.down();
@@ -73,7 +72,7 @@ public class LakeFeature extends Feature<LakeFeatureConfig> {
 							);
 						if (bl) {
 							Material material = iWorld.getBlockState(blockPos.add(j, t, s)).getMaterial();
-							if (t >= 4 && material.method_15797()) {
+							if (t >= 4 && material.isLiquid()) {
 								return false;
 							}
 
@@ -100,9 +99,9 @@ public class LakeFeature extends Feature<LakeFeatureConfig> {
 					for (int txx = 4; txx < 8; txx++) {
 						if (bls[(j * 16 + s) * 8 + txx]) {
 							BlockPos blockPos2 = blockPos.add(j, txx - 1, s);
-							if (Block.isNaturalDirt(iWorld.getBlockState(blockPos2).getBlock()) && iWorld.getLightLevel(LightType.field_9284, blockPos.add(j, txx, s)) > 0) {
+							if (Block.isNaturalDirt(iWorld.getBlockState(blockPos2).getBlock()) && iWorld.getLightLevel(LightType.SKY_LIGHT, blockPos.add(j, txx, s)) > 0) {
 								Biome biome = iWorld.getBiome(blockPos2);
-								if (biome.getSurfaceConfig().getTopMaterial().getBlock() == Blocks.field_10402) {
+								if (biome.method_8722().getTopMaterial().getBlock() == Blocks.field_10402) {
 									iWorld.setBlockState(blockPos2, Blocks.field_10402.getDefaultState(), 2);
 								} else {
 									iWorld.setBlockState(blockPos2, Blocks.field_10219.getDefaultState(), 2);

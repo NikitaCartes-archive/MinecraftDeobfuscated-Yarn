@@ -36,9 +36,9 @@ public final class EntityPredicates {
 			? Predicates.alwaysFalse()
 			: EXCEPT_SPECTATOR.and(
 				entity2 -> {
-					if (!entity2.method_5810()) {
+					if (!entity2.isPushable()) {
 						return false;
-					} else if (!entity.world.isRemote || entity2 instanceof PlayerEntity && ((PlayerEntity)entity2).method_7340()) {
+					} else if (!entity.world.isClient || entity2 instanceof PlayerEntity && ((PlayerEntity)entity2).method_7340()) {
 						AbstractScoreboardTeam abstractScoreboardTeam2 = entity2.getScoreboardTeam();
 						AbstractScoreboardTeam.CollisionRule collisionRule2 = abstractScoreboardTeam2 == null
 							? AbstractScoreboardTeam.CollisionRule.field_1437

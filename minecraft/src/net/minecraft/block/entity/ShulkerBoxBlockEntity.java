@@ -9,7 +9,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.client.network.packet.BlockEntityUpdateClientPacket;
 import net.minecraft.container.Container;
 import net.minecraft.container.ShulkerBoxContainer;
 import net.minecraft.entity.Entity;
@@ -165,12 +164,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	public int getInvMaxStackAmount() {
-		return 64;
-	}
-
-	@Override
-	public boolean method_11004(int i, int j) {
+	public boolean onBlockAction(int i, int j) {
 		if (i == 1) {
 			this.field_12053 = j;
 			if (j == 0) {
@@ -183,7 +177,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 
 			return true;
 		} else {
-			return super.method_11004(i, j);
+			return super.onBlockAction(i, j);
 		}
 	}
 
@@ -275,7 +269,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	protected void method_11281(DefaultedList<ItemStack> defaultedList) {
+	protected void setInvStackList(DefaultedList<ItemStack> defaultedList) {
 		this.inv = defaultedList;
 	}
 
@@ -291,17 +285,17 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	public int[] method_5494(Direction direction) {
+	public int[] getInvAvailableSlots(Direction direction) {
 		return field_12059;
 	}
 
 	@Override
-	public boolean method_5492(int i, ItemStack itemStack, @Nullable Direction direction) {
+	public boolean canInsertInvStack(int i, ItemStack itemStack, @Nullable Direction direction) {
 		return !(Block.getBlockFromItem(itemStack.getItem()) instanceof ShulkerBoxBlock);
 	}
 
 	@Override
-	public boolean method_5493(int i, ItemStack itemStack, Direction direction) {
+	public boolean canExtractInvStack(int i, ItemStack itemStack, Direction direction) {
 		return true;
 	}
 
@@ -317,12 +311,6 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 		}
 
 		return this.color;
-	}
-
-	@Nullable
-	@Override
-	public BlockEntityUpdateClientPacket toUpdatePacket() {
-		return new BlockEntityUpdateClientPacket(this.pos, 10, this.toInitialChunkDataTag());
 	}
 
 	public static enum AnimationStage {

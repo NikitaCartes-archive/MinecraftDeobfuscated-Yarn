@@ -44,7 +44,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.IntHashMap;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportElement;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.math.MathHelper;
 import org.apache.logging.log4j.LogManager;
@@ -59,7 +59,7 @@ public class EntityTracker {
 
 	public EntityTracker(ServerWorld serverWorld) {
 		this.world = serverWorld;
-		this.setViewDistance(serverWorld.getServer().getConfigurationManager().getViewDistance());
+		this.setViewDistance(serverWorld.getServer().getPlayerManager().getViewDistance());
 	}
 
 	public static long toFixedPoint(double d) {
@@ -160,9 +160,9 @@ public class EntityTracker {
 			entityTrackerEntry.method_14300(this.world.players);
 		} catch (Throwable var10) {
 			CrashReport crashReport = CrashReport.create(var10, "Adding entity to track");
-			CrashReportElement crashReportElement = crashReport.addElement("Entity To Track");
-			crashReportElement.add("Tracking range", i + " blocks");
-			crashReportElement.add("Update interval", (ICrashCallable<String>)(() -> {
+			CrashReportSection crashReportSection = crashReport.method_562("Entity To Track");
+			crashReportSection.add("Tracking range", i + " blocks");
+			crashReportSection.add("Update interval", (ICrashCallable<String>)(() -> {
 				String string = "Once per " + j + " ticks";
 				if (j == Integer.MAX_VALUE) {
 					string = "Maximum (" + string + ")";
@@ -170,8 +170,8 @@ public class EntityTracker {
 
 				return string;
 			}));
-			entity.populateCrashReport(crashReportElement);
-			this.trackedEntitiesById.get(entity.getEntityId()).getEntity().populateCrashReport(crashReport.addElement("Entity That Is Already Tracked"));
+			entity.method_5819(crashReportSection);
+			this.trackedEntitiesById.get(entity.getEntityId()).getEntity().method_5819(crashReport.method_562("Entity That Is Already Tracked"));
 
 			try {
 				throw new CrashException(crashReport);

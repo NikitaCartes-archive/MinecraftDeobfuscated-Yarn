@@ -9,7 +9,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
 
 public class ForestFlowerFeature extends FlowerFeature {
 	private static final Block[] field_13628 = new Block[]{

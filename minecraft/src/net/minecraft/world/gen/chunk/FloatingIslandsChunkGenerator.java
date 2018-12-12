@@ -4,12 +4,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.source.BiomeSource;
 
-public class FloatingIslandsChunkGenerator extends SurfaceChunkGenerator<FloatingIslandsChunkGeneratorSettings> {
-	private final BlockPos field_13268;
+public class FloatingIslandsChunkGenerator extends SurfaceChunkGenerator<FloatingIslandsChunkGeneratorConfig> {
+	private final BlockPos center;
 
-	public FloatingIslandsChunkGenerator(IWorld iWorld, BiomeSource biomeSource, FloatingIslandsChunkGeneratorSettings floatingIslandsChunkGeneratorSettings) {
-		super(iWorld, biomeSource, 8, 4, 128, floatingIslandsChunkGeneratorSettings, true);
-		this.field_13268 = floatingIslandsChunkGeneratorSettings.method_12652();
+	public FloatingIslandsChunkGenerator(IWorld iWorld, BiomeSource biomeSource, FloatingIslandsChunkGeneratorConfig floatingIslandsChunkGeneratorConfig) {
+		super(iWorld, biomeSource, 8, 4, 128, floatingIslandsChunkGeneratorConfig, true);
+		this.center = floatingIslandsChunkGeneratorConfig.getCenter();
 	}
 
 	@Override
@@ -43,12 +43,12 @@ public class FloatingIslandsChunkGenerator extends SurfaceChunkGenerator<Floatin
 		return 8.0;
 	}
 
-	public BlockPos method_12648() {
-		return this.field_13268;
+	public BlockPos getCenter() {
+		return this.center;
 	}
 
 	@Override
-	public int method_12100() {
+	public int getSpawnHeight() {
 		return 50;
 	}
 

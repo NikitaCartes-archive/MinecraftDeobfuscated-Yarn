@@ -3,7 +3,7 @@ package net.minecraft.item;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.FireworkEntity;
@@ -192,7 +192,7 @@ public class CrossbowItem extends BaseBowItem {
 		if (!this.method_7764(world, playerEntity, itemStack, itemStack2, f) && !itemStack2.isEmpty()) {
 			boolean bl2 = playerEntity.abilities.creativeMode;
 			boolean bl3 = bl2 && itemStack2.getItem() == Items.field_8107;
-			if (!world.isRemote) {
+			if (!world.isClient) {
 				ArrowItem arrowItem = (ArrowItem)(itemStack2.getItem() instanceof ArrowItem ? itemStack2.getItem() : Items.field_8107);
 				ProjectileEntity projectileEntity = arrowItem.createEntityArrow(world, itemStack2, playerEntity);
 				projectileEntity.method_7437(playerEntity, playerEntity.pitch, f, 0.0F, 3.15F, 1.0F);
@@ -220,7 +220,7 @@ public class CrossbowItem extends BaseBowItem {
 		if (itemStack2.getItem() != Items.field_8639) {
 			return false;
 		} else if (!itemStack2.isEmpty()) {
-			if (!world.isRemote) {
+			if (!world.isClient) {
 				FireworkEntity fireworkEntity = new FireworkEntity(
 					world, itemStack2, playerEntity.x, playerEntity.y + (double)playerEntity.getEyeHeight() - 0.15F, playerEntity.z, true
 				);
@@ -269,8 +269,8 @@ public class CrossbowItem extends BaseBowItem {
 	}
 
 	private void method_7769(World world, PlayerEntity playerEntity, ItemStack itemStack) {
-		if (!world.isRemote) {
-			CriterionCriterions.SHOT_CROSSBOW.method_9115((ServerPlayerEntity)playerEntity, itemStack);
+		if (!world.isClient) {
+			Criterions.SHOT_CROSSBOW.method_9115((ServerPlayerEntity)playerEntity, itemStack);
 		}
 
 		playerEntity.incrementStat(Stats.field_15372.method_14956(this));
@@ -279,7 +279,7 @@ public class CrossbowItem extends BaseBowItem {
 
 	@Override
 	public void method_7852(World world, LivingEntity livingEntity, ItemStack itemStack, int i) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			int j = EnchantmentHelper.getLevel(Enchantments.field_9098, itemStack);
 			SoundEvent soundEvent = this.getChargeSound(j);
 			SoundEvent soundEvent2 = j == 0 ? SoundEvents.field_14860 : null;

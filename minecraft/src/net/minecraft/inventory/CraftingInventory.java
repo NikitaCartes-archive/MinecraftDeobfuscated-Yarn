@@ -1,16 +1,16 @@
 package net.minecraft.inventory;
 
-import net.minecraft.class_1662;
-import net.minecraft.class_1737;
 import net.minecraft.container.Container;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.recipe.RecipeInputProvider;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.InventoryUtil;
 
-public class CraftingInventory implements Inventory, class_1737 {
+public class CraftingInventory implements Inventory, RecipeInputProvider {
 	private final DefaultedList<ItemStack> stacks;
 	private final int width;
 	private final int height;
@@ -50,11 +50,6 @@ public class CraftingInventory implements Inventory, class_1737 {
 	}
 
 	@Override
-	public boolean hasCustomName() {
-		return false;
-	}
-
-	@Override
 	public ItemStack removeInvStack(int i) {
 		return InventoryUtil.removeStack(this.stacks, i);
 	}
@@ -76,44 +71,12 @@ public class CraftingInventory implements Inventory, class_1737 {
 	}
 
 	@Override
-	public int getInvMaxStackAmount() {
-		return 64;
-	}
-
-	@Override
 	public void markDirty() {
 	}
 
 	@Override
 	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
 		return true;
-	}
-
-	@Override
-	public void onInvOpen(PlayerEntity playerEntity) {
-	}
-
-	@Override
-	public void onInvClose(PlayerEntity playerEntity) {
-	}
-
-	@Override
-	public boolean isValidInvStack(int i, ItemStack itemStack) {
-		return true;
-	}
-
-	@Override
-	public int getInvProperty(int i) {
-		return 0;
-	}
-
-	@Override
-	public void setInvProperty(int i, int j) {
-	}
-
-	@Override
-	public int getInvPropertyCount() {
-		return 0;
 	}
 
 	@Override
@@ -132,9 +95,9 @@ public class CraftingInventory implements Inventory, class_1737 {
 	}
 
 	@Override
-	public void method_7683(class_1662 arg) {
+	public void provideRecipeInputs(RecipeFinder recipeFinder) {
 		for (ItemStack itemStack : this.stacks) {
-			arg.method_7404(itemStack);
+			recipeFinder.addNormalItem(itemStack);
 		}
 	}
 }

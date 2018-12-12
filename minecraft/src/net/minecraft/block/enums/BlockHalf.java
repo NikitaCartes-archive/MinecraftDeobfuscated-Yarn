@@ -3,15 +3,21 @@ package net.minecraft.block.enums;
 import net.minecraft.util.StringRepresentable;
 
 public enum BlockHalf implements StringRepresentable {
-	field_12609,
-	field_12607;
+	TOP("top"),
+	BOTTOM("bottom");
+
+	private final String name;
+
+	private BlockHalf(String string2) {
+		this.name = string2;
+	}
 
 	public String toString() {
-		return this.asString();
+		return this.name;
 	}
 
 	@Override
 	public String asString() {
-		return this == field_12609 ? "upper" : "lower";
+		return this.name;
 	}
 }

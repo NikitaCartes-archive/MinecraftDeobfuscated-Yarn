@@ -7,9 +7,9 @@ import java.util.Deque;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_308;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 
@@ -24,8 +24,8 @@ public class ToastManager extends Drawable {
 	}
 
 	public void draw() {
-		if (!this.client.options.field_1842) {
-			class_308.method_1450();
+		if (!this.client.field_1690.field_1842) {
+			GuiLighting.disable();
 
 			for (int i = 0; i < this.visibleEntries.length; i++) {
 				ToastManager.Entry<?> entry = this.visibleEntries[i];
@@ -92,7 +92,7 @@ public class ToastManager extends Drawable {
 		}
 
 		public boolean draw(int i, int j) {
-			long l = SystemUtil.getMeasuringTimeMili();
+			long l = SystemUtil.getMeasuringTimeMs();
 			if (this.field_2243 == -1L) {
 				this.field_2243 = l;
 				this.field_2244.play(ToastManager.this.client.getSoundLoader());

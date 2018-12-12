@@ -7,7 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.particle.Particle;
+import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.text.TextComponent;
 import net.minecraft.util.Int2ObjectBiMap;
@@ -16,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Rotation;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.village.VillagerData;
 
 public class TrackedDataHandlerRegistry {
 	private static final Int2ObjectBiMap<TrackedDataHandler<?>> field_13328 = new Int2ObjectBiMap<>(16);
@@ -106,7 +107,7 @@ public class TrackedDataHandlerRegistry {
 		}
 
 		public TextComponent copy(TextComponent textComponent) {
-			return textComponent.clone();
+			return textComponent.copy();
 		}
 	};
 	public static final TrackedDataHandler<Optional<TextComponent>> OPTIONAL_TEXT_COMPONENT = new TrackedDataHandler<Optional<TextComponent>>() {
@@ -129,7 +130,7 @@ public class TrackedDataHandlerRegistry {
 		}
 
 		public Optional<TextComponent> copy(Optional<TextComponent> optional) {
-			return optional.isPresent() ? Optional.of(((TextComponent)optional.get()).clone()) : Optional.empty();
+			return optional.isPresent() ? Optional.of(((TextComponent)optional.get()).copy()) : Optional.empty();
 		}
 	};
 	public static final TrackedDataHandler<ItemStack> ITEM_STACK = new TrackedDataHandler<ItemStack>() {
@@ -191,27 +192,27 @@ public class TrackedDataHandlerRegistry {
 			return boolean_;
 		}
 	};
-	public static final TrackedDataHandler<Particle> field_13314 = new TrackedDataHandler<Particle>() {
-		public void write(PacketByteBuf packetByteBuf, Particle particle) {
-			packetByteBuf.writeVarInt(Registry.PARTICLE_TYPE.getRawId((ParticleType<? extends Particle>)particle.getParticleType()));
-			particle.method_10294(packetByteBuf);
+	public static final TrackedDataHandler<ParticleParameters> PARTICLE = new TrackedDataHandler<ParticleParameters>() {
+		public void write(PacketByteBuf packetByteBuf, ParticleParameters particleParameters) {
+			packetByteBuf.writeVarInt(Registry.PARTICLE_TYPE.getRawId((ParticleType<? extends ParticleParameters>)particleParameters.getType()));
+			particleParameters.write(packetByteBuf);
 		}
 
-		public Particle read(PacketByteBuf packetByteBuf) {
+		public ParticleParameters read(PacketByteBuf packetByteBuf) {
 			return this.method_12744(packetByteBuf, Registry.PARTICLE_TYPE.getInt(packetByteBuf.readVarInt()));
 		}
 
-		private <T extends Particle> T method_12744(PacketByteBuf packetByteBuf, ParticleType<T> particleType) {
-			return particleType.method_10298().method_10297(particleType, packetByteBuf);
+		private <T extends ParticleParameters> T method_12744(PacketByteBuf packetByteBuf, ParticleType<T> particleType) {
+			return particleType.getParametersFactory().read(particleType, packetByteBuf);
 		}
 
 		@Override
-		public TrackedData<Particle> create(int i) {
+		public TrackedData<ParticleParameters> create(int i) {
 			return new TrackedData<>(i, this);
 		}
 
-		public Particle copy(Particle particle) {
-			return particle;
+		public ParticleParameters copy(ParticleParameters particleParameters) {
+			return particleParameters;
 		}
 	};
 	public static final TrackedDataHandler<Rotation> ROTATION = new TrackedDataHandler<Rotation>() {
@@ -330,6 +331,28 @@ public class TrackedDataHandlerRegistry {
 			return compoundTag.copy();
 		}
 	};
+	public static final TrackedDataHandler<VillagerData> VILLAGER_DATA = new TrackedDataHandler<VillagerData>() {
+		public void method_17197(PacketByteBuf packetByteBuf, VillagerData villagerData) {
+			packetByteBuf.writeVarInt(Registry.VILLAGER_TYPE.getRawId(villagerData.getType()));
+			packetByteBuf.writeVarInt(Registry.VILLAGER_PROFESSION.getRawId(villagerData.getProfession()));
+			packetByteBuf.writeVarInt(villagerData.getLevel());
+		}
+
+		public VillagerData method_17198(PacketByteBuf packetByteBuf) {
+			return new VillagerData(
+				Registry.VILLAGER_TYPE.getInt(packetByteBuf.readVarInt()), Registry.VILLAGER_PROFESSION.getInt(packetByteBuf.readVarInt()), packetByteBuf.readVarInt()
+			);
+		}
+
+		@Override
+		public TrackedData<VillagerData> create(int i) {
+			return new TrackedData<>(i, this);
+		}
+
+		public VillagerData copy(VillagerData villagerData) {
+			return villagerData;
+		}
+	};
 
 	public static void register(TrackedDataHandler<?> trackedDataHandler) {
 		field_13328.add(trackedDataHandler);
@@ -360,6 +383,7 @@ public class TrackedDataHandlerRegistry {
 		register(OPTIONAL_UUID);
 		register(OPTIONAL_BLOCK_STATE);
 		register(TAG_COMPOUND);
-		register(field_13314);
+		register(PARTICLE);
+		register(VILLAGER_DATA);
 	}
 }

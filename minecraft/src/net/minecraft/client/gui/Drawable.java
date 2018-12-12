@@ -4,8 +4,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.Identifier;
@@ -55,7 +55,7 @@ public abstract class Drawable {
 		float h = (float)(m >> 8 & 0xFF) / 255.0F;
 		float o = (float)(m & 0xFF) / 255.0F;
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		GlStateManager.enableBlend();
 		GlStateManager.disableTexture();
 		GlStateManager.blendFuncSeparate(
@@ -65,11 +65,11 @@ public abstract class Drawable {
 			GlStateManager.DstBlendFactor.ZERO
 		);
 		GlStateManager.color4f(g, h, o, f);
-		vertexBuffer.begin(7, VertexFormats.POSITION);
-		vertexBuffer.vertex((double)i, (double)l, 0.0).next();
-		vertexBuffer.vertex((double)k, (double)l, 0.0).next();
-		vertexBuffer.vertex((double)k, (double)j, 0.0).next();
-		vertexBuffer.vertex((double)i, (double)j, 0.0).next();
+		bufferBuilder.begin(7, VertexFormats.POSITION);
+		bufferBuilder.vertex((double)i, (double)l, 0.0).next();
+		bufferBuilder.vertex((double)k, (double)l, 0.0).next();
+		bufferBuilder.vertex((double)k, (double)j, 0.0).next();
+		bufferBuilder.vertex((double)i, (double)j, 0.0).next();
 		tessellator.draw();
 		GlStateManager.enableTexture();
 		GlStateManager.disableBlend();
@@ -95,12 +95,12 @@ public abstract class Drawable {
 		);
 		GlStateManager.shadeModel(7425);
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-		vertexBuffer.begin(7, VertexFormats.POSITION_COLOR);
-		vertexBuffer.vertex((double)k, (double)j, (double)this.zOffset).color(g, h, o, f).next();
-		vertexBuffer.vertex((double)i, (double)j, (double)this.zOffset).color(g, h, o, f).next();
-		vertexBuffer.vertex((double)i, (double)l, (double)this.zOffset).color(q, r, s, p).next();
-		vertexBuffer.vertex((double)k, (double)l, (double)this.zOffset).color(q, r, s, p).next();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
+		bufferBuilder.vertex((double)k, (double)j, (double)this.zOffset).color(g, h, o, f).next();
+		bufferBuilder.vertex((double)i, (double)j, (double)this.zOffset).color(g, h, o, f).next();
+		bufferBuilder.vertex((double)i, (double)l, (double)this.zOffset).color(q, r, s, p).next();
+		bufferBuilder.vertex((double)k, (double)l, (double)this.zOffset).color(q, r, s, p).next();
 		tessellator.draw();
 		GlStateManager.shadeModel(7424);
 		GlStateManager.disableBlend();
@@ -120,18 +120,18 @@ public abstract class Drawable {
 		float f = 0.00390625F;
 		float g = 0.00390625F;
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-		vertexBuffer.begin(7, VertexFormats.POSITION_UV);
-		vertexBuffer.vertex((double)(i + 0), (double)(j + n), (double)this.zOffset)
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+		bufferBuilder.vertex((double)(i + 0), (double)(j + n), (double)this.zOffset)
 			.texture((double)((float)(k + 0) * 0.00390625F), (double)((float)(l + n) * 0.00390625F))
 			.next();
-		vertexBuffer.vertex((double)(i + m), (double)(j + n), (double)this.zOffset)
+		bufferBuilder.vertex((double)(i + m), (double)(j + n), (double)this.zOffset)
 			.texture((double)((float)(k + m) * 0.00390625F), (double)((float)(l + n) * 0.00390625F))
 			.next();
-		vertexBuffer.vertex((double)(i + m), (double)(j + 0), (double)this.zOffset)
+		bufferBuilder.vertex((double)(i + m), (double)(j + 0), (double)this.zOffset)
 			.texture((double)((float)(k + m) * 0.00390625F), (double)((float)(l + 0) * 0.00390625F))
 			.next();
-		vertexBuffer.vertex((double)(i + 0), (double)(j + 0), (double)this.zOffset)
+		bufferBuilder.vertex((double)(i + 0), (double)(j + 0), (double)this.zOffset)
 			.texture((double)((float)(k + 0) * 0.00390625F), (double)((float)(l + 0) * 0.00390625F))
 			.next();
 		tessellator.draw();
@@ -141,18 +141,18 @@ public abstract class Drawable {
 		float h = 0.00390625F;
 		float m = 0.00390625F;
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-		vertexBuffer.begin(7, VertexFormats.POSITION_UV);
-		vertexBuffer.vertex((double)(f + 0.0F), (double)(g + (float)l), (double)this.zOffset)
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+		bufferBuilder.vertex((double)(f + 0.0F), (double)(g + (float)l), (double)this.zOffset)
 			.texture((double)((float)(i + 0) * 0.00390625F), (double)((float)(j + l) * 0.00390625F))
 			.next();
-		vertexBuffer.vertex((double)(f + (float)k), (double)(g + (float)l), (double)this.zOffset)
+		bufferBuilder.vertex((double)(f + (float)k), (double)(g + (float)l), (double)this.zOffset)
 			.texture((double)((float)(i + k) * 0.00390625F), (double)((float)(j + l) * 0.00390625F))
 			.next();
-		vertexBuffer.vertex((double)(f + (float)k), (double)(g + 0.0F), (double)this.zOffset)
+		bufferBuilder.vertex((double)(f + (float)k), (double)(g + 0.0F), (double)this.zOffset)
 			.texture((double)((float)(i + k) * 0.00390625F), (double)((float)(j + 0) * 0.00390625F))
 			.next();
-		vertexBuffer.vertex((double)(f + 0.0F), (double)(g + 0.0F), (double)this.zOffset)
+		bufferBuilder.vertex((double)(f + 0.0F), (double)(g + 0.0F), (double)this.zOffset)
 			.texture((double)((float)(i + 0) * 0.00390625F), (double)((float)(j + 0) * 0.00390625F))
 			.next();
 		tessellator.draw();
@@ -160,12 +160,12 @@ public abstract class Drawable {
 
 	public void drawTexturedRect(int i, int j, Sprite sprite, int k, int l) {
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-		vertexBuffer.begin(7, VertexFormats.POSITION_UV);
-		vertexBuffer.vertex((double)(i + 0), (double)(j + l), (double)this.zOffset).texture((double)sprite.getMinU(), (double)sprite.getMaxV()).next();
-		vertexBuffer.vertex((double)(i + k), (double)(j + l), (double)this.zOffset).texture((double)sprite.getMaxU(), (double)sprite.getMaxV()).next();
-		vertexBuffer.vertex((double)(i + k), (double)(j + 0), (double)this.zOffset).texture((double)sprite.getMaxU(), (double)sprite.getMinV()).next();
-		vertexBuffer.vertex((double)(i + 0), (double)(j + 0), (double)this.zOffset).texture((double)sprite.getMinU(), (double)sprite.getMinV()).next();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+		bufferBuilder.vertex((double)(i + 0), (double)(j + l), (double)this.zOffset).texture((double)sprite.getMinU(), (double)sprite.getMaxV()).next();
+		bufferBuilder.vertex((double)(i + k), (double)(j + l), (double)this.zOffset).texture((double)sprite.getMaxU(), (double)sprite.getMaxV()).next();
+		bufferBuilder.vertex((double)(i + k), (double)(j + 0), (double)this.zOffset).texture((double)sprite.getMaxU(), (double)sprite.getMinV()).next();
+		bufferBuilder.vertex((double)(i + 0), (double)(j + 0), (double)this.zOffset).texture((double)sprite.getMinU(), (double)sprite.getMinV()).next();
 		tessellator.draw();
 	}
 
@@ -173,12 +173,12 @@ public abstract class Drawable {
 		float n = 1.0F / h;
 		float o = 1.0F / m;
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-		vertexBuffer.begin(7, VertexFormats.POSITION_UV);
-		vertexBuffer.vertex((double)i, (double)(j + l), 0.0).texture((double)(f * n), (double)((g + (float)l) * o)).next();
-		vertexBuffer.vertex((double)(i + k), (double)(j + l), 0.0).texture((double)((f + (float)k) * n), (double)((g + (float)l) * o)).next();
-		vertexBuffer.vertex((double)(i + k), (double)j, 0.0).texture((double)((f + (float)k) * n), (double)(g * o)).next();
-		vertexBuffer.vertex((double)i, (double)j, 0.0).texture((double)(f * n), (double)(g * o)).next();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+		bufferBuilder.vertex((double)i, (double)(j + l), 0.0).texture((double)(f * n), (double)((g + (float)l) * o)).next();
+		bufferBuilder.vertex((double)(i + k), (double)(j + l), 0.0).texture((double)((f + (float)k) * n), (double)((g + (float)l) * o)).next();
+		bufferBuilder.vertex((double)(i + k), (double)j, 0.0).texture((double)((f + (float)k) * n), (double)(g * o)).next();
+		bufferBuilder.vertex((double)i, (double)j, 0.0).texture((double)(f * n), (double)(g * o)).next();
 		tessellator.draw();
 	}
 
@@ -186,12 +186,12 @@ public abstract class Drawable {
 		float p = 1.0F / h;
 		float q = 1.0F / o;
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-		vertexBuffer.begin(7, VertexFormats.POSITION_UV);
-		vertexBuffer.vertex((double)i, (double)(j + n), 0.0).texture((double)(f * p), (double)((g + (float)l) * q)).next();
-		vertexBuffer.vertex((double)(i + m), (double)(j + n), 0.0).texture((double)((f + (float)k) * p), (double)((g + (float)l) * q)).next();
-		vertexBuffer.vertex((double)(i + m), (double)j, 0.0).texture((double)((f + (float)k) * p), (double)(g * q)).next();
-		vertexBuffer.vertex((double)i, (double)j, 0.0).texture((double)(f * p), (double)(g * q)).next();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+		bufferBuilder.vertex((double)i, (double)(j + n), 0.0).texture((double)(f * p), (double)((g + (float)l) * q)).next();
+		bufferBuilder.vertex((double)(i + m), (double)(j + n), 0.0).texture((double)((f + (float)k) * p), (double)((g + (float)l) * q)).next();
+		bufferBuilder.vertex((double)(i + m), (double)j, 0.0).texture((double)((f + (float)k) * p), (double)(g * q)).next();
+		bufferBuilder.vertex((double)i, (double)j, 0.0).texture((double)(f * p), (double)(g * q)).next();
 		tessellator.draw();
 	}
 }

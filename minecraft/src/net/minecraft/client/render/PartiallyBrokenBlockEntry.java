@@ -9,7 +9,7 @@ public class PartiallyBrokenBlockEntry {
 	private final int breakingEntityId;
 	private final BlockPos pos;
 	private int stage;
-	private int field_13857;
+	private int lastUpdateTicks;
 
 	public PartiallyBrokenBlockEntry(int i, BlockPos blockPos) {
 		this.breakingEntityId = i;
@@ -32,11 +32,11 @@ public class PartiallyBrokenBlockEntry {
 		return this.stage;
 	}
 
-	public void method_13989(int i) {
-		this.field_13857 = i;
+	public void setLastUpdateTicks(int i) {
+		this.lastUpdateTicks = i;
 	}
 
-	public int method_13990() {
-		return this.field_13857;
+	public int getLastUpdateTicks() {
+		return this.lastUpdateTicks;
 	}
 }

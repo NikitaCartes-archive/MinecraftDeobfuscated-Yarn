@@ -15,14 +15,14 @@ public class ChorusFruitItem extends FoodItem {
 	@Override
 	public ItemStack onItemFinishedUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
 		ItemStack itemStack2 = super.onItemFinishedUsing(itemStack, world, livingEntity);
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			double d = livingEntity.x;
 			double e = livingEntity.y;
 			double f = livingEntity.z;
 
 			for (int i = 0; i < 16; i++) {
 				double g = livingEntity.x + (livingEntity.getRand().nextDouble() - 0.5) * 16.0;
-				double h = MathHelper.clamp(livingEntity.y + (double)(livingEntity.getRand().nextInt(16) - 8), 0.0, (double)(world.method_8456() - 1));
+				double h = MathHelper.clamp(livingEntity.y + (double)(livingEntity.getRand().nextInt(16) - 8), 0.0, (double)(world.getEffectiveHeight() - 1));
 				double j = livingEntity.z + (livingEntity.getRand().nextDouble() - 0.5) * 16.0;
 				if (livingEntity.hasVehicle()) {
 					livingEntity.stopRiding();

@@ -9,7 +9,7 @@ import com.google.gson.JsonObject;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.advancement.ServerAdvancementManager;
+import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -17,7 +17,7 @@ import net.minecraft.util.Identifier;
 
 public class LocationArrivalCriterion implements Criterion<LocationArrivalCriterion.Conditions> {
 	private final Identifier id;
-	private final Map<ServerAdvancementManager, LocationArrivalCriterion.Handler> handlers = Maps.<ServerAdvancementManager, LocationArrivalCriterion.Handler>newHashMap();
+	private final Map<PlayerAdvancementTracker, LocationArrivalCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, LocationArrivalCriterion.Handler>newHashMap();
 
 	public LocationArrivalCriterion(Identifier identifier) {
 		this.id = identifier;
@@ -29,34 +29,34 @@ public class LocationArrivalCriterion implements Criterion<LocationArrivalCriter
 	}
 
 	@Override
-	public void addCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<LocationArrivalCriterion.Conditions> conditionsContainer
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<LocationArrivalCriterion.Conditions> conditionsContainer
 	) {
-		LocationArrivalCriterion.Handler handler = (LocationArrivalCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		LocationArrivalCriterion.Handler handler = (LocationArrivalCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new LocationArrivalCriterion.Handler(serverAdvancementManager);
-			this.handlers.put(serverAdvancementManager, handler);
+			handler = new LocationArrivalCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void removeCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<LocationArrivalCriterion.Conditions> conditionsContainer
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<LocationArrivalCriterion.Conditions> conditionsContainer
 	) {
-		LocationArrivalCriterion.Handler handler = (LocationArrivalCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		LocationArrivalCriterion.Handler handler = (LocationArrivalCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(serverAdvancementManager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void removePlayer(ServerAdvancementManager serverAdvancementManager) {
-		this.handlers.remove(serverAdvancementManager);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
 	public LocationArrivalCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -80,11 +80,11 @@ public class LocationArrivalCriterion implements Criterion<LocationArrivalCriter
 		}
 
 		public static LocationArrivalCriterion.Conditions method_9034(LocationPredicate locationPredicate) {
-			return new LocationArrivalCriterion.Conditions(CriterionCriterions.LOCATION.id, locationPredicate);
+			return new LocationArrivalCriterion.Conditions(Criterions.LOCATION.id, locationPredicate);
 		}
 
 		public static LocationArrivalCriterion.Conditions method_9032() {
-			return new LocationArrivalCriterion.Conditions(CriterionCriterions.SLEPT_IN_BED.id, LocationPredicate.ANY);
+			return new LocationArrivalCriterion.Conditions(Criterions.SLEPT_IN_BED.id, LocationPredicate.ANY);
 		}
 
 		public boolean matches(ServerWorld serverWorld, double d, double e, double f) {
@@ -92,17 +92,17 @@ public class LocationArrivalCriterion implements Criterion<LocationArrivalCriter
 		}
 
 		@Override
-		public JsonElement method_807() {
+		public JsonElement toJson() {
 			return this.location.serialize();
 		}
 	}
 
 	static class Handler {
-		private final ServerAdvancementManager manager;
+		private final PlayerAdvancementTracker field_9697;
 		private final Set<Criterion.ConditionsContainer<LocationArrivalCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<LocationArrivalCriterion.Conditions>>newHashSet();
 
-		public Handler(ServerAdvancementManager serverAdvancementManager) {
-			this.manager = serverAdvancementManager;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.field_9697 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
@@ -132,7 +132,7 @@ public class LocationArrivalCriterion implements Criterion<LocationArrivalCriter
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<LocationArrivalCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
+					conditionsContainerx.apply(this.field_9697);
 				}
 			}
 		}

@@ -20,7 +20,7 @@ public class GiveCommand {
 			ServerCommandManager.literal("give")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.argument("targets", EntityArgumentType.method_9308())
+					ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
 						.then(
 							ServerCommandManager.argument("item", ItemStackArgumentType.create())
 								.executes(

@@ -7,23 +7,23 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
-import net.minecraft.world.gen.config.feature.FeatureConfig;
-import net.minecraft.world.gen.feature.TreeFeature;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
+import net.minecraft.world.gen.feature.AbstractTreeFeature;
+import net.minecraft.world.gen.feature.DefaultFeatureConfig;
+import net.minecraft.world.gen.feature.FeatureConfig;
 
 public abstract class SaplingGenerator {
 	@Nullable
-	protected abstract TreeFeature<DefaultFeatureConfig> createTreeFeature(Random random);
+	protected abstract AbstractTreeFeature<DefaultFeatureConfig> method_11430(Random random);
 
 	public boolean generate(IWorld iWorld, BlockPos blockPos, BlockState blockState, Random random) {
-		TreeFeature<DefaultFeatureConfig> treeFeature = this.createTreeFeature(random);
-		if (treeFeature == null) {
+		AbstractTreeFeature<DefaultFeatureConfig> abstractTreeFeature = this.method_11430(random);
+		if (abstractTreeFeature == null) {
 			return false;
 		} else {
 			iWorld.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 4);
-			if (treeFeature.generate(
-				iWorld, (ChunkGenerator<? extends ChunkGeneratorSettings>)iWorld.getChunkManager().getChunkGenerator(), random, blockPos, FeatureConfig.DEFAULT
+			if (abstractTreeFeature.method_13151(
+				iWorld, (ChunkGenerator<? extends ChunkGeneratorConfig>)iWorld.getChunkManager().getChunkGenerator(), random, blockPos, FeatureConfig.field_13603
 			)) {
 				return true;
 			} else {

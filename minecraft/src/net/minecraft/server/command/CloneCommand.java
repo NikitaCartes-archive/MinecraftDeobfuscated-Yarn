@@ -258,7 +258,7 @@ public class CloneCommand {
 										CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
 										list2.add(new CloneCommand.class_3024(blockPos7, blockState, compoundTag));
 										deque.addLast(blockPos6);
-									} else if (!blockState.method_11598(serverWorld, blockPos6) && !blockState.method_11604(serverWorld, blockPos6)) {
+									} else if (!blockState.isFullOpaque(serverWorld, blockPos6) && !blockState.method_11604(serverWorld, blockPos6)) {
 										list3.add(new CloneCommand.class_3024(blockPos7, blockState, null));
 										deque.addFirst(blockPos6);
 									} else {

@@ -16,7 +16,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_278;
-import net.minecraft.class_2973;
 import net.minecraft.class_3679;
 import net.minecraft.client.texture.Texture;
 import net.minecraft.resource.Resource;
@@ -67,9 +66,9 @@ public class GlProgram implements class_3679, AutoCloseable {
 					try {
 						this.addSampler(jsonElement);
 					} catch (Exception var24) {
-						class_2973 lv = class_2973.method_12856(var24);
-						lv.method_12854("samplers[" + i + "]");
-						throw lv;
+						ShaderParseException shaderParseException = ShaderParseException.wrap(var24);
+						shaderParseException.addFaultyElement("samplers[" + i + "]");
+						throw shaderParseException;
 					}
 
 					i++;
@@ -86,9 +85,9 @@ public class GlProgram implements class_3679, AutoCloseable {
 					try {
 						this.attribNames.add(JsonHelper.asString(jsonElement2, "attribute"));
 					} catch (Exception var23) {
-						class_2973 lv2 = class_2973.method_12856(var23);
-						lv2.method_12854("attributes[" + j + "]");
-						throw lv2;
+						ShaderParseException shaderParseException2 = ShaderParseException.wrap(var23);
+						shaderParseException2.addFaultyElement("attributes[" + j + "]");
+						throw shaderParseException2;
 					}
 
 					j++;
@@ -106,9 +105,9 @@ public class GlProgram implements class_3679, AutoCloseable {
 					try {
 						this.addUniform(jsonElement3);
 					} catch (Exception var22) {
-						class_2973 lv3 = class_2973.method_12856(var22);
-						lv3.method_12854("uniforms[" + k + "]");
-						throw lv3;
+						ShaderParseException shaderParseException3 = ShaderParseException.wrap(var22);
+						shaderParseException3.addFaultyElement("uniforms[" + k + "]");
+						throw shaderParseException3;
 					}
 
 					k++;
@@ -129,9 +128,9 @@ public class GlProgram implements class_3679, AutoCloseable {
 				}
 			}
 		} catch (Exception var25) {
-			class_2973 lv4 = class_2973.method_12856(var25);
-			lv4.method_12855(identifier.getPath());
-			throw lv4;
+			ShaderParseException shaderParseException4 = ShaderParseException.wrap(var25);
+			shaderParseException4.addFaultyFile(identifier.getPath());
+			throw shaderParseException4;
 		} finally {
 			IOUtils.closeQuietly(resource);
 		}
@@ -166,28 +165,28 @@ public class GlProgram implements class_3679, AutoCloseable {
 			int m = 0;
 			boolean bl = true;
 			boolean bl2 = false;
-			if (JsonHelper.method_15289(jsonObject, "func")) {
+			if (JsonHelper.hasString(jsonObject, "func")) {
 				i = GlBlendState.getFuncFromString(jsonObject.get("func").getAsString());
 				if (i != 32774) {
 					bl = false;
 				}
 			}
 
-			if (JsonHelper.method_15289(jsonObject, "srcrgb")) {
+			if (JsonHelper.hasString(jsonObject, "srcrgb")) {
 				j = GlBlendState.getComponentFromString(jsonObject.get("srcrgb").getAsString());
 				if (j != 1) {
 					bl = false;
 				}
 			}
 
-			if (JsonHelper.method_15289(jsonObject, "dstrgb")) {
+			if (JsonHelper.hasString(jsonObject, "dstrgb")) {
 				k = GlBlendState.getComponentFromString(jsonObject.get("dstrgb").getAsString());
 				if (k != 0) {
 					bl = false;
 				}
 			}
 
-			if (JsonHelper.method_15289(jsonObject, "srcalpha")) {
+			if (JsonHelper.hasString(jsonObject, "srcalpha")) {
 				l = GlBlendState.getComponentFromString(jsonObject.get("srcalpha").getAsString());
 				if (l != 1) {
 					bl = false;
@@ -196,7 +195,7 @@ public class GlProgram implements class_3679, AutoCloseable {
 				bl2 = true;
 			}
 
-			if (JsonHelper.method_15289(jsonObject, "dstalpha")) {
+			if (JsonHelper.hasString(jsonObject, "dstalpha")) {
 				m = GlBlendState.getComponentFromString(jsonObject.get("dstalpha").getAsString());
 				if (m != 0) {
 					bl = false;
@@ -324,7 +323,7 @@ public class GlProgram implements class_3679, AutoCloseable {
 	private void addSampler(JsonElement jsonElement) {
 		JsonObject jsonObject = JsonHelper.asObject(jsonElement, "sampler");
 		String string = JsonHelper.getString(jsonObject, "name");
-		if (!JsonHelper.method_15289(jsonObject, "file")) {
+		if (!JsonHelper.hasString(jsonObject, "file")) {
 			this.samplerBinds.put(string, null);
 			this.samplerNames.add(string);
 		} else {
@@ -341,7 +340,7 @@ public class GlProgram implements class_3679, AutoCloseable {
 		this.markUniformStateDirty();
 	}
 
-	private void addUniform(JsonElement jsonElement) throws class_2973 {
+	private void addUniform(JsonElement jsonElement) throws ShaderParseException {
 		JsonObject jsonObject = JsonHelper.asObject(jsonElement, "uniform");
 		String string = JsonHelper.getString(jsonObject, "name");
 		int i = GlUniform.getTypeIndex(JsonHelper.getString(jsonObject, "type"));
@@ -349,7 +348,7 @@ public class GlProgram implements class_3679, AutoCloseable {
 		float[] fs = new float[Math.max(j, 16)];
 		JsonArray jsonArray = JsonHelper.getArray(jsonObject, "values");
 		if (jsonArray.size() != j && jsonArray.size() > 1) {
-			throw new class_2973("Invalid amount of values specified (expected " + j + ", found " + jsonArray.size() + ")");
+			throw new ShaderParseException("Invalid amount of values specified (expected " + j + ", found " + jsonArray.size() + ")");
 		} else {
 			int k = 0;
 
@@ -357,9 +356,9 @@ public class GlProgram implements class_3679, AutoCloseable {
 				try {
 					fs[k] = JsonHelper.asFloat(jsonElement2, "value");
 				} catch (Exception var13) {
-					class_2973 lv = class_2973.method_12856(var13);
-					lv.method_12854("values[" + k + "]");
-					throw lv;
+					ShaderParseException shaderParseException = ShaderParseException.wrap(var13);
+					shaderParseException.addFaultyElement("values[" + k + "]");
+					throw shaderParseException;
 				}
 
 				k++;
@@ -375,11 +374,11 @@ public class GlProgram implements class_3679, AutoCloseable {
 			int l = j > 1 && j <= 4 && i < 8 ? j - 1 : 0;
 			GlUniform glUniform = new GlUniform(string, i + l, j, this);
 			if (i <= 3) {
-				glUniform.method_1248((int)fs[0], (int)fs[1], (int)fs[2], (int)fs[3]);
+				glUniform.put((int)fs[0], (int)fs[1], (int)fs[2], (int)fs[3]);
 			} else if (i <= 7) {
 				glUniform.method_1252(fs[0], fs[1], fs[2], fs[3]);
 			} else {
-				glUniform.method_1253(fs);
+				glUniform.put(fs);
 			}
 
 			this.uniformData.add(glUniform);

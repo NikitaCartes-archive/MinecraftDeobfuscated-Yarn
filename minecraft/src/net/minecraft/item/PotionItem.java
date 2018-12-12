@@ -4,7 +4,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.client.item.TooltipOptions;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -42,10 +42,10 @@ public class PotionItem extends Item {
 		}
 
 		if (playerEntity instanceof ServerPlayerEntity) {
-			CriterionCriterions.CONSUME_ITEM.handle((ServerPlayerEntity)playerEntity, itemStack);
+			Criterions.CONSUME_ITEM.handle((ServerPlayerEntity)playerEntity, itemStack);
 		}
 
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			for (StatusEffectInstance statusEffectInstance : PotionUtil.getPotionEffects(itemStack)) {
 				if (statusEffectInstance.getEffectType().isInstant()) {
 					statusEffectInstance.getEffectType().applyInstantEffect(playerEntity, playerEntity, livingEntity, statusEffectInstance.getAmplifier(), 1.0);
@@ -95,7 +95,7 @@ public class PotionItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void addInformation(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
 		PotionUtil.addInformation(itemStack, list, 1.0F);
 	}
 

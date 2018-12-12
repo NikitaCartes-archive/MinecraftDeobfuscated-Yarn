@@ -6,10 +6,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.sortme.ChatMessageType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sortme.ChatMessageType;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.Property;
 import net.minecraft.text.TextComponent;
@@ -35,7 +35,7 @@ public class DebugStickItem extends Item {
 
 	@Override
 	public boolean beforeBlockBreak(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			this.method_7759(playerEntity, blockState, world, blockPos, false, playerEntity.getStackInHand(Hand.MAIN));
 		}
 
@@ -46,7 +46,7 @@ public class DebugStickItem extends Item {
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		PlayerEntity playerEntity = itemUsageContext.getPlayer();
 		World world = itemUsageContext.getWorld();
-		if (!world.isRemote && playerEntity != null) {
+		if (!world.isClient && playerEntity != null) {
 			BlockPos blockPos = itemUsageContext.getPos();
 			this.method_7759(playerEntity, world.getBlockState(blockPos), world, blockPos, true, itemUsageContext.getItemStack());
 		}

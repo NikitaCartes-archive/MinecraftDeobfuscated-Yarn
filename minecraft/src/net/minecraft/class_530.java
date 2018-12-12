@@ -13,6 +13,7 @@ import net.minecraft.client.gui.hud.spectator.SpectatorMenuElement;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuImpl;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.packet.SpectatorTeleportServerPacket;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TextComponent;
 import net.minecraft.util.Identifier;
@@ -35,7 +36,7 @@ public class class_530 implements SpectatorMenuElement {
 
 	@Override
 	public void selectElement(SpectatorMenuImpl spectatorMenuImpl) {
-		MinecraftClient.getInstance().getNetworkHandler().sendPacket(new class_2884(this.field_3253.getId()));
+		MinecraftClient.getInstance().getNetworkHandler().sendPacket(new SpectatorTeleportServerPacket(this.field_3253.getId()));
 	}
 
 	@Override

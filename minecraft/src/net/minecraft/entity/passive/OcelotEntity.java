@@ -7,13 +7,13 @@ import net.minecraft.class_1359;
 import net.minecraft.class_1361;
 import net.minecraft.class_1371;
 import net.minecraft.class_1394;
-import net.minecraft.class_3730;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
@@ -28,7 +28,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.particle.Particle;
+import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.Ingredient;
@@ -43,7 +43,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class OcelotEntity extends AnimalEntity {
-	private static final Ingredient field_16299 = Ingredient.ofItems(Items.field_8429, Items.field_8209);
+	private static final Ingredient TAMING_INGREDIENT = Ingredient.method_8091(Items.field_8429, Items.field_8209);
 	private static final TrackedData<Boolean> field_16301 = DataTracker.registerData(OcelotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private OcelotEntity.OcelotFleeGoal<PlayerEntity> field_16300;
 	private OcelotEntity.class_3703 field_16302;
@@ -83,7 +83,7 @@ public class OcelotEntity extends AnimalEntity {
 
 	@Override
 	protected void method_5959() {
-		this.field_16302 = new OcelotEntity.class_3703(this, 0.6, field_16299, true);
+		this.field_16302 = new OcelotEntity.class_3703(this, 0.6, TAMING_INGREDIENT, true);
 		this.goalSelector.add(1, new SwimGoal(this));
 		this.goalSelector.add(3, this.field_16302);
 		this.goalSelector.add(7, new class_1359(this, 0.3F));
@@ -116,7 +116,7 @@ public class OcelotEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean method_5974(double d) {
+	public boolean canImmediatelyDespawn(double d) {
 		return !this.method_16099() && this.age > 2400;
 	}
 
@@ -167,17 +167,17 @@ public class OcelotEntity extends AnimalEntity {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if ((this.field_16302 == null || this.field_16302.method_6313())
 			&& !this.method_16099()
-			&& this.method_6481(itemStack)
+			&& this.isBreedingItem(itemStack)
 			&& playerEntity.squaredDistanceTo(this) < 9.0) {
 			this.method_6475(playerEntity, itemStack);
-			if (!this.world.isRemote) {
+			if (!this.world.isClient) {
 				if (this.random.nextInt(3) == 0) {
 					this.method_16102(true);
 					this.method_16100(true);
-					this.world.method_8421(this, (byte)41);
+					this.world.summonParticle(this, (byte)41);
 				} else {
 					this.method_16100(false);
-					this.world.method_8421(this, (byte)40);
+					this.world.summonParticle(this, (byte)40);
 				}
 			}
 
@@ -200,9 +200,9 @@ public class OcelotEntity extends AnimalEntity {
 	}
 
 	private void method_16100(boolean bl) {
-		Particle particle = ParticleTypes.field_11201;
+		ParticleParameters particleParameters = ParticleTypes.field_11201;
 		if (!bl) {
-			particle = ParticleTypes.field_11251;
+			particleParameters = ParticleTypes.field_11251;
 		}
 
 		for (int i = 0; i < 7; i++) {
@@ -211,7 +211,7 @@ public class OcelotEntity extends AnimalEntity {
 			double f = this.random.nextGaussian() * 0.02;
 			this.world
 				.method_8406(
-					particle,
+					particleParameters,
 					this.x + (double)(this.random.nextFloat() * this.width * 2.0F) - (double)this.width,
 					this.y + 0.5 + (double)(this.random.nextFloat() * this.height),
 					this.z + (double)(this.random.nextFloat() * this.width * 2.0F) - (double)this.width,
@@ -238,12 +238,12 @@ public class OcelotEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean method_6481(ItemStack itemStack) {
-		return field_16299.matches(itemStack);
+	public boolean isBreedingItem(ItemStack itemStack) {
+		return TAMING_INGREDIENT.matches(itemStack);
 	}
 
 	@Override
-	public boolean method_5979(IWorld iWorld, class_3730 arg) {
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
 		return this.random.nextInt(3) != 0;
 	}
 
@@ -278,10 +278,10 @@ public class OcelotEntity extends AnimalEntity {
 
 	@Nullable
 	@Override
-	public EntityData method_5943(
-		IWorld iWorld, LocalDifficulty localDifficulty, class_3730 arg, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	public EntityData prepareEntityData(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.method_5943(iWorld, localDifficulty, arg, entityData, compoundTag);
+		entityData = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		if (iWorld.getRandom().nextInt(7) == 0) {
 			this.method_16105();
 		}

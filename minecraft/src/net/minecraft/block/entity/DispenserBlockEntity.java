@@ -100,11 +100,6 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	public int getInvMaxStackAmount() {
-		return 64;
-	}
-
-	@Override
 	public String getContainerId() {
 		return "minecraft:dispenser";
 	}
@@ -121,7 +116,7 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	protected void method_11281(DefaultedList<ItemStack> defaultedList) {
+	protected void setInvStackList(DefaultedList<ItemStack> defaultedList) {
 		this.inventory = defaultedList;
 	}
 }

@@ -8,7 +8,7 @@ import com.google.gson.JsonObject;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.advancement.ServerAdvancementManager;
+import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.NumberRange;
@@ -16,7 +16,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class UsedEnderEyeCriterion implements Criterion<UsedEnderEyeCriterion.Conditions> {
 	private static final Identifier id = new Identifier("used_ender_eye");
-	private final Map<ServerAdvancementManager, UsedEnderEyeCriterion.Handler> handlers = Maps.<ServerAdvancementManager, UsedEnderEyeCriterion.Handler>newHashMap();
+	private final Map<PlayerAdvancementTracker, UsedEnderEyeCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, UsedEnderEyeCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -24,34 +24,34 @@ public class UsedEnderEyeCriterion implements Criterion<UsedEnderEyeCriterion.Co
 	}
 
 	@Override
-	public void addCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<UsedEnderEyeCriterion.Conditions> conditionsContainer
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<UsedEnderEyeCriterion.Conditions> conditionsContainer
 	) {
-		UsedEnderEyeCriterion.Handler handler = (UsedEnderEyeCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		UsedEnderEyeCriterion.Handler handler = (UsedEnderEyeCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new UsedEnderEyeCriterion.Handler(serverAdvancementManager);
-			this.handlers.put(serverAdvancementManager, handler);
+			handler = new UsedEnderEyeCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void removeCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<UsedEnderEyeCriterion.Conditions> conditionsContainer
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<UsedEnderEyeCriterion.Conditions> conditionsContainer
 	) {
-		UsedEnderEyeCriterion.Handler handler = (UsedEnderEyeCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		UsedEnderEyeCriterion.Handler handler = (UsedEnderEyeCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(serverAdvancementManager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void removePlayer(ServerAdvancementManager serverAdvancementManager) {
-		this.handlers.remove(serverAdvancementManager);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
 	public UsedEnderEyeCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -82,11 +82,11 @@ public class UsedEnderEyeCriterion implements Criterion<UsedEnderEyeCriterion.Co
 	}
 
 	static class Handler {
-		private final ServerAdvancementManager manager;
+		private final PlayerAdvancementTracker field_9771;
 		private final Set<Criterion.ConditionsContainer<UsedEnderEyeCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<UsedEnderEyeCriterion.Conditions>>newHashSet();
 
-		public Handler(ServerAdvancementManager serverAdvancementManager) {
-			this.manager = serverAdvancementManager;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.field_9771 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
@@ -116,7 +116,7 @@ public class UsedEnderEyeCriterion implements Criterion<UsedEnderEyeCriterion.Co
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<UsedEnderEyeCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
+					conditionsContainerx.apply(this.field_9771);
 				}
 			}
 		}

@@ -28,12 +28,14 @@ public abstract class SignBlock extends BlockWithEntity implements Waterloggable
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if ((Boolean)blockState.get(field_11491)) {
 			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
 		}
 
-		return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
@@ -58,10 +60,10 @@ public abstract class SignBlock extends BlockWithEntity implements Waterloggable
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
-		if (world.isRemote) {
+		if (world.isClient) {
 			return true;
 		} else {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
@@ -69,7 +71,7 @@ public abstract class SignBlock extends BlockWithEntity implements Waterloggable
 				SignBlockEntity signBlockEntity = (SignBlockEntity)blockEntity;
 				ItemStack itemStack = playerEntity.getStackInHand(hand);
 				if (itemStack.getItem() instanceof DyeItem) {
-					boolean bl = signBlockEntity.method_16127(((DyeItem)itemStack.getItem()).getColor());
+					boolean bl = signBlockEntity.setTextColor(((DyeItem)itemStack.getItem()).getColor());
 					if (bl && !playerEntity.isCreative()) {
 						itemStack.subtractAmount(1);
 					}

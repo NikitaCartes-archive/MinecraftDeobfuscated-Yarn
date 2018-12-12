@@ -8,8 +8,10 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.model.Model;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.render.entity.feature.FeatureRenderer;
+import net.minecraft.client.render.entity.feature.FeatureRendererContext;
+import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.GlAllocationUtils;
 import net.minecraft.entity.LivingEntity;
@@ -22,35 +24,38 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public abstract class LivingEntityRenderer<T extends LivingEntity> extends EntityRenderer<T> {
-	private static final Logger field_4741 = LogManager.getLogger();
-	private static final NativeImageBackedTexture field_4742 = SystemUtil.consume(new NativeImageBackedTexture(16, 16, false), nativeImageBackedTexture -> {
-		nativeImageBackedTexture.getImage().method_4302();
+public abstract class LivingEntityRenderer<T extends LivingEntity, M extends EntityModel<T>> extends EntityRenderer<T> implements FeatureRendererContext<T, M> {
+	private static final Logger LOGGER = LogManager.getLogger();
+	private static final NativeImageBackedTexture colorOverlayTexture = SystemUtil.consume(
+		new NativeImageBackedTexture(16, 16, false), nativeImageBackedTexture -> {
+			nativeImageBackedTexture.getImage().method_4302();
 
-		for (int i = 0; i < 16; i++) {
-			for (int j = 0; j < 16; j++) {
-				nativeImageBackedTexture.getImage().setPixelRGBA(j, i, -1);
+			for (int i = 0; i < 16; i++) {
+				for (int j = 0; j < 16; j++) {
+					nativeImageBackedTexture.getImage().setPixelRGBA(j, i, -1);
+				}
 			}
+
+			nativeImageBackedTexture.upload();
 		}
+	);
+	protected M model;
+	protected FloatBuffer colorOverlayBuffer = GlAllocationUtils.allocateFloatBuffer(4);
+	protected List<FeatureRenderer<T, M>> features = Lists.<FeatureRenderer<T, M>>newArrayList();
+	protected boolean disableOutlineRender;
 
-		nativeImageBackedTexture.method_4524();
-	});
-	protected Model model;
-	protected FloatBuffer field_4740 = GlAllocationUtils.allocateFloatBuffer(4);
-	protected List<LayerEntityRenderer<T>> field_4738 = Lists.<LayerEntityRenderer<T>>newArrayList();
-	protected boolean field_4739;
-
-	public LivingEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, Model model, float f) {
+	public LivingEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, M entityModel, float f) {
 		super(entityRenderDispatcher);
-		this.model = model;
+		this.model = entityModel;
 		this.field_4673 = f;
 	}
 
-	protected <V extends LivingEntity, U extends LayerEntityRenderer<V>> boolean addLayer(U layerEntityRenderer) {
-		return this.field_4738.add(layerEntityRenderer);
+	protected final boolean addFeature(FeatureRenderer<T, M> featureRenderer) {
+		return this.features.add(featureRenderer);
 	}
 
-	public Model method_4038() {
+	@Override
+	public M getModel() {
 		return this.model;
 	}
 
@@ -68,7 +73,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity> extends Entit
 		return f + h * i;
 	}
 
-	public void method_4054(T livingEntity, double d, double e, double f, float g, float h) {
+	public void render(T livingEntity, double d, double e, double f, float g, float h) {
 		GlStateManager.pushMatrix();
 		GlStateManager.disableCull();
 		this.model.swingProgress = this.method_4044(livingEntity, h);
@@ -77,7 +82,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity> extends Entit
 
 		try {
 			float i = this.linearRotationInterpolation(livingEntity.field_6220, livingEntity.field_6283, h);
-			float j = this.linearRotationInterpolation(livingEntity.prevHeadPitch, livingEntity.headPitch, h);
+			float j = this.linearRotationInterpolation(livingEntity.prevHeadYaw, livingEntity.headYaw, h);
 			float k = j - i;
 			if (livingEntity.hasVehicle() && livingEntity.getRiddenEntity() instanceof LivingEntity) {
 				LivingEntity livingEntity2 = (LivingEntity)livingEntity.getRiddenEntity();
@@ -103,7 +108,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity> extends Entit
 			float m = MathHelper.lerp(h, livingEntity.prevPitch, livingEntity.pitch);
 			this.method_4048(livingEntity, d, e, f);
 			float lx = this.method_4045(livingEntity, h);
-			this.method_4058(livingEntity, lx, i, h);
+			this.setupTransforms(livingEntity, lx, i, h);
 			float n = this.method_4060(livingEntity, h);
 			float o = 0.0F;
 			float p = 0.0F;
@@ -121,40 +126,40 @@ public abstract class LivingEntityRenderer<T extends LivingEntity> extends Entit
 
 			GlStateManager.enableAlphaTest();
 			this.model.animateModel(livingEntity, p, o, h);
-			this.model.setRotationAngles(p, o, lx, k, m, n, livingEntity);
-			if (this.field_4674) {
-				boolean bl = this.method_4057(livingEntity);
+			this.model.setAngles(livingEntity, p, o, lx, k, m, n);
+			if (this.renderOutlines) {
+				boolean bl = this.beforeOutlineRender(livingEntity);
 				GlStateManager.enableColorMaterial();
-				GlStateManager.setupSolidRenderingTextureCombine(this.method_3929(livingEntity));
-				if (!this.field_4739) {
+				GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(livingEntity));
+				if (!this.disableOutlineRender) {
 					this.render(livingEntity, p, o, lx, k, m, n);
 				}
 
 				if (!(livingEntity instanceof PlayerEntity) || !((PlayerEntity)livingEntity).isSpectator()) {
-					this.method_4051(livingEntity, p, o, h, lx, k, m, n);
+					this.renderFeatures(livingEntity, p, o, h, lx, k, m, n);
 				}
 
 				GlStateManager.tearDownSolidRenderingTextureCombine();
 				GlStateManager.disableColorMaterial();
 				if (bl) {
-					this.method_4050();
+					this.afterOutlineRender();
 				}
 			} else {
-				boolean blx = this.method_4059(livingEntity, h);
+				boolean blx = this.tryApplyOverlayColor(livingEntity, h);
 				this.render(livingEntity, p, o, lx, k, m, n);
 				if (blx) {
-					this.method_4040();
+					this.disableOverlayColor();
 				}
 
 				GlStateManager.depthMask(true);
 				if (!(livingEntity instanceof PlayerEntity) || !((PlayerEntity)livingEntity).isSpectator()) {
-					this.method_4051(livingEntity, p, o, h, lx, k, m, n);
+					this.renderFeatures(livingEntity, p, o, h, lx, k, m, n);
 				}
 			}
 
 			GlStateManager.disableRescaleNormal();
 		} catch (Exception var19) {
-			field_4741.error("Couldn't render entity", (Throwable)var19);
+			LOGGER.error("Couldn't render entity", (Throwable)var19);
 		}
 
 		GlStateManager.activeTexture(GLX.GL_TEXTURE1);
@@ -162,7 +167,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity> extends Entit
 		GlStateManager.activeTexture(GLX.GL_TEXTURE0);
 		GlStateManager.enableCull();
 		GlStateManager.popMatrix();
-		super.method_3936(livingEntity, d, e, f, g, h);
+		super.render(livingEntity, d, e, f, g, h);
 	}
 
 	public float method_4060(T livingEntity, float f) {
@@ -174,7 +179,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity> extends Entit
 		return 0.0625F;
 	}
 
-	protected boolean method_4057(T livingEntity) {
+	protected boolean beforeOutlineRender(T livingEntity) {
 		GlStateManager.disableLighting();
 		GlStateManager.activeTexture(GLX.GL_TEXTURE1);
 		GlStateManager.disableTexture();
@@ -182,7 +187,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity> extends Entit
 		return true;
 	}
 
-	protected void method_4050() {
+	protected void afterOutlineRender() {
 		GlStateManager.enableLighting();
 		GlStateManager.activeTexture(GLX.GL_TEXTURE1);
 		GlStateManager.enableTexture();
@@ -193,7 +198,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity> extends Entit
 		boolean bl = this.method_4056(livingEntity);
 		boolean bl2 = !bl && !livingEntity.canSeePlayer(MinecraftClient.getInstance().player);
 		if (bl || bl2) {
-			if (!this.method_3925(livingEntity)) {
+			if (!this.bindEntityTexture(livingEntity)) {
 				return;
 			}
 
@@ -209,16 +214,16 @@ public abstract class LivingEntityRenderer<T extends LivingEntity> extends Entit
 	}
 
 	protected boolean method_4056(T livingEntity) {
-		return !livingEntity.isInvisible() || this.field_4674;
+		return !livingEntity.isInvisible() || this.renderOutlines;
 	}
 
-	protected boolean method_4059(T livingEntity, float f) {
-		return this.method_4047(livingEntity, f, true);
+	protected boolean tryApplyOverlayColor(T livingEntity, float f) {
+		return this.tryApplyOverlayColor(livingEntity, f, true);
 	}
 
-	protected boolean method_4047(T livingEntity, float f, boolean bl) {
+	protected boolean tryApplyOverlayColor(T livingEntity, float f, boolean bl) {
 		float g = livingEntity.method_5718();
-		int i = this.method_4053(livingEntity, g, f);
+		int i = this.getOverlayColor(livingEntity, g, f);
 		boolean bl2 = (i >> 24 & 0xFF) > 0;
 		boolean bl3 = livingEntity.hurtTime > 0 || livingEntity.deathCounter > 0;
 		if (!bl2 && !bl3) {
@@ -250,28 +255,28 @@ public abstract class LivingEntityRenderer<T extends LivingEntity> extends Entit
 			GlStateManager.texEnv(8960, GLX.GL_COMBINE_ALPHA, 7681);
 			GlStateManager.texEnv(8960, GLX.GL_SOURCE0_ALPHA, GLX.GL_PREVIOUS);
 			GlStateManager.texEnv(8960, GLX.GL_OPERAND0_ALPHA, 770);
-			this.field_4740.position(0);
+			this.colorOverlayBuffer.position(0);
 			if (bl3) {
-				this.field_4740.put(1.0F);
-				this.field_4740.put(0.0F);
-				this.field_4740.put(0.0F);
-				this.field_4740.put(0.3F);
+				this.colorOverlayBuffer.put(1.0F);
+				this.colorOverlayBuffer.put(0.0F);
+				this.colorOverlayBuffer.put(0.0F);
+				this.colorOverlayBuffer.put(0.3F);
 			} else {
 				float h = (float)(i >> 24 & 0xFF) / 255.0F;
 				float j = (float)(i >> 16 & 0xFF) / 255.0F;
 				float k = (float)(i >> 8 & 0xFF) / 255.0F;
 				float l = (float)(i & 0xFF) / 255.0F;
-				this.field_4740.put(j);
-				this.field_4740.put(k);
-				this.field_4740.put(l);
-				this.field_4740.put(1.0F - h);
+				this.colorOverlayBuffer.put(j);
+				this.colorOverlayBuffer.put(k);
+				this.colorOverlayBuffer.put(l);
+				this.colorOverlayBuffer.put(1.0F - h);
 			}
 
-			this.field_4740.flip();
-			GlStateManager.texEnv(8960, 8705, this.field_4740);
+			this.colorOverlayBuffer.flip();
+			GlStateManager.texEnv(8960, 8705, this.colorOverlayBuffer);
 			GlStateManager.activeTexture(GLX.GL_TEXTURE2);
 			GlStateManager.enableTexture();
-			GlStateManager.bindTexture(field_4742.getGlId());
+			GlStateManager.bindTexture(colorOverlayTexture.getGlId());
 			GlStateManager.texEnv(8960, 8704, GLX.GL_COMBINE);
 			GlStateManager.texEnv(8960, GLX.GL_COMBINE_RGB, 8448);
 			GlStateManager.texEnv(8960, GLX.GL_SOURCE0_RGB, GLX.GL_PREVIOUS);
@@ -286,7 +291,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity> extends Entit
 		}
 	}
 
-	protected void method_4040() {
+	protected void disableOverlayColor() {
 		GlStateManager.activeTexture(GLX.GL_TEXTURE0);
 		GlStateManager.enableTexture();
 		GlStateManager.texEnv(8960, 8704, GLX.GL_COMBINE);
@@ -330,7 +335,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity> extends Entit
 		GlStateManager.translatef((float)d, (float)e, (float)f);
 	}
 
-	protected void method_4058(T livingEntity, float f, float g, float h) {
+	protected void setupTransforms(T livingEntity, float f, float g, float h) {
 		GlStateManager.rotatef(180.0F - g, 0.0F, 1.0F, 0.0F);
 		if (livingEntity.deathCounter > 0) {
 			float i = ((float)livingEntity.deathCounter + h - 1.0F) / 20.0F * 1.6F;
@@ -339,8 +344,8 @@ public abstract class LivingEntityRenderer<T extends LivingEntity> extends Entit
 				i = 1.0F;
 			}
 
-			GlStateManager.rotatef(i * this.method_4039(livingEntity), 0.0F, 0.0F, 1.0F);
-		} else if (livingEntity.method_6123()) {
+			GlStateManager.rotatef(i * this.getLyingAngle(livingEntity), 0.0F, 0.0F, 1.0F);
+		} else if (livingEntity.isUsingRiptide()) {
 			GlStateManager.rotatef(-90.0F - livingEntity.pitch, 1.0F, 0.0F, 0.0F);
 			GlStateManager.rotatef(((float)livingEntity.age + h) * -75.0F, 0.0F, 1.0F, 0.0F);
 		} else if (livingEntity.hasCustomName() || livingEntity instanceof PlayerEntity) {
@@ -362,21 +367,21 @@ public abstract class LivingEntityRenderer<T extends LivingEntity> extends Entit
 		return (float)livingEntity.age + f;
 	}
 
-	protected void method_4051(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
-		for (LayerEntityRenderer<T> layerEntityRenderer : this.field_4738) {
-			boolean bl = this.method_4047(livingEntity, h, layerEntityRenderer.shouldMergeTextures());
-			layerEntityRenderer.render(livingEntity, f, g, h, i, j, k, l);
+	protected void renderFeatures(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
+		for (FeatureRenderer<T, M> featureRenderer : this.features) {
+			boolean bl = this.tryApplyOverlayColor(livingEntity, h, featureRenderer.method_4200());
+			featureRenderer.render(livingEntity, f, g, h, i, j, k, l);
 			if (bl) {
-				this.method_4040();
+				this.disableOverlayColor();
 			}
 		}
 	}
 
-	protected float method_4039(T livingEntity) {
+	protected float getLyingAngle(T livingEntity) {
 		return 90.0F;
 	}
 
-	protected int method_4053(T livingEntity, float f, float g) {
+	protected int getOverlayColor(T livingEntity, float f, float g) {
 		return 0;
 	}
 
@@ -384,7 +389,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity> extends Entit
 	}
 
 	public void method_4041(T livingEntity, double d, double e, double f) {
-		if (this.method_4055(livingEntity)) {
+		if (this.shouldRenderName(livingEntity)) {
 			double g = livingEntity.squaredDistanceTo(this.renderManager.field_4686);
 			float h = livingEntity.isSneaking() ? 32.0F : 64.0F;
 			if (!(g >= (double)(h * h))) {
@@ -395,7 +400,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity> extends Entit
 		}
 	}
 
-	protected boolean method_4055(T livingEntity) {
+	protected boolean shouldRenderName(T livingEntity) {
 		ClientPlayerEntity clientPlayerEntity = MinecraftClient.getInstance().player;
 		boolean bl = !livingEntity.canSeePlayer(clientPlayerEntity);
 		if (livingEntity != clientPlayerEntity) {

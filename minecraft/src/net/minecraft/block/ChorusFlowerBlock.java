@@ -3,7 +3,6 @@ package net.minecraft.block;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
@@ -76,7 +75,7 @@ public class ChorusFlowerBlock extends Block {
 
 						for (int l = 0; l < j; l++) {
 							Direction direction = Direction.class_2353.HORIZONTAL.random(random);
-							BlockPos blockPos3 = blockPos.method_10093(direction);
+							BlockPos blockPos3 = blockPos.offset(direction);
 							if (world.isAir(blockPos3) && world.isAir(blockPos3.down()) && method_9746(world, blockPos3, direction.getOpposite())) {
 								this.method_9745(world, blockPos3, i + 1);
 								bl3 = true;
@@ -108,7 +107,7 @@ public class ChorusFlowerBlock extends Block {
 
 	private static boolean method_9746(ViewableWorld viewableWorld, BlockPos blockPos, @Nullable Direction direction) {
 		for (Direction direction2 : Direction.class_2353.HORIZONTAL) {
-			if (direction2 != direction && !viewableWorld.isAir(blockPos.method_10093(direction2))) {
+			if (direction2 != direction && !viewableWorld.isAir(blockPos.offset(direction2))) {
 				return false;
 			}
 		}
@@ -117,12 +116,14 @@ public class ChorusFlowerBlock extends Block {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if (direction != Direction.UP && !blockState.canPlaceAt(iWorld, blockPos)) {
 			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
 		}
 
-		return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
@@ -136,7 +137,7 @@ public class ChorusFlowerBlock extends Block {
 				boolean bl = false;
 
 				for (Direction direction : Direction.class_2353.HORIZONTAL) {
-					BlockState blockState3 = viewableWorld.getBlockState(blockPos.method_10093(direction));
+					BlockState blockState3 = viewableWorld.getBlockState(blockPos.offset(direction));
 					if (blockState3.getBlock() == this.plantBlock) {
 						if (bl) {
 							return false;
@@ -196,7 +197,7 @@ public class ChorusFlowerBlock extends Block {
 
 			for (int n = 0; n < m; n++) {
 				Direction direction = Direction.class_2353.HORIZONTAL.random(random);
-				BlockPos blockPos4 = blockPos.up(k).method_10093(direction);
+				BlockPos blockPos4 = blockPos.up(k).offset(direction);
 				if (Math.abs(blockPos4.getX() - blockPos2.getX()) < i
 					&& Math.abs(blockPos4.getZ() - blockPos2.getZ()) < i
 					&& iWorld.isAir(blockPos4)
@@ -204,9 +205,7 @@ public class ChorusFlowerBlock extends Block {
 					&& method_9746(iWorld, blockPos4, direction.getOpposite())) {
 					bl = true;
 					iWorld.setBlockState(blockPos4, chorusPlantBlock.method_9759(iWorld, blockPos4), 2);
-					iWorld.setBlockState(
-						blockPos4.method_10093(direction.getOpposite()), chorusPlantBlock.method_9759(iWorld, blockPos4.method_10093(direction.getOpposite())), 2
-					);
+					iWorld.setBlockState(blockPos4.offset(direction.getOpposite()), chorusPlantBlock.method_9759(iWorld, blockPos4.offset(direction.getOpposite())), 2);
 					method_9748(iWorld, blockPos4, random, blockPos2, i, j + 1);
 				}
 			}
@@ -219,7 +218,7 @@ public class ChorusFlowerBlock extends Block {
 
 	@Override
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-		if (!world.isRemote()) {
+		if (!world.isClient()) {
 			List<? extends Entity> list = world.getVisibleEntities(
 				ProjectileEntity.class, blockState.getBoundingShape(world, blockPos).getBoundingBox().offset(blockPos)
 			);

@@ -5,7 +5,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.decoration.PaintingEntity;
+import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
@@ -716,10 +716,11 @@ public class Items {
 	public static final Item field_8261 = register("cooked_porkchop", new FoodItem(8, 0.8F, true, new Item.Settings().itemGroup(ItemGroup.FOOD)));
 	public static final Item field_8892 = register("painting", new DecorationItem(PaintingEntity.class, new Item.Settings().itemGroup(ItemGroup.DECORATIONS)));
 	public static final Item field_8463 = register(
-		"golden_apple", new GoldenAppleItem(4, 1.2F, false, new Item.Settings().itemGroup(ItemGroup.FOOD).rarity(Rarity.field_8903)).method_7828()
+		"golden_apple", new GoldenAppleItem(4, 1.2F, false, new Item.Settings().itemGroup(ItemGroup.FOOD).rarity(Rarity.field_8903)).setAlwaysConsumable()
 	);
 	public static final Item field_8367 = register(
-		"enchanted_golden_apple", new EnchantedGoldenAppleItem(4, 1.2F, false, new Item.Settings().itemGroup(ItemGroup.FOOD).rarity(Rarity.field_8904)).method_7828()
+		"enchanted_golden_apple",
+		new EnchantedGoldenAppleItem(4, 1.2F, false, new Item.Settings().itemGroup(ItemGroup.FOOD).rarity(Rarity.field_8904)).setAlwaysConsumable()
 	);
 	public static final Item field_8788 = register(
 		"oak_sign", new SignItem(new Item.Settings().stackSize(16).itemGroup(ItemGroup.DECORATIONS), Blocks.field_10121, Blocks.field_10187)
@@ -739,12 +740,12 @@ public class Items {
 	public static final Item field_8496 = register(
 		"dark_oak_sign", new SignItem(new Item.Settings().stackSize(16).itemGroup(ItemGroup.DECORATIONS), Blocks.field_10330, Blocks.field_10265)
 	);
-	public static final Item field_8550 = register("bucket", new BucketItem(Fluids.field_15906, new Item.Settings().stackSize(16).itemGroup(ItemGroup.MISC)));
+	public static final Item field_8550 = register("bucket", new BucketItem(Fluids.EMPTY, new Item.Settings().stackSize(16).itemGroup(ItemGroup.MISC)));
 	public static final Item field_8705 = register(
-		"water_bucket", new BucketItem(Fluids.WATER, new Item.Settings().containerItem(field_8550).stackSize(1).itemGroup(ItemGroup.MISC))
+		"water_bucket", new BucketItem(Fluids.WATER, new Item.Settings().recipeRemainder(field_8550).stackSize(1).itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8187 = register(
-		"lava_bucket", new BucketItem(Fluids.LAVA, new Item.Settings().containerItem(field_8550).stackSize(1).itemGroup(ItemGroup.MISC))
+		"lava_bucket", new BucketItem(Fluids.LAVA, new Item.Settings().recipeRemainder(field_8550).stackSize(1).itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8045 = register(
 		"minecart", new MinecartItem(AbstractMinecartEntity.Type.field_7674, new Item.Settings().stackSize(1).itemGroup(ItemGroup.TRANSPORTATION))
@@ -757,7 +758,7 @@ public class Items {
 	);
 	public static final Item field_8745 = register("leather", new Item(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8103 = register(
-		"milk_bucket", new BucketMilkItem(new Item.Settings().containerItem(field_8550).stackSize(1).itemGroup(ItemGroup.MISC))
+		"milk_bucket", new BucketMilkItem(new Item.Settings().recipeRemainder(field_8550).stackSize(1).itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8108 = register(
 		"pufferfish_bucket", new FishBucketItem(EntityType.PUFFERFISH, Fluids.WATER, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC))
@@ -842,7 +843,7 @@ public class Items {
 	public static final Item field_8204 = register("filled_map", new FilledMapItem(new Item.Settings()));
 	public static final Item field_8868 = register("shears", new ShearsItem(new Item.Settings().durability(238).itemGroup(ItemGroup.TOOLS)));
 	public static final Item field_8497 = register("melon_slice", new FoodItem(2, 0.3F, false, new Item.Settings().itemGroup(ItemGroup.FOOD)));
-	public static final Item field_8551 = register("dried_kelp", new FoodItem(1, 0.3F, false, new Item.Settings().itemGroup(ItemGroup.FOOD)).method_7829());
+	public static final Item field_8551 = register("dried_kelp", new FoodItem(1, 0.3F, false, new Item.Settings().itemGroup(ItemGroup.FOOD)).setConsumeQuickly());
 	public static final Item field_8706 = register("pumpkin_seeds", new SeedsItem(Blocks.field_9984, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8188 = register("melon_seeds", new SeedsItem(Blocks.field_10168, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8046 = register("beef", new FoodItem(3, 0.3F, true, new Item.Settings().itemGroup(ItemGroup.FOOD)));
@@ -1160,13 +1161,15 @@ public class Items {
 	public static final Item field_8301 = register(
 		"end_crystal", new EndCrystalItem(new Item.Settings().itemGroup(ItemGroup.DECORATIONS).rarity(Rarity.field_8903))
 	);
-	public static final Item field_8233 = register("chorus_fruit", new ChorusFruitItem(4, 0.3F, new Item.Settings().itemGroup(ItemGroup.MATERIALS)).method_7828());
+	public static final Item field_8233 = register(
+		"chorus_fruit", new ChorusFruitItem(4, 0.3F, new Item.Settings().itemGroup(ItemGroup.MATERIALS)).setAlwaysConsumable()
+	);
 	public static final Item field_8882 = register("popped_chorus_fruit", new Item(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8186 = register("beetroot", new FoodItem(1, 0.6F, false, new Item.Settings().itemGroup(ItemGroup.FOOD)));
 	public static final Item field_8309 = register("beetroot_seeds", new SeedsItem(Blocks.field_10341, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8515 = register("beetroot_soup", new MushroomStewItem(6, new Item.Settings().stackSize(1).itemGroup(ItemGroup.FOOD)));
 	public static final Item field_8613 = register(
-		"dragon_breath", new Item(new Item.Settings().containerItem(field_8469).itemGroup(ItemGroup.BREWING).rarity(Rarity.field_8907))
+		"dragon_breath", new Item(new Item.Settings().recipeRemainder(field_8469).itemGroup(ItemGroup.BREWING).rarity(Rarity.field_8907))
 	);
 	public static final Item field_8436 = register("splash_potion", new SplashPotionItem(new Item.Settings().stackSize(1).itemGroup(ItemGroup.BREWING)));
 	public static final Item field_8236 = register("spectral_arrow", new SpectralArrowItem(new Item.Settings().itemGroup(ItemGroup.COMBAT)));

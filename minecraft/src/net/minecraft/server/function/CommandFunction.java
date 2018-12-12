@@ -11,24 +11,24 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Identifier;
 
 public class CommandFunction {
-	private final CommandFunction.class_2161[] field_9805;
+	private final CommandFunction.Element[] field_9805;
 	private final Identifier id;
 
-	public CommandFunction(Identifier identifier, CommandFunction.class_2161[] args) {
+	public CommandFunction(Identifier identifier, CommandFunction.Element[] elements) {
 		this.id = identifier;
-		this.field_9805 = args;
+		this.field_9805 = elements;
 	}
 
 	public Identifier getId() {
 		return this.id;
 	}
 
-	public CommandFunction.class_2161[] method_9193() {
+	public CommandFunction.Element[] method_9193() {
 		return this.field_9805;
 	}
 
-	public static CommandFunction method_9195(Identifier identifier, CommandFunctionManager commandFunctionManager, List<String> list) {
-		List<CommandFunction.class_2161> list2 = Lists.<CommandFunction.class_2161>newArrayListWithCapacity(list.size());
+	public static CommandFunction create(Identifier identifier, CommandFunctionManager commandFunctionManager, List<String> list) {
+		List<CommandFunction.Element> list2 = Lists.<CommandFunction.Element>newArrayListWithCapacity(list.size());
 
 		for (int i = 0; i < list.size(); i++) {
 			int j = i + 1;
@@ -51,7 +51,7 @@ public class CommandFunction {
 					ParseResults<ServerCommandSource> parseResults = commandFunctionManager.getServer()
 						.getCommandManager()
 						.getDispatcher()
-						.parse(stringReader, commandFunctionManager.method_12899());
+						.parse(stringReader, commandFunctionManager.getFunctionCommandSource());
 					if (parseResults.getReader().canRead()) {
 						if (parseResults.getExceptions().size() == 1) {
 							throw (CommandSyntaxException)parseResults.getExceptions().values().iterator().next();
@@ -64,109 +64,106 @@ public class CommandFunction {
 						throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().createWithContext(parseResults.getReader());
 					}
 
-					list2.add(new CommandFunction.class_2160(parseResults));
+					list2.add(new CommandFunction.CommandElement(parseResults));
 				} catch (CommandSyntaxException var9) {
 					throw new IllegalArgumentException("Whilst parsing command on line " + j + ": " + var9.getMessage());
 				}
 			}
 		}
 
-		return new CommandFunction(identifier, (CommandFunction.class_2161[])list2.toArray(new CommandFunction.class_2161[0]));
+		return new CommandFunction(identifier, (CommandFunction.Element[])list2.toArray(new CommandFunction.Element[0]));
 	}
 
-	public static class class_2159 {
-		public static final CommandFunction.class_2159 field_9809 = new CommandFunction.class_2159((Identifier)null);
-		@Nullable
-		private final Identifier field_9807;
-		private boolean field_9810;
-		private CommandFunction field_9808;
+	public static class CommandElement implements CommandFunction.Element {
+		private final ParseResults<ServerCommandSource> parsed;
 
-		public class_2159(@Nullable Identifier identifier) {
-			this.field_9807 = identifier;
-		}
-
-		public class_2159(CommandFunction commandFunction) {
-			this.field_9807 = null;
-			this.field_9808 = commandFunction;
-		}
-
-		@Nullable
-		public CommandFunction method_9196(CommandFunctionManager commandFunctionManager) {
-			if (!this.field_9810) {
-				if (this.field_9807 != null) {
-					this.field_9808 = commandFunctionManager.getFunction(this.field_9807);
-				}
-
-				this.field_9810 = true;
-			}
-
-			return this.field_9808;
-		}
-
-		@Nullable
-		public Identifier method_9197() {
-			return this.field_9808 != null ? this.field_9808.id : this.field_9807;
-		}
-	}
-
-	public static class class_2160 implements CommandFunction.class_2161 {
-		private final ParseResults<ServerCommandSource> field_9811;
-
-		public class_2160(ParseResults<ServerCommandSource> parseResults) {
-			this.field_9811 = parseResults;
+		public CommandElement(ParseResults<ServerCommandSource> parseResults) {
+			this.parsed = parseResults;
 		}
 
 		@Override
-		public void method_9198(
-			CommandFunctionManager commandFunctionManager, ServerCommandSource serverCommandSource, ArrayDeque<CommandFunctionManager.class_2992> arrayDeque, int i
+		public void execute(
+			CommandFunctionManager commandFunctionManager, ServerCommandSource serverCommandSource, ArrayDeque<CommandFunctionManager.Entry> arrayDeque, int i
 		) throws CommandSyntaxException {
 			commandFunctionManager.getDispatcher()
 				.execute(
 					new ParseResults<>(
-						this.field_9811.getContext().withSource(serverCommandSource),
-						this.field_9811.getStartIndex(),
-						this.field_9811.getReader(),
-						this.field_9811.getExceptions()
+						this.parsed.getContext().withSource(serverCommandSource), this.parsed.getStartIndex(), this.parsed.getReader(), this.parsed.getExceptions()
 					)
 				);
 		}
 
 		public String toString() {
-			return this.field_9811.getReader().getString();
+			return this.parsed.getReader().getString();
 		}
 	}
 
-	public interface class_2161 {
-		void method_9198(
-			CommandFunctionManager commandFunctionManager, ServerCommandSource serverCommandSource, ArrayDeque<CommandFunctionManager.class_2992> arrayDeque, int i
+	public interface Element {
+		void execute(
+			CommandFunctionManager commandFunctionManager, ServerCommandSource serverCommandSource, ArrayDeque<CommandFunctionManager.Entry> arrayDeque, int i
 		) throws CommandSyntaxException;
 	}
 
-	public static class class_2162 implements CommandFunction.class_2161 {
-		private final CommandFunction.class_2159 field_9812;
+	public static class FunctionElement implements CommandFunction.Element {
+		private final CommandFunction.LazyContainer function;
 
-		public class_2162(CommandFunction commandFunction) {
-			this.field_9812 = new CommandFunction.class_2159(commandFunction);
+		public FunctionElement(CommandFunction commandFunction) {
+			this.function = new CommandFunction.LazyContainer(commandFunction);
 		}
 
 		@Override
-		public void method_9198(
-			CommandFunctionManager commandFunctionManager, ServerCommandSource serverCommandSource, ArrayDeque<CommandFunctionManager.class_2992> arrayDeque, int i
+		public void execute(
+			CommandFunctionManager commandFunctionManager, ServerCommandSource serverCommandSource, ArrayDeque<CommandFunctionManager.Entry> arrayDeque, int i
 		) {
-			CommandFunction commandFunction = this.field_9812.method_9196(commandFunctionManager);
+			CommandFunction commandFunction = this.function.get(commandFunctionManager);
 			if (commandFunction != null) {
-				CommandFunction.class_2161[] lvs = commandFunction.method_9193();
+				CommandFunction.Element[] elements = commandFunction.method_9193();
 				int j = i - arrayDeque.size();
-				int k = Math.min(lvs.length, j);
+				int k = Math.min(elements.length, j);
 
 				for (int l = k - 1; l >= 0; l--) {
-					arrayDeque.addFirst(new CommandFunctionManager.class_2992(commandFunctionManager, serverCommandSource, lvs[l]));
+					arrayDeque.addFirst(new CommandFunctionManager.Entry(commandFunctionManager, serverCommandSource, elements[l]));
 				}
 			}
 		}
 
 		public String toString() {
-			return "function " + this.field_9812.method_9197();
+			return "function " + this.function.getId();
+		}
+	}
+
+	public static class LazyContainer {
+		public static final CommandFunction.LazyContainer EMPTY = new CommandFunction.LazyContainer((Identifier)null);
+		@Nullable
+		private final Identifier id;
+		private boolean initialized;
+		private CommandFunction function;
+
+		public LazyContainer(@Nullable Identifier identifier) {
+			this.id = identifier;
+		}
+
+		public LazyContainer(CommandFunction commandFunction) {
+			this.id = null;
+			this.function = commandFunction;
+		}
+
+		@Nullable
+		public CommandFunction get(CommandFunctionManager commandFunctionManager) {
+			if (!this.initialized) {
+				if (this.id != null) {
+					this.function = commandFunctionManager.getFunction(this.id);
+				}
+
+				this.initialized = true;
+			}
+
+			return this.function;
+		}
+
+		@Nullable
+		public Identifier getId() {
+			return this.function != null ? this.function.id : this.id;
 		}
 	}
 }

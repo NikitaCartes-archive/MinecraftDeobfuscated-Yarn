@@ -13,7 +13,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_1310;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -33,6 +32,7 @@ import net.minecraft.container.LockContainer;
 import net.minecraft.container.PlayerContainer;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
@@ -68,7 +68,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.particle.Particle;
+import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.scoreboard.AbstractScoreboardTeam;
@@ -94,6 +94,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.Villager;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Difficulty;
@@ -105,8 +106,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	private static final TrackedData<Integer> SCORE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	protected static final TrackedData<Byte> PLAYER_MODEL_BIT_MASK = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BYTE);
 	protected static final TrackedData<Byte> MAIN_HAND = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BYTE);
-	protected static final TrackedData<CompoundTag> field_7496 = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
-	protected static final TrackedData<CompoundTag> SHOULDER_ENTITY_RIGHT = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
+	protected static final TrackedData<CompoundTag> LEFT_SHOULDER_ENTITY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
+	protected static final TrackedData<CompoundTag> RIGHT_SHOULDER_ENTITY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
 	public PlayerInventory inventory = new PlayerInventory(this);
 	protected EnderChestInventory enderChestInventory = new EnderChestInventory();
 	public Container containerPlayer;
@@ -152,9 +153,9 @@ public abstract class PlayerEntity extends LivingEntity {
 		super(EntityType.PLAYER, world);
 		this.setUuid(getUuidFromProfile(gameProfile));
 		this.gameProfile = gameProfile;
-		this.containerPlayer = new PlayerContainer(this.inventory, !world.isRemote, this);
+		this.containerPlayer = new PlayerContainer(this.inventory, !world.isClient, this);
 		this.container = this.containerPlayer;
-		BlockPos blockPos = world.method_8395();
+		BlockPos blockPos = world.getSpawnPos();
 		this.setPositionAndAngles((double)blockPos.getX() + 0.5, (double)(blockPos.getY() + 1), (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);
 		this.field_6215 = 180.0F;
 	}
@@ -175,8 +176,8 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.dataTracker.startTracking(SCORE, 0);
 		this.dataTracker.startTracking(PLAYER_MODEL_BIT_MASK, (byte)0);
 		this.dataTracker.startTracking(MAIN_HAND, (byte)1);
-		this.dataTracker.startTracking(field_7496, new CompoundTag());
-		this.dataTracker.startTracking(SHOULDER_ENTITY_RIGHT, new CompoundTag());
+		this.dataTracker.startTracking(LEFT_SHOULDER_ENTITY, new CompoundTag());
+		this.dataTracker.startTracking(RIGHT_SHOULDER_ENTITY, new CompoundTag());
 	}
 
 	@Override
@@ -196,7 +197,7 @@ public abstract class PlayerEntity extends LivingEntity {
 				this.sleepTimer = 100;
 			}
 
-			if (!this.world.isRemote) {
+			if (!this.world.isClient) {
 				if (!this.method_7275()) {
 					this.method_7358(true, true, false);
 				} else if (this.world.isDaylight()) {
@@ -210,10 +211,10 @@ public abstract class PlayerEntity extends LivingEntity {
 			}
 		}
 
-		this.initAi();
+		this.method_7300();
 		this.method_7295();
 		super.update();
-		if (!this.world.isRemote && this.container != null && !this.container.canUse(this)) {
+		if (!this.world.isClient && this.container != null && !this.container.canUse(this)) {
 			this.closeGui();
 			this.container = this.containerPlayer;
 		}
@@ -223,19 +224,19 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 
 		this.method_7313();
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			this.hungerManager.update(this);
-			this.method_7281(Stats.field_15417);
+			this.increaseStat(Stats.field_15417);
 			if (this.isValid()) {
-				this.method_7281(Stats.field_15400);
+				this.increaseStat(Stats.field_15400);
 			}
 
 			if (this.isSneaking()) {
-				this.method_7281(Stats.field_15422);
+				this.increaseStat(Stats.field_15422);
 			}
 
 			if (!this.isSleeping()) {
-				this.method_7281(Stats.field_15429);
+				this.increaseStat(Stats.field_15429);
 			}
 		}
 
@@ -277,7 +278,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		return new ItemCooldownManager();
 	}
 
-	private void initAi() {
+	private void method_7300() {
 		BlockState blockState = this.world.method_8475(this.getBoundingBox().expand(0.0, -0.4F, 0.0).contract(0.001), Blocks.field_10422);
 		if (blockState != null) {
 			if (!this.field_7517 && !this.field_5953 && blockState.getBlock() == Blocks.field_10422 && !this.isSpectator()) {
@@ -347,7 +348,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		} else if (this.isSleeping()) {
 			f = 0.2F;
 			g = 0.2F;
-		} else if (this.isSwimming() || this.method_6123()) {
+		} else if (this.isSwimming() || this.isUsingRiptide()) {
 			f = 0.6F;
 			g = 0.6F;
 		} else if (this.isSneaking()) {
@@ -426,14 +427,14 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	private void method_16475(Particle particle) {
+	private void method_16475(ParticleParameters particleParameters) {
 		for (int i = 0; i < 5; i++) {
 			double d = this.random.nextGaussian() * 0.02;
 			double e = this.random.nextGaussian() * 0.02;
 			double f = this.random.nextGaussian() * 0.02;
 			this.world
 				.method_8406(
-					particle,
+					particleParameters,
 					this.x + (double)(this.random.nextFloat() * this.width * 2.0F) - (double)this.width,
 					this.y + 1.0 + (double)(this.random.nextFloat() * this.height),
 					this.z + (double)(this.random.nextFloat() * this.width * 2.0F) - (double)this.width,
@@ -455,7 +456,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public void method_5842() {
-		if (!this.world.isRemote && this.isSneaking() && this.hasVehicle()) {
+		if (!this.world.isClient && this.isSneaking() && this.hasVehicle()) {
 			this.stopRiding();
 			this.setSneaking(false);
 		} else {
@@ -489,7 +490,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	protected void method_6023() {
 		super.method_6023();
 		this.method_6119();
-		this.headPitch = this.yaw;
+		this.headYaw = this.yaw;
 	}
 
 	@Override
@@ -512,7 +513,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.field_7505 = this.field_7483;
 		super.updateMovement();
 		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			entityAttributeInstance.setBaseValue((double)this.abilities.getWalkSpeed());
 		}
 
@@ -558,7 +559,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 		this.method_7267(this.getShoulderEntityLeft());
 		this.method_7267(this.getShoulderEntityRight());
-		if (!this.world.isRemote && (this.fallDistance > 0.5F || this.isInsideWater() || this.hasVehicle()) || this.abilities.flying) {
+		if (!this.world.isClient && (this.fallDistance > 0.5F || this.isInsideWater() || this.hasVehicle()) || this.abilities.flying) {
 			this.method_7262();
 		}
 	}
@@ -573,7 +574,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	private void method_7341(Entity entity) {
-		entity.method_5694(this);
+		entity.onPlayerCollision(this);
 	}
 
 	public int getScore() {
@@ -611,7 +612,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			this.velocityZ = 0.0;
 		}
 
-		this.method_7281(Stats.field_15421);
+		this.increaseStat(Stats.field_15421);
 		this.resetStat(Stats.field_15419.method_14956(Stats.field_15400));
 		this.resetStat(Stats.field_15419.method_14956(Stats.field_15429));
 		this.extinguish();
@@ -619,8 +620,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	protected void method_16078() {
-		super.method_16078();
+	protected void dropInventory() {
+		super.dropInventory();
 		if (!this.world.getGameRules().getBoolean("keepInventory")) {
 			this.method_7293();
 			this.inventory.dropAll();
@@ -701,7 +702,7 @@ public abstract class PlayerEntity extends LivingEntity {
 					this.incrementStat(Stats.field_15405.method_14956(itemStack2.getItem()), itemStack.getAmount());
 				}
 
-				this.method_7281(Stats.field_15406);
+				this.increaseStat(Stats.field_15406);
 			}
 
 			return itemEntity;
@@ -759,7 +760,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public boolean isUsingEffectiveTool(BlockState blockState) {
-		return blockState.getMaterial().method_15805() || this.inventory.isUsingEffectiveTool(blockState);
+		return blockState.getMaterial().canBreakByHand() || this.inventory.isUsingEffectiveTool(blockState);
 	}
 
 	@Override
@@ -804,8 +805,8 @@ public abstract class PlayerEntity extends LivingEntity {
 			this.setShoulderEntityRight(compoundTag.getCompound("ShoulderEntityRight"));
 		}
 
-		if (!this.world.isRemote && this.world.getRaidState() != null && this.method_6088().keySet().contains(StatusEffects.field_16595)) {
-			this.world.getRaidState().method_16538(this);
+		if (!this.world.isClient && this.world.getRaidManager() != null && this.method_6088().keySet().contains(StatusEffects.field_16595)) {
+			this.world.getRaidManager().addTimestamp(this);
 		}
 	}
 
@@ -848,11 +849,11 @@ public abstract class PlayerEntity extends LivingEntity {
 		} else if (this.abilities.invulnerable && !damageSource.doesDamageToCreative()) {
 			return false;
 		} else {
-			this.field_6278 = 0;
+			this.despawnCounter = 0;
 			if (this.getHealth() <= 0.0F) {
 				return false;
 			} else {
-				if (this.isSleeping() && !this.world.isRemote) {
+				if (this.isSleeping() && !this.world.isClient) {
 					this.method_7358(true, true, false);
 				}
 
@@ -954,22 +955,22 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 	}
 
-	public void openSignEditor(SignBlockEntity signBlockEntity) {
+	public void openSignEditorGui(SignBlockEntity signBlockEntity) {
 	}
 
-	public void openCommandBlockMinecart(CommandBlockExecutor commandBlockExecutor) {
+	public void openCommandBlockMinecartGui(CommandBlockExecutor commandBlockExecutor) {
 	}
 
-	public void openCommandBlock(CommandBlockBlockEntity commandBlockBlockEntity) {
+	public void openCommandBlockGui(CommandBlockBlockEntity commandBlockBlockEntity) {
 	}
 
-	public void openStructureBlock(StructureBlockBlockEntity structureBlockBlockEntity) {
+	public void openStructureBlockGui(StructureBlockBlockEntity structureBlockBlockEntity) {
 	}
 
-	public void method_16354(JigsawBlockEntity jigsawBlockEntity) {
+	public void openJigsawGui(JigsawBlockEntity jigsawBlockEntity) {
 	}
 
-	public void openVillagerGui(Villager villager) {
+	public void openVillagerTrade(Villager villager) {
 	}
 
 	public void openInventory(Inventory inventory) {
@@ -981,7 +982,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	public void openContainer(ContainerProvider containerProvider) {
 	}
 
-	public void openBookEditor(ItemStack itemStack, Hand hand) {
+	public void openBookEditorGui(ItemStack itemStack, Hand hand) {
 	}
 
 	public ActionResult interact(Entity entity, Hand hand) {
@@ -1037,9 +1038,9 @@ public abstract class PlayerEntity extends LivingEntity {
 				float f = (float)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue();
 				float g;
 				if (entity instanceof LivingEntity) {
-					g = EnchantmentHelper.getAttackDamage(this.getMainHandStack(), ((LivingEntity)entity).method_6046());
+					g = EnchantmentHelper.getAttackDamage(this.getMainHandStack(), ((LivingEntity)entity).getGroup());
 				} else {
-					g = EnchantmentHelper.getAttackDamage(this.getMainHandStack(), class_1310.field_6290);
+					g = EnchantmentHelper.getAttackDamage(this.getMainHandStack(), EntityGroup.DEFAULT);
 				}
 
 				float h = this.method_7261(0.5F);
@@ -1135,9 +1136,9 @@ public abstract class PlayerEntity extends LivingEntity {
 							this.method_7263();
 						}
 
-						if (entity instanceof ServerPlayerEntity && entity.field_6037) {
+						if (entity instanceof ServerPlayerEntity && entity.velocityModified) {
 							((ServerPlayerEntity)entity).networkHandler.sendPacket(new EntityVelocityUpdateClientPacket(entity));
-							entity.field_6037 = false;
+							entity.velocityModified = false;
 							entity.velocityX = e;
 							entity.velocityY = l;
 							entity.velocityZ = m;
@@ -1145,7 +1146,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 						if (bl3) {
 							this.world.playSound(null, this.x, this.y, this.z, SoundEvents.field_15016, this.getSoundCategory(), 1.0F, 1.0F);
-							this.copyEntityData(entity);
+							this.addCritParticles(entity);
 						}
 
 						if (!bl3 && !bl4) {
@@ -1157,7 +1158,7 @@ public abstract class PlayerEntity extends LivingEntity {
 						}
 
 						if (g > 0.0F) {
-							this.method_7304(entity);
+							this.addEnchantedHitParticles(entity);
 						}
 
 						this.method_6114(entity);
@@ -1221,14 +1222,14 @@ public abstract class PlayerEntity extends LivingEntity {
 		if (this.random.nextFloat() < f) {
 			this.getItemCooldownManager().set(Items.field_8255, 100);
 			this.method_6021();
-			this.world.method_8421(this, (byte)30);
+			this.world.summonParticle(this, (byte)30);
 		}
 	}
 
-	public void copyEntityData(Entity entity) {
+	public void addCritParticles(Entity entity) {
 	}
 
-	public void method_7304(Entity entity) {
+	public void addEnchantedHitParticles(Entity entity) {
 	}
 
 	public void method_7263() {
@@ -1240,7 +1241,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_7331() {
+	public void requestRespawn() {
 	}
 
 	@Override
@@ -1267,7 +1268,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	public PlayerEntity.SleepResult trySleep(BlockPos blockPos) {
 		Direction direction = this.world.getBlockState(blockPos).get(HorizontalFacingBlock.field_11177);
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			if (this.isSleeping() || !this.isValid()) {
 				return PlayerEntity.SleepResult.INVALID_ATTEMPT;
 			}
@@ -1280,7 +1281,7 @@ public abstract class PlayerEntity extends LivingEntity {
 				return PlayerEntity.SleepResult.WRONG_TIME;
 			}
 
-			if (!this.method_7264(blockPos, direction)) {
+			if (!this.isWithinSleepingRange(blockPos, direction)) {
 				return PlayerEntity.SleepResult.TOO_FAR_AWAY;
 			}
 
@@ -1328,20 +1329,20 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.velocityX = 0.0;
 		this.velocityY = 0.0;
 		this.velocityZ = 0.0;
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			this.world.updateSleepingStatus();
 		}
 
 		return PlayerEntity.SleepResult.SUCCESS;
 	}
 
-	private boolean method_7264(BlockPos blockPos, Direction direction) {
+	private boolean isWithinSleepingRange(BlockPos blockPos, Direction direction) {
 		if (Math.abs(this.x - (double)blockPos.getX()) <= 3.0
 			&& Math.abs(this.y - (double)blockPos.getY()) <= 2.0
 			&& Math.abs(this.z - (double)blockPos.getZ()) <= 3.0) {
 			return true;
 		} else {
-			BlockPos blockPos2 = blockPos.method_10093(direction.getOpposite());
+			BlockPos blockPos2 = blockPos.offset(direction.getOpposite());
 			return Math.abs(this.x - (double)blockPos2.getX()) <= 3.0
 				&& Math.abs(this.y - (double)blockPos2.getY()) <= 2.0
 				&& Math.abs(this.z - (double)blockPos2.getZ()) <= 3.0;
@@ -1367,7 +1368,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 
 		this.sleeping = false;
-		if (!this.world.isRemote && bl2) {
+		if (!this.world.isClient && bl2) {
 			this.world.updateSleepingStatus();
 		}
 
@@ -1450,7 +1451,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 	}
 
-	public void method_7281(Identifier identifier) {
+	public void increaseStat(Identifier identifier) {
 		this.incrementStat(Stats.field_15419.method_14956(identifier));
 	}
 
@@ -1468,21 +1469,21 @@ public abstract class PlayerEntity extends LivingEntity {
 	public void resetStat(Stat<?> stat) {
 	}
 
-	public int method_7254(Collection<Recipe> collection) {
+	public int unlockRecipes(Collection<Recipe> collection) {
 		return 0;
 	}
 
-	public void method_7335(Identifier[] identifiers) {
+	public void unlockRecipes(Identifier[] identifiers) {
 	}
 
-	public int method_7333(Collection<Recipe> collection) {
+	public int lockRecipes(Collection<Recipe> collection) {
 		return 0;
 	}
 
 	@Override
 	public void method_6043() {
 		super.method_6043();
-		this.method_7281(Stats.field_15428);
+		this.increaseStat(Stats.field_15428);
 		if (this.isSprinting()) {
 			this.addExhaustion(0.2F);
 		} else {
@@ -1640,9 +1641,9 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public void slowMovement(BlockState blockState, float f, float g, float h) {
+	public void slowMovement(BlockState blockState, Vec3d vec3d) {
 		if (!this.abilities.flying) {
-			super.slowMovement(blockState, f, g, h);
+			super.slowMovement(blockState, vec3d);
 		}
 	}
 
@@ -1709,7 +1710,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	public void addExhaustion(float f) {
 		if (!this.abilities.invulnerable) {
-			if (!this.world.isRemote) {
+			if (!this.world.isClient) {
 				this.hungerManager.addExhaustion(f);
 			}
 		}
@@ -1731,18 +1732,18 @@ public abstract class PlayerEntity extends LivingEntity {
 		return this.abilities.allowModifyWorld;
 	}
 
-	public boolean method_7343(BlockPos blockPos, Direction direction, ItemStack itemStack) {
+	public boolean canPlaceBlock(BlockPos blockPos, Direction direction, ItemStack itemStack) {
 		if (this.abilities.allowModifyWorld) {
 			return true;
 		} else {
-			BlockPos blockPos2 = blockPos.method_10093(direction.getOpposite());
+			BlockPos blockPos2 = blockPos.offset(direction.getOpposite());
 			BlockProxy blockProxy = new BlockProxy(this.world, blockPos2, false);
 			return itemStack.getCustomCanPlace(this.world.getTagManager(), blockProxy);
 		}
 	}
 
 	@Override
-	protected int method_6110(PlayerEntity playerEntity) {
+	protected int getCurrentExperience(PlayerEntity playerEntity) {
 		if (!this.world.getGameRules().getBoolean("keepInventory") && !this.isSpectator()) {
 			int i = this.experience * 7;
 			return i > 100 ? 100 : i;
@@ -1844,7 +1845,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	private void method_7296(@Nullable CompoundTag compoundTag) {
-		if (!this.world.isRemote && !compoundTag.isEmpty()) {
+		if (!this.world.isClient && !compoundTag.isEmpty()) {
 			Entity entity = EntityType.fromTag(compoundTag, this.world);
 			if (entity instanceof TameableEntity) {
 				((TameableEntity)entity).setOwnerUuid(this.uuid);
@@ -2038,19 +2039,19 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public CompoundTag getShoulderEntityLeft() {
-		return this.dataTracker.get(field_7496);
+		return this.dataTracker.get(LEFT_SHOULDER_ENTITY);
 	}
 
 	protected void setShoulderEntityLeft(CompoundTag compoundTag) {
-		this.dataTracker.set(field_7496, compoundTag);
+		this.dataTracker.set(LEFT_SHOULDER_ENTITY, compoundTag);
 	}
 
 	public CompoundTag getShoulderEntityRight() {
-		return this.dataTracker.get(SHOULDER_ENTITY_RIGHT);
+		return this.dataTracker.get(RIGHT_SHOULDER_ENTITY);
 	}
 
 	protected void setShoulderEntityRight(CompoundTag compoundTag) {
-		this.dataTracker.set(SHOULDER_ENTITY_RIGHT, compoundTag);
+		this.dataTracker.set(RIGHT_SHOULDER_ENTITY, compoundTag);
 	}
 
 	public float method_7279() {
@@ -2087,16 +2088,16 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Override
 	protected void method_6020(StatusEffectInstance statusEffectInstance) {
 		super.method_6020(statusEffectInstance);
-		if (!this.world.isRemote && this.world.getRaidState() != null && statusEffectInstance.getEffectType() == StatusEffects.field_16595) {
-			this.world.getRaidState().method_16538(this);
+		if (!this.world.isClient && this.world.getRaidManager() != null && statusEffectInstance.getEffectType() == StatusEffects.field_16595) {
+			this.world.getRaidManager().addTimestamp(this);
 		}
 	}
 
 	@Override
 	protected void method_6129(StatusEffectInstance statusEffectInstance) {
 		super.method_6129(statusEffectInstance);
-		if (!this.world.isRemote && this.world.getRaidState() != null && statusEffectInstance.getEffectType() == StatusEffects.field_16595) {
-			this.world.getRaidState().method_16536(this);
+		if (!this.world.isClient && this.world.getRaidManager() != null && statusEffectInstance.getEffectType() == StatusEffects.field_16595) {
+			this.world.getRaidManager().removeTimestamp(this);
 		}
 	}
 

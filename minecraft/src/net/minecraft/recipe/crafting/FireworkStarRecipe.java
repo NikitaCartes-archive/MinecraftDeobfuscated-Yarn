@@ -23,7 +23,7 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.world.World;
 
 public class FireworkStarRecipe extends AbstractRecipe {
-	private static final Ingredient field_9011 = Ingredient.ofItems(
+	private static final Ingredient field_9011 = Ingredient.method_8091(
 		Items.field_8814,
 		Items.field_8153,
 		Items.field_8397,
@@ -34,20 +34,20 @@ public class FireworkStarRecipe extends AbstractRecipe {
 		Items.field_8712,
 		Items.field_8470
 	);
-	private static final Ingredient field_9010 = Ingredient.ofItems(Items.field_8477);
-	private static final Ingredient field_9014 = Ingredient.ofItems(Items.field_8601);
-	private static final Map<Item, FireworksItem.class_1782> field_9013 = SystemUtil.consume(Maps.<Item, FireworksItem.class_1782>newHashMap(), hashMap -> {
-		hashMap.put(Items.field_8814, FireworksItem.class_1782.field_7977);
-		hashMap.put(Items.field_8153, FireworksItem.class_1782.field_7970);
-		hashMap.put(Items.field_8397, FireworksItem.class_1782.field_7973);
-		hashMap.put(Items.field_8398, FireworksItem.class_1782.field_7974);
-		hashMap.put(Items.field_8791, FireworksItem.class_1782.field_7974);
-		hashMap.put(Items.field_8681, FireworksItem.class_1782.field_7974);
-		hashMap.put(Items.field_8575, FireworksItem.class_1782.field_7974);
-		hashMap.put(Items.field_8712, FireworksItem.class_1782.field_7974);
-		hashMap.put(Items.field_8470, FireworksItem.class_1782.field_7974);
+	private static final Ingredient field_9010 = Ingredient.method_8091(Items.field_8477);
+	private static final Ingredient field_9014 = Ingredient.method_8091(Items.field_8601);
+	private static final Map<Item, FireworksItem.Type> field_9013 = SystemUtil.consume(Maps.<Item, FireworksItem.Type>newHashMap(), hashMap -> {
+		hashMap.put(Items.field_8814, FireworksItem.Type.field_7977);
+		hashMap.put(Items.field_8153, FireworksItem.Type.field_7970);
+		hashMap.put(Items.field_8397, FireworksItem.Type.field_7973);
+		hashMap.put(Items.field_8398, FireworksItem.Type.field_7974);
+		hashMap.put(Items.field_8791, FireworksItem.Type.field_7974);
+		hashMap.put(Items.field_8681, FireworksItem.Type.field_7974);
+		hashMap.put(Items.field_8575, FireworksItem.Type.field_7974);
+		hashMap.put(Items.field_8712, FireworksItem.Type.field_7974);
+		hashMap.put(Items.field_8470, FireworksItem.Type.field_7974);
 	});
-	private static final Ingredient field_9012 = Ingredient.ofItems(Items.field_8054);
+	private static final Ingredient field_9012 = Ingredient.method_8091(Items.field_8054);
 
 	public FireworkStarRecipe(Identifier identifier) {
 		super(identifier);
@@ -109,14 +109,14 @@ public class FireworkStarRecipe extends AbstractRecipe {
 	public ItemStack craft(Inventory inventory) {
 		ItemStack itemStack = new ItemStack(Items.field_8450);
 		CompoundTag compoundTag = itemStack.getOrCreateSubCompoundTag("Explosion");
-		FireworksItem.class_1782 lv = FireworksItem.class_1782.field_7976;
+		FireworksItem.Type type = FireworksItem.Type.field_7976;
 		List<Integer> list = Lists.<Integer>newArrayList();
 
 		for (int i = 0; i < inventory.getInvSize(); i++) {
 			ItemStack itemStack2 = inventory.getInvStack(i);
 			if (!itemStack2.isEmpty()) {
 				if (field_9011.matches(itemStack2)) {
-					lv = (FireworksItem.class_1782)field_9013.get(itemStack2.getItem());
+					type = (FireworksItem.Type)field_9013.get(itemStack2.getItem());
 				} else if (field_9014.matches(itemStack2)) {
 					compoundTag.putBoolean("Flicker", true);
 				} else if (field_9010.matches(itemStack2)) {
@@ -128,7 +128,7 @@ public class FireworkStarRecipe extends AbstractRecipe {
 		}
 
 		compoundTag.putIntArray("Colors", list);
-		compoundTag.putByte("Type", (byte)lv.method_7816());
+		compoundTag.putByte("Type", (byte)type.getId());
 		return itemStack;
 	}
 

@@ -42,11 +42,11 @@ public class BlockPos extends Vec3i {
 		this(vec3i.getX(), vec3i.getY(), vec3i.getZ());
 	}
 
-	public static long method_10090(long l) {
+	public static long toChunkSectionOrigin(long l) {
 		return l & ~BIT_MASK_CHUNK_SECTION;
 	}
 
-	public static long method_10060(long l, Direction direction) {
+	public static long offset(long l, Direction direction) {
 		return add(l, direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ());
 	}
 
@@ -82,11 +82,11 @@ public class BlockPos extends Vec3i {
 		return l | ((long)k & BITS_Z) << BIT_SHIFT_Z;
 	}
 
-	public static long method_10091(long l) {
+	public static long removeChunkSectionLocalY(long l) {
 		return l & -16L;
 	}
 
-	public static long method_10065(long l) {
+	public static long removeY(long l) {
 		return l & ~(BITS_Y << 0);
 	}
 
@@ -115,7 +115,7 @@ public class BlockPos extends Vec3i {
 	}
 
 	public BlockPos up(int i) {
-		return this.method_10079(Direction.UP, i);
+		return this.offset(Direction.UP, i);
 	}
 
 	public BlockPos down() {
@@ -123,7 +123,7 @@ public class BlockPos extends Vec3i {
 	}
 
 	public BlockPos down(int i) {
-		return this.method_10079(Direction.DOWN, i);
+		return this.offset(Direction.DOWN, i);
 	}
 
 	public BlockPos north() {
@@ -131,7 +131,7 @@ public class BlockPos extends Vec3i {
 	}
 
 	public BlockPos north(int i) {
-		return this.method_10079(Direction.NORTH, i);
+		return this.offset(Direction.NORTH, i);
 	}
 
 	public BlockPos south() {
@@ -139,7 +139,7 @@ public class BlockPos extends Vec3i {
 	}
 
 	public BlockPos south(int i) {
-		return this.method_10079(Direction.SOUTH, i);
+		return this.offset(Direction.SOUTH, i);
 	}
 
 	public BlockPos west() {
@@ -147,7 +147,7 @@ public class BlockPos extends Vec3i {
 	}
 
 	public BlockPos west(int i) {
-		return this.method_10079(Direction.WEST, i);
+		return this.offset(Direction.WEST, i);
 	}
 
 	public BlockPos east() {
@@ -155,14 +155,14 @@ public class BlockPos extends Vec3i {
 	}
 
 	public BlockPos east(int i) {
-		return this.method_10079(Direction.EAST, i);
+		return this.offset(Direction.EAST, i);
 	}
 
-	public BlockPos method_10093(Direction direction) {
-		return this.method_10079(direction, 1);
+	public BlockPos offset(Direction direction) {
+		return this.offset(direction, 1);
 	}
 
-	public BlockPos method_10079(Direction direction, int i) {
+	public BlockPos offset(Direction direction, int i) {
 		return i == 0
 			? this
 			: new BlockPos(this.getX() + direction.getOffsetX() * i, this.getY() + direction.getOffsetY() * i, this.getZ() + direction.getOffsetZ() * i);
@@ -309,8 +309,8 @@ public class BlockPos extends Vec3i {
 		}
 
 		@Override
-		public BlockPos method_10079(Direction direction, int i) {
-			return super.method_10079(direction, i).toImmutable();
+		public BlockPos offset(Direction direction, int i) {
+			return super.offset(direction, i).toImmutable();
 		}
 
 		@Override
@@ -352,15 +352,15 @@ public class BlockPos extends Vec3i {
 			return this.set(vec3i.getX(), vec3i.getY(), vec3i.getZ());
 		}
 
-		public BlockPos.Mutable method_16363(long l) {
+		public BlockPos.Mutable setFromLong(long l) {
 			return this.set(unpackLongX(l), unpackLongY(l), unpackLongZ(l));
 		}
 
-		public BlockPos.Mutable method_10098(Direction direction) {
-			return this.method_10104(direction, 1);
+		public BlockPos.Mutable setOffset(Direction direction) {
+			return this.setOffset(direction, 1);
 		}
 
-		public BlockPos.Mutable method_10104(Direction direction, int i) {
+		public BlockPos.Mutable setOffset(Direction direction, int i) {
 			return this.set(this.xMut + direction.getOffsetX() * i, this.yMut + direction.getOffsetY() * i, this.zMut + direction.getOffsetZ() * i);
 		}
 
@@ -390,7 +390,7 @@ public class BlockPos extends Vec3i {
 			return get(0, 0, 0);
 		}
 
-		public static BlockPos.PooledMutable method_10117(Entity entity) {
+		public static BlockPos.PooledMutable getEntityPos(Entity entity) {
 			return get(entity.x, entity.y, entity.z);
 		}
 
@@ -429,12 +429,12 @@ public class BlockPos extends Vec3i {
 			return (BlockPos.PooledMutable)super.set(vec3i);
 		}
 
-		public BlockPos.PooledMutable method_10118(Direction direction) {
-			return (BlockPos.PooledMutable)super.method_10098(direction);
+		public BlockPos.PooledMutable setOffset(Direction direction) {
+			return (BlockPos.PooledMutable)super.setOffset(direction);
 		}
 
-		public BlockPos.PooledMutable method_10116(Direction direction, int i) {
-			return (BlockPos.PooledMutable)super.method_10104(direction, i);
+		public BlockPos.PooledMutable setOffset(Direction direction, int i) {
+			return (BlockPos.PooledMutable)super.setOffset(direction, i);
 		}
 
 		public BlockPos.PooledMutable method_10108(int i, int j, int k) {

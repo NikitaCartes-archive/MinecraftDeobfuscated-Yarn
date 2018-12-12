@@ -1,13 +1,6 @@
 package net.minecraft.network.listener;
 
-import net.minecraft.class_2695;
-import net.minecraft.class_2707;
-import net.minecraft.class_2713;
-import net.minecraft.class_2757;
-import net.minecraft.class_2765;
-import net.minecraft.class_2770;
-import net.minecraft.class_2774;
-import net.minecraft.class_2779;
+import net.minecraft.client.network.packet.AdvancementUpdateClientPacket;
 import net.minecraft.client.network.packet.BlockActionClientPacket;
 import net.minecraft.client.network.packet.BlockBreakingProgressClientPacket;
 import net.minecraft.client.network.packet.BlockEntityUpdateClientPacket;
@@ -20,6 +13,7 @@ import net.minecraft.client.network.packet.CombatEventClientPacket;
 import net.minecraft.client.network.packet.CommandSuggestionsClientPacket;
 import net.minecraft.client.network.packet.CommandTreeClientPacket;
 import net.minecraft.client.network.packet.CooldownUpdateClientPacket;
+import net.minecraft.client.network.packet.CraftResponseClientPacket;
 import net.minecraft.client.network.packet.CustomPayloadClientPacket;
 import net.minecraft.client.network.packet.DifficultyClientPacket;
 import net.minecraft.client.network.packet.DisconnectClientPacket;
@@ -54,11 +48,14 @@ import net.minecraft.client.network.packet.InventoryClientPacket;
 import net.minecraft.client.network.packet.ItemPickupAnimationClientPacket;
 import net.minecraft.client.network.packet.KeepAliveClientPacket;
 import net.minecraft.client.network.packet.LightUpdateClientPacket;
+import net.minecraft.client.network.packet.LookAtClientPacket;
 import net.minecraft.client.network.packet.MapUpdateClientPacket;
 import net.minecraft.client.network.packet.MobSpawnClientPacket;
+import net.minecraft.client.network.packet.OpenWrittenBookClientPacket;
 import net.minecraft.client.network.packet.PaintingSpawnClientPacket;
 import net.minecraft.client.network.packet.ParticleClientPacket;
 import net.minecraft.client.network.packet.PlaySoundClientPacket;
+import net.minecraft.client.network.packet.PlaySoundFromEntityClientPacket;
 import net.minecraft.client.network.packet.PlaySoundIdClientPacket;
 import net.minecraft.client.network.packet.PlayerAbilitiesClientPacket;
 import net.minecraft.client.network.packet.PlayerListClientPacket;
@@ -72,11 +69,15 @@ import net.minecraft.client.network.packet.RemoveEntityEffectClientPacket;
 import net.minecraft.client.network.packet.ResourcePackSendClientPacket;
 import net.minecraft.client.network.packet.ScoreboardDisplayClientPacket;
 import net.minecraft.client.network.packet.ScoreboardObjectiveUpdateClientPacket;
+import net.minecraft.client.network.packet.ScoreboardPlayerUpdateClientPacket;
+import net.minecraft.client.network.packet.SelectAdvancementTabClientPacket;
 import net.minecraft.client.network.packet.SetCameraEntityClientPacket;
 import net.minecraft.client.network.packet.SignEditorOpenClientPacket;
 import net.minecraft.client.network.packet.StatisticsClientPacket;
+import net.minecraft.client.network.packet.StopSoundClientPacket;
 import net.minecraft.client.network.packet.SynchronizeRecipesClientPacket;
 import net.minecraft.client.network.packet.SynchronizeTagsClientPacket;
+import net.minecraft.client.network.packet.TagQueryResponseClientPacket;
 import net.minecraft.client.network.packet.TeamClientPacket;
 import net.minecraft.client.network.packet.TitleClientPacket;
 import net.minecraft.client.network.packet.UnloadChunkClientPacket;
@@ -105,7 +106,7 @@ public interface ClientPlayPacketListener extends PacketListener {
 
 	void onStatistics(StatisticsClientPacket statisticsClientPacket);
 
-	void onUnlockRecipes(class_2713 arg);
+	void onUnlockRecipes(UnlockRecipesClientPacket unlockRecipesClientPacket);
 
 	void onBlockDestroyProgress(BlockBreakingProgressClientPacket blockBreakingProgressClientPacket);
 
@@ -195,7 +196,7 @@ public interface ClientPlayPacketListener extends PacketListener {
 
 	void onTeam(TeamClientPacket teamClientPacket);
 
-	void method_11118(class_2757 arg);
+	void onScoreboardPlayerUpdate(ScoreboardPlayerUpdateClientPacket scoreboardPlayerUpdateClientPacket);
 
 	void onPlayerSpawnPosition(PlayerSpawnPositionClientPacket playerSpawnPositionClientPacket);
 
@@ -203,7 +204,7 @@ public interface ClientPlayPacketListener extends PacketListener {
 
 	void onPlaySound(PlaySoundClientPacket playSoundClientPacket);
 
-	void method_11125(class_2765 arg);
+	void onPlaySoundFromEntity(PlaySoundFromEntityClientPacket playSoundFromEntityClientPacket);
 
 	void onPlaySoundId(PlaySoundIdClientPacket playSoundIdClientPacket);
 
@@ -237,23 +238,25 @@ public interface ClientPlayPacketListener extends PacketListener {
 
 	void onVehicleMove(VehicleMoveClientPacket vehicleMoveClientPacket);
 
-	void onAdvancements(class_2779 arg);
+	void onAdvancements(AdvancementUpdateClientPacket advancementUpdateClientPacket);
 
-	void method_11161(UnlockRecipesClientPacket unlockRecipesClientPacket);
+	void method_11161(SelectAdvancementTabClientPacket selectAdvancementTabClientPacket);
 
-	void method_11090(class_2695 arg);
+	void onCraftResponse(CraftResponseClientPacket craftResponseClientPacket);
 
 	void onCommandTree(CommandTreeClientPacket commandTreeClientPacket);
 
-	void method_11082(class_2770 arg);
+	void onStopSound(StopSoundClientPacket stopSoundClientPacket);
 
 	void onCommandSuggestions(CommandSuggestionsClientPacket commandSuggestionsClientPacket);
 
 	void onSynchronizeRecipes(SynchronizeRecipesClientPacket synchronizeRecipesClientPacket);
 
-	void method_11092(class_2707 arg);
+	void onLookAt(LookAtClientPacket lookAtClientPacket);
 
-	void method_11127(class_2774 arg);
+	void onTagQuery(TagQueryResponseClientPacket tagQueryResponseClientPacket);
 
 	void onLightUpdate(LightUpdateClientPacket lightUpdateClientPacket);
+
+	void onOpenWrittenBook(OpenWrittenBookClientPacket openWrittenBookClientPacket);
 }

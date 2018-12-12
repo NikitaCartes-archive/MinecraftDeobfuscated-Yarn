@@ -94,7 +94,7 @@ public final class VideoMode {
 		return String.format("%sx%s@%s (%sbit)", this.width, this.height, this.refreshRate, this.redBits + this.greenBits + this.blueBits);
 	}
 
-	public static Optional<VideoMode> method_1665(String string) {
+	public static Optional<VideoMode> fromString(String string) {
 		try {
 			Matcher matcher = PATTERN.matcher(string);
 			if (matcher.matches()) {

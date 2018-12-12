@@ -40,7 +40,7 @@ public class LocateCommand {
 
 	private static int method_13457(ServerCommandSource serverCommandSource, String string) throws CommandSyntaxException {
 		BlockPos blockPos = new BlockPos(serverCommandSource.getPosition());
-		BlockPos blockPos2 = serverCommandSource.getWorld().method_8487(string, blockPos, 100, false);
+		BlockPos blockPos2 = serverCommandSource.getWorld().locateStructure(string, blockPos, 100, false);
 		if (blockPos2 == null) {
 			throw FAILED_EXCEPTION.create();
 		} else {

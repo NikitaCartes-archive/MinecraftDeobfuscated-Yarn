@@ -17,9 +17,9 @@ import org.lwjgl.glfw.GLFWScrollCallbackI;
 
 @Environment(EnvType.CLIENT)
 public class InputUtil {
-	public static final InputUtil.KeyCode field_16237 = InputUtil.Type.field_1668.createFromCode(-1);
+	public static final InputUtil.KeyCode UNKNOWN_KEYCODE = InputUtil.Type.field_1668.createFromCode(-1);
 
-	public static InputUtil.KeyCode method_15985(int i, int j) {
+	public static InputUtil.KeyCode getKeyCode(int i, int j) {
 		return i == -1 ? InputUtil.Type.field_1671.createFromCode(j) : InputUtil.Type.field_1668.createFromCode(i);
 	}
 

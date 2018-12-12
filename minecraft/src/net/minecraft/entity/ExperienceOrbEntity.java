@@ -160,7 +160,7 @@ public class ExperienceOrbEntity extends Entity {
 		if (this.isInvulnerableTo(damageSource)) {
 			return false;
 		} else {
-			this.method_5785();
+			this.scheduleVelocityUpdate();
 			this.health = (int)((float)this.health - f);
 			if (this.health <= 0) {
 				this.invalidate();
@@ -185,8 +185,8 @@ public class ExperienceOrbEntity extends Entity {
 	}
 
 	@Override
-	public void method_5694(PlayerEntity playerEntity) {
-		if (!this.world.isRemote) {
+	public void onPlayerCollision(PlayerEntity playerEntity) {
+		if (!this.world.isClient) {
 			if (this.field_6163 == 0 && playerEntity.field_7504 == 0) {
 				playerEntity.field_7504 = 2;
 				playerEntity.method_6103(this, 1);

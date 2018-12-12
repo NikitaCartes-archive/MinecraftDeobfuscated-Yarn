@@ -8,8 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class EndIslandFeature extends Feature<DefaultFeatureConfig> {
 	public EndIslandFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
@@ -17,7 +16,7 @@ public class EndIslandFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean method_13110(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		float f = (float)(random.nextInt(3) + 4);
 
@@ -25,7 +24,7 @@ public class EndIslandFeature extends Feature<DefaultFeatureConfig> {
 			for (int j = MathHelper.floor(-f); j <= MathHelper.ceil(f); j++) {
 				for (int k = MathHelper.floor(-f); k <= MathHelper.ceil(f); k++) {
 					if ((float)(j * j + k * k) <= (f + 1.0F) * (f + 1.0F)) {
-						this.method_13153(iWorld, blockPos.add(j, i, k), Blocks.field_10471.getDefaultState());
+						this.setBlockState(iWorld, blockPos.add(j, i, k), Blocks.field_10471.getDefaultState());
 					}
 				}
 			}

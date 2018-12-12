@@ -107,7 +107,7 @@ public class RealmsGui extends Gui {
 	}
 
 	public int getFontHeight() {
-		return this.fontRenderer.FONT_HEIGHT;
+		return this.fontRenderer.fontHeight;
 	}
 
 	public int getStringWidth(String string) {
@@ -147,9 +147,9 @@ public class RealmsGui extends Gui {
 	}
 
 	public List<RealmsButton> getButtons() {
-		List<RealmsButton> list = Lists.<RealmsButton>newArrayListWithExpectedSize(this.buttonWidgets.size());
+		List<RealmsButton> list = Lists.<RealmsButton>newArrayListWithExpectedSize(this.buttons.size());
 
-		for (ButtonWidget buttonWidget : this.buttonWidgets) {
+		for (ButtonWidget buttonWidget : this.buttons) {
 			list.add(((RealmsButtonWidget)buttonWidget).getRealmsButton());
 		}
 
@@ -157,14 +157,14 @@ public class RealmsGui extends Gui {
 	}
 
 	public void clearWidgets() {
-		HashSet<GuiEventListener> hashSet = new HashSet(this.buttonWidgets);
+		HashSet<GuiEventListener> hashSet = new HashSet(this.buttons);
 		this.listeners.removeIf(hashSet::contains);
-		this.buttonWidgets.clear();
+		this.buttons.clear();
 	}
 
 	public void removeButton(RealmsButton realmsButton) {
 		this.listeners.remove(realmsButton.getProxy());
-		this.buttonWidgets.remove(realmsButton.getProxy());
+		this.buttons.remove(realmsButton.getProxy());
 	}
 
 	@Override

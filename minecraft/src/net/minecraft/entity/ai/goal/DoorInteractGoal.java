@@ -49,7 +49,7 @@ public abstract class DoorInteractGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		if (!this.owner.field_5976) {
+		if (!this.owner.horizontalCollision) {
 			return false;
 		} else {
 			EntityMobNavigation entityMobNavigation = (EntityMobNavigation)this.owner.getNavigation();

@@ -9,13 +9,13 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_308;
 import net.minecraft.class_455;
 import net.minecraft.advancement.AdvancementDisplay;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -132,7 +132,7 @@ public class AdvancementWidget extends Drawable {
 
 	public void method_2325(int i, int j) {
 		if (!this.display.isHidden() || this.field_2714 != null && this.field_2714.isDone()) {
-			float f = this.field_2714 == null ? 0.0F : this.field_2714.method_735();
+			float f = this.field_2714 == null ? 0.0F : this.field_2714.getProgressBarPercentage();
 			class_455 lv;
 			if (f >= 1.0F) {
 				lv = class_455.field_2701;
@@ -144,7 +144,7 @@ public class AdvancementWidget extends Drawable {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.enableBlend();
 			this.drawTexturedRect(i + this.xPos + 3, j + this.yPos, this.display.getFrame().texV(), 128 + lv.method_2320() * 26, 26, 26);
-			class_308.method_1453();
+			GuiLighting.enableForItems();
 			this.client.getItemRenderer().renderItemInGui(null, this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
 		}
 
@@ -163,10 +163,10 @@ public class AdvancementWidget extends Drawable {
 
 	public void method_2331(int i, int j, float f, int k, int l) {
 		boolean bl = k + i + this.xPos + this.field_2715 + 26 >= this.tree.method_2312().width;
-		String string = this.field_2714 == null ? null : this.field_2714.method_728();
+		String string = this.field_2714 == null ? null : this.field_2714.getProgressBarFraction();
 		int m = string == null ? 0 : this.client.fontRenderer.getStringWidth(string);
-		boolean bl2 = 113 - j - this.yPos - 26 <= 6 + this.field_2705.size() * this.client.fontRenderer.FONT_HEIGHT;
-		float g = this.field_2714 == null ? 0.0F : this.field_2714.method_735();
+		boolean bl2 = 113 - j - this.yPos - 26 <= 6 + this.field_2705.size() * this.client.fontRenderer.fontHeight;
+		float g = this.field_2714 == null ? 0.0F : this.field_2714.getProgressBarPercentage();
 		int n = MathHelper.floor(g * (float)this.field_2715);
 		class_455 lv;
 		class_455 lv2;
@@ -204,7 +204,7 @@ public class AdvancementWidget extends Drawable {
 			q = i + this.xPos;
 		}
 
-		int r = 32 + this.field_2705.size() * this.client.fontRenderer.FONT_HEIGHT;
+		int r = 32 + this.field_2705.size() * this.client.fontRenderer.fontHeight;
 		if (!this.field_2705.isEmpty()) {
 			if (bl2) {
 				this.method_2324(q, p + 26 - r, this.field_2715, r, 10, 200, 26, 0, 52);
@@ -230,17 +230,17 @@ public class AdvancementWidget extends Drawable {
 
 		if (bl2) {
 			for (int s = 0; s < this.field_2705.size(); s++) {
-				this.client.fontRenderer.draw((String)this.field_2705.get(s), (float)(q + 5), (float)(p + 26 - r + 7 + s * this.client.fontRenderer.FONT_HEIGHT), -5592406);
+				this.client.fontRenderer.draw((String)this.field_2705.get(s), (float)(q + 5), (float)(p + 26 - r + 7 + s * this.client.fontRenderer.fontHeight), -5592406);
 			}
 		} else {
 			for (int s = 0; s < this.field_2705.size(); s++) {
 				this.client
 					.fontRenderer
-					.draw((String)this.field_2705.get(s), (float)(q + 5), (float)(j + this.yPos + 9 + 17 + s * this.client.fontRenderer.FONT_HEIGHT), -5592406);
+					.draw((String)this.field_2705.get(s), (float)(q + 5), (float)(j + this.yPos + 9 + 17 + s * this.client.fontRenderer.fontHeight), -5592406);
 			}
 		}
 
-		class_308.method_1453();
+		GuiLighting.enableForItems();
 		this.client.getItemRenderer().renderItemInGui(null, this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
 	}
 

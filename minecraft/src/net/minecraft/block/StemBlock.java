@@ -50,7 +50,7 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 	@Override
 	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		super.scheduledTick(blockState, world, blockPos, random);
-		if (world.method_8624(blockPos.up(), 0) >= 9) {
+		if (world.getLightLevel(blockPos.up(), 0) >= 9) {
 			float f = CropBlock.method_9830(this, world, blockPos);
 			if (random.nextInt((int)(25.0F / f) + 1) == 0) {
 				int i = (Integer)blockState.get(field_11584);
@@ -59,7 +59,7 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 					world.setBlockState(blockPos, blockState, 2);
 				} else {
 					Direction direction = Direction.class_2353.HORIZONTAL.random(random);
-					BlockPos blockPos2 = blockPos.method_10093(direction);
+					BlockPos blockPos2 = blockPos.offset(direction);
 					Block block = world.getBlockState(blockPos2.down()).getBlock();
 					if (world.getBlockState(blockPos2).isAir()
 						&& (

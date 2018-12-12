@@ -4,19 +4,19 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.settings.GameOptions;
+import net.minecraft.client.options.GameOptions;
 
 @Environment(EnvType.CLIENT)
 public class VideoSettingsListWidget extends EntryListWidget<VideoSettingsListWidget.class_354> {
 	public VideoSettingsListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m, GameOptions.Option... options) {
 		super(minecraftClient, i, j, k, l, m);
 		this.field_2173 = false;
-		this.method_1901(new VideoSettingsListWidget.class_354(i, GameOptions.Option.FULLSCREEN_RESOLUTION));
+		this.addEntry(new VideoSettingsListWidget.class_354(i, GameOptions.Option.FULLSCREEN_RESOLUTION));
 
 		for (int n = 0; n < options.length; n += 2) {
 			GameOptions.Option option = options[n];
 			GameOptions.Option option2 = n < options.length - 1 ? options[n + 1] : null;
-			this.method_1901(new VideoSettingsListWidget.class_354(i, option, option2));
+			this.addEntry(new VideoSettingsListWidget.class_354(i, option, option2));
 		}
 	}
 
@@ -28,11 +28,11 @@ public class VideoSettingsListWidget extends EntryListWidget<VideoSettingsListWi
 			int l = option.getId();
 			return (ButtonWidget)(option.isSlider()
 				? new OptionSliderWidget(l, i, j, k, 20, option, 0.0, 1.0)
-				: new OptionButtonWidget(l, i, j, k, 20, option, minecraftClient.options.getTranslatedName(option)) {
+				: new OptionButtonWidget(l, i, j, k, 20, option, minecraftClient.field_1690.getTranslatedName(option)) {
 					@Override
 					public void onPressed(double d, double e) {
-						minecraftClient.options.updateOption(option, 1);
-						this.text = minecraftClient.options.getTranslatedName(GameOptions.Option.byId(this.id));
+						minecraftClient.field_1690.updateOption(option, 1);
+						this.text = minecraftClient.field_1690.getTranslatedName(GameOptions.Option.byId(this.id));
 					}
 				});
 		}
@@ -72,14 +72,14 @@ public class VideoSettingsListWidget extends EntryListWidget<VideoSettingsListWi
 		}
 
 		@Override
-		public void drawEntry(int i, int j, int k, int l, boolean bl, float f) {
+		public void draw(int i, int j, int k, int l, boolean bl, float f) {
 			if (this.field_2149 != null) {
-				this.field_2149.y = this.method_1906();
+				this.field_2149.y = this.getY();
 				this.field_2149.draw(k, l, f);
 			}
 
 			if (this.field_2150 != null) {
-				this.field_2150.y = this.method_1906();
+				this.field_2150.y = this.getY();
 				this.field_2150.draw(k, l, f);
 			}
 		}

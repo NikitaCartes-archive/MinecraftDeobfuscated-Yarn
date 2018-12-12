@@ -107,7 +107,7 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 		float h = 0.06F;
 		if (!this.world.method_8422(this.getBoundingBox(), Material.AIR)) {
 			this.invalidate();
-		} else if (this.method_5816()) {
+		} else if (this.isInsideWaterOrBubbleColumn()) {
 			this.invalidate();
 		} else {
 			this.velocityX *= 0.99F;
@@ -187,7 +187,7 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 			hitResult.entity.damage(DamageSource.mobProjectile(this, this.owner).setProjectile(), 1.0F);
 		}
 
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			this.invalidate();
 		}
 	}

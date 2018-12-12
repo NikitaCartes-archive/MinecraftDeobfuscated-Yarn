@@ -10,32 +10,32 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 public class PlayerActionServerPacket implements Packet<ServerPlayPacketListener> {
-	private BlockPos field_12967;
-	private Direction field_12965;
-	private PlayerActionServerPacket.class_2847 field_12966;
+	private BlockPos pos;
+	private Direction direction;
+	private PlayerActionServerPacket.Action action;
 
 	public PlayerActionServerPacket() {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public PlayerActionServerPacket(PlayerActionServerPacket.class_2847 arg, BlockPos blockPos, Direction direction) {
-		this.field_12966 = arg;
-		this.field_12967 = blockPos;
-		this.field_12965 = direction;
+	public PlayerActionServerPacket(PlayerActionServerPacket.Action action, BlockPos blockPos, Direction direction) {
+		this.action = action;
+		this.pos = blockPos;
+		this.direction = direction;
 	}
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.field_12966 = packetByteBuf.readEnumConstant(PlayerActionServerPacket.class_2847.class);
-		this.field_12967 = packetByteBuf.readBlockPos();
-		this.field_12965 = Direction.byId(packetByteBuf.readUnsignedByte());
+		this.action = packetByteBuf.readEnumConstant(PlayerActionServerPacket.Action.class);
+		this.pos = packetByteBuf.readBlockPos();
+		this.direction = Direction.byId(packetByteBuf.readUnsignedByte());
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeEnumConstant(this.field_12966);
-		packetByteBuf.writeBlockPos(this.field_12967);
-		packetByteBuf.writeByte(this.field_12965.getId());
+		packetByteBuf.writeEnumConstant(this.action);
+		packetByteBuf.writeBlockPos(this.pos);
+		packetByteBuf.writeByte(this.direction.getId());
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
@@ -43,18 +43,18 @@ public class PlayerActionServerPacket implements Packet<ServerPlayPacketListener
 	}
 
 	public BlockPos getPos() {
-		return this.field_12967;
+		return this.pos;
 	}
 
-	public Direction method_12360() {
-		return this.field_12965;
+	public Direction getDirection() {
+		return this.direction;
 	}
 
-	public PlayerActionServerPacket.class_2847 getAction() {
-		return this.field_12966;
+	public PlayerActionServerPacket.Action getAction() {
+		return this.action;
 	}
 
-	public static enum class_2847 {
+	public static enum Action {
 		field_12968,
 		field_12971,
 		field_12973,

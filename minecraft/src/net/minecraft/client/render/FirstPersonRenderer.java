@@ -6,20 +6,19 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_308;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderLayer;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.RenderTypeBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.ModelLoader;
-import net.minecraft.client.render.model.json.ModelTransformations;
+import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.entity.LivingEntity;
@@ -57,11 +56,11 @@ public class FirstPersonRenderer {
 		this.itemRenderer = minecraftClient.getItemRenderer();
 	}
 
-	public void renderItem(LivingEntity livingEntity, ItemStack itemStack, ModelTransformations.Type type) {
-		this.renderItemFromSide(livingEntity, itemStack, type, false);
+	public void method_3233(LivingEntity livingEntity, ItemStack itemStack, ModelTransformation.Type type) {
+		this.method_3234(livingEntity, itemStack, type, false);
 	}
 
-	public void renderItemFromSide(LivingEntity livingEntity, ItemStack itemStack, ModelTransformations.Type type, boolean bl) {
+	public void method_3234(LivingEntity livingEntity, ItemStack itemStack, ModelTransformation.Type type, boolean bl) {
 		if (!itemStack.isEmpty()) {
 			Item item = itemStack.getItem();
 			Block block = Block.getBlockFromItem(item);
@@ -84,7 +83,7 @@ public class FirstPersonRenderer {
 		GlStateManager.pushMatrix();
 		GlStateManager.rotatef(f, 1.0F, 0.0F, 0.0F);
 		GlStateManager.rotatef(g, 0.0F, 1.0F, 0.0F);
-		class_308.method_1452();
+		GuiLighting.enable();
 		GlStateManager.popMatrix();
 	}
 
@@ -192,18 +191,18 @@ public class FirstPersonRenderer {
 		GlStateManager.disableLighting();
 		this.client.getTextureManager().bindTexture(MAP_BACKGROUND_TEX);
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		GlStateManager.translatef(-0.5F, -0.5F, 0.0F);
 		GlStateManager.scalef(0.0078125F, 0.0078125F, 0.0078125F);
-		vertexBuffer.begin(7, VertexFormats.POSITION_UV);
-		vertexBuffer.vertex(-7.0, 135.0, 0.0).texture(0.0, 1.0).next();
-		vertexBuffer.vertex(135.0, 135.0, 0.0).texture(1.0, 1.0).next();
-		vertexBuffer.vertex(135.0, -7.0, 0.0).texture(1.0, 0.0).next();
-		vertexBuffer.vertex(-7.0, -7.0, 0.0).texture(0.0, 0.0).next();
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+		bufferBuilder.vertex(-7.0, 135.0, 0.0).texture(0.0, 1.0).next();
+		bufferBuilder.vertex(135.0, 135.0, 0.0).texture(1.0, 1.0).next();
+		bufferBuilder.vertex(135.0, -7.0, 0.0).texture(1.0, 0.0).next();
+		bufferBuilder.vertex(-7.0, -7.0, 0.0).texture(0.0, 0.0).next();
 		tessellator.draw();
 		MapState mapState = FilledMapItem.method_8001(itemStack, this.client.world);
 		if (mapState != null) {
-			this.client.worldRenderer.method_3194().method_1773(mapState, false);
+			this.client.field_1773.method_3194().method_1773(mapState, false);
 		}
 
 		GlStateManager.enableLighting();
@@ -229,7 +228,7 @@ public class FirstPersonRenderer {
 		GlStateManager.rotatef(200.0F, 1.0F, 0.0F, 0.0F);
 		GlStateManager.rotatef(h * -135.0F, 0.0F, 1.0F, 0.0F);
 		GlStateManager.translatef(h * 5.6F, 0.0F, 0.0F);
-		PlayerEntityRenderer playerEntityRenderer = (PlayerEntityRenderer)this.renderManager.<AbstractClientPlayerEntity>getRenderer(abstractClientPlayerEntity);
+		PlayerEntityRenderer playerEntityRenderer = this.renderManager.getRenderer(abstractClientPlayerEntity);
 		GlStateManager.disableCull();
 		if (bl) {
 			playerEntityRenderer.method_4220(abstractClientPlayerEntity);
@@ -315,7 +314,7 @@ public class FirstPersonRenderer {
 		}
 
 		GlStateManager.disableRescaleNormal();
-		class_308.method_1450();
+		GuiLighting.disable();
 	}
 
 	public void renderFirstPersonItem(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, Hand hand, float h, ItemStack itemStack, float i) {
@@ -372,8 +371,8 @@ public class FirstPersonRenderer {
 					}
 				}
 
-				this.renderItemFromSide(
-					abstractClientPlayerEntity, itemStack, bl3 ? ModelTransformations.Type.FIRST_PERSON_RIGHT_HAND : ModelTransformations.Type.FIRST_PERSON_LEFT_HAND, !bl3
+				this.method_3234(
+					abstractClientPlayerEntity, itemStack, bl3 ? ModelTransformation.Type.FIRST_PERSON_RIGHT_HAND : ModelTransformation.Type.FIRST_PERSON_LEFT_HAND, !bl3
 				);
 			}
 		} else {
@@ -439,7 +438,7 @@ public class FirstPersonRenderer {
 						GlStateManager.scalef(1.0F, 1.0F, 1.0F + kx * 0.2F);
 						GlStateManager.rotatef((float)p * 45.0F, 0.0F, -1.0F, 0.0F);
 				}
-			} else if (abstractClientPlayerEntity.method_6123()) {
+			} else if (abstractClientPlayerEntity.isUsingRiptide()) {
 				this.method_3224(optionMainHand, i);
 				int p = bl2 ? 1 : -1;
 				GlStateManager.translatef((float)p * -0.4F, 0.8F, 0.3F);
@@ -455,8 +454,8 @@ public class FirstPersonRenderer {
 				this.method_3217(optionMainHand, h);
 			}
 
-			this.renderItemFromSide(
-				abstractClientPlayerEntity, itemStack, bl2 ? ModelTransformations.Type.FIRST_PERSON_RIGHT_HAND : ModelTransformations.Type.FIRST_PERSON_LEFT_HAND, !bl2
+			this.method_3234(
+				abstractClientPlayerEntity, itemStack, bl2 ? ModelTransformation.Type.FIRST_PERSON_RIGHT_HAND : ModelTransformation.Type.FIRST_PERSON_LEFT_HAND, !bl2
 			);
 		}
 
@@ -480,7 +479,7 @@ public class FirstPersonRenderer {
 				}
 			}
 
-			if (blockState.getRenderType() != RenderTypeBlock.NONE) {
+			if (blockState.getRenderType() != BlockRenderType.field_11455) {
 				this.renderBlock(this.client.getBlockRenderManager().getModels().getSprite(blockState));
 			}
 		}
@@ -501,7 +500,7 @@ public class FirstPersonRenderer {
 	private void renderBlock(Sprite sprite) {
 		this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		float f = 0.1F;
 		GlStateManager.color4f(0.1F, 0.1F, 0.1F, 0.5F);
 		GlStateManager.pushMatrix();
@@ -514,11 +513,11 @@ public class FirstPersonRenderer {
 		float m = sprite.getMaxU();
 		float n = sprite.getMinV();
 		float o = sprite.getMaxV();
-		vertexBuffer.begin(7, VertexFormats.POSITION_UV);
-		vertexBuffer.vertex(-1.0, -1.0, -0.5).texture((double)m, (double)o).next();
-		vertexBuffer.vertex(1.0, -1.0, -0.5).texture((double)l, (double)o).next();
-		vertexBuffer.vertex(1.0, 1.0, -0.5).texture((double)l, (double)n).next();
-		vertexBuffer.vertex(-1.0, 1.0, -0.5).texture((double)m, (double)n).next();
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+		bufferBuilder.vertex(-1.0, -1.0, -0.5).texture((double)m, (double)o).next();
+		bufferBuilder.vertex(1.0, -1.0, -0.5).texture((double)l, (double)o).next();
+		bufferBuilder.vertex(1.0, 1.0, -0.5).texture((double)l, (double)n).next();
+		bufferBuilder.vertex(-1.0, 1.0, -0.5).texture((double)m, (double)n).next();
 		tessellator.draw();
 		GlStateManager.popMatrix();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -527,7 +526,7 @@ public class FirstPersonRenderer {
 	private void renderWaterOverlay(float f) {
 		this.client.getTextureManager().bindTexture(UNDERWATER_TEX);
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		float g = this.client.player.method_5718();
 		GlStateManager.color4f(g, g, g, 0.1F);
 		GlStateManager.enableBlend();
@@ -546,11 +545,11 @@ public class FirstPersonRenderer {
 		float m = -0.5F;
 		float n = -this.client.player.yaw / 64.0F;
 		float o = this.client.player.pitch / 64.0F;
-		vertexBuffer.begin(7, VertexFormats.POSITION_UV);
-		vertexBuffer.vertex(-1.0, -1.0, -0.5).texture((double)(4.0F + n), (double)(4.0F + o)).next();
-		vertexBuffer.vertex(1.0, -1.0, -0.5).texture((double)(0.0F + n), (double)(4.0F + o)).next();
-		vertexBuffer.vertex(1.0, 1.0, -0.5).texture((double)(0.0F + n), (double)(0.0F + o)).next();
-		vertexBuffer.vertex(-1.0, 1.0, -0.5).texture((double)(4.0F + n), (double)(0.0F + o)).next();
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+		bufferBuilder.vertex(-1.0, -1.0, -0.5).texture((double)(4.0F + n), (double)(4.0F + o)).next();
+		bufferBuilder.vertex(1.0, -1.0, -0.5).texture((double)(0.0F + n), (double)(4.0F + o)).next();
+		bufferBuilder.vertex(1.0, 1.0, -0.5).texture((double)(0.0F + n), (double)(0.0F + o)).next();
+		bufferBuilder.vertex(-1.0, 1.0, -0.5).texture((double)(4.0F + n), (double)(0.0F + o)).next();
 		tessellator.draw();
 		GlStateManager.popMatrix();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -559,7 +558,7 @@ public class FirstPersonRenderer {
 
 	private void method_3236() {
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 0.9F);
 		GlStateManager.depthFunc(519);
 		GlStateManager.depthMask(false);
@@ -587,11 +586,11 @@ public class FirstPersonRenderer {
 			float p = -0.5F;
 			GlStateManager.translatef((float)(-(i * 2 - 1)) * 0.24F, -0.3F, 0.0F);
 			GlStateManager.rotatef((float)(i * 2 - 1) * 10.0F, 0.0F, 1.0F, 0.0F);
-			vertexBuffer.begin(7, VertexFormats.POSITION_UV);
-			vertexBuffer.vertex(-0.5, -0.5, -0.5).texture((double)h, (double)k).next();
-			vertexBuffer.vertex(0.5, -0.5, -0.5).texture((double)g, (double)k).next();
-			vertexBuffer.vertex(0.5, 0.5, -0.5).texture((double)g, (double)j).next();
-			vertexBuffer.vertex(-0.5, 0.5, -0.5).texture((double)h, (double)j).next();
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+			bufferBuilder.vertex(-0.5, -0.5, -0.5).texture((double)h, (double)k).next();
+			bufferBuilder.vertex(0.5, -0.5, -0.5).texture((double)g, (double)k).next();
+			bufferBuilder.vertex(0.5, 0.5, -0.5).texture((double)g, (double)j).next();
+			bufferBuilder.vertex(-0.5, 0.5, -0.5).texture((double)h, (double)j).next();
 			tessellator.draw();
 			GlStateManager.popMatrix();
 		}

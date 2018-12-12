@@ -27,7 +27,7 @@ public class TrackIronGolemTargetGoal extends TrackTargetGoal {
 			} else if (this.canTrack(this.target, false)) {
 				return true;
 			} else if (this.entity.getRand().nextInt(20) == 0) {
-				this.target = villageProperties.getNearestPlayer(this.ironGolem);
+				this.target = villageProperties.getNearestUnpopularPlayer(this.ironGolem);
 				return this.canTrack(this.target, false);
 			} else {
 				return false;

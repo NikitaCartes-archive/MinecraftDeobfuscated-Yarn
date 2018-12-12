@@ -32,7 +32,7 @@ public class JigsawBlock extends FacingBlock implements BlockEntityProvider {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(field_10927, itemPlacementContext.method_8038());
+		return this.getDefaultState().with(field_10927, itemPlacementContext.getFacing());
 	}
 
 	@Nullable
@@ -42,12 +42,12 @@ public class JigsawBlock extends FacingBlock implements BlockEntityProvider {
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof JigsawBlockEntity && playerEntity.method_7338()) {
-			playerEntity.method_16354((JigsawBlockEntity)blockEntity);
+			playerEntity.openJigsawGui((JigsawBlockEntity)blockEntity);
 			return true;
 		} else {
 			return false;

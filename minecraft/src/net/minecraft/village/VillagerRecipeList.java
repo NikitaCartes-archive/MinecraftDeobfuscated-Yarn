@@ -1,6 +1,5 @@
 package net.minecraft.village;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -10,54 +9,34 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.PacketByteBuf;
-import net.minecraft.util.TagHelper;
 
 public class VillagerRecipeList extends ArrayList<VillagerRecipe> {
 	public VillagerRecipeList() {
 	}
 
 	public VillagerRecipeList(CompoundTag compoundTag) {
-		this.serialize(compoundTag);
+		ListTag listTag = compoundTag.getList("Recipes", 10);
+
+		for (int i = 0; i < listTag.size(); i++) {
+			this.add(new VillagerRecipe(listTag.getCompoundTag(i)));
+		}
 	}
 
 	@Nullable
 	public VillagerRecipe getValidRecipe(ItemStack itemStack, ItemStack itemStack2, int i) {
 		if (i > 0 && i < this.size()) {
 			VillagerRecipe villagerRecipe = (VillagerRecipe)this.get(i);
-			return !this.itemsAreEqual(itemStack, villagerRecipe.getBuyItem())
-					|| (!itemStack2.isEmpty() || villagerRecipe.hasSecondBuyItem())
-						&& (!villagerRecipe.hasSecondBuyItem() || !this.itemsAreEqual(itemStack2, villagerRecipe.getSecondBuyItem()))
-					|| itemStack.getAmount() < villagerRecipe.getBuyItem().getAmount()
-					|| villagerRecipe.hasSecondBuyItem() && itemStack2.getAmount() < villagerRecipe.getSecondBuyItem().getAmount()
-				? null
-				: villagerRecipe;
+			return villagerRecipe.method_16952(itemStack, itemStack2) ? villagerRecipe : null;
 		} else {
 			for (int j = 0; j < this.size(); j++) {
 				VillagerRecipe villagerRecipe2 = (VillagerRecipe)this.get(j);
-				if (this.itemsAreEqual(itemStack, villagerRecipe2.getBuyItem())
-					&& itemStack.getAmount() >= villagerRecipe2.getBuyItem().getAmount()
-					&& (
-						!villagerRecipe2.hasSecondBuyItem() && itemStack2.isEmpty()
-							|| villagerRecipe2.hasSecondBuyItem()
-								&& this.itemsAreEqual(itemStack2, villagerRecipe2.getSecondBuyItem())
-								&& itemStack2.getAmount() >= villagerRecipe2.getSecondBuyItem().getAmount()
-					)) {
+				if (villagerRecipe2.method_16952(itemStack, itemStack2)) {
 					return villagerRecipe2;
 				}
 			}
 
 			return null;
 		}
-	}
-
-	private boolean itemsAreEqual(ItemStack itemStack, ItemStack itemStack2) {
-		ItemStack itemStack3 = itemStack.copy();
-		if (itemStack3.getItem().canDamage()) {
-			itemStack3.setDamage(itemStack3.getDamage());
-		}
-
-		return ItemStack.areEqualIgnoreTags(itemStack3, itemStack2)
-			&& (!itemStack2.hasTag() || itemStack3.hasTag() && TagHelper.areTagsEqual(itemStack2.getTag(), itemStack3.getTag(), false));
 	}
 
 	public void writeToBuf(PacketByteBuf packetByteBuf) {
@@ -80,7 +59,7 @@ public class VillagerRecipeList extends ArrayList<VillagerRecipe> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static VillagerRecipeList readFromBuf(PacketByteBuf packetByteBuf) throws IOException {
+	public static VillagerRecipeList readFromBuf(PacketByteBuf packetByteBuf) {
 		VillagerRecipeList villagerRecipeList = new VillagerRecipeList();
 		int i = packetByteBuf.readByte() & 255;
 
@@ -104,15 +83,6 @@ public class VillagerRecipeList extends ArrayList<VillagerRecipe> {
 		}
 
 		return villagerRecipeList;
-	}
-
-	public void serialize(CompoundTag compoundTag) {
-		ListTag listTag = compoundTag.getList("Recipes", 10);
-
-		for (int i = 0; i < listTag.size(); i++) {
-			CompoundTag compoundTag2 = listTag.getCompoundTag(i);
-			this.add(new VillagerRecipe(compoundTag2));
-		}
 	}
 
 	public CompoundTag deserialize() {

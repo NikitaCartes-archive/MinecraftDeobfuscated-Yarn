@@ -3,14 +3,11 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.MagmaCubeEntity;
+import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class MagmaCubeEntityModel extends Model {
+public class MagmaCubeEntityModel<T extends SlimeEntity> extends EntityModel<T> {
 	private final Cuboid[] field_3427 = new Cuboid[8];
 	private final Cuboid field_3428;
 
@@ -34,10 +31,8 @@ public class MagmaCubeEntityModel extends Model {
 		this.field_3428.addBox(-2.0F, 18.0F, -2.0F, 4, 4, 4);
 	}
 
-	@Override
-	public void animateModel(LivingEntity livingEntity, float f, float g, float h) {
-		MagmaCubeEntity magmaCubeEntity = (MagmaCubeEntity)livingEntity;
-		float i = MathHelper.lerp(h, magmaCubeEntity.field_7387, magmaCubeEntity.field_7388);
+	public void method_17098(T slimeEntity, float f, float g, float h) {
+		float i = MathHelper.lerp(h, slimeEntity.field_7387, slimeEntity.field_7388);
 		if (i < 0.0F) {
 			i = 0.0F;
 		}
@@ -47,9 +42,8 @@ public class MagmaCubeEntityModel extends Model {
 		}
 	}
 
-	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		this.setRotationAngles(f, g, h, i, j, k, entity);
+	public void method_17099(T slimeEntity, float f, float g, float h, float i, float j, float k) {
+		this.setAngles(slimeEntity, f, g, h, i, j, k);
 		this.field_3428.render(k);
 
 		for (Cuboid cuboid : this.field_3427) {

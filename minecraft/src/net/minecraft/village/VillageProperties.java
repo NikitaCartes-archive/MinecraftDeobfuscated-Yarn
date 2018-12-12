@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.minecraft.class_3730;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoorBlock;
@@ -17,13 +16,14 @@ import net.minecraft.block.PlacementEnvironment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.raid.Raid;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.sortme.Raid;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
@@ -41,8 +41,8 @@ public class VillageProperties {
 	private int tick;
 	private int populationSize;
 	private int lastVillagerDeath;
-	private int field_16598 = 0;
-	private final Map<String, Integer> players = Maps.<String, Integer>newHashMap();
+	private int raidId = 0;
+	private final Map<String, Integer> playerRatings = Maps.<String, Integer>newHashMap();
 	private final List<VillageProperties.AttackerInfo> attackerInfos = Lists.<VillageProperties.AttackerInfo>newArrayList();
 	private int golems;
 
@@ -83,9 +83,9 @@ public class VillageProperties {
 		for (int i = 0; i < 10; i++) {
 			BlockPos blockPos2 = blockPos.add(this.world.random.nextInt(16) - 8, this.world.random.nextInt(6) - 3, this.world.random.nextInt(16) - 8);
 			if (this.isInRadius(blockPos2)) {
-				IronGolemEntity ironGolemEntity = EntityType.IRON_GOLEM.create(this.world, null, null, null, blockPos2, class_3730.field_16474, false, false);
+				IronGolemEntity ironGolemEntity = EntityType.IRON_GOLEM.create(this.world, null, null, null, blockPos2, SpawnType.field_16474, false, false);
 				if (ironGolemEntity != null) {
-					if (ironGolemEntity.method_5979(this.world, class_3730.field_16474) && ironGolemEntity.method_5957(this.world)) {
+					if (ironGolemEntity.canSpawn(this.world, SpawnType.field_16474) && ironGolemEntity.method_5957(this.world)) {
 						this.world.spawnEntity(ironGolemEntity);
 						return ironGolemEntity;
 					}
@@ -129,7 +129,7 @@ public class VillageProperties {
 			);
 		this.populationSize = list.size();
 		if (this.populationSize == 0) {
-			this.players.clear();
+			this.playerRatings.clear();
 		}
 	}
 
@@ -157,7 +157,7 @@ public class VillageProperties {
 		return this.center.squaredDistanceTo(blockPos) < (double)(this.radius * this.radius);
 	}
 
-	public boolean method_16470(BlockPos blockPos, int i) {
+	public boolean isInRaidDistance(BlockPos blockPos, int i) {
 		return this.center.squaredDistanceTo(blockPos) < (double)(this.radius * this.radius + i);
 	}
 
@@ -194,19 +194,15 @@ public class VillageProperties {
 
 			if (j < i) {
 				BlockPos blockPos2 = villageDoor2.getPosition();
-				Direction direction = villageDoor2.method_6424();
-				if (this.world
-						.getBlockState(blockPos2.method_10079(direction, 1))
-						.canPlaceAtSide(this.world, blockPos2.method_10079(direction, 1), PlacementEnvironment.field_50)
+				Direction direction = villageDoor2.getFacing();
+				if (this.world.getBlockState(blockPos2.offset(direction, 1)).canPlaceAtSide(this.world, blockPos2.offset(direction, 1), PlacementEnvironment.field_50)
+					&& this.world.getBlockState(blockPos2.offset(direction, -1)).canPlaceAtSide(this.world, blockPos2.offset(direction, -1), PlacementEnvironment.field_50)
 					&& this.world
-						.getBlockState(blockPos2.method_10079(direction, -1))
-						.canPlaceAtSide(this.world, blockPos2.method_10079(direction, -1), PlacementEnvironment.field_50)
+						.getBlockState(blockPos2.up().offset(direction, 1))
+						.canPlaceAtSide(this.world, blockPos2.up().offset(direction, 1), PlacementEnvironment.field_50)
 					&& this.world
-						.getBlockState(blockPos2.up().method_10079(direction, 1))
-						.canPlaceAtSide(this.world, blockPos2.up().method_10079(direction, 1), PlacementEnvironment.field_50)
-					&& this.world
-						.getBlockState(blockPos2.up().method_10079(direction, -1))
-						.canPlaceAtSide(this.world, blockPos2.up().method_10079(direction, -1), PlacementEnvironment.field_50)) {
+						.getBlockState(blockPos2.up().offset(direction, -1))
+						.canPlaceAtSide(this.world, blockPos2.up().offset(direction, -1), PlacementEnvironment.field_50)) {
 					villageDoor = villageDoor2;
 					i = j;
 				}
@@ -272,12 +268,12 @@ public class VillageProperties {
 		return attackerInfo == null ? null : attackerInfo.attacker;
 	}
 
-	public PlayerEntity getNearestPlayer(LivingEntity livingEntity) {
+	public PlayerEntity getNearestUnpopularPlayer(LivingEntity livingEntity) {
 		double d = Double.MAX_VALUE;
 		PlayerEntity playerEntity = null;
 
-		for (String string : this.players.keySet()) {
-			if (this.method_6389(string)) {
+		for (String string : this.playerRatings.keySet()) {
+			if (this.isUnpopular(string)) {
 				PlayerEntity playerEntity2 = this.world.getPlayerByName(string);
 				if (playerEntity2 != null) {
 					double e = playerEntity2.squaredDistanceTo(livingEntity);
@@ -328,7 +324,7 @@ public class VillageProperties {
 	}
 
 	private boolean isValidDoor(BlockPos blockPos) {
-		if (!this.world.method_8393(blockPos.getX() >> 4, blockPos.getZ() >> 4)) {
+		if (!this.world.isChunkLoaded(blockPos.getX() >> 4, blockPos.getZ() >> 4)) {
 			return true;
 		} else {
 			BlockState blockState = this.world.getBlockState(blockPos);
@@ -354,20 +350,20 @@ public class VillageProperties {
 		}
 	}
 
-	public int method_6388(String string) {
-		Integer integer = (Integer)this.players.get(string);
+	public int getRating(String string) {
+		Integer integer = (Integer)this.playerRatings.get(string);
 		return integer == null ? 0 : integer;
 	}
 
-	public int method_6393(String string, int i) {
-		int j = this.method_6388(string);
+	public int changeRating(String string, int i) {
+		int j = this.getRating(string);
 		int k = MathHelper.clamp(j + i, -30, 10);
-		this.players.put(string, k);
+		this.playerRatings.put(string, k);
 		return k;
 	}
 
-	public boolean method_6389(String string) {
-		return this.method_6388(string) <= -15;
+	public boolean isUnpopular(String string) {
+		return this.getRating(string) <= -15;
 	}
 
 	public void deserialize(CompoundTag compoundTag) {
@@ -400,14 +396,14 @@ public class VillageProperties {
 				UserCache userCache = this.world.getServer().getUserCache();
 				GameProfile gameProfile = userCache.getByUuid(UUID.fromString(compoundTag3.getString("UUID")));
 				if (gameProfile != null) {
-					this.players.put(gameProfile.getName(), compoundTag3.getInt("S"));
+					this.playerRatings.put(gameProfile.getName(), compoundTag3.getInt("S"));
 				}
 			} else {
-				this.players.put(compoundTag3.getString("Name"), compoundTag3.getInt("S"));
+				this.playerRatings.put(compoundTag3.getString("Name"), compoundTag3.getInt("S"));
 			}
 		}
 
-		this.field_16598 = compoundTag.getInt("RaidId");
+		this.raidId = compoundTag.getInt("RaidId");
 	}
 
 	public void serialize(CompoundTag compoundTag) {
@@ -439,7 +435,7 @@ public class VillageProperties {
 		compoundTag.put("Doors", listTag);
 		ListTag listTag2 = new ListTag();
 
-		for (String string : this.players.keySet()) {
+		for (String string : this.playerRatings.keySet()) {
 			CompoundTag compoundTag3 = new CompoundTag();
 			UserCache userCache = this.world.getServer().getUserCache();
 
@@ -447,7 +443,7 @@ public class VillageProperties {
 				GameProfile gameProfile = userCache.findByName(string);
 				if (gameProfile != null) {
 					compoundTag3.putString("UUID", gameProfile.getId().toString());
-					compoundTag3.putInt("S", (Integer)this.players.get(string));
+					compoundTag3.putInt("S", (Integer)this.playerRatings.get(string));
 					listTag2.add((Tag)compoundTag3);
 				}
 			} catch (RuntimeException var9) {
@@ -455,35 +451,35 @@ public class VillageProperties {
 		}
 
 		compoundTag.put("Players", listTag2);
-		compoundTag.putInt("RaidId", this.field_16598);
+		compoundTag.putInt("RaidId", this.raidId);
 	}
 
 	public void onVillagerDeath() {
 		this.lastVillagerDeath = this.tick;
 	}
 
-	public boolean method_6381() {
+	public boolean hasRecentDeath() {
 		return this.lastVillagerDeath == 0 || this.tick - this.lastVillagerDeath >= 3600;
 	}
 
-	public void method_6401(int i) {
-		for (String string : this.players.keySet()) {
-			this.method_6393(string, i);
+	public void changeAllRatings(int i) {
+		for (String string : this.playerRatings.keySet()) {
+			this.changeRating(string, i);
 		}
 	}
 
-	public int method_16467() {
-		return this.field_16598;
+	public int getRaidId() {
+		return this.raidId;
 	}
 
-	public void method_16468(int i) {
-		this.field_16598 = i;
+	public void setRaidId(int i) {
+		this.raidId = i;
 		this.world.getVillageManager().markDirty();
 	}
 
 	@Nullable
 	public Raid method_16469() {
-		return this.world != null && this.world.getRaidState() != null ? this.world.getRaidState().getRaid(this.field_16598) : null;
+		return this.world != null && this.world.getRaidManager() != null ? this.world.getRaidManager().getRaid(this.raidId) : null;
 	}
 
 	class AttackerInfo {

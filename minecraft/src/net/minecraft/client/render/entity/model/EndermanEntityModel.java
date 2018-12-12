@@ -3,10 +3,10 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 
 @Environment(EnvType.CLIENT)
-public class EndermanEntityModel extends BipedEntityModel {
+public class EndermanEntityModel<T extends LivingEntity> extends BipedEntityModel<T> {
 	public boolean carryingBlock;
 	public boolean angry;
 
@@ -36,8 +36,8 @@ public class EndermanEntityModel extends BipedEntityModel {
 	}
 
 	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
-		super.setRotationAngles(f, g, h, i, j, k, entity);
+	public void method_17087(T livingEntity, float f, float g, float h, float i, float j, float k) {
+		super.method_17087(livingEntity, f, g, h, i, j, k);
 		this.head.visible = true;
 		float l = -14.0F;
 		this.body.pitch = 0.0F;

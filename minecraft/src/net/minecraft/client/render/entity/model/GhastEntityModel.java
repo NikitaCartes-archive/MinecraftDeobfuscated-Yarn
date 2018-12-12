@@ -5,12 +5,11 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class GhastEntityModel extends Model {
+public class GhastEntityModel<T extends Entity> extends EntityModel<T> {
 	private final Cuboid field_3373;
 	private final Cuboid[] field_3372 = new Cuboid[9];
 
@@ -34,15 +33,15 @@ public class GhastEntityModel extends Model {
 	}
 
 	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
+	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
 		for (int l = 0; l < this.field_3372.length; l++) {
 			this.field_3372[l].pitch = 0.2F * MathHelper.sin(h * 0.3F + (float)l) + 0.4F;
 		}
 	}
 
 	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		this.setRotationAngles(f, g, h, i, j, k, entity);
+	public void render(T entity, float f, float g, float h, float i, float j, float k) {
+		this.setAngles(entity, f, g, h, i, j, k);
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef(0.0F, 0.6F, 0.0F);
 		this.field_3373.render(k);

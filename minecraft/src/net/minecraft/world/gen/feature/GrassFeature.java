@@ -8,8 +8,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.GrassFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class GrassFeature extends Feature<GrassFeatureConfig> {
 	public GrassFeature(Function<Dynamic<?>, ? extends GrassFeatureConfig> function) {
@@ -17,7 +16,7 @@ public class GrassFeature extends Feature<GrassFeatureConfig> {
 	}
 
 	public boolean method_14080(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, Random random, BlockPos blockPos, GrassFeatureConfig grassFeatureConfig
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, GrassFeatureConfig grassFeatureConfig
 	) {
 		for (BlockState blockState = iWorld.getBlockState(blockPos);
 			(blockState.isAir() || blockState.matches(BlockTags.field_15503)) && blockPos.getY() > 0;

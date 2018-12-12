@@ -11,8 +11,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_295;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.math.Vec3d;
@@ -23,16 +23,16 @@ import org.apache.logging.log4j.Logger;
 public class ChunkRenderWorker implements Runnable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final ChunkBatcher batcher;
-	private final ChunkVertexBuffer field_4428;
+	private final BlockLayeredBufferBuilder field_4428;
 	private boolean running = true;
 
 	public ChunkRenderWorker(ChunkBatcher chunkBatcher) {
 		this(chunkBatcher, null);
 	}
 
-	public ChunkRenderWorker(ChunkBatcher chunkBatcher, @Nullable ChunkVertexBuffer chunkVertexBuffer) {
+	public ChunkRenderWorker(ChunkBatcher chunkBatcher, @Nullable BlockLayeredBufferBuilder blockLayeredBufferBuilder) {
 		this.batcher = chunkBatcher;
-		this.field_4428 = chunkVertexBuffer;
+		this.field_4428 = blockLayeredBufferBuilder;
 	}
 
 	public void run() {
@@ -63,7 +63,7 @@ public class ChunkRenderWorker implements Runnable {
 			}
 
 			if (!chunkRenderDataTask.getChunkRenderer().method_3673()) {
-				chunkRenderDataTask.method_3596();
+				chunkRenderDataTask.cancel();
 				return;
 			}
 
@@ -74,9 +74,9 @@ public class ChunkRenderWorker implements Runnable {
 
 		Entity entity = MinecraftClient.getInstance().getCameraEntity();
 		if (entity == null) {
-			chunkRenderDataTask.method_3596();
+			chunkRenderDataTask.cancel();
 		} else {
-			chunkRenderDataTask.setVertexBuffer(this.method_3613());
+			chunkRenderDataTask.setBufferBuilders(this.method_3613());
 			Vec3d vec3d = class_295.method_1379(entity, 1.0);
 			float f = (float)vec3d.x;
 			float g = (float)vec3d.y;
@@ -114,7 +114,7 @@ public class ChunkRenderWorker implements Runnable {
 							this.batcher
 								.method_3635(
 									blockRenderLayer,
-									chunkRenderDataTask.getVertexBuffer().getVertexBuffer(blockRenderLayer),
+									chunkRenderDataTask.getBufferBuilders().get(blockRenderLayer),
 									chunkRenderDataTask.getChunkRenderer(),
 									chunkRenderData,
 									chunkRenderDataTask.getDistanceToPlayerSquared()
@@ -127,7 +127,7 @@ public class ChunkRenderWorker implements Runnable {
 					this.batcher
 						.method_3635(
 							BlockRenderLayer.TRANSLUCENT,
-							chunkRenderDataTask.getVertexBuffer().getVertexBuffer(BlockRenderLayer.TRANSLUCENT),
+							chunkRenderDataTask.getBufferBuilders().get(BlockRenderLayer.TRANSLUCENT),
 							chunkRenderDataTask.getChunkRenderer(),
 							chunkRenderData,
 							chunkRenderDataTask.getDistanceToPlayerSquared()
@@ -173,13 +173,13 @@ public class ChunkRenderWorker implements Runnable {
 		}
 	}
 
-	private ChunkVertexBuffer method_3613() throws InterruptedException {
+	private BlockLayeredBufferBuilder method_3613() throws InterruptedException {
 		return this.field_4428 != null ? this.field_4428 : this.batcher.getNextAvailableBuffer();
 	}
 
 	private void method_3610(ChunkRenderDataTask chunkRenderDataTask) {
 		if (this.field_4428 == null) {
-			this.batcher.addAvailableBuffer(chunkRenderDataTask.getVertexBuffer());
+			this.batcher.addAvailableBuffer(chunkRenderDataTask.getBufferBuilders());
 		}
 	}
 

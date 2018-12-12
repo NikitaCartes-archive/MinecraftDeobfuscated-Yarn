@@ -70,7 +70,7 @@ public class FunctionArgumentType implements ArgumentType<FunctionArgumentType.c
 	}
 
 	private static Tag<CommandFunction> method_9767(CommandContext<ServerCommandSource> commandContext, Identifier identifier) throws CommandSyntaxException {
-		Tag<CommandFunction> tag = commandContext.getSource().getMinecraftServer().getCommandFunctionManager().method_12901().get(identifier);
+		Tag<CommandFunction> tag = commandContext.getSource().getMinecraftServer().getCommandFunctionManager().getTags().get(identifier);
 		if (tag == null) {
 			throw field_10782.create(identifier.toString());
 		} else {

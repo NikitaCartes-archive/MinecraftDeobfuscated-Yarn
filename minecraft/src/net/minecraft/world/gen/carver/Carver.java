@@ -19,8 +19,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.config.ProbabilityConfig;
-import net.minecraft.world.gen.config.carver.CarverConfig;
+import net.minecraft.world.gen.ProbabilityConfig;
 
 public abstract class Carver<C extends CarverConfig> {
 	public static final Carver<ProbabilityConfig> CAVE = register("cave", new CaveCarver(ProbabilityConfig::deserialize, 256));
@@ -151,7 +150,7 @@ public abstract class Carver<C extends CarverConfig> {
 			bitSet.set(q);
 			mutable.set(l, o, m);
 			BlockState blockState = chunk.getBlockState(mutable);
-			BlockState blockState2 = chunk.getBlockState(mutable2.set(mutable).method_10098(Direction.UP));
+			BlockState blockState2 = chunk.getBlockState(mutable2.set(mutable).setOffset(Direction.UP));
 			if (blockState.getBlock() == Blocks.field_10219 || blockState.getBlock() == Blocks.field_10402) {
 				atomicBoolean.set(true);
 			}
@@ -164,9 +163,9 @@ public abstract class Carver<C extends CarverConfig> {
 				} else {
 					chunk.setBlockState(mutable, CAVE_AIR, false);
 					if (atomicBoolean.get()) {
-						mutable3.set(mutable).method_10098(Direction.DOWN);
+						mutable3.set(mutable).setOffset(Direction.DOWN);
 						if (chunk.getBlockState(mutable3).getBlock() == Blocks.field_10566) {
-							chunk.setBlockState(mutable3, chunk.getBiome(mutable).getSurfaceConfig().getTopMaterial(), false);
+							chunk.setBlockState(mutable3, chunk.getBiome(mutable).method_8722().getTopMaterial(), false);
 						}
 					}
 				}
@@ -176,9 +175,9 @@ public abstract class Carver<C extends CarverConfig> {
 		}
 	}
 
-	public abstract boolean method_12702(Chunk chunk, Random random, int i, int j, int k, int l, int m, BitSet bitSet, C carverConfig);
+	public abstract boolean carve(Chunk chunk, Random random, int i, int j, int k, int l, int m, BitSet bitSet, C carverConfig);
 
-	public abstract boolean method_12705(Random random, int i, int j, C carverConfig);
+	public abstract boolean shouldCarve(Random random, int i, int j, C carverConfig);
 
 	protected boolean method_12709(BlockState blockState) {
 		return this.field_13302.contains(blockState.getBlock());

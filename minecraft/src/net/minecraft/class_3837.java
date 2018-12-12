@@ -35,7 +35,7 @@ import net.minecraft.world.loot.function.LootFunction;
 public class class_3837 extends ConditionalLootFunction {
 	private final class_3837.class_3840 field_17013;
 	private final List<class_3837.class_3839> field_17014;
-	private static final Function<Entity, Tag> field_17015 = NbtPredicate::method_9076;
+	private static final Function<Entity, Tag> field_17015 = NbtPredicate::entityToTag;
 	private static final Function<BlockEntity, Tag> field_17016 = blockEntity -> blockEntity.toTag(new CompoundTag());
 
 	private class_3837(LootCondition[] lootConditions, class_3837.class_3840 arg, List<class_3837.class_3839> list) {
@@ -173,7 +173,7 @@ public class class_3837 extends ConditionalLootFunction {
 		field_17032("replace") {
 			@Override
 			public void method_16864(Tag tag, NbtPathArgumentType.class_2209 arg, List<Tag> list) throws CommandSyntaxException {
-				arg.method_9368(tag, Iterables.<Tag>getLast(list).copy());
+				arg.method_9368(tag, Iterables.getLast(list)::copy);
 			}
 		},
 		field_17033("append") {

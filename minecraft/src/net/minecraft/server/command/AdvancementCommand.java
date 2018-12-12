@@ -16,7 +16,7 @@ import net.minecraft.text.TranslatableTextComponent;
 
 public class AdvancementCommand {
 	private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> {
-		Collection<SimpleAdvancement> collection = commandContext.getSource().getMinecraftServer().getAdvancementManager().getAdvancements();
+		Collection<SimpleAdvancement> collection = commandContext.getSource().getMinecraftServer().method_3851().getAdvancements();
 		return CommandSource.suggestIdentifiers(collection.stream().map(SimpleAdvancement::getId), suggestionsBuilder);
 	};
 
@@ -27,18 +27,18 @@ public class AdvancementCommand {
 				.then(
 					ServerCommandManager.literal("grant")
 						.then(
-							ServerCommandManager.argument("targets", EntityArgumentType.method_9308())
+							ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
 								.then(
 									ServerCommandManager.literal("only")
 										.then(
 											ServerCommandManager.argument("advancement", ResourceLocationArgumentType.create())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
-													commandContext -> method_12988(
+													commandContext -> executeAdvancement(
 															commandContext.getSource(),
 															EntityArgumentType.method_9312(commandContext, "targets"),
-															AdvancementCommand.class_3009.field_13457,
-															method_12996(ResourceLocationArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.class_3010.field_13464)
+															AdvancementCommand.Operation.GRANT,
+															method_12996(ResourceLocationArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13464)
 														)
 												)
 												.then(
@@ -49,10 +49,10 @@ public class AdvancementCommand {
 																)
 														)
 														.executes(
-															commandContext -> method_12981(
+															commandContext -> executeCriterion(
 																	commandContext.getSource(),
 																	EntityArgumentType.method_9312(commandContext, "targets"),
-																	AdvancementCommand.class_3009.field_13457,
+																	AdvancementCommand.Operation.GRANT,
 																	ResourceLocationArgumentType.getAdvancementArgument(commandContext, "advancement"),
 																	StringArgumentType.getString(commandContext, "criterion")
 																)
@@ -66,11 +66,11 @@ public class AdvancementCommand {
 											ServerCommandManager.argument("advancement", ResourceLocationArgumentType.create())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
-													commandContext -> method_12988(
+													commandContext -> executeAdvancement(
 															commandContext.getSource(),
 															EntityArgumentType.method_9312(commandContext, "targets"),
-															AdvancementCommand.class_3009.field_13457,
-															method_12996(ResourceLocationArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.class_3010.field_13458)
+															AdvancementCommand.Operation.GRANT,
+															method_12996(ResourceLocationArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13458)
 														)
 												)
 										)
@@ -81,11 +81,11 @@ public class AdvancementCommand {
 											ServerCommandManager.argument("advancement", ResourceLocationArgumentType.create())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
-													commandContext -> method_12988(
+													commandContext -> executeAdvancement(
 															commandContext.getSource(),
 															EntityArgumentType.method_9312(commandContext, "targets"),
-															AdvancementCommand.class_3009.field_13457,
-															method_12996(ResourceLocationArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.class_3010.field_13465)
+															AdvancementCommand.Operation.GRANT,
+															method_12996(ResourceLocationArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13465)
 														)
 												)
 										)
@@ -96,11 +96,11 @@ public class AdvancementCommand {
 											ServerCommandManager.argument("advancement", ResourceLocationArgumentType.create())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
-													commandContext -> method_12988(
+													commandContext -> executeAdvancement(
 															commandContext.getSource(),
 															EntityArgumentType.method_9312(commandContext, "targets"),
-															AdvancementCommand.class_3009.field_13457,
-															method_12996(ResourceLocationArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.class_3010.field_13462)
+															AdvancementCommand.Operation.GRANT,
+															method_12996(ResourceLocationArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13462)
 														)
 												)
 										)
@@ -108,11 +108,11 @@ public class AdvancementCommand {
 								.then(
 									ServerCommandManager.literal("everything")
 										.executes(
-											commandContext -> method_12988(
+											commandContext -> executeAdvancement(
 													commandContext.getSource(),
 													EntityArgumentType.method_9312(commandContext, "targets"),
-													AdvancementCommand.class_3009.field_13457,
-													commandContext.getSource().getMinecraftServer().getAdvancementManager().getAdvancements()
+													AdvancementCommand.Operation.GRANT,
+													commandContext.getSource().getMinecraftServer().method_3851().getAdvancements()
 												)
 										)
 								)
@@ -121,18 +121,18 @@ public class AdvancementCommand {
 				.then(
 					ServerCommandManager.literal("revoke")
 						.then(
-							ServerCommandManager.argument("targets", EntityArgumentType.method_9308())
+							ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
 								.then(
 									ServerCommandManager.literal("only")
 										.then(
 											ServerCommandManager.argument("advancement", ResourceLocationArgumentType.create())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
-													commandContext -> method_12988(
+													commandContext -> executeAdvancement(
 															commandContext.getSource(),
 															EntityArgumentType.method_9312(commandContext, "targets"),
-															AdvancementCommand.class_3009.field_13456,
-															method_12996(ResourceLocationArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.class_3010.field_13464)
+															AdvancementCommand.Operation.REVOKE,
+															method_12996(ResourceLocationArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13464)
 														)
 												)
 												.then(
@@ -143,10 +143,10 @@ public class AdvancementCommand {
 																)
 														)
 														.executes(
-															commandContext -> method_12981(
+															commandContext -> executeCriterion(
 																	commandContext.getSource(),
 																	EntityArgumentType.method_9312(commandContext, "targets"),
-																	AdvancementCommand.class_3009.field_13456,
+																	AdvancementCommand.Operation.REVOKE,
 																	ResourceLocationArgumentType.getAdvancementArgument(commandContext, "advancement"),
 																	StringArgumentType.getString(commandContext, "criterion")
 																)
@@ -160,11 +160,11 @@ public class AdvancementCommand {
 											ServerCommandManager.argument("advancement", ResourceLocationArgumentType.create())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
-													commandContext -> method_12988(
+													commandContext -> executeAdvancement(
 															commandContext.getSource(),
 															EntityArgumentType.method_9312(commandContext, "targets"),
-															AdvancementCommand.class_3009.field_13456,
-															method_12996(ResourceLocationArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.class_3010.field_13458)
+															AdvancementCommand.Operation.REVOKE,
+															method_12996(ResourceLocationArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13458)
 														)
 												)
 										)
@@ -175,11 +175,11 @@ public class AdvancementCommand {
 											ServerCommandManager.argument("advancement", ResourceLocationArgumentType.create())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
-													commandContext -> method_12988(
+													commandContext -> executeAdvancement(
 															commandContext.getSource(),
 															EntityArgumentType.method_9312(commandContext, "targets"),
-															AdvancementCommand.class_3009.field_13456,
-															method_12996(ResourceLocationArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.class_3010.field_13465)
+															AdvancementCommand.Operation.REVOKE,
+															method_12996(ResourceLocationArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13465)
 														)
 												)
 										)
@@ -190,11 +190,11 @@ public class AdvancementCommand {
 											ServerCommandManager.argument("advancement", ResourceLocationArgumentType.create())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
-													commandContext -> method_12988(
+													commandContext -> executeAdvancement(
 															commandContext.getSource(),
 															EntityArgumentType.method_9312(commandContext, "targets"),
-															AdvancementCommand.class_3009.field_13456,
-															method_12996(ResourceLocationArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.class_3010.field_13462)
+															AdvancementCommand.Operation.REVOKE,
+															method_12996(ResourceLocationArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13462)
 														)
 												)
 										)
@@ -202,11 +202,11 @@ public class AdvancementCommand {
 								.then(
 									ServerCommandManager.literal("everything")
 										.executes(
-											commandContext -> method_12988(
+											commandContext -> executeAdvancement(
 													commandContext.getSource(),
 													EntityArgumentType.method_9312(commandContext, "targets"),
-													AdvancementCommand.class_3009.field_13456,
-													commandContext.getSource().getMinecraftServer().getAdvancementManager().getAdvancements()
+													AdvancementCommand.Operation.REVOKE,
+													commandContext.getSource().getMinecraftServer().method_3851().getAdvancements()
 												)
 										)
 								)
@@ -215,16 +215,16 @@ public class AdvancementCommand {
 		);
 	}
 
-	private static int method_12988(
+	private static int executeAdvancement(
 		ServerCommandSource serverCommandSource,
 		Collection<ServerPlayerEntity> collection,
-		AdvancementCommand.class_3009 arg,
+		AdvancementCommand.Operation operation,
 		Collection<SimpleAdvancement> collection2
 	) {
 		int i = 0;
 
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
-			i += arg.method_12999(serverPlayerEntity, collection2);
+			i += operation.processAll(serverPlayerEntity, collection2);
 		}
 
 		if (i == 0) {
@@ -232,7 +232,7 @@ public class AdvancementCommand {
 				if (collection.size() == 1) {
 					throw new CommandException(
 						new TranslatableTextComponent(
-							arg.method_13001() + ".one.to.one.failure",
+							operation.getCommandPrefix() + ".one.to.one.failure",
 							((SimpleAdvancement)collection2.iterator().next()).getTextComponent(),
 							((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 						)
@@ -240,25 +240,25 @@ public class AdvancementCommand {
 				} else {
 					throw new CommandException(
 						new TranslatableTextComponent(
-							arg.method_13001() + ".one.to.many.failure", ((SimpleAdvancement)collection2.iterator().next()).getTextComponent(), collection.size()
+							operation.getCommandPrefix() + ".one.to.many.failure", ((SimpleAdvancement)collection2.iterator().next()).getTextComponent(), collection.size()
 						)
 					);
 				}
 			} else if (collection.size() == 1) {
 				throw new CommandException(
 					new TranslatableTextComponent(
-						arg.method_13001() + ".many.to.one.failure", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
+						operation.getCommandPrefix() + ".many.to.one.failure", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 					)
 				);
 			} else {
-				throw new CommandException(new TranslatableTextComponent(arg.method_13001() + ".many.to.many.failure", collection2.size(), collection.size()));
+				throw new CommandException(new TranslatableTextComponent(operation.getCommandPrefix() + ".many.to.many.failure", collection2.size(), collection.size()));
 			}
 		} else {
 			if (collection2.size() == 1) {
 				if (collection.size() == 1) {
 					serverCommandSource.sendFeedback(
 						new TranslatableTextComponent(
-							arg.method_13001() + ".one.to.one.success",
+							operation.getCommandPrefix() + ".one.to.one.success",
 							((SimpleAdvancement)collection2.iterator().next()).getTextComponent(),
 							((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 						),
@@ -267,7 +267,7 @@ public class AdvancementCommand {
 				} else {
 					serverCommandSource.sendFeedback(
 						new TranslatableTextComponent(
-							arg.method_13001() + ".one.to.many.success", ((SimpleAdvancement)collection2.iterator().next()).getTextComponent(), collection.size()
+							operation.getCommandPrefix() + ".one.to.many.success", ((SimpleAdvancement)collection2.iterator().next()).getTextComponent(), collection.size()
 						),
 						true
 					);
@@ -275,22 +275,24 @@ public class AdvancementCommand {
 			} else if (collection.size() == 1) {
 				serverCommandSource.sendFeedback(
 					new TranslatableTextComponent(
-						arg.method_13001() + ".many.to.one.success", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
+						operation.getCommandPrefix() + ".many.to.one.success", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 					),
 					true
 				);
 			} else {
-				serverCommandSource.sendFeedback(new TranslatableTextComponent(arg.method_13001() + ".many.to.many.success", collection2.size(), collection.size()), true);
+				serverCommandSource.sendFeedback(
+					new TranslatableTextComponent(operation.getCommandPrefix() + ".many.to.many.success", collection2.size(), collection.size()), true
+				);
 			}
 
 			return i;
 		}
 	}
 
-	private static int method_12981(
+	private static int executeCriterion(
 		ServerCommandSource serverCommandSource,
 		Collection<ServerPlayerEntity> collection,
-		AdvancementCommand.class_3009 arg,
+		AdvancementCommand.Operation operation,
 		SimpleAdvancement simpleAdvancement,
 		String string
 	) {
@@ -299,7 +301,7 @@ public class AdvancementCommand {
 			throw new CommandException(new TranslatableTextComponent("commands.advancement.criterionNotFound", simpleAdvancement.getTextComponent(), string));
 		} else {
 			for (ServerPlayerEntity serverPlayerEntity : collection) {
-				if (arg.method_13000(serverPlayerEntity, simpleAdvancement, string)) {
+				if (operation.processEachCriterion(serverPlayerEntity, simpleAdvancement, string)) {
 					i++;
 				}
 			}
@@ -308,7 +310,7 @@ public class AdvancementCommand {
 				if (collection.size() == 1) {
 					throw new CommandException(
 						new TranslatableTextComponent(
-							arg.method_13001() + ".criterion.to.one.failure",
+							operation.getCommandPrefix() + ".criterion.to.one.failure",
 							string,
 							simpleAdvancement.getTextComponent(),
 							((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
@@ -316,14 +318,16 @@ public class AdvancementCommand {
 					);
 				} else {
 					throw new CommandException(
-						new TranslatableTextComponent(arg.method_13001() + ".criterion.to.many.failure", string, simpleAdvancement.getTextComponent(), collection.size())
+						new TranslatableTextComponent(
+							operation.getCommandPrefix() + ".criterion.to.many.failure", string, simpleAdvancement.getTextComponent(), collection.size()
+						)
 					);
 				}
 			} else {
 				if (collection.size() == 1) {
 					serverCommandSource.sendFeedback(
 						new TranslatableTextComponent(
-							arg.method_13001() + ".criterion.to.one.success",
+							operation.getCommandPrefix() + ".criterion.to.one.success",
 							string,
 							simpleAdvancement.getTextComponent(),
 							((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
@@ -332,7 +336,10 @@ public class AdvancementCommand {
 					);
 				} else {
 					serverCommandSource.sendFeedback(
-						new TranslatableTextComponent(arg.method_13001() + ".criterion.to.many.success", string, simpleAdvancement.getTextComponent(), collection.size()), true
+						new TranslatableTextComponent(
+							operation.getCommandPrefix() + ".criterion.to.many.success", string, simpleAdvancement.getTextComponent(), collection.size()
+						),
+						true
 					);
 				}
 
@@ -341,39 +348,39 @@ public class AdvancementCommand {
 		}
 	}
 
-	private static List<SimpleAdvancement> method_12996(SimpleAdvancement simpleAdvancement, AdvancementCommand.class_3010 arg) {
+	private static List<SimpleAdvancement> method_12996(SimpleAdvancement simpleAdvancement, AdvancementCommand.Selection selection) {
 		List<SimpleAdvancement> list = Lists.<SimpleAdvancement>newArrayList();
-		if (arg.field_13460) {
+		if (selection.before) {
 			for (SimpleAdvancement simpleAdvancement2 = simpleAdvancement.getParent(); simpleAdvancement2 != null; simpleAdvancement2 = simpleAdvancement2.getParent()) {
 				list.add(simpleAdvancement2);
 			}
 		}
 
 		list.add(simpleAdvancement);
-		if (arg.field_13459) {
-			method_12990(simpleAdvancement, list);
+		if (selection.after) {
+			searchAndAdd(simpleAdvancement, list);
 		}
 
 		return list;
 	}
 
-	private static void method_12990(SimpleAdvancement simpleAdvancement, List<SimpleAdvancement> list) {
+	private static void searchAndAdd(SimpleAdvancement simpleAdvancement, List<SimpleAdvancement> list) {
 		for (SimpleAdvancement simpleAdvancement2 : simpleAdvancement.getChildren()) {
 			list.add(simpleAdvancement2);
-			method_12990(simpleAdvancement2, list);
+			searchAndAdd(simpleAdvancement2, list);
 		}
 	}
 
-	static enum class_3009 {
-		field_13457("grant") {
+	static enum Operation {
+		GRANT("grant") {
 			@Override
-			protected boolean method_13002(ServerPlayerEntity serverPlayerEntity, SimpleAdvancement simpleAdvancement) {
-				AdvancementProgress advancementProgress = serverPlayerEntity.getAdvancementManager().method_12882(simpleAdvancement);
+			protected boolean processEach(ServerPlayerEntity serverPlayerEntity, SimpleAdvancement simpleAdvancement) {
+				AdvancementProgress advancementProgress = serverPlayerEntity.getAdvancementManager().getProgress(simpleAdvancement);
 				if (advancementProgress.isDone()) {
 					return false;
 				} else {
-					for (String string : advancementProgress.getAllUnobtained()) {
-						serverPlayerEntity.getAdvancementManager().onAdvancement(simpleAdvancement, string);
+					for (String string : advancementProgress.getUnobtainedCriteria()) {
+						serverPlayerEntity.getAdvancementManager().grantCriterion(simpleAdvancement, string);
 					}
 
 					return true;
@@ -381,19 +388,19 @@ public class AdvancementCommand {
 			}
 
 			@Override
-			protected boolean method_13000(ServerPlayerEntity serverPlayerEntity, SimpleAdvancement simpleAdvancement, String string) {
-				return serverPlayerEntity.getAdvancementManager().onAdvancement(simpleAdvancement, string);
+			protected boolean processEachCriterion(ServerPlayerEntity serverPlayerEntity, SimpleAdvancement simpleAdvancement, String string) {
+				return serverPlayerEntity.getAdvancementManager().grantCriterion(simpleAdvancement, string);
 			}
 		},
-		field_13456("revoke") {
+		REVOKE("revoke") {
 			@Override
-			protected boolean method_13002(ServerPlayerEntity serverPlayerEntity, SimpleAdvancement simpleAdvancement) {
-				AdvancementProgress advancementProgress = serverPlayerEntity.getAdvancementManager().method_12882(simpleAdvancement);
+			protected boolean processEach(ServerPlayerEntity serverPlayerEntity, SimpleAdvancement simpleAdvancement) {
+				AdvancementProgress advancementProgress = serverPlayerEntity.getAdvancementManager().getProgress(simpleAdvancement);
 				if (!advancementProgress.isAnyObtained()) {
 					return false;
 				} else {
-					for (String string : advancementProgress.getAllObtained()) {
-						serverPlayerEntity.getAdvancementManager().method_12883(simpleAdvancement, string);
+					for (String string : advancementProgress.getObtainedCriteria()) {
+						serverPlayerEntity.getAdvancementManager().revokeCriterion(simpleAdvancement, string);
 					}
 
 					return true;
@@ -401,22 +408,22 @@ public class AdvancementCommand {
 			}
 
 			@Override
-			protected boolean method_13000(ServerPlayerEntity serverPlayerEntity, SimpleAdvancement simpleAdvancement, String string) {
-				return serverPlayerEntity.getAdvancementManager().method_12883(simpleAdvancement, string);
+			protected boolean processEachCriterion(ServerPlayerEntity serverPlayerEntity, SimpleAdvancement simpleAdvancement, String string) {
+				return serverPlayerEntity.getAdvancementManager().revokeCriterion(simpleAdvancement, string);
 			}
 		};
 
-		private final String field_13454;
+		private final String commandPrefix;
 
-		private class_3009(String string2) {
-			this.field_13454 = "commands.advancement." + string2;
+		private Operation(String string2) {
+			this.commandPrefix = "commands.advancement." + string2;
 		}
 
-		public int method_12999(ServerPlayerEntity serverPlayerEntity, Iterable<SimpleAdvancement> iterable) {
+		public int processAll(ServerPlayerEntity serverPlayerEntity, Iterable<SimpleAdvancement> iterable) {
 			int i = 0;
 
 			for (SimpleAdvancement simpleAdvancement : iterable) {
-				if (this.method_13002(serverPlayerEntity, simpleAdvancement)) {
+				if (this.processEach(serverPlayerEntity, simpleAdvancement)) {
 					i++;
 				}
 			}
@@ -424,28 +431,28 @@ public class AdvancementCommand {
 			return i;
 		}
 
-		protected abstract boolean method_13002(ServerPlayerEntity serverPlayerEntity, SimpleAdvancement simpleAdvancement);
+		protected abstract boolean processEach(ServerPlayerEntity serverPlayerEntity, SimpleAdvancement simpleAdvancement);
 
-		protected abstract boolean method_13000(ServerPlayerEntity serverPlayerEntity, SimpleAdvancement simpleAdvancement, String string);
+		protected abstract boolean processEachCriterion(ServerPlayerEntity serverPlayerEntity, SimpleAdvancement simpleAdvancement, String string);
 
-		protected String method_13001() {
-			return this.field_13454;
+		protected String getCommandPrefix() {
+			return this.commandPrefix;
 		}
 	}
 
-	static enum class_3010 {
+	static enum Selection {
 		field_13464(false, false),
 		field_13462(true, true),
 		field_13458(false, true),
 		field_13465(true, false),
 		field_13461(true, true);
 
-		private final boolean field_13460;
-		private final boolean field_13459;
+		private final boolean before;
+		private final boolean after;
 
-		private class_3010(boolean bl, boolean bl2) {
-			this.field_13460 = bl;
-			this.field_13459 = bl2;
+		private Selection(boolean bl, boolean bl2) {
+			this.before = bl;
+			this.after = bl2;
 		}
 	}
 }

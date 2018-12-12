@@ -46,7 +46,7 @@ public class ServerPlayerInteractionManager {
 		this.gameMode = gameMode;
 		gameMode.setAbilitites(this.player.abilities);
 		this.player.method_7355();
-		this.player.server.getConfigurationManager().sendToAll(new PlayerListClientPacket(PlayerListClientPacket.Type.UPDATE_GAMEMODE, this.player));
+		this.player.server.getPlayerManager().sendToAll(new PlayerListClientPacket(PlayerListClientPacket.Type.UPDATE_GAMEMODE, this.player));
 		this.world.updateSleepingStatus();
 	}
 
@@ -297,7 +297,7 @@ public class ServerPlayerInteractionManager {
 		} else {
 			boolean bl = !playerEntity.getMainHandStack().isEmpty() || !playerEntity.getOffHandStack().isEmpty();
 			boolean bl2 = playerEntity.isSneaking() && bl;
-			if (!bl2 && blockState.method_11629(world, blockPos, playerEntity, hand, direction, f, g, h)) {
+			if (!bl2 && blockState.activate(world, blockPos, playerEntity, hand, direction, f, g, h)) {
 				return ActionResult.SUCCESS;
 			} else if (!itemStack.isEmpty() && !playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
 				ItemUsageContext itemUsageContext = new ItemUsageContext(playerEntity, playerEntity.getStackInHand(hand), blockPos, direction, f, g, h);

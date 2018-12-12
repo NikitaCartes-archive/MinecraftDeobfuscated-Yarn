@@ -1,9 +1,10 @@
 package net.minecraft.server.world;
 
-import net.minecraft.class_37;
+import java.util.concurrent.Executor;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Profiler;
+import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.LevelGeneratorType;
@@ -16,13 +17,14 @@ public class ServerDemoWorld extends ServerWorld {
 
 	public ServerDemoWorld(
 		MinecraftServer minecraftServer,
+		Executor executor,
 		WorldSaveHandler worldSaveHandler,
-		class_37 arg,
+		PersistentStateManager persistentStateManager,
 		LevelProperties levelProperties,
 		DimensionType dimensionType,
 		Profiler profiler
 	) {
-		super(minecraftServer, worldSaveHandler, arg, levelProperties, dimensionType, profiler);
+		super(minecraftServer, executor, worldSaveHandler, persistentStateManager, levelProperties, dimensionType, profiler);
 		this.properties.method_140(INFO);
 	}
 }

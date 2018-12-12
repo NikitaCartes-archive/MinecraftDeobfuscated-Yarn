@@ -39,8 +39,8 @@ public class EnchantedBookItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void addInformation(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
-		super.addInformation(itemStack, world, list, tooltipOptions);
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
+		super.buildTooltip(itemStack, world, list, tooltipOptions);
 		ListTag listTag = getEnchantmentTag(itemStack);
 
 		for (int i = 0; i < listTag.size(); i++) {

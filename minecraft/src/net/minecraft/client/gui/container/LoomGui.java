@@ -211,7 +211,7 @@ public class LoomGui extends ContainerGui implements InventoryListener {
 	}
 
 	@Override
-	protected boolean isClickInContainerBounds(double d, double e, int i, int j, int k) {
+	protected boolean isClickOutsideBounds(double d, double e, int i, int j, int k) {
 		return d < (double)i || e < (double)j || d >= (double)(i + this.containerWidth) || e >= (double)(j + this.containerHeight);
 	}
 

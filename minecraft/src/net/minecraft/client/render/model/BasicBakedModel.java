@@ -11,7 +11,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.json.JsonUnbakedModel;
 import net.minecraft.client.render.model.json.ModelItemPropertyOverrideList;
-import net.minecraft.client.render.model.json.ModelTransformations;
+import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.math.Direction;
 
@@ -19,10 +19,10 @@ import net.minecraft.util.math.Direction;
 public class BasicBakedModel implements BakedModel {
 	protected final List<BakedQuad> quads;
 	protected final Map<Direction, List<BakedQuad>> faceQuads;
-	protected final boolean usesAO;
+	protected final boolean usesAo;
 	protected final boolean depthInGui;
 	protected final Sprite sprite;
-	protected final ModelTransformations transformations;
+	protected final ModelTransformation transformation;
 	protected final ModelItemPropertyOverrideList itemPropertyOverrides;
 
 	public BasicBakedModel(
@@ -31,26 +31,26 @@ public class BasicBakedModel implements BakedModel {
 		boolean bl,
 		boolean bl2,
 		Sprite sprite,
-		ModelTransformations modelTransformations,
+		ModelTransformation modelTransformation,
 		ModelItemPropertyOverrideList modelItemPropertyOverrideList
 	) {
 		this.quads = list;
 		this.faceQuads = map;
-		this.usesAO = bl;
+		this.usesAo = bl;
 		this.depthInGui = bl2;
 		this.sprite = sprite;
-		this.transformations = modelTransformations;
+		this.transformation = modelTransformation;
 		this.itemPropertyOverrides = modelItemPropertyOverrideList;
 	}
 
 	@Override
-	public List<BakedQuad> method_4707(@Nullable BlockState blockState, @Nullable Direction direction, Random random) {
+	public List<BakedQuad> getQuads(@Nullable BlockState blockState, @Nullable Direction direction, Random random) {
 		return direction == null ? this.quads : (List)this.faceQuads.get(direction);
 	}
 
 	@Override
 	public boolean useAmbientOcclusion() {
-		return this.usesAO;
+		return this.usesAo;
 	}
 
 	@Override
@@ -69,8 +69,8 @@ public class BasicBakedModel implements BakedModel {
 	}
 
 	@Override
-	public ModelTransformations getTransformations() {
-		return this.transformations;
+	public ModelTransformation getTransformation() {
+		return this.transformation;
 	}
 
 	@Override
@@ -83,46 +83,46 @@ public class BasicBakedModel implements BakedModel {
 		private final List<BakedQuad> quads = Lists.<BakedQuad>newArrayList();
 		private final Map<Direction, List<BakedQuad>> faceQuads = Maps.newEnumMap(Direction.class);
 		private final ModelItemPropertyOverrideList itemPropertyOverrides;
-		private final boolean usesAO;
+		private final boolean usesAo;
 		private Sprite particleTexture;
 		private final boolean depthInGui;
-		private final ModelTransformations transformations;
+		private final ModelTransformation transformation;
 
 		public Builder(JsonUnbakedModel jsonUnbakedModel, ModelItemPropertyOverrideList modelItemPropertyOverrideList) {
-			this(jsonUnbakedModel.hasAmbientOcclusion(), jsonUnbakedModel.hasDepthInGui(), jsonUnbakedModel.getTransformations(), modelItemPropertyOverrideList);
+			this(jsonUnbakedModel.hasAmbientOcclusion(), jsonUnbakedModel.hasDepthInGui(), jsonUnbakedModel.method_3443(), modelItemPropertyOverrideList);
 		}
 
 		public Builder(BlockState blockState, BakedModel bakedModel, Sprite sprite, Random random, long l) {
-			this(bakedModel.useAmbientOcclusion(), bakedModel.hasDepthInGui(), bakedModel.getTransformations(), bakedModel.getItemPropertyOverrides());
+			this(bakedModel.useAmbientOcclusion(), bakedModel.hasDepthInGui(), bakedModel.getTransformation(), bakedModel.getItemPropertyOverrides());
 			this.particleTexture = bakedModel.getSprite();
 
 			for (Direction direction : Direction.values()) {
 				random.setSeed(l);
 
-				for (BakedQuad bakedQuad : bakedModel.method_4707(blockState, direction, random)) {
-					this.method_4745(direction, new RetexturedBakedQuad(bakedQuad, sprite));
+				for (BakedQuad bakedQuad : bakedModel.getQuads(blockState, direction, random)) {
+					this.addQuad(direction, new RetexturedBakedQuad(bakedQuad, sprite));
 				}
 			}
 
 			random.setSeed(l);
 
-			for (BakedQuad bakedQuad2 : bakedModel.method_4707(blockState, null, random)) {
+			for (BakedQuad bakedQuad2 : bakedModel.getQuads(blockState, null, random)) {
 				this.addQuad(new RetexturedBakedQuad(bakedQuad2, sprite));
 			}
 		}
 
-		private Builder(boolean bl, boolean bl2, ModelTransformations modelTransformations, ModelItemPropertyOverrideList modelItemPropertyOverrideList) {
+		private Builder(boolean bl, boolean bl2, ModelTransformation modelTransformation, ModelItemPropertyOverrideList modelItemPropertyOverrideList) {
 			for (Direction direction : Direction.values()) {
 				this.faceQuads.put(direction, Lists.newArrayList());
 			}
 
 			this.itemPropertyOverrides = modelItemPropertyOverrideList;
-			this.usesAO = bl;
+			this.usesAo = bl;
 			this.depthInGui = bl2;
-			this.transformations = modelTransformations;
+			this.transformation = modelTransformation;
 		}
 
-		public BasicBakedModel.Builder method_4745(Direction direction, BakedQuad bakedQuad) {
+		public BasicBakedModel.Builder addQuad(Direction direction, BakedQuad bakedQuad) {
 			((List)this.faceQuads.get(direction)).add(bakedQuad);
 			return this;
 		}
@@ -141,7 +141,7 @@ public class BasicBakedModel implements BakedModel {
 			if (this.particleTexture == null) {
 				throw new RuntimeException("Missing particle!");
 			} else {
-				return new BasicBakedModel(this.quads, this.faceQuads, this.usesAO, this.depthInGui, this.particleTexture, this.transformations, this.itemPropertyOverrides);
+				return new BasicBakedModel(this.quads, this.faceQuads, this.usesAo, this.depthInGui, this.particleTexture, this.transformation, this.itemPropertyOverrides);
 			}
 		}
 	}

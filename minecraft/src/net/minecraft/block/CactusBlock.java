@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.damage.DamageSource;
@@ -56,7 +55,7 @@ public class CactusBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape method_9549(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		return field_10711;
 	}
 
@@ -71,27 +70,29 @@ public class CactusBlock extends Block {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if (!blockState.canPlaceAt(iWorld, blockPos)) {
 			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
 		}
 
-		return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		for (Direction direction : Direction.class_2353.HORIZONTAL) {
-			BlockState blockState2 = viewableWorld.getBlockState(blockPos.method_10093(direction));
+			BlockState blockState2 = viewableWorld.getBlockState(blockPos.offset(direction));
 			Material material = blockState2.getMaterial();
-			if (material.method_15799() || viewableWorld.getFluidState(blockPos.method_10093(direction)).matches(FluidTags.field_15518)) {
+			if (material.method_15799() || viewableWorld.getFluidState(blockPos.offset(direction)).matches(FluidTags.field_15518)) {
 				return false;
 			}
 		}
 
 		Block block = viewableWorld.getBlockState(blockPos.down()).getBlock();
 		return (block == Blocks.field_10029 || block == Blocks.field_10102 || block == Blocks.field_10534)
-			&& !viewableWorld.getBlockState(blockPos.up()).getMaterial().method_15797();
+			&& !viewableWorld.getBlockState(blockPos.up()).getMaterial().isLiquid();
 	}
 
 	@Override

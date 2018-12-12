@@ -54,7 +54,7 @@ public abstract class AbstractCommandBlockGui extends Gui {
 		this.consoleCommandTextField.tick();
 	}
 
-	abstract CommandBlockExecutor method_2351();
+	abstract CommandBlockExecutor getCommandExecutor();
 
 	abstract int method_2364();
 
@@ -76,30 +76,30 @@ public abstract class AbstractCommandBlockGui extends Gui {
 		this.toggleTrackingOutputButton = this.addButton(new ButtonWidget(4, this.width / 2 + 150 - 20, this.method_2364(), 20, 20, "O") {
 			@Override
 			public void onPressed(double d, double e) {
-				CommandBlockExecutor commandBlockExecutor = AbstractCommandBlockGui.this.method_2351();
+				CommandBlockExecutor commandBlockExecutor = AbstractCommandBlockGui.this.getCommandExecutor();
 				commandBlockExecutor.shouldTrackOutput(!commandBlockExecutor.isTrackingOutput());
 				AbstractCommandBlockGui.this.method_2368();
 			}
 		});
 		this.consoleCommandTextField = new TextFieldWidget(2, this.fontRenderer, this.width / 2 - 150, 50, 300, 20) {
 			@Override
-			public void method_1876(boolean bl) {
-				super.method_1876(bl);
+			public void setFocused(boolean bl) {
+				super.setFocused(bl);
 				if (bl) {
-					AbstractCommandBlockGui.this.previousOutputTextField.method_1876(false);
+					AbstractCommandBlockGui.this.previousOutputTextField.setFocused(false);
 				}
 			}
 		};
 		this.consoleCommandTextField.setMaxLength(32500);
 		this.consoleCommandTextField.method_1854(this::method_2348);
-		this.consoleCommandTextField.method_1863(this::method_2360);
+		this.consoleCommandTextField.setChangedListener(this::method_2360);
 		this.listeners.add(this.consoleCommandTextField);
 		this.previousOutputTextField = new TextFieldWidget(3, this.fontRenderer, this.width / 2 - 150, this.method_2364(), 276, 20) {
 			@Override
-			public void method_1876(boolean bl) {
-				super.method_1876(bl);
+			public void setFocused(boolean bl) {
+				super.setFocused(bl);
 				if (bl) {
-					AbstractCommandBlockGui.this.consoleCommandTextField.method_1876(false);
+					AbstractCommandBlockGui.this.consoleCommandTextField.setFocused(false);
 				}
 			}
 		};
@@ -107,7 +107,7 @@ public abstract class AbstractCommandBlockGui extends Gui {
 		this.previousOutputTextField.setIsEditable(false);
 		this.previousOutputTextField.setText("-");
 		this.listeners.add(this.previousOutputTextField);
-		this.consoleCommandTextField.method_1876(true);
+		this.consoleCommandTextField.setFocused(true);
 		this.setFocused(this.consoleCommandTextField);
 		this.method_2353();
 	}
@@ -121,9 +121,9 @@ public abstract class AbstractCommandBlockGui extends Gui {
 	}
 
 	protected void method_2368() {
-		if (this.method_2351().isTrackingOutput()) {
+		if (this.getCommandExecutor().isTrackingOutput()) {
 			this.toggleTrackingOutputButton.text = "O";
-			this.previousOutputTextField.setText(this.method_2351().getLastOutput().getString());
+			this.previousOutputTextField.setText(this.getCommandExecutor().getLastOutput().getString());
 		} else {
 			this.toggleTrackingOutputButton.text = "X";
 			this.previousOutputTextField.setText("-");
@@ -131,7 +131,7 @@ public abstract class AbstractCommandBlockGui extends Gui {
 	}
 
 	protected void method_2359() {
-		CommandBlockExecutor commandBlockExecutor = this.method_2351();
+		CommandBlockExecutor commandBlockExecutor = this.getCommandExecutor();
 		this.method_2352(commandBlockExecutor);
 		if (!commandBlockExecutor.isTrackingOutput()) {
 			commandBlockExecutor.setLastOutput(null);
@@ -148,7 +148,7 @@ public abstract class AbstractCommandBlockGui extends Gui {
 	protected abstract void method_2352(CommandBlockExecutor commandBlockExecutor);
 
 	protected void method_2358() {
-		this.method_2351().shouldTrackOutput(this.field_2752);
+		this.getCommandExecutor().shouldTrackOutput(this.field_2752);
 		this.client.openGui(null);
 	}
 
@@ -190,7 +190,7 @@ public abstract class AbstractCommandBlockGui extends Gui {
 	protected void method_2353() {
 		this.field_2758 = null;
 		if (!this.field_2750) {
-			this.consoleCommandTextField.method_1887(null);
+			this.consoleCommandTextField.setSuggestion(null);
 			this.field_2759 = null;
 		}
 
@@ -204,7 +204,7 @@ public abstract class AbstractCommandBlockGui extends Gui {
 
 		this.field_2758 = commandDispatcher.parse(stringReader, this.client.player.networkHandler.getCommandSource());
 		if (this.field_2759 == null || !this.field_2750) {
-			StringReader stringReader2 = new StringReader(string.substring(0, Math.min(string.length(), this.consoleCommandTextField.getId())));
+			StringReader stringReader2 = new StringReader(string.substring(0, Math.min(string.length(), this.consoleCommandTextField.getCursor())));
 			if (stringReader2.canRead() && stringReader2.peek() == '/') {
 				stringReader2.skip();
 			}
@@ -222,7 +222,7 @@ public abstract class AbstractCommandBlockGui extends Gui {
 	private void method_2354() {
 		if (((Suggestions)this.field_2754.join()).isEmpty()
 			&& !this.field_2758.getExceptions().isEmpty()
-			&& this.consoleCommandTextField.getId() == this.consoleCommandTextField.getText().length()) {
+			&& this.consoleCommandTextField.getCursor() == this.consoleCommandTextField.getText().length()) {
 			int i = 0;
 
 			for (Entry<CommandNode<CommandSource>, CommandSyntaxException> entry : this.field_2758.getExceptions().entrySet()) {
@@ -246,7 +246,7 @@ public abstract class AbstractCommandBlockGui extends Gui {
 		}
 
 		this.field_2759 = null;
-		if (this.client.options.autoSuggestions) {
+		if (this.client.field_1690.autoSuggestions) {
 			this.method_2357();
 		}
 	}
@@ -316,7 +316,7 @@ public abstract class AbstractCommandBlockGui extends Gui {
 		this.consoleCommandTextField.render(i, j, f);
 		int k = 75;
 		if (!this.previousOutputTextField.getText().isEmpty()) {
-			k += 5 * this.fontRenderer.FONT_HEIGHT + 1 + this.method_2364() - 135;
+			k += 5 * this.fontRenderer.fontHeight + 1 + this.method_2364() - 135;
 			this.drawString(this.fontRenderer, I18n.translate("advMode.previousOutput"), this.width / 2 - 150, k + 4, 10526880);
 			this.previousOutputTextField.render(i, j, f);
 		}
@@ -488,12 +488,12 @@ public abstract class AbstractCommandBlockGui extends Gui {
 
 		public boolean method_2370(double d) {
 			int i = (int)(
-				AbstractCommandBlockGui.this.client.mouse.method_1603()
+				AbstractCommandBlockGui.this.client.field_1729.getX()
 					* (double)AbstractCommandBlockGui.this.client.window.getScaledWidth()
 					/ (double)AbstractCommandBlockGui.this.client.window.method_4480()
 			);
 			int j = (int)(
-				AbstractCommandBlockGui.this.client.mouse.method_1604()
+				AbstractCommandBlockGui.this.client.field_1729.getY()
 					* (double)AbstractCommandBlockGui.this.client.window.getScaledHeight()
 					/ (double)AbstractCommandBlockGui.this.client.window.method_4507()
 			);
@@ -552,7 +552,7 @@ public abstract class AbstractCommandBlockGui extends Gui {
 
 			Suggestion suggestion = (Suggestion)this.field_2764.getList().get(this.field_2766);
 			AbstractCommandBlockGui.this.consoleCommandTextField
-				.method_1887(AbstractCommandBlockGui.method_2350(AbstractCommandBlockGui.this.consoleCommandTextField.getText(), suggestion.apply(this.field_2768)));
+				.setSuggestion(AbstractCommandBlockGui.method_2350(AbstractCommandBlockGui.this.consoleCommandTextField.getText(), suggestion.apply(this.field_2768)));
 		}
 
 		public void method_2375() {
@@ -560,7 +560,7 @@ public abstract class AbstractCommandBlockGui extends Gui {
 			AbstractCommandBlockGui.this.field_2750 = true;
 			AbstractCommandBlockGui.this.method_2346(suggestion.apply(this.field_2768));
 			int i = suggestion.getRange().getStart() + suggestion.getText().length();
-			AbstractCommandBlockGui.this.consoleCommandTextField.method_1875(i);
+			AbstractCommandBlockGui.this.consoleCommandTextField.setCursor(i);
 			AbstractCommandBlockGui.this.consoleCommandTextField.method_1884(i);
 			this.method_2374(this.field_2766);
 			AbstractCommandBlockGui.this.field_2750 = false;

@@ -4,13 +4,11 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1361;
-import net.minecraft.class_1362;
 import net.minecraft.class_1374;
 import net.minecraft.class_1376;
 import net.minecraft.class_1387;
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
-import net.minecraft.class_3730;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -19,10 +17,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.RangedAttacker;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.FormCaravanGoal;
 import net.minecraft.entity.ai.goal.ProjectileAttackGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -103,7 +103,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 	protected void method_5959() {
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new class_1387(this, 1.2));
-		this.goalSelector.add(2, new class_1362(this, 2.1F));
+		this.goalSelector.add(2, new FormCaravanGoal(this, 2.1F));
 		this.goalSelector.add(3, new ProjectileAttackGoal(this, 1.25, 40, 20.0F));
 		this.goalSelector.add(3, new class_1374(this, 1.2));
 		this.goalSelector.add(4, new AnimalMateGoal(this, 1.0));
@@ -199,7 +199,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 					0.0,
 					0.0
 				);
-			if (!this.world.isRemote) {
+			if (!this.world.isClient) {
 				this.method_5615(i);
 			}
 
@@ -208,7 +208,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 
 		if (j > 0 && (bl || !this.isTame()) && this.getTemper() < this.method_6755()) {
 			bl = true;
-			if (!this.world.isRemote) {
+			if (!this.world.isClient) {
 				this.method_6745(j);
 			}
 		}
@@ -230,10 +230,10 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 
 	@Nullable
 	@Override
-	public EntityData method_5943(
-		IWorld iWorld, LocalDifficulty localDifficulty, class_3730 arg, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	public EntityData prepareEntityData(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.method_5943(iWorld, localDifficulty, arg, entityData, compoundTag);
+		entityData = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		this.method_6796();
 		int i;
 		if (entityData instanceof LlamaEntity.class_1503) {
@@ -323,7 +323,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 
 	@Override
 	protected void method_6731() {
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			super.method_6731();
 			this.method_6799(method_6794(this.field_6962.getInvStack(1)));
 		}
@@ -351,7 +351,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 	}
 
 	@Override
-	public boolean method_6474(AnimalEntity animalEntity) {
+	public boolean canBreedWith(AnimalEntity animalEntity) {
 		return animalEntity != this && animalEntity instanceof LlamaEntity && this.method_6734() && ((LlamaEntity)animalEntity).method_6734();
 	}
 
@@ -436,12 +436,12 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 		return this.field_6997 != null;
 	}
 
-	public boolean method_6805() {
+	public boolean isFollowing() {
 		return this.field_7000 != null;
 	}
 
 	@Nullable
-	public LlamaEntity method_6806() {
+	public LlamaEntity getFollowing() {
 		return this.field_7000;
 	}
 
@@ -452,7 +452,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 
 	@Override
 	protected void method_6746() {
-		if (!this.method_6805() && this.isChild()) {
+		if (!this.isFollowing() && this.isChild()) {
 			super.method_6746();
 		}
 	}
@@ -465,6 +465,12 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 	@Override
 	public void attack(LivingEntity livingEntity, float f) {
 		this.method_6792(livingEntity);
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public boolean hasArmsRaised() {
+		return false;
 	}
 
 	@Override

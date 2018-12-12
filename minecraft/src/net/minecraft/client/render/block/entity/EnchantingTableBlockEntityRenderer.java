@@ -54,7 +54,7 @@ public class EnchantingTableBlockEntityRenderer extends BlockEntityRenderer<Ench
 
 		float n = MathHelper.lerp(g, enchantingTableBlockEntity.field_11965, enchantingTableBlockEntity.field_11966);
 		GlStateManager.enableCull();
-		this.modelTable.render(null, h, l, m, n, 0.0F, 0.0625F);
+		this.modelTable.method_17072(h, l, m, n, 0.0F, 0.0625F);
 		GlStateManager.popMatrix();
 	}
 }

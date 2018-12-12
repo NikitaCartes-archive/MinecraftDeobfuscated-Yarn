@@ -1,8 +1,11 @@
 package net.minecraft;
 
 import javax.annotation.Nullable;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.sortme.SpawnHelper;
+import net.minecraft.sortme.SpawnRestriction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -24,12 +27,12 @@ public class class_1419 {
 		this.field_6727 = world;
 	}
 
-	public void method_6445() {
+	public void tick() {
 		if (this.field_6727.isDaylight()) {
 			this.field_6724 = 0;
 		} else if (this.field_6724 != 2) {
 			if (this.field_6724 == 0) {
-				float f = this.field_6727.method_8400(0.0F);
+				float f = this.field_6727.getSkyAngle(0.0F);
 				if ((double)f < 0.5 || (double)f > 0.501) {
 					return;
 				}
@@ -118,7 +121,7 @@ public class class_1419 {
 			ZombieEntity zombieEntity;
 			try {
 				zombieEntity = new ZombieEntity(this.field_6727);
-				zombieEntity.method_5943(this.field_6727, this.field_6727.getLocalDifficulty(new BlockPos(zombieEntity)), class_3730.field_16467, null, null);
+				zombieEntity.prepareEntityData(this.field_6727, this.field_6727.getLocalDifficulty(new BlockPos(zombieEntity)), SpawnType.field_16467, null, null);
 			} catch (Exception var4) {
 				var4.printStackTrace();
 				return false;
@@ -136,7 +139,7 @@ public class class_1419 {
 	private Vec3d method_6448(BlockPos blockPos) {
 		for (int i = 0; i < 10; i++) {
 			BlockPos blockPos2 = blockPos.add(this.field_6727.random.nextInt(16) - 8, this.field_6727.random.nextInt(6) - 3, this.field_6727.random.nextInt(16) - 8);
-			if (this.field_6726.isInRadius(blockPos2) && class_1948.method_8660(class_1317.class_1319.field_6317, this.field_6727, blockPos2, null)) {
+			if (this.field_6726.isInRadius(blockPos2) && SpawnHelper.canSpawn(SpawnRestriction.Location.field_6317, this.field_6727, blockPos2, null)) {
 				return new Vec3d((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
 			}
 		}

@@ -21,7 +21,7 @@ public class SetWorldSpawnCommand {
 
 	private static int method_13650(ServerCommandSource serverCommandSource, BlockPos blockPos) {
 		serverCommandSource.getWorld().setSpawnPos(blockPos);
-		serverCommandSource.getMinecraftServer().getConfigurationManager().sendToAll(new PlayerSpawnPositionClientPacket(blockPos));
+		serverCommandSource.getMinecraftServer().getPlayerManager().sendToAll(new PlayerSpawnPositionClientPacket(blockPos));
 		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.setworldspawn.success", blockPos.getX(), blockPos.getY(), blockPos.getZ()), true);
 		return 1;
 	}

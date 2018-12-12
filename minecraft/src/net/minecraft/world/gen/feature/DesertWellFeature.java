@@ -10,8 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class DesertWellFeature extends Feature<DefaultFeatureConfig> {
 	private static final BlockStatePredicate field_13450 = BlockStatePredicate.forBlock(Blocks.field_10102);
@@ -24,7 +23,7 @@ public class DesertWellFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean method_12977(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		blockPos = blockPos.up();
 
@@ -54,7 +53,7 @@ public class DesertWellFeature extends Feature<DefaultFeatureConfig> {
 			iWorld.setBlockState(blockPos, this.field_13449, 2);
 
 			for (Direction direction : Direction.class_2353.HORIZONTAL) {
-				iWorld.setBlockState(blockPos.method_10093(direction), this.field_13449, 2);
+				iWorld.setBlockState(blockPos.offset(direction), this.field_13449, 2);
 			}
 
 			for (int i = -2; i <= 2; i++) {

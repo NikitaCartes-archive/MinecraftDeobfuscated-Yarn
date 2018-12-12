@@ -49,7 +49,7 @@ public class ScoreboardHud extends Drawable {
 
 	public void method_1921(boolean bl) {
 		if (bl && !this.field_2158) {
-			this.field_2152 = SystemUtil.getMeasuringTimeMili();
+			this.field_2152 = SystemUtil.getMeasuringTimeMs();
 		}
 
 		this.field_2158 = bl;
@@ -79,7 +79,7 @@ public class ScoreboardHud extends Drawable {
 			l++;
 		}
 
-		boolean bl = this.client.method_1542() || this.client.getNetworkHandler().getClientConnection().isEncrypted();
+		boolean bl = this.client.isIntegratedServerRunning() || this.client.getNetworkHandler().getClientConnection().isEncrypted();
 		int o;
 		if (scoreboardObjective != null) {
 			if (scoreboardObjective.getCriterionType() == ScoreboardCriterion.Type.HEARTS) {
@@ -114,12 +114,12 @@ public class ScoreboardHud extends Drawable {
 		}
 
 		if (list2 != null) {
-			drawRect(i / 2 - s / 2 - 1, r - 1, i / 2 + s / 2 + 1, r + list2.size() * this.client.fontRenderer.FONT_HEIGHT, Integer.MIN_VALUE);
+			drawRect(i / 2 - s / 2 - 1, r - 1, i / 2 + s / 2 + 1, r + list2.size() * this.client.fontRenderer.fontHeight, Integer.MIN_VALUE);
 
 			for (String string2 : list2) {
 				int t = this.client.fontRenderer.getStringWidth(string2);
 				this.client.fontRenderer.drawWithShadow(string2, (float)(i / 2 - t / 2), (float)r, -1);
-				r += this.client.fontRenderer.FONT_HEIGHT;
+				r += this.client.fontRenderer.fontHeight;
 			}
 
 			r++;
@@ -184,12 +184,12 @@ public class ScoreboardHud extends Drawable {
 
 		if (list3 != null) {
 			r += n * 9 + 1;
-			drawRect(i / 2 - s / 2 - 1, r - 1, i / 2 + s / 2 + 1, r + list3.size() * this.client.fontRenderer.FONT_HEIGHT, Integer.MIN_VALUE);
+			drawRect(i / 2 - s / 2 - 1, r - 1, i / 2 + s / 2 + 1, r + list3.size() * this.client.fontRenderer.fontHeight, Integer.MIN_VALUE);
 
 			for (String string2 : list3) {
 				int t = this.client.fontRenderer.getStringWidth(string2);
 				this.client.fontRenderer.drawWithShadow(string2, (float)(i / 2 - t / 2), (float)r, -1);
-				r += this.client.fontRenderer.FONT_HEIGHT;
+				r += this.client.fontRenderer.fontHeight;
 			}
 		}
 	}
@@ -222,7 +222,7 @@ public class ScoreboardHud extends Drawable {
 		int l = scoreboardObjective.getScoreboard().getPlayerScore(string, scoreboardObjective).getScore();
 		if (scoreboardObjective.getCriterionType() == ScoreboardCriterion.Type.HEARTS) {
 			this.client.getTextureManager().bindTexture(ICONS);
-			long m = SystemUtil.getMeasuringTimeMili();
+			long m = SystemUtil.getMeasuringTimeMs();
 			if (this.field_2152 == scoreboardEntry.method_2976()) {
 				if (l < scoreboardEntry.method_2973()) {
 					scoreboardEntry.method_2978(m);

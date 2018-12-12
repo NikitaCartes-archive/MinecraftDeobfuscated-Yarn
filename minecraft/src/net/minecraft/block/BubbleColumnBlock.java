@@ -3,8 +3,6 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2263;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -23,7 +21,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
-public class BubbleColumnBlock extends Block implements class_2263 {
+public class BubbleColumnBlock extends Block implements FluidDrainable {
 	public static final BooleanProperty field_10680 = Properties.DRAG;
 
 	public BubbleColumnBlock(Block.Settings settings) {
@@ -36,7 +34,7 @@ public class BubbleColumnBlock extends Block implements class_2263 {
 		BlockState blockState2 = world.getBlockState(blockPos.up());
 		if (blockState2.isAir()) {
 			entity.method_5700((Boolean)blockState.get(field_10680));
-			if (!world.isRemote) {
+			if (!world.isClient) {
 				ServerWorld serverWorld = (ServerWorld)world;
 
 				for (int i = 0; i < 2; i++) {
@@ -127,7 +125,9 @@ public class BubbleColumnBlock extends Block implements class_2263 {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if (!blockState.canPlaceAt(iWorld, blockPos)) {
 			return Blocks.field_10382.getDefaultState();
 		} else {
@@ -138,7 +138,7 @@ public class BubbleColumnBlock extends Block implements class_2263 {
 			}
 
 			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
-			return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		}
 	}
 
@@ -159,8 +159,8 @@ public class BubbleColumnBlock extends Block implements class_2263 {
 	}
 
 	@Override
-	public RenderTypeBlock getRenderType(BlockState blockState) {
-		return RenderTypeBlock.NONE;
+	public BlockRenderType method_9604(BlockState blockState) {
+		return BlockRenderType.field_11455;
 	}
 
 	@Override
@@ -169,7 +169,7 @@ public class BubbleColumnBlock extends Block implements class_2263 {
 	}
 
 	@Override
-	public Fluid method_9700(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
+	public Fluid tryDrainFluid(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
 		iWorld.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 11);
 		return Fluids.WATER;
 	}

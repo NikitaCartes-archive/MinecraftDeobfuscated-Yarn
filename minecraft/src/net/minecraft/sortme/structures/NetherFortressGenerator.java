@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.class_3443;
-import net.minecraft.class_3485;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FenceBlock;
@@ -88,7 +87,7 @@ public class NetherFortressGenerator {
 		protected class_3391(Random random, int i, int j) {
 			super(StructurePiece.field_16926, 0);
 			this.method_14926(Direction.class_2353.HORIZONTAL.random(random));
-			if (this.method_14934().getAxis() == Direction.Axis.Z) {
+			if (this.getFacing().getAxis() == Direction.Axis.Z) {
 				this.structureBounds = new MutableIntBoundingBox(i, 64, j, i + 19 - 1, 73, j + 19 - 1);
 			} else {
 				this.structureBounds = new MutableIntBoundingBox(i, 64, j, i + 19 - 1, 73, j + 19 - 1);
@@ -99,7 +98,7 @@ public class NetherFortressGenerator {
 			super(structurePiece, compoundTag);
 		}
 
-		public class_3391(class_3485 arg, CompoundTag compoundTag) {
+		public class_3391(StructureManager structureManager, CompoundTag compoundTag) {
 			this(StructurePiece.field_16926, compoundTag);
 		}
 
@@ -111,7 +110,7 @@ public class NetherFortressGenerator {
 		}
 
 		public static NetherFortressGenerator.class_3391 method_14796(List<class_3443> list, int i, int j, int k, Direction direction, int l) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -8, -3, 0, 19, 10, 19, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -8, -3, 0, 19, 10, 19, direction);
 			return method_14809(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new NetherFortressGenerator.class_3391(l, mutableIntBoundingBox, direction)
 				: null;
@@ -169,13 +168,13 @@ public class NetherFortressGenerator {
 			this.field_14495 = random.nextInt();
 		}
 
-		public class_3392(class_3485 arg, CompoundTag compoundTag) {
+		public class_3392(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16903, compoundTag);
 			this.field_14495 = compoundTag.getInt("Seed");
 		}
 
 		public static NetherFortressGenerator.class_3392 method_14797(List<class_3443> list, Random random, int i, int j, int k, Direction direction, int l) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -1, -3, 0, 5, 10, 8, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -1, -3, 0, 5, 10, 8, direction);
 			return method_14809(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new NetherFortressGenerator.class_3392(l, random, mutableIntBoundingBox, direction)
 				: null;
@@ -226,7 +225,7 @@ public class NetherFortressGenerator {
 			this.structureBounds = mutableIntBoundingBox;
 		}
 
-		public class_3393(class_3485 arg, CompoundTag compoundTag) {
+		public class_3393(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16917, compoundTag);
 		}
 
@@ -236,7 +235,7 @@ public class NetherFortressGenerator {
 		}
 
 		public static NetherFortressGenerator.class_3393 method_14798(List<class_3443> list, Random random, int i, int j, int k, Direction direction, int l) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -1, -3, 0, 5, 10, 19, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -1, -3, 0, 5, 10, 19, direction);
 			return method_14809(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new NetherFortressGenerator.class_3393(l, random, mutableIntBoundingBox, direction)
 				: null;
@@ -282,7 +281,7 @@ public class NetherFortressGenerator {
 			this.structureBounds = mutableIntBoundingBox;
 		}
 
-		public class_3394(class_3485 arg, CompoundTag compoundTag) {
+		public class_3394(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16930, compoundTag);
 		}
 
@@ -292,7 +291,7 @@ public class NetherFortressGenerator {
 		}
 
 		public static NetherFortressGenerator.class_3394 method_14799(List<class_3443> list, int i, int j, int k, Direction direction, int l) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -1, -7, 0, 5, 14, 10, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -1, -7, 0, 5, 14, 10, direction);
 			return method_14809(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new NetherFortressGenerator.class_3394(l, mutableIntBoundingBox, direction)
 				: null;
@@ -300,7 +299,7 @@ public class NetherFortressGenerator {
 
 		@Override
 		public boolean method_14931(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
-			BlockState blockState = Blocks.field_10159.getDefaultState().with(StairsBlock.field_11571, Direction.SOUTH);
+			BlockState blockState = Blocks.field_10159.getDefaultState().with(StairsBlock.FACING, Direction.SOUTH);
 			BlockState blockState2 = Blocks.field_10364.getDefaultState().with(FenceBlock.NORTH, Boolean.valueOf(true)).with(FenceBlock.SOUTH, Boolean.valueOf(true));
 
 			for (int i = 0; i <= 9; i++) {
@@ -345,14 +344,14 @@ public class NetherFortressGenerator {
 			this.structureBounds = mutableIntBoundingBox;
 		}
 
-		public class_3395(class_3485 arg, CompoundTag compoundTag) {
+		public class_3395(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16943, compoundTag);
 		}
 
 		@Override
 		public void method_14918(class_3443 arg, List<class_3443> list, Random random) {
 			int i = 1;
-			Direction direction = this.method_14934();
+			Direction direction = this.getFacing();
 			if (direction == Direction.WEST || direction == Direction.NORTH) {
 				i = 5;
 			}
@@ -362,7 +361,7 @@ public class NetherFortressGenerator {
 		}
 
 		public static NetherFortressGenerator.class_3395 method_14800(List<class_3443> list, int i, int j, int k, Direction direction, int l) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -3, 0, 0, 9, 7, 9, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -3, 0, 0, 9, 7, 9, direction);
 			return method_14809(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new NetherFortressGenerator.class_3395(l, mutableIntBoundingBox, direction)
 				: null;
@@ -425,7 +424,7 @@ public class NetherFortressGenerator {
 			this.structureBounds = mutableIntBoundingBox;
 		}
 
-		public class_3396(class_3485 arg, CompoundTag compoundTag) {
+		public class_3396(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16952, compoundTag);
 		}
 
@@ -435,7 +434,7 @@ public class NetherFortressGenerator {
 		}
 
 		public static NetherFortressGenerator.class_3396 method_14801(List<class_3443> list, Random random, int i, int j, int k, Direction direction, int l) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -5, -3, 0, 13, 14, 13, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -5, -3, 0, 13, 14, 13, direction);
 			return method_14809(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new NetherFortressGenerator.class_3396(l, random, mutableIntBoundingBox, direction)
 				: null;
@@ -578,7 +577,7 @@ public class NetherFortressGenerator {
 			this.structureBounds = mutableIntBoundingBox;
 		}
 
-		public class_3397(class_3485 arg, CompoundTag compoundTag) {
+		public class_3397(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16929, compoundTag);
 		}
 
@@ -590,7 +589,7 @@ public class NetherFortressGenerator {
 		}
 
 		public static NetherFortressGenerator.class_3397 method_14802(List<class_3443> list, int i, int j, int k, Direction direction, int l) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -1, 0, 0, 5, 7, 5, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -1, 0, 0, 5, 7, 5, direction);
 			return method_14809(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new NetherFortressGenerator.class_3397(l, mutableIntBoundingBox, direction)
 				: null;
@@ -626,7 +625,7 @@ public class NetherFortressGenerator {
 			this.field_14496 = random.nextInt(3) == 0;
 		}
 
-		public class_3398(class_3485 arg, CompoundTag compoundTag) {
+		public class_3398(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16962, compoundTag);
 			this.field_14496 = compoundTag.getBoolean("Chest");
 		}
@@ -643,7 +642,7 @@ public class NetherFortressGenerator {
 		}
 
 		public static NetherFortressGenerator.class_3398 method_14803(List<class_3443> list, Random random, int i, int j, int k, Direction direction, int l) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -1, 0, 0, 5, 7, 5, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -1, 0, 0, 5, 7, 5, direction);
 			return method_14809(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new NetherFortressGenerator.class_3398(l, random, mutableIntBoundingBox, direction)
 				: null;
@@ -686,7 +685,7 @@ public class NetherFortressGenerator {
 			this.structureBounds = mutableIntBoundingBox;
 		}
 
-		public class_3399(class_3485 arg, CompoundTag compoundTag) {
+		public class_3399(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16921, compoundTag);
 		}
 
@@ -696,7 +695,7 @@ public class NetherFortressGenerator {
 		}
 
 		public static NetherFortressGenerator.class_3399 method_14804(List<class_3443> list, int i, int j, int k, Direction direction, int l) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -1, 0, 0, 5, 7, 5, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -1, 0, 0, 5, 7, 5, direction);
 			return method_14809(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new NetherFortressGenerator.class_3399(l, mutableIntBoundingBox, direction)
 				: null;
@@ -735,7 +734,7 @@ public class NetherFortressGenerator {
 			this.field_14497 = random.nextInt(3) == 0;
 		}
 
-		public class_3400(class_3485 arg, CompoundTag compoundTag) {
+		public class_3400(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16945, compoundTag);
 			this.field_14497 = compoundTag.getBoolean("Chest");
 		}
@@ -752,7 +751,7 @@ public class NetherFortressGenerator {
 		}
 
 		public static NetherFortressGenerator.class_3400 method_14805(List<class_3443> list, Random random, int i, int j, int k, Direction direction, int l) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -1, 0, 0, 5, 7, 5, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -1, 0, 0, 5, 7, 5, direction);
 			return method_14809(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new NetherFortressGenerator.class_3400(l, random, mutableIntBoundingBox, direction)
 				: null;
@@ -795,7 +794,7 @@ public class NetherFortressGenerator {
 			this.structureBounds = mutableIntBoundingBox;
 		}
 
-		public class_3401(class_3485 arg, CompoundTag compoundTag) {
+		public class_3401(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16961, compoundTag);
 		}
 
@@ -806,7 +805,7 @@ public class NetherFortressGenerator {
 		}
 
 		public static NetherFortressGenerator.class_3401 method_14806(List<class_3443> list, int i, int j, int k, Direction direction, int l) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -5, -3, 0, 13, 14, 13, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -5, -3, 0, 13, 14, 13, direction);
 			return method_14809(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new NetherFortressGenerator.class_3401(l, mutableIntBoundingBox, direction)
 				: null;
@@ -885,7 +884,7 @@ public class NetherFortressGenerator {
 				this.fillWithOutline(iWorld, mutableIntBoundingBox, 11, 7, ix, 11, 8, ix, blockState4, blockState4, false);
 			}
 
-			BlockState blockState5 = Blocks.field_10159.getDefaultState().with(StairsBlock.field_11571, Direction.NORTH);
+			BlockState blockState5 = Blocks.field_10159.getDefaultState().with(StairsBlock.FACING, Direction.NORTH);
 
 			for (int j = 0; j <= 6; j++) {
 				int k = j + 4;
@@ -924,8 +923,8 @@ public class NetherFortressGenerator {
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 9, 5, 2, 10, 5, 3, Blocks.field_10266.getDefaultState(), Blocks.field_10266.getDefaultState(), false);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 9, 5, 9, 10, 5, 10, Blocks.field_10266.getDefaultState(), Blocks.field_10266.getDefaultState(), false);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 10, 5, 4, 10, 5, 8, Blocks.field_10266.getDefaultState(), Blocks.field_10266.getDefaultState(), false);
-			BlockState blockState6 = blockState5.with(StairsBlock.field_11571, Direction.EAST);
-			BlockState blockState7 = blockState5.with(StairsBlock.field_11571, Direction.WEST);
+			BlockState blockState6 = blockState5.with(StairsBlock.FACING, Direction.EAST);
+			BlockState blockState7 = blockState5.with(StairsBlock.FACING, Direction.WEST);
 			this.addBlock(iWorld, blockState7, 4, 5, 2, mutableIntBoundingBox);
 			this.addBlock(iWorld, blockState7, 4, 5, 3, mutableIntBoundingBox);
 			this.addBlock(iWorld, blockState7, 4, 5, 9, mutableIntBoundingBox);
@@ -972,7 +971,7 @@ public class NetherFortressGenerator {
 			this.structureBounds = mutableIntBoundingBox;
 		}
 
-		public class_3402(class_3485 arg, CompoundTag compoundTag) {
+		public class_3402(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16931, compoundTag);
 			this.field_14498 = compoundTag.getBoolean("Mob");
 		}
@@ -984,7 +983,7 @@ public class NetherFortressGenerator {
 		}
 
 		public static NetherFortressGenerator.class_3402 method_14807(List<class_3443> list, int i, int j, int k, int l, Direction direction) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -2, 0, 0, 7, 8, 9, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -2, 0, 0, 7, 8, 9, direction);
 			return method_14809(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new NetherFortressGenerator.class_3402(l, mutableIntBoundingBox, direction)
 				: null;
@@ -1165,7 +1164,7 @@ public class NetherFortressGenerator {
 
 		@Nullable
 		protected class_3443 method_14814(NetherFortressGenerator.class_3407 arg, List<class_3443> list, Random random, int i, int j, boolean bl) {
-			Direction direction = this.method_14934();
+			Direction direction = this.getFacing();
 			if (direction != null) {
 				switch (direction) {
 					case NORTH:
@@ -1192,7 +1191,7 @@ public class NetherFortressGenerator {
 
 		@Nullable
 		protected class_3443 method_14812(NetherFortressGenerator.class_3407 arg, List<class_3443> list, Random random, int i, int j, boolean bl) {
-			Direction direction = this.method_14934();
+			Direction direction = this.getFacing();
 			if (direction != null) {
 				switch (direction) {
 					case NORTH:
@@ -1219,7 +1218,7 @@ public class NetherFortressGenerator {
 
 		@Nullable
 		protected class_3443 method_14808(NetherFortressGenerator.class_3407 arg, List<class_3443> list, Random random, int i, int j, boolean bl) {
-			Direction direction = this.method_14934();
+			Direction direction = this.getFacing();
 			if (direction != null) {
 				switch (direction) {
 					case NORTH:
@@ -1283,7 +1282,7 @@ public class NetherFortressGenerator {
 			this.structureBounds = mutableIntBoundingBox;
 		}
 
-		public class_3405(class_3485 arg, CompoundTag compoundTag) {
+		public class_3405(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16908, compoundTag);
 		}
 
@@ -1295,7 +1294,7 @@ public class NetherFortressGenerator {
 		}
 
 		public static NetherFortressGenerator.class_3405 method_14817(List<class_3443> list, int i, int j, int k, Direction direction, int l) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -2, 0, 0, 7, 9, 7, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -2, 0, 0, 7, 9, 7, direction);
 			return method_14809(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new NetherFortressGenerator.class_3405(l, mutableIntBoundingBox, direction)
 				: null;
@@ -1341,7 +1340,7 @@ public class NetherFortressGenerator {
 			this.structureBounds = mutableIntBoundingBox;
 		}
 
-		public class_3406(class_3485 arg, CompoundTag compoundTag) {
+		public class_3406(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16967, compoundTag);
 		}
 
@@ -1351,7 +1350,7 @@ public class NetherFortressGenerator {
 		}
 
 		public static NetherFortressGenerator.class_3406 method_14818(List<class_3443> list, int i, int j, int k, int l, Direction direction) {
-			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.method_14667(i, j, k, -2, 0, 0, 7, 11, 7, direction);
+			MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.createRotated(i, j, k, -2, 0, 0, 7, 11, 7, direction);
 			return method_14809(mutableIntBoundingBox) && class_3443.method_14932(list, mutableIntBoundingBox) == null
 				? new NetherFortressGenerator.class_3406(l, mutableIntBoundingBox, direction)
 				: null;
@@ -1414,7 +1413,7 @@ public class NetherFortressGenerator {
 			}
 		}
 
-		public class_3407(class_3485 arg, CompoundTag compoundTag) {
+		public class_3407(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16924, compoundTag);
 		}
 	}

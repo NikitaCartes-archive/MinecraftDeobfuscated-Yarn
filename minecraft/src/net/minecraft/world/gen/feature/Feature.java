@@ -9,10 +9,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.class_3831;
-import net.minecraft.class_3832;
-import net.minecraft.class_3833;
-import net.minecraft.class_3835;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SweetBerryBushBlock;
@@ -22,40 +18,9 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ModifiableWorld;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.ProbabilityConfig;
-import net.minecraft.world.gen.config.feature.BlockClusterFeatureConfig;
-import net.minecraft.world.gen.config.feature.BoulderFeatureConfig;
-import net.minecraft.world.gen.config.feature.BuriedTreasureFeatureConfig;
-import net.minecraft.world.gen.config.feature.BushFeatureConfig;
-import net.minecraft.world.gen.config.feature.DecoratedFeatureConfig;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
-import net.minecraft.world.gen.config.feature.DoublePlantFeatureConfig;
-import net.minecraft.world.gen.config.feature.EmeraldOreFeatureConfig;
-import net.minecraft.world.gen.config.feature.EndGatewayFeatureConfig;
-import net.minecraft.world.gen.config.feature.EndPillarFeatureConfig;
-import net.minecraft.world.gen.config.feature.FeatureConfig;
-import net.minecraft.world.gen.config.feature.GrassFeatureConfig;
-import net.minecraft.world.gen.config.feature.IcePatchFeatureConfig;
-import net.minecraft.world.gen.config.feature.IcebergFeatureConfig;
-import net.minecraft.world.gen.config.feature.LakeFeatureConfig;
-import net.minecraft.world.gen.config.feature.MineshaftFeatureConfig;
-import net.minecraft.world.gen.config.feature.NetherSpringFeatureConfig;
-import net.minecraft.world.gen.config.feature.NewVillageFeatureConfig;
-import net.minecraft.world.gen.config.feature.OceanRuinFeatureConfig;
-import net.minecraft.world.gen.config.feature.OreFeatureConfig;
-import net.minecraft.world.gen.config.feature.PillagerOutpostFeatureConfig;
-import net.minecraft.world.gen.config.feature.RandomBooleanFeatureConfig;
-import net.minecraft.world.gen.config.feature.RandomFeatureConfig;
-import net.minecraft.world.gen.config.feature.RandomRandomFeatureConfig;
-import net.minecraft.world.gen.config.feature.SeaPickleFeatureConfig;
-import net.minecraft.world.gen.config.feature.SeagrassFeatureConfig;
-import net.minecraft.world.gen.config.feature.ShipwreckFeatureConfig;
-import net.minecraft.world.gen.config.feature.SimpleBlockFeatureConfig;
-import net.minecraft.world.gen.config.feature.SimpleRandomFeatureConfig;
-import net.minecraft.world.gen.config.feature.SpringFeatureConfig;
-import net.minecraft.world.gen.config.feature.VillageFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public abstract class Feature<FC extends FeatureConfig> {
 	public static final StructureFeature<VillageFeatureConfig> VILLAGE = register("village", new VillageFeature(VillageFeatureConfig::deserialize));
@@ -153,12 +118,13 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DefaultFeatureConfig> field_13560 = register("blue_ice", new BlueIceFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<IcebergFeatureConfig> field_13544 = register("iceberg", new IcebergFeature(IcebergFeatureConfig::deserialize));
 	public static final Feature<BoulderFeatureConfig> field_13584 = register("forest_rock", new ForestRockFeature(BoulderFeatureConfig::deserialize));
-	public static final Feature<DefaultFeatureConfig> field_16797 = register("hay_pile", new class_3831(DefaultFeatureConfig::deserialize));
-	public static final Feature<DefaultFeatureConfig> field_17005 = register("snow_pile", new class_3835(DefaultFeatureConfig::deserialize));
-	public static final Feature<DefaultFeatureConfig> field_17006 = register("ice_pile", new class_3832(DefaultFeatureConfig::deserialize));
-	public static final Feature<DefaultFeatureConfig> field_17007 = register("melon_pile", new class_3833(DefaultFeatureConfig::deserialize));
+	public static final Feature<DefaultFeatureConfig> field_16797 = register("hay_pile", new HayPileFeature(DefaultFeatureConfig::deserialize));
+	public static final Feature<DefaultFeatureConfig> field_17005 = register("snow_pile", new SnowPileFeature(DefaultFeatureConfig::deserialize));
+	public static final Feature<DefaultFeatureConfig> field_17006 = register("ice_pile", new IcePileFeature(DefaultFeatureConfig::deserialize));
+	public static final Feature<DefaultFeatureConfig> field_17007 = register("melon_pile", new MelonPileFeature(DefaultFeatureConfig::deserialize));
+	public static final Feature<DefaultFeatureConfig> field_17106 = register("pumpkin_pile", new PumpkinPileFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<BushFeatureConfig> field_13519 = register("bush", new BushFeature(BushFeatureConfig::deserialize));
-	public static final Feature<BlockClusterFeatureConfig> field_13509 = register("disk", new DiskFeature(BlockClusterFeatureConfig::deserialize));
+	public static final Feature<DiskFeatureConfig> field_13509 = register("disk", new DiskFeature(DiskFeatureConfig::deserialize));
 	public static final Feature<DoublePlantFeatureConfig> field_13576 = register("double_plant", new DoublePlantFeature(DoublePlantFeatureConfig::deserialize));
 	public static final Feature<NetherSpringFeatureConfig> field_13563 = register("nether_spring", new NetherSpringFeature(NetherSpringFeatureConfig::deserialize));
 	public static final Feature<IcePatchFeatureConfig> field_13551 = register("ice_patch", new IcePatchFeature(IcePatchFeatureConfig::deserialize));
@@ -174,7 +140,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<RandomBooleanFeatureConfig> field_13550 = register(
 		"random_boolean_selector", new RandomBooleanFeature(RandomBooleanFeatureConfig::deserialize)
 	);
-	public static final Feature<EmeraldOreFeatureConfig> field_13594 = register("emerald_ore", new EmeraldOre(EmeraldOreFeatureConfig::deserialize));
+	public static final Feature<EmeraldOreFeatureConfig> field_13594 = register("emerald_ore", new EmeraldOreFeature(EmeraldOreFeatureConfig::deserialize));
 	public static final Feature<SpringFeatureConfig> field_13513 = register("spring_feature", new SpringFeature(SpringFeatureConfig::deserialize));
 	public static final Feature<EndPillarFeatureConfig> field_13522 = register("end_spike", new EndSpikeFeature(EndPillarFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> field_13574 = register("end_island", new EndIslandFeature(DefaultFeatureConfig::deserialize));
@@ -213,8 +179,8 @@ public abstract class Feature<FC extends FeatureConfig> {
 		hashBiMap.put("Buried_Treasure".toLowerCase(Locale.ROOT), BURIED_TREASURE);
 		hashBiMap.put("New_Village".toLowerCase(Locale.ROOT), NEW_VILLAGE);
 	});
-	public static final List<StructureFeature<?>> field_16654 = ImmutableList.of(PILLAGER_OUTPOST, NEW_VILLAGE);
-	private final Function<Dynamic<?>, ? extends FC> factory;
+	public static final List<StructureFeature<?>> JIGSAW_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, NEW_VILLAGE);
+	private final Function<Dynamic<?>, ? extends FC> configFactory;
 	protected final boolean emitNeighborBlockUpdates;
 
 	private static <C extends FeatureConfig, F extends Feature<C>> F register(String string, F feature) {
@@ -222,20 +188,20 @@ public abstract class Feature<FC extends FeatureConfig> {
 	}
 
 	public Feature(Function<Dynamic<?>, ? extends FC> function) {
-		this.factory = function;
+		this.configFactory = function;
 		this.emitNeighborBlockUpdates = false;
 	}
 
 	public Feature(Function<Dynamic<?>, ? extends FC> function, boolean bl) {
-		this.factory = function;
+		this.configFactory = function;
 		this.emitNeighborBlockUpdates = bl;
 	}
 
-	public FC deserialize(Dynamic<?> dynamic) {
-		return (FC)this.factory.apply(dynamic);
+	public FC method_13148(Dynamic<?> dynamic) {
+		return (FC)this.configFactory.apply(dynamic);
 	}
 
-	protected void method_13153(ModifiableWorld modifiableWorld, BlockPos blockPos, BlockState blockState) {
+	protected void setBlockState(ModifiableWorld modifiableWorld, BlockPos blockPos, BlockState blockState) {
 		if (this.emitNeighborBlockUpdates) {
 			modifiableWorld.setBlockState(blockPos, blockState, 3);
 		} else {
@@ -243,15 +209,15 @@ public abstract class Feature<FC extends FeatureConfig> {
 		}
 	}
 
-	public abstract boolean generate(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, Random random, BlockPos blockPos, FC featureConfig
+	public abstract boolean method_13151(
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, FC featureConfig
 	);
 
-	public List<Biome.SpawnEntry> method_13149() {
+	public List<Biome.SpawnEntry> getMonsterSpawns() {
 		return Collections.emptyList();
 	}
 
-	public List<Biome.SpawnEntry> method_16140() {
+	public List<Biome.SpawnEntry> getCreatureSpawns() {
 		return Collections.emptyList();
 	}
 }

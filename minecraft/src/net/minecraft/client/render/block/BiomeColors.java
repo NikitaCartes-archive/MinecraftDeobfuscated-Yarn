@@ -18,7 +18,7 @@ public class BiomeColors {
 		int i = 0;
 		int j = 0;
 		int k = 0;
-		int l = MinecraftClient.getInstance().options.biomeBlendRadius;
+		int l = MinecraftClient.getInstance().field_1690.biomeBlendRadius;
 		int m = (l * 2 + 1) * (l * 2 + 1);
 
 		for (BlockPos.Mutable mutable : BlockPos.method_10068(

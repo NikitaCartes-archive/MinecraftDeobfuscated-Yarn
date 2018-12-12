@@ -18,7 +18,12 @@ public enum RecipeBookGroup {
 	field_1804(new ItemStack(Items.field_8251)),
 	field_1808(new ItemStack(Items.field_8389)),
 	field_1811(new ItemStack(Blocks.field_10340)),
-	field_1812(new ItemStack(Items.field_8187), new ItemStack(Items.field_8687));
+	field_1812(new ItemStack(Items.field_8187), new ItemStack(Items.field_8687)),
+	field_17110(new ItemStack(Items.field_8251)),
+	field_17111(new ItemStack(Blocks.field_10080)),
+	field_17112(new ItemStack(Items.field_8699), new ItemStack(Items.field_8416)),
+	field_17113(new ItemStack(Items.field_8251)),
+	field_17114(new ItemStack(Items.field_8389));
 
 	private final List<ItemStack> icons;
 

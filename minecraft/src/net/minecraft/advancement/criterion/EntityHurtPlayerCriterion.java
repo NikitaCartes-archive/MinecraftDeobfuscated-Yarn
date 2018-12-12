@@ -9,7 +9,7 @@ import com.google.gson.JsonObject;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.advancement.ServerAdvancementManager;
+import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.predicate.DamagePredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -17,7 +17,7 @@ import net.minecraft.util.Identifier;
 
 public class EntityHurtPlayerCriterion implements Criterion<EntityHurtPlayerCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("entity_hurt_player");
-	private final Map<ServerAdvancementManager, EntityHurtPlayerCriterion.Handler> handlers = Maps.<ServerAdvancementManager, EntityHurtPlayerCriterion.Handler>newHashMap();
+	private final Map<PlayerAdvancementTracker, EntityHurtPlayerCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, EntityHurtPlayerCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -25,34 +25,34 @@ public class EntityHurtPlayerCriterion implements Criterion<EntityHurtPlayerCrit
 	}
 
 	@Override
-	public void addCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<EntityHurtPlayerCriterion.Conditions> conditionsContainer
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<EntityHurtPlayerCriterion.Conditions> conditionsContainer
 	) {
-		EntityHurtPlayerCriterion.Handler handler = (EntityHurtPlayerCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		EntityHurtPlayerCriterion.Handler handler = (EntityHurtPlayerCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new EntityHurtPlayerCriterion.Handler(serverAdvancementManager);
-			this.handlers.put(serverAdvancementManager, handler);
+			handler = new EntityHurtPlayerCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void removeCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<EntityHurtPlayerCriterion.Conditions> conditionsContainer
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<EntityHurtPlayerCriterion.Conditions> conditionsContainer
 	) {
-		EntityHurtPlayerCriterion.Handler handler = (EntityHurtPlayerCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		EntityHurtPlayerCriterion.Handler handler = (EntityHurtPlayerCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(serverAdvancementManager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void removePlayer(ServerAdvancementManager serverAdvancementManager) {
-		this.handlers.remove(serverAdvancementManager);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
 	public EntityHurtPlayerCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -84,7 +84,7 @@ public class EntityHurtPlayerCriterion implements Criterion<EntityHurtPlayerCrit
 		}
 
 		@Override
-		public JsonElement method_807() {
+		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("damage", this.damage.serialize());
 			return jsonObject;
@@ -92,11 +92,11 @@ public class EntityHurtPlayerCriterion implements Criterion<EntityHurtPlayerCrit
 	}
 
 	static class Handler {
-		private final ServerAdvancementManager manager;
+		private final PlayerAdvancementTracker field_9592;
 		private final Set<Criterion.ConditionsContainer<EntityHurtPlayerCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<EntityHurtPlayerCriterion.Conditions>>newHashSet();
 
-		public Handler(ServerAdvancementManager serverAdvancementManager) {
-			this.manager = serverAdvancementManager;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.field_9592 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
@@ -126,7 +126,7 @@ public class EntityHurtPlayerCriterion implements Criterion<EntityHurtPlayerCrit
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<EntityHurtPlayerCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
+					conditionsContainerx.apply(this.field_9592);
 				}
 			}
 		}

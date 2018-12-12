@@ -23,7 +23,7 @@ public class TagCommand {
 			ServerCommandManager.literal("tag")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.argument("targets", EntityArgumentType.method_9306())
+					ServerCommandManager.argument("targets", EntityArgumentType.multipleEntities())
 						.then(
 							ServerCommandManager.literal("add")
 								.then(

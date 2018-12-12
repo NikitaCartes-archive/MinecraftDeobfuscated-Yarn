@@ -188,7 +188,7 @@ public class BossBarCommand {
 									ServerCommandManager.literal("players")
 										.executes(commandContext -> method_13031(commandContext.getSource(), method_13054(commandContext), Collections.emptyList()))
 										.then(
-											ServerCommandManager.argument("targets", EntityArgumentType.method_9308())
+											ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
 												.executes(
 													commandContext -> method_13031(commandContext.getSource(), method_13054(commandContext), EntityArgumentType.method_9310(commandContext, "targets"))
 												)

@@ -208,7 +208,7 @@ public class NewLevelGui extends Gui {
 		});
 		this.buttonCustomizeType.visible = false;
 		this.field_3188 = new TextFieldWidget(9, this.fontRenderer, this.width / 2 - 100, 60, 200, 20);
-		this.field_3188.method_1876(true);
+		this.field_3188.setFocused(true);
 		this.field_3188.setText(this.levelName);
 		this.field_3184 = new TextFieldWidget(10, this.fontRenderer, this.width / 2 - 100, 60, 200, 20);
 		this.field_3184.setText(this.seed);

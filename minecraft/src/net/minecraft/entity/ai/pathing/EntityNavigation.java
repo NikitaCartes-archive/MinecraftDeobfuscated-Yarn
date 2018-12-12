@@ -89,12 +89,12 @@ public abstract class EntityNavigation {
 		} else {
 			this.field_6676 = blockPos;
 			float f = this.getFollowRange();
-			this.world.getProfiler().begin("pathfind");
+			this.world.getProfiler().push("pathfind");
 			BlockPos blockPos2 = new BlockPos(this.entity);
 			int i = (int)(f + 8.0F);
 			BlockView blockView = new ChunkCache(this.world, blockPos2.add(-i, -i, -i), blockPos2.add(i, i, i), 0);
 			Path path = this.pathNodeNavigator.pathfind(blockView, this.entity, this.field_6676, f);
-			this.world.getProfiler().end();
+			this.world.getProfiler().pop();
 			return path;
 		}
 	}
@@ -110,27 +110,27 @@ public abstract class EntityNavigation {
 			} else {
 				this.field_6676 = blockPos;
 				float f = this.getFollowRange();
-				this.world.getProfiler().begin("pathfind");
+				this.world.getProfiler().push("pathfind");
 				BlockPos blockPos2 = new BlockPos(this.entity).up();
 				int i = (int)(f + 16.0F);
 				BlockView blockView = new ChunkCache(this.world, blockPos2.add(-i, -i, -i), blockPos2.add(i, i, i), 0);
 				Path path = this.pathNodeNavigator.pathfind(blockView, this.entity, entity, f);
-				this.world.getProfiler().end();
+				this.world.getProfiler().pop();
 				return path;
 			}
 		}
 	}
 
-	public boolean method_6337(double d, double e, double f, double g) {
-		return this.method_6334(this.findPathTo(d, e, f), g);
+	public boolean startMovingTo(double d, double e, double f, double g) {
+		return this.startMovingAlong(this.findPathTo(d, e, f), g);
 	}
 
-	public boolean method_6335(Entity entity, double d) {
+	public boolean startMovingTo(Entity entity, double d) {
 		Path path = this.findPathTo(entity);
-		return path != null && this.method_6334(path, d);
+		return path != null && this.startMovingAlong(path, d);
 	}
 
-	public boolean method_6334(@Nullable Path path, double d) {
+	public boolean startMovingAlong(@Nullable Path path, double d) {
 		if (path == null) {
 			this.field_6681 = null;
 			return false;
@@ -239,7 +239,7 @@ public abstract class EntityNavigation {
 		if (this.field_6681 != null && !this.field_6681.isFinished()) {
 			Vec3d vec3d2 = this.field_6681.getCurrentPosition();
 			if (vec3d2.equals(this.field_6680)) {
-				this.field_6670 = this.field_6670 + (SystemUtil.getMeasuringTimeMili() - this.field_6669);
+				this.field_6670 = this.field_6670 + (SystemUtil.getMeasuringTimeMs() - this.field_6669);
 			} else {
 				this.field_6680 = vec3d2;
 				double d = vec3d.distanceTo(this.field_6680);
@@ -253,7 +253,7 @@ public abstract class EntityNavigation {
 				this.method_6340();
 			}
 
-			this.field_6669 = SystemUtil.getMeasuringTimeMili();
+			this.field_6669 = SystemUtil.getMeasuringTimeMs();
 		}
 	}
 
@@ -270,7 +270,7 @@ public abstract class EntityNavigation {
 	protected abstract boolean isAtValidPosition();
 
 	protected boolean isInLiquid() {
-		return this.entity.method_5816() || this.entity.isTouchingLava();
+		return this.entity.isInsideWaterOrBubbleColumn() || this.entity.isTouchingLava();
 	}
 
 	protected void method_6359() {
@@ -294,7 +294,7 @@ public abstract class EntityNavigation {
 
 	public boolean isValidPosition(BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
-		return this.world.getBlockState(blockPos2).method_11598(this.world, blockPos2);
+		return this.world.getBlockState(blockPos2).isFullOpaque(this.world, blockPos2);
 	}
 
 	public PathNodeMaker method_6342() {

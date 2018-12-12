@@ -40,10 +40,12 @@ public class NoteBlock extends Block {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		return direction == Direction.DOWN
 			? blockState.with(field_11325, Instrument.fromBlockState(blockState2))
-			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
@@ -65,25 +67,25 @@ public class NoteBlock extends Block {
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
-		if (world.isRemote) {
+		if (world.isClient) {
 			return true;
 		} else {
 			blockState = blockState.method_11572(field_11324);
 			world.setBlockState(blockPos, blockState, 3);
 			this.method_10367(world, blockPos);
-			playerEntity.method_7281(Stats.field_15393);
+			playerEntity.increaseStat(Stats.field_15393);
 			return true;
 		}
 	}
 
 	@Override
 	public void onBlockBreakStart(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			this.method_10367(world, blockPos);
-			playerEntity.method_7281(Stats.field_15385);
+			playerEntity.increaseStat(Stats.field_15385);
 		}
 	}
 

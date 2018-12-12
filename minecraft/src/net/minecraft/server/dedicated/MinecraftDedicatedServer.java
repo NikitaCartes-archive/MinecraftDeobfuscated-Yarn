@@ -22,11 +22,7 @@ import java.util.function.BooleanSupplier;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_2976;
 import net.minecraft.class_3321;
-import net.minecraft.class_3350;
-import net.minecraft.class_3806;
-import net.minecraft.class_3807;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
@@ -59,19 +55,19 @@ import org.apache.logging.log4j.Logger;
 
 public class MinecraftDedicatedServer extends MinecraftServer implements DedicatedServer {
 	private static final Logger LOGGER_DEDICATED = LogManager.getLogger();
-	private static final Pattern field_13810 = Pattern.compile("^[a-fA-F0-9]{40}$");
-	private final List<class_2976> field_13815 = Collections.synchronizedList(Lists.newArrayList());
+	private static final Pattern SHA1_PATTERN = Pattern.compile("^[a-fA-F0-9]{40}$");
+	private final List<PendingServerCommand> commandQueue = Collections.synchronizedList(Lists.newArrayList());
 	private QueryResponseHandler field_13816;
-	private final class_3350 field_13811;
+	private final ServerCommandOutput rconCommandOutput;
 	private RconServer rconServer;
-	private class_3807 field_16799;
+	private ServerPropertiesLoader propertiesLoader;
 	private GameMode defaultGameMode;
 	@Nullable
-	private DedicatedServerGui field_16800;
+	private DedicatedServerGui gui;
 
 	public MinecraftDedicatedServer(
 		File file,
-		class_3807 arg,
+		ServerPropertiesLoader serverPropertiesLoader,
 		DataFixer dataFixer,
 		YggdrasilAuthenticationService yggdrasilAuthenticationService,
 		MinecraftSessionService minecraftSessionService,
@@ -81,8 +77,8 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		super(
 			file, Proxy.NO_PROXY, dataFixer, new ServerCommandManager(true), yggdrasilAuthenticationService, minecraftSessionService, gameProfileRepository, userCache
 		);
-		this.field_16799 = arg;
-		this.field_13811 = new class_3350(this);
+		this.propertiesLoader = serverPropertiesLoader;
+		this.rconCommandOutput = new ServerCommandOutput(this);
 		new Thread("Server Infinisleeper") {
 			{
 				this.setDaemon(true);
@@ -110,7 +106,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 				String string;
 				try {
 					while (!MinecraftDedicatedServer.this.isStopped() && MinecraftDedicatedServer.this.isRunning() && (string = bufferedReader.readLine()) != null) {
-						MinecraftDedicatedServer.this.method_13947(string, MinecraftDedicatedServer.this.method_3739());
+						MinecraftDedicatedServer.this.enqueueCommand(string, MinecraftDedicatedServer.this.getCommandSource());
 					}
 				} catch (IOException var4) {
 					MinecraftDedicatedServer.LOGGER_DEDICATED.error("Exception handling console input", (Throwable)var4);
@@ -126,25 +122,25 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		}
 
 		LOGGER_DEDICATED.info("Loading properties");
-		class_3806 lv = this.field_16799.method_16717();
+		ServerPropertiesHandler serverPropertiesHandler = this.propertiesLoader.getPropertiesHandler();
 		if (this.isSinglePlayer()) {
 			this.setServerIp("127.0.0.1");
 		} else {
-			this.setOnlineMode(lv.field_16813);
-			this.setPreventProxyConnections(lv.field_16839);
-			this.setServerIp(lv.field_16829);
+			this.setOnlineMode(serverPropertiesHandler.onlineMode);
+			this.setPreventProxyConnections(serverPropertiesHandler.preventProxyConnections);
+			this.setServerIp(serverPropertiesHandler.serverIp);
 		}
 
-		this.setSpawnAnimals(lv.field_16836);
-		this.setSpawnNpcs(lv.field_16809);
-		this.setPvpEnabled(lv.field_16833);
-		this.setFlightEnabled(lv.field_16807);
-		this.setResourcePack(lv.field_16801, this.method_13950());
-		this.setMotd(lv.field_16825);
-		this.setForceGameMode(lv.field_16827);
-		super.setPlayerIdleTimeout(lv.field_16817.get());
-		this.method_3731(lv.field_16805);
-		this.defaultGameMode = lv.field_16841;
+		this.setSpawnAnimals(serverPropertiesHandler.spawnAnimals);
+		this.setSpawnNpcs(serverPropertiesHandler.spawnNpcs);
+		this.setPvpEnabled(serverPropertiesHandler.pvp);
+		this.setFlightEnabled(serverPropertiesHandler.allowFlight);
+		this.setResourcePack(serverPropertiesHandler.resourcePack, this.getResourcePackHash());
+		this.setMotd(serverPropertiesHandler.motd);
+		this.setForceGameMode(serverPropertiesHandler.forceGameMode);
+		super.setPlayerIdleTimeout(serverPropertiesHandler.playerIdleTimeout.get());
+		this.method_3731(serverPropertiesHandler.enforceWhitelist);
+		this.defaultGameMode = serverPropertiesHandler.gameMode;
 		LOGGER_DEDICATED.info("Default game type: {}", this.defaultGameMode);
 		InetAddress inetAddress = null;
 		if (!this.getServerIp().isEmpty()) {
@@ -152,7 +148,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		}
 
 		if (this.getServerPort() < 0) {
-			this.setServerPort(lv.field_16837);
+			this.setServerPort(serverPropertiesHandler.serverPort);
 		}
 
 		LOGGER_DEDICATED.info("Generating keypair");
@@ -178,7 +174,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		}
 
 		if (this.getLevelName() == null) {
-			this.setLevelName(lv.field_16820);
+			this.setLevelName(serverPropertiesHandler.levelName);
 		}
 
 		if (this.method_13951()) {
@@ -188,10 +184,10 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		if (!class_3321.method_14540(this)) {
 			return false;
 		} else {
-			this.setConfigurationManager(new DedicatedPlayerManager(this));
+			this.setPlayerManager(new DedicatedPlayerManager(this));
 			long l = SystemUtil.getMeasuringTimeNano();
-			String string = lv.field_16843;
-			String string2 = lv.field_16822;
+			String string = serverPropertiesHandler.levelSeed;
+			String string2 = serverPropertiesHandler.generatorSettings;
 			long m = new Random().nextLong();
 			if (!string.isEmpty()) {
 				try {
@@ -204,8 +200,8 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 				}
 			}
 
-			LevelGeneratorType levelGeneratorType = lv.field_16803;
-			this.setWorldHeight(lv.field_16810);
+			LevelGeneratorType levelGeneratorType = serverPropertiesHandler.levelType;
+			this.setWorldHeight(serverPropertiesHandler.maxBuildHeight);
 			SkullBlockEntity.setUserCache(this.getUserCache());
 			SkullBlockEntity.setSessionService(this.getSessionService());
 			UserCache.setUseRemote(this.isOnlineMode());
@@ -221,17 +217,17 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 			long o = SystemUtil.getMeasuringTimeNano() - l;
 			String string3 = String.format(Locale.ROOT, "%.3fs", (double)o / 1.0E9);
 			LOGGER_DEDICATED.info("Done ({})! For help, type \"help\"", string3);
-			if (lv.field_16830 != null) {
-				this.getGameRules().put("announceAdvancements", lv.field_16830 ? "true" : "false", this);
+			if (serverPropertiesHandler.announcePlayerAchievements != null) {
+				this.getGameRules().put("announceAdvancements", serverPropertiesHandler.announcePlayerAchievements ? "true" : "false", this);
 			}
 
-			if (lv.field_16819) {
+			if (serverPropertiesHandler.enableQuery) {
 				LOGGER_DEDICATED.info("Starting GS4 status listener");
 				this.field_13816 = new QueryResponseHandler(this);
 				this.field_13816.start();
 			}
 
-			if (lv.field_16818) {
+			if (serverPropertiesHandler.enableRcon) {
 				LOGGER_DEDICATED.info("Starting remote control listener");
 				this.rconServer = new RconServer(this);
 				this.rconServer.start();
@@ -250,26 +246,27 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		}
 	}
 
-	public String method_13950() {
-		class_3806 lv = this.field_16799.method_16717();
+	@Override
+	public String getResourcePackHash() {
+		ServerPropertiesHandler serverPropertiesHandler = this.propertiesLoader.getPropertiesHandler();
 		String string;
-		if (!lv.field_16821.isEmpty()) {
-			string = lv.field_16821;
-			if (!Strings.isNullOrEmpty(lv.field_16834)) {
+		if (!serverPropertiesHandler.resourcePackSha1.isEmpty()) {
+			string = serverPropertiesHandler.resourcePackSha1;
+			if (!Strings.isNullOrEmpty(serverPropertiesHandler.resourcePackHash)) {
 				LOGGER_DEDICATED.warn("resource-pack-hash is deprecated and found along side resource-pack-sha1. resource-pack-hash will be ignored.");
 			}
-		} else if (!Strings.isNullOrEmpty(lv.field_16834)) {
+		} else if (!Strings.isNullOrEmpty(serverPropertiesHandler.resourcePackHash)) {
 			LOGGER_DEDICATED.warn("resource-pack-hash is deprecated. Please use resource-pack-sha1 instead.");
-			string = lv.field_16834;
+			string = serverPropertiesHandler.resourcePackHash;
 		} else {
 			string = "";
 		}
 
-		if (!string.isEmpty() && !field_13810.matcher(string).matches()) {
+		if (!string.isEmpty() && !SHA1_PATTERN.matcher(string).matches()) {
 			LOGGER_DEDICATED.warn("Invalid sha1 for ressource-pack-sha1");
 		}
 
-		if (!lv.field_16801.isEmpty() && string.isEmpty()) {
+		if (!serverPropertiesHandler.resourcePack.isEmpty() && string.isEmpty()) {
 			LOGGER_DEDICATED.warn(
 				"You specified a resource pack without providing a sha1 hash. Pack will be updated on the client only if you change the name of the pack."
 			);
@@ -285,13 +282,13 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public class_3806 method_16705() {
-		return this.field_16799.method_16717();
+	public ServerPropertiesHandler getProperties() {
+		return this.propertiesLoader.getPropertiesHandler();
 	}
 
 	@Override
 	public boolean shouldGenerateStructures() {
-		return this.method_16705().field_16826;
+		return this.getProperties().generateStructures;
 	}
 
 	@Override
@@ -301,29 +298,29 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 	@Override
 	public Difficulty getDefaultDifficulty() {
-		return this.method_16705().field_16840;
+		return this.getProperties().difficulty;
 	}
 
 	@Override
 	public boolean isHardcore() {
-		return this.method_16705().field_16838;
+		return this.getProperties().hardcore;
 	}
 
 	@Override
 	public CrashReport populateCrashReport(CrashReport crashReport) {
 		crashReport = super.populateCrashReport(crashReport);
-		crashReport.getElement().add("Is Modded", (ICrashCallable<String>)(() -> {
+		crashReport.method_567().add("Is Modded", (ICrashCallable<String>)(() -> {
 			String string = this.getServerModName();
 			return !"vanilla".equals(string) ? "Definitely; Server brand changed to '" + string + "'" : "Unknown (can't tell)";
 		}));
-		crashReport.getElement().add("Type", (ICrashCallable<String>)(() -> "Dedicated Server (map_server.txt)"));
+		crashReport.method_567().add("Type", (ICrashCallable<String>)(() -> "Dedicated Server (map_server.txt)"));
 		return crashReport;
 	}
 
 	@Override
 	public void exit() {
-		if (this.field_16800 != null) {
-			this.field_16800.method_16750();
+		if (this.gui != null) {
+			this.gui.stop();
 		}
 	}
 
@@ -335,12 +332,12 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 	@Override
 	public boolean isNetherAllowed() {
-		return this.method_16705().field_16811;
+		return this.getProperties().allowNether;
 	}
 
 	@Override
 	public boolean isMonsterSpawningEnabled() {
-		return this.method_16705().field_16835;
+		return this.getProperties().spawnMonsters;
 	}
 
 	@Override
@@ -350,14 +347,14 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		super.addSnooperInfo(snooper);
 	}
 
-	public void method_13947(String string, ServerCommandSource serverCommandSource) {
-		this.field_13815.add(new class_2976(string, serverCommandSource));
+	public void enqueueCommand(String string, ServerCommandSource serverCommandSource) {
+		this.commandQueue.add(new PendingServerCommand(string, serverCommandSource));
 	}
 
 	public void method_13941() {
-		while (!this.field_13815.isEmpty()) {
-			class_2976 lv = (class_2976)this.field_13815.remove(0);
-			this.getCommandManager().execute(lv.field_13378, lv.field_13377);
+		while (!this.commandQueue.isEmpty()) {
+			PendingServerCommand pendingServerCommand = (PendingServerCommand)this.commandQueue.remove(0);
+			this.getCommandManager().execute(pendingServerCommand.source, pendingServerCommand.command);
 		}
 	}
 
@@ -368,11 +365,11 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 	@Override
 	public boolean isUsingNativeTransport() {
-		return this.method_16705().field_16832;
+		return this.getProperties().useNativeTransport;
 	}
 
 	public DedicatedPlayerManager getConfigurationManager() {
-		return (DedicatedPlayerManager)super.getConfigurationManager();
+		return (DedicatedPlayerManager)super.getPlayerManager();
 	}
 
 	@Override
@@ -396,29 +393,29 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	public void createGui() {
-		if (this.field_16800 == null) {
-			this.field_16800 = DedicatedServerGui.create(this);
+		if (this.gui == null) {
+			this.gui = DedicatedServerGui.create(this);
 		}
 	}
 
 	@Override
 	public boolean hasGui() {
-		return this.field_16800 != null;
+		return this.gui != null;
 	}
 
 	@Override
-	public boolean method_3763(GameMode gameMode, boolean bl, int i) {
+	public boolean openToLan(GameMode gameMode, boolean bl, int i) {
 		return false;
 	}
 
 	@Override
 	public boolean areCommandBlocksEnabled() {
-		return this.method_16705().field_16806;
+		return this.getProperties().enableCommandBlock;
 	}
 
 	@Override
 	public int getSpawnProtectionRadius() {
-		return this.method_16705().field_16816;
+		return this.getProperties().spawnProtection;
 	}
 
 	@Override
@@ -432,7 +429,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		} else if (this.getSpawnProtectionRadius() <= 0) {
 			return false;
 		} else {
-			BlockPos blockPos2 = world.method_8395();
+			BlockPos blockPos2 = world.getSpawnPos();
 			int i = MathHelper.abs(blockPos.getX() - blockPos2.getX());
 			int j = MathHelper.abs(blockPos.getZ() - blockPos2.getZ());
 			int k = Math.max(i, j);
@@ -442,33 +439,33 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 	@Override
 	public int getOpPermissionLevel() {
-		return this.method_16705().field_16845;
+		return this.getProperties().opPermissionLevel;
 	}
 
 	@Override
 	public void setPlayerIdleTimeout(int i) {
 		super.setPlayerIdleTimeout(i);
-		this.field_16799.method_16718(arg -> arg.field_16817.method_16745(i));
+		this.propertiesLoader.apply(serverPropertiesHandler -> serverPropertiesHandler.playerIdleTimeout.set(i));
 	}
 
 	@Override
 	public boolean shouldBroadcastRconToOps() {
-		return this.method_16705().field_16824;
+		return this.getProperties().broadcastRconToOps;
 	}
 
 	@Override
 	public boolean shouldBroadcastConsoleToOps() {
-		return this.method_16705().field_16802;
+		return this.getProperties().broadcastConsoleToOps;
 	}
 
 	@Override
 	public int getMaxWorldBorderRadius() {
-		return this.method_16705().field_16812;
+		return this.getProperties().maxWorldSize;
 	}
 
 	@Override
 	public int getNetworkCompressionThreshold() {
-		return this.method_16705().field_16842;
+		return this.getProperties().networkCompressionThreshold;
 	}
 
 	protected boolean method_13951() {
@@ -477,7 +474,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		for (int i = 0; !bl && i <= 2; i++) {
 			if (i > 0) {
 				LOGGER_DEDICATED.warn("Encountered a problem while converting the user banlist, retrying in a few seconds");
-				this.method_13942();
+				this.sleepFiveSeconds();
 			}
 
 			bl = class_3321.method_14547(this);
@@ -488,7 +485,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		for (int var7 = 0; !bl2 && var7 <= 2; var7++) {
 			if (var7 > 0) {
 				LOGGER_DEDICATED.warn("Encountered a problem while converting the ip banlist, retrying in a few seconds");
-				this.method_13942();
+				this.sleepFiveSeconds();
 			}
 
 			bl2 = class_3321.method_14545(this);
@@ -499,7 +496,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		for (int var8 = 0; !bl3 && var8 <= 2; var8++) {
 			if (var8 > 0) {
 				LOGGER_DEDICATED.warn("Encountered a problem while converting the op list, retrying in a few seconds");
-				this.method_13942();
+				this.sleepFiveSeconds();
 			}
 
 			bl3 = class_3321.method_14539(this);
@@ -510,7 +507,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		for (int var9 = 0; !bl4 && var9 <= 2; var9++) {
 			if (var9 > 0) {
 				LOGGER_DEDICATED.warn("Encountered a problem while converting the whitelist, retrying in a few seconds");
-				this.method_13942();
+				this.sleepFiveSeconds();
 			}
 
 			bl4 = class_3321.method_14533(this);
@@ -521,7 +518,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		for (int var10 = 0; !bl5 && var10 <= 2; var10++) {
 			if (var10 > 0) {
 				LOGGER_DEDICATED.warn("Encountered a problem while converting the player save files, retrying in a few seconds");
-				this.method_13942();
+				this.sleepFiveSeconds();
 			}
 
 			bl5 = class_3321.method_14550(this);
@@ -530,7 +527,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		return bl || bl2 || bl3 || bl4 || bl5;
 	}
 
-	private void method_13942() {
+	private void sleepFiveSeconds() {
 		try {
 			Thread.sleep(5000L);
 		} catch (InterruptedException var2) {
@@ -538,7 +535,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	public long getMaxTickTime() {
-		return this.method_16705().field_16815;
+		return this.getProperties().maxTickTime;
 	}
 
 	@Override
@@ -547,13 +544,13 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public String method_12934(String string) {
-		this.field_13811.method_14702();
-		this.getCommandManager().execute(this.field_13811.method_14700(), string);
-		return this.field_13811.method_14701();
+	public String executeRconCommand(String string) {
+		this.rconCommandOutput.clear();
+		this.getCommandManager().execute(this.rconCommandOutput.method_14700(), string);
+		return this.rconCommandOutput.asString();
 	}
 
-	public void method_16712(boolean bl) {
-		this.field_16799.method_16718(arg -> arg.field_16804.method_16745(bl));
+	public void setUseWhitelist(boolean bl) {
+		this.propertiesLoader.apply(serverPropertiesHandler -> serverPropertiesHandler.whiteList.set(bl));
 	}
 }

@@ -32,13 +32,13 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public int method_9524(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
 		return (Integer)blockState.get(field_10897);
 	}
 
-	public static void method_9983(BlockState blockState, World world, BlockPos blockPos) {
-		if (world.dimension.method_12451()) {
-			int i = world.getLightLevel(LightType.field_9284, blockPos) - world.getAmbientDarkness();
+	public static void updateState(BlockState blockState, World world, BlockPos blockPos) {
+		if (world.dimension.hasSkyLight()) {
+			int i = world.getLightLevel(LightType.SKY_LIGHT, blockPos) - world.getAmbientDarkness();
 			float f = world.method_8442(1.0F);
 			boolean bl = (Boolean)blockState.get(field_10899);
 			if (bl) {
@@ -57,26 +57,26 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
 		if (playerEntity.canModifyWorld()) {
-			if (world.isRemote) {
+			if (world.isClient) {
 				return true;
 			} else {
 				BlockState blockState2 = blockState.method_11572(field_10899);
 				world.setBlockState(blockPos, blockState2, 4);
-				method_9983(blockState2, world, blockPos);
+				updateState(blockState2, world, blockPos);
 				return true;
 			}
 		} else {
-			return super.method_9534(blockState, world, blockPos, playerEntity, hand, direction, f, g, h);
+			return super.activate(blockState, world, blockPos, playerEntity, hand, direction, f, g, h);
 		}
 	}
 
 	@Override
-	public RenderTypeBlock getRenderType(BlockState blockState) {
-		return RenderTypeBlock.MODEL;
+	public BlockRenderType method_9604(BlockState blockState) {
+		return BlockRenderType.field_11458;
 	}
 
 	@Override

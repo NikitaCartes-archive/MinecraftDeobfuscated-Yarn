@@ -3,14 +3,13 @@ package net.minecraft.client.render.model;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_789;
 import net.minecraft.client.render.model.json.ModelElementFace;
 import net.minecraft.client.render.model.json.ModelElementTexture;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.util.Quaternion;
+import net.minecraft.client.util.math.Quaternion;
+import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.sortme.SomethingDirectionSomethingQuadBakery;
-import net.minecraft.sortme.Vector3f;
-import net.minecraft.sortme.Vector4f;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
@@ -45,19 +44,19 @@ public class BakedQuadFactory {
 		}
 	};
 
-	public BakedQuad method_3468(
+	public BakedQuad bake(
 		Vector3f vector3f,
 		Vector3f vector3f2,
 		ModelElementFace modelElementFace,
 		Sprite sprite,
 		Direction direction,
 		ModelRotationContainer modelRotationContainer,
-		@Nullable class_789 arg,
+		@Nullable net.minecraft.client.render.model.json.ModelRotation modelRotation,
 		boolean bl
 	) {
-		ModelElementTexture modelElementTexture = modelElementFace.field_4227;
-		if (modelRotationContainer.method_3512()) {
-			modelElementTexture = this.method_3454(modelElementFace.field_4227, direction, modelRotationContainer.getRotation());
+		ModelElementTexture modelElementTexture = modelElementFace.textureData;
+		if (modelRotationContainer.isUvLocked()) {
+			modelElementTexture = this.method_3454(modelElementFace.textureData, direction, modelRotationContainer.getRotation());
 		}
 
 		float[] fs = new float[modelElementTexture.uvs.length];
@@ -71,10 +70,12 @@ public class BakedQuadFactory {
 		modelElementTexture.uvs[2] = MathHelper.lerp(h, modelElementTexture.uvs[2], i);
 		modelElementTexture.uvs[1] = MathHelper.lerp(h, modelElementTexture.uvs[1], j);
 		modelElementTexture.uvs[3] = MathHelper.lerp(h, modelElementTexture.uvs[3], j);
-		int[] is = this.method_3458(modelElementTexture, sprite, direction, this.method_3459(vector3f, vector3f2), modelRotationContainer.getRotation(), arg, bl);
+		int[] is = this.method_3458(
+			modelElementTexture, sprite, direction, this.method_3459(vector3f, vector3f2), modelRotationContainer.getRotation(), modelRotation, bl
+		);
 		Direction direction2 = method_3467(is);
 		System.arraycopy(fs, 0, modelElementTexture.uvs, 0, fs.length);
-		if (arg == null) {
+		if (modelRotation == null) {
 			this.method_3462(is, direction2);
 		}
 
@@ -86,12 +87,18 @@ public class BakedQuadFactory {
 	}
 
 	private int[] method_3458(
-		ModelElementTexture modelElementTexture, Sprite sprite, Direction direction, float[] fs, ModelRotation modelRotation, @Nullable class_789 arg, boolean bl
+		ModelElementTexture modelElementTexture,
+		Sprite sprite,
+		Direction direction,
+		float[] fs,
+		ModelRotation modelRotation,
+		@Nullable net.minecraft.client.render.model.json.ModelRotation modelRotation2,
+		boolean bl
 	) {
 		int[] is = new int[28];
 
 		for (int i = 0; i < 4; i++) {
-			this.method_3461(is, i, direction, modelElementTexture, fs, sprite, modelRotation, arg, bl);
+			this.method_3461(is, i, direction, modelElementTexture, fs, sprite, modelRotation, modelRotation2, bl);
 		}
 
 		return is;
@@ -139,14 +146,14 @@ public class BakedQuadFactory {
 		float[] fs,
 		Sprite sprite,
 		ModelRotation modelRotation,
-		@Nullable class_789 arg,
+		@Nullable net.minecraft.client.render.model.json.ModelRotation modelRotation2,
 		boolean bl
 	) {
-		Direction direction2 = modelRotation.method_4705(direction);
+		Direction direction2 = modelRotation.apply(direction);
 		int j = bl ? this.method_3457(direction2) : -1;
 		SomethingDirectionSomethingQuadBakery.class_755 lv = SomethingDirectionSomethingQuadBakery.method_3163(direction).method_3162(i);
 		Vector3f vector3f = new Vector3f(fs[lv.field_3975], fs[lv.field_3974], fs[lv.field_3973]);
-		this.method_3463(vector3f, arg);
+		this.method_3463(vector3f, modelRotation2);
 		int k = this.method_3455(vector3f, direction, i, modelRotation);
 		this.method_3460(is, k, i, vector3f, j, sprite, modelElementTexture);
 	}
@@ -161,11 +168,11 @@ public class BakedQuadFactory {
 		is[l + 4 + 1] = Float.floatToRawIntBits(sprite.getV((double)modelElementTexture.getV(j)));
 	}
 
-	private void method_3463(Vector3f vector3f, @Nullable class_789 arg) {
-		if (arg != null) {
+	private void method_3463(Vector3f vector3f, @Nullable net.minecraft.client.render.model.json.ModelRotation modelRotation) {
+		if (modelRotation != null) {
 			Vector3f vector3f2;
 			Vector3f vector3f3;
-			switch (arg.field_4239) {
+			switch (modelRotation.axis) {
 				case X:
 					vector3f2 = new Vector3f(1.0F, 0.0F, 0.0F);
 					vector3f3 = new Vector3f(0.0F, 1.0F, 1.0F);
@@ -182,9 +189,9 @@ public class BakedQuadFactory {
 					throw new IllegalArgumentException("There are only 3 axes");
 			}
 
-			Quaternion quaternion = new Quaternion(vector3f2, arg.field_4237, true);
-			if (arg.field_4238) {
-				if (Math.abs(arg.field_4237) == 22.5F) {
+			Quaternion quaternion = new Quaternion(vector3f2, modelRotation.angle, true);
+			if (modelRotation.rescale) {
+				if (Math.abs(modelRotation.angle) == 22.5F) {
 					vector3f3.scale(field_4260);
 				} else {
 					vector3f3.scale(field_4259);
@@ -195,7 +202,7 @@ public class BakedQuadFactory {
 				vector3f3.set(1.0F, 1.0F, 1.0F);
 			}
 
-			this.method_3464(vector3f, new Vector3f(arg.field_4236), quaternion, vector3f3);
+			this.method_3464(vector3f, new Vector3f(modelRotation.origin), quaternion, vector3f3);
 		}
 	}
 
@@ -211,7 +218,7 @@ public class BakedQuadFactory {
 	private void method_3464(Vector3f vector3f, Vector3f vector3f2, Quaternion quaternion, Vector3f vector3f3) {
 		Vector4f vector4f = new Vector4f(vector3f.x() - vector3f2.x(), vector3f.y() - vector3f2.y(), vector3f.z() - vector3f2.z(), 1.0F);
 		vector4f.method_4959(quaternion);
-		vector4f.method_4954(vector3f3);
+		vector4f.multiply(vector3f3);
 		vector3f.set(vector4f.x() + vector3f2.x(), vector4f.y() + vector3f2.y(), vector4f.z() + vector3f2.z());
 	}
 

@@ -2,7 +2,7 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.particle.TexturedParticle;
+import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
@@ -36,7 +36,7 @@ public class EnchantGlyphParticle extends Particle {
 	}
 
 	@Override
-	public void addPos(double d, double e, double f) {
+	public void move(double d, double e, double f) {
 		this.setBoundingBox(this.getBoundingBox().offset(d, e, f));
 		this.repositionFromBoundingBox();
 	}
@@ -76,18 +76,18 @@ public class EnchantGlyphParticle extends Particle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class class_669 implements FactoryParticle<TexturedParticle> {
-		public Particle createParticle(TexturedParticle texturedParticle, World world, double d, double e, double f, double g, double h, double i) {
-			EnchantGlyphParticle enchantGlyphParticle = new EnchantGlyphParticle(world, d, e, f, g, h, i);
-			enchantGlyphParticle.setSpriteIndex(208);
-			return enchantGlyphParticle;
+	public static class EnchantFactory implements ParticleFactory<DefaultParticleType> {
+		public Particle method_3021(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+			return new EnchantGlyphParticle(world, d, e, f, g, h, i);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class class_670 implements FactoryParticle<TexturedParticle> {
-		public Particle createParticle(TexturedParticle texturedParticle, World world, double d, double e, double f, double g, double h, double i) {
-			return new EnchantGlyphParticle(world, d, e, f, g, h, i);
+	public static class NautilusFactory implements ParticleFactory<DefaultParticleType> {
+		public Particle method_3020(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+			EnchantGlyphParticle enchantGlyphParticle = new EnchantGlyphParticle(world, d, e, f, g, h, i);
+			enchantGlyphParticle.setSpriteIndex(208);
+			return enchantGlyphParticle;
 		}
 	}
 }

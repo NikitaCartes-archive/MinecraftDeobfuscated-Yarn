@@ -1,9 +1,9 @@
 package net.minecraft.entity.mob;
 
-import net.minecraft.class_3730;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -20,8 +20,8 @@ public class HuskEntity extends ZombieEntity {
 	}
 
 	@Override
-	public boolean method_5979(IWorld iWorld, class_3730 arg) {
-		return super.method_5979(iWorld, arg) && (arg == class_3730.field_16469 || iWorld.getSkyLightLevel(new BlockPos(this)));
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
+		return super.canSpawn(iWorld, spawnType) && (spawnType == SpawnType.field_16469 || iWorld.isSkyVisible(new BlockPos(this)));
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class HuskEntity extends ZombieEntity {
 	public boolean method_6121(Entity entity) {
 		boolean bl = super.method_6121(entity);
 		if (bl && this.getMainHandStack().isEmpty() && entity instanceof LivingEntity) {
-			float f = this.world.getLocalDifficulty(new BlockPos(this)).method_5457();
+			float f = this.world.getLocalDifficulty(new BlockPos(this)).getLocalDifficulty();
 			((LivingEntity)entity).addPotionEffect(new StatusEffectInstance(StatusEffects.field_5903, 140 * (int)f));
 		}
 

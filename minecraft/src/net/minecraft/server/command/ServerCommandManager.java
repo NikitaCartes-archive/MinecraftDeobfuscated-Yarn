@@ -1,9 +1,6 @@
 package net.minecraft.server.command;
 
 import com.google.common.collect.Maps;
-import com.google.common.io.Files;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -13,14 +10,10 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.function.Predicate;
 import net.minecraft.client.network.packet.CommandTreeClientPacket;
 import net.minecraft.command.CommandException;
-import net.minecraft.command.arguments.ArgumentTypes;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.server.dedicated.command.BanCommand;
 import net.minecraft.server.dedicated.command.BanIpCommand;
@@ -128,25 +121,13 @@ public class ServerCommandManager {
 		this.dispatcher.setConsumer((commandContext, blx, i) -> commandContext.getSource().method_9215(commandContext, blx, i));
 	}
 
-	public void writeCommandTree(File file) {
-		try {
-			Files.write(
-				new GsonBuilder().setPrettyPrinting().create().toJson((JsonElement)ArgumentTypes.toJson(this.dispatcher, this.dispatcher.getRoot())),
-				file,
-				StandardCharsets.UTF_8
-			);
-		} catch (IOException var3) {
-			LOGGER.error("Couldn't write out command tree!", (Throwable)var3);
-		}
-	}
-
 	public int execute(ServerCommandSource serverCommandSource, String string) {
 		StringReader stringReader = new StringReader(string);
 		if (stringReader.canRead() && stringReader.peek() == '/') {
 			stringReader.skip();
 		}
 
-		serverCommandSource.getMinecraftServer().getProfiler().begin(string);
+		serverCommandSource.getMinecraftServer().getProfiler().push(string);
 
 		byte var20;
 		try {
@@ -196,7 +177,7 @@ public class ServerCommandManager {
 			);
 			var20 = 0;
 		} finally {
-			serverCommandSource.getMinecraftServer().getProfiler().end();
+			serverCommandSource.getMinecraftServer().getProfiler().pop();
 		}
 
 		return var20;

@@ -6,8 +6,6 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2859;
-import net.minecraft.class_308;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.client.gui.Gui;
@@ -15,7 +13,9 @@ import net.minecraft.client.gui.widget.AdvancementTreeWidget;
 import net.minecraft.client.gui.widget.AdvancementWidget;
 import net.minecraft.client.network.ClientAdvancementManager;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.server.network.packet.AdvancementTabServerPacket;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -37,9 +37,9 @@ public class AdvancementsGui extends Gui implements ClientAdvancementManager.cla
 		this.selectedWidget = null;
 		this.advancementHandler.setGui(this);
 		if (this.selectedWidget == null && !this.widgetMap.isEmpty()) {
-			this.advancementHandler.method_2864(((AdvancementTreeWidget)this.widgetMap.values().iterator().next()).method_2307(), true);
+			this.advancementHandler.selectTab(((AdvancementTreeWidget)this.widgetMap.values().iterator().next()).method_2307(), true);
 		} else {
-			this.advancementHandler.method_2864(this.selectedWidget == null ? null : this.selectedWidget.method_2307(), true);
+			this.advancementHandler.selectTab(this.selectedWidget == null ? null : this.selectedWidget.method_2307(), true);
 		}
 	}
 
@@ -48,7 +48,7 @@ public class AdvancementsGui extends Gui implements ClientAdvancementManager.cla
 		this.advancementHandler.setGui(null);
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
 		if (clientPlayNetworkHandler != null) {
-			clientPlayNetworkHandler.sendPacket(class_2859.method_12414());
+			clientPlayNetworkHandler.sendPacket(AdvancementTabServerPacket.close());
 		}
 	}
 
@@ -60,7 +60,7 @@ public class AdvancementsGui extends Gui implements ClientAdvancementManager.cla
 
 			for (AdvancementTreeWidget advancementTreeWidget : this.widgetMap.values()) {
 				if (advancementTreeWidget.method_2316(j, k, d, e)) {
-					this.advancementHandler.method_2864(advancementTreeWidget.method_2307(), true);
+					this.advancementHandler.selectTab(advancementTreeWidget.method_2307(), true);
 					break;
 				}
 			}
@@ -71,9 +71,9 @@ public class AdvancementsGui extends Gui implements ClientAdvancementManager.cla
 
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
-		if (this.client.options.keyAdvancements.matches(i, j)) {
+		if (this.client.field_1690.keyAdvancements.matchesKey(i, j)) {
 			this.client.openGui(null);
-			this.client.mouse.method_1612();
+			this.client.field_1729.lockCursor();
 			return true;
 		} else {
 			return super.keyPressed(i, j, k);
@@ -112,8 +112,8 @@ public class AdvancementsGui extends Gui implements ClientAdvancementManager.cla
 			drawRect(k + 9, l + 18, k + 9 + 234, l + 18 + 113, -16777216);
 			String string = I18n.translate("advancements.empty");
 			int m = this.fontRenderer.getStringWidth(string);
-			this.fontRenderer.draw(string, (float)(k + 9 + 117 - m / 2), (float)(l + 18 + 56 - this.fontRenderer.FONT_HEIGHT / 2), -1);
-			this.fontRenderer.draw(":(", (float)(k + 9 + 117 - this.fontRenderer.getStringWidth(":(") / 2), (float)(l + 18 + 113 - this.fontRenderer.FONT_HEIGHT), -1);
+			this.fontRenderer.draw(string, (float)(k + 9 + 117 - m / 2), (float)(l + 18 + 56 - this.fontRenderer.fontHeight / 2), -1);
+			this.fontRenderer.draw(":(", (float)(k + 9 + 117 - this.fontRenderer.getStringWidth(":(") / 2), (float)(l + 18 + 113 - this.fontRenderer.fontHeight), -1);
 		} else {
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef((float)(k + 9), (float)(l + 18), -400.0F);
@@ -128,7 +128,7 @@ public class AdvancementsGui extends Gui implements ClientAdvancementManager.cla
 	public void drawWidgets(int i, int j) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.enableBlend();
-		class_308.method_1450();
+		GuiLighting.disable();
 		this.client.getTextureManager().bindTexture(WINDOW_TEXTURE);
 		this.drawTexturedRect(i, j, 0, 0, 252, 140);
 		if (this.widgetMap.size() > 1) {
@@ -145,7 +145,7 @@ public class AdvancementsGui extends Gui implements ClientAdvancementManager.cla
 				GlStateManager.SrcBlendFactor.ONE,
 				GlStateManager.DstBlendFactor.ZERO
 			);
-			class_308.method_1453();
+			GuiLighting.enableForItems();
 
 			for (AdvancementTreeWidget advancementTreeWidget : this.widgetMap.values()) {
 				advancementTreeWidget.drawIcon(i, j, this.itemRenderer);
@@ -178,7 +178,7 @@ public class AdvancementsGui extends Gui implements ClientAdvancementManager.cla
 	}
 
 	@Override
-	public void method_723(SimpleAdvancement simpleAdvancement) {
+	public void onRootAdded(SimpleAdvancement simpleAdvancement) {
 		AdvancementTreeWidget advancementTreeWidget = AdvancementTreeWidget.create(this.client, this, this.widgetMap.size(), simpleAdvancement);
 		if (advancementTreeWidget != null) {
 			this.widgetMap.put(simpleAdvancement, advancementTreeWidget);
@@ -186,11 +186,11 @@ public class AdvancementsGui extends Gui implements ClientAdvancementManager.cla
 	}
 
 	@Override
-	public void method_720(SimpleAdvancement simpleAdvancement) {
+	public void onRootRemoved(SimpleAdvancement simpleAdvancement) {
 	}
 
 	@Override
-	public void method_721(SimpleAdvancement simpleAdvancement) {
+	public void onDependentAdded(SimpleAdvancement simpleAdvancement) {
 		AdvancementTreeWidget advancementTreeWidget = this.method_2336(simpleAdvancement);
 		if (advancementTreeWidget != null) {
 			advancementTreeWidget.method_2318(simpleAdvancement);
@@ -198,7 +198,7 @@ public class AdvancementsGui extends Gui implements ClientAdvancementManager.cla
 	}
 
 	@Override
-	public void method_719(SimpleAdvancement simpleAdvancement) {
+	public void onDependentRemoved(SimpleAdvancement simpleAdvancement) {
 	}
 
 	@Override
@@ -215,7 +215,7 @@ public class AdvancementsGui extends Gui implements ClientAdvancementManager.cla
 	}
 
 	@Override
-	public void method_722() {
+	public void onClear() {
 		this.widgetMap.clear();
 		this.selectedWidget = null;
 	}

@@ -57,7 +57,7 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 	}
 
 	public void initShapeCache() {
-		if (!this.getBlock().isPistonExtension()) {
+		if (!this.getBlock().hasDynamicBounds()) {
 			this.shapeCache = new BlockState.ShapeCache(this);
 		}
 	}
@@ -74,16 +74,16 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		return this.getBlock().allowsSpawning(this, entity);
 	}
 
-	public boolean method_11623(BlockView blockView, BlockPos blockPos) {
-		return this.shapeCache != null ? this.shapeCache.field_16556 : this.getBlock().method_9579(this, blockView, blockPos);
+	public boolean isTranslucent(BlockView blockView, BlockPos blockPos) {
+		return this.shapeCache != null ? this.shapeCache.field_16556 : this.getBlock().isTranslucent(this, blockView, blockPos);
 	}
 
-	public int method_11581(BlockView blockView, BlockPos blockPos) {
-		return this.shapeCache != null ? this.shapeCache.field_16555 : this.getBlock().method_9505(this, blockView, blockPos);
+	public int getLightSubtracted(BlockView blockView, BlockPos blockPos) {
+		return this.shapeCache != null ? this.shapeCache.field_16555 : this.getBlock().getLightSubtracted(this, blockView, blockPos);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public VoxelShape method_16384(BlockView blockView, BlockPos blockPos, Direction direction) {
+	public VoxelShape getCullShape(BlockView blockView, BlockPos blockPos, Direction direction) {
 		return this.shapeCache != null && this.shapeCache.shapes != null
 			? this.shapeCache.shapes[direction.ordinal()]
 			: VoxelShapes.method_16344(this.method_11615(blockView, blockPos), direction);
@@ -101,8 +101,8 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		return this.getBlock().isAir(this);
 	}
 
-	public boolean method_11593(BlockView blockView, BlockPos blockPos) {
-		return this.getBlock().method_9599(this, blockView, blockPos);
+	public boolean usesNeighborLightValues(BlockView blockView, BlockPos blockPos) {
+		return this.getBlock().usesNeighborLightValues(this, blockView, blockPos);
 	}
 
 	public MaterialColor getMaterialColor(BlockView blockView, BlockPos blockPos) {
@@ -126,8 +126,8 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		return this.getBlock().hasBlockEntityBreakingRender(this);
 	}
 
-	public RenderTypeBlock getRenderType() {
-		return this.getBlock().getRenderType(this);
+	public BlockRenderType getRenderType() {
+		return this.getBlock().method_9604(this);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -140,7 +140,7 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		return this.getBlock().getAmbientOcclusionLightLevel(this, blockView, blockPos);
 	}
 
-	public boolean blocksLight(BlockView blockView, BlockPos blockPos) {
+	public boolean method_11603(BlockView blockView, BlockPos blockPos) {
 		return this.getBlock().method_16361(this, blockView, blockPos);
 	}
 
@@ -152,8 +152,8 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		return this.getBlock().emitsRedstonePower(this);
 	}
 
-	public int method_11597(BlockView blockView, BlockPos blockPos, Direction direction) {
-		return this.getBlock().method_9524(this, blockView, blockPos, direction);
+	public int getWeakRedstonePower(BlockView blockView, BlockPos blockPos, Direction direction) {
+		return this.getBlock().getWeakRedstonePower(this, blockView, blockPos, direction);
 	}
 
 	public boolean hasComparatorOutput() {
@@ -172,16 +172,16 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		return this.getBlock().calcBlockBreakingDelta(this, playerEntity, blockView, blockPos);
 	}
 
-	public int method_11577(BlockView blockView, BlockPos blockPos, Direction direction) {
-		return this.getBlock().method_9603(this, blockView, blockPos, direction);
+	public int getStrongRedstonePower(BlockView blockView, BlockPos blockPos, Direction direction) {
+		return this.getBlock().getStrongRedstonePower(this, blockView, blockPos, direction);
 	}
 
 	public PistonBehavior getPistonBehavior() {
 		return this.getBlock().getPistonBehavior(this);
 	}
 
-	public boolean method_11598(BlockView blockView, BlockPos blockPos) {
-		return this.shapeCache != null ? this.shapeCache.field_16557 : this.getBlock().method_9557(this, blockView, blockPos);
+	public boolean isFullOpaque(BlockView blockView, BlockPos blockPos) {
+		return this.shapeCache != null ? this.shapeCache.fullOpaque : this.getBlock().isFullOpaque(this, blockView, blockPos);
 	}
 
 	public boolean isFullBoundsCubeForCulling() {
@@ -189,20 +189,20 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_11592(BlockState blockState, Direction direction) {
-		return this.getBlock().method_9522(this, blockState, direction);
+	public boolean skipRenderingSide(BlockState blockState, Direction direction) {
+		return this.getBlock().skipRenderingSide(this, blockState, direction);
 	}
 
 	public VoxelShape getBoundingShape(BlockView blockView, BlockPos blockPos) {
 		return this.getBlock().getBoundingShape(this, blockView, blockPos);
 	}
 
-	public VoxelShape method_11628(BlockView blockView, BlockPos blockPos) {
-		return this.method_16337(blockView, blockPos, VerticalEntityPosition.minValue());
+	public VoxelShape getCollisionShape(BlockView blockView, BlockPos blockPos) {
+		return this.getCollisionShape(blockView, blockPos, VerticalEntityPosition.minValue());
 	}
 
-	public VoxelShape method_16337(BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return this.getBlock().method_9549(this, blockView, blockPos, verticalEntityPosition);
+	public VoxelShape getCollisionShape(BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+		return this.getBlock().getCollisionShape(this, blockView, blockPos, verticalEntityPosition);
 	}
 
 	public VoxelShape method_11615(BlockView blockView, BlockPos blockPos) {
@@ -229,8 +229,8 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		this.getBlock().neighborUpdate(this, world, blockPos, block, blockPos2);
 	}
 
-	public void method_11635(IWorld iWorld, BlockPos blockPos, int i) {
-		this.getBlock().method_9528(this, iWorld, blockPos, i);
+	public void updateNeighborStates(IWorld iWorld, BlockPos blockPos, int i) {
+		this.getBlock().updateNeighborStates(this, iWorld, blockPos, i);
 	}
 
 	public void method_11637(IWorld iWorld, BlockPos blockPos, int i) {
@@ -265,8 +265,8 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		return this.getBlock().getDroppedStacks(this, builder);
 	}
 
-	public boolean method_11629(World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h) {
-		return this.getBlock().method_9534(this, world, blockPos, playerEntity, hand, direction, f, g, h);
+	public boolean activate(World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h) {
+		return this.getBlock().activate(this, world, blockPos, playerEntity, hand, direction, f, g, h);
 	}
 
 	public void onBlockBreakStart(World world, BlockPos blockPos, PlayerEntity playerEntity) {
@@ -277,8 +277,8 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		return this.getBlock().canSuffocate(this, blockView, blockPos);
 	}
 
-	public BlockState method_11578(Direction direction, BlockState blockState, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-		return this.getBlock().method_9559(this, direction, blockState, iWorld, blockPos, blockPos2);
+	public BlockState getStateForNeighborUpdate(Direction direction, BlockState blockState, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+		return this.getBlock().getStateForNeighborUpdate(this, direction, blockState, iWorld, blockPos, blockPos2);
 	}
 
 	public boolean canPlaceAtSide(BlockView blockView, BlockPos blockPos, PlacementEnvironment placementEnvironment) {
@@ -293,8 +293,8 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		return this.getBlock().canPlaceAt(this, viewableWorld, blockPos);
 	}
 
-	public boolean method_11601(BlockView blockView, BlockPos blockPos) {
-		return this.getBlock().method_9552(this, blockView, blockPos);
+	public boolean shouldPostProcess(BlockView blockView, BlockPos blockPos) {
+		return this.getBlock().shouldPostProcess(this, blockView, blockPos);
 	}
 
 	public boolean matches(Tag<Block> tag) {
@@ -310,8 +310,8 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 	}
 
 	@Environment(EnvType.CLIENT)
-	public long getPosRandom(BlockPos blockPos) {
-		return this.getBlock().getPosRandom(this, blockPos);
+	public long getRenderingSeed(BlockPos blockPos) {
+		return this.getBlock().getRenderingSeed(this, blockPos);
 	}
 
 	public BlockSoundGroup getSoundGroup() {
@@ -371,9 +371,9 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 	}
 
 	static final class ShapeCache {
-		private static final Direction[] field_16559 = Direction.values();
+		private static final Direction[] DIRECTIONS = Direction.values();
 		private final boolean cull;
-		private final boolean field_16557;
+		private final boolean fullOpaque;
 		private final boolean field_16556;
 		private final int field_16555;
 		private final VoxelShape[] shapes;
@@ -381,16 +381,16 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		private ShapeCache(BlockState blockState) {
 			Block block = blockState.getBlock();
 			this.cull = block.isFullBoundsCubeForCulling(blockState);
-			this.field_16557 = block.method_9557(blockState, EmptyBlockView.field_12294, BlockPos.ORIGIN);
-			this.field_16556 = block.method_9579(blockState, EmptyBlockView.field_12294, BlockPos.ORIGIN);
-			this.field_16555 = block.method_9505(blockState, EmptyBlockView.field_12294, BlockPos.ORIGIN);
+			this.fullOpaque = block.isFullOpaque(blockState, EmptyBlockView.field_12294, BlockPos.ORIGIN);
+			this.field_16556 = block.isTranslucent(blockState, EmptyBlockView.field_12294, BlockPos.ORIGIN);
+			this.field_16555 = block.getLightSubtracted(blockState, EmptyBlockView.field_12294, BlockPos.ORIGIN);
 			if (!blockState.isFullBoundsCubeForCulling()) {
 				this.shapes = null;
 			} else {
-				this.shapes = new VoxelShape[field_16559.length];
+				this.shapes = new VoxelShape[DIRECTIONS.length];
 				VoxelShape voxelShape = block.method_9571(blockState, EmptyBlockView.field_12294, BlockPos.ORIGIN);
 
-				for (Direction direction : field_16559) {
+				for (Direction direction : DIRECTIONS) {
 					this.shapes[direction.ordinal()] = VoxelShapes.method_16344(voxelShape, direction);
 				}
 			}

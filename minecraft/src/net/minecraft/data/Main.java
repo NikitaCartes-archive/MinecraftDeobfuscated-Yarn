@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import net.minecraft.class_3843;
 import net.minecraft.data.dev.NbtProvider;
 import net.minecraft.data.report.BlockListProvider;
 import net.minecraft.data.report.CommandSyntaxProvider;
@@ -20,6 +19,7 @@ import net.minecraft.data.server.FluidTagsProvider;
 import net.minecraft.data.server.ItemTagsProvider;
 import net.minecraft.data.server.LootTablesProvider;
 import net.minecraft.data.server.RecipesProvider;
+import net.minecraft.data.validate.StructureValidatorProvider;
 
 public class Main {
 	public static void main(String[] strings) throws IOException {
@@ -78,7 +78,7 @@ public class Main {
 		}
 
 		if (bl5) {
-			dataGenerator.install(new class_3843(dataGenerator));
+			dataGenerator.install(new StructureValidatorProvider(dataGenerator));
 		}
 
 		return dataGenerator;

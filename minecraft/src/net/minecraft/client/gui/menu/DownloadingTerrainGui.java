@@ -8,7 +8,7 @@ import net.minecraft.client.resource.language.I18n;
 @Environment(EnvType.CLIENT)
 public class DownloadingTerrainGui extends Gui {
 	@Override
-	public boolean canClose() {
+	public boolean doesEscapeKeyClose() {
 		return false;
 	}
 

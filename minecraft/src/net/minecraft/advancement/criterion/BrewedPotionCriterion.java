@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.minecraft.advancement.ServerAdvancementManager;
+import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.potion.Potion;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -20,7 +20,7 @@ import net.minecraft.util.registry.Registry;
 
 public class BrewedPotionCriterion implements Criterion<BrewedPotionCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("brewed_potion");
-	private final Map<ServerAdvancementManager, BrewedPotionCriterion.Handler> handlers = Maps.<ServerAdvancementManager, BrewedPotionCriterion.Handler>newHashMap();
+	private final Map<PlayerAdvancementTracker, BrewedPotionCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, BrewedPotionCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -28,34 +28,34 @@ public class BrewedPotionCriterion implements Criterion<BrewedPotionCriterion.Co
 	}
 
 	@Override
-	public void addCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<BrewedPotionCriterion.Conditions> conditionsContainer
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<BrewedPotionCriterion.Conditions> conditionsContainer
 	) {
-		BrewedPotionCriterion.Handler handler = (BrewedPotionCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		BrewedPotionCriterion.Handler handler = (BrewedPotionCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new BrewedPotionCriterion.Handler(serverAdvancementManager);
-			this.handlers.put(serverAdvancementManager, handler);
+			handler = new BrewedPotionCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void removeCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<BrewedPotionCriterion.Conditions> conditionsContainer
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<BrewedPotionCriterion.Conditions> conditionsContainer
 	) {
-		BrewedPotionCriterion.Handler handler = (BrewedPotionCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		BrewedPotionCriterion.Handler handler = (BrewedPotionCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(serverAdvancementManager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void removePlayer(ServerAdvancementManager serverAdvancementManager) {
-		this.handlers.remove(serverAdvancementManager);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
 	public BrewedPotionCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -96,7 +96,7 @@ public class BrewedPotionCriterion implements Criterion<BrewedPotionCriterion.Co
 		}
 
 		@Override
-		public JsonElement method_807() {
+		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			if (this.potion != null) {
 				jsonObject.addProperty("potion", Registry.POTION.getId(this.potion).toString());
@@ -107,11 +107,11 @@ public class BrewedPotionCriterion implements Criterion<BrewedPotionCriterion.Co
 	}
 
 	static class Handler {
-		private final ServerAdvancementManager manager;
+		private final PlayerAdvancementTracker field_9491;
 		private final Set<Criterion.ConditionsContainer<BrewedPotionCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<BrewedPotionCriterion.Conditions>>newHashSet();
 
-		public Handler(ServerAdvancementManager serverAdvancementManager) {
-			this.manager = serverAdvancementManager;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.field_9491 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
@@ -141,7 +141,7 @@ public class BrewedPotionCriterion implements Criterion<BrewedPotionCriterion.Co
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<BrewedPotionCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
+					conditionsContainerx.apply(this.field_9491);
 				}
 			}
 		}

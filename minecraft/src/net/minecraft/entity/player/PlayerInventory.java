@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1662;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.network.packet.GuiSlotUpdateClientPacket;
 import net.minecraft.inventory.Inventory;
@@ -14,6 +13,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.TextComponent;
@@ -22,7 +22,7 @@ import net.minecraft.util.DefaultedList;
 import net.minecraft.util.InventoryUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportElement;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.world.World;
 
@@ -319,17 +319,17 @@ public class PlayerInventory implements Inventory {
 				}
 			} catch (Throwable var6) {
 				CrashReport crashReport = CrashReport.create(var6, "Adding item to inventory");
-				CrashReportElement crashReportElement = crashReport.addElement("Item being added");
-				crashReportElement.add("Item ID", Item.getRawIdByItem(itemStack.getItem()));
-				crashReportElement.add("Item data", itemStack.getDamage());
-				crashReportElement.add("Item name", (ICrashCallable<String>)(() -> itemStack.getDisplayName().getString()));
+				CrashReportSection crashReportSection = crashReport.method_562("Item being added");
+				crashReportSection.add("Item ID", Item.getRawIdByItem(itemStack.getItem()));
+				crashReportSection.add("Item data", itemStack.getDamage());
+				crashReportSection.add("Item name", (ICrashCallable<String>)(() -> itemStack.getDisplayName().getString()));
 				throw new CrashException(crashReport);
 			}
 		}
 	}
 
 	public void method_7398(World world, ItemStack itemStack) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			while (!itemStack.isEmpty()) {
 				int i = this.getOccupiedSlotWithRoomForStack(itemStack);
 				if (i == -1) {
@@ -521,16 +521,6 @@ public class PlayerInventory implements Inventory {
 		return new TranslatableTextComponent("container.inventory");
 	}
 
-	@Override
-	public boolean hasCustomName() {
-		return false;
-	}
-
-	@Override
-	public int getInvMaxStackAmount() {
-		return 64;
-	}
-
 	public boolean isUsingEffectiveTool(BlockState blockState) {
 		return this.getInvStack(this.selectedSlot).isEffectiveOn(blockState);
 	}
@@ -616,19 +606,6 @@ public class PlayerInventory implements Inventory {
 		return false;
 	}
 
-	@Override
-	public void onInvOpen(PlayerEntity playerEntity) {
-	}
-
-	@Override
-	public void onInvClose(PlayerEntity playerEntity) {
-	}
-
-	@Override
-	public boolean isValidInvStack(int i, ItemStack itemStack) {
-		return true;
-	}
-
 	public void clone(PlayerInventory playerInventory) {
 		for (int i = 0; i < this.getInvSize(); i++) {
 			this.setInvStack(i, playerInventory.getInvStack(i));
@@ -638,29 +615,15 @@ public class PlayerInventory implements Inventory {
 	}
 
 	@Override
-	public int getInvProperty(int i) {
-		return 0;
-	}
-
-	@Override
-	public void setInvProperty(int i, int j) {
-	}
-
-	@Override
-	public int getInvPropertyCount() {
-		return 0;
-	}
-
-	@Override
 	public void clearInv() {
 		for (List<ItemStack> list : this.field_7543) {
 			list.clear();
 		}
 	}
 
-	public void method_7387(class_1662 arg) {
+	public void populateRecipeFinder(RecipeFinder recipeFinder) {
 		for (ItemStack itemStack : this.main) {
-			arg.method_7404(itemStack);
+			recipeFinder.addNormalItem(itemStack);
 		}
 	}
 }

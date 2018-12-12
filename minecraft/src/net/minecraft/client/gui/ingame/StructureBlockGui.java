@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Locale;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2875;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.enums.StructureMode;
@@ -16,6 +15,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.server.network.packet.UpdateStructureBlockServerPacket;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
@@ -42,8 +42,8 @@ public class StructureBlockGui extends Gui {
 	private TextFieldWidget inputIntegrity;
 	private TextFieldWidget inputSeed;
 	private TextFieldWidget inputMetadata;
-	private ButtonWidget field_3002;
-	private ButtonWidget field_2994;
+	private ButtonWidget doneButton;
+	private ButtonWidget cancelButton;
 	private ButtonWidget buttonSave;
 	private ButtonWidget buttonLoad;
 	private ButtonWidget buttonRotate0;
@@ -79,7 +79,7 @@ public class StructureBlockGui extends Gui {
 	}
 
 	private void method_2515() {
-		if (this.method_2516(StructureBlockBlockEntity.class_2634.field_12108)) {
+		if (this.method_2516(StructureBlockBlockEntity.Action.field_12108)) {
 			this.client.openGui(null);
 		}
 	}
@@ -97,13 +97,13 @@ public class StructureBlockGui extends Gui {
 	@Override
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.field_3002 = this.addButton(new ButtonWidget(0, this.width / 2 - 4 - 150, 210, 150, 20, I18n.translate("gui.done")) {
+		this.doneButton = this.addButton(new ButtonWidget(0, this.width / 2 - 4 - 150, 210, 150, 20, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
 				StructureBlockGui.this.method_2515();
 			}
 		});
-		this.field_2994 = this.addButton(new ButtonWidget(1, this.width / 2 + 4, 210, 150, 20, I18n.translate("gui.cancel")) {
+		this.cancelButton = this.addButton(new ButtonWidget(1, this.width / 2 + 4, 210, 150, 20, I18n.translate("gui.cancel")) {
 			@Override
 			public void onPressed(double d, double e) {
 				StructureBlockGui.this.method_2514();
@@ -113,7 +113,7 @@ public class StructureBlockGui extends Gui {
 			@Override
 			public void onPressed(double d, double e) {
 				if (StructureBlockGui.this.structureBlock.getMode() == StructureMode.field_12695) {
-					StructureBlockGui.this.method_2516(StructureBlockBlockEntity.class_2634.field_12110);
+					StructureBlockGui.this.method_2516(StructureBlockBlockEntity.Action.field_12110);
 					StructureBlockGui.this.client.openGui(null);
 				}
 			}
@@ -122,7 +122,7 @@ public class StructureBlockGui extends Gui {
 			@Override
 			public void onPressed(double d, double e) {
 				if (StructureBlockGui.this.structureBlock.getMode() == StructureMode.field_12697) {
-					StructureBlockGui.this.method_2516(StructureBlockBlockEntity.class_2634.field_12109);
+					StructureBlockGui.this.method_2516(StructureBlockBlockEntity.Action.field_12109);
 					StructureBlockGui.this.client.openGui(null);
 				}
 			}
@@ -138,7 +138,7 @@ public class StructureBlockGui extends Gui {
 			@Override
 			public void onPressed(double d, double e) {
 				if (StructureBlockGui.this.structureBlock.getMode() == StructureMode.field_12695) {
-					StructureBlockGui.this.method_2516(StructureBlockBlockEntity.class_2634.field_12106);
+					StructureBlockGui.this.method_2516(StructureBlockBlockEntity.Action.field_12106);
 					StructureBlockGui.this.client.openGui(null);
 				}
 			}
@@ -213,7 +213,7 @@ public class StructureBlockGui extends Gui {
 		this.inputName = new TextFieldWidget(2, this.fontRenderer, this.width / 2 - 152, 40, 300, 20) {
 			@Override
 			public boolean charTyped(char c, int i) {
-				return !StructureBlockGui.this.method_16016(this.getText(), c, this.getId()) ? false : super.charTyped(c, i);
+				return !StructureBlockGui.this.method_16016(this.getText(), c, this.getCursor()) ? false : super.charTyped(c, i);
 			}
 		};
 		this.inputName.setMaxLength(64);
@@ -270,7 +270,7 @@ public class StructureBlockGui extends Gui {
 		this.updateShowAirButton();
 		this.field_2983 = this.structureBlock.shouldShowBoundingBox();
 		this.updateShowBoundingBoxButton();
-		this.inputName.method_1876(true);
+		this.inputName.setFocused(true);
 		this.setFocused(this.inputName);
 	}
 
@@ -366,18 +366,18 @@ public class StructureBlockGui extends Gui {
 	}
 
 	private void updateMode() {
-		this.inputName.method_1876(false);
-		this.inputPosX.method_1876(false);
-		this.inputPosY.method_1876(false);
-		this.inputPosZ.method_1876(false);
-		this.inputSizeX.method_1876(false);
-		this.inputSizeY.method_1876(false);
-		this.inputSizeZ.method_1876(false);
-		this.inputIntegrity.method_1876(false);
-		this.inputSeed.method_1876(false);
-		this.inputMetadata.method_1876(false);
+		this.inputName.setFocused(false);
+		this.inputPosX.setFocused(false);
+		this.inputPosY.setFocused(false);
+		this.inputPosZ.setFocused(false);
+		this.inputSizeX.setFocused(false);
+		this.inputSizeY.setFocused(false);
+		this.inputSizeZ.setFocused(false);
+		this.inputIntegrity.setFocused(false);
+		this.inputSeed.setFocused(false);
+		this.inputMetadata.setFocused(false);
 		this.inputName.setVisible(false);
-		this.inputName.method_1876(false);
+		this.inputName.setFocused(false);
 		this.inputPosX.setVisible(false);
 		this.inputPosY.setVisible(false);
 		this.inputPosZ.setVisible(false);
@@ -439,7 +439,7 @@ public class StructureBlockGui extends Gui {
 		this.buttonMode.text = I18n.translate("structure_block.mode." + this.structureBlock.getMode().asString());
 	}
 
-	private boolean method_2516(StructureBlockBlockEntity.class_2634 arg) {
+	private boolean method_2516(StructureBlockBlockEntity.Action action) {
 		BlockPos blockPos = new BlockPos(this.parseInt(this.inputPosX.getText()), this.parseInt(this.inputPosY.getText()), this.parseInt(this.inputPosZ.getText()));
 		BlockPos blockPos2 = new BlockPos(
 			this.parseInt(this.inputSizeX.getText()), this.parseInt(this.inputSizeY.getText()), this.parseInt(this.inputSizeZ.getText())
@@ -449,9 +449,9 @@ public class StructureBlockGui extends Gui {
 		this.client
 			.getNetworkHandler()
 			.sendPacket(
-				new class_2875(
+				new UpdateStructureBlockServerPacket(
 					this.structureBlock.getPos(),
-					arg,
+					action,
 					this.structureBlock.getMode(),
 					this.inputName.getText(),
 					blockPos,
@@ -502,7 +502,7 @@ public class StructureBlockGui extends Gui {
 	public boolean mouseClicked(double d, double e, int i) {
 		if (super.mouseClicked(d, e, i)) {
 			for (TextFieldWidget textFieldWidget : this.textFields) {
-				textFieldWidget.method_1876(this.getFocused() == textFieldWidget);
+				textFieldWidget.setFocused(this.getFocused() == textFieldWidget);
 			}
 
 			return true;
@@ -525,19 +525,19 @@ public class StructureBlockGui extends Gui {
 			TextFieldWidget textFieldWidget2 = null;
 
 			for (TextFieldWidget textFieldWidget3 : this.textFields) {
-				if (textFieldWidget != null && textFieldWidget3.getVisible()) {
+				if (textFieldWidget != null && textFieldWidget3.isVisible()) {
 					textFieldWidget2 = textFieldWidget3;
 					break;
 				}
 
-				if (textFieldWidget3.isFocused() && textFieldWidget3.getVisible()) {
+				if (textFieldWidget3.isFocused() && textFieldWidget3.isVisible()) {
 					textFieldWidget = textFieldWidget3;
 				}
 			}
 
 			if (textFieldWidget != null && textFieldWidget2 == null) {
 				for (TextFieldWidget textFieldWidget3 : this.textFields) {
-					if (textFieldWidget3.getVisible() && textFieldWidget3 != textFieldWidget) {
+					if (textFieldWidget3.isVisible() && textFieldWidget3 != textFieldWidget) {
 						textFieldWidget2 = textFieldWidget3;
 						break;
 					}
@@ -545,8 +545,8 @@ public class StructureBlockGui extends Gui {
 			}
 
 			if (textFieldWidget2 != null && textFieldWidget2 != textFieldWidget) {
-				textFieldWidget.method_1876(false);
-				textFieldWidget2.method_1876(true);
+				textFieldWidget.setFocused(false);
+				textFieldWidget2.setFocused(true);
 				this.setFocused(textFieldWidget2);
 			}
 

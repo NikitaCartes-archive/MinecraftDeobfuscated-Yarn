@@ -5,9 +5,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.EntityTextureOffset;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.util.GlAllocationUtils;
 
 @Environment(EnvType.CLIENT)
@@ -30,14 +29,12 @@ public class Cuboid {
 	public List<Box> boxes = Lists.<Box>newArrayList();
 	public List<Cuboid> children;
 	public final String name;
-	private final Model owner;
 	public float x;
 	public float y;
 	public float z;
 
 	public Cuboid(Model model, String string) {
-		this.owner = model;
-		model.cuboids.add(this);
+		model.cuboidList.add(this);
 		this.name = string;
 		this.setTextureSize(model.textureWidth, model.textureHeight);
 	}
@@ -49,6 +46,15 @@ public class Cuboid {
 	public Cuboid(Model model, int i, int j) {
 		this(model);
 		this.setTextureOffset(i, j);
+	}
+
+	public void method_17138(Cuboid cuboid) {
+		this.pitch = cuboid.pitch;
+		this.yaw = cuboid.yaw;
+		this.roll = cuboid.roll;
+		this.rotationPointX = cuboid.rotationPointX;
+		this.rotationPointY = cuboid.rotationPointY;
+		this.rotationPointZ = cuboid.rotationPointZ;
 	}
 
 	public void addChild(Cuboid cuboid) {
@@ -65,14 +71,9 @@ public class Cuboid {
 		return this;
 	}
 
-	public Cuboid addBox(String string, float f, float g, float h, int i, int j, int k) {
-		return this.addBox(string, f, g, h, i, j, k, 0.0F);
-	}
-
-	public Cuboid addBox(String string, float f, float g, float h, int i, int j, int k, float l) {
+	public Cuboid addBox(String string, float f, float g, float h, int i, int j, int k, float l, int m, int n) {
 		string = this.name + "." + string;
-		EntityTextureOffset entityTextureOffset = this.owner.getTextureOffset(string);
-		this.setTextureOffset(entityTextureOffset.offsetX, entityTextureOffset.offsetY);
+		this.setTextureOffset(m, n);
 		this.boxes.add(new Box(this, this.textureOffsetX, this.textureOffsetY, f, g, h, i, j, k, l).setName(string));
 		return this;
 	}
@@ -108,6 +109,7 @@ public class Cuboid {
 					this.compile(f);
 				}
 
+				GlStateManager.pushMatrix();
 				GlStateManager.translatef(this.x, this.y, this.z);
 				if (this.pitch != 0.0F || this.yaw != 0.0F || this.roll != 0.0F) {
 					GlStateManager.pushMatrix();
@@ -140,6 +142,7 @@ public class Cuboid {
 						}
 					}
 				} else {
+					GlStateManager.pushMatrix();
 					GlStateManager.translatef(this.rotationPointX * f, this.rotationPointY * f, this.rotationPointZ * f);
 					GlStateManager.callList(this.list);
 					if (this.children != null) {
@@ -148,10 +151,10 @@ public class Cuboid {
 						}
 					}
 
-					GlStateManager.translatef(-this.rotationPointX * f, -this.rotationPointY * f, -this.rotationPointZ * f);
+					GlStateManager.popMatrix();
 				}
 
-				GlStateManager.translatef(-this.x, -this.y, -this.z);
+				GlStateManager.popMatrix();
 			}
 		}
 	}
@@ -213,10 +216,10 @@ public class Cuboid {
 	private void compile(float f) {
 		this.list = GlAllocationUtils.genLists(1);
 		GlStateManager.newList(this.list, 4864);
-		VertexBuffer vertexBuffer = Tessellator.getInstance().getVertexBuffer();
+		BufferBuilder bufferBuilder = Tessellator.getInstance().getBufferBuilder();
 
 		for (int i = 0; i < this.boxes.size(); i++) {
-			((Box)this.boxes.get(i)).render(vertexBuffer, f);
+			((Box)this.boxes.get(i)).render(bufferBuilder, f);
 		}
 
 		GlStateManager.endList();

@@ -9,10 +9,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.decorator.DecoratorConfig;
-import net.minecraft.world.gen.config.feature.FeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class ConfiguredDecorator<DC extends DecoratorConfig> {
 	public final Decorator<DC> decorator;
@@ -28,7 +27,7 @@ public class ConfiguredDecorator<DC extends DecoratorConfig> {
 	}
 
 	public <FC extends FeatureConfig> boolean generate(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, Random random, BlockPos blockPos, ConfiguredFeature<FC> configuredFeature
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, ConfiguredFeature<FC> configuredFeature
 	) {
 		return this.decorator.generate(iWorld, chunkGenerator, random, blockPos, this.config, configuredFeature);
 	}

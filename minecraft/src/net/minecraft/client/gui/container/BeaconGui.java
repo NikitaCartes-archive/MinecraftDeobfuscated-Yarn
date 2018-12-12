@@ -3,12 +3,11 @@ package net.minecraft.client.gui.container;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2866;
-import net.minecraft.class_308;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.ContainerGui;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.container.BeaconContainer;
 import net.minecraft.entity.effect.StatusEffect;
@@ -18,6 +17,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.packet.GuiCloseServerPacket;
+import net.minecraft.server.network.packet.UpdateBeaconServerPacket;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -110,18 +110,18 @@ public class BeaconGui extends ContainerGui {
 
 	@Override
 	protected void drawForeground(int i, int j) {
-		class_308.method_1450();
+		GuiLighting.disable();
 		this.drawStringCentered(this.fontRenderer, I18n.translate("block.minecraft.beacon.primary"), 62, 10, 14737632);
 		this.drawStringCentered(this.fontRenderer, I18n.translate("block.minecraft.beacon.secondary"), 169, 10, 14737632);
 
-		for (ButtonWidget buttonWidget : this.buttonWidgets) {
+		for (ButtonWidget buttonWidget : this.buttons) {
 			if (buttonWidget.isHovered()) {
 				buttonWidget.onHover(i - this.left, j - this.top);
 				break;
 			}
 		}
 
-		class_308.method_1453();
+		GuiLighting.enableForItems();
 	}
 
 	@Override
@@ -220,7 +220,9 @@ public class BeaconGui extends ContainerGui {
 
 		@Override
 		public void onPressed(double d, double e) {
-			BeaconGui.this.client.getNetworkHandler().sendPacket(new class_2866(BeaconGui.this.inventory.getInvProperty(1), BeaconGui.this.inventory.getInvProperty(2)));
+			BeaconGui.this.client
+				.getNetworkHandler()
+				.sendPacket(new UpdateBeaconServerPacket(BeaconGui.this.inventory.getInvProperty(1), BeaconGui.this.inventory.getInvProperty(2)));
 			BeaconGui.this.client.player.networkHandler.sendPacket(new GuiCloseServerPacket(BeaconGui.this.client.player.container.syncId));
 			BeaconGui.this.client.openGui(null);
 		}
@@ -252,7 +254,7 @@ public class BeaconGui extends ContainerGui {
 					BeaconGui.this.inventory.setInvProperty(2, i);
 				}
 
-				BeaconGui.this.buttonWidgets.clear();
+				BeaconGui.this.buttons.clear();
 				BeaconGui.this.listeners.clear();
 				BeaconGui.this.onInitialized();
 				BeaconGui.this.update();

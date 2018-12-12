@@ -1,13 +1,13 @@
 package net.minecraft.entity.mob;
 
-import net.minecraft.class_1310;
 import net.minecraft.class_1361;
 import net.minecraft.class_1376;
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
-import net.minecraft.class_3730;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
@@ -23,8 +23,8 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class EndermiteEntity extends HostileEntity {
-	private int field_7250;
-	private boolean field_7251;
+	private int lifeTime;
+	private boolean playerSpawned;
 
 	public EndermiteEntity(World world) {
 		super(EntityType.ENDERMITE, world);
@@ -84,15 +84,15 @@ public class EndermiteEntity extends HostileEntity {
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		this.field_7250 = compoundTag.getInt("Lifetime");
-		this.field_7251 = compoundTag.getBoolean("PlayerSpawned");
+		this.lifeTime = compoundTag.getInt("Lifetime");
+		this.playerSpawned = compoundTag.getBoolean("PlayerSpawned");
 	}
 
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putInt("Lifetime", this.field_7250);
-		compoundTag.putBoolean("PlayerSpawned", this.field_7251);
+		compoundTag.putInt("Lifetime", this.lifeTime);
+		compoundTag.putBoolean("PlayerSpawned", this.playerSpawned);
 	}
 
 	@Override
@@ -113,17 +113,17 @@ public class EndermiteEntity extends HostileEntity {
 	}
 
 	public boolean method_7023() {
-		return this.field_7251;
+		return this.playerSpawned;
 	}
 
 	public void method_7022(boolean bl) {
-		this.field_7251 = bl;
+		this.playerSpawned = bl;
 	}
 
 	@Override
 	public void updateMovement() {
 		super.updateMovement();
-		if (this.world.isRemote) {
+		if (this.world.isClient) {
 			for (int i = 0; i < 2; i++) {
 				this.world
 					.method_8406(
@@ -138,23 +138,23 @@ public class EndermiteEntity extends HostileEntity {
 			}
 		} else {
 			if (!this.isPersistent()) {
-				this.field_7250++;
+				this.lifeTime++;
 			}
 
-			if (this.field_7250 >= 2400) {
+			if (this.lifeTime >= 2400) {
 				this.invalidate();
 			}
 		}
 	}
 
 	@Override
-	protected boolean method_7075() {
+	protected boolean checkLightLevelForSpawn() {
 		return true;
 	}
 
 	@Override
-	public boolean method_5979(IWorld iWorld, class_3730 arg) {
-		if (super.method_5979(iWorld, arg)) {
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
+		if (super.canSpawn(iWorld, spawnType)) {
 			PlayerEntity playerEntity = iWorld.getClosestPlayer(this, 5.0);
 			return playerEntity == null;
 		} else {
@@ -163,7 +163,7 @@ public class EndermiteEntity extends HostileEntity {
 	}
 
 	@Override
-	public class_1310 method_6046() {
-		return class_1310.field_6293;
+	public EntityGroup getGroup() {
+		return EntityGroup.ARTHROPOD;
 	}
 }

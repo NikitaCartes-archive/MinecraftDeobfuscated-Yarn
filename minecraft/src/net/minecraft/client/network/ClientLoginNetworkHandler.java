@@ -22,7 +22,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.menu.DisconnectedGui;
 import net.minecraft.client.gui.menu.RealmsGui;
-import net.minecraft.client.sortme.NetworkUtils;
+import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.network.NetworkState;
@@ -61,7 +61,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 		NetworkUtils.downloadExecutor.submit((Runnable)(() -> {
 			TextComponent textComponent = this.method_2892(string);
 			if (textComponent != null) {
-				if (this.client.getCurrentServerEntry() == null || !this.client.getCurrentServerEntry().isLocal()) {
+				if (this.client.method_1558() == null || !this.client.method_1558().isLocal()) {
 					this.connection.disconnect(textComponent);
 					return;
 				}

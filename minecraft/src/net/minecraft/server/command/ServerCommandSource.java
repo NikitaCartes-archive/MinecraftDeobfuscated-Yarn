@@ -352,8 +352,8 @@ public class ServerCommandSource implements CommandSource {
 		TextComponent textComponent2 = new TranslatableTextComponent("chat.type.admin", this.getDisplayName(), textComponent)
 			.applyFormat(new TextFormat[]{TextFormat.GRAY, TextFormat.ITALIC});
 		if (this.minecraftServer.getGameRules().getBoolean("sendCommandFeedback")) {
-			for (ServerPlayerEntity serverPlayerEntity : this.minecraftServer.getConfigurationManager().getPlayerList()) {
-				if (serverPlayerEntity != this.output && this.minecraftServer.getConfigurationManager().isOperator(serverPlayerEntity.getGameProfile())) {
+			for (ServerPlayerEntity serverPlayerEntity : this.minecraftServer.getPlayerManager().getPlayerList()) {
+				if (serverPlayerEntity != this.output && this.minecraftServer.getPlayerManager().isOperator(serverPlayerEntity.getGameProfile())) {
 					serverPlayerEntity.appendCommandFeedback(textComponent2);
 				}
 			}
@@ -383,7 +383,7 @@ public class ServerCommandSource implements CommandSource {
 
 	@Override
 	public Collection<String> getTeamNames() {
-		return this.minecraftServer.method_3845().getTeamNames();
+		return this.minecraftServer.getScoreboard().getTeamNames();
 	}
 
 	@Override

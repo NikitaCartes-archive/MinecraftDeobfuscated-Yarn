@@ -34,7 +34,7 @@ public class EatGrassGoal extends Goal {
 	@Override
 	public void start() {
 		this.timer = 40;
-		this.world.method_8421(this.owner, (byte)10);
+		this.world.summonParticle(this.owner, (byte)10);
 		this.owner.getNavigation().method_6340();
 	}
 

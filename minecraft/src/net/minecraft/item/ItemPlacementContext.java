@@ -16,7 +16,7 @@ public class ItemPlacementContext extends ItemUsageContext {
 			itemUsageContext.getPlayer(),
 			itemUsageContext.getItemStack(),
 			itemUsageContext.getPos(),
-			itemUsageContext.method_8038(),
+			itemUsageContext.getFacing(),
 			itemUsageContext.getHitX(),
 			itemUsageContext.getHitY(),
 			itemUsageContext.getHitZ()
@@ -27,7 +27,7 @@ public class ItemPlacementContext extends ItemUsageContext {
 		World world, @Nullable PlayerEntity playerEntity, ItemStack itemStack, BlockPos blockPos, Direction direction, float f, float g, float h
 	) {
 		super(world, playerEntity, itemStack, blockPos, direction, f, g, h);
-		this.placedPos = this.pos.method_10093(this.field_8943);
+		this.placedPos = this.pos.offset(this.facing);
 		this.field_7904 = this.getWorld().getBlockState(this.pos).method_11587(this);
 	}
 
@@ -36,7 +36,7 @@ public class ItemPlacementContext extends ItemUsageContext {
 			itemPlacementContext.getWorld(),
 			itemPlacementContext.getPlayer(),
 			itemPlacementContext.getItemStack(),
-			blockPos.method_10093(direction.getOpposite()),
+			blockPos.offset(direction.getOpposite()),
 			direction,
 			itemPlacementContext.getHitX(),
 			itemPlacementContext.getHitY(),
@@ -46,7 +46,7 @@ public class ItemPlacementContext extends ItemUsageContext {
 		this.field_7904 = false;
 	}
 
-	public static ItemPlacementContext method_16355(ItemPlacementContext itemPlacementContext, BlockPos.Mutable mutable, Direction direction) {
+	public static ItemPlacementContext create(ItemPlacementContext itemPlacementContext, BlockPos.Mutable mutable, Direction direction) {
 		return new ItemPlacementContext(itemPlacementContext, mutable, direction);
 	}
 
@@ -63,24 +63,24 @@ public class ItemPlacementContext extends ItemUsageContext {
 		return this.field_7904;
 	}
 
-	public Direction method_7715() {
+	public Direction getPlayerFacing() {
 		return Direction.getEntityFacingOrder(this.player)[0];
 	}
 
-	public Direction[] method_7718() {
+	public Direction[] getPlacementFacings() {
 		Direction[] directions = Direction.getEntityFacingOrder(this.player);
 		if (this.field_7904) {
 			return directions;
 		} else {
 			int i = 0;
 
-			while (i < directions.length && directions[i] != this.field_8943.getOpposite()) {
+			while (i < directions.length && directions[i] != this.facing.getOpposite()) {
 				i++;
 			}
 
 			if (i > 0) {
 				System.arraycopy(directions, 0, directions, 1, i);
-				directions[0] = this.field_8943.getOpposite();
+				directions[0] = this.facing.getOpposite();
 			}
 
 			return directions;

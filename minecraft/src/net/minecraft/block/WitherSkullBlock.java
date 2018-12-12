@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import javax.annotation.Nullable;
 import net.minecraft.class_2710;
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.pattern.BlockPattern;
@@ -40,7 +40,7 @@ public class WitherSkullBlock extends SkullBlock {
 	public static void method_10898(World world, BlockPos blockPos, SkullBlockEntity skullBlockEntity) {
 		Block block = skullBlockEntity.getCachedState().getBlock();
 		boolean bl = block == Blocks.field_10177 || block == Blocks.field_10101;
-		if (bl && blockPos.getY() >= 2 && world.getDifficulty() != Difficulty.PEACEFUL && !world.isRemote) {
+		if (bl && blockPos.getY() >= 2 && world.getDifficulty() != Difficulty.PEACEFUL && !world.isClient) {
 			BlockPattern blockPattern = getWitherBossPattern();
 			BlockPattern.Result result = blockPattern.searchAround(world, blockPos);
 			if (result != null) {
@@ -57,14 +57,14 @@ public class WitherSkullBlock extends SkullBlock {
 					(double)blockPos3.getX() + 0.5,
 					(double)blockPos3.getY() + 0.55,
 					(double)blockPos3.getZ() + 0.5,
-					result.method_11719().getAxis() == Direction.Axis.X ? 0.0F : 90.0F,
+					result.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F,
 					0.0F
 				);
-				entityWither.field_6283 = result.method_11719().getAxis() == Direction.Axis.X ? 0.0F : 90.0F;
+				entityWither.field_6283 = result.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F;
 				entityWither.method_6885();
 
 				for (ServerPlayerEntity serverPlayerEntity : world.getVisibleEntities(ServerPlayerEntity.class, entityWither.getBoundingBox().expand(50.0))) {
-					CriterionCriterions.SUMMONED_ENTITY.handle(serverPlayerEntity, entityWither);
+					Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, entityWither);
 				}
 
 				world.spawnEntity(entityWither);
@@ -91,7 +91,7 @@ public class WitherSkullBlock extends SkullBlock {
 	}
 
 	public static boolean method_10899(World world, BlockPos blockPos, ItemStack itemStack) {
-		return itemStack.getItem() == Items.field_8791 && blockPos.getY() >= 2 && world.getDifficulty() != Difficulty.PEACEFUL && !world.isRemote
+		return itemStack.getItem() == Items.field_8791 && blockPos.getY() >= 2 && world.getDifficulty() != Difficulty.PEACEFUL && !world.isClient
 			? getWitherDispenserPattern().searchAround(world, blockPos) != null
 			: false;
 	}

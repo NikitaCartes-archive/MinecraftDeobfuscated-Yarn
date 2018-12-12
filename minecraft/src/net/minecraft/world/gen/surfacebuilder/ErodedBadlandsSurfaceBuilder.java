@@ -9,7 +9,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.config.surfacebuilder.TernarySurfaceConfig;
 
 public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 	private static final BlockState field_15629 = Blocks.field_10611.getDefaultState();
@@ -52,7 +51,7 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 		int o = i & 15;
 		int p = j & 15;
 		BlockState blockState3 = field_15629;
-		BlockState blockState4 = biome.getSurfaceConfig().getUnderMaterial();
+		BlockState blockState4 = biome.method_8722().getUnderMaterial();
 		int q = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
 		boolean bl = Math.cos(d / 3.0 * Math.PI) > 0.0;
 		int r = -1;
@@ -76,7 +75,7 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 						blockState4 = blockState;
 					} else if (s >= l - 4 && s <= l + 1) {
 						blockState3 = field_15629;
-						blockState4 = biome.getSurfaceConfig().getUnderMaterial();
+						blockState4 = biome.method_8722().getUnderMaterial();
 					}
 
 					if (s < l && (blockState3 == null || blockState3.isAir())) {
@@ -97,7 +96,7 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 
 							chunk.setBlockState(mutable, blockState6, false);
 						} else {
-							chunk.setBlockState(mutable, biome.getSurfaceConfig().getTopMaterial(), false);
+							chunk.setBlockState(mutable, biome.method_8722().getTopMaterial(), false);
 							bl2 = true;
 						}
 					} else {

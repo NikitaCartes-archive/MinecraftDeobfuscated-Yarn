@@ -7,13 +7,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class WitchEntityModel extends VillagerEntityModel {
+public class WitchEntityModel<T extends Entity> extends VillagerEntityModel<T> {
 	private boolean field_3614;
 	private final Cuboid mole = new Cuboid(this).setTextureSize(64, 128);
 	private final Cuboid hat;
 
 	public WitchEntityModel(float f) {
-		super(f, 0.0F, 64, 128);
+		super(f, 64, 128);
 		this.mole.setRotationPoint(0.0F, -2.0F, 0.0F);
 		this.mole.setTextureOffset(0, 0).addBox(0.0F, 3.0F, -6.75F, 1, 1, 1, -0.25F);
 		this.nose.addChild(this.mole);
@@ -42,8 +42,8 @@ public class WitchEntityModel extends VillagerEntityModel {
 	}
 
 	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
-		super.setRotationAngles(f, g, h, i, j, k, entity);
+	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
+		super.setAngles(entity, f, g, h, i, j, k);
 		this.nose.x = 0.0F;
 		this.nose.y = 0.0F;
 		this.nose.z = 0.0F;

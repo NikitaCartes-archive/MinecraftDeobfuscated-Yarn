@@ -1,15 +1,15 @@
 package net.minecraft.scoreboard;
 
-import net.minecraft.nbt.PersistedState;
+import net.minecraft.world.PersistentState;
 
 public class ScoreboardSynchronizer implements Runnable {
-	private final PersistedState compound;
+	private final PersistentState field_66;
 
-	public ScoreboardSynchronizer(PersistedState persistedState) {
-		this.compound = persistedState;
+	public ScoreboardSynchronizer(PersistentState persistentState) {
+		this.field_66 = persistentState;
 	}
 
 	public void run() {
-		this.compound.markDirty();
+		this.field_66.markDirty();
 	}
 }

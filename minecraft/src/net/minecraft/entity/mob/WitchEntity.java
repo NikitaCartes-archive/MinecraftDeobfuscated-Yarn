@@ -26,6 +26,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.entity.thrown.ThrownPotionEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -62,7 +63,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 		this.goalSelector.add(3, new class_1361(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(3, new class_1376(this));
 		this.targetSelector.add(1, new class_1399(this, RaiderEntity.class));
-		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, playerEntity -> playerEntity != null && this.method_16482()));
+		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, playerEntity -> playerEntity != null && this.hasActiveRaid()));
 		this.targetSelector.add(2, new class_3760(this, RaiderEntity.class, true));
 	}
 
@@ -104,7 +105,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 
 	@Override
 	public void updateMovement() {
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			if (this.isDrinking()) {
 				if (this.field_7417-- <= 0) {
 					this.setDrinking(false);
@@ -150,7 +151,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 			}
 
 			if (this.random.nextFloat() < 7.5E-4F) {
-				this.world.method_8421(this, (byte)15);
+				this.world.summonParticle(this, (byte)15);
 			}
 		}
 
@@ -185,7 +186,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 			f = 0.0F;
 		}
 
-		if (damageSource.setMagic()) {
+		if (damageSource.getMagic()) {
 			f = (float)((double)f * 0.15);
 		}
 
@@ -209,7 +210,8 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 				potion = Potions.field_8975;
 			}
 
-			ThrownPotionEntity thrownPotionEntity = new ThrownPotionEntity(this.world, this, PotionUtil.setPotion(new ItemStack(Items.field_8436), potion));
+			ThrownPotionEntity thrownPotionEntity = new ThrownPotionEntity(this.world, this);
+			thrownPotionEntity.setItemStack(PotionUtil.setPotion(new ItemStack(Items.field_8436), potion));
 			thrownPotionEntity.pitch -= -20.0F;
 			thrownPotionEntity.setVelocity(e, g + (double)(i * 0.2F), h, 0.75F, 8.0F);
 			this.world.playSound(null, this.x, this.y, this.z, SoundEvents.field_15067, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
@@ -222,16 +224,22 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 		return 1.62F;
 	}
 
+	@Environment(EnvType.CLIENT)
+	@Override
+	public boolean hasArmsRaised() {
+		return false;
+	}
+
 	@Override
 	public void setArmsRaised(boolean bl) {
 	}
 
 	@Override
-	public void method_16484(int i, boolean bl) {
+	public void addBonusForWave(int i, boolean bl) {
 	}
 
 	@Override
-	protected boolean method_16485() {
+	public boolean canLead() {
 		return false;
 	}
 }

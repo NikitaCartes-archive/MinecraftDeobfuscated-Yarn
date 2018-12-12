@@ -17,8 +17,8 @@ public class SaveOnCommand {
 				boolean bl = false;
 
 				for (ServerWorld serverWorld : serverCommandSource.getMinecraftServer().getWorlds()) {
-					if (serverWorld != null && serverWorld.field_13957) {
-						serverWorld.field_13957 = false;
+					if (serverWorld != null && serverWorld.savingDisabled) {
+						serverWorld.savingDisabled = false;
 						bl = true;
 					}
 				}

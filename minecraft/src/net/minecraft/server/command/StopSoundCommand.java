@@ -4,7 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import java.util.Collection;
 import javax.annotation.Nullable;
-import net.minecraft.class_2770;
+import net.minecraft.client.network.packet.StopSoundClientPacket;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.command.arguments.ResourceLocationArgumentType;
@@ -17,7 +17,7 @@ import net.minecraft.util.Identifier;
 public class StopSoundCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		RequiredArgumentBuilder<ServerCommandSource, EntitySelector> requiredArgumentBuilder = ServerCommandManager.argument(
-				"targets", EntityArgumentType.method_9308()
+				"targets", EntityArgumentType.multiplePlayer()
 			)
 			.executes(commandContext -> method_13685(commandContext.getSource(), EntityArgumentType.method_9312(commandContext, "targets"), null, null))
 			.then(
@@ -63,10 +63,10 @@ public class StopSoundCommand {
 	private static int method_13685(
 		ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, @Nullable SoundCategory soundCategory, @Nullable Identifier identifier
 	) {
-		class_2770 lv = new class_2770(identifier, soundCategory);
+		StopSoundClientPacket stopSoundClientPacket = new StopSoundClientPacket(identifier, soundCategory);
 
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
-			serverPlayerEntity.networkHandler.sendPacket(lv);
+			serverPlayerEntity.networkHandler.sendPacket(stopSoundClientPacket);
 		}
 
 		if (soundCategory != null) {

@@ -49,7 +49,7 @@ public class CoralDeadWallFanBlock extends CoralDeadFanBlock {
 
 	@Override
 	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.method_10345(blockState.get(field_9933)));
+		return blockState.applyRotation(mirror.getRotation(blockState.get(field_9933)));
 	}
 
 	@Override
@@ -58,7 +58,9 @@ public class CoralDeadWallFanBlock extends CoralDeadFanBlock {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if ((Boolean)blockState.get(WATERLOGGED)) {
 			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
 		}
@@ -69,9 +71,9 @@ public class CoralDeadWallFanBlock extends CoralDeadFanBlock {
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		Direction direction = blockState.get(field_9933);
-		BlockPos blockPos2 = blockPos.method_10093(direction.getOpposite());
+		BlockPos blockPos2 = blockPos.offset(direction.getOpposite());
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-		return Block.method_9501(blockState2.method_11628(viewableWorld, blockPos2), direction) && !method_9581(blockState2.getBlock());
+		return Block.isFaceFullCube(blockState2.getCollisionShape(viewableWorld, blockPos2), direction) && !method_9581(blockState2.getBlock());
 	}
 
 	@Nullable
@@ -80,7 +82,7 @@ public class CoralDeadWallFanBlock extends CoralDeadFanBlock {
 		BlockState blockState = super.getPlacementState(itemPlacementContext);
 		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getPos();
-		Direction[] directions = itemPlacementContext.method_7718();
+		Direction[] directions = itemPlacementContext.getPlacementFacings();
 
 		for (Direction direction : directions) {
 			if (direction.getAxis().isHorizontal()) {

@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.Quaternion;
-import net.minecraft.sortme.Vector3f;
+import net.minecraft.client.util.math.Quaternion;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 
@@ -60,7 +60,7 @@ public enum ModelRotation implements ModelRotationContainer {
 		return this.quaternion;
 	}
 
-	public Direction method_4705(Direction direction) {
+	public Direction apply(Direction direction) {
 		Direction direction2 = direction;
 
 		for (int i = 0; i < this.xRotations; i++) {
@@ -96,6 +96,6 @@ public enum ModelRotation implements ModelRotationContainer {
 	}
 
 	public static ModelRotation get(int i, int j) {
-		return (ModelRotation)BY_INDEX.get(getIndex(MathHelper.floorMOd(i, 360), MathHelper.floorMOd(j, 360)));
+		return (ModelRotation)BY_INDEX.get(getIndex(MathHelper.floorMod(i, 360), MathHelper.floorMod(j, 360)));
 	}
 }

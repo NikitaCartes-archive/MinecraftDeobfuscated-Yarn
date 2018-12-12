@@ -6,8 +6,7 @@ import java.util.function.Function;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.SimpleBlockFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class SimpleBlockFeature extends Feature<SimpleBlockFeatureConfig> {
 	public SimpleBlockFeature(Function<Dynamic<?>, ? extends SimpleBlockFeatureConfig> function) {
@@ -16,7 +15,7 @@ public class SimpleBlockFeature extends Feature<SimpleBlockFeatureConfig> {
 
 	public boolean method_13929(
 		IWorld iWorld,
-		ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator,
+		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,
 		BlockPos blockPos,
 		SimpleBlockFeatureConfig simpleBlockFeatureConfig

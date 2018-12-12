@@ -20,8 +20,8 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	protected int breedingAge;
 	protected int field_5948;
 	protected int field_5947;
-	private float field_5946 = -1.0F;
-	private float field_5945;
+	private float lastWidth = -1.0F;
+	private float lastHeight;
 
 	protected PassiveEntity(EntityType<?> entityType, World world) {
 		super(entityType, world);
@@ -35,7 +35,7 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		Item item = itemStack.getItem();
 		if (item instanceof SpawnEggItem && ((SpawnEggItem)item).method_8018(itemStack.getTag(), this.getType())) {
-			if (!this.world.isRemote) {
+			if (!this.world.isClient) {
 				PassiveEntity passiveEntity = this.createChild(this);
 				if (passiveEntity != null) {
 					passiveEntity.setBreedingAge(-24000);
@@ -64,7 +64,7 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	}
 
 	public int getBreedingAge() {
-		if (this.world.isRemote) {
+		if (this.world.isClient) {
 			return this.dataTracker.get(CHILD) ? -1 : 1;
 		} else {
 			return this.breedingAge;
@@ -102,7 +102,7 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	public void setBreedingAge(int i) {
 		this.dataTracker.set(CHILD, i < 0);
 		this.breedingAge = i;
-		this.method_5617(this.isChild());
+		this.setSize(this.isChild());
 	}
 
 	@Override
@@ -122,7 +122,7 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
 		if (CHILD.equals(trackedData)) {
-			this.method_5617(this.isChild());
+			this.setSize(this.isChild());
 		}
 
 		super.onTrackedDataSet(trackedData);
@@ -131,7 +131,7 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	@Override
 	public void updateMovement() {
 		super.updateMovement();
-		if (this.world.isRemote) {
+		if (this.world.isClient) {
 			if (this.field_5947 > 0) {
 				if (this.field_5947 % 4 == 0) {
 					this.world
@@ -169,18 +169,18 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 		return this.getBreedingAge() < 0;
 	}
 
-	public void method_5617(boolean bl) {
-		this.method_5616(bl ? 0.5F : 1.0F);
+	public void setSize(boolean bl) {
+		this.setSize(bl ? 0.5F : 1.0F);
 	}
 
 	@Override
 	protected final void setSize(float f, float g) {
-		this.field_5946 = f;
-		this.field_5945 = g;
-		this.method_5616(1.0F);
+		this.lastWidth = f;
+		this.lastHeight = g;
+		this.setSize(1.0F);
 	}
 
-	protected final void method_5616(float f) {
-		super.setSize(this.field_5946 * f, this.field_5945 * f);
+	protected final void setSize(float f) {
+		super.setSize(this.lastWidth * f, this.lastHeight * f);
 	}
 }

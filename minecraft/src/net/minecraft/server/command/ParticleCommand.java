@@ -9,7 +9,7 @@ import java.util.Collection;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.command.arguments.ParticleArgumentType;
 import net.minecraft.command.arguments.Vec3ArgumentType;
-import net.minecraft.particle.Particle;
+import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableTextComponent;
@@ -28,13 +28,13 @@ public class ParticleCommand {
 						.executes(
 							commandContext -> method_13491(
 									commandContext.getSource(),
-									ParticleArgumentType.getParticleArgument(commandContext, "name"),
+									ParticleArgumentType.method_9421(commandContext, "name"),
 									commandContext.getSource().getPosition(),
 									Vec3d.ZERO,
 									0.0F,
 									0,
 									false,
-									commandContext.getSource().getMinecraftServer().getConfigurationManager().getPlayerList()
+									commandContext.getSource().getMinecraftServer().getPlayerManager().getPlayerList()
 								)
 						)
 						.then(
@@ -42,13 +42,13 @@ public class ParticleCommand {
 								.executes(
 									commandContext -> method_13491(
 											commandContext.getSource(),
-											ParticleArgumentType.getParticleArgument(commandContext, "name"),
+											ParticleArgumentType.method_9421(commandContext, "name"),
 											Vec3ArgumentType.getVec3Argument(commandContext, "pos"),
 											Vec3d.ZERO,
 											0.0F,
 											0,
 											false,
-											commandContext.getSource().getMinecraftServer().getConfigurationManager().getPlayerList()
+											commandContext.getSource().getMinecraftServer().getPlayerManager().getPlayerList()
 										)
 								)
 								.then(
@@ -60,13 +60,13 @@ public class ParticleCommand {
 														.executes(
 															commandContext -> method_13491(
 																	commandContext.getSource(),
-																	ParticleArgumentType.getParticleArgument(commandContext, "name"),
+																	ParticleArgumentType.method_9421(commandContext, "name"),
 																	Vec3ArgumentType.getVec3Argument(commandContext, "pos"),
 																	Vec3ArgumentType.getVec3Argument(commandContext, "delta"),
 																	FloatArgumentType.getFloat(commandContext, "speed"),
 																	IntegerArgumentType.getInteger(commandContext, "count"),
 																	false,
-																	commandContext.getSource().getMinecraftServer().getConfigurationManager().getPlayerList()
+																	commandContext.getSource().getMinecraftServer().getPlayerManager().getPlayerList()
 																)
 														)
 														.then(
@@ -74,21 +74,21 @@ public class ParticleCommand {
 																.executes(
 																	commandContext -> method_13491(
 																			commandContext.getSource(),
-																			ParticleArgumentType.getParticleArgument(commandContext, "name"),
+																			ParticleArgumentType.method_9421(commandContext, "name"),
 																			Vec3ArgumentType.getVec3Argument(commandContext, "pos"),
 																			Vec3ArgumentType.getVec3Argument(commandContext, "delta"),
 																			FloatArgumentType.getFloat(commandContext, "speed"),
 																			IntegerArgumentType.getInteger(commandContext, "count"),
 																			true,
-																			commandContext.getSource().getMinecraftServer().getConfigurationManager().getPlayerList()
+																			commandContext.getSource().getMinecraftServer().getPlayerManager().getPlayerList()
 																		)
 																)
 																.then(
-																	ServerCommandManager.argument("viewers", EntityArgumentType.method_9308())
+																	ServerCommandManager.argument("viewers", EntityArgumentType.multiplePlayer())
 																		.executes(
 																			commandContext -> method_13491(
 																					commandContext.getSource(),
-																					ParticleArgumentType.getParticleArgument(commandContext, "name"),
+																					ParticleArgumentType.method_9421(commandContext, "name"),
 																					Vec3ArgumentType.getVec3Argument(commandContext, "pos"),
 																					Vec3ArgumentType.getVec3Argument(commandContext, "delta"),
 																					FloatArgumentType.getFloat(commandContext, "speed"),
@@ -104,21 +104,21 @@ public class ParticleCommand {
 																.executes(
 																	commandContext -> method_13491(
 																			commandContext.getSource(),
-																			ParticleArgumentType.getParticleArgument(commandContext, "name"),
+																			ParticleArgumentType.method_9421(commandContext, "name"),
 																			Vec3ArgumentType.getVec3Argument(commandContext, "pos"),
 																			Vec3ArgumentType.getVec3Argument(commandContext, "delta"),
 																			FloatArgumentType.getFloat(commandContext, "speed"),
 																			IntegerArgumentType.getInteger(commandContext, "count"),
 																			false,
-																			commandContext.getSource().getMinecraftServer().getConfigurationManager().getPlayerList()
+																			commandContext.getSource().getMinecraftServer().getPlayerManager().getPlayerList()
 																		)
 																)
 																.then(
-																	ServerCommandManager.argument("viewers", EntityArgumentType.method_9308())
+																	ServerCommandManager.argument("viewers", EntityArgumentType.multiplePlayer())
 																		.executes(
 																			commandContext -> method_13491(
 																					commandContext.getSource(),
-																					ParticleArgumentType.getParticleArgument(commandContext, "name"),
+																					ParticleArgumentType.method_9421(commandContext, "name"),
 																					Vec3ArgumentType.getVec3Argument(commandContext, "pos"),
 																					Vec3ArgumentType.getVec3Argument(commandContext, "delta"),
 																					FloatArgumentType.getFloat(commandContext, "speed"),
@@ -138,12 +138,20 @@ public class ParticleCommand {
 	}
 
 	private static int method_13491(
-		ServerCommandSource serverCommandSource, Particle particle, Vec3d vec3d, Vec3d vec3d2, float f, int i, boolean bl, Collection<ServerPlayerEntity> collection
+		ServerCommandSource serverCommandSource,
+		ParticleParameters particleParameters,
+		Vec3d vec3d,
+		Vec3d vec3d2,
+		float f,
+		int i,
+		boolean bl,
+		Collection<ServerPlayerEntity> collection
 	) throws CommandSyntaxException {
 		int j = 0;
 
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
-			if (serverCommandSource.getWorld().method_14166(serverPlayerEntity, particle, bl, vec3d.x, vec3d.y, vec3d.z, i, vec3d2.x, vec3d2.y, vec3d2.z, (double)f)) {
+			if (serverCommandSource.getWorld()
+				.method_14166(serverPlayerEntity, particleParameters, bl, vec3d.x, vec3d.y, vec3d.z, i, vec3d2.x, vec3d2.y, vec3d2.z, (double)f)) {
 				j++;
 			}
 		}
@@ -153,7 +161,7 @@ public class ParticleCommand {
 		} else {
 			serverCommandSource.sendFeedback(
 				new TranslatableTextComponent(
-					"commands.particle.success", Registry.PARTICLE_TYPE.getId((ParticleType<? extends Particle>)particle.getParticleType()).toString()
+					"commands.particle.success", Registry.PARTICLE_TYPE.getId((ParticleType<? extends ParticleParameters>)particleParameters.getType()).toString()
 				),
 				true
 			);

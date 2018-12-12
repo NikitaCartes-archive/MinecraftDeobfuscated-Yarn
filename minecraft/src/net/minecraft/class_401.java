@@ -5,8 +5,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.AbstractListWidget;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.realms.RealmsSimpleScrolledSelectionList;
 import net.minecraft.util.math.MathHelper;
@@ -26,17 +26,17 @@ public class class_401 extends AbstractListWidget {
 	}
 
 	@Override
-	protected boolean method_1937(int i, int j, double d, double e) {
+	protected boolean selectEntry(int i, int j, double d, double e) {
 		return this.field_2343.selectItem(i, j, d, e);
 	}
 
 	@Override
-	protected boolean isSelected(int i) {
+	protected boolean isSelectedEntry(int i) {
 		return this.field_2343.isSelectedItem(i);
 	}
 
 	@Override
-	protected void method_1936() {
+	protected void drawBackground() {
 		this.field_2343.renderBackground();
 	}
 
@@ -50,7 +50,7 @@ public class class_401 extends AbstractListWidget {
 	}
 
 	@Override
-	protected int getContentHeight() {
+	protected int getMaxScrollPosition() {
 		return this.field_2343.getMaxPosition();
 	}
 
@@ -61,17 +61,17 @@ public class class_401 extends AbstractListWidget {
 
 	@Override
 	public void draw(int i, int j, float f) {
-		if (this.field_2172) {
-			this.method_1936();
+		if (this.visible) {
+			this.drawBackground();
 			int k = this.getScrollbarPosition();
 			int l = k + 6;
 			this.clampScrollY();
 			GlStateManager.disableLighting();
 			GlStateManager.disableFog();
 			Tessellator tessellator = Tessellator.getInstance();
-			VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
+			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 			int m = this.x1 + this.width / 2 - this.getEntryWidth() / 2 + 2;
-			int n = this.y1 + 4 - (int)this.field_2175;
+			int n = this.y1 + 4 - (int)this.scrollY;
 			if (this.field_2170) {
 				this.method_1940(m, n, tessellator);
 			}
@@ -92,30 +92,30 @@ public class class_401 extends AbstractListWidget {
 			GlStateManager.disableTexture();
 			int o = this.getMaxScrollY();
 			if (o > 0) {
-				int p = (this.y2 - this.y1) * (this.y2 - this.y1) / this.getContentHeight();
+				int p = (this.y2 - this.y1) * (this.y2 - this.y1) / this.getMaxScrollPosition();
 				p = MathHelper.clamp(p, 32, this.y2 - this.y1 - 8);
-				int q = (int)this.field_2175 * (this.y2 - this.y1 - p) / o + this.y1;
+				int q = (int)this.scrollY * (this.y2 - this.y1 - p) / o + this.y1;
 				if (q < this.y1) {
 					q = this.y1;
 				}
 
-				vertexBuffer.begin(7, VertexFormats.POSITION_UV_COLOR);
-				vertexBuffer.vertex((double)k, (double)this.y2, 0.0).texture(0.0, 1.0).color(0, 0, 0, 255).next();
-				vertexBuffer.vertex((double)l, (double)this.y2, 0.0).texture(1.0, 1.0).color(0, 0, 0, 255).next();
-				vertexBuffer.vertex((double)l, (double)this.y1, 0.0).texture(1.0, 0.0).color(0, 0, 0, 255).next();
-				vertexBuffer.vertex((double)k, (double)this.y1, 0.0).texture(0.0, 0.0).color(0, 0, 0, 255).next();
+				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+				bufferBuilder.vertex((double)k, (double)this.y2, 0.0).texture(0.0, 1.0).color(0, 0, 0, 255).next();
+				bufferBuilder.vertex((double)l, (double)this.y2, 0.0).texture(1.0, 1.0).color(0, 0, 0, 255).next();
+				bufferBuilder.vertex((double)l, (double)this.y1, 0.0).texture(1.0, 0.0).color(0, 0, 0, 255).next();
+				bufferBuilder.vertex((double)k, (double)this.y1, 0.0).texture(0.0, 0.0).color(0, 0, 0, 255).next();
 				tessellator.draw();
-				vertexBuffer.begin(7, VertexFormats.POSITION_UV_COLOR);
-				vertexBuffer.vertex((double)k, (double)(q + p), 0.0).texture(0.0, 1.0).color(128, 128, 128, 255).next();
-				vertexBuffer.vertex((double)l, (double)(q + p), 0.0).texture(1.0, 1.0).color(128, 128, 128, 255).next();
-				vertexBuffer.vertex((double)l, (double)q, 0.0).texture(1.0, 0.0).color(128, 128, 128, 255).next();
-				vertexBuffer.vertex((double)k, (double)q, 0.0).texture(0.0, 0.0).color(128, 128, 128, 255).next();
+				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+				bufferBuilder.vertex((double)k, (double)(q + p), 0.0).texture(0.0, 1.0).color(128, 128, 128, 255).next();
+				bufferBuilder.vertex((double)l, (double)(q + p), 0.0).texture(1.0, 1.0).color(128, 128, 128, 255).next();
+				bufferBuilder.vertex((double)l, (double)q, 0.0).texture(1.0, 0.0).color(128, 128, 128, 255).next();
+				bufferBuilder.vertex((double)k, (double)q, 0.0).texture(0.0, 0.0).color(128, 128, 128, 255).next();
 				tessellator.draw();
-				vertexBuffer.begin(7, VertexFormats.POSITION_UV_COLOR);
-				vertexBuffer.vertex((double)k, (double)(q + p - 1), 0.0).texture(0.0, 1.0).color(192, 192, 192, 255).next();
-				vertexBuffer.vertex((double)(l - 1), (double)(q + p - 1), 0.0).texture(1.0, 1.0).color(192, 192, 192, 255).next();
-				vertexBuffer.vertex((double)(l - 1), (double)q, 0.0).texture(1.0, 0.0).color(192, 192, 192, 255).next();
-				vertexBuffer.vertex((double)k, (double)q, 0.0).texture(0.0, 0.0).color(192, 192, 192, 255).next();
+				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+				bufferBuilder.vertex((double)k, (double)(q + p - 1), 0.0).texture(0.0, 1.0).color(192, 192, 192, 255).next();
+				bufferBuilder.vertex((double)(l - 1), (double)(q + p - 1), 0.0).texture(1.0, 1.0).color(192, 192, 192, 255).next();
+				bufferBuilder.vertex((double)(l - 1), (double)q, 0.0).texture(1.0, 0.0).color(192, 192, 192, 255).next();
+				bufferBuilder.vertex((double)k, (double)q, 0.0).texture(0.0, 0.0).color(192, 192, 192, 255).next();
 				tessellator.draw();
 			}
 

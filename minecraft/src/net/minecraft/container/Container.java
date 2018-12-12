@@ -83,18 +83,6 @@ public abstract class Container {
 		return false;
 	}
 
-	@Nullable
-	public Slot getMatchingSlot(Inventory inventory, int i) {
-		for (int j = 0; j < this.slotList.size(); j++) {
-			Slot slot = (Slot)this.slotList.get(j);
-			if (slot.matches(inventory, i)) {
-				return slot;
-			}
-		}
-
-		return null;
-	}
-
 	public Slot getSlot(int i) {
 		return (Slot)this.slotList.get(i);
 	}
@@ -104,10 +92,10 @@ public abstract class Container {
 		return slot != null ? slot.getStack() : ItemStack.EMPTY;
 	}
 
-	public ItemStack onSlotClick(int i, int j, ActionTypeSlot actionTypeSlot, PlayerEntity playerEntity) {
+	public ItemStack method_7593(int i, int j, SlotActionType slotActionType, PlayerEntity playerEntity) {
 		ItemStack itemStack = ItemStack.EMPTY;
 		PlayerInventory playerInventory = playerEntity.inventory;
-		if (actionTypeSlot == ActionTypeSlot.DRAG) {
+		if (slotActionType == SlotActionType.field_7789) {
 			int k = this.field_7759;
 			this.field_7759 = method_7594(j);
 			if ((k != 1 || this.field_7759 != 2) && k != this.field_7759) {
@@ -167,7 +155,7 @@ public abstract class Container {
 			}
 		} else if (this.field_7759 != 0) {
 			this.method_7605();
-		} else if ((actionTypeSlot == ActionTypeSlot.CLICK || actionTypeSlot == ActionTypeSlot.SHIFT_CLICK) && (j == 0 || j == 1)) {
+		} else if ((slotActionType == SlotActionType.field_7790 || slotActionType == SlotActionType.field_7794) && (j == 0 || j == 1)) {
 			if (i == -999) {
 				if (!playerInventory.getCursorStack().isEmpty()) {
 					if (j == 0) {
@@ -179,7 +167,7 @@ public abstract class Container {
 						playerEntity.dropItem(playerInventory.getCursorStack().split(1), true);
 					}
 				}
-			} else if (actionTypeSlot == ActionTypeSlot.SHIFT_CLICK) {
+			} else if (slotActionType == SlotActionType.field_7794) {
 				if (i < 0) {
 					return ItemStack.EMPTY;
 				}
@@ -265,7 +253,7 @@ public abstract class Container {
 					slot3.markDirty();
 				}
 			}
-		} else if (actionTypeSlot == ActionTypeSlot.HOTBAR_KEY && j >= 0 && j < 9) {
+		} else if (slotActionType == SlotActionType.field_7791 && j >= 0 && j < 9) {
 			Slot slot3 = (Slot)this.slotList.get(i);
 			ItemStack itemStack3x = playerInventory.getInvStack(j);
 			ItemStack itemStack2x = slot3.getStack();
@@ -302,21 +290,21 @@ public abstract class Container {
 					}
 				}
 			}
-		} else if (actionTypeSlot == ActionTypeSlot.MIDDLE_CLICK && playerEntity.abilities.creativeMode && playerInventory.getCursorStack().isEmpty() && i >= 0) {
+		} else if (slotActionType == SlotActionType.field_7796 && playerEntity.abilities.creativeMode && playerInventory.getCursorStack().isEmpty() && i >= 0) {
 			Slot slot3 = (Slot)this.slotList.get(i);
 			if (slot3 != null && slot3.hasStack()) {
 				ItemStack itemStack3x = slot3.getStack().copy();
 				itemStack3x.setAmount(itemStack3x.getMaxAmount());
 				playerInventory.setCursorStack(itemStack3x);
 			}
-		} else if (actionTypeSlot == ActionTypeSlot.DROP && playerInventory.getCursorStack().isEmpty() && i >= 0) {
+		} else if (slotActionType == SlotActionType.field_7795 && playerInventory.getCursorStack().isEmpty() && i >= 0) {
 			Slot slot3 = (Slot)this.slotList.get(i);
 			if (slot3 != null && slot3.hasStack() && slot3.canTakeItems(playerEntity)) {
 				ItemStack itemStack3x = slot3.takeStack(j == 0 ? 1 : slot3.getStack().getAmount());
 				slot3.onTakeItem(playerEntity, itemStack3x);
 				playerEntity.dropItem(itemStack3x, true);
 			}
-		} else if (actionTypeSlot == ActionTypeSlot.DOUBLE_CLICK && i >= 0) {
+		} else if (slotActionType == SlotActionType.field_7793 && i >= 0) {
 			Slot slot3 = (Slot)this.slotList.get(i);
 			ItemStack itemStack3x = playerInventory.getCursorStack();
 			if (!itemStack3x.isEmpty() && (slot3 == null || !slot3.hasStack() || !slot3.canTakeItems(playerEntity))) {
@@ -558,12 +546,12 @@ public abstract class Container {
 		}
 	}
 
-	protected void method_7599(World world, PlayerEntity playerEntity, Inventory inventory, CraftingResultInventory craftingResultInventory) {
-		if (!world.isRemote) {
+	protected void onCraftingContentChanged(World world, PlayerEntity playerEntity, Inventory inventory, CraftingResultInventory craftingResultInventory) {
+		if (!world.isClient) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)playerEntity;
 			ItemStack itemStack = ItemStack.EMPTY;
 			Recipe recipe = world.getServer().getRecipeManager().get(inventory, world);
-			if (craftingResultInventory.method_7665(world, serverPlayerEntity, recipe) && recipe != null) {
+			if (craftingResultInventory.shouldCraftRecipe(world, serverPlayerEntity, recipe) && recipe != null) {
 				itemStack = recipe.craft(inventory);
 			}
 

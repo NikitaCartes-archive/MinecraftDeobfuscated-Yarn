@@ -35,8 +35,8 @@ public class DedicatedServerGui extends JComponent {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final MinecraftDedicatedServer server;
 	private Thread consoleUpdateThread;
-	private final Collection<Runnable> field_16855 = Lists.<Runnable>newArrayList();
-	private final AtomicBoolean field_16854 = new AtomicBoolean();
+	private final Collection<Runnable> stopTasks = Lists.<Runnable>newArrayList();
+	private final AtomicBoolean stopped = new AtomicBoolean();
 
 	public static DedicatedServerGui create(MinecraftDedicatedServer minecraftDedicatedServer) {
 		try {
@@ -53,14 +53,14 @@ public class DedicatedServerGui extends JComponent {
 		jFrame.setVisible(true);
 		jFrame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent windowEvent) {
-				if (!dedicatedServerGui.field_16854.getAndSet(true)) {
+				if (!dedicatedServerGui.stopped.getAndSet(true)) {
 					jFrame.setTitle("Minecraft server - shutting down!");
 					minecraftDedicatedServer.stop(true);
-					dedicatedServerGui.method_16747();
+					dedicatedServerGui.runStopTasks();
 				}
 			}
 		});
-		dedicatedServerGui.method_16746(jFrame::dispose);
+		dedicatedServerGui.addStopTask(jFrame::dispose);
 		dedicatedServerGui.start();
 		return dedicatedServerGui;
 	}
@@ -71,21 +71,21 @@ public class DedicatedServerGui extends JComponent {
 		this.setLayout(new BorderLayout());
 
 		try {
-			this.add(this.method_13973(), "Center");
+			this.add(this.createLogPanel(), "Center");
 			this.add(this.createStatsPanel(), "West");
 		} catch (Exception var3) {
 			LOGGER.error("Couldn't build server GUI", (Throwable)var3);
 		}
 	}
 
-	public void method_16746(Runnable runnable) {
-		this.field_16855.add(runnable);
+	public void addStopTask(Runnable runnable) {
+		this.stopTasks.add(runnable);
 	}
 
 	private JComponent createStatsPanel() throws Exception {
 		JPanel jPanel = new JPanel(new BorderLayout());
 		PlayerStatsGui playerStatsGui = new PlayerStatsGui(this.server);
-		this.field_16855.add(playerStatsGui::method_16751);
+		this.stopTasks.add(playerStatsGui::stop);
 		jPanel.add(playerStatsGui, "North");
 		jPanel.add(this.createPlaysPanel(), "Center");
 		jPanel.setBorder(new TitledBorder(new EtchedBorder(), "Stats"));
@@ -99,7 +99,7 @@ public class DedicatedServerGui extends JComponent {
 		return jScrollPane;
 	}
 
-	private JComponent method_13973() throws Exception {
+	private JComponent createLogPanel() throws Exception {
 		JPanel jPanel = new JPanel(new BorderLayout());
 		JTextArea jTextArea = new JTextArea();
 		JScrollPane jScrollPane = new JScrollPane(jTextArea, 22, 30);
@@ -109,7 +109,7 @@ public class DedicatedServerGui extends JComponent {
 		jTextField.addActionListener(actionEvent -> {
 			String string = jTextField.getText().trim();
 			if (!string.isEmpty()) {
-				this.server.method_13947(string, this.server.method_3739());
+				this.server.enqueueCommand(string, this.server.getCommandSource());
 			}
 
 			jTextField.setText("");
@@ -136,14 +136,14 @@ public class DedicatedServerGui extends JComponent {
 		this.consoleUpdateThread.start();
 	}
 
-	public void method_16750() {
-		if (!this.field_16854.getAndSet(true)) {
-			this.method_16747();
+	public void stop() {
+		if (!this.stopped.getAndSet(true)) {
+			this.runStopTasks();
 		}
 	}
 
-	private void method_16747() {
-		this.field_16855.forEach(Runnable::run);
+	private void runStopTasks() {
+		this.stopTasks.forEach(Runnable::run);
 	}
 
 	public void appendToConsole(JTextArea jTextArea, JScrollPane jScrollPane, String string) {

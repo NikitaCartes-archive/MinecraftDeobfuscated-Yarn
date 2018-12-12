@@ -51,7 +51,7 @@ public class VertexFormatElement {
 	}
 
 	public final int getSize() {
-		return this.format.getId() * this.count;
+		return this.format.getSize() * this.count;
 	}
 
 	public final boolean isPosition() {
@@ -92,18 +92,18 @@ public class VertexFormatElement {
 		UNSIGNED_INT(4, "Unsigned Int", 5125),
 		INT(4, "Int", 5124);
 
-		private final int id;
+		private final int size;
 		private final String name;
 		private final int glId;
 
 		private Format(int j, String string2, int k) {
-			this.id = j;
+			this.size = j;
 			this.name = string2;
 			this.glId = k;
 		}
 
-		public int getId() {
-			return this.id;
+		public int getSize() {
+			return this.size;
 		}
 
 		public String getName() {

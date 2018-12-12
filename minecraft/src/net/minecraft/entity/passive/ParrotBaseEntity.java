@@ -17,7 +17,7 @@ public abstract class ParrotBaseEntity extends TameableEntity {
 		compoundTag.putString("id", this.getSavedEntityId());
 		this.toTag(compoundTag);
 		if (playerEntity.method_7298(compoundTag)) {
-			this.world.method_8463(this);
+			this.world.removeEntity(this);
 			return true;
 		} else {
 			return false;

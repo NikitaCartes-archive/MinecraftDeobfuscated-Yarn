@@ -10,7 +10,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
 
 public class CoralTreeFeature extends CoralFeature {
 	public CoralTreeFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
@@ -27,7 +26,7 @@ public class CoralTreeFeature extends CoralFeature {
 				return true;
 			}
 
-			mutable.method_10098(Direction.UP);
+			mutable.setOffset(Direction.UP);
 		}
 
 		BlockPos blockPos2 = mutable.toImmutable();
@@ -37,15 +36,15 @@ public class CoralTreeFeature extends CoralFeature {
 
 		for (Direction direction : list.subList(0, k)) {
 			mutable.set(blockPos2);
-			mutable.method_10098(direction);
+			mutable.setOffset(direction);
 			int l = random.nextInt(5) + 2;
 			int m = 0;
 
 			for (int n = 0; n < l && this.method_12864(iWorld, random, mutable, blockState); n++) {
 				m++;
-				mutable.method_10098(Direction.UP);
+				mutable.setOffset(Direction.UP);
 				if (n == 0 || m >= 2 && random.nextFloat() < 0.25F) {
-					mutable.method_10098(direction);
+					mutable.setOffset(direction);
 					m = 0;
 				}
 			}

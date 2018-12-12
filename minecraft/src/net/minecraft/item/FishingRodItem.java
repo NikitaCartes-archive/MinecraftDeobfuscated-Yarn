@@ -44,7 +44,7 @@ public class FishingRodItem extends Item {
 			world.playSound(
 				null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_14596, SoundCategory.field_15254, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F)
 			);
-			if (!world.isRemote) {
+			if (!world.isClient) {
 				FishHookEntity fishHookEntity = new FishHookEntity(world, playerEntity);
 				int j = EnchantmentHelper.getLure(itemStack);
 				if (j > 0) {

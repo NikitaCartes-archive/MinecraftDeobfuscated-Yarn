@@ -4,11 +4,9 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1361;
-import net.minecraft.class_1367;
 import net.minecraft.class_1374;
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
-import net.minecraft.class_3730;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -17,12 +15,14 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.control.JumpControl;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.pathing.Path;
@@ -75,7 +75,7 @@ public class RabbitEntity extends AnimalEntity {
 		this.goalSelector.add(1, new SwimGoal(this));
 		this.goalSelector.add(1, new RabbitEntity.class_1469(this, 2.2));
 		this.goalSelector.add(2, new AnimalMateGoal(this, 0.8));
-		this.goalSelector.add(3, new TemptGoal(this, 1.0, Ingredient.ofItems(Items.field_8179, Items.field_8071, Blocks.field_10182), false));
+		this.goalSelector.add(3, new TemptGoal(this, 1.0, Ingredient.method_8091(Items.field_8179, Items.field_8071, Blocks.field_10182), false));
 		this.goalSelector.add(4, new RabbitEntity.RabbitFleeGoal(this, PlayerEntity.class, 8.0F, 2.2, 2.2));
 		this.goalSelector.add(4, new RabbitEntity.RabbitFleeGoal(this, WolfEntity.class, 10.0F, 2.2, 2.2));
 		this.goalSelector.add(4, new RabbitEntity.RabbitFleeGoal(this, HostileEntity.class, 4.0F, 2.2, 2.2));
@@ -86,7 +86,7 @@ public class RabbitEntity extends AnimalEntity {
 
 	@Override
 	protected float method_6106() {
-		if (!this.field_5976 && (!this.moveControl.method_6241() || !(this.moveControl.method_6235() > this.y + 0.5))) {
+		if (!this.horizontalCollision && (!this.moveControl.method_6241() || !(this.moveControl.method_6235() > this.y + 0.5))) {
 			Path path = this.navigation.method_6345();
 			if (path != null && path.getCurrentNodeIndex() < path.getPathLength()) {
 				Vec3d vec3d = path.getNodePosition(this);
@@ -112,8 +112,8 @@ public class RabbitEntity extends AnimalEntity {
 			}
 		}
 
-		if (!this.world.isRemote) {
-			this.world.method_8421(this, (byte)1);
+		if (!this.world.isClient) {
+			this.world.summonParticle(this, (byte)1);
 		}
 	}
 
@@ -297,7 +297,7 @@ public class RabbitEntity extends AnimalEntity {
 		return this.isInvulnerableTo(damageSource) ? false : super.damage(damageSource, f);
 	}
 
-	private boolean method_6614(Item item) {
+	private boolean isBreedingItem(Item item) {
 		return item == Items.field_8179 || item == Items.field_8071 || item == Blocks.field_10182.getItem();
 	}
 
@@ -317,8 +317,8 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean method_6481(ItemStack itemStack) {
-		return this.method_6614(itemStack.getItem());
+	public boolean isBreedingItem(ItemStack itemStack) {
+		return this.isBreedingItem(itemStack.getItem());
 	}
 
 	public int getRabbitType() {
@@ -342,10 +342,10 @@ public class RabbitEntity extends AnimalEntity {
 
 	@Nullable
 	@Override
-	public EntityData method_5943(
-		IWorld iWorld, LocalDifficulty localDifficulty, class_3730 arg, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	public EntityData prepareEntityData(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.method_5943(iWorld, localDifficulty, arg, entityData, compoundTag);
+		entityData = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		int i = this.method_6622(iWorld);
 		boolean bl = false;
 		if (entityData instanceof RabbitEntity.class_1466) {
@@ -376,13 +376,13 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean method_5979(IWorld iWorld, class_3730 arg) {
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
 		int i = MathHelper.floor(this.x);
 		int j = MathHelper.floor(this.getBoundingBox().minY);
 		int k = MathHelper.floor(this.z);
 		BlockPos blockPos = new BlockPos(i, j, k);
 		Block block = iWorld.getBlockState(blockPos.down()).getBlock();
-		return block != Blocks.field_10479 && block != Blocks.field_10477 && block != Blocks.field_10102 ? super.method_5979(iWorld, arg) : true;
+		return block != Blocks.field_10479 && block != Blocks.field_10477 && block != Blocks.field_10102 ? super.canSpawn(iWorld, spawnType) : true;
 	}
 
 	private boolean method_6607() {
@@ -512,7 +512,7 @@ public class RabbitEntity extends AnimalEntity {
 		}
 	}
 
-	static class class_1470 extends class_1367 {
+	static class class_1470 extends MoveToTargetPosGoal {
 		private final RabbitEntity field_6863;
 		private boolean field_6862;
 		private boolean field_6861;
@@ -524,7 +524,7 @@ public class RabbitEntity extends AnimalEntity {
 
 		@Override
 		public boolean canStart() {
-			if (this.field_6518 <= 0) {
+			if (this.counter <= 0) {
 				if (!this.field_6863.world.getGameRules().getBoolean("mobGriefing")) {
 					return false;
 				}
@@ -548,15 +548,11 @@ public class RabbitEntity extends AnimalEntity {
 			this.field_6863
 				.getLookControl()
 				.lookAt(
-					(double)this.field_6512.getX() + 0.5,
-					(double)(this.field_6512.getY() + 1),
-					(double)this.field_6512.getZ() + 0.5,
-					10.0F,
-					(float)this.field_6863.method_5978()
+					(double)this.targetPos.getX() + 0.5, (double)(this.targetPos.getY() + 1), (double)this.targetPos.getZ() + 0.5, 10.0F, (float)this.field_6863.method_5978()
 				);
-			if (this.method_6295()) {
+			if (this.hasReached()) {
 				World world = this.field_6863.world;
-				BlockPos blockPos = this.field_6512.up();
+				BlockPos blockPos = this.targetPos.up();
 				BlockState blockState = world.getBlockState(blockPos);
 				Block block = blockState.getBlock();
 				if (this.field_6861 && block instanceof CarrotsBlock) {
@@ -573,12 +569,12 @@ public class RabbitEntity extends AnimalEntity {
 				}
 
 				this.field_6861 = false;
-				this.field_6518 = 10;
+				this.counter = 10;
 			}
 		}
 
 		@Override
-		protected boolean method_6296(ViewableWorld viewableWorld, BlockPos blockPos) {
+		protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
 			Block block = viewableWorld.getBlockState(blockPos).getBlock();
 			if (block == Blocks.field_10362 && this.field_6862 && !this.field_6861) {
 				blockPos = blockPos.up();

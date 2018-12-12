@@ -19,7 +19,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 
 public class WallSignBlock extends SignBlock {
-	public static final DirectionProperty field_11726 = HorizontalFacingBlock.field_11177;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
 	private static final Map<Direction, VoxelShape> field_11727 = Maps.newEnumMap(
 		ImmutableMap.of(
 			Direction.NORTH,
@@ -35,7 +35,7 @@ public class WallSignBlock extends SignBlock {
 
 	public WallSignBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11726, Direction.NORTH).with(field_11491, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(field_11491, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -45,12 +45,12 @@ public class WallSignBlock extends SignBlock {
 
 	@Override
 	public VoxelShape getBoundingShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return (VoxelShape)field_11727.get(blockState.get(field_11726));
+		return (VoxelShape)field_11727.get(blockState.get(FACING));
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		return viewableWorld.getBlockState(blockPos.method_10093(((Direction)blockState.get(field_11726)).getOpposite())).getMaterial().method_15799();
+		return viewableWorld.getBlockState(blockPos.offset(((Direction)blockState.get(FACING)).getOpposite())).getMaterial().method_15799();
 	}
 
 	@Nullable
@@ -60,12 +60,12 @@ public class WallSignBlock extends SignBlock {
 		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getPos());
 		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getPos();
-		Direction[] directions = itemPlacementContext.method_7718();
+		Direction[] directions = itemPlacementContext.getPlacementFacings();
 
 		for (Direction direction : directions) {
 			if (direction.getAxis().isHorizontal()) {
 				Direction direction2 = direction.getOpposite();
-				blockState = blockState.with(field_11726, direction2);
+				blockState = blockState.with(FACING, direction2);
 				if (blockState.canPlaceAt(viewableWorld, blockPos)) {
 					return blockState.with(field_11491, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 				}
@@ -76,24 +76,26 @@ public class WallSignBlock extends SignBlock {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-		return direction.getOpposite() == blockState.get(field_11726) && !blockState.canPlaceAt(iWorld, blockPos)
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
+		return direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos)
 			? Blocks.field_10124.getDefaultState()
-			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
 	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
-		return blockState.with(field_11726, rotation.method_10503(blockState.get(field_11726)));
+		return blockState.with(FACING, rotation.method_10503(blockState.get(FACING)));
 	}
 
 	@Override
 	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.method_10345(blockState.get(field_11726)));
+		return blockState.applyRotation(mirror.getRotation(blockState.get(FACING)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_11726, field_11491);
+		builder.with(FACING, field_11491);
 	}
 }

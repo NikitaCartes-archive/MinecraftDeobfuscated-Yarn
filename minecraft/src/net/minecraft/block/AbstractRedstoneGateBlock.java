@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -52,12 +51,12 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public int method_9603(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		return blockState.method_11597(blockView, blockPos, direction);
+	public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+		return blockState.getWeakRedstonePower(blockView, blockPos, direction);
 	}
 
 	@Override
-	public int method_9524(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
 		if (!(Boolean)blockState.get(field_10911)) {
 			return 0;
 		} else {
@@ -75,7 +74,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 			world.clearBlockState(blockPos);
 
 			for (Direction direction : Direction.values()) {
-				world.updateNeighborsAlways(blockPos.method_10093(direction), this);
+				world.updateNeighborsAlways(blockPos.offset(direction), this);
 			}
 		}
 	}
@@ -107,8 +106,8 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 
 	protected int method_9991(World world, BlockPos blockPos, BlockState blockState) {
 		Direction direction = blockState.get(field_11177);
-		BlockPos blockPos2 = blockPos.method_10093(direction);
-		int i = world.method_8499(blockPos2, direction);
+		BlockPos blockPos2 = blockPos.offset(direction);
+		int i = world.getEmittedRedstonePower(blockPos2, direction);
 		if (i >= 15) {
 			return i;
 		} else {
@@ -122,19 +121,20 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 		Direction direction2 = direction.rotateYClockwise();
 		Direction direction3 = direction.rotateYCounterclockwise();
 		return Math.max(
-			this.method_9995(viewableWorld, blockPos.method_10093(direction2), direction2),
-			this.method_9995(viewableWorld, blockPos.method_10093(direction3), direction3)
+			this.getInputLevel(viewableWorld, blockPos.offset(direction2), direction2), this.getInputLevel(viewableWorld, blockPos.offset(direction3), direction3)
 		);
 	}
 
-	protected int method_9995(ViewableWorld viewableWorld, BlockPos blockPos, Direction direction) {
+	protected int getInputLevel(ViewableWorld viewableWorld, BlockPos blockPos, Direction direction) {
 		BlockState blockState = viewableWorld.getBlockState(blockPos);
 		Block block = blockState.getBlock();
 		if (this.isValidInput(blockState)) {
 			if (block == Blocks.field_10002) {
 				return 15;
 			} else {
-				return block == Blocks.field_10091 ? (Integer)blockState.get(RedstoneWireBlock.field_11432) : viewableWorld.method_8596(blockPos, direction);
+				return block == Blocks.field_10091
+					? (Integer)blockState.get(RedstoneWireBlock.field_11432)
+					: viewableWorld.getEmittedStrongRedstonePower(blockPos, direction);
 			}
 		} else {
 			return 0;
@@ -148,7 +148,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(field_11177, itemPlacementContext.method_8042().getOpposite());
+		return this.getDefaultState().with(field_11177, itemPlacementContext.getPlayerHorizontalFacing().getOpposite());
 	}
 
 	@Override
@@ -177,9 +177,9 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 
 	protected void method_9997(World world, BlockPos blockPos, BlockState blockState) {
 		Direction direction = blockState.get(field_11177);
-		BlockPos blockPos2 = blockPos.method_10093(direction.getOpposite());
+		BlockPos blockPos2 = blockPos.offset(direction.getOpposite());
 		world.updateNeighbor(blockPos2, this, blockPos);
-		world.method_8508(blockPos2, this, direction);
+		world.updateNeighborsExcept(blockPos2, this, direction);
 	}
 
 	protected boolean isValidInput(BlockState blockState) {
@@ -196,7 +196,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 
 	public boolean method_9988(BlockView blockView, BlockPos blockPos, BlockState blockState) {
 		Direction direction = ((Direction)blockState.get(field_11177)).getOpposite();
-		BlockState blockState2 = blockView.getBlockState(blockPos.method_10093(direction));
+		BlockState blockState2 = blockView.getBlockState(blockPos.offset(direction));
 		return method_9999(blockState2) && blockState2.get(field_11177) != direction;
 	}
 

@@ -82,7 +82,7 @@ public class FleeEntityGoal<T extends Entity> extends Goal {
 
 	@Override
 	public void start() {
-		this.field_6394.method_6334(this.field_6387, this.field_6385);
+		this.field_6394.startMovingAlong(this.field_6387, this.field_6385);
 	}
 
 	@Override

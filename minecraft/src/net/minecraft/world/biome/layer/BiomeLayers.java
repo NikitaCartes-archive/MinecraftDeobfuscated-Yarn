@@ -19,7 +19,7 @@ import net.minecraft.class_3657;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
-import net.minecraft.world.gen.chunk.OverworldChunkGeneratorSettings;
+import net.minecraft.world.gen.chunk.OverworldChunkGeneratorConfig;
 import net.minecraft.world.level.LevelGeneratorType;
 
 public class BiomeLayers {
@@ -47,7 +47,7 @@ public class BiomeLayers {
 	}
 
 	public static <T extends LayerSampler, C extends LayerSampleContext<T>> ImmutableList<LayerFactory<T>> build(
-		LevelGeneratorType levelGeneratorType, OverworldChunkGeneratorSettings overworldChunkGeneratorSettings, LongFunction<C> longFunction
+		LevelGeneratorType levelGeneratorType, OverworldChunkGeneratorConfig overworldChunkGeneratorConfig, LongFunction<C> longFunction
 	) {
 		LayerFactory<T> layerFactory = ContinentLayer.field_16103.create((LayerSampleContext<T>)longFunction.apply(1L));
 		layerFactory = ScaleLayer.field_16198.create((LayerSampleContext<T>)longFunction.apply(2000L), layerFactory);
@@ -72,9 +72,9 @@ public class BiomeLayers {
 		layerFactory = stack(1000L, ScaleLayer.field_16196, layerFactory, 0, longFunction);
 		int i = 4;
 		int j = i;
-		if (overworldChunkGeneratorSettings != null) {
-			i = overworldChunkGeneratorSettings.method_12614();
-			j = overworldChunkGeneratorSettings.method_12616();
+		if (overworldChunkGeneratorConfig != null) {
+			i = overworldChunkGeneratorConfig.method_12614();
+			j = overworldChunkGeneratorConfig.method_12616();
 		}
 
 		if (levelGeneratorType == LevelGeneratorType.LARGE_BIOMES) {
@@ -83,7 +83,7 @@ public class BiomeLayers {
 
 		LayerFactory<T> layerFactory3 = stack(1000L, ScaleLayer.field_16196, layerFactory, 0, longFunction);
 		layerFactory3 = class_3650.field_16157.create((LayerSampleContext)longFunction.apply(100L), layerFactory3);
-		LayerFactory<T> layerFactory4 = new class_3640(levelGeneratorType, overworldChunkGeneratorSettings)
+		LayerFactory<T> layerFactory4 = new class_3640(levelGeneratorType, overworldChunkGeneratorConfig)
 			.create((LayerSampleContext<T>)longFunction.apply(200L), layerFactory);
 		layerFactory4 = BambooJungleReplaceLayer.INSTANCE.create((LayerSampleContext)longFunction.apply(1001L), layerFactory4);
 		layerFactory4 = stack(1000L, ScaleLayer.field_16196, layerFactory4, 2, longFunction);
@@ -114,10 +114,10 @@ public class BiomeLayers {
 		return ImmutableList.of(layerFactory4, layerFactory7, layerFactory4);
 	}
 
-	public static BiomeLayerSampler[] build(long l, LevelGeneratorType levelGeneratorType, OverworldChunkGeneratorSettings overworldChunkGeneratorSettings) {
+	public static BiomeLayerSampler[] build(long l, LevelGeneratorType levelGeneratorType, OverworldChunkGeneratorConfig overworldChunkGeneratorConfig) {
 		int i = 25;
 		ImmutableList<LayerFactory<CachingLayerSampler>> immutableList = build(
-			levelGeneratorType, overworldChunkGeneratorSettings, m -> new CachingLayerContext(25, l, m)
+			levelGeneratorType, overworldChunkGeneratorConfig, m -> new CachingLayerContext(25, l, m)
 		);
 		BiomeLayerSampler biomeLayerSampler = new BiomeLayerSampler((LayerFactory<CachingLayerSampler>)immutableList.get(0));
 		BiomeLayerSampler biomeLayerSampler2 = new BiomeLayerSampler((LayerFactory<CachingLayerSampler>)immutableList.get(1));

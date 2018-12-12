@@ -11,7 +11,7 @@ import java.util.Set;
 import net.minecraft.datafixers.TypeReferences;
 
 public class EntityHealthFix extends DataFix {
-	private static final Set<String> entities = Sets.<String>newHashSet(
+	private static final Set<String> ENTITIES = Sets.<String>newHashSet(
 		"ArmorStand",
 		"Bat",
 		"Blaze",

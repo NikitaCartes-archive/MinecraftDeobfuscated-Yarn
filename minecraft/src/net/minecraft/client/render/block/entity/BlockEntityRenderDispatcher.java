@@ -7,10 +7,10 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_308;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BedBlockEntity;
+import net.minecraft.block.entity.BellBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.ConduitBlockEntity;
@@ -25,13 +25,14 @@ import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.entity.model.ShulkerEntityModel;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.HitResult;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportElement;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -70,6 +71,7 @@ public class BlockEntityRenderDispatcher {
 		this.renderers.put(ShulkerBoxBlockEntity.class, new ShulkerBoxBlockEntityRenderer(new ShulkerEntityModel()));
 		this.renderers.put(BedBlockEntity.class, new BedBlockEntityRenderer());
 		this.renderers.put(ConduitBlockEntity.class, new ConduitBlockEntityRenderer());
+		this.renderers.put(BellBlockEntity.class, new BellBlockEntityRenderer());
 
 		for (BlockEntityRenderer<?> blockEntityRenderer : this.renderers.values()) {
 			blockEntityRenderer.setRenderManager(this);
@@ -109,7 +111,7 @@ public class BlockEntityRenderDispatcher {
 
 	public void render(BlockEntity blockEntity, float f, int i) {
 		if (blockEntity.getSquaredDistance(this.cameraX, this.cameraY, this.cameraZ) < blockEntity.getSquaredRenderDistance()) {
-			class_308.method_1452();
+			GuiLighting.enable();
 			int j = this.world.getLightmapIndex(blockEntity.getPos(), 0);
 			int k = j % 65536;
 			int l = j / 65536;
@@ -141,8 +143,8 @@ public class BlockEntityRenderDispatcher {
 				blockEntityRenderer.render(blockEntity, d, e, f, g, i);
 			} catch (Throwable var15) {
 				CrashReport crashReport = CrashReport.create(var15, "Rendering Block Entity");
-				CrashReportElement crashReportElement = crashReport.addElement("Block Entity Details");
-				blockEntity.populateCrashReport(crashReportElement);
+				CrashReportSection crashReportSection = crashReport.method_562("Block Entity Details");
+				blockEntity.method_11003(crashReportSection);
 				throw new CrashException(crashReport);
 			}
 		}

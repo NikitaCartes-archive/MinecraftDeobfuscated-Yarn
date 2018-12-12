@@ -8,7 +8,7 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.particle.DustParticle;
+import net.minecraft.particle.DustParticleParameters;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.Hand;
@@ -42,11 +42,11 @@ public class RedstoneOreBlock extends Block {
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
 		method_10441(blockState, world, blockPos);
-		return super.method_9534(blockState, world, blockPos, playerEntity, hand, direction, f, g, h);
+		return super.activate(blockState, world, blockPos, playerEntity, hand, direction, f, g, h);
 	}
 
 	private static void method_10441(BlockState blockState, World world, BlockPos blockPos) {
@@ -85,13 +85,13 @@ public class RedstoneOreBlock extends Block {
 		Random random = world.random;
 
 		for (Direction direction : Direction.values()) {
-			BlockPos blockPos2 = blockPos.method_10093(direction);
-			if (!world.getBlockState(blockPos2).method_11598(world, blockPos2)) {
+			BlockPos blockPos2 = blockPos.offset(direction);
+			if (!world.getBlockState(blockPos2).isFullOpaque(world, blockPos2)) {
 				Direction.Axis axis = direction.getAxis();
 				double e = axis == Direction.Axis.X ? 0.5 + 0.5625 * (double)direction.getOffsetX() : (double)random.nextFloat();
 				double f = axis == Direction.Axis.Y ? 0.5 + 0.5625 * (double)direction.getOffsetY() : (double)random.nextFloat();
 				double g = axis == Direction.Axis.Z ? 0.5 + 0.5625 * (double)direction.getOffsetZ() : (double)random.nextFloat();
-				world.method_8406(DustParticle.field_11188, (double)blockPos.getX() + e, (double)blockPos.getY() + f, (double)blockPos.getZ() + g, 0.0, 0.0, 0.0);
+				world.method_8406(DustParticleParameters.RED, (double)blockPos.getX() + e, (double)blockPos.getY() + f, (double)blockPos.getZ() + g, 0.0, 0.0, 0.0);
 			}
 		}
 	}

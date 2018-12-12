@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.advancement.ServerAdvancementManager;
+import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.entity.Entity;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 
 public class ChanneledLightningCriterion implements Criterion<ChanneledLightningCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("channeled_lightning");
-	private final Map<ServerAdvancementManager, ChanneledLightningCriterion.class_2003> field_9500 = Maps.<ServerAdvancementManager, ChanneledLightningCriterion.class_2003>newHashMap();
+	private final Map<PlayerAdvancementTracker, ChanneledLightningCriterion.class_2003> field_9500 = Maps.<PlayerAdvancementTracker, ChanneledLightningCriterion.class_2003>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -26,34 +26,34 @@ public class ChanneledLightningCriterion implements Criterion<ChanneledLightning
 	}
 
 	@Override
-	public void addCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions> conditionsContainer
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions> conditionsContainer
 	) {
-		ChanneledLightningCriterion.class_2003 lv = (ChanneledLightningCriterion.class_2003)this.field_9500.get(serverAdvancementManager);
+		ChanneledLightningCriterion.class_2003 lv = (ChanneledLightningCriterion.class_2003)this.field_9500.get(playerAdvancementTracker);
 		if (lv == null) {
-			lv = new ChanneledLightningCriterion.class_2003(serverAdvancementManager);
-			this.field_9500.put(serverAdvancementManager, lv);
+			lv = new ChanneledLightningCriterion.class_2003(playerAdvancementTracker);
+			this.field_9500.put(playerAdvancementTracker, lv);
 		}
 
 		lv.method_8804(conditionsContainer);
 	}
 
 	@Override
-	public void removeCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions> conditionsContainer
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions> conditionsContainer
 	) {
-		ChanneledLightningCriterion.class_2003 lv = (ChanneledLightningCriterion.class_2003)this.field_9500.get(serverAdvancementManager);
+		ChanneledLightningCriterion.class_2003 lv = (ChanneledLightningCriterion.class_2003)this.field_9500.get(playerAdvancementTracker);
 		if (lv != null) {
 			lv.method_8807(conditionsContainer);
 			if (lv.method_8805()) {
-				this.field_9500.remove(serverAdvancementManager);
+				this.field_9500.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void removePlayer(ServerAdvancementManager serverAdvancementManager) {
-		this.field_9500.remove(serverAdvancementManager);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.field_9500.remove(playerAdvancementTracker);
 	}
 
 	public ChanneledLightningCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -100,7 +100,7 @@ public class ChanneledLightningCriterion implements Criterion<ChanneledLightning
 		}
 
 		@Override
-		public JsonElement method_807() {
+		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("victims", EntityPredicate.serializeAll(this.victims));
 			return jsonObject;
@@ -108,11 +108,11 @@ public class ChanneledLightningCriterion implements Criterion<ChanneledLightning
 	}
 
 	static class class_2003 {
-		private final ServerAdvancementManager field_9502;
+		private final PlayerAdvancementTracker field_9502;
 		private final Set<Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions>> field_9501 = Sets.<Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions>>newHashSet();
 
-		public class_2003(ServerAdvancementManager serverAdvancementManager) {
-			this.field_9502 = serverAdvancementManager;
+		public class_2003(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.field_9502 = playerAdvancementTracker;
 		}
 
 		public boolean method_8805() {

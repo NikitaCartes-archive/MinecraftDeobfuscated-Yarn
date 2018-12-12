@@ -26,9 +26,10 @@ public class class_1346 extends Goal {
 		boolean bl = false;
 
 		for (BoatEntity boatEntity : list) {
-			if (boatEntity.method_5642() != null
+			if (boatEntity.getPrimaryPassenger() != null
 				&& (
-					MathHelper.abs(((LivingEntity)boatEntity.method_5642()).field_6212) > 0.0F || MathHelper.abs(((LivingEntity)boatEntity.method_5642()).field_6250) > 0.0F
+					MathHelper.abs(((LivingEntity)boatEntity.getPrimaryPassenger()).field_6212) > 0.0F
+						|| MathHelper.abs(((LivingEntity)boatEntity.getPrimaryPassenger()).field_6250) > 0.0F
 				)) {
 				bl = true;
 				break;
@@ -53,8 +54,8 @@ public class class_1346 extends Goal {
 	@Override
 	public void start() {
 		for (BoatEntity boatEntity : this.field_6426.world.getVisibleEntities(BoatEntity.class, this.field_6426.getBoundingBox().expand(5.0))) {
-			if (boatEntity.method_5642() != null && boatEntity.method_5642() instanceof LivingEntity) {
-				this.field_6427 = (LivingEntity)boatEntity.method_5642();
+			if (boatEntity.getPrimaryPassenger() != null && boatEntity.getPrimaryPassenger() instanceof LivingEntity) {
+				this.field_6427 = (LivingEntity)boatEntity.getPrimaryPassenger();
 				break;
 			}
 		}
@@ -77,17 +78,17 @@ public class class_1346 extends Goal {
 		if (--this.field_6428 <= 0) {
 			this.field_6428 = 10;
 			if (this.field_6425 == class_1340.field_6401) {
-				BlockPos blockPos = new BlockPos(this.field_6427).method_10093(this.field_6427.method_5735().getOpposite());
+				BlockPos blockPos = new BlockPos(this.field_6427).offset(this.field_6427.getHorizontalFacing().getOpposite());
 				blockPos = blockPos.add(0, -1, 0);
-				this.field_6426.getNavigation().method_6337((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0);
+				this.field_6426.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0);
 				if (this.field_6426.distanceTo(this.field_6427) < 4.0F) {
 					this.field_6428 = 0;
 					this.field_6425 = class_1340.field_6400;
 				}
 			} else if (this.field_6425 == class_1340.field_6400) {
 				Direction direction = this.field_6427.method_5755();
-				BlockPos blockPos2 = new BlockPos(this.field_6427).method_10079(direction, 10);
-				this.field_6426.getNavigation().method_6337((double)blockPos2.getX(), (double)(blockPos2.getY() - 1), (double)blockPos2.getZ(), 1.0);
+				BlockPos blockPos2 = new BlockPos(this.field_6427).offset(direction, 10);
+				this.field_6426.getNavigation().startMovingTo((double)blockPos2.getX(), (double)(blockPos2.getY() - 1), (double)blockPos2.getZ(), 1.0);
 				if (this.field_6426.distanceTo(this.field_6427) > 12.0F) {
 					this.field_6428 = 0;
 					this.field_6425 = class_1340.field_6401;

@@ -3,7 +3,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.item.ItemContainer;
+import net.minecraft.item.ItemProvider;
 import net.minecraft.item.Items;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntegerProperty;
@@ -38,7 +38,7 @@ public class BeetrootsBlock extends CropBlock {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	protected ItemContainer getCropItem() {
+	protected ItemProvider getCropItem() {
 		return Items.field_8309;
 	}
 

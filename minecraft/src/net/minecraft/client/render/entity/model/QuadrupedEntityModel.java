@@ -4,12 +4,11 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class QuadrupedEntityModel extends Model {
+public class QuadrupedEntityModel<T extends Entity> extends EntityModel<T> {
 	protected Cuboid head;
 	protected Cuboid body;
 	protected Cuboid leg1;
@@ -41,8 +40,8 @@ public class QuadrupedEntityModel extends Model {
 	}
 
 	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		this.setRotationAngles(f, g, h, i, j, k, entity);
+	public void render(T entity, float f, float g, float h, float i, float j, float k) {
+		this.setAngles(entity, f, g, h, i, j, k);
 		if (this.isChild) {
 			float l = 2.0F;
 			GlStateManager.pushMatrix();
@@ -69,7 +68,7 @@ public class QuadrupedEntityModel extends Model {
 	}
 
 	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
+	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
 		this.head.pitch = j * (float) (Math.PI / 180.0);
 		this.head.yaw = i * (float) (Math.PI / 180.0);
 		this.body.pitch = (float) (Math.PI / 2);

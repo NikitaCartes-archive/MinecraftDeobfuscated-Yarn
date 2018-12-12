@@ -1,16 +1,19 @@
 package net.minecraft.entity.mob;
 
+import com.mojang.datafixers.Dynamic;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3730;
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.fabricmc.api.EnvironmentInterface;
+import net.fabricmc.api.EnvironmentInterfaces;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.EntityData;
+import net.minecraft.datafixers.NbtOps;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -27,66 +30,70 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.LocalDifficulty;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.village.VillagerData;
+import net.minecraft.village.VillagerDataContainer;
+import net.minecraft.village.VillagerProfession;
+import net.minecraft.village.VillagerRecipeList;
+import net.minecraft.village.VillagerType;
 import net.minecraft.world.World;
 
-public class ZombieVillagerEntity extends ZombieEntity {
+@EnvironmentInterfaces({@EnvironmentInterface(
+		value = EnvType.CLIENT,
+		itf = VillagerDataContainer.class
+	)})
+public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataContainer {
 	private static final TrackedData<Boolean> CONVERTING = DataTracker.registerData(ZombieVillagerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final TrackedData<Integer> PROFESSION = DataTracker.registerData(ZombieVillagerEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final TrackedData<VillagerData> VILLAGER_DATA = DataTracker.registerData(ZombieVillagerEntity.class, TrackedDataHandlerRegistry.VILLAGER_DATA);
 	private int conversionTimer;
-	private UUID field_7421;
+	private UUID converter;
+	private CompoundTag offerData;
 
 	public ZombieVillagerEntity(World world) {
 		super(EntityType.ZOMBIE_VILLAGER, world);
+		this.setVillagerData(this.getVillagerData().withProfession(Registry.VILLAGER_PROFESSION.getRandom(this.random)));
 	}
 
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
 		this.dataTracker.startTracking(CONVERTING, false);
-		this.dataTracker.startTracking(PROFESSION, 0);
-	}
-
-	public void method_7195(int i) {
-		this.dataTracker.set(PROFESSION, i);
-	}
-
-	public int getProfession() {
-		return Math.max(this.dataTracker.get(PROFESSION) % 6, 0);
+		this.dataTracker.startTracking(VILLAGER_DATA, new VillagerData(VillagerType.field_17073, VillagerProfession.field_17051, 1));
 	}
 
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putInt("Profession", this.getProfession());
+		compoundTag.put("VillagerData", this.getVillagerData().serialize(NbtOps.INSTANCE));
+		if (this.offerData != null) {
+			compoundTag.put("Offers", this.offerData);
+		}
+
 		compoundTag.putInt("ConversionTime", this.isConverting() ? this.conversionTimer : -1);
-		if (this.field_7421 != null) {
-			compoundTag.putUuid("ConversionPlayer", this.field_7421);
+		if (this.converter != null) {
+			compoundTag.putUuid("ConversionPlayer", this.converter);
 		}
 	}
 
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		this.method_7195(compoundTag.getInt("Profession"));
+		if (compoundTag.containsKey("VillagerData", 10)) {
+			this.setVillagerData(new VillagerData(new Dynamic<>(NbtOps.INSTANCE, compoundTag.getTag("VillagerData"))));
+		}
+
+		if (compoundTag.containsKey("Offers", 10)) {
+			this.offerData = compoundTag.getCompound("Offers");
+		}
+
 		if (compoundTag.containsKey("ConversionTime", 99) && compoundTag.getInt("ConversionTime") > -1) {
 			this.setConverting(compoundTag.hasUuid("ConversionPlayer") ? compoundTag.getUuid("ConversionPlayer") : null, compoundTag.getInt("ConversionTime"));
 		}
 	}
 
-	@Nullable
-	@Override
-	public EntityData method_5943(
-		IWorld iWorld, LocalDifficulty localDifficulty, class_3730 arg, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
-	) {
-		this.method_7195(this.world.random.nextInt(6));
-		return super.method_5943(iWorld, localDifficulty, arg, entityData, compoundTag);
-	}
-
 	@Override
 	public void update() {
-		if (!this.world.isRemote && this.isConverting()) {
+		if (!this.world.isClient && this.isConverting()) {
 			int i = this.method_7194();
 			this.conversionTimer -= i;
 			if (this.conversionTimer <= 0) {
@@ -105,7 +112,7 @@ public class ZombieVillagerEntity extends ZombieEntity {
 				itemStack.subtractAmount(1);
 			}
 
-			if (!this.world.isRemote) {
+			if (!this.world.isClient) {
 				this.setConverting(playerEntity.getUuid(), this.random.nextInt(2401) + 3600);
 			}
 
@@ -121,7 +128,7 @@ public class ZombieVillagerEntity extends ZombieEntity {
 	}
 
 	@Override
-	public boolean method_5974(double d) {
+	public boolean canImmediatelyDespawn(double d) {
 		return !this.isConverting();
 	}
 
@@ -130,12 +137,12 @@ public class ZombieVillagerEntity extends ZombieEntity {
 	}
 
 	protected void setConverting(@Nullable UUID uUID, int i) {
-		this.field_7421 = uUID;
+		this.converter = uUID;
 		this.conversionTimer = i;
 		this.getDataTracker().set(CONVERTING, true);
-		this.method_6016(StatusEffects.field_5911);
+		this.removeStatusEffect(StatusEffects.field_5911);
 		this.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5910, i, Math.min(this.world.getDifficulty().getId() - 1, 0)));
-		this.world.method_8421(this, (byte)16);
+		this.world.summonParticle(this, (byte)16);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -163,14 +170,18 @@ public class ZombieVillagerEntity extends ZombieEntity {
 	protected void finishConversion() {
 		VillagerEntity villagerEntity = new VillagerEntity(this.world);
 		villagerEntity.setPositionAndAngles(this);
-		villagerEntity.setVillagerType(this.getProfession());
-		villagerEntity.method_7240(this.world, this.world.getLocalDifficulty(new BlockPos(villagerEntity)), class_3730.field_16468, null, null, false);
-		villagerEntity.method_7238();
+		villagerEntity.setVillagerData(this.getVillagerData());
+		if (this.offerData != null) {
+			villagerEntity.setRecipes(new VillagerRecipeList(this.offerData));
+		}
+
+		villagerEntity.prepareEntityData(this.world, this.world.getLocalDifficulty(new BlockPos(villagerEntity)), SpawnType.field_16468, null, null);
+		villagerEntity.setRecentlyRescued();
 		if (this.isChild()) {
 			villagerEntity.setBreedingAge(-24000);
 		}
 
-		this.world.method_8463(this);
+		this.world.removeEntity(this);
 		villagerEntity.setAiDisabled(this.isAiDisabled());
 		if (this.hasCustomName()) {
 			villagerEntity.setCustomName(this.getCustomName());
@@ -178,10 +189,10 @@ public class ZombieVillagerEntity extends ZombieEntity {
 		}
 
 		this.world.spawnEntity(villagerEntity);
-		if (this.field_7421 != null) {
-			PlayerEntity playerEntity = this.world.getPlayerByUuid(this.field_7421);
+		if (this.converter != null) {
+			PlayerEntity playerEntity = this.world.getPlayerByUuid(this.converter);
 			if (playerEntity instanceof ServerPlayerEntity) {
-				CriterionCriterions.CURED_ZOMBIE_VILLAGER.handle((ServerPlayerEntity)playerEntity, this, villagerEntity);
+				Criterions.CURED_ZOMBIE_VILLAGER.handle((ServerPlayerEntity)playerEntity, this, villagerEntity);
 			}
 		}
 
@@ -242,5 +253,23 @@ public class ZombieVillagerEntity extends ZombieEntity {
 	@Override
 	protected ItemStack getSkull() {
 		return ItemStack.EMPTY;
+	}
+
+	public void setOfferData(CompoundTag compoundTag) {
+		this.offerData = compoundTag;
+	}
+
+	public void setVillagerData(VillagerData villagerData) {
+		VillagerData villagerData2 = this.getVillagerData();
+		if (villagerData2.getProfession() != villagerData.getProfession()) {
+			this.offerData = null;
+		}
+
+		this.dataTracker.set(VILLAGER_DATA, villagerData);
+	}
+
+	@Override
+	public VillagerData getVillagerData() {
+		return this.dataTracker.get(VILLAGER_DATA);
 	}
 }

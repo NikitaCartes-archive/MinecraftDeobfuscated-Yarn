@@ -46,7 +46,7 @@ public class BeaconContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		if (!playerEntity.world.isRemote) {
+		if (!playerEntity.world.isClient) {
 			ItemStack itemStack = this.slotPayment.takeStack(this.slotPayment.getMaxStackAmount());
 			if (!itemStack.isEmpty()) {
 				playerEntity.dropItem(itemStack, false);

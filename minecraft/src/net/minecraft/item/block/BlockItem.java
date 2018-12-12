@@ -5,7 +5,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -62,7 +62,7 @@ public class BlockItem extends Item {
 					this.afterBlockPlaced(blockPos, world, playerEntity, itemStack, blockState2);
 					block.onPlaced(world, blockPos, blockState2, playerEntity, itemStack);
 					if (playerEntity instanceof ServerPlayerEntity) {
-						CriterionCriterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos, itemStack);
+						Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos, itemStack);
 					}
 				}
 
@@ -113,7 +113,7 @@ public class BlockItem extends Item {
 			if (compoundTag != null) {
 				BlockEntity blockEntity = world.getBlockEntity(blockPos);
 				if (blockEntity != null) {
-					if (!world.isRemote && blockEntity.method_11011() && (playerEntity == null || !playerEntity.method_7338())) {
+					if (!world.isClient && blockEntity.method_11011() && (playerEntity == null || !playerEntity.method_7338())) {
 						return false;
 					}
 
@@ -149,8 +149,8 @@ public class BlockItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void addInformation(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
-		super.addInformation(itemStack, world, list, tooltipOptions);
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
+		super.buildTooltip(itemStack, world, list, tooltipOptions);
 		this.getBlock().addInformation(itemStack, world, list, tooltipOptions);
 	}
 

@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -77,7 +77,7 @@ public class FishHookEntity extends Entity {
 
 	private void method_6950(PlayerEntity playerEntity) {
 		this.setSize(0.25F, 0.25F);
-		this.field_5985 = true;
+		this.ignoreCameraFrustum = true;
 		this.owner = playerEntity;
 		this.owner.fishHook = this;
 	}
@@ -147,7 +147,7 @@ public class FishHookEntity extends Entity {
 		super.update();
 		if (this.owner == null) {
 			this.invalidate();
-		} else if (this.world.isRemote || !this.method_6959()) {
+		} else if (this.world.isClient || !this.method_6959()) {
 			if (this.field_7176) {
 				this.field_7167++;
 				if (this.field_7167 >= 1200) {
@@ -180,11 +180,11 @@ public class FishHookEntity extends Entity {
 					return;
 				}
 
-				if (!this.world.isRemote) {
+				if (!this.world.isClient) {
 					this.method_6958();
 				}
 
-				if (!this.field_7176 && !this.onGround && !this.field_5976) {
+				if (!this.field_7176 && !this.onGround && !this.horizontalCollision) {
 					this.field_7166++;
 				} else {
 					this.field_7166 = 0;
@@ -219,7 +219,7 @@ public class FishHookEntity extends Entity {
 					}
 
 					this.velocityY = this.velocityY - d * (double)this.random.nextFloat() * 0.2;
-					if (!this.world.isRemote && f > 0.0F) {
+					if (!this.world.isClient && f > 0.0F) {
 						this.method_6949(blockPos);
 					}
 				}
@@ -327,11 +327,11 @@ public class FishHookEntity extends Entity {
 		ServerWorld serverWorld = (ServerWorld)this.world;
 		int i = 1;
 		BlockPos blockPos2 = blockPos.up();
-		if (this.random.nextFloat() < 0.25F && this.world.method_8520(blockPos2)) {
+		if (this.random.nextFloat() < 0.25F && this.world.hasRain(blockPos2)) {
 			i++;
 		}
 
-		if (this.random.nextFloat() < 0.5F && !this.world.getSkyLightLevel(blockPos2)) {
+		if (this.random.nextFloat() < 0.5F && !this.world.isSkyVisible(blockPos2)) {
 			i--;
 		}
 
@@ -418,12 +418,12 @@ public class FishHookEntity extends Entity {
 	}
 
 	public int method_6957(ItemStack itemStack) {
-		if (!this.world.isRemote && this.owner != null) {
+		if (!this.world.isClient && this.owner != null) {
 			int i = 0;
 			if (this.hookedEntity != null) {
 				this.method_6954();
-				CriterionCriterions.FISHING_ROD_HOOKED.method_8939((ServerPlayerEntity)this.owner, itemStack, this, Collections.emptyList());
-				this.world.method_8421(this, (byte)31);
+				Criterions.FISHING_ROD_HOOKED.method_8939((ServerPlayerEntity)this.owner, itemStack, this, Collections.emptyList());
+				this.world.summonParticle(this, (byte)31);
 				i = this.hookedEntity instanceof ItemEntity ? 3 : 5;
 			} else if (this.field_7173 > 0) {
 				LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
@@ -433,7 +433,7 @@ public class FishHookEntity extends Entity {
 					.setLuck((float)this.field_7171 + this.owner.getLuck());
 				LootSupplier lootSupplier = this.world.getServer().getLootManager().getSupplier(LootTables.GAMEPLAY_FISHING);
 				List<ItemStack> list = lootSupplier.getDrops(builder.build(LootContextTypes.FISHING));
-				CriterionCriterions.FISHING_ROD_HOOKED.method_8939((ServerPlayerEntity)this.owner, itemStack, this, list);
+				Criterions.FISHING_ROD_HOOKED.method_8939((ServerPlayerEntity)this.owner, itemStack, this, list);
 
 				for (ItemStack itemStack2 : list) {
 					ItemEntity itemEntity = new ItemEntity(this.world, this.x, this.y, this.z, itemStack2);
@@ -469,7 +469,7 @@ public class FishHookEntity extends Entity {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void method_5711(byte b) {
-		if (b == 31 && this.world.isRemote && this.hookedEntity instanceof PlayerEntity && ((PlayerEntity)this.hookedEntity).method_7340()) {
+		if (b == 31 && this.world.isClient && this.hookedEntity instanceof PlayerEntity && ((PlayerEntity)this.hookedEntity).method_7340()) {
 			this.method_6954();
 		}
 

@@ -14,27 +14,21 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_295;
-import net.minecraft.class_655;
-import net.minecraft.class_661;
-import net.minecraft.class_721;
-import net.minecraft.class_725;
-import net.minecraft.class_733;
-import net.minecraft.class_734;
-import net.minecraft.class_736;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.RenderTypeBlock;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportElement;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
@@ -49,10 +43,10 @@ public class ParticleManager {
 	private static final Identifier PARTICLE_TEX = new Identifier("textures/particle/particles.png");
 	protected World world;
 	private final ArrayDeque<Particle>[][] particleQueues = new ArrayDeque[4][];
-	private final Queue<class_733> field_3837 = Queues.<class_733>newArrayDeque();
+	private final Queue<EmitterParticle> newEmitterParticles = Queues.<EmitterParticle>newArrayDeque();
 	private final TextureManager textureManager;
 	private final Random random = new Random();
-	private final Int2ObjectMap<FactoryParticle<?>> field_3835 = new Int2ObjectOpenHashMap<>();
+	private final Int2ObjectMap<ParticleFactory<?>> factories = new Int2ObjectOpenHashMap<>();
 	private final Queue<Particle> newParticles = Queues.<Particle>newArrayDeque();
 
 	public ParticleManager(World world, TextureManager textureManager) {
@@ -71,87 +65,87 @@ public class ParticleManager {
 	}
 
 	private void registerDefaultFactories() {
-		this.method_3043(ParticleTypes.field_11225, new SpellParticle.FactoryMobAmbient());
-		this.method_3043(ParticleTypes.field_11231, new EmotionParticle.FactoryAngry());
+		this.method_3043(ParticleTypes.field_11225, new SpellParticle.EntityAmbientFactory());
+		this.method_3043(ParticleTypes.field_11231, new EmotionParticle.AngryVillagerFactory());
 		this.method_3043(ParticleTypes.field_11235, new BarrierParticle.Factory());
 		this.method_3043(ParticleTypes.field_11217, new BlockCrackParticle.Factory());
-		this.method_3043(ParticleTypes.field_11247, new WaterBubbleParticle.class_654());
-		this.method_3043(ParticleTypes.field_11238, new class_655.class_656());
-		this.method_3043(ParticleTypes.field_11241, new class_661.class_662());
-		this.method_3043(ParticleTypes.field_11204, new CloudParticle.class_705());
-		this.method_3043(ParticleTypes.field_11205, new DamageParticle.FactoryCrit());
-		this.method_3043(ParticleTypes.field_11243, new class_736.class_737());
-		this.method_3043(ParticleTypes.field_11209, new DamageParticle.FactoryDefault());
+		this.method_3043(ParticleTypes.field_11247, new WaterBubbleParticle.Factory());
+		this.method_3043(ParticleTypes.field_11238, new BubbleColumnUpParticle.Factory());
+		this.method_3043(ParticleTypes.field_11241, new BubblePopParticle.Factory());
+		this.method_3043(ParticleTypes.field_11204, new CloudParticle.CloudFactory());
+		this.method_3043(ParticleTypes.field_11205, new DamageParticle.CritFactory());
+		this.method_3043(ParticleTypes.field_11243, new CurrentDownParticle.Factory());
+		this.method_3043(ParticleTypes.field_11209, new DamageParticle.DefaultFactory());
 		this.method_3043(ParticleTypes.field_11216, new DragonBreathParticle.Factory());
-		this.method_3043(ParticleTypes.field_11222, new SomethingParticle.class_730());
-		this.method_3043(ParticleTypes.field_11223, new BlockLeakParticle.FactoryWater());
-		this.method_3043(ParticleTypes.field_11232, new BlockLeakParticle.class_665());
+		this.method_3043(ParticleTypes.field_11222, new SuspendParticle.DolphinFactory());
+		this.method_3043(ParticleTypes.field_11223, new BlockLeakParticle.LavaFactory());
+		this.method_3043(ParticleTypes.field_11232, new BlockLeakParticle.WaterFactory());
 		this.method_3043(ParticleTypes.field_11212, new RedDustParticle.Factory());
-		this.method_3043(ParticleTypes.field_11245, new SpellParticle.class_715());
+		this.method_3043(ParticleTypes.field_11245, new SpellParticle.DefaultFactory());
 		this.method_3043(ParticleTypes.field_11250, new ElderGuardianAppearanceParticle.Factory());
-		this.method_3043(ParticleTypes.field_11208, new DamageParticle.FactoryCritMagic());
-		this.method_3043(ParticleTypes.field_11215, new EnchantGlyphParticle.class_670());
+		this.method_3043(ParticleTypes.field_11208, new DamageParticle.EnchantedHitFactory());
+		this.method_3043(ParticleTypes.field_11215, new EnchantGlyphParticle.EnchantFactory());
 		this.method_3043(ParticleTypes.field_11207, new EndRodParticle.Factory());
-		this.method_3043(ParticleTypes.field_11226, new SpellParticle.FactoryMob());
-		this.method_3043(ParticleTypes.field_11221, new ExplosionHugeParticle.Factory());
+		this.method_3043(ParticleTypes.field_11226, new SpellParticle.EntityFactory());
+		this.method_3043(ParticleTypes.field_11221, new ExplosionEmitterParticle.Factory());
 		this.method_3043(ParticleTypes.field_11236, new ExplosionLargeParticle.Factory());
 		this.method_3043(ParticleTypes.field_11206, new BlockFallingDustParticle.Factory());
 		this.method_3043(ParticleTypes.field_11248, new FireworksSparkParticle.Factory());
 		this.method_3043(ParticleTypes.field_11244, new FishingParticle.Factory());
 		this.method_3043(ParticleTypes.field_11240, new FlameParticle.Factory());
-		this.method_3043(ParticleTypes.field_11211, new SomethingParticle.FactoryHappy());
-		this.method_3043(ParticleTypes.field_11201, new EmotionParticle.FactoryLove());
-		this.method_3043(ParticleTypes.field_11213, new SpellParticle.FactoryInstant());
-		this.method_3043(ParticleTypes.field_11218, new CrackParticle.FactoryItem());
-		this.method_3043(ParticleTypes.field_11246, new CrackParticle.class_649());
-		this.method_3043(ParticleTypes.field_11230, new CrackParticle.class_650());
+		this.method_3043(ParticleTypes.field_11211, new SuspendParticle.HappyVillagerFactory());
+		this.method_3043(ParticleTypes.field_11201, new EmotionParticle.HeartFactory());
+		this.method_3043(ParticleTypes.field_11213, new SpellParticle.InstantFactory());
+		this.method_3043(ParticleTypes.field_11218, new CrackParticle.ItemFactory());
+		this.method_3043(ParticleTypes.field_11246, new CrackParticle.SlimeballFactory());
+		this.method_3043(ParticleTypes.field_11230, new CrackParticle.SnowballFactory());
 		this.method_3043(ParticleTypes.field_11237, new FireSmokeLargeParticle.Factory());
 		this.method_3043(ParticleTypes.field_11239, new LavaEmberParticle.Factory());
-		this.method_3043(ParticleTypes.field_11219, new SomethingParticle.class_732());
-		this.method_3043(ParticleTypes.field_11229, new EnchantGlyphParticle.class_669());
+		this.method_3043(ParticleTypes.field_11219, new SuspendParticle.MyceliumFactory());
+		this.method_3043(ParticleTypes.field_11229, new EnchantGlyphParticle.NautilusFactory());
 		this.method_3043(ParticleTypes.field_11224, new NoteParticle.Factory());
 		this.method_3043(ParticleTypes.field_11203, new ExplosionSmokeParticle.Factory());
 		this.method_3043(ParticleTypes.field_11214, new PortalParticle.Factory());
 		this.method_3043(ParticleTypes.field_11242, new RainSplashParticle.Factory());
 		this.method_3043(ParticleTypes.field_11251, new FireSmokeParticle.Factory());
-		this.method_3043(ParticleTypes.field_11234, new CloudParticle.class_706());
-		this.method_3043(ParticleTypes.field_11228, new class_721.class_722());
+		this.method_3043(ParticleTypes.field_11234, new CloudParticle.SneezeFactory());
+		this.method_3043(ParticleTypes.field_11228, new SpitParticle.Factory());
 		this.method_3043(ParticleTypes.field_11227, new SweepAttackParticle.Factory());
-		this.method_3043(ParticleTypes.field_11220, new class_734.class_735());
-		this.method_3043(ParticleTypes.field_11233, new class_725.class_726());
-		this.method_3043(ParticleTypes.field_11210, new WaterSuspendParticle.class_724());
-		this.method_3043(ParticleTypes.field_11202, new WaterSplashParticle.Factory());
-		this.method_3043(ParticleTypes.field_11249, new SpellParticle.FactoryWitch());
+		this.method_3043(ParticleTypes.field_11220, new TotemParticle.Factory());
+		this.method_3043(ParticleTypes.field_11233, new SquidInkParticle.Factory());
+		this.method_3043(ParticleTypes.field_11210, new WaterSuspendParticle.UnderwaterFactory());
+		this.method_3043(ParticleTypes.field_11202, new WaterSplashParticle.SplashFactory());
+		this.method_3043(ParticleTypes.field_11249, new SpellParticle.WitchFactory());
 	}
 
-	public <T extends net.minecraft.particle.Particle> void method_3043(ParticleType<T> particleType, FactoryParticle<T> factoryParticle) {
-		this.field_3835.put(Registry.PARTICLE_TYPE.getRawId(particleType), factoryParticle);
+	public <T extends ParticleParameters> void method_3043(ParticleType<T> particleType, ParticleFactory<T> particleFactory) {
+		this.factories.put(Registry.PARTICLE_TYPE.getRawId(particleType), particleFactory);
 	}
 
-	public void method_3061(Entity entity, net.minecraft.particle.Particle particle) {
-		this.field_3837.add(new class_733(this.world, entity, particle));
+	public void method_3061(Entity entity, ParticleParameters particleParameters) {
+		this.newEmitterParticles.add(new EmitterParticle(this.world, entity, particleParameters));
 	}
 
-	public void method_3051(Entity entity, net.minecraft.particle.Particle particle, int i) {
-		this.field_3837.add(new class_733(this.world, entity, particle, i));
+	public void method_3051(Entity entity, ParticleParameters particleParameters, int i) {
+		this.newEmitterParticles.add(new EmitterParticle(this.world, entity, particleParameters, i));
 	}
 
 	@Nullable
-	public Particle method_3056(net.minecraft.particle.Particle particle, double d, double e, double f, double g, double h, double i) {
-		Particle particle2 = this.method_3055(particle, d, e, f, g, h, i);
-		if (particle2 != null) {
-			this.addParticle(particle2);
-			return particle2;
+	public Particle method_3056(ParticleParameters particleParameters, double d, double e, double f, double g, double h, double i) {
+		Particle particle = this.method_3055(particleParameters, d, e, f, g, h, i);
+		if (particle != null) {
+			this.addParticle(particle);
+			return particle;
 		} else {
 			return null;
 		}
 	}
 
 	@Nullable
-	private <T extends net.minecraft.particle.Particle> Particle method_3055(T particle, double d, double e, double f, double g, double h, double i) {
-		FactoryParticle<T> factoryParticle = (FactoryParticle<T>)this.field_3835
-			.get(Registry.PARTICLE_TYPE.getRawId((ParticleType<? extends net.minecraft.particle.Particle>)particle.getParticleType()));
-		return factoryParticle == null ? null : factoryParticle.createParticle(particle, this.world, d, e, f, g, h, i);
+	private <T extends ParticleParameters> Particle method_3055(T particleParameters, double d, double e, double f, double g, double h, double i) {
+		ParticleFactory<T> particleFactory = (ParticleFactory<T>)this.factories
+			.get(Registry.PARTICLE_TYPE.getRawId((ParticleType<? extends ParticleParameters>)particleParameters.getType()));
+		return particleFactory == null ? null : particleFactory.method_3090(particleParameters, this.world, d, e, f, g, h, i);
 	}
 
 	public void addParticle(Particle particle) {
@@ -160,20 +154,20 @@ public class ParticleManager {
 
 	public void tick() {
 		for (int i = 0; i < 4; i++) {
-			this.method_3044(i);
+			this.updateGroup(i);
 		}
 
-		if (!this.field_3837.isEmpty()) {
-			List<class_733> list = Lists.<class_733>newArrayList();
+		if (!this.newEmitterParticles.isEmpty()) {
+			List<EmitterParticle> list = Lists.<EmitterParticle>newArrayList();
 
-			for (class_733 lv : this.field_3837) {
-				lv.update();
-				if (!lv.isAlive()) {
-					list.add(lv);
+			for (EmitterParticle emitterParticle : this.newEmitterParticles) {
+				emitterParticle.update();
+				if (!emitterParticle.isAlive()) {
+					list.add(emitterParticle);
 				}
 			}
 
-			this.field_3837.removeAll(list);
+			this.newEmitterParticles.removeAll(list);
 		}
 
 		if (!this.newParticles.isEmpty()) {
@@ -189,16 +183,16 @@ public class ParticleManager {
 		}
 	}
 
-	private void method_3044(int i) {
-		this.world.getProfiler().begin(String.valueOf(i));
+	private void updateGroup(int i) {
+		this.world.getProfiler().push(String.valueOf(i));
 
 		for (int j = 0; j < 2; j++) {
-			this.world.getProfiler().begin(String.valueOf(j));
+			this.world.getProfiler().push(String.valueOf(j));
 			this.updateParticleQueue(this.particleQueues[i][j]);
-			this.world.getProfiler().end();
+			this.world.getProfiler().pop();
 		}
 
-		this.world.getProfiler().end();
+		this.world.getProfiler().pop();
 	}
 
 	private void updateParticleQueue(Queue<Particle> queue) {
@@ -220,10 +214,10 @@ public class ParticleManager {
 			particle.update();
 		} catch (Throwable var6) {
 			CrashReport crashReport = CrashReport.create(var6, "Ticking Particle");
-			CrashReportElement crashReportElement = crashReport.addElement("Particle being ticked");
+			CrashReportSection crashReportSection = crashReport.method_562("Particle being ticked");
 			int i = particle.getParticleGroup();
-			crashReportElement.add("Particle", particle::toString);
-			crashReportElement.add("Particle Type", (ICrashCallable<String>)(() -> {
+			crashReportSection.add("Particle", particle::toString);
+			crashReportSection.add("Particle Type", (ICrashCallable<String>)(() -> {
 				if (i == 0) {
 					return "MISC_TEXTURE";
 				} else if (i == 1) {
@@ -236,16 +230,16 @@ public class ParticleManager {
 		}
 	}
 
-	public void method_3049(Entity entity, float f) {
+	public void renderUnlitParticles(Entity entity, float f) {
 		float g = class_295.method_1375();
 		float h = class_295.method_1380();
 		float i = class_295.method_1381();
 		float j = class_295.method_1378();
 		float k = class_295.method_1377();
-		Particle.lerpX = MathHelper.lerp((double)f, entity.prevRenderX, entity.x);
-		Particle.lerpY = MathHelper.lerp((double)f, entity.prevRenderY, entity.y);
-		Particle.lerpZ = MathHelper.lerp((double)f, entity.prevRenderZ, entity.z);
-		Particle.field_3864 = entity.getRotationVec(f);
+		Particle.cameraX = MathHelper.lerp((double)f, entity.prevRenderX, entity.x);
+		Particle.cameraY = MathHelper.lerp((double)f, entity.prevRenderY, entity.y);
+		Particle.cameraZ = MathHelper.lerp((double)f, entity.prevRenderZ, entity.z);
+		Particle.cameraRotation = entity.getRotationVec(f);
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GlStateManager.SrcBlendFactor.SRC_ALPHA, GlStateManager.DstBlendFactor.ONE_MINUS_SRC_ALPHA);
 		GlStateManager.alphaFunc(516, 0.003921569F);
@@ -272,18 +266,18 @@ public class ParticleManager {
 
 					GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 					Tessellator tessellator = Tessellator.getInstance();
-					VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-					vertexBuffer.begin(7, VertexFormats.field_1584);
+					BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+					bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
 
 					for (Particle particle : this.particleQueues[l][m]) {
 						try {
-							particle.buildGeometry(vertexBuffer, entity, f, g, k, h, i, j);
+							particle.buildGeometry(bufferBuilder, entity, f, g, k, h, i, j);
 						} catch (Throwable var18) {
 							CrashReport crashReport = CrashReport.create(var18, "Rendering Particle");
-							CrashReportElement crashReportElement = crashReport.addElement("Particle being rendered");
+							CrashReportSection crashReportSection = crashReport.method_562("Particle being rendered");
 							int n = l;
-							crashReportElement.add("Particle", particle::toString);
-							crashReportElement.add("Particle Type", (ICrashCallable<String>)(() -> {
+							crashReportSection.add("Particle", particle::toString);
+							crashReportSection.add("Particle Type", (ICrashCallable<String>)(() -> {
 								if (n == 0) {
 									return "MISC_TEXTURE";
 								} else if (n == 1) {
@@ -306,25 +300,25 @@ public class ParticleManager {
 		GlStateManager.alphaFunc(516, 0.1F);
 	}
 
-	public void method_3060(Entity entity, float f) {
+	public void renderLitParticles(Entity entity, float f) {
 		float g = class_295.method_1375();
 		float h = class_295.method_1380();
 		float i = class_295.method_1381();
 		float j = class_295.method_1378();
 		float k = class_295.method_1377();
-		Particle.lerpX = MathHelper.lerp((double)f, entity.prevRenderX, entity.x);
-		Particle.lerpY = MathHelper.lerp((double)f, entity.prevRenderY, entity.y);
-		Particle.lerpZ = MathHelper.lerp((double)f, entity.prevRenderZ, entity.z);
-		Particle.field_3864 = entity.getRotationVec(f);
+		Particle.cameraX = MathHelper.lerp((double)f, entity.prevRenderX, entity.x);
+		Particle.cameraY = MathHelper.lerp((double)f, entity.prevRenderY, entity.y);
+		Particle.cameraZ = MathHelper.lerp((double)f, entity.prevRenderZ, entity.z);
+		Particle.cameraRotation = entity.getRotationVec(f);
 
 		for (int l = 0; l < 2; l++) {
 			Queue<Particle> queue = this.particleQueues[3][l];
 			if (!queue.isEmpty()) {
 				Tessellator tessellator = Tessellator.getInstance();
-				VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
+				BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 
 				for (Particle particle : queue) {
-					particle.buildGeometry(vertexBuffer, entity, f, g, k, h, i, j);
+					particle.buildGeometry(bufferBuilder, entity, f, g, k, h, i, j);
 				}
 			}
 		}
@@ -339,10 +333,10 @@ public class ParticleManager {
 			}
 		}
 
-		this.field_3837.clear();
+		this.newEmitterParticles.clear();
 	}
 
-	public void method_3046(BlockPos blockPos, BlockState blockState) {
+	public void addBlockBreakParticles(BlockPos blockPos, BlockState blockState) {
 		if (!blockState.isAir()) {
 			VoxelShape voxelShape = blockState.getBoundingShape(this.world, blockPos);
 			double d = 0.25;
@@ -378,9 +372,9 @@ public class ParticleManager {
 		}
 	}
 
-	public void method_3054(BlockPos blockPos, Direction direction) {
+	public void addBlockBreakingParticles(BlockPos blockPos, Direction direction) {
 		BlockState blockState = this.world.getBlockState(blockPos);
-		if (blockState.getRenderType() != RenderTypeBlock.NONE) {
+		if (blockState.getRenderType() != BlockRenderType.field_11455) {
 			int i = blockPos.getX();
 			int j = blockPos.getY();
 			int k = blockPos.getZ();
@@ -417,7 +411,7 @@ public class ParticleManager {
 		}
 	}
 
-	public String method_3052() {
+	public String getDebugString() {
 		int i = 0;
 
 		for (int j = 0; j < 4; j++) {

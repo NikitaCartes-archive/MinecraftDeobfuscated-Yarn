@@ -15,7 +15,7 @@ import java.util.Optional;
 import net.minecraft.datafixers.TypeReferences;
 
 public class ItemPotionFix extends DataFix {
-	private static final String[] potions = DataFixUtils.make(new String[128], strings -> {
+	private static final String[] ID_TO_POTIONS = DataFixUtils.make(new String[128], strings -> {
 		strings[0] = "minecraft:water";
 		strings[1] = "minecraft:regeneration";
 		strings[2] = "minecraft:swiftness";
@@ -169,7 +169,7 @@ public class ItemPotionFix extends DataFix {
 						Dynamic<?> dynamic2 = ((Typed)optional2.get()).get(DSL.remainderFinder());
 						Optional<String> optional3 = dynamic2.get("Potion").flatMap(Dynamic::getStringValue);
 						if (!optional3.isPresent()) {
-							String string = potions[s & 127];
+							String string = ID_TO_POTIONS[s & 127];
 							Typed<?> typed3 = ((Typed)optional2.get())
 								.set(DSL.remainderFinder(), dynamic2.set("Potion", dynamic2.createString(string == null ? "minecraft:water" : string)));
 							typed2 = typed.set(opticFinder2, typed3);

@@ -33,9 +33,10 @@ public class ExperienceBottleItem extends Item {
 		world.playSound(
 			null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_14637, SoundCategory.field_15254, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F)
 		);
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			ThrownExperienceBottleEntity thrownExperienceBottleEntity = new ThrownExperienceBottleEntity(world, playerEntity);
-			thrownExperienceBottleEntity.method_7489(playerEntity, playerEntity.pitch, playerEntity.yaw, -20.0F, 0.7F, 1.0F);
+			thrownExperienceBottleEntity.method_16940(itemStack);
+			thrownExperienceBottleEntity.calculateVelocity(playerEntity, playerEntity.pitch, playerEntity.yaw, -20.0F, 0.7F, 1.0F);
 			world.spawnEntity(thrownExperienceBottleEntity);
 		}
 

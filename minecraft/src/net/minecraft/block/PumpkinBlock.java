@@ -17,13 +17,13 @@ public class PumpkinBlock extends GourdBlock {
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.getItem() == Items.field_8868) {
-			if (!world.isRemote) {
-				Direction direction2 = direction.getAxis() == Direction.Axis.Y ? playerEntity.method_5735().getOpposite() : direction;
+			if (!world.isClient) {
+				Direction direction2 = direction.getAxis() == Direction.Axis.Y ? playerEntity.getHorizontalFacing().getOpposite() : direction;
 				world.playSound(null, blockPos, SoundEvents.field_14619, SoundCategory.field_15245, 1.0F, 1.0F);
 				world.setBlockState(blockPos, Blocks.field_10147.getDefaultState().with(PumpkinCarvedBlock.field_10748, direction2), 11);
 				ItemEntity itemEntity = new ItemEntity(
@@ -42,7 +42,7 @@ public class PumpkinBlock extends GourdBlock {
 
 			return true;
 		} else {
-			return super.method_9534(blockState, world, blockPos, playerEntity, hand, direction, f, g, h);
+			return super.activate(blockState, world, blockPos, playerEntity, hand, direction, f, g, h);
 		}
 	}
 

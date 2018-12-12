@@ -1,8 +1,7 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.minecraft.class_2760;
-import net.minecraft.client.render.block.BlockRenderLayer;
+import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -21,7 +20,7 @@ import net.minecraft.world.World;
 
 public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggable {
 	public static final BooleanProperty field_11631 = Properties.OPEN;
-	public static final EnumProperty<class_2760> field_11625 = Properties.field_12518;
+	public static final EnumProperty<BlockHalf> field_11625 = Properties.BLOCK_HALF;
 	public static final BooleanProperty field_11629 = Properties.POWERED;
 	public static final BooleanProperty field_11626 = Properties.WATERLOGGED;
 	protected static final VoxelShape field_11627 = Block.createCubeShape(0.0, 0.0, 0.0, 3.0, 16.0, 16.0);
@@ -38,7 +37,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 				.getDefaultState()
 				.with(field_11177, Direction.NORTH)
 				.with(field_11631, Boolean.valueOf(false))
-				.with(field_11625, class_2760.BOTTOM)
+				.with(field_11625, BlockHalf.BOTTOM)
 				.with(field_11629, Boolean.valueOf(false))
 				.with(field_11626, Boolean.valueOf(false))
 		);
@@ -47,7 +46,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	@Override
 	public VoxelShape getBoundingShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		if (!(Boolean)blockState.get(field_11631)) {
-			return blockState.get(field_11625) == class_2760.TOP ? field_11628 : field_11632;
+			return blockState.get(field_11625) == BlockHalf.TOP ? field_11628 : field_11632;
 		} else {
 			switch ((Direction)blockState.get(field_11177)) {
 				case NORTH:
@@ -78,7 +77,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
 		if (this.material == Material.METAL) {
@@ -107,7 +106,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 
 	@Override
 	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			boolean bl = world.isReceivingRedstonePower(blockPos);
 			if (bl != (Boolean)blockState.get(field_11629)) {
 				if ((Boolean)blockState.get(field_11631) != bl) {
@@ -127,12 +126,12 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockState blockState = this.getDefaultState();
 		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getPos());
-		Direction direction = itemPlacementContext.method_8038();
+		Direction direction = itemPlacementContext.getFacing();
 		if (!itemPlacementContext.method_7717() && direction.getAxis().isHorizontal()) {
-			blockState = blockState.with(field_11177, direction).with(field_11625, itemPlacementContext.getHitY() > 0.5F ? class_2760.TOP : class_2760.BOTTOM);
+			blockState = blockState.with(field_11177, direction).with(field_11625, itemPlacementContext.getHitY() > 0.5F ? BlockHalf.TOP : BlockHalf.BOTTOM);
 		} else {
-			blockState = blockState.with(field_11177, itemPlacementContext.method_8042().getOpposite())
-				.with(field_11625, direction == Direction.UP ? class_2760.BOTTOM : class_2760.TOP);
+			blockState = blockState.with(field_11177, itemPlacementContext.getPlayerHorizontalFacing().getOpposite())
+				.with(field_11625, direction == Direction.UP ? BlockHalf.BOTTOM : BlockHalf.TOP);
 		}
 
 		if (itemPlacementContext.getWorld().isReceivingRedstonePower(itemPlacementContext.getPos())) {
@@ -158,11 +157,13 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if ((Boolean)blockState.get(field_11626)) {
 			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
 		}
 
-		return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 }

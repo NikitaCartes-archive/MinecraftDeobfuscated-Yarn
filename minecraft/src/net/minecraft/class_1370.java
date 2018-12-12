@@ -7,9 +7,9 @@ import net.minecraft.util.math.Vec3d;
 
 public class class_1370 extends Goal {
 	private final MobEntityWithAi field_6536;
-	private double field_6535;
-	private double field_6534;
-	private double field_6533;
+	private double x;
+	private double y;
+	private double z;
 	private final double field_6537;
 
 	public class_1370(MobEntityWithAi mobEntityWithAi, double d) {
@@ -28,9 +28,9 @@ public class class_1370 extends Goal {
 			if (vec3d == null) {
 				return false;
 			} else {
-				this.field_6535 = vec3d.x;
-				this.field_6534 = vec3d.y;
-				this.field_6533 = vec3d.z;
+				this.x = vec3d.x;
+				this.y = vec3d.y;
+				this.z = vec3d.z;
 				return true;
 			}
 		}
@@ -43,6 +43,6 @@ public class class_1370 extends Goal {
 
 	@Override
 	public void start() {
-		this.field_6536.getNavigation().method_6337(this.field_6535, this.field_6534, this.field_6533, this.field_6537);
+		this.field_6536.getNavigation().startMovingTo(this.x, this.y, this.z, this.field_6537);
 	}
 }

@@ -96,7 +96,7 @@ public class ForceLoadCommand {
 	private static int method_13374(ServerCommandSource serverCommandSource, ColumnPosArgumentType.class_2265 arg) throws CommandSyntaxException {
 		ChunkPos chunkPos = new ChunkPos(arg.field_10708 >> 4, arg.field_10707 >> 4);
 		DimensionType dimensionType = serverCommandSource.getWorld().getDimension().getType();
-		boolean bl = serverCommandSource.getMinecraftServer().getWorld(dimensionType).method_8559(chunkPos.x, chunkPos.z);
+		boolean bl = serverCommandSource.getMinecraftServer().getWorld(dimensionType).isChunkForced(chunkPos.x, chunkPos.z);
 		if (bl) {
 			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.forceload.query.success", chunkPos, dimensionType), false);
 			return 1;
@@ -107,7 +107,7 @@ public class ForceLoadCommand {
 
 	private static int method_13373(ServerCommandSource serverCommandSource) {
 		DimensionType dimensionType = serverCommandSource.getWorld().getDimension().getType();
-		LongSet longSet = serverCommandSource.getMinecraftServer().getWorld(dimensionType).method_8440();
+		LongSet longSet = serverCommandSource.getMinecraftServer().getWorld(dimensionType).getForcedChunks();
 		int i = longSet.size();
 		if (i > 0) {
 			String string = Joiner.on(", ").join(longSet.stream().sorted().map(ChunkPos::new).map(ChunkPos::toString).iterator());
@@ -126,8 +126,8 @@ public class ForceLoadCommand {
 	private static int method_13366(ServerCommandSource serverCommandSource) {
 		DimensionType dimensionType = serverCommandSource.getWorld().getDimension().getType();
 		ServerWorld serverWorld = serverCommandSource.getMinecraftServer().getWorld(dimensionType);
-		LongSet longSet = serverWorld.method_8440();
-		longSet.forEach(l -> serverWorld.method_8461(ChunkPos.longX(l), ChunkPos.longZ(l), false));
+		LongSet longSet = serverWorld.getForcedChunks();
+		longSet.forEach(l -> serverWorld.setChunkForced(ChunkPos.longX(l), ChunkPos.longZ(l), false));
 		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.forceload.removed.all", dimensionType), true);
 		return 0;
 	}
@@ -155,7 +155,7 @@ public class ForceLoadCommand {
 
 				for (int s = m; s <= o; s++) {
 					for (int t = n; t <= p; t++) {
-						boolean bl2 = serverWorld.method_8461(s, t, bl);
+						boolean bl2 = serverWorld.setChunkForced(s, t, bl);
 						if (bl2) {
 							r++;
 							if (chunkPos == null) {

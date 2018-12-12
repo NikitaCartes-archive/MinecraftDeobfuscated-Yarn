@@ -7,8 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public abstract class FlowerFeature extends Feature<DefaultFeatureConfig> {
 	public FlowerFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
@@ -16,7 +15,7 @@ public abstract class FlowerFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean method_13176(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		BlockState blockState = this.method_13175(random, blockPos);
 		int i = 0;

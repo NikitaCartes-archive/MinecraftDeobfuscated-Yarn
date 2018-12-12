@@ -3,22 +3,22 @@ package net.minecraft.entity.mob;
 import java.util.Random;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.class_1367;
 import net.minecraft.class_1379;
 import net.minecraft.class_1396;
 import net.minecraft.class_1399;
 import net.minecraft.class_1414;
-import net.minecraft.class_3730;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.RangedAttacker;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
 import net.minecraft.entity.ai.goal.ProjectileAttackGoal;
 import net.minecraft.entity.ai.pathing.EntityMobNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
@@ -83,10 +83,10 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 	}
 
 	@Override
-	public EntityData method_5943(
-		IWorld iWorld, LocalDifficulty localDifficulty, class_3730 arg, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	public EntityData prepareEntityData(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.method_5943(iWorld, localDifficulty, arg, entityData, compoundTag);
+		entityData = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		if (this.getEquippedStack(EquipmentSlot.HAND_OFF).isEmpty() && this.random.nextFloat() < 0.03F) {
 			this.setEquippedStack(EquipmentSlot.HAND_OFF, new ItemStack(Items.field_8864));
 			this.handDropChances[EquipmentSlot.HAND_OFF.getEntitySlotId()] = 2.0F;
@@ -96,11 +96,11 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 	}
 
 	@Override
-	public boolean method_5979(IWorld iWorld, class_3730 arg) {
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
 		Biome biome = iWorld.getBiome(new BlockPos(this.x, this.y, this.z));
 		return biome != Biomes.field_9438 && biome != Biomes.field_9463
-			? this.random.nextInt(40) == 0 && this.method_7015() && super.method_5979(iWorld, arg)
-			: this.random.nextInt(15) == 0 && super.method_5979(iWorld, arg);
+			? this.random.nextInt(40) == 0 && this.method_7015() && super.canSpawn(iWorld, spawnType)
+			: this.random.nextInt(15) == 0 && super.canSpawn(iWorld, spawnType);
 	}
 
 	private boolean method_7015() {
@@ -208,7 +208,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 
 	@Override
 	public void method_5790() {
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			if (this.method_6034() && this.isInsideWater() && this.method_7018()) {
 				this.navigation = this.field_7234;
 				this.method_5796(true);
@@ -325,7 +325,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 		}
 	}
 
-	static class class_1554 extends class_1367 {
+	static class class_1554 extends MoveToTargetPosGoal {
 		private final DrownedEntity field_7237;
 
 		public class_1554(DrownedEntity drownedEntity, double d) {
@@ -347,7 +347,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 		}
 
 		@Override
-		protected boolean method_6296(ViewableWorld viewableWorld, BlockPos blockPos) {
+		protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
 			BlockPos blockPos2 = blockPos.up();
 			return viewableWorld.isAir(blockPos2) && viewableWorld.isAir(blockPos2.up())
 				? viewableWorld.getBlockState(blockPos).hasSolidTopSurface(viewableWorld, blockPos)
@@ -408,7 +408,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 
 		@Override
 		public void start() {
-			this.field_7242.getNavigation().method_6337(this.field_7240, this.field_7239, this.field_7238, this.field_7243);
+			this.field_7242.getNavigation().startMovingTo(this.field_7240, this.field_7239, this.field_7238, this.field_7243);
 		}
 
 		@Nullable
@@ -458,7 +458,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 					return;
 				}
 
-				this.field_7246.getNavigation().method_6337(vec3d.x, vec3d.y, vec3d.z, this.field_7245);
+				this.field_7246.getNavigation().startMovingTo(vec3d.x, vec3d.y, vec3d.z, this.field_7245);
 			}
 		}
 

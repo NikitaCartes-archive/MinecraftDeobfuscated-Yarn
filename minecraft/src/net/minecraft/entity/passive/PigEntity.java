@@ -35,7 +35,7 @@ import net.minecraft.world.World;
 public class PigEntity extends AnimalEntity {
 	private static final TrackedData<Boolean> SADDLED = DataTracker.registerData(PigEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> field_6815 = DataTracker.registerData(PigEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final Ingredient field_6817 = Ingredient.ofItems(Items.field_8179, Items.field_8567, Items.field_8186);
+	private static final Ingredient BREEDING_INGREDIENT = Ingredient.method_8091(Items.field_8179, Items.field_8567, Items.field_8186);
 	private boolean field_6814;
 	private int field_6812;
 	private int field_6813;
@@ -50,8 +50,8 @@ public class PigEntity extends AnimalEntity {
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new class_1374(this, 1.25));
 		this.goalSelector.add(3, new AnimalMateGoal(this, 1.0));
-		this.goalSelector.add(4, new TemptGoal(this, 1.2, Ingredient.ofItems(Items.field_8184), false));
-		this.goalSelector.add(4, new TemptGoal(this, 1.2, false, field_6817));
+		this.goalSelector.add(4, new TemptGoal(this, 1.2, Ingredient.method_8091(Items.field_8184), false));
+		this.goalSelector.add(4, new TemptGoal(this, 1.2, false, BREEDING_INGREDIENT));
 		this.goalSelector.add(5, new FollowParentGoal(this, 1.1));
 		this.goalSelector.add(6, new class_1394(this, 1.0));
 		this.goalSelector.add(7, new class_1361(this, PlayerEntity.class, 6.0F));
@@ -67,13 +67,13 @@ public class PigEntity extends AnimalEntity {
 
 	@Nullable
 	@Override
-	public Entity method_5642() {
+	public Entity getPrimaryPassenger() {
 		return this.getPassengerList().isEmpty() ? null : (Entity)this.getPassengerList().get(0);
 	}
 
 	@Override
 	public boolean method_5956() {
-		Entity entity = this.method_5642();
+		Entity entity = this.getPrimaryPassenger();
 		if (!(entity instanceof PlayerEntity)) {
 			return false;
 		} else {
@@ -84,7 +84,7 @@ public class PigEntity extends AnimalEntity {
 
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
-		if (field_6815.equals(trackedData) && this.world.isRemote) {
+		if (field_6815.equals(trackedData) && this.world.isClient) {
 			this.field_6814 = true;
 			this.field_6812 = 0;
 			this.field_6813 = this.dataTracker.get(field_6815);
@@ -140,7 +140,7 @@ public class PigEntity extends AnimalEntity {
 				itemStack.interactWithEntity(playerEntity, this, hand);
 				return true;
 			} else if (this.isSaddled() && !this.hasPassengers()) {
-				if (!this.world.isRemote) {
+				if (!this.world.isClient) {
 					playerEntity.startRiding(this);
 				}
 
@@ -157,10 +157,10 @@ public class PigEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void method_16078() {
-		super.method_16078();
+	protected void dropInventory() {
+		super.dropInventory();
 		if (this.isSaddled()) {
-			this.dropItem(Items.field_8175);
+			this.method_5706(Items.field_8175);
 		}
 	}
 
@@ -178,7 +178,7 @@ public class PigEntity extends AnimalEntity {
 
 	@Override
 	public void onStruckByLightning(LightningEntity lightningEntity) {
-		if (!this.world.isRemote && !this.invalid) {
+		if (!this.world.isClient && !this.invalid) {
 			PigZombieEntity pigZombieEntity = new PigZombieEntity(this.world);
 			pigZombieEntity.setEquippedStack(EquipmentSlot.HAND_MAIN, new ItemStack(Items.field_8845));
 			pigZombieEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
@@ -202,7 +202,7 @@ public class PigEntity extends AnimalEntity {
 			this.pitch = entity.pitch * 0.5F;
 			this.setRotation(this.yaw, this.pitch);
 			this.field_6283 = this.yaw;
-			this.headPitch = this.yaw;
+			this.headYaw = this.yaw;
 			this.stepHeight = 1.0F;
 			this.field_6281 = this.method_6029() * 0.1F;
 			if (this.field_6814 && this.field_6812++ > this.field_6813) {
@@ -257,7 +257,7 @@ public class PigEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean method_6481(ItemStack itemStack) {
-		return field_6817.matches(itemStack);
+	public boolean isBreedingItem(ItemStack itemStack) {
+		return BREEDING_INGREDIENT.matches(itemStack);
 	}
 }

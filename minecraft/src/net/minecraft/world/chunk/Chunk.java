@@ -9,16 +9,15 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_2810;
-import net.minecraft.class_2843;
-import net.minecraft.class_3449;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sortme.structures.StructureStart;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.BlockViewWithStructures;
 import net.minecraft.world.LightType;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.biome.Biome;
@@ -27,7 +26,7 @@ import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.Heightmap;
 import org.apache.logging.log4j.LogManager;
 
-public interface Chunk extends class_2810 {
+public interface Chunk extends BlockViewWithStructures {
 	@Nullable
 	BlockState setBlockState(BlockPos blockPos, BlockState blockState, boolean bl);
 
@@ -53,27 +52,27 @@ public interface Chunk extends class_2810 {
 		return chunkSection == null ? 0 : chunkSection.getYOffset();
 	}
 
-	Set<BlockPos> method_12021();
+	Set<BlockPos> getBlockEntityPositions();
 
 	ChunkSection[] getSectionArray();
 
 	@Nullable
-	LightingProvider method_12023();
+	LightingProvider getLightingProvider();
 
 	default int method_12035(BlockPos blockPos, int i, boolean bl) {
-		LightingProvider lightingProvider = this.method_12023();
+		LightingProvider lightingProvider = this.getLightingProvider();
 		if (lightingProvider == null) {
 			return 0;
 		} else {
-			int j = bl ? lightingProvider.get(LightType.field_9284).getLightLevel(blockPos) - i : 0;
-			int k = lightingProvider.get(LightType.field_9282).getLightLevel(blockPos);
+			int j = bl ? lightingProvider.get(LightType.SKY_LIGHT).getLightLevel(blockPos) - i : 0;
+			int k = lightingProvider.get(LightType.BLOCK_LIGHT).getLightLevel(blockPos);
 			return Math.max(k, j);
 		}
 	}
 
-	Collection<Entry<Heightmap.Type, Heightmap>> method_12011();
+	Collection<Entry<Heightmap.Type, Heightmap>> getHeightmaps();
 
-	void method_12037(Heightmap.Type type, long[] ls);
+	void setHeightmap(Heightmap.Type type, long[] ls);
 
 	Heightmap getHeightmap(Heightmap.Type type);
 
@@ -81,11 +80,11 @@ public interface Chunk extends class_2810 {
 
 	ChunkPos getPos();
 
-	void method_12043(long l);
+	void setLastSaveTime(long l);
 
-	Map<String, class_3449> method_12016();
+	Map<String, StructureStart> getStructureStarts();
 
-	void method_12034(Map<String, class_3449> map);
+	void setStructureStarts(Map<String, StructureStart> map);
 
 	default Biome getBiome(BlockPos blockPos) {
 		int i = blockPos.getX() & 15;
@@ -95,24 +94,24 @@ public interface Chunk extends class_2810 {
 
 	Biome[] getBiomeArray();
 
-	void method_12008(boolean bl);
+	void setShouldSave(boolean bl);
 
-	boolean method_12044();
+	boolean needsSaving();
 
 	ChunkStatus getStatus();
 
 	void removeBlockEntity(BlockPos blockPos);
 
-	void method_12027(ChunkManager chunkManager);
+	void setLightingProvider(LightingProvider lightingProvider);
 
 	default void markBlockForPostProcessing(BlockPos blockPos) {
 		LogManager.getLogger().warn("Trying to mark a block for PostProcessing @ {}, but this operation is not supported.", blockPos);
 	}
 
-	ShortList[] method_12012();
+	ShortList[] getPostProcessingLists();
 
-	default void method_12029(short s, int i) {
-		getListFromArray(this.method_12012(), i).add(s);
+	default void markBlockForPostProcessing(short s, int i) {
+		getListFromArray(this.getPostProcessingLists(), i).add(s);
 	}
 
 	default void addPendingBlockEntityTag(CompoundTag compoundTag) {
@@ -120,29 +119,29 @@ public interface Chunk extends class_2810 {
 	}
 
 	@Nullable
-	default CompoundTag method_12024(BlockPos blockPos) {
+	default CompoundTag getBlockEntityTagAt(BlockPos blockPos) {
 		throw new UnsupportedOperationException();
 	}
 
-	default void setBiomes(Biome[] biomes) {
+	default void setBiomeArray(Biome[] biomes) {
 		throw new UnsupportedOperationException();
 	}
 
 	Stream<BlockPos> method_12018();
 
-	TickScheduler<Block> method_12013();
+	TickScheduler<Block> getBlockTickScheduler();
 
-	TickScheduler<Fluid> method_12014();
+	TickScheduler<Fluid> getFluidTickScheduler();
 
-	default BitSet method_12025(GenerationStep.Carver carver) {
+	default BitSet getCarvingMask(GenerationStep.Carver carver) {
 		throw new RuntimeException("Meaningless in this context");
 	}
 
-	class_2843 method_12003();
+	UpgradeData getUpgradeData();
 
-	void method_12028(long l);
+	void setInhabitedTime(long l);
 
-	long method_12033();
+	long getInhabitedTime();
 
 	static ShortList getListFromArray(ShortList[] shortLists, int i) {
 		if (shortLists[i] == null) {
@@ -152,7 +151,7 @@ public interface Chunk extends class_2810 {
 		return shortLists[i];
 	}
 
-	boolean method_12038();
+	boolean isLightOn();
 
-	void method_12020(boolean bl);
+	void setLightOn(boolean bl);
 }

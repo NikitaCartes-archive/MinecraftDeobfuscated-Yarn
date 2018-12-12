@@ -27,8 +27,8 @@ import net.minecraft.client.gui.menu.YesNoGui;
 import net.minecraft.client.gui.menu.settings.LanguageSettingsGui;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.LanguageButtonWidget;
+import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.settings.GameOptions;
 import net.minecraft.realms.RealmsBridge;
 import net.minecraft.resource.Resource;
 import net.minecraft.server.world.ServerDemoWorld;
@@ -105,7 +105,7 @@ public class MainMenuGui extends Gui {
 	}
 
 	private boolean areRealmsNotificationsEnabled() {
-		return MinecraftClient.getInstance().options.isEnabled(GameOptions.Option.REALMS_NOTIFICATIONS) && this.realmsNotificationGui != null;
+		return MinecraftClient.getInstance().field_1690.isEnabled(GameOptions.Option.REALMS_NOTIFICATIONS) && this.realmsNotificationGui != null;
 	}
 
 	@Override
@@ -121,7 +121,7 @@ public class MainMenuGui extends Gui {
 	}
 
 	@Override
-	public boolean canClose() {
+	public boolean doesEscapeKeyClose() {
 		return false;
 	}
 
@@ -150,7 +150,7 @@ public class MainMenuGui extends Gui {
 		this.field_2602 = this.addButton(new ButtonWidget(0, this.width / 2 - 100, j + 72 + 12, 98, 20, I18n.translate("menu.options")) {
 			@Override
 			public void onPressed(double d, double e) {
-				MainMenuGui.this.client.openGui(new SettingsGui(MainMenuGui.this, MainMenuGui.this.client.options));
+				MainMenuGui.this.client.openGui(new SettingsGui(MainMenuGui.this, MainMenuGui.this.client.field_1690));
 			}
 		});
 		this.addButton(new ButtonWidget(4, this.width / 2 + 2, j + 72 + 12, 98, 20, I18n.translate("menu.quit")) {
@@ -159,12 +159,15 @@ public class MainMenuGui extends Gui {
 				MainMenuGui.this.client.stopThread();
 			}
 		});
-		this.addButton(new LanguageButtonWidget(5, this.width / 2 - 124, j + 72 + 12) {
-			@Override
-			public void onPressed(double d, double e) {
-				MainMenuGui.this.client.openGui(new LanguageSettingsGui(MainMenuGui.this, MainMenuGui.this.client.options, MainMenuGui.this.client.getLanguageManager()));
+		this.addButton(
+			new LanguageButtonWidget(5, this.width / 2 - 124, j + 72 + 12) {
+				@Override
+				public void onPressed(double d, double e) {
+					MainMenuGui.this.client
+						.openGui(new LanguageSettingsGui(MainMenuGui.this, MainMenuGui.this.client.field_1690, MainMenuGui.this.client.getLanguageManager()));
+				}
 			}
-		});
+		);
 		synchronized (this.mutex) {
 			this.warningTitleWidth = this.fontRenderer.getStringWidth(this.warningTitle);
 			this.warningTextWidth = this.fontRenderer.getStringWidth(this.warningText);
@@ -176,7 +179,7 @@ public class MainMenuGui extends Gui {
 		}
 
 		this.client.setConnectedToRealms(false);
-		if (MinecraftClient.getInstance().options.isEnabled(GameOptions.Option.REALMS_NOTIFICATIONS) && !this.field_2599) {
+		if (MinecraftClient.getInstance().field_1690.isEnabled(GameOptions.Option.REALMS_NOTIFICATIONS) && !this.field_2599) {
 			RealmsBridge realmsBridge = new RealmsBridge();
 			this.realmsNotificationGui = realmsBridge.getNotificationScreen(this);
 			this.field_2599 = true;
@@ -293,7 +296,7 @@ public class MainMenuGui extends Gui {
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef((float)(this.width / 2 + 90), 70.0F, 0.0F);
 		GlStateManager.rotatef(-20.0F, 0.0F, 0.0F, 1.0F);
-		float g = 1.8F - MathHelper.abs(MathHelper.sin((float)(SystemUtil.getMeasuringTimeMili() % 1000L) / 1000.0F * (float) (Math.PI * 2)) * 0.1F);
+		float g = 1.8F - MathHelper.abs(MathHelper.sin((float)(SystemUtil.getMeasuringTimeMs() % 1000L) / 1000.0F * (float) (Math.PI * 2)) * 0.1F);
 		g = g * 100.0F / (float)(this.fontRenderer.getStringWidth(this.splashText) + 32);
 		GlStateManager.scalef(g, g, g);
 		this.drawStringCentered(this.fontRenderer, this.splashText, 0, -8, -256);

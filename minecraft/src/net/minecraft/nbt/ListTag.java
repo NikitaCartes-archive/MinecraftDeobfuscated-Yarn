@@ -243,7 +243,7 @@ public class ListTag extends AbstractListTag<Tag> {
 	}
 
 	@Override
-	public void remove(int i) {
+	public void removeAt(int i) {
 		this.value.remove(i);
 	}
 
@@ -296,7 +296,7 @@ public class ListTag extends AbstractListTag<Tag> {
 		}
 	}
 
-	public int getType() {
+	public int getListType() {
 		return this.type;
 	}
 

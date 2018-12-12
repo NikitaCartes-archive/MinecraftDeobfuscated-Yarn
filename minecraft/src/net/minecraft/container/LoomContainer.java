@@ -2,7 +2,6 @@ package net.minecraft.container;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1662;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,6 +16,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.StringTextComponent;
@@ -103,13 +103,13 @@ public class LoomContainer extends CraftingContainer {
 	}
 
 	@Override
-	public int getCrafitngHeight() {
+	public int getCraftingHeight() {
 		return 1;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int method_7658() {
+	public int getCraftingSlotCount() {
 		return 3;
 	}
 
@@ -123,7 +123,7 @@ public class LoomContainer extends CraftingContainer {
 	}
 
 	@Override
-	public void method_7654(class_1662 arg) {
+	public void populateRecipeFinder(RecipeFinder recipeFinder) {
 	}
 
 	@Override
@@ -176,7 +176,7 @@ public class LoomContainer extends CraftingContainer {
 				if (bl) {
 					this.field_7847 = 0;
 				} else {
-					this.field_7847 = ((BannerPatternItem)itemStack3.getItem()).method_7704().ordinal();
+					this.field_7847 = ((BannerPatternItem)itemStack3.getItem()).getPattern().ordinal();
 					this.method_7648();
 				}
 
@@ -245,14 +245,14 @@ public class LoomContainer extends CraftingContainer {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			this.inv.removeInvStack(3);
 			this.method_7607(playerEntity, playerEntity.world, this.inv);
 		}
 	}
 
 	private void method_7648() {
-		if (!this.world.isRemote && this.field_7847 > 0) {
+		if (!this.world.isClient && this.field_7847 > 0) {
 			ItemStack itemStack = this.inv.getInvStack(0);
 			ItemStack itemStack2 = this.inv.getInvStack(1);
 			ItemStack itemStack3 = ItemStack.EMPTY;

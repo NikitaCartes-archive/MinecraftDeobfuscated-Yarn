@@ -39,9 +39,9 @@ public class class_2437 implements Consumer<BiConsumer<Identifier, LootSupplier.
 				.withPool(
 					LootPool.create()
 						.withRolls(ConstantLootTableRange.create(1))
-						.method_351(LootTableEntry.method_428(LootTables.field_266).setWeight(10).setQuality(-2))
-						.method_351(LootTableEntry.method_428(LootTables.field_854).setWeight(5).setQuality(2))
-						.method_351(LootTableEntry.method_428(LootTables.field_795).setWeight(85).setQuality(-1))
+						.withEntry(LootTableEntry.method_428(LootTables.field_266).setWeight(10).setQuality(-2))
+						.withEntry(LootTableEntry.method_428(LootTables.field_854).setWeight(5).setQuality(2))
+						.withEntry(LootTableEntry.method_428(LootTables.field_795).setWeight(85).setQuality(-1))
 				)
 		);
 		biConsumer.accept(
@@ -49,10 +49,10 @@ public class class_2437 implements Consumer<BiConsumer<Identifier, LootSupplier.
 			LootSupplier.create()
 				.withPool(
 					LootPool.create()
-						.method_351(ItemEntry.method_411(Items.field_8429).setWeight(60))
-						.method_351(ItemEntry.method_411(Items.field_8209).setWeight(25))
-						.method_351(ItemEntry.method_411(Items.field_8846).setWeight(2))
-						.method_351(ItemEntry.method_411(Items.field_8323).setWeight(13))
+						.withEntry(ItemEntry.builder(Items.field_8429).setWeight(60))
+						.withEntry(ItemEntry.builder(Items.field_8209).setWeight(25))
+						.withEntry(ItemEntry.builder(Items.field_8846).setWeight(2))
+						.withEntry(ItemEntry.builder(Items.field_8323).setWeight(13))
 				)
 		);
 		biConsumer.accept(
@@ -60,27 +60,23 @@ public class class_2437 implements Consumer<BiConsumer<Identifier, LootSupplier.
 			LootSupplier.create()
 				.withPool(
 					LootPool.create()
-						.method_351(
-							ItemEntry.method_411(Items.field_8370).setWeight(10).withFunction(SetDamageLootFunction.method_633(UniformLootTableRange.method_377(0.0F, 0.9F)))
-						)
-						.method_351(ItemEntry.method_411(Items.field_8745).setWeight(10))
-						.method_351(ItemEntry.method_411(Items.field_8606).setWeight(10))
-						.method_351(
-							ItemEntry.method_411(Items.field_8574)
+						.withEntry(ItemEntry.builder(Items.field_8370).setWeight(10).withFunction(SetDamageLootFunction.method_633(UniformLootTableRange.between(0.0F, 0.9F))))
+						.withEntry(ItemEntry.builder(Items.field_8745).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.field_8606).setWeight(10))
+						.withEntry(
+							ItemEntry.builder(Items.field_8574)
 								.setWeight(10)
 								.withFunction(SetTagLootFunction.method_677(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:water"))))
 						)
-						.method_351(ItemEntry.method_411(Items.field_8276).setWeight(5))
-						.method_351(
-							ItemEntry.method_411(Items.field_8378).setWeight(2).withFunction(SetDamageLootFunction.method_633(UniformLootTableRange.method_377(0.0F, 0.9F)))
-						)
-						.method_351(ItemEntry.method_411(Items.field_8428).setWeight(10))
-						.method_351(ItemEntry.method_411(Items.field_8600).setWeight(5))
-						.method_351(ItemEntry.method_411(Items.field_8794).setWeight(1).withFunction(SetCountLootFunction.method_621(ConstantLootTableRange.create(10))))
-						.method_351(ItemEntry.method_411(Blocks.field_10348).setWeight(10))
-						.method_351(ItemEntry.method_411(Items.field_8511).setWeight(10))
-						.method_351(
-							ItemEntry.method_411(Blocks.field_10211)
+						.withEntry(ItemEntry.builder(Items.field_8276).setWeight(5))
+						.withEntry(ItemEntry.builder(Items.field_8378).setWeight(2).withFunction(SetDamageLootFunction.method_633(UniformLootTableRange.between(0.0F, 0.9F))))
+						.withEntry(ItemEntry.builder(Items.field_8428).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.field_8600).setWeight(5))
+						.withEntry(ItemEntry.builder(Items.field_8794).setWeight(1).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(10))))
+						.withEntry(ItemEntry.builder(Blocks.field_10348).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.field_8511).setWeight(10))
+						.withEntry(
+							ItemEntry.builder(Blocks.field_10211)
 								.withCondition(field_11346.or(field_11347).or(field_11350).or(field_11349).or(field_11348).or(field_11351).or(field_11352))
 								.setWeight(10)
 						)
@@ -91,21 +87,21 @@ public class class_2437 implements Consumer<BiConsumer<Identifier, LootSupplier.
 			LootSupplier.create()
 				.withPool(
 					LootPool.create()
-						.method_351(ItemEntry.method_411(Blocks.field_10588))
-						.method_351(ItemEntry.method_411(Items.field_8448))
-						.method_351(ItemEntry.method_411(Items.field_8175))
-						.method_351(
-							ItemEntry.method_411(Items.field_8102)
-								.withFunction(SetDamageLootFunction.method_633(UniformLootTableRange.method_377(0.0F, 0.25F)))
+						.withEntry(ItemEntry.builder(Blocks.field_10588))
+						.withEntry(ItemEntry.builder(Items.field_8448))
+						.withEntry(ItemEntry.builder(Items.field_8175))
+						.withEntry(
+							ItemEntry.builder(Items.field_8102)
+								.withFunction(SetDamageLootFunction.method_633(UniformLootTableRange.between(0.0F, 0.25F)))
 								.withFunction(EnchantWithLevelsLootFunction.method_481(ConstantLootTableRange.create(30)).method_484())
 						)
-						.method_351(
-							ItemEntry.method_411(Items.field_8378)
-								.withFunction(SetDamageLootFunction.method_633(UniformLootTableRange.method_377(0.0F, 0.25F)))
+						.withEntry(
+							ItemEntry.builder(Items.field_8378)
+								.withFunction(SetDamageLootFunction.method_633(UniformLootTableRange.between(0.0F, 0.25F)))
 								.withFunction(EnchantWithLevelsLootFunction.method_481(ConstantLootTableRange.create(30)).method_484())
 						)
-						.method_351(ItemEntry.method_411(Items.field_8529).withFunction(EnchantWithLevelsLootFunction.method_481(ConstantLootTableRange.create(30)).method_484()))
-						.method_351(ItemEntry.method_411(Items.field_8864))
+						.withEntry(ItemEntry.builder(Items.field_8529).withFunction(EnchantWithLevelsLootFunction.method_481(ConstantLootTableRange.create(30)).method_484()))
+						.withEntry(ItemEntry.builder(Items.field_8864))
 				)
 		);
 	}

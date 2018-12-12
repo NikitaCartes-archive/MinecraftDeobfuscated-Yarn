@@ -24,7 +24,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1138;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.settings.GameOptions;
+import net.minecraft.client.options.GameOptions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;

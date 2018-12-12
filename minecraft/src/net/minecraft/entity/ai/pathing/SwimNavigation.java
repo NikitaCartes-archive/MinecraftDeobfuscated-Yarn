@@ -107,7 +107,7 @@ public class SwimNavigation extends EntityNavigation {
 		if (this.field_6681 != null && !this.field_6681.isFinished()) {
 			Vec3d vec3d2 = this.field_6681.getCurrentPosition();
 			if (vec3d2.equals(this.field_6680)) {
-				this.field_6670 = this.field_6670 + (SystemUtil.getMeasuringTimeMili() - this.field_6669);
+				this.field_6670 = this.field_6670 + (SystemUtil.getMeasuringTimeMs() - this.field_6669);
 			} else {
 				this.field_6680 = vec3d2;
 				double d = vec3d.distanceTo(this.field_6680);
@@ -121,7 +121,7 @@ public class SwimNavigation extends EntityNavigation {
 				this.method_6340();
 			}
 
-			this.field_6669 = SystemUtil.getMeasuringTimeMili();
+			this.field_6669 = SystemUtil.getMeasuringTimeMs();
 		}
 	}
 
@@ -134,7 +134,7 @@ public class SwimNavigation extends EntityNavigation {
 
 	@Override
 	public boolean isValidPosition(BlockPos blockPos) {
-		return !this.world.getBlockState(blockPos).method_11598(this.world, blockPos);
+		return !this.world.getBlockState(blockPos).isFullOpaque(this.world, blockPos);
 	}
 
 	@Override

@@ -3,13 +3,13 @@ package net.minecraft.world;
 import it.unimi.dsi.fastutil.shorts.ShortList;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import net.minecraft.class_2839;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TaskPriority;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkPos;
+import net.minecraft.world.chunk.ProtoChunk;
 
 public class ChunkTickScheduler<T> implements TickScheduler<T> {
 	protected final Predicate<T> shouldExclude;
@@ -45,7 +45,7 @@ public class ChunkTickScheduler<T> implements TickScheduler<T> {
 		for (int i = 0; i < this.scheduledPositions.length; i++) {
 			if (this.scheduledPositions[i] != null) {
 				for (Short short_ : this.scheduledPositions[i]) {
-					BlockPos blockPos = class_2839.joinBlockPos(short_, i, this.pos);
+					BlockPos blockPos = ProtoChunk.joinBlockPos(short_, i, this.pos);
 					tickScheduler.schedule(blockPos, (T)function.apply(blockPos), 0);
 				}
 
@@ -61,7 +61,7 @@ public class ChunkTickScheduler<T> implements TickScheduler<T> {
 
 	@Override
 	public void schedule(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
-		Chunk.getListFromArray(this.scheduledPositions, blockPos.getY() >> 4).add(class_2839.getPackedChunkSliceRelative(blockPos));
+		Chunk.getListFromArray(this.scheduledPositions, blockPos.getY() >> 4).add(ProtoChunk.getPackedSectionRelative(blockPos));
 	}
 
 	@Override

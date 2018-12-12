@@ -29,7 +29,7 @@ public class MutableIntBoundingBox {
 		return new MutableIntBoundingBox(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
 	}
 
-	public static MutableIntBoundingBox method_14667(int i, int j, int k, int l, int m, int n, int o, int p, int q, Direction direction) {
+	public static MutableIntBoundingBox createRotated(int i, int j, int k, int l, int m, int n, int o, int p, int q, Direction direction) {
 		switch (direction) {
 			case NORTH:
 				return new MutableIntBoundingBox(i + l, j + m, k - q + 1 + n, i + o - 1 + l, j + p - 1 + m, k + n);

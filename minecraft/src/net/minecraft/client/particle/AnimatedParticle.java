@@ -62,7 +62,7 @@ public class AnimatedParticle extends Particle {
 
 		this.setSpriteIndex(this.textureId + this.frameCount - 1 - this.age * this.frameCount / this.maxAge);
 		this.velocityY = this.velocityY + (double)this.field_3881;
-		this.addPos(this.velocityX, this.velocityY, this.velocityZ);
+		this.move(this.velocityX, this.velocityY, this.velocityZ);
 		this.velocityX = this.velocityX * (double)this.field_3879;
 		this.velocityY = this.velocityY * (double)this.field_3879;
 		this.velocityZ = this.velocityZ * (double)this.field_3879;

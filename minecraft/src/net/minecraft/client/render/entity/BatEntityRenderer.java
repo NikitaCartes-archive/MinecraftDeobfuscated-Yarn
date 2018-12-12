@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class BatEntityRenderer extends EntityMobRenderer<BatEntity> {
+public class BatEntityRenderer extends MobEntityRenderer<BatEntity, BatEntityModel> {
 	private static final Identifier SKIN = new Identifier("textures/entity/bat.png");
 
 	public BatEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
@@ -24,13 +24,13 @@ public class BatEntityRenderer extends EntityMobRenderer<BatEntity> {
 		GlStateManager.scalef(0.35F, 0.35F, 0.35F);
 	}
 
-	protected void method_3882(BatEntity batEntity, float f, float g, float h) {
+	protected void setupTransforms(BatEntity batEntity, float f, float g, float h) {
 		if (batEntity.isRoosting()) {
 			GlStateManager.translatef(0.0F, -0.1F, 0.0F);
 		} else {
 			GlStateManager.translatef(0.0F, MathHelper.cos(f * 0.3F) * 0.1F, 0.0F);
 		}
 
-		super.method_4058(batEntity, f, g, h);
+		super.setupTransforms(batEntity, f, g, h);
 	}
 }

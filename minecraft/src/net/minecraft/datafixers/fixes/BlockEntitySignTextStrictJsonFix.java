@@ -19,7 +19,7 @@ import net.minecraft.util.JsonHelper;
 import org.apache.commons.lang3.StringUtils;
 
 public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
-	public static final Gson field_15827 = new GsonBuilder().registerTypeAdapter(TextComponent.class, new JsonDeserializer<TextComponent>() {
+	public static final Gson GSON = new GsonBuilder().registerTypeAdapter(TextComponent.class, new JsonDeserializer<TextComponent>() {
 		public TextComponent method_15583(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			if (jsonElement.isJsonPrimitive()) {
 				return new StringTextComponent(jsonElement.getAsString());
@@ -53,7 +53,7 @@ public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
 		if (!"null".equals(string2) && !StringUtils.isEmpty(string2)) {
 			if (string2.charAt(0) == '"' && string2.charAt(string2.length() - 1) == '"' || string2.charAt(0) == '{' && string2.charAt(string2.length() - 1) == '}') {
 				try {
-					textComponent = JsonHelper.deserialize(field_15827, string2, TextComponent.class, true);
+					textComponent = JsonHelper.deserialize(GSON, string2, TextComponent.class, true);
 					if (textComponent == null) {
 						textComponent = new StringTextComponent("");
 					}

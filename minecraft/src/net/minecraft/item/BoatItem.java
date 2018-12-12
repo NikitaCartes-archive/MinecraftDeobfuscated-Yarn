@@ -72,7 +72,7 @@ public class BoatItem extends Item {
 				if (!world.method_8587(boatEntity, boatEntity.getBoundingBox().expand(-0.1))) {
 					return new TypedActionResult<>(ActionResult.FAILURE, itemStack);
 				} else {
-					if (!world.isRemote) {
+					if (!world.isClient) {
 						world.spawnEntity(boatEntity);
 					}
 

@@ -9,7 +9,7 @@ import com.google.gson.JsonObject;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.advancement.ServerAdvancementManager;
+import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.predicate.entity.EntityEffectPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -17,7 +17,7 @@ import net.minecraft.util.Identifier;
 
 public class EffectsChangedCriterion implements Criterion<EffectsChangedCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("effects_changed");
-	private final Map<ServerAdvancementManager, EffectsChangedCriterion.Handler> handlers = Maps.<ServerAdvancementManager, EffectsChangedCriterion.Handler>newHashMap();
+	private final Map<PlayerAdvancementTracker, EffectsChangedCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, EffectsChangedCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -25,34 +25,34 @@ public class EffectsChangedCriterion implements Criterion<EffectsChangedCriterio
 	}
 
 	@Override
-	public void addCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<EffectsChangedCriterion.Conditions> conditionsContainer
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<EffectsChangedCriterion.Conditions> conditionsContainer
 	) {
-		EffectsChangedCriterion.Handler handler = (EffectsChangedCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		EffectsChangedCriterion.Handler handler = (EffectsChangedCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new EffectsChangedCriterion.Handler(serverAdvancementManager);
-			this.handlers.put(serverAdvancementManager, handler);
+			handler = new EffectsChangedCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void removeCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<EffectsChangedCriterion.Conditions> conditionsContainer
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<EffectsChangedCriterion.Conditions> conditionsContainer
 	) {
-		EffectsChangedCriterion.Handler handler = (EffectsChangedCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		EffectsChangedCriterion.Handler handler = (EffectsChangedCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(serverAdvancementManager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void removePlayer(ServerAdvancementManager serverAdvancementManager) {
-		this.handlers.remove(serverAdvancementManager);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
 	public EffectsChangedCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -84,7 +84,7 @@ public class EffectsChangedCriterion implements Criterion<EffectsChangedCriterio
 		}
 
 		@Override
-		public JsonElement method_807() {
+		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("effects", this.effects.serialize());
 			return jsonObject;
@@ -92,11 +92,11 @@ public class EffectsChangedCriterion implements Criterion<EffectsChangedCriterio
 	}
 
 	static class Handler {
-		private final ServerAdvancementManager manager;
+		private final PlayerAdvancementTracker field_9561;
 		private final Set<Criterion.ConditionsContainer<EffectsChangedCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<EffectsChangedCriterion.Conditions>>newHashSet();
 
-		public Handler(ServerAdvancementManager serverAdvancementManager) {
-			this.manager = serverAdvancementManager;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.field_9561 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
@@ -126,7 +126,7 @@ public class EffectsChangedCriterion implements Criterion<EffectsChangedCriterio
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<EffectsChangedCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
+					conditionsContainerx.apply(this.field_9561);
 				}
 			}
 		}

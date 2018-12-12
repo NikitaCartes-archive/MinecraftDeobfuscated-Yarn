@@ -15,18 +15,18 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.decoration.painting.PaintingMotive;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.particle.Particle;
+import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
-import net.minecraft.sortme.PaintingMotive;
 import net.minecraft.sortme.StructurePiece;
 import net.minecraft.sortme.StructurePoolElement;
 import net.minecraft.sortme.rule.RuleTest;
@@ -37,6 +37,8 @@ import net.minecraft.stat.StatType;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.IntIterable;
+import net.minecraft.village.VillagerProfession;
+import net.minecraft.village.VillagerType;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeSourceType;
@@ -58,7 +60,7 @@ public abstract class Registry<T> implements IntIterable<T> {
 	private static final Map<Identifier, Supplier<?>> field_11140 = Maps.<Identifier, Supplier<?>>newLinkedHashMap();
 	public static final ModifiableRegistry<ModifiableRegistry<?>> REGISTRIES = new IdRegistry<>();
 	public static final Registry<SoundEvent> SOUND_EVENT = method_10224("sound_event", new IdRegistry<>(), () -> SoundEvents.field_15197);
-	public static final DefaultMappedRegistry<Fluid> FLUID = method_10224("fluid", new DefaultMappedRegistry<>("empty"), () -> Fluids.field_15906);
+	public static final DefaultMappedRegistry<Fluid> FLUID = method_10224("fluid", new DefaultMappedRegistry<>("empty"), () -> Fluids.EMPTY);
 	public static final Registry<StatusEffect> STATUS_EFFECT = method_10224("mob_effect", new IdRegistry<>(), () -> StatusEffects.field_5926);
 	public static final DefaultMappedRegistry<Block> BLOCK = method_10224("block", new DefaultMappedRegistry<>("air"), () -> Blocks.field_10124);
 	public static final Registry<Enchantment> ENCHANTMENT = method_10224("enchantment", new IdRegistry<>(), () -> Enchantments.field_9130);
@@ -70,7 +72,7 @@ public abstract class Registry<T> implements IntIterable<T> {
 	public static final Registry<Feature<?>> FEATURE = method_10224("feature", new IdRegistry<>(), () -> Feature.field_13517);
 	public static final Registry<Decorator<?>> DECORATOR = method_10224("decorator", new IdRegistry<>(), () -> Decorator.NOPE);
 	public static final Registry<Biome> BIOME = method_10224("biome", new IdRegistry<>(), () -> Biomes.DEFAULT);
-	public static final Registry<ParticleType<? extends Particle>> PARTICLE_TYPE = method_10224(
+	public static final Registry<ParticleType<? extends ParticleParameters>> PARTICLE_TYPE = method_10224(
 		"particle_type", new IdRegistry<>(), () -> ParticleTypes.field_11217
 	);
 	public static final Registry<BiomeSourceType<?, ?>> BIOME_SOURCE_TYPE = method_10224(
@@ -86,7 +88,7 @@ public abstract class Registry<T> implements IntIterable<T> {
 	);
 	public static final Registry<Identifier> CUSTOM_STAT = method_10224("custom_stat", new IdRegistry<>(), () -> Stats.field_15428);
 	public static final DefaultMappedRegistry<ChunkStatus> CHUNK_STATUS = method_10224(
-		"chunk_status", new DefaultMappedRegistry<>("empty"), () -> ChunkStatus.field_12798
+		"chunk_status", new DefaultMappedRegistry<>("empty"), () -> ChunkStatus.EMPTY
 	);
 	public static final Registry<StructureFeature<?>> STRUCTURE_FEATURE = method_10224(
 		"structure_feature", new IdRegistry<>(), () -> StructureFeatures.field_16709
@@ -100,6 +102,12 @@ public abstract class Registry<T> implements IntIterable<T> {
 		"structure_pool_element", new IdRegistry<>(), () -> StructurePoolElement.field_16972
 	);
 	public static final Registry<StatType<?>> STAT_TYPE = registerRegistry("stat_type", new IdRegistry<>());
+	public static final DefaultMappedRegistry<VillagerType> VILLAGER_TYPE = method_10224(
+		"villager_type", new DefaultMappedRegistry<>("plains"), () -> VillagerType.field_17073
+	);
+	public static final DefaultMappedRegistry<VillagerProfession> VILLAGER_PROFESSION = method_10224(
+		"villager_profession", new DefaultMappedRegistry<>("none"), () -> VillagerProfession.field_17051
+	);
 
 	private static <T> void method_10227(String string, Supplier<T> supplier) {
 		field_11140.put(new Identifier(string), supplier);

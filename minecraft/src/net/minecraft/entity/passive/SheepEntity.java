@@ -12,13 +12,13 @@ import net.minecraft.class_1361;
 import net.minecraft.class_1374;
 import net.minecraft.class_1376;
 import net.minecraft.class_1394;
-import net.minecraft.class_3730;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.container.Container;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.EatGrassGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
@@ -33,7 +33,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemContainer;
+import net.minecraft.item.ItemProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -53,13 +53,13 @@ import net.minecraft.world.loot.LootTables;
 
 public class SheepEntity extends AnimalEntity {
 	private static final TrackedData<Byte> COLOR = DataTracker.registerData(SheepEntity.class, TrackedDataHandlerRegistry.BYTE);
-	private final CraftingInventory field_6866 = new CraftingInventory(new Container() {
+	private final CraftingInventory dyeCraftingInventory = new CraftingInventory(new Container() {
 		@Override
 		public boolean canUse(PlayerEntity playerEntity) {
 			return false;
 		}
 	}, 2, 1);
-	private static final Map<DyeColor, ItemContainer> field_6868 = SystemUtil.consume(Maps.newEnumMap(DyeColor.class), enumMap -> {
+	private static final Map<DyeColor, ItemProvider> DROPS = SystemUtil.consume(Maps.newEnumMap(DyeColor.class), enumMap -> {
 		enumMap.put(DyeColor.WHITE, Blocks.field_10446);
 		enumMap.put(DyeColor.ORANGE, Blocks.field_10095);
 		enumMap.put(DyeColor.MAGENTA, Blocks.field_10215);
@@ -77,7 +77,7 @@ public class SheepEntity extends AnimalEntity {
 		enumMap.put(DyeColor.RED, Blocks.field_10314);
 		enumMap.put(DyeColor.BLACK, Blocks.field_10146);
 	});
-	private static final Map<DyeColor, float[]> field_6867 = Maps.newEnumMap(
+	private static final Map<DyeColor, float[]> COLORS = Maps.newEnumMap(
 		(Map)Arrays.stream(DyeColor.values()).collect(Collectors.toMap(dyeColor -> dyeColor, SheepEntity::method_6630))
 	);
 	private int field_6865;
@@ -95,7 +95,7 @@ public class SheepEntity extends AnimalEntity {
 
 	@Environment(EnvType.CLIENT)
 	public static float[] getRgbColor(DyeColor dyeColor) {
-		return (float[])field_6867.get(dyeColor);
+		return (float[])COLORS.get(dyeColor);
 	}
 
 	public SheepEntity(World world) {
@@ -109,7 +109,7 @@ public class SheepEntity extends AnimalEntity {
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new class_1374(this, 1.25));
 		this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
-		this.goalSelector.add(3, new TemptGoal(this, 1.1, Ingredient.ofItems(Items.field_8861), false));
+		this.goalSelector.add(3, new TemptGoal(this, 1.1, Ingredient.method_8091(Items.field_8861), false));
 		this.goalSelector.add(4, new FollowParentGoal(this, 1.1));
 		this.goalSelector.add(5, this.field_6869);
 		this.goalSelector.add(6, new class_1394(this, 1.0));
@@ -125,7 +125,7 @@ public class SheepEntity extends AnimalEntity {
 
 	@Override
 	public void updateMovement() {
-		if (this.world.isRemote) {
+		if (this.world.isClient) {
 			this.field_6865 = Math.max(0, this.field_6865 - 1);
 		}
 
@@ -223,20 +223,20 @@ public class SheepEntity extends AnimalEntity {
 	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.getItem() == Items.field_8868 && !this.isSheared() && !this.isChild()) {
-			this.method_6636();
+			this.dropItems();
 			itemStack.applyDamage(1, playerEntity);
 		}
 
 		return super.interactMob(playerEntity, hand);
 	}
 
-	public void method_6636() {
-		if (!this.world.isRemote) {
+	public void dropItems() {
+		if (!this.world.isClient) {
 			this.setSheared(true);
 			int i = 1 + this.random.nextInt(3);
 
 			for (int j = 0; j < i; j++) {
-				ItemEntity itemEntity = this.dropItem((ItemContainer)field_6868.get(this.getColor()), 1);
+				ItemEntity itemEntity = this.method_5870((ItemProvider)DROPS.get(this.getColor()), 1);
 				if (itemEntity != null) {
 					itemEntity.velocityY = itemEntity.velocityY + (double)(this.random.nextFloat() * 0.05F);
 					itemEntity.velocityX = itemEntity.velocityX + (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.1F);
@@ -304,7 +304,7 @@ public class SheepEntity extends AnimalEntity {
 		}
 	}
 
-	public static DyeColor method_6632(Random random) {
+	public static DyeColor generateDefaultColor(Random random) {
 		int i = random.nextInt(100);
 		if (i < 5) {
 			return DyeColor.BLACK;
@@ -322,7 +322,7 @@ public class SheepEntity extends AnimalEntity {
 	public SheepEntity createChild(PassiveEntity passiveEntity) {
 		SheepEntity sheepEntity = (SheepEntity)passiveEntity;
 		SheepEntity sheepEntity2 = new SheepEntity(this.world);
-		sheepEntity2.setColor(this.method_6639(this, sheepEntity));
+		sheepEntity2.setColor(this.getChildColor(this, sheepEntity));
 		return sheepEntity2;
 	}
 
@@ -336,20 +336,20 @@ public class SheepEntity extends AnimalEntity {
 
 	@Nullable
 	@Override
-	public EntityData method_5943(
-		IWorld iWorld, LocalDifficulty localDifficulty, class_3730 arg, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	public EntityData prepareEntityData(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.method_5943(iWorld, localDifficulty, arg, entityData, compoundTag);
-		this.setColor(method_6632(iWorld.getRandom()));
+		entityData = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		this.setColor(generateDefaultColor(iWorld.getRandom()));
 		return entityData;
 	}
 
-	private DyeColor method_6639(AnimalEntity animalEntity, AnimalEntity animalEntity2) {
+	private DyeColor getChildColor(AnimalEntity animalEntity, AnimalEntity animalEntity2) {
 		DyeColor dyeColor = ((SheepEntity)animalEntity).getColor();
 		DyeColor dyeColor2 = ((SheepEntity)animalEntity2).getColor();
-		this.field_6866.setInvStack(0, new ItemStack(DyeItem.fromColor(dyeColor)));
-		this.field_6866.setInvStack(1, new ItemStack(DyeItem.fromColor(dyeColor2)));
-		ItemStack itemStack = animalEntity.world.getRecipeManager().craft(this.field_6866, ((SheepEntity)animalEntity).world);
+		this.dyeCraftingInventory.setInvStack(0, new ItemStack(DyeItem.fromColor(dyeColor)));
+		this.dyeCraftingInventory.setInvStack(1, new ItemStack(DyeItem.fromColor(dyeColor2)));
+		ItemStack itemStack = animalEntity.world.getRecipeManager().craft(this.dyeCraftingInventory, ((SheepEntity)animalEntity).world);
 		Item item = itemStack.getItem();
 		DyeColor dyeColor3;
 		if (item instanceof DyeItem) {

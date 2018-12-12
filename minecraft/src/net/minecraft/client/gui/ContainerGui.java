@@ -6,14 +6,14 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_308;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.container.ActionTypeSlot;
 import net.minecraft.container.Container;
 import net.minecraft.container.Slot;
+import net.minecraft.container.SlotActionType;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.TextFormat;
@@ -71,11 +71,11 @@ public abstract class ContainerGui extends Gui {
 		int l = this.top;
 		this.drawBackground(f, i, j);
 		GlStateManager.disableRescaleNormal();
-		class_308.method_1450();
+		GuiLighting.disable();
 		GlStateManager.disableLighting();
 		GlStateManager.disableDepthTest();
 		super.draw(i, j, f);
-		class_308.method_1453();
+		GuiLighting.enableForItems();
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef((float)k, (float)l, 0.0F);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -106,9 +106,9 @@ public abstract class ContainerGui extends Gui {
 			}
 		}
 
-		class_308.method_1450();
+		GuiLighting.disable();
 		this.drawForeground(i, j);
-		class_308.method_1453();
+		GuiLighting.enableForItems();
 		PlayerInventory playerInventory = this.client.player.inventory;
 		ItemStack itemStack = this.field_2782.isEmpty() ? playerInventory.getCursorStack() : this.field_2782;
 		if (!itemStack.isEmpty()) {
@@ -130,7 +130,7 @@ public abstract class ContainerGui extends Gui {
 		}
 
 		if (!this.field_2785.isEmpty()) {
-			float g = (float)(SystemUtil.getMeasuringTimeMili() - this.field_2795) / 100.0F;
+			float g = (float)(SystemUtil.getMeasuringTimeMs() - this.field_2795) / 100.0F;
 			if (g >= 1.0F) {
 				g = 1.0F;
 				this.field_2785 = ItemStack.EMPTY;
@@ -146,7 +146,7 @@ public abstract class ContainerGui extends Gui {
 		GlStateManager.popMatrix();
 		GlStateManager.enableLighting();
 		GlStateManager.enableDepthTest();
-		class_308.method_1452();
+		GuiLighting.enable();
 	}
 
 	protected void drawMousoverTooltip(int i, int j) {
@@ -269,15 +269,15 @@ public abstract class ContainerGui extends Gui {
 		if (super.mouseClicked(d, e, i)) {
 			return true;
 		} else {
-			boolean bl = this.client.options.keyPickItem.matches(i);
+			boolean bl = this.client.field_1690.keyPickItem.matchesMouse(i);
 			Slot slot = this.getSlotAt(d, e);
-			long l = SystemUtil.getMeasuringTimeMili();
+			long l = SystemUtil.getMeasuringTimeMs();
 			this.field_2783 = this.field_2799 == slot && l - this.field_2788 < 250L && this.field_2786 == i;
 			this.field_2798 = false;
 			if (i == 0 || i == 1 || bl) {
 				int j = this.left;
 				int k = this.top;
-				boolean bl2 = this.isClickInContainerBounds(d, e, j, k, i);
+				boolean bl2 = this.isClickOutsideBounds(d, e, j, k, i);
 				int m = -1;
 				if (slot != null) {
 					m = slot.id;
@@ -287,13 +287,13 @@ public abstract class ContainerGui extends Gui {
 					m = -999;
 				}
 
-				if (this.client.options.touchscreen && bl2 && this.client.player.inventory.getCursorStack().isEmpty()) {
+				if (this.client.field_1690.touchscreen && bl2 && this.client.player.inventory.getCursorStack().isEmpty()) {
 					this.client.openGui(null);
 					return true;
 				}
 
 				if (m != -1) {
-					if (this.client.options.touchscreen) {
+					if (this.client.field_1690.touchscreen) {
 						if (slot != null && slot.hasStack()) {
 							this.field_2777 = slot;
 							this.field_2782 = ItemStack.EMPTY;
@@ -303,23 +303,23 @@ public abstract class ContainerGui extends Gui {
 						}
 					} else if (!this.field_2794) {
 						if (this.client.player.inventory.getCursorStack().isEmpty()) {
-							if (this.client.options.keyPickItem.matches(i)) {
-								this.onMouseClick(slot, m, i, ActionTypeSlot.MIDDLE_CLICK);
+							if (this.client.field_1690.keyPickItem.matchesMouse(i)) {
+								this.onMouseClick(slot, m, i, SlotActionType.field_7796);
 							} else {
 								boolean bl3 = m != -999
 									&& (
 										InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 340)
 											|| InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 344)
 									);
-								ActionTypeSlot actionTypeSlot = ActionTypeSlot.CLICK;
+								SlotActionType slotActionType = SlotActionType.field_7790;
 								if (bl3) {
 									this.field_2791 = slot != null && slot.hasStack() ? slot.getStack().copy() : ItemStack.EMPTY;
-									actionTypeSlot = ActionTypeSlot.SHIFT_CLICK;
+									slotActionType = SlotActionType.field_7794;
 								} else if (m == -999) {
-									actionTypeSlot = ActionTypeSlot.DROP;
+									slotActionType = SlotActionType.field_7795;
 								}
 
-								this.onMouseClick(slot, m, i, actionTypeSlot);
+								this.onMouseClick(slot, m, i, slotActionType);
 							}
 
 							this.field_2798 = true;
@@ -331,7 +331,7 @@ public abstract class ContainerGui extends Gui {
 								this.field_2790 = 0;
 							} else if (i == 1) {
 								this.field_2790 = 1;
-							} else if (this.client.options.keyPickItem.matches(i)) {
+							} else if (this.client.field_1690.keyPickItem.matchesMouse(i)) {
 								this.field_2790 = 2;
 							}
 						}
@@ -346,7 +346,7 @@ public abstract class ContainerGui extends Gui {
 		}
 	}
 
-	protected boolean isClickInContainerBounds(double d, double e, int i, int j, int k) {
+	protected boolean isClickOutsideBounds(double d, double e, int i, int j, int k) {
 		return d < (double)i || e < (double)j || d >= (double)(i + this.containerWidth) || e >= (double)(j + this.containerHeight);
 	}
 
@@ -354,19 +354,19 @@ public abstract class ContainerGui extends Gui {
 	public boolean mouseDragged(double d, double e, int i, double f, double g) {
 		Slot slot = this.getSlotAt(d, e);
 		ItemStack itemStack = this.client.player.inventory.getCursorStack();
-		if (this.field_2777 != null && this.client.options.touchscreen) {
+		if (this.field_2777 != null && this.client.field_1690.touchscreen) {
 			if (i == 0 || i == 1) {
 				if (this.field_2782.isEmpty()) {
 					if (slot != this.field_2777 && !this.field_2777.getStack().isEmpty()) {
 						this.field_2782 = this.field_2777.getStack().copy();
 					}
 				} else if (this.field_2782.getAmount() > 1 && slot != null && Container.canInsertItemIntoSlot(slot, this.field_2782, false)) {
-					long l = SystemUtil.getMeasuringTimeMili();
+					long l = SystemUtil.getMeasuringTimeMs();
 					if (this.field_2780 == slot) {
 						if (l - this.field_2781 > 500L) {
-							this.onMouseClick(this.field_2777, this.field_2777.id, 0, ActionTypeSlot.CLICK);
-							this.onMouseClick(slot, slot.id, 1, ActionTypeSlot.CLICK);
-							this.onMouseClick(this.field_2777, this.field_2777.id, 0, ActionTypeSlot.CLICK);
+							this.onMouseClick(this.field_2777, this.field_2777.id, 0, SlotActionType.field_7790);
+							this.onMouseClick(slot, slot.id, 1, SlotActionType.field_7790);
+							this.onMouseClick(this.field_2777, this.field_2777.id, 0, SlotActionType.field_7790);
 							this.field_2781 = l + 750L;
 							this.field_2782.subtractAmount(1);
 						}
@@ -395,7 +395,7 @@ public abstract class ContainerGui extends Gui {
 		Slot slot = this.getSlotAt(d, e);
 		int j = this.left;
 		int k = this.top;
-		boolean bl = this.isClickInContainerBounds(d, e, j, k, i);
+		boolean bl = this.isClickOutsideBounds(d, e, j, k, i);
 		int l = -1;
 		if (slot != null) {
 			l = slot.id;
@@ -414,12 +414,12 @@ public abstract class ContainerGui extends Gui {
 							&& slot2.hasStack()
 							&& slot2.inventory == slot.inventory
 							&& Container.canInsertItemIntoSlot(slot2, this.field_2791, true)) {
-							this.onMouseClick(slot2, slot2.id, i, ActionTypeSlot.SHIFT_CLICK);
+							this.onMouseClick(slot2, slot2.id, i, SlotActionType.field_7794);
 						}
 					}
 				}
 			} else {
-				this.onMouseClick(slot, l, i, ActionTypeSlot.DOUBLE_CLICK);
+				this.onMouseClick(slot, l, i, SlotActionType.field_7793);
 			}
 
 			this.field_2783 = false;
@@ -437,7 +437,7 @@ public abstract class ContainerGui extends Gui {
 				return true;
 			}
 
-			if (this.field_2777 != null && this.client.options.touchscreen) {
+			if (this.field_2777 != null && this.client.field_1690.touchscreen) {
 				if (i == 0 || i == 1) {
 					if (this.field_2782.isEmpty() && slot != this.field_2777) {
 						this.field_2782 = this.field_2777.getStack();
@@ -445,40 +445,40 @@ public abstract class ContainerGui extends Gui {
 
 					boolean bl2 = Container.canInsertItemIntoSlot(slot, this.field_2782, false);
 					if (l != -1 && !this.field_2782.isEmpty() && bl2) {
-						this.onMouseClick(this.field_2777, this.field_2777.id, i, ActionTypeSlot.CLICK);
-						this.onMouseClick(slot, l, 0, ActionTypeSlot.CLICK);
+						this.onMouseClick(this.field_2777, this.field_2777.id, i, SlotActionType.field_7790);
+						this.onMouseClick(slot, l, 0, SlotActionType.field_7790);
 						if (this.client.player.inventory.getCursorStack().isEmpty()) {
 							this.field_2785 = ItemStack.EMPTY;
 						} else {
-							this.onMouseClick(this.field_2777, this.field_2777.id, i, ActionTypeSlot.CLICK);
+							this.onMouseClick(this.field_2777, this.field_2777.id, i, SlotActionType.field_7790);
 							this.field_2784 = MathHelper.floor(d - (double)j);
 							this.field_2796 = MathHelper.floor(e - (double)k);
 							this.field_2802 = this.field_2777;
 							this.field_2785 = this.field_2782;
-							this.field_2795 = SystemUtil.getMeasuringTimeMili();
+							this.field_2795 = SystemUtil.getMeasuringTimeMs();
 						}
 					} else if (!this.field_2782.isEmpty()) {
 						this.field_2784 = MathHelper.floor(d - (double)j);
 						this.field_2796 = MathHelper.floor(e - (double)k);
 						this.field_2802 = this.field_2777;
 						this.field_2785 = this.field_2782;
-						this.field_2795 = SystemUtil.getMeasuringTimeMili();
+						this.field_2795 = SystemUtil.getMeasuringTimeMs();
 					}
 
 					this.field_2782 = ItemStack.EMPTY;
 					this.field_2777 = null;
 				}
 			} else if (this.field_2794 && !this.slots.isEmpty()) {
-				this.onMouseClick(null, -999, Container.method_7591(0, this.field_2790), ActionTypeSlot.DRAG);
+				this.onMouseClick(null, -999, Container.method_7591(0, this.field_2790), SlotActionType.field_7789);
 
 				for (Slot slot2x : this.slots) {
-					this.onMouseClick(slot2x, slot2x.id, Container.method_7591(1, this.field_2790), ActionTypeSlot.DRAG);
+					this.onMouseClick(slot2x, slot2x.id, Container.method_7591(1, this.field_2790), SlotActionType.field_7789);
 				}
 
-				this.onMouseClick(null, -999, Container.method_7591(2, this.field_2790), ActionTypeSlot.DRAG);
+				this.onMouseClick(null, -999, Container.method_7591(2, this.field_2790), SlotActionType.field_7789);
 			} else if (!this.client.player.inventory.getCursorStack().isEmpty()) {
-				if (this.client.options.keyPickItem.matches(i)) {
-					this.onMouseClick(slot, l, i, ActionTypeSlot.MIDDLE_CLICK);
+				if (this.client.field_1690.keyPickItem.matchesMouse(i)) {
+					this.onMouseClick(slot, l, i, SlotActionType.field_7796);
 				} else {
 					boolean bl2 = l != -999
 						&& (
@@ -489,7 +489,7 @@ public abstract class ContainerGui extends Gui {
 						this.field_2791 = slot != null && slot.hasStack() ? slot.getStack().copy() : ItemStack.EMPTY;
 					}
 
-					this.onMouseClick(slot, l, i, bl2 ? ActionTypeSlot.SHIFT_CLICK : ActionTypeSlot.CLICK);
+					this.onMouseClick(slot, l, i, bl2 ? SlotActionType.field_7794 : SlotActionType.field_7790);
 				}
 			}
 		}
@@ -514,16 +514,16 @@ public abstract class ContainerGui extends Gui {
 		return d >= (double)(i - 1) && d < (double)(i + k + 1) && e >= (double)(j - 1) && e < (double)(j + l + 1);
 	}
 
-	protected void onMouseClick(Slot slot, int i, int j, ActionTypeSlot actionTypeSlot) {
+	protected void onMouseClick(Slot slot, int i, int j, SlotActionType slotActionType) {
 		if (slot != null) {
 			i = slot.id;
 		}
 
-		this.client.interactionManager.method_2906(this.container.syncId, i, j, actionTypeSlot, this.client.player);
+		this.client.interactionManager.method_2906(this.container.syncId, i, j, slotActionType, this.client.player);
 	}
 
 	@Override
-	public boolean canClose() {
+	public boolean doesEscapeKeyClose() {
 		return false;
 	}
 
@@ -532,16 +532,16 @@ public abstract class ContainerGui extends Gui {
 		if (super.keyPressed(i, j, k)) {
 			return true;
 		} else {
-			if (i == 256 || this.client.options.keyInventory.matches(i, j)) {
+			if (i == 256 || this.client.field_1690.keyInventory.matchesKey(i, j)) {
 				this.client.player.closeGui();
 			}
 
 			this.handleHotbarKeyPressed(i, j);
 			if (this.focusedSlot != null && this.focusedSlot.hasStack()) {
-				if (this.client.options.keyPickItem.matches(i, j)) {
-					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, 0, ActionTypeSlot.MIDDLE_CLICK);
-				} else if (this.client.options.keyDrop.matches(i, j)) {
-					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, isControlPressed() ? 1 : 0, ActionTypeSlot.DROP);
+				if (this.client.field_1690.keyPickItem.matchesKey(i, j)) {
+					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, 0, SlotActionType.field_7796);
+				} else if (this.client.field_1690.keyDrop.matchesKey(i, j)) {
+					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, isControlPressed() ? 1 : 0, SlotActionType.field_7795);
 				}
 			}
 
@@ -552,8 +552,8 @@ public abstract class ContainerGui extends Gui {
 	protected boolean handleHotbarKeyPressed(int i, int j) {
 		if (this.client.player.inventory.getCursorStack().isEmpty() && this.focusedSlot != null) {
 			for (int k = 0; k < 9; k++) {
-				if (this.client.options.keysHotbar[k].matches(i, j)) {
-					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, k, ActionTypeSlot.HOTBAR_KEY);
+				if (this.client.field_1690.keysHotbar[k].matchesKey(i, j)) {
+					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, k, SlotActionType.field_7791);
 					return true;
 				}
 			}

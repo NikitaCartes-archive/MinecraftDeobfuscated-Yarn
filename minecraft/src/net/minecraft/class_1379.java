@@ -31,7 +31,7 @@ public class class_1379 extends Goal {
 			return false;
 		} else {
 			if (!this.field_6565) {
-				if (this.field_6566.method_6131() >= 100) {
+				if (this.field_6566.getDespawnCounter() >= 100) {
 					return false;
 				}
 
@@ -65,7 +65,7 @@ public class class_1379 extends Goal {
 
 	@Override
 	public void start() {
-		this.field_6566.getNavigation().method_6337(this.field_6563, this.field_6562, this.field_6561, this.field_6567);
+		this.field_6566.getNavigation().startMovingTo(this.field_6563, this.field_6562, this.field_6561, this.field_6567);
 	}
 
 	public void method_6304() {

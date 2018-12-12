@@ -8,13 +8,13 @@ import net.minecraft.class_1374;
 import net.minecraft.class_1376;
 import net.minecraft.class_1379;
 import net.minecraft.class_1399;
-import net.minecraft.class_3730;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
@@ -55,7 +55,7 @@ public class PolarBearEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean method_6481(ItemStack itemStack) {
+	public boolean isBreedingItem(ItemStack itemStack) {
 		return false;
 	}
 
@@ -84,15 +84,15 @@ public class PolarBearEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean method_5979(IWorld iWorld, class_3730 arg) {
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
 		int i = MathHelper.floor(this.x);
 		int j = MathHelper.floor(this.getBoundingBox().minY);
 		int k = MathHelper.floor(this.z);
 		BlockPos blockPos = new BlockPos(i, j, k);
 		Biome biome = iWorld.getBiome(blockPos);
 		return biome != Biomes.field_9435 && biome != Biomes.field_9418
-			? super.method_5979(iWorld, arg)
-			: iWorld.method_8624(blockPos, 0) > 8 && iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.field_10295;
+			? super.canSpawn(iWorld, spawnType)
+			: iWorld.getLightLevel(blockPos, 0) > 8 && iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.field_10295;
 	}
 
 	@Override
@@ -131,7 +131,7 @@ public class PolarBearEntity extends AnimalEntity {
 	@Override
 	public void update() {
 		super.update();
-		if (this.world.isRemote) {
+		if (this.world.isClient) {
 			this.field_6838 = this.field_6837;
 			if (this.method_6600()) {
 				this.field_6837 = MathHelper.clamp(this.field_6837 + 1.0F, 0.0F, 6.0F);
@@ -174,8 +174,8 @@ public class PolarBearEntity extends AnimalEntity {
 	}
 
 	@Override
-	public EntityData method_5943(
-		IWorld iWorld, LocalDifficulty localDifficulty, class_3730 arg, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	public EntityData prepareEntityData(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		if (entityData instanceof PolarBearEntity.class_1458) {
 			if (((PolarBearEntity.class_1458)entityData).field_6842) {

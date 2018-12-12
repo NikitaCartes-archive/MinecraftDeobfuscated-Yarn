@@ -4,7 +4,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
 import net.minecraft.client.model.Model;
-import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
 public class SkullEntityModel extends Model {
@@ -22,16 +21,9 @@ public class SkullEntityModel extends Model {
 		this.field_3564.setRotationPoint(0.0F, 0.0F, 0.0F);
 	}
 
-	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		this.setRotationAngles(f, g, h, i, j, k, entity);
-		this.field_3564.render(k);
-	}
-
-	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
-		super.setRotationAngles(f, g, h, i, j, k, entity);
+	public void setRotationAngles(float f, float g, float h, float i, float j, float k) {
 		this.field_3564.yaw = i * (float) (Math.PI / 180.0);
 		this.field_3564.pitch = j * (float) (Math.PI / 180.0);
+		this.field_3564.render(k);
 	}
 }

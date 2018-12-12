@@ -36,7 +36,7 @@ public class class_853 implements ExtendedBlockView {
 
 		for (int n = j; n <= l; n++) {
 			for (int o = k; o <= m; o++) {
-				worldChunks[n - j][o - k] = world.getChunk(n, o);
+				worldChunks[n - j][o - k] = world.getWorldChunk(n, o);
 			}
 		}
 

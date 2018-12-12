@@ -46,7 +46,7 @@ public class BowItem extends BaseBowItem {
 				float f = method_7722(j);
 				if (!((double)f < 0.1)) {
 					boolean bl2 = bl && itemStack2.getItem() == Items.field_8107;
-					if (!world.isRemote) {
+					if (!world.isClient) {
 						ArrowItem arrowItem = (ArrowItem)(itemStack2.getItem() instanceof ArrowItem ? itemStack2.getItem() : Items.field_8107);
 						ProjectileEntity projectileEntity = arrowItem.createEntityArrow(world, itemStack2, playerEntity);
 						projectileEntity.method_7437(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, f * 3.0F, 1.0F);

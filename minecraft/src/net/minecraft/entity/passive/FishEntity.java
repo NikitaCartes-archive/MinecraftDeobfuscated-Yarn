@@ -2,11 +2,11 @@ package net.minecraft.entity.passive;
 
 import net.minecraft.class_1374;
 import net.minecraft.class_1378;
-import net.minecraft.class_3730;
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.WaterCreatureEntity;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
@@ -33,7 +33,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public abstract class FishEntity extends WaterCreatureEntity implements Living {
-	private static final TrackedData<Boolean> field_6730 = DataTracker.registerData(FishEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<Boolean> FROM_BUCKET = DataTracker.registerData(FishEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
 	public FishEntity(EntityType<?> entityType, World world) {
 		super(entityType, world);
@@ -52,21 +52,21 @@ public abstract class FishEntity extends WaterCreatureEntity implements Living {
 	}
 
 	@Override
-	public boolean isPersistent() {
-		return this.method_6453() || super.isPersistent();
+	public boolean cannotDespawn() {
+		return this.isFromBucket();
 	}
 
 	@Override
-	public boolean method_5979(IWorld iWorld, class_3730 arg) {
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
 		BlockPos blockPos = new BlockPos(this);
 		return iWorld.getBlockState(blockPos).getBlock() == Blocks.field_10382 && iWorld.getBlockState(blockPos.up()).getBlock() == Blocks.field_10382
-			? super.method_5979(iWorld, arg)
+			? super.canSpawn(iWorld, spawnType)
 			: false;
 	}
 
 	@Override
-	public boolean method_5974(double d) {
-		return !this.method_6453() && !this.hasCustomName();
+	public boolean canImmediatelyDespawn(double d) {
+		return !this.isFromBucket() && !this.hasCustomName();
 	}
 
 	@Override
@@ -77,27 +77,27 @@ public abstract class FishEntity extends WaterCreatureEntity implements Living {
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(field_6730, false);
+		this.dataTracker.startTracking(FROM_BUCKET, false);
 	}
 
-	private boolean method_6453() {
-		return this.dataTracker.get(field_6730);
+	private boolean isFromBucket() {
+		return this.dataTracker.get(FROM_BUCKET);
 	}
 
-	public void method_6454(boolean bl) {
-		this.dataTracker.set(field_6730, bl);
+	public void setFromBucket(boolean bl) {
+		this.dataTracker.set(FROM_BUCKET, bl);
 	}
 
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putBoolean("FromBucket", this.method_6453());
+		compoundTag.putBoolean("FromBucket", this.isFromBucket());
 	}
 
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		this.method_6454(compoundTag.getBoolean("FromBucket"));
+		this.setFromBucket(compoundTag.getBoolean("FromBucket"));
 	}
 
 	@Override
@@ -105,7 +105,7 @@ public abstract class FishEntity extends WaterCreatureEntity implements Living {
 		super.method_5959();
 		this.goalSelector.add(0, new class_1374(this, 1.25));
 		this.goalSelector.add(2, new FleeEntityGoal(this, PlayerEntity.class, 8.0F, 1.6, 1.4, EntityPredicates.EXCEPT_SPECTATOR));
-		this.goalSelector.add(4, new FishEntity.class_1424(this));
+		this.goalSelector.add(4, new FishEntity.SwimToRandomPlaceGoal(this));
 	}
 
 	@Override
@@ -131,13 +131,13 @@ public abstract class FishEntity extends WaterCreatureEntity implements Living {
 
 	@Override
 	public void updateMovement() {
-		if (!this.isInsideWater() && this.onGround && this.field_5992) {
+		if (!this.isInsideWater() && this.onGround && this.verticalCollision) {
 			this.velocityY += 0.4F;
 			this.velocityX = this.velocityX + (double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.05F);
 			this.velocityZ = this.velocityZ + (double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.05F);
 			this.onGround = false;
 			this.velocityDirty = true;
-			this.playSoundAtEntity(this.method_6457(), this.getSoundVolume(), this.getSoundPitch());
+			this.playSoundAtEntity(this.getFlopSound(), this.getSoundVolume(), this.getSoundPitch());
 		}
 
 		super.updateMovement();
@@ -149,10 +149,10 @@ public abstract class FishEntity extends WaterCreatureEntity implements Living {
 		if (itemStack.getItem() == Items.field_8705 && this.isValid()) {
 			this.playSoundAtEntity(SoundEvents.field_14568, 1.0F, 1.0F);
 			itemStack.subtractAmount(1);
-			ItemStack itemStack2 = this.method_6452();
-			this.method_6455(itemStack2);
-			if (!this.world.isRemote) {
-				CriterionCriterions.FILLED_BUCKET.method_8932((ServerPlayerEntity)playerEntity, itemStack2);
+			ItemStack itemStack2 = this.getFishBucketItem();
+			this.copyDataToStack(itemStack2);
+			if (!this.world.isClient) {
+				Criterions.FILLED_BUCKET.method_8932((ServerPlayerEntity)playerEntity, itemStack2);
 			}
 
 			if (itemStack.isEmpty()) {
@@ -168,19 +168,19 @@ public abstract class FishEntity extends WaterCreatureEntity implements Living {
 		}
 	}
 
-	protected void method_6455(ItemStack itemStack) {
+	protected void copyDataToStack(ItemStack itemStack) {
 		if (this.hasCustomName()) {
 			itemStack.setDisplayName(this.getCustomName());
 		}
 	}
 
-	protected abstract ItemStack method_6452();
+	protected abstract ItemStack getFishBucketItem();
 
-	protected boolean method_6456() {
+	protected boolean hasSelfControl() {
 		return true;
 	}
 
-	protected abstract SoundEvent method_6457();
+	protected abstract SoundEvent getFlopSound();
 
 	@Override
 	protected SoundEvent getSoundSwim() {
@@ -219,17 +219,17 @@ public abstract class FishEntity extends WaterCreatureEntity implements Living {
 		}
 	}
 
-	static class class_1424 extends class_1378 {
+	static class SwimToRandomPlaceGoal extends class_1378 {
 		private final FishEntity field_6732;
 
-		public class_1424(FishEntity fishEntity) {
+		public SwimToRandomPlaceGoal(FishEntity fishEntity) {
 			super(fishEntity, 1.0, 40);
 			this.field_6732 = fishEntity;
 		}
 
 		@Override
 		public boolean canStart() {
-			return this.field_6732.method_6456() && super.canStart();
+			return this.field_6732.hasSelfControl() && super.canStart();
 		}
 	}
 }

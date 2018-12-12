@@ -9,7 +9,7 @@ import com.google.gson.JsonObject;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.advancement.ServerAdvancementManager;
+import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -18,7 +18,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class LevitationCriterion implements Criterion<LevitationCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("levitation");
-	private final Map<ServerAdvancementManager, LevitationCriterion.Handler> handlers = Maps.<ServerAdvancementManager, LevitationCriterion.Handler>newHashMap();
+	private final Map<PlayerAdvancementTracker, LevitationCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, LevitationCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -26,32 +26,34 @@ public class LevitationCriterion implements Criterion<LevitationCriterion.Condit
 	}
 
 	@Override
-	public void addCondition(ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<LevitationCriterion.Conditions> conditionsContainer) {
-		LevitationCriterion.Handler handler = (LevitationCriterion.Handler)this.handlers.get(serverAdvancementManager);
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<LevitationCriterion.Conditions> conditionsContainer
+	) {
+		LevitationCriterion.Handler handler = (LevitationCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new LevitationCriterion.Handler(serverAdvancementManager);
-			this.handlers.put(serverAdvancementManager, handler);
+			handler = new LevitationCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void removeCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<LevitationCriterion.Conditions> conditionsContainer
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<LevitationCriterion.Conditions> conditionsContainer
 	) {
-		LevitationCriterion.Handler handler = (LevitationCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		LevitationCriterion.Handler handler = (LevitationCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(serverAdvancementManager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void removePlayer(ServerAdvancementManager serverAdvancementManager) {
-		this.handlers.remove(serverAdvancementManager);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
 	public LevitationCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -86,7 +88,7 @@ public class LevitationCriterion implements Criterion<LevitationCriterion.Condit
 		}
 
 		@Override
-		public JsonElement method_807() {
+		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("distance", this.distance.serialize());
 			jsonObject.add("duration", this.duration.serialize());
@@ -95,11 +97,11 @@ public class LevitationCriterion implements Criterion<LevitationCriterion.Condit
 	}
 
 	static class Handler {
-		private final ServerAdvancementManager manager;
+		private final PlayerAdvancementTracker field_9674;
 		private final Set<Criterion.ConditionsContainer<LevitationCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<LevitationCriterion.Conditions>>newHashSet();
 
-		public Handler(ServerAdvancementManager serverAdvancementManager) {
-			this.manager = serverAdvancementManager;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.field_9674 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
@@ -129,7 +131,7 @@ public class LevitationCriterion implements Criterion<LevitationCriterion.Condit
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<LevitationCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
+					conditionsContainerx.apply(this.field_9674);
 				}
 			}
 		}

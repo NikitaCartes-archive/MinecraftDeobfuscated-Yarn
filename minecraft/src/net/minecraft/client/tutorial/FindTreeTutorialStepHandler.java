@@ -4,11 +4,11 @@ import com.google.common.collect.Sets;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_372;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stat.Stats;
@@ -42,7 +42,7 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 	private static final TextComponent TITLE = new TranslatableTextComponent("tutorial.find_tree.title");
 	private static final TextComponent DESCRIPTION = new TranslatableTextComponent("tutorial.find_tree.description");
 	private final TutorialManager manager;
-	private class_372 field_5633;
+	private TutorialToast field_5633;
 	private int ticks;
 
 	public FindTreeTutorialStepHandler(TutorialManager tutorialManager) {
@@ -73,7 +73,7 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 			}
 
 			if (this.ticks >= 6000 && this.field_5633 == null) {
-				this.field_5633 = new class_372(class_372.class_373.field_2235, TITLE, DESCRIPTION, false);
+				this.field_5633 = new TutorialToast(TutorialToast.class_373.field_2235, TITLE, DESCRIPTION, false);
 				this.manager.getClient().getToastManager().add(this.field_5633);
 			}
 		}
@@ -109,7 +109,7 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 
 	public static boolean method_4896(ClientPlayerEntity clientPlayerEntity) {
 		for (Block block : MATCHING_BLOCKS) {
-			if (clientPlayerEntity.getStats().method_15025(Stats.field_15427.method_14956(block)) > 0) {
+			if (clientPlayerEntity.getStats().getStat(Stats.field_15427.method_14956(block)) > 0) {
 				return true;
 			}
 		}

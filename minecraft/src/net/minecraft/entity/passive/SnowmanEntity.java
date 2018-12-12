@@ -1,6 +1,8 @@
 package net.minecraft.entity.passive;
 
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.class_1361;
 import net.minecraft.class_1376;
 import net.minecraft.class_1394;
@@ -77,11 +79,11 @@ public class SnowmanEntity extends GolemEntity implements RangedAttacker {
 	@Override
 	public void updateMovement() {
 		super.updateMovement();
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			int i = MathHelper.floor(this.x);
 			int j = MathHelper.floor(this.y);
 			int k = MathHelper.floor(this.z);
-			if (this.method_5637()) {
+			if (this.isTouchingWater()) {
 				this.damage(DamageSource.DROWN, 1.0F);
 			}
 
@@ -130,7 +132,7 @@ public class SnowmanEntity extends GolemEntity implements RangedAttacker {
 	@Override
 	protected boolean interactMob(PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (itemStack.getItem() == Items.field_8868 && this.hasPumpkin() && !this.world.isRemote) {
+		if (itemStack.getItem() == Items.field_8868 && this.hasPumpkin() && !this.world.isClient) {
 			this.setHasPumpkin(false);
 			itemStack.applyDamage(1, playerEntity);
 		}
@@ -167,6 +169,12 @@ public class SnowmanEntity extends GolemEntity implements RangedAttacker {
 	@Override
 	protected SoundEvent getDeathSound() {
 		return SoundEvents.field_14594;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public boolean hasArmsRaised() {
+		return false;
 	}
 
 	@Override

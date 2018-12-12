@@ -19,12 +19,12 @@ public class FixedBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	public Biome method_16359(int i, int j) {
+	public Biome getBiome(int i, int j) {
 		return this.field_9486;
 	}
 
 	@Override
-	public Biome[] method_8760(int i, int j, int k, int l, boolean bl) {
+	public Biome[] sampleBiomes(int i, int j, int k, int l, boolean bl) {
 		Biome[] biomes = new Biome[k * l];
 		Arrays.fill(biomes, 0, k * l, this.field_9486);
 		return biomes;
@@ -32,26 +32,26 @@ public class FixedBiomeSource extends BiomeSource {
 
 	@Nullable
 	@Override
-	public BlockPos method_8762(int i, int j, int k, List<Biome> list, Random random) {
+	public BlockPos locateBiome(int i, int j, int k, List<Biome> list, Random random) {
 		return list.contains(this.field_9486) ? new BlockPos(i - k + random.nextInt(k * 2 + 1), 0, j - k + random.nextInt(k * 2 + 1)) : null;
 	}
 
 	@Override
 	public boolean hasStructureFeature(StructureFeature<?> structureFeature) {
-		return (Boolean)this.STRUCTURE_FEATURES.computeIfAbsent(structureFeature, this.field_9486::hasStructureFeature);
+		return (Boolean)this.structureFeatures.computeIfAbsent(structureFeature, this.field_9486::hasStructureFeature);
 	}
 
 	@Override
 	public Set<BlockState> getTopMaterials() {
 		if (this.topMaterials.isEmpty()) {
-			this.topMaterials.add(this.field_9486.getSurfaceConfig().getTopMaterial());
+			this.topMaterials.add(this.field_9486.method_8722().getTopMaterial());
 		}
 
 		return this.topMaterials;
 	}
 
 	@Override
-	public Set<Biome> method_8763(int i, int j, int k) {
+	public Set<Biome> getBiomesInArea(int i, int j, int k) {
 		return Sets.<Biome>newHashSet(this.field_9486);
 	}
 }

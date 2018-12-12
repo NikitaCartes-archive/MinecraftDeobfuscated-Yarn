@@ -4,13 +4,12 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class BoatEntityModel extends Model implements MultipassModel {
+public class BoatEntityModel extends EntityModel<BoatEntity> {
 	private final Cuboid[] field_3327 = new Cuboid[5];
 	private final Cuboid[] field_3325 = new Cuboid[2];
 	private final Cuboid field_3326;
@@ -53,11 +52,9 @@ public class BoatEntityModel extends Model implements MultipassModel {
 		this.field_3326.pitch = (float) (Math.PI / 2);
 	}
 
-	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
+	public void method_17071(BoatEntity boatEntity, float f, float g, float h, float i, float j, float k) {
 		GlStateManager.rotatef(90.0F, 0.0F, 1.0F, 0.0F);
-		BoatEntity boatEntity = (BoatEntity)entity;
-		this.setRotationAngles(f, g, h, i, j, k, entity);
+		this.setAngles(boatEntity, f, g, h, i, j, k);
 
 		for (int l = 0; l < 5; l++) {
 			this.field_3327[l].render(k);
@@ -67,7 +64,6 @@ public class BoatEntityModel extends Model implements MultipassModel {
 		this.method_2797(boatEntity, 1, k, f);
 	}
 
-	@Override
 	public void renderPass(Entity entity, float f, float g, float h, float i, float j, float k) {
 		GlStateManager.rotatef(90.0F, 0.0F, 1.0F, 0.0F);
 		GlStateManager.colorMask(false, false, false, false);

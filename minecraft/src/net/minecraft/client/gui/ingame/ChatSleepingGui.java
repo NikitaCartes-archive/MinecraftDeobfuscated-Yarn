@@ -2,10 +2,10 @@ package net.minecraft.client.gui.ingame;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2848;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.server.network.packet.ClientCommandServerPacket;
 
 @Environment(EnvType.CLIENT)
 public class ChatSleepingGui extends ChatGui {
@@ -15,20 +15,20 @@ public class ChatSleepingGui extends ChatGui {
 		this.addButton(new ButtonWidget(1, this.width / 2 - 100, this.height - 40, I18n.translate("multiplayer.stopSleeping")) {
 			@Override
 			public void onPressed(double d, double e) {
-				ChatSleepingGui.this.leaveBed();
+				ChatSleepingGui.this.stopSleeping();
 			}
 		});
 	}
 
 	@Override
 	public void close() {
-		this.leaveBed();
+		this.stopSleeping();
 	}
 
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
 		if (i == 256) {
-			this.leaveBed();
+			this.stopSleeping();
 		} else if (i == 257 || i == 335) {
 			String string = this.chatField.getText().trim();
 			if (!string.isEmpty()) {
@@ -43,8 +43,8 @@ public class ChatSleepingGui extends ChatGui {
 		return super.keyPressed(i, j, k);
 	}
 
-	private void leaveBed() {
+	private void stopSleeping() {
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.player.networkHandler;
-		clientPlayNetworkHandler.sendPacket(new class_2848(this.client.player, class_2848.class_2849.field_12986));
+		clientPlayNetworkHandler.sendPacket(new ClientCommandServerPacket(this.client.player, ClientCommandServerPacket.Mode.field_12986));
 	}
 }

@@ -4,7 +4,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3033;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -45,6 +44,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.TheEndDimension;
 import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.gen.feature.EndPortalFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -92,8 +92,8 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 		this.setSize(16.0F, 8.0F);
 		this.noClip = true;
 		this.fireImmune = true;
-		this.field_5985 = true;
-		if (!world.isRemote && world.dimension instanceof TheEndDimension) {
+		this.ignoreCameraFrustum = true;
+		if (!world.isClient && world.dimension instanceof TheEndDimension) {
 			this.fight = ((TheEndDimension)world.dimension).method_12513();
 		} else {
 			this.fight = null;
@@ -135,7 +135,7 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 
 	@Override
 	public void updateMovement() {
-		if (this.world.isRemote) {
+		if (this.world.isClient) {
 			this.setHealth(this.getHealth());
 			if (!this.isSilent()) {
 				float f = MathHelper.cos(this.field_7030 * (float) (Math.PI * 2));
@@ -186,7 +186,7 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 
 				this.field_7026[this.field_7010][0] = (double)this.yaw;
 				this.field_7026[this.field_7010][1] = this.y;
-				if (this.world.isRemote) {
+				if (this.world.isClient) {
 					if (this.field_6210 > 0) {
 						double d = this.x + (this.field_6224 - this.x) / (double)this.field_6210;
 						double e = this.y + (this.field_6245 - this.y) / (double)this.field_6210;
@@ -281,7 +281,7 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 				this.partWingRight.setPositionAndAngles(this.x + (double)(x * 4.5F), this.y + 2.0, this.z + (double)(w * 4.5F), 0.0F, 0.0F);
 				this.partWingLeft.update();
 				this.partWingLeft.setPositionAndAngles(this.x - (double)(x * 4.5F), this.y + 2.0, this.z - (double)(w * 4.5F), 0.0F, 0.0F);
-				if (!this.world.isRemote && this.hurtTime == 0) {
+				if (!this.world.isClient && this.hurtTime == 0) {
 					this.method_6825(this.world.getVisibleEntities(this, this.partWingRight.getBoundingBox().expand(4.0, 2.0, 4.0).offset(0.0, -2.0, 0.0)));
 					this.method_6825(this.world.getVisibleEntities(this, this.partWingLeft.getBoundingBox().expand(4.0, 2.0, 4.0).offset(0.0, -2.0, 0.0)));
 					this.method_6827(this.world.getVisibleEntities(this, this.partHead.getBoundingBox().expand(1.0)));
@@ -327,7 +327,7 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 					);
 				}
 
-				if (!this.world.isRemote) {
+				if (!this.world.isClient) {
 					this.field_7027 = this.method_6821(this.partHead.getBoundingBox())
 						| this.method_6821(this.partNeck.getBoundingBox())
 						| this.method_6821(this.partBody.getBoundingBox());
@@ -539,7 +539,7 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 			i = 12000;
 		}
 
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			if (this.field_7031 > 150 && this.field_7031 % 5 == 0 && bl) {
 				this.method_6824(MathHelper.floor((float)i * 0.08F));
 			}
@@ -552,7 +552,7 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 		this.move(MovementType.SELF, 0.0, 0.1F, 0.0);
 		this.yaw += 20.0F;
 		this.field_6283 = this.yaw;
-		if (this.field_7031 == 200 && !this.world.isRemote) {
+		if (this.field_7031 == 200 && !this.world.isClient) {
 			if (bl) {
 				this.method_6824(MathHelper.floor((float)i * 0.2F));
 			}
@@ -810,7 +810,7 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 		PhaseType<? extends Phase> phaseType = phase.getType();
 		double d;
 		if (phaseType == PhaseType.LANDING || phaseType == PhaseType.TAKEOFF) {
-			BlockPos blockPos = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, class_3033.field_13600);
+			BlockPos blockPos = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
 			float f = Math.max(MathHelper.sqrt(this.squaredDistanceToCenter(blockPos)) / 4.0F, 1.0F);
 			d = (double)((float)i / f);
 		} else if (phase.method_6848()) {
@@ -829,7 +829,7 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 		PhaseType<? extends Phase> phaseType = phase.getType();
 		Vec3d vec3d;
 		if (phaseType == PhaseType.LANDING || phaseType == PhaseType.TAKEOFF) {
-			BlockPos blockPos = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, class_3033.field_13600);
+			BlockPos blockPos = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
 			float g = Math.max(MathHelper.sqrt(this.squaredDistanceToCenter(blockPos)) / 4.0F, 1.0F);
 			float h = 6.0F / g;
 			float i = this.pitch;
@@ -867,7 +867,7 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
-		if (PHASE_TYPE.equals(trackedData) && this.world.isRemote) {
+		if (PHASE_TYPE.equals(trackedData) && this.world.isClient) {
 			this.phaseManager.setPhase(PhaseType.getFromId(this.getDataTracker().get(PHASE_TYPE)));
 		}
 

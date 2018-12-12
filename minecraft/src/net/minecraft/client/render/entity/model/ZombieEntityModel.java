@@ -2,12 +2,11 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class ZombieEntityModel extends BipedEntityModel {
+public class ZombieEntityModel<T extends ZombieEntity> extends BipedEntityModel<T> {
 	public ZombieEntityModel() {
 		this(0.0F, false);
 	}
@@ -20,10 +19,9 @@ public class ZombieEntityModel extends BipedEntityModel {
 		super(f, 0.0F, 64, bl ? 32 : 64);
 	}
 
-	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
-		super.setRotationAngles(f, g, h, i, j, k, entity);
-		boolean bl = entity instanceof ZombieEntity && ((ZombieEntity)entity).hasArmsRaised();
+	public void method_17134(T zombieEntity, float f, float g, float h, float i, float j, float k) {
+		super.method_17087(zombieEntity, f, g, h, i, j, k);
+		boolean bl = zombieEntity.hasArmsRaised();
 		float l = MathHelper.sin(this.swingProgress * (float) Math.PI);
 		float m = MathHelper.sin((1.0F - (1.0F - this.swingProgress) * (1.0F - this.swingProgress)) * (float) Math.PI);
 		this.armRight.roll = 0.0F;

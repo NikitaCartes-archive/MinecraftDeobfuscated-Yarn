@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -17,10 +18,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.class_1419;
 import net.minecraft.class_1655;
 import net.minecraft.class_1919;
-import net.minecraft.class_1946;
-import net.minecraft.class_3202;
-import net.minecraft.class_3485;
-import net.minecraft.class_37;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.network.packet.BlockActionClientPacket;
@@ -35,11 +32,12 @@ import net.minecraft.entity.WaterCreatureEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.raid.RaidManager;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.network.Packet;
-import net.minecraft.particle.Particle;
+import net.minecraft.particle.ParticleParameters;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.scoreboard.ScoreboardState;
 import net.minecraft.scoreboard.ScoreboardSynchronizer;
@@ -47,22 +45,24 @@ import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.EntityTracker;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sortme.RaidState;
+import net.minecraft.sortme.structures.StructureManager;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.TagManager;
 import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.util.MinecraftException;
-import net.minecraft.util.Profiler;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportElement;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.PersistentStateManager;
+import net.minecraft.world.PortalForcer;
 import net.minecraft.world.ScheduledTick;
+import net.minecraft.world.SessionLockException;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.WorldVillageManager;
@@ -75,10 +75,10 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.FeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.BonusChestFeature;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
@@ -90,15 +90,15 @@ public class ServerWorld extends World {
 	private final MinecraftServer server;
 	private final EntityTracker entityTracker;
 	private final Map<UUID, Entity> entitiesByUuid = Maps.<UUID, Entity>newHashMap();
-	public boolean field_13957;
+	public boolean savingDisabled;
 	private boolean field_13955;
 	private int field_13948;
-	private final class_1946 field_13956;
+	private final PortalForcer portalForcer;
 	private final ServerTickScheduler<Block> blockTickScheduler = new ServerTickScheduler<>(
 		this, block -> block == null || block.getDefaultState().isAir(), Registry.BLOCK::getId, Registry.BLOCK::get, this::method_14189
 	);
 	private final ServerTickScheduler<Fluid> fluidTickScheduler = new ServerTickScheduler<>(
-		this, fluid -> fluid == null || fluid == Fluids.field_15906, Registry.FLUID::getId, Registry.FLUID::get, this::method_14171
+		this, fluid -> fluid == null || fluid == Fluids.EMPTY, Registry.FLUID::getId, Registry.FLUID::get, this::method_14171
 	);
 	protected final class_1419 field_13958 = new class_1419(this);
 	ObjectLinkedOpenHashSet<class_1919> field_13950 = new ObjectLinkedOpenHashSet<>();
@@ -106,44 +106,45 @@ public class ServerWorld extends World {
 
 	public ServerWorld(
 		MinecraftServer minecraftServer,
+		Executor executor,
 		WorldSaveHandler worldSaveHandler,
-		class_37 arg,
+		PersistentStateManager persistentStateManager,
 		LevelProperties levelProperties,
 		DimensionType dimensionType,
 		Profiler profiler
 	) {
 		super(
 			worldSaveHandler,
-			arg,
+			persistentStateManager,
 			levelProperties,
 			dimensionType,
 			(world, dimension) -> new ServerChunkManager(
 					world,
 					worldSaveHandler.createChunkSaveHandler(dimension),
+					executor,
 					dimension.createChunkGenerator(),
-					minecraftServer.getConfigurationManager().getViewDistance(),
-					1
+					minecraftServer.getPlayerManager().getViewDistance()
 				),
 			profiler,
 			false
 		);
 		this.server = minecraftServer;
 		this.entityTracker = new EntityTracker(this);
-		this.field_13956 = new class_1946(this);
+		this.portalForcer = new PortalForcer(this);
 		this.updateAmbientDarkness();
 		this.initWeatherGradients();
 		this.getWorldBorder().setMaxWorldBorderRadius(minecraftServer.getMaxWorldBorderRadius());
 	}
 
-	public ServerWorld method_14185() {
-		String string = RaidState.method_16533(this.dimension);
-		RaidState raidState = this.method_8648(this.dimension.getType(), RaidState::new, string);
-		if (raidState == null) {
-			this.raidState = new RaidState(this);
-			this.method_8647(this.dimension.getType(), string, this.raidState);
+	public ServerWorld initialize() {
+		String string = RaidManager.nameFor(this.dimension);
+		RaidManager raidManager = this.method_8648(this.dimension.getType(), RaidManager::new, string);
+		if (raidManager == null) {
+			this.raidManager = new RaidManager(this);
+			this.method_8647(this.dimension.getType(), string, this.raidManager);
 		} else {
-			this.raidState = raidState;
-			this.raidState.method_16530(this);
+			this.raidManager = raidManager;
+			this.raidManager.setWorld(this);
 		}
 
 		String string2 = WorldVillageManager.getBaseTag(this.dimension);
@@ -163,8 +164,8 @@ public class ServerWorld extends World {
 			this.method_8647(DimensionType.field_13072, "scoreboard", scoreboardState);
 		}
 
-		scoreboardState.setScoreboard(this.server.method_3845());
-		this.server.method_3845().method_12935(new ScoreboardSynchronizer(scoreboardState));
+		scoreboardState.setScoreboard(this.server.getScoreboard());
+		this.server.getScoreboard().method_12935(new ScoreboardSynchronizer(scoreboardState));
 		this.getWorldBorder().setCenter(this.properties.getBorderCenterX(), this.properties.getBorderCenterZ());
 		this.getWorldBorder().setDamagePerBlock(this.properties.getBorderDamagePerBlock());
 		this.getWorldBorder().setSafeZone(this.properties.getBorderSafeZone());
@@ -202,18 +203,18 @@ public class ServerWorld extends World {
 		}
 
 		this.tickTime();
-		this.getProfiler().begin("chunkSource");
+		this.getProfiler().push("chunkSource");
 		this.getChunkManager().tick(booleanSupplier);
-		this.getProfiler().endBegin("tickPending");
+		this.getProfiler().swap("tickPending");
 		this.tickScheduledTicks();
-		this.getProfiler().endBegin("village");
+		this.getProfiler().swap("village");
 		this.villageManager.tick();
-		this.field_13958.method_6445();
-		this.getProfiler().endBegin("portalForcer");
-		this.field_13956.method_8656(this.getTime());
-		this.getProfiler().endBegin("raid");
-		this.raidState.tick();
-		this.getProfiler().end();
+		this.field_13958.tick();
+		this.getProfiler().swap("portalForcer");
+		this.portalForcer.tick(this.getTime());
+		this.getProfiler().swap("raid");
+		this.raidManager.tick();
+		this.getProfiler().pop();
 		this.method_14192();
 		this.field_13953 = false;
 	}
@@ -241,8 +242,8 @@ public class ServerWorld extends World {
 		}
 	}
 
-	public ServerScoreboard method_14170() {
-		return this.server.method_3845();
+	public ServerScoreboard getScoreboard() {
+		return this.server.getScoreboard();
 	}
 
 	protected void method_14200() {
@@ -265,7 +266,7 @@ public class ServerWorld extends World {
 	}
 
 	public boolean method_14172() {
-		if (this.field_13955 && !this.isRemote) {
+		if (this.field_13955 && !this.isClient) {
 			for (PlayerEntity playerEntity : this.players) {
 				if (!playerEntity.isSpectator() && !playerEntity.method_7276()) {
 					return false;
@@ -302,13 +303,8 @@ public class ServerWorld extends World {
 	}
 
 	@Override
-	public boolean isChunkLoaded(int i, int j) {
-		return this.method_8393(i, j);
-	}
-
-	@Override
 	public void updateEntities() {
-		if (this.players.isEmpty() && !this.method_8551()) {
+		if (this.players.isEmpty() && !this.hasForcedChunks()) {
 			if (this.field_13948++ >= 300) {
 				return;
 			}
@@ -321,9 +317,9 @@ public class ServerWorld extends World {
 	}
 
 	@Override
-	protected void method_8541() {
-		super.method_8541();
-		this.getProfiler().endBegin("players");
+	protected void tickPlayers() {
+		super.tickPlayers();
+		this.getProfiler().swap("players");
 
 		for (int i = 0; i < this.players.size(); i++) {
 			Entity entity = (Entity)this.players.get(i);
@@ -336,32 +332,32 @@ public class ServerWorld extends World {
 				entity.stopRiding();
 			}
 
-			this.getProfiler().begin("tick");
+			this.getProfiler().push("tick");
 			if (!entity.invalid) {
 				try {
 					this.method_8552(entity);
 				} catch (Throwable var7) {
 					CrashReport crashReport = CrashReport.create(var7, "Ticking player");
-					CrashReportElement crashReportElement = crashReport.addElement("Player being ticked");
-					entity.populateCrashReport(crashReportElement);
+					CrashReportSection crashReportSection = crashReport.method_562("Player being ticked");
+					entity.method_5819(crashReportSection);
 					throw new CrashException(crashReport);
 				}
 			}
 
-			this.getProfiler().end();
-			this.getProfiler().begin("remove");
+			this.getProfiler().pop();
+			this.getProfiler().push("remove");
 			if (entity.invalid) {
 				int j = entity.chunkX;
 				int k = entity.chunkZ;
 				if (entity.field_6016 && this.isChunkLoaded(j, k)) {
-					this.getChunk(j, k).remove(entity);
+					this.getWorldChunk(j, k).remove(entity);
 				}
 
 				this.entities.remove(entity);
 				this.onEntityRemoved(entity);
 			}
 
-			this.getProfiler().end();
+			this.getProfiler().pop();
 		}
 	}
 
@@ -430,7 +426,7 @@ public class ServerWorld extends World {
 				CrashReport crashReport = CrashReport.create(var6, "Exception initializing level");
 
 				try {
-					this.toCrashReportElement(crashReport);
+					this.method_8538(crashReport);
 				} catch (Throwable var5) {
 				}
 
@@ -457,14 +453,14 @@ public class ServerWorld extends World {
 
 	private void method_14184(LevelInfo levelInfo) {
 		if (!this.dimension.method_12448()) {
-			this.properties.setSpawnPos(BlockPos.ORIGIN.up(this.chunkManager.getChunkGenerator().method_12100()));
+			this.properties.setSpawnPos(BlockPos.ORIGIN.up(this.chunkManager.getChunkGenerator().getSpawnHeight()));
 		} else if (this.properties.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
 			this.properties.setSpawnPos(BlockPos.ORIGIN.up());
 		} else {
 			BiomeSource biomeSource = this.chunkManager.getChunkGenerator().getBiomeSource();
 			List<Biome> list = biomeSource.getSpawnBiomes();
 			Random random = new Random(this.getSeed());
-			BlockPos blockPos = biomeSource.method_8762(0, 0, 256, list, random);
+			BlockPos blockPos = biomeSource.locateBiome(0, 0, 256, list, random);
 			ChunkPos chunkPos = blockPos == null ? new ChunkPos(0, 0) : new ChunkPos(blockPos);
 			if (blockPos == null) {
 				LOGGER.warn("Unable to find spawn biome");
@@ -479,7 +475,7 @@ public class ServerWorld extends World {
 				}
 			}
 
-			this.properties.setSpawnPos(chunkPos.method_8323().add(8, this.chunkManager.getChunkGenerator().method_12100(), 8));
+			this.properties.setSpawnPos(chunkPos.method_8323().add(8, this.chunkManager.getChunkGenerator().getSpawnHeight(), 8));
 			int i = 0;
 			int j = 0;
 			int k = 0;
@@ -519,7 +515,7 @@ public class ServerWorld extends World {
 			int k = this.properties.getSpawnZ() + this.random.nextInt(6) - this.random.nextInt(6);
 			BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(j, 0, k)).up();
 			if (bonusChestFeature.method_12817(
-				this, (ChunkGenerator<? extends ChunkGeneratorSettings>)this.chunkManager.getChunkGenerator(), this.random, blockPos, FeatureConfig.DEFAULT
+				this, (ChunkGenerator<? extends ChunkGeneratorConfig>)this.chunkManager.getChunkGenerator(), this.random, blockPos, FeatureConfig.field_13603
 			)) {
 				break;
 			}
@@ -531,14 +527,14 @@ public class ServerWorld extends World {
 		return this.dimension.getForcedSpawnPoint();
 	}
 
-	public void save(@Nullable ProgressListener progressListener, boolean bl) throws MinecraftException {
+	public void save(@Nullable ProgressListener progressListener, boolean bl) throws SessionLockException {
 		ServerChunkManager serverChunkManager = this.getChunkManager();
-		if (!this.field_13957) {
+		if (!this.savingDisabled) {
 			if (progressListener != null) {
 				progressListener.method_15412(new TranslatableTextComponent("menu.savingLevel"));
 			}
 
-			this.method_14188();
+			this.saveLevel();
 			if (progressListener != null) {
 				progressListener.method_15414(new TranslatableTextComponent("menu.savingChunks"));
 			}
@@ -547,12 +543,12 @@ public class ServerWorld extends World {
 		}
 	}
 
-	protected void method_14188() throws MinecraftException {
+	protected void saveLevel() throws SessionLockException {
 		this.checkSessionLock();
 
 		for (ServerWorld serverWorld : this.server.getWorlds()) {
-			if (serverWorld instanceof class_3202) {
-				((class_3202)serverWorld).method_14032();
+			if (serverWorld instanceof SecondaryServerWorld) {
+				((SecondaryServerWorld)serverWorld).saveWorldData();
 			}
 		}
 
@@ -566,8 +562,8 @@ public class ServerWorld extends World {
 		this.properties.setBorderSizeLerpTarget(this.getWorldBorder().getTargetSize());
 		this.properties.setBorderSizeLerpTime(this.getWorldBorder().getTargetRemainingTime());
 		this.properties.setCustomBossEvents(this.server.method_3837().method_12974());
-		this.saveHandler.saveWorld(this.properties, this.server.getConfigurationManager().getUserData());
-		this.method_8646().method_265();
+		this.saveHandler.saveWorld(this.properties, this.server.getPlayerManager().getUserData());
+		this.getPersistentStateManager().save();
 	}
 
 	@Override
@@ -640,9 +636,7 @@ public class ServerWorld extends World {
 	@Override
 	public boolean addGlobalEntity(Entity entity) {
 		if (super.addGlobalEntity(entity)) {
-			this.server
-				.getConfigurationManager()
-				.sendToAround(null, entity.x, entity.y, entity.z, 512.0, this.dimension.getType(), new EntitySpawnGlobalClientPacket(entity));
+			this.server.getPlayerManager().sendToAround(null, entity.x, entity.y, entity.z, 512.0, this.dimension.getType(), new EntitySpawnGlobalClientPacket(entity));
 			return true;
 		} else {
 			return false;
@@ -650,7 +644,7 @@ public class ServerWorld extends World {
 	}
 
 	@Override
-	public void method_8421(Entity entity, byte b) {
+	public void summonParticle(Entity entity, byte b) {
 		this.getEntityTracker().method_14073(entity, new EntityStatusClientPacket(entity, b));
 	}
 
@@ -660,7 +654,9 @@ public class ServerWorld extends World {
 
 	@Environment(EnvType.CLIENT)
 	public CompletableFuture<WorldChunk> method_16177(int i, int j, boolean bl) {
-		return this.getChunkManager().getChunkAsync(i, j, ChunkStatus.field_12803, bl).thenApply(either -> either.map(chunk -> (WorldChunk)chunk, unloaded -> null));
+		return this.getChunkManager()
+			.getChunkSyncIfServerThread(i, j, ChunkStatus.FULL, bl)
+			.thenApply(either -> either.map(chunk -> (WorldChunk)chunk, unloaded -> null));
 	}
 
 	@Override
@@ -697,7 +693,7 @@ public class ServerWorld extends World {
 			class_1919 lv = this.field_13950.removeFirst();
 			if (this.method_14174(lv)) {
 				this.server
-					.getConfigurationManager()
+					.getPlayerManager()
 					.sendToAround(
 						null,
 						(double)lv.method_8306().getX(),
@@ -727,22 +723,22 @@ public class ServerWorld extends World {
 		boolean bl = this.isRaining();
 		super.updateWeather();
 		if (this.rainGradientPrev != this.rainGradient) {
-			this.server.getConfigurationManager().sendToDimension(new GameStateChangeClientPacket(7, this.rainGradient), this.dimension.getType());
+			this.server.getPlayerManager().sendToDimension(new GameStateChangeClientPacket(7, this.rainGradient), this.dimension.getType());
 		}
 
 		if (this.thunderGradientPrev != this.thunderGradient) {
-			this.server.getConfigurationManager().sendToDimension(new GameStateChangeClientPacket(8, this.thunderGradient), this.dimension.getType());
+			this.server.getPlayerManager().sendToDimension(new GameStateChangeClientPacket(8, this.thunderGradient), this.dimension.getType());
 		}
 
 		if (bl != this.isRaining()) {
 			if (bl) {
-				this.server.getConfigurationManager().sendToAll(new GameStateChangeClientPacket(2, 0.0F));
+				this.server.getPlayerManager().sendToAll(new GameStateChangeClientPacket(2, 0.0F));
 			} else {
-				this.server.getConfigurationManager().sendToAll(new GameStateChangeClientPacket(1, 0.0F));
+				this.server.getPlayerManager().sendToAll(new GameStateChangeClientPacket(1, 0.0F));
 			}
 
-			this.server.getConfigurationManager().sendToAll(new GameStateChangeClientPacket(7, this.rainGradient));
-			this.server.getConfigurationManager().sendToAll(new GameStateChangeClientPacket(8, this.thunderGradient));
+			this.server.getPlayerManager().sendToAll(new GameStateChangeClientPacket(7, this.rainGradient));
+			this.server.getPlayerManager().sendToAll(new GameStateChangeClientPacket(8, this.thunderGradient));
 		}
 	}
 
@@ -764,16 +760,18 @@ public class ServerWorld extends World {
 		return this.entityTracker;
 	}
 
-	public class_1946 method_14173() {
-		return this.field_13956;
+	public PortalForcer getPortalForcer() {
+		return this.portalForcer;
 	}
 
-	public class_3485 method_14183() {
-		return this.saveHandler.method_134();
+	public StructureManager method_14183() {
+		return this.saveHandler.getStructureManager();
 	}
 
-	public <T extends Particle> int method_14199(T particle, double d, double e, double f, int i, double g, double h, double j, double k) {
-		ParticleClientPacket particleClientPacket = new ParticleClientPacket(particle, false, (float)d, (float)e, (float)f, (float)g, (float)h, (float)j, (float)k, i);
+	public <T extends ParticleParameters> int method_14199(T particleParameters, double d, double e, double f, int i, double g, double h, double j, double k) {
+		ParticleClientPacket particleClientPacket = new ParticleClientPacket(
+			particleParameters, false, (float)d, (float)e, (float)f, (float)g, (float)h, (float)j, (float)k, i
+		);
 		int l = 0;
 
 		for (int m = 0; m < this.players.size(); m++) {
@@ -786,10 +784,10 @@ public class ServerWorld extends World {
 		return l;
 	}
 
-	public <T extends Particle> boolean method_14166(
-		ServerPlayerEntity serverPlayerEntity, T particle, boolean bl, double d, double e, double f, int i, double g, double h, double j, double k
+	public <T extends ParticleParameters> boolean method_14166(
+		ServerPlayerEntity serverPlayerEntity, T particleParameters, boolean bl, double d, double e, double f, int i, double g, double h, double j, double k
 	) {
-		Packet<?> packet = new ParticleClientPacket(particle, bl, (float)d, (float)e, (float)f, (float)g, (float)h, (float)j, (float)k, i);
+		Packet<?> packet = new ParticleClientPacket(particleParameters, bl, (float)d, (float)e, (float)f, (float)g, (float)h, (float)j, (float)k, i);
 		return this.method_14191(serverPlayerEntity, bl, d, e, f, packet);
 	}
 
@@ -816,7 +814,7 @@ public class ServerWorld extends World {
 
 	@Nullable
 	@Override
-	public BlockPos method_8487(String string, BlockPos blockPos, int i, boolean bl) {
+	public BlockPos locateStructure(String string, BlockPos blockPos, int i, boolean bl) {
 		return this.getChunkManager().getChunkGenerator().locateStructure(this, string, blockPos, i, bl);
 	}
 
@@ -837,7 +835,7 @@ public class ServerWorld extends World {
 	}
 
 	@Override
-	public boolean method_8458() {
-		return this.field_13957;
+	public boolean isSavingDisabled() {
+		return this.savingDisabled;
 	}
 }

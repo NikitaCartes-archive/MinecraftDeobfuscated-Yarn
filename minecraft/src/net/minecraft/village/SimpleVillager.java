@@ -6,7 +6,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.TextComponent;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -14,13 +13,13 @@ import net.minecraft.world.World;
 public class SimpleVillager implements Villager {
 	private final VillagerInventory villagerInventory;
 	private final PlayerEntity player;
-	private VillagerRecipeList recipeList;
+	private VillagerRecipeList recipeList = new VillagerRecipeList();
 	private final TextComponent displayName;
 
 	public SimpleVillager(PlayerEntity playerEntity, TextComponent textComponent) {
 		this.player = playerEntity;
 		this.displayName = textComponent;
-		this.villagerInventory = new VillagerInventory(playerEntity, this);
+		this.villagerInventory = new VillagerInventory(this);
 	}
 
 	@Nullable
@@ -33,14 +32,13 @@ public class SimpleVillager implements Villager {
 	public void setCurrentCustomer(@Nullable PlayerEntity playerEntity) {
 	}
 
-	@Nullable
 	@Override
-	public VillagerRecipeList getRecipes(PlayerEntity playerEntity) {
+	public VillagerRecipeList getRecipes() {
 		return this.recipeList;
 	}
 
 	@Override
-	public void setRecipeList(@Nullable VillagerRecipeList villagerRecipeList) {
+	public void setServerRecipes(@Nullable VillagerRecipeList villagerRecipeList) {
 		this.recipeList = villagerRecipeList;
 	}
 
@@ -55,7 +53,7 @@ public class SimpleVillager implements Villager {
 
 	@Override
 	public TextComponent getDisplayName() {
-		return (TextComponent)(this.displayName != null ? this.displayName : new TranslatableTextComponent("entity.Villager.name"));
+		return this.displayName;
 	}
 
 	@Override

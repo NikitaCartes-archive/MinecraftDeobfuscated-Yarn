@@ -11,7 +11,7 @@ import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeSourceType;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.ChunkPos;
-import net.minecraft.world.gen.chunk.CavesChunkGeneratorSettings;
+import net.minecraft.world.gen.chunk.CavesChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorType;
 
@@ -19,7 +19,7 @@ public class TheNetherDimension extends Dimension {
 	public TheNetherDimension(World world, DimensionType dimensionType) {
 		super(world, dimensionType);
 		this.field_13057 = true;
-		this.field_13056 = true;
+		this.isNether = true;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -40,11 +40,11 @@ public class TheNetherDimension extends Dimension {
 
 	@Override
 	public ChunkGenerator<?> createChunkGenerator() {
-		CavesChunkGeneratorSettings cavesChunkGeneratorSettings = ChunkGeneratorType.field_12765.createSettings();
-		cavesChunkGeneratorSettings.setDefaultBlock(Blocks.field_10515.getDefaultState());
-		cavesChunkGeneratorSettings.setDefaultFluid(Blocks.field_10164.getDefaultState());
+		CavesChunkGeneratorConfig cavesChunkGeneratorConfig = ChunkGeneratorType.field_12765.method_12117();
+		cavesChunkGeneratorConfig.setDefaultBlock(Blocks.field_10515.getDefaultState());
+		cavesChunkGeneratorConfig.setDefaultFluid(Blocks.field_10164.getDefaultState());
 		return ChunkGeneratorType.field_12765
-			.create(this.world, BiomeSourceType.FIXED.applyConfig(BiomeSourceType.FIXED.getConfig().method_8782(Biomes.field_9461)), cavesChunkGeneratorSettings);
+			.create(this.world, BiomeSourceType.FIXED.applyConfig(BiomeSourceType.FIXED.getConfig().method_8782(Biomes.field_9461)), cavesChunkGeneratorConfig);
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class TheNetherDimension extends Dimension {
 	}
 
 	@Override
-	public float method_12464(long l, float f) {
+	public float getSkyAngle(long l, float f) {
 		return 0.5F;
 	}
 

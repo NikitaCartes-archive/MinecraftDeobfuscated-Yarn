@@ -1,12 +1,13 @@
 package net.minecraft;
 
+import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ViewableWorld;
 
-public class class_3697 extends class_1367 {
+public class class_3697 extends MoveToTargetPosGoal {
 	private final CatEntity field_16282;
 
 	public class_3697(CatEntity catEntity, double d, int i) {
@@ -28,7 +29,7 @@ public class class_3697 extends class_1367 {
 	}
 
 	@Override
-	protected int method_6293(MobEntityWithAi mobEntityWithAi) {
+	protected int getInterval(MobEntityWithAi mobEntityWithAi) {
 		return 40;
 	}
 
@@ -42,7 +43,7 @@ public class class_3697 extends class_1367 {
 	public void tick() {
 		super.tick();
 		this.field_16282.method_6176().method_6311(false);
-		if (!this.method_6295()) {
+		if (!this.hasReached()) {
 			this.field_16282.method_16088(false);
 		} else if (!this.field_16282.method_16086()) {
 			this.field_16282.method_16088(true);
@@ -50,7 +51,7 @@ public class class_3697 extends class_1367 {
 	}
 
 	@Override
-	protected boolean method_6296(ViewableWorld viewableWorld, BlockPos blockPos) {
+	protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
 		return viewableWorld.isAir(blockPos.up()) && viewableWorld.getBlockState(blockPos).getBlock().matches(BlockTags.field_16443);
 	}
 }

@@ -2,6 +2,10 @@ package net.minecraft.entity.thrown;
 
 import java.util.List;
 import java.util.function.Predicate;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.EnvironmentInterface;
+import net.fabricmc.api.EnvironmentInterfaces;
+import net.minecraft.class_3856;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.EntityType;
@@ -28,7 +32,11 @@ import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ThrownPotionEntity extends ThrownEntity {
+@EnvironmentInterfaces({@EnvironmentInterface(
+		value = EnvType.CLIENT,
+		itf = class_3856.class
+	)})
+public class ThrownPotionEntity extends ThrownEntity implements class_3856 {
 	private static final TrackedData<ItemStack> ITEM_STACK = DataTracker.registerData(ThrownPotionEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final Predicate<LivingEntity> field_7653 = ThrownPotionEntity::doesWaterHurt;
@@ -37,16 +45,12 @@ public class ThrownPotionEntity extends ThrownEntity {
 		super(EntityType.POTION, world);
 	}
 
-	public ThrownPotionEntity(World world, LivingEntity livingEntity, ItemStack itemStack) {
+	public ThrownPotionEntity(World world, LivingEntity livingEntity) {
 		super(EntityType.POTION, livingEntity, world);
-		this.setItemStack(itemStack);
 	}
 
-	public ThrownPotionEntity(World world, double d, double e, double f, ItemStack itemStack) {
+	public ThrownPotionEntity(World world, double d, double e, double f) {
 		super(EntityType.POTION, d, e, f, world);
-		if (!itemStack.isEmpty()) {
-			this.setItemStack(itemStack);
-		}
 	}
 
 	@Override
@@ -54,7 +58,8 @@ public class ThrownPotionEntity extends ThrownEntity {
 		this.getDataTracker().startTracking(ITEM_STACK, ItemStack.EMPTY);
 	}
 
-	public ItemStack getItemStack() {
+	@Override
+	public ItemStack method_7495() {
 		ItemStack itemStack = this.getDataTracker().get(ITEM_STACK);
 		if (itemStack.getItem() != Items.field_8436 && itemStack.getItem() != Items.field_8150) {
 			if (this.world != null) {
@@ -78,17 +83,17 @@ public class ThrownPotionEntity extends ThrownEntity {
 
 	@Override
 	protected void onCollision(HitResult hitResult) {
-		if (!this.world.isRemote) {
-			ItemStack itemStack = this.getItemStack();
+		if (!this.world.isClient) {
+			ItemStack itemStack = this.method_7495();
 			Potion potion = PotionUtil.getPotion(itemStack);
 			List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
 			boolean bl = potion == Potions.field_8991 && list.isEmpty();
 			if (hitResult.type == HitResult.Type.BLOCK && bl) {
-				BlockPos blockPos = hitResult.getBlockPos().method_10093(hitResult.field_1327);
-				this.method_7499(blockPos, hitResult.field_1327);
+				BlockPos blockPos = hitResult.getBlockPos().offset(hitResult.side);
+				this.extinguishFire(blockPos, hitResult.side);
 
 				for (Direction direction : Direction.class_2353.HORIZONTAL) {
-					this.method_7499(blockPos.method_10093(direction), direction);
+					this.extinguishFire(blockPos.offset(direction), direction);
 				}
 			}
 
@@ -177,12 +182,12 @@ public class ThrownPotionEntity extends ThrownEntity {
 	}
 
 	private boolean isLingering() {
-		return this.getItemStack().getItem() == Items.field_8150;
+		return this.method_7495().getItem() == Items.field_8150;
 	}
 
-	private void method_7499(BlockPos blockPos, Direction direction) {
+	private void extinguishFire(BlockPos blockPos, Direction direction) {
 		if (this.world.getBlockState(blockPos).getBlock() == Blocks.field_10036) {
-			this.world.method_8506(null, blockPos.method_10093(direction), direction.getOpposite());
+			this.world.method_8506(null, blockPos.offset(direction), direction.getOpposite());
 		}
 	}
 
@@ -200,7 +205,7 @@ public class ThrownPotionEntity extends ThrownEntity {
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
-		ItemStack itemStack = this.getItemStack();
+		ItemStack itemStack = this.method_7495();
 		if (!itemStack.isEmpty()) {
 			compoundTag.put("Potion", itemStack.toTag(new CompoundTag()));
 		}

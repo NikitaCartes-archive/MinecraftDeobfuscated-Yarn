@@ -1,202 +1,372 @@
 package net.minecraft.world.chunk.light;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongIterator;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.class_2804;
-import net.minecraft.class_3554;
-import net.minecraft.class_3556;
-import net.minecraft.class_3560;
-import net.minecraft.class_3562;
-import net.minecraft.block.BlockState;
+import net.minecraft.sortme.LevelIndexedProcessor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
-import net.minecraft.world.chunk.ChunkView;
+import net.minecraft.world.chunk.ChunkNibbleArray;
+import net.minecraft.world.chunk.ChunkProvider;
+import net.minecraft.world.chunk.WorldNibbleStorage;
 
-public abstract class LightStorage<M extends class_3556<M>, S extends class_3560<M>> extends class_3554 implements class_3562 {
-	private static final Direction[] field_16513 = Direction.values();
-	protected final ChunkView view;
-	protected final LightType type;
-	protected final S field_15793;
-	private boolean field_15794 = false;
-	private final BlockPos.Mutable field_16514 = new BlockPos.Mutable();
-	private final BlockPos.Mutable field_16515 = new BlockPos.Mutable();
-	private final BlockPos.Mutable field_16512 = new BlockPos.Mutable();
+public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends LevelIndexedProcessor {
+	protected static final ChunkNibbleArray EMPTY = new ChunkNibbleArray();
+	private static final Direction[] DIRECTIONS = Direction.values();
+	private final LightType lightType;
+	private final ChunkProvider chunkProvider;
+	protected final LongSet field_15808 = new LongOpenHashSet();
+	protected final LongSet field_15797 = new LongOpenHashSet();
+	protected final LongSet field_15804 = new LongOpenHashSet();
+	protected volatile M dataStorageUncached;
+	protected final M dataStorage;
+	protected LongSet field_15802 = new LongOpenHashSet();
+	protected LongSet toNotify = new LongOpenHashSet();
+	protected final Long2ObjectMap<ChunkNibbleArray> toUpdate = new Long2ObjectOpenHashMap<>();
+	private final LongSet toRemove = new LongOpenHashSet();
+	protected volatile boolean hasLightUpdates;
 
-	public LightStorage(ChunkView chunkView, LightType lightType, S arg) {
-		super(16, 256, 8192);
-		this.view = chunkView;
-		this.type = lightType;
-		this.field_15793 = arg;
+	protected LightStorage(LightType lightType, ChunkProvider chunkProvider, M worldNibbleStorage) {
+		super(3, 16, 256);
+		this.lightType = lightType;
+		this.chunkProvider = chunkProvider;
+		this.dataStorage = worldNibbleStorage;
+		this.dataStorageUncached = worldNibbleStorage.copy();
+		this.dataStorageUncached.disableCache();
 	}
 
-	@Override
-	protected void queueLightCheck(long l) {
-		this.field_15793.method_15539();
-		if (this.field_15793.method_15524(BlockPos.method_10090(l))) {
-			super.queueLightCheck(l);
+	protected boolean hasChunk(long l) {
+		return this.getDataForChunk(l, true) != null;
+	}
+
+	@Nullable
+	protected ChunkNibbleArray getDataForChunk(long l, boolean bl) {
+		return this.getDataForChunk(bl ? this.dataStorage : this.dataStorageUncached, l);
+	}
+
+	@Nullable
+	protected ChunkNibbleArray getDataForChunk(M worldNibbleStorage, long l) {
+		return worldNibbleStorage.getDataForChunk(l);
+	}
+
+	protected abstract int getLight(long l);
+
+	protected int get(long l) {
+		long m = BlockPos.toChunkSectionOrigin(l);
+		ChunkNibbleArray chunkNibbleArray = this.getDataForChunk(m, true);
+		return chunkNibbleArray.method_12139(BlockPos.unpackLongX(l) & 15, BlockPos.unpackLongY(l) & 15, BlockPos.unpackLongZ(l) & 15);
+	}
+
+	protected void set(long l, int i) {
+		long m = BlockPos.toChunkSectionOrigin(l);
+		if (this.field_15802.add(m)) {
+			this.dataStorage.cloneChunkData(m);
+		}
+
+		ChunkNibbleArray chunkNibbleArray = this.getDataForChunk(m, true);
+		chunkNibbleArray.set(BlockPos.unpackLongX(l) & 15, BlockPos.unpackLongY(l) & 15, BlockPos.unpackLongZ(l) & 15, i);
+
+		for (int j = -1; j <= 1; j++) {
+			for (int k = -1; k <= 1; k++) {
+				for (int n = -1; n <= 1; n++) {
+					this.toNotify.add(BlockPos.toChunkSectionOrigin(BlockPos.add(l, k, n, j)));
+				}
+			}
 		}
 	}
 
-	protected int method_16340(long l, long m) {
-		this.field_15793.method_15539();
-		if (!BlockPos.isHeightInvalid(l) && !BlockPos.isHeightInvalid(m)) {
-			this.field_16514.method_16363(l);
-			this.field_16515.method_16363(m);
-			int i = this.field_16514.getX() >> 4;
-			int j = this.field_16514.getZ() >> 4;
-			int k = this.field_16515.getX() >> 4;
-			int n = this.field_16515.getZ() >> 4;
-			BlockView blockView = this.view.get(k, n);
-			if (blockView == null) {
-				return 16;
-			} else {
-				BlockState blockState = blockView.getBlockState(this.field_16515);
-				BlockView blockView2 = this.view.method_16399();
-				int o = blockState.method_11581(blockView2, this.field_16515);
-				if (!blockState.method_16386() && o >= 15) {
-					return 16;
-				} else {
-					BlockView blockView3;
-					if (i == k && j == n) {
-						blockView3 = blockView;
-					} else {
-						blockView3 = this.view.get(i, j);
+	@Override
+	protected boolean isInvalidIndex(long l) {
+		return l == -1L;
+	}
+
+	@Override
+	protected void processLevelAt(long l, int i, boolean bl) {
+		for (int j = -1; j <= 1; j++) {
+			for (int k = -1; k <= 1; k++) {
+				for (int m = -1; m <= 1; m++) {
+					long n = BlockPos.add(l, j * 16, k * 16, m * 16);
+					if (n != l) {
+						this.scheduleUpdateRecursively(l, n, i, bl);
+					}
+				}
+			}
+		}
+	}
+
+	@Override
+	protected int getMergedLevel(long l, long m, int i) {
+		int j = i;
+
+		for (int k = -1; k <= 1; k++) {
+			for (int n = -1; n <= 1; n++) {
+				for (int o = -1; o <= 1; o++) {
+					long p = BlockPos.add(l, k * 16, n * 16, o * 16);
+					if (p == l) {
+						p = -1L;
 					}
 
-					if (blockView3 == null) {
-						return 16;
-					} else {
-						int p = Integer.signum(this.field_16515.getX() - this.field_16514.getX());
-						int q = Integer.signum(this.field_16515.getY() - this.field_16514.getY());
-						int r = Integer.signum(this.field_16515.getZ() - this.field_16514.getZ());
-						Direction direction = Direction.method_16365(this.field_16512.set(p, q, r));
-						if (direction == null) {
-							return 16;
-						} else {
-							BlockState blockState2 = blockView3.getBlockState(this.field_16514);
-							boolean bl = blockState2.isFullBoundsCubeForCulling() && blockState2.method_16386();
-							boolean bl2 = blockState.isFullBoundsCubeForCulling() && blockState.method_16386();
-							if (!bl && !bl2) {
-								return o;
-							} else {
-								VoxelShape voxelShape = bl ? blockState2.method_11615(blockView2, this.field_16514) : VoxelShapes.empty();
-								VoxelShape voxelShape2 = bl2 ? blockState.method_11615(blockView2, this.field_16515) : VoxelShapes.empty();
-								return VoxelShapes.method_1080(voxelShape, voxelShape2, direction) ? 16 : o;
+					if (p != m) {
+						int q = this.getBaseLevelFor(p, l, this.getCurrentLevelFor(p));
+						if (j > q) {
+							j = q;
+						}
+
+						if (j == 0) {
+							return j;
+						}
+					}
+				}
+			}
+		}
+
+		return j;
+	}
+
+	@Override
+	protected int getCurrentLevelFor(long l) {
+		if (l == -1L) {
+			return 2;
+		} else if (this.field_15808.contains(l)) {
+			return 0;
+		} else {
+			return !this.toRemove.contains(l) && this.dataStorage.hasChunk(l) ? 1 : 2;
+		}
+	}
+
+	@Override
+	protected int getBaseLevelFor(long l, long m, int i) {
+		if (l == -1L) {
+			if (this.field_15797.contains(m)) {
+				return 2;
+			} else {
+				return !this.field_15808.contains(m) && !this.field_15804.contains(m) ? 2 : 0;
+			}
+		} else {
+			return i + 1;
+		}
+	}
+
+	@Override
+	protected void setLevelFor(long l, int i) {
+		int j = this.getCurrentLevelFor(l);
+		if (j != 0 && i == 0) {
+			this.field_15808.add(l);
+			this.field_15804.remove(l);
+		}
+
+		if (j == 0 && i != 0) {
+			this.field_15808.remove(l);
+			this.field_15797.remove(l);
+		}
+
+		if (j >= 2 && i != 2) {
+			if (this.toRemove.contains(l)) {
+				this.toRemove.remove(l);
+			} else {
+				this.dataStorage.addForChunk(l, this.getDataForChunk(l));
+				this.field_15802.add(l);
+				this.method_15523(l);
+
+				for (int k = -1; k <= 1; k++) {
+					for (int m = -1; m <= 1; m++) {
+						for (int n = -1; n <= 1; n++) {
+							this.toNotify.add(BlockPos.toChunkSectionOrigin(BlockPos.add(l, m * 16, n * 16, k * 16)));
+						}
+					}
+				}
+			}
+		}
+
+		if (j != 2 && i >= 2) {
+			this.toRemove.add(l);
+		}
+
+		this.hasLightUpdates = !this.toRemove.isEmpty();
+	}
+
+	private ChunkNibbleArray getDataForChunk(long l) {
+		ChunkNibbleArray chunkNibbleArray = this.toUpdate.get(l);
+		return chunkNibbleArray != null ? chunkNibbleArray : new ChunkNibbleArray();
+	}
+
+	protected void removeChunkData(ChunkLightProvider<?, ?> chunkLightProvider, long l) {
+		int i = BlockPos.unpackLongX(l);
+		int j = BlockPos.unpackLongY(l);
+		int k = BlockPos.unpackLongZ(l);
+
+		for (int m = 0; m < 16; m++) {
+			for (int n = 0; n < 16; n++) {
+				for (int o = 0; o < 16; o++) {
+					long p = BlockPos.asLong(i + m, j + n, k + o);
+					chunkLightProvider.remove(p);
+				}
+			}
+		}
+	}
+
+	protected boolean hasLightUpdates() {
+		return this.hasLightUpdates;
+	}
+
+	protected void processUpdates(ChunkLightProvider<M, ?> chunkLightProvider, boolean bl, boolean bl2) {
+		if (this.hasLightUpdates() || !this.toUpdate.isEmpty()) {
+			LongIterator objectIterator = this.toRemove.iterator();
+
+			while (objectIterator.hasNext()) {
+				long l = (Long)objectIterator.next();
+				this.toUpdate.remove(l);
+				this.removeChunkData(chunkLightProvider, l);
+				this.dataStorage.removeChunk(l);
+			}
+
+			this.dataStorage.clearCache();
+			objectIterator = this.toRemove.iterator();
+
+			while (objectIterator.hasNext()) {
+				long l = (Long)objectIterator.next();
+				this.onChunkRemoved(l);
+			}
+
+			this.toRemove.clear();
+			this.hasLightUpdates = false;
+
+			for (Entry<ChunkNibbleArray> entry : this.toUpdate.long2ObjectEntrySet()) {
+				long m = entry.getLongKey();
+				if (this.hasChunk(m)) {
+					ChunkNibbleArray chunkNibbleArray = (ChunkNibbleArray)entry.getValue();
+					if (this.dataStorage.getDataForChunk(m) != chunkNibbleArray) {
+						this.removeChunkData(chunkLightProvider, m);
+						this.dataStorage.addForChunk(m, chunkNibbleArray);
+						this.field_15802.add(m);
+					}
+				}
+			}
+
+			this.dataStorage.clearCache();
+			if (!bl2) {
+				objectIterator = this.toUpdate.keySet().iterator();
+
+				while (objectIterator.hasNext()) {
+					long l = (Long)objectIterator.next();
+					if (this.hasChunk(l)) {
+						int i = BlockPos.unpackLongX(l);
+						int j = BlockPos.unpackLongY(l);
+						int k = BlockPos.unpackLongZ(l);
+
+						for (Direction direction : DIRECTIONS) {
+							long n = BlockPos.add(l, direction.getOffsetX() * 16, direction.getOffsetY() * 16, direction.getOffsetZ() * 16);
+							if (!this.toUpdate.containsKey(n) && this.hasChunk(n)) {
+								for (int o = 0; o < 16; o++) {
+									for (int p = 0; p < 16; p++) {
+										long q;
+										long r;
+										switch (direction) {
+											case DOWN:
+												q = BlockPos.asLong(i + p, j, k + o);
+												r = BlockPos.asLong(i + p, j - 1, k + o);
+												break;
+											case UP:
+												q = BlockPos.asLong(i + p, j + 16 - 1, k + o);
+												r = BlockPos.asLong(i + p, j + 16, k + o);
+												break;
+											case NORTH:
+												q = BlockPos.asLong(i + o, j + p, k);
+												r = BlockPos.asLong(i + o, j + p, k - 1);
+												break;
+											case SOUTH:
+												q = BlockPos.asLong(i + o, j + p, k + 16 - 1);
+												r = BlockPos.asLong(i + o, j + p, k + 16);
+												break;
+											case WEST:
+												q = BlockPos.asLong(i, j + o, k + p);
+												r = BlockPos.asLong(i - 1, j + o, k + p);
+												break;
+											default:
+												q = BlockPos.asLong(i + 16 - 1, j + o, k + p);
+												r = BlockPos.asLong(i + 16, j + o, k + p);
+										}
+
+										chunkLightProvider.scheduleNewLevelUpdate(q, r, chunkLightProvider.getBaseLevelFor(q, r, chunkLightProvider.getCurrentLevelFor(q)), false);
+										chunkLightProvider.scheduleNewLevelUpdate(r, q, chunkLightProvider.getBaseLevelFor(r, q, chunkLightProvider.getCurrentLevelFor(r)), false);
+									}
+								}
 							}
 						}
 					}
 				}
 			}
-		} else {
-			return 0;
-		}
-	}
 
-	@Override
-	protected boolean method_15494(long l) {
-		return l == -1L;
-	}
+			ObjectIterator<Entry<ChunkNibbleArray>> objectIteratorx = this.toUpdate.long2ObjectEntrySet().iterator();
 
-	@Override
-	protected int method_15486(long l, long m, int i) {
-		return 0;
-	}
-
-	@Override
-	public int method_15480(long l) {
-		return l == -1L ? 0 : 15 - this.field_15793.method_15537(l);
-	}
-
-	protected int method_15517(class_2804 arg, long l) {
-		return 15 - arg.method_12139(BlockPos.unpackLongX(l) & 15, BlockPos.unpackLongY(l) & 15, BlockPos.unpackLongZ(l) & 15);
-	}
-
-	@Override
-	protected void method_15485(long l, int i) {
-		this.field_15793.method_15525(l, Math.min(15, 15 - i));
-	}
-
-	@Override
-	public int method_15488(long l, long m, int i) {
-		return 0;
-	}
-
-	public boolean method_15518() {
-		return this.method_15489() || this.field_15793.method_15489() || this.field_15793.method_15528();
-	}
-
-	public int method_15516(int i, boolean bl, boolean bl2) {
-		if (!this.field_15794) {
-			if (this.field_15793.method_15489()) {
-				i = this.field_15793.method_15492(i);
-				if (i == 0) {
-					return i;
+			while (objectIteratorx.hasNext()) {
+				Entry<ChunkNibbleArray> entryx = (Entry<ChunkNibbleArray>)objectIteratorx.next();
+				long m = entryx.getLongKey();
+				if (this.hasChunk(m)) {
+					objectIteratorx.remove();
 				}
 			}
+		}
+	}
 
-			this.field_15793.method_15527(this, bl, bl2);
+	protected void method_15523(long l) {
+	}
+
+	protected void onChunkRemoved(long l) {
+	}
+
+	protected void method_15535(long l, boolean bl) {
+	}
+
+	protected void scheduleToUpdate(long l, ChunkNibbleArray chunkNibbleArray) {
+		this.toUpdate.put(l, chunkNibbleArray);
+	}
+
+	protected void scheduleChunkLightUpdate(long l, boolean bl) {
+		boolean bl2 = this.field_15808.contains(l);
+		if (!bl2 && !bl) {
+			this.field_15804.add(l);
+			this.scheduleNewLevelUpdate(-1L, l, 0, true);
 		}
 
-		this.field_15794 = true;
-		if (this.method_15489()) {
-			i = this.method_15492(i);
-			if (i == 0) {
-				return i;
+		if (bl2 && bl) {
+			this.field_15797.add(l);
+			this.scheduleNewLevelUpdate(-1L, l, 2, false);
+		}
+	}
+
+	protected void updateAll() {
+		if (this.hasLevelUpdates()) {
+			this.updateLevels(Integer.MAX_VALUE);
+		}
+	}
+
+	protected void notifyChunkProvider() {
+		if (!this.field_15802.isEmpty()) {
+			M worldNibbleStorage = this.dataStorage.copy();
+			worldNibbleStorage.disableCache();
+			this.dataStorageUncached = worldNibbleStorage;
+			this.field_15802.clear();
+		}
+
+		if (!this.toNotify.isEmpty()) {
+			LongIterator longIterator = this.toNotify.iterator();
+
+			while (longIterator.hasNext()) {
+				long l = longIterator.nextLong();
+				int i = BlockPos.unpackLongX(l);
+				int j = BlockPos.unpackLongY(l);
+				int k = BlockPos.unpackLongZ(l);
+				this.chunkProvider.onLightUpdate(this.lightType, i >> 4, j >> 4, k >> 4);
 			}
+
+			this.toNotify.clear();
 		}
-
-		this.field_15794 = false;
-		this.field_15793.method_15530();
-		return i;
-	}
-
-	protected void method_15515(int i, int j, int k, class_2804 arg) {
-		long l = BlockPos.asLong(i << 4, j << 4, k << 4);
-		this.field_15793.method_15532(l, arg);
-	}
-
-	@Nullable
-	@Override
-	public class_2804 method_15544(int i, int j, int k) {
-		long l = BlockPos.asLong(i << 4, j << 4, k << 4);
-		return this.field_15793.method_15522(l, false);
-	}
-
-	@Override
-	public int getLightLevel(BlockPos blockPos) {
-		return this.field_15793.method_15538(blockPos.asLong());
-	}
-
-	@Environment(EnvType.CLIENT)
-	public String method_15520(long l) {
-		return "" + this.field_15793.method_15480(l);
-	}
-
-	public void queueLightCheck(BlockPos blockPos) {
-		long l = blockPos.asLong();
-		this.queueLightCheck(l);
-
-		for (Direction direction : field_16513) {
-			this.queueLightCheck(BlockPos.method_10060(l, direction));
-		}
-	}
-
-	public void method_15514(BlockPos blockPos, int i) {
-	}
-
-	@Override
-	public void method_15551(int i, int j, int k, boolean bl) {
-		long l = BlockPos.asLong(i << 4, j << 4, k << 4);
-		this.field_15793.method_15526(l, bl);
-	}
-
-	public void method_15512(int i, int j, boolean bl) {
-		long l = BlockPos.method_10065(BlockPos.asLong(i << 4, 0, j << 4));
-		this.field_15793.method_15535(l, bl);
 	}
 }

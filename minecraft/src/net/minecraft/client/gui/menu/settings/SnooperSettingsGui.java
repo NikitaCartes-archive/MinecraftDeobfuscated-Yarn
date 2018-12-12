@@ -10,8 +10,8 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiEventListener;
 import net.minecraft.client.gui.widget.AbstractListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.settings.GameOptions;
 
 @Environment(EnvType.CLIENT)
 public class SnooperSettingsGui extends Gui {
@@ -91,7 +91,7 @@ public class SnooperSettingsGui extends Gui {
 
 		for (String string : this.field_2572) {
 			this.drawStringCentered(this.fontRenderer, string, this.width / 2, k, 8421504);
-			k += this.fontRenderer.FONT_HEIGHT;
+			k += this.fontRenderer.fontHeight;
 		}
 
 		super.draw(i, j, f);
@@ -106,7 +106,7 @@ public class SnooperSettingsGui extends Gui {
 				SnooperSettingsGui.this.height,
 				80,
 				SnooperSettingsGui.this.height - 40,
-				SnooperSettingsGui.this.fontRenderer.FONT_HEIGHT + 1
+				SnooperSettingsGui.this.fontRenderer.fontHeight + 1
 			);
 		}
 
@@ -116,12 +116,12 @@ public class SnooperSettingsGui extends Gui {
 		}
 
 		@Override
-		protected boolean isSelected(int i) {
+		protected boolean isSelectedEntry(int i) {
 			return false;
 		}
 
 		@Override
-		protected void method_1936() {
+		protected void drawBackground() {
 		}
 
 		@Override

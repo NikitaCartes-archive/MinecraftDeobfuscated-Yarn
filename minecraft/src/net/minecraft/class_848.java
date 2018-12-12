@@ -2,8 +2,8 @@ package net.minecraft;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.Renderer;
-import net.minecraft.client.render.block.BlockRenderLayer;
+import net.minecraft.block.BlockRenderLayer;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.chunk.ChunkRenderData;
 import net.minecraft.client.render.chunk.ChunkRenderer;
 import net.minecraft.client.util.GlAllocationUtils;
@@ -13,8 +13,8 @@ import net.minecraft.world.World;
 public class class_848 extends ChunkRenderer {
 	private final int field_4449 = GlAllocationUtils.genLists(BlockRenderLayer.values().length);
 
-	public class_848(World world, Renderer renderer) {
-		super(world, renderer);
+	public class_848(World world, WorldRenderer worldRenderer) {
+		super(world, worldRenderer);
 	}
 
 	public int method_3639(BlockRenderLayer blockRenderLayer, ChunkRenderData chunkRenderData) {
@@ -22,8 +22,8 @@ public class class_848 extends ChunkRenderer {
 	}
 
 	@Override
-	public void method_3659() {
-		super.method_3659();
+	public void delete() {
+		super.delete();
 		GlAllocationUtils.deleteLists(this.field_4449, BlockRenderLayer.values().length);
 	}
 }

@@ -3,15 +3,15 @@ package net.minecraft.entity.mob;
 import java.util.List;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.class_1310;
 import net.minecraft.class_1361;
 import net.minecraft.class_1379;
 import net.minecraft.class_1399;
-import net.minecraft.class_3730;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
@@ -102,7 +102,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		} else if (entity instanceof VexEntity) {
 			return this.isTeammate(((VexEntity)entity).getOwner());
 		} else {
-			return entity instanceof LivingEntity && ((LivingEntity)entity).method_6046() == class_1310.field_6291
+			return entity instanceof LivingEntity && ((LivingEntity)entity).getGroup() == EntityGroup.ILLAGER
 				? this.getScoreboardTeam() == null && entity.getScoreboardTeam() == null
 				: false;
 		}
@@ -138,7 +138,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 	}
 
 	@Override
-	public void method_16484(int i, boolean bl) {
+	public void addBonusForWave(int i, boolean bl) {
 	}
 
 	class ConjureFangsGoal extends SpellcastingIllagerEntity.CastSpellGoal {
@@ -186,12 +186,12 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 			double j = 0.0;
 
 			do {
-				if (!EvokerEntity.this.world.method_8515(blockPos) && EvokerEntity.this.world.method_8515(blockPos.down())) {
+				if (!EvokerEntity.this.world.doesBlockHaveSolidTopSurface(blockPos) && EvokerEntity.this.world.doesBlockHaveSolidTopSurface(blockPos.down())) {
 					if (!EvokerEntity.this.world.isAir(blockPos)) {
 						BlockState blockState = EvokerEntity.this.world.getBlockState(blockPos);
-						VoxelShape voxelShape = blockState.method_11628(EvokerEntity.this.world, blockPos);
+						VoxelShape voxelShape = blockState.getCollisionShape(EvokerEntity.this.world, blockPos);
 						if (!voxelShape.isEmpty()) {
-							j = voxelShape.method_1105(Direction.Axis.Y);
+							j = voxelShape.getMaximum(Direction.Axis.Y);
 						}
 					}
 
@@ -264,7 +264,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 				BlockPos blockPos = new BlockPos(EvokerEntity.this).add(-2 + EvokerEntity.this.random.nextInt(5), 1, -2 + EvokerEntity.this.random.nextInt(5));
 				VexEntity vexEntity = new VexEntity(EvokerEntity.this.world);
 				vexEntity.setPositionAndAngles(blockPos, 0.0F, 0.0F);
-				vexEntity.method_5943(EvokerEntity.this.world, EvokerEntity.this.world.getLocalDifficulty(blockPos), class_3730.field_16471, null, null);
+				vexEntity.prepareEntityData(EvokerEntity.this.world, EvokerEntity.this.world.getLocalDifficulty(blockPos), SpawnType.field_16471, null, null);
 				vexEntity.setOwner(EvokerEntity.this);
 				vexEntity.setBounds(blockPos);
 				vexEntity.setLifeTicks(20 * (30 + EvokerEntity.this.random.nextInt(90)));

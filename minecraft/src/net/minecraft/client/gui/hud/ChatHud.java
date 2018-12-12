@@ -33,10 +33,10 @@ public class ChatHud extends Drawable {
 	}
 
 	public void method_1805(int i) {
-		if (this.client.options.chatVisibility != PlayerEntity.ChatVisibility.HIDDEN) {
+		if (this.client.field_1690.chatVisibility != PlayerEntity.ChatVisibility.HIDDEN) {
 			int j = this.method_1813();
 			int k = this.field_2064.size();
-			double d = this.client.options.chatOpacity * 0.9F + 0.1F;
+			double d = this.client.field_1690.chatOpacity * 0.9F + 0.1F;
 			if (k > 0) {
 				boolean bl = false;
 				if (this.isChatFocused()) {
@@ -82,7 +82,7 @@ public class ChatHud extends Drawable {
 				}
 
 				if (bl) {
-					int nx = this.client.fontRenderer.FONT_HEIGHT;
+					int nx = this.client.fontRenderer.fontHeight;
 					GlStateManager.translatef(-3.0F, 0.0F, 0.0F);
 					int s = k * nx + k;
 					int o = m * nx + m;
@@ -199,8 +199,8 @@ public class ChatHud extends Drawable {
 			h = (double)MathHelper.floor(h / f);
 			if (!(g < 0.0) && !(h < 0.0)) {
 				int i = Math.min(this.method_1813(), this.field_2064.size());
-				if (g <= (double)MathHelper.floor((double)this.getWidth() / this.getScale()) && h < (double)(this.client.fontRenderer.FONT_HEIGHT * i + i)) {
-					int j = (int)(h / (double)this.client.fontRenderer.FONT_HEIGHT + (double)this.field_2066);
+				if (g <= (double)MathHelper.floor((double)this.getWidth() / this.getScale()) && h < (double)(this.client.fontRenderer.fontHeight * i + i)) {
+					int j = (int)(h / (double)this.client.fontRenderer.fontHeight + (double)this.field_2066);
 					if (j >= 0 && j < this.field_2064.size()) {
 						ChatHudLine chatHudLine = (ChatHudLine)this.field_2064.get(j);
 						int k = 0;
@@ -251,15 +251,15 @@ public class ChatHud extends Drawable {
 	}
 
 	public int getWidth() {
-		return method_1806(this.client.options.chatWidth);
+		return method_1806(this.client.field_1690.chatWidth);
 	}
 
 	public int getHeight() {
-		return method_1818(this.isChatFocused() ? this.client.options.chatHeightFocused : this.client.options.chatHeightUnfocused);
+		return method_1818(this.isChatFocused() ? this.client.field_1690.chatHeightFocused : this.client.field_1690.chatHeightUnfocused);
 	}
 
 	public double getScale() {
-		return this.client.options.chatScale;
+		return this.client.field_1690.chatScale;
 	}
 
 	public static int method_1806(double d) {

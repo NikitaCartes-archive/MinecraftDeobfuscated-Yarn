@@ -6,7 +6,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
-public class GiantEntity extends HostileEntity {
+public class GiantEntity extends ZombieEntity {
 	public GiantEntity(World world) {
 		super(EntityType.GIANT, world);
 		this.setSize(this.width * 6.0F, this.height * 6.0F);

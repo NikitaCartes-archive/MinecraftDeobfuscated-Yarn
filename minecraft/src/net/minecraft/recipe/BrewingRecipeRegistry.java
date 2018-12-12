@@ -181,7 +181,7 @@ public class BrewingRecipeRegistry {
 		} else if (!(item3 instanceof PotionItem)) {
 			throw new IllegalArgumentException("Expected a potion, got: " + Registry.ITEM.getId(item3));
 		} else {
-			ITEM_RECIPES.add(new BrewingRecipeRegistry.Recipe<>(item, Ingredient.ofItems(item2), item3));
+			ITEM_RECIPES.add(new BrewingRecipeRegistry.Recipe<>(item, Ingredient.method_8091(item2), item3));
 		}
 	}
 
@@ -189,12 +189,12 @@ public class BrewingRecipeRegistry {
 		if (!(item instanceof PotionItem)) {
 			throw new IllegalArgumentException("Expected a potion, got: " + Registry.ITEM.getId(item));
 		} else {
-			POTION_TYPES.add(Ingredient.ofItems(item));
+			POTION_TYPES.add(Ingredient.method_8091(item));
 		}
 	}
 
 	private static void registerPotionRecipe(Potion potion, Item item, Potion potion2) {
-		POTION_RECIPES.add(new BrewingRecipeRegistry.Recipe<>(potion, Ingredient.ofItems(item), potion2));
+		POTION_RECIPES.add(new BrewingRecipeRegistry.Recipe<>(potion, Ingredient.method_8091(item), potion2));
 	}
 
 	static class Recipe<T> {

@@ -37,8 +37,8 @@ import net.minecraft.world.BlockView;
 	)})
 public class ChestBlockEntity extends LootableContainerBlockEntity implements ChestAnimationProgress, Tickable {
 	private DefaultedList<ItemStack> inventory = DefaultedList.create(27, ItemStack.EMPTY);
-	protected float field_11929;
-	protected float field_11926;
+	protected float animationAngle;
+	protected float lastAnimationAngle;
 	protected int field_11928;
 	private int field_11930;
 
@@ -101,17 +101,12 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	public int getInvMaxStackAmount() {
-		return 64;
-	}
-
-	@Override
 	public void tick() {
 		int i = this.pos.getX();
 		int j = this.pos.getY();
 		int k = this.pos.getZ();
 		this.field_11930++;
-		if (!this.world.isRemote && this.field_11928 != 0 && (this.field_11930 + i + j + k) % 200 == 0) {
+		if (!this.world.isClient && this.field_11928 != 0 && (this.field_11930 + i + j + k) % 200 == 0) {
 			this.field_11928 = 0;
 			float f = 5.0F;
 
@@ -136,36 +131,36 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 			}
 		}
 
-		this.field_11926 = this.field_11929;
+		this.lastAnimationAngle = this.animationAngle;
 		float f = 0.1F;
-		if (this.field_11928 > 0 && this.field_11929 == 0.0F) {
-			this.method_11050(SoundEvents.field_14982);
+		if (this.field_11928 > 0 && this.animationAngle == 0.0F) {
+			this.playSound(SoundEvents.field_14982);
 		}
 
-		if (this.field_11928 == 0 && this.field_11929 > 0.0F || this.field_11928 > 0 && this.field_11929 < 1.0F) {
-			float g = this.field_11929;
+		if (this.field_11928 == 0 && this.animationAngle > 0.0F || this.field_11928 > 0 && this.animationAngle < 1.0F) {
+			float g = this.animationAngle;
 			if (this.field_11928 > 0) {
-				this.field_11929 += 0.1F;
+				this.animationAngle += 0.1F;
 			} else {
-				this.field_11929 -= 0.1F;
+				this.animationAngle -= 0.1F;
 			}
 
-			if (this.field_11929 > 1.0F) {
-				this.field_11929 = 1.0F;
+			if (this.animationAngle > 1.0F) {
+				this.animationAngle = 1.0F;
 			}
 
 			float h = 0.5F;
-			if (this.field_11929 < 0.5F && g >= 0.5F) {
-				this.method_11050(SoundEvents.field_14823);
+			if (this.animationAngle < 0.5F && g >= 0.5F) {
+				this.playSound(SoundEvents.field_14823);
 			}
 
-			if (this.field_11929 < 0.0F) {
-				this.field_11929 = 0.0F;
+			if (this.animationAngle < 0.0F) {
+				this.animationAngle = 0.0F;
 			}
 		}
 	}
 
-	private void method_11050(SoundEvent soundEvent) {
+	private void playSound(SoundEvent soundEvent) {
 		ChestType chestType = this.getCachedState().get(ChestBlock.field_10770);
 		if (chestType != ChestType.field_12574) {
 			double d = (double)this.pos.getX() + 0.5;
@@ -182,12 +177,12 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	public boolean method_11004(int i, int j) {
+	public boolean onBlockAction(int i, int j) {
 		if (i == 1) {
 			this.field_11928 = j;
 			return true;
 		} else {
-			return super.method_11004(i, j);
+			return super.onBlockAction(i, j);
 		}
 	}
 
@@ -236,14 +231,14 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	protected void method_11281(DefaultedList<ItemStack> defaultedList) {
+	protected void setInvStackList(DefaultedList<ItemStack> defaultedList) {
 		this.inventory = defaultedList;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public float getAnimationProgress(float f) {
-		return MathHelper.lerp(f, this.field_11926, this.field_11929);
+		return MathHelper.lerp(f, this.lastAnimationAngle, this.animationAngle);
 	}
 
 	public static int method_11048(BlockView blockView, BlockPos blockPos) {
@@ -260,7 +255,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 
 	public static void method_11047(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
 		DefaultedList<ItemStack> defaultedList = chestBlockEntity.getInvStackList();
-		chestBlockEntity.method_11281(chestBlockEntity2.getInvStackList());
-		chestBlockEntity2.method_11281(defaultedList);
+		chestBlockEntity.setInvStackList(chestBlockEntity2.getInvStackList());
+		chestBlockEntity2.setInvStackList(defaultedList);
 	}
 }

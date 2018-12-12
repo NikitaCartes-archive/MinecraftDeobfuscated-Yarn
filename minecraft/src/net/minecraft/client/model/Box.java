@@ -2,7 +2,7 @@ package net.minecraft.client.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.VertexBuffer;
+import net.minecraft.client.render.BufferBuilder;
 
 @Environment(EnvType.CLIENT)
 public class Box {
@@ -79,9 +79,9 @@ public class Box {
 		}
 	}
 
-	public void render(VertexBuffer vertexBuffer, float f) {
+	public void render(BufferBuilder bufferBuilder, float f) {
 		for (Polygon polygon : this.polygons) {
-			polygon.render(vertexBuffer, f);
+			polygon.render(bufferBuilder, f);
 		}
 	}
 

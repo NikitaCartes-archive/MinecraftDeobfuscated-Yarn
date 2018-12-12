@@ -4,11 +4,10 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.PolarBearEntity;
 
 @Environment(EnvType.CLIENT)
-public class PolarBearEntityModel extends QuadrupedEntityModel {
+public class PolarBearEntityModel<T extends PolarBearEntity> extends QuadrupedEntityModel<T> {
 	public PolarBearEntityModel() {
 		super(12, 0.0F);
 		this.textureWidth = 128;
@@ -49,9 +48,8 @@ public class PolarBearEntityModel extends QuadrupedEntityModel {
 		this.field_3537 += 2.0F;
 	}
 
-	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		this.setRotationAngles(f, g, h, i, j, k, entity);
+	public void method_17113(T polarBearEntity, float f, float g, float h, float i, float j, float k) {
+		this.method_17114(polarBearEntity, f, g, h, i, j, k);
 		if (this.isChild) {
 			float l = 2.0F;
 			this.field_3540 = 16.0F;
@@ -80,11 +78,10 @@ public class PolarBearEntityModel extends QuadrupedEntityModel {
 		}
 	}
 
-	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
-		super.setRotationAngles(f, g, h, i, j, k, entity);
-		float l = h - (float)entity.age;
-		float m = ((PolarBearEntity)entity).method_6601(l);
+	public void method_17114(T polarBearEntity, float f, float g, float h, float i, float j, float k) {
+		super.setAngles(polarBearEntity, f, g, h, i, j, k);
+		float l = h - (float)polarBearEntity.age;
+		float m = polarBearEntity.method_6601(l);
 		m *= m;
 		float n = 1.0F - m;
 		this.body.pitch = (float) (Math.PI / 2) - m * (float) Math.PI * 0.35F;

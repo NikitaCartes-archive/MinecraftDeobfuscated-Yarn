@@ -55,7 +55,7 @@ public class ExplodingWitherSkullEntity extends ExplosiveProjectileEntity {
 
 	@Override
 	protected void onCollision(HitResult hitResult) {
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			if (hitResult.entity != null) {
 				if (this.owner != null) {
 					if (hitResult.entity.damage(DamageSource.mob(this.owner), 8.0F)) {
@@ -83,7 +83,7 @@ public class ExplodingWitherSkullEntity extends ExplosiveProjectileEntity {
 				}
 			}
 
-			this.world.method_8537(this, this.x, this.y, this.z, 1.0F, false, this.world.getGameRules().getBoolean("mobGriefing"));
+			this.world.createExplosion(this, this.x, this.y, this.z, 1.0F, false, this.world.getGameRules().getBoolean("mobGriefing"));
 			this.invalidate();
 		}
 	}

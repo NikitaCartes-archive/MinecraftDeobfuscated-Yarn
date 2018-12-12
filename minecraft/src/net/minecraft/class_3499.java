@@ -10,10 +10,11 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.FluidFillable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.decoration.PaintingEntity;
+import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.CompoundTag;
@@ -31,6 +32,7 @@ import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.AbstractVoxelShapeContainer;
 import net.minecraft.util.shape.BitSetVoxelShapeContainer;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
@@ -78,7 +80,7 @@ public class class_3499 {
 						compoundTag.remove("y");
 						compoundTag.remove("z");
 						list2.add(new class_3499.class_3501(blockPos6, blockState, compoundTag));
-					} else if (!blockState.method_11598(world, mutable) && !blockState.method_11604(world, mutable)) {
+					} else if (!blockState.isFullOpaque(world, mutable) && !blockState.method_11604(world, mutable)) {
 						list3.add(new class_3499.class_3501(blockPos6, blockState, null));
 					} else {
 						list.add(new class_3499.class_3501(blockPos6, blockState, null));
@@ -209,8 +211,8 @@ public class class_3499 {
 								}
 							}
 
-							if (fluidState != null && blockState.getBlock() instanceof class_2402) {
-								((class_2402)blockState.getBlock()).method_10311(iWorld, blockPos2, blockState, fluidState);
+							if (fluidState != null && blockState.getBlock() instanceof FluidFillable) {
+								((FluidFillable)blockState.getBlock()).tryFillWithFluid(iWorld, blockPos2, blockState, fluidState);
 								if (!fluidState.isStill()) {
 									list2.add(blockPos2);
 								}
@@ -231,7 +233,7 @@ public class class_3499 {
 						FluidState fluidState2 = iWorld.getFluidState(blockPos3);
 
 						for (int p = 0; p < directions.length && !fluidState2.isStill(); p++) {
-							FluidState fluidState3 = iWorld.getFluidState(blockPos3.method_10093(directions[p]));
+							FluidState fluidState3 = iWorld.getFluidState(blockPos3.offset(directions[p]));
 							if (fluidState3.method_15763() > fluidState2.method_15763() || fluidState3.isStill() && !fluidState2.isStill()) {
 								fluidState2 = fluidState3;
 							}
@@ -239,8 +241,8 @@ public class class_3499 {
 
 						if (fluidState2.isStill()) {
 							BlockState blockState2 = iWorld.getBlockState(blockPos3);
-							if (blockState2.getBlock() instanceof class_2402) {
-								((class_2402)blockState2.getBlock()).method_10311(iWorld, blockPos3, blockState2, fluidState2);
+							if (blockState2.getBlock() instanceof FluidFillable) {
+								((FluidFillable)blockState2.getBlock()).tryFillWithFluid(iWorld, blockPos3, blockState2, fluidState2);
 								bl = true;
 								iterator.remove();
 							}
@@ -250,27 +252,27 @@ public class class_3499 {
 
 				if (j <= m) {
 					if (!arg.method_16444()) {
-						class_251 lv2 = new BitSetVoxelShapeContainer(m - j + 1, n - k + 1, o - l + 1);
+						AbstractVoxelShapeContainer abstractVoxelShapeContainer = new BitSetVoxelShapeContainer(m - j + 1, n - k + 1, o - l + 1);
 						int q = j;
 						int r = k;
 						int px = l;
 
 						for (Pair<BlockPos, CompoundTag> pair : list3) {
 							BlockPos blockPos4 = pair.getFirst();
-							lv2.method_1049(blockPos4.getX() - q, blockPos4.getY() - r, blockPos4.getZ() - px, true, true);
+							abstractVoxelShapeContainer.modify(blockPos4.getX() - q, blockPos4.getY() - r, blockPos4.getZ() - px, true, true);
 						}
 
-						lv2.method_1046((direction, mx, nx, ox) -> {
+						abstractVoxelShapeContainer.method_1046((direction, mx, nx, ox) -> {
 							BlockPos blockPosx = new BlockPos(q + mx, r + nx, p + ox);
-							BlockPos blockPos2 = blockPosx.method_10093(direction);
+							BlockPos blockPos2 = blockPosx.offset(direction);
 							BlockState blockStatex = iWorld.getBlockState(blockPosx);
 							BlockState blockState2 = iWorld.getBlockState(blockPos2);
-							BlockState blockState3x = blockStatex.method_11578(direction, blockState2, iWorld, blockPosx, blockPos2);
+							BlockState blockState3x = blockStatex.getStateForNeighborUpdate(direction, blockState2, iWorld, blockPosx, blockPos2);
 							if (blockStatex != blockState3x) {
 								iWorld.setBlockState(blockPosx, blockState3x, i & -2 | 16);
 							}
 
-							BlockState blockState4 = blockState2.method_11578(direction.getOpposite(), blockState3x, iWorld, blockPos2, blockPosx);
+							BlockState blockState4 = blockState2.getStateForNeighborUpdate(direction.getOpposite(), blockState3x, iWorld, blockPos2, blockPosx);
 							if (blockState2 != blockState4) {
 								iWorld.setBlockState(blockPos2, blockState4, i & -2 | 16);
 							}
@@ -347,7 +349,7 @@ public class class_3499 {
 
 				Entity entity;
 				try {
-					entity = EntityType.fromTag(compoundTag, iWorld.method_8410());
+					entity = EntityType.fromTag(compoundTag, iWorld.getWorld());
 				} catch (Exception var16) {
 					entity = null;
 				}
@@ -500,11 +502,11 @@ public class class_3499 {
 	private void method_16186(Rotation rotation, int i, int j, MutableIntBoundingBox mutableIntBoundingBox, Direction direction, Direction direction2) {
 		BlockPos blockPos = BlockPos.ORIGIN;
 		if (rotation == Rotation.ROT_90 || rotation == Rotation.ROT_270) {
-			blockPos = blockPos.method_10079(rotation.method_10503(direction), j);
+			blockPos = blockPos.offset(rotation.method_10503(direction), j);
 		} else if (rotation == Rotation.ROT_180) {
-			blockPos = blockPos.method_10079(direction2, i);
+			blockPos = blockPos.offset(direction2, i);
 		} else {
-			blockPos = blockPos.method_10079(direction, i);
+			blockPos = blockPos.offset(direction, i);
 		}
 
 		mutableIntBoundingBox.translate(blockPos.getX(), 0, blockPos.getZ());

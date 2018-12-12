@@ -11,13 +11,13 @@ public class BarrierBlock extends Block {
 	}
 
 	@Override
-	public boolean method_9579(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean isTranslucent(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return true;
 	}
 
 	@Override
-	public RenderTypeBlock getRenderType(BlockState blockState) {
-		return RenderTypeBlock.NONE;
+	public BlockRenderType method_9604(BlockState blockState) {
+		return BlockRenderType.field_11455;
 	}
 
 	@Override

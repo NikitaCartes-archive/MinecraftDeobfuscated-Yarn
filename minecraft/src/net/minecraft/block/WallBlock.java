@@ -32,20 +32,20 @@ public class WallBlock extends HorizontalConnectedBlock {
 				.with(WEST, Boolean.valueOf(false))
 				.with(WATERLOGGED, Boolean.valueOf(false))
 		);
-		this.field_11718 = this.method_9984(4.0F, 3.0F, 16.0F, 0.0F, 14.0F);
-		this.field_11716 = this.method_9984(4.0F, 3.0F, 24.0F, 0.0F, 24.0F);
+		this.field_11718 = this.createShapes(4.0F, 3.0F, 16.0F, 0.0F, 14.0F);
+		this.field_11716 = this.createShapes(4.0F, 3.0F, 24.0F, 0.0F, 24.0F);
 	}
 
 	@Override
 	public VoxelShape getBoundingShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return blockState.get(field_11717) ? this.field_11718[this.method_9987(blockState)] : super.getBoundingShape(blockState, blockView, blockPos);
+		return blockState.get(field_11717) ? this.field_11718[this.getShapeIndex(blockState)] : super.getBoundingShape(blockState, blockView, blockPos);
 	}
 
 	@Override
-	public VoxelShape method_9549(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		return blockState.get(field_11717)
-			? this.field_11716[this.method_9987(blockState)]
-			: super.method_9549(blockState, blockView, blockPos, verticalEntityPosition);
+			? this.field_11716[this.getShapeIndex(blockState)]
+			: super.getCollisionShape(blockState, blockView, blockPos, verticalEntityPosition);
 	}
 
 	@Override
@@ -83,10 +83,10 @@ public class WallBlock extends HorizontalConnectedBlock {
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos3);
 		BlockState blockState3 = viewableWorld.getBlockState(blockPos4);
 		BlockState blockState4 = viewableWorld.getBlockState(blockPos5);
-		boolean bl = this.method_16704(blockState, Block.method_9501(blockState.method_11628(viewableWorld, blockPos2), Direction.SOUTH), Direction.SOUTH);
-		boolean bl2 = this.method_16704(blockState2, Block.method_9501(blockState2.method_11628(viewableWorld, blockPos3), Direction.WEST), Direction.WEST);
-		boolean bl3 = this.method_16704(blockState3, Block.method_9501(blockState3.method_11628(viewableWorld, blockPos4), Direction.NORTH), Direction.NORTH);
-		boolean bl4 = this.method_16704(blockState4, Block.method_9501(blockState4.method_11628(viewableWorld, blockPos5), Direction.EAST), Direction.EAST);
+		boolean bl = this.method_16704(blockState, Block.isFaceFullCube(blockState.getCollisionShape(viewableWorld, blockPos2), Direction.SOUTH), Direction.SOUTH);
+		boolean bl2 = this.method_16704(blockState2, Block.isFaceFullCube(blockState2.getCollisionShape(viewableWorld, blockPos3), Direction.WEST), Direction.WEST);
+		boolean bl3 = this.method_16704(blockState3, Block.isFaceFullCube(blockState3.getCollisionShape(viewableWorld, blockPos4), Direction.NORTH), Direction.NORTH);
+		boolean bl4 = this.method_16704(blockState4, Block.isFaceFullCube(blockState4.getCollisionShape(viewableWorld, blockPos5), Direction.EAST), Direction.EAST);
 		boolean bl5 = (!bl || bl2 || !bl3 || bl4) && (bl || !bl2 || bl3 || !bl4);
 		return this.getDefaultState()
 			.with(field_11717, Boolean.valueOf(bl5 || !viewableWorld.isAir(blockPos.up())))
@@ -98,26 +98,28 @@ public class WallBlock extends HorizontalConnectedBlock {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if ((Boolean)blockState.get(WATERLOGGED)) {
 			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
 		}
 
 		if (direction == Direction.DOWN) {
-			return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		} else {
 			Direction direction2 = direction.getOpposite();
 			boolean bl = direction == Direction.NORTH
-				? this.method_16704(blockState2, Block.method_9501(blockState2.method_11628(iWorld, blockPos2), direction2), direction2)
+				? this.method_16704(blockState2, Block.isFaceFullCube(blockState2.getCollisionShape(iWorld, blockPos2), direction2), direction2)
 				: (Boolean)blockState.get(NORTH);
 			boolean bl2 = direction == Direction.EAST
-				? this.method_16704(blockState2, Block.method_9501(blockState2.method_11628(iWorld, blockPos2), direction2), direction2)
+				? this.method_16704(blockState2, Block.isFaceFullCube(blockState2.getCollisionShape(iWorld, blockPos2), direction2), direction2)
 				: (Boolean)blockState.get(EAST);
 			boolean bl3 = direction == Direction.SOUTH
-				? this.method_16704(blockState2, Block.method_9501(blockState2.method_11628(iWorld, blockPos2), direction2), direction2)
+				? this.method_16704(blockState2, Block.isFaceFullCube(blockState2.getCollisionShape(iWorld, blockPos2), direction2), direction2)
 				: (Boolean)blockState.get(SOUTH);
 			boolean bl4 = direction == Direction.WEST
-				? this.method_16704(blockState2, Block.method_9501(blockState2.method_11628(iWorld, blockPos2), direction2), direction2)
+				? this.method_16704(blockState2, Block.isFaceFullCube(blockState2.getCollisionShape(iWorld, blockPos2), direction2), direction2)
 				: (Boolean)blockState.get(WEST);
 			boolean bl5 = (!bl || bl2 || !bl3 || bl4) && (bl || !bl2 || bl3 || !bl4);
 			return blockState.with(field_11717, Boolean.valueOf(bl5 || !iWorld.isAir(blockPos.up())))

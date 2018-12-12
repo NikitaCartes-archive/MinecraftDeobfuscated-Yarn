@@ -26,7 +26,7 @@ public class OutOfMemoryGui extends Gui {
 	}
 
 	@Override
-	public boolean canClose() {
+	public boolean doesEscapeKeyClose() {
 		return false;
 	}
 

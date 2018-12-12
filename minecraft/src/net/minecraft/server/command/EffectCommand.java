@@ -33,7 +33,7 @@ public class EffectCommand {
 				.then(
 					ServerCommandManager.literal("clear")
 						.then(
-							ServerCommandManager.argument("targets", EntityArgumentType.method_9306())
+							ServerCommandManager.argument("targets", EntityArgumentType.multipleEntities())
 								.executes(commandContext -> method_13230(commandContext.getSource(), EntityArgumentType.method_9317(commandContext, "targets")))
 								.then(
 									ServerCommandManager.argument("effect", MobEffectArgumentType.create())
@@ -50,7 +50,7 @@ public class EffectCommand {
 				.then(
 					ServerCommandManager.literal("give")
 						.then(
-							ServerCommandManager.argument("targets", EntityArgumentType.method_9306())
+							ServerCommandManager.argument("targets", EntityArgumentType.multipleEntities())
 								.then(
 									ServerCommandManager.argument("effect", MobEffectArgumentType.create())
 										.executes(
@@ -182,7 +182,7 @@ public class EffectCommand {
 		int i = 0;
 
 		for (Entity entity : collection) {
-			if (entity instanceof LivingEntity && ((LivingEntity)entity).method_6016(statusEffect)) {
+			if (entity instanceof LivingEntity && ((LivingEntity)entity).removeStatusEffect(statusEffect)) {
 				i++;
 			}
 		}

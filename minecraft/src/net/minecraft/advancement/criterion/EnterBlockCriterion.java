@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
-import net.minecraft.advancement.ServerAdvancementManager;
+import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -26,7 +26,7 @@ import net.minecraft.util.registry.Registry;
 
 public class EnterBlockCriterion implements Criterion<EnterBlockCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("enter_block");
-	private final Map<ServerAdvancementManager, EnterBlockCriterion.Handler> handlers = Maps.<ServerAdvancementManager, EnterBlockCriterion.Handler>newHashMap();
+	private final Map<PlayerAdvancementTracker, EnterBlockCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, EnterBlockCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -34,32 +34,34 @@ public class EnterBlockCriterion implements Criterion<EnterBlockCriterion.Condit
 	}
 
 	@Override
-	public void addCondition(ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<EnterBlockCriterion.Conditions> conditionsContainer) {
-		EnterBlockCriterion.Handler handler = (EnterBlockCriterion.Handler)this.handlers.get(serverAdvancementManager);
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<EnterBlockCriterion.Conditions> conditionsContainer
+	) {
+		EnterBlockCriterion.Handler handler = (EnterBlockCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new EnterBlockCriterion.Handler(serverAdvancementManager);
-			this.handlers.put(serverAdvancementManager, handler);
+			handler = new EnterBlockCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.addConditon(conditionsContainer);
 	}
 
 	@Override
-	public void removeCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<EnterBlockCriterion.Conditions> conditionsContainer
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<EnterBlockCriterion.Conditions> conditionsContainer
 	) {
-		EnterBlockCriterion.Handler handler = (EnterBlockCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		EnterBlockCriterion.Handler handler = (EnterBlockCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(serverAdvancementManager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void removePlayer(ServerAdvancementManager serverAdvancementManager) {
-		this.handlers.remove(serverAdvancementManager);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
 	public EnterBlockCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -128,7 +130,7 @@ public class EnterBlockCriterion implements Criterion<EnterBlockCriterion.Condit
 		}
 
 		@Override
-		public JsonElement method_807() {
+		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			if (this.block != null) {
 				jsonObject.addProperty("block", Registry.BLOCK.getId(this.block).toString());
@@ -136,7 +138,7 @@ public class EnterBlockCriterion implements Criterion<EnterBlockCriterion.Condit
 					JsonObject jsonObject2 = new JsonObject();
 
 					for (Entry<Property<?>, ?> entry : this.state.entrySet()) {
-						jsonObject2.addProperty(((Property)entry.getKey()).getName(), SystemUtil.method_650((Property)entry.getKey(), entry.getValue()));
+						jsonObject2.addProperty(((Property)entry.getKey()).getName(), SystemUtil.getValueAsString((Property)entry.getKey(), entry.getValue()));
 					}
 
 					jsonObject.add("state", jsonObject2);
@@ -164,11 +166,11 @@ public class EnterBlockCriterion implements Criterion<EnterBlockCriterion.Condit
 	}
 
 	static class Handler {
-		private final ServerAdvancementManager manager;
+		private final PlayerAdvancementTracker field_9575;
 		private final Set<Criterion.ConditionsContainer<EnterBlockCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<EnterBlockCriterion.Conditions>>newHashSet();
 
-		public Handler(ServerAdvancementManager serverAdvancementManager) {
-			this.manager = serverAdvancementManager;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.field_9575 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
@@ -198,7 +200,7 @@ public class EnterBlockCriterion implements Criterion<EnterBlockCriterion.Condit
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<EnterBlockCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
+					conditionsContainerx.apply(this.field_9575);
 				}
 			}
 		}

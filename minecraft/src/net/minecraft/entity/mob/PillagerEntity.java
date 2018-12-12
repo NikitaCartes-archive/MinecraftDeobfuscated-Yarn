@@ -5,11 +5,9 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1310;
 import net.minecraft.class_1361;
 import net.minecraft.class_1379;
 import net.minecraft.class_1399;
-import net.minecraft.class_3730;
 import net.minecraft.class_3745;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -18,10 +16,12 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.RangedAttacker;
 import net.minecraft.entity.ai.goal.CrossbowAttackGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
@@ -58,7 +58,7 @@ import net.minecraft.world.World;
 
 public class PillagerEntity extends IllagerEntity implements class_3745, RangedAttacker {
 	private static final TrackedData<Boolean> field_7334 = DataTracker.registerData(PillagerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private final BasicInventory field_7335 = new BasicInventory(new StringTextComponent("Inventory"), 5);
+	private final BasicInventory inventory = new BasicInventory(new StringTextComponent("Inventory"), 5);
 
 	public PillagerEntity(World world) {
 		super(EntityType.PILLAGER, world);
@@ -120,8 +120,8 @@ public class PillagerEntity extends IllagerEntity implements class_3745, RangedA
 		super.writeCustomDataToTag(compoundTag);
 		ListTag listTag = new ListTag();
 
-		for (int i = 0; i < this.field_7335.getInvSize(); i++) {
-			ItemStack itemStack = this.field_7335.getInvStack(i);
+		for (int i = 0; i < this.inventory.getInvSize(); i++) {
+			ItemStack itemStack = this.inventory.getInvStack(i);
 			if (!itemStack.isEmpty()) {
 				listTag.add((Tag)itemStack.toTag(new CompoundTag()));
 			}
@@ -132,15 +132,15 @@ public class PillagerEntity extends IllagerEntity implements class_3745, RangedA
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public IllagerEntity.class_1544 method_6990() {
+	public IllagerEntity.State method_6990() {
 		if (this.method_7109()) {
-			return IllagerEntity.class_1544.field_7211;
+			return IllagerEntity.State.field_7211;
 		} else if (this.method_7108()) {
-			return IllagerEntity.class_1544.field_7210;
+			return IllagerEntity.State.field_7210;
 		} else {
 			return !this.getMainHandStack().isEmpty() && this.getMainHandStack().getItem() == Items.field_8399
-				? IllagerEntity.class_1544.field_7213
-				: IllagerEntity.class_1544.field_7207;
+				? IllagerEntity.State.field_7213
+				: IllagerEntity.State.field_7207;
 		}
 	}
 
@@ -152,7 +152,7 @@ public class PillagerEntity extends IllagerEntity implements class_3745, RangedA
 		for (int i = 0; i < listTag.size(); i++) {
 			ItemStack itemStack = ItemStack.fromTag(listTag.getCompoundTag(i));
 			if (!itemStack.isEmpty()) {
-				this.field_7335.method_5491(itemStack);
+				this.inventory.add(itemStack);
 			}
 		}
 
@@ -166,13 +166,13 @@ public class PillagerEntity extends IllagerEntity implements class_3745, RangedA
 	}
 
 	@Override
-	protected boolean method_7075() {
+	protected boolean checkLightLevelForSpawn() {
 		return true;
 	}
 
 	@Override
-	public boolean method_5979(IWorld iWorld, class_3730 arg) {
-		return iWorld.getLightLevel(LightType.field_9282, new BlockPos(this.x, this.y, this.z)) > 8 ? false : super.method_5979(iWorld, arg);
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
+		return iWorld.getLightLevel(LightType.BLOCK_LIGHT, new BlockPos(this.x, this.y, this.z)) > 8 ? false : super.canSpawn(iWorld, spawnType);
 	}
 
 	@Override
@@ -182,12 +182,12 @@ public class PillagerEntity extends IllagerEntity implements class_3745, RangedA
 
 	@Nullable
 	@Override
-	public EntityData method_5943(
-		IWorld iWorld, LocalDifficulty localDifficulty, class_3730 arg, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	public EntityData prepareEntityData(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		this.initEquipment(localDifficulty);
 		this.method_5984(localDifficulty);
-		return super.method_5943(iWorld, localDifficulty, arg, entityData, compoundTag);
+		return super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	@Override
@@ -207,7 +207,7 @@ public class PillagerEntity extends IllagerEntity implements class_3745, RangedA
 		if (super.isTeammate(entity)) {
 			return true;
 		} else {
-			return entity instanceof LivingEntity && ((LivingEntity)entity).method_6046() == class_1310.field_6291
+			return entity instanceof LivingEntity && ((LivingEntity)entity).getGroup() == EntityGroup.ILLAGER
 				? this.getScoreboardTeam() == null && entity.getScoreboardTeam() == null
 				: false;
 		}
@@ -238,7 +238,7 @@ public class PillagerEntity extends IllagerEntity implements class_3745, RangedA
 		projectileEntity.setVelocity(d, e + h * 0.2F, g, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
 		this.playSoundAtEntity(SoundEvents.field_15187, 1.0F, 1.0F / (this.getRand().nextFloat() * 0.4F + 0.8F));
 		this.world.spawnEntity(projectileEntity);
-		this.field_6278 = 0;
+		this.despawnCounter = 0;
 		CrossbowItem.setCharged(this.getMainHandStack(), false);
 	}
 
@@ -250,19 +250,25 @@ public class PillagerEntity extends IllagerEntity implements class_3745, RangedA
 		return arrowEntity;
 	}
 
+	@Environment(EnvType.CLIENT)
+	@Override
+	public boolean hasArmsRaised() {
+		return false;
+	}
+
 	public BasicInventory method_16473() {
-		return this.field_7335;
+		return this.inventory;
 	}
 
 	@Override
-	protected void method_5949(ItemEntity itemEntity) {
+	protected void pickupItem(ItemEntity itemEntity) {
 		ItemStack itemStack = itemEntity.getStack();
 		if (itemStack.getItem() instanceof BannerItem) {
-			super.method_5949(itemEntity);
+			super.pickupItem(itemEntity);
 		} else {
 			Item item = itemStack.getItem();
 			if (this.method_7111(item)) {
-				ItemStack itemStack2 = this.field_7335.method_5491(itemStack);
+				ItemStack itemStack2 = this.inventory.add(itemStack);
 				if (itemStack2.isEmpty()) {
 					itemEntity.invalidate();
 				} else {
@@ -273,7 +279,7 @@ public class PillagerEntity extends IllagerEntity implements class_3745, RangedA
 	}
 
 	private boolean method_7111(Item item) {
-		return this.method_16482() ? item == Items.field_8539 : false;
+		return this.hasActiveRaid() ? item == Items.field_8539 : false;
 	}
 
 	@Override
@@ -282,8 +288,8 @@ public class PillagerEntity extends IllagerEntity implements class_3745, RangedA
 			return true;
 		} else {
 			int j = i - 300;
-			if (j >= 0 && j < this.field_7335.getInvSize()) {
-				this.field_7335.setInvStack(j, itemStack);
+			if (j >= 0 && j < this.inventory.getInvSize()) {
+				this.inventory.setInvStack(j, itemStack);
 				return true;
 			} else {
 				return false;
@@ -292,7 +298,7 @@ public class PillagerEntity extends IllagerEntity implements class_3745, RangedA
 	}
 
 	@Override
-	public void method_16484(int i, boolean bl) {
+	public void addBonusForWave(int i, boolean bl) {
 		if (i > 3) {
 			int j = 5;
 			if (this.random.nextInt(Math.max(6 - i, 1)) == 0) {
@@ -310,12 +316,12 @@ public class PillagerEntity extends IllagerEntity implements class_3745, RangedA
 	}
 
 	@Override
-	public boolean isPersistent() {
-		return super.isPersistent() && this.method_16473().isInvEmpty();
+	public boolean cannotDespawn() {
+		return super.cannotDespawn() && this.method_16473().isInvEmpty();
 	}
 
 	@Override
-	public boolean method_5974(double d) {
-		return super.method_5974(d) && this.method_16473().isInvEmpty();
+	public boolean canImmediatelyDespawn(double d) {
+		return super.canImmediatelyDespawn(d) && this.method_16473().isInvEmpty();
 	}
 }

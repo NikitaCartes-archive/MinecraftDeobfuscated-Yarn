@@ -6,13 +6,13 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2779;
-import net.minecraft.class_2859;
-import net.minecraft.class_367;
 import net.minecraft.advancement.AdvancementManager;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.packet.AdvancementUpdateClientPacket;
+import net.minecraft.client.toast.AdvancementToast;
+import net.minecraft.server.network.packet.AdvancementTabServerPacket;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,27 +32,30 @@ public class ClientAdvancementManager {
 		this.client = minecraftClient;
 	}
 
-	public void onAdvancements(class_2779 arg) {
-		if (arg.method_11924()) {
+	public void onAdvancements(AdvancementUpdateClientPacket advancementUpdateClientPacket) {
+		if (advancementUpdateClientPacket.shouldClearCurrent()) {
 			this.manager.clear();
 			this.field_3681.clear();
 		}
 
-		this.manager.removeAll(arg.method_11926());
-		this.manager.method_711(arg.method_11928());
+		this.manager.removeAll(advancementUpdateClientPacket.getAdvancementIdsToRemove());
+		this.manager.load(advancementUpdateClientPacket.getAdvancementsToEarn());
 
-		for (Entry<Identifier, AdvancementProgress> entry : arg.method_11927().entrySet()) {
+		for (Entry<Identifier, AdvancementProgress> entry : advancementUpdateClientPacket.getAdvancementsToProgress().entrySet()) {
 			SimpleAdvancement simpleAdvancement = this.manager.get((Identifier)entry.getKey());
 			if (simpleAdvancement != null) {
 				AdvancementProgress advancementProgress = (AdvancementProgress)entry.getValue();
-				advancementProgress.method_727(simpleAdvancement.getCriteria(), simpleAdvancement.getRequirements());
+				advancementProgress.init(simpleAdvancement.getCriteria(), simpleAdvancement.getRequirements());
 				this.field_3681.put(simpleAdvancement, advancementProgress);
 				if (this.field_3682 != null) {
 					this.field_3682.method_2865(simpleAdvancement, advancementProgress);
 				}
 
-				if (!arg.method_11924() && advancementProgress.isDone() && simpleAdvancement.getDisplay() != null && simpleAdvancement.getDisplay().shouldShowToast()) {
-					this.client.getToastManager().add(new class_367(simpleAdvancement));
+				if (!advancementUpdateClientPacket.shouldClearCurrent()
+					&& advancementProgress.isDone()
+					&& simpleAdvancement.getDisplay() != null
+					&& simpleAdvancement.getDisplay().shouldShowToast()) {
+					this.client.getToastManager().add(new AdvancementToast(simpleAdvancement));
 				}
 			} else {
 				LOGGER.warn("Server informed client about progress for unknown advancement {}", entry.getKey());
@@ -64,10 +67,10 @@ public class ClientAdvancementManager {
 		return this.manager;
 	}
 
-	public void method_2864(@Nullable SimpleAdvancement simpleAdvancement, boolean bl) {
+	public void selectTab(@Nullable SimpleAdvancement simpleAdvancement, boolean bl) {
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
 		if (clientPlayNetworkHandler != null && simpleAdvancement != null && bl) {
-			clientPlayNetworkHandler.sendPacket(class_2859.method_12418(simpleAdvancement));
+			clientPlayNetworkHandler.sendPacket(AdvancementTabServerPacket.open(simpleAdvancement));
 		}
 
 		if (this.field_3685 != simpleAdvancement) {
@@ -80,7 +83,7 @@ public class ClientAdvancementManager {
 
 	public void setGui(@Nullable ClientAdvancementManager.class_633 arg) {
 		this.field_3682 = arg;
-		this.manager.method_717(arg);
+		this.manager.setListener(arg);
 		if (arg != null) {
 			for (Entry<SimpleAdvancement, AdvancementProgress> entry : this.field_3681.entrySet()) {
 				arg.method_2865((SimpleAdvancement)entry.getKey(), (AdvancementProgress)entry.getValue());
@@ -91,7 +94,7 @@ public class ClientAdvancementManager {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public interface class_633 extends AdvancementManager.class_164 {
+	public interface class_633 extends AdvancementManager.Listener {
 		void method_2865(SimpleAdvancement simpleAdvancement, AdvancementProgress advancementProgress);
 
 		void method_2866(@Nullable SimpleAdvancement simpleAdvancement);

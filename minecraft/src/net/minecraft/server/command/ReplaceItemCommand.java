@@ -70,7 +70,7 @@ public class ReplaceItemCommand {
 				.then(
 					ServerCommandManager.literal("entity")
 						.then(
-							ServerCommandManager.argument("targets", EntityArgumentType.method_9306())
+							ServerCommandManager.argument("targets", EntityArgumentType.multipleEntities())
 								.then(
 									ServerCommandManager.argument("slot", ItemSlotArgumentType.create())
 										.then(

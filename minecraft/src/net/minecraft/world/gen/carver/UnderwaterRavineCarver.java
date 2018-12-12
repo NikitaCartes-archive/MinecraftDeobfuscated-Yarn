@@ -9,7 +9,7 @@ import java.util.function.Function;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.config.ProbabilityConfig;
+import net.minecraft.world.gen.ProbabilityConfig;
 
 public class UnderwaterRavineCarver extends RavineCarver {
 	public UnderwaterRavineCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> function) {

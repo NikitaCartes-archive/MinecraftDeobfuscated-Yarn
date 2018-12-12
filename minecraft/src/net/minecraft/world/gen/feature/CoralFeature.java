@@ -12,8 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public abstract class CoralFeature extends Feature<DefaultFeatureConfig> {
 	public CoralFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
@@ -21,7 +20,7 @@ public abstract class CoralFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean method_12865(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		BlockState blockState = BlockTags.field_15461.getRandom(random).getDefaultState();
 		return this.method_12863(iWorld, random, blockPos, blockState);
@@ -43,7 +42,7 @@ public abstract class CoralFeature extends Feature<DefaultFeatureConfig> {
 
 			for (Direction direction : Direction.class_2353.HORIZONTAL) {
 				if (random.nextFloat() < 0.2F) {
-					BlockPos blockPos3 = blockPos.method_10093(direction);
+					BlockPos blockPos3 = blockPos.offset(direction);
 					if (iWorld.getBlockState(blockPos3).getBlock() == Blocks.field_10382) {
 						BlockState blockState3 = BlockTags.field_15476.getRandom(random).getDefaultState().with(CoralDeadWallFanBlock.field_9933, direction);
 						iWorld.setBlockState(blockPos3, blockState3, 2);

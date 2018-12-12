@@ -3,10 +3,10 @@ package net.minecraft.client.particle;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3538;
-import net.minecraft.client.render.VertexBuffer;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.LoopingStream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
@@ -51,10 +51,10 @@ public class Particle {
 	protected Sprite sprite;
 	protected float field_3839;
 	protected float field_3857;
-	public static double lerpX;
-	public static double lerpY;
-	public static double lerpZ;
-	public static Vec3d field_3864;
+	public static double cameraX;
+	public static double cameraY;
+	public static double cameraZ;
+	public static Vec3d cameraRotation;
 
 	protected Particle(World world, double d, double e, double f) {
 		this.world = world;
@@ -129,7 +129,7 @@ public class Particle {
 		this.maxAge = i;
 	}
 
-	public int method_3082() {
+	public int getMaxAge() {
 		return this.maxAge;
 	}
 
@@ -142,7 +142,7 @@ public class Particle {
 		}
 
 		this.velocityY = this.velocityY - 0.04 * (double)this.gravityStrength;
-		this.addPos(this.velocityX, this.velocityY, this.velocityZ);
+		this.move(this.velocityX, this.velocityY, this.velocityZ);
 		this.velocityX *= 0.98F;
 		this.velocityY *= 0.98F;
 		this.velocityZ *= 0.98F;
@@ -152,7 +152,7 @@ public class Particle {
 		}
 	}
 
-	public void buildGeometry(VertexBuffer vertexBuffer, Entity entity, float f, float g, float h, float i, float j, float k) {
+	public void buildGeometry(BufferBuilder bufferBuilder, Entity entity, float f, float g, float h, float i, float j, float k) {
 		float l = (float)this.tileU / 32.0F;
 		float m = l + 0.03121875F;
 		float n = (float)this.tileV / 32.0F;
@@ -165,9 +165,9 @@ public class Particle {
 			o = this.sprite.getMaxV();
 		}
 
-		float q = (float)(MathHelper.lerp((double)f, this.prevPosX, this.posX) - lerpX);
-		float r = (float)(MathHelper.lerp((double)f, this.prevPosY, this.posY) - lerpY);
-		float s = (float)(MathHelper.lerp((double)f, this.prevPosZ, this.posZ) - lerpZ);
+		float q = (float)(MathHelper.lerp((double)f, this.prevPosX, this.posX) - cameraX);
+		float r = (float)(MathHelper.lerp((double)f, this.prevPosY, this.posY) - cameraY);
+		float s = (float)(MathHelper.lerp((double)f, this.prevPosZ, this.posZ) - cameraZ);
 		int t = this.getColorMultiplier(f);
 		int u = t >> 16 & 65535;
 		int v = t & 65535;
@@ -180,9 +180,9 @@ public class Particle {
 		if (this.field_3839 != 0.0F) {
 			float w = MathHelper.lerp(f, this.field_3857, this.field_3839);
 			float x = MathHelper.cos(w * 0.5F);
-			float y = MathHelper.sin(w * 0.5F) * (float)field_3864.x;
-			float z = MathHelper.sin(w * 0.5F) * (float)field_3864.y;
-			float aa = MathHelper.sin(w * 0.5F) * (float)field_3864.z;
+			float y = MathHelper.sin(w * 0.5F) * (float)cameraRotation.x;
+			float z = MathHelper.sin(w * 0.5F) * (float)cameraRotation.y;
+			float aa = MathHelper.sin(w * 0.5F) * (float)cameraRotation.z;
 			Vec3d vec3d = new Vec3d((double)y, (double)z, (double)aa);
 
 			for (int ab = 0; ab < 4; ab++) {
@@ -192,22 +192,22 @@ public class Particle {
 			}
 		}
 
-		vertexBuffer.vertex((double)q + vec3ds[0].x, (double)r + vec3ds[0].y, (double)s + vec3ds[0].z)
+		bufferBuilder.vertex((double)q + vec3ds[0].x, (double)r + vec3ds[0].y, (double)s + vec3ds[0].z)
 			.texture((double)m, (double)o)
 			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
 			.texture(u, v)
 			.next();
-		vertexBuffer.vertex((double)q + vec3ds[1].x, (double)r + vec3ds[1].y, (double)s + vec3ds[1].z)
+		bufferBuilder.vertex((double)q + vec3ds[1].x, (double)r + vec3ds[1].y, (double)s + vec3ds[1].z)
 			.texture((double)m, (double)n)
 			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
 			.texture(u, v)
 			.next();
-		vertexBuffer.vertex((double)q + vec3ds[2].x, (double)r + vec3ds[2].y, (double)s + vec3ds[2].z)
+		bufferBuilder.vertex((double)q + vec3ds[2].x, (double)r + vec3ds[2].y, (double)s + vec3ds[2].z)
 			.texture((double)l, (double)n)
 			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
 			.texture(u, v)
 			.next();
-		vertexBuffer.vertex((double)q + vec3ds[3].x, (double)r + vec3ds[3].y, (double)s + vec3ds[3].z)
+		bufferBuilder.vertex((double)q + vec3ds[3].x, (double)r + vec3ds[3].y, (double)s + vec3ds[3].z)
 			.texture((double)l, (double)o)
 			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
 			.texture(u, v)
@@ -286,20 +286,20 @@ public class Particle {
 		this.setBoundingBox(new BoundingBox(d - (double)g, e, f - (double)g, d + (double)g, e + (double)h, f + (double)g));
 	}
 
-	public void addPos(double d, double e, double f) {
+	public void move(double d, double e, double f) {
 		double g = d;
 		double h = e;
 		double i = f;
 		if (this.collidesWithWorld && (d != 0.0 || e != 0.0 || f != 0.0)) {
-			class_3538<VoxelShape> lv = new class_3538<>(this.world.method_8609(null, this.getBoundingBox(), d, e, f));
-			e = VoxelShapes.method_1085(Direction.Axis.Y, this.getBoundingBox(), lv.method_15418(), e);
+			LoopingStream<VoxelShape> loopingStream = new LoopingStream<>(this.world.getCollisionVoxelShapes(null, this.getBoundingBox(), d, e, f));
+			e = VoxelShapes.calculateMaxOffset(Direction.Axis.Y, this.getBoundingBox(), loopingStream.getStream(), e);
 			this.setBoundingBox(this.getBoundingBox().offset(0.0, e, 0.0));
-			d = VoxelShapes.method_1085(Direction.Axis.X, this.getBoundingBox(), lv.method_15418(), d);
+			d = VoxelShapes.calculateMaxOffset(Direction.Axis.X, this.getBoundingBox(), loopingStream.getStream(), d);
 			if (d != 0.0) {
 				this.setBoundingBox(this.getBoundingBox().offset(d, 0.0, 0.0));
 			}
 
-			f = VoxelShapes.method_1085(Direction.Axis.Z, this.getBoundingBox(), lv.method_15418(), f);
+			f = VoxelShapes.calculateMaxOffset(Direction.Axis.Z, this.getBoundingBox(), loopingStream.getStream(), f);
 			if (f != 0.0) {
 				this.setBoundingBox(this.getBoundingBox().offset(0.0, 0.0, f));
 			}

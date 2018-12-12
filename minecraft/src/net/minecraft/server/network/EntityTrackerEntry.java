@@ -38,7 +38,7 @@ import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.decoration.EnderCrystalEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.decoration.LeadKnotEntity;
-import net.minecraft.entity.decoration.PaintingEntity;
+import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.EvokerFangsEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -109,7 +109,7 @@ public class EntityTrackerEntry {
 		this.lastZ = EntityTracker.toFixedPoint(entity.z);
 		this.lastYaw = MathHelper.floor(entity.yaw * 256.0F / 360.0F);
 		this.lastPitch = MathHelper.floor(entity.pitch * 256.0F / 360.0F);
-		this.lastHeadPitch = MathHelper.floor(entity.getHeadPitch() * 256.0F / 360.0F);
+		this.lastHeadPitch = MathHelper.floor(entity.getHeadYaw() * 256.0F / 360.0F);
 		this.lastOnGround = entity.onGround;
 	}
 
@@ -251,7 +251,7 @@ public class EntityTrackerEntry {
 				this.field_14051 = false;
 			}
 
-			int i = MathHelper.floor(this.entity.getHeadPitch() * 256.0F / 360.0F);
+			int i = MathHelper.floor(this.entity.getHeadYaw() * 256.0F / 360.0F);
 			if (Math.abs(i - this.lastHeadPitch) >= 1) {
 				this.sendToTrackingPlayers(new EntitySetHeadYawClientPacket(this.entity, (byte)i));
 				this.lastHeadPitch = i;
@@ -261,9 +261,9 @@ public class EntityTrackerEntry {
 		}
 
 		this.field_14040++;
-		if (this.entity.field_6037) {
+		if (this.entity.velocityModified) {
 			this.sendToTrackingPlayersAndSelf(new EntityVelocityUpdateClientPacket(this.entity));
-			this.entity.field_6037 = false;
+			this.entity.velocityModified = false;
 		}
 	}
 
@@ -412,7 +412,7 @@ public class EntityTrackerEntry {
 		if (this.entity instanceof ServerPlayerEntity) {
 			return new PlayerSpawnClientPacket((PlayerEntity)this.entity);
 		} else if (this.entity instanceof Living) {
-			this.lastHeadPitch = MathHelper.floor(this.entity.getHeadPitch() * 256.0F / 360.0F);
+			this.lastHeadPitch = MathHelper.floor(this.entity.getHeadYaw() * 256.0F / 360.0F);
 			return new MobSpawnClientPacket((LivingEntity)this.entity);
 		} else if (this.entity instanceof PaintingEntity) {
 			return new PaintingSpawnClientPacket((PaintingEntity)this.entity);
@@ -494,7 +494,7 @@ public class EntityTrackerEntry {
 			return new EntitySpawnClientPacket(this.entity, 78);
 		} else if (this.entity instanceof ItemFrameEntity) {
 			ItemFrameEntity itemFrameEntity = (ItemFrameEntity)this.entity;
-			return new EntitySpawnClientPacket(this.entity, 71, itemFrameEntity.field_7099.getId(), itemFrameEntity.getDecorationBlockPos());
+			return new EntitySpawnClientPacket(this.entity, 71, itemFrameEntity.facing.getId(), itemFrameEntity.getDecorationBlockPos());
 		} else if (this.entity instanceof LeadKnotEntity) {
 			LeadKnotEntity leadKnotEntity = (LeadKnotEntity)this.entity;
 			return new EntitySpawnClientPacket(this.entity, 77, 0, leadKnotEntity.getDecorationBlockPos());

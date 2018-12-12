@@ -64,7 +64,7 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		if (this.field_6265 > 0) {
-			this.headPitch = (float)((double)this.headPitch + MathHelper.wrapDegrees(this.field_6242 - (double)this.headPitch) / (double)this.field_6265);
+			this.headYaw = (float)((double)this.headYaw + MathHelper.wrapDegrees(this.field_6242 - (double)this.headYaw) / (double)this.field_6265);
 			this.field_6265--;
 		}
 
@@ -86,9 +86,9 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 
 		this.field_7483 = this.field_7483 + (g - this.field_7483) * 0.4F;
 		this.field_6223 = this.field_6223 + (h - this.field_6223) * 0.8F;
-		this.world.getProfiler().begin("push");
+		this.world.getProfiler().push("push");
 		this.doPushLogic();
-		this.world.getProfiler().end();
+		this.world.getProfiler().pop();
 	}
 
 	@Override

@@ -43,12 +43,12 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public IllagerEntity.class_1544 method_6990() {
-		return this.method_7137() ? IllagerEntity.class_1544.field_7212 : IllagerEntity.class_1544.field_7207;
+	public IllagerEntity.State method_6990() {
+		return this.method_7137() ? IllagerEntity.State.field_7212 : IllagerEntity.State.field_7207;
 	}
 
 	public boolean method_7137() {
-		return this.world.isRemote ? this.dataTracker.get(field_7373) > 0 : this.spellTicks > 0;
+		return this.world.isClient ? this.dataTracker.get(field_7373) > 0 : this.spellTicks > 0;
 	}
 
 	public void method_7138(SpellcastingIllagerEntity.class_1618 arg) {
@@ -57,7 +57,7 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 	}
 
 	protected SpellcastingIllagerEntity.class_1618 method_7140() {
-		return !this.world.isRemote ? this.field_7371 : SpellcastingIllagerEntity.class_1618.method_7144(this.dataTracker.get(field_7373));
+		return !this.world.isClient ? this.field_7371 : SpellcastingIllagerEntity.class_1618.method_7144(this.dataTracker.get(field_7373));
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 	@Override
 	public void update() {
 		super.update();
-		if (this.world.isRemote && this.method_7137()) {
+		if (this.world.isClient && this.method_7137()) {
 			SpellcastingIllagerEntity.class_1618 lv = this.method_7140();
 			double d = lv.field_7374[0];
 			double e = lv.field_7374[1];

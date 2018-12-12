@@ -11,7 +11,7 @@ public abstract class DrawableContainer extends Drawable implements InputListene
 	private GuiEventListener focused;
 	private boolean active;
 
-	protected abstract List<? extends GuiEventListener> getListeners();
+	protected abstract List<? extends GuiEventListener> getEntries();
 
 	private final boolean isActive() {
 		return this.active;
@@ -33,7 +33,7 @@ public abstract class DrawableContainer extends Drawable implements InputListene
 
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
-		for (GuiEventListener guiEventListener : this.getListeners()) {
+		for (GuiEventListener guiEventListener : this.getEntries()) {
 			boolean bl = guiEventListener.mouseClicked(d, e, i);
 			if (bl) {
 				this.focusOn(guiEventListener);
@@ -65,18 +65,18 @@ public abstract class DrawableContainer extends Drawable implements InputListene
 	}
 
 	public void focusOn(@Nullable GuiEventListener guiEventListener) {
-		this.switchFocus(guiEventListener, this.getListeners().indexOf(this.getFocused()));
+		this.switchFocus(guiEventListener, this.getEntries().indexOf(this.getFocused()));
 	}
 
 	public void focusNext() {
-		int i = this.getListeners().indexOf(this.getFocused());
-		int j = i == -1 ? 0 : (i + 1) % this.getListeners().size();
+		int i = this.getEntries().indexOf(this.getFocused());
+		int j = i == -1 ? 0 : (i + 1) % this.getEntries().size();
 		this.switchFocus(this.getNextFocusable(j), i);
 	}
 
 	@Nullable
 	private GuiEventListener getNextFocusable(int i) {
-		List<? extends GuiEventListener> list = this.getListeners();
+		List<? extends GuiEventListener> list = this.getEntries();
 		int j = list.size();
 
 		for (int k = 0; k < j; k++) {
@@ -90,7 +90,7 @@ public abstract class DrawableContainer extends Drawable implements InputListene
 	}
 
 	private void switchFocus(@Nullable GuiEventListener guiEventListener, int i) {
-		GuiEventListener guiEventListener2 = i == -1 ? null : (GuiEventListener)this.getListeners().get(i);
+		GuiEventListener guiEventListener2 = i == -1 ? null : (GuiEventListener)this.getEntries().get(i);
 		if (guiEventListener2 != guiEventListener) {
 			if (guiEventListener2 != null) {
 				guiEventListener2.setHasFocus(false);

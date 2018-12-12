@@ -23,7 +23,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.TagHelper;
-import net.minecraft.util.crash.CrashReportElement;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
@@ -303,7 +303,7 @@ public class LevelProperties {
 		compoundTag.putLong("Time", this.time);
 		compoundTag.putLong("DayTime", this.timeOfDay);
 		compoundTag.putLong("SizeOnDisk", this.sizeOnDisk);
-		compoundTag.putLong("LastPlayed", SystemUtil.getEpochTimeMili());
+		compoundTag.putLong("LastPlayed", SystemUtil.getEpochTimeMs());
 		compoundTag.putString("LevelName", this.levelName);
 		compoundTag.putInt("version", this.version);
 		compoundTag.putInt("clearWeatherTime", this.clearWeatherTime);
@@ -660,19 +660,19 @@ public class LevelProperties {
 		return this.field_191;
 	}
 
-	public void populateCrashReport(CrashReportElement crashReportElement) {
-		crashReportElement.add("Level seed", (ICrashCallable<String>)(() -> String.valueOf(this.getSeed())));
-		crashReportElement.add(
+	public void populateCrashReport(CrashReportSection crashReportSection) {
+		crashReportSection.add("Level seed", (ICrashCallable<String>)(() -> String.valueOf(this.getSeed())));
+		crashReportSection.add(
 			"Level generator",
 			(ICrashCallable<String>)(() -> String.format(
 					"ID %02d - %s, ver %d. Features enabled: %b", this.generatorType.getId(), this.generatorType.getName(), this.generatorType.getVersion(), this.structures
 				))
 		);
-		crashReportElement.add("Level generator options", (ICrashCallable<String>)(() -> this.generatorOptions.toString()));
-		crashReportElement.add("Level spawn location", (ICrashCallable<String>)(() -> CrashReportElement.createPositionString(this.spawnX, this.spawnY, this.spawnZ)));
-		crashReportElement.add("Level time", (ICrashCallable<String>)(() -> String.format("%d game time, %d day time", this.time, this.timeOfDay)));
-		crashReportElement.add("Level dimension", (ICrashCallable<String>)(() -> String.valueOf(this.dimension)));
-		crashReportElement.add("Level storage version", (ICrashCallable<String>)(() -> {
+		crashReportSection.add("Level generator options", (ICrashCallable<String>)(() -> this.generatorOptions.toString()));
+		crashReportSection.add("Level spawn location", (ICrashCallable<String>)(() -> CrashReportSection.createPositionString(this.spawnX, this.spawnY, this.spawnZ)));
+		crashReportSection.add("Level time", (ICrashCallable<String>)(() -> String.format("%d game time, %d day time", this.time, this.timeOfDay)));
+		crashReportSection.add("Level dimension", (ICrashCallable<String>)(() -> String.valueOf(this.dimension)));
+		crashReportSection.add("Level storage version", (ICrashCallable<String>)(() -> {
 			String string = "Unknown?";
 
 			try {
@@ -688,13 +688,13 @@ public class LevelProperties {
 
 			return String.format("0x%05X - %s", this.version, string);
 		}));
-		crashReportElement.add(
+		crashReportSection.add(
 			"Level weather",
 			(ICrashCallable<String>)(() -> String.format(
 					"Rain time: %d (now: %b), thunder time: %d (now: %b)", this.rainTime, this.raining, this.thunderTime, this.thundering
 				))
 		);
-		crashReportElement.add(
+		crashReportSection.add(
 			"Level game mode",
 			(ICrashCallable<String>)(() -> String.format(
 					"Game mode: %s (ID %d). Hardcore: %b. Cheats: %b", this.gameMode.getName(), this.gameMode.getId(), this.hardcore, this.commandsAllowed

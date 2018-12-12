@@ -22,7 +22,7 @@ public class ArmorStandItem extends Item {
 
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-		Direction direction = itemUsageContext.method_8038();
+		Direction direction = itemUsageContext.getFacing();
 		if (direction == Direction.DOWN) {
 			return ActionResult.FAILURE;
 		} else {
@@ -39,7 +39,7 @@ public class ArmorStandItem extends Item {
 					return ActionResult.FAILURE;
 				} else {
 					ItemStack itemStack = itemUsageContext.getItemStack();
-					if (!world.isRemote) {
+					if (!world.isClient) {
 						world.clearBlockState(blockPos);
 						world.clearBlockState(blockPos2);
 						ArmorStandEntity armorStandEntity = new ArmorStandEntity(world, d + 0.5, e, f + 0.5);

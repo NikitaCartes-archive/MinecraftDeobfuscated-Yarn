@@ -57,7 +57,7 @@ public class SnowBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape method_9549(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		return field_11517[blockState.get(field_11518) - 1];
 	}
 
@@ -71,22 +71,24 @@ public class SnowBlock extends Block {
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos.down());
 		Block block = blockState2.getBlock();
 		return block != Blocks.field_10295 && block != Blocks.field_10225 && block != Blocks.field_10499
-			? Block.method_9501(blockState2.method_11628(viewableWorld, blockPos.down()), Direction.UP)
+			? Block.isFaceFullCube(blockState2.getCollisionShape(viewableWorld, blockPos.down()), Direction.UP)
 				|| blockState2.matches(BlockTags.field_15503)
 				|| block == this && (Integer)blockState2.get(field_11518) == 8
 			: false;
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		return !blockState.canPlaceAt(iWorld, blockPos)
 			? Blocks.field_10124.getDefaultState()
-			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
 	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (world.getLightLevel(LightType.field_9282, blockPos) > 11) {
+		if (world.getLightLevel(LightType.BLOCK_LIGHT, blockPos) > 11) {
 			dropStacks(blockState, world, blockPos);
 			world.clearBlockState(blockPos);
 		}
@@ -98,7 +100,7 @@ public class SnowBlock extends Block {
 		if (itemPlacementContext.getItemStack().getItem() != this.getItem() || i >= 8) {
 			return i == 1;
 		} else {
-			return itemPlacementContext.method_7717() ? itemPlacementContext.method_8038() == Direction.UP : true;
+			return itemPlacementContext.method_7717() ? itemPlacementContext.getFacing() == Direction.UP : true;
 		}
 	}
 

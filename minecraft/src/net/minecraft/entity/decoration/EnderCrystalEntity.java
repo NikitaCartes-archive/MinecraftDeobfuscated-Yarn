@@ -55,7 +55,7 @@ public class EnderCrystalEntity extends Entity {
 		this.prevY = this.y;
 		this.prevZ = this.z;
 		this.field_7034++;
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			BlockPos blockPos = new BlockPos(this);
 			if (this.world.dimension instanceof TheEndDimension && this.world.getBlockState(blockPos).isAir()) {
 				this.world.setBlockState(blockPos, Blocks.field_10036.getDefaultState());
@@ -95,9 +95,9 @@ public class EnderCrystalEntity extends Entity {
 		} else if (damageSource.getAttacker() instanceof EnderDragonEntity) {
 			return false;
 		} else {
-			if (!this.invalid && !this.world.isRemote) {
+			if (!this.invalid && !this.world.isClient) {
 				this.invalidate();
-				if (!this.world.isRemote) {
+				if (!this.world.isClient) {
 					if (!damageSource.isExplosive()) {
 						this.world.createExplosion(null, this.x, this.y, this.z, 6.0F, true);
 					}

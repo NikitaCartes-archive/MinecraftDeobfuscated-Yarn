@@ -2,23 +2,23 @@ package net.minecraft.world.chunk;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2816;
-import net.minecraft.class_2837;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.sortme.PalettedContainer;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.TagHelper;
+import net.minecraft.util.palette.IdListPalette;
+import net.minecraft.util.palette.Palette;
+import net.minecraft.util.palette.PalettedContainer;
 
 public class ChunkSection {
-	private static final class_2837<BlockState> field_12879 = new class_2816<>(Block.STATE_IDS, Blocks.field_10124.getDefaultState());
+	private static final Palette<BlockState> palette = new IdListPalette<>(Block.STATE_IDS, Blocks.field_10124.getDefaultState());
 	private final int yOffset;
 	private short nonEmptyBlockCount;
 	private short randomTickableBlockCount;
 	private short nonEmptyFluidCount;
-	private final PalettedContainer<BlockState> container;
+	private final PalettedContainer<BlockState> field_12878;
 
 	public ChunkSection(int i) {
 		this(i, (short)0, (short)0, (short)0);
@@ -29,37 +29,37 @@ public class ChunkSection {
 		this.nonEmptyBlockCount = s;
 		this.randomTickableBlockCount = t;
 		this.nonEmptyFluidCount = u;
-		this.container = new PalettedContainer<>(
-			field_12879, Block.STATE_IDS, TagHelper::deserializeBlockState, TagHelper::serializeBlockState, Blocks.field_10124.getDefaultState()
+		this.field_12878 = new PalettedContainer<>(
+			palette, Block.STATE_IDS, TagHelper::deserializeBlockState, TagHelper::serializeBlockState, Blocks.field_10124.getDefaultState()
 		);
 	}
 
 	public BlockState getBlockState(int i, int j, int k) {
-		return this.container.get(i, j, k);
+		return this.field_12878.get(i, j, k);
 	}
 
 	public FluidState getFluidState(int i, int j, int k) {
-		return this.container.get(i, j, k).getFluidState();
+		return this.field_12878.get(i, j, k).getFluidState();
 	}
 
 	public void lock() {
-		this.container.lock();
+		this.field_12878.lock();
 	}
 
 	public void unlock() {
-		this.container.unlock();
+		this.field_12878.unlock();
 	}
 
-	public BlockState method_16675(int i, int j, int k, BlockState blockState) {
-		return this.method_12256(i, j, k, blockState, true);
+	public BlockState setBlockState(int i, int j, int k, BlockState blockState) {
+		return this.setBlockState(i, j, k, blockState, true);
 	}
 
-	public BlockState method_12256(int i, int j, int k, BlockState blockState, boolean bl) {
+	public BlockState setBlockState(int i, int j, int k, BlockState blockState, boolean bl) {
 		BlockState blockState2;
 		if (bl) {
-			blockState2 = this.container.method_12328(i, j, k, blockState);
+			blockState2 = this.field_12878.setSync(i, j, k, blockState);
 		} else {
-			blockState2 = this.container.method_16678(i, j, k, blockState);
+			blockState2 = this.field_12878.set(i, j, k, blockState);
 		}
 
 		FluidState fluidState = blockState2.getFluidState();
@@ -109,7 +109,7 @@ public class ChunkSection {
 		return this.yOffset;
 	}
 
-	public void method_12253() {
+	public void calculateCounts() {
 		this.nonEmptyBlockCount = 0;
 		this.randomTickableBlockCount = 0;
 		this.nonEmptyFluidCount = 0;
@@ -137,22 +137,22 @@ public class ChunkSection {
 		}
 	}
 
-	public PalettedContainer<BlockState> getContainer() {
-		return this.container;
+	public PalettedContainer<BlockState> method_12265() {
+		return this.field_12878;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public void fromPacket(PacketByteBuf packetByteBuf) {
 		this.nonEmptyBlockCount = packetByteBuf.readShort();
-		this.container.fromPacket(packetByteBuf);
+		this.field_12878.fromPacket(packetByteBuf);
 	}
 
 	public void toPacket(PacketByteBuf packetByteBuf) {
 		packetByteBuf.writeShort(this.nonEmptyBlockCount);
-		this.container.toPacket(packetByteBuf);
+		this.field_12878.toPacket(packetByteBuf);
 	}
 
 	public int getPacketSize() {
-		return 2 + this.container.getPacketSize();
+		return 2 + this.field_12878.getPacketSize();
 	}
 }

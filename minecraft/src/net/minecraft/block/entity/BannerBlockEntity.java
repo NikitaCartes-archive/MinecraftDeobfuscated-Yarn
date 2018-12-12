@@ -57,17 +57,13 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 		return (TextComponent)(this.customName != null ? this.customName : new TranslatableTextComponent("block.minecraft.banner"));
 	}
 
-	@Override
-	public boolean hasCustomName() {
-		return this.customName != null;
-	}
-
 	@Nullable
+	@Override
 	public TextComponent getCustomName() {
 		return this.customName;
 	}
 
-	public void method_16842(TextComponent textComponent) {
+	public void setCustomName(TextComponent textComponent) {
 		this.customName = textComponent;
 	}
 
@@ -185,7 +181,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ItemStack method_10907(BlockState blockState) {
+	public ItemStack getPickStack(BlockState blockState) {
 		ItemStack itemStack = new ItemStack(StandingBannerBlock.method_9398(this.getColorForState(() -> blockState)));
 		if (this.patternListTag != null && !this.patternListTag.isEmpty()) {
 			itemStack.getOrCreateSubCompoundTag("BlockEntityTag").put("Patterns", this.patternListTag.copy());

@@ -174,7 +174,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 		}
 
 		@Override
-		public int method_9376(Tag tag, Tag tag2) {
+		public int method_9376(Tag tag, Supplier<Tag> supplier) {
 			if (!(tag instanceof AbstractListTag)) {
 				return 0;
 			} else {
@@ -183,7 +183,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 				abstractListTag.clear();
 
 				for (int j = 0; j < i; j++) {
-					abstractListTag.append(j, tag2.copy());
+					abstractListTag.append(j, (Tag)supplier.get());
 				}
 
 				return i;
@@ -244,10 +244,10 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 		}
 
 		@Override
-		public int method_9376(Tag tag, Tag tag2) {
+		public int method_9376(Tag tag, Supplier<Tag> supplier) {
 			if (tag instanceof CompoundTag) {
 				CompoundTag compoundTag = (CompoundTag)tag;
-				compoundTag.put(this.field_9902, tag2);
+				compoundTag.put(this.field_9902, (Tag)supplier.get());
 				return 1;
 			} else {
 				return 0;
@@ -298,13 +298,13 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 		}
 
 		@Override
-		public int method_9376(Tag tag, Tag tag2) {
+		public int method_9376(Tag tag, Supplier<Tag> supplier) {
 			if (tag instanceof AbstractListTag) {
 				AbstractListTag<?> abstractListTag = (AbstractListTag<?>)tag;
 				int i = abstractListTag.size();
 				int j = this.field_9903 < 0 ? i + this.field_9903 : this.field_9903;
 				if (0 <= j && j < i) {
-					abstractListTag.setRaw(j, tag2);
+					abstractListTag.setRaw(j, (Tag)supplier.get());
 					return 1;
 				}
 			}
@@ -319,7 +319,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 				int i = abstractListTag.size();
 				int j = this.field_9903 < 0 ? i + this.field_9903 : this.field_9903;
 				if (0 <= j && j < i) {
-					abstractListTag.remove(j);
+					abstractListTag.removeAt(j);
 					return 1;
 				}
 			}
@@ -384,13 +384,13 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 		}
 
 		@Override
-		public int method_9376(Tag tag, Tag tag2) {
-			return this.method_9364(tag, (listTag, integer) -> listTag.setRaw(integer, tag2.copy()));
+		public int method_9376(Tag tag, Supplier<Tag> supplier) {
+			return this.method_9364(tag, (listTag, integer) -> listTag.setRaw(integer, (Tag)supplier.get()));
 		}
 
 		@Override
 		public int method_9383(Tag tag) {
-			return this.method_9364(tag, ListTag::remove);
+			return this.method_9364(tag, ListTag::removeAt);
 		}
 	}
 
@@ -436,12 +436,12 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 		}
 
 		@Override
-		public int method_9376(Tag tag, Tag tag2) {
+		public int method_9376(Tag tag, Supplier<Tag> supplier) {
 			if (tag instanceof CompoundTag) {
 				CompoundTag compoundTag = (CompoundTag)tag;
-				Tag tag3 = compoundTag.getTag(this.field_9906);
-				if (this.field_9908.test(tag3)) {
-					compoundTag.put(this.field_9906, tag2);
+				Tag tag2 = compoundTag.getTag(this.field_9906);
+				if (this.field_9908.test(tag2)) {
+					compoundTag.put(this.field_9906, (Tag)supplier.get());
 					return 1;
 				}
 			}
@@ -526,10 +526,10 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 			return (Integer)list.stream().map(function).reduce(0, (integer, integer2) -> integer + integer2);
 		}
 
-		public int method_9368(Tag tag, Tag tag2) throws CommandSyntaxException {
+		public int method_9368(Tag tag, Supplier<Tag> supplier) throws CommandSyntaxException {
 			List<Tag> list = this.method_9369(tag);
 			NbtPathArgumentType.class_2210 lv = this.field_9911[this.field_9911.length - 1];
-			int i = method_9371(list, tag2x -> lv.method_9376(tag2x, tag2));
+			int i = method_9371(list, tagx -> lv.method_9376(tagx, supplier));
 			if (i == 0) {
 				throw NbtPathArgumentType.field_9899.create(this.field_9909);
 			} else {
@@ -565,7 +565,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 
 		Tag method_9382();
 
-		int method_9376(Tag tag, Tag tag2);
+		int method_9376(Tag tag, Supplier<Tag> supplier);
 
 		int method_9383(Tag tag);
 
@@ -613,7 +613,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 		}
 
 		@Override
-		public int method_9376(Tag tag, Tag tag2) {
+		public int method_9376(Tag tag, Supplier<Tag> supplier) {
 			return 0;
 		}
 

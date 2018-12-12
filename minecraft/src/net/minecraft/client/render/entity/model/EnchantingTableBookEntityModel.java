@@ -4,7 +4,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
 import net.minecraft.client.model.Model;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -27,9 +26,8 @@ public class EnchantingTableBookEntityModel extends Model {
 		this.field_3333.yaw = (float) (Math.PI / 2);
 	}
 
-	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		this.setRotationAngles(f, g, h, i, j, k, entity);
+	public void method_17072(float f, float g, float h, float i, float j, float k) {
+		this.method_17073(f, g, h, i, j, k);
 		this.field_3336.render(k);
 		this.field_3338.render(k);
 		this.field_3333.render(k);
@@ -39,8 +37,7 @@ public class EnchantingTableBookEntityModel extends Model {
 		this.field_3339.render(k);
 	}
 
-	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
+	private void method_17073(float f, float g, float h, float i, float j, float k) {
 		float l = (MathHelper.sin(f * 0.02F) * 0.1F + 1.25F) * i;
 		this.field_3336.yaw = (float) Math.PI + l;
 		this.field_3338.yaw = -l;

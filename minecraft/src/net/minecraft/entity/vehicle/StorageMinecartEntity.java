@@ -110,24 +110,6 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 		return this.invalid ? false : !(playerEntity.squaredDistanceTo(this) > 64.0);
 	}
 
-	@Override
-	public void onInvOpen(PlayerEntity playerEntity) {
-	}
-
-	@Override
-	public void onInvClose(PlayerEntity playerEntity) {
-	}
-
-	@Override
-	public boolean isValidInvStack(int i, ItemStack itemStack) {
-		return true;
-	}
-
-	@Override
-	public int getInvMaxStackAmount() {
-		return 64;
-	}
-
 	@Nullable
 	@Override
 	public Entity changeDimension(DimensionType dimensionType) {
@@ -176,7 +158,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 
 	@Override
 	public boolean interact(PlayerEntity playerEntity, Hand hand) {
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			playerEntity.openInventory(this);
 		}
 
@@ -194,20 +176,6 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 		this.velocityX *= (double)f;
 		this.velocityY *= 0.0;
 		this.velocityZ *= (double)f;
-	}
-
-	@Override
-	public int getInvProperty(int i) {
-		return 0;
-	}
-
-	@Override
-	public void setInvProperty(int i, int j) {
-	}
-
-	@Override
-	public int getInvPropertyCount() {
-		return 0;
 	}
 
 	@Override

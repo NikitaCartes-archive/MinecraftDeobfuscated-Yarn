@@ -9,7 +9,7 @@ import com.google.gson.JsonObject;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.advancement.ServerAdvancementManager;
+import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -18,7 +18,7 @@ import net.minecraft.util.NumberRange;
 
 public class EnchantedItemCriterion implements Criterion<EnchantedItemCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("enchanted_item");
-	private final Map<ServerAdvancementManager, EnchantedItemCriterion.Handler> handlers = Maps.<ServerAdvancementManager, EnchantedItemCriterion.Handler>newHashMap();
+	private final Map<PlayerAdvancementTracker, EnchantedItemCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, EnchantedItemCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -26,34 +26,34 @@ public class EnchantedItemCriterion implements Criterion<EnchantedItemCriterion.
 	}
 
 	@Override
-	public void addCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<EnchantedItemCriterion.Conditions> conditionsContainer
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<EnchantedItemCriterion.Conditions> conditionsContainer
 	) {
-		EnchantedItemCriterion.Handler handler = (EnchantedItemCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		EnchantedItemCriterion.Handler handler = (EnchantedItemCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new EnchantedItemCriterion.Handler(serverAdvancementManager);
-			this.handlers.put(serverAdvancementManager, handler);
+			handler = new EnchantedItemCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void removeCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<EnchantedItemCriterion.Conditions> conditionsContainer
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<EnchantedItemCriterion.Conditions> conditionsContainer
 	) {
-		EnchantedItemCriterion.Handler handler = (EnchantedItemCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		EnchantedItemCriterion.Handler handler = (EnchantedItemCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(serverAdvancementManager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void removePlayer(ServerAdvancementManager serverAdvancementManager) {
-		this.handlers.remove(serverAdvancementManager);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
 	public EnchantedItemCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -88,7 +88,7 @@ public class EnchantedItemCriterion implements Criterion<EnchantedItemCriterion.
 		}
 
 		@Override
-		public JsonElement method_807() {
+		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("item", this.item.serialize());
 			jsonObject.add("levels", this.levels.serialize());
@@ -97,11 +97,11 @@ public class EnchantedItemCriterion implements Criterion<EnchantedItemCriterion.
 	}
 
 	static class Handler {
-		private final ServerAdvancementManager manager;
+		private final PlayerAdvancementTracker field_9566;
 		private final Set<Criterion.ConditionsContainer<EnchantedItemCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<EnchantedItemCriterion.Conditions>>newHashSet();
 
-		public Handler(ServerAdvancementManager serverAdvancementManager) {
-			this.manager = serverAdvancementManager;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.field_9566 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
@@ -131,7 +131,7 @@ public class EnchantedItemCriterion implements Criterion<EnchantedItemCriterion.
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<EnchantedItemCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
+					conditionsContainerx.apply(this.field_9566);
 				}
 			}
 		}

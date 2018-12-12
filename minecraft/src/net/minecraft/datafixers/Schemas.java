@@ -27,6 +27,7 @@ import net.minecraft.datafixers.fixes.BlockEntitySignTextStrictJsonFix;
 import net.minecraft.datafixers.fixes.BlockNameFix;
 import net.minecraft.datafixers.fixes.BlockNameFlatteningFix;
 import net.minecraft.datafixers.fixes.BlockStateStructureTemplateFix;
+import net.minecraft.datafixers.fixes.CatTypeFix;
 import net.minecraft.datafixers.fixes.ChoiceFix;
 import net.minecraft.datafixers.fixes.ChunkLightRemoveFix;
 import net.minecraft.datafixers.fixes.ChunkPalettedStorageFix;
@@ -93,6 +94,7 @@ import net.minecraft.datafixers.fixes.SavedDataVillageCropFix;
 import net.minecraft.datafixers.fixes.StatsCounterFix;
 import net.minecraft.datafixers.fixes.SwimStatsRenameFix;
 import net.minecraft.datafixers.fixes.TeamDisplayNameFix;
+import net.minecraft.datafixers.fixes.VillagerProfessionFix;
 import net.minecraft.datafixers.fixes.VillagerTradeFix;
 import net.minecraft.datafixers.fixes.WriteAndReadFix;
 import net.minecraft.datafixers.mapping.LegacyCoralBlockMapping;
@@ -307,7 +309,7 @@ public class Schemas {
 		Schema schema56 = dataFixerBuilder.addSchema(1483, Schema1483::new);
 		dataFixerBuilder.addFixer(new EntityPufferfishRenameFix(schema56, true));
 		dataFixerBuilder.addFixer(
-			FixItemName.create(schema56, "Rename pufferfish egg item", string -> (String)EntityPufferfishRenameFix.convert.getOrDefault(string, string))
+			FixItemName.create(schema56, "Rename pufferfish egg item", string -> (String)EntityPufferfishRenameFix.RENAMED_FISHES.getOrDefault(string, string))
 		);
 		Schema schema57 = dataFixerBuilder.addSchema(1484, identNormalize);
 		dataFixerBuilder.addFixer(
@@ -463,5 +465,10 @@ public class Schemas {
 		dataFixerBuilder.addFixer(new FixChoiceTypes(schema82, "Add jigsaw", TypeReferences.BLOCK_ENTITY));
 		Schema schema83 = dataFixerBuilder.addSchema(1911, identNormalize);
 		dataFixerBuilder.addFixer(new ChunkStatusFix2(schema83, false));
+		Schema schema84 = dataFixerBuilder.addSchema(1917, identNormalize);
+		dataFixerBuilder.addFixer(new CatTypeFix(schema84, false));
+		Schema schema85 = dataFixerBuilder.addSchema(1918, identNormalize);
+		dataFixerBuilder.addFixer(new VillagerProfessionFix(schema85, "minecraft:villager"));
+		dataFixerBuilder.addFixer(new VillagerProfessionFix(schema85, "minecraft:zombie_villager"));
 	}
 }

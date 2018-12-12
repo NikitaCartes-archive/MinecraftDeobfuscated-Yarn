@@ -7,18 +7,17 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.block.Material;
+import net.minecraft.entity.raid.Raid;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.PersistedState;
 import net.minecraft.nbt.Tag;
-import net.minecraft.sortme.Raid;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.village.VillageDoor;
 import net.minecraft.village.VillageProperties;
 import net.minecraft.world.dimension.Dimension;
 
-public class WorldVillageManager extends PersistedState {
+public class WorldVillageManager extends PersistentState {
 	private World world;
 	private final List<BlockPos> recentVillagerPositions = Lists.<BlockPos>newArrayList();
 	private final List<VillageDoor> recentlySeenDoors = Lists.<VillageDoor>newArrayList();
@@ -56,7 +55,7 @@ public class WorldVillageManager extends PersistedState {
 
 		for (VillageProperties villageProperties : this.villages) {
 			villageProperties.update(this.tick);
-			this.world.getRaidState().method_16531(villageProperties);
+			this.world.getRaidManager().checkRaid(villageProperties);
 		}
 
 		this.validateVillageProperties();
@@ -170,18 +169,18 @@ public class WorldVillageManager extends PersistedState {
 	private void method_6443(BlockState blockState, BlockPos blockPos) {
 		Direction direction = blockState.get(DoorBlock.field_10938);
 		Direction direction2 = direction.getOpposite();
-		int i = this.method_6437(blockPos, direction, 5);
-		int j = this.method_6437(blockPos, direction2, i + 1);
+		int i = this.isDoorLeadingOutside(blockPos, direction, 5);
+		int j = this.isDoorLeadingOutside(blockPos, direction2, i + 1);
 		if (i != j) {
 			this.recentlySeenDoors.add(new VillageDoor(blockPos, i < j ? direction : direction2, this.tick));
 		}
 	}
 
-	private int method_6437(BlockPos blockPos, Direction direction, int i) {
+	private int isDoorLeadingOutside(BlockPos blockPos, Direction direction, int i) {
 		int j = 0;
 
 		for (int k = 1; k <= 5; k++) {
-			if (this.world.getSkyLightLevel(blockPos.method_10079(direction, k))) {
+			if (this.world.isSkyVisible(blockPos.offset(direction, k))) {
 				if (++j >= i) {
 					return j;
 				}
@@ -206,7 +205,7 @@ public class WorldVillageManager extends PersistedState {
 	}
 
 	@Override
-	public void deserialize(CompoundTag compoundTag) {
+	public void fromTag(CompoundTag compoundTag) {
 		this.tick = compoundTag.getInt("Tick");
 		ListTag listTag = compoundTag.getList("Villages", 10);
 
@@ -219,7 +218,7 @@ public class WorldVillageManager extends PersistedState {
 	}
 
 	@Override
-	public CompoundTag serialize(CompoundTag compoundTag) {
+	public CompoundTag toTag(CompoundTag compoundTag) {
 		compoundTag.putInt("Tick", this.tick);
 		ListTag listTag = new ListTag();
 
@@ -235,13 +234,13 @@ public class WorldVillageManager extends PersistedState {
 
 	public void method_16471() {
 		for (VillageProperties villageProperties : this.villages) {
-			int i = villageProperties.method_16467();
+			int i = villageProperties.getRaidId();
 			if (i > 0) {
-				Raid raid = this.world.getRaidState().getRaid(i);
+				Raid raid = this.world.getRaidManager().getRaid(i);
 				if (raid != null) {
-					raid.method_16512(villageProperties);
+					raid.setVillage(villageProperties);
 				} else {
-					villageProperties.method_16468(0);
+					villageProperties.setRaidId(0);
 				}
 			}
 		}

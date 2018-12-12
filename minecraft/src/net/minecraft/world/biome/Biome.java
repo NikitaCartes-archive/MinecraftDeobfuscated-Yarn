@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2919;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -20,10 +19,8 @@ import net.minecraft.client.render.block.FoliageColorHandler;
 import net.minecraft.client.render.block.GrassColorHandler;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.sortme.structures.VillageGenerator;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.IdList;
@@ -37,32 +34,24 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.LightType;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.Carver;
+import net.minecraft.world.gen.carver.CarverConfig;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.carver.CarverConfig;
-import net.minecraft.world.gen.config.decorator.DecoratorConfig;
-import net.minecraft.world.gen.config.feature.BuriedTreasureFeatureConfig;
-import net.minecraft.world.gen.config.feature.DecoratedFeatureConfig;
-import net.minecraft.world.gen.config.feature.FeatureConfig;
-import net.minecraft.world.gen.config.feature.MineshaftFeatureConfig;
-import net.minecraft.world.gen.config.feature.NewVillageFeatureConfig;
-import net.minecraft.world.gen.config.feature.OceanRuinFeatureConfig;
-import net.minecraft.world.gen.config.feature.PillagerOutpostFeatureConfig;
-import net.minecraft.world.gen.config.feature.ShipwreckFeatureConfig;
-import net.minecraft.world.gen.config.feature.VillageFeatureConfig;
-import net.minecraft.world.gen.config.surfacebuilder.SurfaceConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
+import net.minecraft.world.gen.decorator.DecoratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.FlowerFeature;
-import net.minecraft.world.gen.feature.MineshaftFeature;
-import net.minecraft.world.gen.feature.OceanRuinFeature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
+import net.minecraft.world.gen.surfacebuilder.SurfaceConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -96,11 +85,11 @@ public abstract class Biome {
 		return PARENT_BIOME_ID_MAP.getInt(Registry.BIOME.getRawId(biome));
 	}
 
-	public static <C extends CarverConfig> ConfiguredCarver<C> configureCarver(Carver<C> carver, C carverConfig) {
+	public static <C extends CarverConfig> ConfiguredCarver<C> method_8714(Carver<C> carver, C carverConfig) {
 		return new ConfiguredCarver<>(carver, carverConfig);
 	}
 
-	public static <F extends FeatureConfig, D extends DecoratorConfig> ConfiguredFeature<?> configureFeature(
+	public static <F extends FeatureConfig, D extends DecoratorConfig> ConfiguredFeature<?> method_8699(
 		Feature<F> feature, F featureConfig, Decorator<D> decorator, D decoratorConfig
 	) {
 		Feature<DecoratedFeatureConfig> feature2 = feature instanceof FlowerFeature ? Feature.field_13561 : Feature.field_13572;
@@ -138,45 +127,6 @@ public abstract class Biome {
 		} else {
 			throw new IllegalStateException("You are missing parameters to build a proper biome for " + this.getClass().getSimpleName() + "\n" + settings);
 		}
-	}
-
-	protected void addDefaultFeatures() {
-		this.addFeature(
-			GenerationStep.Feature.field_13172,
-			configureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004F, MineshaftFeature.Type.NORMAL), Decorator.NOPE, DecoratorConfig.DEFAULT)
-		);
-		this.addFeature(
-			GenerationStep.Feature.field_13173,
-			configureFeature(Feature.VILLAGE, new VillageFeatureConfig(0, VillageGenerator.Type.OAK), Decorator.NOPE, DecoratorConfig.DEFAULT)
-		);
-		this.addFeature(
-			GenerationStep.Feature.field_13173,
-			configureFeature(Feature.PILLAGER_OUTPOST, new PillagerOutpostFeatureConfig(0.004), Decorator.NOPE, DecoratorConfig.DEFAULT)
-		);
-		this.addFeature(GenerationStep.Feature.field_13172, configureFeature(Feature.STRONGHOLD, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT));
-		this.addFeature(GenerationStep.Feature.field_13173, configureFeature(Feature.SWAMP_HUT, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT));
-		this.addFeature(GenerationStep.Feature.field_13173, configureFeature(Feature.DESERT_PYRAMID, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT));
-		this.addFeature(GenerationStep.Feature.field_13173, configureFeature(Feature.JUNGLE_TEMPLE, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT));
-		this.addFeature(GenerationStep.Feature.field_13173, configureFeature(Feature.IGLOO, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT));
-		this.addFeature(
-			GenerationStep.Feature.field_13173, configureFeature(Feature.SHIPWRECK, new ShipwreckFeatureConfig(false), Decorator.NOPE, DecoratorConfig.DEFAULT)
-		);
-		this.addFeature(GenerationStep.Feature.field_13173, configureFeature(Feature.OCEAN_MONUMENT, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT));
-		this.addFeature(
-			GenerationStep.Feature.field_13173, configureFeature(Feature.WOODLAND_MANSION, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT)
-		);
-		this.addFeature(
-			GenerationStep.Feature.field_13173,
-			configureFeature(Feature.OCEAN_RUIN, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeTemperature.COLD, 0.3F, 0.9F), Decorator.NOPE, DecoratorConfig.DEFAULT)
-		);
-		this.addFeature(
-			GenerationStep.Feature.field_13172,
-			configureFeature(Feature.BURIED_TREASURE, new BuriedTreasureFeatureConfig(0.01F), Decorator.NOPE, DecoratorConfig.DEFAULT)
-		);
-		this.addFeature(
-			GenerationStep.Feature.field_13173,
-			configureFeature(Feature.NEW_VILLAGE, new NewVillageFeatureConfig("village/plains/town_centers", 6), Decorator.NOPE, DecoratorConfig.DEFAULT)
-		);
 	}
 
 	public boolean hasParent() {
@@ -227,7 +177,7 @@ public abstract class Biome {
 		if (this.getTemperature(blockPos) >= 0.15F) {
 			return false;
 		} else {
-			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.field_9282, blockPos) < 10) {
+			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.BLOCK_LIGHT, blockPos) < 10) {
 				BlockState blockState = viewableWorld.getBlockState(blockPos);
 				FluidState fluidState = viewableWorld.getFluidState(blockPos);
 				if (fluidState.getFluid() == Fluids.WATER && blockState.getBlock() instanceof FluidBlock) {
@@ -253,7 +203,7 @@ public abstract class Biome {
 		if (this.getTemperature(blockPos) >= 0.15F) {
 			return false;
 		} else {
-			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.field_9282, blockPos) < 10) {
+			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.BLOCK_LIGHT, blockPos) < 10) {
 				BlockState blockState = viewableWorld.getBlockState(blockPos);
 				if (blockState.isAir() && Blocks.field_10477.getDefaultState().canPlaceAt(viewableWorld, blockPos)) {
 					return true;
@@ -280,7 +230,7 @@ public abstract class Biome {
 		return (List<ConfiguredCarver<?>>)this.carvers.computeIfAbsent(carver, carverx -> Lists.newArrayList());
 	}
 
-	public <C extends FeatureConfig> void addStructureFeature(StructureFeature<C> structureFeature, C featureConfig) {
+	public <C extends FeatureConfig> void method_8710(StructureFeature<C> structureFeature, C featureConfig) {
 		this.structureFeatures.put(structureFeature, featureConfig);
 	}
 
@@ -289,7 +239,7 @@ public abstract class Biome {
 	}
 
 	@Nullable
-	public <C extends FeatureConfig> C getStructureFeatureConfig(StructureFeature<C> structureFeature) {
+	public <C extends FeatureConfig> C method_8706(StructureFeature<C> structureFeature) {
 		return (C)this.structureFeatures.get(structureFeature);
 	}
 
@@ -302,13 +252,18 @@ public abstract class Biome {
 	}
 
 	public void generateFeatureStep(
-		GenerationStep.Feature feature, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, IWorld iWorld, long l, class_2919 arg, BlockPos blockPos
+		GenerationStep.Feature feature,
+		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		IWorld iWorld,
+		long l,
+		ChunkRandom chunkRandom,
+		BlockPos blockPos
 	) {
 		int i = 0;
 
 		for (ConfiguredFeature<?> configuredFeature : (List)this.features.get(feature)) {
-			arg.method_12664(l, i, feature.ordinal());
-			configuredFeature.generate(iWorld, chunkGenerator, arg, blockPos);
+			chunkRandom.setFeatureSeed(l, i, feature.ordinal());
+			configuredFeature.generate(iWorld, chunkGenerator, chunkRandom, blockPos);
 			i++;
 		}
 	}
@@ -387,8 +342,8 @@ public abstract class Biome {
 		return this.surfaceBuilder;
 	}
 
-	public SurfaceConfig getSurfaceConfig() {
-		return this.surfaceBuilder.getConfig();
+	public SurfaceConfig method_8722() {
+		return this.surfaceBuilder.method_15197();
 	}
 
 	@Nullable
@@ -468,7 +423,7 @@ public abstract class Biome {
 		@Nullable
 		private String parent;
 
-		public <SC extends SurfaceConfig> Biome.Settings configureSurfaceBuilder(SurfaceBuilder<SC> surfaceBuilder, SC surfaceConfig) {
+		public <SC extends SurfaceConfig> Biome.Settings method_8737(SurfaceBuilder<SC> surfaceBuilder, SC surfaceConfig) {
 			this.surfaceBuilder = new ConfiguredSurfaceBuilder<>(surfaceBuilder, surfaceConfig);
 			return this;
 		}
@@ -551,11 +506,11 @@ public abstract class Biome {
 	}
 
 	public static class SpawnEntry extends WeightedPicker.Entry {
-		public EntityType<? extends MobEntity> type;
+		public EntityType<?> type;
 		public int minGroupSize;
 		public int maxGroupSize;
 
-		public SpawnEntry(EntityType<? extends MobEntity> entityType, int i, int j, int k) {
+		public SpawnEntry(EntityType<?> entityType, int i, int j, int k) {
 			super(i);
 			this.type = entityType;
 			this.minGroupSize = j;

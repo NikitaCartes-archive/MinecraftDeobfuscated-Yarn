@@ -16,7 +16,7 @@ public class WorkingGui extends Gui implements ProgressListener {
 	private boolean done;
 
 	@Override
-	public boolean canClose() {
+	public boolean doesEscapeKeyClose() {
 		return false;
 	}
 
@@ -43,7 +43,7 @@ public class WorkingGui extends Gui implements ProgressListener {
 	}
 
 	@Override
-	public void method_15411() {
+	public void setDone() {
 		this.done = true;
 	}
 

@@ -8,7 +8,7 @@ import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.sortme.Vector3f;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 
@@ -22,20 +22,18 @@ public class ItemModelGenerator {
 
 		for (int i = 0; i < LAYERS.size(); i++) {
 			String string = (String)LAYERS.get(i);
-			if (!jsonUnbakedModel.method_3432(string)) {
+			if (!jsonUnbakedModel.textureExists(string)) {
 				break;
 			}
 
-			String string2 = jsonUnbakedModel.method_3436(string);
+			String string2 = jsonUnbakedModel.resolveTexture(string);
 			map.put(string, string2);
 			Sprite sprite = (Sprite)function.apply(new Identifier(string2));
 			list.addAll(this.method_3480(i, string, sprite));
 		}
 
-		map.put("particle", jsonUnbakedModel.method_3432("particle") ? jsonUnbakedModel.method_3436("particle") : (String)map.get("layer0"));
-		JsonUnbakedModel jsonUnbakedModel2 = new JsonUnbakedModel(
-			null, list, map, false, false, jsonUnbakedModel.getTransformations(), jsonUnbakedModel.getOverrides()
-		);
+		map.put("particle", jsonUnbakedModel.textureExists("particle") ? jsonUnbakedModel.resolveTexture("particle") : (String)map.get("layer0"));
+		JsonUnbakedModel jsonUnbakedModel2 = new JsonUnbakedModel(null, list, map, false, false, jsonUnbakedModel.method_3443(), jsonUnbakedModel.getOverrides());
 		jsonUnbakedModel2.id = jsonUnbakedModel.id;
 		return jsonUnbakedModel2;
 	}

@@ -1,6 +1,6 @@
 package net.minecraft.item;
 
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,7 +19,7 @@ public class FoodItem extends Item {
 	private final float saturationModifier;
 	private final boolean wolfFood;
 	private boolean alwaysConsumable;
-	private boolean field_7994;
+	private boolean consumeQuickly;
 	private StatusEffectInstance statusEffect;
 	private float statusEffectChance;
 
@@ -41,7 +41,7 @@ public class FoodItem extends Item {
 			this.onConsumed(itemStack, world, playerEntity);
 			playerEntity.incrementStat(Stats.field_15372.method_14956(this));
 			if (playerEntity instanceof ServerPlayerEntity) {
-				CriterionCriterions.CONSUME_ITEM.handle((ServerPlayerEntity)playerEntity, itemStack);
+				Criterions.CONSUME_ITEM.handle((ServerPlayerEntity)playerEntity, itemStack);
 			}
 		}
 
@@ -50,14 +50,14 @@ public class FoodItem extends Item {
 	}
 
 	protected void onConsumed(ItemStack itemStack, World world, PlayerEntity playerEntity) {
-		if (!world.isRemote && this.statusEffect != null && world.random.nextFloat() < this.statusEffectChance) {
+		if (!world.isClient && this.statusEffect != null && world.random.nextFloat() < this.statusEffectChance) {
 			playerEntity.addPotionEffect(new StatusEffectInstance(this.statusEffect));
 		}
 	}
 
 	@Override
 	public int getMaxUseTime(ItemStack itemStack) {
-		return this.field_7994 ? 16 : 32;
+		return this.consumeQuickly ? 16 : 32;
 	}
 
 	@Override
@@ -94,13 +94,13 @@ public class FoodItem extends Item {
 		return this;
 	}
 
-	public FoodItem method_7828() {
+	public FoodItem setAlwaysConsumable() {
 		this.alwaysConsumable = true;
 		return this;
 	}
 
-	public FoodItem method_7829() {
-		this.field_7994 = true;
+	public FoodItem setConsumeQuickly() {
+		this.consumeQuickly = true;
 		return this;
 	}
 }

@@ -2,16 +2,28 @@ package net.minecraft.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.api.EnvironmentInterface;
+import net.fabricmc.api.EnvironmentInterfaces;
+import net.minecraft.class_3856;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-public class EnderEyeEntity extends Entity {
+@EnvironmentInterfaces({@EnvironmentInterface(
+		value = EnvType.CLIENT,
+		itf = class_3856.class
+	)})
+public class EnderEyeEntity extends Entity implements class_3856 {
+	private static final TrackedData<ItemStack> field_17080 = DataTracker.registerData(EnderEyeEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 	private double field_7619;
 	private double field_7618;
 	private double field_7617;
@@ -29,8 +41,25 @@ public class EnderEyeEntity extends Entity {
 		this.setPosition(d, e, f);
 	}
 
+	public void method_16933(ItemStack itemStack) {
+		if (itemStack.getItem() != Items.field_8449 || itemStack.hasTag()) {
+			this.getDataTracker().set(field_17080, SystemUtil.consume(itemStack.copy(), itemStackx -> itemStackx.setAmount(1)));
+		}
+	}
+
+	private ItemStack method_16935() {
+		return this.getDataTracker().get(field_17080);
+	}
+
+	@Override
+	public ItemStack method_7495() {
+		ItemStack itemStack = this.method_16935();
+		return itemStack.isEmpty() ? new ItemStack(Items.field_8449) : itemStack;
+	}
+
 	@Override
 	protected void initDataTracker() {
+		this.getDataTracker().startTracking(field_17080, ItemStack.EMPTY);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -112,7 +141,7 @@ public class EnderEyeEntity extends Entity {
 
 		this.pitch = MathHelper.lerp(0.2F, this.prevPitch, this.pitch);
 		this.yaw = MathHelper.lerp(0.2F, this.prevYaw, this.yaw);
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			double d = this.field_7619 - this.x;
 			double e = this.field_7617 - this.z;
 			float g = (float)Math.sqrt(d * d + e * e);
@@ -159,14 +188,14 @@ public class EnderEyeEntity extends Entity {
 				);
 		}
 
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			this.setPosition(this.x, this.y, this.z);
 			this.field_7620++;
-			if (this.field_7620 > 80 && !this.world.isRemote) {
+			if (this.field_7620 > 80 && !this.world.isClient) {
 				this.playSoundAtEntity(SoundEvents.field_15210, 1.0F, 1.0F);
 				this.invalidate();
 				if (this.field_7621) {
-					this.world.spawnEntity(new ItemEntity(this.world, this.x, this.y, this.z, new ItemStack(Items.field_8449)));
+					this.world.spawnEntity(new ItemEntity(this.world, this.x, this.y, this.z, this.method_7495()));
 				} else {
 					this.world.fireWorldEvent(2003, new BlockPos(this), 0);
 				}
@@ -176,10 +205,16 @@ public class EnderEyeEntity extends Entity {
 
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		ItemStack itemStack = this.method_16935();
+		if (!itemStack.isEmpty()) {
+			compoundTag.put("Item", itemStack.toTag(new CompoundTag()));
+		}
 	}
 
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		ItemStack itemStack = ItemStack.fromTag(compoundTag.getCompound("Item"));
+		this.method_16933(itemStack);
 	}
 
 	@Override

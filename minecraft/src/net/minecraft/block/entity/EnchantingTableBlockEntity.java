@@ -114,13 +114,14 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Container
 		return (TextComponent)(this.customName != null ? this.customName : new TranslatableTextComponent("container.enchant"));
 	}
 
-	@Override
-	public boolean hasCustomName() {
-		return this.customName != null;
-	}
-
 	public void setCustomName(@Nullable TextComponent textComponent) {
 		this.customName = textComponent;
+	}
+
+	@Nullable
+	@Override
+	public TextComponent getCustomName() {
+		return this.customName;
 	}
 
 	@Override

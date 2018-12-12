@@ -12,8 +12,8 @@ import net.minecraft.container.Container;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemContainer;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sortme.ItemScatterer;
 import net.minecraft.stat.Stats;
@@ -42,8 +42,8 @@ public class DispenserBlock extends BlockWithEntity {
 		new Object2ObjectOpenHashMap<>(), object2ObjectOpenHashMap -> object2ObjectOpenHashMap.defaultReturnValue(new ItemDispenserBehavior())
 	);
 
-	public static void registerBehavior(ItemContainer itemContainer, DispenserBehavior dispenserBehavior) {
-		BEHAVIORS.put(itemContainer.getItem(), dispenserBehavior);
+	public static void registerBehavior(ItemProvider itemProvider, DispenserBehavior dispenserBehavior) {
+		BEHAVIORS.put(itemProvider.getItem(), dispenserBehavior);
 	}
 
 	protected DispenserBlock(Block.Settings settings) {
@@ -57,19 +57,19 @@ public class DispenserBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
-		if (world.isRemote) {
+		if (world.isClient) {
 			return true;
 		} else {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof DispenserBlockEntity) {
 				playerEntity.openInventory((DispenserBlockEntity)blockEntity);
 				if (blockEntity instanceof DropperBlockEntity) {
-					playerEntity.method_7281(Stats.field_15367);
+					playerEntity.increaseStat(Stats.field_15367);
 				} else {
-					playerEntity.method_7281(Stats.field_15371);
+					playerEntity.increaseStat(Stats.field_15371);
 				}
 			}
 
@@ -110,7 +110,7 @@ public class DispenserBlock extends BlockWithEntity {
 
 	@Override
 	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			this.method_10012(world, blockPos);
 		}
 	}
@@ -122,7 +122,7 @@ public class DispenserBlock extends BlockWithEntity {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(field_10918, itemPlacementContext.method_7715().getOpposite());
+		return this.getDefaultState().with(field_10918, itemPlacementContext.getPlayerFacing().getOpposite());
 	}
 
 	@Override
@@ -167,8 +167,8 @@ public class DispenserBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public RenderTypeBlock getRenderType(BlockState blockState) {
-		return RenderTypeBlock.MODEL;
+	public BlockRenderType method_9604(BlockState blockState) {
+		return BlockRenderType.field_11458;
 	}
 
 	@Override
@@ -178,7 +178,7 @@ public class DispenserBlock extends BlockWithEntity {
 
 	@Override
 	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.method_10345(blockState.get(field_10918)));
+		return blockState.applyRotation(mirror.getRotation(blockState.get(field_10918)));
 	}
 
 	@Override

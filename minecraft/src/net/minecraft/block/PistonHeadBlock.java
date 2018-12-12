@@ -74,7 +74,7 @@ public class PistonHeadBlock extends FacingBlock {
 
 	@Override
 	public VoxelShape getBoundingShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return VoxelShapes.method_1084(this.method_11520(blockState), this.method_11519(blockState));
+		return VoxelShapes.union(this.method_11520(blockState), this.method_11519(blockState));
 	}
 
 	private VoxelShape method_11519(BlockState blockState) {
@@ -103,8 +103,8 @@ public class PistonHeadBlock extends FacingBlock {
 
 	@Override
 	public void onBreak(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
-		if (!world.isRemote && playerEntity.abilities.creativeMode) {
-			BlockPos blockPos2 = blockPos.method_10093(((Direction)blockState.get(field_10927)).getOpposite());
+		if (!world.isClient && playerEntity.abilities.creativeMode) {
+			BlockPos blockPos2 = blockPos.offset(((Direction)blockState.get(field_10927)).getOpposite());
 			Block block = world.getBlockState(blockPos2).getBlock();
 			if (block == Blocks.field_10560 || block == Blocks.field_10615) {
 				world.clearBlockState(blockPos2);
@@ -119,7 +119,7 @@ public class PistonHeadBlock extends FacingBlock {
 		if (blockState.getBlock() != blockState2.getBlock()) {
 			super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
 			Direction direction = ((Direction)blockState.get(field_10927)).getOpposite();
-			blockPos = blockPos.method_10093(direction);
+			blockPos = blockPos.offset(direction);
 			BlockState blockState3 = world.getBlockState(blockPos);
 			if ((blockState3.getBlock() == Blocks.field_10560 || blockState3.getBlock() == Blocks.field_10615) && (Boolean)blockState3.get(PistonBlock.field_12191)) {
 				dropStacks(blockState3, world, blockPos);
@@ -129,22 +129,24 @@ public class PistonHeadBlock extends FacingBlock {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		return direction.getOpposite() == blockState.get(field_10927) && !blockState.canPlaceAt(iWorld, blockPos)
 			? Blocks.field_10124.getDefaultState()
-			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		Block block = viewableWorld.getBlockState(blockPos.method_10093(((Direction)blockState.get(field_10927)).getOpposite())).getBlock();
+		Block block = viewableWorld.getBlockState(blockPos.offset(((Direction)blockState.get(field_10927)).getOpposite())).getBlock();
 		return block == Blocks.field_10560 || block == Blocks.field_10615 || block == Blocks.field_10008;
 	}
 
 	@Override
 	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
 		if (blockState.canPlaceAt(world, blockPos)) {
-			BlockPos blockPos3 = blockPos.method_10093(((Direction)blockState.get(field_10927)).getOpposite());
+			BlockPos blockPos3 = blockPos.offset(((Direction)blockState.get(field_10927)).getOpposite());
 			world.getBlockState(blockPos3).neighborUpdate(world, blockPos3, block, blockPos2);
 		}
 	}
@@ -162,7 +164,7 @@ public class PistonHeadBlock extends FacingBlock {
 
 	@Override
 	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.method_10345(blockState.get(field_10927)));
+		return blockState.applyRotation(mirror.getRotation(blockState.get(field_10927)));
 	}
 
 	@Override

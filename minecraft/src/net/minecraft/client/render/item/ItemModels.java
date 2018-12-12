@@ -11,7 +11,7 @@ import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemContainer;
+import net.minecraft.item.ItemProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.block.BlockItem;
 
@@ -25,8 +25,8 @@ public class ItemModels {
 		this.modelManager = bakedModelManager;
 	}
 
-	public Sprite getSprite(ItemContainer itemContainer) {
-		return this.getSprite(new ItemStack(itemContainer));
+	public Sprite getSprite(ItemProvider itemProvider) {
+		return this.getSprite(new ItemStack(itemProvider));
 	}
 
 	public Sprite getSprite(ItemStack itemStack) {

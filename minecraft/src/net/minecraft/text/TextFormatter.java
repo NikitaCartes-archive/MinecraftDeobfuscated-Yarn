@@ -26,7 +26,7 @@ public class TextFormatter {
 	public static TextComponent method_10881(@Nullable ServerCommandSource serverCommandSource, TextComponent textComponent, @Nullable Entity entity) throws CommandSyntaxException {
 		TextComponent textComponent2 = textComponent instanceof class_2566
 			? ((class_2566)textComponent).method_10890(serverCommandSource, entity)
-			: textComponent.cloneShallow();
+			: textComponent.copyShallow();
 
 		for (TextComponent textComponent3 : textComponent.getChildren()) {
 			textComponent2.append(method_10881(serverCommandSource, textComponent3, entity));

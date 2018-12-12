@@ -14,7 +14,7 @@ public class KickCommand {
 			ServerCommandManager.literal("kick")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
 				.then(
-					ServerCommandManager.argument("targets", EntityArgumentType.method_9308())
+					ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
 						.executes(
 							commandContext -> method_13411(
 									commandContext.getSource(), EntityArgumentType.method_9312(commandContext, "targets"), new TranslatableTextComponent("multiplayer.disconnect.kicked")
@@ -36,7 +36,7 @@ public class KickCommand {
 
 	private static int method_13411(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, TextComponent textComponent) {
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
-			serverPlayerEntity.networkHandler.method_14367(textComponent);
+			serverPlayerEntity.networkHandler.disconnect(textComponent);
 			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.kick.success", serverPlayerEntity.getDisplayName(), textComponent), true);
 		}
 

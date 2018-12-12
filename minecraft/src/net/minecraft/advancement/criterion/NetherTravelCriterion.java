@@ -9,7 +9,7 @@ import com.google.gson.JsonObject;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.advancement.ServerAdvancementManager;
+import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -19,7 +19,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class NetherTravelCriterion implements Criterion<NetherTravelCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("nether_travel");
-	private final Map<ServerAdvancementManager, NetherTravelCriterion.Handler> handlers = Maps.<ServerAdvancementManager, NetherTravelCriterion.Handler>newHashMap();
+	private final Map<PlayerAdvancementTracker, NetherTravelCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, NetherTravelCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -27,34 +27,34 @@ public class NetherTravelCriterion implements Criterion<NetherTravelCriterion.Co
 	}
 
 	@Override
-	public void addCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<NetherTravelCriterion.Conditions> conditionsContainer
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<NetherTravelCriterion.Conditions> conditionsContainer
 	) {
-		NetherTravelCriterion.Handler handler = (NetherTravelCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		NetherTravelCriterion.Handler handler = (NetherTravelCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new NetherTravelCriterion.Handler(serverAdvancementManager);
-			this.handlers.put(serverAdvancementManager, handler);
+			handler = new NetherTravelCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void removeCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<NetherTravelCriterion.Conditions> conditionsContainer
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<NetherTravelCriterion.Conditions> conditionsContainer
 	) {
-		NetherTravelCriterion.Handler handler = (NetherTravelCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		NetherTravelCriterion.Handler handler = (NetherTravelCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(serverAdvancementManager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void removePlayer(ServerAdvancementManager serverAdvancementManager) {
-		this.handlers.remove(serverAdvancementManager);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
 	public NetherTravelCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -96,7 +96,7 @@ public class NetherTravelCriterion implements Criterion<NetherTravelCriterion.Co
 		}
 
 		@Override
-		public JsonElement method_807() {
+		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("entered", this.entered.serialize());
 			jsonObject.add("exited", this.exited.serialize());
@@ -106,11 +106,11 @@ public class NetherTravelCriterion implements Criterion<NetherTravelCriterion.Co
 	}
 
 	static class Handler {
-		private final ServerAdvancementManager manager;
+		private final PlayerAdvancementTracker field_9720;
 		private final Set<Criterion.ConditionsContainer<NetherTravelCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<NetherTravelCriterion.Conditions>>newHashSet();
 
-		public Handler(ServerAdvancementManager serverAdvancementManager) {
-			this.manager = serverAdvancementManager;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.field_9720 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
@@ -140,7 +140,7 @@ public class NetherTravelCriterion implements Criterion<NetherTravelCriterion.Co
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<NetherTravelCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
+					conditionsContainerx.apply(this.field_9720);
 				}
 			}
 		}

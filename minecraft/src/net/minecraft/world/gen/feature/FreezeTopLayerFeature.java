@@ -12,8 +12,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class FreezeTopLayerFeature extends Feature<DefaultFeatureConfig> {
 	public FreezeTopLayerFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
@@ -21,7 +20,7 @@ public class FreezeTopLayerFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean method_13978(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		BlockPos.Mutable mutable2 = new BlockPos.Mutable();
@@ -32,7 +31,7 @@ public class FreezeTopLayerFeature extends Feature<DefaultFeatureConfig> {
 				int l = blockPos.getZ() + j;
 				int m = iWorld.getTop(Heightmap.Type.MOTION_BLOCKING, k, l);
 				mutable.set(k, m, l);
-				mutable2.set(mutable).method_10104(Direction.DOWN, 1);
+				mutable2.set(mutable).setOffset(Direction.DOWN, 1);
 				Biome biome = iWorld.getBiome(mutable);
 				if (biome.canSetSnow(iWorld, mutable2, false)) {
 					iWorld.setBlockState(mutable2, Blocks.field_10295.getDefaultState(), 2);

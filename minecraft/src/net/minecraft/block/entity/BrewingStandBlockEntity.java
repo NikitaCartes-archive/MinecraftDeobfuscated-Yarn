@@ -24,9 +24,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 public class BrewingStandBlockEntity extends LockableContainerBlockEntity implements SidedInventory, Tickable {
-	private static final int[] SLOTS_UP = new int[]{3};
-	private static final int[] SLOTS_DOWN = new int[]{0, 1, 2, 3};
-	private static final int[] SLOTS_SIDE = new int[]{0, 1, 2, 4};
+	private static final int[] TOP_SLOTS = new int[]{3};
+	private static final int[] BOTTOM_SLOTS = new int[]{0, 1, 2, 3};
+	private static final int[] SIDE_SLOTS = new int[]{0, 1, 2, 4};
 	private DefaultedList<ItemStack> inventory = DefaultedList.create(5, ItemStack.EMPTY);
 	private int brewTime;
 	private boolean[] field_11883;
@@ -43,9 +43,10 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 		return (TextComponent)(this.customName != null ? this.customName : new TranslatableTextComponent("container.brewing"));
 	}
 
+	@Nullable
 	@Override
-	public boolean hasCustomName() {
-		return this.customName != null;
+	public TextComponent getCustomName() {
+		return this.customName;
 	}
 
 	public void setCustomName(@Nullable TextComponent textComponent) {
@@ -100,7 +101,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 			this.markDirty();
 		}
 
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			boolean[] bls = this.method_11028();
 			if (!Arrays.equals(bls, this.field_11883)) {
 				this.field_11883 = bls;
@@ -157,8 +158,8 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 
 		itemStack.subtractAmount(1);
 		BlockPos blockPos = this.getPos();
-		if (itemStack.getItem().hasContainerItem()) {
-			ItemStack itemStack2 = new ItemStack(itemStack.getItem().getContainerItem());
+		if (itemStack.getItem().hasRecipeRemainder()) {
+			ItemStack itemStack2 = new ItemStack(itemStack.getItem().getRecipeRemainder());
 			if (itemStack.isEmpty()) {
 				itemStack = itemStack2;
 			} else {
@@ -219,23 +220,10 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	}
 
 	@Override
-	public int getInvMaxStackAmount() {
-		return 64;
-	}
-
-	@Override
 	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
 		return this.world.getBlockEntity(this.pos) != this
 			? false
 			: !(playerEntity.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) > 64.0);
-	}
-
-	@Override
-	public void onInvOpen(PlayerEntity playerEntity) {
-	}
-
-	@Override
-	public void onInvClose(PlayerEntity playerEntity) {
 	}
 
 	@Override
@@ -251,21 +239,21 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	}
 
 	@Override
-	public int[] method_5494(Direction direction) {
+	public int[] getInvAvailableSlots(Direction direction) {
 		if (direction == Direction.UP) {
-			return SLOTS_UP;
+			return TOP_SLOTS;
 		} else {
-			return direction == Direction.DOWN ? SLOTS_DOWN : SLOTS_SIDE;
+			return direction == Direction.DOWN ? BOTTOM_SLOTS : SIDE_SLOTS;
 		}
 	}
 
 	@Override
-	public boolean method_5492(int i, ItemStack itemStack, @Nullable Direction direction) {
+	public boolean canInsertInvStack(int i, ItemStack itemStack, @Nullable Direction direction) {
 		return this.isValidInvStack(i, itemStack);
 	}
 
 	@Override
-	public boolean method_5493(int i, ItemStack itemStack, Direction direction) {
+	public boolean canExtractInvStack(int i, ItemStack itemStack, Direction direction) {
 		return i == 3 ? itemStack.getItem() == Items.field_8469 : true;
 	}
 

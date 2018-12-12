@@ -38,7 +38,7 @@ public class ClientChunkManager extends ChunkManager {
 	public ClientChunkManager(World world) {
 		this.world = world;
 		this.emptyChunk = new EmptyChunk(world, 0, 0);
-		this.lightingProvider = new LightingProvider(this, world.getDimension().method_12451());
+		this.lightingProvider = new LightingProvider(this, true, world.getDimension().hasSkyLight());
 	}
 
 	private static boolean method_16024(int i, int j, int k, int l, int m) {
@@ -65,7 +65,7 @@ public class ClientChunkManager extends ChunkManager {
 	}
 
 	@Override
-	public BlockView method_16399() {
+	public BlockView getWorldAsView() {
 		return this.world;
 	}
 
@@ -89,7 +89,7 @@ public class ClientChunkManager extends ChunkManager {
 
 			for (int m = 0; m < chunkSections.length; m++) {
 				ChunkSection chunkSection = chunkSections[m];
-				lightingProvider.method_15551(i, m, j, chunkSection == WorldChunk.EMPTY_SECTION || chunkSection.isEmpty());
+				lightingProvider.scheduleChunkLightUpdate(i, m, j, chunkSection == WorldChunk.EMPTY_SECTION || chunkSection.isEmpty());
 			}
 		}
 	}
@@ -101,7 +101,7 @@ public class ClientChunkManager extends ChunkManager {
 
 	private void method_16026() {
 		int i = this.field_16246.field_16253;
-		int j = Math.max(2, this.client.options.viewDistance + -2) + 2;
+		int j = Math.max(2, this.client.field_1690.viewDistance + -2) + 2;
 		if (i != j) {
 			ClientChunkManager.class_3681 lv = new ClientChunkManager.class_3681(j);
 
@@ -148,8 +148,8 @@ public class ClientChunkManager extends ChunkManager {
 	}
 
 	@Override
-	public void method_12247(LightType lightType, int i, int j, int k) {
-		MinecraftClient.getInstance().renderer.method_8571(i, j, k);
+	public void onLightUpdate(LightType lightType, int i, int j, int k) {
+		MinecraftClient.getInstance().field_1769.scheduleChunkRender(i, j, k);
 	}
 
 	@Environment(EnvType.CLIENT)

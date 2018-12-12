@@ -22,24 +22,24 @@ import org.apache.logging.log4j.Logger;
 public class DataCache {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Path root;
-	private final Path field_11286;
-	private int field_11284;
-	private final Map<Path, String> field_11282 = Maps.<Path, String>newHashMap();
-	private final Map<Path, String> field_11283 = Maps.<Path, String>newHashMap();
-	private final Set<Path> field_16743 = Sets.<Path>newHashSet();
+	private final Path recordFile;
+	private int unchanged;
+	private final Map<Path, String> oldSha1 = Maps.<Path, String>newHashMap();
+	private final Map<Path, String> newSha1 = Maps.<Path, String>newHashMap();
+	private final Set<Path> ignores = Sets.<Path>newHashSet();
 
 	public DataCache(Path path, String string) throws IOException {
 		this.root = path;
 		Path path2 = path.resolve(".cache");
 		Files.createDirectories(path2);
-		this.field_11286 = path2.resolve(string);
-		this.paths().forEach(pathx -> {
-			String var10000 = (String)this.field_11282.put(pathx, "");
+		this.recordFile = path2.resolve(string);
+		this.files().forEach(pathx -> {
+			String var10000 = (String)this.oldSha1.put(pathx, "");
 		});
-		if (Files.isReadable(this.field_11286)) {
-			IOUtils.readLines(Files.newInputStream(this.field_11286), Charsets.UTF_8).forEach(stringx -> {
+		if (Files.isReadable(this.recordFile)) {
+			IOUtils.readLines(Files.newInputStream(this.recordFile), Charsets.UTF_8).forEach(stringx -> {
 				int i = stringx.indexOf(32);
-				this.field_11282.put(path.resolve(stringx.substring(i + 1)), stringx.substring(0, i));
+				this.oldSha1.put(path.resolve(stringx.substring(i + 1)), stringx.substring(0, i));
 			});
 		}
 	}
@@ -49,14 +49,14 @@ public class DataCache {
 
 		Writer writer;
 		try {
-			writer = Files.newBufferedWriter(this.field_11286);
+			writer = Files.newBufferedWriter(this.recordFile);
 		} catch (IOException var3) {
-			LOGGER.warn("Unable write cachefile {}: {}", this.field_11286, var3.toString());
+			LOGGER.warn("Unable write cachefile {}: {}", this.recordFile, var3.toString());
 			return;
 		}
 
 		IOUtils.writeLines(
-			(Collection<?>)this.field_11283
+			(Collection<?>)this.newSha1
 				.entrySet()
 				.stream()
 				.map(entry -> (String)entry.getValue() + ' ' + this.root.relativize((Path)entry.getKey()))
@@ -65,32 +65,32 @@ public class DataCache {
 			writer
 		);
 		writer.close();
-		LOGGER.debug("Caching: cache hits: {}, created: {} removed: {}", this.field_11284, this.field_11283.size() - this.field_11284, this.field_11282.size());
+		LOGGER.debug("Caching: cache hits: {}, created: {} removed: {}", this.unchanged, this.newSha1.size() - this.unchanged, this.oldSha1.size());
 	}
 
 	@Nullable
-	public String method_10323(Path path) {
-		return (String)this.field_11282.get(path);
+	public String getOldSha1(Path path) {
+		return (String)this.oldSha1.get(path);
 	}
 
-	public void method_10325(Path path, String string) {
-		this.field_11283.put(path, string);
-		if (Objects.equals(this.field_11282.remove(path), string)) {
-			this.field_11284++;
+	public void updateSha1(Path path, String string) {
+		this.newSha1.put(path, string);
+		if (Objects.equals(this.oldSha1.remove(path), string)) {
+			this.unchanged++;
 		}
 	}
 
 	public boolean contains(Path path) {
-		return this.field_11282.containsKey(path);
+		return this.oldSha1.containsKey(path);
 	}
 
-	public void method_16674(Path path) {
-		this.field_16743.add(path);
+	public void ignore(Path path) {
+		this.ignores.add(path);
 	}
 
 	private void deleteAll() throws IOException {
-		this.paths().forEach(path -> {
-			if (this.contains(path) && !this.field_16743.contains(path)) {
+		this.files().forEach(path -> {
+			if (this.contains(path) && !this.ignores.contains(path)) {
 				try {
 					Files.delete(path);
 				} catch (IOException var3) {
@@ -100,7 +100,7 @@ public class DataCache {
 		});
 	}
 
-	private Stream<Path> paths() throws IOException {
-		return Files.walk(this.root).filter(path -> !Objects.equals(this.field_11286, path) && !Files.isDirectory(path, new LinkOption[0]));
+	private Stream<Path> files() throws IOException {
+		return Files.walk(this.root).filter(path -> !Objects.equals(this.recordFile, path) && !Files.isDirectory(path, new LinkOption[0]));
 	}
 }

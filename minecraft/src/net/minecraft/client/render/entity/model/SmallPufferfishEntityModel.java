@@ -3,12 +3,11 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class SmallPufferfishEntityModel extends Model {
+public class SmallPufferfishEntityModel<T extends Entity> extends EntityModel<T> {
 	private final Cuboid field_3505;
 	private final Cuboid field_3507;
 	private final Cuboid field_3506;
@@ -41,8 +40,8 @@ public class SmallPufferfishEntityModel extends Model {
 	}
 
 	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		this.setRotationAngles(f, g, h, i, j, k, entity);
+	public void render(T entity, float f, float g, float h, float i, float j, float k) {
+		this.setAngles(entity, f, g, h, i, j, k);
 		this.field_3505.render(k);
 		this.field_3507.render(k);
 		this.field_3506.render(k);
@@ -52,7 +51,7 @@ public class SmallPufferfishEntityModel extends Model {
 	}
 
 	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
+	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
 		this.field_3504.roll = -0.2F + 0.4F * MathHelper.sin(h * 0.2F);
 		this.field_3503.roll = 0.2F - 0.4F * MathHelper.sin(h * 0.2F);
 	}

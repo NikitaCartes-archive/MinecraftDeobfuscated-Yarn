@@ -12,8 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class HugeRedMushroomFeature extends Feature<DefaultFeatureConfig> {
 	public HugeRedMushroomFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
@@ -21,7 +20,7 @@ public class HugeRedMushroomFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean method_13398(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		int i = random.nextInt(3) + 4;
 		if (random.nextInt(12) == 0) {
@@ -70,8 +69,8 @@ public class HugeRedMushroomFeature extends Feature<DefaultFeatureConfig> {
 							boolean bl6 = bl3 || bl4;
 							if (l >= i || bl5 != bl6) {
 								mutable.set(blockPos).method_10100(o, l, p);
-								if (!iWorld.getBlockState(mutable).method_11598(iWorld, mutable)) {
-									this.method_13153(
+								if (!iWorld.getBlockState(mutable).isFullOpaque(iWorld, mutable)) {
+									this.setBlockState(
 										iWorld,
 										mutable,
 										blockState2.with(MushroomBlock.field_11166, Boolean.valueOf(l >= i - 1))
@@ -92,9 +91,9 @@ public class HugeRedMushroomFeature extends Feature<DefaultFeatureConfig> {
 					.with(MushroomBlock.field_11169, Boolean.valueOf(false));
 
 				for (int m = 0; m < i; m++) {
-					mutable.set(blockPos).method_10104(Direction.UP, m);
-					if (!iWorld.getBlockState(mutable).method_11598(iWorld, mutable)) {
-						this.method_13153(iWorld, mutable, blockState3);
+					mutable.set(blockPos).setOffset(Direction.UP, m);
+					if (!iWorld.getBlockState(mutable).isFullOpaque(iWorld, mutable)) {
+						this.setBlockState(iWorld, mutable, blockState3);
 					}
 				}
 

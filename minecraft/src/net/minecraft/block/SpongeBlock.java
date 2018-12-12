@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import com.google.common.collect.Lists;
 import java.util.Queue;
-import net.minecraft.class_2263;
 import net.minecraft.class_3545;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.fluid.FluidState;
@@ -48,12 +47,14 @@ public class SpongeBlock extends Block {
 			int j = lv.method_15441();
 
 			for (Direction direction : Direction.values()) {
-				BlockPos blockPos3 = blockPos2.method_10093(direction);
+				BlockPos blockPos3 = blockPos2.offset(direction);
 				BlockState blockState = world.getBlockState(blockPos3);
 				FluidState fluidState = world.getFluidState(blockPos3);
 				Material material = blockState.getMaterial();
 				if (fluidState.matches(FluidTags.field_15517)) {
-					if (blockState.getBlock() instanceof class_2263 && ((class_2263)blockState.getBlock()).method_9700(world, blockPos3, blockState) != Fluids.field_15906) {
+					if (blockState.getBlock() instanceof FluidDrainable && ((FluidDrainable)blockState.getBlock()).tryDrainFluid(world, blockPos3, blockState) != Fluids.EMPTY
+						)
+					 {
 						i++;
 						if (j < 6) {
 							queue.add(new class_3545<>(blockPos3, j + 1));

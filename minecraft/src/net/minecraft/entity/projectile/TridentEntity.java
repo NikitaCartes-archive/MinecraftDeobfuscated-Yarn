@@ -61,7 +61,7 @@ public class TridentEntity extends ProjectileEntity {
 		if ((this.dealtDamage || this.isNoClip()) && entity != null) {
 			int i = this.dataTracker.get(field_7647);
 			if (i > 0 && !this.method_7493()) {
-				if (!this.world.isRemote && this.pickupType == ProjectileEntity.PickupType.PICKUP) {
+				if (!this.world.isClient && this.pickupType == ProjectileEntity.PickupType.PICKUP) {
 					this.dropStack(this.asItemStack(), 0.1F);
 				}
 
@@ -70,7 +70,7 @@ public class TridentEntity extends ProjectileEntity {
 				this.setNoClip(true);
 				Vec3d vec3d = new Vec3d(entity.x - this.x, entity.y + (double)entity.getEyeHeight() - this.y, entity.z - this.z);
 				this.y = this.y + vec3d.y * 0.015 * (double)i;
-				if (this.world.isRemote) {
+				if (this.world.isClient) {
 					this.prevRenderY = this.y;
 				}
 
@@ -112,7 +112,7 @@ public class TridentEntity extends ProjectileEntity {
 		float f = 8.0F;
 		if (entity instanceof LivingEntity) {
 			LivingEntity livingEntity = (LivingEntity)entity;
-			f += EnchantmentHelper.getAttackDamage(this.tridentStack, livingEntity.method_6046());
+			f += EnchantmentHelper.getAttackDamage(this.tridentStack, livingEntity.getGroup());
 		}
 
 		Entity entity2 = this.getOwner();
@@ -135,7 +135,7 @@ public class TridentEntity extends ProjectileEntity {
 		float g = 1.0F;
 		if (this.world.isThundering() && EnchantmentHelper.hasChanneling(this.tridentStack)) {
 			BlockPos blockPos = entity.getPos();
-			if (this.world.getSkyLightLevel(blockPos)) {
+			if (this.world.isSkyVisible(blockPos)) {
 				LightningEntity lightningEntity = new LightningEntity(
 					this.world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, false
 				);
@@ -155,10 +155,10 @@ public class TridentEntity extends ProjectileEntity {
 	}
 
 	@Override
-	public void method_5694(PlayerEntity playerEntity) {
+	public void onPlayerCollision(PlayerEntity playerEntity) {
 		Entity entity = this.getOwner();
 		if (entity == null || entity.getUuid() == playerEntity.getUuid()) {
-			super.method_5694(playerEntity);
+			super.onPlayerCollision(playerEntity);
 		}
 	}
 

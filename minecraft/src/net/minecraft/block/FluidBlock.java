@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2263;
 import net.minecraft.fluid.BaseFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -31,23 +30,23 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.loot.context.LootContext;
 
-public class FluidBlock extends Block implements class_2263 {
+public class FluidBlock extends Block implements FluidDrainable {
 	public static final IntegerProperty field_11278 = Properties.FLUID_BLOCK_LEVEL;
-	protected final BaseFluid field_11279;
-	private final List<FluidState> field_11276;
-	private final Map<BlockState, VoxelShape> field_11277 = Maps.<BlockState, VoxelShape>newIdentityHashMap();
+	protected final BaseFluid fluid;
+	private final List<FluidState> statesByLevel;
+	private final Map<BlockState, VoxelShape> shapesByState = Maps.<BlockState, VoxelShape>newIdentityHashMap();
 
 	protected FluidBlock(BaseFluid baseFluid, Block.Settings settings) {
 		super(settings);
-		this.field_11279 = baseFluid;
-		this.field_11276 = Lists.<FluidState>newArrayList();
-		this.field_11276.add(baseFluid.getState(false));
+		this.fluid = baseFluid;
+		this.statesByLevel = Lists.<FluidState>newArrayList();
+		this.statesByLevel.add(baseFluid.getState(false));
 
 		for (int i = 1; i < 8; i++) {
-			this.field_11276.add(baseFluid.method_15728(8 - i, false));
+			this.statesByLevel.add(baseFluid.method_15728(8 - i, false));
 		}
 
-		this.field_11276.add(baseFluid.method_15728(8, true));
+		this.statesByLevel.add(baseFluid.method_15728(8, true));
 		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11278, Integer.valueOf(0)));
 	}
 
@@ -57,19 +56,19 @@ public class FluidBlock extends Block implements class_2263 {
 	}
 
 	@Override
-	public boolean method_9579(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean isTranslucent(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return false;
 	}
 
 	@Override
 	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, PlacementEnvironment placementEnvironment) {
-		return !this.field_11279.matches(FluidTags.field_15518);
+		return !this.fluid.matches(FluidTags.field_15518);
 	}
 
 	@Override
 	public FluidState getFluidState(BlockState blockState) {
 		int i = (Integer)blockState.get(field_11278);
-		return (FluidState)this.field_11276.get(Math.min(i, 8));
+		return (FluidState)this.statesByLevel.get(Math.min(i, 8));
 	}
 
 	@Override
@@ -79,24 +78,22 @@ public class FluidBlock extends Block implements class_2263 {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean method_9522(BlockState blockState, BlockState blockState2, Direction direction) {
-		return blockState2.getFluidState().getFluid().matchesType(this.field_11279) ? true : super.isFullBoundsCubeForCulling(blockState);
+	public boolean skipRenderingSide(BlockState blockState, BlockState blockState2, Direction direction) {
+		return blockState2.getFluidState().getFluid().matchesType(this.fluid) ? true : super.isFullBoundsCubeForCulling(blockState);
 	}
 
 	@Override
 	public VoxelShape getBoundingShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		FluidState fluidState = blockView.getFluidState(blockPos.up());
-		return fluidState.getFluid().matchesType(this.field_11279)
-			? VoxelShapes.fullCube()
-			: (VoxelShape)this.field_11277.computeIfAbsent(blockState, blockStatex -> {
-				FluidState fluidStatex = blockStatex.getFluidState();
-				return VoxelShapes.cube(0.0, 0.0, 0.0, 1.0, (double)fluidStatex.method_15763(), 1.0);
-			});
+		return fluidState.getFluid().matchesType(this.fluid) ? VoxelShapes.fullCube() : (VoxelShape)this.shapesByState.computeIfAbsent(blockState, blockStatex -> {
+			FluidState fluidStatex = blockStatex.getFluidState();
+			return VoxelShapes.cube(0.0, 0.0, 0.0, 1.0, (double)fluidStatex.method_15763(), 1.0);
+		});
 	}
 
 	@Override
-	public RenderTypeBlock getRenderType(BlockState blockState) {
-		return RenderTypeBlock.NONE;
+	public BlockRenderType method_9604(BlockState blockState) {
+		return BlockRenderType.field_11455;
 	}
 
 	@Override
@@ -106,7 +103,7 @@ public class FluidBlock extends Block implements class_2263 {
 
 	@Override
 	public int getTickRate(ViewableWorld viewableWorld) {
-		return this.field_11279.method_15789(viewableWorld);
+		return this.fluid.method_15789(viewableWorld);
 	}
 
 	@Override
@@ -117,12 +114,14 @@ public class FluidBlock extends Block implements class_2263 {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if (blockState.getFluidState().isStill() || blockState2.getFluidState().isStill()) {
 			iWorld.getFluidTickScheduler().schedule(blockPos, blockState.getFluidState().getFluid(), this.getTickRate(iWorld));
 		}
 
-		return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
@@ -133,11 +132,11 @@ public class FluidBlock extends Block implements class_2263 {
 	}
 
 	public boolean method_10316(World world, BlockPos blockPos, BlockState blockState) {
-		if (this.field_11279.matches(FluidTags.field_15518)) {
+		if (this.fluid.matches(FluidTags.field_15518)) {
 			boolean bl = false;
 
 			for (Direction direction : Direction.values()) {
-				if (direction != Direction.DOWN && world.getFluidState(blockPos.method_10093(direction)).matches(FluidTags.field_15517)) {
+				if (direction != Direction.DOWN && world.getFluidState(blockPos.offset(direction)).matches(FluidTags.field_15517)) {
 					bl = true;
 					break;
 				}
@@ -181,12 +180,12 @@ public class FluidBlock extends Block implements class_2263 {
 	}
 
 	@Override
-	public Fluid method_9700(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
+	public Fluid tryDrainFluid(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
 		if ((Integer)blockState.get(field_11278) == 0) {
 			iWorld.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 11);
-			return this.field_11279;
+			return this.fluid;
 		} else {
-			return Fluids.field_15906;
+			return Fluids.EMPTY;
 		}
 	}
 }

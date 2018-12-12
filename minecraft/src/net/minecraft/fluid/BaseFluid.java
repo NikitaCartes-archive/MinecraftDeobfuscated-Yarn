@@ -9,11 +9,11 @@ import it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import net.minecraft.class_2402;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DoorBlock;
+import net.minecraft.block.FluidFillable;
 import net.minecraft.block.Material;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.state.StateFactory;
@@ -57,7 +57,7 @@ public abstract class BaseFluid extends Fluid {
 		Vec3d var27;
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 			for (Direction direction : Direction.class_2353.HORIZONTAL) {
-				pooledMutable.set(blockPos).method_10118(direction);
+				pooledMutable.set(blockPos).setOffset(direction);
 				FluidState fluidState2 = blockView.getFluidState(pooledMutable);
 				if (this.method_15748(fluidState2)) {
 					float f = fluidState2.method_15763();
@@ -86,7 +86,7 @@ public abstract class BaseFluid extends Fluid {
 			Vec3d vec3d = new Vec3d(d, 0.0, e);
 			if ((Boolean)fluidState.get(STILL)) {
 				for (Direction direction2 : Direction.class_2353.HORIZONTAL) {
-					pooledMutable.set(blockPos).method_10118(direction2);
+					pooledMutable.set(blockPos).setOffset(direction2);
 					if (this.method_15749(blockView, pooledMutable, direction2) || this.method_15749(blockView, pooledMutable.up(), direction2)) {
 						vec3d = vec3d.normalize().add(0.0, -6.0, 0.0);
 						break;
@@ -116,7 +116,7 @@ public abstract class BaseFluid extends Fluid {
 			return false;
 		} else {
 			boolean bl = Block.method_9581(block) || block instanceof StairsBlock;
-			return !bl && Block.method_9501(blockState.method_11628(blockView, blockPos), direction);
+			return !bl && Block.isFaceFullCube(blockState.getCollisionShape(blockView, blockPos), direction);
 		}
 	}
 
@@ -149,7 +149,7 @@ public abstract class BaseFluid extends Fluid {
 			for (Entry<Direction, FluidState> entry : map.entrySet()) {
 				Direction direction = (Direction)entry.getKey();
 				FluidState fluidState2 = (FluidState)entry.getValue();
-				BlockPos blockPos2 = blockPos.method_10093(direction);
+				BlockPos blockPos2 = blockPos.offset(direction);
 				BlockState blockState2 = iWorld.getBlockState(blockPos2);
 				if (this.method_15738(iWorld, blockPos, blockState, direction, blockPos2, blockState2, iWorld.getFluidState(blockPos2), fluidState2.getFluid())) {
 					this.method_15745(iWorld, blockPos2, blockState2, direction, fluidState2);
@@ -163,7 +163,7 @@ public abstract class BaseFluid extends Fluid {
 		int j = 0;
 
 		for (Direction direction : Direction.class_2353.HORIZONTAL) {
-			BlockPos blockPos2 = blockPos.method_10093(direction);
+			BlockPos blockPos2 = blockPos.offset(direction);
 			BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
 			FluidState fluidState = blockState2.getFluidState();
 			if (fluidState.getFluid().matchesType(this) && this.method_15732(direction, viewableWorld, blockPos, blockState, blockPos2, blockState2)) {
@@ -192,13 +192,13 @@ public abstract class BaseFluid extends Fluid {
 			return this.method_15728(8, true);
 		} else {
 			int k = i - this.method_15739(viewableWorld);
-			return k <= 0 ? Fluids.field_15906.getDefaultState() : this.method_15728(k, false);
+			return k <= 0 ? Fluids.EMPTY.getDefaultState() : this.method_15728(k, false);
 		}
 	}
 
 	private boolean method_15732(Direction direction, BlockView blockView, BlockPos blockPos, BlockState blockState, BlockPos blockPos2, BlockState blockState2) {
 		Object2ByteLinkedOpenHashMap<Block.NeighborGroup> object2ByteLinkedOpenHashMap;
-		if (!blockState.getBlock().isPistonExtension() && !blockState2.getBlock().isPistonExtension()) {
+		if (!blockState.getBlock().hasDynamicBounds() && !blockState2.getBlock().hasDynamicBounds()) {
 			object2ByteLinkedOpenHashMap = (Object2ByteLinkedOpenHashMap<Block.NeighborGroup>)field_15901.get();
 		} else {
 			object2ByteLinkedOpenHashMap = null;
@@ -215,8 +215,8 @@ public abstract class BaseFluid extends Fluid {
 			neighborGroup = null;
 		}
 
-		VoxelShape voxelShape = blockState.method_11628(blockView, blockPos);
-		VoxelShape voxelShape2 = blockState2.method_11628(blockView, blockPos2);
+		VoxelShape voxelShape = blockState.getCollisionShape(blockView, blockPos);
+		VoxelShape voxelShape2 = blockState2.getCollisionShape(blockView, blockPos2);
 		boolean bl = !VoxelShapes.method_1080(voxelShape, voxelShape2, direction);
 		if (object2ByteLinkedOpenHashMap != null) {
 			if (object2ByteLinkedOpenHashMap.size() == 200) {
@@ -244,8 +244,8 @@ public abstract class BaseFluid extends Fluid {
 	protected abstract boolean method_15737();
 
 	protected void method_15745(IWorld iWorld, BlockPos blockPos, BlockState blockState, Direction direction, FluidState fluidState) {
-		if (blockState.getBlock() instanceof class_2402) {
-			((class_2402)blockState.getBlock()).method_10311(iWorld, blockPos, blockState, fluidState);
+		if (blockState.getBlock() instanceof FluidFillable) {
+			((FluidFillable)blockState.getBlock()).tryFillWithFluid(iWorld, blockPos, blockState, fluidState);
 		} else {
 			if (!blockState.isAir()) {
 				this.method_15730(iWorld, blockPos, blockState);
@@ -277,7 +277,7 @@ public abstract class BaseFluid extends Fluid {
 
 		for (Direction direction2 : Direction.class_2353.HORIZONTAL) {
 			if (direction2 != direction) {
-				BlockPos blockPos3 = blockPos.method_10093(direction2);
+				BlockPos blockPos3 = blockPos.offset(direction2);
 				short s = method_15747(blockPos2, blockPos3);
 				Pair<BlockState, FluidState> pair = short2ObjectMap.computeIfAbsent(s, ix -> {
 					BlockState blockStatex = viewableWorld.getBlockState(blockPos3);
@@ -341,7 +341,7 @@ public abstract class BaseFluid extends Fluid {
 		int i = 0;
 
 		for (Direction direction : Direction.class_2353.HORIZONTAL) {
-			BlockPos blockPos2 = blockPos.method_10093(direction);
+			BlockPos blockPos2 = blockPos.offset(direction);
 			FluidState fluidState = viewableWorld.getFluidState(blockPos2);
 			if (this.method_15752(fluidState)) {
 				i++;
@@ -358,7 +358,7 @@ public abstract class BaseFluid extends Fluid {
 		Short2BooleanMap short2BooleanMap = new Short2BooleanOpenHashMap();
 
 		for (Direction direction : Direction.class_2353.HORIZONTAL) {
-			BlockPos blockPos2 = blockPos.method_10093(direction);
+			BlockPos blockPos2 = blockPos.offset(direction);
 			short s = method_15747(blockPos, blockPos2);
 			Pair<BlockState, FluidState> pair = short2ObjectMap.computeIfAbsent(s, ix -> {
 				BlockState blockStatex = viewableWorld.getBlockState(blockPos2);
@@ -396,8 +396,8 @@ public abstract class BaseFluid extends Fluid {
 
 	private boolean method_15754(BlockView blockView, BlockPos blockPos, BlockState blockState, Fluid fluid) {
 		Block block = blockState.getBlock();
-		if (block instanceof class_2402) {
-			return ((class_2402)block).method_10310(blockView, blockPos, blockState, fluid);
+		if (block instanceof FluidFillable) {
+			return ((FluidFillable)block).canFillWithFluid(blockView, blockPos, blockState, fluid);
 		} else if (!(block instanceof DoorBlock)
 			&& !block.matches(BlockTags.field_15500)
 			&& block != Blocks.field_9983

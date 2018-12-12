@@ -66,7 +66,7 @@ public class YesNoGui extends Gui {
 
 		for (String string : this.messageSplit) {
 			this.drawStringCentered(this.fontRenderer, string, this.width / 2, k, 16777215);
-			k += this.fontRenderer.FONT_HEIGHT;
+			k += this.fontRenderer.fontHeight;
 		}
 
 		super.draw(i, j, f);
@@ -75,7 +75,7 @@ public class YesNoGui extends Gui {
 	public void disableButtons(int i) {
 		this.buttonEnableTimer = i;
 
-		for (ButtonWidget buttonWidget : this.buttonWidgets) {
+		for (ButtonWidget buttonWidget : this.buttons) {
 			buttonWidget.enabled = false;
 		}
 	}
@@ -84,14 +84,14 @@ public class YesNoGui extends Gui {
 	public void update() {
 		super.update();
 		if (--this.buttonEnableTimer == 0) {
-			for (ButtonWidget buttonWidget : this.buttonWidgets) {
+			for (ButtonWidget buttonWidget : this.buttons) {
 				buttonWidget.enabled = true;
 			}
 		}
 	}
 
 	@Override
-	public boolean canClose() {
+	public boolean doesEscapeKeyClose() {
 		return false;
 	}
 

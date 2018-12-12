@@ -44,7 +44,7 @@ public class ScoreboardTeam extends AbstractScoreboardTeam {
 	public TextComponent method_1148() {
 		TextComponent textComponent = TextFormatter.bracketed(
 			this.displayName
-				.clone()
+				.copy()
 				.modifyStyle(style -> style.setInsertion(this.name).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent(this.name))))
 		);
 		TextFormat textFormat = this.getColor();
@@ -65,7 +65,7 @@ public class ScoreboardTeam extends AbstractScoreboardTeam {
 	}
 
 	public void method_1138(@Nullable TextComponent textComponent) {
-		this.field_1418 = (TextComponent)(textComponent == null ? new StringTextComponent("") : textComponent.clone());
+		this.field_1418 = (TextComponent)(textComponent == null ? new StringTextComponent("") : textComponent.copy());
 		this.scoreboard.updateScoreboardTeam(this);
 	}
 
@@ -74,7 +74,7 @@ public class ScoreboardTeam extends AbstractScoreboardTeam {
 	}
 
 	public void method_1139(@Nullable TextComponent textComponent) {
-		this.field_1419 = (TextComponent)(textComponent == null ? new StringTextComponent("") : textComponent.clone());
+		this.field_1419 = (TextComponent)(textComponent == null ? new StringTextComponent("") : textComponent.copy());
 		this.scoreboard.updateScoreboardTeam(this);
 	}
 
@@ -99,7 +99,7 @@ public class ScoreboardTeam extends AbstractScoreboardTeam {
 	}
 
 	public static TextComponent method_1142(@Nullable AbstractScoreboardTeam abstractScoreboardTeam, TextComponent textComponent) {
-		return abstractScoreboardTeam == null ? textComponent.clone() : abstractScoreboardTeam.method_1198(textComponent);
+		return abstractScoreboardTeam == null ? textComponent.copy() : abstractScoreboardTeam.method_1198(textComponent);
 	}
 
 	@Override

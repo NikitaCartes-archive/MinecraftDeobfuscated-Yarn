@@ -9,11 +9,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
-import net.minecraft.class_2412;
-import net.minecraft.class_2414;
-import net.minecraft.class_2416;
-import net.minecraft.class_2417;
-import net.minecraft.class_2419;
 import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
@@ -26,8 +21,12 @@ public class AdvancementsProvider implements DataProvider {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private final DataGenerator root;
-	private final List<Consumer<Consumer<SimpleAdvancement>>> field_11289 = ImmutableList.of(
-		new class_2419(), new class_2414(), new class_2412(), new class_2416(), new class_2417()
+	private final List<Consumer<Consumer<SimpleAdvancement>>> tabGenerators = ImmutableList.of(
+		new EndTabAdvancementGenerator(),
+		new HusbandryTabAdvancementGenerator(),
+		new AdventureTabAdvancementGenerator(),
+		new NetherTabAdvancementGenerator(),
+		new StoryTabAdvancementGenerator()
 	);
 
 	public AdvancementsProvider(DataGenerator dataGenerator) {
@@ -45,14 +44,14 @@ public class AdvancementsProvider implements DataProvider {
 				Path path2 = getOutput(path, simpleAdvancement);
 
 				try {
-					DataProvider.method_10320(GSON, dataCache, simpleAdvancement.createTask().method_698(), path2);
+					DataProvider.writeToPath(GSON, dataCache, simpleAdvancement.createTask().toJson(), path2);
 				} catch (IOException var6x) {
 					LOGGER.error("Couldn't save advancement {}", path2, var6x);
 				}
 			}
 		};
 
-		for (Consumer<Consumer<SimpleAdvancement>> consumer2 : this.field_11289) {
+		for (Consumer<Consumer<SimpleAdvancement>> consumer2 : this.tabGenerators) {
 			consumer2.accept(consumer);
 		}
 	}

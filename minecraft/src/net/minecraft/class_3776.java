@@ -11,13 +11,14 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sortme.StructurePoolElement;
+import net.minecraft.sortme.structures.StructureManager;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 public class class_3776 extends class_3784 {
@@ -36,20 +37,20 @@ public class class_3776 extends class_3784 {
 		this(ConfiguredFeature.deserialize((Dynamic<T>)dynamic.get("feature").orElseGet(dynamic::emptyMap)));
 	}
 
-	public BlockPos method_16601(class_3485 arg, Rotation rotation) {
+	public BlockPos method_16601(StructureManager structureManager, Rotation rotation) {
 		return new BlockPos(0, 0, 0);
 	}
 
 	@Override
-	public List<class_3499.class_3501> method_16627(class_3485 arg, BlockPos blockPos, Rotation rotation, Random random) {
+	public List<class_3499.class_3501> method_16627(StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random) {
 		ArrayList<class_3499.class_3501> arrayList = Lists.newArrayList();
 		arrayList.add(new class_3499.class_3501(blockPos, Blocks.field_16540.getDefaultState().with(JigsawBlock.field_10927, Direction.DOWN), this.field_16662));
 		return arrayList;
 	}
 
 	@Override
-	public MutableIntBoundingBox method_16628(class_3485 arg, BlockPos blockPos, Rotation rotation) {
-		BlockPos blockPos2 = this.method_16601(arg, rotation);
+	public MutableIntBoundingBox method_16628(StructureManager structureManager, BlockPos blockPos, Rotation rotation) {
+		BlockPos blockPos2 = this.method_16601(structureManager, rotation);
 		return new MutableIntBoundingBox(
 			blockPos.getX(),
 			blockPos.getY(),
@@ -63,7 +64,7 @@ public class class_3776 extends class_3784 {
 	@Override
 	public boolean method_16626(IWorld iWorld, BlockPos blockPos, Rotation rotation, MutableIntBoundingBox mutableIntBoundingBox, Random random) {
 		ChunkGenerator<?> chunkGenerator = iWorld.getChunkManager().getChunkGenerator();
-		return this.field_16661.generate(iWorld, (ChunkGenerator<? extends ChunkGeneratorSettings>)chunkGenerator, random, blockPos);
+		return this.field_16661.generate(iWorld, (ChunkGenerator<? extends ChunkGeneratorConfig>)chunkGenerator, random, blockPos);
 	}
 
 	@Override

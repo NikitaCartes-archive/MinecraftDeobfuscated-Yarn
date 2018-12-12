@@ -46,12 +46,14 @@ public class MagmaBlock extends Block {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if (direction == Direction.UP && blockState2.getBlock() == Blocks.field_10382) {
 			iWorld.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(iWorld));
 		}
 
-		return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
@@ -86,7 +88,7 @@ public class MagmaBlock extends Block {
 	}
 
 	@Override
-	public boolean method_9552(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean shouldPostProcess(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return true;
 	}
 }

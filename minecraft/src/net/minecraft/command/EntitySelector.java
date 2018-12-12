@@ -21,7 +21,7 @@ import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Vec3d;
 
 public class EntitySelector {
-	private final int limit;
+	private final int count;
 	private final boolean includesEntities;
 	private final boolean field_10829;
 	private final Predicate<Entity> basePredicate;
@@ -53,7 +53,7 @@ public class EntitySelector {
 		Class<? extends Entity> class_,
 		boolean bl4
 	) {
-		this.limit = i;
+		this.count = i;
 		this.includesEntities = bl;
 		this.field_10829 = bl2;
 		this.basePredicate = predicate;
@@ -68,8 +68,8 @@ public class EntitySelector {
 		this.checkPermissions = bl4;
 	}
 
-	public int getLimit() {
-		return this.limit;
+	public int getCount() {
+		return this.count;
 	}
 
 	public boolean includesEntities() {
@@ -107,7 +107,7 @@ public class EntitySelector {
 		if (!this.includesEntities) {
 			return this.getPlayers(serverCommandSource);
 		} else if (this.playerName != null) {
-			ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getConfigurationManager().getPlayer(this.playerName);
+			ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayer(this.playerName);
 			return (List<? extends Entity>)(serverPlayerEntity == null ? Collections.emptyList() : Lists.newArrayList(serverPlayerEntity));
 		} else if (this.entityId != null) {
 			for (ServerWorld serverWorld : serverCommandSource.getMinecraftServer().getWorlds()) {
@@ -161,10 +161,10 @@ public class EntitySelector {
 	public List<ServerPlayerEntity> getPlayers(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
 		this.check(serverCommandSource);
 		if (this.playerName != null) {
-			ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getConfigurationManager().getPlayer(this.playerName);
+			ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayer(this.playerName);
 			return (List<ServerPlayerEntity>)(serverPlayerEntity == null ? Collections.emptyList() : Lists.<ServerPlayerEntity>newArrayList(serverPlayerEntity));
 		} else if (this.entityId != null) {
-			ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getConfigurationManager().getPlayer(this.entityId);
+			ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayer(this.entityId);
 			return (List<ServerPlayerEntity>)(serverPlayerEntity == null ? Collections.emptyList() : Lists.<ServerPlayerEntity>newArrayList(serverPlayerEntity));
 		} else {
 			Vec3d vec3d = (Vec3d)this.positionOffset.apply(serverCommandSource.getPosition());
@@ -185,7 +185,7 @@ public class EntitySelector {
 				} else {
 					list = Lists.<ServerPlayerEntity>newArrayList();
 
-					for (ServerPlayerEntity serverPlayerEntity3 : serverCommandSource.getMinecraftServer().getConfigurationManager().getPlayerList()) {
+					for (ServerPlayerEntity serverPlayerEntity3 : serverCommandSource.getMinecraftServer().getPlayerManager().getPlayerList()) {
 						if (predicate.test(serverPlayerEntity3)) {
 							list.add(serverPlayerEntity3);
 						}
@@ -216,7 +216,7 @@ public class EntitySelector {
 			this.sorter.accept(vec3d, list);
 		}
 
-		return list.subList(0, Math.min(this.limit, list.size()));
+		return list.subList(0, Math.min(this.count, list.size()));
 	}
 
 	public static TextComponent getNames(List<? extends Entity> list) {

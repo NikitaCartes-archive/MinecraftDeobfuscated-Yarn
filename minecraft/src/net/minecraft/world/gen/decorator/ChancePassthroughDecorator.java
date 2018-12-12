@@ -6,7 +6,6 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import net.minecraft.class_3667;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.gen.config.decorator.ChanceDecoratorConfig;
 
 public class ChancePassthroughDecorator extends class_3667<ChanceDecoratorConfig> {
 	public ChancePassthroughDecorator(Function<Dynamic<?>, ? extends ChanceDecoratorConfig> function) {

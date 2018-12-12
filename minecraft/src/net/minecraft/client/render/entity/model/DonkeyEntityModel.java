@@ -3,11 +3,10 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
 
 @Environment(EnvType.CLIENT)
-public class DonkeyEntityModel extends HorseEntityModel {
+public class DonkeyEntityModel<T extends AbstractDonkeyEntity> extends HorseEntityModel<T> {
 	private final Cuboid field_3349 = new Cuboid(this, 26, 21);
 	private final Cuboid field_3348;
 
@@ -39,9 +38,8 @@ public class DonkeyEntityModel extends HorseEntityModel {
 		cuboid.addChild(cuboid3);
 	}
 
-	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		if (((AbstractDonkeyEntity)entity).hasChest()) {
+	public void method_17076(T abstractDonkeyEntity, float f, float g, float h, float i, float j, float k) {
+		if (abstractDonkeyEntity.hasChest()) {
 			this.field_3349.visible = true;
 			this.field_3348.visible = true;
 		} else {
@@ -49,6 +47,6 @@ public class DonkeyEntityModel extends HorseEntityModel {
 			this.field_3348.visible = false;
 		}
 
-		super.render(entity, f, g, h, i, j, k);
+		super.method_17085(abstractDonkeyEntity, f, g, h, i, j, k);
 	}
 }

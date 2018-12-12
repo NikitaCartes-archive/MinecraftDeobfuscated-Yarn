@@ -2,20 +2,34 @@ package net.minecraft.village;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.TagHelper;
 
 public class VillagerRecipe {
-	private ItemStack buyItem = ItemStack.EMPTY;
-	private ItemStack secondBuyItem = ItemStack.EMPTY;
-	private ItemStack sellItem = ItemStack.EMPTY;
+	private final ItemStack buyItem;
+	private final ItemStack secondBuyItem;
+	private final ItemStack sellItem;
 	private int uses;
-	private int maxUses;
-	private boolean rewardExp;
+	private int maxUses = 7;
+	private boolean rewardExp = true;
 
 	public VillagerRecipe(CompoundTag compoundTag) {
-		this.serialize(compoundTag);
+		this.buyItem = ItemStack.fromTag(compoundTag.getCompound("buy"));
+		this.secondBuyItem = ItemStack.fromTag(compoundTag.getCompound("buyB"));
+		this.sellItem = ItemStack.fromTag(compoundTag.getCompound("sell"));
+		this.uses = compoundTag.getInt("uses");
+		if (compoundTag.containsKey("maxUses", 99)) {
+			this.maxUses = compoundTag.getInt("maxUses");
+		}
+
+		if (compoundTag.containsKey("rewardExp", 1)) {
+			this.rewardExp = compoundTag.getBoolean("rewardExp");
+		}
+	}
+
+	public VillagerRecipe(ItemStack itemStack, ItemStack itemStack2) {
+		this(itemStack, ItemStack.EMPTY, itemStack2);
 	}
 
 	public VillagerRecipe(ItemStack itemStack, ItemStack itemStack2, ItemStack itemStack3) {
@@ -28,15 +42,6 @@ public class VillagerRecipe {
 		this.sellItem = itemStack3;
 		this.uses = i;
 		this.maxUses = j;
-		this.rewardExp = true;
-	}
-
-	public VillagerRecipe(ItemStack itemStack, ItemStack itemStack2) {
-		this(itemStack, ItemStack.EMPTY, itemStack2);
-	}
-
-	public VillagerRecipe(ItemStack itemStack, Item item) {
-		this(itemStack, new ItemStack(item));
 	}
 
 	public ItemStack getBuyItem() {
@@ -45,10 +50,6 @@ public class VillagerRecipe {
 
 	public ItemStack getSecondBuyItem() {
 		return this.secondBuyItem;
-	}
-
-	public boolean hasSecondBuyItem() {
-		return !this.secondBuyItem.isEmpty();
 	}
 
 	public ItemStack getSellItem() {
@@ -84,43 +85,48 @@ public class VillagerRecipe {
 		return this.rewardExp;
 	}
 
-	public void serialize(CompoundTag compoundTag) {
-		CompoundTag compoundTag2 = compoundTag.getCompound("buy");
-		this.buyItem = ItemStack.fromTag(compoundTag2);
-		CompoundTag compoundTag3 = compoundTag.getCompound("sell");
-		this.sellItem = ItemStack.fromTag(compoundTag3);
-		if (compoundTag.containsKey("buyB", 10)) {
-			this.secondBuyItem = ItemStack.fromTag(compoundTag.getCompound("buyB"));
-		}
-
-		if (compoundTag.containsKey("uses", 99)) {
-			this.uses = compoundTag.getInt("uses");
-		}
-
-		if (compoundTag.containsKey("maxUses", 99)) {
-			this.maxUses = compoundTag.getInt("maxUses");
-		} else {
-			this.maxUses = 7;
-		}
-
-		if (compoundTag.containsKey("rewardExp", 1)) {
-			this.rewardExp = compoundTag.getBoolean("rewardExp");
-		} else {
-			this.rewardExp = true;
-		}
-	}
-
 	public CompoundTag deserialize() {
 		CompoundTag compoundTag = new CompoundTag();
 		compoundTag.put("buy", this.buyItem.toTag(new CompoundTag()));
 		compoundTag.put("sell", this.sellItem.toTag(new CompoundTag()));
-		if (!this.secondBuyItem.isEmpty()) {
-			compoundTag.put("buyB", this.secondBuyItem.toTag(new CompoundTag()));
-		}
-
+		compoundTag.put("buyB", this.secondBuyItem.toTag(new CompoundTag()));
 		compoundTag.putInt("uses", this.uses);
 		compoundTag.putInt("maxUses", this.maxUses);
 		compoundTag.putBoolean("rewardExp", this.rewardExp);
 		return compoundTag;
+	}
+
+	public boolean method_16952(ItemStack itemStack, ItemStack itemStack2) {
+		return this.method_16954(itemStack, this.buyItem)
+			&& itemStack.getAmount() >= this.buyItem.getAmount()
+			&& this.method_16954(itemStack2, this.secondBuyItem)
+			&& itemStack2.getAmount() >= this.secondBuyItem.getAmount();
+	}
+
+	private boolean method_16954(ItemStack itemStack, ItemStack itemStack2) {
+		if (itemStack2.isEmpty() && itemStack.isEmpty()) {
+			return true;
+		} else {
+			ItemStack itemStack3 = itemStack.copy();
+			if (itemStack3.getItem().canDamage()) {
+				itemStack3.setDamage(itemStack3.getDamage());
+			}
+
+			return ItemStack.areEqualIgnoreTags(itemStack3, itemStack2)
+				&& (!itemStack2.hasTag() || itemStack3.hasTag() && TagHelper.areTagsEqual(itemStack2.getTag(), itemStack3.getTag(), false));
+		}
+	}
+
+	public boolean method_16953(ItemStack itemStack, ItemStack itemStack2) {
+		if (!this.method_16952(itemStack, itemStack2)) {
+			return false;
+		} else {
+			itemStack.subtractAmount(this.getBuyItem().getAmount());
+			if (!this.getSecondBuyItem().isEmpty()) {
+				itemStack2.subtractAmount(this.getSecondBuyItem().getAmount());
+			}
+
+			return true;
+		}
 	}
 }

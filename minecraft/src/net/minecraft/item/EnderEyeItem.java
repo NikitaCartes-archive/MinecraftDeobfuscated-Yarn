@@ -1,6 +1,6 @@
 package net.minecraft.item;
 
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -32,7 +32,7 @@ public class EnderEyeItem extends Item {
 		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.getBlock() != Blocks.field_10398 || (Boolean)blockState.get(EndPortalFrameBlock.field_10958)) {
 			return ActionResult.PASS;
-		} else if (world.isRemote) {
+		} else if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
 			BlockState blockState2 = blockState.with(EndPortalFrameBlock.field_10958, Boolean.valueOf(true));
@@ -77,14 +77,15 @@ public class EnderEyeItem extends Item {
 			return new TypedActionResult<>(ActionResult.PASS, itemStack);
 		} else {
 			playerEntity.setCurrentHand(hand);
-			if (!world.isRemote) {
+			if (!world.isClient) {
 				BlockPos blockPos = world.getChunkManager().getChunkGenerator().locateStructure(world, "Stronghold", new BlockPos(playerEntity), 100, false);
 				if (blockPos != null) {
 					EnderEyeEntity enderEyeEntity = new EnderEyeEntity(world, playerEntity.x, playerEntity.y + (double)(playerEntity.height / 2.0F), playerEntity.z);
+					enderEyeEntity.method_16933(itemStack);
 					enderEyeEntity.method_7478(blockPos);
 					world.spawnEntity(enderEyeEntity);
 					if (playerEntity instanceof ServerPlayerEntity) {
-						CriterionCriterions.USED_ENDER_EYE.handle((ServerPlayerEntity)playerEntity, blockPos);
+						Criterions.USED_ENDER_EYE.handle((ServerPlayerEntity)playerEntity, blockPos);
 					}
 
 					world.playSound(

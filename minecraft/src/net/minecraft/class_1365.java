@@ -2,7 +2,8 @@ package net.minecraft;
 
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.MobEntityWithAi;
-import net.minecraft.sortme.Raid;
+import net.minecraft.entity.raid.Raid;
+import net.minecraft.entity.raid.RaidVictim;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.VillageDoor;
@@ -23,11 +24,11 @@ public class class_1365 extends Goal {
 	@Override
 	public boolean canStart() {
 		BlockPos blockPos = new BlockPos(this.field_6498);
-		if (this.field_6498 instanceof class_3758) {
-			class_3758 lv = (class_3758)this.field_6498;
-			Raid raid = lv.method_16461();
-			if (raid != null && raid.method_16832()) {
-				VillageProperties villageProperties = lv.method_7232();
+		if (this.field_6498 instanceof RaidVictim) {
+			RaidVictim raidVictim = (RaidVictim)this.field_6498;
+			Raid raid = raidVictim.method_16461();
+			if (raid != null && raid.isOnGoing()) {
+				VillageProperties villageProperties = raidVictim.getVillage();
 				this.field_6496 = villageProperties.getNearestDoor(blockPos);
 				if (villageProperties != null && this.field_6496 != null && !this.method_16463()) {
 					return true;
@@ -39,7 +40,7 @@ public class class_1365 extends Goal {
 				!this.field_6498.world.isDaylight()
 					|| this.field_6498.world.isRaining() && this.field_6498.world.getBiome(blockPos).getPrecipitation() != Biome.Precipitation.RAIN
 			)
-			&& this.field_6498.world.dimension.method_12451()) {
+			&& this.field_6498.world.dimension.hasSkyLight()) {
 			if (this.field_6498.getRand().nextInt(50) != 0) {
 				return false;
 			} else if (this.method_16463()) {
@@ -77,10 +78,10 @@ public class class_1365 extends Goal {
 		if (this.field_6498.squaredDistanceTo(blockPos) > 256.0) {
 			Vec3d vec3d = class_1414.method_6373(this.field_6498, 14, 3, new Vec3d((double)i + 0.5, (double)j, (double)k + 0.5));
 			if (vec3d != null) {
-				this.field_6498.getNavigation().method_6337(vec3d.x, vec3d.y, vec3d.z, 1.0);
+				this.field_6498.getNavigation().startMovingTo(vec3d.x, vec3d.y, vec3d.z, 1.0);
 			}
 		} else {
-			this.field_6498.getNavigation().method_6337((double)i + 0.5, (double)j, (double)k + 0.5, 1.0);
+			this.field_6498.getNavigation().startMovingTo((double)i + 0.5, (double)j, (double)k + 0.5, 1.0);
 		}
 	}
 

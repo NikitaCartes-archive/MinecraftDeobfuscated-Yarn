@@ -6,7 +6,7 @@ import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.config.ProbabilityConfig;
+import net.minecraft.world.gen.ProbabilityConfig;
 
 public class CaveCarver extends Carver<ProbabilityConfig> {
 	public CaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> function, int i) {

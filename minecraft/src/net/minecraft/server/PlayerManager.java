@@ -15,8 +15,8 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3442;
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.minecraft.advancement.PlayerAdvancementTracker;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.client.network.packet.ChatMessageClientPacket;
 import net.minecraft.client.network.packet.CustomPayloadClientPacket;
 import net.minecraft.client.network.packet.DifficultyClientPacket;
@@ -35,7 +35,6 @@ import net.minecraft.client.network.packet.SynchronizeTagsClientPacket;
 import net.minecraft.client.network.packet.TeamClientPacket;
 import net.minecraft.client.network.packet.WorldBorderClientPacket;
 import net.minecraft.client.network.packet.WorldTimeUpdateClientPacket;
-import net.minecraft.client.sortme.ChatMessageType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -58,6 +57,8 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sortme.ChatMessageType;
+import net.minecraft.stat.ServerStatHandler;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormat;
@@ -91,8 +92,8 @@ public abstract class PlayerManager {
 	private final BannedIpsList bannedIps = new BannedIpsList(BANNED_IPS_FILE);
 	private final OpsList ops = new OpsList(OPS_FILE);
 	private final WhitelistList whitelist = new WhitelistList(WHITELIST_FILE);
-	private final Map<UUID, class_3442> statisticsMap = Maps.<UUID, class_3442>newHashMap();
-	private final Map<UUID, net.minecraft.advancement.ServerAdvancementManager> advancementManagerMap = Maps.<UUID, net.minecraft.advancement.ServerAdvancementManager>newHashMap();
+	private final Map<UUID, ServerStatHandler> statisticsMap = Maps.<UUID, ServerStatHandler>newHashMap();
+	private final Map<UUID, PlayerAdvancementTracker> advancementManagerMap = Maps.<UUID, PlayerAdvancementTracker>newHashMap();
 	private PlayerSaveHandler field_14358;
 	private boolean whitelistEnabled;
 	protected final int maxPlayers;
@@ -157,8 +158,8 @@ public abstract class PlayerManager {
 		serverPlayNetworkHandler.sendPacket(new SynchronizeTagsClientPacket(this.server.getTagManager()));
 		this.method_14576(serverPlayerEntity);
 		serverPlayerEntity.method_14248().method_14914();
-		serverPlayerEntity.getRecipeBook().method_14904(serverPlayerEntity);
-		this.method_14588(serverWorld.method_14170(), serverPlayerEntity);
+		serverPlayerEntity.getRecipeBook().sendInitRecipesPacket(serverPlayerEntity);
+		this.method_14588(serverWorld.getScoreboard(), serverPlayerEntity);
 		this.server.method_3856();
 		TextComponent textComponent;
 		if (serverPlayerEntity.getGameProfile().getName().equalsIgnoreCase(string)) {
@@ -168,8 +169,8 @@ public abstract class PlayerManager {
 		}
 
 		this.sendToAll(textComponent.applyFormat(TextFormat.YELLOW));
-		this.method_14610(serverPlayerEntity);
 		serverPlayNetworkHandler.method_14363(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z, serverPlayerEntity.yaw, serverPlayerEntity.pitch);
+		this.method_14610(serverPlayerEntity);
 		this.method_14606(serverPlayerEntity, serverWorld);
 		if (!this.server.getResourcePackUrl().isEmpty()) {
 			serverPlayerEntity.method_14255(this.server.getResourcePackUrl(), this.server.getResourcePackHash());
@@ -181,7 +182,7 @@ public abstract class PlayerManager {
 
 		if (compoundTag != null && compoundTag.containsKey("RootVehicle", 10)) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("RootVehicle");
-			Entity entity = ChunkSaveHandlerImpl.method_12378(compoundTag2.getCompound("Entity"), serverWorld, true);
+			Entity entity = ChunkSaveHandlerImpl.readEntity(compoundTag2.getCompound("Entity"), serverWorld, true);
 			if (entity != null) {
 				UUID uUID = compoundTag2.getUuid("Attach");
 				if (entity.getUuid().equals(uUID)) {
@@ -274,11 +275,11 @@ public abstract class PlayerManager {
 
 		serverWorld2.getChunkManager().addPlayer(serverPlayerEntity);
 		if (serverWorld != null) {
-			CriterionCriterions.CHANGED_DIMENSION.handle(serverPlayerEntity, serverWorld.dimension.getType(), serverWorld2.dimension.getType());
+			Criterions.CHANGED_DIMENSION.handle(serverPlayerEntity, serverWorld.dimension.getType(), serverWorld2.dimension.getType());
 			if (serverWorld.dimension.getType() == DimensionType.field_13076
 				&& serverPlayerEntity.world.dimension.getType() == DimensionType.field_13072
 				&& serverPlayerEntity.getEnteredNetherPosition() != null) {
-				CriterionCriterions.NETHER_TRAVEL.handle(serverPlayerEntity, serverPlayerEntity.getEnteredNetherPosition());
+				Criterions.NETHER_TRAVEL.handle(serverPlayerEntity, serverPlayerEntity.getEnteredNetherPosition());
 			}
 		}
 	}
@@ -300,15 +301,14 @@ public abstract class PlayerManager {
 
 	protected void savePlayerData(ServerPlayerEntity serverPlayerEntity) {
 		this.field_14358.savePlayerData(serverPlayerEntity);
-		class_3442 lv = (class_3442)this.statisticsMap.get(serverPlayerEntity.getUuid());
-		if (lv != null) {
-			lv.method_14912();
+		ServerStatHandler serverStatHandler = (ServerStatHandler)this.statisticsMap.get(serverPlayerEntity.getUuid());
+		if (serverStatHandler != null) {
+			serverStatHandler.save();
 		}
 
-		net.minecraft.advancement.ServerAdvancementManager serverAdvancementManager = (net.minecraft.advancement.ServerAdvancementManager)this.advancementManagerMap
-			.get(serverPlayerEntity.getUuid());
-		if (serverAdvancementManager != null) {
-			serverAdvancementManager.save();
+		PlayerAdvancementTracker playerAdvancementTracker = (PlayerAdvancementTracker)this.advancementManagerMap.get(serverPlayerEntity.getUuid());
+		if (playerAdvancementTracker != null) {
+			playerAdvancementTracker.save();
 		}
 	}
 
@@ -333,7 +333,7 @@ public abstract class PlayerManager {
 
 	public void method_14611(ServerPlayerEntity serverPlayerEntity) {
 		ServerWorld serverWorld = serverPlayerEntity.getServerWorld();
-		serverPlayerEntity.method_7281(Stats.field_15389);
+		serverPlayerEntity.increaseStat(Stats.field_15389);
 		this.savePlayerData(serverPlayerEntity);
 		if (serverPlayerEntity.hasVehicle()) {
 			Entity entity = serverPlayerEntity.getTopmostRiddenEntity();
@@ -346,13 +346,13 @@ public abstract class PlayerManager {
 					serverWorld.method_8507(entity2);
 				}
 
-				serverWorld.getChunk(serverPlayerEntity.chunkX, serverPlayerEntity.chunkZ).markDirty();
+				serverWorld.getWorldChunk(serverPlayerEntity.chunkX, serverPlayerEntity.chunkZ).markDirty();
 			}
 		}
 
-		serverWorld.method_8463(serverPlayerEntity);
+		serverWorld.removeEntity(serverPlayerEntity);
 		serverWorld.getChunkManager().removePlayer(serverPlayerEntity);
-		serverPlayerEntity.getAdvancementManager().method_12881();
+		serverPlayerEntity.getAdvancementManager().clearCriterions();
 		this.players.remove(serverPlayerEntity);
 		this.server.method_3837().method_12976(serverPlayerEntity);
 		UUID uUID = serverPlayerEntity.getUuid();
@@ -410,7 +410,7 @@ public abstract class PlayerManager {
 		}
 
 		for (ServerPlayerEntity serverPlayerEntity3 : list) {
-			serverPlayerEntity3.networkHandler.method_14367(new TranslatableTextComponent("multiplayer.disconnect.duplicate_login"));
+			serverPlayerEntity3.networkHandler.disconnect(new TranslatableTextComponent("multiplayer.disconnect.duplicate_login"));
 		}
 
 		ServerPlayerInteractionManager serverPlayerInteractionManager;
@@ -478,7 +478,7 @@ public abstract class PlayerManager {
 					serverPlayerEntity2.interactionManager.getGameMode()
 				)
 			);
-		BlockPos blockPos2 = serverWorld.method_8395();
+		BlockPos blockPos2 = serverWorld.getSpawnPos();
 		serverPlayerEntity2.networkHandler
 			.method_14363(serverPlayerEntity2.x, serverPlayerEntity2.y, serverPlayerEntity2.z, serverPlayerEntity2.yaw, serverPlayerEntity2.pitch);
 		serverPlayerEntity2.networkHandler.sendPacket(new PlayerSpawnPositionClientPacket(blockPos2));
@@ -539,7 +539,7 @@ public abstract class PlayerManager {
 		double e = entity.z;
 		double f = 8.0;
 		float g = entity.yaw;
-		serverWorld.getProfiler().begin("moving");
+		serverWorld.getProfiler().push("moving");
 		if (entity.dimension == DimensionType.field_13076) {
 			d = MathHelper.clamp(d / 8.0, serverWorld2.getWorldBorder().getBoundWest() + 16.0, serverWorld2.getWorldBorder().getBoundEast() - 16.0);
 			e = MathHelper.clamp(e / 8.0, serverWorld2.getWorldBorder().getBoundNorth() + 16.0, serverWorld2.getWorldBorder().getBoundSouth() - 16.0);
@@ -557,7 +557,7 @@ public abstract class PlayerManager {
 		} else {
 			BlockPos blockPos;
 			if (dimensionType == DimensionType.field_13078) {
-				blockPos = serverWorld2.method_8395();
+				blockPos = serverWorld2.getSpawnPos();
 			} else {
 				blockPos = serverWorld2.getForcedSpawnPoint();
 			}
@@ -571,19 +571,19 @@ public abstract class PlayerManager {
 			}
 		}
 
-		serverWorld.getProfiler().end();
+		serverWorld.getProfiler().pop();
 		if (dimensionType != DimensionType.field_13078) {
-			serverWorld.getProfiler().begin("placing");
+			serverWorld.getProfiler().push("placing");
 			d = (double)MathHelper.clamp((int)d, -29999872, 29999872);
 			e = (double)MathHelper.clamp((int)e, -29999872, 29999872);
 			if (entity.isValid()) {
 				entity.setPositionAndAngles(d, entity.y, e, entity.yaw, entity.pitch);
-				serverWorld2.method_14173().method_8655(entity, g);
+				serverWorld2.getPortalForcer().method_8655(entity, g);
 				serverWorld2.spawnEntity(entity);
 				serverWorld2.method_8553(entity, false);
 			}
 
-			serverWorld.getProfiler().end();
+			serverWorld.getProfiler().pop();
 		}
 
 		entity.setWorld(serverWorld2);
@@ -755,7 +755,7 @@ public abstract class PlayerManager {
 		serverPlayerEntity.networkHandler.sendPacket(new WorldBorderClientPacket(worldBorder, WorldBorderClientPacket.Type.INITIALIZE));
 		serverPlayerEntity.networkHandler
 			.sendPacket(new WorldTimeUpdateClientPacket(serverWorld.getTime(), serverWorld.getTimeOfDay(), serverWorld.getGameRules().getBoolean("doDaylightCycle")));
-		BlockPos blockPos = serverWorld.method_8395();
+		BlockPos blockPos = serverWorld.getSpawnPos();
 		serverPlayerEntity.networkHandler.sendPacket(new PlayerSpawnPositionClientPacket(blockPos));
 		if (serverWorld.isRaining()) {
 			serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeClientPacket(1, 0.0F));
@@ -836,7 +836,7 @@ public abstract class PlayerManager {
 
 	public void disconnectAllPlayers() {
 		for (int i = 0; i < this.players.size(); i++) {
-			((ServerPlayerEntity)this.players.get(i)).networkHandler.method_14367(new TranslatableTextComponent("multiplayer.disconnect.server_shutdown"));
+			((ServerPlayerEntity)this.players.get(i)).networkHandler.disconnect(new TranslatableTextComponent("multiplayer.disconnect.server_shutdown"));
 		}
 	}
 
@@ -850,10 +850,10 @@ public abstract class PlayerManager {
 		this.broadcastChatMessage(textComponent, true);
 	}
 
-	public class_3442 method_14583(PlayerEntity playerEntity) {
+	public ServerStatHandler method_14583(PlayerEntity playerEntity) {
 		UUID uUID = playerEntity.getUuid();
-		class_3442 lv = uUID == null ? null : (class_3442)this.statisticsMap.get(uUID);
-		if (lv == null) {
+		ServerStatHandler serverStatHandler = uUID == null ? null : (ServerStatHandler)this.statisticsMap.get(uUID);
+		if (serverStatHandler == null) {
 			File file = new File(this.server.getWorld(DimensionType.field_13072).getSaveHandler().getWorldDir(), "stats");
 			File file2 = new File(file, uUID + ".json");
 			if (!file2.exists()) {
@@ -863,26 +863,25 @@ public abstract class PlayerManager {
 				}
 			}
 
-			lv = new class_3442(this.server, file2);
-			this.statisticsMap.put(uUID, lv);
+			serverStatHandler = new ServerStatHandler(this.server, file2);
+			this.statisticsMap.put(uUID, serverStatHandler);
 		}
 
-		return lv;
+		return serverStatHandler;
 	}
 
-	public net.minecraft.advancement.ServerAdvancementManager getAdvancementManager(ServerPlayerEntity serverPlayerEntity) {
+	public PlayerAdvancementTracker getAdvancementManager(ServerPlayerEntity serverPlayerEntity) {
 		UUID uUID = serverPlayerEntity.getUuid();
-		net.minecraft.advancement.ServerAdvancementManager serverAdvancementManager = (net.minecraft.advancement.ServerAdvancementManager)this.advancementManagerMap
-			.get(uUID);
-		if (serverAdvancementManager == null) {
+		PlayerAdvancementTracker playerAdvancementTracker = (PlayerAdvancementTracker)this.advancementManagerMap.get(uUID);
+		if (playerAdvancementTracker == null) {
 			File file = new File(this.server.getWorld(DimensionType.field_13072).getSaveHandler().getWorldDir(), "advancements");
 			File file2 = new File(file, uUID + ".json");
-			serverAdvancementManager = new net.minecraft.advancement.ServerAdvancementManager(this.server, file2, serverPlayerEntity);
-			this.advancementManagerMap.put(uUID, serverAdvancementManager);
+			playerAdvancementTracker = new PlayerAdvancementTracker(this.server, file2, serverPlayerEntity);
+			this.advancementManagerMap.put(uUID, playerAdvancementTracker);
 		}
 
-		serverAdvancementManager.method_12875(serverPlayerEntity);
-		return serverAdvancementManager;
+		playerAdvancementTracker.setOwner(serverPlayerEntity);
+		return playerAdvancementTracker;
 	}
 
 	public void setViewDistance(int i) {
@@ -910,8 +909,8 @@ public abstract class PlayerManager {
 	}
 
 	public void onDataPacksReloaded() {
-		for (net.minecraft.advancement.ServerAdvancementManager serverAdvancementManager : this.advancementManagerMap.values()) {
-			serverAdvancementManager.reload();
+		for (PlayerAdvancementTracker playerAdvancementTracker : this.advancementManagerMap.values()) {
+			playerAdvancementTracker.reload();
 		}
 
 		this.sendToAll(new SynchronizeTagsClientPacket(this.server.getTagManager()));
@@ -919,7 +918,7 @@ public abstract class PlayerManager {
 
 		for (ServerPlayerEntity serverPlayerEntity : this.players) {
 			serverPlayerEntity.networkHandler.sendPacket(synchronizeRecipesClientPacket);
-			serverPlayerEntity.getRecipeBook().method_14904(serverPlayerEntity);
+			serverPlayerEntity.getRecipeBook().sendInitRecipesPacket(serverPlayerEntity);
 		}
 	}
 

@@ -16,9 +16,8 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_193;
 import net.minecraft.advancement.criterion.CriterionConditions;
-import net.minecraft.item.ItemContainer;
+import net.minecraft.item.ItemProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TextComponent;
@@ -62,8 +61,8 @@ public class SimpleAdvancement {
 		} else {
 			TextComponent textComponent = advancementDisplay.getTitle();
 			TextFormat textFormat = advancementDisplay.getFrame().getTitleFormat();
-			TextComponent textComponent2 = textComponent.clone().applyFormat(textFormat).append("\n").append(advancementDisplay.getDescription());
-			TextComponent textComponent3 = textComponent.clone().modifyStyle(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, textComponent2)));
+			TextComponent textComponent2 = textComponent.copy().applyFormat(textFormat).append("\n").append(advancementDisplay.getDescription());
+			TextComponent textComponent3 = textComponent.copy().modifyStyle(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, textComponent2)));
 			this.textComponent = new StringTextComponent("[").append(textComponent3).append("]").applyFormat(textFormat);
 		}
 	}
@@ -153,7 +152,7 @@ public class SimpleAdvancement {
 		private AdvancementRewards rewards = AdvancementRewards.NONE;
 		private Map<String, AdvancementCriterion> criteria = Maps.<String, AdvancementCriterion>newLinkedHashMap();
 		private String[][] requirements;
-		private class_193 field_1151 = class_193.AND;
+		private CriteriaMerger merger = CriteriaMerger.AND;
 
 		private Builder(
 			@Nullable Identifier identifier,
@@ -187,7 +186,7 @@ public class SimpleAdvancement {
 		}
 
 		public SimpleAdvancement.Builder display(
-			ItemContainer itemContainer,
+			ItemProvider itemProvider,
 			TextComponent textComponent,
 			TextComponent textComponent2,
 			@Nullable Identifier identifier,
@@ -196,9 +195,7 @@ public class SimpleAdvancement {
 			boolean bl2,
 			boolean bl3
 		) {
-			return this.display(
-				new AdvancementDisplay(new ItemStack(itemContainer.getItem()), textComponent, textComponent2, identifier, advancementFrame, bl, bl2, bl3)
-			);
+			return this.display(new AdvancementDisplay(new ItemStack(itemProvider.getItem()), textComponent, textComponent2, identifier, advancementFrame, bl, bl2, bl3));
 		}
 
 		public SimpleAdvancement.Builder display(AdvancementDisplay advancementDisplay) {
@@ -206,7 +203,7 @@ public class SimpleAdvancement {
 			return this;
 		}
 
-		public SimpleAdvancement.Builder method_703(AdvancementRewards.Builder builder) {
+		public SimpleAdvancement.Builder rewards(AdvancementRewards.Builder builder) {
 			return this.rewards(builder.build());
 		}
 
@@ -228,12 +225,12 @@ public class SimpleAdvancement {
 			}
 		}
 
-		public SimpleAdvancement.Builder method_704(class_193 arg) {
-			this.field_1151 = arg;
+		public SimpleAdvancement.Builder criteriaMerger(CriteriaMerger criteriaMerger) {
+			this.merger = criteriaMerger;
 			return this;
 		}
 
-		public boolean method_700(Function<Identifier, SimpleAdvancement> function) {
+		public boolean findParent(Function<Identifier, SimpleAdvancement> function) {
 			if (this.parentId == null) {
 				return true;
 			} else {
@@ -246,26 +243,26 @@ public class SimpleAdvancement {
 		}
 
 		public SimpleAdvancement build(Identifier identifier) {
-			if (!this.method_700(identifierx -> null)) {
+			if (!this.findParent(identifierx -> null)) {
 				throw new IllegalStateException("Tried to build incomplete advancement!");
 			} else {
 				if (this.requirements == null) {
-					this.requirements = this.field_1151.createRequirements(this.criteria.keySet());
+					this.requirements = this.merger.createRequirements(this.criteria.keySet());
 				}
 
 				return new SimpleAdvancement(identifier, this.parentObj, this.display, this.rewards, this.criteria, this.requirements);
 			}
 		}
 
-		public SimpleAdvancement method_694(Consumer<SimpleAdvancement> consumer, String string) {
+		public SimpleAdvancement build(Consumer<SimpleAdvancement> consumer, String string) {
 			SimpleAdvancement simpleAdvancement = this.build(new Identifier(string));
 			consumer.accept(simpleAdvancement);
 			return simpleAdvancement;
 		}
 
-		public JsonObject method_698() {
+		public JsonObject toJson() {
 			if (this.requirements == null) {
-				this.requirements = this.field_1151.createRequirements(this.criteria.keySet());
+				this.requirements = this.merger.createRequirements(this.criteria.keySet());
 			}
 
 			JsonObject jsonObject = new JsonObject();
@@ -279,11 +276,11 @@ public class SimpleAdvancement {
 				jsonObject.add("display", this.display.toJson());
 			}
 
-			jsonObject.add("rewards", this.rewards.method_747());
+			jsonObject.add("rewards", this.rewards.toJson());
 			JsonObject jsonObject2 = new JsonObject();
 
 			for (Entry<String, AdvancementCriterion> entry : this.criteria.entrySet()) {
-				jsonObject2.add((String)entry.getKey(), ((AdvancementCriterion)entry.getValue()).method_773());
+				jsonObject2.add((String)entry.getKey(), ((AdvancementCriterion)entry.getValue()).toJson());
 			}
 
 			jsonObject.add("criteria", jsonObject2);
@@ -315,7 +312,7 @@ public class SimpleAdvancement {
 				packetByteBuf.writeBoolean(false);
 			} else {
 				packetByteBuf.writeBoolean(true);
-				this.display.writeToBuffer(packetByteBuf);
+				this.display.toPacket(packetByteBuf);
 			}
 
 			AdvancementCriterion.serialize(this.criteria, packetByteBuf);
@@ -352,7 +349,7 @@ public class SimpleAdvancement {
 			AdvancementRewards advancementRewards = JsonHelper.deserialize(
 				jsonObject, "rewards", AdvancementRewards.NONE, jsonDeserializationContext, AdvancementRewards.class
 			);
-			Map<String, AdvancementCriterion> map = AdvancementCriterion.deserialize(JsonHelper.getObject(jsonObject, "criteria"), jsonDeserializationContext);
+			Map<String, AdvancementCriterion> map = AdvancementCriterion.fromJson(JsonHelper.getObject(jsonObject, "criteria"), jsonDeserializationContext);
 			if (map.isEmpty()) {
 				throw new JsonSyntaxException("Advancement criteria cannot be empty");
 			} else {
@@ -412,8 +409,8 @@ public class SimpleAdvancement {
 
 		public static SimpleAdvancement.Builder deserialize(PacketByteBuf packetByteBuf) {
 			Identifier identifier = packetByteBuf.readBoolean() ? packetByteBuf.readIdentifier() : null;
-			AdvancementDisplay advancementDisplay = packetByteBuf.readBoolean() ? AdvancementDisplay.readFromBuffer(packetByteBuf) : null;
-			Map<String, AdvancementCriterion> map = AdvancementCriterion.deserialize(packetByteBuf);
+			AdvancementDisplay advancementDisplay = packetByteBuf.readBoolean() ? AdvancementDisplay.fromPacket(packetByteBuf) : null;
+			Map<String, AdvancementCriterion> map = AdvancementCriterion.fromPacket(packetByteBuf);
 			String[][] strings = new String[packetByteBuf.readVarInt()][];
 
 			for (int i = 0; i < strings.length; i++) {
@@ -427,7 +424,7 @@ public class SimpleAdvancement {
 			return new SimpleAdvancement.Builder(identifier, advancementDisplay, AdvancementRewards.NONE, map, strings);
 		}
 
-		public Map<String, AdvancementCriterion> method_710() {
+		public Map<String, AdvancementCriterion> getCriteria() {
 			return this.criteria;
 		}
 	}

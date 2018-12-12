@@ -4,17 +4,16 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_856;
-import net.minecraft.client.model.Cuboid;
+import net.minecraft.client.render.entity.feature.ShulkerSomethingFeatureRenderer;
 import net.minecraft.client.render.entity.model.ShulkerEntityModel;
 import net.minecraft.entity.mob.ShulkerEntity;
-import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
-public class ShulkerEntityRenderer extends EntityMobRenderer<ShulkerEntity> {
+public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
 	public static final Identifier field_4781 = new Identifier("textures/entity/shulker/shulker.png");
 	public static final Identifier[] SKIN = new Identifier[]{
 		new Identifier("textures/entity/shulker/shulker_white.png"),
@@ -36,12 +35,8 @@ public class ShulkerEntityRenderer extends EntityMobRenderer<ShulkerEntity> {
 	};
 
 	public ShulkerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new ShulkerEntityModel(), 0.0F);
-		this.addLayer(new ShulkerEntityRenderer.class_944());
-	}
-
-	public ShulkerEntityModel method_4110() {
-		return (ShulkerEntityModel)super.method_4038();
+		super(entityRenderDispatcher, new ShulkerEntityModel<>(), 0.0F);
+		this.addFeature(new ShulkerSomethingFeatureRenderer(this));
 	}
 
 	public void method_4113(ShulkerEntity shulkerEntity, double d, double e, double f, float g, float h) {
@@ -54,9 +49,9 @@ public class ShulkerEntityRenderer extends EntityMobRenderer<ShulkerEntity> {
 			double k = (double)(blockPos.getX() - blockPos2.getX()) * j;
 			double l = (double)(blockPos.getY() - blockPos2.getY()) * j;
 			double m = (double)(blockPos.getZ() - blockPos2.getZ()) * j;
-			super.method_4072(shulkerEntity, d - k, e - l, f - m, g, h);
+			super.render(shulkerEntity, d - k, e - l, f - m, g, h);
 		} else {
-			super.method_4072(shulkerEntity, d, e, f, g, h);
+			super.render(shulkerEntity, d, e, f, g, h);
 		}
 	}
 
@@ -83,8 +78,8 @@ public class ShulkerEntityRenderer extends EntityMobRenderer<ShulkerEntity> {
 	}
 
 	protected void method_4114(ShulkerEntity shulkerEntity, float f, float g, float h) {
-		super.method_4058(shulkerEntity, f, g, h);
-		switch (shulkerEntity.method_7119()) {
+		super.setupTransforms(shulkerEntity, f, g, h);
+		switch (shulkerEntity.getAttachedFace()) {
 			case DOWN:
 			default:
 				break;
@@ -116,62 +111,5 @@ public class ShulkerEntityRenderer extends EntityMobRenderer<ShulkerEntity> {
 	protected void method_4109(ShulkerEntity shulkerEntity, float f) {
 		float g = 0.999F;
 		GlStateManager.scalef(0.999F, 0.999F, 0.999F);
-	}
-
-	@Environment(EnvType.CLIENT)
-	class class_944 implements LayerEntityRenderer<ShulkerEntity> {
-		private class_944() {
-		}
-
-		public void render(ShulkerEntity shulkerEntity, float f, float g, float h, float i, float j, float k, float l) {
-			GlStateManager.pushMatrix();
-			switch (shulkerEntity.method_7119()) {
-				case DOWN:
-				default:
-					break;
-				case EAST:
-					GlStateManager.rotatef(90.0F, 0.0F, 0.0F, 1.0F);
-					GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
-					GlStateManager.translatef(1.0F, -1.0F, 0.0F);
-					GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
-					break;
-				case WEST:
-					GlStateManager.rotatef(-90.0F, 0.0F, 0.0F, 1.0F);
-					GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
-					GlStateManager.translatef(-1.0F, -1.0F, 0.0F);
-					GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
-					break;
-				case NORTH:
-					GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
-					GlStateManager.translatef(0.0F, -1.0F, -1.0F);
-					break;
-				case SOUTH:
-					GlStateManager.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
-					GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
-					GlStateManager.translatef(0.0F, -1.0F, 1.0F);
-					break;
-				case UP:
-					GlStateManager.rotatef(180.0F, 1.0F, 0.0F, 0.0F);
-					GlStateManager.translatef(0.0F, -2.0F, 0.0F);
-			}
-
-			Cuboid cuboid = ShulkerEntityRenderer.this.method_4110().method_2830();
-			cuboid.yaw = j * (float) (Math.PI / 180.0);
-			cuboid.pitch = k * (float) (Math.PI / 180.0);
-			DyeColor dyeColor = shulkerEntity.method_7121();
-			if (dyeColor == null) {
-				ShulkerEntityRenderer.this.bindTexture(ShulkerEntityRenderer.field_4781);
-			} else {
-				ShulkerEntityRenderer.this.bindTexture(ShulkerEntityRenderer.SKIN[dyeColor.getId()]);
-			}
-
-			cuboid.render(l);
-			GlStateManager.popMatrix();
-		}
-
-		@Override
-		public boolean shouldMergeTextures() {
-			return false;
-		}
 	}
 }

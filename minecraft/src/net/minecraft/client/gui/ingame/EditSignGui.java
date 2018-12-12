@@ -3,8 +3,6 @@ package net.minecraft.client.gui.ingame;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2877;
-import net.minecraft.class_3728;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.StandingSignBlock;
 import net.minecraft.block.WallSignBlock;
@@ -14,6 +12,8 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.SelectionManager;
+import net.minecraft.server.network.packet.UpdateSignServerPacket;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.util.math.Direction;
@@ -21,9 +21,9 @@ import net.minecraft.util.math.Direction;
 @Environment(EnvType.CLIENT)
 public class EditSignGui extends Gui {
 	private final SignBlockEntity sign;
-	private int field_3030;
-	private int field_3029;
-	private class_3728 field_3032;
+	private int ticksSinceOpened;
+	private int currentRow;
+	private SelectionManager selectionManager;
 
 	public EditSignGui(SignBlockEntity signBlockEntity) {
 		this.sign = signBlockEntity;
@@ -39,10 +39,10 @@ public class EditSignGui extends Gui {
 			}
 		});
 		this.sign.setEditable(false);
-		this.field_3032 = new class_3728(
+		this.selectionManager = new SelectionManager(
 			this.client,
-			() -> this.sign.method_11302(this.field_3029).getString(),
-			string -> this.sign.method_11299(this.field_3029, new StringTextComponent(string)),
+			() -> this.sign.getTextOnRow(this.currentRow).getString(),
+			string -> this.sign.setTextOnRow(this.currentRow, new StringTextComponent(string)),
 			90
 		);
 	}
@@ -53,7 +53,7 @@ public class EditSignGui extends Gui {
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
 		if (clientPlayNetworkHandler != null) {
 			clientPlayNetworkHandler.sendPacket(
-				new class_2877(this.sign.getPos(), this.sign.method_11302(0), this.sign.method_11302(1), this.sign.method_11302(2), this.sign.method_11302(3))
+				new UpdateSignServerPacket(this.sign.getPos(), this.sign.getTextOnRow(0), this.sign.getTextOnRow(1), this.sign.getTextOnRow(2), this.sign.getTextOnRow(3))
 			);
 		}
 
@@ -62,7 +62,7 @@ public class EditSignGui extends Gui {
 
 	@Override
 	public void update() {
-		this.field_3030++;
+		this.ticksSinceOpened++;
 	}
 
 	private void method_2526() {
@@ -72,7 +72,7 @@ public class EditSignGui extends Gui {
 
 	@Override
 	public boolean charTyped(char c, int i) {
-		this.field_3032.method_16199(c);
+		this.selectionManager.insert(c);
 		return true;
 	}
 
@@ -84,15 +84,15 @@ public class EditSignGui extends Gui {
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
 		if (i == 265) {
-			this.field_3029 = this.field_3029 - 1 & 3;
-			this.field_3032.method_16204();
+			this.currentRow = this.currentRow - 1 & 3;
+			this.selectionManager.moveCaretToEnd();
 			return true;
 		} else if (i == 264 || i == 257 || i == 335) {
-			this.field_3029 = this.field_3029 + 1 & 3;
-			this.field_3032.method_16204();
+			this.currentRow = this.currentRow + 1 & 3;
+			this.selectionManager.moveCaretToEnd();
 			return true;
 		} else {
-			return this.field_3032.method_16202(i) ? true : super.keyPressed(i, j, k);
+			return this.selectionManager.handleSpecialKey(i) ? true : super.keyPressed(i, j, k);
 		}
 	}
 
@@ -111,14 +111,15 @@ public class EditSignGui extends Gui {
 		if (blockState.getBlock().matches(BlockTags.field_15472)) {
 			h = (float)((Integer)blockState.get(StandingSignBlock.field_11559) * 360) / 16.0F;
 		} else {
-			h = ((Direction)blockState.get(WallSignBlock.field_11726)).asRotation();
+			h = ((Direction)blockState.get(WallSignBlock.FACING)).asRotation();
 		}
 
 		GlStateManager.rotatef(h, 0.0F, 1.0F, 0.0F);
 		GlStateManager.translatef(0.0F, -1.0625F, 0.0F);
-		this.sign.method_16332(this.field_3029, this.field_3032.method_16201(), this.field_3032.method_16203(), this.field_3030 / 6 % 2 == 0);
+		this.sign
+			.setSelectionState(this.currentRow, this.selectionManager.getSelectionStart(), this.selectionManager.getSelectionEnd(), this.ticksSinceOpened / 6 % 2 == 0);
 		BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.sign, -0.5, -0.75, -0.5, 0.0F);
-		this.sign.method_16335();
+		this.sign.resetSelectionState();
 		GlStateManager.popMatrix();
 		super.draw(i, j, f);
 	}

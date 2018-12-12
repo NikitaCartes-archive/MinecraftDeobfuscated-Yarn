@@ -92,7 +92,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
 		if ((Boolean)blockState.get(field_10729)) {
@@ -124,12 +124,12 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public int method_9524(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
 		return blockState.get(field_10729) ? 15 : 0;
 	}
 
 	@Override
-	public int method_9603(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+	public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
 		return blockState.get(field_10729) && method_10119(blockState) == direction ? 15 : 0;
 	}
 
@@ -140,7 +140,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 
 	@Override
 	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!world.isRemote && (Boolean)blockState.get(field_10729)) {
+		if (!world.isClient && (Boolean)blockState.get(field_10729)) {
 			if (this.field_10725) {
 				this.method_9715(blockState, world, blockPos);
 			} else {
@@ -153,7 +153,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 
 	@Override
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-		if (!world.isRemote && this.field_10725 && !(Boolean)blockState.get(field_10729)) {
+		if (!world.isClient && this.field_10725 && !(Boolean)blockState.get(field_10729)) {
 			this.method_9715(blockState, world, blockPos);
 		}
 	}
@@ -175,7 +175,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 
 	private void method_9713(BlockState blockState, World world, BlockPos blockPos) {
 		world.updateNeighborsAlways(blockPos, this);
-		world.updateNeighborsAlways(blockPos.method_10093(method_10119(blockState).getOpposite()), this);
+		world.updateNeighborsAlways(blockPos.offset(method_10119(blockState).getOpposite()), this);
 	}
 
 	@Override

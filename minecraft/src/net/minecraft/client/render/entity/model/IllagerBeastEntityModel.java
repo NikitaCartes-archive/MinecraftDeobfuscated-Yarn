@@ -3,14 +3,11 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.IllagerBeastEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class IllagerBeastEntityModel extends Model {
+public class IllagerBeastEntityModel extends EntityModel<IllagerBeastEntity> {
 	private final Cuboid field_3386;
 	private final Cuboid field_3388;
 	private final Cuboid field_3387;
@@ -68,9 +65,8 @@ public class IllagerBeastEntityModel extends Model {
 		this.field_3382.setRotationPoint(8.0F, -13.0F, -5.0F);
 	}
 
-	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		this.setRotationAngles(f, g, h, i, j, k, entity);
+	public void method_17090(IllagerBeastEntity illagerBeastEntity, float f, float g, float h, float i, float j, float k) {
+		this.method_17091(illagerBeastEntity, f, g, h, i, j, k);
 		this.field_3384.render(k);
 		this.field_3387.render(k);
 		this.field_3385.render(k);
@@ -79,8 +75,7 @@ public class IllagerBeastEntityModel extends Model {
 		this.field_3382.render(k);
 	}
 
-	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
+	public void method_17091(IllagerBeastEntity illagerBeastEntity, float f, float g, float h, float i, float j, float k) {
 		this.field_3386.pitch = j * (float) (Math.PI / 180.0);
 		this.field_3386.yaw = i * (float) (Math.PI / 180.0);
 		this.field_3387.pitch = (float) (Math.PI / 2);
@@ -91,10 +86,8 @@ public class IllagerBeastEntityModel extends Model {
 		this.field_3382.pitch = MathHelper.cos(f * 0.6662F) * l;
 	}
 
-	@Override
-	public void animateModel(LivingEntity livingEntity, float f, float g, float h) {
-		super.animateModel(livingEntity, f, g, h);
-		IllagerBeastEntity illagerBeastEntity = (IllagerBeastEntity)livingEntity;
+	public void method_17089(IllagerBeastEntity illagerBeastEntity, float f, float g, float h) {
+		super.animateModel(illagerBeastEntity, f, g, h);
 		int i = illagerBeastEntity.method_7074();
 		int j = illagerBeastEntity.method_7072();
 		int k = 20;

@@ -129,7 +129,7 @@ public class IntArrayTag extends AbstractListTag<IntTag> {
 	}
 
 	@Override
-	public void remove(int i) {
+	public void removeAt(int i) {
 		this.value = ArrayUtils.remove(this.value, i);
 	}
 

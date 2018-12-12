@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntegerProperty;
@@ -56,7 +55,7 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		Block block = viewableWorld.getBlockState(blockPos.method_10093(blockState.get(field_11177))).getBlock();
+		Block block = viewableWorld.getBlockState(blockPos.offset(blockState.get(field_11177))).getBlock();
 		return block.matches(BlockTags.field_15474);
 	}
 
@@ -83,7 +82,7 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getPos();
 
-		for (Direction direction : itemPlacementContext.method_7718()) {
+		for (Direction direction : itemPlacementContext.getPlacementFacings()) {
 			if (direction.getAxis().isHorizontal()) {
 				blockState = blockState.with(field_11177, direction);
 				if (blockState.canPlaceAt(viewableWorld, blockPos)) {
@@ -96,10 +95,12 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		return direction == blockState.get(field_11177) && !blockState.canPlaceAt(iWorld, blockPos)
 			? Blocks.field_10124.getDefaultState()
-			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override

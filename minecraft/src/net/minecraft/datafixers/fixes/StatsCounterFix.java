@@ -19,14 +19,14 @@ import net.minecraft.datafixers.TypeReferences;
 import org.apache.commons.lang3.StringUtils;
 
 public class StatsCounterFix extends DataFix {
-	private static final Set<String> skip = ImmutableSet.<String>builder()
+	private static final Set<String> SKIP = ImmutableSet.<String>builder()
 		.add("stat.craftItem.minecraft.spawn_egg")
 		.add("stat.useItem.minecraft.spawn_egg")
 		.add("stat.breakItem.minecraft.spawn_egg")
 		.add("stat.pickup.minecraft.spawn_egg")
 		.add("stat.drop.minecraft.spawn_egg")
 		.build();
-	private static final Map<String, String> customMap = ImmutableMap.<String, String>builder()
+	private static final Map<String, String> RENAMED_GENERAL_STATS = ImmutableMap.<String, String>builder()
 		.put("stat.leaveGame", "minecraft:leave_game")
 		.put("stat.playOneMinute", "minecraft:play_one_minute")
 		.put("stat.timeSinceDeath", "minecraft:time_since_death")
@@ -78,18 +78,18 @@ public class StatsCounterFix extends DataFix {
 		.put("stat.sleepInBed", "minecraft:sleep_in_bed")
 		.put("stat.shulkerBoxOpened", "minecraft:open_shulker_box")
 		.build();
-	private static final Map<String, String> field_5738 = ImmutableMap.<String, String>builder()
+	private static final Map<String, String> RENAMED_ITEM_STATS = ImmutableMap.<String, String>builder()
 		.put("stat.craftItem", "minecraft:crafted")
 		.put("stat.useItem", "minecraft:used")
 		.put("stat.breakItem", "minecraft:broken")
 		.put("stat.pickup", "minecraft:picked_up")
 		.put("stat.drop", "minecraft:dropped")
 		.build();
-	private static final Map<String, String> field_5736 = ImmutableMap.<String, String>builder()
+	private static final Map<String, String> RENAMED_ENTITY_STATS = ImmutableMap.<String, String>builder()
 		.put("stat.entityKilledBy", "minecraft:killed_by")
 		.put("stat.killEntity", "minecraft:killed")
 		.build();
-	private static final Map<String, String> entityMap = ImmutableMap.<String, String>builder()
+	private static final Map<String, String> RENAMED_ENTITIES = ImmutableMap.<String, String>builder()
 		.put("Bat", "minecraft:bat")
 		.put("Blaze", "minecraft:blaze")
 		.put("CaveSpider", "minecraft:cave_spider")
@@ -154,12 +154,12 @@ public class StatsCounterFix extends DataFix {
 					for (Entry<? extends Dynamic<?>, ? extends Dynamic<?>> entry : ((Map)optional.get()).entrySet()) {
 						if (((Dynamic)entry.getValue()).getNumberValue().isPresent()) {
 							String string = (String)((Dynamic)entry.getKey()).getStringValue().orElse("");
-							if (!skip.contains(string)) {
+							if (!SKIP.contains(string)) {
 								String string2;
 								String string3;
-								if (customMap.containsKey(string)) {
+								if (RENAMED_GENERAL_STATS.containsKey(string)) {
 									string2 = "minecraft:custom";
-									string3 = (String)customMap.get(string);
+									string3 = (String)RENAMED_GENERAL_STATS.get(string);
 								} else {
 									int i = StringUtils.ordinalIndexOf(string, ".", 2);
 									if (i < 0) {
@@ -170,19 +170,19 @@ public class StatsCounterFix extends DataFix {
 									if ("stat.mineBlock".equals(string4)) {
 										string2 = "minecraft:mined";
 										string3 = this.getBlock(string.substring(i + 1).replace('.', ':'));
-									} else if (field_5738.containsKey(string4)) {
-										string2 = (String)field_5738.get(string4);
+									} else if (RENAMED_ITEM_STATS.containsKey(string4)) {
+										string2 = (String)RENAMED_ITEM_STATS.get(string4);
 										String string5 = string.substring(i + 1).replace('.', ':');
 										String string6 = this.getItem(string5);
 										string3 = string6 == null ? string5 : string6;
 									} else {
-										if (!field_5736.containsKey(string4)) {
+										if (!RENAMED_ENTITY_STATS.containsKey(string4)) {
 											continue;
 										}
 
-										string2 = (String)field_5736.get(string4);
+										string2 = (String)RENAMED_ENTITY_STATS.get(string4);
 										String string5 = string.substring(i + 1).replace('.', ':');
-										string3 = (String)entityMap.getOrDefault(string5, string5);
+										string3 = (String)RENAMED_ENTITIES.getOrDefault(string5, string5);
 									}
 								}
 

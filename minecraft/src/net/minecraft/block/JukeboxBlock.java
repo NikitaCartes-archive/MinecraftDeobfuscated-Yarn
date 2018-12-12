@@ -26,7 +26,7 @@ public class JukeboxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
 		if ((Boolean)blockState.get(field_11180)) {
@@ -48,7 +48,7 @@ public class JukeboxBlock extends BlockWithEntity {
 	}
 
 	private void removeRecord(World world, BlockPos blockPos) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof JukeboxBlockEntity) {
 				JukeboxBlockEntity jukeboxBlockEntity = (JukeboxBlockEntity)blockEntity;
@@ -102,8 +102,8 @@ public class JukeboxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public RenderTypeBlock getRenderType(BlockState blockState) {
-		return RenderTypeBlock.MODEL;
+	public BlockRenderType method_9604(BlockState blockState) {
+		return BlockRenderType.field_11458;
 	}
 
 	@Override

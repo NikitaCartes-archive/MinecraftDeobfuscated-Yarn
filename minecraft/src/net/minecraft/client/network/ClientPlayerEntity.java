@@ -9,15 +9,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.class_1104;
 import net.minecraft.class_1116;
 import net.minecraft.class_1118;
-import net.minecraft.class_2799;
-import net.minecraft.class_2828;
-import net.minecraft.class_2833;
-import net.minecraft.class_2842;
-import net.minecraft.class_2848;
-import net.minecraft.class_2851;
-import net.minecraft.class_2853;
-import net.minecraft.class_2879;
-import net.minecraft.class_3469;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
@@ -32,6 +23,7 @@ import net.minecraft.client.gui.CommandBlockMinecartGui;
 import net.minecraft.client.gui.ContainerGui;
 import net.minecraft.client.gui.container.AnvilGui;
 import net.minecraft.client.gui.container.BeaconGui;
+import net.minecraft.client.gui.container.BlastFurnaceGui;
 import net.minecraft.client.gui.container.ContainerGui54;
 import net.minecraft.client.gui.container.ContainerGui9;
 import net.minecraft.client.gui.container.CraftingTableGui;
@@ -42,6 +34,7 @@ import net.minecraft.client.gui.container.HopperGui;
 import net.minecraft.client.gui.container.HorseGui;
 import net.minecraft.client.gui.container.LoomGui;
 import net.minecraft.client.gui.container.ShulkerBoxGui;
+import net.minecraft.client.gui.container.SmokerGui;
 import net.minecraft.client.gui.container.VillagerGui;
 import net.minecraft.client.gui.ingame.BrewingStandGui;
 import net.minecraft.client.gui.ingame.EditBookGui;
@@ -73,12 +66,21 @@ import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.server.network.packet.ChatMessageServerPacket;
+import net.minecraft.server.network.packet.ClientCommandServerPacket;
+import net.minecraft.server.network.packet.ClientStatusServerPacket;
 import net.minecraft.server.network.packet.GuiCloseServerPacket;
+import net.minecraft.server.network.packet.HandSwingServerPacket;
 import net.minecraft.server.network.packet.PlayerActionServerPacket;
+import net.minecraft.server.network.packet.PlayerLookServerPacket;
+import net.minecraft.server.network.packet.PlayerMoveServerMessage;
+import net.minecraft.server.network.packet.RecipeBookDataServerPacket;
+import net.minecraft.server.network.packet.UpdatePlayerAbilitiesServerPacket;
+import net.minecraft.server.network.packet.VehicleMoveServerPacket;
 import net.minecraft.sortme.CommandBlockExecutor;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.stat.StatHandler;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.text.TextComponent;
 import net.minecraft.util.Hand;
@@ -96,7 +98,7 @@ import net.minecraft.world.dimension.DimensionType;
 @Environment(EnvType.CLIENT)
 public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	public final ClientPlayNetworkHandler networkHandler;
-	private final class_3469 stats;
+	private final StatHandler stats;
 	private final ClientRecipeBook recipeBook;
 	private final List<class_1104> field_3933 = Lists.<class_1104>newArrayList();
 	private int clientPermissionLevel = 0;
@@ -124,7 +126,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	public float field_3929;
 	public float field_3911;
 	private boolean field_3915;
-	private Hand field_3945;
+	private Hand activeHand;
 	private boolean field_3942;
 	private boolean field_3927 = true;
 	private int field_3934;
@@ -132,11 +134,11 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	private int field_3917;
 
 	public ClientPlayerEntity(
-		MinecraftClient minecraftClient, World world, ClientPlayNetworkHandler clientPlayNetworkHandler, class_3469 arg, ClientRecipeBook clientRecipeBook
+		MinecraftClient minecraftClient, World world, ClientPlayNetworkHandler clientPlayNetworkHandler, StatHandler statHandler, ClientRecipeBook clientRecipeBook
 	) {
-		super(world, clientPlayNetworkHandler.method_2879());
+		super(world, clientPlayNetworkHandler.getProfile());
 		this.networkHandler = clientPlayNetworkHandler;
-		this.stats = arg;
+		this.stats = statHandler;
 		this.recipeBook = clientRecipeBook;
 		this.client = minecraftClient;
 		this.dimension = DimensionType.field_13072;
@@ -164,7 +166,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			if (entity instanceof BoatEntity) {
 				this.prevYaw = entity.yaw;
 				this.yaw = entity.yaw;
-				this.setHeadPitch(entity.yaw);
+				this.setHeadYaw(entity.yaw);
 			}
 
 			return true;
@@ -192,11 +194,11 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		if (this.world.isBlockLoaded(new BlockPos(this.x, 0.0, this.z))) {
 			super.update();
 			if (this.hasVehicle()) {
-				this.networkHandler.sendPacket(new class_2828.class_2831(this.yaw, this.pitch, this.onGround));
-				this.networkHandler.sendPacket(new class_2851(this.field_6212, this.field_6250, this.input.jumping, this.input.sneaking));
+				this.networkHandler.sendPacket(new PlayerMoveServerMessage.LookOnly(this.yaw, this.pitch, this.onGround));
+				this.networkHandler.sendPacket(new PlayerLookServerPacket(this.field_6212, this.field_6250, this.input.jumping, this.input.sneaking));
 				Entity entity = this.getTopmostRiddenEntity();
 				if (entity != this && entity.method_5787()) {
-					this.networkHandler.sendPacket(new class_2833(entity));
+					this.networkHandler.sendPacket(new VehicleMoveServerPacket(entity));
 				}
 			} else {
 				this.method_3136();
@@ -212,9 +214,9 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		boolean bl = this.isSprinting();
 		if (bl != this.field_3919) {
 			if (bl) {
-				this.networkHandler.sendPacket(new class_2848(this, class_2848.class_2849.field_12981));
+				this.networkHandler.sendPacket(new ClientCommandServerPacket(this, ClientCommandServerPacket.Mode.field_12981));
 			} else {
-				this.networkHandler.sendPacket(new class_2848(this, class_2848.class_2849.field_12985));
+				this.networkHandler.sendPacket(new ClientCommandServerPacket(this, ClientCommandServerPacket.Mode.field_12985));
 			}
 
 			this.field_3919 = bl;
@@ -223,9 +225,9 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		boolean bl2 = this.isSneaking();
 		if (bl2 != this.field_3936) {
 			if (bl2) {
-				this.networkHandler.sendPacket(new class_2848(this, class_2848.class_2849.field_12979));
+				this.networkHandler.sendPacket(new ClientCommandServerPacket(this, ClientCommandServerPacket.Mode.field_12979));
 			} else {
-				this.networkHandler.sendPacket(new class_2848(this, class_2848.class_2849.field_12984));
+				this.networkHandler.sendPacket(new ClientCommandServerPacket(this, ClientCommandServerPacket.Mode.field_12984));
 			}
 
 			this.field_3936 = bl2;
@@ -242,16 +244,16 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			boolean bl3 = d * d + e * e + f * f > 9.0E-4 || this.field_3923 >= 20;
 			boolean bl4 = g != 0.0 || h != 0.0;
 			if (this.hasVehicle()) {
-				this.networkHandler.sendPacket(new class_2828.class_2830(this.velocityX, -999.0, this.velocityZ, this.yaw, this.pitch, this.onGround));
+				this.networkHandler.sendPacket(new PlayerMoveServerMessage.Both(this.velocityX, -999.0, this.velocityZ, this.yaw, this.pitch, this.onGround));
 				bl3 = false;
 			} else if (bl3 && bl4) {
-				this.networkHandler.sendPacket(new class_2828.class_2830(this.x, boundingBox.minY, this.z, this.yaw, this.pitch, this.onGround));
+				this.networkHandler.sendPacket(new PlayerMoveServerMessage.Both(this.x, boundingBox.minY, this.z, this.yaw, this.pitch, this.onGround));
 			} else if (bl3) {
-				this.networkHandler.sendPacket(new class_2828.class_2829(this.x, boundingBox.minY, this.z, this.onGround));
+				this.networkHandler.sendPacket(new PlayerMoveServerMessage.PositionOnly(this.x, boundingBox.minY, this.z, this.onGround));
 			} else if (bl4) {
-				this.networkHandler.sendPacket(new class_2828.class_2831(this.yaw, this.pitch, this.onGround));
+				this.networkHandler.sendPacket(new PlayerMoveServerMessage.LookOnly(this.yaw, this.pitch, this.onGround));
 			} else if (this.field_3920 != this.onGround) {
-				this.networkHandler.sendPacket(new class_2828(this.onGround));
+				this.networkHandler.sendPacket(new PlayerMoveServerMessage(this.onGround));
 			}
 
 			if (bl3) {
@@ -267,15 +269,15 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			}
 
 			this.field_3920 = this.onGround;
-			this.field_3927 = this.client.options.autoJump;
+			this.field_3927 = this.client.field_1690.autoJump;
 		}
 	}
 
 	@Nullable
 	@Override
 	public ItemEntity dropSelectedItem(boolean bl) {
-		PlayerActionServerPacket.class_2847 lv = bl ? PlayerActionServerPacket.class_2847.field_12970 : PlayerActionServerPacket.class_2847.field_12975;
-		this.networkHandler.sendPacket(new PlayerActionServerPacket(lv, BlockPos.ORIGIN, Direction.DOWN));
+		PlayerActionServerPacket.Action action = bl ? PlayerActionServerPacket.Action.field_12970 : PlayerActionServerPacket.Action.field_12975;
+		this.networkHandler.sendPacket(new PlayerActionServerPacket(action, BlockPos.ORIGIN, Direction.DOWN));
 		this.inventory
 			.takeInvStack(this.inventory.selectedSlot, bl && !this.inventory.getMainHandStack().isEmpty() ? this.inventory.getMainHandStack().getAmount() : 1);
 		return null;
@@ -293,12 +295,12 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	@Override
 	public void swingHand(Hand hand) {
 		super.swingHand(hand);
-		this.networkHandler.sendPacket(new class_2879(hand));
+		this.networkHandler.sendPacket(new HandSwingServerPacket(hand));
 	}
 
 	@Override
-	public void method_7331() {
-		this.networkHandler.sendPacket(new class_2799(class_2799.class_2800.field_12774));
+	public void requestRespawn() {
+		this.networkHandler.sendPacket(new ClientStatusServerPacket(ClientStatusServerPacket.Mode.field_12774));
 	}
 
 	@Override
@@ -344,7 +346,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public void method_7355() {
-		this.networkHandler.sendPacket(new class_2842(this.abilities));
+		this.networkHandler.sendPacket(new UpdatePlayerAbilitiesServerPacket(this.abilities));
 	}
 
 	@Override
@@ -353,22 +355,23 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	protected void method_3133() {
-		this.networkHandler.sendPacket(new class_2848(this, class_2848.class_2849.field_12987, MathHelper.floor(this.method_3151() * 100.0F)));
+		this.networkHandler
+			.sendPacket(new ClientCommandServerPacket(this, ClientCommandServerPacket.Mode.field_12987, MathHelper.floor(this.method_3151() * 100.0F)));
 	}
 
-	public void openRidingInventory() {
-		this.networkHandler.sendPacket(new class_2848(this, class_2848.class_2849.field_12988));
+	public void method_3132() {
+		this.networkHandler.sendPacket(new ClientCommandServerPacket(this, ClientCommandServerPacket.Mode.field_12988));
 	}
 
 	public void setServerBrand(String string) {
 		this.serverBrand = string;
 	}
 
-	public String getServerBrand() {
+	public String method_3135() {
 		return this.serverBrand;
 	}
 
-	public class_3469 getStats() {
+	public StatHandler getStats() {
 		return this.stats;
 	}
 
@@ -376,10 +379,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		return this.recipeBook;
 	}
 
-	public void method_3141(Recipe recipe) {
-		if (this.recipeBook.method_14883(recipe)) {
-			this.recipeBook.method_14886(recipe);
-			this.networkHandler.sendPacket(new class_2853(recipe));
+	public void onRecipeDisplayed(Recipe recipe) {
+		if (this.recipeBook.shouldDisplay(recipe)) {
+			this.recipeBook.onRecipeDisplayed(recipe);
+			this.networkHandler.sendPacket(new RecipeBookDataServerPacket(recipe));
 		}
 	}
 
@@ -500,7 +503,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		if (!itemStack.isEmpty() && !this.method_6115()) {
 			super.setCurrentHand(hand);
 			this.field_3915 = true;
-			this.field_3945 = hand;
+			this.activeHand = hand;
 		}
 	}
 
@@ -517,7 +520,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public Hand getActiveHand() {
-		return this.field_3945;
+		return this.activeHand;
 	}
 
 	@Override
@@ -548,35 +551,35 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void openSignEditor(SignBlockEntity signBlockEntity) {
+	public void openSignEditorGui(SignBlockEntity signBlockEntity) {
 		this.client.openGui(new EditSignGui(signBlockEntity));
 	}
 
 	@Override
-	public void openCommandBlockMinecart(CommandBlockExecutor commandBlockExecutor) {
+	public void openCommandBlockMinecartGui(CommandBlockExecutor commandBlockExecutor) {
 		this.client.openGui(new CommandBlockMinecartGui(commandBlockExecutor));
 	}
 
 	@Override
-	public void openCommandBlock(CommandBlockBlockEntity commandBlockBlockEntity) {
+	public void openCommandBlockGui(CommandBlockBlockEntity commandBlockBlockEntity) {
 		this.client.openGui(new CommandBlockGui(commandBlockBlockEntity));
 	}
 
 	@Override
-	public void openStructureBlock(StructureBlockBlockEntity structureBlockBlockEntity) {
+	public void openStructureBlockGui(StructureBlockBlockEntity structureBlockBlockEntity) {
 		this.client.openGui(new StructureBlockGui(structureBlockBlockEntity));
 	}
 
 	@Override
-	public void method_16354(JigsawBlockEntity jigsawBlockEntity) {
+	public void openJigsawGui(JigsawBlockEntity jigsawBlockEntity) {
 		this.client.openGui(new JigsawBlockGui(jigsawBlockEntity));
 	}
 
 	@Override
-	public void openBookEditor(ItemStack itemStack, Hand hand) {
+	public void openBookEditorGui(ItemStack itemStack, Hand hand) {
 		Item item = itemStack.getItem();
 		if (item == Items.field_8674) {
-			this.client.openGui(new EditBookGui(this, itemStack, true, hand));
+			this.client.openGui(new EditBookGui(this, itemStack, hand));
 		}
 	}
 
@@ -597,6 +600,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			this.client.openGui(new ContainerGui9(this.inventory, inventory));
 		} else if ("minecraft:shulker_box".equals(string)) {
 			this.client.openGui(new ShulkerBoxGui(this.inventory, inventory));
+		} else if ("minecraft:blast_furnace".equals(string)) {
+			this.client.openGui(new BlastFurnaceGui(this.inventory, inventory));
+		} else if ("minecraft:smoker".equals(string)) {
+			this.client.openGui(new SmokerGui(this.inventory, inventory));
 		} else {
 			this.client.openGui(new ContainerGui54(this.inventory, inventory));
 		}
@@ -624,17 +631,17 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void openVillagerGui(Villager villager) {
+	public void openVillagerTrade(Villager villager) {
 		this.client.openGui(new VillagerGui(this.inventory, villager, this.world));
 	}
 
 	@Override
-	public void copyEntityData(Entity entity) {
+	public void addCritParticles(Entity entity) {
 		this.client.particleManager.method_3061(entity, ParticleTypes.field_11205);
 	}
 
 	@Override
-	public void method_7304(Entity entity) {
+	public void addEnchantedHitParticles(Entity entity) {
 		this.client.particleManager.method_3061(entity, ParticleTypes.field_11208);
 	}
 
@@ -741,7 +748,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			&& bl5
 			&& !this.method_6115()
 			&& !this.hasPotionEffect(StatusEffects.field_5919)) {
-			if (this.field_3935 <= 0 && !this.client.options.keySprint.method_1434()) {
+			if (this.field_3935 <= 0 && !this.client.field_1690.keySprint.method_1434()) {
 				this.field_3935 = 7;
 			} else {
 				this.setSprinting(true);
@@ -754,13 +761,13 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			&& bl5
 			&& !this.method_6115()
 			&& !this.hasPotionEffect(StatusEffects.field_5919)
-			&& this.client.options.keySprint.method_1434()) {
+			&& this.client.field_1690.keySprint.method_1434()) {
 			this.setSprinting(true);
 		}
 
 		if (this.isSprinting()) {
 			boolean bl6 = this.input.field_3905 < 0.8F || !bl5;
-			boolean bl7 = bl6 || this.field_5976 || this.isInsideWater() && !this.method_5869();
+			boolean bl7 = bl6 || this.horizontalCollision || this.isInsideWater() && !this.method_5869();
 			if (this.isSwimming()) {
 				if (!this.onGround && !this.input.sneaking && bl6 || !this.isInsideWater()) {
 					this.setSprinting(false);
@@ -790,7 +797,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		if (this.input.jumping && !bl && !this.onGround && this.velocityY < 0.0 && !this.isFallFlying() && !this.abilities.flying) {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
 			if (itemStack.getItem() == Items.field_8833 && ElytraItem.isUsable(itemStack)) {
-				this.networkHandler.sendPacket(new class_2848(this, class_2848.class_2849.field_12982));
+				this.networkHandler.sendPacket(new ClientCommandServerPacket(this, ClientCommandServerPacket.Mode.field_12982));
 			}
 		}
 
@@ -922,10 +929,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 						VerticalEntityPosition verticalEntityPosition = VerticalEntityPosition.fromEntity(this);
 						BlockPos blockPos = new BlockPos(this.x, this.getBoundingBox().maxY, this.z);
 						BlockState blockState = this.world.getBlockState(blockPos);
-						if (blockState.method_16337(this.world, blockPos, verticalEntityPosition).isEmpty()) {
+						if (blockState.getCollisionShape(this.world, blockPos, verticalEntityPosition).isEmpty()) {
 							blockPos = blockPos.up();
 							BlockState blockState2 = this.world.getBlockState(blockPos);
-							if (blockState2.method_16337(this.world, blockPos, verticalEntityPosition).isEmpty()) {
+							if (blockState2.getCollisionShape(this.world, blockPos, verticalEntityPosition).isEmpty()) {
 								float n = 7.0F;
 								float o = 1.2F;
 								if (this.hasPotionEffect(StatusEffects.field_5913)) {
@@ -959,8 +966,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 											BlockPos blockPos3 = blockPos2.up(t);
 											BlockState blockState3 = this.world.getBlockState(blockPos3);
 											VoxelShape voxelShape;
-											if (!(voxelShape = blockState3.method_16337(this.world, blockPos3, verticalEntityPosition)).isEmpty()) {
-												s = (float)voxelShape.method_1105(Direction.Axis.Y) + (float)blockPos3.getY();
+											if (!(voxelShape = blockState3.getCollisionShape(this.world, blockPos3, verticalEntityPosition)).isEmpty()) {
+												s = (float)voxelShape.getMaximum(Direction.Axis.Y) + (float)blockPos3.getY();
 												if ((double)s - this.getBoundingBox().minY > (double)o) {
 													return;
 												}
@@ -969,7 +976,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 											if (t > 1) {
 												blockPos = blockPos.up();
 												BlockState blockState4 = this.world.getBlockState(blockPos);
-												if (!blockState4.method_16337(this.world, blockPos, verticalEntityPosition).isEmpty()) {
+												if (!blockState4.getCollisionShape(this.world, blockPos, verticalEntityPosition).isEmpty()) {
 													return;
 												}
 											}

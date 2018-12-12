@@ -2,7 +2,7 @@ package net.minecraft;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
-import net.minecraft.entity.mob.RaiderEntity;
+import net.minecraft.entity.raid.RaiderEntity;
 
 public class class_3760<T extends LivingEntity> extends FollowTargetGoal<T> {
 	public class_3760(RaiderEntity raiderEntity, Class<T> class_, boolean bl) {
@@ -11,6 +11,6 @@ public class class_3760<T extends LivingEntity> extends FollowTargetGoal<T> {
 
 	@Override
 	public boolean canStart() {
-		return ((RaiderEntity)this.entity).method_16482() && this.field_6643.isAssignableFrom(RaiderEntity.class);
+		return ((RaiderEntity)this.entity).hasActiveRaid() && this.field_6643.isAssignableFrom(RaiderEntity.class);
 	}
 }

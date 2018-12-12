@@ -17,7 +17,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.TaskPriority;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportElement;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.ScheduledTick;
@@ -25,7 +25,7 @@ import net.minecraft.world.TickScheduler;
 import net.minecraft.world.chunk.ChunkPos;
 
 public class ServerTickScheduler<T> implements TickScheduler<T> {
-	protected final Predicate<T> shouldExclude;
+	protected final Predicate<T> invalidObjPredicate;
 	protected final Function<T, Identifier> idToName;
 	protected final Function<Identifier, T> nameToId;
 	protected final Set<ScheduledTick<T>> ticksScheduled = Sets.<ScheduledTick<T>>newHashSet();
@@ -37,7 +37,7 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 	public ServerTickScheduler(
 		ServerWorld serverWorld, Predicate<T> predicate, Function<T, Identifier> function, Function<Identifier, T> function2, Consumer<ScheduledTick<T>> consumer
 	) {
-		this.shouldExclude = predicate;
+		this.invalidObjPredicate = predicate;
 		this.idToName = function;
 		this.nameToId = function2;
 		this.world = serverWorld;
@@ -53,7 +53,7 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 				i = 65536;
 			}
 
-			this.world.getProfiler().begin("cleaning");
+			this.world.getProfiler().push("cleaning");
 
 			for (int j = 0; j < i; j++) {
 				ScheduledTick<T> scheduledTick = (ScheduledTick<T>)this.ticksScheduledOrdered.first();
@@ -66,8 +66,8 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 				this.ticksCurrent.add(scheduledTick);
 			}
 
-			this.world.getProfiler().end();
-			this.world.getProfiler().begin("ticking");
+			this.world.getProfiler().pop();
+			this.world.getProfiler().push("ticking");
 			Iterator<ScheduledTick<T>> iterator = this.ticksCurrent.iterator();
 
 			while (iterator.hasNext()) {
@@ -79,8 +79,8 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 						this.tickConsumer.accept(scheduledTick);
 					} catch (Throwable var8) {
 						CrashReport crashReport = CrashReport.create(var8, "Exception while ticking");
-						CrashReportElement crashReportElement = crashReport.addElement("Block being ticked");
-						CrashReportElement.addBlockInfo(crashReportElement, scheduledTick.pos, null);
+						CrashReportSection crashReportSection = crashReport.method_562("Block being ticked");
+						CrashReportSection.addBlockInfo(crashReportSection, scheduledTick.pos, null);
 						throw new CrashException(crashReport);
 					}
 				} else {
@@ -88,7 +88,7 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 				}
 			}
 
-			this.world.getProfiler().end();
+			this.world.getProfiler().pop();
 			this.ticksCurrent.clear();
 		}
 	}
@@ -194,7 +194,7 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 
 	@Override
 	public void schedule(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
-		if (!this.shouldExclude.test(object)) {
+		if (!this.invalidObjPredicate.test(object)) {
 			if (this.world.isBlockLoaded(blockPos)) {
 				this.addScheduledTick(blockPos, object, i, taskPriority);
 			}
@@ -202,7 +202,7 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 	}
 
 	protected void scheduleForced(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
-		if (!this.shouldExclude.test(object)) {
+		if (!this.invalidObjPredicate.test(object)) {
 			this.addScheduledTick(blockPos, object, i, taskPriority);
 		}
 	}

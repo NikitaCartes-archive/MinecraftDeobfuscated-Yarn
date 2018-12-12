@@ -12,8 +12,7 @@ import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_323;
-import net.minecraft.class_3678;
+import net.minecraft.client.WindowEventHandler;
 import net.minecraft.client.WindowSettings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,9 +30,9 @@ import org.lwjgl.system.MemoryUtil;
 @Environment(EnvType.CLIENT)
 public final class Window implements AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final GLFWErrorCallback errorCallback = GLFWErrorCallback.create(this::method_4482);
-	private final class_3678 field_5176;
-	private final class_323 field_5195;
+	private final GLFWErrorCallback errorCallback = GLFWErrorCallback.create(this::logGlError);
+	private final WindowEventHandler windowEventHandler;
+	private final MonitorTracker monitorTracker;
 	private Monitor monitor;
 	private final long handle;
 	private int field_5175;
@@ -52,18 +51,18 @@ public final class Window implements AutoCloseable {
 	private int scaledWidth;
 	private int scaledHeight;
 	private double field_5179;
-	private String field_5192 = "";
+	private String phase = "";
 	private boolean field_5186;
 	private double field_5189 = Double.MIN_VALUE;
 	private int framerateLimit;
 	private boolean field_16517;
 
-	public Window(class_3678 arg, class_323 arg2, WindowSettings windowSettings, String string, String string2) {
-		this.field_5195 = arg2;
-		this.method_4481();
-		this.method_4474("Pre startup");
-		this.field_5176 = arg;
-		Optional<VideoMode> optional = VideoMode.method_1665(string);
+	public Window(WindowEventHandler windowEventHandler, MonitorTracker monitorTracker, WindowSettings windowSettings, String string, String string2) {
+		this.monitorTracker = monitorTracker;
+		this.throwExceptionOnGlError();
+		this.setPhase("Pre startup");
+		this.windowEventHandler = windowEventHandler;
+		Optional<VideoMode> optional = VideoMode.fromString(string);
 		if (optional.isPresent()) {
 			this.videoMode = optional;
 		} else if (windowSettings.fullscreenWidth.isPresent() && windowSettings.fullscreenHeight.isPresent()) {
@@ -73,7 +72,7 @@ public final class Window implements AutoCloseable {
 		}
 
 		this.field_5177 = this.fullscreen = windowSettings.fullscreen;
-		this.monitor = arg2.method_1680(GLFW.glfwGetPrimaryMonitor());
+		this.monitor = monitorTracker.getMonitor(GLFW.glfwGetPrimaryMonitor());
 		VideoMode videoMode = this.monitor.findClosestVideoMode(this.fullscreen ? this.videoMode : Optional.empty());
 		this.field_5174 = this.field_5182 = windowSettings.width > 0 ? windowSettings.width : 1;
 		this.field_5184 = this.field_5197 = windowSettings.height > 0 ? windowSettings.height : 1;
@@ -81,7 +80,7 @@ public final class Window implements AutoCloseable {
 		this.field_5185 = this.field_5198 = this.monitor.getViewportY() + videoMode.getHeight() / 2 - this.field_5197 / 2;
 		GLFW.glfwDefaultWindowHints();
 		this.handle = GLFW.glfwCreateWindow(this.field_5182, this.field_5197, string2, this.fullscreen ? this.monitor.getHandle() : 0L, 0L);
-		this.method_4503();
+		this.getMonitor();
 		GLFW.glfwMakeContextCurrent(this.handle);
 		GL.createCapabilities();
 		this.method_4479();
@@ -173,26 +172,26 @@ public final class Window implements AutoCloseable {
 		return var6;
 	}
 
-	public void method_4474(String string) {
-		this.field_5192 = string;
+	public void setPhase(String string) {
+		this.phase = string;
 	}
 
-	private void method_4481() {
-		GLFW.glfwSetErrorCallback(Window::method_4501);
+	private void throwExceptionOnGlError() {
+		GLFW.glfwSetErrorCallback(Window::throwExceptionForGlError);
 	}
 
-	private static void method_4501(int i, long l) {
+	private static void throwExceptionForGlError(int i, long l) {
 		throw new IllegalStateException("GLFW error " + i + ": " + MemoryUtil.memUTF8(l));
 	}
 
-	public void method_4482(int i, long l) {
+	public void logGlError(int i, long l) {
 		String string = MemoryUtil.memUTF8(l);
 		LOGGER.error("########## GL ERROR ##########");
-		LOGGER.error("@ {}", this.field_5192);
+		LOGGER.error("@ {}", this.phase);
 		LOGGER.error("{}: {}", i, string);
 	}
 
-	public void method_4513() {
+	public void logOnGlError() {
 		GLFW.glfwSetErrorCallback(this.errorCallback).free();
 	}
 
@@ -208,14 +207,14 @@ public final class Window implements AutoCloseable {
 		GLFW.glfwTerminate();
 	}
 
-	private void method_4503() {
-		this.monitor = this.field_5195.method_1681(this);
+	private void getMonitor() {
+		this.monitor = this.monitorTracker.getMonitor(this);
 	}
 
 	private void method_4478(long l, int i, int j) {
 		this.field_5183 = i;
 		this.field_5198 = j;
-		this.method_4503();
+		this.getMonitor();
 	}
 
 	private void onSizeChanged(long l, int i, int j) {
@@ -226,7 +225,7 @@ public final class Window implements AutoCloseable {
 				this.windowWidth = i;
 				this.windowHeight = j;
 				if (this.getWindowWidth() != k || this.getWindowHeight() != m) {
-					this.field_5176.onResolutionChanged();
+					this.windowEventHandler.onResolutionChanged();
 				}
 			}
 		}
@@ -243,12 +242,12 @@ public final class Window implements AutoCloseable {
 	private void method_4488(long l, int i, int j) {
 		this.field_5182 = i;
 		this.field_5197 = j;
-		this.method_4503();
+		this.getMonitor();
 	}
 
 	private void method_4494(long l, boolean bl) {
 		if (l == this.handle) {
-			this.field_5176.method_15995(bl);
+			this.windowEventHandler.setWindowFocused(bl);
 		}
 	}
 
@@ -260,7 +259,7 @@ public final class Window implements AutoCloseable {
 		return this.framerateLimit;
 	}
 
-	public void method_15998(boolean bl) {
+	public void setFullscreen(boolean bl) {
 		GLFW.glfwSwapBuffers(this.handle);
 		pollEvents();
 		if (this.fullscreen != this.field_5177) {
@@ -269,7 +268,7 @@ public final class Window implements AutoCloseable {
 		}
 	}
 
-	public void method_15996() {
+	public void waitForFramerateLimit() {
 		double d = this.field_5189 + 1.0 / (double)this.getFramerateLimit();
 
 		double e;
@@ -313,7 +312,7 @@ public final class Window implements AutoCloseable {
 		if (this.fullscreen && this.field_5186) {
 			this.field_5186 = false;
 			this.method_4479();
-			this.field_5176.onResolutionChanged();
+			this.windowEventHandler.onResolutionChanged();
 		}
 	}
 
@@ -352,9 +351,9 @@ public final class Window implements AutoCloseable {
 	private void method_4485(boolean bl) {
 		try {
 			this.method_4479();
-			this.field_5176.onResolutionChanged();
+			this.windowEventHandler.onResolutionChanged();
 			this.setVsync(bl);
-			this.field_5176.method_15994(false);
+			this.windowEventHandler.updateDisplay(false);
 		} catch (Exception var3) {
 			LOGGER.error("Couldn't toggle fullscreen", (Throwable)var3);
 		}

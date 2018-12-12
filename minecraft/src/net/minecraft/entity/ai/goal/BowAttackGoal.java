@@ -80,7 +80,7 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttacker> extends Goa
 				this.field_6576.getNavigation().method_6340();
 				this.field_6568++;
 			} else {
-				this.field_6576.getNavigation().method_6335(livingEntity, this.field_6569);
+				this.field_6576.getNavigation().startMovingTo(livingEntity, this.field_6569);
 				this.field_6568 = -1;
 			}
 

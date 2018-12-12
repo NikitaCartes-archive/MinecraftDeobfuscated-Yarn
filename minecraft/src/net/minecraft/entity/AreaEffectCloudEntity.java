@@ -19,7 +19,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.particle.Particle;
+import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
@@ -36,7 +36,7 @@ public class AreaEffectCloudEntity extends Entity {
 	private static final TrackedData<Float> RADIUS = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Integer> COLOR = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> WAITING = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final TrackedData<Particle> PARTICLE_ID = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.field_13314);
+	private static final TrackedData<ParticleParameters> PARTICLE_ID = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.PARTICLE);
 	private Potion potion = Potions.field_8984;
 	private final List<StatusEffectInstance> effects = Lists.<StatusEffectInstance>newArrayList();
 	private final Map<Entity, Integer> affectedEntities = Maps.<Entity, Integer>newHashMap();
@@ -76,7 +76,7 @@ public class AreaEffectCloudEntity extends Entity {
 		double g = this.z;
 		this.setSize(f * 2.0F, 0.5F);
 		this.setPosition(d, e, g);
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			this.getDataTracker().set(RADIUS, f);
 		}
 	}
@@ -107,7 +107,7 @@ public class AreaEffectCloudEntity extends Entity {
 		}
 	}
 
-	public int method_5606() {
+	public int getColor() {
 		return this.getDataTracker().get(COLOR);
 	}
 
@@ -116,12 +116,12 @@ public class AreaEffectCloudEntity extends Entity {
 		this.getDataTracker().set(COLOR, i);
 	}
 
-	public Particle getParticleType() {
+	public ParticleParameters method_5600() {
 		return this.getDataTracker().get(PARTICLE_ID);
 	}
 
-	public void setParticleType(Particle particle) {
-		this.getDataTracker().set(PARTICLE_ID, particle);
+	public void method_5608(ParticleParameters particleParameters) {
+		this.getDataTracker().set(PARTICLE_ID, particleParameters);
 	}
 
 	protected void setWaiting(boolean bl) {
@@ -145,8 +145,8 @@ public class AreaEffectCloudEntity extends Entity {
 		super.update();
 		boolean bl = this.isWaiting();
 		float f = this.getRadius();
-		if (this.world.isRemote) {
-			Particle particle = this.getParticleType();
+		if (this.world.isClient) {
+			ParticleParameters particleParameters = this.method_5600();
 			if (bl) {
 				if (this.random.nextBoolean()) {
 					for (int i = 0; i < 2; i++) {
@@ -154,17 +154,23 @@ public class AreaEffectCloudEntity extends Entity {
 						float h = MathHelper.sqrt(this.random.nextFloat()) * 0.2F;
 						float j = MathHelper.cos(g) * h;
 						float k = MathHelper.sin(g) * h;
-						if (particle.getParticleType() == ParticleTypes.field_11226) {
-							int l = this.random.nextBoolean() ? 16777215 : this.method_5606();
+						if (particleParameters.getType() == ParticleTypes.field_11226) {
+							int l = this.random.nextBoolean() ? 16777215 : this.getColor();
 							int m = l >> 16 & 0xFF;
 							int n = l >> 8 & 0xFF;
 							int o = l & 0xFF;
 							this.world
 								.method_8494(
-									particle, this.x + (double)j, this.y, this.z + (double)k, (double)((float)m / 255.0F), (double)((float)n / 255.0F), (double)((float)o / 255.0F)
+									particleParameters,
+									this.x + (double)j,
+									this.y,
+									this.z + (double)k,
+									(double)((float)m / 255.0F),
+									(double)((float)n / 255.0F),
+									(double)((float)o / 255.0F)
 								);
 						} else {
-							this.world.method_8494(particle, this.x + (double)j, this.y, this.z + (double)k, 0.0, 0.0, 0.0);
+							this.world.method_8494(particleParameters, this.x + (double)j, this.y, this.z + (double)k, 0.0, 0.0, 0.0);
 						}
 					}
 				}
@@ -176,19 +182,31 @@ public class AreaEffectCloudEntity extends Entity {
 					float j = MathHelper.sqrt(this.random.nextFloat()) * f;
 					float k = MathHelper.cos(h) * j;
 					float r = MathHelper.sin(h) * j;
-					if (particle.getParticleType() == ParticleTypes.field_11226) {
-						int m = this.method_5606();
+					if (particleParameters.getType() == ParticleTypes.field_11226) {
+						int m = this.getColor();
 						int n = m >> 16 & 0xFF;
 						int o = m >> 8 & 0xFF;
 						int s = m & 0xFF;
 						this.world
 							.method_8494(
-								particle, this.x + (double)k, this.y, this.z + (double)r, (double)((float)n / 255.0F), (double)((float)o / 255.0F), (double)((float)s / 255.0F)
+								particleParameters,
+								this.x + (double)k,
+								this.y,
+								this.z + (double)r,
+								(double)((float)n / 255.0F),
+								(double)((float)o / 255.0F),
+								(double)((float)s / 255.0F)
 							);
 					} else {
 						this.world
 							.method_8494(
-								particle, this.x + (double)k, this.y, this.z + (double)r, (0.5 - this.random.nextDouble()) * 0.15, 0.01F, (0.5 - this.random.nextDouble()) * 0.15
+								particleParameters,
+								this.x + (double)k,
+								this.y,
+								this.z + (double)r,
+								(0.5 - this.random.nextDouble()) * 0.15,
+								0.01F,
+								(0.5 - this.random.nextDouble()) * 0.15
 							);
 					}
 				}
@@ -332,7 +350,7 @@ public class AreaEffectCloudEntity extends Entity {
 		this.ownerUuid = compoundTag.getUuid("OwnerUUID");
 		if (compoundTag.containsKey("Particle", 8)) {
 			try {
-				this.setParticleType(ParticleArgumentType.method_9418(new StringReader(compoundTag.getString("Particle"))));
+				this.method_5608(ParticleArgumentType.method_9418(new StringReader(compoundTag.getString("Particle"))));
 			} catch (CommandSyntaxException var5) {
 				field_5935.warn("Couldn't load custom particle {}", compoundTag.getString("Particle"), var5);
 			}
@@ -369,13 +387,13 @@ public class AreaEffectCloudEntity extends Entity {
 		compoundTag.putFloat("RadiusOnUse", this.radiusOnUse);
 		compoundTag.putFloat("RadiusPerTick", this.radiusGrowth);
 		compoundTag.putFloat("Radius", this.getRadius());
-		compoundTag.putString("Particle", this.getParticleType().asString());
+		compoundTag.putString("Particle", this.method_5600().asString());
 		if (this.ownerUuid != null) {
 			compoundTag.putUuid("OwnerUUID", this.ownerUuid);
 		}
 
 		if (this.customColor) {
-			compoundTag.putInt("Color", this.method_5606());
+			compoundTag.putInt("Color", this.getColor());
 		}
 
 		if (this.potion != Potions.field_8984 && this.potion != null) {

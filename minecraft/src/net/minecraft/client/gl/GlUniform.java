@@ -7,7 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_278;
 import net.minecraft.class_3679;
-import net.minecraft.sortme.Matrix4f;
+import net.minecraft.client.util.math.Matrix4f;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.system.MemoryUtil;
@@ -86,14 +86,14 @@ public class GlUniform extends class_278 implements AutoCloseable {
 	}
 
 	@Override
-	public void method_1251(float f) {
+	public void put(float f) {
 		this.floatData.position(0);
 		this.floatData.put(0, f);
 		this.markStateDirty();
 	}
 
 	@Override
-	public void method_1255(float f, float g) {
+	public void put(float f, float g) {
 		this.floatData.position(0);
 		this.floatData.put(0, f);
 		this.floatData.put(1, g);
@@ -101,7 +101,7 @@ public class GlUniform extends class_278 implements AutoCloseable {
 	}
 
 	@Override
-	public void method_1249(float f, float g, float h) {
+	public void put(float f, float g, float h) {
 		this.floatData.position(0);
 		this.floatData.put(0, f);
 		this.floatData.put(1, g);
@@ -110,7 +110,7 @@ public class GlUniform extends class_278 implements AutoCloseable {
 	}
 
 	@Override
-	public void method_1254(float f, float g, float h, float i) {
+	public void put(float f, float g, float h, float i) {
 		this.floatData.position(0);
 		this.floatData.put(f);
 		this.floatData.put(g);
@@ -143,7 +143,7 @@ public class GlUniform extends class_278 implements AutoCloseable {
 	}
 
 	@Override
-	public void method_1248(int i, int j, int k, int l) {
+	public void put(int i, int j, int k, int l) {
 		this.intData.position(0);
 		if (this.dataType >= 0) {
 			this.intData.put(0, i);
@@ -165,7 +165,7 @@ public class GlUniform extends class_278 implements AutoCloseable {
 	}
 
 	@Override
-	public void method_1253(float[] fs) {
+	public void put(float[] fs) {
 		if (fs.length < this.count) {
 			LOGGER.warn("Uniform.set called with a too-small value array (expected {}, got {}). Ignoring.", this.count, fs.length);
 		} else {
@@ -179,7 +179,7 @@ public class GlUniform extends class_278 implements AutoCloseable {
 	@Override
 	public void method_1250(Matrix4f matrix4f) {
 		this.floatData.position(0);
-		matrix4f.method_4932(this.floatData);
+		matrix4f.putIntoBuffer(this.floatData);
 		this.markStateDirty();
 	}
 

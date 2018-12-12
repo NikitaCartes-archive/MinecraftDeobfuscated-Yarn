@@ -1,13 +1,14 @@
 package net.minecraft.state.property;
 
 import java.util.function.Predicate;
-import net.minecraft.class_2760;
+import net.minecraft.block.enums.Attachment;
 import net.minecraft.block.enums.BambooLeaves;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.block.enums.ComparatorMode;
 import net.minecraft.block.enums.DoorHinge;
+import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.enums.Instrument;
 import net.minecraft.block.enums.PistonType;
 import net.minecraft.block.enums.RailShape;
@@ -54,18 +55,19 @@ public class Properties {
 	public static final BooleanProperty EAST_BOOL = BooleanProperty.create("east");
 	public static final BooleanProperty SOUTH_BOOL = BooleanProperty.create("south");
 	public static final BooleanProperty WEST_BOOL = BooleanProperty.create("west");
-	public static final DirectionProperty field_12525 = DirectionProperty.method_11845(
+	public static final DirectionProperty FACING = DirectionProperty.create(
 		"facing", Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.UP, Direction.DOWN
 	);
-	public static final DirectionProperty field_12545 = DirectionProperty.create("facing", (Predicate<Direction>)(direction -> direction != Direction.UP));
-	public static final DirectionProperty field_12481 = DirectionProperty.create("facing", Direction.class_2353.HORIZONTAL);
+	public static final DirectionProperty FACING_HOPPER = DirectionProperty.create("facing", (Predicate<Direction>)(direction -> direction != Direction.UP));
+	public static final DirectionProperty FACING_HORIZONTAL = DirectionProperty.create("facing", Direction.class_2353.HORIZONTAL);
 	public static final EnumProperty<WallMountLocation> WALL_MOUNT_LOCAITON = EnumProperty.create("face", WallMountLocation.class);
+	public static final EnumProperty<Attachment> ATTACHMENT = EnumProperty.create("attachment", Attachment.class);
 	public static final EnumProperty<WireConnection> WIRE_CONNECTION_EAST = EnumProperty.create("east", WireConnection.class);
 	public static final EnumProperty<WireConnection> WIRE_CONNECTION_NORTH = EnumProperty.create("north", WireConnection.class);
 	public static final EnumProperty<WireConnection> WIRE_CONNECTION_SOUTH = EnumProperty.create("south", WireConnection.class);
 	public static final EnumProperty<WireConnection> WIRE_CONNECTION_WEST = EnumProperty.create("west", WireConnection.class);
-	public static final EnumProperty<BlockHalf> DOOR_HALF = EnumProperty.create("half", BlockHalf.class);
-	public static final EnumProperty<class_2760> field_12518 = EnumProperty.create("half", class_2760.class);
+	public static final EnumProperty<DoubleBlockHalf> DOUBLE_BLOCK_HALF = EnumProperty.create("half", DoubleBlockHalf.class);
+	public static final EnumProperty<BlockHalf> BLOCK_HALF = EnumProperty.create("half", BlockHalf.class);
 	public static final EnumProperty<RailShape> RAIL_SHAPE = EnumProperty.create("shape", RailShape.class);
 	public static final EnumProperty<RailShape> RAIL_SHAPE_STRAIGHT = EnumProperty.create(
 		"shape",

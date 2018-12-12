@@ -8,8 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.BoulderFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class ForestRockFeature extends Feature<BoulderFeatureConfig> {
 	public ForestRockFeature(Function<Dynamic<?>, ? extends BoulderFeatureConfig> function) {
@@ -17,7 +16,7 @@ public class ForestRockFeature extends Feature<BoulderFeatureConfig> {
 	}
 
 	public boolean method_12813(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, Random random, BlockPos blockPos, BoulderFeatureConfig boulderFeatureConfig
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BoulderFeatureConfig boulderFeatureConfig
 	) {
 		while (blockPos.getY() > 3) {
 			if (!iWorld.isAir(blockPos.down())) {

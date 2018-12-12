@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import javax.annotation.Nullable;
 import net.minecraft.datafixers.TypeReferences;
+import net.minecraft.util.PackedIntegerArray;
 
 public class class_1191 extends DataFix {
 	private static final int[][] field_5687 = new int[][]{{-1, 0, 0}, {1, 0, 0}, {0, -1, 0}, {0, 1, 0}, {0, 0, -1}, {0, 0, 1}};
@@ -288,17 +289,17 @@ public class class_1191 extends DataFix {
 			}
 
 			int m = this.field_5690.get(l);
-			if (1 << this.field_5696.method_15213() <= m) {
-				class_3508 lv = new class_3508(this.field_5696.method_15213() + 1, 4096);
+			if (1 << this.field_5696.getElementBits() <= m) {
+				PackedIntegerArray packedIntegerArray = new PackedIntegerArray(this.field_5696.getElementBits() + 1, 4096);
 
 				for (int n = 0; n < 4096; n++) {
-					lv.method_15210(n, this.field_5696.method_15211(n));
+					packedIntegerArray.set(n, this.field_5696.get(n));
 				}
 
-				this.field_5696 = lv;
+				this.field_5696 = packedIntegerArray;
 			}
 
-			this.field_5696.method_15210(i, m);
+			this.field_5696.set(i, m);
 		}
 	}
 
@@ -308,7 +309,7 @@ public class class_1191 extends DataFix {
 		protected final List<Dynamic<?>> field_5692;
 		protected final int field_5694;
 		@Nullable
-		protected class_3508 field_5696;
+		protected PackedIntegerArray field_5696;
 
 		public class_1193(Typed<?> typed, Schema schema) {
 			if (!Objects.equals(schema.getType(TypeReferences.BLOCK_STATE), this.field_5695)) {
@@ -328,14 +329,14 @@ public class class_1191 extends DataFix {
 			} else {
 				long[] ls = ((LongStream)dynamic.get("BlockStates").flatMap(Dynamic::getLongStream).get()).toArray();
 				int i = Math.max(4, DataFixUtils.ceillog2(this.field_5692.size()));
-				this.field_5696 = new class_3508(i, 4096, ls);
+				this.field_5696 = new PackedIntegerArray(i, 4096, ls);
 			}
 		}
 
 		public Typed<?> method_5083(Typed<?> typed) {
 			return this.method_5079()
 				? typed
-				: typed.update(DSL.remainderFinder(), dynamic -> dynamic.set("BlockStates", dynamic.createLongList(Arrays.stream(this.field_5696.asLongArray()))))
+				: typed.update(DSL.remainderFinder(), dynamic -> dynamic.set("BlockStates", dynamic.createLongList(Arrays.stream(this.field_5696.getStorage()))))
 					.set(
 						this.field_5693,
 						(List<Pair<String, Dynamic<?>>>)this.field_5692
@@ -350,7 +351,7 @@ public class class_1191 extends DataFix {
 		}
 
 		public int method_5075(int i) {
-			return this.field_5696.method_15211(i);
+			return this.field_5696.get(i);
 		}
 
 		protected int method_5082(String string, boolean bl, int i) {

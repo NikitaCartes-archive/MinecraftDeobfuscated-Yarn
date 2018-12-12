@@ -32,15 +32,15 @@ public class TNTPrimedEntityRenderer extends EntityRenderer<PrimedTNTEntity> {
 		}
 
 		float i = (1.0F - ((float)primedTNTEntity.getFuseTimer() - h + 1.0F) / 100.0F) * 0.8F;
-		this.method_3925(primedTNTEntity);
+		this.bindEntityTexture(primedTNTEntity);
 		GlStateManager.rotatef(-90.0F, 0.0F, 1.0F, 0.0F);
 		GlStateManager.translatef(-0.5F, -0.5F, 0.5F);
-		blockRenderManager.render(Blocks.field_10375.getDefaultState(), primedTNTEntity.method_5718());
+		blockRenderManager.renderDynamic(Blocks.field_10375.getDefaultState(), primedTNTEntity.method_5718());
 		GlStateManager.translatef(0.0F, 0.0F, 1.0F);
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.enableColorMaterial();
-			GlStateManager.setupSolidRenderingTextureCombine(this.method_3929(primedTNTEntity));
-			blockRenderManager.render(Blocks.field_10375.getDefaultState(), 1.0F);
+			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(primedTNTEntity));
+			blockRenderManager.renderDynamic(Blocks.field_10375.getDefaultState(), 1.0F);
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		} else if (primedTNTEntity.getFuseTimer() / 5 % 2 == 0) {
@@ -51,7 +51,7 @@ public class TNTPrimedEntityRenderer extends EntityRenderer<PrimedTNTEntity> {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, i);
 			GlStateManager.polygonOffset(-3.0F, -3.0F);
 			GlStateManager.enablePolygonOffset();
-			blockRenderManager.render(Blocks.field_10375.getDefaultState(), 1.0F);
+			blockRenderManager.renderDynamic(Blocks.field_10375.getDefaultState(), 1.0F);
 			GlStateManager.polygonOffset(0.0F, 0.0F);
 			GlStateManager.disablePolygonOffset();
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -61,7 +61,7 @@ public class TNTPrimedEntityRenderer extends EntityRenderer<PrimedTNTEntity> {
 		}
 
 		GlStateManager.popMatrix();
-		super.method_3936(primedTNTEntity, d, e, f, g, h);
+		super.render(primedTNTEntity, d, e, f, g, h);
 	}
 
 	protected Identifier getTexture(PrimedTNTEntity primedTNTEntity) {

@@ -10,7 +10,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
 
 public class CoralClawFeature extends CoralFeature {
 	public CoralClawFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
@@ -30,34 +29,34 @@ public class CoralClawFeature extends CoralFeature {
 			for (Direction direction2 : list.subList(0, i)) {
 				BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
 				int j = random.nextInt(2) + 1;
-				mutable.method_10098(direction2);
+				mutable.setOffset(direction2);
 				int k;
 				Direction direction3;
 				if (direction2 == direction) {
 					direction3 = direction;
 					k = random.nextInt(3) + 2;
 				} else {
-					mutable.method_10098(Direction.UP);
+					mutable.setOffset(Direction.UP);
 					Direction[] directions = new Direction[]{direction2, Direction.UP};
 					direction3 = directions[random.nextInt(directions.length)];
 					k = random.nextInt(3) + 3;
 				}
 
 				for (int l = 0; l < j && this.method_12864(iWorld, random, mutable, blockState); l++) {
-					mutable.method_10098(direction3);
+					mutable.setOffset(direction3);
 				}
 
-				mutable.method_10098(direction3.getOpposite());
-				mutable.method_10098(Direction.UP);
+				mutable.setOffset(direction3.getOpposite());
+				mutable.setOffset(Direction.UP);
 
 				for (int l = 0; l < k; l++) {
-					mutable.method_10098(direction);
+					mutable.setOffset(direction);
 					if (!this.method_12864(iWorld, random, mutable, blockState)) {
 						break;
 					}
 
 					if (random.nextFloat() < 0.25F) {
-						mutable.method_10098(Direction.UP);
+						mutable.setOffset(Direction.UP);
 					}
 				}
 			}

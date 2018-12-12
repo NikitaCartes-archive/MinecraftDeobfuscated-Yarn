@@ -3,7 +3,6 @@ package net.minecraft.block;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.ZombieEntity;
@@ -51,7 +50,7 @@ public class TurtleEggBlock extends Block {
 		if (!this.method_10835(world, entity)) {
 			super.onSteppedOn(world, blockPos, entity);
 		} else {
-			if (!world.isRemote && world.random.nextInt(i) == 0) {
+			if (!world.isClient && world.random.nextInt(i) == 0) {
 				this.method_10833(world, blockPos, world.getBlockState(blockPos));
 			}
 		}
@@ -78,12 +77,12 @@ public class TurtleEggBlock extends Block {
 			} else {
 				world.playSound(null, blockPos, SoundEvents.field_14902, SoundCategory.field_15245, 0.7F, 0.9F + random.nextFloat() * 0.2F);
 				world.clearBlockState(blockPos);
-				if (!world.isRemote) {
+				if (!world.isClient) {
 					for (int j = 0; j < blockState.get(field_11710); j++) {
 						world.fireWorldEvent(2001, blockPos, Block.getRawIdFromState(blockState));
 						TurtleEntity turtleEntity = new TurtleEntity(world);
 						turtleEntity.setBreedingAge(-24000);
-						turtleEntity.method_6683(blockPos);
+						turtleEntity.setHomePos(blockPos);
 						turtleEntity.setPositionAndAngles((double)blockPos.getX() + 0.3 + (double)j * 0.2, (double)blockPos.getY(), (double)blockPos.getZ() + 0.3, 0.0F, 0.0F);
 						world.spawnEntity(turtleEntity);
 					}
@@ -98,13 +97,13 @@ public class TurtleEggBlock extends Block {
 
 	@Override
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
-		if (this.method_10831(world, blockPos) && !world.isRemote) {
+		if (this.method_10831(world, blockPos) && !world.isClient) {
 			world.fireWorldEvent(2005, blockPos, 0);
 		}
 	}
 
 	private boolean method_10832(World world) {
-		float f = world.method_8400(1.0F);
+		float f = world.getSkyAngle(1.0F);
 		return (double)f < 0.69 && (double)f > 0.65 ? true : world.random.nextInt(500) == 0;
 	}
 

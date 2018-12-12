@@ -4,13 +4,12 @@ import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
-import net.minecraft.class_3747;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
+import net.minecraft.world.ModifiableTestableWorld;
 
-public class PineTreeFeature extends TreeFeature<DefaultFeatureConfig> {
+public class PineTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
 	private static final BlockState LOG = Blocks.field_10037.getDefaultState();
 	private static final BlockState LEAVES = Blocks.field_9988.getDefaultState();
 
@@ -19,7 +18,7 @@ public class PineTreeFeature extends TreeFeature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	public boolean method_12775(Set<BlockPos> set, class_3747 arg, Random random, BlockPos blockPos) {
+	public boolean generate(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos) {
 		int i = random.nextInt(5) + 7;
 		int j = i - random.nextInt(2) - 3;
 		int k = i - j;
@@ -41,7 +40,7 @@ public class PineTreeFeature extends TreeFeature<DefaultFeatureConfig> {
 					for (int p = blockPos.getZ() - n; p <= blockPos.getZ() + n && bl; p++) {
 						if (m < 0 || m >= 256) {
 							bl = false;
-						} else if (!method_16432(arg, mutable.set(o, m, p))) {
+						} else if (!canTreeReplace(modifiableTestableWorld, mutable.set(o, m, p))) {
 							bl = false;
 						}
 					}
@@ -50,8 +49,8 @@ public class PineTreeFeature extends TreeFeature<DefaultFeatureConfig> {
 
 			if (!bl) {
 				return false;
-			} else if (method_16430(arg, blockPos.down()) && blockPos.getY() < 256 - i - 1) {
-				this.method_16427(arg, blockPos.down());
+			} else if (isNaturalDirtOrGrass(modifiableTestableWorld, blockPos.down()) && blockPos.getY() < 256 - i - 1) {
+				this.setToDirt(modifiableTestableWorld, blockPos.down());
 				int m = 0;
 
 				for (int n = blockPos.getY() + i; n >= blockPos.getY() + j; n--) {
@@ -62,8 +61,8 @@ public class PineTreeFeature extends TreeFeature<DefaultFeatureConfig> {
 							int r = px - blockPos.getZ();
 							if (Math.abs(o) != m || Math.abs(r) != m || m <= 0) {
 								BlockPos blockPos2 = new BlockPos(q, n, px);
-								if (method_16420(arg, blockPos2)) {
-									this.method_13153(arg, blockPos2, LEAVES);
+								if (isAirOrLeaves(modifiableTestableWorld, blockPos2)) {
+									this.setBlockState(modifiableTestableWorld, blockPos2, LEAVES);
 								}
 							}
 						}
@@ -77,8 +76,8 @@ public class PineTreeFeature extends TreeFeature<DefaultFeatureConfig> {
 				}
 
 				for (int n = 0; n < i - 1; n++) {
-					if (method_16420(arg, blockPos.up(n))) {
-						this.method_12773(set, arg, blockPos.up(n), LOG);
+					if (isAirOrLeaves(modifiableTestableWorld, blockPos.up(n))) {
+						this.setBlockState(set, modifiableTestableWorld, blockPos.up(n), LOG);
 					}
 				}
 

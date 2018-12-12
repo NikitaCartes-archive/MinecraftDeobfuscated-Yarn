@@ -12,7 +12,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.item.TooltipOptions;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
@@ -22,9 +21,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemContainer;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.block.BlockItem;
 import net.minecraft.server.world.ServerWorld;
@@ -67,10 +66,10 @@ import net.minecraft.world.loot.context.Parameters;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Block implements ItemContainer {
+public class Block implements ItemProvider {
 	protected static final Logger LOGGER = LogManager.getLogger();
 	public static final IdList<BlockState> STATE_IDS = new IdList<>();
-	private static final Direction[] field_10644 = new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP};
+	private static final Direction[] FACINGS = new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP};
 	protected final int lightLevel;
 	protected final float hardness;
 	protected final float resistance;
@@ -82,7 +81,7 @@ public class Block implements ItemContainer {
 	protected final StateFactory<Block, BlockState> stateFactory;
 	private BlockState defaultState;
 	protected final boolean collidable;
-	private final boolean pistonExtension;
+	private final boolean dynamicBounds;
 	@Nullable
 	private Identifier dropTableId;
 	@Nullable
@@ -117,12 +116,12 @@ public class Block implements ItemContainer {
 
 	public static BlockState method_9582(BlockState blockState, BlockState blockState2, World world, BlockPos blockPos) {
 		VoxelShape voxelShape = VoxelShapes.method_1082(
-				blockState.method_11628(world, blockPos), blockState2.method_11628(world, blockPos), BooleanBiFunction.ONLY_SECOND
+				blockState.getCollisionShape(world, blockPos), blockState2.getCollisionShape(world, blockPos), BooleanBiFunction.ONLY_SECOND
 			)
 			.method_1096((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 
 		for (Entity entity : world.getVisibleEntities(null, voxelShape.getBoundingBox())) {
-			double d = VoxelShapes.method_1085(Direction.Axis.Y, entity.getBoundingBox().offset(0.0, 1.0, 0.0), Stream.of(voxelShape), -1.0);
+			double d = VoxelShapes.calculateMaxOffset(Direction.Axis.Y, entity.getBoundingBox().offset(0.0, 1.0, 0.0), Stream.of(voxelShape), -1.0);
 			entity.method_5859(entity.x, entity.y + 1.0 + d, entity.z);
 		}
 
@@ -159,12 +158,12 @@ public class Block implements ItemContainer {
 	}
 
 	@Deprecated
-	public void method_9528(BlockState blockState, IWorld iWorld, BlockPos blockPos, int i) {
+	public void updateNeighborStates(BlockState blockState, IWorld iWorld, BlockPos blockPos, int i) {
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-			for (Direction direction : field_10644) {
-				pooledMutable.set(blockPos).method_10118(direction);
+			for (Direction direction : FACINGS) {
+				pooledMutable.set(blockPos).setOffset(direction);
 				BlockState blockState2 = iWorld.getBlockState(pooledMutable);
-				BlockState blockState3 = blockState2.method_11578(direction.getOpposite(), blockState, iWorld, pooledMutable, blockPos);
+				BlockState blockState3 = blockState2.getStateForNeighborUpdate(direction.getOpposite(), blockState, iWorld, pooledMutable, blockPos);
 				replaceBlock(blockState2, blockState3, iWorld, pooledMutable, i);
 			}
 		}
@@ -178,9 +177,9 @@ public class Block implements ItemContainer {
 		BlockState blockState2 = blockState;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (Direction direction : field_10644) {
-			mutable.set(blockPos).method_10098(direction);
-			blockState2 = blockState2.method_11578(direction, iWorld.getBlockState(mutable), iWorld, blockPos, mutable);
+		for (Direction direction : FACINGS) {
+			mutable.set(blockPos).setOffset(direction);
+			blockState2 = blockState2.getStateForNeighborUpdate(direction, iWorld.getBlockState(mutable), iWorld, blockPos, mutable);
 		}
 
 		return blockState2;
@@ -189,7 +188,7 @@ public class Block implements ItemContainer {
 	public static void replaceBlock(BlockState blockState, BlockState blockState2, IWorld iWorld, BlockPos blockPos, int i) {
 		if (blockState2 != blockState) {
 			if (blockState2.isAir()) {
-				if (!iWorld.isRemote()) {
+				if (!iWorld.isClient()) {
 					iWorld.breakBlock(blockPos, (i & 32) == 0);
 				}
 			} else {
@@ -203,7 +202,9 @@ public class Block implements ItemContainer {
 	}
 
 	@Deprecated
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		return blockState;
 	}
 
@@ -229,7 +230,7 @@ public class Block implements ItemContainer {
 		this.hardness = settings.hardness;
 		this.randomTicks = settings.randomTicks;
 		this.friction = settings.friction;
-		this.pistonExtension = settings.pistonExtension;
+		this.dynamicBounds = settings.dynamicBounds;
 		this.dropTableId = settings.dropTableId;
 		this.stateFactory = builder.build(BlockState::new);
 		this.setDefaultState(this.stateFactory.getDefaultState());
@@ -255,7 +256,7 @@ public class Block implements ItemContainer {
 
 	@Deprecated
 	public final boolean method_16361(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return method_9614(blockState.method_11628(blockView, blockPos));
+		return isShapeFullCube(blockState.getCollisionShape(blockView, blockPos));
 	}
 
 	@Deprecated
@@ -269,7 +270,7 @@ public class Block implements ItemContainer {
 	}
 
 	public final boolean method_9555(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return blockState.blocksLight(blockView, blockPos);
+		return blockState.method_11603(blockView, blockPos);
 	}
 
 	@Deprecated
@@ -287,24 +288,24 @@ public class Block implements ItemContainer {
 	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, PlacementEnvironment placementEnvironment) {
 		switch (placementEnvironment) {
 			case field_50:
-				return !method_9614(blockState.method_11628(blockView, blockPos));
+				return !isShapeFullCube(blockState.getCollisionShape(blockView, blockPos));
 			case field_48:
 				return blockView.getFluidState(blockPos).matches(FluidTags.field_15517);
 			case field_51:
-				return !method_9614(blockState.method_11628(blockView, blockPos));
+				return !isShapeFullCube(blockState.getCollisionShape(blockView, blockPos));
 			default:
 				return false;
 		}
 	}
 
 	@Deprecated
-	public RenderTypeBlock getRenderType(BlockState blockState) {
-		return RenderTypeBlock.MODEL;
+	public BlockRenderType method_9604(BlockState blockState) {
+		return BlockRenderType.field_11458;
 	}
 
 	@Deprecated
 	public boolean method_9616(BlockState blockState, ItemPlacementContext itemPlacementContext) {
-		return this.material.method_15800() && itemPlacementContext.getItemStack().getItem() != this.getItem();
+		return this.material.isReplaceable() && itemPlacementContext.getItemStack().getItem() != this.getItem();
 	}
 
 	@Deprecated
@@ -321,7 +322,7 @@ public class Block implements ItemContainer {
 	}
 
 	@Deprecated
-	public boolean method_9552(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean shouldPostProcess(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return false;
 	}
 
@@ -332,10 +333,10 @@ public class Block implements ItemContainer {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static boolean method_9607(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		BlockPos blockPos2 = blockPos.method_10093(direction);
+	public static boolean shouldDrawSide(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+		BlockPos blockPos2 = blockPos.offset(direction);
 		BlockState blockState2 = blockView.getBlockState(blockPos2);
-		if (blockState.method_11592(blockState2, direction)) {
+		if (blockState.skipRenderingSide(blockState2, direction)) {
 			return false;
 		} else if (blockState2.isFullBoundsCubeForCulling()) {
 			Block.NeighborGroup neighborGroup = new Block.NeighborGroup(blockState, blockState2, direction);
@@ -344,8 +345,8 @@ public class Block implements ItemContainer {
 			if (b != 127) {
 				return b != 0;
 			} else {
-				VoxelShape voxelShape = blockState.method_16384(blockView, blockPos, direction);
-				VoxelShape voxelShape2 = blockState2.method_16384(blockView, blockPos2, direction.getOpposite());
+				VoxelShape voxelShape = blockState.getCullShape(blockView, blockPos, direction);
+				VoxelShape voxelShape2 = blockState2.getCullShape(blockView, blockPos2, direction.getOpposite());
 				boolean bl = VoxelShapes.compareShapes(voxelShape, voxelShape2, BooleanBiFunction.ONLY_FIRST);
 				if (object2ByteLinkedOpenHashMap.size() == 200) {
 					object2ByteLinkedOpenHashMap.removeLastByte();
@@ -366,7 +367,7 @@ public class Block implements ItemContainer {
 
 	@Deprecated
 	@Environment(EnvType.CLIENT)
-	public boolean method_9522(BlockState blockState, BlockState blockState2, Direction direction) {
+	public boolean skipRenderingSide(BlockState blockState, BlockState blockState2, Direction direction) {
 		return false;
 	}
 
@@ -376,7 +377,7 @@ public class Block implements ItemContainer {
 	}
 
 	@Deprecated
-	public VoxelShape method_9549(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		return this.collidable ? blockState.getBoundingShape(blockView, blockPos) : VoxelShapes.empty();
 	}
 
@@ -390,32 +391,32 @@ public class Block implements ItemContainer {
 		return VoxelShapes.empty();
 	}
 
-	public static boolean method_9501(VoxelShape voxelShape, Direction direction) {
-		VoxelShape voxelShape2 = voxelShape.method_1098(direction);
-		return method_9614(voxelShape2);
+	public static boolean isFaceFullCube(VoxelShape voxelShape, Direction direction) {
+		VoxelShape voxelShape2 = voxelShape.getFace(direction);
+		return isShapeFullCube(voxelShape2);
 	}
 
-	public static boolean method_9614(VoxelShape voxelShape) {
+	public static boolean isShapeFullCube(VoxelShape voxelShape) {
 		return !VoxelShapes.compareShapes(VoxelShapes.fullCube(), voxelShape, BooleanBiFunction.NOT_SAME);
 	}
 
 	@Deprecated
-	public final boolean method_9557(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public final boolean isFullOpaque(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		boolean bl = blockState.isFullBoundsCubeForCulling();
 		VoxelShape voxelShape = bl ? blockState.method_11615(blockView, blockPos) : VoxelShapes.empty();
-		return method_9614(voxelShape);
+		return isShapeFullCube(voxelShape);
 	}
 
-	public boolean method_9579(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return !method_9614(blockState.getBoundingShape(blockView, blockPos)) && blockState.getFluidState().isEmpty();
+	public boolean isTranslucent(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		return !isShapeFullCube(blockState.getBoundingShape(blockView, blockPos)) && blockState.getFluidState().isEmpty();
 	}
 
 	@Deprecated
-	public int method_9505(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		if (blockState.method_11598(blockView, blockPos)) {
+	public int getLightSubtracted(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		if (blockState.isFullOpaque(blockView, blockPos)) {
 			return blockView.getMaxLightLevel();
 		} else {
-			return blockState.method_11623(blockView, blockPos) ? 0 : 1;
+			return blockState.isTranslucent(blockView, blockPos) ? 0 : 1;
 		}
 	}
 
@@ -425,8 +426,8 @@ public class Block implements ItemContainer {
 	}
 
 	@Deprecated
-	public final boolean method_9599(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return !blockState.method_11598(blockView, blockPos) && blockState.method_11581(blockView, blockPos) == blockView.getMaxLightLevel();
+	public final boolean usesNeighborLightValues(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		return !blockState.isFullOpaque(blockView, blockPos) && blockState.getLightSubtracted(blockView, blockPos) == blockView.getMaxLightLevel();
 	}
 
 	public boolean canCollideWith(BlockState blockState) {
@@ -559,7 +560,7 @@ public class Block implements ItemContainer {
 	}
 
 	public static void dropStack(World world, BlockPos blockPos, ItemStack itemStack) {
-		if (!world.isRemote && !itemStack.isEmpty() && world.getGameRules().getBoolean("doTileDrops")) {
+		if (!world.isClient && !itemStack.isEmpty() && world.getGameRules().getBoolean("doTileDrops")) {
 			float f = 0.5F;
 			double d = (double)(world.random.nextFloat() * 0.5F) + 0.25;
 			double e = (double)(world.random.nextFloat() * 0.5F) + 0.25;
@@ -571,7 +572,7 @@ public class Block implements ItemContainer {
 	}
 
 	protected void dropExperience(World world, BlockPos blockPos, int i) {
-		if (!world.isRemote && world.getGameRules().getBoolean("doTileDrops")) {
+		if (!world.isClient && world.getGameRules().getBoolean("doTileDrops")) {
 			while (i > 0) {
 				int j = ExperienceOrbEntity.roundToOrbSize(i);
 				i -= j;
@@ -590,7 +591,7 @@ public class Block implements ItemContainer {
 		if (hitResult != null) {
 			HitResult hitResult2 = blockState.getRayTraceShape(world, blockPos).rayTrace(vec3d, vec3d2, blockPos);
 			if (hitResult2 != null && hitResult2.pos.subtract(vec3d).lengthSquared() < hitResult.pos.subtract(vec3d).lengthSquared()) {
-				hitResult.field_1327 = hitResult2.field_1327;
+				hitResult.side = hitResult2.side;
 			}
 		}
 
@@ -610,7 +611,7 @@ public class Block implements ItemContainer {
 	}
 
 	@Deprecated
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
 		return false;
@@ -629,7 +630,7 @@ public class Block implements ItemContainer {
 	}
 
 	@Deprecated
-	public int method_9524(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
 		return 0;
 	}
 
@@ -643,7 +644,7 @@ public class Block implements ItemContainer {
 	}
 
 	@Deprecated
-	public int method_9603(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+	public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
 		return 0;
 	}
 
@@ -659,7 +660,7 @@ public class Block implements ItemContainer {
 	}
 
 	public boolean canMobSpawnInside() {
-		return !this.material.method_15799() && !this.material.method_15797();
+		return !this.material.method_15799() && !this.material.isLiquid();
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -688,7 +689,7 @@ public class Block implements ItemContainer {
 	@Deprecated
 	@Environment(EnvType.CLIENT)
 	public float getAmbientOcclusionLightLevel(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return blockState.blocksLight(blockView, blockPos) ? 0.2F : 1.0F;
+		return blockState.method_11603(blockView, blockPos) ? 0.2F : 1.0F;
 	}
 
 	public void onLandedUpon(World world, BlockPos blockPos, Entity entity, float f) {
@@ -710,7 +711,7 @@ public class Block implements ItemContainer {
 
 	@Deprecated
 	public FluidState getFluidState(BlockState blockState) {
-		return Fluids.field_15906.getDefaultState();
+		return Fluids.EMPTY.getDefaultState();
 	}
 
 	public float getFrictionCoefficient() {
@@ -719,7 +720,7 @@ public class Block implements ItemContainer {
 
 	@Deprecated
 	@Environment(EnvType.CLIENT)
-	public long getPosRandom(BlockState blockState, BlockPos blockPos) {
+	public long getRenderingSeed(BlockState blockState, BlockPos blockPos) {
 		return MathHelper.hashCode(blockPos);
 	}
 
@@ -787,8 +788,8 @@ public class Block implements ItemContainer {
 		return Item.getItemFromBlock(this);
 	}
 
-	public boolean isPistonExtension() {
-		return this.pistonExtension;
+	public boolean hasDynamicBounds() {
+		return this.dynamicBounds;
 	}
 
 	public String toString() {
@@ -810,12 +811,12 @@ public class Block implements ItemContainer {
 	public static final class NeighborGroup {
 		private final BlockState self;
 		private final BlockState other;
-		private final Direction field_10653;
+		private final Direction facing;
 
 		public NeighborGroup(BlockState blockState, BlockState blockState2, Direction direction) {
 			this.self = blockState;
 			this.other = blockState2;
-			this.field_10653 = direction;
+			this.facing = direction;
 		}
 
 		public boolean equals(Object object) {
@@ -825,12 +826,12 @@ public class Block implements ItemContainer {
 				return false;
 			} else {
 				Block.NeighborGroup neighborGroup = (Block.NeighborGroup)object;
-				return this.self == neighborGroup.self && this.other == neighborGroup.other && this.field_10653 == neighborGroup.field_10653;
+				return this.self == neighborGroup.self && this.other == neighborGroup.other && this.facing == neighborGroup.facing;
 			}
 		}
 
 		public int hashCode() {
-			return Objects.hash(new Object[]{this.self, this.other, this.field_10653});
+			return Objects.hash(new Object[]{this.self, this.other, this.facing});
 		}
 	}
 
@@ -851,7 +852,7 @@ public class Block implements ItemContainer {
 		private boolean randomTicks;
 		private float friction = 0.6F;
 		private Identifier dropTableId;
-		private boolean pistonExtension;
+		private boolean dynamicBounds;
 
 		private Settings(Material material, MaterialColor materialColor) {
 			this.material = material;
@@ -881,7 +882,7 @@ public class Block implements ItemContainer {
 			settings.materialColor = block.materialColor;
 			settings.soundGroup = block.soundGroup;
 			settings.friction = block.getFrictionCoefficient();
-			settings.pistonExtension = block.pistonExtension;
+			settings.dynamicBounds = block.dynamicBounds;
 			return settings;
 		}
 
@@ -925,8 +926,8 @@ public class Block implements ItemContainer {
 			return this;
 		}
 
-		protected Block.Settings isPistonExtension() {
-			this.pistonExtension = true;
+		protected Block.Settings hasDynamicBounds() {
+			this.dynamicBounds = true;
 			return this;
 		}
 

@@ -6,8 +6,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.settings.ServerEntry;
 
 @Environment(EnvType.CLIENT)
 public class DirectConnectServerGui extends Gui {
@@ -43,8 +43,8 @@ public class DirectConnectServerGui extends Gui {
 		});
 		this.field_2463 = new TextFieldWidget(2, this.fontRenderer, this.width / 2 - 100, 116, 200, 20);
 		this.field_2463.setMaxLength(128);
-		this.field_2463.method_1876(true);
-		this.field_2463.setText(this.client.options.lastServer);
+		this.field_2463.setFocused(true);
+		this.field_2463.setText(this.client.field_1690.lastServer);
 		this.listeners.add(this.field_2463);
 		this.setFocused(this.field_2463);
 		this.method_2169();
@@ -65,8 +65,8 @@ public class DirectConnectServerGui extends Gui {
 	@Override
 	public void onClosed() {
 		this.client.keyboard.enableRepeatEvents(false);
-		this.client.options.lastServer = this.field_2463.getText();
-		this.client.options.write();
+		this.client.field_1690.lastServer = this.field_2463.getText();
+		this.client.field_1690.write();
 	}
 
 	@Override

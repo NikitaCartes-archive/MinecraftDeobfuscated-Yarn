@@ -5,7 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.particle.Particle;
+import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.PacketByteBuf;
@@ -21,13 +21,15 @@ public class ParticleClientPacket implements Packet<ClientPlayPacketListener> {
 	private float field_12260;
 	private int particleCount;
 	private boolean longDistance;
-	private Particle field_12259;
+	private ParticleParameters field_12259;
 
 	public ParticleClientPacket() {
 	}
 
-	public <T extends Particle> ParticleClientPacket(T particle, boolean bl, float f, float g, float h, float i, float j, float k, float l, int m) {
-		this.field_12259 = particle;
+	public <T extends ParticleParameters> ParticleClientPacket(
+		T particleParameters, boolean bl, float f, float g, float h, float i, float j, float k, float l, int m
+	) {
+		this.field_12259 = particleParameters;
 		this.longDistance = bl;
 		this.x = f;
 		this.y = g;
@@ -55,16 +57,16 @@ public class ParticleClientPacket implements Packet<ClientPlayPacketListener> {
 		this.offsetZ = packetByteBuf.readFloat();
 		this.field_12260 = packetByteBuf.readFloat();
 		this.particleCount = packetByteBuf.readInt();
-		this.field_12259 = this.method_11542(packetByteBuf, (ParticleType<Particle>)particleType);
+		this.field_12259 = this.method_11542(packetByteBuf, (ParticleType<ParticleParameters>)particleType);
 	}
 
-	private <T extends Particle> T method_11542(PacketByteBuf packetByteBuf, ParticleType<T> particleType) {
-		return particleType.method_10298().method_10297(particleType, packetByteBuf);
+	private <T extends ParticleParameters> T method_11542(PacketByteBuf packetByteBuf, ParticleType<T> particleType) {
+		return particleType.getParametersFactory().read(particleType, packetByteBuf);
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeInt(Registry.PARTICLE_TYPE.getRawId((ParticleType<? extends Particle>)this.field_12259.getParticleType()));
+		packetByteBuf.writeInt(Registry.PARTICLE_TYPE.getRawId((ParticleType<? extends ParticleParameters>)this.field_12259.getType()));
 		packetByteBuf.writeBoolean(this.longDistance);
 		packetByteBuf.writeFloat(this.x);
 		packetByteBuf.writeFloat(this.y);
@@ -74,7 +76,7 @@ public class ParticleClientPacket implements Packet<ClientPlayPacketListener> {
 		packetByteBuf.writeFloat(this.offsetZ);
 		packetByteBuf.writeFloat(this.field_12260);
 		packetByteBuf.writeInt(this.particleCount);
-		this.field_12259.method_10294(packetByteBuf);
+		this.field_12259.write(packetByteBuf);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -123,7 +125,7 @@ public class ParticleClientPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Particle method_11551() {
+	public ParticleParameters method_11551() {
 		return this.field_12259;
 	}
 

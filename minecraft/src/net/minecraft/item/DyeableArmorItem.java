@@ -1,12 +1,11 @@
 package net.minecraft.item;
 
-import net.minecraft.class_1741;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.nbt.CompoundTag;
 
 public class DyeableArmorItem extends ArmorItem {
-	public DyeableArmorItem(class_1741 arg, EquipmentSlot equipmentSlot, Item.Settings settings) {
-		super(arg, equipmentSlot, settings);
+	public DyeableArmorItem(ArmorMaterial armorMaterial, EquipmentSlot equipmentSlot, Item.Settings settings) {
+		super(armorMaterial, equipmentSlot, settings);
 	}
 
 	public boolean hasColor(ItemStack itemStack) {

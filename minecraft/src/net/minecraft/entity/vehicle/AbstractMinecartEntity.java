@@ -125,11 +125,11 @@ public abstract class AbstractMinecartEntity extends Entity implements Nameable 
 	@Nullable
 	@Override
 	public BoundingBox method_5708(Entity entity) {
-		return entity.method_5810() ? entity.getBoundingBox() : null;
+		return entity.isPushable() ? entity.getBoundingBox() : null;
 	}
 
 	@Override
-	public boolean method_5810() {
+	public boolean isPushable() {
 		return true;
 	}
 
@@ -140,14 +140,14 @@ public abstract class AbstractMinecartEntity extends Entity implements Nameable 
 
 	@Override
 	public boolean damage(DamageSource damageSource, float f) {
-		if (this.world.isRemote || this.invalid) {
+		if (this.world.isClient || this.invalid) {
 			return true;
 		} else if (this.isInvulnerableTo(damageSource)) {
 			return false;
 		} else {
 			this.method_7524(-this.method_7522());
 			this.method_7509(10);
-			this.method_5785();
+			this.scheduleVelocityUpdate();
 			this.method_7520(this.method_7521() + f * 10.0F);
 			boolean bl = damageSource.getAttacker() instanceof PlayerEntity && ((PlayerEntity)damageSource.getAttacker()).abilities.creativeMode;
 			if (bl || this.method_7521() > 40.0F) {
@@ -190,7 +190,7 @@ public abstract class AbstractMinecartEntity extends Entity implements Nameable 
 
 	@Override
 	public Direction method_5755() {
-		return this.field_7660 ? this.method_5735().getOpposite().rotateYClockwise() : this.method_5735().rotateYClockwise();
+		return this.field_7660 ? this.getHorizontalFacing().getOpposite().rotateYClockwise() : this.getHorizontalFacing().rotateYClockwise();
 	}
 
 	@Override
@@ -207,8 +207,8 @@ public abstract class AbstractMinecartEntity extends Entity implements Nameable 
 			this.destroy();
 		}
 
-		if (!this.world.isRemote && this.world instanceof ServerWorld) {
-			this.world.getProfiler().begin("portal");
+		if (!this.world.isClient && this.world instanceof ServerWorld) {
+			this.world.getProfiler().push("portal");
 			MinecraftServer minecraftServer = this.world.getServer();
 			int i = this.getMaxPortalTime();
 			if (this.inPortal) {
@@ -242,10 +242,10 @@ public abstract class AbstractMinecartEntity extends Entity implements Nameable 
 				this.portalCooldown--;
 			}
 
-			this.world.getProfiler().end();
+			this.world.getProfiler().pop();
 		}
 
-		if (this.world.isRemote) {
+		if (this.world.isClient) {
 			if (this.field_7669 > 0) {
 				double d = this.x + (this.field_7665 - this.x) / (double)this.field_7669;
 				double e = this.y + (this.field_7666 - this.y) / (double)this.field_7669;
@@ -322,7 +322,7 @@ public abstract class AbstractMinecartEntity extends Entity implements Nameable 
 				}
 			} else {
 				for (Entity entity2 : this.world.getVisibleEntities(this, this.getBoundingBox().expand(0.2F, 0.0, 0.2F))) {
-					if (!this.hasPassenger(entity2) && entity2.method_5810() && entity2 instanceof AbstractMinecartEntity) {
+					if (!this.hasPassenger(entity2) && entity2.isPushable() && entity2 instanceof AbstractMinecartEntity) {
 						entity2.pushAwayFrom(this);
 					}
 				}
@@ -660,7 +660,7 @@ public abstract class AbstractMinecartEntity extends Entity implements Nameable 
 
 	@Override
 	public void pushAwayFrom(Entity entity) {
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			if (!entity.noClip && !this.noClip) {
 				if (!this.hasPassenger(entity)) {
 					double d = entity.x - this.x;
@@ -679,8 +679,8 @@ public abstract class AbstractMinecartEntity extends Entity implements Nameable 
 						e *= g;
 						d *= 0.1F;
 						e *= 0.1F;
-						d *= (double)(1.0F - this.field_5968);
-						e *= (double)(1.0F - this.field_5968);
+						d *= (double)(1.0F - this.pushSpeedReduction);
+						e *= (double)(1.0F - this.pushSpeedReduction);
 						d *= 0.5;
 						e *= 0.5;
 						if (entity instanceof AbstractMinecartEntity) {

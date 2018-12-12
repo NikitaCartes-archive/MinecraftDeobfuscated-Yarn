@@ -2,8 +2,8 @@ package net.minecraft.client.tutorial;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_372;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stat.Stats;
@@ -18,7 +18,7 @@ public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
 	private static final TextComponent TITLE = new TranslatableTextComponent("tutorial.craft_planks.title");
 	private static final TextComponent DESCRIPTION = new TranslatableTextComponent("tutorial.craft_planks.description");
 	private final TutorialManager manager;
-	private class_372 field_5610;
+	private TutorialToast field_5610;
 	private int ticks;
 
 	public CraftPlanksTutorialStepHandler(TutorialManager tutorialManager) {
@@ -47,7 +47,7 @@ public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
 			}
 
 			if (this.ticks >= 1200 && this.field_5610 == null) {
-				this.field_5610 = new class_372(class_372.class_373.field_2236, TITLE, DESCRIPTION, false);
+				this.field_5610 = new TutorialToast(TutorialToast.class_373.field_2236, TITLE, DESCRIPTION, false);
 				this.manager.getClient().getToastManager().add(this.field_5610);
 			}
 		}
@@ -71,7 +71,7 @@ public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
 
 	public static boolean method_4895(ClientPlayerEntity clientPlayerEntity, Tag<Item> tag) {
 		for (Item item : tag.values()) {
-			if (clientPlayerEntity.getStats().method_15025(Stats.field_15370.method_14956(item)) > 0) {
+			if (clientPlayerEntity.getStats().getStat(Stats.field_15370.method_14956(item)) > 0) {
 				return true;
 			}
 		}

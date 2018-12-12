@@ -39,7 +39,7 @@ public class QueryResponseHandler extends RconBase {
 
 	public QueryResponseHandler(DedicatedServer dedicatedServer) {
 		super(dedicatedServer, "Query Listener");
-		this.queryPort = dedicatedServer.method_16705().field_16831;
+		this.queryPort = dedicatedServer.getProperties().queryPort;
 		this.hostname = dedicatedServer.getHostname();
 		this.field_14457 = dedicatedServer.getPort();
 		this.field_14445 = dedicatedServer.getMotd();
@@ -113,7 +113,7 @@ public class QueryResponseHandler extends RconBase {
 	}
 
 	private byte[] method_14747(DatagramPacket datagramPacket) throws IOException {
-		long l = SystemUtil.getMeasuringTimeMili();
+		long l = SystemUtil.getMeasuringTimeMs();
 		if (l < this.field_14450 + 5000L) {
 			byte[] bs = this.field_14446.bytes();
 			byte[] cs = this.method_14748(datagramPacket.getSocketAddress());
@@ -189,7 +189,7 @@ public class QueryResponseHandler extends RconBase {
 
 	private void method_14746() {
 		if (this.running) {
-			long l = SystemUtil.getMeasuringTimeMili();
+			long l = SystemUtil.getMeasuringTimeMs();
 			if (l >= this.field_14443 + 30000L) {
 				this.field_14443 = l;
 				Iterator<Entry<SocketAddress, QueryResponseHandler.class_3365>> iterator = this.field_14453.entrySet().iterator();
@@ -206,7 +206,7 @@ public class QueryResponseHandler extends RconBase {
 
 	public void run() {
 		this.info("Query running on " + this.hostname + ":" + this.queryPort);
-		this.field_14443 = SystemUtil.getMeasuringTimeMili();
+		this.field_14443 = SystemUtil.getMeasuringTimeMs();
 		this.currentPacket = new DatagramPacket(this.packetBuffer, this.packetBuffer.length);
 
 		try {

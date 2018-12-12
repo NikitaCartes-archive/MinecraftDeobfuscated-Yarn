@@ -3,7 +3,6 @@ package net.minecraft.world.gen.surfacebuilder;
 import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.class_2919;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
@@ -11,7 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.config.surfacebuilder.TernarySurfaceConfig;
+import net.minecraft.world.gen.ChunkRandom;
 
 public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 	protected static final BlockState field_15640 = Blocks.field_10225.getDefaultState();
@@ -69,8 +68,8 @@ public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConf
 
 		int q = i & 15;
 		int r = j & 15;
-		BlockState blockState3 = biome.getSurfaceConfig().getUnderMaterial();
-		BlockState blockState4 = biome.getSurfaceConfig().getTopMaterial();
+		BlockState blockState3 = biome.method_8722().getUnderMaterial();
+		BlockState blockState4 = biome.method_8722().getTopMaterial();
 		int s = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
 		int t = -1;
 		int u = 0;
@@ -94,8 +93,8 @@ public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConf
 						blockState4 = field_15643;
 						blockState3 = blockState;
 					} else if (x >= l - 4 && x <= l + 1) {
-						blockState4 = biome.getSurfaceConfig().getTopMaterial();
-						blockState3 = biome.getSurfaceConfig().getUnderMaterial();
+						blockState4 = biome.method_8722().getTopMaterial();
+						blockState3 = biome.method_8722().getUnderMaterial();
 					}
 
 					if (x < l && (blockState4 == null || blockState4.isAir())) {
@@ -134,7 +133,7 @@ public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConf
 	@Override
 	public void method_15306(long l) {
 		if (this.field_15641 != l || this.field_15644 == null || this.field_15642 == null) {
-			Random random = new class_2919(l);
+			Random random = new ChunkRandom(l);
 			this.field_15644 = new OctaveSimplexNoiseSampler(random, 4);
 			this.field_15642 = new OctaveSimplexNoiseSampler(random, 1);
 		}

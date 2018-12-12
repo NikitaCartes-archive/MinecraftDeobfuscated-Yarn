@@ -3,13 +3,11 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class ShulkerEntityModel extends Model {
+public class ShulkerEntityModel<T extends ShulkerEntity> extends EntityModel<T> {
 	private final Cuboid field_3553;
 	private final Cuboid field_3555;
 	private final Cuboid field_3554;
@@ -28,9 +26,7 @@ public class ShulkerEntityModel extends Model {
 		this.field_3554.setRotationPoint(0.0F, 12.0F, 0.0F);
 	}
 
-	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
-		ShulkerEntity shulkerEntity = (ShulkerEntity)entity;
+	public void method_17122(T shulkerEntity, float f, float g, float h, float i, float j, float k) {
 		float l = h - (float)shulkerEntity.age;
 		float m = (0.5F + shulkerEntity.method_7116(l)) * (float) Math.PI;
 		float n = -1.0F + MathHelper.sin(m);
@@ -50,8 +46,7 @@ public class ShulkerEntityModel extends Model {
 		this.field_3554.yaw = i * (float) (Math.PI / 180.0);
 	}
 
-	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
+	public void method_17123(T shulkerEntity, float f, float g, float h, float i, float j, float k) {
 		this.field_3553.render(k);
 		this.field_3555.render(k);
 	}

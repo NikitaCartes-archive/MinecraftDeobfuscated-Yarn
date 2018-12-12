@@ -2,11 +2,6 @@ package net.minecraft.client.network;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2813;
-import net.minecraft.class_2838;
-import net.minecraft.class_2868;
-import net.minecraft.class_2873;
-import net.minecraft.class_3469;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CommandBlock;
@@ -17,7 +12,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.audio.PositionedSoundInstance;
 import net.minecraft.client.recipe.book.ClientRecipeBook;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.container.ActionTypeSlot;
+import net.minecraft.container.SlotActionType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -26,13 +21,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.network.ButtonClickServerPacket;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.server.network.packet.ClickWindowServerPacket;
+import net.minecraft.server.network.packet.CraftRequestServerPacket;
+import net.minecraft.server.network.packet.CreativeInventoryActionServerPacket;
+import net.minecraft.server.network.packet.PickFromInventoryServerPacket;
 import net.minecraft.server.network.packet.PlayerActionServerPacket;
 import net.minecraft.server.network.packet.PlayerInteractBlockServerPacket;
 import net.minecraft.server.network.packet.PlayerInteractEntityServerPacket;
 import net.minecraft.server.network.packet.PlayerInteractItemServerPacket;
-import net.minecraft.server.network.packet.RecipeClickServerPacket;
+import net.minecraft.server.network.packet.UpdateSelectedSlotServerPacket;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.stat.StatHandler;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.HitResult;
@@ -140,7 +140,7 @@ public class ClientPlayerInteractionManager {
 		}
 	}
 
-	public boolean method_2910(BlockPos blockPos, Direction direction) {
+	public boolean attackBlock(BlockPos blockPos, Direction direction) {
 		if (this.gameMode.shouldLimitWorldModification()) {
 			if (this.gameMode == GameMode.field_9219) {
 				return false;
@@ -164,17 +164,17 @@ public class ClientPlayerInteractionManager {
 		} else {
 			if (this.gameMode.isCreative()) {
 				this.client.getTutorialManager().onBlockAttacked(this.client.world, blockPos, this.client.world.getBlockState(blockPos), 1.0F);
-				this.networkHandler.sendPacket(new PlayerActionServerPacket(PlayerActionServerPacket.class_2847.field_12968, blockPos, direction));
+				this.networkHandler.sendPacket(new PlayerActionServerPacket(PlayerActionServerPacket.Action.field_12968, blockPos, direction));
 				method_2921(this.client, this, blockPos, direction);
 				this.field_3716 = 5;
 			} else if (!this.breakingBlock || !this.isCurrentlyBreaking(blockPos)) {
 				if (this.breakingBlock) {
-					this.networkHandler.sendPacket(new PlayerActionServerPacket(PlayerActionServerPacket.class_2847.field_12971, this.currentBreakingPos, direction));
+					this.networkHandler.sendPacket(new PlayerActionServerPacket(PlayerActionServerPacket.Action.field_12971, this.currentBreakingPos, direction));
 				}
 
 				BlockState blockState = this.client.world.getBlockState(blockPos);
 				this.client.getTutorialManager().onBlockAttacked(this.client.world, blockPos, blockState, 0.0F);
-				this.networkHandler.sendPacket(new PlayerActionServerPacket(PlayerActionServerPacket.class_2847.field_12968, blockPos, direction));
+				this.networkHandler.sendPacket(new PlayerActionServerPacket(PlayerActionServerPacket.Action.field_12968, blockPos, direction));
 				boolean bl = !blockState.isAir();
 				if (bl && this.currentBreakingProgress == 0.0F) {
 					blockState.onBlockBreakStart(this.client.world, blockPos, this.client.player);
@@ -201,7 +201,7 @@ public class ClientPlayerInteractionManager {
 			this.client
 				.getTutorialManager()
 				.onBlockAttacked(this.client.world, this.currentBreakingPos, this.client.world.getBlockState(this.currentBreakingPos), -1.0F);
-			this.networkHandler.sendPacket(new PlayerActionServerPacket(PlayerActionServerPacket.class_2847.field_12971, this.currentBreakingPos, Direction.DOWN));
+			this.networkHandler.sendPacket(new PlayerActionServerPacket(PlayerActionServerPacket.Action.field_12971, this.currentBreakingPos, Direction.DOWN));
 			this.breakingBlock = false;
 			this.currentBreakingProgress = 0.0F;
 			this.client.world.setBlockBreakingProgress(this.client.player.getEntityId(), this.currentBreakingPos, -1);
@@ -217,7 +217,7 @@ public class ClientPlayerInteractionManager {
 		} else if (this.gameMode.isCreative() && this.client.world.getWorldBorder().contains(blockPos)) {
 			this.field_3716 = 5;
 			this.client.getTutorialManager().onBlockAttacked(this.client.world, blockPos, this.client.world.getBlockState(blockPos), 1.0F);
-			this.networkHandler.sendPacket(new PlayerActionServerPacket(PlayerActionServerPacket.class_2847.field_12968, blockPos, direction));
+			this.networkHandler.sendPacket(new PlayerActionServerPacket(PlayerActionServerPacket.Action.field_12968, blockPos, direction));
 			method_2921(this.client, this, blockPos, direction);
 			return true;
 		} else if (this.isCurrentlyBreaking(blockPos)) {
@@ -242,7 +242,7 @@ public class ClientPlayerInteractionManager {
 				this.client.getTutorialManager().onBlockAttacked(this.client.world, blockPos, blockState, MathHelper.clamp(this.currentBreakingProgress, 0.0F, 1.0F));
 				if (this.currentBreakingProgress >= 1.0F) {
 					this.breakingBlock = false;
-					this.networkHandler.sendPacket(new PlayerActionServerPacket(PlayerActionServerPacket.class_2847.field_12973, blockPos, direction));
+					this.networkHandler.sendPacket(new PlayerActionServerPacket(PlayerActionServerPacket.Action.field_12973, blockPos, direction));
 					this.breakBlock(blockPos);
 					this.currentBreakingProgress = 0.0F;
 					this.field_3713 = 0.0F;
@@ -253,7 +253,7 @@ public class ClientPlayerInteractionManager {
 				return true;
 			}
 		} else {
-			return this.method_2910(blockPos, direction);
+			return this.attackBlock(blockPos, direction);
 		}
 	}
 
@@ -286,11 +286,13 @@ public class ClientPlayerInteractionManager {
 		int i = this.client.player.inventory.selectedSlot;
 		if (i != this.lastSelectedSlot) {
 			this.lastSelectedSlot = i;
-			this.networkHandler.sendPacket(new class_2868(this.lastSelectedSlot));
+			this.networkHandler.sendPacket(new UpdateSelectedSlotServerPacket(this.lastSelectedSlot));
 		}
 	}
 
-	public ActionResult method_2896(ClientPlayerEntity clientPlayerEntity, ClientWorld clientWorld, BlockPos blockPos, Direction direction, Vec3d vec3d, Hand hand) {
+	public ActionResult interactBlock(
+		ClientPlayerEntity clientPlayerEntity, ClientWorld clientWorld, BlockPos blockPos, Direction direction, Vec3d vec3d, Hand hand
+	) {
 		this.syncSelectedSlot();
 		if (!this.client.world.getWorldBorder().contains(blockPos)) {
 			return ActionResult.FAILURE;
@@ -305,7 +307,7 @@ public class ClientPlayerInteractionManager {
 			} else {
 				boolean bl = !clientPlayerEntity.getMainHandStack().isEmpty() || !clientPlayerEntity.getOffHandStack().isEmpty();
 				boolean bl2 = clientPlayerEntity.isSneaking() && bl;
-				if (!bl2 && clientWorld.getBlockState(blockPos).method_11629(clientWorld, blockPos, clientPlayerEntity, hand, direction, f, g, h)) {
+				if (!bl2 && clientWorld.getBlockState(blockPos).activate(clientWorld, blockPos, clientPlayerEntity, hand, direction, f, g, h)) {
 					this.networkHandler.sendPacket(new PlayerInteractBlockServerPacket(blockPos, direction, hand, f, g, h));
 					return ActionResult.SUCCESS;
 				} else {
@@ -352,8 +354,8 @@ public class ClientPlayerInteractionManager {
 		}
 	}
 
-	public ClientPlayerEntity createPlayer(World world, class_3469 arg, ClientRecipeBook clientRecipeBook) {
-		return new ClientPlayerEntity(this.client, world, this.networkHandler, arg, clientRecipeBook);
+	public ClientPlayerEntity createPlayer(World world, StatHandler statHandler, ClientRecipeBook clientRecipeBook) {
+		return new ClientPlayerEntity(this.client, world, this.networkHandler, statHandler, clientRecipeBook);
 	}
 
 	public void attackEntity(PlayerEntity playerEntity, Entity entity) {
@@ -378,15 +380,15 @@ public class ClientPlayerInteractionManager {
 		return this.gameMode == GameMode.field_9219 ? ActionResult.PASS : entity.interactAt(playerEntity, vec3d, hand);
 	}
 
-	public ItemStack method_2906(int i, int j, int k, ActionTypeSlot actionTypeSlot, PlayerEntity playerEntity) {
+	public ItemStack method_2906(int i, int j, int k, SlotActionType slotActionType, PlayerEntity playerEntity) {
 		short s = playerEntity.container.getNextActionId(playerEntity.inventory);
-		ItemStack itemStack = playerEntity.container.onSlotClick(j, k, actionTypeSlot, playerEntity);
-		this.networkHandler.sendPacket(new class_2813(i, j, k, actionTypeSlot, itemStack, s));
+		ItemStack itemStack = playerEntity.container.method_7593(j, k, slotActionType, playerEntity);
+		this.networkHandler.sendPacket(new ClickWindowServerPacket(i, j, k, slotActionType, itemStack, s));
 		return itemStack;
 	}
 
 	public void clickRecipe(int i, Recipe recipe, boolean bl) {
-		this.networkHandler.sendPacket(new RecipeClickServerPacket(i, recipe, bl));
+		this.networkHandler.sendPacket(new CraftRequestServerPacket(i, recipe, bl));
 	}
 
 	public void clickButton(int i, int j) {
@@ -395,19 +397,19 @@ public class ClientPlayerInteractionManager {
 
 	public void method_2909(ItemStack itemStack, int i) {
 		if (this.gameMode.isCreative()) {
-			this.networkHandler.sendPacket(new class_2873(i, itemStack));
+			this.networkHandler.sendPacket(new CreativeInventoryActionServerPacket(i, itemStack));
 		}
 	}
 
 	public void method_2915(ItemStack itemStack) {
 		if (this.gameMode.isCreative() && !itemStack.isEmpty()) {
-			this.networkHandler.sendPacket(new class_2873(-1, itemStack));
+			this.networkHandler.sendPacket(new CreativeInventoryActionServerPacket(-1, itemStack));
 		}
 	}
 
 	public void method_2897(PlayerEntity playerEntity) {
 		this.syncSelectedSlot();
-		this.networkHandler.sendPacket(new PlayerActionServerPacket(PlayerActionServerPacket.class_2847.field_12974, BlockPos.ORIGIN, Direction.DOWN));
+		this.networkHandler.sendPacket(new PlayerActionServerPacket(PlayerActionServerPacket.Action.field_12974, BlockPos.ORIGIN, Direction.DOWN));
 		playerEntity.method_6075();
 	}
 
@@ -443,7 +445,7 @@ public class ClientPlayerInteractionManager {
 		return this.breakingBlock;
 	}
 
-	public void method_2916(int i) {
-		this.networkHandler.sendPacket(new class_2838(i));
+	public void pickFromInventory(int i) {
+		this.networkHandler.sendPacket(new PickFromInventoryServerPacket(i));
 	}
 }

@@ -10,6 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.FireBlock;
+import net.minecraft.block.FluidDrainable;
 import net.minecraft.block.PumpkinCarvedBlock;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.SkullBlock;
@@ -27,6 +28,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FireworkEntity;
 import net.minecraft.entity.PrimedTNTEntity;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
@@ -60,6 +62,7 @@ import net.minecraft.util.DebugPrintStreamLogger;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Language;
 import net.minecraft.util.PrintStreamLogger;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
@@ -103,76 +106,104 @@ public class Bootstrap {
 				return projectileEntity;
 			}
 		});
-		DispenserBlock.registerBehavior(Items.field_8803, new ProjectileDispenserBehavior() {
-			@Override
-			protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
-				return new ThrownEggEntity(world, position.getX(), position.getY(), position.getZ());
+		DispenserBlock.registerBehavior(
+			Items.field_8803,
+			new ProjectileDispenserBehavior() {
+				@Override
+				protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
+					return SystemUtil.consume(
+						new ThrownEggEntity(world, position.getX(), position.getY(), position.getZ()), thrownEggEntity -> thrownEggEntity.method_16940(itemStack)
+					);
+				}
 			}
-		});
-		DispenserBlock.registerBehavior(Items.field_8543, new ProjectileDispenserBehavior() {
-			@Override
-			protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
-				return new SnowballEntity(world, position.getX(), position.getY(), position.getZ());
+		);
+		DispenserBlock.registerBehavior(
+			Items.field_8543,
+			new ProjectileDispenserBehavior() {
+				@Override
+				protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
+					return SystemUtil.consume(
+						new SnowballEntity(world, position.getX(), position.getY(), position.getZ()), snowballEntity -> snowballEntity.method_16940(itemStack)
+					);
+				}
 			}
-		});
-		DispenserBlock.registerBehavior(Items.field_8287, new ProjectileDispenserBehavior() {
-			@Override
-			protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
-				return new ThrownExperienceBottleEntity(world, position.getX(), position.getY(), position.getZ());
-			}
+		);
+		DispenserBlock.registerBehavior(
+			Items.field_8287,
+			new ProjectileDispenserBehavior() {
+				@Override
+				protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
+					return SystemUtil.consume(
+						new ThrownExperienceBottleEntity(world, position.getX(), position.getY(), position.getZ()),
+						thrownExperienceBottleEntity -> thrownExperienceBottleEntity.method_16940(itemStack)
+					);
+				}
 
-			@Override
-			protected float getVariation() {
-				return super.getVariation() * 0.5F;
+				@Override
+				protected float getVariation() {
+					return super.getVariation() * 0.5F;
+				}
+
+				@Override
+				protected float getForce() {
+					return super.getForce() * 1.25F;
+				}
 			}
+		);
+		DispenserBlock.registerBehavior(
+			Items.field_8436,
+			new DispenserBehavior() {
+				@Override
+				public ItemStack dispense(BlockPointer blockPointer, ItemStack itemStack) {
+					return (new ProjectileDispenserBehavior() {
+							@Override
+							protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
+								return SystemUtil.consume(
+									new ThrownPotionEntity(world, position.getX(), position.getY(), position.getZ()), thrownPotionEntity -> thrownPotionEntity.setItemStack(itemStack)
+								);
+							}
 
-			@Override
-			protected float getForce() {
-				return super.getForce() * 1.25F;
+							@Override
+							protected float getVariation() {
+								return super.getVariation() * 0.5F;
+							}
+
+							@Override
+							protected float getForce() {
+								return super.getForce() * 1.25F;
+							}
+						})
+						.dispense(blockPointer, itemStack);
+				}
 			}
-		});
-		DispenserBlock.registerBehavior(Items.field_8436, new DispenserBehavior() {
-			@Override
-			public ItemStack dispense(BlockPointer blockPointer, ItemStack itemStack) {
-				return (new ProjectileDispenserBehavior() {
-					@Override
-					protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
-						return new ThrownPotionEntity(world, position.getX(), position.getY(), position.getZ(), itemStack.copy());
-					}
+		);
+		DispenserBlock.registerBehavior(
+			Items.field_8150,
+			new DispenserBehavior() {
+				@Override
+				public ItemStack dispense(BlockPointer blockPointer, ItemStack itemStack) {
+					return (new ProjectileDispenserBehavior() {
+							@Override
+							protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
+								return SystemUtil.consume(
+									new ThrownPotionEntity(world, position.getX(), position.getY(), position.getZ()), thrownPotionEntity -> thrownPotionEntity.setItemStack(itemStack)
+								);
+							}
 
-					@Override
-					protected float getVariation() {
-						return super.getVariation() * 0.5F;
-					}
+							@Override
+							protected float getVariation() {
+								return super.getVariation() * 0.5F;
+							}
 
-					@Override
-					protected float getForce() {
-						return super.getForce() * 1.25F;
-					}
-				}).dispense(blockPointer, itemStack);
+							@Override
+							protected float getForce() {
+								return super.getForce() * 1.25F;
+							}
+						})
+						.dispense(blockPointer, itemStack);
+				}
 			}
-		});
-		DispenserBlock.registerBehavior(Items.field_8150, new DispenserBehavior() {
-			@Override
-			public ItemStack dispense(BlockPointer blockPointer, ItemStack itemStack) {
-				return (new ProjectileDispenserBehavior() {
-					@Override
-					protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
-						return new ThrownPotionEntity(world, position.getX(), position.getY(), position.getZ(), itemStack.copy());
-					}
-
-					@Override
-					protected float getVariation() {
-						return super.getVariation() * 0.5F;
-					}
-
-					@Override
-					protected float getForce() {
-						return super.getForce() * 1.25F;
-					}
-				}).dispense(blockPointer, itemStack);
-			}
-		});
+		);
 		ItemDispenserBehavior itemDispenserBehavior = new ItemDispenserBehavior() {
 			@Override
 			public ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
@@ -180,7 +211,7 @@ public class Bootstrap {
 				EntityType<?> entityType = ((SpawnEggItem)itemStack.getItem()).method_8015(itemStack.getTag());
 				if (entityType != null) {
 					entityType.spawnFromItemStack(
-						blockPointer.getWorld(), itemStack, null, blockPointer.getBlockPos().method_10093(direction), class_3730.field_16470, direction != Direction.UP, false
+						blockPointer.getWorld(), itemStack, null, blockPointer.getBlockPos().offset(direction), SpawnType.field_16470, direction != Direction.UP, false
 					);
 				}
 
@@ -224,7 +255,7 @@ public class Bootstrap {
 				double g = random.nextGaussian() * 0.05 + (double)direction.getOffsetX();
 				double h = random.nextGaussian() * 0.05 + (double)direction.getOffsetY();
 				double i = random.nextGaussian() * 0.05 + (double)direction.getOffsetZ();
-				world.spawnEntity(new SmallFireballEntity(world, d, e, f, g, h, i));
+				world.spawnEntity(SystemUtil.consume(new SmallFireballEntity(world, d, e, f, g, h, i), smallFireballEntity -> smallFireballEntity.method_16936(itemStack)));
 				itemStack.subtractAmount(1);
 				return itemStack;
 			}
@@ -246,10 +277,10 @@ public class Bootstrap {
 			@Override
 			public ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
 				BucketItem bucketItem = (BucketItem)itemStack.getItem();
-				BlockPos blockPos = blockPointer.getBlockPos().method_10093(blockPointer.getBlockState().get(DispenserBlock.field_10918));
+				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.field_10918));
 				World world = blockPointer.getWorld();
-				if (bucketItem.method_7731(null, world, blockPos, null)) {
-					bucketItem.method_7728(world, itemStack, blockPos);
+				if (bucketItem.placeFluid(null, world, blockPos, null)) {
+					bucketItem.onEmptied(world, itemStack, blockPos);
 					return new ItemStack(Items.field_8550);
 				} else {
 					return this.field_13367.dispense(blockPointer, itemStack);
@@ -268,11 +299,11 @@ public class Bootstrap {
 			@Override
 			public ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
 				IWorld iWorld = blockPointer.getWorld();
-				BlockPos blockPos = blockPointer.getBlockPos().method_10093(blockPointer.getBlockState().get(DispenserBlock.field_10918));
+				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.field_10918));
 				BlockState blockState = iWorld.getBlockState(blockPos);
 				Block block = blockState.getBlock();
-				if (block instanceof class_2263) {
-					Fluid fluid = ((class_2263)block).method_9700(iWorld, blockPos, blockState);
+				if (block instanceof FluidDrainable) {
+					Fluid fluid = ((FluidDrainable)block).tryDrainFluid(iWorld, blockPos, blockState);
 					if (!(fluid instanceof BaseFluid)) {
 						return super.method_10135(blockPointer, itemStack);
 					} else {
@@ -298,13 +329,13 @@ public class Bootstrap {
 			protected ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
 				World world = blockPointer.getWorld();
 				this.field_13364 = true;
-				BlockPos blockPos = blockPointer.getBlockPos().method_10093(blockPointer.getBlockState().get(DispenserBlock.field_10918));
+				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.field_10918));
 				if (FlintAndSteelItem.method_7825(world, blockPos)) {
 					world.setBlockState(blockPos, Blocks.field_10036.getDefaultState());
 				} else {
 					Block block = world.getBlockState(blockPos).getBlock();
 					if (block instanceof TntBlock) {
-						((TntBlock)block).method_10738(world, blockPos);
+						((TntBlock)block).primeTnt(world, blockPos);
 						world.clearBlockState(blockPos);
 					} else {
 						this.field_13364 = false;
@@ -323,10 +354,10 @@ public class Bootstrap {
 			protected ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
 				this.field_13364 = true;
 				World world = blockPointer.getWorld();
-				BlockPos blockPos = blockPointer.getBlockPos().method_10093(blockPointer.getBlockState().get(DispenserBlock.field_10918));
+				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.field_10918));
 				if (!BoneMealItem.method_7720(itemStack, world, blockPos) && !BoneMealItem.method_7719(itemStack, world, blockPos, null)) {
 					this.field_13364 = false;
-				} else if (!world.isRemote) {
+				} else if (!world.isClient) {
 					world.fireWorldEvent(2005, blockPos, 0);
 				}
 
@@ -337,7 +368,7 @@ public class Bootstrap {
 			@Override
 			protected ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
 				World world = blockPointer.getWorld();
-				BlockPos blockPos = blockPointer.getBlockPos().method_10093(blockPointer.getBlockState().get(DispenserBlock.field_10918));
+				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.field_10918));
 				PrimedTNTEntity primedTNTEntity = new PrimedTNTEntity(world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, null);
 				world.spawnEntity(primedTNTEntity);
 				world.playSound(null, primedTNTEntity.x, primedTNTEntity.y, primedTNTEntity.z, SoundEvents.field_15079, SoundCategory.field_15245, 1.0F, 1.0F);
@@ -364,7 +395,7 @@ public class Bootstrap {
 				protected ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
 					World world = blockPointer.getWorld();
 					Direction direction = blockPointer.getBlockState().get(DispenserBlock.field_10918);
-					BlockPos blockPos = blockPointer.getBlockPos().method_10093(direction);
+					BlockPos blockPos = blockPointer.getBlockPos().offset(direction);
 					this.field_13364 = true;
 					if (world.isAir(blockPos) && WitherSkullBlock.method_10899(world, blockPos, itemStack)) {
 						world.setBlockState(
@@ -392,11 +423,11 @@ public class Bootstrap {
 			@Override
 			protected ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
 				World world = blockPointer.getWorld();
-				BlockPos blockPos = blockPointer.getBlockPos().method_10093(blockPointer.getBlockState().get(DispenserBlock.field_10918));
+				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.field_10918));
 				PumpkinCarvedBlock pumpkinCarvedBlock = (PumpkinCarvedBlock)Blocks.field_10147;
 				this.field_13364 = true;
 				if (world.isAir(blockPos) && pumpkinCarvedBlock.method_9733(world, blockPos)) {
-					if (!world.isRemote) {
+					if (!world.isClient) {
 						world.setBlockState(blockPos, pumpkinCarvedBlock.getDefaultState(), 3);
 					}
 
@@ -421,13 +452,13 @@ public class Bootstrap {
 			@Override
 			protected ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
 				World world = blockPointer.getWorld();
-				if (!world.isRemote()) {
+				if (!world.isClient()) {
 					this.field_13364 = false;
-					BlockPos blockPos = blockPointer.getBlockPos().method_10093(blockPointer.getBlockState().get(DispenserBlock.field_10918));
+					BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.field_10918));
 
 					for (SheepEntity sheepEntity : world.getVisibleEntities(SheepEntity.class, new BoundingBox(blockPos))) {
 						if (sheepEntity.isValid() && !sheepEntity.isSheared() && !sheepEntity.isChild()) {
-							sheepEntity.method_6636();
+							sheepEntity.dropItems();
 							if (itemStack.applyDamage(1, world.random, null)) {
 								itemStack.setAmount(0);
 							}
@@ -512,7 +543,7 @@ public class Bootstrap {
 			double d = blockPointer.getX() + (double)((float)direction.getOffsetX() * 1.125F);
 			double e = blockPointer.getY() + (double)((float)direction.getOffsetY() * 1.125F);
 			double f = blockPointer.getZ() + (double)((float)direction.getOffsetZ() * 1.125F);
-			BlockPos blockPos = blockPointer.getBlockPos().method_10093(direction);
+			BlockPos blockPos = blockPointer.getBlockPos().offset(direction);
 			double g;
 			if (world.getFluidState(blockPos).matches(FluidTags.field_15517)) {
 				g = 1.0;
@@ -562,12 +593,12 @@ public class Bootstrap {
 		}
 
 		@Override
-		public Direction method_7715() {
+		public Direction getPlayerFacing() {
 			return Direction.DOWN;
 		}
 
 		@Override
-		public Direction[] method_7718() {
+		public Direction[] getPlacementFacings() {
 			switch (this.field_13362) {
 				case DOWN:
 				default:
@@ -586,7 +617,7 @@ public class Bootstrap {
 		}
 
 		@Override
-		public Direction method_8042() {
+		public Direction getPlayerHorizontalFacing() {
 			return this.field_13362.getAxis() == Direction.Axis.Y ? Direction.NORTH : this.field_13362;
 		}
 
@@ -620,7 +651,7 @@ public class Bootstrap {
 			Item item = itemStack.getItem();
 			if (item instanceof BlockItem) {
 				Direction direction = blockPointer.getBlockState().get(DispenserBlock.field_10918);
-				BlockPos blockPos = blockPointer.getBlockPos().method_10093(direction);
+				BlockPos blockPos = blockPointer.getBlockPos().offset(direction);
 				Direction direction2 = blockPointer.getWorld().isAir(blockPos.down()) ? direction : Direction.UP;
 				this.field_13364 = ((BlockItem)item).place(new Bootstrap.class_2968(blockPointer.getWorld(), blockPos, direction, itemStack, direction2))
 					== ActionResult.SUCCESS;

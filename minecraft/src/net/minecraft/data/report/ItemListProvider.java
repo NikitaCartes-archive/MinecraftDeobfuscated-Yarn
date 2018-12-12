@@ -1,21 +1,21 @@
 package net.minecraft.data.report;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
-import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.DefaultMappedRegistry;
+import net.minecraft.util.registry.ModifiableRegistry;
 import net.minecraft.util.registry.Registry;
 
 public class ItemListProvider implements DataProvider {
+	private static final Gson field_17170 = new GsonBuilder().setPrettyPrinting().create();
 	private final DataGenerator root;
 
 	public ItemListProvider(DataGenerator dataGenerator) {
@@ -25,42 +25,36 @@ public class ItemListProvider implements DataProvider {
 	@Override
 	public void run(DataCache dataCache) throws IOException {
 		JsonObject jsonObject = new JsonObject();
+		Registry.REGISTRIES.keys().forEach(identifier -> jsonObject.add(identifier.toString(), method_17175(Registry.REGISTRIES.get(identifier))));
+		Path path = this.root.getOutput().resolve("reports/registries.json");
+		DataProvider.writeToPath(field_17170, dataCache, jsonObject, path);
+	}
 
-		for (Item item : Registry.ITEM) {
-			Identifier identifier = Registry.ITEM.getId(item);
-			JsonObject jsonObject2 = new JsonObject();
-			jsonObject2.addProperty("protocol_id", Item.getRawIdByItem(item));
-			jsonObject.add(identifier.toString(), jsonObject2);
+	private static <T> JsonElement method_17175(ModifiableRegistry<T> modifiableRegistry) {
+		JsonObject jsonObject = new JsonObject();
+		if (modifiableRegistry instanceof DefaultMappedRegistry) {
+			Identifier identifier = ((DefaultMappedRegistry)modifiableRegistry).getDefaultId();
+			jsonObject.addProperty("default", identifier.toString());
 		}
 
-		Path path = this.root.getOutput().resolve("reports/items.json");
-		Files.createDirectories(path.getParent());
-		BufferedWriter bufferedWriter = Files.newBufferedWriter(path, StandardCharsets.UTF_8);
-		Throwable var18 = null;
+		int i = Registry.REGISTRIES.getRawId(modifiableRegistry);
+		jsonObject.addProperty("protocol_id", i);
+		JsonObject jsonObject2 = new JsonObject();
 
-		try {
-			String string = new GsonBuilder().setPrettyPrinting().create().toJson((JsonElement)jsonObject);
-			bufferedWriter.write(string);
-		} catch (Throwable var14) {
-			var18 = var14;
-			throw var14;
-		} finally {
-			if (bufferedWriter != null) {
-				if (var18 != null) {
-					try {
-						bufferedWriter.close();
-					} catch (Throwable var13) {
-						var18.addSuppressed(var13);
-					}
-				} else {
-					bufferedWriter.close();
-				}
-			}
+		for (Identifier identifier2 : modifiableRegistry.keys()) {
+			T object = modifiableRegistry.get(identifier2);
+			int j = modifiableRegistry.getRawId(object);
+			JsonObject jsonObject3 = new JsonObject();
+			jsonObject3.addProperty("protocol_id", j);
+			jsonObject2.add(identifier2.toString(), jsonObject3);
 		}
+
+		jsonObject.add("entries", jsonObject2);
+		return jsonObject;
 	}
 
 	@Override
 	public String getName() {
-		return "Item List";
+		return "Registry Dump";
 	}
 }

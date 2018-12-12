@@ -26,6 +26,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
@@ -40,9 +41,9 @@ import net.minecraft.world.World;
 
 public class IllagerBeastEntity extends RaiderEntity {
 	private static final Predicate<Entity> field_7301 = entity -> entity.isValid() && !(entity instanceof IllagerBeastEntity);
-	private int field_7303;
-	private int field_7302;
-	private int field_7305;
+	private int attackTick;
+	private int stunTick;
+	private int roarTick;
 
 	public IllagerBeastEntity(World world) {
 		super(EntityType.ILLAGER_BEAST, world);
@@ -79,17 +80,17 @@ public class IllagerBeastEntity extends RaiderEntity {
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putInt("AttackTick", this.field_7303);
-		compoundTag.putInt("StunTick", this.field_7302);
-		compoundTag.putInt("RoarTick", this.field_7305);
+		compoundTag.putInt("AttackTick", this.attackTick);
+		compoundTag.putInt("StunTick", this.stunTick);
+		compoundTag.putInt("RoarTick", this.roarTick);
 	}
 
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		this.field_7303 = compoundTag.getInt("AttackTick");
-		this.field_7302 = compoundTag.getInt("StunTick");
-		this.field_7305 = compoundTag.getInt("RoarTick");
+		this.attackTick = compoundTag.getInt("AttackTick");
+		this.stunTick = compoundTag.getInt("StunTick");
+		this.roarTick = compoundTag.getInt("RoarTick");
 	}
 
 	@Override
@@ -114,7 +115,7 @@ public class IllagerBeastEntity extends RaiderEntity {
 
 	@Nullable
 	@Override
-	public Entity method_5642() {
+	public Entity getPrimaryPassenger() {
 		return this.getPassengerList().isEmpty() ? null : (Entity)this.getPassengerList().get(0);
 	}
 
@@ -129,7 +130,7 @@ public class IllagerBeastEntity extends RaiderEntity {
 			this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(MathHelper.lerp(0.1, e, d));
 		}
 
-		if (this.field_5976 && this.world.getGameRules().getBoolean("mobGriefing")) {
+		if (this.horizontalCollision && this.world.getGameRules().getBoolean("mobGriefing")) {
 			boolean bl = false;
 			BoundingBox boundingBox = this.getBoundingBox().expand(0.2);
 
@@ -153,23 +154,23 @@ public class IllagerBeastEntity extends RaiderEntity {
 			}
 		}
 
-		if (this.field_7305 > 0) {
-			this.field_7305--;
-			if (this.field_7305 == 10) {
+		if (this.roarTick > 0) {
+			this.roarTick--;
+			if (this.roarTick == 10) {
 				this.method_7071();
 			}
 		}
 
-		if (this.field_7303 > 0) {
-			this.field_7303--;
+		if (this.attackTick > 0) {
+			this.attackTick--;
 		}
 
-		if (this.field_7302 > 0) {
-			this.field_7302--;
+		if (this.stunTick > 0) {
+			this.stunTick--;
 			this.method_7073();
-			if (this.field_7302 == 0) {
+			if (this.stunTick == 0) {
 				this.playSoundAtEntity(SoundEvents.field_14733, 1.0F, 1.0F);
-				this.field_7305 = 20;
+				this.roarTick = 20;
 			}
 		}
 	}
@@ -185,27 +186,27 @@ public class IllagerBeastEntity extends RaiderEntity {
 
 	@Override
 	protected boolean method_6062() {
-		return super.method_6062() || this.field_7303 > 0 || this.field_7302 > 0 || this.field_7305 > 0;
+		return super.method_6062() || this.attackTick > 0 || this.stunTick > 0 || this.roarTick > 0;
 	}
 
 	@Override
 	public boolean canSee(Entity entity) {
-		return this.field_7302 <= 0 && this.field_7305 <= 0 ? super.canSee(entity) : false;
+		return this.stunTick <= 0 && this.roarTick <= 0 ? super.canSee(entity) : false;
 	}
 
 	@Override
 	protected void method_6060(LivingEntity livingEntity) {
-		if (this.field_7305 == 0) {
+		if (this.roarTick == 0) {
 			if (this.random.nextDouble() < 0.5) {
-				this.field_7302 = 40;
+				this.stunTick = 40;
 				this.playSoundAtEntity(SoundEvents.field_14822, 1.0F, 1.0F);
-				this.world.method_8421(this, (byte)39);
+				this.world.summonParticle(this, (byte)39);
 				livingEntity.pushAwayFrom(this);
 			} else {
 				this.method_7068(livingEntity);
 			}
 
-			livingEntity.field_6037 = true;
+			livingEntity.velocityModified = true;
 		}
 	}
 
@@ -241,10 +242,10 @@ public class IllagerBeastEntity extends RaiderEntity {
 	@Override
 	public void method_5711(byte b) {
 		if (b == 4) {
-			this.field_7303 = 10;
+			this.attackTick = 10;
 			this.playSoundAtEntity(SoundEvents.field_15240, 1.0F, 1.0F);
 		} else if (b == 39) {
-			this.field_7302 = 40;
+			this.stunTick = 40;
 		}
 
 		super.method_5711(b);
@@ -252,23 +253,23 @@ public class IllagerBeastEntity extends RaiderEntity {
 
 	@Environment(EnvType.CLIENT)
 	public int method_7070() {
-		return this.field_7303;
+		return this.attackTick;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public int method_7074() {
-		return this.field_7302;
+		return this.stunTick;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public int method_7072() {
-		return this.field_7305;
+		return this.roarTick;
 	}
 
 	@Override
 	public boolean method_6121(Entity entity) {
-		this.field_7303 = 10;
-		this.world.method_8421(this, (byte)4);
+		this.attackTick = 10;
+		this.world.summonParticle(this, (byte)4);
 		this.playSoundAtEntity(SoundEvents.field_15240, 1.0F, 1.0F);
 		return super.method_6121(entity);
 	}
@@ -300,11 +301,11 @@ public class IllagerBeastEntity extends RaiderEntity {
 	}
 
 	@Override
-	public void method_16484(int i, boolean bl) {
+	public void addBonusForWave(int i, boolean bl) {
 	}
 
 	@Override
-	protected boolean method_16485() {
+	public boolean canLead() {
 		return false;
 	}
 

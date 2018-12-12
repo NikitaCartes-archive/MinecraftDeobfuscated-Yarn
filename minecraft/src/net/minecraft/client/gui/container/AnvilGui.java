@@ -3,7 +3,6 @@ package net.minecraft.client.gui.container;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2855;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.ContainerGui;
 import net.minecraft.client.gui.GuiEventListener;
@@ -16,6 +15,7 @@ import net.minecraft.container.Slot;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.packet.RenameItemServerPacket;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
@@ -47,9 +47,9 @@ public class AnvilGui extends ContainerGui implements ContainerListener {
 		this.nameField = new TextFieldWidget(0, this.fontRenderer, i + 62, j + 24, 103, 12);
 		this.nameField.method_1868(-1);
 		this.nameField.method_1860(-1);
-		this.nameField.method_1858(false);
+		this.nameField.setHasBorder(false);
 		this.nameField.setMaxLength(35);
-		this.nameField.method_1863(this::method_2403);
+		this.nameField.setChangedListener(this::method_2403);
 		this.listeners.add(this.nameField);
 		this.container.removeListener(this);
 		this.container.addListener(this);
@@ -107,7 +107,7 @@ public class AnvilGui extends ContainerGui implements ContainerListener {
 			}
 
 			this.anvilContainer.setNewItemName(string2);
-			this.client.player.networkHandler.sendPacket(new class_2855(string2));
+			this.client.player.networkHandler.sendPacket(new RenameItemServerPacket(string2));
 		}
 	}
 

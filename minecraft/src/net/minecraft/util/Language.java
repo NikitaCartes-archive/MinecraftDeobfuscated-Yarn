@@ -34,7 +34,7 @@ public class Language {
 				this.translations.put(entry.getKey(), string);
 			}
 
-			this.timeLoaded = SystemUtil.getMeasuringTimeMili();
+			this.timeLoaded = SystemUtil.getMeasuringTimeMs();
 		} catch (JsonParseException var7) {
 			LOGGER.error("Couldn't read strings from /assets/minecraft/lang/en_us.json", (Throwable)var7);
 		}
@@ -48,7 +48,7 @@ public class Language {
 	public static synchronized void load(Map<String, String> map) {
 		INSTANCE.translations.clear();
 		INSTANCE.translations.putAll(map);
-		INSTANCE.timeLoaded = SystemUtil.getMeasuringTimeMili();
+		INSTANCE.timeLoaded = SystemUtil.getMeasuringTimeMs();
 	}
 
 	public synchronized String translate(String string) {

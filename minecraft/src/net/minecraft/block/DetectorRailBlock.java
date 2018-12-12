@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.class_2452;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.container.Container;
 import net.minecraft.entity.Entity;
@@ -47,7 +46,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 
 	@Override
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			if (!(Boolean)blockState.get(field_10913)) {
 				this.method_10002(world, blockPos, blockState);
 			}
@@ -56,18 +55,18 @@ public class DetectorRailBlock extends AbstractRailBlock {
 
 	@Override
 	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!world.isRemote && (Boolean)blockState.get(field_10913)) {
+		if (!world.isClient && (Boolean)blockState.get(field_10913)) {
 			this.method_10002(world, blockPos, blockState);
 		}
 	}
 
 	@Override
-	public int method_9524(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
 		return blockState.get(field_10913) ? 15 : 0;
 	}
 
 	@Override
-	public int method_9603(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+	public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
 		if (!(Boolean)blockState.get(field_10913)) {
 			return 0;
 		} else {
@@ -88,7 +87,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 			this.method_10003(world, blockPos, blockState, true);
 			world.updateNeighborsAlways(blockPos, this);
 			world.updateNeighborsAlways(blockPos.down(), this);
-			world.method_16109(blockPos);
+			world.scheduleBlockRender(blockPos);
 		}
 
 		if (!bl2 && bl) {
@@ -96,7 +95,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 			this.method_10003(world, blockPos, blockState, false);
 			world.updateNeighborsAlways(blockPos, this);
 			world.updateNeighborsAlways(blockPos.down(), this);
-			world.method_16109(blockPos);
+			world.scheduleBlockRender(blockPos);
 		}
 
 		if (bl2) {
@@ -107,9 +106,9 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	}
 
 	protected void method_10003(World world, BlockPos blockPos, BlockState blockState, boolean bl) {
-		class_2452 lv = new class_2452(world, blockPos, blockState);
+		RailPlacementHelper railPlacementHelper = new RailPlacementHelper(world, blockPos, blockState);
 
-		for (BlockPos blockPos2 : lv.method_10457()) {
+		for (BlockPos blockPos2 : railPlacementHelper.getNeighbors()) {
 			BlockState blockState2 = world.getBlockState(blockPos2);
 			blockState2.neighborUpdate(world, blockPos2, blockState2.getBlock(), blockPos);
 		}

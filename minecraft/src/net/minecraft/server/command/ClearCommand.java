@@ -27,7 +27,7 @@ public class ClearCommand {
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.executes(commandContext -> method_13077(commandContext.getSource(), Collections.singleton(commandContext.getSource().getPlayer()), itemStack -> true, -1))
 				.then(
-					ServerCommandManager.argument("targets", EntityArgumentType.method_9308())
+					ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
 						.executes(commandContext -> method_13077(commandContext.getSource(), EntityArgumentType.method_9312(commandContext, "targets"), itemStack -> true, -1))
 						.then(
 							ServerCommandManager.argument("item", ItemPredicateArgumentType.create())

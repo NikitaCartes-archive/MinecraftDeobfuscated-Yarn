@@ -19,13 +19,6 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_2804;
-import net.minecraft.class_2839;
-import net.minecraft.class_2843;
-import net.minecraft.class_3360;
-import net.minecraft.class_3449;
-import net.minecraft.class_3485;
-import net.minecraft.class_37;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
@@ -39,7 +32,8 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.ShortTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.world.ServerTickScheduler;
-import net.minecraft.util.MinecraftException;
+import net.minecraft.sortme.structures.StructureManager;
+import net.minecraft.sortme.structures.StructureStart;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.math.BlockPos;
@@ -48,10 +42,13 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
+import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
+import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.chunk.ReadOnlyChunk;
+import net.minecraft.world.chunk.UpgradeData;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.chunk.storage.RegionFileCache;
@@ -64,30 +61,30 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
-	private static final Logger field_13001 = LogManager.getLogger();
-	private final Map<ChunkPos, CompoundTag> field_13000 = Maps.<ChunkPos, CompoundTag>newHashMap();
-	private final File field_12999;
-	private final DataFixer field_13002;
-	private class_3360 field_13003;
-	private boolean field_12998;
+	private static final Logger LOGGER = LogManager.getLogger();
+	private final Map<ChunkPos, CompoundTag> chunkTagCache = Maps.<ChunkPos, CompoundTag>newHashMap();
+	private final File file;
+	private final DataFixer dataFixer;
+	private FeatureUpdater featureUpdater;
+	private boolean logIfAllChunksSaved;
 
 	public ChunkSaveHandlerImpl(File file, DataFixer dataFixer) {
-		this.field_12999 = file;
-		this.field_13002 = dataFixer;
+		this.file = file;
+		this.dataFixer = dataFixer;
 	}
 
 	@Nullable
-	private CompoundTag method_12389(IWorld iWorld, int i, int j) throws IOException {
-		return this.method_12398(iWorld.getDimension().getType(), iWorld.method_8646(), i, j);
+	private CompoundTag getChunkTag(IWorld iWorld, int i, int j) throws IOException {
+		return this.getChunkTag(iWorld.getDimension().getType(), iWorld.getPersistentStateManager(), i, j);
 	}
 
 	@Nullable
-	private CompoundTag method_12398(DimensionType dimensionType, @Nullable class_37 arg, int i, int j) throws IOException {
-		CompoundTag compoundTag = (CompoundTag)this.field_13000.get(new ChunkPos(i, j));
+	private CompoundTag getChunkTag(DimensionType dimensionType, @Nullable PersistentStateManager persistentStateManager, int i, int j) throws IOException {
+		CompoundTag compoundTag = (CompoundTag)this.chunkTagCache.get(new ChunkPos(i, j));
 		if (compoundTag != null) {
 			return compoundTag;
 		} else {
-			DataInputStream dataInputStream = RegionFileCache.getChunkDataInputStream(this.field_12999, i, j);
+			DataInputStream dataInputStream = RegionFileCache.getChunkDataInputStream(this.file, i, j);
 			if (dataInputStream == null) {
 				return null;
 			} else {
@@ -95,17 +92,17 @@ public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
 				dataInputStream.close();
 				int k = compoundTag2.containsKey("DataVersion", 99) ? compoundTag2.getInt("DataVersion") : -1;
 				if (k < 1493) {
-					compoundTag2 = TagHelper.update(this.field_13002, DataFixTypes.CHUNK, compoundTag2, k, 1493);
+					compoundTag2 = TagHelper.update(this.dataFixer, DataFixTypes.CHUNK, compoundTag2, k, 1493);
 					if (compoundTag2.getCompound("Level").getBoolean("hasLegacyStructureData")) {
-						this.method_12380(dimensionType, arg);
-						compoundTag2 = this.field_13003.method_14735(compoundTag2);
+						this.getFeatureUpdater(dimensionType, persistentStateManager);
+						compoundTag2 = this.featureUpdater.getUpdatedReferences(compoundTag2);
 					}
 				}
 
-				compoundTag2 = TagHelper.update(this.field_13002, DataFixTypes.CHUNK, compoundTag2, Math.max(1493, k));
+				compoundTag2 = TagHelper.update(this.dataFixer, DataFixTypes.CHUNK, compoundTag2, Math.max(1493, k));
 				if (k < SharedConstants.getGameVersion().getWorldVersion()) {
 					compoundTag2.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
-					this.method_12390(new ChunkPos(i, j), compoundTag2);
+					this.cacheChunkTag(new ChunkPos(i, j), compoundTag2);
 				}
 
 				return compoundTag2;
@@ -113,34 +110,34 @@ public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
 		}
 	}
 
-	public void method_12380(DimensionType dimensionType, @Nullable class_37 arg) {
-		if (this.field_13003 == null) {
-			this.field_13003 = class_3360.method_14745(dimensionType, arg);
+	public void getFeatureUpdater(DimensionType dimensionType, @Nullable PersistentStateManager persistentStateManager) {
+		if (this.featureUpdater == null) {
+			this.featureUpdater = FeatureUpdater.create(dimensionType, persistentStateManager);
 		}
 	}
 
 	@Nullable
 	@Override
-	public class_2839 method_12411(IWorld iWorld, int i, int j) {
+	public ProtoChunk readChunk(IWorld iWorld, int i, int j) {
 		try {
-			class_3485 lv = iWorld.getSaveHandler().method_134();
+			StructureManager structureManager = iWorld.getSaveHandler().getStructureManager();
 			ChunkGenerator<?> chunkGenerator = iWorld.getChunkManager().getChunkGenerator();
 			BiomeSource biomeSource = chunkGenerator.getBiomeSource();
-			CompoundTag compoundTag = this.method_12389(iWorld, i, j);
+			CompoundTag compoundTag = this.getChunkTag(iWorld, i, j);
 			if (compoundTag == null) {
 				return null;
 			} else {
-				ChunkStatus.class_2808 lv2 = this.method_12377(compoundTag);
+				ChunkStatus.ChunkType chunkType = this.getEntityStorageMode(compoundTag);
 				boolean bl = compoundTag.containsKey("Level", 10) && compoundTag.getCompound("Level").containsKey("Status", 8);
 				if (!bl) {
-					field_13001.error("Chunk file at {},{} is missing level data, skipping", i, j);
+					LOGGER.error("Chunk file at {},{} is missing level data, skipping", i, j);
 					return null;
 				} else {
 					CompoundTag compoundTag2 = compoundTag.getCompound("Level");
 					int k = compoundTag2.getInt("xPos");
 					int l = compoundTag2.getInt("zPos");
 					if (k != i || l != j) {
-						field_13001.error("Chunk file at {},{} is in the wrong location; relocating. (Expected {}, {}, got {}, {})", i, j, i, j, k, l);
+						LOGGER.error("Chunk file at {},{} is in the wrong location; relocating. (Expected {}, {}, got {}, {})", i, j, i, j, k, l);
 					}
 
 					Biome[] biomes = new Biome[256];
@@ -151,68 +148,79 @@ public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
 						for (int m = 0; m < is.length; m++) {
 							biomes[m] = Registry.BIOME.getInt(is[m]);
 							if (biomes[m] == null) {
-								biomes[m] = biomeSource.method_8758(mutable.set((m & 15) + (i << 4), 0, (m >> 4 & 15) + (j << 4)));
+								biomes[m] = biomeSource.getBiome(mutable.set((m & 15) + (i << 4), 0, (m >> 4 & 15) + (j << 4)));
 							}
 						}
 					} else {
 						for (int n = 0; n < biomes.length; n++) {
-							biomes[n] = biomeSource.method_8758(mutable.set((n & 15) + (i << 4), 0, (n >> 4 & 15) + (j << 4)));
+							biomes[n] = biomeSource.getBiome(mutable.set((n & 15) + (i << 4), 0, (n >> 4 & 15) + (j << 4)));
 						}
 					}
 
-					class_2843 lv3 = compoundTag2.containsKey("UpgradeData", 10) ? new class_2843(compoundTag2.getCompound("UpgradeData")) : class_2843.field_12950;
+					UpgradeData upgradeData = compoundTag2.containsKey("UpgradeData", 10)
+						? new UpgradeData(compoundTag2.getCompound("UpgradeData"))
+						: UpgradeData.NO_UPGRADE_DATA;
 					ChunkPos chunkPos = new ChunkPos(i, j);
 					ChunkTickScheduler<Block> chunkTickScheduler = new ChunkTickScheduler<>(
 						block -> block == null || block.getDefaultState().isAir(), Registry.BLOCK::getId, Registry.BLOCK::get, chunkPos, compoundTag2.getList("ToBeTicked", 9)
 					);
 					ChunkTickScheduler<Fluid> chunkTickScheduler2 = new ChunkTickScheduler<>(
-						fluid -> fluid == null || fluid == Fluids.field_15906, Registry.FLUID::getId, Registry.FLUID::get, chunkPos, compoundTag2.getList("LiquidsToBeTicked", 9)
+						fluid -> fluid == null || fluid == Fluids.EMPTY, Registry.FLUID::getId, Registry.FLUID::get, chunkPos, compoundTag2.getList("LiquidsToBeTicked", 9)
 					);
 					boolean bl2 = compoundTag2.getBoolean("isLightOn");
 					ListTag listTag = compoundTag2.getList("Sections", 10);
-					ChunkSection[] chunkSections = method_12384(iWorld, i, j, listTag, bl2);
+					ChunkSection[] chunkSections = readChunkSections(iWorld, i, j, listTag, bl2);
 					long o = compoundTag2.getLong("InhabitedTime");
 					Chunk chunk;
-					if (lv2 == ChunkStatus.class_2808.field_12807) {
+					if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
 						chunk = new WorldChunk(
-							iWorld.method_8410(), i, j, biomes, lv3, chunkTickScheduler, chunkTickScheduler2, o, chunkSections, worldChunk -> method_12386(compoundTag2, worldChunk)
+							iWorld.getWorld(),
+							i,
+							j,
+							biomes,
+							upgradeData,
+							chunkTickScheduler,
+							chunkTickScheduler2,
+							o,
+							chunkSections,
+							worldChunk -> method_12386(compoundTag2, worldChunk)
 						);
 					} else {
-						class_2839 lv4 = new class_2839(i, j, lv3, chunkSections, chunkTickScheduler, chunkTickScheduler2);
-						chunk = lv4;
-						lv4.setBiomes(biomes);
-						lv4.method_12028(o);
-						lv4.method_12308(ChunkStatus.get(compoundTag2.getString("Status")));
-						if (!bl2 && lv4.getStatus().isAfter(ChunkStatus.field_12805)) {
+						ProtoChunk protoChunk = new ProtoChunk(i, j, upgradeData, chunkSections, chunkTickScheduler, chunkTickScheduler2);
+						chunk = protoChunk;
+						protoChunk.setBiomeArray(biomes);
+						protoChunk.setInhabitedTime(o);
+						protoChunk.setStatus(ChunkStatus.get(compoundTag2.getString("Status")));
+						if (!bl2 && protoChunk.getStatus().isAfter(ChunkStatus.LIGHT)) {
 							for (BlockPos blockPos : BlockPos.Mutable.iterateBoxPositions(i << 4, 0, j << 4, (i + 1 << 4) - 1, 255, (j + 1 << 4) - 1)) {
 								if (chunk.getBlockState(blockPos).getLuminance() != 0) {
-									lv4.method_12315(blockPos);
+									protoChunk.addLightSource(blockPos);
 								}
 							}
 						}
 					}
 
-					chunk.method_12020(bl2);
+					chunk.setLightOn(bl2);
 					CompoundTag compoundTag3 = compoundTag2.getCompound("Heightmaps");
 					EnumSet<Heightmap.Type> enumSet = EnumSet.noneOf(Heightmap.Type.class);
 
 					for (Heightmap.Type type : Heightmap.Type.values()) {
 						String string = type.getName();
 						if (compoundTag3.containsKey(string, 12)) {
-							if (lv2 == ChunkStatus.class_2808.field_12808 || type.method_16136()) {
-								chunk.method_12037(type, compoundTag3.getLongArray(string));
+							if (chunkType == ChunkStatus.ChunkType.PROTOCHUNK || type.method_16136()) {
+								chunk.setHeightmap(type, compoundTag3.getLongArray(string));
 							}
-						} else if (lv2 == ChunkStatus.class_2808.field_12807 && type.method_16136()) {
+						} else if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK && type.method_16136()) {
 							enumSet.add(type);
 						}
 					}
 
-					Heightmap.method_16684(chunk, enumSet);
+					Heightmap.populateHeightmaps(chunk, enumSet);
 					CompoundTag compoundTag4 = compoundTag2.getCompound("Structures");
-					chunk.method_12034(this.method_12392(chunkGenerator, lv, biomeSource, compoundTag4));
-					chunk.method_12183(this.method_12387(compoundTag4));
+					chunk.setStructureStarts(this.readStructureStarts(chunkGenerator, structureManager, biomeSource, compoundTag4));
+					chunk.setStructureReferences(this.readStructureReferences(compoundTag4));
 					if (compoundTag2.getBoolean("shouldSave")) {
-						chunk.method_12008(true);
+						chunk.setShouldSave(true);
 					}
 
 					ListTag listTag2 = compoundTag2.getList("PostProcessing", 9);
@@ -221,18 +229,18 @@ public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
 						ListTag listTag3 = listTag2.getListTag(p);
 
 						for (int q = 0; q < listTag3.size(); q++) {
-							chunk.method_12029(listTag3.getShort(q), p);
+							chunk.markBlockForPostProcessing(listTag3.getShort(q), p);
 						}
 					}
 
-					if (lv2 == ChunkStatus.class_2808.field_12807) {
+					if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
 						return new ReadOnlyChunk((WorldChunk)chunk);
 					} else {
-						class_2839 lv5 = (class_2839)chunk;
+						ProtoChunk protoChunk2 = (ProtoChunk)chunk;
 						ListTag listTag3 = compoundTag2.getList("Entities", 10);
 
 						for (int q = 0; q < listTag3.size(); q++) {
-							lv5.method_12302(listTag3.getCompoundTag(q));
+							protoChunk2.addEntity(listTag3.getCompoundTag(q));
 						}
 
 						ListTag listTag4 = compoundTag2.getList("TileEntities", 10);
@@ -248,7 +256,7 @@ public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
 							ListTag listTag6 = listTag5.getListTag(s);
 
 							for (int t = 0; t < listTag6.size(); t++) {
-								lv5.method_12304(listTag6.getShort(t), s);
+								protoChunk2.addLightSource(listTag6.getShort(t), s);
 							}
 						}
 
@@ -256,23 +264,23 @@ public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
 
 						for (String string2 : compoundTag5.getKeys()) {
 							GenerationStep.Carver carver = GenerationStep.Carver.valueOf(string2);
-							lv5.method_12307(carver, BitSet.valueOf(compoundTag5.getByteArray(string2)));
+							protoChunk2.setCarvingMask(carver, BitSet.valueOf(compoundTag5.getByteArray(string2)));
 						}
 
-						return lv5;
+						return protoChunk2;
 					}
 				}
 			}
 		} catch (CrashException var37) {
 			throw var37;
 		} catch (Exception var38) {
-			field_13001.error("Couldn't load chunk", (Throwable)var38);
+			LOGGER.error("Couldn't load chunk", (Throwable)var38);
 			return null;
 		}
 	}
 
 	@Override
-	public void method_12410(World world, Chunk chunk) throws IOException, MinecraftException {
+	public void saveChunk(World world, Chunk chunk) throws IOException, SessionLockException {
 		world.checkSessionLock();
 
 		try {
@@ -281,13 +289,13 @@ public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
 			compoundTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
 			ChunkPos chunkPos = chunk.getPos();
 			compoundTag.put("Level", compoundTag2);
-			if (chunk.getStatus().method_12164() != ChunkStatus.class_2808.field_12807) {
-				CompoundTag compoundTag3 = this.method_12389(world, chunkPos.x, chunkPos.z);
-				if (compoundTag3 != null && this.method_12377(compoundTag3) == ChunkStatus.class_2808.field_12807) {
+			if (chunk.getStatus().getChunkType() != ChunkStatus.ChunkType.LEVELCHUNK) {
+				CompoundTag compoundTag3 = this.getChunkTag(world, chunkPos.x, chunkPos.z);
+				if (compoundTag3 != null && this.getEntityStorageMode(compoundTag3) == ChunkStatus.ChunkType.LEVELCHUNK) {
 					return;
 				}
 
-				if (chunk.getStatus() == ChunkStatus.field_12798 && chunk.method_12016().values().stream().noneMatch(class_3449::hasChildren)) {
+				if (chunk.getStatus() == ChunkStatus.EMPTY && chunk.getStructureStarts().values().stream().noneMatch(StructureStart::hasChildren)) {
 					return;
 				}
 			}
@@ -297,17 +305,17 @@ public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
 			compoundTag2.putInt("xPos", i);
 			compoundTag2.putInt("zPos", j);
 			compoundTag2.putLong("LastUpdate", world.getTime());
-			compoundTag2.putLong("InhabitedTime", chunk.method_12033());
+			compoundTag2.putLong("InhabitedTime", chunk.getInhabitedTime());
 			compoundTag2.putString("Status", chunk.getStatus().getName());
-			class_2843 lv = chunk.method_12003();
-			if (!lv.method_12349()) {
-				compoundTag2.put("UpgradeData", lv.method_12350());
+			UpgradeData upgradeData = chunk.getUpgradeData();
+			if (!upgradeData.method_12349()) {
+				compoundTag2.put("UpgradeData", upgradeData.toTag());
 			}
 
 			ChunkSection[] chunkSections = chunk.getSectionArray();
-			ListTag listTag = this.method_12395(world, i, j, chunkSections);
+			ListTag listTag = this.writeSectionsTag(world, i, j, chunkSections);
 			compoundTag2.put("Sections", listTag);
-			if (chunk.method_12038()) {
+			if (chunk.isLightOn()) {
 				compoundTag2.putBoolean("isLightOn", true);
 			}
 
@@ -322,20 +330,20 @@ public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
 			compoundTag2.putIntArray("Biomes", is);
 			ListTag listTag2 = new ListTag();
 
-			for (BlockPos blockPos : chunk.method_12021()) {
+			for (BlockPos blockPos : chunk.getBlockEntityPositions()) {
 				BlockEntity blockEntity = chunk.getBlockEntity(blockPos);
 				if (blockEntity != null) {
 					CompoundTag compoundTag4 = new CompoundTag();
 					blockEntity.toTag(compoundTag4);
-					if (chunk.getStatus().method_12164() == ChunkStatus.class_2808.field_12807) {
+					if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.LEVELCHUNK) {
 						compoundTag4.putBoolean("keepPacked", false);
 					}
 
 					listTag2.add((Tag)compoundTag4);
 				} else {
-					CompoundTag compoundTag4 = chunk.method_12024(blockPos);
+					CompoundTag compoundTag4 = chunk.getBlockEntityTagAt(blockPos);
 					if (compoundTag4 != null) {
-						if (chunk.getStatus().method_12164() == ChunkStatus.class_2808.field_12807) {
+						if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.LEVELCHUNK) {
 							compoundTag4.putBoolean("keepPacked", true);
 						}
 
@@ -346,7 +354,7 @@ public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
 
 			compoundTag2.put("TileEntities", listTag2);
 			ListTag listTag3 = new ListTag();
-			if (chunk.getStatus().method_12164() == ChunkStatus.class_2808.field_12807) {
+			if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.LEVELCHUNK) {
 				WorldChunk worldChunk = (WorldChunk)chunk;
 				worldChunk.method_12232(false);
 
@@ -360,25 +368,25 @@ public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
 					}
 				}
 			} else {
-				class_2839 lv2 = (class_2839)chunk;
-				listTag3.addAll(lv2.method_12295());
+				ProtoChunk protoChunk = (ProtoChunk)chunk;
+				listTag3.addAll(protoChunk.getEntities());
 
-				for (BlockPos blockPos2 : chunk.method_12021()) {
+				for (BlockPos blockPos2 : chunk.getBlockEntityPositions()) {
 					BlockEntity blockEntity2 = chunk.getBlockEntity(blockPos2);
 					if (blockEntity2 != null) {
 						CompoundTag compoundTag5 = new CompoundTag();
 						blockEntity2.toTag(compoundTag5);
 						listTag2.add((Tag)compoundTag5);
 					} else {
-						listTag2.add((Tag)chunk.method_12024(blockPos2));
+						listTag2.add((Tag)chunk.getBlockEntityTagAt(blockPos2));
 					}
 				}
 
-				compoundTag2.put("Lights", shortListsToNbt(lv2.method_12296()));
+				compoundTag2.put("Lights", shortListsToNbt(protoChunk.method_12296()));
 				CompoundTag compoundTag6 = new CompoundTag();
 
 				for (GenerationStep.Carver carver : GenerationStep.Carver.values()) {
-					compoundTag6.putByteArray(carver.toString(), chunk.method_12025(carver).toByteArray());
+					compoundTag6.putByteArray(carver.toString(), chunk.getCarvingMask(carver).toByteArray());
 				}
 
 				compoundTag2.put("CarvingMasks", compoundTag6);
@@ -389,45 +397,45 @@ public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
 				compoundTag2.put("TileTicks", ((ServerTickScheduler)world.getBlockTickScheduler()).toTag(chunkPos));
 			}
 
-			if (chunk.method_12013() instanceof ChunkTickScheduler) {
-				compoundTag2.put("ToBeTicked", ((ChunkTickScheduler)chunk.method_12013()).toNbt());
+			if (chunk.getBlockTickScheduler() instanceof ChunkTickScheduler) {
+				compoundTag2.put("ToBeTicked", ((ChunkTickScheduler)chunk.getBlockTickScheduler()).toNbt());
 			}
 
 			if (world.getFluidTickScheduler() instanceof ServerTickScheduler) {
 				compoundTag2.put("LiquidTicks", ((ServerTickScheduler)world.getFluidTickScheduler()).toTag(chunkPos));
 			}
 
-			if (chunk.method_12014() instanceof ChunkTickScheduler) {
-				compoundTag2.put("LiquidsToBeTicked", ((ChunkTickScheduler)chunk.method_12014()).toNbt());
+			if (chunk.getFluidTickScheduler() instanceof ChunkTickScheduler) {
+				compoundTag2.put("LiquidsToBeTicked", ((ChunkTickScheduler)chunk.getFluidTickScheduler()).toNbt());
 			}
 
-			compoundTag2.put("PostProcessing", shortListsToNbt(chunk.method_12012()));
+			compoundTag2.put("PostProcessing", shortListsToNbt(chunk.getPostProcessingLists()));
 			CompoundTag compoundTag7 = new CompoundTag();
 
-			for (Entry<Heightmap.Type, Heightmap> entry : chunk.method_12011()) {
-				if (chunk.getStatus().method_12164() == ChunkStatus.class_2808.field_12808 || ((Heightmap.Type)entry.getKey()).method_16136()) {
+			for (Entry<Heightmap.Type, Heightmap> entry : chunk.getHeightmaps()) {
+				if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.PROTOCHUNK || ((Heightmap.Type)entry.getKey()).method_16136()) {
 					compoundTag7.put(((Heightmap.Type)entry.getKey()).getName(), new LongArrayTag(((Heightmap)entry.getValue()).asLongArray()));
 				}
 			}
 
 			compoundTag2.put("Heightmaps", compoundTag7);
-			compoundTag2.put("Structures", this.method_12385(i, j, chunk.method_12016(), chunk.method_12179()));
-			this.method_12390(chunkPos, compoundTag);
+			compoundTag2.put("Structures", this.writeStructuresTag(i, j, chunk.getStructureStarts(), chunk.getStructureReferences()));
+			this.cacheChunkTag(chunkPos, compoundTag);
 		} catch (Exception var21) {
-			field_13001.error("Failed to save chunk", (Throwable)var21);
+			LOGGER.error("Failed to save chunk", (Throwable)var21);
 		}
 	}
 
-	private void method_12390(ChunkPos chunkPos, CompoundTag compoundTag) {
-		this.field_13000.put(chunkPos, compoundTag);
+	private void cacheChunkTag(ChunkPos chunkPos, CompoundTag compoundTag) {
+		this.chunkTagCache.put(chunkPos, compoundTag);
 	}
 
 	@Override
-	public boolean method_12412() {
-		Iterator<Entry<ChunkPos, CompoundTag>> iterator = this.field_13000.entrySet().iterator();
+	public boolean saveNextChunk() {
+		Iterator<Entry<ChunkPos, CompoundTag>> iterator = this.chunkTagCache.entrySet().iterator();
 		if (!iterator.hasNext()) {
-			if (this.field_12998) {
-				field_13001.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", this.field_12999.getName());
+			if (this.logIfAllChunksSaved) {
+				LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", this.file.getName());
 			}
 
 			return false;
@@ -440,14 +448,14 @@ public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
 				return true;
 			} else {
 				try {
-					DataOutputStream dataOutputStream = RegionFileCache.getChunkDataOutputStream(this.field_12999, chunkPos.x, chunkPos.z);
+					DataOutputStream dataOutputStream = RegionFileCache.getChunkDataOutputStream(this.file, chunkPos.x, chunkPos.z);
 					NbtIo.write(compoundTag, dataOutputStream);
 					dataOutputStream.close();
-					if (this.field_13003 != null) {
-						this.field_13003.method_14744(chunkPos.toLong());
+					if (this.featureUpdater != null) {
+						this.featureUpdater.markResolved(chunkPos.toLong());
 					}
 				} catch (Exception var6) {
-					field_13001.error("Failed to save chunk", (Throwable)var6);
+					LOGGER.error("Failed to save chunk", (Throwable)var6);
 				}
 
 				return true;
@@ -455,26 +463,26 @@ public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
 		}
 	}
 
-	private ChunkStatus.class_2808 method_12377(@Nullable CompoundTag compoundTag) {
+	private ChunkStatus.ChunkType getEntityStorageMode(@Nullable CompoundTag compoundTag) {
 		if (compoundTag != null) {
 			ChunkStatus chunkStatus = ChunkStatus.get(compoundTag.getCompound("Level").getString("Status"));
 			if (chunkStatus != null) {
-				return chunkStatus.method_12164();
+				return chunkStatus.getChunkType();
 			}
 		}
 
-		return ChunkStatus.class_2808.field_12808;
+		return ChunkStatus.ChunkType.PROTOCHUNK;
 	}
 
 	@Override
-	public void save() {
+	public void saveAllChunks() {
 		try {
-			this.field_12998 = true;
+			this.logIfAllChunksSaved = true;
 
-			while (this.method_12412()) {
+			while (this.saveNextChunk()) {
 			}
 		} finally {
-			this.field_12998 = false;
+			this.logIfAllChunksSaved = false;
 		}
 	}
 
@@ -484,7 +492,7 @@ public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
 
 		for (int i = 0; i < listTag.size(); i++) {
 			CompoundTag compoundTag2 = listTag.getCompoundTag(i);
-			method_12383(compoundTag2, world, worldChunk);
+			readEntityAndAddToChunk(compoundTag2, world, worldChunk);
 			worldChunk.method_12232(true);
 		}
 
@@ -512,7 +520,7 @@ public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
 		}
 	}
 
-	private ListTag method_12395(World world, int i, int j, ChunkSection[] chunkSections) {
+	private ListTag writeSectionsTag(World world, int i, int j, ChunkSection[] chunkSections) {
 		ListTag listTag = new ListTag();
 		LightingProvider lightingProvider = world.getChunkManager().getLightingProvider();
 
@@ -522,21 +530,21 @@ public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
 				.filter(chunkSectionx -> chunkSectionx != null && chunkSectionx.getYOffset() >> 4 == l)
 				.findFirst()
 				.orElse(WorldChunk.EMPTY_SECTION);
-			class_2804 lv = lightingProvider.get(LightType.field_9282).method_15544(i, l, j);
-			class_2804 lv2 = lightingProvider.get(LightType.field_9284).method_15544(i, l, j);
-			if (chunkSection != WorldChunk.EMPTY_SECTION || lv != null || lv2 != null) {
+			ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.BLOCK_LIGHT).getChunkLightArray(i, l, j);
+			ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.SKY_LIGHT).getChunkLightArray(i, l, j);
+			if (chunkSection != WorldChunk.EMPTY_SECTION || chunkNibbleArray != null || chunkNibbleArray2 != null) {
 				CompoundTag compoundTag = new CompoundTag();
 				compoundTag.putByte("Y", (byte)(l & 0xFF));
 				if (chunkSection != WorldChunk.EMPTY_SECTION) {
-					chunkSection.getContainer().method_12330(compoundTag, "Palette", "BlockStates");
+					chunkSection.method_12265().write(compoundTag, "Palette", "BlockStates");
 				}
 
-				if (lv != null && !lv.method_12146()) {
-					compoundTag.putByteArray("BlockLight", lv.method_12137());
+				if (chunkNibbleArray != null && !chunkNibbleArray.isUninitialized()) {
+					compoundTag.putByteArray("BlockLight", chunkNibbleArray.asByteArray());
 				}
 
-				if (lv2 != null && !lv2.method_12146()) {
-					compoundTag.putByteArray("SkyLight", lv2.method_12137());
+				if (chunkNibbleArray2 != null && !chunkNibbleArray2.isUninitialized()) {
+					compoundTag.putByteArray("SkyLight", chunkNibbleArray2.asByteArray());
 				}
 
 				listTag.add((Tag)compoundTag);
@@ -546,10 +554,10 @@ public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
 		return listTag;
 	}
 
-	private static ChunkSection[] method_12384(IWorld iWorld, int i, int j, ListTag listTag, boolean bl) {
+	private static ChunkSection[] readChunkSections(IWorld iWorld, int i, int j, ListTag listTag, boolean bl) {
 		int k = 16;
 		ChunkSection[] chunkSections = new ChunkSection[16];
-		boolean bl2 = iWorld.getDimension().method_12451();
+		boolean bl2 = iWorld.getDimension().hasSkyLight();
 		ChunkManager chunkManager = iWorld.getChunkManager();
 
 		for (int l = 0; l < listTag.size(); l++) {
@@ -557,18 +565,18 @@ public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
 			int m = compoundTag.getByte("Y");
 			if (compoundTag.containsKey("Palette", 9) && compoundTag.containsKey("BlockStates", 12)) {
 				ChunkSection chunkSection = new ChunkSection(m << 4);
-				chunkSection.getContainer().method_12329(compoundTag.getList("Palette", 10), compoundTag.getLongArray("BlockStates"));
-				chunkSection.method_12253();
+				chunkSection.method_12265().read(compoundTag.getList("Palette", 10), compoundTag.getLongArray("BlockStates"));
+				chunkSection.calculateCounts();
 				chunkSections[m] = chunkSection;
 			}
 
 			if (bl) {
 				if (compoundTag.containsKey("BlockLight", 7)) {
-					chunkManager.getLightingProvider().method_15558(LightType.field_9282, i, m, j, new class_2804(compoundTag.getByteArray("BlockLight")));
+					chunkManager.getLightingProvider().setSection(LightType.BLOCK_LIGHT, i, m, j, new ChunkNibbleArray(compoundTag.getByteArray("BlockLight")));
 				}
 
 				if (bl2 && compoundTag.containsKey("SkyLight", 7)) {
-					chunkManager.getLightingProvider().method_15558(LightType.field_9284, i, m, j, new class_2804(compoundTag.getByteArray("SkyLight")));
+					chunkManager.getLightingProvider().setSection(LightType.SKY_LIGHT, i, m, j, new ChunkNibbleArray(compoundTag.getByteArray("SkyLight")));
 				}
 			}
 		}
@@ -576,12 +584,12 @@ public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
 		return chunkSections;
 	}
 
-	private CompoundTag method_12385(int i, int j, Map<String, class_3449> map, Map<String, LongSet> map2) {
+	private CompoundTag writeStructuresTag(int i, int j, Map<String, StructureStart> map, Map<String, LongSet> map2) {
 		CompoundTag compoundTag = new CompoundTag();
 		CompoundTag compoundTag2 = new CompoundTag();
 
-		for (Entry<String, class_3449> entry : map.entrySet()) {
-			compoundTag2.put((String)entry.getKey(), ((class_3449)entry.getValue()).method_14972(i, j));
+		for (Entry<String, StructureStart> entry : map.entrySet()) {
+			compoundTag2.put((String)entry.getKey(), ((StructureStart)entry.getValue()).toTag(i, j));
 		}
 
 		compoundTag.put("Starts", compoundTag2);
@@ -595,18 +603,20 @@ public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
 		return compoundTag;
 	}
 
-	private Map<String, class_3449> method_12392(ChunkGenerator<?> chunkGenerator, class_3485 arg, BiomeSource biomeSource, CompoundTag compoundTag) {
-		Map<String, class_3449> map = Maps.<String, class_3449>newHashMap();
+	private Map<String, StructureStart> readStructureStarts(
+		ChunkGenerator<?> chunkGenerator, StructureManager structureManager, BiomeSource biomeSource, CompoundTag compoundTag
+	) {
+		Map<String, StructureStart> map = Maps.<String, StructureStart>newHashMap();
 		CompoundTag compoundTag2 = compoundTag.getCompound("Starts");
 
 		for (String string : compoundTag2.getKeys()) {
-			map.put(string, StructureFeatures.method_14842(chunkGenerator, arg, biomeSource, compoundTag2.getCompound(string)));
+			map.put(string, StructureFeatures.method_14842(chunkGenerator, structureManager, biomeSource, compoundTag2.getCompound(string)));
 		}
 
 		return map;
 	}
 
-	private Map<String, LongSet> method_12387(CompoundTag compoundTag) {
+	private Map<String, LongSet> readStructureReferences(CompoundTag compoundTag) {
 		Map<String, LongSet> map = Maps.<String, LongSet>newHashMap();
 		CompoundTag compoundTag2 = compoundTag.getCompound("References");
 
@@ -635,8 +645,8 @@ public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
 	}
 
 	@Nullable
-	private static Entity method_12382(CompoundTag compoundTag, World world, Function<Entity, Entity> function) {
-		Entity entity = method_12379(compoundTag, world);
+	private static Entity readEntity(CompoundTag compoundTag, World world, Function<Entity, Entity> function) {
+		Entity entity = readEntityWithoutPassengers(compoundTag, world);
 		if (entity == null) {
 			return null;
 		} else {
@@ -645,7 +655,7 @@ public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
 				ListTag listTag = compoundTag.getList("Passengers", 10);
 
 				for (int i = 0; i < listTag.size(); i++) {
-					Entity entity2 = method_12382(listTag.getCompoundTag(i), world, function);
+					Entity entity2 = readEntity(listTag.getCompoundTag(i), world, function);
 					if (entity2 != null) {
 						entity2.startRiding(entity, true);
 					}
@@ -657,51 +667,51 @@ public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
 	}
 
 	@Nullable
-	public static Entity method_12383(CompoundTag compoundTag, World world, WorldChunk worldChunk) {
-		return method_12382(compoundTag, world, entity -> {
+	public static Entity readEntityAndAddToChunk(CompoundTag compoundTag, World world, WorldChunk worldChunk) {
+		return readEntity(compoundTag, world, entity -> {
 			worldChunk.addEntity(entity);
 			return entity;
 		});
 	}
 
 	@Nullable
-	public static Entity method_12399(CompoundTag compoundTag, World world, double d, double e, double f, boolean bl) {
-		return method_12382(compoundTag, world, entity -> {
+	public static Entity readEntity(CompoundTag compoundTag, World world, double d, double e, double f, boolean bl) {
+		return readEntity(compoundTag, world, entity -> {
 			entity.setPositionAndAngles(d, e, f, entity.yaw, entity.pitch);
 			return bl && !world.spawnEntity(entity) ? null : entity;
 		});
 	}
 
 	@Nullable
-	public static Entity method_12378(CompoundTag compoundTag, World world, boolean bl) {
-		return method_12382(compoundTag, world, entity -> bl && !world.spawnEntity(entity) ? null : entity);
+	public static Entity readEntity(CompoundTag compoundTag, World world, boolean bl) {
+		return readEntity(compoundTag, world, entity -> bl && !world.spawnEntity(entity) ? null : entity);
 	}
 
 	@Nullable
-	protected static Entity method_12379(CompoundTag compoundTag, World world) {
+	protected static Entity readEntityWithoutPassengers(CompoundTag compoundTag, World world) {
 		try {
 			return EntityType.fromTag(compoundTag, world);
 		} catch (RuntimeException var3) {
-			field_13001.warn("Exception loading entity: ", (Throwable)var3);
+			LOGGER.warn("Exception loading entity: ", (Throwable)var3);
 			return null;
 		}
 	}
 
-	public static void method_12394(Entity entity, IWorld iWorld) {
+	public static void spawnEntityAndPassengers(Entity entity, IWorld iWorld) {
 		if (iWorld.spawnEntity(entity) && entity.hasPassengers()) {
 			for (Entity entity2 : entity.getPassengerList()) {
-				method_12394(entity2, iWorld);
+				spawnEntityAndPassengers(entity2, iWorld);
 			}
 		}
 	}
 
-	public boolean method_12375(ChunkPos chunkPos, DimensionType dimensionType, class_37 arg) {
+	public boolean upgradeChunk(ChunkPos chunkPos, DimensionType dimensionType, PersistentStateManager persistentStateManager) {
 		boolean bl = false;
 
 		try {
-			this.method_12398(dimensionType, arg, chunkPos.x, chunkPos.z);
+			this.getChunkTag(dimensionType, persistentStateManager, chunkPos.x, chunkPos.z);
 
-			while (this.method_12412()) {
+			while (this.saveNextChunk()) {
 				bl = true;
 			}
 		} catch (IOException var6) {
@@ -712,7 +722,7 @@ public class ChunkSaveHandlerImpl implements ChunkSaveHandler {
 
 	@Override
 	public void close() {
-		while (this.method_12412()) {
+		while (this.saveNextChunk()) {
 		}
 	}
 }

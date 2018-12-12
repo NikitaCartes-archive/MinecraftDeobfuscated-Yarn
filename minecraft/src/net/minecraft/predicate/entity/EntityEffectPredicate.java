@@ -20,18 +20,18 @@ import net.minecraft.util.registry.Registry;
 
 public class EntityEffectPredicate {
 	public static final EntityEffectPredicate EMPTY = new EntityEffectPredicate(Collections.emptyMap());
-	private final Map<StatusEffect, EntityEffectPredicate.class_2103> effects;
+	private final Map<StatusEffect, EntityEffectPredicate.EffectData> effects;
 
-	public EntityEffectPredicate(Map<StatusEffect, EntityEffectPredicate.class_2103> map) {
+	public EntityEffectPredicate(Map<StatusEffect, EntityEffectPredicate.EffectData> map) {
 		this.effects = map;
 	}
 
 	public static EntityEffectPredicate create() {
-		return new EntityEffectPredicate(Maps.<StatusEffect, EntityEffectPredicate.class_2103>newHashMap());
+		return new EntityEffectPredicate(Maps.<StatusEffect, EntityEffectPredicate.EffectData>newHashMap());
 	}
 
-	public EntityEffectPredicate method_9065(StatusEffect statusEffect) {
-		this.effects.put(statusEffect, new EntityEffectPredicate.class_2103());
+	public EntityEffectPredicate withEffect(StatusEffect statusEffect) {
+		this.effects.put(statusEffect, new EntityEffectPredicate.EffectData());
 		return this;
 	}
 
@@ -51,9 +51,9 @@ public class EntityEffectPredicate {
 		if (this == EMPTY) {
 			return true;
 		} else {
-			for (Entry<StatusEffect, EntityEffectPredicate.class_2103> entry : this.effects.entrySet()) {
+			for (Entry<StatusEffect, EntityEffectPredicate.EffectData> entry : this.effects.entrySet()) {
 				StatusEffectInstance statusEffectInstance = (StatusEffectInstance)map.get(entry.getKey());
-				if (!((EntityEffectPredicate.class_2103)entry.getValue()).test(statusEffectInstance)) {
+				if (!((EntityEffectPredicate.EffectData)entry.getValue()).test(statusEffectInstance)) {
 					return false;
 				}
 			}
@@ -65,7 +65,7 @@ public class EntityEffectPredicate {
 	public static EntityEffectPredicate deserialize(@Nullable JsonElement jsonElement) {
 		if (jsonElement != null && !jsonElement.isJsonNull()) {
 			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "effects");
-			Map<StatusEffect, EntityEffectPredicate.class_2103> map = Maps.<StatusEffect, EntityEffectPredicate.class_2103>newHashMap();
+			Map<StatusEffect, EntityEffectPredicate.EffectData> map = Maps.<StatusEffect, EntityEffectPredicate.EffectData>newHashMap();
 
 			for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
 				Identifier identifier = new Identifier((String)entry.getKey());
@@ -74,10 +74,10 @@ public class EntityEffectPredicate {
 					throw new JsonSyntaxException("Unknown effect '" + identifier + "'");
 				}
 
-				EntityEffectPredicate.class_2103 lv = EntityEffectPredicate.class_2103.deserialize(
+				EntityEffectPredicate.EffectData effectData = EntityEffectPredicate.EffectData.deserialize(
 					JsonHelper.asObject((JsonElement)entry.getValue(), (String)entry.getKey())
 				);
-				map.put(statusEffect, lv);
+				map.put(statusEffect, effectData);
 			}
 
 			return new EntityEffectPredicate(map);
@@ -92,15 +92,15 @@ public class EntityEffectPredicate {
 		} else {
 			JsonObject jsonObject = new JsonObject();
 
-			for (Entry<StatusEffect, EntityEffectPredicate.class_2103> entry : this.effects.entrySet()) {
-				jsonObject.add(Registry.STATUS_EFFECT.getId((StatusEffect)entry.getKey()).toString(), ((EntityEffectPredicate.class_2103)entry.getValue()).serialize());
+			for (Entry<StatusEffect, EntityEffectPredicate.EffectData> entry : this.effects.entrySet()) {
+				jsonObject.add(Registry.STATUS_EFFECT.getId((StatusEffect)entry.getKey()).toString(), ((EntityEffectPredicate.EffectData)entry.getValue()).serialize());
 			}
 
 			return jsonObject;
 		}
 	}
 
-	public static class class_2103 {
+	public static class EffectData {
 		private final NumberRange.Integer amplifier;
 		private final NumberRange.Integer duration;
 		@Nullable
@@ -108,14 +108,14 @@ public class EntityEffectPredicate {
 		@Nullable
 		private final Boolean visible;
 
-		public class_2103(NumberRange.Integer integer, NumberRange.Integer integer2, @Nullable Boolean boolean_, @Nullable Boolean boolean2) {
+		public EffectData(NumberRange.Integer integer, NumberRange.Integer integer2, @Nullable Boolean boolean_, @Nullable Boolean boolean2) {
 			this.amplifier = integer;
 			this.duration = integer2;
 			this.ambient = boolean_;
 			this.visible = boolean2;
 		}
 
-		public class_2103() {
+		public EffectData() {
 			this(NumberRange.Integer.ANY, NumberRange.Integer.ANY, null, null);
 		}
 
@@ -142,12 +142,12 @@ public class EntityEffectPredicate {
 			return jsonObject;
 		}
 
-		public static EntityEffectPredicate.class_2103 deserialize(JsonObject jsonObject) {
+		public static EntityEffectPredicate.EffectData deserialize(JsonObject jsonObject) {
 			NumberRange.Integer integer = NumberRange.Integer.fromJson(jsonObject.get("amplifier"));
 			NumberRange.Integer integer2 = NumberRange.Integer.fromJson(jsonObject.get("duration"));
 			Boolean boolean_ = jsonObject.has("ambient") ? JsonHelper.getBoolean(jsonObject, "ambient") : null;
 			Boolean boolean2 = jsonObject.has("visible") ? JsonHelper.getBoolean(jsonObject, "visible") : null;
-			return new EntityEffectPredicate.class_2103(integer, integer2, boolean_, boolean2);
+			return new EntityEffectPredicate.EffectData(integer, integer2, boolean_, boolean2);
 		}
 	}
 }

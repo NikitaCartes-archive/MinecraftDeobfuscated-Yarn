@@ -18,14 +18,14 @@ public class CraftingTableBlock extends Block {
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
-		if (world.isRemote) {
+		if (world.isClient) {
 			return true;
 		} else {
 			playerEntity.openContainer(new CraftingTableBlock.ContainerProvider(world, blockPos));
-			playerEntity.method_7281(Stats.field_15368);
+			playerEntity.increaseStat(Stats.field_15368);
 			return true;
 		}
 	}
@@ -42,11 +42,6 @@ public class CraftingTableBlock extends Block {
 		@Override
 		public TextComponent getName() {
 			return new TranslatableTextComponent(Blocks.field_9980.getTranslationKey() + ".name");
-		}
-
-		@Override
-		public boolean hasCustomName() {
-			return false;
 		}
 
 		@Override

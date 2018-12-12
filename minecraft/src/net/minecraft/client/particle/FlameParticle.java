@@ -2,9 +2,9 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.VertexBuffer;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.entity.Entity;
-import net.minecraft.particle.TexturedParticle;
+import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
@@ -29,16 +29,16 @@ public class FlameParticle extends Particle {
 	}
 
 	@Override
-	public void addPos(double d, double e, double f) {
+	public void move(double d, double e, double f) {
 		this.setBoundingBox(this.getBoundingBox().offset(d, e, f));
 		this.repositionFromBoundingBox();
 	}
 
 	@Override
-	public void buildGeometry(VertexBuffer vertexBuffer, Entity entity, float f, float g, float h, float i, float j, float k) {
+	public void buildGeometry(BufferBuilder bufferBuilder, Entity entity, float f, float g, float h, float i, float j, float k) {
 		float l = ((float)this.age + f) / (float)this.maxAge;
 		this.size = this.field_3812 * (1.0F - l * l * 0.5F);
-		super.buildGeometry(vertexBuffer, entity, f, g, h, i, j, k);
+		super.buildGeometry(bufferBuilder, entity, f, g, h, i, j, k);
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class FlameParticle extends Particle {
 			this.markDead();
 		}
 
-		this.addPos(this.velocityX, this.velocityY, this.velocityZ);
+		this.move(this.velocityX, this.velocityY, this.velocityZ);
 		this.velocityX *= 0.96F;
 		this.velocityY *= 0.96F;
 		this.velocityZ *= 0.96F;
@@ -76,8 +76,8 @@ public class FlameParticle extends Particle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Factory implements FactoryParticle<TexturedParticle> {
-		public Particle createParticle(TexturedParticle texturedParticle, World world, double d, double e, double f, double g, double h, double i) {
+	public static class Factory implements ParticleFactory<DefaultParticleType> {
+		public Particle method_3036(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new FlameParticle(world, d, e, f, g, h, i);
 		}
 	}

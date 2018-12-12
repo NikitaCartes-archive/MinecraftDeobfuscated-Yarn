@@ -24,8 +24,7 @@ import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.EndPillarFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class EndSpikeFeature extends Feature<EndPillarFeatureConfig> {
 	private static final LoadingCache<Long, List<EndSpikeFeature.Spike>> CACHE = CacheBuilder.newBuilder()
@@ -43,11 +42,7 @@ public class EndSpikeFeature extends Feature<EndPillarFeatureConfig> {
 	}
 
 	public boolean method_15887(
-		IWorld iWorld,
-		ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator,
-		Random random,
-		BlockPos blockPos,
-		EndPillarFeatureConfig endPillarFeatureConfig
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, EndPillarFeatureConfig endPillarFeatureConfig
 	) {
 		List<EndSpikeFeature.Spike> list = endPillarFeatureConfig.getSpikes();
 		if (list.isEmpty()) {
@@ -71,9 +66,9 @@ public class EndSpikeFeature extends Feature<EndPillarFeatureConfig> {
 		)) {
 			if (mutable.squaredDistanceTo((double)blockPos.getX(), (double)mutable.getY(), (double)blockPos.getZ()) <= (double)(i * i + 1)
 				&& mutable.getY() < spike.getHeight()) {
-				this.method_13153(iWorld, mutable, Blocks.field_10540.getDefaultState());
+				this.setBlockState(iWorld, mutable, Blocks.field_10540.getDefaultState());
 			} else if (mutable.getY() > 65) {
-				this.method_13153(iWorld, mutable, Blocks.field_10124.getDefaultState());
+				this.setBlockState(iWorld, mutable, Blocks.field_10124.getDefaultState());
 			}
 		}
 
@@ -98,21 +93,21 @@ public class EndSpikeFeature extends Feature<EndPillarFeatureConfig> {
 								.with(PaneBlock.SOUTH, Boolean.valueOf(bl4 && n != 2))
 								.with(PaneBlock.WEST, Boolean.valueOf(bl5 && m != -2))
 								.with(PaneBlock.EAST, Boolean.valueOf(bl5 && m != 2));
-							this.method_13153(iWorld, mutable2.set(blockPos.getX() + m, spike.getHeight() + o, blockPos.getZ() + n), blockState);
+							this.setBlockState(iWorld, mutable2.set(blockPos.getX() + m, spike.getHeight() + o, blockPos.getZ() + n), blockState);
 						}
 					}
 				}
 			}
 		}
 
-		EnderCrystalEntity enderCrystalEntity = new EnderCrystalEntity(iWorld.method_8410());
+		EnderCrystalEntity enderCrystalEntity = new EnderCrystalEntity(iWorld.getWorld());
 		enderCrystalEntity.setBeamTarget(endPillarFeatureConfig.getPos());
 		enderCrystalEntity.setInvulnerable(endPillarFeatureConfig.isCrystalInvulerable());
 		enderCrystalEntity.setPositionAndAngles(
 			(double)((float)blockPos.getX() + 0.5F), (double)(spike.getHeight() + 1), (double)((float)blockPos.getZ() + 0.5F), random.nextFloat() * 360.0F, 0.0F
 		);
 		iWorld.spawnEntity(enderCrystalEntity);
-		this.method_13153(iWorld, new BlockPos(blockPos.getX(), spike.getHeight(), blockPos.getZ()), Blocks.field_9987.getDefaultState());
+		this.setBlockState(iWorld, new BlockPos(blockPos.getX(), spike.getHeight(), blockPos.getZ()), Blocks.field_9987.getDefaultState());
 	}
 
 	public static class Spike {
@@ -162,7 +157,7 @@ public class EndSpikeFeature extends Feature<EndPillarFeatureConfig> {
 			return this.boundingBox;
 		}
 
-		public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+		<T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
 			Builder<T, T> builder = ImmutableMap.builder();
 			builder.put(dynamicOps.createString("centerX"), dynamicOps.createInt(this.centerX));
 			builder.put(dynamicOps.createString("centerZ"), dynamicOps.createInt(this.centerZ));

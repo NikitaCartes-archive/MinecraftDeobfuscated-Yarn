@@ -4,7 +4,7 @@ import net.minecraft.util.TaskPriority;
 import net.minecraft.util.math.BlockPos;
 
 public class ScheduledTick<T> implements Comparable<ScheduledTick<?>> {
-	private static long id_counter;
+	private static long idCounter;
 	private final T object;
 	public final BlockPos pos;
 	public final long time;
@@ -16,7 +16,7 @@ public class ScheduledTick<T> implements Comparable<ScheduledTick<?>> {
 	}
 
 	public ScheduledTick(BlockPos blockPos, T object, long l, TaskPriority taskPriority) {
-		this.id = id_counter++;
+		this.id = idCounter++;
 		this.pos = blockPos.toImmutable();
 		this.object = object;
 		this.time = l;

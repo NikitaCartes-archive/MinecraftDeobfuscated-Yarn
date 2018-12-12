@@ -88,7 +88,7 @@ public class ArrowEntity extends ProjectileEntity {
 	@Override
 	public void update() {
 		super.update();
-		if (this.world.isRemote) {
+		if (this.world.isClient) {
 			if (this.inGround) {
 				if (this.field_7576 % 5 == 0) {
 					this.spawnParticles(1);
@@ -97,7 +97,7 @@ public class ArrowEntity extends ProjectileEntity {
 				this.spawnParticles(2);
 			}
 		} else if (this.inGround && this.field_7576 != 0 && !this.effects.isEmpty() && this.field_7576 >= 600) {
-			this.world.method_8421(this, (byte)0);
+			this.world.summonParticle(this, (byte)0);
 			this.potion = Potions.field_8984;
 			this.effects.clear();
 			this.dataTracker.set(COLOR, -1);

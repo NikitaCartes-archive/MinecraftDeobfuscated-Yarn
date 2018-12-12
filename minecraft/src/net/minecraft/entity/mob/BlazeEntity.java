@@ -99,7 +99,7 @@ public class BlazeEntity extends HostileEntity {
 			this.velocityY *= 0.6;
 		}
 
-		if (this.world.isRemote) {
+		if (this.world.isClient) {
 			if (this.random.nextInt(24) == 0 && !this.isSilent()) {
 				this.world
 					.playSound(
@@ -133,7 +133,7 @@ public class BlazeEntity extends HostileEntity {
 
 	@Override
 	protected void mobTick() {
-		if (this.method_5637()) {
+		if (this.isTouchingWater()) {
 			this.damage(DamageSource.DROWN, 1.0F);
 		}
 
@@ -177,7 +177,7 @@ public class BlazeEntity extends HostileEntity {
 	}
 
 	@Override
-	protected boolean method_7075() {
+	protected boolean checkLightLevelForSpawn() {
 		return true;
 	}
 

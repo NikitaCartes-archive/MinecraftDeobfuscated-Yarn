@@ -31,7 +31,7 @@ public class ItemEntity extends Entity {
 	private int health = 5;
 	private UUID thrower;
 	private UUID owner;
-	public float field_7203 = (float)(Math.random() * Math.PI * 2.0);
+	public float hoverHeight = (float)(Math.random() * Math.PI * 2.0);
 
 	public ItemEntity(World world) {
 		super(EntityType.ITEM, world);
@@ -84,7 +84,7 @@ public class ItemEntity extends Entity {
 				this.velocityY -= 0.04F;
 			}
 
-			if (this.world.isRemote) {
+			if (this.world.isClient) {
 				this.noClip = false;
 			} else {
 				this.noClip = this.method_5632(this.x, (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.z);
@@ -100,7 +100,7 @@ public class ItemEntity extends Entity {
 					this.playSoundAtEntity(SoundEvents.field_14821, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
 				}
 
-				if (!this.world.isRemote) {
+				if (!this.world.isClient) {
 					this.tryMerge();
 				}
 			}
@@ -126,7 +126,7 @@ public class ItemEntity extends Entity {
 			}
 
 			this.velocityDirty = this.velocityDirty | this.method_5713();
-			if (!this.world.isRemote) {
+			if (!this.world.isClient) {
 				double h = this.velocityX - d;
 				double i = this.velocityY - e;
 				double j = this.velocityZ - f;
@@ -136,7 +136,7 @@ public class ItemEntity extends Entity {
 				}
 			}
 
-			if (!this.world.isRemote && this.age >= 6000) {
+			if (!this.world.isClient && this.age >= 6000) {
 				this.invalidate();
 			}
 		}
@@ -210,7 +210,7 @@ public class ItemEntity extends Entity {
 		} else if (!this.getStack().isEmpty() && this.getStack().getItem() == Items.field_8137 && damageSource.isExplosive()) {
 			return false;
 		} else {
-			this.method_5785();
+			this.scheduleVelocityUpdate();
 			this.health = (int)((float)this.health - f);
 			if (this.health <= 0) {
 				this.invalidate();
@@ -262,8 +262,8 @@ public class ItemEntity extends Entity {
 	}
 
 	@Override
-	public void method_5694(PlayerEntity playerEntity) {
-		if (!this.world.isRemote) {
+	public void onPlayerCollision(PlayerEntity playerEntity) {
+		if (!this.world.isClient) {
 			ItemStack itemStack = this.getStack();
 			Item item = itemStack.getItem();
 			int i = itemStack.getAmount();
@@ -296,7 +296,7 @@ public class ItemEntity extends Entity {
 	@Override
 	public Entity changeDimension(DimensionType dimensionType) {
 		Entity entity = super.changeDimension(dimensionType);
-		if (!this.world.isRemote && entity instanceof ItemEntity) {
+		if (!this.world.isClient && entity instanceof ItemEntity) {
 			((ItemEntity)entity).tryMerge();
 		}
 

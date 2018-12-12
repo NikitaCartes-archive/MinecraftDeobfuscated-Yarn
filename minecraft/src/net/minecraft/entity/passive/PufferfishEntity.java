@@ -2,8 +2,8 @@ package net.minecraft.entity.passive;
 
 import java.util.List;
 import java.util.function.Predicate;
-import net.minecraft.class_1310;
 import net.minecraft.client.network.packet.GameStateChangeClientPacket;
+import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
@@ -32,7 +32,7 @@ public class PufferfishEntity extends FishEntity {
 			return false;
 		} else {
 			return !(livingEntity instanceof PlayerEntity) || !((PlayerEntity)livingEntity).isSpectator() && !((PlayerEntity)livingEntity).isCreative()
-				? livingEntity.method_6046() != class_1310.field_6292
+				? livingEntity.getGroup() != EntityGroup.AQUATIC
 				: false;
 		}
 	};
@@ -103,7 +103,7 @@ public class PufferfishEntity extends FishEntity {
 	}
 
 	@Override
-	protected ItemStack method_6452() {
+	protected ItemStack getFishBucketItem() {
 		return new ItemStack(Items.field_8108);
 	}
 
@@ -115,7 +115,7 @@ public class PufferfishEntity extends FishEntity {
 
 	@Override
 	public void update() {
-		if (this.isValid() && !this.world.isRemote) {
+		if (this.isValid() && !this.world.isClient) {
 			if (this.field_6833 > 0) {
 				if (this.method_6594() == 0) {
 					this.playSoundAtEntity(SoundEvents.field_15235, this.getSoundVolume(), this.getSoundPitch());
@@ -163,7 +163,7 @@ public class PufferfishEntity extends FishEntity {
 	}
 
 	@Override
-	public void method_5694(PlayerEntity playerEntity) {
+	public void onPlayerCollision(PlayerEntity playerEntity) {
 		int i = this.method_6594();
 		if (playerEntity instanceof ServerPlayerEntity && i > 0 && playerEntity.damage(DamageSource.mob(this), (float)(1 + i))) {
 			((ServerPlayerEntity)playerEntity).networkHandler.sendPacket(new GameStateChangeClientPacket(9, 0.0F));
@@ -187,7 +187,7 @@ public class PufferfishEntity extends FishEntity {
 	}
 
 	@Override
-	protected SoundEvent method_6457() {
+	protected SoundEvent getFlopSound() {
 		return SoundEvents.field_15004;
 	}
 

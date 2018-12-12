@@ -14,15 +14,15 @@ import java.util.Locale;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_308;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.FontRenderer;
 import net.minecraft.client.gui.ingame.ConfirmChatLinkGui;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.LabelWidget;
 import net.minecraft.client.item.TooltipOptions;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.InputUtil;
@@ -38,7 +38,7 @@ import net.minecraft.text.event.HoverEvent;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportElement;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.crash.ICrashCallable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,15 +52,15 @@ public abstract class Gui extends DrawableContainer implements YesNoCallback {
 	public ItemRenderer itemRenderer;
 	public int width;
 	public int height;
-	protected final List<ButtonWidget> buttonWidgets = Lists.<ButtonWidget>newArrayList();
+	protected final List<ButtonWidget> buttons = Lists.<ButtonWidget>newArrayList();
 	protected final List<LabelWidget> labelWidgets = Lists.<LabelWidget>newArrayList();
 	public boolean field_2558;
 	public FontRenderer fontRenderer;
 	private URI uri;
 
 	public void draw(int i, int j, float f) {
-		for (int k = 0; k < this.buttonWidgets.size(); k++) {
-			((ButtonWidget)this.buttonWidgets.get(k)).draw(i, j, f);
+		for (int k = 0; k < this.buttons.size(); k++) {
+			((ButtonWidget)this.buttons.get(k)).draw(i, j, f);
 		}
 
 		for (int k = 0; k < this.labelWidgets.size(); k++) {
@@ -70,7 +70,7 @@ public abstract class Gui extends DrawableContainer implements YesNoCallback {
 
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
-		if (i == 256 && this.canClose()) {
+		if (i == 256 && this.doesEscapeKeyClose()) {
 			this.close();
 			return true;
 		} else {
@@ -78,7 +78,7 @@ public abstract class Gui extends DrawableContainer implements YesNoCallback {
 		}
 	}
 
-	public boolean canClose() {
+	public boolean doesEscapeKeyClose() {
 		return true;
 	}
 
@@ -87,7 +87,7 @@ public abstract class Gui extends DrawableContainer implements YesNoCallback {
 	}
 
 	protected <T extends ButtonWidget> T addButton(T buttonWidget) {
-		this.buttonWidgets.add(buttonWidget);
+		this.buttons.add(buttonWidget);
 		this.listeners.add(buttonWidget);
 		return buttonWidget;
 	}
@@ -98,7 +98,7 @@ public abstract class Gui extends DrawableContainer implements YesNoCallback {
 
 	public List<String> getStackTooltip(ItemStack itemStack) {
 		List<TextComponent> list = itemStack.getTooltipText(
-			this.client.player, this.client.options.advancedItemTooltips ? TooltipOptions.Instance.ADVANCED : TooltipOptions.Instance.NORMAL
+			this.client.player, this.client.field_1690.advancedItemTooltips ? TooltipOptions.Instance.ADVANCED : TooltipOptions.Instance.NORMAL
 		);
 		List<String> list2 = Lists.<String>newArrayList();
 
@@ -116,7 +116,7 @@ public abstract class Gui extends DrawableContainer implements YesNoCallback {
 	public void drawTooltip(List<String> list, int i, int j) {
 		if (!list.isEmpty()) {
 			GlStateManager.disableRescaleNormal();
-			class_308.method_1450();
+			GuiLighting.disable();
 			GlStateManager.disableLighting();
 			GlStateManager.disableDepthTest();
 			int k = 0;
@@ -172,7 +172,7 @@ public abstract class Gui extends DrawableContainer implements YesNoCallback {
 			this.itemRenderer.zOffset = 0.0F;
 			GlStateManager.enableLighting();
 			GlStateManager.enableDepthTest();
-			class_308.method_1452();
+			GuiLighting.enable();
 			GlStateManager.enableRescaleNormal();
 		}
 	}
@@ -197,7 +197,7 @@ public abstract class Gui extends DrawableContainer implements YesNoCallback {
 					this.drawStackTooltip(itemStack, i, j);
 				}
 			} else if (hoverEvent.getAction() == HoverEvent.Action.SHOW_ENTITY) {
-				if (this.client.options.advancedItemTooltips) {
+				if (this.client.field_1690.advancedItemTooltips) {
 					try {
 						CompoundTag compoundTag = JsonLikeTagParser.parse(hoverEvent.getValue().getString());
 						List<String> list = Lists.<String>newArrayList();
@@ -239,7 +239,7 @@ public abstract class Gui extends DrawableContainer implements YesNoCallback {
 				}
 			} else if (clickEvent != null) {
 				if (clickEvent.getAction() == ClickEvent.Action.OPEN_URL) {
-					if (!this.client.options.chatLinks) {
+					if (!this.client.field_1690.chatLinks) {
 						return false;
 					}
 
@@ -254,7 +254,7 @@ public abstract class Gui extends DrawableContainer implements YesNoCallback {
 							throw new URISyntaxException(clickEvent.getValue(), "Unsupported protocol: " + string.toLowerCase(Locale.ROOT));
 						}
 
-						if (this.client.options.chatLinksPrompt) {
+						if (this.client.field_1690.chatLinksPrompt) {
 							this.uri = uRI;
 							this.client.openGui(new ConfirmChatLinkGui(this, clickEvent.getValue(), 31102009, false));
 						} else {
@@ -299,13 +299,13 @@ public abstract class Gui extends DrawableContainer implements YesNoCallback {
 		this.fontRenderer = minecraftClient.fontRenderer;
 		this.width = i;
 		this.height = j;
-		this.buttonWidgets.clear();
+		this.buttons.clear();
 		this.listeners.clear();
 		this.onInitialized();
 	}
 
 	@Override
-	public List<? extends GuiEventListener> getListeners() {
+	public List<? extends GuiEventListener> getEntries() {
 		return this.listeners;
 	}
 
@@ -335,18 +335,18 @@ public abstract class Gui extends DrawableContainer implements YesNoCallback {
 		GlStateManager.disableLighting();
 		GlStateManager.disableFog();
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		this.client.getTextureManager().bindTexture(OPTIONS_BG);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
-		vertexBuffer.begin(7, VertexFormats.POSITION_UV_COLOR);
-		vertexBuffer.vertex(0.0, (double)this.height, 0.0).texture(0.0, (double)((float)this.height / 32.0F + (float)i)).color(64, 64, 64, 255).next();
-		vertexBuffer.vertex((double)this.width, (double)this.height, 0.0)
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+		bufferBuilder.vertex(0.0, (double)this.height, 0.0).texture(0.0, (double)((float)this.height / 32.0F + (float)i)).color(64, 64, 64, 255).next();
+		bufferBuilder.vertex((double)this.width, (double)this.height, 0.0)
 			.texture((double)((float)this.width / 32.0F), (double)((float)this.height / 32.0F + (float)i))
 			.color(64, 64, 64, 255)
 			.next();
-		vertexBuffer.vertex((double)this.width, 0.0, 0.0).texture((double)((float)this.width / 32.0F), (double)i).color(64, 64, 64, 255).next();
-		vertexBuffer.vertex(0.0, 0.0, 0.0).texture(0.0, (double)i).color(64, 64, 64, 255).next();
+		bufferBuilder.vertex((double)this.width, 0.0, 0.0).texture((double)((float)this.width / 32.0F), (double)i).color(64, 64, 64, 255).next();
+		bufferBuilder.vertex(0.0, 0.0, 0.0).texture(0.0, (double)i).color(64, 64, 64, 255).next();
 		tessellator.draw();
 	}
 
@@ -413,8 +413,8 @@ public abstract class Gui extends DrawableContainer implements YesNoCallback {
 			runnable.run();
 		} catch (Throwable var6) {
 			CrashReport crashReport = CrashReport.create(var6, string);
-			CrashReportElement crashReportElement = crashReport.addElement("Affected screen");
-			crashReportElement.add("Screen name", (ICrashCallable<String>)(() -> string2));
+			CrashReportSection crashReportSection = crashReport.method_562("Affected screen");
+			crashReportSection.add("Screen name", (ICrashCallable<String>)(() -> string2));
 			throw new CrashException(crashReport);
 		}
 	}

@@ -5,8 +5,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.menu.settings.ControlsSettingsGui;
+import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.text.TextFormat;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -20,23 +20,23 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 		super(minecraftClient, controlsSettingsGui.width + 45, controlsSettingsGui.height, 63, controlsSettingsGui.height - 32, 20);
 		this.gui = controlsSettingsGui;
 		this.client = minecraftClient;
-		KeyBinding[] keyBindings = ArrayUtils.clone(minecraftClient.options.keysAll);
+		KeyBinding[] keyBindings = ArrayUtils.clone(minecraftClient.field_1690.keysAll);
 		Arrays.sort(keyBindings);
 		String string = null;
 
 		for (KeyBinding keyBinding : keyBindings) {
-			String string2 = keyBinding.method_1423();
+			String string2 = keyBinding.getCategory();
 			if (!string2.equals(string)) {
 				string = string2;
-				this.method_1901(new KeyBindingListWidget.class_460(string2));
+				this.addEntry(new KeyBindingListWidget.class_460(string2));
 			}
 
-			int i = minecraftClient.fontRenderer.getStringWidth(I18n.translate(keyBinding.method_1431()));
+			int i = minecraftClient.fontRenderer.getStringWidth(I18n.translate(keyBinding.getId()));
 			if (i > this.field_2733) {
 				this.field_2733 = i;
 			}
 
-			this.method_1901(new KeyBindingListWidget.class_462(keyBinding));
+			this.addEntry(new KeyBindingListWidget.class_462(keyBinding));
 		}
 	}
 
@@ -65,13 +65,13 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 		}
 
 		@Override
-		public void drawEntry(int i, int j, int k, int l, boolean bl, float f) {
+		public void draw(int i, int j, int k, int l, boolean bl, float f) {
 			KeyBindingListWidget.this.client
 				.fontRenderer
 				.draw(
 					this.field_2736,
 					(float)(KeyBindingListWidget.this.client.currentGui.width / 2 - this.field_2737 / 2),
-					(float)(this.method_1906() + j - KeyBindingListWidget.this.client.fontRenderer.FONT_HEIGHT - 1),
+					(float)(this.getY() + j - KeyBindingListWidget.this.client.fontRenderer.fontHeight - 1),
 					16777215
 				);
 		}
@@ -86,8 +86,8 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 
 		private class_462(KeyBinding keyBinding) {
 			this.field_2740 = keyBinding;
-			this.field_2741 = I18n.translate(keyBinding.method_1431());
-			this.field_2739 = new ButtonWidget(0, 0, 0, 75, 20, I18n.translate(keyBinding.method_1431())) {
+			this.field_2741 = I18n.translate(keyBinding.getId());
+			this.field_2739 = new ButtonWidget(0, 0, 0, 75, 20, I18n.translate(keyBinding.getId())) {
 				@Override
 				public void onPressed(double d, double e) {
 					KeyBindingListWidget.this.gui.field_2727 = keyBinding;
@@ -96,23 +96,23 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 			this.field_2743 = new ButtonWidget(0, 0, 0, 50, 20, I18n.translate("controls.reset")) {
 				@Override
 				public void onPressed(double d, double e) {
-					KeyBindingListWidget.this.client.options.method_1641(keyBinding, keyBinding.getDefaultKeyCode());
+					KeyBindingListWidget.this.client.field_1690.method_1641(keyBinding, keyBinding.getDefaultKeyCode());
 					KeyBinding.method_1426();
 				}
 			};
 		}
 
 		@Override
-		public void drawEntry(int i, int j, int k, int l, boolean bl, float f) {
-			int m = this.method_1906();
-			int n = this.method_1907();
+		public void draw(int i, int j, int k, int l, boolean bl, float f) {
+			int m = this.getY();
+			int n = this.getX();
 			boolean bl2 = KeyBindingListWidget.this.gui.field_2727 == this.field_2740;
 			KeyBindingListWidget.this.client
 				.fontRenderer
 				.draw(
 					this.field_2741,
 					(float)(n + 90 - KeyBindingListWidget.this.field_2733),
-					(float)(m + j / 2 - KeyBindingListWidget.this.client.fontRenderer.FONT_HEIGHT / 2),
+					(float)(m + j / 2 - KeyBindingListWidget.this.client.fontRenderer.fontHeight / 2),
 					16777215
 				);
 			this.field_2743.x = n + 190;
@@ -123,8 +123,8 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 			this.field_2739.y = m;
 			this.field_2739.text = this.field_2740.method_16007();
 			boolean bl3 = false;
-			if (!this.field_2740.isUnbound()) {
-				for (KeyBinding keyBinding : KeyBindingListWidget.this.client.options.keysAll) {
+			if (!this.field_2740.isNotBound()) {
+				for (KeyBinding keyBinding : KeyBindingListWidget.this.client.field_1690.keysAll) {
 					if (keyBinding != this.field_2740 && this.field_2740.equals(keyBinding)) {
 						bl3 = true;
 						break;

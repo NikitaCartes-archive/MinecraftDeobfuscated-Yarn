@@ -5,9 +5,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReferenceArray;
+import java.util.function.IntConsumer;
+import java.util.function.IntSupplier;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_3898;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.network.packet.BlockEntityUpdateClientPacket;
 import net.minecraft.client.network.packet.BlockUpdateClientPacket;
@@ -15,6 +19,7 @@ import net.minecraft.client.network.packet.ChunkDataClientPacket;
 import net.minecraft.client.network.packet.ChunkDeltaUpdateClientPacket;
 import net.minecraft.client.network.packet.LightUpdateClientPacket;
 import net.minecraft.network.Packet;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.LightType;
@@ -36,7 +41,7 @@ public class ServerChunkManagerEntry {
 	);
 	private static final List<ChunkStatus> chunkStatuses = ChunkStatus.createOrderedList();
 	private static final ServerChunkManagerEntry.class_3194[] field_13873 = ServerChunkManagerEntry.class_3194.values();
-	private final AtomicReferenceArray<CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>>> field_16425 = new AtomicReferenceArray(
+	private final AtomicReferenceArray<CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>>> statusToChunk = new AtomicReferenceArray(
 		chunkStatuses.size()
 	);
 	@Nullable
@@ -45,8 +50,8 @@ public class ServerChunkManagerEntry {
 	private volatile CompletableFuture<Either<WorldChunk, ServerChunkManagerEntry.Unloaded>> field_13865;
 	private CompletableFuture<Chunk> chunk = CompletableFuture.completedFuture(null);
 	private int field_16432;
-	private int field_13862;
-	private final PlayerChunkWatchingManager players;
+	private int level;
+	private int field_17208;
 	private final ChunkPos pos;
 	private final short[] blockUpdatePositions = new short[64];
 	private int blockUpdateCount;
@@ -55,23 +60,30 @@ public class ServerChunkManagerEntry {
 	private int field_13871;
 	private int field_13870;
 	private final LightingProvider lightingProvider;
+	private final ServerChunkManagerEntry.class_3896 field_17209;
+	private final ServerChunkManagerEntry.class_3897 field_17210;
 
-	public ServerChunkManagerEntry(ChunkPos chunkPos, int i, LightingProvider lightingProvider, PlayerChunkWatchingManager playerChunkWatchingManager) {
+	public ServerChunkManagerEntry(
+		ChunkPos chunkPos, int i, LightingProvider lightingProvider, ServerChunkManagerEntry.class_3896 arg, ServerChunkManagerEntry.class_3897 arg2
+	) {
 		this.pos = chunkPos;
 		this.lightingProvider = lightingProvider;
-		this.players = playerChunkWatchingManager;
-		this.field_16432 = ServerChunkManager.field_13922 + 1;
-		this.method_15890(i);
+		this.field_17209 = arg;
+		this.field_17210 = arg2;
+		this.field_16432 = ServerChunkManager.FULL_CHUNK_LEVEL + 1;
+		this.level = this.field_16432;
+		this.field_17208 = this.field_16432;
+		this.setLevel(i);
 	}
 
-	public CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>> method_16146(ChunkStatus chunkStatus) {
-		CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>> completableFuture = (CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>>)this.field_16425
-			.get(chunkStatus.getOrderId());
+	public CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>> getChunkForStatus(ChunkStatus chunkStatus) {
+		CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>> completableFuture = (CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>>)this.statusToChunk
+			.get(chunkStatus.getIndex());
 		return completableFuture == null ? UNLOADED_CHUNK_FUTURE : completableFuture;
 	}
 
-	public CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>> method_13997(ChunkStatus chunkStatus) {
-		return method_14011(this.field_13862).isAfter(chunkStatus) ? this.method_16146(chunkStatus) : UNLOADED_CHUNK_FUTURE;
+	public CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>> getChunkMinimumStatus(ChunkStatus chunkStatus) {
+		return getStatusByLevel(this.level).isAfter(chunkStatus) ? this.getChunkForStatus(chunkStatus) : UNLOADED_CHUNK_FUTURE;
 	}
 
 	public CompletableFuture<Either<WorldChunk, ServerChunkManagerEntry.Unloaded>> method_16145() {
@@ -96,7 +108,7 @@ public class ServerChunkManagerEntry {
 	public ChunkStatus method_16141() {
 		for (int i = chunkStatuses.size() - 1; i >= 0; i--) {
 			ChunkStatus chunkStatus = (ChunkStatus)chunkStatuses.get(i);
-			CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>> completableFuture = this.method_16146(chunkStatus);
+			CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>> completableFuture = this.getChunkForStatus(chunkStatus);
 			if (((Either)completableFuture.getNow(UNLOADED_CHUNK)).left().isPresent()) {
 				return chunkStatus;
 			}
@@ -109,7 +121,7 @@ public class ServerChunkManagerEntry {
 	public Chunk method_14010() {
 		for (int i = chunkStatuses.size() - 1; i >= 0; i--) {
 			ChunkStatus chunkStatus = (ChunkStatus)chunkStatuses.get(i);
-			CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>> completableFuture = this.method_16146(chunkStatus);
+			CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>> completableFuture = this.getChunkForStatus(chunkStatus);
 			if (!completableFuture.isCompletedExceptionally()) {
 				Optional<Chunk> optional = ((Either)completableFuture.getNow(UNLOADED_CHUNK)).left();
 				if (optional.isPresent()) {
@@ -146,7 +158,7 @@ public class ServerChunkManagerEntry {
 	public void method_14012(LightType lightType, int i) {
 		WorldChunk worldChunk = this.getChunk();
 		if (worldChunk != null) {
-			if (lightType == LightType.field_9284) {
+			if (lightType == LightType.SKY_LIGHT) {
 				this.field_13870 |= 1 << i - -1;
 			} else {
 				this.field_13871 |= 1 << i - -1;
@@ -154,31 +166,31 @@ public class ServerChunkManagerEntry {
 		}
 	}
 
-	public void flushUpdates(WorldChunk worldChunk, int i) {
+	public void flushUpdates(WorldChunk worldChunk) {
 		if (this.blockUpdateCount != 0 || this.field_13870 != 0 || this.field_13871 != 0) {
 			World world = worldChunk.getWorld();
 			if (this.blockUpdateCount == 1) {
-				int j = (this.blockUpdatePositions[0] >> 12 & 15) + this.pos.x * 16;
-				int k = this.blockUpdatePositions[0] & 255;
-				int l = (this.blockUpdatePositions[0] >> 8 & 15) + this.pos.z * 16;
-				BlockPos blockPos = new BlockPos(j, k, l);
-				this.sendPacket(new BlockUpdateClientPacket(world, blockPos), false, i);
+				int i = (this.blockUpdatePositions[0] >> 12 & 15) + this.pos.x * 16;
+				int j = this.blockUpdatePositions[0] & 255;
+				int k = (this.blockUpdatePositions[0] >> 8 & 15) + this.pos.z * 16;
+				BlockPos blockPos = new BlockPos(i, j, k);
+				this.sendPacket(new BlockUpdateClientPacket(world, blockPos), false);
 				if (world.getBlockState(blockPos).getBlock().hasBlockEntity()) {
-					this.sendBlockEntityUpdatePacket(world, blockPos, i);
+					this.sendBlockEntityUpdatePacket(world, blockPos);
 				}
 			} else if (this.blockUpdateCount == 64) {
-				this.sendPacket(new ChunkDataClientPacket(worldChunk, this.field_13872), false, i);
+				this.sendPacket(new ChunkDataClientPacket(worldChunk, this.field_13872), false);
 				this.field_16209 = this.field_13872 << 1;
 			} else if (this.blockUpdateCount != 0) {
-				this.sendPacket(new ChunkDeltaUpdateClientPacket(this.blockUpdateCount, this.blockUpdatePositions, worldChunk), false, i);
+				this.sendPacket(new ChunkDeltaUpdateClientPacket(this.blockUpdateCount, this.blockUpdatePositions, worldChunk), false);
 
-				for (int j = 0; j < this.blockUpdateCount; j++) {
-					int k = (this.blockUpdatePositions[j] >> 12 & 15) + this.pos.x * 16;
-					int l = this.blockUpdatePositions[j] & 255;
-					int m = (this.blockUpdatePositions[j] >> 8 & 15) + this.pos.z * 16;
-					BlockPos blockPos2 = new BlockPos(k, l, m);
+				for (int i = 0; i < this.blockUpdateCount; i++) {
+					int j = (this.blockUpdatePositions[i] >> 12 & 15) + this.pos.x * 16;
+					int k = this.blockUpdatePositions[i] & 255;
+					int l = (this.blockUpdatePositions[i] >> 8 & 15) + this.pos.z * 16;
+					BlockPos blockPos2 = new BlockPos(j, k, l);
 					if (world.getBlockState(blockPos2).getBlock().hasBlockEntity()) {
-						this.sendBlockEntityUpdatePacket(world, blockPos2, i);
+						this.sendBlockEntityUpdatePacket(world, blockPos2);
 					}
 				}
 			}
@@ -187,14 +199,12 @@ public class ServerChunkManagerEntry {
 			this.field_13872 = 0;
 			if (this.field_13870 != 0 || this.field_13871 != 0) {
 				this.sendPacket(
-					new LightUpdateClientPacket(worldChunk.getPos(), this.lightingProvider, this.field_13870 & ~this.field_16209, this.field_13871 & ~this.field_16209),
-					true,
-					i
+					new LightUpdateClientPacket(worldChunk.getPos(), this.lightingProvider, this.field_13870 & ~this.field_16209, this.field_13871 & ~this.field_16209), true
 				);
-				int jx = this.field_13870 & this.field_16209;
-				int k = this.field_13871 & this.field_16209;
-				if (jx != 0 || k != 0) {
-					this.sendPacket(new LightUpdateClientPacket(worldChunk.getPos(), this.lightingProvider, jx, k), false, i);
+				int ix = this.field_13870 & this.field_16209;
+				int j = this.field_13871 & this.field_16209;
+				if (ix != 0 || j != 0) {
+					this.sendPacket(new LightUpdateClientPacket(worldChunk.getPos(), this.lightingProvider, ix, j), false);
 				}
 
 				this.field_13870 = 0;
@@ -204,42 +214,38 @@ public class ServerChunkManagerEntry {
 		}
 	}
 
-	private void sendBlockEntityUpdatePacket(World world, BlockPos blockPos, int i) {
+	private void sendBlockEntityUpdatePacket(World world, BlockPos blockPos) {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity != null) {
 			BlockEntityUpdateClientPacket blockEntityUpdateClientPacket = blockEntity.toUpdatePacket();
 			if (blockEntityUpdateClientPacket != null) {
-				this.sendPacket(blockEntityUpdateClientPacket, false, i);
+				this.sendPacket(blockEntityUpdateClientPacket, false);
 			}
 		}
 	}
 
-	private void sendPacket(Packet<?> packet, boolean bl, int i) {
-		this.players.getPlayersWatchingChunk(this.pos.toLong()).forEach(serverPlayerEntity -> {
-			int j = ServerChunkManager.getWatchDistance(this.pos, serverPlayerEntity);
-			if (j <= i) {
-				if (!bl || j >= i) {
-					serverPlayerEntity.networkHandler.sendPacket(packet);
-				}
-			}
-		});
+	private void sendPacket(Packet<?> packet, boolean bl) {
+		this.field_17210.method_17210(this.pos, bl).forEach(serverPlayerEntity -> serverPlayerEntity.networkHandler.sendPacket(packet));
 	}
 
-	public CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>> method_13993(ChunkStatus chunkStatus, ServerChunkManager serverChunkManager) {
-		int i = chunkStatus.getOrderId();
-		CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>> completableFuture = (CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>>)this.field_16425
+	public CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>> method_13993(ChunkStatus chunkStatus, class_3898 arg) {
+		int i = chunkStatus.getIndex();
+		CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>> completableFuture = (CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>>)this.statusToChunk
 			.get(i);
 		if (completableFuture != null) {
-			return completableFuture;
-		} else if (method_14011(this.field_13862).isAfter(chunkStatus)) {
-			CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>> completableFuture2 = serverChunkManager.method_16163(
-				this.pos, this.field_13862, chunkStatus
-			);
+			Either<Chunk, ServerChunkManagerEntry.Unloaded> either = (Either<Chunk, ServerChunkManagerEntry.Unloaded>)completableFuture.getNow(null);
+			if (either == null || either.left().isPresent()) {
+				return completableFuture;
+			}
+		}
+
+		if (getStatusByLevel(this.level).isAfter(chunkStatus)) {
+			CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>> completableFuture2 = arg.method_17236(this, chunkStatus);
 			this.updateChunk(completableFuture2);
-			this.field_16425.set(i, completableFuture2);
+			this.statusToChunk.set(i, completableFuture2);
 			return completableFuture2;
 		} else {
-			return UNLOADED_CHUNK_FUTURE;
+			return completableFuture == null ? UNLOADED_CHUNK_FUTURE : completableFuture;
 		}
 	}
 
@@ -249,36 +255,62 @@ public class ServerChunkManagerEntry {
 
 	@Environment(EnvType.CLIENT)
 	public ServerChunkManagerEntry.class_3194 method_13995() {
-		return method_14008(this.field_13862);
+		return method_14008(this.level);
 	}
 
 	public ChunkPos getPos() {
 		return this.pos;
 	}
 
-	public int method_14005() {
-		return this.field_13862;
+	public int getLevel() {
+		return this.level;
 	}
 
-	public void method_15890(int i) {
-		this.field_13862 = i;
+	public int method_17208() {
+		return this.field_17208;
 	}
 
-	public void method_14007(ServerChunkManager serverChunkManager) {
-		ChunkStatus chunkStatus = method_14011(this.field_16432);
-		ChunkStatus chunkStatus2 = method_14011(this.field_13862);
-		if (this.field_13862 <= ServerChunkManager.field_13922) {
-			for (int i = chunkStatus.getOrderId() + 1; i <= chunkStatus2.getOrderId(); i++) {
-				this.method_13993((ChunkStatus)chunkStatuses.get(i), serverChunkManager);
+	private void method_17207(int i) {
+		this.field_17208 = i;
+	}
+
+	public void setLevel(int i) {
+		this.level = i;
+	}
+
+	protected void method_14007(class_3898 arg) {
+		ChunkStatus chunkStatus = getStatusByLevel(this.field_16432);
+		ChunkStatus chunkStatus2 = getStatusByLevel(this.level);
+		if (this.level <= ServerChunkManager.FULL_CHUNK_LEVEL) {
+			for (int i = chunkStatus.getIndex() + 1; i <= chunkStatus2.getIndex(); i++) {
+				this.method_13993((ChunkStatus)chunkStatuses.get(i), arg);
+			}
+		}
+
+		if (this.field_16432 <= ServerChunkManager.FULL_CHUNK_LEVEL) {
+			Either<Chunk, ServerChunkManagerEntry.Unloaded> either = Either.right(new ServerChunkManagerEntry.Unloaded() {
+				public String toString() {
+					return "Unloaded ticket level " + ServerChunkManagerEntry.this.pos.toString();
+				}
+			});
+
+			for (int j = chunkStatus2.getIndex() + 1; j <= chunkStatus.getIndex(); j++) {
+				CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>> completableFuture = (CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>>)this.statusToChunk
+					.get(j);
+				if (completableFuture != null) {
+					completableFuture.complete(either);
+				} else {
+					this.statusToChunk.set(j, CompletableFuture.completedFuture(either));
+				}
 			}
 		}
 
 		ServerChunkManagerEntry.class_3194 lv = method_14008(this.field_16432);
-		ServerChunkManagerEntry.class_3194 lv2 = method_14008(this.field_13862);
+		ServerChunkManagerEntry.class_3194 lv2 = method_14008(this.level);
 		boolean bl = lv.method_14014(ServerChunkManagerEntry.class_3194.field_13875);
 		boolean bl2 = lv2.method_14014(ServerChunkManagerEntry.class_3194.field_13875);
 		if (!bl && bl2) {
-			this.field_16431 = serverChunkManager.method_16175(this.pos);
+			this.field_16431 = arg.method_17235(this);
 			this.updateChunk(this.field_16431);
 		}
 
@@ -289,7 +321,7 @@ public class ServerChunkManagerEntry {
 		boolean bl3 = lv.method_14014(ServerChunkManagerEntry.class_3194.field_13877);
 		boolean bl4 = lv2.method_14014(ServerChunkManagerEntry.class_3194.field_13877);
 		if (!bl3 && bl4) {
-			this.field_13865 = serverChunkManager.method_14123(this.pos);
+			this.field_13865 = arg.method_17247(this.pos);
 			this.updateChunk(this.field_13865);
 		}
 
@@ -297,18 +329,19 @@ public class ServerChunkManagerEntry {
 			this.field_13865 = UNLOADED_WORLD_CHUNK_FUTURE;
 		}
 
-		this.field_16432 = this.field_13862;
+		this.field_17209.method_17209(this.pos, this::method_17208, this.level, this::method_17207);
+		this.field_16432 = this.level;
 	}
 
-	public static ChunkStatus method_14011(int i) {
-		return i <= 33 ? ChunkStatus.field_12803 : ChunkStatus.getOrdered(i - 33 - 1);
+	public static ChunkStatus getStatusByLevel(int i) {
+		return i <= 33 ? ChunkStatus.FULL : ChunkStatus.getByIndex(i - 33 - 1);
 	}
 
 	public static ServerChunkManagerEntry.class_3194 method_14008(int i) {
 		return field_13873[MathHelper.clamp(33 - i, 0, field_13873.length - 1)];
 	}
 
-	interface Unloaded {
+	public interface Unloaded {
 		ServerChunkManagerEntry.Unloaded INSTANCE = new ServerChunkManagerEntry.Unloaded() {
 			public String toString() {
 				return "UNLOADED";
@@ -324,5 +357,17 @@ public class ServerChunkManagerEntry {
 		public boolean method_14014(ServerChunkManagerEntry.class_3194 arg) {
 			return this.ordinal() >= arg.ordinal();
 		}
+	}
+
+	public interface class_3896 {
+		void method_17209(ChunkPos chunkPos, IntSupplier intSupplier, int i, IntConsumer intConsumer);
+	}
+
+	public interface class_3897 {
+		default Stream<ServerPlayerEntity> method_17210(ChunkPos chunkPos, boolean bl) {
+			return this.method_17211(chunkPos, bl, false);
+		}
+
+		Stream<ServerPlayerEntity> method_17211(ChunkPos chunkPos, boolean bl, boolean bl2);
 	}
 }

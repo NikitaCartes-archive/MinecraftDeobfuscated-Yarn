@@ -20,7 +20,7 @@ import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TextComponent;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportElement;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.crash.ICrashCallable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -294,7 +294,7 @@ public class CompoundTag implements Tag {
 		try {
 			if (this.getType(string) == 9) {
 				ListTag listTag = (ListTag)this.tags.get(string);
-				if (!listTag.isEmpty() && listTag.getType() != i) {
+				if (!listTag.isEmpty() && listTag.getListType() != i) {
 					return new ListTag();
 				}
 
@@ -342,10 +342,10 @@ public class CompoundTag implements Tag {
 
 	private CrashReport createCrashReport(String string, int i, ClassCastException classCastException) {
 		CrashReport crashReport = CrashReport.create(classCastException, "Reading NBT data");
-		CrashReportElement crashReportElement = crashReport.addElement("Corrupt NBT tag", 1);
-		crashReportElement.add("Tag type found", (ICrashCallable<String>)(() -> TYPES[((Tag)this.tags.get(string)).getType()]));
-		crashReportElement.add("Tag type expected", (ICrashCallable<String>)(() -> TYPES[i]));
-		crashReportElement.add("Tag name", string);
+		CrashReportSection crashReportSection = crashReport.method_556("Corrupt NBT tag", 1);
+		crashReportSection.add("Tag type found", (ICrashCallable<String>)(() -> TYPES[((Tag)this.tags.get(string)).getType()]));
+		crashReportSection.add("Tag type expected", (ICrashCallable<String>)(() -> TYPES[i]));
+		crashReportSection.add("Tag name", string);
 		return crashReport;
 	}
 
@@ -391,9 +391,9 @@ public class CompoundTag implements Tag {
 			return tag;
 		} catch (IOException var9) {
 			CrashReport crashReport = CrashReport.create(var9, "Loading NBT data");
-			CrashReportElement crashReportElement = crashReport.addElement("NBT Tag");
-			crashReportElement.add("Tag name", string);
-			crashReportElement.add("Tag type", b);
+			CrashReportSection crashReportSection = crashReport.method_562("NBT Tag");
+			crashReportSection.add("Tag name", string);
+			crashReportSection.add("Tag type", b);
 			throw new CrashException(crashReport);
 		}
 	}

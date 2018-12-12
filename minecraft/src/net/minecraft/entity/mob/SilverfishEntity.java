@@ -1,14 +1,14 @@
 package net.minecraft.entity.mob;
 
 import java.util.Random;
-import net.minecraft.class_1310;
 import net.minecraft.class_1379;
 import net.minecraft.class_1399;
-import net.minecraft.class_3730;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.StoneInfestedBlock;
+import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
@@ -118,13 +118,13 @@ public class SilverfishEntity extends HostileEntity {
 	}
 
 	@Override
-	protected boolean method_7075() {
+	protected boolean checkLightLevelForSpawn() {
 		return true;
 	}
 
 	@Override
-	public boolean method_5979(IWorld iWorld, class_3730 arg) {
-		if (super.method_5979(iWorld, arg)) {
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
+		if (super.canSpawn(iWorld, spawnType)) {
 			PlayerEntity playerEntity = iWorld.getClosestSurvivalPlayer(this, 5.0);
 			return playerEntity == null;
 		} else {
@@ -133,8 +133,8 @@ public class SilverfishEntity extends HostileEntity {
 	}
 
 	@Override
-	public class_1310 method_6046() {
-		return class_1310.field_6293;
+	public EntityGroup getGroup() {
+		return EntityGroup.ARTHROPOD;
 	}
 
 	static class class_1615 extends class_1379 {
@@ -156,7 +156,7 @@ public class SilverfishEntity extends HostileEntity {
 				Random random = this.field_6566.getRand();
 				if (this.field_6566.world.getGameRules().getBoolean("mobGriefing") && random.nextInt(10) == 0) {
 					this.field_7368 = Direction.random(random);
-					BlockPos blockPos = new BlockPos(this.field_6566.x, this.field_6566.y + 0.5, this.field_6566.z).method_10093(this.field_7368);
+					BlockPos blockPos = new BlockPos(this.field_6566.x, this.field_6566.y + 0.5, this.field_6566.z).offset(this.field_7368);
 					BlockState blockState = this.field_6566.world.getBlockState(blockPos);
 					if (StoneInfestedBlock.method_10269(blockState)) {
 						this.field_7367 = true;
@@ -180,7 +180,7 @@ public class SilverfishEntity extends HostileEntity {
 				super.start();
 			} else {
 				IWorld iWorld = this.field_6566.world;
-				BlockPos blockPos = new BlockPos(this.field_6566.x, this.field_6566.y + 0.5, this.field_6566.z).method_10093(this.field_7368);
+				BlockPos blockPos = new BlockPos(this.field_6566.x, this.field_6566.y + 0.5, this.field_6566.z).offset(this.field_7368);
 				BlockState blockState = iWorld.getBlockState(blockPos);
 				if (StoneInfestedBlock.method_10269(blockState)) {
 					iWorld.setBlockState(blockPos, StoneInfestedBlock.method_10270(blockState.getBlock()), 3);

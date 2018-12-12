@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
@@ -15,7 +14,7 @@ public class StainedGlassBlock extends TransparentBlock {
 	}
 
 	@Override
-	public boolean method_9579(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean isTranslucent(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return true;
 	}
 
@@ -36,7 +35,7 @@ public class StainedGlassBlock extends TransparentBlock {
 	@Override
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
 		if (blockState2.getBlock() != blockState.getBlock()) {
-			if (!world.isRemote) {
+			if (!world.isClient) {
 				BeaconBlock.method_9463(world, blockPos);
 			}
 		}
@@ -45,7 +44,7 @@ public class StainedGlassBlock extends TransparentBlock {
 	@Override
 	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState.getBlock() != blockState2.getBlock()) {
-			if (!world.isRemote) {
+			if (!world.isClient) {
 				BeaconBlock.method_9463(world, blockPos);
 			}
 		}

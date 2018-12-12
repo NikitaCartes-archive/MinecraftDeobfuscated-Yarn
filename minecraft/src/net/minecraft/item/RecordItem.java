@@ -39,13 +39,13 @@ public class RecordItem extends Item {
 		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.getBlock() == Blocks.field_10223 && !(Boolean)blockState.get(JukeboxBlock.field_11180)) {
 			ItemStack itemStack = itemUsageContext.getItemStack();
-			if (!world.isRemote) {
+			if (!world.isClient) {
 				((JukeboxBlock)Blocks.field_10223).setRecord(world, blockPos, blockState, itemStack);
 				world.fireWorldEvent(null, 1010, blockPos, Item.getRawIdByItem(this));
 				itemStack.subtractAmount(1);
 				PlayerEntity playerEntity = itemUsageContext.getPlayer();
 				if (playerEntity != null) {
-					playerEntity.method_7281(Stats.field_15375);
+					playerEntity.increaseStat(Stats.field_15375);
 				}
 			}
 
@@ -61,12 +61,12 @@ public class RecordItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void addInformation(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
-		list.add(this.method_8011().applyFormat(TextFormat.GRAY));
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
+		list.add(this.getDescription().applyFormat(TextFormat.GRAY));
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent method_8011() {
+	public TextComponent getDescription() {
 		return new TranslatableTextComponent(this.getTranslationKey() + ".desc");
 	}
 

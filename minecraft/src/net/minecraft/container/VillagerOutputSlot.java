@@ -53,33 +53,14 @@ public class VillagerOutputSlot extends Slot {
 		if (villagerRecipe != null) {
 			ItemStack itemStack2 = this.villagerInventory.getInvStack(0);
 			ItemStack itemStack3 = this.villagerInventory.getInvStack(1);
-			if (this.isValid(villagerRecipe, itemStack2, itemStack3) || this.isValid(villagerRecipe, itemStack3, itemStack2)) {
+			if (villagerRecipe.method_16953(itemStack2, itemStack3) || villagerRecipe.method_16953(itemStack3, itemStack2)) {
 				this.villager.useRecipe(villagerRecipe);
-				playerEntity.method_7281(Stats.field_15378);
+				playerEntity.increaseStat(Stats.field_15378);
 				this.villagerInventory.setInvStack(0, itemStack2);
 				this.villagerInventory.setInvStack(1, itemStack3);
 			}
 		}
 
 		return itemStack;
-	}
-
-	private boolean isValid(VillagerRecipe villagerRecipe, ItemStack itemStack, ItemStack itemStack2) {
-		ItemStack itemStack3 = villagerRecipe.getBuyItem();
-		ItemStack itemStack4 = villagerRecipe.getSecondBuyItem();
-		if (itemStack.getItem() == itemStack3.getItem() && itemStack.getAmount() >= itemStack3.getAmount()) {
-			if (!itemStack4.isEmpty() && !itemStack2.isEmpty() && itemStack4.getItem() == itemStack2.getItem() && itemStack2.getAmount() >= itemStack4.getAmount()) {
-				itemStack.subtractAmount(itemStack3.getAmount());
-				itemStack2.subtractAmount(itemStack4.getAmount());
-				return true;
-			}
-
-			if (itemStack4.isEmpty() && itemStack2.isEmpty()) {
-				itemStack.subtractAmount(itemStack3.getAmount());
-				return true;
-			}
-		}
-
-		return false;
 	}
 }

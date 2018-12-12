@@ -1,19 +1,19 @@
 package net.minecraft.world.biome.source;
 
-import net.minecraft.world.gen.chunk.OverworldChunkGeneratorSettings;
+import net.minecraft.world.gen.chunk.OverworldChunkGeneratorConfig;
 import net.minecraft.world.level.LevelProperties;
 
 public class VanillaLayeredBiomeSourceConfig implements BiomeSourceConfig {
 	private LevelProperties levelProperties;
-	private OverworldChunkGeneratorSettings generatorSettings;
+	private OverworldChunkGeneratorConfig field_9669;
 
 	public VanillaLayeredBiomeSourceConfig setLevelProperties(LevelProperties levelProperties) {
 		this.levelProperties = levelProperties;
 		return this;
 	}
 
-	public VanillaLayeredBiomeSourceConfig setGeneratorSettings(OverworldChunkGeneratorSettings overworldChunkGeneratorSettings) {
-		this.generatorSettings = overworldChunkGeneratorSettings;
+	public VanillaLayeredBiomeSourceConfig method_9004(OverworldChunkGeneratorConfig overworldChunkGeneratorConfig) {
+		this.field_9669 = overworldChunkGeneratorConfig;
 		return this;
 	}
 
@@ -21,7 +21,7 @@ public class VanillaLayeredBiomeSourceConfig implements BiomeSourceConfig {
 		return this.levelProperties;
 	}
 
-	public OverworldChunkGeneratorSettings getGeneratorSettings() {
-		return this.generatorSettings;
+	public OverworldChunkGeneratorConfig method_9005() {
+		return this.field_9669;
 	}
 }

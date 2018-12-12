@@ -42,7 +42,7 @@ public class class_6 extends LandPathNodeMaker {
 		}
 
 		BlockPos blockPos = new BlockPos(this.entity);
-		PathNodeType pathNodeType = this.getPathNodeType(this.entity, blockPos.getX(), i, blockPos.getZ());
+		PathNodeType pathNodeType = this.method_9(this.entity, blockPos.getX(), i, blockPos.getZ());
 		if (this.entity.getPathNodeTypeWeight(pathNodeType) < 0.0F) {
 			Set<BlockPos> set = Sets.<BlockPos>newHashSet();
 			set.add(new BlockPos(this.entity.getBoundingBox().minX, (double)i, this.entity.getBoundingBox().minZ));
@@ -51,7 +51,7 @@ public class class_6 extends LandPathNodeMaker {
 			set.add(new BlockPos(this.entity.getBoundingBox().maxX, (double)i, this.entity.getBoundingBox().maxZ));
 
 			for (BlockPos blockPos2 : set) {
-				PathNodeType pathNodeType2 = this.getPathNodeType(this.entity, blockPos2);
+				PathNodeType pathNodeType2 = this.method_10(this.entity, blockPos2);
 				if (this.entity.getPathNodeTypeWeight(pathNodeType2) >= 0.0F) {
 					return super.getPathNode(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
 				}
@@ -196,7 +196,7 @@ public class class_6 extends LandPathNodeMaker {
 	@Override
 	protected PathNode getPathNode(int i, int j, int k) {
 		PathNode pathNode = null;
-		PathNodeType pathNodeType = this.getPathNodeType(this.entity, i, j, k);
+		PathNodeType pathNodeType = this.method_9(this.entity, i, j, k);
 		float f = this.entity.getPathNodeTypeWeight(pathNodeType);
 		if (f >= 0.0F) {
 			pathNode = super.getPathNode(i, j, k);
@@ -255,11 +255,11 @@ public class class_6 extends LandPathNodeMaker {
 		return this.method_59(blockView, i, j, k, pathNodeType);
 	}
 
-	private PathNodeType getPathNodeType(MobEntity mobEntity, BlockPos blockPos) {
-		return this.getPathNodeType(mobEntity, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+	private PathNodeType method_10(MobEntity mobEntity, BlockPos blockPos) {
+		return this.method_9(mobEntity, blockPos.getX(), blockPos.getY(), blockPos.getZ());
 	}
 
-	private PathNodeType getPathNodeType(MobEntity mobEntity, int i, int j, int k) {
+	private PathNodeType method_9(MobEntity mobEntity, int i, int j, int k) {
 		return this.getPathNodeType(
 			this.blockView, i, j, k, mobEntity, this.field_31, this.field_30, this.field_28, this.canPathThroughDoors(), this.canEnterOpenDoors()
 		);

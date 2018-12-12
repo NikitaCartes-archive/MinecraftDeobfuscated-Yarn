@@ -15,8 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.loot.LootTables;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,7 +30,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean method_13548(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		int i = 3;
 		int j = random.nextInt(2) + 2;
@@ -97,7 +96,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 						int x = 0;
 
 						for (Direction direction : Direction.class_2353.HORIZONTAL) {
-							if (iWorld.getBlockState(blockPos3.method_10093(direction)).getMaterial().method_15799()) {
+							if (iWorld.getBlockState(blockPos3.offset(direction)).getMaterial().method_15799()) {
 								x++;
 							}
 						}

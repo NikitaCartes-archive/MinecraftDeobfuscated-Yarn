@@ -30,7 +30,7 @@ public class TeleportCommand {
 			ServerCommandManager.literal("teleport")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.argument("targets", EntityArgumentType.method_9306())
+					ServerCommandManager.argument("targets", EntityArgumentType.multipleEntities())
 						.then(
 							ServerCommandManager.argument("location", Vec3ArgumentType.create())
 								.executes(
@@ -61,7 +61,7 @@ public class TeleportCommand {
 										.then(
 											ServerCommandManager.literal("entity")
 												.then(
-													ServerCommandManager.argument("facingEntity", EntityArgumentType.create())
+													ServerCommandManager.argument("facingEntity", EntityArgumentType.oneEntity())
 														.executes(
 															commandContext -> method_13765(
 																	commandContext.getSource(),
@@ -107,7 +107,7 @@ public class TeleportCommand {
 								)
 						)
 						.then(
-							ServerCommandManager.argument("destination", EntityArgumentType.create())
+							ServerCommandManager.argument("destination", EntityArgumentType.oneEntity())
 								.executes(
 									commandContext -> method_13771(
 											commandContext.getSource(), EntityArgumentType.method_9317(commandContext, "targets"), EntityArgumentType.method_9313(commandContext, "destination")
@@ -129,7 +129,7 @@ public class TeleportCommand {
 						)
 				)
 				.then(
-					ServerCommandManager.argument("destination", EntityArgumentType.create())
+					ServerCommandManager.argument("destination", EntityArgumentType.oneEntity())
 						.executes(
 							commandContext -> method_13771(
 									commandContext.getSource(),
@@ -258,17 +258,17 @@ public class TeleportCommand {
 				((ServerPlayerEntity)entity).method_14251(serverWorld, d, e, f, g, h);
 			}
 
-			entity.setHeadPitch(g);
+			entity.setHeadYaw(g);
 		} else {
 			float i = MathHelper.wrapDegrees(g);
 			float j = MathHelper.wrapDegrees(h);
 			j = MathHelper.clamp(j, -90.0F, 90.0F);
 			if (serverWorld == entity.world) {
 				entity.setPositionAndAngles(d, e, f, i, j);
-				entity.setHeadPitch(i);
+				entity.setHeadYaw(i);
 			} else {
 				ServerWorld serverWorld2 = (ServerWorld)entity.world;
-				serverWorld2.method_8463(entity);
+				serverWorld2.removeEntity(entity);
 				entity.dimension = serverWorld.dimension.getType();
 				entity.invalid = false;
 				Entity entity2 = entity;
@@ -279,7 +279,7 @@ public class TeleportCommand {
 
 				entity.method_5878(entity2);
 				entity.setPositionAndAngles(d, e, f, i, j);
-				entity.setHeadPitch(i);
+				entity.setHeadYaw(i);
 				boolean bl = entity.field_5983;
 				entity.field_5983 = true;
 				serverWorld.spawnEntity(entity);
@@ -321,10 +321,10 @@ public class TeleportCommand {
 				if (entity instanceof ServerPlayerEntity) {
 					((ServerPlayerEntity)entity).method_14222(serverCommandSource.getEntityAnchor(), this.field_13758, this.field_13759);
 				} else {
-					entity.method_5702(serverCommandSource.getEntityAnchor(), this.field_13760);
+					entity.lookAt(serverCommandSource.getEntityAnchor(), this.field_13760);
 				}
 			} else {
-				entity.method_5702(serverCommandSource.getEntityAnchor(), this.field_13760);
+				entity.lookAt(serverCommandSource.getEntityAnchor(), this.field_13760);
 			}
 		}
 	}

@@ -5,12 +5,11 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3730;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.pattern.BlockProxy;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
@@ -59,7 +58,7 @@ public class PortalBlock extends Block {
 
 			BlockPos blockPos3 = blockPos2.up();
 			if (i > 0 && !world.getBlockState(blockPos3).isSimpleFullBlock(world, blockPos3)) {
-				Entity entity = EntityType.ZOMBIE_PIGMAN.spawn(world, null, null, null, blockPos3, class_3730.field_16474, false, false);
+				Entity entity = EntityType.ZOMBIE_PIGMAN.spawn(world, null, null, null, blockPos3, SpawnType.field_16474, false, false);
 				if (entity != null) {
 					entity.portalCooldown = entity.getDefaultPortalCooldown();
 				}
@@ -89,13 +88,15 @@ public class PortalBlock extends Block {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		Direction.Axis axis = direction.getAxis();
 		Direction.Axis axis2 = blockState.get(field_11310);
 		boolean bl = axis2 != axis && axis.isHorizontal();
 		return !bl && blockState2.getBlock() != this && !new PortalBlock.class_2424(iWorld, blockPos, axis2).method_10362()
 			? Blocks.field_10124.getDefaultState()
-			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
@@ -193,8 +194,8 @@ public class PortalBlock extends Block {
 
 			for (Direction.AxisDirection axisDirection : Direction.AxisDirection.values()) {
 				BlockPattern.Result result = new BlockPattern.Result(
-					direction.getDirection() == axisDirection ? blockPos2 : blockPos2.method_10079(lv.field_11314, lv.method_10356() - 1),
-					Direction.method_10156(axisDirection, axis),
+					direction.getDirection() == axisDirection ? blockPos2 : blockPos2.offset(lv.field_11314, lv.method_10356() - 1),
+					Direction.get(axisDirection, axis),
 					Direction.UP,
 					loadingCache,
 					lv.method_10356(),
@@ -221,8 +222,8 @@ public class PortalBlock extends Block {
 			}
 
 			return new BlockPattern.Result(
-				direction.getDirection() == axisDirection2 ? blockPos2 : blockPos2.method_10079(lv.field_11314, lv.method_10356() - 1),
-				Direction.method_10156(axisDirection2, axis),
+				direction.getDirection() == axisDirection2 ? blockPos2 : blockPos2.offset(lv.field_11314, lv.method_10356() - 1),
+				Direction.get(axisDirection2, axis),
 				Direction.UP,
 				loadingCache,
 				lv.method_10356(),
@@ -262,7 +263,7 @@ public class PortalBlock extends Block {
 
 			int i = this.method_10354(blockPos, this.field_11315) - 1;
 			if (i >= 0) {
-				this.field_11316 = blockPos.method_10079(this.field_11315, i);
+				this.field_11316 = blockPos.offset(this.field_11315, i);
 				this.field_11311 = this.method_10354(this.field_11316, this.field_11314);
 				if (this.field_11311 < 2 || this.field_11311 > 21) {
 					this.field_11316 = null;
@@ -278,13 +279,13 @@ public class PortalBlock extends Block {
 		protected int method_10354(BlockPos blockPos, Direction direction) {
 			int i;
 			for (i = 0; i < 22; i++) {
-				BlockPos blockPos2 = blockPos.method_10079(direction, i);
+				BlockPos blockPos2 = blockPos.offset(direction, i);
 				if (!this.method_10359(this.field_11318.getBlockState(blockPos2)) || this.field_11318.getBlockState(blockPos2.down()).getBlock() != Blocks.field_10540) {
 					break;
 				}
 			}
 
-			Block block = this.field_11318.getBlockState(blockPos.method_10079(direction, i)).getBlock();
+			Block block = this.field_11318.getBlockState(blockPos.offset(direction, i)).getBlock();
 			return block == Blocks.field_10540 ? i : 0;
 		}
 
@@ -300,7 +301,7 @@ public class PortalBlock extends Block {
 			label56:
 			for (this.field_11312 = 0; this.field_11312 < 21; this.field_11312++) {
 				for (int i = 0; i < this.field_11311; i++) {
-					BlockPos blockPos = this.field_11316.method_10079(this.field_11314, i).up(this.field_11312);
+					BlockPos blockPos = this.field_11316.offset(this.field_11314, i).up(this.field_11312);
 					BlockState blockState = this.field_11318.getBlockState(blockPos);
 					if (!this.method_10359(blockState)) {
 						break label56;
@@ -312,12 +313,12 @@ public class PortalBlock extends Block {
 					}
 
 					if (i == 0) {
-						block = this.field_11318.getBlockState(blockPos.method_10093(this.field_11315)).getBlock();
+						block = this.field_11318.getBlockState(blockPos.offset(this.field_11315)).getBlock();
 						if (block != Blocks.field_10540) {
 							break label56;
 						}
 					} else if (i == this.field_11311 - 1) {
-						block = this.field_11318.getBlockState(blockPos.method_10093(this.field_11314)).getBlock();
+						block = this.field_11318.getBlockState(blockPos.offset(this.field_11314)).getBlock();
 						if (block != Blocks.field_10540) {
 							break label56;
 						}
@@ -326,7 +327,7 @@ public class PortalBlock extends Block {
 			}
 
 			for (int i = 0; i < this.field_11311; i++) {
-				if (this.field_11318.getBlockState(this.field_11316.method_10079(this.field_11314, i).up(this.field_11312)).getBlock() != Blocks.field_10540) {
+				if (this.field_11318.getBlockState(this.field_11316.offset(this.field_11314, i).up(this.field_11312)).getBlock() != Blocks.field_10540) {
 					this.field_11312 = 0;
 					break;
 				}
@@ -353,7 +354,7 @@ public class PortalBlock extends Block {
 
 		public void method_10363() {
 			for (int i = 0; i < this.field_11311; i++) {
-				BlockPos blockPos = this.field_11316.method_10079(this.field_11314, i);
+				BlockPos blockPos = this.field_11316.offset(this.field_11314, i);
 
 				for (int j = 0; j < this.field_11312; j++) {
 					this.field_11318.setBlockState(blockPos.up(j), Blocks.field_10316.getDefaultState().with(PortalBlock.field_11310, this.field_11317), 18);

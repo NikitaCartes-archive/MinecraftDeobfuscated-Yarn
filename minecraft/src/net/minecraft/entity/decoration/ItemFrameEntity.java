@@ -40,7 +40,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 
 	public ItemFrameEntity(World world, BlockPos blockPos, Direction direction) {
 		super(EntityType.ITEM_FRAME, world, blockPos);
-		this.method_6892(direction);
+		this.setFacing(direction);
 	}
 
 	@Override
@@ -55,12 +55,12 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	protected void method_6892(Direction direction) {
+	protected void setFacing(Direction direction) {
 		Validate.notNull(direction);
-		this.field_7099 = direction;
+		this.facing = direction;
 		if (direction.getAxis().isHorizontal()) {
 			this.pitch = 0.0F;
-			this.yaw = (float)(this.field_7099.getHorizontal() * 90);
+			this.yaw = (float)(this.facing.getHorizontal() * 90);
 		} else {
 			this.pitch = (float)(-90 * direction.getDirection().offset());
 			this.yaw = 0.0F;
@@ -73,15 +73,15 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 
 	@Override
 	protected void method_6895() {
-		if (this.field_7099 != null) {
+		if (this.facing != null) {
 			double d = 0.46875;
-			this.x = (double)this.blockPos.getX() + 0.5 - (double)this.field_7099.getOffsetX() * 0.46875;
-			this.y = (double)this.blockPos.getY() + 0.5 - (double)this.field_7099.getOffsetY() * 0.46875;
-			this.z = (double)this.blockPos.getZ() + 0.5 - (double)this.field_7099.getOffsetZ() * 0.46875;
+			this.x = (double)this.blockPos.getX() + 0.5 - (double)this.facing.getOffsetX() * 0.46875;
+			this.y = (double)this.blockPos.getY() + 0.5 - (double)this.facing.getOffsetY() * 0.46875;
+			this.z = (double)this.blockPos.getZ() + 0.5 - (double)this.facing.getOffsetZ() * 0.46875;
 			double e = (double)this.getWidthPixels();
 			double f = (double)this.getHeightPixels();
 			double g = (double)this.getWidthPixels();
-			Direction.Axis axis = this.field_7099.getAxis();
+			Direction.Axis axis = this.facing.getAxis();
 			switch (axis) {
 				case X:
 					e = 1.0;
@@ -105,8 +105,8 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 		if (!this.world.method_8587(this, this.getBoundingBox())) {
 			return false;
 		} else {
-			BlockState blockState = this.world.getBlockState(this.blockPos.method_10093(this.field_7099.getOpposite()));
-			return blockState.getMaterial().method_15799() || this.field_7099.getAxis().isHorizontal() && AbstractRedstoneGateBlock.method_9999(blockState)
+			BlockState blockState = this.world.getBlockState(this.blockPos.offset(this.facing.getOpposite()));
+			return blockState.getMaterial().method_15799() || this.facing.getAxis().isHorizontal() && AbstractRedstoneGateBlock.method_9999(blockState)
 				? this.world.getEntities(this, this.getBoundingBox(), PREDICATE).isEmpty()
 				: false;
 		}
@@ -122,7 +122,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 		if (this.isInvulnerableTo(damageSource)) {
 			return false;
 		} else if (!damageSource.isExplosive() && !this.getHeldItemStack().isEmpty()) {
-			if (!this.world.isRemote) {
+			if (!this.world.isClient) {
 				this.method_6936(damageSource.getAttacker(), false);
 				this.playSoundAtEntity(SoundEvents.field_14770, 1.0F, 1.0F);
 			}
@@ -175,7 +175,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 			}
 
 			if (bl) {
-				this.dropItem(Items.field_8143);
+				this.method_5706(Items.field_8143);
 			}
 
 			if (!itemStack.isEmpty() && this.random.nextFloat() < this.itemDropChance) {
@@ -264,7 +264,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 			compoundTag.putFloat("ItemDropChance", this.itemDropChance);
 		}
 
-		compoundTag.putByte("Facing", (byte)this.field_7099.getId());
+		compoundTag.putByte("Facing", (byte)this.facing.getId());
 	}
 
 	@Override
@@ -284,13 +284,13 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 			}
 		}
 
-		this.method_6892(Direction.byId(compoundTag.getByte("Facing")));
+		this.setFacing(Direction.byId(compoundTag.getByte("Facing")));
 	}
 
 	@Override
 	public boolean interact(PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			if (this.getHeldItemStack().isEmpty()) {
 				if (!itemStack.isEmpty()) {
 					this.setHeldItemStack(itemStack);

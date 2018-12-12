@@ -157,7 +157,7 @@ public class MathHelper {
 		return abs(g - f) < 1.0E-5F;
 	}
 
-	public static int floorMOd(int i, int j) {
+	public static int floorMod(int i, int j) {
 		return Math.floorMod(i, j);
 	}
 

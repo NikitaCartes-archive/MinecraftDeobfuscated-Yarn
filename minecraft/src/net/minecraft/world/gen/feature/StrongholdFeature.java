@@ -7,9 +7,9 @@ import java.util.Random;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.class_3443;
-import net.minecraft.class_3449;
-import net.minecraft.class_3485;
 import net.minecraft.sortme.structures.StrongholdGenerator;
+import net.minecraft.sortme.structures.StructureManager;
+import net.minecraft.sortme.structures.StructureStart;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
@@ -17,13 +17,12 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 	private boolean field_13851;
 	private ChunkPos[] field_13852;
-	private final List<class_3449> field_13853 = Lists.<class_3449>newArrayList();
+	private final List<StructureStart> field_13853 = Lists.<StructureStart>newArrayList();
 	private long field_13854;
 
 	public StrongholdFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
@@ -73,7 +72,7 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 
 	@Nullable
 	@Override
-	public BlockPos locateStructure(World world, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, BlockPos blockPos, int i, boolean bl) {
+	public BlockPos locateStructure(World world, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, BlockPos blockPos, int i, boolean bl) {
 		if (!chunkGenerator.getBiomeSource().hasStructureFeature(this)) {
 			return null;
 		} else {
@@ -116,15 +115,15 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 			}
 		}
 
-		int i = chunkGenerator.getSettings().method_12563();
-		int j = chunkGenerator.getSettings().method_12561();
-		int k = chunkGenerator.getSettings().method_12565();
+		int i = chunkGenerator.method_12109().getStrongholdDistance();
+		int j = chunkGenerator.method_12109().getStrongholdCount();
+		int k = chunkGenerator.method_12109().getStrongholdSpread();
 		this.field_13852 = new ChunkPos[j];
 		int l = 0;
 
-		for (class_3449 lv : this.field_13853) {
+		for (StructureStart structureStart : this.field_13853) {
 			if (l < this.field_13852.length) {
-				this.field_13852[l++] = new ChunkPos(lv.method_14967(), lv.method_14966());
+				this.field_13852[l++] = new ChunkPos(structureStart.method_14967(), structureStart.method_14966());
 			}
 		}
 
@@ -140,7 +139,7 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 				double e = (double)(4 * i + i * o * 6) + (random.nextDouble() - 0.5) * (double)i * 2.5;
 				int q = (int)Math.round(Math.cos(d) * e);
 				int r = (int)Math.round(Math.sin(d) * e);
-				BlockPos blockPos = chunkGenerator.getBiomeSource().method_8762((q << 4) + 8, (r << 4) + 8, 112, list, random);
+				BlockPos blockPos = chunkGenerator.getBiomeSource().locateBiome((q << 4) + 8, (r << 4) + 8, 112, list, random);
 				if (blockPos != null) {
 					q = blockPos.getX() >> 4;
 					r = blockPos.getZ() >> 4;
@@ -162,20 +161,20 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 		}
 	}
 
-	public static class class_3189 extends class_3449 {
+	public static class class_3189 extends StructureStart {
 		public class_3189(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
 			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, class_3485 arg, int i, int j, Biome biome) {
+		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
 			int k = 0;
 			long l = chunkGenerator.getSeed();
 
 			StrongholdGenerator.class_3434 lv;
 			do {
-				this.field_15330 = MutableIntBoundingBox.maxSize();
-				this.field_16715.method_12663(l + (long)(k++), i, j);
+				this.boundingBox = MutableIntBoundingBox.maxSize();
+				this.field_16715.setStructureSeed(l + (long)(k++), i, j);
 				StrongholdGenerator.method_14855();
 				lv = new StrongholdGenerator.class_3434(this.field_16715, (i << 4) + 2, (j << 4) + 2);
 				this.children.add(lv);
@@ -192,7 +191,7 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 				this.method_14978(chunkGenerator.method_16398(), this.field_16715, 10);
 			} while (this.children.isEmpty() || lv.field_15283 == null);
 
-			((StrongholdFeature)this.method_16656()).field_13853.add(this);
+			((StrongholdFeature)this.getFeature()).field_13853.add(this);
 		}
 	}
 }

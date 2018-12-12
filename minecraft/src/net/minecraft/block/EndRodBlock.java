@@ -4,7 +4,6 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.state.StateFactory;
@@ -33,7 +32,7 @@ public class EndRodBlock extends FacingBlock {
 
 	@Override
 	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.with(field_10927, mirror.method_10343(blockState.get(field_10927)));
+		return blockState.with(field_10927, mirror.apply(blockState.get(field_10927)));
 	}
 
 	@Override
@@ -51,8 +50,8 @@ public class EndRodBlock extends FacingBlock {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		Direction direction = itemPlacementContext.method_8038();
-		BlockState blockState = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getPos().method_10093(direction.getOpposite()));
+		Direction direction = itemPlacementContext.getFacing();
+		BlockState blockState = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getPos().offset(direction.getOpposite()));
 		return blockState.getBlock() == this && blockState.get(field_10927) == direction
 			? this.getDefaultState().with(field_10927, direction.getOpposite())
 			: this.getDefaultState().with(field_10927, direction);

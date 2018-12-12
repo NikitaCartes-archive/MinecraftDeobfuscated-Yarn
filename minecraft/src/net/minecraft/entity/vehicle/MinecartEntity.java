@@ -21,7 +21,7 @@ public class MinecartEntity extends AbstractMinecartEntity {
 		} else if (this.hasPassengers()) {
 			return true;
 		} else {
-			if (!this.world.isRemote) {
+			if (!this.world.isClient) {
 				playerEntity.startRiding(this);
 			}
 
@@ -40,7 +40,7 @@ public class MinecartEntity extends AbstractMinecartEntity {
 				this.method_7524(-this.method_7522());
 				this.method_7509(10);
 				this.method_7520(50.0F);
-				this.method_5785();
+				this.scheduleVelocityUpdate();
 			}
 		}
 	}

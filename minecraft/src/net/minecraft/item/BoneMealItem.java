@@ -27,18 +27,18 @@ public class BoneMealItem extends Item {
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		World world = itemUsageContext.getWorld();
 		BlockPos blockPos = itemUsageContext.getPos();
-		BlockPos blockPos2 = blockPos.method_10093(itemUsageContext.method_8038());
+		BlockPos blockPos2 = blockPos.offset(itemUsageContext.getFacing());
 		if (method_7720(itemUsageContext.getItemStack(), world, blockPos)) {
-			if (!world.isRemote) {
+			if (!world.isClient) {
 				world.fireWorldEvent(2005, blockPos, 0);
 			}
 
 			return ActionResult.SUCCESS;
 		} else {
 			BlockState blockState = world.getBlockState(blockPos);
-			boolean bl = Block.method_9501(blockState.method_11628(world, blockPos), itemUsageContext.method_8038());
-			if (bl && method_7719(itemUsageContext.getItemStack(), world, blockPos2, itemUsageContext.method_8038())) {
-				if (!world.isRemote) {
+			boolean bl = Block.isFaceFullCube(blockState.getCollisionShape(world, blockPos), itemUsageContext.getFacing());
+			if (bl && method_7719(itemUsageContext.getItemStack(), world, blockPos2, itemUsageContext.getFacing())) {
+				if (!world.isClient) {
 					world.fireWorldEvent(2005, blockPos2, 0);
 				}
 
@@ -53,8 +53,8 @@ public class BoneMealItem extends Item {
 		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.getBlock() instanceof Fertilizable) {
 			Fertilizable fertilizable = (Fertilizable)blockState.getBlock();
-			if (fertilizable.isFertilizable(world, blockPos, blockState, world.isRemote)) {
-				if (!world.isRemote) {
+			if (fertilizable.isFertilizable(world, blockPos, blockState, world.isClient)) {
+				if (!world.isClient) {
 					if (fertilizable.canGrow(world, world.random, blockPos, blockState)) {
 						fertilizable.grow(world, world.random, blockPos, blockState);
 					}
@@ -71,7 +71,7 @@ public class BoneMealItem extends Item {
 
 	public static boolean method_7719(ItemStack itemStack, World world, BlockPos blockPos, @Nullable Direction direction) {
 		if (world.getBlockState(blockPos).getBlock() == Blocks.field_10382 && world.getFluidState(blockPos).method_15761() == 8) {
-			if (!world.isRemote) {
+			if (!world.isClient) {
 				label79:
 				for (int i = 0; i < 128; i++) {
 					BlockPos blockPos2 = blockPos;
@@ -81,7 +81,7 @@ public class BoneMealItem extends Item {
 					for (int j = 0; j < i / 16; j++) {
 						blockPos2 = blockPos2.add(random.nextInt(3) - 1, (random.nextInt(3) - 1) * random.nextInt(3) / 2, random.nextInt(3) - 1);
 						biome = world.getBiome(blockPos2);
-						if (world.getBlockState(blockPos2).blocksLight(world, blockPos2)) {
+						if (world.getBlockState(blockPos2).method_11603(world, blockPos2)) {
 							continue label79;
 						}
 					}
@@ -134,7 +134,7 @@ public class BoneMealItem extends Item {
 				iWorld.method_8406(
 					ParticleTypes.field_11211,
 					(double)((float)blockPos.getX() + random.nextFloat()),
-					(double)blockPos.getY() + (double)random.nextFloat() * blockState.getBoundingShape(iWorld, blockPos).method_1105(Direction.Axis.Y),
+					(double)blockPos.getY() + (double)random.nextFloat() * blockState.getBoundingShape(iWorld, blockPos).getMaximum(Direction.Axis.Y),
 					(double)((float)blockPos.getZ() + random.nextFloat()),
 					d,
 					e,

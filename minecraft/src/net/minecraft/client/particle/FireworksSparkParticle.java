@@ -4,12 +4,12 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.VertexBuffer;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.FireworksItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.particle.TexturedParticle;
+import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -20,8 +20,8 @@ import net.minecraft.world.World;
 @Environment(EnvType.CLIENT)
 public class FireworksSparkParticle {
 	@Environment(EnvType.CLIENT)
-	public static class Factory implements FactoryParticle<TexturedParticle> {
-		public Particle method_3025(TexturedParticle texturedParticle, World world, double d, double e, double f, double g, double h, double i) {
+	public static class Factory implements ParticleFactory<DefaultParticleType> {
+		public Particle method_3025(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			FireworksSparkParticle.class_680 lv = new FireworksSparkParticle.class_680(world, d, e, f, g, h, i, MinecraftClient.getInstance().particleManager);
 			lv.setColorAlpha(0.99F);
 			return lv;
@@ -36,35 +36,35 @@ public class FireworksSparkParticle {
 		}
 
 		@Override
-		public void buildGeometry(VertexBuffer vertexBuffer, Entity entity, float f, float g, float h, float i, float j, float k) {
+		public void buildGeometry(BufferBuilder bufferBuilder, Entity entity, float f, float g, float h, float i, float j, float k) {
 			float l = 0.25F;
 			float m = 0.5F;
 			float n = 0.125F;
 			float o = 0.375F;
 			float p = 7.1F * MathHelper.sin(((float)this.age + f - 1.0F) * 0.25F * (float) Math.PI);
 			this.setColorAlpha(0.6F - ((float)this.age + f - 1.0F) * 0.25F * 0.5F);
-			float q = (float)(MathHelper.lerp((double)f, this.prevPosX, this.posX) - lerpX);
-			float r = (float)(MathHelper.lerp((double)f, this.prevPosY, this.posY) - lerpY);
-			float s = (float)(MathHelper.lerp((double)f, this.prevPosZ, this.posZ) - lerpZ);
+			float q = (float)(MathHelper.lerp((double)f, this.prevPosX, this.posX) - cameraX);
+			float r = (float)(MathHelper.lerp((double)f, this.prevPosY, this.posY) - cameraY);
+			float s = (float)(MathHelper.lerp((double)f, this.prevPosZ, this.posZ) - cameraZ);
 			int t = this.getColorMultiplier(f);
 			int u = t >> 16 & 65535;
 			int v = t & 65535;
-			vertexBuffer.vertex((double)(q - g * p - j * p), (double)(r - h * p), (double)(s - i * p - k * p))
+			bufferBuilder.vertex((double)(q - g * p - j * p), (double)(r - h * p), (double)(s - i * p - k * p))
 				.texture(0.5, 0.375)
 				.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
 				.texture(u, v)
 				.next();
-			vertexBuffer.vertex((double)(q - g * p + j * p), (double)(r + h * p), (double)(s - i * p + k * p))
+			bufferBuilder.vertex((double)(q - g * p + j * p), (double)(r + h * p), (double)(s - i * p + k * p))
 				.texture(0.5, 0.125)
 				.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
 				.texture(u, v)
 				.next();
-			vertexBuffer.vertex((double)(q + g * p + j * p), (double)(r + h * p), (double)(s + i * p + k * p))
+			bufferBuilder.vertex((double)(q + g * p + j * p), (double)(r + h * p), (double)(s + i * p + k * p))
 				.texture(0.25, 0.125)
 				.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
 				.texture(u, v)
 				.next();
-			vertexBuffer.vertex((double)(q + g * p - j * p), (double)(r - h * p), (double)(s + i * p - k * p))
+			bufferBuilder.vertex((double)(q + g * p - j * p), (double)(r - h * p), (double)(s + i * p - k * p))
 				.texture(0.25, 0.375)
 				.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
 				.texture(u, v)
@@ -106,9 +106,9 @@ public class FireworksSparkParticle {
 		}
 
 		@Override
-		public void buildGeometry(VertexBuffer vertexBuffer, Entity entity, float f, float g, float h, float i, float j, float k) {
+		public void buildGeometry(BufferBuilder bufferBuilder, Entity entity, float f, float g, float h, float i, float j, float k) {
 			if (!this.field_3803 || this.age < this.maxAge / 3 || (this.age + this.maxAge) / 3 % 2 == 0) {
-				super.buildGeometry(vertexBuffer, entity, f, g, h, i, j, k);
+				super.buildGeometry(bufferBuilder, entity, f, g, h, i, j, k);
 			}
 		}
 
@@ -167,7 +167,7 @@ public class FireworksSparkParticle {
 		}
 
 		@Override
-		public void buildGeometry(VertexBuffer vertexBuffer, Entity entity, float f, float g, float h, float i, float j, float k) {
+		public void buildGeometry(BufferBuilder bufferBuilder, Entity entity, float f, float g, float h, float i, float j, float k) {
 		}
 
 		@Override
@@ -180,7 +180,7 @@ public class FireworksSparkParticle {
 				} else {
 					for (int i = 0; i < this.field_3806.size(); i++) {
 						CompoundTag compoundTag = this.field_3806.getCompoundTag(i);
-						if (FireworksItem.class_1782.method_7813(compoundTag.getByte("Type")) == FireworksItem.class_1782.field_7977) {
+						if (FireworksItem.Type.fromId(compoundTag.getByte("Type")) == FireworksItem.Type.field_7977) {
 							bl2 = true;
 							break;
 						}
@@ -200,7 +200,7 @@ public class FireworksSparkParticle {
 			if (this.field_3808 % 2 == 0 && this.field_3806 != null && this.field_3808 / 2 < this.field_3806.size()) {
 				int j = this.field_3808 / 2;
 				CompoundTag compoundTag2 = this.field_3806.getCompoundTag(j);
-				FireworksItem.class_1782 lv = FireworksItem.class_1782.method_7813(compoundTag2.getByte("Type"));
+				FireworksItem.Type type = FireworksItem.Type.fromId(compoundTag2.getByte("Type"));
 				boolean bl3 = compoundTag2.getBoolean("Trail");
 				boolean bl4 = compoundTag2.getBoolean("Flicker");
 				int[] is = compoundTag2.getIntArray("Colors");
@@ -209,7 +209,7 @@ public class FireworksSparkParticle {
 					is = new int[]{DyeColor.BLACK.getFireworkColor()};
 				}
 
-				switch (lv) {
+				switch (type) {
 					case field_7976:
 					default:
 						this.method_3031(0.25, 2, is, js, bl3, bl4);
@@ -256,9 +256,9 @@ public class FireworksSparkParticle {
 				float f = (float)((k & 0xFF0000) >> 16) / 255.0F;
 				float g = (float)((k & 0xFF00) >> 8) / 255.0F;
 				float h = (float)((k & 0xFF) >> 0) / 255.0F;
-				FireworksSparkParticle.class_678 lv2 = new FireworksSparkParticle.class_678(this.world, this.posX, this.posY, this.posZ);
-				lv2.setColor(f, g, h);
-				this.field_3805.addParticle(lv2);
+				FireworksSparkParticle.class_678 lv = new FireworksSparkParticle.class_678(this.world, this.posX, this.posY, this.posZ);
+				lv.setColor(f, g, h);
+				this.field_3805.addParticle(lv);
 			}
 
 			this.field_3808++;

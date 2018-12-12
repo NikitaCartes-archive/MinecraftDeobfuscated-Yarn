@@ -27,12 +27,12 @@ import org.apache.logging.log4j.Logger;
 
 public class CommandBlock extends BlockWithEntity {
 	private static final Logger field_10792 = LogManager.getLogger();
-	public static final DirectionProperty field_10791 = FacingBlock.field_10927;
+	public static final DirectionProperty FACING = FacingBlock.field_10927;
 	public static final BooleanProperty field_10793 = Properties.CONDITIONAL;
 
 	public CommandBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_10791, Direction.NORTH).with(field_10793, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(field_10793, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class CommandBlock extends BlockWithEntity {
 
 	@Override
 	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof CommandBlockBlockEntity) {
 				CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
@@ -63,7 +63,7 @@ public class CommandBlock extends BlockWithEntity {
 
 	@Override
 	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof CommandBlockBlockEntity) {
 				CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
@@ -102,7 +102,7 @@ public class CommandBlock extends BlockWithEntity {
 			commandBlockExecutor.setSuccessCount(0);
 		}
 
-		method_9779(world, blockPos, blockState.get(field_10791));
+		method_9779(world, blockPos, blockState.get(FACING));
 	}
 
 	@Override
@@ -111,12 +111,12 @@ public class CommandBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof CommandBlockBlockEntity && playerEntity.method_7338()) {
-			playerEntity.openCommandBlock((CommandBlockBlockEntity)blockEntity);
+			playerEntity.openCommandBlockGui((CommandBlockBlockEntity)blockEntity);
 			return true;
 		} else {
 			return false;
@@ -144,7 +144,7 @@ public class CommandBlock extends BlockWithEntity {
 				commandBlockExecutor.setCustomName(itemStack.getDisplayName());
 			}
 
-			if (!world.isRemote) {
+			if (!world.isClient) {
 				if (itemStack.getSubCompoundTag("BlockEntityTag") == null) {
 					commandBlockExecutor.shouldTrackOutput(world.getGameRules().getBoolean("sendCommandFeedback"));
 					commandBlockBlockEntity.setAuto(this == Blocks.field_10395);
@@ -159,28 +159,28 @@ public class CommandBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public RenderTypeBlock getRenderType(BlockState blockState) {
-		return RenderTypeBlock.MODEL;
+	public BlockRenderType method_9604(BlockState blockState) {
+		return BlockRenderType.field_11458;
 	}
 
 	@Override
 	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
-		return blockState.with(field_10791, rotation.method_10503(blockState.get(field_10791)));
+		return blockState.with(FACING, rotation.method_10503(blockState.get(FACING)));
 	}
 
 	@Override
 	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.method_10345(blockState.get(field_10791)));
+		return blockState.applyRotation(mirror.getRotation(blockState.get(FACING)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_10791, field_10793);
+		builder.with(FACING, field_10793);
 	}
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(field_10791, itemPlacementContext.method_7715().getOpposite());
+		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite());
 	}
 
 	private static void method_9779(World world, BlockPos blockPos, Direction direction) {
@@ -189,7 +189,7 @@ public class CommandBlock extends BlockWithEntity {
 		int i = gameRules.getInteger("maxCommandChainLength");
 
 		while (i-- > 0) {
-			mutable.method_10098(direction);
+			mutable.setOffset(direction);
 			BlockState blockState = world.getBlockState(mutable);
 			Block block = blockState.getBlock();
 			if (block != Blocks.field_10395) {
@@ -219,7 +219,7 @@ public class CommandBlock extends BlockWithEntity {
 				}
 			}
 
-			direction = blockState.get(field_10791);
+			direction = blockState.get(FACING);
 		}
 
 		if (i <= 0) {

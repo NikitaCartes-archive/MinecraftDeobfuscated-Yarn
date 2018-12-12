@@ -50,7 +50,7 @@ public class SystemUtil {
 		return Collectors.toMap(Entry::getKey, Entry::getValue);
 	}
 
-	public static <T extends Comparable<T>> String method_650(Property<T> property, Object object) {
+	public static <T extends Comparable<T>> String getValueAsString(Property<T> property, Object object) {
 		return property.getValueAsString((T)object);
 	}
 
@@ -58,7 +58,7 @@ public class SystemUtil {
 		return identifier == null ? string + ".unregistered_sadface" : string + '.' + identifier.getNamespace() + '.' + identifier.getPath().replace('/', '.');
 	}
 
-	public static long getMeasuringTimeMili() {
+	public static long getMeasuringTimeMs() {
 		return getMeasuringTimeNano() / 1000000L;
 	}
 
@@ -66,7 +66,7 @@ public class SystemUtil {
 		return NANO_TIME_SUPPLIER.getAsLong();
 	}
 
-	public static long getEpochTimeMili() {
+	public static long getEpochTimeMs() {
 		return Instant.now().toEpochMilli();
 	}
 

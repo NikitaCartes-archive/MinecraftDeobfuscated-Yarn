@@ -7,7 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1386;
 import net.minecraft.class_3321;
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -17,7 +17,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.particle.Particle;
+import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.scoreboard.AbstractScoreboardTeam;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -85,9 +85,9 @@ public abstract class TameableEntity extends AnimalEntity implements OwnableEnti
 	}
 
 	protected void method_6180(boolean bl) {
-		Particle particle = ParticleTypes.field_11201;
+		ParticleParameters particleParameters = ParticleTypes.field_11201;
 		if (!bl) {
-			particle = ParticleTypes.field_11251;
+			particleParameters = ParticleTypes.field_11251;
 		}
 
 		for (int i = 0; i < 7; i++) {
@@ -96,7 +96,7 @@ public abstract class TameableEntity extends AnimalEntity implements OwnableEnti
 			double f = this.random.nextGaussian() * 0.02;
 			this.world
 				.method_8406(
-					particle,
+					particleParameters,
 					this.x + (double)(this.random.nextFloat() * this.width * 2.0F) - (double)this.width,
 					this.y + 0.5 + (double)(this.random.nextFloat() * this.height),
 					this.z + (double)(this.random.nextFloat() * this.width * 2.0F) - (double)this.width,
@@ -164,7 +164,7 @@ public abstract class TameableEntity extends AnimalEntity implements OwnableEnti
 		this.setTamed(true);
 		this.setOwnerUuid(playerEntity.getUuid());
 		if (playerEntity instanceof ServerPlayerEntity) {
-			CriterionCriterions.TAME_ANIMAL.handle((ServerPlayerEntity)playerEntity, this);
+			Criterions.TAME_ANIMAL.handle((ServerPlayerEntity)playerEntity, this);
 		}
 	}
 
@@ -220,7 +220,7 @@ public abstract class TameableEntity extends AnimalEntity implements OwnableEnti
 
 	@Override
 	public void onDeath(DamageSource damageSource) {
-		if (!this.world.isRemote && this.world.getGameRules().getBoolean("showDeathMessages") && this.getOwner() instanceof ServerPlayerEntity) {
+		if (!this.world.isClient && this.world.getGameRules().getBoolean("showDeathMessages") && this.getOwner() instanceof ServerPlayerEntity) {
 			this.getOwner().appendCommandFeedback(this.getDamageTracker().getDeathMessage());
 		}
 

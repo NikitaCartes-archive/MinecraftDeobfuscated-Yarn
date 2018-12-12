@@ -7,8 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.DecoratedFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class DecoratedFeature extends Feature<DecoratedFeatureConfig> {
 	public DecoratedFeature(Function<Dynamic<?>, ? extends DecoratedFeatureConfig> function) {
@@ -16,11 +15,7 @@ public class DecoratedFeature extends Feature<DecoratedFeatureConfig> {
 	}
 
 	public boolean method_12892(
-		IWorld iWorld,
-		ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator,
-		Random random,
-		BlockPos blockPos,
-		DecoratedFeatureConfig decoratedFeatureConfig
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DecoratedFeatureConfig decoratedFeatureConfig
 	) {
 		return decoratedFeatureConfig.decorator.generate(iWorld, chunkGenerator, random, blockPos, decoratedFeatureConfig.feature);
 	}

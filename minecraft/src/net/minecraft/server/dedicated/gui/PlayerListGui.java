@@ -20,8 +20,8 @@ public class PlayerListGui extends JList<String> implements Tickable {
 		if (this.tick++ % 20 == 0) {
 			Vector<String> vector = new Vector();
 
-			for (int i = 0; i < this.server.getConfigurationManager().getPlayerList().size(); i++) {
-				vector.add(((ServerPlayerEntity)this.server.getConfigurationManager().getPlayerList().get(i)).getGameProfile().getName());
+			for (int i = 0; i < this.server.getPlayerManager().getPlayerList().size(); i++) {
+				vector.add(((ServerPlayerEntity)this.server.getPlayerManager().getPlayerList().get(i)).getGameProfile().getName());
 			}
 
 			this.setListData(vector);

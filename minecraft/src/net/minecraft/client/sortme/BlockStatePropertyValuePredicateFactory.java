@@ -8,14 +8,14 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_815;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.render.model.json.MultipartModelSelector;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.Property;
 
 @Environment(EnvType.CLIENT)
-public class BlockStatePropertyValuePredicateFactory implements class_815 {
+public class BlockStatePropertyValuePredicateFactory implements MultipartModelSelector {
 	private static final Splitter VALUE_SPLITTER = Splitter.on('|').omitEmptyStrings();
 	private final String key;
 	private final String valueString;
@@ -43,10 +43,10 @@ public class BlockStatePropertyValuePredicateFactory implements class_815 {
 			} else {
 				Predicate<BlockState> predicate;
 				if (list.size() == 1) {
-					predicate = this.method_3525(stateFactory, property, string);
+					predicate = this.createPredicate(stateFactory, property, string);
 				} else {
 					List<Predicate<BlockState>> list2 = (List<Predicate<BlockState>>)list.stream()
-						.map(stringx -> this.method_3525(stateFactory, property, stringx))
+						.map(stringx -> this.createPredicate(stateFactory, property, stringx))
 						.collect(Collectors.toList());
 					predicate = blockState -> list2.stream().anyMatch(predicatex -> predicatex.test(blockState));
 				}
@@ -56,7 +56,7 @@ public class BlockStatePropertyValuePredicateFactory implements class_815 {
 		}
 	}
 
-	private Predicate<BlockState> method_3525(StateFactory<Block, BlockState> stateFactory, Property<?> property, String string) {
+	private Predicate<BlockState> createPredicate(StateFactory<Block, BlockState> stateFactory, Property<?> property, String string) {
 		Optional<?> optional = property.getValue(string);
 		if (!optional.isPresent()) {
 			throw new RuntimeException(

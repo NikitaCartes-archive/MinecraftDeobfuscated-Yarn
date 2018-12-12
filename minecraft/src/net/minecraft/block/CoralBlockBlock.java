@@ -27,17 +27,19 @@ public class CoralBlockBlock extends Block {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if (!this.method_9808(iWorld, blockPos)) {
 			iWorld.getBlockTickScheduler().schedule(blockPos, this, 60 + iWorld.getRandom().nextInt(40));
 		}
 
-		return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	protected boolean method_9808(BlockView blockView, BlockPos blockPos) {
 		for (Direction direction : Direction.values()) {
-			FluidState fluidState = blockView.getFluidState(blockPos.method_10093(direction));
+			FluidState fluidState = blockView.getFluidState(blockPos.offset(direction));
 			if (fluidState.matches(FluidTags.field_15517)) {
 				return true;
 			}

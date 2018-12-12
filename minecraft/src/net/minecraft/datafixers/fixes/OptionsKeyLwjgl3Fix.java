@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import net.minecraft.datafixers.TypeReferences;
 
 public class OptionsKeyLwjgl3Fix extends DataFix {
-	private static final Int2ObjectMap<String> keys = DataFixUtils.make(new Int2ObjectOpenHashMap<>(), int2ObjectOpenHashMap -> {
+	private static final Int2ObjectMap<String> NUMERICAL_KEY_IDS_TO_KEY_NAMES = DataFixUtils.make(new Int2ObjectOpenHashMap<>(), int2ObjectOpenHashMap -> {
 		int2ObjectOpenHashMap.put(0, "key.unknown");
 		int2ObjectOpenHashMap.put(11, "key.0");
 		int2ObjectOpenHashMap.put(2, "key.1");
@@ -159,7 +159,7 @@ public class OptionsKeyLwjgl3Fix extends DataFix {
 
 											return Pair.of(entry.getKey(), ((Dynamic)entry.getValue()).createString(string));
 										} else {
-											String string2 = keys.getOrDefault(i, "key.unknown");
+											String string2 = NUMERICAL_KEY_IDS_TO_KEY_NAMES.getOrDefault(i, "key.unknown");
 											return Pair.of(entry.getKey(), ((Dynamic)entry.getValue()).createString(string2));
 										}
 									} else {

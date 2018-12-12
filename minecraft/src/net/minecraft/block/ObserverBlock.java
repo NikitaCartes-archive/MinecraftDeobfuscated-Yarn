@@ -33,7 +33,7 @@ public class ObserverBlock extends FacingBlock {
 
 	@Override
 	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.method_10345(blockState.get(field_10927)));
+		return blockState.applyRotation(mirror.getRotation(blockState.get(field_10927)));
 	}
 
 	@Override
@@ -49,25 +49,27 @@ public class ObserverBlock extends FacingBlock {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if (blockState.get(field_10927) == direction && !(Boolean)blockState.get(field_11322)) {
 			this.method_10366(iWorld, blockPos);
 		}
 
-		return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	private void method_10366(IWorld iWorld, BlockPos blockPos) {
-		if (!iWorld.isRemote() && !iWorld.getBlockTickScheduler().isScheduled(blockPos, this)) {
+		if (!iWorld.isClient() && !iWorld.getBlockTickScheduler().isScheduled(blockPos, this)) {
 			iWorld.getBlockTickScheduler().schedule(blockPos, this, 2);
 		}
 	}
 
 	protected void method_10365(World world, BlockPos blockPos, BlockState blockState) {
 		Direction direction = blockState.get(field_10927);
-		BlockPos blockPos2 = blockPos.method_10093(direction.getOpposite());
+		BlockPos blockPos2 = blockPos.offset(direction.getOpposite());
 		world.updateNeighbor(blockPos2, this, blockPos);
-		world.method_8508(blockPos2, this, direction);
+		world.updateNeighborsExcept(blockPos2, this, direction);
 	}
 
 	@Override
@@ -76,19 +78,19 @@ public class ObserverBlock extends FacingBlock {
 	}
 
 	@Override
-	public int method_9603(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		return blockState.method_11597(blockView, blockPos, direction);
+	public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+		return blockState.getWeakRedstonePower(blockView, blockPos, direction);
 	}
 
 	@Override
-	public int method_9524(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
 		return blockState.get(field_11322) && blockState.get(field_10927) == direction ? 15 : 0;
 	}
 
 	@Override
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
 		if (blockState.getBlock() != blockState2.getBlock()) {
-			if (!world.isRemote() && (Boolean)blockState.get(field_11322) && !world.getBlockTickScheduler().isScheduled(blockPos, this)) {
+			if (!world.isClient() && (Boolean)blockState.get(field_11322) && !world.getBlockTickScheduler().isScheduled(blockPos, this)) {
 				BlockState blockState3 = blockState.with(field_11322, Boolean.valueOf(false));
 				world.setBlockState(blockPos, blockState3, 18);
 				this.method_10365(world, blockPos, blockState3);
@@ -99,7 +101,7 @@ public class ObserverBlock extends FacingBlock {
 	@Override
 	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState.getBlock() != blockState2.getBlock()) {
-			if (!world.isRemote && (Boolean)blockState.get(field_11322) && world.getBlockTickScheduler().isScheduled(blockPos, this)) {
+			if (!world.isClient && (Boolean)blockState.get(field_11322) && world.getBlockTickScheduler().isScheduled(blockPos, this)) {
 				this.method_10365(world, blockPos, blockState.with(field_11322, Boolean.valueOf(false)));
 			}
 		}
@@ -107,6 +109,6 @@ public class ObserverBlock extends FacingBlock {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(field_10927, itemPlacementContext.method_7715().getOpposite().getOpposite());
+		return this.getDefaultState().with(field_10927, itemPlacementContext.getPlayerFacing().getOpposite().getOpposite());
 	}
 }

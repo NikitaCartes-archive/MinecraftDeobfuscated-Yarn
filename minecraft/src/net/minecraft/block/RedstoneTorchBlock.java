@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.particle.DustParticle;
+import net.minecraft.particle.DustParticleParameters;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -37,7 +37,7 @@ public class RedstoneTorchBlock extends TorchBlock {
 	@Override
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
 		for (Direction direction : Direction.values()) {
-			world.updateNeighborsAlways(blockPos.method_10093(direction), this);
+			world.updateNeighborsAlways(blockPos.offset(direction), this);
 		}
 	}
 
@@ -45,18 +45,18 @@ public class RedstoneTorchBlock extends TorchBlock {
 	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (!bl) {
 			for (Direction direction : Direction.values()) {
-				world.updateNeighborsAlways(blockPos.method_10093(direction), this);
+				world.updateNeighborsAlways(blockPos.offset(direction), this);
 			}
 		}
 	}
 
 	@Override
-	public int method_9524(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
 		return blockState.get(field_11446) && Direction.UP != direction ? 15 : 0;
 	}
 
 	protected boolean method_10488(World world, BlockPos blockPos, BlockState blockState) {
-		return world.method_8459(blockPos.down(), Direction.DOWN);
+		return world.isEmittingRedstonePower(blockPos.down(), Direction.DOWN);
 	}
 
 	@Override
@@ -102,8 +102,8 @@ public class RedstoneTorchBlock extends TorchBlock {
 	}
 
 	@Override
-	public int method_9603(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		return direction == Direction.DOWN ? blockState.method_11597(blockView, blockPos, direction) : 0;
+	public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+		return direction == Direction.DOWN ? blockState.getWeakRedstonePower(blockView, blockPos, direction) : 0;
 	}
 
 	@Override
@@ -118,7 +118,7 @@ public class RedstoneTorchBlock extends TorchBlock {
 			double d = (double)blockPos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.2;
 			double e = (double)blockPos.getY() + 0.7 + (random.nextDouble() - 0.5) * 0.2;
 			double f = (double)blockPos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.2;
-			world.method_8406(DustParticle.field_11188, d, e, f, 0.0, 0.0, 0.0);
+			world.method_8406(DustParticleParameters.RED, d, e, f, 0.0, 0.0, 0.0);
 		}
 	}
 

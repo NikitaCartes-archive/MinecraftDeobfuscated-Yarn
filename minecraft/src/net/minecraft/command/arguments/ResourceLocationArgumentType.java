@@ -31,7 +31,7 @@ public class ResourceLocationArgumentType implements ArgumentType<Identifier> {
 
 	public static SimpleAdvancement getAdvancementArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		Identifier identifier = commandContext.getArgument(string, Identifier.class);
-		SimpleAdvancement simpleAdvancement = commandContext.getSource().getMinecraftServer().getAdvancementManager().get(identifier);
+		SimpleAdvancement simpleAdvancement = commandContext.getSource().getMinecraftServer().method_3851().get(identifier);
 		if (simpleAdvancement == null) {
 			throw UNKNOWN_ADVANCEMENT_EXCEPTION.create(identifier);
 		} else {

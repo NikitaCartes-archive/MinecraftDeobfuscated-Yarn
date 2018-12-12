@@ -19,7 +19,7 @@ public class TitleCommand {
 			ServerCommandManager.literal("title")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.argument("targets", EntityArgumentType.method_9308())
+					ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
 						.then(
 							ServerCommandManager.literal("clear")
 								.executes(commandContext -> method_13805(commandContext.getSource(), EntityArgumentType.method_9312(commandContext, "targets")))

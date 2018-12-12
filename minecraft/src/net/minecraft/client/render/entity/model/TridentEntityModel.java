@@ -28,7 +28,7 @@ public class TridentEntityModel extends Model {
 		this.field_3593.addChild(cuboid3);
 	}
 
-	public void method_2835() {
+	public void renderItem() {
 		this.field_3593.render(0.0625F);
 	}
 }

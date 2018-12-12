@@ -43,14 +43,16 @@ public class WallBannerBlock extends AbstractBannerBlock {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		return viewableWorld.getBlockState(blockPos.method_10093(((Direction)blockState.get(field_11722)).getOpposite())).getMaterial().method_15799();
+		return viewableWorld.getBlockState(blockPos.offset(((Direction)blockState.get(field_11722)).getOpposite())).getMaterial().method_15799();
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		return direction == ((Direction)blockState.get(field_11722)).getOpposite() && !blockState.canPlaceAt(iWorld, blockPos)
 			? Blocks.field_10124.getDefaultState()
-			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
@@ -63,7 +65,7 @@ public class WallBannerBlock extends AbstractBannerBlock {
 		BlockState blockState = this.getDefaultState();
 		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getPos();
-		Direction[] directions = itemPlacementContext.method_7718();
+		Direction[] directions = itemPlacementContext.getPlacementFacings();
 
 		for (Direction direction : directions) {
 			if (direction.getAxis().isHorizontal()) {
@@ -85,7 +87,7 @@ public class WallBannerBlock extends AbstractBannerBlock {
 
 	@Override
 	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.method_10345(blockState.get(field_11722)));
+		return blockState.applyRotation(mirror.getRotation(blockState.get(field_11722)));
 	}
 
 	@Override

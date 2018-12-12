@@ -7,7 +7,6 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
@@ -63,7 +62,9 @@ public class FireBlock extends Block {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		return this.canPlaceAt(blockState, iWorld, blockPos)
 			? this.method_10198(iWorld, blockPos).with(field_11092, blockState.get(field_11092))
 			: Blocks.field_10124.getDefaultState();
@@ -84,7 +85,7 @@ public class FireBlock extends Block {
 			for (Direction direction : Direction.values()) {
 				BooleanProperty booleanProperty = (BooleanProperty)field_11090.get(direction);
 				if (booleanProperty != null) {
-					blockState2 = blockState2.with(booleanProperty, Boolean.valueOf(this.method_10195(blockView.getBlockState(blockPos.method_10093(direction)))));
+					blockState2 = blockState2.with(booleanProperty, Boolean.valueOf(this.method_10195(blockView.getBlockState(blockPos.offset(direction)))));
 				}
 			}
 
@@ -182,11 +183,11 @@ public class FireBlock extends Block {
 	}
 
 	protected boolean method_10192(World world, BlockPos blockPos) {
-		return world.method_8520(blockPos)
-			|| world.method_8520(blockPos.west())
-			|| world.method_8520(blockPos.east())
-			|| world.method_8520(blockPos.north())
-			|| world.method_8520(blockPos.south());
+		return world.hasRain(blockPos)
+			|| world.hasRain(blockPos.west())
+			|| world.hasRain(blockPos.east())
+			|| world.hasRain(blockPos.north())
+			|| world.hasRain(blockPos.south());
 	}
 
 	private int method_10190(Block block) {
@@ -201,7 +202,7 @@ public class FireBlock extends Block {
 		int k = this.method_10190(world.getBlockState(blockPos).getBlock());
 		if (random.nextInt(i) < k) {
 			BlockState blockState = world.getBlockState(blockPos);
-			if (random.nextInt(j + 10) < 5 && !world.method_8520(blockPos)) {
+			if (random.nextInt(j + 10) < 5 && !world.hasRain(blockPos)) {
 				int l = Math.min(j + random.nextInt(5) / 4, 15);
 				world.setBlockState(blockPos, this.method_10198(world, blockPos).with(field_11092, Integer.valueOf(l)), 3);
 			} else {
@@ -210,14 +211,14 @@ public class FireBlock extends Block {
 
 			Block block = blockState.getBlock();
 			if (block instanceof TntBlock) {
-				((TntBlock)block).method_10738(world, blockPos);
+				((TntBlock)block).primeTnt(world, blockPos);
 			}
 		}
 	}
 
 	private boolean method_10193(BlockView blockView, BlockPos blockPos) {
 		for (Direction direction : Direction.values()) {
-			if (this.method_10195(blockView.getBlockState(blockPos.method_10093(direction)))) {
+			if (this.method_10195(blockView.getBlockState(blockPos.offset(direction)))) {
 				return true;
 			}
 		}
@@ -232,7 +233,7 @@ public class FireBlock extends Block {
 			int i = 0;
 
 			for (Direction direction : Direction.values()) {
-				i = Math.max(this.method_10191(viewableWorld.getBlockState(blockPos.method_10093(direction)).getBlock()), i);
+				i = Math.max(this.method_10191(viewableWorld.getBlockState(blockPos.offset(direction)).getBlock()), i);
 			}
 
 			return i;

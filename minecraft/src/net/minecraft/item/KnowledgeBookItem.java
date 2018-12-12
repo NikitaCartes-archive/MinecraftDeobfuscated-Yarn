@@ -31,7 +31,7 @@ public class KnowledgeBookItem extends Item {
 		}
 
 		if (compoundTag != null && compoundTag.containsKey("Recipes", 9)) {
-			if (!world.isRemote) {
+			if (!world.isClient) {
 				ListTag listTag = compoundTag.getList("Recipes", 8);
 				List<Recipe> list = Lists.<Recipe>newArrayList();
 
@@ -46,7 +46,7 @@ public class KnowledgeBookItem extends Item {
 					list.add(recipe);
 				}
 
-				playerEntity.method_7254(list);
+				playerEntity.unlockRecipes(list);
 				playerEntity.incrementStat(Stats.field_15372.method_14956(this));
 			}
 

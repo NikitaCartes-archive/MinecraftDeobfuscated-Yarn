@@ -13,7 +13,6 @@ import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.PersistedState;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.Packet;
 import net.minecraft.sortme.MapBannerInstance;
@@ -23,14 +22,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.PersistentState;
 import net.minecraft.world.dimension.DimensionType;
 
-public class MapState extends PersistedState {
-	public int field_116;
-	public int field_115;
-	public DimensionType field_118;
+public class MapState extends PersistentState {
+	public int xCenter;
+	public int zCenter;
+	public DimensionType dimension;
 	public boolean showIcons;
-	public boolean field_113;
+	public boolean unlimitedTracking;
 	public byte scale;
 	public byte[] colorArray = new byte[16384];
 	public List<MapState.class_23> field_112 = Lists.<MapState.class_23>newArrayList();
@@ -46,9 +46,9 @@ public class MapState extends PersistedState {
 	public void method_105(int i, int j, int k, boolean bl, boolean bl2, DimensionType dimensionType) {
 		this.scale = (byte)k;
 		this.method_106((double)i, (double)j, this.scale);
-		this.field_118 = dimensionType;
+		this.dimension = dimensionType;
 		this.showIcons = bl;
-		this.field_113 = bl2;
+		this.unlimitedTracking = bl2;
 		this.markDirty();
 	}
 
@@ -56,18 +56,18 @@ public class MapState extends PersistedState {
 		int j = 128 * (1 << i);
 		int k = MathHelper.floor((d + 64.0) / (double)j);
 		int l = MathHelper.floor((e + 64.0) / (double)j);
-		this.field_116 = k * j + j / 2 - 64;
-		this.field_115 = l * j + j / 2 - 64;
+		this.xCenter = k * j + j / 2 - 64;
+		this.zCenter = l * j + j / 2 - 64;
 	}
 
 	@Override
-	public void deserialize(CompoundTag compoundTag) {
-		this.field_118 = DimensionType.byRawId(compoundTag.getInt("dimension"));
-		this.field_116 = compoundTag.getInt("xCenter");
-		this.field_115 = compoundTag.getInt("zCenter");
+	public void fromTag(CompoundTag compoundTag) {
+		this.dimension = DimensionType.byRawId(compoundTag.getInt("dimension"));
+		this.xCenter = compoundTag.getInt("xCenter");
+		this.zCenter = compoundTag.getInt("zCenter");
 		this.scale = (byte)MathHelper.clamp(compoundTag.getByte("scale"), 0, 4);
 		this.showIcons = !compoundTag.containsKey("trackingPosition", 1) || compoundTag.getBoolean("trackingPosition");
-		this.field_113 = compoundTag.getBoolean("unlimitedTracking");
+		this.unlimitedTracking = compoundTag.getBoolean("unlimitedTracking");
 		this.colorArray = compoundTag.getByteArray("colors");
 		if (this.colorArray.length != 16384) {
 			this.colorArray = new byte[16384];
@@ -107,14 +107,14 @@ public class MapState extends PersistedState {
 	}
 
 	@Override
-	public CompoundTag serialize(CompoundTag compoundTag) {
-		compoundTag.putInt("dimension", this.field_118.getRawId());
-		compoundTag.putInt("xCenter", this.field_116);
-		compoundTag.putInt("zCenter", this.field_115);
+	public CompoundTag toTag(CompoundTag compoundTag) {
+		compoundTag.putInt("dimension", this.dimension.getRawId());
+		compoundTag.putInt("xCenter", this.xCenter);
+		compoundTag.putInt("zCenter", this.zCenter);
 		compoundTag.putByte("scale", this.scale);
 		compoundTag.putByteArray("colors", this.colorArray);
 		compoundTag.putBoolean("trackingPosition", this.showIcons);
-		compoundTag.putBoolean("unlimitedTracking", this.field_113);
+		compoundTag.putBoolean("unlimitedTracking", this.unlimitedTracking);
 		ListTag listTag = new ListTag();
 
 		for (MapBannerInstance mapBannerInstance : this.field_123.values()) {
@@ -147,7 +147,7 @@ public class MapState extends PersistedState {
 			MapState.class_23 lv2 = (MapState.class_23)this.field_112.get(i);
 			String string = lv2.field_125.getName().getString();
 			if (!lv2.field_125.invalid && (lv2.field_125.inventory.method_7379(itemStack) || itemStack.isHeldInItemFrame())) {
-				if (!itemStack.isHeldInItemFrame() && lv2.field_125.dimension == this.field_118 && this.showIcons) {
+				if (!itemStack.isHeldInItemFrame() && lv2.field_125.dimension == this.dimension && this.showIcons) {
 					this.method_107(MapIcon.Direction.field_91, lv2.field_125.world, string, lv2.field_125.x, lv2.field_125.z, (double)lv2.field_125.yaw, null);
 				}
 			} else {
@@ -165,14 +165,14 @@ public class MapState extends PersistedState {
 				this.icons.remove("frame-" + mapFrameInstance.getEntityId());
 			}
 
-			MapFrameInstance mapFrameInstance2 = new MapFrameInstance(blockPos, itemFrameEntity.field_7099.getHorizontal() * 90, itemFrameEntity.getEntityId());
+			MapFrameInstance mapFrameInstance2 = new MapFrameInstance(blockPos, itemFrameEntity.facing.getHorizontal() * 90, itemFrameEntity.getEntityId());
 			this.method_107(
 				MapIcon.Direction.field_95,
 				playerEntity.world,
 				"frame-" + itemFrameEntity.getEntityId(),
 				(double)blockPos.getX(),
 				(double)blockPos.getZ(),
-				(double)(itemFrameEntity.field_7099.getHorizontal() * 90),
+				(double)(itemFrameEntity.facing.getHorizontal() * 90),
 				null
 			);
 			this.field_121.put(mapFrameInstance2.method_82(), mapFrameInstance2);
@@ -225,8 +225,8 @@ public class MapState extends PersistedState {
 		MapIcon.Direction direction, @Nullable IWorld iWorld, String string, double d, double e, double f, @Nullable TextComponent textComponent
 	) {
 		int i = 1 << this.scale;
-		float g = (float)(d - (double)this.field_116) / (float)i;
-		float h = (float)(e - (double)this.field_115) / (float)i;
+		float g = (float)(d - (double)this.xCenter) / (float)i;
+		float h = (float)(e - (double)this.zCenter) / (float)i;
 		byte b = (byte)((int)((double)(g * 2.0F) + 0.5));
 		byte c = (byte)((int)((double)(h * 2.0F) + 0.5));
 		int j = 63;
@@ -234,7 +234,7 @@ public class MapState extends PersistedState {
 		if (g >= -63.0F && h >= -63.0F && g <= 63.0F && h <= 63.0F) {
 			f += f < 0.0 ? -8.0 : 8.0;
 			k = (byte)((int)(f * 16.0 / 360.0));
-			if (this.field_118 == DimensionType.field_13076 && iWorld != null) {
+			if (this.dimension == DimensionType.field_13076 && iWorld != null) {
 				int l = (int)(iWorld.getLevelProperties().getTimeOfDay() / 10L);
 				k = (byte)(l * l * 34187121 + l * 121 >> 15 & 15);
 			}
@@ -248,7 +248,7 @@ public class MapState extends PersistedState {
 			if (Math.abs(g) < 320.0F && Math.abs(h) < 320.0F) {
 				direction = MapIcon.Direction.field_86;
 			} else {
-				if (!this.field_113) {
+				if (!this.unlimitedTracking) {
 					this.icons.remove(string);
 					return;
 				}
@@ -306,8 +306,8 @@ public class MapState extends PersistedState {
 		float f = (float)blockPos.getX() + 0.5F;
 		float g = (float)blockPos.getZ() + 0.5F;
 		int i = 1 << this.scale;
-		float h = (f - (float)this.field_116) / (float)i;
-		float j = (g - (float)this.field_115) / (float)i;
+		float h = (f - (float)this.xCenter) / (float)i;
+		float j = (g - (float)this.zCenter) / (float)i;
 		int k = 63;
 		boolean bl = false;
 		if (h >= -63.0F && j >= -63.0F && h <= 63.0F && j <= 63.0F) {

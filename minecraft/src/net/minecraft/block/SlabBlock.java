@@ -68,7 +68,7 @@ public class SlabBlock extends Block implements Waterloggable {
 			BlockState blockState2 = this.getDefaultState()
 				.with(field_11501, SlabType.field_12681)
 				.with(field_11502, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
-			Direction direction = itemPlacementContext.method_8038();
+			Direction direction = itemPlacementContext.getFacing();
 			return direction != Direction.DOWN && (direction == Direction.UP || !((double)itemPlacementContext.getHitY() > 0.5))
 				? blockState2
 				: blockState2.with(field_11501, SlabType.field_12679);
@@ -83,7 +83,7 @@ public class SlabBlock extends Block implements Waterloggable {
 			return false;
 		} else if (itemPlacementContext.method_7717()) {
 			boolean bl = (double)itemPlacementContext.getHitY() > 0.5;
-			Direction direction = itemPlacementContext.method_8038();
+			Direction direction = itemPlacementContext.getFacing();
 			return slabType == SlabType.field_12681
 				? direction == Direction.UP || bl && direction.getAxis().isHorizontal()
 				: direction == Direction.DOWN || !bl && direction.getAxis().isHorizontal();
@@ -98,17 +98,19 @@ public class SlabBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public boolean method_10311(IWorld iWorld, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
-		return blockState.get(field_11501) != SlabType.field_12682 ? Waterloggable.super.method_10311(iWorld, blockPos, blockState, fluidState) : false;
+	public boolean tryFillWithFluid(IWorld iWorld, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
+		return blockState.get(field_11501) != SlabType.field_12682 ? Waterloggable.super.tryFillWithFluid(iWorld, blockPos, blockState, fluidState) : false;
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if ((Boolean)blockState.get(field_11502)) {
 			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
 		}
 
-		return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override

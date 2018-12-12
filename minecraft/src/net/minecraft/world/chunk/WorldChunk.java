@@ -21,10 +21,6 @@ import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2839;
-import net.minecraft.class_2843;
-import net.minecraft.class_3449;
-import net.minecraft.class_3509;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -38,10 +34,12 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerChunkManagerEntry;
+import net.minecraft.sortme.structures.StructureStart;
 import net.minecraft.util.PacketByteBuf;
+import net.minecraft.util.TypeFilterableList;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportElement;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
@@ -67,27 +65,27 @@ public class WorldChunk implements Chunk {
 	private final Map<BlockPos, CompoundTag> pendingBlockEntityTags = Maps.<BlockPos, CompoundTag>newHashMap();
 	private boolean loadedToWorld;
 	private final World world;
-	private final Map<Heightmap.Type, Heightmap> field_12853 = Maps.newEnumMap(Heightmap.Type.class);
-	private final class_2843 field_12849;
+	private final Map<Heightmap.Type, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Type.class);
+	private final UpgradeData upgradeData;
 	private final Map<BlockPos, BlockEntity> blockEntityMap = Maps.<BlockPos, BlockEntity>newHashMap();
-	private final class_3509<Entity>[] entitySections;
-	private final Map<String, class_3449> field_12838 = Maps.<String, class_3449>newHashMap();
-	private final Map<String, LongSet> field_12845 = Maps.<String, LongSet>newHashMap();
-	private final ShortList[] field_12836 = new ShortList[16];
-	private final TickScheduler<Block> field_12841;
-	private final TickScheduler<Fluid> field_12857;
+	private final TypeFilterableList<Entity>[] entitySections;
+	private final Map<String, StructureStart> structureStarts = Maps.<String, StructureStart>newHashMap();
+	private final Map<String, LongSet> structureReferences = Maps.<String, LongSet>newHashMap();
+	private final ShortList[] postProcessingLists = new ShortList[16];
+	private final TickScheduler<Block> blockTickScheduler;
+	private final TickScheduler<Fluid> fluidTickScheduler;
 	private boolean field_12837;
-	private long field_12844;
+	private long lastSaveTime;
 	private boolean dirty;
-	private long field_12843;
+	private long inhabitedTime;
 	private Supplier<ServerChunkManagerEntry.class_3194> field_12856;
 	private Consumer<WorldChunk> field_12850;
 	private final ChunkPos pos;
-	private boolean field_12847;
+	private boolean isLightOn;
 
 	@Environment(EnvType.CLIENT)
 	public WorldChunk(World world, int i, int j, Biome[] biomes) {
-		this(world, i, j, biomes, class_2843.field_12950, DummyClientTickScheduler.get(), DummyClientTickScheduler.get(), 0L, null);
+		this(world, i, j, biomes, UpgradeData.NO_UPGRADE_DATA, DummyClientTickScheduler.get(), DummyClientTickScheduler.get(), 0L, null);
 	}
 
 	public WorldChunk(
@@ -95,13 +93,13 @@ public class WorldChunk implements Chunk {
 		int i,
 		int j,
 		Biome[] biomes,
-		class_2843 arg,
+		UpgradeData upgradeData,
 		TickScheduler<Block> tickScheduler,
 		TickScheduler<Fluid> tickScheduler2,
 		long l,
 		@Nullable Consumer<WorldChunk> consumer
 	) {
-		this(world, i, j, biomes, arg, tickScheduler, tickScheduler2, l, null, consumer);
+		this(world, i, j, biomes, upgradeData, tickScheduler, tickScheduler2, l, null, consumer);
 	}
 
 	public WorldChunk(
@@ -109,32 +107,32 @@ public class WorldChunk implements Chunk {
 		int i,
 		int j,
 		Biome[] biomes,
-		class_2843 arg,
+		UpgradeData upgradeData,
 		TickScheduler<Block> tickScheduler,
 		TickScheduler<Fluid> tickScheduler2,
 		long l,
 		@Nullable ChunkSection[] chunkSections,
 		@Nullable Consumer<WorldChunk> consumer
 	) {
-		this.entitySections = new class_3509[16];
+		this.entitySections = new TypeFilterableList[16];
 		this.world = world;
 		this.pos = new ChunkPos(i, j);
-		this.field_12849 = arg;
+		this.upgradeData = upgradeData;
 
 		for (Heightmap.Type type : Heightmap.Type.values()) {
 			if (type.method_16136()) {
-				this.field_12853.put(type, new Heightmap(this, type));
+				this.heightmaps.put(type, new Heightmap(this, type));
 			}
 		}
 
 		for (int k = 0; k < this.entitySections.length; k++) {
-			this.entitySections[k] = new class_3509<>(Entity.class);
+			this.entitySections[k] = new TypeFilterableList<>(Entity.class);
 		}
 
 		this.biomeArray = biomes;
-		this.field_12841 = tickScheduler;
-		this.field_12857 = tickScheduler2;
-		this.field_12843 = l;
+		this.blockTickScheduler = tickScheduler;
+		this.fluidTickScheduler = tickScheduler2;
+		this.inhabitedTime = l;
 		this.field_12850 = consumer;
 		if (chunkSections != null) {
 			if (this.sections.length == chunkSections.length) {
@@ -145,33 +143,43 @@ public class WorldChunk implements Chunk {
 		}
 	}
 
-	public WorldChunk(World world, class_2839 arg, int i, int j) {
-		this(world, i, j, arg.getBiomeArray(), arg.method_12003(), arg.method_12303(), arg.method_12313(), arg.method_12033(), null);
+	public WorldChunk(World world, ProtoChunk protoChunk, int i, int j) {
+		this(
+			world,
+			i,
+			j,
+			protoChunk.getBiomeArray(),
+			protoChunk.getUpgradeData(),
+			protoChunk.getBlockTickScheduler(),
+			protoChunk.getFluidTickScheduler(),
+			protoChunk.getInhabitedTime(),
+			null
+		);
 
 		for (int k = 0; k < this.sections.length; k++) {
-			this.sections[k] = arg.getSectionArray()[k];
+			this.sections[k] = protoChunk.getSectionArray()[k];
 		}
 
-		for (CompoundTag compoundTag : arg.method_12295()) {
-			ChunkSaveHandlerImpl.method_12383(compoundTag, world, this);
+		for (CompoundTag compoundTag : protoChunk.getEntities()) {
+			ChunkSaveHandlerImpl.readEntityAndAddToChunk(compoundTag, world, this);
 		}
 
-		for (BlockEntity blockEntity : arg.method_12309().values()) {
+		for (BlockEntity blockEntity : protoChunk.getBlockEntities().values()) {
 			this.addBlockEntity(blockEntity);
 		}
 
-		this.pendingBlockEntityTags.putAll(arg.method_12316());
+		this.pendingBlockEntityTags.putAll(protoChunk.getBlockEntityTags());
 
-		for (int k = 0; k < arg.method_12012().length; k++) {
-			this.field_12836[k] = arg.method_12012()[k];
+		for (int k = 0; k < protoChunk.getPostProcessingLists().length; k++) {
+			this.postProcessingLists[k] = protoChunk.getPostProcessingLists()[k];
 		}
 
-		this.method_12034(arg.method_12016());
-		this.method_12183(arg.method_12179());
+		this.setStructureStarts(protoChunk.getStructureStarts());
+		this.setStructureReferences(protoChunk.getStructureReferences());
 
-		for (Entry<Heightmap.Type, Heightmap> entry : arg.method_12011()) {
+		for (Entry<Heightmap.Type, Heightmap> entry : protoChunk.getHeightmaps()) {
 			if (((Heightmap.Type)entry.getKey()).method_16136()) {
-				this.getHeightmap((Heightmap.Type)entry.getKey()).fromLongArray(((Heightmap)entry.getValue()).asLongArray());
+				this.getHeightmap((Heightmap.Type)entry.getKey()).setTo(((Heightmap)entry.getValue()).asLongArray());
 			}
 		}
 
@@ -180,11 +188,11 @@ public class WorldChunk implements Chunk {
 
 	@Override
 	public Heightmap getHeightmap(Heightmap.Type type) {
-		return (Heightmap)this.field_12853.computeIfAbsent(type, typex -> new Heightmap(this, typex));
+		return (Heightmap)this.heightmaps.computeIfAbsent(type, typex -> new Heightmap(this, typex));
 	}
 
 	@Override
-	public Set<BlockPos> method_12021() {
+	public Set<BlockPos> getBlockEntityPositions() {
 		Set<BlockPos> set = Sets.<BlockPos>newHashSet(this.pendingBlockEntityTags.keySet());
 		set.addAll(this.blockEntityMap.keySet());
 		return set;
@@ -223,8 +231,8 @@ public class WorldChunk implements Chunk {
 				return Blocks.field_10124.getDefaultState();
 			} catch (Throwable var8) {
 				CrashReport crashReport = CrashReport.create(var8, "Getting block state");
-				CrashReportElement crashReportElement = crashReport.addElement("Block being got");
-				crashReportElement.add("Location", (ICrashCallable<String>)(() -> CrashReportElement.createPositionString(i, j, k)));
+				CrashReportSection crashReportSection = crashReport.method_562("Block being got");
+				crashReportSection.add("Location", (ICrashCallable<String>)(() -> CrashReportSection.createPositionString(i, j, k)));
 				throw new CrashException(crashReport);
 			}
 		}
@@ -244,11 +252,11 @@ public class WorldChunk implements Chunk {
 				}
 			}
 
-			return Fluids.field_15906.getDefaultState();
+			return Fluids.EMPTY.getDefaultState();
 		} catch (Throwable var7) {
 			CrashReport crashReport = CrashReport.create(var7, "Getting fluid state");
-			CrashReportElement crashReportElement = crashReport.addElement("Block being got");
-			crashReportElement.add("Location", (ICrashCallable<String>)(() -> CrashReportElement.createPositionString(i, j, k)));
+			CrashReportSection crashReportSection = crashReport.method_562("Block being got");
+			crashReportSection.add("Location", (ICrashCallable<String>)(() -> CrashReportSection.createPositionString(i, j, k)));
 			throw new CrashException(crashReport);
 		}
 	}
@@ -270,22 +278,22 @@ public class WorldChunk implements Chunk {
 		}
 
 		boolean bl2 = chunkSection.isEmpty();
-		BlockState blockState2 = chunkSection.method_16675(i, j & 15, k, blockState);
+		BlockState blockState2 = chunkSection.setBlockState(i, j & 15, k, blockState);
 		if (blockState2 == blockState) {
 			return null;
 		} else {
 			Block block = blockState.getBlock();
 			Block block2 = blockState2.getBlock();
-			((Heightmap)this.field_12853.get(Heightmap.Type.MOTION_BLOCKING)).method_12597(i, j, k, blockState);
-			((Heightmap)this.field_12853.get(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES)).method_12597(i, j, k, blockState);
-			((Heightmap)this.field_12853.get(Heightmap.Type.OCEAN_FLOOR)).method_12597(i, j, k, blockState);
-			((Heightmap)this.field_12853.get(Heightmap.Type.WORLD_SURFACE)).method_12597(i, j, k, blockState);
+			((Heightmap)this.heightmaps.get(Heightmap.Type.MOTION_BLOCKING)).trackUpdate(i, j, k, blockState);
+			((Heightmap)this.heightmaps.get(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES)).trackUpdate(i, j, k, blockState);
+			((Heightmap)this.heightmaps.get(Heightmap.Type.OCEAN_FLOOR)).trackUpdate(i, j, k, blockState);
+			((Heightmap)this.heightmaps.get(Heightmap.Type.WORLD_SURFACE)).trackUpdate(i, j, k, blockState);
 			boolean bl3 = chunkSection.isEmpty();
 			if (bl2 != bl3) {
-				this.world.getChunkManager().getLightingProvider().method_15552(blockPos, bl3);
+				this.world.getChunkManager().getLightingProvider().scheduleChunkLightUpdate(blockPos, bl3);
 			}
 
-			if (!this.world.isRemote) {
+			if (!this.world.isClient) {
 				blockState2.onBlockRemoved(this.world, blockPos, blockState, bl);
 			} else if (block2 != block && block2 instanceof BlockEntityProvider) {
 				this.world.removeBlockEntity(blockPos);
@@ -301,7 +309,7 @@ public class WorldChunk implements Chunk {
 					}
 				}
 
-				if (!this.world.isRemote) {
+				if (!this.world.isClient) {
 					blockState.onBlockAdded(this.world, blockPos, blockState2);
 				}
 
@@ -323,7 +331,7 @@ public class WorldChunk implements Chunk {
 
 	@Nullable
 	@Override
-	public LightingProvider method_12023() {
+	public LightingProvider getLightingProvider() {
 		return this.world.getChunkManager().getLightingProvider();
 	}
 
@@ -332,8 +340,8 @@ public class WorldChunk implements Chunk {
 		return this.getBlockState(blockPos).getLuminance();
 	}
 
-	public int method_12233(BlockPos blockPos, int i) {
-		return this.method_12035(blockPos, i, this.world.getDimension().method_12451());
+	public int getLightLevel(BlockPos blockPos, int i) {
+		return this.method_12035(blockPos, i, this.world.getDimension().hasSkyLight());
 	}
 
 	@Override
@@ -363,8 +371,8 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Override
-	public void method_12037(Heightmap.Type type, long[] ls) {
-		((Heightmap)this.field_12853.get(type)).fromLongArray(ls);
+	public void setHeightmap(Heightmap.Type type, long[] ls) {
+		((Heightmap)this.heightmaps.get(type)).setTo(ls);
 	}
 
 	public void remove(Entity entity) {
@@ -385,7 +393,7 @@ public class WorldChunk implements Chunk {
 
 	@Override
 	public int sampleHeightmap(Heightmap.Type type, int i, int j) {
-		return ((Heightmap)this.field_12853.get(type)).method_12603(i & 15, j & 15) - 1;
+		return ((Heightmap)this.heightmaps.get(type)).get(i & 15, j & 15) - 1;
 	}
 
 	@Nullable
@@ -472,8 +480,8 @@ public class WorldChunk implements Chunk {
 		this.loadedToWorld = true;
 		this.world.addBlockEntities(this.blockEntityMap.values());
 
-		for (class_3509<Entity> lv : this.entitySections) {
-			this.world.loadEntities(lv.stream().filter(entity -> !(entity instanceof PlayerEntity)));
+		for (TypeFilterableList<Entity> typeFilterableList : this.entitySections) {
+			this.world.loadEntities(typeFilterableList.stream().filter(entity -> !(entity instanceof PlayerEntity)));
 		}
 	}
 
@@ -484,8 +492,8 @@ public class WorldChunk implements Chunk {
 			this.world.unloadBlockEntity(blockEntity);
 		}
 
-		for (class_3509<Entity> lv : this.entitySections) {
-			this.world.unloadEntities(lv);
+		for (TypeFilterableList<Entity> typeFilterableList : this.entitySections) {
+			this.world.unloadEntities(typeFilterableList);
 		}
 	}
 
@@ -528,7 +536,7 @@ public class WorldChunk implements Chunk {
 		j = MathHelper.clamp(j, 0, this.entitySections.length - 1);
 
 		for (int k = i; k <= j; k++) {
-			for (T entity : this.entitySections[k].method_15216(class_)) {
+			for (T entity : this.entitySections[k].getAllOfType(class_)) {
 				if (entity.getBoundingBox().intersects(boundingBox) && (predicate == null || predicate.test(entity))) {
 					list.add(entity);
 				}
@@ -536,7 +544,7 @@ public class WorldChunk implements Chunk {
 		}
 	}
 
-	public boolean method_12223() {
+	public boolean isEmpty() {
 		return false;
 	}
 
@@ -605,7 +613,7 @@ public class WorldChunk implements Chunk {
 		for (Heightmap.Type type : Heightmap.Type.values()) {
 			String string = type.getName();
 			if (compoundTag.containsKey(string, 12)) {
-				this.method_12037(type, compoundTag.getLongArray(string));
+				this.setHeightmap(type, compoundTag.getLongArray(string));
 			}
 		}
 
@@ -633,20 +641,20 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Override
-	public Collection<Entry<Heightmap.Type, Heightmap>> method_12011() {
-		return Collections.unmodifiableSet(this.field_12853.entrySet());
+	public Collection<Entry<Heightmap.Type, Heightmap>> getHeightmaps() {
+		return Collections.unmodifiableSet(this.heightmaps.entrySet());
 	}
 
 	public Map<BlockPos, BlockEntity> getBlockEntityMap() {
 		return this.blockEntityMap;
 	}
 
-	public class_3509<Entity>[] getEntitySectionArray() {
+	public TypeFilterableList<Entity>[] getEntitySectionArray() {
 		return this.entitySections;
 	}
 
 	@Override
-	public CompoundTag method_12024(BlockPos blockPos) {
+	public CompoundTag getBlockEntityTagAt(BlockPos blockPos) {
 		return (CompoundTag)this.pendingBlockEntityTags.get(blockPos);
 	}
 
@@ -659,23 +667,23 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Override
-	public TickScheduler<Block> method_12013() {
-		return this.field_12841;
+	public TickScheduler<Block> getBlockTickScheduler() {
+		return this.blockTickScheduler;
 	}
 
 	@Override
-	public TickScheduler<Fluid> method_12014() {
-		return this.field_12857;
+	public TickScheduler<Fluid> getFluidTickScheduler() {
+		return this.fluidTickScheduler;
 	}
 
 	@Override
-	public void method_12008(boolean bl) {
+	public void setShouldSave(boolean bl) {
 		this.dirty = bl;
 	}
 
 	@Override
-	public boolean method_12044() {
-		return this.dirty || this.field_12837 && this.world.getTime() != this.field_12844;
+	public boolean needsSaving() {
+		return this.dirty || this.field_12837 && this.world.getTime() != this.lastSaveTime;
 	}
 
 	public void method_12232(boolean bl) {
@@ -683,85 +691,85 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Override
-	public void method_12043(long l) {
-		this.field_12844 = l;
+	public void setLastSaveTime(long l) {
+		this.lastSaveTime = l;
 	}
 
 	@Nullable
 	@Override
-	public class_3449 method_12181(String string) {
-		return (class_3449)this.field_12838.get(string);
+	public StructureStart getStructureStart(String string) {
+		return (StructureStart)this.structureStarts.get(string);
 	}
 
 	@Override
-	public void method_12184(String string, class_3449 arg) {
-		this.field_12838.put(string, arg);
+	public void setStructureStart(String string, StructureStart structureStart) {
+		this.structureStarts.put(string, structureStart);
 	}
 
 	@Override
-	public Map<String, class_3449> method_12016() {
-		return this.field_12838;
+	public Map<String, StructureStart> getStructureStarts() {
+		return this.structureStarts;
 	}
 
 	@Override
-	public void method_12034(Map<String, class_3449> map) {
-		this.field_12838.clear();
-		this.field_12838.putAll(map);
+	public void setStructureStarts(Map<String, StructureStart> map) {
+		this.structureStarts.clear();
+		this.structureStarts.putAll(map);
 	}
 
 	@Override
-	public LongSet method_12180(String string) {
-		return (LongSet)this.field_12845.computeIfAbsent(string, stringx -> new LongOpenHashSet());
+	public LongSet getStructureReferences(String string) {
+		return (LongSet)this.structureReferences.computeIfAbsent(string, stringx -> new LongOpenHashSet());
 	}
 
 	@Override
-	public void method_12182(String string, long l) {
-		((LongSet)this.field_12845.computeIfAbsent(string, stringx -> new LongOpenHashSet())).add(l);
+	public void addStructureReference(String string, long l) {
+		((LongSet)this.structureReferences.computeIfAbsent(string, stringx -> new LongOpenHashSet())).add(l);
 	}
 
 	@Override
-	public Map<String, LongSet> method_12179() {
-		return this.field_12845;
+	public Map<String, LongSet> getStructureReferences() {
+		return this.structureReferences;
 	}
 
 	@Override
-	public void method_12183(Map<String, LongSet> map) {
-		this.field_12845.clear();
-		this.field_12845.putAll(map);
+	public void setStructureReferences(Map<String, LongSet> map) {
+		this.structureReferences.clear();
+		this.structureReferences.putAll(map);
 	}
 
 	@Override
-	public long method_12033() {
-		return this.field_12843;
+	public long getInhabitedTime() {
+		return this.inhabitedTime;
 	}
 
 	@Override
-	public void method_12028(long l) {
-		this.field_12843 = l;
+	public void setInhabitedTime(long l) {
+		this.inhabitedTime = l;
 	}
 
-	public void method_12221() {
+	public void runPostProcessing() {
 		ChunkPos chunkPos = this.getPos();
 
-		for (int i = 0; i < this.field_12836.length; i++) {
-			if (this.field_12836[i] != null) {
-				for (Short short_ : this.field_12836[i]) {
-					BlockPos blockPos = class_2839.joinBlockPos(short_, i, chunkPos);
+		for (int i = 0; i < this.postProcessingLists.length; i++) {
+			if (this.postProcessingLists[i] != null) {
+				for (Short short_ : this.postProcessingLists[i]) {
+					BlockPos blockPos = ProtoChunk.joinBlockPos(short_, i, chunkPos);
 					BlockState blockState = this.getBlockState(blockPos);
 					BlockState blockState2 = Block.getRenderingState(blockState, this.world, blockPos);
 					this.world.setBlockState(blockPos, blockState2, 20);
 				}
 
-				this.field_12836[i].clear();
+				this.postProcessingLists[i].clear();
 			}
 		}
 
-		if (this.field_12841 instanceof ChunkTickScheduler) {
-			((ChunkTickScheduler)this.field_12841).tick(this.world.getBlockTickScheduler(), blockPosx -> this.getBlockState(blockPosx).getBlock());
+		if (this.blockTickScheduler instanceof ChunkTickScheduler) {
+			((ChunkTickScheduler)this.blockTickScheduler).tick(this.world.getBlockTickScheduler(), blockPosx -> this.getBlockState(blockPosx).getBlock());
 		}
 
-		if (this.field_12857 instanceof ChunkTickScheduler) {
-			((ChunkTickScheduler)this.field_12857).tick(this.world.getFluidTickScheduler(), blockPosx -> this.getFluidState(blockPosx).getFluid());
+		if (this.fluidTickScheduler instanceof ChunkTickScheduler) {
+			((ChunkTickScheduler)this.fluidTickScheduler).tick(this.world.getFluidTickScheduler(), blockPosx -> this.getFluidState(blockPosx).getFluid());
 		}
 
 		for (BlockPos blockPos2 : new HashSet(this.pendingBlockEntityTags.keySet())) {
@@ -769,7 +777,7 @@ public class WorldChunk implements Chunk {
 		}
 
 		this.pendingBlockEntityTags.clear();
-		this.field_12849.method_12356(this);
+		this.upgradeData.method_12356(this);
 	}
 
 	@Nullable
@@ -798,18 +806,18 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Override
-	public class_2843 method_12003() {
-		return this.field_12849;
+	public UpgradeData getUpgradeData() {
+		return this.upgradeData;
 	}
 
 	@Override
-	public ShortList[] method_12012() {
-		return this.field_12836;
+	public ShortList[] getPostProcessingLists() {
+		return this.postProcessingLists;
 	}
 
 	@Override
 	public ChunkStatus getStatus() {
-		return ChunkStatus.field_12803;
+		return ChunkStatus.FULL;
 	}
 
 	public ServerChunkManagerEntry.class_3194 method_12225() {
@@ -821,17 +829,17 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Override
-	public void method_12027(ChunkManager chunkManager) {
+	public void setLightingProvider(LightingProvider lightingProvider) {
 	}
 
 	@Override
-	public boolean method_12038() {
-		return this.field_12847;
+	public boolean isLightOn() {
+		return this.isLightOn;
 	}
 
 	@Override
-	public void method_12020(boolean bl) {
-		this.field_12847 = bl;
+	public void setLightOn(boolean bl) {
+		this.isLightOn = bl;
 	}
 
 	public static enum AccessType {

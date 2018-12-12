@@ -80,7 +80,7 @@ public class FollowOwnerGoal extends Goal {
 		if (!this.caller.isSitting()) {
 			if (--this.field_6443 <= 0) {
 				this.field_6443 = 10;
-				if (!this.field_6446.method_6335(this.owner, this.field_6442)) {
+				if (!this.field_6446.startMovingTo(this.owner, this.field_6442)) {
 					if (!this.caller.isLeashed() && !this.caller.hasVehicle()) {
 						if (!(this.caller.squaredDistanceTo(this.owner) < 144.0)) {
 							int i = MathHelper.floor(this.owner.x) - 2;
@@ -106,7 +106,7 @@ public class FollowOwnerGoal extends Goal {
 	protected boolean method_6263(int i, int j, int k, int l, int m) {
 		BlockPos blockPos = new BlockPos(i + l, k - 1, j + m);
 		BlockState blockState = this.world.getBlockState(blockPos);
-		return Block.method_9501(blockState.method_11628(this.world, blockPos), Direction.DOWN)
+		return Block.isFaceFullCube(blockState.getCollisionShape(this.world, blockPos), Direction.DOWN)
 			&& blockState.allowsSpawning(this.caller)
 			&& this.world.isAir(blockPos.up())
 			&& this.world.isAir(blockPos.up(2));

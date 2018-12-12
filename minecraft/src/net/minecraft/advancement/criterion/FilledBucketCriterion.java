@@ -9,7 +9,7 @@ import com.google.gson.JsonObject;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.advancement.ServerAdvancementManager;
+import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -17,7 +17,7 @@ import net.minecraft.util.Identifier;
 
 public class FilledBucketCriterion implements Criterion<FilledBucketCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("filled_bucket");
-	private final Map<ServerAdvancementManager, FilledBucketCriterion.class_2055> field_9613 = Maps.<ServerAdvancementManager, FilledBucketCriterion.class_2055>newHashMap();
+	private final Map<PlayerAdvancementTracker, FilledBucketCriterion.class_2055> field_9613 = Maps.<PlayerAdvancementTracker, FilledBucketCriterion.class_2055>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -25,34 +25,34 @@ public class FilledBucketCriterion implements Criterion<FilledBucketCriterion.Co
 	}
 
 	@Override
-	public void addCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<FilledBucketCriterion.Conditions> conditionsContainer
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<FilledBucketCriterion.Conditions> conditionsContainer
 	) {
-		FilledBucketCriterion.class_2055 lv = (FilledBucketCriterion.class_2055)this.field_9613.get(serverAdvancementManager);
+		FilledBucketCriterion.class_2055 lv = (FilledBucketCriterion.class_2055)this.field_9613.get(playerAdvancementTracker);
 		if (lv == null) {
-			lv = new FilledBucketCriterion.class_2055(serverAdvancementManager);
-			this.field_9613.put(serverAdvancementManager, lv);
+			lv = new FilledBucketCriterion.class_2055(playerAdvancementTracker);
+			this.field_9613.put(playerAdvancementTracker, lv);
 		}
 
 		lv.method_8933(conditionsContainer);
 	}
 
 	@Override
-	public void removeCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<FilledBucketCriterion.Conditions> conditionsContainer
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<FilledBucketCriterion.Conditions> conditionsContainer
 	) {
-		FilledBucketCriterion.class_2055 lv = (FilledBucketCriterion.class_2055)this.field_9613.get(serverAdvancementManager);
+		FilledBucketCriterion.class_2055 lv = (FilledBucketCriterion.class_2055)this.field_9613.get(playerAdvancementTracker);
 		if (lv != null) {
 			lv.method_8936(conditionsContainer);
 			if (lv.method_8934()) {
-				this.field_9613.remove(serverAdvancementManager);
+				this.field_9613.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void removePlayer(ServerAdvancementManager serverAdvancementManager) {
-		this.field_9613.remove(serverAdvancementManager);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.field_9613.remove(playerAdvancementTracker);
 	}
 
 	public FilledBucketCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -84,7 +84,7 @@ public class FilledBucketCriterion implements Criterion<FilledBucketCriterion.Co
 		}
 
 		@Override
-		public JsonElement method_807() {
+		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("item", this.item.serialize());
 			return jsonObject;
@@ -92,11 +92,11 @@ public class FilledBucketCriterion implements Criterion<FilledBucketCriterion.Co
 	}
 
 	static class class_2055 {
-		private final ServerAdvancementManager field_9615;
+		private final PlayerAdvancementTracker field_9615;
 		private final Set<Criterion.ConditionsContainer<FilledBucketCriterion.Conditions>> field_9614 = Sets.<Criterion.ConditionsContainer<FilledBucketCriterion.Conditions>>newHashSet();
 
-		public class_2055(ServerAdvancementManager serverAdvancementManager) {
-			this.field_9615 = serverAdvancementManager;
+		public class_2055(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.field_9615 = playerAdvancementTracker;
 		}
 
 		public boolean method_8934() {

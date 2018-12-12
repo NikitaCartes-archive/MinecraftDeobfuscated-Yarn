@@ -5,8 +5,8 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.util.Identifier;
@@ -19,7 +19,7 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
 
 	public void method_4034(LightningEntity lightningEntity, double d, double e, double f, float g, float h) {
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		GlStateManager.disableTexture();
 		GlStateManager.disableLighting();
 		GlStateManager.enableBlend();
@@ -65,7 +65,7 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
 						q += (double)(random2.nextInt(31) - 15);
 					}
 
-					vertexBuffer.begin(5, VertexFormats.POSITION_COLOR);
+					bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 					float u = 0.5F;
 					float v = 0.45F;
 					float w = 0.45F;
@@ -101,8 +101,8 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
 							ae += z * 2.0;
 						}
 
-						vertexBuffer.vertex(ad + p, e + (double)(r * 16), ae + q).color(0.45F, 0.45F, 0.5F, 0.3F).next();
-						vertexBuffer.vertex(ab + s, e + (double)((r + 1) * 16), ac + t).color(0.45F, 0.45F, 0.5F, 0.3F).next();
+						bufferBuilder.vertex(ad + p, e + (double)(r * 16), ae + q).color(0.45F, 0.45F, 0.5F, 0.3F).next();
+						bufferBuilder.vertex(ab + s, e + (double)((r + 1) * 16), ac + t).color(0.45F, 0.45F, 0.5F, 0.3F).next();
 					}
 
 					tessellator.draw();

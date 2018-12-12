@@ -11,9 +11,9 @@ import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2805;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.server.command.CommandSource;
+import net.minecraft.server.network.packet.RequestCommandCompletionsServerPacket;
 import net.minecraft.util.HitResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -78,7 +78,7 @@ public class ClientCommandSource implements CommandSource {
 
 		this.pendingCompletion = new CompletableFuture();
 		int i = ++this.completionId;
-		this.networkHandler.sendPacket(new class_2805(i, commandContext.getInput()));
+		this.networkHandler.sendPacket(new RequestCommandCompletionsServerPacket(i, commandContext.getInput()));
 		return this.pendingCompletion;
 	}
 

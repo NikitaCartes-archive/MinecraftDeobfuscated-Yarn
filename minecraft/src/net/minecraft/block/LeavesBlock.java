@@ -3,7 +3,6 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.state.StateFactory;
@@ -46,12 +45,14 @@ public class LeavesBlock extends Block {
 	}
 
 	@Override
-	public int method_9505(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public int getLightSubtracted(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return 1;
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		int i = method_10302(blockState2) + 1;
 		if (i != 1 || (Integer)blockState.get(field_11199) != i) {
 			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
@@ -65,7 +66,7 @@ public class LeavesBlock extends Block {
 
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 			for (Direction direction : Direction.values()) {
-				pooledMutable.set(blockPos).method_10118(direction);
+				pooledMutable.set(blockPos).setOffset(direction);
 				i = Math.min(i, method_10302(iWorld.getBlockState(pooledMutable)) + 1);
 				if (i == 1) {
 					break;
@@ -88,7 +89,7 @@ public class LeavesBlock extends Block {
 	@Override
 	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		BlockPos blockPos2 = blockPos.down();
-		if (world.method_8520(blockPos.up()) && !world.getBlockState(blockPos2).hasSolidTopSurface(world, blockPos2) && random.nextInt(15) == 1) {
+		if (world.hasRain(blockPos.up()) && !world.getBlockState(blockPos2).hasSolidTopSurface(world, blockPos2) && random.nextInt(15) == 1) {
 			double d = (double)((float)blockPos.getX() + random.nextFloat());
 			double e = (double)blockPos.getY() - 0.05;
 			double f = (double)((float)blockPos.getZ() + random.nextFloat());

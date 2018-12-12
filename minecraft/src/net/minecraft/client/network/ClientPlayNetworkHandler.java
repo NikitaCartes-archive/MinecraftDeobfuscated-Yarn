@@ -6,7 +6,6 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import io.netty.buffer.Unpooled;
 import java.io.File;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -23,27 +22,9 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2695;
-import net.minecraft.class_2707;
-import net.minecraft.class_2713;
-import net.minecraft.class_2757;
-import net.minecraft.class_2765;
-import net.minecraft.class_2770;
-import net.minecraft.class_2774;
-import net.minecraft.class_2779;
-import net.minecraft.class_2793;
-import net.minecraft.class_2799;
-import net.minecraft.class_2804;
-import net.minecraft.class_2809;
-import net.minecraft.class_2827;
-import net.minecraft.class_2828;
-import net.minecraft.class_2833;
-import net.minecraft.class_2856;
 import net.minecraft.class_300;
 import net.minecraft.class_330;
-import net.minecraft.class_366;
 import net.minecraft.class_452;
-import net.minecraft.class_516;
 import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BannerBlockEntity;
@@ -55,7 +36,6 @@ import net.minecraft.block.entity.ConduitBlockEntity;
 import net.minecraft.block.entity.EndGatewayBlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
-import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
@@ -67,12 +47,11 @@ import net.minecraft.client.audio.SoundInstance;
 import net.minecraft.client.gui.CommandBlockGui;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.MainMenuGui;
+import net.minecraft.client.gui.WrittenBookGui;
 import net.minecraft.client.gui.container.FurnaceGui;
-import net.minecraft.client.gui.container.RecipeBookGui;
 import net.minecraft.client.gui.container.VillagerGui;
-import net.minecraft.client.gui.ingame.CreativeInventoryGui;
+import net.minecraft.client.gui.ingame.CreativePlayerInventoryGui;
 import net.minecraft.client.gui.ingame.DeathGui;
-import net.minecraft.client.gui.ingame.EditBookGui;
 import net.minecraft.client.gui.ingame.RecipeBookProvider;
 import net.minecraft.client.gui.menu.DemoGui;
 import net.minecraft.client.gui.menu.DisconnectedGui;
@@ -81,6 +60,8 @@ import net.minecraft.client.gui.menu.EndCreditsGui;
 import net.minecraft.client.gui.menu.MultiplayerGui;
 import net.minecraft.client.gui.menu.RealmsGui;
 import net.minecraft.client.gui.menu.YesNoGui;
+import net.minecraft.client.gui.recipebook.RecipeBookGui;
+import net.minecraft.client.network.packet.AdvancementUpdateClientPacket;
 import net.minecraft.client.network.packet.BlockActionClientPacket;
 import net.minecraft.client.network.packet.BlockBreakingProgressClientPacket;
 import net.minecraft.client.network.packet.BlockEntityUpdateClientPacket;
@@ -93,6 +74,7 @@ import net.minecraft.client.network.packet.CombatEventClientPacket;
 import net.minecraft.client.network.packet.CommandSuggestionsClientPacket;
 import net.minecraft.client.network.packet.CommandTreeClientPacket;
 import net.minecraft.client.network.packet.CooldownUpdateClientPacket;
+import net.minecraft.client.network.packet.CraftResponseClientPacket;
 import net.minecraft.client.network.packet.CustomPayloadClientPacket;
 import net.minecraft.client.network.packet.DifficultyClientPacket;
 import net.minecraft.client.network.packet.DisconnectClientPacket;
@@ -127,11 +109,14 @@ import net.minecraft.client.network.packet.InventoryClientPacket;
 import net.minecraft.client.network.packet.ItemPickupAnimationClientPacket;
 import net.minecraft.client.network.packet.KeepAliveClientPacket;
 import net.minecraft.client.network.packet.LightUpdateClientPacket;
+import net.minecraft.client.network.packet.LookAtClientPacket;
 import net.minecraft.client.network.packet.MapUpdateClientPacket;
 import net.minecraft.client.network.packet.MobSpawnClientPacket;
+import net.minecraft.client.network.packet.OpenWrittenBookClientPacket;
 import net.minecraft.client.network.packet.PaintingSpawnClientPacket;
 import net.minecraft.client.network.packet.ParticleClientPacket;
 import net.minecraft.client.network.packet.PlaySoundClientPacket;
+import net.minecraft.client.network.packet.PlaySoundFromEntityClientPacket;
 import net.minecraft.client.network.packet.PlaySoundIdClientPacket;
 import net.minecraft.client.network.packet.PlayerAbilitiesClientPacket;
 import net.minecraft.client.network.packet.PlayerListClientPacket;
@@ -145,11 +130,15 @@ import net.minecraft.client.network.packet.RemoveEntityEffectClientPacket;
 import net.minecraft.client.network.packet.ResourcePackSendClientPacket;
 import net.minecraft.client.network.packet.ScoreboardDisplayClientPacket;
 import net.minecraft.client.network.packet.ScoreboardObjectiveUpdateClientPacket;
+import net.minecraft.client.network.packet.ScoreboardPlayerUpdateClientPacket;
+import net.minecraft.client.network.packet.SelectAdvancementTabClientPacket;
 import net.minecraft.client.network.packet.SetCameraEntityClientPacket;
 import net.minecraft.client.network.packet.SignEditorOpenClientPacket;
 import net.minecraft.client.network.packet.StatisticsClientPacket;
+import net.minecraft.client.network.packet.StopSoundClientPacket;
 import net.minecraft.client.network.packet.SynchronizeRecipesClientPacket;
 import net.minecraft.client.network.packet.SynchronizeTagsClientPacket;
+import net.minecraft.client.network.packet.TagQueryResponseClientPacket;
 import net.minecraft.client.network.packet.TeamClientPacket;
 import net.minecraft.client.network.packet.TitleClientPacket;
 import net.minecraft.client.network.packet.UnloadChunkClientPacket;
@@ -158,16 +147,18 @@ import net.minecraft.client.network.packet.VehicleMoveClientPacket;
 import net.minecraft.client.network.packet.WorldBorderClientPacket;
 import net.minecraft.client.network.packet.WorldEventClientPacket;
 import net.minecraft.client.network.packet.WorldTimeUpdateClientPacket;
+import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.options.ServerEntry;
+import net.minecraft.client.options.ServerList;
 import net.minecraft.client.particle.ItemPickupParticle;
 import net.minecraft.client.recipe.book.ClientRecipeBook;
+import net.minecraft.client.recipe.book.RecipeResultCollection;
 import net.minecraft.client.render.debug.NeighborUpdateDebugRenderer;
 import net.minecraft.client.render.debug.WorldGenAttemptDebugRenderer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.search.SearchManager;
 import net.minecraft.client.search.SearchableContainer;
-import net.minecraft.client.settings.GameOptions;
-import net.minecraft.client.settings.ServerEntry;
-import net.minecraft.client.settings.ServerList;
+import net.minecraft.client.toast.RecipeToast;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.container.Container;
 import net.minecraft.entity.AreaEffectCloudEntity;
@@ -191,7 +182,7 @@ import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.decoration.EnderCrystalEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.decoration.LeadKnotEntity;
-import net.minecraft.entity.decoration.PaintingEntity;
+import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.EvokerFangsEntity;
@@ -243,7 +234,14 @@ import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.ScoreboardTeam;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.network.EntityTracker;
+import net.minecraft.server.network.packet.ClientStatusServerPacket;
 import net.minecraft.server.network.packet.CustomPayloadServerPacket;
+import net.minecraft.server.network.packet.GuiActionConfirmServerPacket;
+import net.minecraft.server.network.packet.KeepAliveServerPacket;
+import net.minecraft.server.network.packet.PlayerMoveServerMessage;
+import net.minecraft.server.network.packet.ResourcePackStatusServerPacket;
+import net.minecraft.server.network.packet.TeleportConfirmServerPacket;
+import net.minecraft.server.network.packet.VehicleMoveServerPacket;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stat;
@@ -267,6 +265,7 @@ import net.minecraft.village.Villager;
 import net.minecraft.village.VillagerRecipeList;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.LightType;
+import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
@@ -325,14 +324,14 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			gameJoinClientPacket.getDifficulty(),
 			this.client.getProfiler()
 		);
-		this.client.options.difficulty = gameJoinClientPacket.getDifficulty();
+		this.client.field_1690.difficulty = gameJoinClientPacket.getDifficulty();
 		this.client.method_1481(this.world);
 		this.client.player.dimension = gameJoinClientPacket.getDimension();
 		this.client.openGui(new DownloadingTerrainGui());
 		this.client.player.setEntityId(gameJoinClientPacket.getEntityId());
 		this.client.player.setReducedDebugInfo(gameJoinClientPacket.hasReducedDebugInfo());
 		this.client.interactionManager.setGameMode(gameJoinClientPacket.getGameMode());
-		this.client.options.onPlayerModelPartChange();
+		this.client.field_1690.onPlayerModelPartChange();
 		this.connection
 			.sendPacket(
 				new CustomPayloadServerPacket(CustomPayloadServerPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(ClientBrandRetriever.getClientModName()))
@@ -446,7 +445,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		} else if (entitySpawnClientPacket.getEntityTypeId() == 79) {
 			entity = new EvokerFangsEntity(this.world, d, e, f, 0.0F, 0, null);
 		} else if (entitySpawnClientPacket.getEntityTypeId() == 73) {
-			entity = new ThrownPotionEntity(this.world, d, e, f, ItemStack.EMPTY);
+			entity = new ThrownPotionEntity(this.world, d, e, f);
 			entitySpawnClientPacket.setEntityData(0);
 		} else if (entitySpawnClientPacket.getEntityTypeId() == 75) {
 			entity = new ThrownExperienceBottleEntity(this.world, d, e, f);
@@ -546,7 +545,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onPaintingSpawn(PaintingSpawnClientPacket paintingSpawnClientPacket) {
 		NetworkThreadUtils.forceMainThread(paintingSpawnClientPacket, this, this.client);
 		PaintingEntity paintingEntity = new PaintingEntity(
-			this.world, paintingSpawnClientPacket.getPos(), paintingSpawnClientPacket.getFacing(), paintingSpawnClientPacket.method_11221()
+			this.world, paintingSpawnClientPacket.getPos(), paintingSpawnClientPacket.getFacing(), paintingSpawnClientPacket.getMotive()
 		);
 		paintingEntity.setUuid(paintingSpawnClientPacket.getPaintingUuid());
 		this.world.method_2942(paintingSpawnClientPacket.getId(), paintingEntity);
@@ -712,9 +711,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		}
 
 		playerEntity.setPositionAnglesAndUpdate(d, e, f, g, h);
-		this.connection.sendPacket(new class_2793(playerPositionLookClientPacket.getTeleportId()));
+		this.connection.sendPacket(new TeleportConfirmServerPacket(playerPositionLookClientPacket.getTeleportId()));
 		this.connection
-			.sendPacket(new class_2828.class_2830(playerEntity.x, playerEntity.getBoundingBox().minY, playerEntity.z, playerEntity.yaw, playerEntity.pitch, false));
+			.sendPacket(
+				new PlayerMoveServerMessage.Both(playerEntity.x, playerEntity.getBoundingBox().minY, playerEntity.z, playerEntity.yaw, playerEntity.pitch, false)
+			);
 		if (!this.field_3698) {
 			this.client.player.prevX = this.client.player.x;
 			this.client.player.prevY = this.client.player.y;
@@ -751,7 +752,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			);
 
 		for (int k = 0; k < 16; k++) {
-			this.world.method_16108(i, k, j);
+			this.world.scheduleNeighborChunksRender(i, k, j);
 		}
 
 		for (CompoundTag compoundTag : chunkDataClientPacket.getBlockEntityTagList()) {
@@ -771,7 +772,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.world.getChunkProvider().method_2859(i, j);
 
 		for (int k = 0; k < 16; k++) {
-			this.world.method_16108(i, k, j);
+			this.world.scheduleNeighborChunksRender(i, k, j);
 		}
 	}
 
@@ -852,7 +853,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onChatMessage(ChatMessageClientPacket chatMessageClientPacket) {
 		NetworkThreadUtils.forceMainThread(chatMessageClientPacket, this, this.client);
-		this.client.hudInGame.addChatMessage(chatMessageClientPacket.getLocation(), chatMessageClientPacket.getMessage());
+		this.client.hudInGame.method_1755(chatMessageClientPacket.getLocation(), chatMessageClientPacket.getMessage());
 	}
 
 	@Override
@@ -897,7 +898,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		if (livingEntity != null) {
 			EntityTracker.method_14070(livingEntity, d, e, f);
 			livingEntity.field_6283 = (float)(mobSpawnClientPacket.getVelocityZ() * 360) / 256.0F;
-			livingEntity.headPitch = (float)(mobSpawnClientPacket.getVelocityZ() * 360) / 256.0F;
+			livingEntity.headYaw = (float)(mobSpawnClientPacket.getVelocityZ() * 360) / 256.0F;
 			Entity[] entitys = livingEntity.getParts();
 			if (entitys != null) {
 				int i = mobSpawnClientPacket.getId() - livingEntity.getEntityId();
@@ -952,7 +953,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				if (entity2 != null) {
 					entity2.startRiding(entity, true);
 					if (entity2 == this.client.player && !bl) {
-						this.client.hudInGame.setOverlayMessage(I18n.translate("mount.onboard", this.client.options.keySneak.method_16007()), false);
+						this.client.hudInGame.setOverlayMessage(I18n.translate("mount.onboard", this.client.field_1690.keySneak.method_16007()), false);
 					}
 				}
 			}
@@ -985,7 +986,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				this.client.particleManager.method_3051(entity, ParticleTypes.field_11220, 30);
 				this.world.playSound(entity.x, entity.y, entity.z, SoundEvents.field_14931, entity.getSoundCategory(), 1.0F, 1.0F, false);
 				if (entity == this.client.player) {
-					this.client.worldRenderer.method_3189(new ItemStack(Items.field_8288));
+					this.client.field_1773.method_3189(new ItemStack(Items.field_8288));
 				}
 			} else {
 				entity.method_5711(entityStatusClientPacket.getStatus());
@@ -1063,7 +1064,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			clientPlayerEntity.openInventory(new BasicInventory(guiOpenClientPacket.getTitle(), guiOpenClientPacket.getSlotCount()));
 			clientPlayerEntity.container.syncId = guiOpenClientPacket.getId();
 		} else if ("minecraft:villager".equals(guiOpenClientPacket.getType())) {
-			clientPlayerEntity.openVillagerGui(new SimpleVillager(clientPlayerEntity, guiOpenClientPacket.getTitle()));
+			clientPlayerEntity.openVillagerTrade(new SimpleVillager(clientPlayerEntity, guiOpenClientPacket.getTitle()));
 			clientPlayerEntity.container.syncId = guiOpenClientPacket.getId();
 		} else if ("EntityHorse".equals(guiOpenClientPacket.getType())) {
 			Entity entity = this.world.getEntityById(guiOpenClientPacket.getHorseId());
@@ -1094,9 +1095,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			playerEntity.inventory.setInvStack(i, itemStack);
 		} else {
 			boolean bl = false;
-			if (this.client.currentGui instanceof CreativeInventoryGui) {
-				CreativeInventoryGui creativeInventoryGui = (CreativeInventoryGui)this.client.currentGui;
-				bl = creativeInventoryGui.method_2469() != ItemGroup.INVENTORY.getId();
+			if (this.client.currentGui instanceof CreativePlayerInventoryGui) {
+				CreativePlayerInventoryGui creativePlayerInventoryGui = (CreativePlayerInventoryGui)this.client.currentGui;
+				bl = creativePlayerInventoryGui.method_2469() != ItemGroup.INVENTORY.getId();
 			}
 
 			if (guiSlotUpdateClientPacket.getId() == 0 && guiSlotUpdateClientPacket.getSlot() >= 36 && i < 45) {
@@ -1126,7 +1127,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		}
 
 		if (container != null && !guiActionConfirmClientPacket.wasAccepted()) {
-			this.sendPacket(new class_2809(guiActionConfirmClientPacket.getId(), guiActionConfirmClientPacket.getActionId(), true));
+			this.sendPacket(new GuiActionConfirmServerPacket(guiActionConfirmClientPacket.getId(), guiActionConfirmClientPacket.getActionId(), true));
 		}
 	}
 
@@ -1151,7 +1152,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			blockEntity.setPos(signEditorOpenClientPacket.getPos());
 		}
 
-		this.client.player.openSignEditor((SignBlockEntity)blockEntity);
+		this.client.player.openSignEditorGui((SignBlockEntity)blockEntity);
 	}
 
 	@Override
@@ -1169,7 +1170,6 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				|| i == 7 && blockEntity instanceof StructureBlockBlockEntity
 				|| i == 8 && blockEntity instanceof EndGatewayBlockEntity
 				|| i == 9 && blockEntity instanceof SignBlockEntity
-				|| i == 10 && blockEntity instanceof ShulkerBoxBlockEntity
 				|| i == 11 && blockEntity instanceof BedBlockEntity
 				|| i == 5 && blockEntity instanceof ConduitBlockEntity
 				|| i == 12 && blockEntity instanceof JigsawBlockEntity) {
@@ -1250,13 +1250,16 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			this.client.interactionManager.setGameMode(GameMode.byId(j));
 		} else if (i == 4) {
 			if (j == 0) {
-				this.client.player.networkHandler.sendPacket(new class_2799(class_2799.class_2800.field_12774));
+				this.client.player.networkHandler.sendPacket(new ClientStatusServerPacket(ClientStatusServerPacket.Mode.field_12774));
 				this.client.openGui(new DownloadingTerrainGui());
 			} else if (j == 1) {
-				this.client.openGui(new EndCreditsGui(true, () -> this.client.player.networkHandler.sendPacket(new class_2799(class_2799.class_2800.field_12774))));
+				this.client
+					.openGui(
+						new EndCreditsGui(true, () -> this.client.player.networkHandler.sendPacket(new ClientStatusServerPacket(ClientStatusServerPacket.Mode.field_12774)))
+					);
 			}
 		} else if (i == 5) {
-			GameOptions gameOptions = this.client.options;
+			GameOptions gameOptions = this.client.field_1690;
 			if (f == 0.0F) {
 				this.client.openGui(new DemoGui());
 			} else if (f == 101.0F) {
@@ -1306,7 +1309,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onMapUpdate(MapUpdateClientPacket mapUpdateClientPacket) {
 		NetworkThreadUtils.forceMainThread(mapUpdateClientPacket, this, this.client);
-		class_330 lv = this.client.worldRenderer.method_3194();
+		class_330 lv = this.client.field_1773.method_3194();
 		String string = "map_" + mapUpdateClientPacket.getId();
 		MapState mapState = FilledMapItem.method_7997(this.client.world, string);
 		if (mapState == null) {
@@ -1336,20 +1339,20 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void onAdvancements(class_2779 arg) {
-		NetworkThreadUtils.forceMainThread(arg, this, this.client);
-		this.advancementHandler.onAdvancements(arg);
+	public void onAdvancements(AdvancementUpdateClientPacket advancementUpdateClientPacket) {
+		NetworkThreadUtils.forceMainThread(advancementUpdateClientPacket, this, this.client);
+		this.advancementHandler.onAdvancements(advancementUpdateClientPacket);
 	}
 
 	@Override
-	public void method_11161(UnlockRecipesClientPacket unlockRecipesClientPacket) {
-		NetworkThreadUtils.forceMainThread(unlockRecipesClientPacket, this, this.client);
-		Identifier identifier = unlockRecipesClientPacket.method_11793();
+	public void method_11161(SelectAdvancementTabClientPacket selectAdvancementTabClientPacket) {
+		NetworkThreadUtils.forceMainThread(selectAdvancementTabClientPacket, this, this.client);
+		Identifier identifier = selectAdvancementTabClientPacket.getTabId();
 		if (identifier == null) {
-			this.advancementHandler.method_2864(null, false);
+			this.advancementHandler.selectTab(null, false);
 		} else {
 			SimpleAdvancement simpleAdvancement = this.advancementHandler.getManager().get(identifier);
-			this.advancementHandler.method_2864(simpleAdvancement, false);
+			this.advancementHandler.selectTab(simpleAdvancement, false);
 		}
 	}
 
@@ -1360,9 +1363,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11082(class_2770 arg) {
-		NetworkThreadUtils.forceMainThread(arg, this, this.client);
-		this.client.getSoundLoader().stopSounds(arg.method_11904(), arg.method_11903());
+	public void onStopSound(StopSoundClientPacket stopSoundClientPacket) {
+		NetworkThreadUtils.forceMainThread(stopSoundClientPacket, this, this.client);
+		this.client.getSoundLoader().stopSounds(stopSoundClientPacket.getSoundId(), stopSoundClientPacket.getCategory());
 	}
 
 	@Override
@@ -1380,28 +1383,28 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			this.recipeManager.add(recipe);
 		}
 
-		SearchableContainer<class_516> searchableContainer = this.client.getSearchableContainer(SearchManager.field_5496);
+		SearchableContainer<RecipeResultCollection> searchableContainer = this.client.getSearchableContainer(SearchManager.field_5496);
 		searchableContainer.clear();
 		ClientRecipeBook clientRecipeBook = this.client.player.getRecipeBook();
-		clientRecipeBook.method_1401();
-		clientRecipeBook.method_1393().forEach(searchableContainer::add);
+		clientRecipeBook.reload();
+		clientRecipeBook.getOrderedResults().forEach(searchableContainer::add);
 		searchableContainer.reload();
 	}
 
 	@Override
-	public void method_11092(class_2707 arg) {
-		NetworkThreadUtils.forceMainThread(arg, this, this.client);
-		Vec3d vec3d = arg.method_11732(this.world);
+	public void onLookAt(LookAtClientPacket lookAtClientPacket) {
+		NetworkThreadUtils.forceMainThread(lookAtClientPacket, this, this.client);
+		Vec3d vec3d = lookAtClientPacket.getTargetPosition(this.world);
 		if (vec3d != null) {
-			this.client.player.method_5702(arg.method_11730(), vec3d);
+			this.client.player.lookAt(lookAtClientPacket.getSelfAnchor(), vec3d);
 		}
 	}
 
 	@Override
-	public void method_11127(class_2774 arg) {
-		NetworkThreadUtils.forceMainThread(arg, this, this.client);
-		if (!this.field_3692.method_1404(arg.method_11910(), arg.method_11911())) {
-			LOGGER.debug("Got unhandled response to tag query {}", arg.method_11910());
+	public void onTagQuery(TagQueryResponseClientPacket tagQueryResponseClientPacket) {
+		NetworkThreadUtils.forceMainThread(tagQueryResponseClientPacket, this, this.client);
+		if (!this.field_3692.method_1404(tagQueryResponseClientPacket.getTransactionId(), tagQueryResponseClientPacket.getTag())) {
+			LOGGER.debug("Got unhandled response to tag query {}", tagQueryResponseClientPacket.getTransactionId());
 		}
 	}
 
@@ -1412,7 +1415,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		for (Entry<Stat<?>, Integer> entry : statisticsClientPacket.getStatMap().entrySet()) {
 			Stat<?> stat = (Stat<?>)entry.getKey();
 			int i = (Integer)entry.getValue();
-			this.client.player.getStats().method_15023(this.client.player, stat, i);
+			this.client.player.getStats().setStat(this.client.player, stat, i);
 		}
 
 		if (this.client.currentGui instanceof class_452) {
@@ -1421,52 +1424,52 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void onUnlockRecipes(class_2713 arg) {
-		NetworkThreadUtils.forceMainThread(arg, this, this.client);
+	public void onUnlockRecipes(UnlockRecipesClientPacket unlockRecipesClientPacket) {
+		NetworkThreadUtils.forceMainThread(unlockRecipesClientPacket, this, this.client);
 		ClientRecipeBook clientRecipeBook = this.client.player.getRecipeBook();
-		clientRecipeBook.setGuiOpen(arg.isGuiOpen());
-		clientRecipeBook.setFilteringCraftable(arg.isFilteringCraftable());
-		clientRecipeBook.setFurnaceGuiOpen(arg.isFurnaceGuiOpen());
-		clientRecipeBook.setFurnaceFilteringCraftable(arg.isFurnaceFilteringCraftable());
-		class_2713.class_2714 lv = arg.method_11751();
-		switch (lv) {
+		clientRecipeBook.setGuiOpen(unlockRecipesClientPacket.isGuiOpen());
+		clientRecipeBook.setFilteringCraftable(unlockRecipesClientPacket.isFilteringCraftable());
+		clientRecipeBook.setFurnaceGuiOpen(unlockRecipesClientPacket.isFurnaceGuiOpen());
+		clientRecipeBook.setFurnaceFilteringCraftable(unlockRecipesClientPacket.isFurnaceFilteringCraftable());
+		UnlockRecipesClientPacket.Action action = unlockRecipesClientPacket.getAction();
+		switch (action) {
 			case field_12417:
-				for (Identifier identifierxxx : arg.method_11750()) {
+				for (Identifier identifierxxx : unlockRecipesClientPacket.getRecipeIdsToChange()) {
 					Recipe recipe = this.recipeManager.get(identifierxxx);
 					if (recipe != null) {
-						clientRecipeBook.method_14893(recipe);
+						clientRecipeBook.remove(recipe);
 					}
 				}
 				break;
 			case field_12416:
-				for (Identifier identifierx : arg.method_11750()) {
+				for (Identifier identifierx : unlockRecipesClientPacket.getRecipeIdsToChange()) {
 					Recipe recipe = this.recipeManager.get(identifierx);
 					if (recipe != null) {
-						clientRecipeBook.method_14876(recipe);
+						clientRecipeBook.add(recipe);
 					}
 				}
 
-				for (Identifier identifierxx : arg.method_11757()) {
+				for (Identifier identifierxx : unlockRecipesClientPacket.getRecipeIdsToInit()) {
 					Recipe recipe = this.recipeManager.get(identifierxx);
 					if (recipe != null) {
-						clientRecipeBook.method_14885(recipe);
+						clientRecipeBook.display(recipe);
 					}
 				}
 				break;
 			case field_12415:
-				for (Identifier identifier : arg.method_11750()) {
+				for (Identifier identifier : unlockRecipesClientPacket.getRecipeIdsToChange()) {
 					Recipe recipe = this.recipeManager.get(identifier);
 					if (recipe != null) {
-						clientRecipeBook.method_14876(recipe);
-						clientRecipeBook.method_14885(recipe);
-						class_366.method_1985(this.client.getToastManager(), recipe);
+						clientRecipeBook.add(recipe);
+						clientRecipeBook.display(recipe);
+						RecipeToast.method_1985(this.client.getToastManager(), recipe);
 					}
 				}
 		}
 
-		clientRecipeBook.method_1393().forEach(argx -> argx.method_2647(clientRecipeBook));
+		clientRecipeBook.getOrderedResults().forEach(recipeResultCollection -> recipeResultCollection.initialize(clientRecipeBook));
 		if (this.client.currentGui instanceof RecipeBookProvider) {
-			((RecipeBookProvider)this.client.currentGui).method_16891();
+			((RecipeBookProvider)this.client.currentGui).refreshRecipeBook();
 		}
 	}
 
@@ -1624,7 +1627,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 	@Override
 	public void onKeepAlive(KeepAliveClientPacket keepAliveClientPacket) {
-		this.sendPacket(new class_2827(keepAliveClientPacket.method_11517()));
+		this.sendPacket(new KeepAliveServerPacket(keepAliveClientPacket.method_11517()));
 	}
 
 	@Override
@@ -1657,11 +1660,20 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11125(class_2765 arg) {
-		NetworkThreadUtils.forceMainThread(arg, this, this.client);
-		Entity entity = this.world.getEntityById(arg.method_11883());
+	public void onPlaySoundFromEntity(PlaySoundFromEntityClientPacket playSoundFromEntityClientPacket) {
+		NetworkThreadUtils.forceMainThread(playSoundFromEntityClientPacket, this, this.client);
+		Entity entity = this.world.getEntityById(playSoundFromEntityClientPacket.getEntityId());
 		if (entity != null) {
-			this.client.world.method_8449(this.client.player, entity, arg.method_11882(), arg.method_11881(), arg.method_11885(), arg.method_11880());
+			this.client
+				.world
+				.playSoundFromEntity(
+					this.client.player,
+					entity,
+					playSoundFromEntityClientPacket.getSound(),
+					playSoundFromEntityClientPacket.getCategory(),
+					playSoundFromEntityClientPacket.getVolume(),
+					playSoundFromEntityClientPacket.getPitch()
+				);
 		}
 	}
 
@@ -1697,7 +1709,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 					File file = new File(this.client.runDirectory, "saves");
 					File file2 = new File(file, string3);
 					if (file2.isFile()) {
-						this.method_2873(class_2856.class_2857.field_13016);
+						this.sendResourcePackStatus(ResourcePackStatusServerPacket.Status.field_13016);
 						CompletableFuture<?> completableFuture = this.client.getResourcePackDownloader().loadServerPack(file2);
 						this.method_2885(completableFuture);
 						return;
@@ -1705,31 +1717,31 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				} catch (UnsupportedEncodingException var8) {
 				}
 
-				this.method_2873(class_2856.class_2857.field_13015);
+				this.sendResourcePackStatus(ResourcePackStatusServerPacket.Status.field_13015);
 			} else {
-				ServerEntry serverEntry = this.client.getCurrentServerEntry();
+				ServerEntry serverEntry = this.client.method_1558();
 				if (serverEntry != null && serverEntry.getResourcePack() == ServerEntry.ResourcePackState.ENABLED) {
-					this.method_2873(class_2856.class_2857.field_13016);
+					this.sendResourcePackStatus(ResourcePackStatusServerPacket.Status.field_13016);
 					this.method_2885(this.client.getResourcePackDownloader().download(string, string2));
 				} else if (serverEntry != null && serverEntry.getResourcePack() != ServerEntry.ResourcePackState.PROMPT) {
-					this.method_2873(class_2856.class_2857.field_13018);
+					this.sendResourcePackStatus(ResourcePackStatusServerPacket.Status.field_13018);
 				} else {
 					this.client.execute(() -> this.client.openGui(new YesNoGui((bl, i) -> {
 							this.client = MinecraftClient.getInstance();
-							ServerEntry serverEntryx = this.client.getCurrentServerEntry();
+							ServerEntry serverEntryx = this.client.method_1558();
 							if (bl) {
 								if (serverEntryx != null) {
 									serverEntryx.setResourcePackState(ServerEntry.ResourcePackState.ENABLED);
 								}
 
-								this.method_2873(class_2856.class_2857.field_13016);
+								this.sendResourcePackStatus(ResourcePackStatusServerPacket.Status.field_13016);
 								this.method_2885(this.client.getResourcePackDownloader().download(string, string2));
 							} else {
 								if (serverEntryx != null) {
 									serverEntryx.setResourcePackState(ServerEntry.ResourcePackState.DISABLED);
 								}
 
-								this.method_2873(class_2856.class_2857.field_13018);
+								this.sendResourcePackStatus(ResourcePackStatusServerPacket.Status.field_13018);
 							}
 
 							ServerList.updateServerListEntry(serverEntryx);
@@ -1753,20 +1765,20 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				throw new URISyntaxException(string, "Invalid levelstorage resourcepack path");
 			}
 		} catch (URISyntaxException var5) {
-			this.method_2873(class_2856.class_2857.field_13015);
+			this.sendResourcePackStatus(ResourcePackStatusServerPacket.Status.field_13015);
 			return false;
 		}
 	}
 
 	private void method_2885(CompletableFuture<?> completableFuture) {
-		completableFuture.thenRun(() -> this.method_2873(class_2856.class_2857.field_13017)).exceptionally(throwable -> {
-			this.method_2873(class_2856.class_2857.field_13015);
+		completableFuture.thenRun(() -> this.sendResourcePackStatus(ResourcePackStatusServerPacket.Status.field_13017)).exceptionally(throwable -> {
+			this.sendResourcePackStatus(ResourcePackStatusServerPacket.Status.field_13015);
 			return null;
 		});
 	}
 
-	private void method_2873(class_2856.class_2857 arg) {
-		this.connection.sendPacket(new class_2856(arg));
+	private void sendResourcePackStatus(ResourcePackStatusServerPacket.Status status) {
+		this.connection.sendPacket(new ResourcePackStatusServerPacket(status));
 	}
 
 	@Override
@@ -1797,7 +1809,16 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				vehicleMoveClientPacket.getYaw(),
 				vehicleMoveClientPacket.getPitch()
 			);
-			this.connection.sendPacket(new class_2833(entity));
+			this.connection.sendPacket(new VehicleMoveServerPacket(entity));
+		}
+	}
+
+	@Override
+	public void onOpenWrittenBook(OpenWrittenBookClientPacket openWrittenBookClientPacket) {
+		NetworkThreadUtils.forceMainThread(openWrittenBookClientPacket, this, this.client);
+		ItemStack itemStack = this.client.player.getStackInHand(openWrittenBookClientPacket.getHand());
+		if (itemStack.getItem() == Items.field_8360) {
+			this.client.openGui(new WrittenBookGui(itemStack));
 		}
 	}
 
@@ -1810,25 +1831,15 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		try {
 			packetByteBuf = customPayloadClientPacket.getData();
 			if (CustomPayloadClientPacket.TRADER_LIST.equals(identifier)) {
-				try {
-					int i = packetByteBuf.readInt();
-					Gui gui = this.client.currentGui;
-					if (gui instanceof VillagerGui && i == this.client.player.container.syncId) {
-						Villager villager = ((VillagerGui)gui).method_2495();
-						VillagerRecipeList villagerRecipeList = VillagerRecipeList.readFromBuf(packetByteBuf);
-						villager.setRecipeList(villagerRecipeList);
-					}
-				} catch (IOException var13) {
-					LOGGER.error("Couldn't load trade info", (Throwable)var13);
+				int i = packetByteBuf.readInt();
+				Gui gui = this.client.currentGui;
+				if (gui instanceof VillagerGui && i == this.client.player.container.syncId) {
+					Villager villager = ((VillagerGui)gui).method_2495();
+					VillagerRecipeList villagerRecipeList = VillagerRecipeList.readFromBuf(packetByteBuf);
+					villager.setServerRecipes(villagerRecipeList);
 				}
 			} else if (CustomPayloadClientPacket.BRAND.equals(identifier)) {
 				this.client.player.setServerBrand(packetByteBuf.readString(32767));
-			} else if (CustomPayloadClientPacket.BOOK_OPEN.equals(identifier)) {
-				Hand hand = packetByteBuf.readEnumConstant(Hand.class);
-				ItemStack itemStack = hand == Hand.OFF ? this.client.player.getOffHandStack() : this.client.player.getMainHandStack();
-				if (itemStack.getItem() == Items.field_8360) {
-					this.client.openGui(new EditBookGui(this.client.player, itemStack, false, hand));
-				}
 			} else if (CustomPayloadClientPacket.DEBUG_PATH.equals(identifier)) {
 				int i = packetByteBuf.readInt();
 				float f = packetByteBuf.readFloat();
@@ -1896,31 +1907,33 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		Scoreboard scoreboard = this.world.getScoreboard();
 		String string = scoreboardObjectiveUpdateClientPacket.getName();
 		if (scoreboardObjectiveUpdateClientPacket.getMode() == 0) {
-			scoreboard.method_1168(string, ScoreboardCriterion.DUMMY, scoreboardObjectiveUpdateClientPacket.getValue(), scoreboardObjectiveUpdateClientPacket.getType());
+			scoreboard.method_1168(
+				string, ScoreboardCriterion.DUMMY, scoreboardObjectiveUpdateClientPacket.getDisplayName(), scoreboardObjectiveUpdateClientPacket.getType()
+			);
 		} else if (scoreboard.containsObjective(string)) {
 			ScoreboardObjective scoreboardObjective = scoreboard.method_1170(string);
 			if (scoreboardObjectiveUpdateClientPacket.getMode() == 1) {
 				scoreboard.removeObjective(scoreboardObjective);
 			} else if (scoreboardObjectiveUpdateClientPacket.getMode() == 2) {
 				scoreboardObjective.setCriterionType(scoreboardObjectiveUpdateClientPacket.getType());
-				scoreboardObjective.method_1121(scoreboardObjectiveUpdateClientPacket.getValue());
+				scoreboardObjective.method_1121(scoreboardObjectiveUpdateClientPacket.getDisplayName());
 			}
 		}
 	}
 
 	@Override
-	public void method_11118(class_2757 arg) {
-		NetworkThreadUtils.forceMainThread(arg, this, this.client);
+	public void onScoreboardPlayerUpdate(ScoreboardPlayerUpdateClientPacket scoreboardPlayerUpdateClientPacket) {
+		NetworkThreadUtils.forceMainThread(scoreboardPlayerUpdateClientPacket, this, this.client);
 		Scoreboard scoreboard = this.world.getScoreboard();
-		String string = arg.method_11864();
-		switch (arg.method_11863()) {
+		String string = scoreboardPlayerUpdateClientPacket.getObjectiveName();
+		switch (scoreboardPlayerUpdateClientPacket.method_11863()) {
 			case field_13431:
 				ScoreboardObjective scoreboardObjective = scoreboard.method_1165(string);
-				ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(arg.method_11862(), scoreboardObjective);
-				scoreboardPlayerScore.setScore(arg.method_11865());
+				ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(scoreboardPlayerUpdateClientPacket.getPlayerName(), scoreboardObjective);
+				scoreboardPlayerScore.setScore(scoreboardPlayerUpdateClientPacket.getScore());
 				break;
 			case field_13430:
-				scoreboard.resetPlayerScore(arg.method_11862(), scoreboard.method_1170(string));
+				scoreboard.resetPlayerScore(scoreboardPlayerUpdateClientPacket.getPlayerName(), scoreboard.method_1170(string));
 		}
 	}
 
@@ -2061,17 +2074,17 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11090(class_2695 arg) {
-		NetworkThreadUtils.forceMainThread(arg, this, this.client);
+	public void onCraftResponse(CraftResponseClientPacket craftResponseClientPacket) {
+		NetworkThreadUtils.forceMainThread(craftResponseClientPacket, this, this.client);
 		Container container = this.client.player.container;
-		if (container.syncId == arg.method_11685() && container.method_7622(this.client.player)) {
-			Recipe recipe = this.recipeManager.get(arg.method_11684());
+		if (container.syncId == craftResponseClientPacket.getSyncId() && container.method_7622(this.client.player)) {
+			Recipe recipe = this.recipeManager.get(craftResponseClientPacket.getRecipeId());
 			if (recipe != null) {
 				if (this.client.currentGui instanceof RecipeBookProvider) {
 					RecipeBookGui recipeBookGui = ((RecipeBookProvider)this.client.currentGui).getRecipeBookGui();
-					recipeBookGui.method_2596(recipe, container.slotList);
+					recipeBookGui.showGhostRecipe(recipe, container.slotList);
 				} else if (this.client.currentGui instanceof FurnaceGui) {
-					((FurnaceGui)this.client.currentGui).recipeBook.method_2596(recipe, container.slotList);
+					((FurnaceGui)this.client.currentGui).recipeBook.showGhostRecipe(recipe, container.slotList);
 				}
 			}
 		}
@@ -2086,11 +2099,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		int k = lightUpdateClientPacket.method_11556();
 		int l = lightUpdateClientPacket.method_16124();
 		Iterator<byte[]> iterator = lightUpdateClientPacket.method_11555().iterator();
-		this.method_2870(i, j, lightingProvider, LightType.field_9284, k, l, iterator);
+		this.method_2870(i, j, lightingProvider, LightType.SKY_LIGHT, k, l, iterator);
 		int m = lightUpdateClientPacket.method_11559();
 		int n = lightUpdateClientPacket.method_16125();
 		Iterator<byte[]> iterator2 = lightUpdateClientPacket.method_11557().iterator();
-		this.method_2870(i, j, lightingProvider, LightType.field_9282, m, n, iterator2);
+		this.method_2870(i, j, lightingProvider, LightType.BLOCK_LIGHT, m, n, iterator2);
 	}
 
 	private void method_2870(int i, int j, LightingProvider lightingProvider, LightType lightType, int k, int l, Iterator<byte[]> iterator) {
@@ -2099,8 +2112,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			boolean bl = (k & 1 << m) != 0;
 			boolean bl2 = (l & 1 << m) != 0;
 			if (bl || bl2) {
-				lightingProvider.method_15558(lightType, i, n, j, bl ? new class_2804((byte[])((byte[])iterator.next()).clone()) : new class_2804());
-				this.world.method_16108(i, n, j);
+				lightingProvider.setSection(lightType, i, n, j, bl ? new ChunkNibbleArray((byte[])((byte[])iterator.next()).clone()) : new ChunkNibbleArray());
+				this.world.scheduleNeighborChunksRender(i, n, j);
 			}
 		}
 	}
@@ -2129,7 +2142,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		return null;
 	}
 
-	public GameProfile method_2879() {
+	public GameProfile getProfile() {
 		return this.profile;
 	}
 

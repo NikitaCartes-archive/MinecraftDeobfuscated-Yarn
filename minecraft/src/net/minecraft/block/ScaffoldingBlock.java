@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.fluid.FluidState;
@@ -56,7 +55,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 
 	@Override
 	public boolean method_9616(BlockState blockState, ItemPlacementContext itemPlacementContext) {
-		return itemPlacementContext.method_8038().getAxis() == Direction.Axis.Y && itemPlacementContext.getItemStack().getItem() == this.getItem();
+		return itemPlacementContext.getFacing().getAxis() == Direction.Axis.Y && itemPlacementContext.getItemStack().getItem() == this.getItem();
 	}
 
 	@Override
@@ -65,7 +64,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 		if (direction == null) {
 			return false;
 		} else {
-			BlockState blockState2 = viewableWorld.getBlockState(blockPos.method_10093(direction));
+			BlockState blockState2 = viewableWorld.getBlockState(blockPos.offset(direction));
 			return blockState2.getBlock() != this || (Integer)blockState2.get(field_16495) + 1 <= 7;
 		}
 	}
@@ -83,18 +82,20 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 
 	@Override
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			world.getBlockTickScheduler().schedule(blockPos, this, 1);
 		}
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if ((Boolean)blockState.get(field_16496)) {
 			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
 		}
 
-		if (!iWorld.isRemote()) {
+		if (!iWorld.isClient()) {
 			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
 		}
 
@@ -120,7 +121,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public VoxelShape method_9549(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		return verticalEntityPosition.isAboveBlock(VoxelShapes.fullCube(), blockPos)
 				&& (!verticalEntityPosition.isSneaking() || blockState.get(field_16495) != 0 && blockState.get(field_16547))
 			? VoxelShapes.fullCube()
@@ -141,14 +142,14 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 		BlockState blockState = blockView.getBlockState(blockPos.down());
 		if (blockState.getBlock() == this) {
 			return Direction.DOWN;
-		} else if (Block.method_9501(blockState.method_11628(blockView, blockPos), Direction.UP)) {
+		} else if (Block.isFaceFullCube(blockState.getCollisionShape(blockView, blockPos), Direction.UP)) {
 			return Direction.DOWN;
 		} else {
 			Direction direction = null;
 			int i = 7;
 
 			for (Direction direction2 : Direction.class_2353.HORIZONTAL) {
-				BlockState blockState2 = blockView.getBlockState(blockPos.method_10093(direction2));
+				BlockState blockState2 = blockView.getBlockState(blockPos.offset(direction2));
 				if (blockState2.getBlock() == this) {
 					int j = (Integer)blockState2.get(field_16495);
 					if (j < i) {
@@ -167,7 +168,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 		if (direction == null) {
 			return 7;
 		} else {
-			BlockState blockState = blockView.getBlockState(blockPos.method_10093(direction));
+			BlockState blockState = blockView.getBlockState(blockPos.offset(direction));
 			return blockState.getBlock() == this ? Math.min(7, (Integer)blockState.get(field_16495) + (direction.getAxis() == Direction.Axis.Y ? 0 : 1)) : 0;
 		}
 	}
@@ -178,15 +179,11 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 		VoxelShape voxelShape3 = Block.createCubeShape(14.0, 0.0, 0.0, 16.0, 16.0, 2.0);
 		VoxelShape voxelShape4 = Block.createCubeShape(0.0, 0.0, 14.0, 2.0, 16.0, 16.0);
 		VoxelShape voxelShape5 = Block.createCubeShape(14.0, 0.0, 14.0, 16.0, 16.0, 16.0);
-		field_16494 = VoxelShapes.method_1084(
-			voxelShape, VoxelShapes.method_1084(voxelShape2, VoxelShapes.method_1084(voxelShape3, VoxelShapes.method_1084(voxelShape4, voxelShape5)))
-		);
+		field_16494 = VoxelShapes.union(voxelShape, VoxelShapes.union(voxelShape2, VoxelShapes.union(voxelShape3, VoxelShapes.union(voxelShape4, voxelShape5))));
 		VoxelShape voxelShape6 = Block.createCubeShape(0.0, 0.0, 0.0, 2.0, 2.0, 16.0);
 		VoxelShape voxelShape7 = Block.createCubeShape(14.0, 0.0, 0.0, 16.0, 2.0, 16.0);
 		VoxelShape voxelShape8 = Block.createCubeShape(0.0, 0.0, 14.0, 16.0, 2.0, 16.0);
 		VoxelShape voxelShape9 = Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 2.0, 2.0);
-		field_16497 = VoxelShapes.method_1084(
-			field_16494, VoxelShapes.method_1084(voxelShape7, VoxelShapes.method_1084(voxelShape6, VoxelShapes.method_1084(voxelShape9, voxelShape8)))
-		);
+		field_16497 = VoxelShapes.union(field_16494, VoxelShapes.union(voxelShape7, VoxelShapes.union(voxelShape6, VoxelShapes.union(voxelShape9, voxelShape8))));
 	}
 }

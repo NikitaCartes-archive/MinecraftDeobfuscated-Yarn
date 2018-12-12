@@ -11,9 +11,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.advancement.ServerAdvancementManager;
+import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemContainer;
+import net.minecraft.item.ItemProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
@@ -25,7 +25,7 @@ import net.minecraft.util.NumberRange;
 
 public class InventoryChangedCriterion implements Criterion<InventoryChangedCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("inventory_changed");
-	private final Map<ServerAdvancementManager, InventoryChangedCriterion.Handler> handlers = Maps.<ServerAdvancementManager, InventoryChangedCriterion.Handler>newHashMap();
+	private final Map<PlayerAdvancementTracker, InventoryChangedCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, InventoryChangedCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -33,34 +33,34 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 	}
 
 	@Override
-	public void addCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<InventoryChangedCriterion.Conditions> conditionsContainer
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<InventoryChangedCriterion.Conditions> conditionsContainer
 	) {
-		InventoryChangedCriterion.Handler handler = (InventoryChangedCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		InventoryChangedCriterion.Handler handler = (InventoryChangedCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new InventoryChangedCriterion.Handler(serverAdvancementManager);
-			this.handlers.put(serverAdvancementManager, handler);
+			handler = new InventoryChangedCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void removeCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<InventoryChangedCriterion.Conditions> conditionsContainer
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<InventoryChangedCriterion.Conditions> conditionsContainer
 	) {
-		InventoryChangedCriterion.Handler handler = (InventoryChangedCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		InventoryChangedCriterion.Handler handler = (InventoryChangedCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(serverAdvancementManager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void removePlayer(ServerAdvancementManager serverAdvancementManager) {
-		this.handlers.remove(serverAdvancementManager);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
 	public InventoryChangedCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -97,12 +97,12 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 			return new InventoryChangedCriterion.Conditions(NumberRange.Integer.ANY, NumberRange.Integer.ANY, NumberRange.Integer.ANY, itemPredicates);
 		}
 
-		public static InventoryChangedCriterion.Conditions items(ItemContainer... itemContainers) {
-			ItemPredicate[] itemPredicates = new ItemPredicate[itemContainers.length];
+		public static InventoryChangedCriterion.Conditions method_8959(ItemProvider... itemProviders) {
+			ItemPredicate[] itemPredicates = new ItemPredicate[itemProviders.length];
 
-			for (int i = 0; i < itemContainers.length; i++) {
+			for (int i = 0; i < itemProviders.length; i++) {
 				itemPredicates[i] = new ItemPredicate(
-					null, itemContainers[i].getItem(), NumberRange.Integer.ANY, NumberRange.Integer.ANY, new EnchantmentPredicate[0], null, NbtPredicate.ANY
+					null, itemProviders[i].getItem(), NumberRange.Integer.ANY, NumberRange.Integer.ANY, new EnchantmentPredicate[0], null, NbtPredicate.ANY
 				);
 			}
 
@@ -110,7 +110,7 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 		}
 
 		@Override
-		public JsonElement method_807() {
+		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			if (!this.occupied.isDummy() || !this.full.isDummy() || !this.empty.isDummy()) {
 				JsonObject jsonObject2 = new JsonObject();
@@ -171,11 +171,11 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 	}
 
 	static class Handler {
-		private final ServerAdvancementManager manager;
+		private final PlayerAdvancementTracker field_9628;
 		private final Set<Criterion.ConditionsContainer<InventoryChangedCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<InventoryChangedCriterion.Conditions>>newHashSet();
 
-		public Handler(ServerAdvancementManager serverAdvancementManager) {
-			this.manager = serverAdvancementManager;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.field_9628 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
@@ -205,7 +205,7 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<InventoryChangedCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
+					conditionsContainerx.apply(this.field_9628);
 				}
 			}
 		}

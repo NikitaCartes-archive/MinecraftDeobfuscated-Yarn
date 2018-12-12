@@ -8,8 +8,7 @@ import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.decorator.DungeonDecoratorConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class DungeonsDecorator extends Decorator<DungeonDecoratorConfig> {
 	public DungeonsDecorator(Function<Dynamic<?>, ? extends DungeonDecoratorConfig> function) {
@@ -17,16 +16,12 @@ public class DungeonsDecorator extends Decorator<DungeonDecoratorConfig> {
 	}
 
 	public Stream<BlockPos> method_15933(
-		IWorld iWorld,
-		ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator,
-		Random random,
-		DungeonDecoratorConfig dungeonDecoratorConfig,
-		BlockPos blockPos
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, DungeonDecoratorConfig dungeonDecoratorConfig, BlockPos blockPos
 	) {
 		int i = dungeonDecoratorConfig.chance;
 		return IntStream.range(0, i).mapToObj(ix -> {
 			int j = random.nextInt(16);
-			int k = random.nextInt(chunkGenerator.method_12104());
+			int k = random.nextInt(chunkGenerator.getMaxY());
 			int l = random.nextInt(16);
 			return blockPos.add(j, k, l);
 		});

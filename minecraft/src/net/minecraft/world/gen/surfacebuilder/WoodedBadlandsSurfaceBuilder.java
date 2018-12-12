@@ -8,7 +8,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.config.surfacebuilder.TernarySurfaceConfig;
 
 public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 	private static final BlockState field_15741 = Blocks.field_10611.getDefaultState();
@@ -37,7 +36,7 @@ public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 		int n = i & 15;
 		int o = j & 15;
 		BlockState blockState3 = field_15741;
-		BlockState blockState4 = biome.getSurfaceConfig().getUnderMaterial();
+		BlockState blockState4 = biome.method_8722().getUnderMaterial();
 		int p = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
 		boolean bl = Math.cos(d / 3.0 * Math.PI) > 0.0;
 		int q = -1;
@@ -59,7 +58,7 @@ public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 							blockState4 = blockState;
 						} else if (s >= l - 4 && s <= l + 1) {
 							blockState3 = field_15741;
-							blockState4 = biome.getSurfaceConfig().getUnderMaterial();
+							blockState4 = biome.method_8722().getUnderMaterial();
 						}
 
 						if (s < l && (blockState3 == null || blockState3.isAir())) {
@@ -79,7 +78,7 @@ public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 								chunk.setBlockState(mutable, Blocks.field_10219.getDefaultState(), false);
 							}
 						} else if (s <= l + 3 + p) {
-							chunk.setBlockState(mutable, biome.getSurfaceConfig().getTopMaterial(), false);
+							chunk.setBlockState(mutable, biome.method_8722().getTopMaterial(), false);
 							bl2 = true;
 						} else {
 							BlockState blockState6;

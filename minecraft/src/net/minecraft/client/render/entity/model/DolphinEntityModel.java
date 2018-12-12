@@ -3,13 +3,11 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.DolphinEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class DolphinEntityModel extends Model {
+public class DolphinEntityModel<T extends Entity> extends EntityModel<T> {
 	private final Cuboid field_4656;
 	private final Cuboid field_4658;
 	private final Cuboid field_4657;
@@ -60,21 +58,18 @@ public class DolphinEntityModel extends Model {
 	}
 
 	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
+	public void render(T entity, float f, float g, float h, float i, float j, float k) {
 		this.field_4658.render(k);
 	}
 
 	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
+	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
 		this.field_4658.pitch = j * (float) (Math.PI / 180.0);
 		this.field_4658.yaw = i * (float) (Math.PI / 180.0);
-		if (entity instanceof DolphinEntity) {
-			DolphinEntity dolphinEntity = (DolphinEntity)entity;
-			if (dolphinEntity.velocityX != 0.0 || dolphinEntity.velocityZ != 0.0) {
-				this.field_4658.pitch = this.field_4658.pitch + -0.05F + -0.05F * MathHelper.cos(h * 0.3F);
-				this.field_4657.pitch = -0.1F * MathHelper.cos(h * 0.3F);
-				this.field_4655.pitch = -0.2F * MathHelper.cos(h * 0.3F);
-			}
+		if (entity.velocityX != 0.0 || entity.velocityZ != 0.0) {
+			this.field_4658.pitch = this.field_4658.pitch + -0.05F + -0.05F * MathHelper.cos(h * 0.3F);
+			this.field_4657.pitch = -0.1F * MathHelper.cos(h * 0.3F);
+			this.field_4655.pitch = -0.2F * MathHelper.cos(h * 0.3F);
 		}
 	}
 }

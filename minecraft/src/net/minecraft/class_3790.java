@@ -8,6 +8,7 @@ import net.minecraft.datafixers.NbtOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.sortme.StructurePiece;
+import net.minecraft.sortme.structures.StructureManager;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
@@ -23,16 +24,16 @@ public abstract class class_3790 extends class_3443 {
 	protected Rotation field_16694;
 	private final List<JigsawJunction> field_16696 = Lists.<JigsawJunction>newArrayList();
 
-	public class_3790(StructurePiece structurePiece, class_3485 arg, class_3784 arg2, BlockPos blockPos, int i, Rotation rotation) {
+	public class_3790(StructurePiece structurePiece, StructureManager structureManager, class_3784 arg, BlockPos blockPos, int i, Rotation rotation) {
 		super(structurePiece, 0);
-		this.field_16693 = arg2;
+		this.field_16693 = arg;
 		this.field_16695 = blockPos;
 		this.field_16692 = i;
 		this.field_16694 = rotation;
-		this.structureBounds = arg2.method_16628(arg, blockPos, rotation);
+		this.structureBounds = arg.method_16628(structureManager, blockPos, rotation);
 	}
 
-	public class_3790(class_3485 arg, CompoundTag compoundTag, StructurePiece structurePiece) {
+	public class_3790(StructureManager structureManager, CompoundTag compoundTag, StructurePiece structurePiece) {
 		super(structurePiece, compoundTag);
 		this.field_16695 = new BlockPos(compoundTag.getInt("PosX"), compoundTag.getInt("PosY"), compoundTag.getInt("PosZ"));
 		this.field_16692 = compoundTag.getInt("ground_level_delta");
@@ -40,7 +41,7 @@ public abstract class class_3790 extends class_3443 {
 			new Dynamic<>(NbtOps.INSTANCE, compoundTag.getCompound("pool_element")), Registry.STRUCTURE_POOL_ELEMENT, "element_type", class_3777.field_16663
 		);
 		this.field_16694 = Rotation.valueOf(compoundTag.getString("rotation"));
-		this.structureBounds = this.field_16693.method_16628(arg, this.field_16695, this.field_16694);
+		this.structureBounds = this.field_16693.method_16628(structureManager, this.field_16695, this.field_16694);
 		ListTag listTag = compoundTag.getList("junctions", 10);
 		this.field_16696.clear();
 		listTag.forEach(tag -> this.field_16696.add(JigsawJunction.deserialize(new Dynamic<>(NbtOps.INSTANCE, tag))));

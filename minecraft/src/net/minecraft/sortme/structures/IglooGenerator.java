@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Random;
 import net.minecraft.class_3443;
 import net.minecraft.class_3470;
-import net.minecraft.class_3485;
 import net.minecraft.class_3492;
 import net.minecraft.class_3499;
 import net.minecraft.block.BlockState;
@@ -24,7 +23,7 @@ import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.Heightmap;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
+import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.loot.LootTables;
 
 public class IglooGenerator {
@@ -39,42 +38,42 @@ public class IglooGenerator {
 	);
 
 	public static void method_14705(
-		class_3485 arg, BlockPos blockPos, Rotation rotation, List<class_3443> list, Random random, DefaultFeatureConfig defaultFeatureConfig
+		StructureManager structureManager, BlockPos blockPos, Rotation rotation, List<class_3443> list, Random random, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		if (random.nextDouble() < 0.5) {
 			int i = random.nextInt(8) + 4;
-			list.add(new IglooGenerator.class_3352(arg, field_14410, blockPos, rotation, i * 3));
+			list.add(new IglooGenerator.class_3352(structureManager, field_14410, blockPos, rotation, i * 3));
 
 			for (int j = 0; j < i - 1; j++) {
-				list.add(new IglooGenerator.class_3352(arg, field_14407, blockPos, rotation, j * 3));
+				list.add(new IglooGenerator.class_3352(structureManager, field_14407, blockPos, rotation, j * 3));
 			}
 		}
 
-		list.add(new IglooGenerator.class_3352(arg, field_14409, blockPos, rotation, 0));
+		list.add(new IglooGenerator.class_3352(structureManager, field_14409, blockPos, rotation, 0));
 	}
 
 	public static class class_3352 extends class_3470 {
 		private final Identifier field_14411;
 		private final Rotation field_14412;
 
-		public class_3352(class_3485 arg, Identifier identifier, BlockPos blockPos, Rotation rotation, int i) {
+		public class_3352(StructureManager structureManager, Identifier identifier, BlockPos blockPos, Rotation rotation, int i) {
 			super(StructurePiece.field_16909, 0);
 			this.field_14411 = identifier;
 			BlockPos blockPos2 = (BlockPos)IglooGenerator.field_14406.get(identifier);
 			this.field_15432 = blockPos.add(blockPos2.getX(), blockPos2.getY() - i, blockPos2.getZ());
 			this.field_14412 = rotation;
-			this.method_14708(arg);
+			this.method_14708(structureManager);
 		}
 
-		public class_3352(class_3485 arg, CompoundTag compoundTag) {
+		public class_3352(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16909, compoundTag);
 			this.field_14411 = new Identifier(compoundTag.getString("Template"));
 			this.field_14412 = Rotation.valueOf(compoundTag.getString("Rot"));
-			this.method_14708(arg);
+			this.method_14708(structureManager);
 		}
 
-		private void method_14708(class_3485 arg) {
-			class_3499 lv = arg.method_15091(this.field_14411);
+		private void method_14708(StructureManager structureManager) {
+			class_3499 lv = structureManager.method_15091(this.field_14411);
 			class_3492 lv2 = new class_3492()
 				.method_15123(this.field_14412)
 				.method_15125(Mirror.NONE)

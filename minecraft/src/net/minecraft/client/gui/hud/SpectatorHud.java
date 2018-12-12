@@ -3,13 +3,13 @@ package net.minecraft.client.gui.hud;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_308;
 import net.minecraft.class_536;
 import net.minecraft.class_539;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuElement;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuImpl;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
@@ -27,7 +27,7 @@ public class SpectatorHud extends Drawable implements class_536 {
 	}
 
 	public void method_1977(int i) {
-		this.field_2198 = SystemUtil.getMeasuringTimeMili();
+		this.field_2198 = SystemUtil.getMeasuringTimeMs();
 		if (this.spectatorMenu != null) {
 			this.spectatorMenu.method_2771(i);
 		} else {
@@ -36,7 +36,7 @@ public class SpectatorHud extends Drawable implements class_536 {
 	}
 
 	private float method_1981() {
-		long l = this.field_2198 - SystemUtil.getMeasuringTimeMili() + 5000L;
+		long l = this.field_2198 - SystemUtil.getMeasuringTimeMs() + 5000L;
 		return MathHelper.clamp((float)l / 2000.0F, 0.0F, 1.0F);
 	}
 
@@ -73,13 +73,13 @@ public class SpectatorHud extends Drawable implements class_536 {
 			this.drawTexturedRect((float)(i - 91 - 1 + arg.method_2787() * 20), g - 1.0F, 0, 22, 24, 22);
 		}
 
-		class_308.method_1453();
+		GuiLighting.enableForItems();
 
 		for (int j = 0; j < 9; j++) {
 			this.method_1982(j, this.client.window.getScaledWidth() / 2 - 90 + j * 20 + 2, g + 3.0F, f, arg.method_2786(j));
 		}
 
-		class_308.method_1450();
+		GuiLighting.disable();
 		GlStateManager.disableRescaleNormal();
 		GlStateManager.disableBlend();
 	}
@@ -94,7 +94,7 @@ public class SpectatorHud extends Drawable implements class_536 {
 			GlStateManager.color4f(h, h, h, g);
 			spectatorMenuElement.renderIcon(h, k);
 			GlStateManager.popMatrix();
-			String string = String.valueOf(this.client.options.keysHotbar[i].method_16007());
+			String string = String.valueOf(this.client.field_1690.keysHotbar[i].method_16007());
 			if (k > 3 && spectatorMenuElement.enabled()) {
 				this.client
 					.fontRenderer
@@ -147,12 +147,12 @@ public class SpectatorHud extends Drawable implements class_536 {
 
 		if (i >= 0 && i <= 8) {
 			this.spectatorMenu.method_2771(i);
-			this.field_2198 = SystemUtil.getMeasuringTimeMili();
+			this.field_2198 = SystemUtil.getMeasuringTimeMs();
 		}
 	}
 
 	public void method_1983() {
-		this.field_2198 = SystemUtil.getMeasuringTimeMili();
+		this.field_2198 = SystemUtil.getMeasuringTimeMs();
 		if (this.method_1980()) {
 			int i = this.spectatorMenu.method_2773();
 			if (i != -1) {

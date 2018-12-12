@@ -11,7 +11,7 @@ import java.util.Map;
 import net.minecraft.datafixers.TypeReferences;
 
 public class BlockEntityIdFix extends DataFix {
-	private static final Map<String, String> field_15824 = DataFixUtils.make(Maps.<String, String>newHashMap(), hashMap -> {
+	private static final Map<String, String> RENAMED_BLOCK_ENTITIES = DataFixUtils.make(Maps.<String, String>newHashMap(), hashMap -> {
 		hashMap.put("Airportal", "minecraft:end_portal");
 		hashMap.put("Banner", "minecraft:banner");
 		hashMap.put("Beacon", "minecraft:beacon");
@@ -50,7 +50,10 @@ public class BlockEntityIdFix extends DataFix {
 		return TypeRewriteRule.seq(
 			this.convertUnchecked("item stack block entity name hook converter", type, type2),
 			this.fixTypeEverywhere(
-				"BlockEntityIdFix", taggedChoiceType, taggedChoiceType2, dynamicOps -> pair -> pair.mapFirst(string -> (String)field_15824.getOrDefault(string, string))
+				"BlockEntityIdFix",
+				taggedChoiceType,
+				taggedChoiceType2,
+				dynamicOps -> pair -> pair.mapFirst(string -> (String)RENAMED_BLOCK_ENTITIES.getOrDefault(string, string))
 			)
 		);
 	}

@@ -11,7 +11,7 @@ import java.util.Map;
 import net.minecraft.datafixers.TypeReferences;
 
 public class EntityIdFix extends DataFix {
-	private static final Map<String, String> field_15895 = DataFixUtils.make(Maps.<String, String>newHashMap(), hashMap -> {
+	private static final Map<String, String> RENAMED_ENTITIES = DataFixUtils.make(Maps.<String, String>newHashMap(), hashMap -> {
 		hashMap.put("AreaEffectCloud", "minecraft:area_effect_cloud");
 		hashMap.put("ArmorStand", "minecraft:armor_stand");
 		hashMap.put("Arrow", "minecraft:arrow");
@@ -102,7 +102,7 @@ public class EntityIdFix extends DataFix {
 		return TypeRewriteRule.seq(
 			this.convertUnchecked("item stack entity name hook converter", type, type2),
 			this.fixTypeEverywhere(
-				"EntityIdFix", taggedChoiceType, taggedChoiceType2, dynamicOps -> pair -> pair.mapFirst(string -> (String)field_15895.getOrDefault(string, string))
+				"EntityIdFix", taggedChoiceType, taggedChoiceType2, dynamicOps -> pair -> pair.mapFirst(string -> (String)RENAMED_ENTITIES.getOrDefault(string, string))
 			)
 		);
 	}

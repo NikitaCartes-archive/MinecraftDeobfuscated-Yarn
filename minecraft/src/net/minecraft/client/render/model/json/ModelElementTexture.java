@@ -26,7 +26,7 @@ public class ModelElementTexture {
 		if (this.uvs == null) {
 			throw new NullPointerException("uvs");
 		} else {
-			int j = this.method_3413(i);
+			int j = this.getRotatedUVIndex(i);
 			return this.uvs[j != 0 && j != 1 ? 2 : 0];
 		}
 	}
@@ -35,12 +35,12 @@ public class ModelElementTexture {
 		if (this.uvs == null) {
 			throw new NullPointerException("uvs");
 		} else {
-			int j = this.method_3413(i);
+			int j = this.getRotatedUVIndex(i);
 			return this.uvs[j != 0 && j != 3 ? 3 : 1];
 		}
 	}
 
-	private int method_3413(int i) {
+	private int getRotatedUVIndex(int i) {
 		return (i + this.rotation / 90) % 4;
 	}
 
@@ -55,15 +55,15 @@ public class ModelElementTexture {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class class_788 implements JsonDeserializer<ModelElementTexture> {
+	static class Deserializer implements JsonDeserializer<ModelElementTexture> {
 		public ModelElementTexture method_3418(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
-			float[] fs = this.method_3419(jsonObject);
-			int i = this.method_3420(jsonObject);
+			float[] fs = this.deserializeUVs(jsonObject);
+			int i = this.deserializeRotation(jsonObject);
 			return new ModelElementTexture(fs, i);
 		}
 
-		protected int method_3420(JsonObject jsonObject) {
+		protected int deserializeRotation(JsonObject jsonObject) {
 			int i = JsonHelper.getInt(jsonObject, "rotation", 0);
 			if (i >= 0 && i % 90 == 0 && i / 90 <= 3) {
 				return i;
@@ -73,7 +73,7 @@ public class ModelElementTexture {
 		}
 
 		@Nullable
-		private float[] method_3419(JsonObject jsonObject) {
+		private float[] deserializeUVs(JsonObject jsonObject) {
 			if (!jsonObject.has("uv")) {
 				return null;
 			} else {

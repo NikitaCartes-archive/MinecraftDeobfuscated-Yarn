@@ -6,10 +6,10 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.Renderer;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -56,15 +56,15 @@ public class WorldGenAttemptDebugRenderer implements RenderDebug.DebugRenderer {
 		GlStateManager.disableTexture();
 		new BlockPos(playerEntity.x, 0.0, playerEntity.z);
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-		vertexBuffer.begin(5, VertexFormats.POSITION_COLOR);
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 
 		for (int i = 0; i < this.field_4640.size(); i++) {
 			BlockPos blockPos2 = (BlockPos)this.field_4640.get(i);
 			Float float_ = (Float)this.field_4635.get(i);
 			float h = float_ / 2.0F;
-			Renderer.renderCuboid(
-				vertexBuffer,
+			WorldRenderer.buildBox(
+				bufferBuilder,
 				(double)((float)blockPos2.getX() + 0.5F - h) - d,
 				(double)((float)blockPos2.getY() + 0.5F - h) - e,
 				(double)((float)blockPos2.getZ() + 0.5F - h) - g,

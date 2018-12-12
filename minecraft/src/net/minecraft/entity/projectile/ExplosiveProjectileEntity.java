@@ -9,7 +9,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.particle.Particle;
+import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -75,7 +75,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 
 	@Override
 	public void update() {
-		if (this.world.isRemote || (this.owner == null || !this.owner.invalid) && this.world.isBlockLoaded(new BlockPos(this))) {
+		if (this.world.isClient || (this.owner == null || !this.owner.invalid) && this.world.isBlockLoaded(new BlockPos(this))) {
 			super.update();
 			if (this.method_7468()) {
 				this.setOnFireFor(1);
@@ -116,7 +116,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 			this.velocityX *= (double)f;
 			this.velocityY *= (double)f;
 			this.velocityZ *= (double)f;
-			this.world.method_8406(this.getParticleType(), this.x, this.y + 0.5, this.z, 0.0, 0.0, 0.0);
+			this.world.method_8406(this.method_7467(), this.x, this.y + 0.5, this.z, 0.0, 0.0, 0.0);
 			this.setPosition(this.x, this.y, this.z);
 		} else {
 			this.invalidate();
@@ -127,7 +127,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 		return true;
 	}
 
-	protected Particle getParticleType() {
+	protected ParticleParameters method_7467() {
 		return ParticleTypes.field_11251;
 	}
 
@@ -181,7 +181,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 		if (this.isInvulnerableTo(damageSource)) {
 			return false;
 		} else {
-			this.method_5785();
+			this.scheduleVelocityUpdate();
 			if (damageSource.getAttacker() != null) {
 				Vec3d vec3d = damageSource.getAttacker().method_5720();
 				if (vec3d != null) {

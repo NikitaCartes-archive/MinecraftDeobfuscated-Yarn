@@ -63,8 +63,8 @@ public class TridentItem extends Item {
 			int j = this.getMaxUseTime(itemStack) - i;
 			if (j >= 10) {
 				int k = EnchantmentHelper.getRiptide(itemStack);
-				if (k <= 0 || playerEntity.method_5721()) {
-					if (!world.isRemote) {
+				if (k <= 0 || playerEntity.isInsideWaterOrRain()) {
+					if (!world.isClient) {
 						itemStack.applyDamage(1, playerEntity);
 						if (k == 0) {
 							TridentEntity tridentEntity = new TridentEntity(world, playerEntity, itemStack);
@@ -74,7 +74,7 @@ public class TridentItem extends Item {
 							}
 
 							world.spawnEntity(tridentEntity);
-							world.method_8449(null, tridentEntity, SoundEvents.field_15001, SoundCategory.field_15248, 1.0F, 1.0F);
+							world.playSoundFromEntity(null, tridentEntity, SoundEvents.field_15001, SoundCategory.field_15248, 1.0F, 1.0F);
 							if (!playerEntity.abilities.creativeMode) {
 								playerEntity.inventory.removeOne(itemStack);
 							}
@@ -109,7 +109,7 @@ public class TridentItem extends Item {
 							soundEvent = SoundEvents.field_14606;
 						}
 
-						world.method_8449(null, playerEntity, soundEvent, SoundCategory.field_15248, 1.0F, 1.0F);
+						world.playSoundFromEntity(null, playerEntity, soundEvent, SoundCategory.field_15248, 1.0F, 1.0F);
 					}
 				}
 			}
@@ -121,7 +121,7 @@ public class TridentItem extends Item {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.getDamage() >= itemStack.getDurability()) {
 			return new TypedActionResult<>(ActionResult.FAILURE, itemStack);
-		} else if (EnchantmentHelper.getRiptide(itemStack) > 0 && !playerEntity.method_5721()) {
+		} else if (EnchantmentHelper.getRiptide(itemStack) > 0 && !playerEntity.isInsideWaterOrRain()) {
 			return new TypedActionResult<>(ActionResult.FAILURE, itemStack);
 		} else {
 			playerEntity.setCurrentHand(hand);

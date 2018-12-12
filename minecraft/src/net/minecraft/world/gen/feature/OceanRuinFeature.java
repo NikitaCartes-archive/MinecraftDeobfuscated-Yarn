@@ -5,18 +5,16 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import net.minecraft.class_3145;
-import net.minecraft.class_3449;
-import net.minecraft.class_3485;
 import net.minecraft.sortme.structures.OceanTempleGenerator;
+import net.minecraft.sortme.structures.StructureManager;
+import net.minecraft.sortme.structures.StructureStart;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.config.feature.OceanRuinFeatureConfig;
 
-public class OceanRuinFeature extends class_3145<OceanRuinFeatureConfig> {
+public class OceanRuinFeature extends AbstractTempleFeature<OceanRuinFeatureConfig> {
 	public OceanRuinFeature(Function<Dynamic<?>, ? extends OceanRuinFeatureConfig> function) {
 		super(function);
 	}
@@ -33,12 +31,12 @@ public class OceanRuinFeature extends class_3145<OceanRuinFeatureConfig> {
 
 	@Override
 	protected int method_13773(ChunkGenerator<?> chunkGenerator) {
-		return chunkGenerator.getSettings().method_12564();
+		return chunkGenerator.method_12109().method_12564();
 	}
 
 	@Override
 	protected int method_13775(ChunkGenerator<?> chunkGenerator) {
-		return chunkGenerator.getSettings().method_12555();
+		return chunkGenerator.method_12109().method_12555();
 	}
 
 	@Override
@@ -72,19 +70,19 @@ public class OceanRuinFeature extends class_3145<OceanRuinFeatureConfig> {
 		}
 	}
 
-	public static class class_3412 extends class_3449 {
+	public static class class_3412 extends StructureStart {
 		public class_3412(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
 			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, class_3485 arg, int i, int j, Biome biome) {
-			OceanRuinFeatureConfig oceanRuinFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.OCEAN_RUIN);
+		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+			OceanRuinFeatureConfig oceanRuinFeatureConfig = chunkGenerator.method_12105(biome, Feature.OCEAN_RUIN);
 			int k = i * 16;
 			int l = j * 16;
 			BlockPos blockPos = new BlockPos(k, 90, l);
 			Rotation rotation = Rotation.values()[this.field_16715.nextInt(Rotation.values().length)];
-			OceanTempleGenerator.method_14827(arg, blockPos, rotation, this.children, this.field_16715, oceanRuinFeatureConfig);
+			OceanTempleGenerator.method_14827(structureManager, blockPos, rotation, this.children, this.field_16715, oceanRuinFeatureConfig);
 			this.method_14969();
 		}
 	}

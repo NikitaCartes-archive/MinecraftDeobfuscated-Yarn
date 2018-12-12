@@ -16,7 +16,7 @@ public class GlazedTerracottaBlock extends HorizontalFacingBlock {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(field_11177, itemPlacementContext.method_8042().getOpposite());
+		return this.getDefaultState().with(field_11177, itemPlacementContext.getPlayerHorizontalFacing().getOpposite());
 	}
 
 	@Override

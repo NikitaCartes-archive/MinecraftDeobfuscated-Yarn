@@ -39,7 +39,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.FluidRayTraceMode;
 import net.minecraft.world.World;
 
-public class Item implements ItemContainer {
+public class Item implements ItemProvider {
 	public static final Map<Block, Item> BLOCK_ITEM_MAP = Maps.<Block, Item>newHashMap();
 	private static final ItemPropertyGetter GETTER_DAMAGED = (itemStack, world, livingEntity) -> itemStack.isDamaged() ? 1.0F : 0.0F;
 	private static final ItemPropertyGetter GETTER_DAMAGE = (itemStack, world, livingEntity) -> MathHelper.clamp(
@@ -63,7 +63,7 @@ public class Item implements ItemContainer {
 	private final Rarity rarity;
 	private final int fullStackSize;
 	private final int durability;
-	private final Item containerItem;
+	private final Item recipeRemainder;
 	@Nullable
 	private String translationKey;
 
@@ -87,7 +87,7 @@ public class Item implements ItemContainer {
 		this.addProperty(new Identifier("custom_model_data"), GETTER_CUSTOM_MODEL_DATA);
 		this.itemGroup = settings.itemGroup;
 		this.rarity = settings.rarity;
-		this.containerItem = settings.containerItem;
+		this.recipeRemainder = settings.recipeRemainder;
 		this.durability = settings.durability;
 		this.fullStackSize = settings.fullStackSize;
 		if (this.durability > 0) {
@@ -197,12 +197,12 @@ public class Item implements ItemContainer {
 	}
 
 	@Nullable
-	public final Item getContainerItem() {
-		return this.containerItem;
+	public final Item getRecipeRemainder() {
+		return this.recipeRemainder;
 	}
 
-	public boolean hasContainerItem() {
-		return this.containerItem != null;
+	public boolean hasRecipeRemainder() {
+		return this.recipeRemainder != null;
 	}
 
 	public void onUpdate(ItemStack itemStack, World world, Entity entity, int i, boolean bl) {
@@ -227,7 +227,7 @@ public class Item implements ItemContainer {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void addInformation(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
 	}
 
 	public TextComponent getTranslatedNameTrimmed(ItemStack itemStack) {
@@ -323,7 +323,7 @@ public class Item implements ItemContainer {
 	public static class Settings {
 		private int fullStackSize = 64;
 		private int durability;
-		private Item containerItem;
+		private Item recipeRemainder;
 		private ItemGroup itemGroup;
 		private Rarity rarity = Rarity.field_8906;
 
@@ -346,8 +346,8 @@ public class Item implements ItemContainer {
 			return this;
 		}
 
-		public Item.Settings containerItem(Item item) {
-			this.containerItem = item;
+		public Item.Settings recipeRemainder(Item item) {
+			this.recipeRemainder = item;
 			return this;
 		}
 

@@ -4,7 +4,6 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.enums.BambooLeaves;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -39,7 +38,7 @@ public class SaplingBambooBlock extends Block implements Fertilizable {
 
 	@Override
 	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (random.nextInt(3) == 0 && world.isAir(blockPos.up()) && world.method_8624(blockPos.up(), 0) >= 9) {
+		if (random.nextInt(3) == 0 && world.isAir(blockPos.up()) && world.getLightLevel(blockPos.up(), 0) >= 9) {
 			this.method_9351(world, blockPos);
 		}
 	}
@@ -50,7 +49,9 @@ public class SaplingBambooBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if (!blockState.canPlaceAt(iWorld, blockPos)) {
 			return Blocks.field_10124.getDefaultState();
 		} else {
@@ -58,7 +59,7 @@ public class SaplingBambooBlock extends Block implements Fertilizable {
 				iWorld.setBlockState(blockPos, Blocks.field_10211.getDefaultState(), 2);
 			}
 
-			return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		}
 	}
 

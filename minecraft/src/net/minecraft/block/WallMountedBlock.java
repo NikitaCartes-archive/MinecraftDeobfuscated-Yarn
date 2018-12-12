@@ -20,13 +20,13 @@ public class WallMountedBlock extends HorizontalFacingBlock {
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		Direction direction = method_10119(blockState).getOpposite();
-		BlockPos blockPos2 = blockPos.method_10093(direction);
+		BlockPos blockPos2 = blockPos.offset(direction);
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
 		Block block = blockState2.getBlock();
 		if (method_9553(block)) {
 			return false;
 		} else {
-			boolean bl = Block.method_9501(blockState2.method_11628(viewableWorld, blockPos2), direction.getOpposite());
+			boolean bl = Block.isFaceFullCube(blockState2.getCollisionShape(viewableWorld, blockPos2), direction.getOpposite());
 			return direction == Direction.UP ? block == Blocks.field_10312 || bl : !method_9581(block) && bl;
 		}
 	}
@@ -34,12 +34,12 @@ public class WallMountedBlock extends HorizontalFacingBlock {
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		for (Direction direction : itemPlacementContext.method_7718()) {
+		for (Direction direction : itemPlacementContext.getPlacementFacings()) {
 			BlockState blockState;
 			if (direction.getAxis() == Direction.Axis.Y) {
 				blockState = this.getDefaultState()
 					.with(field_11007, direction == Direction.UP ? WallMountLocation.field_12473 : WallMountLocation.field_12475)
-					.with(field_11177, itemPlacementContext.method_8042());
+					.with(field_11177, itemPlacementContext.getPlayerHorizontalFacing());
 			} else {
 				blockState = this.getDefaultState().with(field_11007, WallMountLocation.field_12471).with(field_11177, direction.getOpposite());
 			}
@@ -53,10 +53,12 @@ public class WallMountedBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		return method_10119(blockState).getOpposite() == direction && !blockState.canPlaceAt(iWorld, blockPos)
 			? Blocks.field_10124.getDefaultState()
-			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	protected static Direction method_10119(BlockState blockState) {

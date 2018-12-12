@@ -72,7 +72,7 @@ public class PrimedTNTEntity extends Entity {
 		this.fuseTimer--;
 		if (this.fuseTimer <= 0) {
 			this.invalidate();
-			if (!this.world.isRemote) {
+			if (!this.world.isClient) {
 				this.explode();
 			}
 		} else {

@@ -20,12 +20,12 @@ public class CheckerboardBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	public Biome method_16359(int i, int j) {
+	public Biome getBiome(int i, int j) {
 		return this.field_9481[Math.abs(((i >> this.field_9480) + (j >> this.field_9480)) % this.field_9481.length)];
 	}
 
 	@Override
-	public Biome[] method_8760(int i, int j, int k, int l, boolean bl) {
+	public Biome[] sampleBiomes(int i, int j, int k, int l, boolean bl) {
 		Biome[] biomes = new Biome[k * l];
 
 		for (int m = 0; m < l; m++) {
@@ -41,13 +41,13 @@ public class CheckerboardBiomeSource extends BiomeSource {
 
 	@Nullable
 	@Override
-	public BlockPos method_8762(int i, int j, int k, List<Biome> list, Random random) {
+	public BlockPos locateBiome(int i, int j, int k, List<Biome> list, Random random) {
 		return null;
 	}
 
 	@Override
 	public boolean hasStructureFeature(StructureFeature<?> structureFeature) {
-		return (Boolean)this.STRUCTURE_FEATURES.computeIfAbsent(structureFeature, structureFeaturex -> {
+		return (Boolean)this.structureFeatures.computeIfAbsent(structureFeature, structureFeaturex -> {
 			for (Biome biome : this.field_9481) {
 				if (biome.hasStructureFeature(structureFeaturex)) {
 					return true;
@@ -62,7 +62,7 @@ public class CheckerboardBiomeSource extends BiomeSource {
 	public Set<BlockState> getTopMaterials() {
 		if (this.topMaterials.isEmpty()) {
 			for (Biome biome : this.field_9481) {
-				this.topMaterials.add(biome.getSurfaceConfig().getTopMaterial());
+				this.topMaterials.add(biome.method_8722().getTopMaterial());
 			}
 		}
 
@@ -70,7 +70,7 @@ public class CheckerboardBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	public Set<Biome> method_8763(int i, int j, int k) {
+	public Set<Biome> getBiomesInArea(int i, int j, int k) {
 		return Sets.<Biome>newHashSet(this.field_9481);
 	}
 }

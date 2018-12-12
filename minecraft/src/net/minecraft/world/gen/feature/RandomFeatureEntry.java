@@ -9,8 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.FeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class RandomFeatureEntry<FC extends FeatureConfig> {
 	public final Feature<FC> feature;
@@ -24,7 +23,7 @@ public class RandomFeatureEntry<FC extends FeatureConfig> {
 	}
 
 	public RandomFeatureEntry(Feature<FC> feature, Dynamic<?> dynamic, float f) {
-		this(feature, feature.deserialize(dynamic), Float.valueOf(f));
+		this(feature, feature.method_13148(dynamic), Float.valueOf(f));
 	}
 
 	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
@@ -43,8 +42,8 @@ public class RandomFeatureEntry<FC extends FeatureConfig> {
 		);
 	}
 
-	public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, Random random, BlockPos blockPos) {
-		return this.feature.generate(iWorld, chunkGenerator, random, blockPos, this.config);
+	public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos) {
+		return this.feature.method_13151(iWorld, chunkGenerator, random, blockPos, this.config);
 	}
 
 	public static <T> RandomFeatureEntry<?> deserialize(Dynamic<T> dynamic) {

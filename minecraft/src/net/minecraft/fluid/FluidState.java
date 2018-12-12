@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.render.block.BlockRenderLayer;
-import net.minecraft.particle.Particle;
+import net.minecraft.particle.ParticleParameters;
 import net.minecraft.state.PropertyContainer;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.Property;
@@ -52,7 +52,7 @@ public interface FluidState extends PropertyContainer<FluidState> {
 			for (int j = -1; j <= 1; j++) {
 				BlockPos blockPos2 = blockPos.add(i, 0, j);
 				FluidState fluidState = blockView.getFluidState(blockPos2);
-				if (!fluidState.getFluid().matchesType(this.getFluid()) && !blockView.getBlockState(blockPos2).method_11598(blockView, blockPos2)) {
+				if (!fluidState.getFluid().matchesType(this.getFluid()) && !blockView.getBlockState(blockPos2).isFullOpaque(blockView, blockPos2)) {
 					return true;
 				}
 			}
@@ -88,8 +88,8 @@ public interface FluidState extends PropertyContainer<FluidState> {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	default Particle method_15766() {
-		return this.getFluid().getParticle();
+	default ParticleParameters method_15766() {
+		return this.getFluid().method_15787();
 	}
 
 	@Environment(EnvType.CLIENT)

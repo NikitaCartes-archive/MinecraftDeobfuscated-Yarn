@@ -21,5 +21,5 @@ public abstract class AbstractListTag<T extends Tag> extends AbstractList<T> imp
 
 	public abstract void append(int i, Tag tag);
 
-	public abstract void remove(int i);
+	public abstract void removeAt(int i);
 }

@@ -57,7 +57,7 @@ public abstract class RealmsSimpleScrolledSelectionList extends RealmsGuiEventLi
 	}
 
 	public void scroll(int i) {
-		this.proxy.scrollByY(i);
+		this.proxy.scroll(i);
 	}
 
 	public int getScroll() {

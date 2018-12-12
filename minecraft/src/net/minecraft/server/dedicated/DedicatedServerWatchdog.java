@@ -11,7 +11,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportElement;
+import net.minecraft.util.crash.CrashReportSection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,7 +28,7 @@ public class DedicatedServerWatchdog implements Runnable {
 	public void run() {
 		while (this.server.isRunning()) {
 			long l = this.server.getServerStartTime();
-			long m = SystemUtil.getMeasuringTimeMili();
+			long m = SystemUtil.getMeasuringTimeMs();
 			long n = m - l;
 			if (n > this.maxTickTime) {
 				LOGGER.fatal(
@@ -53,8 +53,8 @@ public class DedicatedServerWatchdog implements Runnable {
 
 				CrashReport crashReport = new CrashReport("Watching Server", error);
 				this.server.populateCrashReport(crashReport);
-				CrashReportElement crashReportElement = crashReport.addElement("Thread Dump");
-				crashReportElement.add("Threads", stringBuilder);
+				CrashReportSection crashReportSection = crashReport.method_562("Thread Dump");
+				crashReportSection.add("Threads", stringBuilder);
 				File file = new File(
 					new File(this.server.getRunDirectory(), "crash-reports"), "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-server.txt"
 				);

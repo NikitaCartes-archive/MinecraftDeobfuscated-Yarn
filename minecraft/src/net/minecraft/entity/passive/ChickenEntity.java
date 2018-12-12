@@ -27,14 +27,14 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class ChickenEntity extends AnimalEntity {
-	private static final Ingredient field_6742 = Ingredient.ofItems(Items.field_8317, Items.field_8188, Items.field_8706, Items.field_8309);
+	private static final Ingredient BREEDING_INGREDIENT = Ingredient.method_8091(Items.field_8317, Items.field_8188, Items.field_8706, Items.field_8309);
 	public float field_6741;
 	public float field_6743;
 	public float field_6738;
 	public float field_6736;
 	public float field_6737 = 1.0F;
 	public int eggLayTime;
-	public boolean field_6740;
+	public boolean jockey;
 
 	public ChickenEntity(World world) {
 		super(EntityType.CHICKEN, world);
@@ -48,7 +48,7 @@ public class ChickenEntity extends AnimalEntity {
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new class_1374(this, 1.4));
 		this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
-		this.goalSelector.add(3, new TemptGoal(this, 1.0, false, field_6742));
+		this.goalSelector.add(3, new TemptGoal(this, 1.0, false, BREEDING_INGREDIENT));
 		this.goalSelector.add(4, new FollowParentGoal(this, 1.1));
 		this.goalSelector.add(5, new class_1394(this, 1.0));
 		this.goalSelector.add(6, new class_1361(this, PlayerEntity.class, 6.0F));
@@ -84,9 +84,9 @@ public class ChickenEntity extends AnimalEntity {
 		}
 
 		this.field_6741 = this.field_6741 + this.field_6737 * 2.0F;
-		if (!this.world.isRemote && !this.isChild() && !this.method_6472() && --this.eggLayTime <= 0) {
+		if (!this.world.isClient && !this.isChild() && !this.hasJockey() && --this.eggLayTime <= 0) {
 			this.playSoundAtEntity(SoundEvents.field_15219, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-			this.dropItem(Items.field_8803);
+			this.method_5706(Items.field_8803);
 			this.eggLayTime = this.random.nextInt(6000) + 6000;
 		}
 	}
@@ -120,19 +120,19 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean method_6481(ItemStack itemStack) {
-		return field_6742.matches(itemStack);
+	public boolean isBreedingItem(ItemStack itemStack) {
+		return BREEDING_INGREDIENT.matches(itemStack);
 	}
 
 	@Override
-	protected int method_6110(PlayerEntity playerEntity) {
-		return this.method_6472() ? 10 : super.method_6110(playerEntity);
+	protected int getCurrentExperience(PlayerEntity playerEntity) {
+		return this.hasJockey() ? 10 : super.getCurrentExperience(playerEntity);
 	}
 
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		this.field_6740 = compoundTag.getBoolean("IsChickenJockey");
+		this.jockey = compoundTag.getBoolean("IsChickenJockey");
 		if (compoundTag.containsKey("EggLayTime")) {
 			this.eggLayTime = compoundTag.getInt("EggLayTime");
 		}
@@ -141,13 +141,13 @@ public class ChickenEntity extends AnimalEntity {
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putBoolean("IsChickenJockey", this.field_6740);
+		compoundTag.putBoolean("IsChickenJockey", this.jockey);
 		compoundTag.putInt("EggLayTime", this.eggLayTime);
 	}
 
 	@Override
-	public boolean method_5974(double d) {
-		return this.method_6472() && !this.hasPassengers();
+	public boolean canImmediatelyDespawn(double d) {
+		return this.hasJockey() && !this.hasPassengers();
 	}
 
 	@Override
@@ -163,11 +163,11 @@ public class ChickenEntity extends AnimalEntity {
 		}
 	}
 
-	public boolean method_6472() {
-		return this.field_6740;
+	public boolean hasJockey() {
+		return this.jockey;
 	}
 
-	public void method_6473(boolean bl) {
-		this.field_6740 = bl;
+	public void setHasJockey(boolean bl) {
+		this.jockey = bl;
 	}
 }

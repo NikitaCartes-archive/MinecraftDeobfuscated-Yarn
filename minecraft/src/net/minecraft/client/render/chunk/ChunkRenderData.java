@@ -5,9 +5,9 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_854;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.render.VertexBuffer;
-import net.minecraft.client.render.block.BlockRenderLayer;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
@@ -33,7 +33,7 @@ public class ChunkRenderData {
 	private boolean empty = true;
 	private final List<BlockEntity> blockEntities = Lists.<BlockEntity>newArrayList();
 	private class_854 field_4455 = new class_854();
-	private VertexBuffer.State bufferState;
+	private BufferBuilder.State bufferState;
 
 	public boolean isEmpty() {
 		return this.empty;
@@ -72,11 +72,11 @@ public class ChunkRenderData {
 		this.field_4455 = arg;
 	}
 
-	public VertexBuffer.State getBufferState() {
+	public BufferBuilder.State getBufferState() {
 		return this.bufferState;
 	}
 
-	public void setBufferState(VertexBuffer.State state) {
+	public void setBufferState(BufferBuilder.State state) {
 		this.bufferState = state;
 	}
 }

@@ -8,10 +8,10 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
-import net.minecraft.world.gen.config.feature.FeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
+import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 	protected static final VoxelShape field_11304 = Block.createCubeShape(5.0, 0.0, 5.0, 11.0, 6.0, 11.0);
@@ -57,7 +57,7 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return blockState.method_11598(blockView, blockPos);
+		return blockState.isFullOpaque(blockView, blockPos);
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
 		Block block = blockState2.getBlock();
 		return block != Blocks.field_10402 && block != Blocks.field_10520
-			? viewableWorld.method_8624(blockPos, 0) < 13 && this.canPlantOnTop(blockState2, viewableWorld, blockPos2)
+			? viewableWorld.getLightLevel(blockPos, 0) < 13 && this.canPlantOnTop(blockState2, viewableWorld, blockPos2)
 			: true;
 	}
 
@@ -80,8 +80,8 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 		}
 
 		if (feature != null
-			&& feature.generate(
-				iWorld, (ChunkGenerator<? extends ChunkGeneratorSettings>)iWorld.getChunkManager().getChunkGenerator(), random, blockPos, FeatureConfig.DEFAULT
+			&& feature.method_13151(
+				iWorld, (ChunkGenerator<? extends ChunkGeneratorConfig>)iWorld.getChunkManager().getChunkGenerator(), random, blockPos, FeatureConfig.field_13603
 			)) {
 			return true;
 		} else {
@@ -106,7 +106,7 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public boolean method_9552(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean shouldPostProcess(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return true;
 	}
 }

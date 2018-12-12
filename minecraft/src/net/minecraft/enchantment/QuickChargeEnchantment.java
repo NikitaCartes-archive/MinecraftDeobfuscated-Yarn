@@ -4,7 +4,7 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class QuickChargeEnchantment extends Enchantment {
 	public QuickChargeEnchantment(Enchantment.Weight weight, EquipmentSlot... equipmentSlots) {
-		super(weight, EnchantmentTarget.field_9081, equipmentSlots);
+		super(weight, EnchantmentTarget.CROSSBOW, equipmentSlots);
 	}
 
 	@Override

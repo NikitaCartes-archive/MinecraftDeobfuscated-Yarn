@@ -35,26 +35,24 @@ public class BackupPromptGui extends Gui {
 		super.onInitialized();
 		this.wrappedText.clear();
 		this.wrappedText.addAll(this.fontRenderer.wrapStringToWidthAsList(this.subtitle, this.width - 50));
-		this.addButton(new OptionButtonWidget(0, this.width / 2 - 155, 100 + (this.wrappedText.size() + 1) * this.fontRenderer.FONT_HEIGHT, this.confirmText) {
+		this.addButton(new OptionButtonWidget(0, this.width / 2 - 155, 100 + (this.wrappedText.size() + 1) * this.fontRenderer.fontHeight, this.confirmText) {
 			@Override
 			public void onPressed(double d, double e) {
 				BackupPromptGui.this.callback.proceed(true);
 			}
 		});
-		this.addButton(new OptionButtonWidget(1, this.width / 2 - 155 + 160, 100 + (this.wrappedText.size() + 1) * this.fontRenderer.FONT_HEIGHT, this.skipText) {
+		this.addButton(new OptionButtonWidget(1, this.width / 2 - 155 + 160, 100 + (this.wrappedText.size() + 1) * this.fontRenderer.fontHeight, this.skipText) {
 			@Override
 			public void onPressed(double d, double e) {
 				BackupPromptGui.this.callback.proceed(false);
 			}
 		});
-		this.addButton(
-			new ButtonWidget(1, this.width / 2 - 155 + 80, 124 + (this.wrappedText.size() + 1) * this.fontRenderer.FONT_HEIGHT, 150, 20, this.cancelText) {
-				@Override
-				public void onPressed(double d, double e) {
-					BackupPromptGui.this.client.openGui(BackupPromptGui.this.parent);
-				}
+		this.addButton(new ButtonWidget(1, this.width / 2 - 155 + 80, 124 + (this.wrappedText.size() + 1) * this.fontRenderer.fontHeight, 150, 20, this.cancelText) {
+			@Override
+			public void onPressed(double d, double e) {
+				BackupPromptGui.this.client.openGui(BackupPromptGui.this.parent);
 			}
-		);
+		});
 	}
 
 	@Override
@@ -65,14 +63,14 @@ public class BackupPromptGui extends Gui {
 
 		for (String string : this.wrappedText) {
 			this.drawStringCentered(this.fontRenderer, string, this.width / 2, k, 16777215);
-			k += this.fontRenderer.FONT_HEIGHT;
+			k += this.fontRenderer.fontHeight;
 		}
 
 		super.draw(i, j, f);
 	}
 
 	@Override
-	public boolean canClose() {
+	public boolean doesEscapeKeyClose() {
 		return false;
 	}
 

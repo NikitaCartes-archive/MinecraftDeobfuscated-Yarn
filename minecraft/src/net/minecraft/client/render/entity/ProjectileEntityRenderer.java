@@ -3,8 +3,8 @@ package net.minecraft.client.render.entity;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.util.math.MathHelper;
@@ -15,8 +15,8 @@ public abstract class ProjectileEntityRenderer<T extends ProjectileEntity> exten
 		super(entityRenderDispatcher);
 	}
 
-	public void method_3875(T projectileEntity, double d, double e, double f, float g, float h) {
-		this.method_3925(projectileEntity);
+	public void render(T projectileEntity, double d, double e, double f, float g, float h) {
+		this.bindEntityTexture(projectileEntity);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.pushMatrix();
 		GlStateManager.disableLighting();
@@ -24,7 +24,7 @@ public abstract class ProjectileEntityRenderer<T extends ProjectileEntity> exten
 		GlStateManager.rotatef(MathHelper.lerp(h, projectileEntity.prevYaw, projectileEntity.yaw) - 90.0F, 0.0F, 1.0F, 0.0F);
 		GlStateManager.rotatef(MathHelper.lerp(h, projectileEntity.prevPitch, projectileEntity.pitch), 0.0F, 0.0F, 1.0F);
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		int i = 0;
 		float j = 0.0F;
 		float k = 0.5F;
@@ -45,38 +45,38 @@ public abstract class ProjectileEntityRenderer<T extends ProjectileEntity> exten
 		GlStateManager.rotatef(45.0F, 1.0F, 0.0F, 0.0F);
 		GlStateManager.scalef(0.05625F, 0.05625F, 0.05625F);
 		GlStateManager.translatef(-4.0F, 0.0F, 0.0F);
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.enableColorMaterial();
-			GlStateManager.setupSolidRenderingTextureCombine(this.method_3929(projectileEntity));
+			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(projectileEntity));
 		}
 
 		GlStateManager.normal3f(0.05625F, 0.0F, 0.0F);
-		vertexBuffer.begin(7, VertexFormats.POSITION_UV);
-		vertexBuffer.vertex(-7.0, -2.0, -2.0).texture(0.0, 0.15625).next();
-		vertexBuffer.vertex(-7.0, -2.0, 2.0).texture(0.15625, 0.15625).next();
-		vertexBuffer.vertex(-7.0, 2.0, 2.0).texture(0.15625, 0.3125).next();
-		vertexBuffer.vertex(-7.0, 2.0, -2.0).texture(0.0, 0.3125).next();
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+		bufferBuilder.vertex(-7.0, -2.0, -2.0).texture(0.0, 0.15625).next();
+		bufferBuilder.vertex(-7.0, -2.0, 2.0).texture(0.15625, 0.15625).next();
+		bufferBuilder.vertex(-7.0, 2.0, 2.0).texture(0.15625, 0.3125).next();
+		bufferBuilder.vertex(-7.0, 2.0, -2.0).texture(0.0, 0.3125).next();
 		tessellator.draw();
 		GlStateManager.normal3f(-0.05625F, 0.0F, 0.0F);
-		vertexBuffer.begin(7, VertexFormats.POSITION_UV);
-		vertexBuffer.vertex(-7.0, 2.0, -2.0).texture(0.0, 0.15625).next();
-		vertexBuffer.vertex(-7.0, 2.0, 2.0).texture(0.15625, 0.15625).next();
-		vertexBuffer.vertex(-7.0, -2.0, 2.0).texture(0.15625, 0.3125).next();
-		vertexBuffer.vertex(-7.0, -2.0, -2.0).texture(0.0, 0.3125).next();
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+		bufferBuilder.vertex(-7.0, 2.0, -2.0).texture(0.0, 0.15625).next();
+		bufferBuilder.vertex(-7.0, 2.0, 2.0).texture(0.15625, 0.15625).next();
+		bufferBuilder.vertex(-7.0, -2.0, 2.0).texture(0.15625, 0.3125).next();
+		bufferBuilder.vertex(-7.0, -2.0, -2.0).texture(0.0, 0.3125).next();
 		tessellator.draw();
 
 		for (int u = 0; u < 4; u++) {
 			GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
 			GlStateManager.normal3f(0.0F, 0.0F, 0.05625F);
-			vertexBuffer.begin(7, VertexFormats.POSITION_UV);
-			vertexBuffer.vertex(-8.0, -2.0, 0.0).texture(0.0, 0.0).next();
-			vertexBuffer.vertex(8.0, -2.0, 0.0).texture(0.5, 0.0).next();
-			vertexBuffer.vertex(8.0, 2.0, 0.0).texture(0.5, 0.15625).next();
-			vertexBuffer.vertex(-8.0, 2.0, 0.0).texture(0.0, 0.15625).next();
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+			bufferBuilder.vertex(-8.0, -2.0, 0.0).texture(0.0, 0.0).next();
+			bufferBuilder.vertex(8.0, -2.0, 0.0).texture(0.5, 0.0).next();
+			bufferBuilder.vertex(8.0, 2.0, 0.0).texture(0.5, 0.15625).next();
+			bufferBuilder.vertex(-8.0, 2.0, 0.0).texture(0.0, 0.15625).next();
 			tessellator.draw();
 		}
 
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}
@@ -84,6 +84,6 @@ public abstract class ProjectileEntityRenderer<T extends ProjectileEntity> exten
 		GlStateManager.disableRescaleNormal();
 		GlStateManager.enableLighting();
 		GlStateManager.popMatrix();
-		super.method_3936(projectileEntity, d, e, f, g, h);
+		super.render(projectileEntity, d, e, f, g, h);
 	}
 }

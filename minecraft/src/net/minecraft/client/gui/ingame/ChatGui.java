@@ -74,12 +74,12 @@ public class ChatGui extends Gui {
 		this.field_2387 = this.client.hudInGame.getHudChat().method_1809().size();
 		this.chatField = new TextFieldWidget(0, this.fontRenderer, 4, this.height - 12, this.width - 4, 12);
 		this.chatField.setMaxLength(256);
-		this.chatField.method_1858(false);
-		this.chatField.method_1876(true);
+		this.chatField.setHasBorder(false);
+		this.chatField.setFocused(true);
 		this.chatField.setText(this.field_2384);
 		this.chatField.method_1856(false);
 		this.chatField.method_1854(this::method_2102);
-		this.chatField.method_1863(this::method_2111);
+		this.chatField.setChangedListener(this::method_2111);
 		this.listeners.add(this.chatField);
 		this.method_2110();
 	}
@@ -179,7 +179,7 @@ public class ChatGui extends Gui {
 	private void method_2110() {
 		this.field_2388 = null;
 		if (!this.field_2378) {
-			this.chatField.method_1887(null);
+			this.chatField.setSuggestion(null);
 			this.field_2385 = null;
 		}
 
@@ -191,7 +191,7 @@ public class ChatGui extends Gui {
 			CommandDispatcher<CommandSource> commandDispatcher = this.client.player.networkHandler.method_2886();
 			this.field_2388 = commandDispatcher.parse(stringReader, this.client.player.networkHandler.getCommandSource());
 			if (this.field_2385 == null || !this.field_2378) {
-				StringReader stringReader2 = new StringReader(string.substring(0, Math.min(string.length(), this.chatField.getId())));
+				StringReader stringReader2 = new StringReader(string.substring(0, Math.min(string.length(), this.chatField.getCursor())));
 				if (stringReader2.canRead() && stringReader2.peek() == '/') {
 					stringReader2.skip();
 					ParseResults<CommandSource> parseResults = commandDispatcher.parse(stringReader2, this.client.player.networkHandler.getCommandSource());
@@ -213,7 +213,7 @@ public class ChatGui extends Gui {
 	private void method_2116() {
 		if (((Suggestions)this.field_2386.join()).isEmpty()
 			&& !this.field_2388.getExceptions().isEmpty()
-			&& this.chatField.getId() == this.chatField.getText().length()) {
+			&& this.chatField.getCursor() == this.chatField.getText().length()) {
 			int i = 0;
 
 			for (Entry<CommandNode<CommandSource>, CommandSyntaxException> entry : this.field_2388.getExceptions().entrySet()) {
@@ -237,7 +237,7 @@ public class ChatGui extends Gui {
 		}
 
 		this.field_2385 = null;
-		if (this.field_2380 && this.client.options.autoSuggestions) {
+		if (this.field_2380 && this.client.field_1690.autoSuggestions) {
 			this.method_2112();
 		}
 	}
@@ -566,11 +566,9 @@ public class ChatGui extends Gui {
 		}
 
 		public boolean method_2117(double d) {
-			int i = (int)(
-				ChatGui.this.client.mouse.method_1603() * (double)ChatGui.this.client.window.getScaledWidth() / (double)ChatGui.this.client.window.method_4480()
-			);
+			int i = (int)(ChatGui.this.client.field_1729.getX() * (double)ChatGui.this.client.window.getScaledWidth() / (double)ChatGui.this.client.window.method_4480());
 			int j = (int)(
-				ChatGui.this.client.mouse.method_1604() * (double)ChatGui.this.client.window.getScaledHeight() / (double)ChatGui.this.client.window.method_4507()
+				ChatGui.this.client.field_1729.getY() * (double)ChatGui.this.client.window.getScaledHeight() / (double)ChatGui.this.client.window.method_4507()
 			);
 			if (this.field_2396.method_3318(i, j)) {
 				this.field_2395 = MathHelper.clamp((int)((double)this.field_2395 - d), 0, Math.max(this.field_2390.getList().size() - 10, 0));
@@ -626,7 +624,7 @@ public class ChatGui extends Gui {
 			}
 
 			Suggestion suggestion = (Suggestion)this.field_2390.getList().get(this.field_2392);
-			ChatGui.this.chatField.method_1887(ChatGui.method_2103(ChatGui.this.chatField.getText(), suggestion.apply(this.field_2394)));
+			ChatGui.this.chatField.setSuggestion(ChatGui.method_2103(ChatGui.this.chatField.getText(), suggestion.apply(this.field_2394)));
 		}
 
 		public void method_2122() {
@@ -634,7 +632,7 @@ public class ChatGui extends Gui {
 			ChatGui.this.field_2378 = true;
 			ChatGui.this.method_2108(suggestion.apply(this.field_2394));
 			int i = suggestion.getRange().getStart() + suggestion.getText().length();
-			ChatGui.this.chatField.method_1875(i);
+			ChatGui.this.chatField.setCursor(i);
 			ChatGui.this.chatField.method_1884(i);
 			this.method_2121(this.field_2392);
 			ChatGui.this.field_2378 = false;

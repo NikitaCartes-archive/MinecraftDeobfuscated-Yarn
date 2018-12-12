@@ -14,7 +14,6 @@ import net.minecraft.class_1386;
 import net.minecraft.class_1394;
 import net.minecraft.class_1404;
 import net.minecraft.class_3697;
-import net.minecraft.class_3730;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -22,6 +21,7 @@ import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.FollowOwnerGoal;
@@ -65,7 +65,7 @@ import net.minecraft.world.loot.context.LootContextTypes;
 import net.minecraft.world.loot.context.Parameters;
 
 public class CatEntity extends TameableEntity {
-	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.field_8429, Items.field_8209);
+	private static final Ingredient TAMING_INGREDIENT = Ingredient.method_8091(Items.field_8429, Items.field_8209);
 	private static final TrackedData<Integer> CAT_TYPE = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> field_16284 = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> field_16292 = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -80,7 +80,8 @@ public class CatEntity extends TameableEntity {
 		hashMap.put(6, new Identifier("textures/entity/cat/persian.png"));
 		hashMap.put(7, new Identifier("textures/entity/cat/ragdoll.png"));
 		hashMap.put(8, new Identifier("textures/entity/cat/white.png"));
-		hashMap.put(9, new Identifier("textures/entity/cat/all_black.png"));
+		hashMap.put(9, new Identifier("textures/entity/cat/jellie.png"));
+		hashMap.put(10, new Identifier("textures/entity/cat/all_black.png"));
 	});
 	private CatEntity.CatFleeGoal<PlayerEntity> fleeGoal;
 	private TemptGoal field_6810;
@@ -201,7 +202,7 @@ public class CatEntity extends TameableEntity {
 	@Override
 	protected SoundEvent getAmbientSound() {
 		if (this.isTamed()) {
-			if (this.method_6479()) {
+			if (this.isInLove()) {
 				return SoundEvents.field_14741;
 			} else {
 				return this.random.nextInt(4) == 0 ? SoundEvents.field_14589 : SoundEvents.field_15051;
@@ -243,7 +244,7 @@ public class CatEntity extends TameableEntity {
 
 	@Override
 	protected void method_6475(PlayerEntity playerEntity, ItemStack itemStack) {
-		if (this.method_6481(itemStack)) {
+		if (this.isBreedingItem(itemStack)) {
 			this.playSoundAtEntity(SoundEvents.field_16439, 1.0F, 1.0F);
 		}
 
@@ -332,31 +333,31 @@ public class CatEntity extends TameableEntity {
 	}
 
 	@Override
-	public boolean method_6474(AnimalEntity animalEntity) {
+	public boolean canBreedWith(AnimalEntity animalEntity) {
 		if (!this.isTamed()) {
 			return false;
 		} else if (!(animalEntity instanceof CatEntity)) {
 			return false;
 		} else {
 			CatEntity catEntity = (CatEntity)animalEntity;
-			return catEntity.isTamed() && super.method_6474(animalEntity);
+			return catEntity.isTamed() && super.canBreedWith(animalEntity);
 		}
 	}
 
 	@Nullable
 	@Override
-	public EntityData method_5943(
-		IWorld iWorld, LocalDifficulty localDifficulty, class_3730 arg, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	public EntityData prepareEntityData(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.method_5943(iWorld, localDifficulty, arg, entityData, compoundTag);
+		entityData = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		if (iWorld.method_8391() > 0.9F) {
-			this.getOcelotType(this.random.nextInt(10));
+			this.getOcelotType(this.random.nextInt(11));
 		} else {
-			this.getOcelotType(this.random.nextInt(9));
+			this.getOcelotType(this.random.nextInt(10));
 		}
 
 		if (Feature.SWAMP_HUT.method_14024(iWorld, new BlockPos(this))) {
-			this.getOcelotType(9);
+			this.getOcelotType(10);
 			this.setPersistent();
 		}
 
@@ -380,21 +381,21 @@ public class CatEntity extends TameableEntity {
 						this.setPersistent();
 						return true;
 					}
-				} else if (!this.world.isRemote && !this.method_6481(itemStack)) {
+				} else if (!this.world.isClient && !this.isBreedingItem(itemStack)) {
 					this.field_6321.method_6311(!this.isSitting());
 				}
 			}
-		} else if (this.method_6481(itemStack)) {
+		} else if (this.isBreedingItem(itemStack)) {
 			this.method_6475(playerEntity, itemStack);
-			if (!this.world.isRemote) {
+			if (!this.world.isClient) {
 				if (this.random.nextInt(3) == 0) {
 					this.method_6170(playerEntity);
 					this.method_6180(true);
 					this.field_6321.method_6311(true);
-					this.world.method_8421(this, (byte)7);
+					this.world.summonParticle(this, (byte)7);
 				} else {
 					this.method_6180(false);
-					this.world.method_8421(this, (byte)6);
+					this.world.summonParticle(this, (byte)6);
 				}
 			}
 
@@ -411,7 +412,7 @@ public class CatEntity extends TameableEntity {
 	}
 
 	@Override
-	public boolean method_6481(ItemStack itemStack) {
+	public boolean isBreedingItem(ItemStack itemStack) {
 		return TAMING_INGREDIENT.matches(itemStack);
 	}
 
@@ -421,7 +422,7 @@ public class CatEntity extends TameableEntity {
 	}
 
 	@Override
-	public boolean method_5974(double d) {
+	public boolean canImmediatelyDespawn(double d) {
 		return !this.isTamed() && this.age > 2400;
 	}
 
@@ -545,14 +546,14 @@ public class CatEntity extends TameableEntity {
 		public void start() {
 			if (this.field_16294 != null) {
 				this.entity.method_6176().method_6311(false);
-				this.entity.getNavigation().method_6337((double)this.field_16294.getX(), (double)this.field_16294.getY(), (double)this.field_16294.getZ(), 1.1F);
+				this.entity.getNavigation().startMovingTo((double)this.field_16294.getX(), (double)this.field_16294.getY(), (double)this.field_16294.getZ(), 1.1F);
 			}
 		}
 
 		@Override
 		public void onRemove() {
 			this.entity.method_16088(false);
-			float f = this.entity.world.method_8400(1.0F);
+			float f = this.entity.world.getSkyAngle(1.0F);
 			if (this.owner.getSleepTimer() >= 100 && (double)f > 0.77 && (double)f < 0.8 && (double)this.entity.world.getRandom().nextFloat() < 0.7) {
 				this.method_16097();
 			}
@@ -597,7 +598,7 @@ public class CatEntity extends TameableEntity {
 		public void tick() {
 			if (this.owner != null && this.field_16294 != null) {
 				this.entity.method_6176().method_6311(false);
-				this.entity.getNavigation().method_6337((double)this.field_16294.getX(), (double)this.field_16294.getY(), (double)this.field_16294.getZ(), 1.1F);
+				this.entity.getNavigation().startMovingTo((double)this.field_16294.getX(), (double)this.field_16294.getY(), (double)this.field_16294.getZ(), 1.1F);
 				if (this.entity.squaredDistanceTo(this.owner) < 2.5) {
 					this.field_16296++;
 					if (this.field_16296 > 16) {

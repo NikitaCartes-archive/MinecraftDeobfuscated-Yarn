@@ -4,8 +4,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishHookEntity;
@@ -26,14 +26,14 @@ public class FishHookEntityRenderer extends EntityRenderer<FishHookEntity> {
 
 	public void method_3974(FishHookEntity fishHookEntity, double d, double e, double f, float g, float h) {
 		PlayerEntity playerEntity = fishHookEntity.getOwner();
-		if (playerEntity != null && !this.field_4674) {
+		if (playerEntity != null && !this.renderOutlines) {
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef((float)d, (float)e, (float)f);
 			GlStateManager.enableRescaleNormal();
 			GlStateManager.scalef(0.5F, 0.5F, 0.5F);
-			this.method_3925(fishHookEntity);
+			this.bindEntityTexture(fishHookEntity);
 			Tessellator tessellator = Tessellator.getInstance();
-			VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
+			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 			int i = 1;
 			int j = 2;
 			float k = 0.03125F;
@@ -45,18 +45,18 @@ public class FishHookEntityRenderer extends EntityRenderer<FishHookEntity> {
 			float q = 0.5F;
 			GlStateManager.rotatef(180.0F - this.renderManager.field_4679, 0.0F, 1.0F, 0.0F);
 			GlStateManager.rotatef((float)(this.renderManager.settings.field_1850 == 2 ? -1 : 1) * -this.renderManager.field_4677, 1.0F, 0.0F, 0.0F);
-			if (this.field_4674) {
+			if (this.renderOutlines) {
 				GlStateManager.enableColorMaterial();
-				GlStateManager.setupSolidRenderingTextureCombine(this.method_3929(fishHookEntity));
+				GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(fishHookEntity));
 			}
 
-			vertexBuffer.begin(7, VertexFormats.POSITION_UV_NORMAL);
-			vertexBuffer.vertex(-0.5, -0.5, 0.0).texture(0.03125, 0.09375).normal(0.0F, 1.0F, 0.0F).next();
-			vertexBuffer.vertex(0.5, -0.5, 0.0).texture(0.0625, 0.09375).normal(0.0F, 1.0F, 0.0F).next();
-			vertexBuffer.vertex(0.5, 0.5, 0.0).texture(0.0625, 0.0625).normal(0.0F, 1.0F, 0.0F).next();
-			vertexBuffer.vertex(-0.5, 0.5, 0.0).texture(0.03125, 0.0625).normal(0.0F, 1.0F, 0.0F).next();
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV_NORMAL);
+			bufferBuilder.vertex(-0.5, -0.5, 0.0).texture(0.03125, 0.09375).normal(0.0F, 1.0F, 0.0F).next();
+			bufferBuilder.vertex(0.5, -0.5, 0.0).texture(0.0625, 0.09375).normal(0.0F, 1.0F, 0.0F).next();
+			bufferBuilder.vertex(0.5, 0.5, 0.0).texture(0.0625, 0.0625).normal(0.0F, 1.0F, 0.0F).next();
+			bufferBuilder.vertex(-0.5, 0.5, 0.0).texture(0.03125, 0.0625).normal(0.0F, 1.0F, 0.0F).next();
 			tessellator.draw();
-			if (this.field_4674) {
+			if (this.renderOutlines) {
 				GlStateManager.tearDownSolidRenderingTextureCombine();
 				GlStateManager.disableColorMaterial();
 			}
@@ -107,18 +107,18 @@ public class FishHookEntityRenderer extends EntityRenderer<FishHookEntity> {
 			double ai = (double)((float)(ab - af));
 			GlStateManager.disableTexture();
 			GlStateManager.disableLighting();
-			vertexBuffer.begin(3, VertexFormats.POSITION_COLOR);
+			bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
 			int aj = 16;
 
 			for (int ak = 0; ak <= 16; ak++) {
 				float al = (float)ak / 16.0F;
-				vertexBuffer.vertex(d + ag * (double)al, e + ah * (double)(al * al + al) * 0.5 + 0.25, f + ai * (double)al).color(0, 0, 0, 255).next();
+				bufferBuilder.vertex(d + ag * (double)al, e + ah * (double)(al * al + al) * 0.5 + 0.25, f + ai * (double)al).color(0, 0, 0, 255).next();
 			}
 
 			tessellator.draw();
 			GlStateManager.enableLighting();
 			GlStateManager.enableTexture();
-			super.method_3936(fishHookEntity, d, e, f, g, h);
+			super.render(fishHookEntity, d, e, f, g, h);
 		}
 	}
 

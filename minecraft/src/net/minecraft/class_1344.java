@@ -30,7 +30,7 @@ public class class_1344 extends Goal {
 			return false;
 		} else if (!this.field_6419.isOnFire()) {
 			return false;
-		} else if (!this.field_6418.getSkyLightLevel(new BlockPos(this.field_6419.x, this.field_6419.getBoundingBox().minY, this.field_6419.z))) {
+		} else if (!this.field_6418.isSkyVisible(new BlockPos(this.field_6419.x, this.field_6419.getBoundingBox().minY, this.field_6419.z))) {
 			return false;
 		} else if (!this.field_6419.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
 			return false;
@@ -54,7 +54,7 @@ public class class_1344 extends Goal {
 
 	@Override
 	public void start() {
-		this.field_6419.getNavigation().method_6337(this.field_6417, this.field_6416, this.field_6415, this.field_6420);
+		this.field_6419.getNavigation().startMovingTo(this.field_6417, this.field_6416, this.field_6415, this.field_6420);
 	}
 
 	@Nullable
@@ -64,7 +64,7 @@ public class class_1344 extends Goal {
 
 		for (int i = 0; i < 10; i++) {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);
-			if (!this.field_6418.getSkyLightLevel(blockPos2) && this.field_6419.method_6149(blockPos2) < 0.0F) {
+			if (!this.field_6418.isSkyVisible(blockPos2) && this.field_6419.method_6149(blockPos2) < 0.0F) {
 				return new Vec3d((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
 			}
 		}

@@ -5,7 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particle.DustParticle;
+import net.minecraft.particle.DustParticleParameters;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateFactory;
@@ -77,12 +77,12 @@ public class LeverBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
 		blockState = blockState.method_11572(field_11265);
 		boolean bl = (Boolean)blockState.get(field_11265);
-		if (world.isRemote) {
+		if (world.isClient) {
 			if (bl) {
 				method_10308(blockState, world, blockPos, 1.0F);
 			}
@@ -103,7 +103,7 @@ public class LeverBlock extends WallMountedBlock {
 		double d = (double)blockPos.getX() + 0.5 + 0.1 * (double)direction.getOffsetX() + 0.2 * (double)direction2.getOffsetX();
 		double e = (double)blockPos.getY() + 0.5 + 0.1 * (double)direction.getOffsetY() + 0.2 * (double)direction2.getOffsetY();
 		double g = (double)blockPos.getZ() + 0.5 + 0.1 * (double)direction.getOffsetZ() + 0.2 * (double)direction2.getOffsetZ();
-		iWorld.method_8406(new DustParticle(1.0F, 0.0F, 0.0F, f), d, e, g, 0.0, 0.0, 0.0);
+		iWorld.method_8406(new DustParticleParameters(1.0F, 0.0F, 0.0F, f), d, e, g, 0.0, 0.0, 0.0);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -126,12 +126,12 @@ public class LeverBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public int method_9524(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
 		return blockState.get(field_11265) ? 15 : 0;
 	}
 
 	@Override
-	public int method_9603(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+	public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
 		return blockState.get(field_11265) && method_10119(blockState) == direction ? 15 : 0;
 	}
 
@@ -142,7 +142,7 @@ public class LeverBlock extends WallMountedBlock {
 
 	private void method_10309(BlockState blockState, World world, BlockPos blockPos) {
 		world.updateNeighborsAlways(blockPos, this);
-		world.updateNeighborsAlways(blockPos.method_10093(method_10119(blockState).getOpposite()), this);
+		world.updateNeighborsAlways(blockPos.offset(method_10119(blockState).getOpposite()), this);
 	}
 
 	@Override

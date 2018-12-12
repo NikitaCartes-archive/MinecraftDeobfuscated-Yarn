@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -49,17 +48,19 @@ public class LadderBlock extends Block implements Waterloggable {
 	private boolean method_10305(BlockView blockView, BlockPos blockPos, Direction direction) {
 		BlockState blockState = blockView.getBlockState(blockPos);
 		boolean bl = method_9581(blockState.getBlock());
-		return !bl && Block.method_9501(blockState.method_11628(blockView, blockPos), direction) && !blockState.emitsRedstonePower();
+		return !bl && Block.isFaceFullCube(blockState.getCollisionShape(blockView, blockPos), direction) && !blockState.emitsRedstonePower();
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		Direction direction = blockState.get(field_11253);
-		return this.method_10305(viewableWorld, blockPos.method_10093(direction.getOpposite()), direction);
+		return this.method_10305(viewableWorld, blockPos.offset(direction.getOpposite()), direction);
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if (direction.getOpposite() == blockState.get(field_11253) && !blockState.canPlaceAt(iWorld, blockPos)) {
 			return Blocks.field_10124.getDefaultState();
 		} else {
@@ -67,7 +68,7 @@ public class LadderBlock extends Block implements Waterloggable {
 				iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
 			}
 
-			return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		}
 	}
 
@@ -75,9 +76,8 @@ public class LadderBlock extends Block implements Waterloggable {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		if (!itemPlacementContext.method_7717()) {
-			BlockState blockState = itemPlacementContext.getWorld()
-				.getBlockState(itemPlacementContext.getPos().method_10093(itemPlacementContext.method_8038().getOpposite()));
-			if (blockState.getBlock() == this && blockState.get(field_11253) == itemPlacementContext.method_8038()) {
+			BlockState blockState = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getPos().offset(itemPlacementContext.getFacing().getOpposite()));
+			if (blockState.getBlock() == this && blockState.get(field_11253) == itemPlacementContext.getFacing()) {
 				return null;
 			}
 		}
@@ -87,7 +87,7 @@ public class LadderBlock extends Block implements Waterloggable {
 		BlockPos blockPos = itemPlacementContext.getPos();
 		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getPos());
 
-		for (Direction direction : itemPlacementContext.method_7718()) {
+		for (Direction direction : itemPlacementContext.getPlacementFacings()) {
 			if (direction.getAxis().isHorizontal()) {
 				blockState = blockState.with(field_11253, direction.getOpposite());
 				if (blockState.canPlaceAt(viewableWorld, blockPos)) {
@@ -111,7 +111,7 @@ public class LadderBlock extends Block implements Waterloggable {
 
 	@Override
 	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.method_10345(blockState.get(field_11253)));
+		return blockState.applyRotation(mirror.getRotation(blockState.get(field_11253)));
 	}
 
 	@Override

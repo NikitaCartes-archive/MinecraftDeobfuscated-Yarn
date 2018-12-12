@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.minecraft.advancement.ServerAdvancementManager;
+import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -18,7 +18,7 @@ import net.minecraft.world.dimension.DimensionType;
 
 public class ChangedDimensionCriterion implements Criterion<ChangedDimensionCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("changed_dimension");
-	private final Map<ServerAdvancementManager, ChangedDimensionCriterion.Handler> handlers = Maps.<ServerAdvancementManager, ChangedDimensionCriterion.Handler>newHashMap();
+	private final Map<PlayerAdvancementTracker, ChangedDimensionCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, ChangedDimensionCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -26,34 +26,34 @@ public class ChangedDimensionCriterion implements Criterion<ChangedDimensionCrit
 	}
 
 	@Override
-	public void addCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<ChangedDimensionCriterion.Conditions> conditionsContainer
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<ChangedDimensionCriterion.Conditions> conditionsContainer
 	) {
-		ChangedDimensionCriterion.Handler handler = (ChangedDimensionCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		ChangedDimensionCriterion.Handler handler = (ChangedDimensionCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new ChangedDimensionCriterion.Handler(serverAdvancementManager);
-			this.handlers.put(serverAdvancementManager, handler);
+			handler = new ChangedDimensionCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void removeCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<ChangedDimensionCriterion.Conditions> conditionsContainer
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<ChangedDimensionCriterion.Conditions> conditionsContainer
 	) {
-		ChangedDimensionCriterion.Handler handler = (ChangedDimensionCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		ChangedDimensionCriterion.Handler handler = (ChangedDimensionCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(serverAdvancementManager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void removePlayer(ServerAdvancementManager serverAdvancementManager) {
-		this.handlers.remove(serverAdvancementManager);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
 	public ChangedDimensionCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -90,7 +90,7 @@ public class ChangedDimensionCriterion implements Criterion<ChangedDimensionCrit
 		}
 
 		@Override
-		public JsonElement method_807() {
+		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			if (this.from != null) {
 				jsonObject.addProperty("from", DimensionType.getId(this.from).toString());
@@ -105,11 +105,11 @@ public class ChangedDimensionCriterion implements Criterion<ChangedDimensionCrit
 	}
 
 	static class Handler {
-		private final ServerAdvancementManager manager;
+		private final PlayerAdvancementTracker field_9496;
 		private final Set<Criterion.ConditionsContainer<ChangedDimensionCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<ChangedDimensionCriterion.Conditions>>newHashSet();
 
-		public Handler(ServerAdvancementManager serverAdvancementManager) {
-			this.manager = serverAdvancementManager;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.field_9496 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
@@ -139,7 +139,7 @@ public class ChangedDimensionCriterion implements Criterion<ChangedDimensionCrit
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<ChangedDimensionCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
+					conditionsContainerx.apply(this.field_9496);
 				}
 			}
 		}

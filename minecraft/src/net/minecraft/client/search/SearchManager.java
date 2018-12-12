@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_516;
+import net.minecraft.client.recipe.book.RecipeResultCollection;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloadListener;
@@ -13,7 +13,7 @@ import net.minecraft.resource.ResourceReloadListener;
 public class SearchManager implements ResourceReloadListener {
 	public static final SearchManager.Key<ItemStack> ITEMS_TOOLTIP = new SearchManager.Key<>();
 	public static final SearchManager.Key<ItemStack> ITEMS_TAG = new SearchManager.Key<>();
-	public static final SearchManager.Key<class_516> field_5496 = new SearchManager.Key<>();
+	public static final SearchManager.Key<RecipeResultCollection> field_5496 = new SearchManager.Key<>();
 	private final Map<SearchManager.Key<?>, SearchableContainer<?>> instances = Maps.<SearchManager.Key<?>, SearchableContainer<?>>newHashMap();
 
 	@Override

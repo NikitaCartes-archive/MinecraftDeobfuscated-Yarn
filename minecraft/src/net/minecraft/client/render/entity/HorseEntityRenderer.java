@@ -7,20 +7,18 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.model.HorseEntityModel;
 import net.minecraft.client.texture.LayeredTexture;
-import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class HorseEntityRenderer extends HorseBaseEntityRenderer<HorseEntity> {
+public final class HorseEntityRenderer extends HorseBaseEntityRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
 	private static final Map<String, Identifier> TEXTURES = Maps.<String, Identifier>newHashMap();
 
 	public HorseEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new HorseEntityModel(), 1.1F);
+		super(entityRenderDispatcher, new HorseEntityModel<>(), 1.1F);
 	}
 
-	protected Identifier getTexture(HorseBaseEntity horseBaseEntity) {
-		HorseEntity horseEntity = (HorseEntity)horseBaseEntity;
+	protected Identifier getTexture(HorseEntity horseEntity) {
 		String string = horseEntity.getTextureLocation();
 		Identifier identifier = (Identifier)TEXTURES.get(string);
 		if (identifier == null) {

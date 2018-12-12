@@ -181,7 +181,7 @@ public class ShulkerBulletEntity extends Entity {
 
 			direction = Direction.random(this.random);
 			if (list.isEmpty()) {
-				for (int i = 5; !this.world.isAir(blockPos2.method_10093(direction)) && i > 0; i--) {
+				for (int i = 5; !this.world.isAir(blockPos2.offset(direction)) && i > 0; i--) {
 					direction = Direction.random(this.random);
 				}
 			} else {
@@ -214,11 +214,11 @@ public class ShulkerBulletEntity extends Entity {
 
 	@Override
 	public void update() {
-		if (!this.world.isRemote && this.world.getDifficulty() == Difficulty.PEACEFUL) {
+		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.PEACEFUL) {
 			this.invalidate();
 		} else {
 			super.update();
-			if (!this.world.isRemote) {
+			if (!this.world.isClient) {
 				if (this.field_7626 == null && this.field_7632 != null) {
 					for (LivingEntity livingEntity : this.world
 						.getVisibleEntities(LivingEntity.class, new BoundingBox(this.field_7631.add(-2, -2, -2), this.field_7631.add(2, 2, 2)))) {
@@ -264,7 +264,7 @@ public class ShulkerBulletEntity extends Entity {
 
 			this.setPosition(this.x + this.velocityX, this.y + this.velocityY, this.z + this.velocityZ);
 			class_1675.method_7484(this, 0.5F);
-			if (this.world.isRemote) {
+			if (this.world.isClient) {
 				this.world.method_8406(ParticleTypes.field_11207, this.x - this.velocityX, this.y - this.velocityY + 0.15, this.z - this.velocityZ, 0.0, 0.0, 0.0);
 			} else if (this.field_7626 != null && !this.field_7626.invalid) {
 				if (this.field_7627 > 0) {
@@ -277,7 +277,7 @@ public class ShulkerBulletEntity extends Entity {
 				if (this.field_7628 != null) {
 					BlockPos blockPos = new BlockPos(this);
 					Direction.Axis axis = this.field_7628.getAxis();
-					if (this.world.method_8515(blockPos.method_10093(this.field_7628))) {
+					if (this.world.doesBlockHaveSolidTopSurface(blockPos.offset(this.field_7628))) {
 						this.method_7486(axis);
 					} else {
 						BlockPos blockPos2 = new BlockPos(this.field_7626);
@@ -338,7 +338,7 @@ public class ShulkerBulletEntity extends Entity {
 
 	@Override
 	public boolean damage(DamageSource damageSource, float f) {
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			this.playSoundAtEntity(SoundEvents.field_14977, 1.0F, 1.0F);
 			((ServerWorld)this.world).method_14199(ParticleTypes.field_11205, this.x, this.y, this.z, 15, 0.2, 0.2, 0.2, 0.0);
 			this.invalidate();

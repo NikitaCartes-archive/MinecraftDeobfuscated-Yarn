@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_341;
-import net.minecraft.class_424;
+import net.minecraft.client.gui.CloseWorldGui;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.MainMenuGui;
 import net.minecraft.client.gui.menu.YesNoGui;
@@ -31,7 +31,7 @@ public class DeathGui extends Gui {
 		String string2;
 		if (this.client.world.getLevelProperties().isHardcore()) {
 			string = I18n.translate("deathScreen.spectate");
-			string2 = I18n.translate("deathScreen." + (this.client.method_1542() ? "deleteWorld" : "leaveServer"));
+			string2 = I18n.translate("deathScreen." + (this.client.isIntegratedServerRunning() ? "deleteWorld" : "leaveServer"));
 		} else {
 			string = I18n.translate("deathScreen.respawn");
 			string2 = I18n.translate("deathScreen.titleScreen");
@@ -40,7 +40,7 @@ public class DeathGui extends Gui {
 		this.addButton(new ButtonWidget(0, this.width / 2 - 100, this.height / 4 + 72, string) {
 			@Override
 			public void onPressed(double d, double e) {
-				DeathGui.this.client.player.method_7331();
+				DeathGui.this.client.player.requestRespawn();
 				DeathGui.this.client.openGui(null);
 			}
 		});
@@ -64,13 +64,13 @@ public class DeathGui extends Gui {
 			buttonWidget.enabled = false;
 		}
 
-		for (ButtonWidget buttonWidget2 : this.buttonWidgets) {
+		for (ButtonWidget buttonWidget2 : this.buttons) {
 			buttonWidget2.enabled = false;
 		}
 	}
 
 	@Override
-	public boolean canClose() {
+	public boolean doesEscapeKeyClose() {
 		return false;
 	}
 
@@ -83,10 +83,10 @@ public class DeathGui extends Gui {
 				this.client.world.method_8525();
 			}
 
-			this.client.method_1550(null, new class_424(I18n.translate("menu.savingLevel")));
+			this.client.method_1550(null, new CloseWorldGui(I18n.translate("menu.savingLevel")));
 			this.client.openGui(new MainMenuGui());
 		} else {
-			this.client.player.method_7331();
+			this.client.player.requestRespawn();
 			this.client.openGui(null);
 		}
 	}
@@ -106,7 +106,7 @@ public class DeathGui extends Gui {
 		this.drawStringCentered(
 			this.fontRenderer, I18n.translate("deathScreen.score") + ": " + TextFormat.YELLOW + this.client.player.getScore(), this.width / 2, 100, 16777215
 		);
-		if (this.msg != null && j > 85 && j < 85 + this.fontRenderer.FONT_HEIGHT) {
+		if (this.msg != null && j > 85 && j < 85 + this.fontRenderer.fontHeight) {
 			TextComponent textComponent = this.method_2164(i);
 			if (textComponent != null && textComponent.getStyle().getHoverEvent() != null) {
 				this.drawTextComponentHover(textComponent, i, j);
@@ -142,7 +142,7 @@ public class DeathGui extends Gui {
 
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
-		if (this.msg != null && e > 85.0 && e < (double)(85 + this.fontRenderer.FONT_HEIGHT)) {
+		if (this.msg != null && e > 85.0 && e < (double)(85 + this.fontRenderer.fontHeight)) {
 			TextComponent textComponent = this.method_2164((int)d);
 			if (textComponent != null
 				&& textComponent.getStyle().getClickEvent() != null
@@ -165,7 +165,7 @@ public class DeathGui extends Gui {
 		super.update();
 		this.ticksSinceDeath++;
 		if (this.ticksSinceDeath == 20) {
-			for (ButtonWidget buttonWidget : this.buttonWidgets) {
+			for (ButtonWidget buttonWidget : this.buttons) {
 				buttonWidget.enabled = true;
 			}
 		}

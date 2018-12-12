@@ -48,15 +48,15 @@ public class ModelItemOverride {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class class_800 implements JsonDeserializer<ModelItemOverride> {
+	static class Deserializer implements JsonDeserializer<ModelItemOverride> {
 		public ModelItemOverride method_3475(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "model"));
-			Map<Identifier, Float> map = this.method_3474(jsonObject);
+			Map<Identifier, Float> map = this.deserializeMinPropertyValues(jsonObject);
 			return new ModelItemOverride(identifier, map);
 		}
 
-		protected Map<Identifier, Float> method_3474(JsonObject jsonObject) {
+		protected Map<Identifier, Float> deserializeMinPropertyValues(JsonObject jsonObject) {
 			Map<Identifier, Float> map = Maps.<Identifier, Float>newLinkedHashMap();
 			JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "predicate");
 

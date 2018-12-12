@@ -32,18 +32,18 @@ import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.chunk.CavesChunkGenerator;
-import net.minecraft.world.gen.chunk.CavesChunkGeneratorSettings;
+import net.minecraft.world.gen.chunk.CavesChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.ChunkGeneratorType;
 import net.minecraft.world.gen.chunk.DebugChunkGenerator;
-import net.minecraft.world.gen.chunk.DebugChunkGeneratorSettings;
+import net.minecraft.world.gen.chunk.DebugChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.FlatChunkGenerator;
-import net.minecraft.world.gen.chunk.FlatChunkGeneratorSettings;
+import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.FloatingIslandsChunkGenerator;
-import net.minecraft.world.gen.chunk.FloatingIslandsChunkGeneratorSettings;
+import net.minecraft.world.gen.chunk.FloatingIslandsChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.OverworldChunkGenerator;
-import net.minecraft.world.gen.chunk.OverworldChunkGeneratorSettings;
+import net.minecraft.world.gen.chunk.OverworldChunkGeneratorConfig;
 import net.minecraft.world.level.LevelGeneratorType;
 
 public class OverworldDimension extends Dimension {
@@ -57,31 +57,31 @@ public class OverworldDimension extends Dimension {
 	}
 
 	@Override
-	public ChunkGenerator<? extends ChunkGeneratorSettings> createChunkGenerator() {
+	public ChunkGenerator<? extends ChunkGeneratorConfig> createChunkGenerator() {
 		LevelGeneratorType levelGeneratorType = this.world.getLevelProperties().getGeneratorType();
-		ChunkGeneratorType<FlatChunkGeneratorSettings, FlatChunkGenerator> chunkGeneratorType = ChunkGeneratorType.field_12766;
-		ChunkGeneratorType<DebugChunkGeneratorSettings, DebugChunkGenerator> chunkGeneratorType2 = ChunkGeneratorType.field_12768;
-		ChunkGeneratorType<CavesChunkGeneratorSettings, CavesChunkGenerator> chunkGeneratorType3 = ChunkGeneratorType.field_12765;
-		ChunkGeneratorType<FloatingIslandsChunkGeneratorSettings, FloatingIslandsChunkGenerator> chunkGeneratorType4 = ChunkGeneratorType.field_12770;
-		ChunkGeneratorType<OverworldChunkGeneratorSettings, OverworldChunkGenerator> chunkGeneratorType5 = ChunkGeneratorType.field_12769;
+		ChunkGeneratorType<FlatChunkGeneratorConfig, FlatChunkGenerator> chunkGeneratorType = ChunkGeneratorType.field_12766;
+		ChunkGeneratorType<DebugChunkGeneratorConfig, DebugChunkGenerator> chunkGeneratorType2 = ChunkGeneratorType.field_12768;
+		ChunkGeneratorType<CavesChunkGeneratorConfig, CavesChunkGenerator> chunkGeneratorType3 = ChunkGeneratorType.field_12765;
+		ChunkGeneratorType<FloatingIslandsChunkGeneratorConfig, FloatingIslandsChunkGenerator> chunkGeneratorType4 = ChunkGeneratorType.field_12770;
+		ChunkGeneratorType<OverworldChunkGeneratorConfig, OverworldChunkGenerator> chunkGeneratorType5 = ChunkGeneratorType.field_12769;
 		BiomeSourceType<FixedBiomeSourceConfig, FixedBiomeSource> biomeSourceType = BiomeSourceType.FIXED;
 		BiomeSourceType<VanillaLayeredBiomeSourceConfig, VanillaLayeredBiomeSource> biomeSourceType2 = BiomeSourceType.VANILLA_LAYERED;
 		BiomeSourceType<CheckerboardBiomeSourceConfig, CheckerboardBiomeSource> biomeSourceType3 = BiomeSourceType.CHECKERBOARD;
 		if (levelGeneratorType == LevelGeneratorType.FLAT) {
-			FlatChunkGeneratorSettings flatChunkGeneratorSettings = FlatChunkGeneratorSettings.method_14323(
+			FlatChunkGeneratorConfig flatChunkGeneratorConfig = FlatChunkGeneratorConfig.method_14323(
 				new Dynamic<>(NbtOps.INSTANCE, this.world.getLevelProperties().getGeneratorOptions())
 			);
-			FixedBiomeSourceConfig fixedBiomeSourceConfig = biomeSourceType.getConfig().method_8782(flatChunkGeneratorSettings.method_14326());
-			return chunkGeneratorType.create(this.world, biomeSourceType.applyConfig(fixedBiomeSourceConfig), flatChunkGeneratorSettings);
+			FixedBiomeSourceConfig fixedBiomeSourceConfig = biomeSourceType.getConfig().method_8782(flatChunkGeneratorConfig.getBiome());
+			return chunkGeneratorType.create(this.world, biomeSourceType.applyConfig(fixedBiomeSourceConfig), flatChunkGeneratorConfig);
 		} else if (levelGeneratorType == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
 			FixedBiomeSourceConfig fixedBiomeSourceConfig2 = biomeSourceType.getConfig().method_8782(Biomes.field_9451);
-			return chunkGeneratorType2.create(this.world, biomeSourceType.applyConfig(fixedBiomeSourceConfig2), chunkGeneratorType2.createSettings());
+			return chunkGeneratorType2.create(this.world, biomeSourceType.applyConfig(fixedBiomeSourceConfig2), chunkGeneratorType2.method_12117());
 		} else if (levelGeneratorType != LevelGeneratorType.BUFFET) {
-			OverworldChunkGeneratorSettings overworldChunkGeneratorSettings2 = chunkGeneratorType5.createSettings();
+			OverworldChunkGeneratorConfig overworldChunkGeneratorConfig2 = chunkGeneratorType5.method_12117();
 			VanillaLayeredBiomeSourceConfig vanillaLayeredBiomeSourceConfig2 = biomeSourceType2.getConfig()
 				.setLevelProperties(this.world.getLevelProperties())
-				.setGeneratorSettings(overworldChunkGeneratorSettings2);
-			return chunkGeneratorType5.create(this.world, biomeSourceType2.applyConfig(vanillaLayeredBiomeSourceConfig2), overworldChunkGeneratorSettings2);
+				.method_9004(overworldChunkGeneratorConfig2);
+			return chunkGeneratorType5.create(this.world, biomeSourceType2.applyConfig(vanillaLayeredBiomeSourceConfig2), overworldChunkGeneratorConfig2);
 		} else {
 			BiomeSource biomeSource = null;
 			JsonElement jsonElement = Dynamic.convert(NbtOps.INSTANCE, JsonOps.INSTANCE, this.world.getLevelProperties().getGeneratorOptions());
@@ -114,7 +114,7 @@ public class OverworldDimension extends Dimension {
 
 				if (BiomeSourceType.VANILLA_LAYERED == biomeSourceType4) {
 					VanillaLayeredBiomeSourceConfig vanillaLayeredBiomeSourceConfig = biomeSourceType2.getConfig()
-						.setGeneratorSettings(new OverworldChunkGeneratorSettings())
+						.method_9004(new OverworldChunkGeneratorConfig())
 						.setLevelProperties(this.world.getLevelProperties());
 					biomeSource = biomeSourceType2.applyConfig(vanillaLayeredBiomeSourceConfig);
 				}
@@ -142,25 +142,25 @@ public class OverworldDimension extends Dimension {
 				ChunkGeneratorType<?, ?> chunkGeneratorType6 = Registry.CHUNK_GENERATOR_TYPE
 					.get(new Identifier(jsonObject.getAsJsonObject("chunk_generator").getAsJsonPrimitive("type").getAsString()));
 				if (ChunkGeneratorType.field_12765 == chunkGeneratorType6) {
-					CavesChunkGeneratorSettings cavesChunkGeneratorSettings = chunkGeneratorType3.createSettings();
-					cavesChunkGeneratorSettings.setDefaultBlock(blockState);
-					cavesChunkGeneratorSettings.setDefaultFluid(blockState2);
-					return chunkGeneratorType3.create(this.world, biomeSource, cavesChunkGeneratorSettings);
+					CavesChunkGeneratorConfig cavesChunkGeneratorConfig = chunkGeneratorType3.method_12117();
+					cavesChunkGeneratorConfig.setDefaultBlock(blockState);
+					cavesChunkGeneratorConfig.setDefaultFluid(blockState2);
+					return chunkGeneratorType3.create(this.world, biomeSource, cavesChunkGeneratorConfig);
 				}
 
 				if (ChunkGeneratorType.field_12770 == chunkGeneratorType6) {
-					FloatingIslandsChunkGeneratorSettings floatingIslandsChunkGeneratorSettings = chunkGeneratorType4.createSettings();
-					floatingIslandsChunkGeneratorSettings.method_12651(new BlockPos(0, 64, 0));
-					floatingIslandsChunkGeneratorSettings.setDefaultBlock(blockState);
-					floatingIslandsChunkGeneratorSettings.setDefaultFluid(blockState2);
-					return chunkGeneratorType4.create(this.world, biomeSource, floatingIslandsChunkGeneratorSettings);
+					FloatingIslandsChunkGeneratorConfig floatingIslandsChunkGeneratorConfig = chunkGeneratorType4.method_12117();
+					floatingIslandsChunkGeneratorConfig.withCenter(new BlockPos(0, 64, 0));
+					floatingIslandsChunkGeneratorConfig.setDefaultBlock(blockState);
+					floatingIslandsChunkGeneratorConfig.setDefaultFluid(blockState2);
+					return chunkGeneratorType4.create(this.world, biomeSource, floatingIslandsChunkGeneratorConfig);
 				}
 			}
 
-			OverworldChunkGeneratorSettings overworldChunkGeneratorSettings = chunkGeneratorType5.createSettings();
-			overworldChunkGeneratorSettings.setDefaultBlock(blockState);
-			overworldChunkGeneratorSettings.setDefaultFluid(blockState2);
-			return chunkGeneratorType5.create(this.world, biomeSource, overworldChunkGeneratorSettings);
+			OverworldChunkGeneratorConfig overworldChunkGeneratorConfig = chunkGeneratorType5.method_12117();
+			overworldChunkGeneratorConfig.setDefaultBlock(blockState);
+			overworldChunkGeneratorConfig.setDefaultFluid(blockState2);
+			return chunkGeneratorType5.create(this.world, biomeSource, overworldChunkGeneratorConfig);
 		}
 	}
 
@@ -184,11 +184,11 @@ public class OverworldDimension extends Dimension {
 	public BlockPos method_12444(int i, int j, boolean bl) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(i, 0, j);
 		Biome biome = this.world.getBiome(mutable);
-		BlockState blockState = biome.getSurfaceConfig().getTopMaterial();
+		BlockState blockState = biome.method_8722().getTopMaterial();
 		if (bl && !blockState.getBlock().matches(BlockTags.field_15478)) {
 			return null;
 		} else {
-			WorldChunk worldChunk = this.world.getChunk(i >> 4, j >> 4);
+			WorldChunk worldChunk = this.world.getWorldChunk(i >> 4, j >> 4);
 			int k = worldChunk.sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, i & 15, j & 15);
 			if (k < 0) {
 				return null;
@@ -215,7 +215,7 @@ public class OverworldDimension extends Dimension {
 	}
 
 	@Override
-	public float method_12464(long l, float f) {
+	public float getSkyAngle(long l, float f) {
 		int i = (int)(l % 24000L);
 		float g = ((float)i + f) / 24000.0F - 0.25F;
 		if (g < 0.0F) {

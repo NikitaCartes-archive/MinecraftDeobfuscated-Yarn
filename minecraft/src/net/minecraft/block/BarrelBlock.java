@@ -4,11 +4,16 @@ import javax.annotation.Nullable;
 import net.minecraft.block.entity.BarrelBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sortme.ItemScatterer;
+import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
@@ -17,11 +22,41 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class BarrelBlock extends BlockWithEntity {
-	public static final DirectionProperty field_16320 = Properties.field_12525;
+	public static final DirectionProperty field_16320 = Properties.FACING;
 
 	public BarrelBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateFactory.getDefaultState().with(field_16320, Direction.NORTH));
+	}
+
+	@Override
+	public boolean activate(
+		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
+	) {
+		if (world.isClient) {
+			return true;
+		} else {
+			BlockEntity blockEntity = world.getBlockEntity(blockPos);
+			if (blockEntity instanceof BarrelBlockEntity) {
+				playerEntity.openInventory((Inventory)blockEntity);
+				playerEntity.increaseStat(Stats.field_17271);
+			}
+
+			return true;
+		}
+	}
+
+	@Override
+	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+		if (blockState.getBlock() != blockState2.getBlock()) {
+			BlockEntity blockEntity = world.getBlockEntity(blockPos);
+			if (blockEntity instanceof Inventory) {
+				ItemScatterer.spawn(world, blockPos, (Inventory)blockEntity);
+				world.updateHorizontalAdjacent(blockPos, this);
+			}
+
+			super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
+		}
 	}
 
 	@Nullable
@@ -31,8 +66,8 @@ public class BarrelBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public RenderTypeBlock getRenderType(BlockState blockState) {
-		return RenderTypeBlock.MODEL;
+	public BlockRenderType method_9604(BlockState blockState) {
+		return BlockRenderType.field_11458;
 	}
 
 	@Override
@@ -52,7 +87,7 @@ public class BarrelBlock extends BlockWithEntity {
 
 	@Override
 	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.method_10345(blockState.get(field_16320)));
+		return blockState.applyRotation(mirror.getRotation(blockState.get(field_16320)));
 	}
 
 	@Override
@@ -62,6 +97,6 @@ public class BarrelBlock extends BlockWithEntity {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(field_16320, itemPlacementContext.method_7715().getOpposite());
+		return this.getDefaultState().with(field_16320, itemPlacementContext.getPlayerFacing().getOpposite());
 	}
 }

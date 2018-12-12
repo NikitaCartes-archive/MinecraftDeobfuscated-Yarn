@@ -6,7 +6,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_308;
 import net.minecraft.class_3229;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -15,8 +14,9 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiEventListener;
 import net.minecraft.client.gui.widget.AbstractListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.datafixers.NbtOps;
@@ -24,12 +24,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.gen.chunk.FlatChunkGeneratorSettings;
+import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 
 @Environment(EnvType.CLIENT)
 public class CustomizeFlatLevelGui extends Gui {
 	private final NewLevelGui parent;
-	private FlatChunkGeneratorSettings field_2419 = FlatChunkGeneratorSettings.method_14309();
+	private FlatChunkGeneratorConfig field_2419 = FlatChunkGeneratorConfig.method_14309();
 	private String titleText;
 	private String tileText;
 	private String heightText;
@@ -52,11 +52,11 @@ public class CustomizeFlatLevelGui extends Gui {
 	}
 
 	public void method_2139(String string) {
-		this.field_2419 = FlatChunkGeneratorSettings.method_14319(string);
+		this.field_2419 = FlatChunkGeneratorConfig.method_14319(string);
 	}
 
 	public void method_2144(CompoundTag compoundTag) {
-		this.field_2419 = FlatChunkGeneratorSettings.method_14323(new Dynamic<>(NbtOps.INSTANCE, compoundTag));
+		this.field_2419 = FlatChunkGeneratorConfig.method_14323(new Dynamic<>(NbtOps.INSTANCE, compoundTag));
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class CustomizeFlatLevelGui extends Gui {
 				@Override
 				public void onPressed(double d, double e) {
 					if (CustomizeFlatLevelGui.this.method_2147()) {
-						List<class_3229> list = CustomizeFlatLevelGui.this.field_2419.method_14327();
+						List<class_3229> list = CustomizeFlatLevelGui.this.field_2419.getLayers();
 						int i = list.size() - CustomizeFlatLevelGui.this.field_2424.field_2428 - 1;
 						list.remove(i);
 						CustomizeFlatLevelGui.this.field_2424.field_2428 = Math.min(CustomizeFlatLevelGui.this.field_2424.field_2428, list.size() - 1);
@@ -139,7 +139,7 @@ public class CustomizeFlatLevelGui extends Gui {
 	}
 
 	private boolean method_2147() {
-		return this.field_2424.field_2428 > -1 && this.field_2424.field_2428 < this.field_2419.method_14327().size();
+		return this.field_2424.field_2428 > -1 && this.field_2424.field_2428 < this.field_2419.getLayers().size();
 	}
 
 	@Nullable
@@ -171,9 +171,9 @@ public class CustomizeFlatLevelGui extends Gui {
 			this.method_2149(i + 1, j + 1);
 			GlStateManager.enableRescaleNormal();
 			if (!itemStack.isEmpty()) {
-				class_308.method_1453();
+				GuiLighting.enableForItems();
 				CustomizeFlatLevelGui.this.itemRenderer.renderItemWithPropertyOverrides(itemStack, i + 2, j + 2);
-				class_308.method_1450();
+				GuiLighting.disable();
 			}
 
 			GlStateManager.disableRescaleNormal();
@@ -191,18 +191,18 @@ public class CustomizeFlatLevelGui extends Gui {
 			int m = 18;
 			int n = 18;
 			Tessellator tessellator = Tessellator.getInstance();
-			VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-			vertexBuffer.begin(7, VertexFormats.POSITION_UV);
-			vertexBuffer.vertex((double)(i + 0), (double)(j + 18), (double)this.zOffset)
+			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+			bufferBuilder.vertex((double)(i + 0), (double)(j + 18), (double)this.zOffset)
 				.texture((double)((float)(k + 0) * 0.0078125F), (double)((float)(l + 18) * 0.0078125F))
 				.next();
-			vertexBuffer.vertex((double)(i + 18), (double)(j + 18), (double)this.zOffset)
+			bufferBuilder.vertex((double)(i + 18), (double)(j + 18), (double)this.zOffset)
 				.texture((double)((float)(k + 18) * 0.0078125F), (double)((float)(l + 18) * 0.0078125F))
 				.next();
-			vertexBuffer.vertex((double)(i + 18), (double)(j + 0), (double)this.zOffset)
+			bufferBuilder.vertex((double)(i + 18), (double)(j + 0), (double)this.zOffset)
 				.texture((double)((float)(k + 18) * 0.0078125F), (double)((float)(l + 0) * 0.0078125F))
 				.next();
-			vertexBuffer.vertex((double)(i + 0), (double)(j + 0), (double)this.zOffset)
+			bufferBuilder.vertex((double)(i + 0), (double)(j + 0), (double)this.zOffset)
 				.texture((double)((float)(k + 0) * 0.0078125F), (double)((float)(l + 0) * 0.0078125F))
 				.next();
 			tessellator.draw();
@@ -210,28 +210,28 @@ public class CustomizeFlatLevelGui extends Gui {
 
 		@Override
 		protected int getEntryCount() {
-			return CustomizeFlatLevelGui.this.field_2419.method_14327().size();
+			return CustomizeFlatLevelGui.this.field_2419.getLayers().size();
 		}
 
 		@Override
-		protected boolean method_1937(int i, int j, double d, double e) {
+		protected boolean selectEntry(int i, int j, double d, double e) {
 			this.field_2428 = i;
 			CustomizeFlatLevelGui.this.method_2145();
 			return true;
 		}
 
 		@Override
-		protected boolean isSelected(int i) {
+		protected boolean isSelectedEntry(int i) {
 			return i == this.field_2428;
 		}
 
 		@Override
-		protected void method_1936() {
+		protected void drawBackground() {
 		}
 
 		@Override
 		protected void drawEntry(int i, int j, int k, int l, int m, int n, float f) {
-			class_3229 lv = (class_3229)CustomizeFlatLevelGui.this.field_2419.method_14327().get(CustomizeFlatLevelGui.this.field_2419.method_14327().size() - i - 1);
+			class_3229 lv = (class_3229)CustomizeFlatLevelGui.this.field_2419.getLayers().get(CustomizeFlatLevelGui.this.field_2419.getLayers().size() - i - 1);
 			BlockState blockState = lv.method_14286();
 			Block block = blockState.getBlock();
 			Item item = block.getItem();
@@ -250,7 +250,7 @@ public class CustomizeFlatLevelGui extends Gui {
 			String string2;
 			if (i == 0) {
 				string2 = I18n.translate("createWorld.customize.flat.layer.top", lv.method_14289());
-			} else if (i == CustomizeFlatLevelGui.this.field_2419.method_14327().size() - 1) {
+			} else if (i == CustomizeFlatLevelGui.this.field_2419.getLayers().size() - 1) {
 				string2 = I18n.translate("createWorld.customize.flat.layer.bottom", lv.method_14289());
 			} else {
 				string2 = I18n.translate("createWorld.customize.flat.layer", lv.method_14289());

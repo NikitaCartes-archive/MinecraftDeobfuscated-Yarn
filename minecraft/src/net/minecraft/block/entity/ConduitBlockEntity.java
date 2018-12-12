@@ -85,7 +85,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 		long l = this.world.getTime();
 		if (l % 40L == 0L) {
 			this.method_11057(this.method_11069());
-			if (!this.world.isRemote && this.method_11065()) {
+			if (!this.world.isClient && this.method_11065()) {
 				this.method_11055();
 				this.method_11068();
 			}
@@ -100,7 +100,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 			this.method_11067(SoundEvents.field_15071);
 		}
 
-		if (this.world.isRemote) {
+		if (this.world.isClient) {
 			this.method_11064();
 			this.method_11063();
 			if (this.method_11065()) {
@@ -159,7 +159,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 		List<PlayerEntity> list = this.world.getVisibleEntities(PlayerEntity.class, boundingBox);
 		if (!list.isEmpty()) {
 			for (PlayerEntity playerEntity : list) {
-				if (this.pos.distanceTo(new BlockPos(playerEntity)) <= (double)j && playerEntity.method_5721()) {
+				if (this.pos.distanceTo(new BlockPos(playerEntity)) <= (double)j && playerEntity.isInsideWaterOrRain()) {
 					playerEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5927, 260, 0, true, true));
 				}
 			}
@@ -176,7 +176,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 			this.targetUuid = null;
 		} else if (this.targetEntity == null) {
 			List<LivingEntity> list = this.world
-				.getEntities(LivingEntity.class, this.method_11059(), livingEntityx -> livingEntityx instanceof Monster && livingEntityx.method_5721());
+				.getEntities(LivingEntity.class, this.method_11059(), livingEntityx -> livingEntityx instanceof Monster && livingEntityx.isInsideWaterOrRain());
 			if (!list.isEmpty()) {
 				this.targetEntity = (LivingEntity)list.get(this.world.random.nextInt(list.size()));
 			}

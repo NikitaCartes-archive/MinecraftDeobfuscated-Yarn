@@ -30,7 +30,7 @@ public class DonkeyEntity extends AbstractDonkeyEntity {
 	}
 
 	@Override
-	public boolean method_6474(AnimalEntity animalEntity) {
+	public boolean canBreedWith(AnimalEntity animalEntity) {
 		if (animalEntity == this) {
 			return false;
 		} else {

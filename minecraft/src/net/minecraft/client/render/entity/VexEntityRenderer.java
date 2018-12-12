@@ -8,7 +8,7 @@ import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class VexEntityRenderer extends BipedEntityRenderer<VexEntity> {
+public class VexEntityRenderer extends BipedEntityRenderer<VexEntity, VexEntityModel> {
 	private static final Identifier field_4801 = new Identifier("textures/entity/illager/vex.png");
 	private static final Identifier field_4802 = new Identifier("textures/entity/illager/vex_charging.png");
 

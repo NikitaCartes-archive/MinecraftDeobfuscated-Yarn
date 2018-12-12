@@ -4,13 +4,12 @@ import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
-import net.minecraft.class_3747;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
+import net.minecraft.world.ModifiableTestableWorld;
 
-public class SpruceTreeFeature extends TreeFeature<DefaultFeatureConfig> {
+public class SpruceTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
 	private static final BlockState LOG = Blocks.field_10037.getDefaultState();
 	private static final BlockState LEAVES = Blocks.field_9988.getDefaultState();
 
@@ -19,7 +18,7 @@ public class SpruceTreeFeature extends TreeFeature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	public boolean method_12775(Set<BlockPos> set, class_3747 arg, Random random, BlockPos blockPos) {
+	public boolean generate(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos) {
 		int i = random.nextInt(4) + 6;
 		int j = 1 + random.nextInt(2);
 		int k = i - j;
@@ -40,7 +39,7 @@ public class SpruceTreeFeature extends TreeFeature<DefaultFeatureConfig> {
 					for (int p = blockPos.getZ() - n; p <= blockPos.getZ() + n && bl; p++) {
 						if (m >= 0 && m < 256) {
 							mutable.set(o, m, p);
-							if (!method_16420(arg, mutable)) {
+							if (!isAirOrLeaves(modifiableTestableWorld, mutable)) {
 								bl = false;
 							}
 						} else {
@@ -52,8 +51,8 @@ public class SpruceTreeFeature extends TreeFeature<DefaultFeatureConfig> {
 
 			if (!bl) {
 				return false;
-			} else if (method_16433(arg, blockPos.down()) && blockPos.getY() < 256 - i - 1) {
-				this.method_16427(arg, blockPos.down());
+			} else if (isDirtOrGrass(modifiableTestableWorld, blockPos.down()) && blockPos.getY() < 256 - i - 1) {
+				this.setToDirt(modifiableTestableWorld, blockPos.down());
 				int m = random.nextInt(2);
 				int n = 1;
 				int q = 0;
@@ -68,8 +67,8 @@ public class SpruceTreeFeature extends TreeFeature<DefaultFeatureConfig> {
 							int u = t - blockPos.getZ();
 							if (Math.abs(s) != m || Math.abs(u) != m || m <= 0) {
 								BlockPos blockPos2 = new BlockPos(r, px, t);
-								if (method_16420(arg, blockPos2) || method_16425(arg, blockPos2)) {
-									this.method_13153(arg, blockPos2, LEAVES);
+								if (isAirOrLeaves(modifiableTestableWorld, blockPos2) || isReplaceablePlant(modifiableTestableWorld, blockPos2)) {
+									this.setBlockState(modifiableTestableWorld, blockPos2, LEAVES);
 								}
 							}
 						}
@@ -89,8 +88,8 @@ public class SpruceTreeFeature extends TreeFeature<DefaultFeatureConfig> {
 				int o = random.nextInt(3);
 
 				for (int px = 0; px < i - o; px++) {
-					if (method_16420(arg, blockPos.up(px))) {
-						this.method_12773(set, arg, blockPos.up(px), LOG);
+					if (isAirOrLeaves(modifiableTestableWorld, blockPos.up(px))) {
+						this.setBlockState(set, modifiableTestableWorld, blockPos.up(px), LOG);
 					}
 				}
 

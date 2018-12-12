@@ -28,7 +28,7 @@ public class ListCommand {
 	}
 
 	private static int method_13434(ServerCommandSource serverCommandSource, Function<ServerPlayerEntity, TextComponent> function) {
-		PlayerManager playerManager = serverCommandSource.getMinecraftServer().getConfigurationManager();
+		PlayerManager playerManager = serverCommandSource.getMinecraftServer().getPlayerManager();
 		List<ServerPlayerEntity> list = playerManager.getPlayerList();
 		TextComponent textComponent = TextFormatter.join(list, function);
 		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.list.players", list.size(), playerManager.getMaxPlayerCount(), textComponent), false);

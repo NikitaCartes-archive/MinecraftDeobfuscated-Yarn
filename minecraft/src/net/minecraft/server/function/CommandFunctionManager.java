@@ -33,13 +33,13 @@ public class CommandFunctionManager implements Tickable, ResourceReloadListener 
 	public static final int EXTENSION_LENGTH = ".mcfunction".length();
 	private final MinecraftServer server;
 	private final Map<Identifier, CommandFunction> idMap = Maps.<Identifier, CommandFunction>newHashMap();
-	private final ArrayDeque<CommandFunctionManager.class_2992> field_13413 = new ArrayDeque();
+	private final ArrayDeque<CommandFunctionManager.Entry> chain = new ArrayDeque();
 	private boolean field_13411;
-	private final TagContainer<CommandFunction> field_13416 = new TagContainer<>(
+	private final TagContainer<CommandFunction> tags = new TagContainer<>(
 		identifier -> this.getFunction(identifier) != null, this::getFunction, "tags/functions", true, "function"
 	);
 	private final List<CommandFunction> tickFunctions = Lists.<CommandFunction>newArrayList();
-	private boolean field_13422;
+	private boolean justLoaded;
 
 	public CommandFunctionManager(MinecraftServer minecraftServer) {
 		this.server = minecraftServer;
@@ -68,31 +68,31 @@ public class CommandFunctionManager implements Tickable, ResourceReloadListener 
 
 	@Override
 	public void tick() {
-		this.server.getProfiler().begin(TICK_FUNCTION::toString);
+		this.server.getProfiler().push(TICK_FUNCTION::toString);
 
 		for (CommandFunction commandFunction : this.tickFunctions) {
-			this.method_12904(commandFunction, this.method_12899());
+			this.execute(commandFunction, this.getFunctionCommandSource());
 		}
 
-		this.server.getProfiler().end();
-		if (this.field_13422) {
-			this.field_13422 = false;
-			Collection<CommandFunction> collection = this.method_12901().getOrCreate(LOAD_FUNCTION).values();
-			this.server.getProfiler().begin(LOAD_FUNCTION::toString);
+		this.server.getProfiler().pop();
+		if (this.justLoaded) {
+			this.justLoaded = false;
+			Collection<CommandFunction> collection = this.getTags().getOrCreate(LOAD_FUNCTION).values();
+			this.server.getProfiler().push(LOAD_FUNCTION::toString);
 
 			for (CommandFunction commandFunction2 : collection) {
-				this.method_12904(commandFunction2, this.method_12899());
+				this.execute(commandFunction2, this.getFunctionCommandSource());
 			}
 
-			this.server.getProfiler().end();
+			this.server.getProfiler().pop();
 		}
 	}
 
-	public int method_12904(CommandFunction commandFunction, ServerCommandSource serverCommandSource) {
+	public int execute(CommandFunction commandFunction, ServerCommandSource serverCommandSource) {
 		int i = this.getMaxCommandChainLength();
 		if (this.field_13411) {
-			if (this.field_13413.size() < i) {
-				this.field_13413.addFirst(new CommandFunctionManager.class_2992(this, serverCommandSource, new CommandFunction.class_2162(commandFunction)));
+			if (this.chain.size() < i) {
+				this.chain.addFirst(new CommandFunctionManager.Entry(this, serverCommandSource, new CommandFunction.FunctionElement(commandFunction)));
 			}
 
 			return 0;
@@ -101,29 +101,29 @@ public class CommandFunctionManager implements Tickable, ResourceReloadListener 
 			try {
 				this.field_13411 = true;
 				int j = 0;
-				CommandFunction.class_2161[] lvs = commandFunction.method_9193();
+				CommandFunction.Element[] elements = commandFunction.method_9193();
 
-				for (int k = lvs.length - 1; k >= 0; k--) {
-					this.field_13413.push(new CommandFunctionManager.class_2992(this, serverCommandSource, lvs[k]));
+				for (int k = elements.length - 1; k >= 0; k--) {
+					this.chain.push(new CommandFunctionManager.Entry(this, serverCommandSource, elements[k]));
 				}
 
 				do {
-					if (this.field_13413.isEmpty()) {
+					if (this.chain.isEmpty()) {
 						return j;
 					}
 
 					try {
-						CommandFunctionManager.class_2992 lv = (CommandFunctionManager.class_2992)this.field_13413.removeFirst();
-						this.server.getProfiler().begin(lv::toString);
-						lv.method_12914(this.field_13413, i);
+						CommandFunctionManager.Entry entry = (CommandFunctionManager.Entry)this.chain.removeFirst();
+						this.server.getProfiler().push(entry::toString);
+						entry.execute(this.chain, i);
 					} finally {
-						this.server.getProfiler().end();
+						this.server.getProfiler().pop();
 					}
 				} while (++j < i);
 
 				var16 = j;
 			} finally {
-				this.field_13413.clear();
+				this.chain.clear();
 				this.field_13411 = false;
 			}
 
@@ -135,7 +135,7 @@ public class CommandFunctionManager implements Tickable, ResourceReloadListener 
 	public void onResourceReload(ResourceManager resourceManager) {
 		this.idMap.clear();
 		this.tickFunctions.clear();
-		this.field_13416.clear();
+		this.tags.clear();
 		Collection<Identifier> collection = resourceManager.findResources("functions", stringx -> stringx.endsWith(".mcfunction"));
 		List<CompletableFuture<CommandFunction>> list = Lists.<CompletableFuture<CommandFunction>>newArrayList();
 
@@ -143,8 +143,8 @@ public class CommandFunctionManager implements Tickable, ResourceReloadListener 
 			String string = identifier.getPath();
 			Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(PATH_PREFIX_LENGTH, string.length() - EXTENSION_LENGTH));
 			list.add(
-				CompletableFuture.supplyAsync(() -> method_12906(resourceManager, identifier), ResourceImpl.RESOURCE_IO_EXECUTOR)
-					.thenApplyAsync(listx -> CommandFunction.method_9195(identifier2, this, listx))
+				CompletableFuture.supplyAsync(() -> readLines(resourceManager, identifier), ResourceImpl.RESOURCE_IO_EXECUTOR)
+					.thenApplyAsync(listx -> CommandFunction.create(identifier2, this, listx))
 					.handle((commandFunction, throwable) -> this.load(commandFunction, throwable, identifier))
 			);
 		}
@@ -154,9 +154,9 @@ public class CommandFunctionManager implements Tickable, ResourceReloadListener 
 			LOGGER.info("Loaded {} custom command functions", this.idMap.size());
 		}
 
-		this.field_13416.load(resourceManager);
-		this.tickFunctions.addAll(this.field_13416.getOrCreate(TICK_FUNCTION).values());
-		this.field_13422 = true;
+		this.tags.load(resourceManager);
+		this.tickFunctions.addAll(this.tags.getOrCreate(TICK_FUNCTION).values());
+		this.justLoaded = true;
 	}
 
 	@Nullable
@@ -172,7 +172,7 @@ public class CommandFunctionManager implements Tickable, ResourceReloadListener 
 		}
 	}
 
-	private static List<String> method_12906(ResourceManager resourceManager, Identifier identifier) {
+	private static List<String> readLines(ResourceManager resourceManager, Identifier identifier) {
 		try {
 			Resource resource = resourceManager.getResource(identifier);
 			Throwable var3 = null;
@@ -203,34 +203,34 @@ public class CommandFunctionManager implements Tickable, ResourceReloadListener 
 		}
 	}
 
-	public ServerCommandSource method_12899() {
-		return this.server.method_3739().withLevel(2).withSilent();
+	public ServerCommandSource getFunctionCommandSource() {
+		return this.server.getCommandSource().withLevel(2).withSilent();
 	}
 
-	public TagContainer<CommandFunction> method_12901() {
-		return this.field_13416;
+	public TagContainer<CommandFunction> getTags() {
+		return this.tags;
 	}
 
-	public static class class_2992 {
+	public static class Entry {
 		private final CommandFunctionManager manager;
 		private final ServerCommandSource field_13424;
-		private final CommandFunction.class_2161 field_13425;
+		private final CommandFunction.Element element;
 
-		public class_2992(CommandFunctionManager commandFunctionManager, ServerCommandSource serverCommandSource, CommandFunction.class_2161 arg) {
+		public Entry(CommandFunctionManager commandFunctionManager, ServerCommandSource serverCommandSource, CommandFunction.Element element) {
 			this.manager = commandFunctionManager;
 			this.field_13424 = serverCommandSource;
-			this.field_13425 = arg;
+			this.element = element;
 		}
 
-		public void method_12914(ArrayDeque<CommandFunctionManager.class_2992> arrayDeque, int i) {
+		public void execute(ArrayDeque<CommandFunctionManager.Entry> arrayDeque, int i) {
 			try {
-				this.field_13425.method_9198(this.manager, this.field_13424, arrayDeque, i);
+				this.element.execute(this.manager, this.field_13424, arrayDeque, i);
 			} catch (Throwable var4) {
 			}
 		}
 
 		public String toString() {
-			return this.field_13425.toString();
+			return this.element.toString();
 		}
 	}
 }

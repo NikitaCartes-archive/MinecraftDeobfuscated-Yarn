@@ -46,7 +46,7 @@ public class SkeletonEntity extends AbstractSkeletonEntity {
 			CreeperEntity creeperEntity = (CreeperEntity)entity;
 			if (creeperEntity.method_7008()) {
 				creeperEntity.method_7002();
-				this.dropItem(Items.field_8398);
+				this.method_5706(Items.field_8398);
 			}
 		}
 	}

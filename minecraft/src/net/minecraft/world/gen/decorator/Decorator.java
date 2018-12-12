@@ -9,24 +9,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.decorator.CarvingMaskDecoratorConfig;
-import net.minecraft.world.gen.config.decorator.ChanceDecoratorConfig;
-import net.minecraft.world.gen.config.decorator.ChanceRangeDecoratorConfig;
-import net.minecraft.world.gen.config.decorator.CountChanceDecoratorConfig;
-import net.minecraft.world.gen.config.decorator.CountDecoratorConfig;
-import net.minecraft.world.gen.config.decorator.CountDepthDecoratorConfig;
-import net.minecraft.world.gen.config.decorator.CountExtraChanceDecoratorConfig;
-import net.minecraft.world.gen.config.decorator.DecoratorConfig;
-import net.minecraft.world.gen.config.decorator.DungeonDecoratorConfig;
-import net.minecraft.world.gen.config.decorator.HeightmapRangeDecoratorConfig;
-import net.minecraft.world.gen.config.decorator.LakeDecoratorConfig;
-import net.minecraft.world.gen.config.decorator.NoiseHeightmapDecoratorConfig;
-import net.minecraft.world.gen.config.decorator.NopeDecoratorConfig;
-import net.minecraft.world.gen.config.decorator.RangeDecoratorConfig;
-import net.minecraft.world.gen.config.decorator.TopSolidHeightmapNoiseBiasedDecoratorConfig;
-import net.minecraft.world.gen.config.feature.FeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.FeatureConfig;
 
 public abstract class Decorator<DC extends DecoratorConfig> {
 	public static final Decorator<CountDecoratorConfig> field_14238 = register("count_heightmap", new CountHeightmapDecorator(CountDecoratorConfig::deserialize));
@@ -121,7 +106,7 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 
 	protected <FC extends FeatureConfig> boolean generate(
 		IWorld iWorld,
-		ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator,
+		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,
 		BlockPos blockPos,
 		DC decoratorConfig,
@@ -136,7 +121,7 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 	}
 
 	public abstract Stream<BlockPos> method_14452(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, Random random, DC decoratorConfig, BlockPos blockPos
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, DC decoratorConfig, BlockPos blockPos
 	);
 
 	public String toString() {

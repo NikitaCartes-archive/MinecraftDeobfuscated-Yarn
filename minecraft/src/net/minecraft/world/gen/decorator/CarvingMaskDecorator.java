@@ -11,8 +11,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.decorator.CarvingMaskDecoratorConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class CarvingMaskDecorator extends Decorator<CarvingMaskDecoratorConfig> {
 	public CarvingMaskDecorator(Function<Dynamic<?>, ? extends CarvingMaskDecoratorConfig> function) {
@@ -21,14 +20,14 @@ public class CarvingMaskDecorator extends Decorator<CarvingMaskDecoratorConfig> 
 
 	public Stream<BlockPos> method_14341(
 		IWorld iWorld,
-		ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator,
+		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,
 		CarvingMaskDecoratorConfig carvingMaskDecoratorConfig,
 		BlockPos blockPos
 	) {
-		Chunk chunk = iWorld.method_8399(blockPos);
+		Chunk chunk = iWorld.getChunk(blockPos);
 		ChunkPos chunkPos = chunk.getPos();
-		BitSet bitSet = chunk.method_12025(carvingMaskDecoratorConfig.step);
+		BitSet bitSet = chunk.getCarvingMask(carvingMaskDecoratorConfig.step);
 		return IntStream.range(0, bitSet.length()).filter(i -> bitSet.get(i) && random.nextFloat() < carvingMaskDecoratorConfig.probability).mapToObj(i -> {
 			int j = i & 15;
 			int k = i >> 4 & 15;

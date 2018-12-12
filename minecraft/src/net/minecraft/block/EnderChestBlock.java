@@ -27,13 +27,13 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class EnderChestBlock extends BlockWithEntity implements Waterloggable {
-	public static final DirectionProperty field_10966 = HorizontalFacingBlock.field_11177;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
 	public static final BooleanProperty field_10968 = Properties.WATERLOGGED;
 	protected static final VoxelShape field_10967 = Block.createCubeShape(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
 
 	protected EnderChestBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_10966, Direction.NORTH).with(field_10968, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(field_10968, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -48,20 +48,20 @@ public class EnderChestBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public RenderTypeBlock getRenderType(BlockState blockState) {
-		return RenderTypeBlock.field_11456;
+	public BlockRenderType method_9604(BlockState blockState) {
+		return BlockRenderType.field_11456;
 	}
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getPos());
 		return this.getDefaultState()
-			.with(field_10966, itemPlacementContext.method_8042().getOpposite())
+			.with(FACING, itemPlacementContext.getPlayerHorizontalFacing().getOpposite())
 			.with(field_10968, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
 		EnderChestInventory enderChestInventory = playerEntity.getEnderChestInventory();
@@ -70,12 +70,12 @@ public class EnderChestBlock extends BlockWithEntity implements Waterloggable {
 			BlockPos blockPos2 = blockPos.up();
 			if (world.getBlockState(blockPos2).isSimpleFullBlock(world, blockPos2)) {
 				return true;
-			} else if (world.isRemote) {
+			} else if (world.isClient) {
 				return true;
 			} else {
 				enderChestInventory.setCurrentBlockEntity((EnderChestBlockEntity)blockEntity);
 				playerEntity.openInventory(enderChestInventory);
-				playerEntity.method_7281(Stats.field_15424);
+				playerEntity.increaseStat(Stats.field_15424);
 				return true;
 			}
 		} else {
@@ -106,17 +106,17 @@ public class EnderChestBlock extends BlockWithEntity implements Waterloggable {
 
 	@Override
 	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
-		return blockState.with(field_10966, rotation.method_10503(blockState.get(field_10966)));
+		return blockState.with(FACING, rotation.method_10503(blockState.get(FACING)));
 	}
 
 	@Override
 	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.method_10345(blockState.get(field_10966)));
+		return blockState.applyRotation(mirror.getRotation(blockState.get(FACING)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_10966, field_10968);
+		builder.with(FACING, field_10968);
 	}
 
 	@Override
@@ -125,12 +125,14 @@ public class EnderChestBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if ((Boolean)blockState.get(field_10968)) {
 			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
 		}
 
-		return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override

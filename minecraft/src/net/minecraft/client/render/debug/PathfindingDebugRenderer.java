@@ -7,10 +7,10 @@ import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.Renderer;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.player.PlayerEntity;
@@ -35,14 +35,14 @@ public class PathfindingDebugRenderer implements RenderDebug.DebugRenderer {
 
 	public void method_3869(int i, Path path, float f) {
 		this.field_4616.put(i, path);
-		this.field_4615.put(i, SystemUtil.getMeasuringTimeMili());
+		this.field_4615.put(i, SystemUtil.getMeasuringTimeMs());
 		this.field_4617.put(i, f);
 	}
 
 	@Override
 	public void render(float f, long l) {
 		if (!this.field_4616.isEmpty()) {
-			long m = SystemUtil.getMeasuringTimeMili();
+			long m = SystemUtil.getMeasuringTimeMs();
 			this.field_4618 = this.client.player;
 			this.field_4621 = MathHelper.lerp((double)f, this.field_4618.prevRenderX, this.field_4618.x);
 			this.field_4620 = MathHelper.lerp((double)f, this.field_4618.prevRenderY, this.field_4618.y);
@@ -65,7 +65,7 @@ public class PathfindingDebugRenderer implements RenderDebug.DebugRenderer {
 				this.method_3868(f, path);
 				PathNode pathNode = path.method_48();
 				if (!(this.method_3867(pathNode) > 40.0F)) {
-					Renderer.renderCuboidOutline(
+					WorldRenderer.drawBox(
 						new BoundingBox(
 								(double)((float)pathNode.x + 0.25F),
 								(double)((float)pathNode.y + 0.25F),
@@ -86,7 +86,7 @@ public class PathfindingDebugRenderer implements RenderDebug.DebugRenderer {
 						if (!(this.method_3867(pathNode2) > 40.0F)) {
 							float h = i == path.getCurrentNodeIndex() ? 1.0F : 0.0F;
 							float j = i == path.getCurrentNodeIndex() ? 0.0F : 1.0F;
-							Renderer.renderCuboidOutline(
+							WorldRenderer.drawBox(
 								new BoundingBox(
 										(double)((float)pathNode2.x + 0.5F - g),
 										(double)((float)pathNode2.y + 0.01F * (float)i),
@@ -160,8 +160,8 @@ public class PathfindingDebugRenderer implements RenderDebug.DebugRenderer {
 
 	public void method_3868(float f, Path path) {
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-		vertexBuffer.begin(3, VertexFormats.POSITION_COLOR);
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
 
 		for (int i = 0; i < path.getPathLength(); i++) {
 			PathNode pathNode = path.getNode(i);
@@ -171,7 +171,7 @@ public class PathfindingDebugRenderer implements RenderDebug.DebugRenderer {
 				int k = j >> 16 & 0xFF;
 				int l = j >> 8 & 0xFF;
 				int m = j & 0xFF;
-				vertexBuffer.vertex((double)pathNode.x - this.field_4621 + 0.5, (double)pathNode.y - this.field_4620 + 0.5, (double)pathNode.z - this.field_4619 + 0.5)
+				bufferBuilder.vertex((double)pathNode.x - this.field_4621 + 0.5, (double)pathNode.y - this.field_4620 + 0.5, (double)pathNode.z - this.field_4619 + 0.5)
 					.color(k, l, m, 255)
 					.next();
 			}

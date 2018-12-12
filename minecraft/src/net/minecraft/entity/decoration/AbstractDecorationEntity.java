@@ -27,7 +27,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 	private int field_7097;
 	protected BlockPos blockPos;
 	@Nullable
-	public Direction field_7099;
+	public Direction facing;
 
 	protected AbstractDecorationEntity(EntityType<?> entityType, World world) {
 		super(entityType, world);
@@ -43,27 +43,27 @@ public abstract class AbstractDecorationEntity extends Entity {
 	protected void initDataTracker() {
 	}
 
-	protected void method_6892(Direction direction) {
+	protected void setFacing(Direction direction) {
 		Validate.notNull(direction);
 		Validate.isTrue(direction.getAxis().isHorizontal());
-		this.field_7099 = direction;
-		this.yaw = (float)(this.field_7099.getHorizontal() * 90);
+		this.facing = direction;
+		this.yaw = (float)(this.facing.getHorizontal() * 90);
 		this.prevYaw = this.yaw;
 		this.method_6895();
 	}
 
 	protected void method_6895() {
-		if (this.field_7099 != null) {
+		if (this.facing != null) {
 			double d = (double)this.blockPos.getX() + 0.5;
 			double e = (double)this.blockPos.getY() + 0.5;
 			double f = (double)this.blockPos.getZ() + 0.5;
 			double g = 0.46875;
 			double h = this.method_6893(this.getWidthPixels());
 			double i = this.method_6893(this.getHeightPixels());
-			d -= (double)this.field_7099.getOffsetX() * 0.46875;
-			f -= (double)this.field_7099.getOffsetZ() * 0.46875;
+			d -= (double)this.facing.getOffsetX() * 0.46875;
+			f -= (double)this.facing.getOffsetZ() * 0.46875;
 			e += i;
-			Direction direction = this.field_7099.rotateYCounterclockwise();
+			Direction direction = this.facing.rotateYCounterclockwise();
 			d += h * (double)direction.getOffsetX();
 			f += h * (double)direction.getOffsetZ();
 			this.x = d;
@@ -72,7 +72,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 			double j = (double)this.getWidthPixels();
 			double k = (double)this.getHeightPixels();
 			double l = (double)this.getWidthPixels();
-			if (this.field_7099.getAxis() == Direction.Axis.Z) {
+			if (this.facing.getAxis() == Direction.Axis.Z) {
 				l = 1.0;
 			} else {
 				j = 1.0;
@@ -94,7 +94,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 		this.prevX = this.x;
 		this.prevY = this.y;
 		this.prevZ = this.z;
-		if (this.field_7097++ == 100 && !this.world.isRemote) {
+		if (this.field_7097++ == 100 && !this.world.isClient) {
 			this.field_7097 = 0;
 			if (!this.invalid && !this.method_6888()) {
 				this.invalidate();
@@ -109,15 +109,15 @@ public abstract class AbstractDecorationEntity extends Entity {
 		} else {
 			int i = Math.max(1, this.getWidthPixels() / 16);
 			int j = Math.max(1, this.getHeightPixels() / 16);
-			BlockPos blockPos = this.blockPos.method_10093(this.field_7099.getOpposite());
-			Direction direction = this.field_7099.rotateYCounterclockwise();
+			BlockPos blockPos = this.blockPos.offset(this.facing.getOpposite());
+			Direction direction = this.facing.rotateYCounterclockwise();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 			for (int k = 0; k < i; k++) {
 				for (int l = 0; l < j; l++) {
 					int m = (i - 1) / -2;
 					int n = (j - 1) / -2;
-					mutable.set(blockPos).method_10104(direction, k + m).method_10104(Direction.UP, l + n);
+					mutable.set(blockPos).setOffset(direction, k + m).setOffset(Direction.UP, l + n);
 					BlockState blockState = this.world.getBlockState(mutable);
 					if (!blockState.getMaterial().method_15799() && !AbstractRedstoneGateBlock.method_9999(blockState)) {
 						return false;
@@ -140,8 +140,8 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public Direction method_5735() {
-		return this.field_7099;
+	public Direction getHorizontalFacing() {
+		return this.facing;
 	}
 
 	@Override
@@ -149,9 +149,9 @@ public abstract class AbstractDecorationEntity extends Entity {
 		if (this.isInvulnerableTo(damageSource)) {
 			return false;
 		} else {
-			if (!this.invalid && !this.world.isRemote) {
+			if (!this.invalid && !this.world.isClient) {
 				this.invalidate();
-				this.method_5785();
+				this.scheduleVelocityUpdate();
 				this.copyEntityData(damageSource.getAttacker());
 			}
 
@@ -161,7 +161,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 
 	@Override
 	public void move(MovementType movementType, double d, double e, double f) {
-		if (!this.world.isRemote && !this.invalid && d * d + e * e + f * f > 0.0) {
+		if (!this.world.isClient && !this.invalid && d * d + e * e + f * f > 0.0) {
 			this.invalidate();
 			this.copyEntityData(null);
 		}
@@ -169,7 +169,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 
 	@Override
 	public void addVelocity(double d, double e, double f) {
-		if (!this.world.isRemote && !this.invalid && d * d + e * e + f * f > 0.0) {
+		if (!this.world.isClient && !this.invalid && d * d + e * e + f * f > 0.0) {
 			this.invalidate();
 			this.copyEntityData(null);
 		}
@@ -177,7 +177,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		compoundTag.putByte("Facing", (byte)this.field_7099.getHorizontal());
+		compoundTag.putByte("Facing", (byte)this.facing.getHorizontal());
 		BlockPos blockPos = this.getDecorationBlockPos();
 		compoundTag.putInt("TileX", blockPos.getX());
 		compoundTag.putInt("TileY", blockPos.getY());
@@ -187,7 +187,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		this.blockPos = new BlockPos(compoundTag.getInt("TileX"), compoundTag.getInt("TileY"), compoundTag.getInt("TileZ"));
-		this.method_6892(Direction.fromHorizontal(compoundTag.getByte("Facing")));
+		this.setFacing(Direction.fromHorizontal(compoundTag.getByte("Facing")));
 	}
 
 	public abstract int getWidthPixels();
@@ -202,9 +202,9 @@ public abstract class AbstractDecorationEntity extends Entity {
 	public ItemEntity dropStack(ItemStack itemStack, float f) {
 		ItemEntity itemEntity = new ItemEntity(
 			this.world,
-			this.x + (double)((float)this.field_7099.getOffsetX() * 0.15F),
+			this.x + (double)((float)this.facing.getOffsetX() * 0.15F),
 			this.y + (double)f,
-			this.z + (double)((float)this.field_7099.getOffsetZ() * 0.15F),
+			this.z + (double)((float)this.facing.getOffsetZ() * 0.15F),
 			itemStack
 		);
 		itemEntity.setPickupDelayDefault();
@@ -230,16 +230,16 @@ public abstract class AbstractDecorationEntity extends Entity {
 
 	@Override
 	public float applyRotation(Rotation rotation) {
-		if (this.field_7099 != null && this.field_7099.getAxis() != Direction.Axis.Y) {
+		if (this.facing != null && this.facing.getAxis() != Direction.Axis.Y) {
 			switch (rotation) {
 				case ROT_180:
-					this.field_7099 = this.field_7099.getOpposite();
+					this.facing = this.facing.getOpposite();
 					break;
 				case ROT_270:
-					this.field_7099 = this.field_7099.rotateYCounterclockwise();
+					this.facing = this.facing.rotateYCounterclockwise();
 					break;
 				case ROT_90:
-					this.field_7099 = this.field_7099.rotateYClockwise();
+					this.facing = this.facing.rotateYClockwise();
 			}
 		}
 
@@ -258,7 +258,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 
 	@Override
 	public float applyMirror(Mirror mirror) {
-		return this.applyRotation(mirror.method_10345(this.field_7099));
+		return this.applyRotation(mirror.getRotation(this.facing));
 	}
 
 	@Override

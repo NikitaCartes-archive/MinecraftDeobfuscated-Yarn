@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -36,7 +35,7 @@ public class CoralParentBlock extends Block implements Waterloggable {
 			return true;
 		} else {
 			for (Direction direction : Direction.values()) {
-				if (blockView.getFluidState(blockPos.method_10093(direction)).matches(FluidTags.field_15517)) {
+				if (blockView.getFluidState(blockPos.offset(direction)).matches(FluidTags.field_15517)) {
 					return true;
 				}
 			}
@@ -63,14 +62,16 @@ public class CoralParentBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if ((Boolean)blockState.get(WATERLOGGED)) {
 			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
 		}
 
 		return direction == Direction.DOWN && !this.canPlaceAt(blockState, iWorld, blockPos)
 			? Blocks.field_10124.getDefaultState()
-			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override

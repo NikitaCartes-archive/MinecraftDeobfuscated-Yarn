@@ -5,7 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.ContainerGui;
-import net.minecraft.client.gui.ingame.InventoryGui;
+import net.minecraft.client.gui.ingame.PlayerInventoryGui;
 import net.minecraft.container.HorseContainer;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
@@ -62,7 +62,7 @@ public class HorseGui extends ContainerGui {
 			}
 		}
 
-		InventoryGui.drawEntity(k + 51, l + 60, 17, (float)(k + 51) - this.mouseX, (float)(l + 75 - 50) - this.mouseY, this.entity);
+		PlayerInventoryGui.drawEntity(k + 51, l + 60, 17, (float)(k + 51) - this.mouseX, (float)(l + 75 - 50) - this.mouseY, this.entity);
 	}
 
 	@Override

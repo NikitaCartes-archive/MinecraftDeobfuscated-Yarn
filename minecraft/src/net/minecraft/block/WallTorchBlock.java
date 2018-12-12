@@ -22,7 +22,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class WallTorchBlock extends TorchBlock {
-	public static final DirectionProperty field_11731 = HorizontalFacingBlock.field_11177;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
 	private static final Map<Direction, VoxelShape> BOUNDING_SHAPES = Maps.newEnumMap(
 		ImmutableMap.of(
 			Direction.NORTH,
@@ -38,7 +38,7 @@ public class WallTorchBlock extends TorchBlock {
 
 	protected WallTorchBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11731, Direction.NORTH));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH));
 	}
 
 	@Override
@@ -52,15 +52,15 @@ public class WallTorchBlock extends TorchBlock {
 	}
 
 	public static VoxelShape getBoundingShape(BlockState blockState) {
-		return (VoxelShape)BOUNDING_SHAPES.get(blockState.get(field_11731));
+		return (VoxelShape)BOUNDING_SHAPES.get(blockState.get(FACING));
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		Direction direction = blockState.get(field_11731);
-		BlockPos blockPos2 = blockPos.method_10093(direction.getOpposite());
+		Direction direction = blockState.get(FACING);
+		BlockPos blockPos2 = blockPos.offset(direction.getOpposite());
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-		return Block.method_9501(blockState2.method_11628(viewableWorld, blockPos2), direction) && !method_9581(blockState2.getBlock());
+		return Block.isFaceFullCube(blockState2.getCollisionShape(viewableWorld, blockPos2), direction) && !method_9581(blockState2.getBlock());
 	}
 
 	@Nullable
@@ -69,12 +69,12 @@ public class WallTorchBlock extends TorchBlock {
 		BlockState blockState = this.getDefaultState();
 		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getPos();
-		Direction[] directions = itemPlacementContext.method_7718();
+		Direction[] directions = itemPlacementContext.getPlacementFacings();
 
 		for (Direction direction : directions) {
 			if (direction.getAxis().isHorizontal()) {
 				Direction direction2 = direction.getOpposite();
-				blockState = blockState.with(field_11731, direction2);
+				blockState = blockState.with(FACING, direction2);
 				if (blockState.canPlaceAt(viewableWorld, blockPos)) {
 					return blockState;
 				}
@@ -85,14 +85,16 @@ public class WallTorchBlock extends TorchBlock {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-		return direction.getOpposite() == blockState.get(field_11731) && !blockState.canPlaceAt(iWorld, blockPos) ? Blocks.field_10124.getDefaultState() : blockState;
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
+		return direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos) ? Blocks.field_10124.getDefaultState() : blockState;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		Direction direction = blockState.get(field_11731);
+		Direction direction = blockState.get(FACING);
 		double d = (double)blockPos.getX() + 0.5;
 		double e = (double)blockPos.getY() + 0.7;
 		double f = (double)blockPos.getZ() + 0.5;
@@ -105,16 +107,16 @@ public class WallTorchBlock extends TorchBlock {
 
 	@Override
 	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
-		return blockState.with(field_11731, rotation.method_10503(blockState.get(field_11731)));
+		return blockState.with(FACING, rotation.method_10503(blockState.get(FACING)));
 	}
 
 	@Override
 	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.method_10345(blockState.get(field_11731)));
+		return blockState.applyRotation(mirror.getRotation(blockState.get(FACING)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_11731);
+		builder.with(FACING);
 	}
 }

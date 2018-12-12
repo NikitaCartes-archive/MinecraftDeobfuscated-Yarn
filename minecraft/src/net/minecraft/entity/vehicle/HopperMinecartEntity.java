@@ -53,7 +53,7 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 
 	@Override
 	public boolean interact(PlayerEntity playerEntity, Hand hand) {
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			playerEntity.openInventory(this);
 		}
 
@@ -99,7 +99,7 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	@Override
 	public void update() {
 		super.update();
-		if (!this.world.isRemote && this.isValid() && this.isEnabled()) {
+		if (!this.world.isClient && this.isValid() && this.isEnabled()) {
 			BlockPos blockPos = new BlockPos(this);
 			if (blockPos.equals(this.currentBlockPos)) {
 				this.transferCooldown--;
@@ -109,7 +109,7 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 
 			if (!this.isCoolingDown()) {
 				this.setTransferCooldown(0);
-				if (this.updateLogic()) {
+				if (this.canOperate()) {
 					this.setTransferCooldown(4);
 					this.markDirty();
 				}
@@ -117,7 +117,7 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 		}
 	}
 
-	public boolean updateLogic() {
+	public boolean canOperate() {
 		if (HopperBlockEntity.tryExtract(this)) {
 			return true;
 		} else {
@@ -134,7 +134,7 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	public void dropItems(DamageSource damageSource) {
 		super.dropItems(damageSource);
 		if (this.world.getGameRules().getBoolean("doEntityDrops")) {
-			this.dropItem(Blocks.field_10312);
+			this.method_5706(Blocks.field_10312);
 		}
 	}
 

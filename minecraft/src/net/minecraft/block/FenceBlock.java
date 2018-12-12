@@ -19,7 +19,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class FenceBlock extends HorizontalConnectedBlock {
-	private final VoxelShape[] field_11066;
+	private final VoxelShape[] SHAPES;
 
 	public FenceBlock(Block.Settings settings) {
 		super(2.0F, 2.0F, 16.0F, 16.0F, 24.0F, settings);
@@ -32,12 +32,12 @@ public class FenceBlock extends HorizontalConnectedBlock {
 				.with(WEST, Boolean.valueOf(false))
 				.with(WATERLOGGED, Boolean.valueOf(false))
 		);
-		this.field_11066 = this.method_9984(2.0F, 1.0F, 16.0F, 6.0F, 15.0F);
+		this.SHAPES = this.createShapes(2.0F, 1.0F, 16.0F, 6.0F, 15.0F);
 	}
 
 	@Override
 	public VoxelShape method_9571(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return this.field_11066[this.method_9987(blockState)];
+		return this.SHAPES[this.getShapeIndex(blockState)];
 	}
 
 	@Override
@@ -64,10 +64,10 @@ public class FenceBlock extends HorizontalConnectedBlock {
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			return LeashItem.method_7994(playerEntity, world, blockPos);
 		} else {
 			ItemStack itemStack = playerEntity.getStackInHand(hand);
@@ -90,22 +90,28 @@ public class FenceBlock extends HorizontalConnectedBlock {
 		BlockState blockState4 = blockView.getBlockState(blockPos5);
 		return super.getPlacementState(itemPlacementContext)
 			.with(
-				NORTH, Boolean.valueOf(this.method_10184(blockState, Block.method_9501(blockState.method_11628(blockView, blockPos2), Direction.SOUTH), Direction.SOUTH))
+				NORTH,
+				Boolean.valueOf(this.method_10184(blockState, Block.isFaceFullCube(blockState.getCollisionShape(blockView, blockPos2), Direction.SOUTH), Direction.SOUTH))
 			)
 			.with(
-				EAST, Boolean.valueOf(this.method_10184(blockState2, Block.method_9501(blockState2.method_11628(blockView, blockPos3), Direction.WEST), Direction.WEST))
+				EAST,
+				Boolean.valueOf(this.method_10184(blockState2, Block.isFaceFullCube(blockState2.getCollisionShape(blockView, blockPos3), Direction.WEST), Direction.WEST))
 			)
 			.with(
-				SOUTH, Boolean.valueOf(this.method_10184(blockState3, Block.method_9501(blockState3.method_11628(blockView, blockPos4), Direction.NORTH), Direction.NORTH))
+				SOUTH,
+				Boolean.valueOf(this.method_10184(blockState3, Block.isFaceFullCube(blockState3.getCollisionShape(blockView, blockPos4), Direction.NORTH), Direction.NORTH))
 			)
 			.with(
-				WEST, Boolean.valueOf(this.method_10184(blockState4, Block.method_9501(blockState4.method_11628(blockView, blockPos5), Direction.EAST), Direction.EAST))
+				WEST,
+				Boolean.valueOf(this.method_10184(blockState4, Block.isFaceFullCube(blockState4.getCollisionShape(blockView, blockPos5), Direction.EAST), Direction.EAST))
 			)
 			.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if ((Boolean)blockState.get(WATERLOGGED)) {
 			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
 		}
@@ -114,10 +120,10 @@ public class FenceBlock extends HorizontalConnectedBlock {
 			? blockState.with(
 				(Property)FACING_PROPERTIES.get(direction),
 				Boolean.valueOf(
-					this.method_10184(blockState2, Block.method_9501(blockState2.method_11628(iWorld, blockPos2), direction.getOpposite()), direction.getOpposite())
+					this.method_10184(blockState2, Block.isFaceFullCube(blockState2.getCollisionShape(iWorld, blockPos2), direction.getOpposite()), direction.getOpposite())
 				)
 			)
-			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override

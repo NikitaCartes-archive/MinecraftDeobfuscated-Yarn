@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.network.packet.GameStateChangeClientPacket;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -184,7 +184,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 		BlockPos blockPos = new BlockPos(this.xTile, this.yTile, this.zTIle);
 		BlockState blockState = this.world.getBlockState(blockPos);
 		if (!blockState.isAir() && !bl) {
-			VoxelShape voxelShape = blockState.method_11628(this.world, blockPos);
+			VoxelShape voxelShape = blockState.getCollisionShape(this.world, blockPos);
 			if (!voxelShape.isEmpty()) {
 				for (BoundingBox boundingBox : voxelShape.getBoundingBoxList()) {
 					if (boundingBox.offset(blockPos).contains(new Vec3d(this.x, this.y, this.z))) {
@@ -199,7 +199,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 			this.shake--;
 		}
 
-		if (this.method_5721()) {
+		if (this.isInsideWaterOrRain()) {
 			this.extinguish();
 		}
 
@@ -419,7 +419,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 		if (entity.damage(damageSource, (float)i)) {
 			if (entity instanceof LivingEntity) {
 				LivingEntity livingEntity = (LivingEntity)entity;
-				if (!this.world.isRemote && this.getPierceLevel() <= 0) {
+				if (!this.world.isClient && this.getPierceLevel() <= 0) {
 					livingEntity.setStuckArrows(livingEntity.getStuckArrows() + 1);
 				}
 
@@ -444,10 +444,10 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 					this.field_7579.add(livingEntity);
 				}
 
-				if (!this.world.isRemote && this.field_7579 != null && entity2 instanceof ServerPlayerEntity) {
+				if (!this.world.isClient && this.field_7579 != null && entity2 instanceof ServerPlayerEntity) {
 					int j = this.field_7579.size();
 					ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity2;
-					CriterionCriterions.KILLED_BY_CROSSBOW.method_8980(serverPlayerEntity, this.field_7579, j);
+					Criterions.KILLED_BY_CROSSBOW.method_8980(serverPlayerEntity, this.field_7579, j);
 				}
 			}
 
@@ -462,7 +462,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 			this.yaw += 180.0F;
 			this.prevYaw += 180.0F;
 			this.field_7577 = 0;
-			if (!this.world.isRemote && this.velocityX * this.velocityX + this.velocityY * this.velocityY + this.velocityZ * this.velocityZ < 0.001F) {
+			if (!this.world.isClient && this.velocityX * this.velocityX + this.velocityY * this.velocityY + this.velocityZ * this.velocityZ < 0.001F) {
 				if (this.pickupType == ProjectileEntity.PickupType.PICKUP) {
 					this.dropStack(this.asItemStack(), 0.1F);
 				}
@@ -535,7 +535,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 		}
 
 		compoundTag.putString("SoundEvent", Registry.SOUND_EVENT.getId(this.sound).toString());
-		compoundTag.putBoolean("ShotFromCrossbow", this.method_7456());
+		compoundTag.putBoolean("ShotFromCrossbow", this.isShotFromCrossbow());
 	}
 
 	@Override
@@ -583,8 +583,8 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	}
 
 	@Override
-	public void method_5694(PlayerEntity playerEntity) {
-		if (!this.world.isRemote && (this.inGround || this.isNoClip()) && this.shake <= 0) {
+	public void onPlayerCollision(PlayerEntity playerEntity) {
+		if (!this.world.isClient && (this.inGround || this.isNoClip()) && this.shake <= 0) {
 			boolean bl = this.pickupType == ProjectileEntity.PickupType.PICKUP
 				|| this.pickupType == ProjectileEntity.PickupType.CREATIVE_PICKUP && playerEntity.abilities.creativeMode
 				|| this.isNoClip() && this.getOwner().getUuid() == playerEntity.getUuid();
@@ -650,7 +650,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 		return (b & 1) != 0;
 	}
 
-	public boolean method_7456() {
+	public boolean isShotFromCrossbow() {
 		byte b = this.dataTracker.get(FLAGS);
 		return (b & 4) != 0;
 	}
@@ -686,7 +686,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	}
 
 	public boolean isNoClip() {
-		return !this.world.isRemote ? this.noClip : (this.dataTracker.get(FLAGS) & 2) != 0;
+		return !this.world.isClient ? this.noClip : (this.dataTracker.get(FLAGS) & 2) != 0;
 	}
 
 	public void setShotFromCrossbow(boolean bl) {

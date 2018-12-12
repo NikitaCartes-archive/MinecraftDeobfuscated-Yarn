@@ -12,25 +12,25 @@ import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.world.World;
 
 public class BannerPatternItem extends Item {
-	private final BannerPattern field_7900;
+	private final BannerPattern pattern;
 
 	public BannerPatternItem(BannerPattern bannerPattern, Item.Settings settings) {
 		super(settings);
-		this.field_7900 = bannerPattern;
+		this.pattern = bannerPattern;
 	}
 
-	public BannerPattern method_7704() {
-		return this.field_7900;
+	public BannerPattern getPattern() {
+		return this.pattern;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void addInformation(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
-		list.add(this.method_7703().applyFormat(TextFormat.GRAY));
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
+		list.add(this.nameTextComponent().applyFormat(TextFormat.GRAY));
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent method_7703() {
+	public TextComponent nameTextComponent() {
 		return new TranslatableTextComponent(this.getTranslationKey() + ".desc");
 	}
 }

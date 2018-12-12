@@ -9,7 +9,7 @@ import net.minecraft.client.render.block.GrassColorHandler;
 import net.minecraft.item.DyeableArmorItem;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemContainer;
+import net.minecraft.item.ItemProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.SpawnEggItem;
@@ -21,19 +21,19 @@ import net.minecraft.util.registry.Registry;
 
 @Environment(EnvType.CLIENT)
 public class ItemColorMap {
-	private final IdList<ItemColorMapper> field_1996 = new IdList<>(32);
+	private final IdList<ItemColorMapper> mappers = new IdList<>(32);
 
-	public static ItemColorMap method_1706(BlockColorMap blockColorMap) {
+	public static ItemColorMap create(BlockColorMap blockColorMap) {
 		ItemColorMap itemColorMap = new ItemColorMap();
-		itemColorMap.method_1708(
+		itemColorMap.register(
 			(itemStack, i) -> i > 0 ? -1 : ((DyeableArmorItem)itemStack.getItem()).getColor(itemStack),
 			Items.field_8267,
 			Items.field_8577,
 			Items.field_8570,
 			Items.field_8370
 		);
-		itemColorMap.method_1708((itemStack, i) -> GrassColorHandler.getColor(0.5, 1.0), Blocks.field_10214, Blocks.field_10313);
-		itemColorMap.method_1708((itemStack, i) -> {
+		itemColorMap.register((itemStack, i) -> GrassColorHandler.getColor(0.5, 1.0), Blocks.field_10214, Blocks.field_10313);
+		itemColorMap.register((itemStack, i) -> {
 			if (i != 1) {
 				return -1;
 			} else {
@@ -61,13 +61,13 @@ public class ItemColorMap {
 				}
 			}
 		}, Items.field_8450);
-		itemColorMap.method_1708((itemStack, i) -> i > 0 ? -1 : PotionUtil.getColor(itemStack), Items.field_8574, Items.field_8436, Items.field_8150);
+		itemColorMap.register((itemStack, i) -> i > 0 ? -1 : PotionUtil.getColor(itemStack), Items.field_8574, Items.field_8436, Items.field_8150);
 
 		for (SpawnEggItem spawnEggItem : SpawnEggItem.method_8017()) {
-			itemColorMap.method_1708((itemStack, i) -> spawnEggItem.method_8016(i), spawnEggItem);
+			itemColorMap.register((itemStack, i) -> spawnEggItem.method_8016(i), spawnEggItem);
 		}
 
-		itemColorMap.method_1708(
+		itemColorMap.register(
 			(itemStack, i) -> {
 				BlockState blockState = ((BlockItem)itemStack.getItem()).getBlock().getDefaultState();
 				return blockColorMap.getRenderColor(blockState, null, null, i);
@@ -84,19 +84,19 @@ public class ItemColorMap {
 			Blocks.field_10035,
 			Blocks.field_10588
 		);
-		itemColorMap.method_1708((itemStack, i) -> i == 0 ? PotionUtil.getColor(itemStack) : -1, Items.field_8087);
-		itemColorMap.method_1708((itemStack, i) -> i == 0 ? -1 : FilledMapItem.method_7999(itemStack), Items.field_8204);
+		itemColorMap.register((itemStack, i) -> i == 0 ? PotionUtil.getColor(itemStack) : -1, Items.field_8087);
+		itemColorMap.register((itemStack, i) -> i == 0 ? -1 : FilledMapItem.method_7999(itemStack), Items.field_8204);
 		return itemColorMap;
 	}
 
-	public int method_1704(ItemStack itemStack, int i) {
-		ItemColorMapper itemColorMapper = this.field_1996.getInt(Registry.ITEM.getRawId(itemStack.getItem()));
+	public int getRenderColor(ItemStack itemStack, int i) {
+		ItemColorMapper itemColorMapper = this.mappers.getInt(Registry.ITEM.getRawId(itemStack.getItem()));
 		return itemColorMapper == null ? -1 : itemColorMapper.getColor(itemStack, i);
 	}
 
-	public void method_1708(ItemColorMapper itemColorMapper, ItemContainer... itemContainers) {
-		for (ItemContainer itemContainer : itemContainers) {
-			this.field_1996.set(itemColorMapper, Item.getRawIdByItem(itemContainer.getItem()));
+	public void register(ItemColorMapper itemColorMapper, ItemProvider... itemProviders) {
+		for (ItemProvider itemProvider : itemProviders) {
+			this.mappers.set(itemColorMapper, Item.getRawIdByItem(itemProvider.getItem()));
 		}
 	}
 }

@@ -16,7 +16,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportElement;
+import net.minecraft.util.crash.CrashReportSection;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -98,14 +98,15 @@ public class DataTracker {
 		DataTracker.Entry<T> entry;
 		try {
 			entry = (DataTracker.Entry<T>)this.entries.get(trackedData.getId());
-		} catch (Throwable var6) {
-			CrashReport crashReport = CrashReport.create(var6, "Getting synched entity data");
-			CrashReportElement crashReportElement = crashReport.addElement("Synched entity data");
-			crashReportElement.add("Data ID", trackedData);
+		} catch (Throwable var9) {
+			CrashReport crashReport = CrashReport.create(var9, "Getting synched entity data");
+			CrashReportSection crashReportSection = crashReport.method_562("Synched entity data");
+			crashReportSection.add("Data ID", trackedData);
 			throw new CrashException(crashReport);
+		} finally {
+			this.lock.readLock().unlock();
 		}
 
-		this.lock.readLock().unlock();
 		return entry;
 	}
 

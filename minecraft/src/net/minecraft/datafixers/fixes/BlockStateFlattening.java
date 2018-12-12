@@ -11,29 +11,29 @@ import org.apache.logging.log4j.Logger;
 
 public class BlockStateFlattening {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Dynamic<?>[] states = new Dynamic[4095];
-	private static final Object2IntMap<Dynamic<?>> stateObjToId = DataFixUtils.make(
+	private static final Dynamic<?>[] NEW_IDS_TO_STATES = new Dynamic[4095];
+	private static final Object2IntMap<Dynamic<?>> OLD_STATES_TO_NEW_IDS = DataFixUtils.make(
 		new Object2IntOpenHashMap<>(), object2IntOpenHashMap -> object2IntOpenHashMap.defaultReturnValue(-1)
 	);
-	private static final Object2IntMap<String> stateStrToId = DataFixUtils.make(
+	private static final Object2IntMap<String> BLOCKS_TO_DEFAULT_IDS = DataFixUtils.make(
 		new Object2IntOpenHashMap<>(), object2IntOpenHashMap -> object2IntOpenHashMap.defaultReturnValue(-1)
 	);
 
 	static void putStates(int i, String string, String... strings) {
-		states[i] = parseState(string);
+		NEW_IDS_TO_STATES[i] = parseState(string);
 
 		for (String string2 : strings) {
 			Dynamic<?> dynamic = parseState(string2);
 			String string3 = dynamic.getString("Name");
-			stateStrToId.putIfAbsent(string3, i);
-			stateObjToId.put(dynamic, i);
+			BLOCKS_TO_DEFAULT_IDS.putIfAbsent(string3, i);
+			OLD_STATES_TO_NEW_IDS.put(dynamic, i);
 		}
 	}
 
 	public static Dynamic<?> lookupState(Dynamic<?> dynamic) {
-		int i = stateObjToId.getInt(dynamic);
-		if (i >= 0 && i < states.length) {
-			Dynamic<?> dynamic2 = states[i];
+		int i = OLD_STATES_TO_NEW_IDS.getInt(dynamic);
+		if (i >= 0 && i < NEW_IDS_TO_STATES.length) {
+			Dynamic<?> dynamic2 = NEW_IDS_TO_STATES[i];
 			return dynamic2 == null ? dynamic : dynamic2;
 		} else {
 			return dynamic;
@@ -41,9 +41,9 @@ public class BlockStateFlattening {
 	}
 
 	public static String lookup(String string) {
-		int i = stateStrToId.getInt(string);
-		if (i >= 0 && i < states.length) {
-			Dynamic<?> dynamic = states[i];
+		int i = BLOCKS_TO_DEFAULT_IDS.getInt(string);
+		if (i >= 0 && i < NEW_IDS_TO_STATES.length) {
+			Dynamic<?> dynamic = NEW_IDS_TO_STATES[i];
 			return dynamic == null ? string : dynamic.getString("Name");
 		} else {
 			return string;
@@ -51,8 +51,8 @@ public class BlockStateFlattening {
 	}
 
 	public static String lookup(int i) {
-		if (i >= 0 && i < states.length) {
-			Dynamic<?> dynamic = states[i];
+		if (i >= 0 && i < NEW_IDS_TO_STATES.length) {
+			Dynamic<?> dynamic = NEW_IDS_TO_STATES[i];
 			return dynamic == null ? "minecraft:air" : dynamic.getString("Name");
 		} else {
 			return "minecraft:air";
@@ -70,15 +70,15 @@ public class BlockStateFlattening {
 
 	public static Dynamic<?> lookupState(int i) {
 		Dynamic<?> dynamic = null;
-		if (i > 0 && i < states.length) {
-			dynamic = states[i];
+		if (i > 0 && i < NEW_IDS_TO_STATES.length) {
+			dynamic = NEW_IDS_TO_STATES[i];
 		}
 
-		return dynamic == null ? states[0] : dynamic;
+		return dynamic == null ? NEW_IDS_TO_STATES[0] : dynamic;
 	}
 
 	static {
-		stateObjToId.defaultReturnValue(-1);
+		OLD_STATES_TO_NEW_IDS.defaultReturnValue(-1);
 		putStates(0, "{Name:'minecraft:air'}", "{Name:'minecraft:air'}");
 		putStates(16, "{Name:'minecraft:stone'}", "{Name:'minecraft:stone',Properties:{variant:'stone'}}");
 		putStates(17, "{Name:'minecraft:granite'}", "{Name:'minecraft:stone',Properties:{variant:'granite'}}");

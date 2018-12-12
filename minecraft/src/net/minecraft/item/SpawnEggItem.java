@@ -7,7 +7,6 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3730;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -15,6 +14,7 @@ import net.minecraft.block.FluidBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sortme.MobSpawnerLogic;
@@ -44,12 +44,12 @@ public class SpawnEggItem extends Item {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		World world = itemUsageContext.getWorld();
-		if (world.isRemote) {
+		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
 			ItemStack itemStack = itemUsageContext.getItemStack();
 			BlockPos blockPos = itemUsageContext.getPos();
-			Direction direction = itemUsageContext.method_8038();
+			Direction direction = itemUsageContext.getFacing();
 			BlockState blockState = world.getBlockState(blockPos);
 			Block block = blockState.getBlock();
 			if (block == Blocks.field_10260) {
@@ -69,22 +69,16 @@ public class SpawnEggItem extends Item {
 			}
 
 			BlockPos blockPos2;
-			if (blockState.method_11628(world, blockPos).isEmpty()) {
+			if (blockState.getCollisionShape(world, blockPos).isEmpty()) {
 				blockPos2 = blockPos;
 			} else {
-				blockPos2 = blockPos.method_10093(direction);
+				blockPos2 = blockPos.offset(direction);
 			}
 
 			EntityType<?> entityType2 = this.method_8015(itemStack.getTag());
 			if (entityType2 == null
 				|| entityType2.spawnFromItemStack(
-						world,
-						itemStack,
-						itemUsageContext.getPlayer(),
-						blockPos2,
-						class_3730.field_16465,
-						true,
-						!Objects.equals(blockPos, blockPos2) && direction == Direction.UP
+						world, itemStack, itemUsageContext.getPlayer(), blockPos2, SpawnType.field_16465, true, !Objects.equals(blockPos, blockPos2) && direction == Direction.UP
 					)
 					!= null) {
 				itemStack.subtractAmount(1);
@@ -97,7 +91,7 @@ public class SpawnEggItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (world.isRemote) {
+		if (world.isClient) {
 			return new TypedActionResult<>(ActionResult.PASS, itemStack);
 		} else {
 			HitResult hitResult = this.getHitResult(world, playerEntity, true);
@@ -105,9 +99,9 @@ public class SpawnEggItem extends Item {
 				BlockPos blockPos = hitResult.getBlockPos();
 				if (!(world.getBlockState(blockPos).getBlock() instanceof FluidBlock)) {
 					return new TypedActionResult<>(ActionResult.PASS, itemStack);
-				} else if (world.canPlayerModifyAt(playerEntity, blockPos) && playerEntity.method_7343(blockPos, hitResult.field_1327, itemStack)) {
+				} else if (world.canPlayerModifyAt(playerEntity, blockPos) && playerEntity.canPlaceBlock(blockPos, hitResult.side, itemStack)) {
 					EntityType<?> entityType = this.method_8015(itemStack.getTag());
-					if (entityType != null && entityType.spawnFromItemStack(world, itemStack, playerEntity, blockPos, class_3730.field_16465, false, false) != null) {
+					if (entityType != null && entityType.spawnFromItemStack(world, itemStack, playerEntity, blockPos, SpawnType.field_16465, false, false) != null) {
 						if (!playerEntity.abilities.creativeMode) {
 							itemStack.subtractAmount(1);
 						}

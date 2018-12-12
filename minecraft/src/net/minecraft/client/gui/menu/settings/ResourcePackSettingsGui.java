@@ -40,25 +40,25 @@ public class ResourcePackSettingsGui extends Gui {
 				if (ResourcePackSettingsGui.this.field_3155) {
 					List<ClientResourcePackContainer> list = Lists.<ClientResourcePackContainer>newArrayList();
 
-					for (class_520 lv : ResourcePackSettingsGui.this.field_3154.getListeners()) {
+					for (class_520 lv : ResourcePackSettingsGui.this.field_3154.getEntries()) {
 						list.add(lv.method_2681());
 					}
 
 					Collections.reverse(list);
 					ResourcePackSettingsGui.this.client.method_1520().resetEnabled(list);
-					ResourcePackSettingsGui.this.client.options.resourcePacks.clear();
-					ResourcePackSettingsGui.this.client.options.incompatibleResourcePacks.clear();
+					ResourcePackSettingsGui.this.client.field_1690.resourcePacks.clear();
+					ResourcePackSettingsGui.this.client.field_1690.incompatibleResourcePacks.clear();
 
 					for (ClientResourcePackContainer clientResourcePackContainer : list) {
 						if (!clientResourcePackContainer.sortsTillEnd()) {
-							ResourcePackSettingsGui.this.client.options.resourcePacks.add(clientResourcePackContainer.getName());
+							ResourcePackSettingsGui.this.client.field_1690.resourcePacks.add(clientResourcePackContainer.getName());
 							if (!clientResourcePackContainer.getCompatibility().isCompatible()) {
-								ResourcePackSettingsGui.this.client.options.incompatibleResourcePacks.add(clientResourcePackContainer.getName());
+								ResourcePackSettingsGui.this.client.field_1690.incompatibleResourcePacks.add(clientResourcePackContainer.getName());
 							}
 						}
 					}
 
-					ResourcePackSettingsGui.this.client.options.write();
+					ResourcePackSettingsGui.this.client.field_1690.write();
 					ResourcePackSettingsGui.this.client.reloadResources();
 				}
 
@@ -68,22 +68,22 @@ public class ResourcePackSettingsGui extends Gui {
 		class_522 lv = this.field_3157;
 		class_523 lv2 = this.field_3154;
 		this.field_3157 = new class_522(this.client, 200, this.height);
-		this.field_3157.setLeftPos(this.width / 2 - 4 - 200);
+		this.field_3157.setX(this.width / 2 - 4 - 200);
 		if (lv != null) {
-			this.field_3157.getListeners().addAll(lv.getListeners());
+			this.field_3157.getEntries().addAll(lv.getEntries());
 		}
 
 		this.listeners.add(this.field_3157);
 		this.field_3154 = new class_523(this.client, 200, this.height);
-		this.field_3154.setLeftPos(this.width / 2 + 4);
+		this.field_3154.setX(this.width / 2 + 4);
 		if (lv2 != null) {
-			this.field_3154.getListeners().addAll(lv2.getListeners());
+			this.field_3154.getEntries().addAll(lv2.getEntries());
 		}
 
 		this.listeners.add(this.field_3154);
 		if (!this.field_3155) {
-			this.field_3157.getListeners().clear();
-			this.field_3154.getListeners().clear();
+			this.field_3157.getEntries().clear();
+			this.field_3154.getEntries().clear();
 			ResourcePackContainerManager<ClientResourcePackContainer> resourcePackContainerManager = this.client.method_1520();
 			resourcePackContainerManager.callCreators();
 			List<ClientResourcePackContainer> list = Lists.<ClientResourcePackContainer>newArrayList(resourcePackContainerManager.getAlphabeticallyOrderedContainers());
@@ -101,27 +101,27 @@ public class ResourcePackSettingsGui extends Gui {
 
 	@Override
 	public void mouseMoved(double d, double e) {
-		if (this.field_3157.method_1938(d, e)) {
+		if (this.field_3157.isSelected(d, e)) {
 			this.setFocused(this.field_3157);
-		} else if (this.field_3154.method_1938(d, e)) {
+		} else if (this.field_3154.isSelected(d, e)) {
 			this.setFocused(this.field_3154);
 		}
 	}
 
 	public void method_2674(class_520 arg) {
-		this.field_3157.getListeners().remove(arg);
+		this.field_3157.getEntries().remove(arg);
 		arg.method_2686(this.field_3154);
 		this.method_2660();
 	}
 
 	public void method_2663(class_520 arg) {
-		this.field_3154.getListeners().remove(arg);
+		this.field_3154.getEntries().remove(arg);
 		this.field_3157.method_2690(arg);
 		this.method_2660();
 	}
 
 	public boolean method_2669(class_520 arg) {
-		return this.field_3154.getListeners().contains(arg);
+		return this.field_3154.getEntries().contains(arg);
 	}
 
 	@Override

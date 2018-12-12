@@ -5,9 +5,9 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3730;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -62,7 +62,7 @@ public abstract class MobSpawnerLogic {
 	private boolean method_8284() {
 		BlockPos blockPos = this.getPos();
 		return this.getWorld()
-			.findClosestVisiblePlayer((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, (double)this.requiredPlayerRange);
+			.findVisiblePlayer((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, (double)this.requiredPlayerRange);
 	}
 
 	public void update() {
@@ -70,7 +70,7 @@ public abstract class MobSpawnerLogic {
 			this.field_9159 = this.field_9161;
 		} else {
 			BlockPos blockPos = this.getPos();
-			if (this.getWorld().isRemote) {
+			if (this.getWorld().isClient) {
 				double d = (double)((float)blockPos.getX() + this.getWorld().random.nextFloat());
 				double e = (double)((float)blockPos.getY() + this.getWorld().random.nextFloat());
 				double f = (double)((float)blockPos.getZ() + this.getWorld().random.nextFloat());
@@ -106,7 +106,7 @@ public abstract class MobSpawnerLogic {
 					double k = j >= 3
 						? listTag.getDouble(2)
 						: (double)blockPos.getZ() + (world.random.nextDouble() - world.random.nextDouble()) * (double)this.spawnRange + 0.5;
-					Entity entity = ChunkSaveHandlerImpl.method_12399(compoundTag, world, g, h, k, false);
+					Entity entity = ChunkSaveHandlerImpl.readEntity(compoundTag, world, g, h, k, false);
 					if (entity == null) {
 						this.method_8282();
 						return;
@@ -132,12 +132,12 @@ public abstract class MobSpawnerLogic {
 
 					MobEntity mobEntity = entity instanceof MobEntity ? (MobEntity)entity : null;
 					entity.setPositionAndAngles(entity.x, entity.y, entity.z, world.random.nextFloat() * 360.0F, 0.0F);
-					if (mobEntity == null || mobEntity.method_5979(world, class_3730.field_16469) && mobEntity.method_5950()) {
+					if (mobEntity == null || mobEntity.canSpawn(world, SpawnType.field_16469) && mobEntity.method_5950()) {
 						if (this.spawnEntry.getEntityTag().getSize() == 1 && this.spawnEntry.getEntityTag().containsKey("id", 8) && entity instanceof MobEntity) {
-							((MobEntity)entity).method_5943(world, world.getLocalDifficulty(new BlockPos(entity)), class_3730.field_16469, null, null);
+							((MobEntity)entity).prepareEntityData(world, world.getLocalDifficulty(new BlockPos(entity)), SpawnType.field_16469, null, null);
 						}
 
-						ChunkSaveHandlerImpl.method_12394(entity, world);
+						ChunkSaveHandlerImpl.spawnEntityAndPassengers(entity, world);
 						world.fireWorldEvent(2004, blockPos, 0);
 						if (mobEntity != null) {
 							mobEntity.method_5990();
@@ -235,10 +235,10 @@ public abstract class MobSpawnerLogic {
 	@Environment(EnvType.CLIENT)
 	public Entity method_8283() {
 		if (this.field_9153 == null) {
-			this.field_9153 = ChunkSaveHandlerImpl.method_12378(this.spawnEntry.getEntityTag(), this.getWorld(), false);
+			this.field_9153 = ChunkSaveHandlerImpl.readEntity(this.spawnEntry.getEntityTag(), this.getWorld(), false);
 			if (this.spawnEntry.getEntityTag().getSize() == 1 && this.spawnEntry.getEntityTag().containsKey("id", 8) && this.field_9153 instanceof MobEntity) {
 				((MobEntity)this.field_9153)
-					.method_5943(this.getWorld(), this.getWorld().getLocalDifficulty(new BlockPos(this.field_9153)), class_3730.field_16469, null, null);
+					.prepareEntityData(this.getWorld(), this.getWorld().getLocalDifficulty(new BlockPos(this.field_9153)), SpawnType.field_16469, null, null);
 			}
 		}
 
@@ -246,7 +246,7 @@ public abstract class MobSpawnerLogic {
 	}
 
 	public boolean method_8275(int i) {
-		if (i == 1 && this.getWorld().isRemote) {
+		if (i == 1 && this.getWorld().isClient) {
 			this.spawnDelay = this.minSpawnDelay;
 			return true;
 		} else {

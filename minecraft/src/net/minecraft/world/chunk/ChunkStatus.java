@@ -8,159 +8,145 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import javax.annotation.Nullable;
-import net.minecraft.class_2839;
-import net.minecraft.class_3233;
-import net.minecraft.server.world.ServerChunkManager;
+import net.minecraft.server.world.chunk.light.ServerLightingProvider;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class ChunkStatus {
-	public static final ChunkStatus field_12798 = register(
-		"empty", null, -1, false, ChunkStatus.class_2808.field_12808, (serverChunkManager, world, chunkGenerator, list, chunk) -> {
-		}
-	);
-	public static final ChunkStatus field_16423 = register(
-		"structure_starts", field_12798, 0, false, ChunkStatus.class_2808.field_12808, (chunkStatus, serverChunkManager, world, chunkGenerator, list, chunk) -> {
-			if (!chunk.getStatus().isAfter(method_16561()) || !chunk.method_12038()) {
+	public static final ChunkStatus EMPTY = method_16555("empty", null, -1, false, ChunkStatus.ChunkType.PROTOCHUNK, (world, chunkGenerator, list, chunk) -> {
+	});
+	public static final ChunkStatus STRUCTURE_STARTS = method_16557(
+		"structure_starts",
+		EMPTY,
+		0,
+		false,
+		ChunkStatus.ChunkType.PROTOCHUNK,
+		(chunkStatus, world, chunkGenerator, serverLightingProvider, function, list, chunk) -> {
+			if (!chunk.getStatus().isAfter(method_16561()) || !chunk.isLightOn()) {
 				ChunkPos chunkPos = chunk.getPos();
 				int i = chunkPos.x;
 				int j = chunkPos.z;
-				serverChunkManager.getLightingProvider().method_15557(i, j, true);
+				serverLightingProvider.method_15557(i, j, true);
 			}
 
 			if (!chunk.getStatus().isAfter(chunkStatus) && world.getLevelProperties().hasStructures()) {
-				chunkGenerator.method_16129(chunk, chunkGenerator, world.getSaveHandler().method_134());
+				chunkGenerator.method_16129(chunk, chunkGenerator, world.getSaveHandler().getStructureManager());
 			}
 
 			return CompletableFuture.completedFuture(chunk);
 		}
 	);
-	public static final ChunkStatus field_16422 = register(
+	public static final ChunkStatus STRUCTURE_REFERENCES = method_16555(
 		"structure_references",
-		field_16423,
+		STRUCTURE_STARTS,
 		8,
 		false,
-		ChunkStatus.class_2808.field_12808,
-		(serverChunkManager, world, chunkGenerator, list, chunk) -> chunkGenerator.method_16130(new class_3233(world, list), chunk)
+		ChunkStatus.ChunkType.PROTOCHUNK,
+		(world, chunkGenerator, list, chunk) -> chunkGenerator.addStructureReferences(new ChunkRegion(world, list), chunk)
 	);
-	public static final ChunkStatus field_12794 = register(
-		"biomes",
-		field_16422,
-		0,
-		false,
-		ChunkStatus.class_2808.field_12808,
-		(serverChunkManager, world, chunkGenerator, list, chunk) -> chunkGenerator.populateBiomes(chunk)
+	public static final ChunkStatus BIOMES = method_16555(
+		"biomes", STRUCTURE_REFERENCES, 0, false, ChunkStatus.ChunkType.PROTOCHUNK, (world, chunkGenerator, list, chunk) -> chunkGenerator.populateBiomes(chunk)
 	);
-	public static final ChunkStatus field_12804 = register(
+	public static final ChunkStatus NOISE = method_16555(
 		"noise",
-		field_12794,
+		BIOMES,
 		8,
 		false,
-		ChunkStatus.class_2808.field_12808,
-		(serverChunkManager, world, chunkGenerator, list, chunk) -> chunkGenerator.populateNoise(new class_3233(world, list), chunk)
+		ChunkStatus.ChunkType.PROTOCHUNK,
+		(world, chunkGenerator, list, chunk) -> chunkGenerator.populateNoise(new ChunkRegion(world, list), chunk)
 	);
-	public static final ChunkStatus field_12796 = register(
-		"surface",
-		field_12804,
-		0,
-		false,
-		ChunkStatus.class_2808.field_12808,
-		(serverChunkManager, world, chunkGenerator, list, chunk) -> chunkGenerator.buildSurface(chunk)
+	public static final ChunkStatus SURFACE = method_16555(
+		"surface", NOISE, 0, false, ChunkStatus.ChunkType.PROTOCHUNK, (world, chunkGenerator, list, chunk) -> chunkGenerator.buildSurface(chunk)
 	);
-	public static final ChunkStatus field_12801 = register(
+	public static final ChunkStatus CARVERS = method_16555(
 		"carvers",
-		field_12796,
+		SURFACE,
 		0,
 		false,
-		ChunkStatus.class_2808.field_12808,
-		(serverChunkManager, world, chunkGenerator, list, chunk) -> chunkGenerator.carve(chunk, GenerationStep.Carver.field_13169)
+		ChunkStatus.ChunkType.PROTOCHUNK,
+		(world, chunkGenerator, list, chunk) -> chunkGenerator.carve(chunk, GenerationStep.Carver.field_13169)
 	);
-	public static final ChunkStatus field_12790 = register(
+	public static final ChunkStatus LIQUID_CARVERS = method_16555(
 		"liquid_carvers",
-		field_12801,
+		CARVERS,
 		0,
 		true,
-		ChunkStatus.class_2808.field_12808,
-		(serverChunkManager, world, chunkGenerator, list, chunk) -> chunkGenerator.carve(chunk, GenerationStep.Carver.field_13166)
+		ChunkStatus.ChunkType.PROTOCHUNK,
+		(world, chunkGenerator, list, chunk) -> chunkGenerator.carve(chunk, GenerationStep.Carver.field_13166)
 	);
-	public static final ChunkStatus field_12795 = register(
+	public static final ChunkStatus FEATURES = method_16555(
 		"features",
-		field_12790,
+		LIQUID_CARVERS,
 		8,
 		true,
-		ChunkStatus.class_2808.field_12808,
-		(serverChunkManager, world, chunkGenerator, list, chunk) -> {
-			Heightmap.method_16684(
+		ChunkStatus.ChunkType.PROTOCHUNK,
+		(world, chunkGenerator, list, chunk) -> {
+			Heightmap.populateHeightmaps(
 				chunk, EnumSet.of(Heightmap.Type.MOTION_BLOCKING, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, Heightmap.Type.OCEAN_FLOOR, Heightmap.Type.WORLD_SURFACE)
 			);
-			chunkGenerator.generateFeatures(new class_3233(world, list));
+			chunkGenerator.generateFeatures(new ChunkRegion(world, list));
 		}
 	);
-	public static final ChunkStatus field_12805 = register(
-		"light", field_12795, 1, true, ChunkStatus.class_2808.field_12808, (chunkStatus, serverChunkManager, world, chunkGenerator, list, chunk) -> {
-			chunk.method_12027(serverChunkManager);
+	public static final ChunkStatus LIGHT = method_16557(
+		"light", FEATURES, 1, true, ChunkStatus.ChunkType.PROTOCHUNK, (chunkStatus, world, chunkGenerator, serverLightingProvider, function, list, chunk) -> {
+			chunk.setLightingProvider(serverLightingProvider);
 			ChunkPos chunkPos = chunk.getPos();
 			int i = chunkPos.x;
 			int j = chunkPos.z;
-			boolean bl = chunk.getStatus().isAfter(chunkStatus) && chunk.method_12038();
-			ChunkSection[] chunkSections = chunk.getSectionArray();
+			boolean bl = chunk.getStatus().isAfter(chunkStatus) && chunk.isLightOn();
 			if (!chunk.getStatus().isAfter(chunkStatus)) {
-				((class_2839)chunk).method_12308(chunkStatus);
+				((ProtoChunk)chunk).setStatus(chunkStatus);
 			}
 
-			LightingProvider lightingProvider = serverChunkManager.getLightingProvider();
-
-			for (int k = 0; k < 16; k++) {
-				ChunkSection chunkSection = chunkSections[k];
-				boolean bl2 = chunkSection == WorldChunk.EMPTY_SECTION || chunkSection.isEmpty();
-				if (!bl2) {
-					lightingProvider.method_15551(i, k, j, false);
-				}
-			}
-
-			if (!bl) {
-				lightingProvider.method_15557(i, j, false);
-				chunk.method_12018().forEach(blockPos -> lightingProvider.method_15560(blockPos, chunk.getLuminance(blockPos)));
-			}
-
-			return CompletableFuture.completedFuture(chunk);
+			return serverLightingProvider.method_17310(chunk, i, j, bl);
 		}
 	);
-	public static final ChunkStatus field_12786 = register(
+	public static final ChunkStatus SPAWN = method_16555(
 		"spawn",
-		field_12805,
+		LIGHT,
 		0,
 		true,
-		ChunkStatus.class_2808.field_12808,
-		(serverChunkManager, world, chunkGenerator, list, chunk) -> chunkGenerator.populateEntities(new class_3233(world, list))
+		ChunkStatus.ChunkType.PROTOCHUNK,
+		(world, chunkGenerator, list, chunk) -> chunkGenerator.populateEntities(new ChunkRegion(world, list))
 	);
-	public static final ChunkStatus field_12800 = register(
-		"heightmaps", field_12786, 0, true, ChunkStatus.class_2808.field_12808, (serverChunkManager, world, chunkGenerator, list, chunk) -> {
+	public static final ChunkStatus HEIGHTMAPS = method_16555(
+		"heightmaps", SPAWN, 0, true, ChunkStatus.ChunkType.PROTOCHUNK, (world, chunkGenerator, list, chunk) -> {
 		}
 	);
-	public static final ChunkStatus field_12803 = register(
+	public static final ChunkStatus FULL = method_16557(
 		"full",
-		field_12800,
+		HEIGHTMAPS,
 		0,
 		true,
-		ChunkStatus.class_2808.field_12807,
-		(chunkStatus, serverChunkManager, world, chunkGenerator, list, chunk) -> serverChunkManager.method_14140((class_2839)chunk)
+		ChunkStatus.ChunkType.LEVELCHUNK,
+		(chunkStatus, world, chunkGenerator, serverLightingProvider, function, list, chunk) -> (CompletableFuture<Chunk>)function.apply(chunk)
 	);
 	private static final List<ChunkStatus> ORDERED = ImmutableList.of(
-		field_12803, field_12795, field_12790, field_16423, field_16423, field_16423, field_16423, field_16423, field_16423, field_16423, field_16423
+		FULL,
+		FEATURES,
+		LIQUID_CARVERS,
+		STRUCTURE_STARTS,
+		STRUCTURE_STARTS,
+		STRUCTURE_STARTS,
+		STRUCTURE_STARTS,
+		STRUCTURE_STARTS,
+		STRUCTURE_STARTS,
+		STRUCTURE_STARTS,
+		STRUCTURE_STARTS
 	);
 	private static final IntList STATUS_ORDER = SystemUtil.consume(new IntArrayList(createOrderedList().size()), intArrayList -> {
 		int i = 0;
 
 		for (int j = createOrderedList().size() - 1; j >= 0; j--) {
-			while (i + 1 < ORDERED.size() && j <= ((ChunkStatus)ORDERED.get(i + 1)).getOrderId()) {
+			while (i + 1 < ORDERED.size() && j <= ((ChunkStatus)ORDERED.get(i + 1)).getIndex()) {
 				i++;
 			}
 
@@ -168,30 +154,30 @@ public class ChunkStatus {
 		}
 	});
 	private final String name;
-	private final int orderId;
+	private final int index;
 	private final ChunkStatus previous;
 	private final ChunkStatus.class_2807 field_12792;
 	private final int field_12802;
-	private final ChunkStatus.class_2808 field_12787;
+	private final ChunkStatus.ChunkType chunkType;
 	private final boolean field_12793;
 
-	private static ChunkStatus register(
-		String string, @Nullable ChunkStatus chunkStatus, int i, boolean bl, ChunkStatus.class_2808 arg, ChunkStatus.class_3768 arg2
+	private static ChunkStatus method_16555(
+		String string, @Nullable ChunkStatus chunkStatus, int i, boolean bl, ChunkStatus.ChunkType chunkType, ChunkStatus.class_3768 arg
 	) {
-		return register(string, chunkStatus, i, bl, arg, (ChunkStatus.class_2807)arg2);
+		return method_16557(string, chunkStatus, i, bl, chunkType, arg);
 	}
 
-	private static ChunkStatus register(
-		String string, @Nullable ChunkStatus chunkStatus, int i, boolean bl, ChunkStatus.class_2808 arg, ChunkStatus.class_2807 arg2
+	private static ChunkStatus method_16557(
+		String string, @Nullable ChunkStatus chunkStatus, int i, boolean bl, ChunkStatus.ChunkType chunkType, ChunkStatus.class_2807 arg
 	) {
-		return Registry.register(Registry.CHUNK_STATUS, string, new ChunkStatus(string, chunkStatus, i, bl, arg, arg2));
+		return Registry.register(Registry.CHUNK_STATUS, string, new ChunkStatus(string, chunkStatus, i, bl, chunkType, arg));
 	}
 
 	public static List<ChunkStatus> createOrderedList() {
 		List<ChunkStatus> list = Lists.<ChunkStatus>newArrayList();
 
 		ChunkStatus chunkStatus;
-		for (chunkStatus = field_12803; chunkStatus.getPrevious() != chunkStatus; chunkStatus = chunkStatus.getPrevious()) {
+		for (chunkStatus = FULL; chunkStatus.getPrevious() != chunkStatus; chunkStatus = chunkStatus.getPrevious()) {
 			list.add(chunkStatus);
 		}
 
@@ -201,37 +187,37 @@ public class ChunkStatus {
 	}
 
 	private static ChunkStatus method_16561() {
-		return field_12805;
+		return LIGHT;
 	}
 
-	public static ChunkStatus getOrdered(int i) {
+	public static ChunkStatus getByIndex(int i) {
 		if (i >= ORDERED.size()) {
-			return field_12798;
+			return EMPTY;
 		} else {
-			return i < 0 ? field_12803 : (ChunkStatus)ORDERED.get(i);
+			return i < 0 ? FULL : (ChunkStatus)ORDERED.get(i);
 		}
 	}
 
-	public static int getOrderedSize() {
+	public static int getStatusCount() {
 		return ORDERED.size();
 	}
 
-	public static int method_12175(ChunkStatus chunkStatus) {
-		return STATUS_ORDER.getInt(chunkStatus.getOrderId());
+	public static int getIndex(ChunkStatus chunkStatus) {
+		return STATUS_ORDER.getInt(chunkStatus.getIndex());
 	}
 
-	ChunkStatus(String string, @Nullable ChunkStatus chunkStatus, int i, boolean bl, ChunkStatus.class_2808 arg, ChunkStatus.class_2807 arg2) {
+	ChunkStatus(String string, @Nullable ChunkStatus chunkStatus, int i, boolean bl, ChunkStatus.ChunkType chunkType, ChunkStatus.class_2807 arg) {
 		this.name = string;
 		this.previous = chunkStatus == null ? this : chunkStatus;
-		this.field_12792 = arg2;
+		this.field_12792 = arg;
 		this.field_12802 = i;
-		this.field_12787 = arg;
+		this.chunkType = chunkType;
 		this.field_12793 = bl;
-		this.orderId = chunkStatus == null ? 0 : chunkStatus.getOrderId() + 1;
+		this.index = chunkStatus == null ? 0 : chunkStatus.getIndex() + 1;
 	}
 
-	public int getOrderId() {
-		return this.orderId;
+	public int getIndex() {
+		return this.index;
 	}
 
 	public String getName() {
@@ -242,11 +228,17 @@ public class ChunkStatus {
 		return this.previous;
 	}
 
-	public CompletableFuture<Chunk> method_12154(ServerChunkManager serverChunkManager, ChunkGenerator<?> chunkGenerator, List<Chunk> list) {
+	public CompletableFuture<Chunk> method_12154(
+		World world,
+		ChunkGenerator<?> chunkGenerator,
+		ServerLightingProvider serverLightingProvider,
+		Function<Chunk, CompletableFuture<Chunk>> function,
+		List<Chunk> list
+	) {
 		Chunk chunk = (Chunk)list.get(list.size() / 2);
-		CompletableFuture<Chunk> completableFuture = this.field_12792.doWork(this, serverChunkManager, serverChunkManager.getWorld(), chunkGenerator, list, chunk);
-		return this.field_12787 == ChunkStatus.class_2808.field_12808 ? completableFuture.thenApply(chunkx -> {
-			((class_2839)chunkx).method_12308(this);
+		CompletableFuture<Chunk> completableFuture = this.field_12792.doWork(this, world, chunkGenerator, serverLightingProvider, function, list, chunk);
+		return this.chunkType == ChunkStatus.ChunkType.PROTOCHUNK ? completableFuture.thenApply(chunkx -> {
+			((ProtoChunk)chunkx).setStatus(this);
 			return chunkx;
 		}) : completableFuture;
 	}
@@ -255,8 +247,8 @@ public class ChunkStatus {
 		return this.field_12802;
 	}
 
-	public ChunkStatus.class_2808 method_12164() {
-		return this.field_12787;
+	public ChunkStatus.ChunkType getChunkType() {
+		return this.chunkType;
 	}
 
 	public static ChunkStatus get(String string) {
@@ -268,32 +260,48 @@ public class ChunkStatus {
 	}
 
 	public boolean isAfter(ChunkStatus chunkStatus) {
-		return this.getOrderId() >= chunkStatus.getOrderId();
+		return this.getIndex() >= chunkStatus.getIndex();
+	}
+
+	public String toString() {
+		return Registry.CHUNK_STATUS.getId(this).toString();
+	}
+
+	public static enum ChunkType {
+		PROTOCHUNK,
+		LEVELCHUNK;
 	}
 
 	interface class_2807 {
 		CompletableFuture<Chunk> doWork(
-			ChunkStatus chunkStatus, ServerChunkManager serverChunkManager, World world, ChunkGenerator<?> chunkGenerator, List<Chunk> list, Chunk chunk
+			ChunkStatus chunkStatus,
+			World world,
+			ChunkGenerator<?> chunkGenerator,
+			ServerLightingProvider serverLightingProvider,
+			Function<Chunk, CompletableFuture<Chunk>> function,
+			List<Chunk> list,
+			Chunk chunk
 		);
-	}
-
-	public static enum class_2808 {
-		field_12808,
-		field_12807;
 	}
 
 	interface class_3768 extends ChunkStatus.class_2807 {
 		@Override
 		default CompletableFuture<Chunk> doWork(
-			ChunkStatus chunkStatus, ServerChunkManager serverChunkManager, World world, ChunkGenerator<?> chunkGenerator, List<Chunk> list, Chunk chunk
+			ChunkStatus chunkStatus,
+			World world,
+			ChunkGenerator<?> chunkGenerator,
+			ServerLightingProvider serverLightingProvider,
+			Function<Chunk, CompletableFuture<Chunk>> function,
+			List<Chunk> list,
+			Chunk chunk
 		) {
 			if (!chunk.getStatus().isAfter(chunkStatus)) {
-				this.doWork(serverChunkManager, world, chunkGenerator, list, chunk);
+				this.doWork(world, chunkGenerator, list, chunk);
 			}
 
 			return CompletableFuture.completedFuture(chunk);
 		}
 
-		void doWork(ServerChunkManager serverChunkManager, World world, ChunkGenerator<?> chunkGenerator, List<Chunk> list, Chunk chunk);
+		void doWork(World world, ChunkGenerator<?> chunkGenerator, List<Chunk> list, Chunk chunk);
 	}
 }

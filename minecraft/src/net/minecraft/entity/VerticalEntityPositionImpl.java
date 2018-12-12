@@ -24,6 +24,6 @@ public class VerticalEntityPositionImpl implements VerticalEntityPosition {
 
 	@Override
 	public boolean isAboveBlock(VoxelShape voxelShape, BlockPos blockPos) {
-		return this.posY > (double)blockPos.getY() + voxelShape.method_1105(Direction.Axis.Y) - 1.0E-5F;
+		return this.posY > (double)blockPos.getY() + voxelShape.getMaximum(Direction.Axis.Y) - 1.0E-5F;
 	}
 }

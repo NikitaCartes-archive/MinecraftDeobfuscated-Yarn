@@ -25,8 +25,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.packet.QueryPongClientPacket;
 import net.minecraft.client.network.packet.QueryResponseClientPacket;
+import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.settings.ServerEntry;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.ServerAddress;
@@ -131,7 +131,7 @@ public class ServerEntryNetworkPart {
 							serverEntry.setIcon(null);
 						}
 
-						this.field_3772 = SystemUtil.getMeasuringTimeMili();
+						this.field_3772 = SystemUtil.getMeasuringTimeMs();
 						clientConnection.sendPacket(new QueryPingServerPacket(this.field_3772));
 						this.field_3775 = true;
 					}
@@ -140,7 +140,7 @@ public class ServerEntryNetworkPart {
 				@Override
 				public void onPong(QueryPongClientPacket queryPongClientPacket) {
 					long l = this.field_3772;
-					long m = SystemUtil.getMeasuringTimeMili();
+					long m = SystemUtil.getMeasuringTimeMs();
 					serverEntry.ping = m - l;
 					clientConnection.disconnect(new TranslatableTextComponent("multiplayer.status.finished"));
 				}
@@ -167,7 +167,7 @@ public class ServerEntryNetworkPart {
 
 	private void ping(ServerEntry serverEntry) {
 		final ServerAddress serverAddress = ServerAddress.parse(serverEntry.address);
-		new Bootstrap().group(ClientConnection.CLIENT_IO_GROUP.get()).handler(new ChannelInitializer<Channel>() {
+		new Bootstrap().group(ClientConnection.field_11650.get()).handler(new ChannelInitializer<Channel>() {
 			@Override
 			protected void initChannel(Channel channel) throws Exception {
 				try {

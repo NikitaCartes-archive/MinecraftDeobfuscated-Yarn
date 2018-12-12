@@ -175,14 +175,14 @@ public class WolfEntity extends TameableEntity {
 	@Override
 	public void updateMovement() {
 		super.updateMovement();
-		if (!this.world.isRemote && this.field_6944 && !this.field_6951 && !this.method_6150() && this.onGround) {
+		if (!this.world.isClient && this.field_6944 && !this.field_6951 && !this.method_6150() && this.onGround) {
 			this.field_6951 = true;
 			this.field_6947 = 0.0F;
 			this.field_6945 = 0.0F;
-			this.world.method_8421(this, (byte)8);
+			this.world.summonParticle(this, (byte)8);
 		}
 
-		if (!this.world.isRemote && this.getTarget() == null && this.isAngry()) {
+		if (!this.world.isClient && this.getTarget() == null && this.isAngry()) {
 			this.setAngry(false);
 		}
 	}
@@ -197,7 +197,7 @@ public class WolfEntity extends TameableEntity {
 			this.field_6952 = this.field_6952 + (0.0F - this.field_6952) * 0.4F;
 		}
 
-		if (this.method_5637()) {
+		if (this.isTouchingWater()) {
 			this.field_6944 = true;
 			this.field_6951 = false;
 			this.field_6947 = 0.0F;
@@ -336,7 +336,7 @@ public class WolfEntity extends TameableEntity {
 				}
 			}
 
-			if (this.isOwner(playerEntity) && !this.world.isRemote && !this.method_6481(itemStack)) {
+			if (this.isOwner(playerEntity) && !this.world.isClient && !this.isBreedingItem(itemStack)) {
 				this.field_6321.method_6311(!this.isSitting());
 				this.field_6282 = false;
 				this.navigation.method_6340();
@@ -347,7 +347,7 @@ public class WolfEntity extends TameableEntity {
 				itemStack.subtractAmount(1);
 			}
 
-			if (!this.world.isRemote) {
+			if (!this.world.isClient) {
 				if (this.random.nextInt(3) == 0) {
 					this.method_6170(playerEntity);
 					this.navigation.method_6340();
@@ -355,10 +355,10 @@ public class WolfEntity extends TameableEntity {
 					this.field_6321.method_6311(true);
 					this.setHealth(20.0F);
 					this.method_6180(true);
-					this.world.method_8421(this, (byte)7);
+					this.world.summonParticle(this, (byte)7);
 				} else {
 					this.method_6180(false);
-					this.world.method_8421(this, (byte)6);
+					this.world.summonParticle(this, (byte)6);
 				}
 			}
 
@@ -390,7 +390,7 @@ public class WolfEntity extends TameableEntity {
 	}
 
 	@Override
-	public boolean method_6481(ItemStack itemStack) {
+	public boolean isBreedingItem(ItemStack itemStack) {
 		Item item = itemStack.getItem();
 		return item instanceof FoodItem && ((FoodItem)item).isWolfFood();
 	}
@@ -437,7 +437,7 @@ public class WolfEntity extends TameableEntity {
 	}
 
 	@Override
-	public boolean method_6474(AnimalEntity animalEntity) {
+	public boolean canBreedWith(AnimalEntity animalEntity) {
 		if (animalEntity == this) {
 			return false;
 		} else if (!this.isTamed()) {
@@ -449,7 +449,7 @@ public class WolfEntity extends TameableEntity {
 			if (!wolfEntity.isTamed()) {
 				return false;
 			} else {
-				return wolfEntity.isSitting() ? false : this.method_6479() && wolfEntity.method_6479();
+				return wolfEntity.isSitting() ? false : this.isInLove() && wolfEntity.isInLove();
 			}
 		}
 	}

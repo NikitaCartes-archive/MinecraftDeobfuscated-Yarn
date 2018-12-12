@@ -4,16 +4,16 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1310;
 import net.minecraft.class_1361;
 import net.minecraft.class_1379;
 import net.minecraft.class_1399;
-import net.minecraft.class_3730;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.BreakDoorGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
@@ -25,6 +25,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -37,7 +38,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
 public class VindicatorEntity extends IllagerEntity {
-	private boolean field_7406;
+	private boolean isJohnny;
 	private static final Predicate<Entity> field_7405 = entity -> entity instanceof LivingEntity && ((LivingEntity)entity).method_6102();
 
 	public VindicatorEntity(World world) {
@@ -83,31 +84,31 @@ public class VindicatorEntity extends IllagerEntity {
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
-		if (this.field_7406) {
+		if (this.isJohnny) {
 			compoundTag.putBoolean("Johnny", true);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public IllagerEntity.class_1544 method_6990() {
-		return this.method_7169() ? IllagerEntity.class_1544.field_7211 : IllagerEntity.class_1544.field_7207;
+	public IllagerEntity.State method_6990() {
+		return this.method_7169() ? IllagerEntity.State.field_7211 : IllagerEntity.State.field_7207;
 	}
 
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
 		if (compoundTag.containsKey("Johnny", 99)) {
-			this.field_7406 = compoundTag.getBoolean("Johnny");
+			this.isJohnny = compoundTag.getBoolean("Johnny");
 		}
 	}
 
 	@Nullable
 	@Override
-	public EntityData method_5943(
-		IWorld iWorld, LocalDifficulty localDifficulty, class_3730 arg, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	public EntityData prepareEntityData(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		EntityData entityData2 = super.method_5943(iWorld, localDifficulty, arg, entityData, compoundTag);
+		EntityData entityData2 = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		((EntityMobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
 		this.initEquipment(localDifficulty);
 		this.method_5984(localDifficulty);
@@ -130,7 +131,7 @@ public class VindicatorEntity extends IllagerEntity {
 		if (super.isTeammate(entity)) {
 			return true;
 		} else {
-			return entity instanceof LivingEntity && ((LivingEntity)entity).method_6046() == class_1310.field_6291
+			return entity instanceof LivingEntity && ((LivingEntity)entity).getGroup() == EntityGroup.ILLAGER
 				? this.getScoreboardTeam() == null && entity.getScoreboardTeam() == null
 				: false;
 		}
@@ -139,8 +140,8 @@ public class VindicatorEntity extends IllagerEntity {
 	@Override
 	public void setCustomName(@Nullable TextComponent textComponent) {
 		super.setCustomName(textComponent);
-		if (!this.field_7406 && textComponent != null && textComponent.getString().equals("Johnny")) {
-			this.field_7406 = true;
+		if (!this.isJohnny && textComponent != null && textComponent.getString().equals("Johnny")) {
+			this.isJohnny = true;
 		}
 	}
 
@@ -160,7 +161,7 @@ public class VindicatorEntity extends IllagerEntity {
 	}
 
 	@Override
-	public void method_16484(int i, boolean bl) {
+	public void addBonusForWave(int i, boolean bl) {
 	}
 
 	static class VindicatorBreakDoorGoal extends BreakDoorGoal {
@@ -172,13 +173,13 @@ public class VindicatorEntity extends IllagerEntity {
 		@Override
 		public boolean canStart() {
 			VindicatorEntity vindicatorEntity = (VindicatorEntity)this.owner;
-			return this.owner.world.getDifficulty() == Difficulty.HARD && vindicatorEntity.hasRaidGoal() && vindicatorEntity.method_16482() && super.canStart();
+			return this.owner.world.getDifficulty() == Difficulty.HARD && vindicatorEntity.hasRaidGoal() && vindicatorEntity.hasActiveRaid() && super.canStart();
 		}
 
 		@Override
 		public void start() {
 			super.start();
-			this.owner.method_16826(0);
+			this.owner.setDespawnCounter(0);
 		}
 	}
 
@@ -189,13 +190,13 @@ public class VindicatorEntity extends IllagerEntity {
 
 		@Override
 		public boolean canStart() {
-			return ((VindicatorEntity)this.entity).field_7406 && super.canStart();
+			return ((VindicatorEntity)this.entity).isJohnny && super.canStart();
 		}
 
 		@Override
 		public void start() {
 			super.start();
-			this.entity.method_16826(0);
+			this.entity.setDespawnCounter(0);
 		}
 	}
 
@@ -207,13 +208,13 @@ public class VindicatorEntity extends IllagerEntity {
 		@Override
 		public boolean canStart() {
 			VindicatorEntity vindicatorEntity = (VindicatorEntity)this.field_6525;
-			return vindicatorEntity.hasRaidGoal() && vindicatorEntity.method_16482() && super.canStart();
+			return vindicatorEntity.hasRaidGoal() && vindicatorEntity.hasActiveRaid() && super.canStart();
 		}
 
 		@Override
 		public void start() {
 			super.start();
-			this.field_6525.method_16826(0);
+			this.field_6525.setDespawnCounter(0);
 		}
 
 		@Override

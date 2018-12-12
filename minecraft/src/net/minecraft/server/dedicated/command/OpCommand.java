@@ -23,7 +23,7 @@ public class OpCommand {
 					ServerCommandManager.argument("targets", GameProfileArgumentType.create())
 						.suggests(
 							(commandContext, suggestionsBuilder) -> {
-								PlayerManager playerManager = commandContext.getSource().getMinecraftServer().getConfigurationManager();
+								PlayerManager playerManager = commandContext.getSource().getMinecraftServer().getPlayerManager();
 								return CommandSource.suggestMatching(
 									playerManager.getPlayerList()
 										.stream()
@@ -39,7 +39,7 @@ public class OpCommand {
 	}
 
 	private static int method_13465(ServerCommandSource serverCommandSource, Collection<GameProfile> collection) throws CommandSyntaxException {
-		PlayerManager playerManager = serverCommandSource.getMinecraftServer().getConfigurationManager();
+		PlayerManager playerManager = serverCommandSource.getMinecraftServer().getPlayerManager();
 		int i = 0;
 
 		for (GameProfile gameProfile : collection) {

@@ -49,10 +49,12 @@ public class MushroomBlock extends Block {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		return blockState2.getBlock() == this
 			? blockState.with((Property)field_11168.get(direction), Boolean.valueOf(false))
-			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
@@ -67,12 +69,12 @@ public class MushroomBlock extends Block {
 
 	@Override
 	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.with((Property)field_11168.get(mirror.method_10343(Direction.NORTH)), blockState.get(field_11171))
-			.with((Property)field_11168.get(mirror.method_10343(Direction.SOUTH)), blockState.get(field_11170))
-			.with((Property)field_11168.get(mirror.method_10343(Direction.EAST)), blockState.get(field_11172))
-			.with((Property)field_11168.get(mirror.method_10343(Direction.WEST)), blockState.get(field_11167))
-			.with((Property)field_11168.get(mirror.method_10343(Direction.UP)), blockState.get(field_11166))
-			.with((Property)field_11168.get(mirror.method_10343(Direction.DOWN)), blockState.get(field_11169));
+		return blockState.with((Property)field_11168.get(mirror.apply(Direction.NORTH)), blockState.get(field_11171))
+			.with((Property)field_11168.get(mirror.apply(Direction.SOUTH)), blockState.get(field_11170))
+			.with((Property)field_11168.get(mirror.apply(Direction.EAST)), blockState.get(field_11172))
+			.with((Property)field_11168.get(mirror.apply(Direction.WEST)), blockState.get(field_11167))
+			.with((Property)field_11168.get(mirror.apply(Direction.UP)), blockState.get(field_11166))
+			.with((Property)field_11168.get(mirror.apply(Direction.DOWN)), blockState.get(field_11169));
 	}
 
 	@Override

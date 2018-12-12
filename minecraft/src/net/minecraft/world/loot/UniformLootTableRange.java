@@ -28,7 +28,7 @@ public class UniformLootTableRange implements LootTableRange {
 		this.max = f;
 	}
 
-	public static UniformLootTableRange method_377(float f, float g) {
+	public static UniformLootTableRange between(float f, float g) {
 		return new UniformLootTableRange(f, g);
 	}
 

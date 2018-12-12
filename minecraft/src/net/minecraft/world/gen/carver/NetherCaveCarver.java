@@ -11,7 +11,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.config.ProbabilityConfig;
+import net.minecraft.world.gen.ProbabilityConfig;
 
 public class NetherCaveCarver extends CaveCarver {
 	public NetherCaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> function) {

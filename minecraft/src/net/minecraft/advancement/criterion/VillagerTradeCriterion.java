@@ -9,7 +9,7 @@ import com.google.gson.JsonObject;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.advancement.ServerAdvancementManager;
+import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.EntityPredicate;
@@ -19,7 +19,7 @@ import net.minecraft.util.Identifier;
 
 public class VillagerTradeCriterion implements Criterion<VillagerTradeCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("villager_trade");
-	private final Map<ServerAdvancementManager, VillagerTradeCriterion.Handler> handlers = Maps.<ServerAdvancementManager, VillagerTradeCriterion.Handler>newHashMap();
+	private final Map<PlayerAdvancementTracker, VillagerTradeCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, VillagerTradeCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -27,34 +27,34 @@ public class VillagerTradeCriterion implements Criterion<VillagerTradeCriterion.
 	}
 
 	@Override
-	public void addCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<VillagerTradeCriterion.Conditions> conditionsContainer
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<VillagerTradeCriterion.Conditions> conditionsContainer
 	) {
-		VillagerTradeCriterion.Handler handler = (VillagerTradeCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		VillagerTradeCriterion.Handler handler = (VillagerTradeCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new VillagerTradeCriterion.Handler(serverAdvancementManager);
-			this.handlers.put(serverAdvancementManager, handler);
+			handler = new VillagerTradeCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void removeCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<VillagerTradeCriterion.Conditions> conditionsContainer
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<VillagerTradeCriterion.Conditions> conditionsContainer
 	) {
-		VillagerTradeCriterion.Handler handler = (VillagerTradeCriterion.Handler)this.handlers.get(serverAdvancementManager);
+		VillagerTradeCriterion.Handler handler = (VillagerTradeCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(serverAdvancementManager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void removePlayer(ServerAdvancementManager serverAdvancementManager) {
-		this.handlers.remove(serverAdvancementManager);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
 	public VillagerTradeCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -89,7 +89,7 @@ public class VillagerTradeCriterion implements Criterion<VillagerTradeCriterion.
 		}
 
 		@Override
-		public JsonElement method_807() {
+		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("item", this.villager.serialize());
 			jsonObject.add("villager", this.item.serialize());
@@ -98,11 +98,11 @@ public class VillagerTradeCriterion implements Criterion<VillagerTradeCriterion.
 	}
 
 	static class Handler {
-		private final ServerAdvancementManager manager;
+		private final PlayerAdvancementTracker field_9765;
 		private final Set<Criterion.ConditionsContainer<VillagerTradeCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<VillagerTradeCriterion.Conditions>>newHashSet();
 
-		public Handler(ServerAdvancementManager serverAdvancementManager) {
-			this.manager = serverAdvancementManager;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.field_9765 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
@@ -132,7 +132,7 @@ public class VillagerTradeCriterion implements Criterion<VillagerTradeCriterion.
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<VillagerTradeCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
+					conditionsContainerx.apply(this.field_9765);
 				}
 			}
 		}

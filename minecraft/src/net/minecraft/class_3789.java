@@ -5,6 +5,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sortme.StructurePiece;
+import net.minecraft.sortme.structures.StructureManager;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
@@ -20,7 +21,7 @@ public class class_3789 {
 			this.structureBounds = new MutableIntBoundingBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX(), blockPos.getY(), blockPos.getZ());
 		}
 
-		public class_3339(class_3485 arg, CompoundTag compoundTag) {
+		public class_3339(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16960, compoundTag);
 		}
 
@@ -44,7 +45,7 @@ public class class_3789 {
 					BlockState blockState3 = !blockState.isAir() && !this.method_14655(blockState) ? blockState : Blocks.field_10102.getDefaultState();
 
 					for (Direction direction : Direction.values()) {
-						BlockPos blockPos = mutable.method_10093(direction);
+						BlockPos blockPos = mutable.offset(direction);
 						BlockState blockState4 = iWorld.getBlockState(blockPos);
 						if (blockState4.isAir() || this.method_14655(blockState4)) {
 							BlockPos blockPos2 = blockPos.down();

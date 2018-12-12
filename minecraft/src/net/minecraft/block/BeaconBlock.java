@@ -2,8 +2,7 @@ package net.minecraft.block;
 
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.render.block.BlockRenderLayer;
-import net.minecraft.client.sortme.NetworkUtils;
+import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -25,16 +24,16 @@ public class BeaconBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
-		if (world.isRemote) {
+		if (world.isClient) {
 			return true;
 		} else {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof BeaconBlockEntity) {
 				playerEntity.openInventory((BeaconBlockEntity)blockEntity);
-				playerEntity.method_7281(Stats.field_15416);
+				playerEntity.increaseStat(Stats.field_15416);
 			}
 
 			return true;
@@ -47,8 +46,8 @@ public class BeaconBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public RenderTypeBlock getRenderType(BlockState blockState) {
-		return RenderTypeBlock.MODEL;
+	public BlockRenderType method_9604(BlockState blockState) {
+		return BlockRenderType.field_11458;
 	}
 
 	@Override
@@ -70,7 +69,7 @@ public class BeaconBlock extends BlockWithEntity {
 		NetworkUtils.downloadExecutor.submit((Runnable)(() -> {
 			for (int i = blockPos.getY() - 1; i >= 0; i--) {
 				BlockPos blockPos2 = new BlockPos(blockPos.getX(), i, blockPos.getZ());
-				if (!world.getSkyLightLevel(blockPos2)) {
+				if (!world.isSkyVisible(blockPos2)) {
 					break;
 				}
 

@@ -52,7 +52,7 @@ public abstract class RealmsScrolledSelectionList extends RealmsGuiEventListener
 	}
 
 	public void scroll(int i) {
-		this.proxy.scrollByY(i);
+		this.proxy.scroll(i);
 	}
 
 	public int getScroll() {

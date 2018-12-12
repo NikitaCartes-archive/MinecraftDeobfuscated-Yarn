@@ -214,7 +214,7 @@ public class RegionFile {
 				}
 			}
 
-			this.setTimestamp(i, j, (int)(SystemUtil.getEpochTimeMili() / 1000L));
+			this.setTimestamp(i, j, (int)(SystemUtil.getEpochTimeMs() / 1000L));
 		} catch (IOException var12) {
 			var12.printStackTrace();
 		}

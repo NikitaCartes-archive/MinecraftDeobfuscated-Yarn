@@ -11,14 +11,14 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.FontRenderer;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.json.ModelTransformation;
-import net.minecraft.client.render.model.json.ModelTransformations;
+import net.minecraft.client.render.model.json.Transformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.ModelIdentifier;
@@ -32,7 +32,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportElement;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -43,7 +43,7 @@ import net.minecraft.world.World;
 @Environment(EnvType.CLIENT)
 public class ItemRenderer implements ResourceReloadListener {
 	public static final Identifier ENCHANTMENT_GLINT_TEX = new Identifier("textures/misc/enchanted_item_glint.png");
-	private static final Set<Item> field_4728 = Sets.<Item>newHashSet(Items.AIR);
+	private static final Set<Item> WITHOUT_MODELS = Sets.<Item>newHashSet(Items.AIR);
 	public float zOffset;
 	private final ItemModels modelMap;
 	private final TextureManager textureManager;
@@ -54,7 +54,7 @@ public class ItemRenderer implements ResourceReloadListener {
 		this.modelMap = new ItemModels(bakedModelManager);
 
 		for (Item item : Registry.ITEM) {
-			if (!field_4728.contains(item)) {
+			if (!WITHOUT_MODELS.contains(item)) {
 				this.modelMap.putModel(item, new ModelIdentifier(Registry.ITEM.getId(item), "inventory"));
 			}
 		}
@@ -76,18 +76,18 @@ public class ItemRenderer implements ResourceReloadListener {
 
 	private void renderItemModelColored(BakedModel bakedModel, int i, ItemStack itemStack) {
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-		vertexBuffer.begin(7, VertexFormats.field_1590);
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_UV_NORMAL);
 		Random random = new Random();
 		long l = 42L;
 
 		for (Direction direction : Direction.values()) {
 			random.setSeed(42L);
-			this.renderModelColored(vertexBuffer, bakedModel.method_4707(null, direction, random), i, itemStack);
+			this.renderModelColored(bufferBuilder, bakedModel.getQuads(null, direction, random), i, itemStack);
 		}
 
 		random.setSeed(42L);
-		this.renderModelColored(vertexBuffer, bakedModel.method_4707(null, null, random), i, itemStack);
+		this.renderModelColored(bufferBuilder, bakedModel.getQuads(null, null, random), i, itemStack);
 		tessellator.draw();
 	}
 
@@ -98,7 +98,7 @@ public class ItemRenderer implements ResourceReloadListener {
 			if (bakedModel.isBuiltin()) {
 				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				GlStateManager.enableRescaleNormal();
-				ItemBuiltinRenderer.INSTANCE.method_3166(itemStack);
+				ItemDynamicRenderer.INSTANCE.render(itemStack);
 			} else {
 				this.renderItemModel(bakedModel, itemStack);
 				if (itemStack.hasEnchantmentGlow()) {
@@ -119,14 +119,14 @@ public class ItemRenderer implements ResourceReloadListener {
 		GlStateManager.matrixMode(5890);
 		GlStateManager.pushMatrix();
 		GlStateManager.scalef((float)i, (float)i, (float)i);
-		float f = (float)(SystemUtil.getMeasuringTimeMili() % 3000L) / 3000.0F / (float)i;
+		float f = (float)(SystemUtil.getMeasuringTimeMs() % 3000L) / 3000.0F / (float)i;
 		GlStateManager.translatef(f, 0.0F, 0.0F);
 		GlStateManager.rotatef(-50.0F, 0.0F, 0.0F, 1.0F);
 		runnable.run();
 		GlStateManager.popMatrix();
 		GlStateManager.pushMatrix();
 		GlStateManager.scalef((float)i, (float)i, (float)i);
-		float g = (float)(SystemUtil.getMeasuringTimeMili() % 4873L) / 4873.0F / (float)i;
+		float g = (float)(SystemUtil.getMeasuringTimeMs() % 4873L) / 4873.0F / (float)i;
 		GlStateManager.translatef(-g, 0.0F, 0.0F);
 		GlStateManager.rotatef(10.0F, 0.0F, 0.0F, 1.0F);
 		runnable.run();
@@ -139,18 +139,18 @@ public class ItemRenderer implements ResourceReloadListener {
 		textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 	}
 
-	private void renderQuad(VertexBuffer vertexBuffer, BakedQuad bakedQuad) {
-		Vec3i vec3i = bakedQuad.method_3358().getVector();
-		vertexBuffer.postNormal((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ());
+	private void renderQuad(BufferBuilder bufferBuilder, BakedQuad bakedQuad) {
+		Vec3i vec3i = bakedQuad.getFace().getVector();
+		bufferBuilder.postNormal((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ());
 	}
 
-	private void renderQuadColored(VertexBuffer vertexBuffer, BakedQuad bakedQuad, int i) {
-		vertexBuffer.putVertexData(bakedQuad.getVertexData());
-		vertexBuffer.setQuadColor(i);
-		this.renderQuad(vertexBuffer, bakedQuad);
+	private void renderQuadColored(BufferBuilder bufferBuilder, BakedQuad bakedQuad, int i) {
+		bufferBuilder.putVertexData(bakedQuad.getVertexData());
+		bufferBuilder.setQuadColor(i);
+		this.renderQuad(bufferBuilder, bakedQuad);
 	}
 
-	private void renderModelColored(VertexBuffer vertexBuffer, List<BakedQuad> list, int i, ItemStack itemStack) {
+	private void renderModelColored(BufferBuilder bufferBuilder, List<BakedQuad> list, int i, ItemStack itemStack) {
 		boolean bl = i == -1 && !itemStack.isEmpty();
 		int j = 0;
 
@@ -158,11 +158,11 @@ public class ItemRenderer implements ResourceReloadListener {
 			BakedQuad bakedQuad = (BakedQuad)list.get(j);
 			int l = i;
 			if (bl && bakedQuad.hasColor()) {
-				l = this.colorMap.method_1704(itemStack, bakedQuad.getColorIndex());
+				l = this.colorMap.getRenderColor(itemStack, bakedQuad.getColorIndex());
 				l |= -16777216;
 			}
 
-			this.renderQuadColored(vertexBuffer, bakedQuad, l);
+			this.renderQuadColored(bufferBuilder, bakedQuad, l);
 		}
 	}
 
@@ -171,7 +171,7 @@ public class ItemRenderer implements ResourceReloadListener {
 		return bakedModel == null ? false : bakedModel.hasDepthInGui();
 	}
 
-	public void renderItemWithTransformation(ItemStack itemStack, ModelTransformations.Type type) {
+	public void renderItemWithTransformation(ItemStack itemStack, ModelTransformation.Type type) {
 		if (!itemStack.isEmpty()) {
 			BakedModel bakedModel = this.method_4007(itemStack);
 			this.renderItemModel(itemStack, bakedModel, type, false);
@@ -201,18 +201,18 @@ public class ItemRenderer implements ResourceReloadListener {
 	}
 
 	private BakedModel method_4020(BakedModel bakedModel, ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
-		BakedModel bakedModel2 = bakedModel.getItemPropertyOverrides().method_3495(bakedModel, itemStack, world, livingEntity);
+		BakedModel bakedModel2 = bakedModel.getItemPropertyOverrides().apply(bakedModel, itemStack, world, livingEntity);
 		return bakedModel2 == null ? this.modelMap.getModelManager().getMissingModel() : bakedModel2;
 	}
 
-	public void renderItemAmountAndDamageInGUI(ItemStack itemStack, LivingEntity livingEntity, ModelTransformations.Type type, boolean bl) {
+	public void renderItemAmountAndDamageInGUI(ItemStack itemStack, LivingEntity livingEntity, ModelTransformation.Type type, boolean bl) {
 		if (!itemStack.isEmpty() && livingEntity != null) {
 			BakedModel bakedModel = this.method_4019(itemStack, livingEntity.world, livingEntity);
 			this.renderItemModel(itemStack, bakedModel, type, bl);
 		}
 	}
 
-	protected void renderItemModel(ItemStack itemStack, BakedModel bakedModel, ModelTransformations.Type type, boolean bl) {
+	protected void renderItemModel(ItemStack itemStack, BakedModel bakedModel, ModelTransformation.Type type, boolean bl) {
 		if (!itemStack.isEmpty()) {
 			this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 			this.textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).pushFilter(false, false);
@@ -227,9 +227,9 @@ public class ItemRenderer implements ResourceReloadListener {
 				GlStateManager.DstBlendFactor.ZERO
 			);
 			GlStateManager.pushMatrix();
-			ModelTransformations modelTransformations = bakedModel.getTransformations();
-			ModelTransformations.applyGl(modelTransformations.getTransformation(type), bl);
-			if (this.method_4030(modelTransformations.getTransformation(type))) {
+			ModelTransformation modelTransformation = bakedModel.getTransformation();
+			ModelTransformation.applyGl(modelTransformation.getTransformation(type), bl);
+			if (this.method_4030(modelTransformation.getTransformation(type))) {
 				GlStateManager.cullFace(GlStateManager.FaceSides.FRONT);
 			}
 
@@ -243,8 +243,8 @@ public class ItemRenderer implements ResourceReloadListener {
 		}
 	}
 
-	private boolean method_4030(ModelTransformation modelTransformation) {
-		return modelTransformation.field_4285.x() < 0.0F ^ modelTransformation.field_4285.y() < 0.0F ^ modelTransformation.field_4285.z() < 0.0F;
+	private boolean method_4030(Transformation transformation) {
+		return transformation.scale.x() < 0.0F ^ transformation.scale.y() < 0.0F ^ transformation.scale.z() < 0.0F;
 	}
 
 	public void renderItemWithPropertyOverrides(ItemStack itemStack, int i, int j) {
@@ -262,7 +262,7 @@ public class ItemRenderer implements ResourceReloadListener {
 		GlStateManager.blendFunc(GlStateManager.SrcBlendFactor.SRC_ALPHA, GlStateManager.DstBlendFactor.ONE_MINUS_SRC_ALPHA);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.renderItemModel(i, j, bakedModel.hasDepthInGui());
-		bakedModel.getTransformations().applyGl(ModelTransformations.Type.GUI);
+		bakedModel.getTransformation().method_3500(ModelTransformation.Type.GUI);
 		this.renderItemAndGlow(itemStack, bakedModel);
 		GlStateManager.disableAlphaTest();
 		GlStateManager.disableRescaleNormal();
@@ -296,11 +296,11 @@ public class ItemRenderer implements ResourceReloadListener {
 				this.renderItem(itemStack, i, j, this.method_4028(itemStack, null, livingEntity));
 			} catch (Throwable var8) {
 				CrashReport crashReport = CrashReport.create(var8, "Rendering item");
-				CrashReportElement crashReportElement = crashReport.addElement("Item being rendered");
-				crashReportElement.add("Item Type", (ICrashCallable<String>)(() -> String.valueOf(itemStack.getItem())));
-				crashReportElement.add("Item Damage", (ICrashCallable<String>)(() -> String.valueOf(itemStack.getDamage())));
-				crashReportElement.add("Item NBT", (ICrashCallable<String>)(() -> String.valueOf(itemStack.getTag())));
-				crashReportElement.add("Item Foil", (ICrashCallable<String>)(() -> String.valueOf(itemStack.hasEnchantmentGlow())));
+				CrashReportSection crashReportSection = crashReport.method_562("Item being rendered");
+				crashReportSection.add("Item Type", (ICrashCallable<String>)(() -> String.valueOf(itemStack.getItem())));
+				crashReportSection.add("Item Damage", (ICrashCallable<String>)(() -> String.valueOf(itemStack.getDamage())));
+				crashReportSection.add("Item NBT", (ICrashCallable<String>)(() -> String.valueOf(itemStack.getTag())));
+				crashReportSection.add("Item Foil", (ICrashCallable<String>)(() -> String.valueOf(itemStack.hasEnchantmentGlow())));
 				throw new CrashException(crashReport);
 			}
 
@@ -332,14 +332,14 @@ public class ItemRenderer implements ResourceReloadListener {
 				GlStateManager.disableAlphaTest();
 				GlStateManager.disableBlend();
 				Tessellator tessellator = Tessellator.getInstance();
-				VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
+				BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 				float f = (float)itemStack.getDamage();
 				float g = (float)itemStack.getDurability();
 				float h = Math.max(0.0F, (g - f) / g);
 				int k = Math.round(13.0F - f * 13.0F / g);
 				int l = MathHelper.hsvToRgb(h / 3.0F, 1.0F, 1.0F);
-				this.renderQuad(vertexBuffer, i + 2, j + 13, 13, 2, 0, 0, 0, 255);
-				this.renderQuad(vertexBuffer, i + 2, j + 13, k, 1, l >> 16 & 0xFF, l >> 8 & 0xFF, l & 0xFF, 255);
+				this.renderQuad(bufferBuilder, i + 2, j + 13, 13, 2, 0, 0, 0, 255);
+				this.renderQuad(bufferBuilder, i + 2, j + 13, k, 1, l >> 16 & 0xFF, l >> 8 & 0xFF, l & 0xFF, 255);
 				GlStateManager.enableBlend();
 				GlStateManager.enableAlphaTest();
 				GlStateManager.enableTexture();
@@ -356,8 +356,8 @@ public class ItemRenderer implements ResourceReloadListener {
 				GlStateManager.disableDepthTest();
 				GlStateManager.disableTexture();
 				Tessellator tessellator2 = Tessellator.getInstance();
-				VertexBuffer vertexBuffer2 = tessellator2.getVertexBuffer();
-				this.renderQuad(vertexBuffer2, i, j + MathHelper.floor(16.0F * (1.0F - m)), 16, MathHelper.ceil(16.0F * m), 255, 255, 255, 127);
+				BufferBuilder bufferBuilder2 = tessellator2.getBufferBuilder();
+				this.renderQuad(bufferBuilder2, i, j + MathHelper.floor(16.0F * (1.0F - m)), 16, MathHelper.ceil(16.0F * m), 255, 255, 255, 127);
 				GlStateManager.enableTexture();
 				GlStateManager.enableLighting();
 				GlStateManager.enableDepthTest();
@@ -365,12 +365,12 @@ public class ItemRenderer implements ResourceReloadListener {
 		}
 	}
 
-	private void renderQuad(VertexBuffer vertexBuffer, int i, int j, int k, int l, int m, int n, int o, int p) {
-		vertexBuffer.begin(7, VertexFormats.POSITION_COLOR);
-		vertexBuffer.vertex((double)(i + 0), (double)(j + 0), 0.0).color(m, n, o, p).next();
-		vertexBuffer.vertex((double)(i + 0), (double)(j + l), 0.0).color(m, n, o, p).next();
-		vertexBuffer.vertex((double)(i + k), (double)(j + l), 0.0).color(m, n, o, p).next();
-		vertexBuffer.vertex((double)(i + k), (double)(j + 0), 0.0).color(m, n, o, p).next();
+	private void renderQuad(BufferBuilder bufferBuilder, int i, int j, int k, int l, int m, int n, int o, int p) {
+		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
+		bufferBuilder.vertex((double)(i + 0), (double)(j + 0), 0.0).color(m, n, o, p).next();
+		bufferBuilder.vertex((double)(i + 0), (double)(j + l), 0.0).color(m, n, o, p).next();
+		bufferBuilder.vertex((double)(i + k), (double)(j + l), 0.0).color(m, n, o, p).next();
+		bufferBuilder.vertex((double)(i + k), (double)(j + 0), 0.0).color(m, n, o, p).next();
 		Tessellator.getInstance().draw();
 	}
 

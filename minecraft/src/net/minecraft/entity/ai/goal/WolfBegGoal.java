@@ -63,7 +63,7 @@ public class WolfBegGoal extends Goal {
 				return true;
 			}
 
-			if (this.owner.method_6481(itemStack)) {
+			if (this.owner.isBreedingItem(itemStack)) {
 				return true;
 			}
 		}

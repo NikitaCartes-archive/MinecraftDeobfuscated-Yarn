@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.advancement.criterion.CriterionConditions;
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.PacketByteBuf;
@@ -31,7 +31,7 @@ public class AdvancementCriterion {
 
 	public static AdvancementCriterion deserialize(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "trigger"));
-		Criterion<?> criterion = CriterionCriterions.getById(identifier);
+		Criterion<?> criterion = Criterions.getById(identifier);
 		if (criterion == null) {
 			throw new JsonSyntaxException("Invalid criterion trigger: " + identifier);
 		} else {
@@ -46,7 +46,7 @@ public class AdvancementCriterion {
 		return new AdvancementCriterion();
 	}
 
-	public static Map<String, AdvancementCriterion> deserialize(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public static Map<String, AdvancementCriterion> fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		Map<String, AdvancementCriterion> map = Maps.<String, AdvancementCriterion>newHashMap();
 
 		for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
@@ -56,7 +56,7 @@ public class AdvancementCriterion {
 		return map;
 	}
 
-	public static Map<String, AdvancementCriterion> deserialize(PacketByteBuf packetByteBuf) {
+	public static Map<String, AdvancementCriterion> fromPacket(PacketByteBuf packetByteBuf) {
 		Map<String, AdvancementCriterion> map = Maps.<String, AdvancementCriterion>newHashMap();
 		int i = packetByteBuf.readVarInt();
 
@@ -81,10 +81,10 @@ public class AdvancementCriterion {
 		return this.conditions;
 	}
 
-	public JsonElement method_773() {
+	public JsonElement toJson() {
 		JsonObject jsonObject = new JsonObject();
 		jsonObject.addProperty("trigger", this.conditions.getId().toString());
-		jsonObject.add("conditions", this.conditions.method_807());
+		jsonObject.add("conditions", this.conditions.toJson());
 		return jsonObject;
 	}
 }

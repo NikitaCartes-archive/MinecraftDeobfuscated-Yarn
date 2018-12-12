@@ -20,7 +20,7 @@ public class EnchantedGoldenAppleItem extends FoodItem {
 
 	@Override
 	protected void onConsumed(ItemStack itemStack, World world, PlayerEntity playerEntity) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			playerEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5924, 400, 1));
 			playerEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5907, 6000, 0));
 			playerEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5918, 6000, 0));

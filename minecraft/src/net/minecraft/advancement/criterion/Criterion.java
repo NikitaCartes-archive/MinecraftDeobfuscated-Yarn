@@ -2,18 +2,18 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
-import net.minecraft.advancement.ServerAdvancementManager;
+import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.util.Identifier;
 
 public interface Criterion<T extends CriterionConditions> {
 	Identifier getId();
 
-	void addCondition(ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<T> conditionsContainer);
+	void beginTrackingCondition(PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<T> conditionsContainer);
 
-	void removeCondition(ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<T> conditionsContainer);
+	void endTrackingCondition(PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<T> conditionsContainer);
 
-	void removePlayer(ServerAdvancementManager serverAdvancementManager);
+	void endTracking(PlayerAdvancementTracker playerAdvancementTracker);
 
 	T deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext);
 
@@ -32,8 +32,8 @@ public interface Criterion<T extends CriterionConditions> {
 			return this.conditions;
 		}
 
-		public void apply(ServerAdvancementManager serverAdvancementManager) {
-			serverAdvancementManager.onAdvancement(this.advancement, this.id);
+		public void apply(PlayerAdvancementTracker playerAdvancementTracker) {
+			playerAdvancementTracker.grantCriterion(this.advancement, this.id);
 		}
 
 		public boolean equals(Object object) {

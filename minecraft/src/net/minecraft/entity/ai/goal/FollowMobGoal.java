@@ -80,7 +80,7 @@ public class FollowMobGoal extends Goal {
 				double f = this.field_6432.z - this.field_6433.z;
 				double g = d * d + e * e + f * f;
 				if (!(g <= (double)(this.field_6438 * this.field_6438))) {
-					this.field_6434.method_6335(this.field_6433, this.field_6430);
+					this.field_6434.startMovingTo(this.field_6433, this.field_6430);
 				} else {
 					this.field_6434.method_6340();
 					LookControl lookControl = this.field_6433.getLookControl();
@@ -88,7 +88,7 @@ public class FollowMobGoal extends Goal {
 						|| lookControl.getLookX() == this.field_6432.x && lookControl.getLookY() == this.field_6432.y && lookControl.getLookZ() == this.field_6432.z) {
 						double h = this.field_6433.x - this.field_6432.x;
 						double i = this.field_6433.z - this.field_6432.z;
-						this.field_6434.method_6337(this.field_6432.x - h, this.field_6432.y, this.field_6432.z - i, this.field_6430);
+						this.field_6434.startMovingTo(this.field_6432.x - h, this.field_6432.y, this.field_6432.z - i, this.field_6430);
 					}
 				}
 			}

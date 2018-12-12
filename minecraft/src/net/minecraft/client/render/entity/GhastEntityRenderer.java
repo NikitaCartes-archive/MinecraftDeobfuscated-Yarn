@@ -8,12 +8,12 @@ import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class GhastEntityRenderer extends EntityMobRenderer<GhastEntity> {
+public class GhastEntityRenderer extends MobEntityRenderer<GhastEntity, GhastEntityModel<GhastEntity>> {
 	private static final Identifier SKIN = new Identifier("textures/entity/ghast/ghast.png");
 	private static final Identifier ANGRY_SKIN = new Identifier("textures/entity/ghast/ghast_shooting.png");
 
 	public GhastEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new GhastEntityModel(), 0.5F);
+		super(entityRenderDispatcher, new GhastEntityModel<>(), 0.5F);
 	}
 
 	protected Identifier getTexture(GhastEntity ghastEntity) {

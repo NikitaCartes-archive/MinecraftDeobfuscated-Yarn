@@ -43,7 +43,7 @@ public class ScoreboardObjective {
 
 	public TextComponent getTextComponent() {
 		return TextFormatter.bracketed(
-			this.field_1402.clone().modifyStyle(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent(this.getName()))))
+			this.field_1402.copy().modifyStyle(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent(this.getName()))))
 		);
 	}
 

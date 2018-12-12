@@ -4,7 +4,7 @@ import com.google.common.collect.Sets;
 import java.util.Iterator;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.minecraft.util.Profiler;
+import net.minecraft.util.profiler.Profiler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -45,7 +45,7 @@ public class Goals {
 	}
 
 	public void tick() {
-		this.profiler.begin("goalSetup");
+		this.profiler.push("goalSetup");
 		if (this.timer++ % this.timeInterval == 0) {
 			for (Goals.WeighedAiGoal weighedAiGoal : this.all) {
 				if (weighedAiGoal.executing) {
@@ -73,15 +73,15 @@ public class Goals {
 			}
 		}
 
-		this.profiler.end();
+		this.profiler.pop();
 		if (!this.executing.isEmpty()) {
-			this.profiler.begin("goalTick");
+			this.profiler.push("goalTick");
 
 			for (Goals.WeighedAiGoal weighedAiGoalx : this.executing) {
 				weighedAiGoalx.goal.tick();
 			}
 
-			this.profiler.end();
+			this.profiler.pop();
 		}
 	}
 
@@ -92,7 +92,7 @@ public class Goals {
 	private boolean canStart(Goals.WeighedAiGoal weighedAiGoal) {
 		if (this.executing.isEmpty()) {
 			return true;
-		} else if (this.canAddTask(weighedAiGoal.goal.getControlBits())) {
+		} else if (this.isControlBitUsed(weighedAiGoal.goal.getControlBits())) {
 			return false;
 		} else {
 			for (Goals.WeighedAiGoal weighedAiGoal2 : this.executing) {
@@ -115,7 +115,7 @@ public class Goals {
 		return (weighedAiGoal.goal.getControlBits() & weighedAiGoal2.goal.getControlBits()) == 0;
 	}
 
-	public boolean canAddTask(int i) {
+	public boolean isControlBitUsed(int i) {
 		return (this.usedBits & i) > 0;
 	}
 

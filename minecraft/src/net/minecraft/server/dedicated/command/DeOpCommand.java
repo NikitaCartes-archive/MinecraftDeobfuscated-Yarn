@@ -23,7 +23,7 @@ public class DeOpCommand {
 					ServerCommandManager.argument("targets", GameProfileArgumentType.create())
 						.suggests(
 							(commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(
-									commandContext.getSource().getMinecraftServer().getConfigurationManager().getOpNames(), suggestionsBuilder
+									commandContext.getSource().getMinecraftServer().getPlayerManager().getOpNames(), suggestionsBuilder
 								)
 						)
 						.executes(commandContext -> method_13144(commandContext.getSource(), GameProfileArgumentType.getProfilesArgument(commandContext, "targets")))
@@ -32,7 +32,7 @@ public class DeOpCommand {
 	}
 
 	private static int method_13144(ServerCommandSource serverCommandSource, Collection<GameProfile> collection) throws CommandSyntaxException {
-		PlayerManager playerManager = serverCommandSource.getMinecraftServer().getConfigurationManager();
+		PlayerManager playerManager = serverCommandSource.getMinecraftServer().getPlayerManager();
 		int i = 0;
 
 		for (GameProfile gameProfile : collection) {

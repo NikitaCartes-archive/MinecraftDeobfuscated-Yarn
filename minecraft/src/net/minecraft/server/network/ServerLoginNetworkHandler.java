@@ -40,8 +40,8 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 	private final byte[] field_14167 = new byte[4];
 	private final MinecraftServer server;
 	public final ClientConnection client;
-	private ServerLoginNetworkHandler.State field_14163 = ServerLoginNetworkHandler.State.field_14170;
-	private int field_14156;
+	private ServerLoginNetworkHandler.State state = ServerLoginNetworkHandler.State.field_14170;
+	private int loginTicks;
 	private GameProfile profile;
 	private final String field_14165 = "";
 	private SecretKey field_14159;
@@ -55,18 +55,18 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 
 	@Override
 	public void tick() {
-		if (this.field_14163 == ServerLoginNetworkHandler.State.field_14168) {
+		if (this.state == ServerLoginNetworkHandler.State.field_14168) {
 			this.method_14384();
-		} else if (this.field_14163 == ServerLoginNetworkHandler.State.field_14171) {
-			ServerPlayerEntity serverPlayerEntity = this.server.getConfigurationManager().getPlayer(this.profile.getId());
+		} else if (this.state == ServerLoginNetworkHandler.State.field_14171) {
+			ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId());
 			if (serverPlayerEntity == null) {
-				this.field_14163 = ServerLoginNetworkHandler.State.field_14168;
-				this.server.getConfigurationManager().onPlayerConnect(this.client, this.clientEntity);
+				this.state = ServerLoginNetworkHandler.State.field_14168;
+				this.server.getPlayerManager().onPlayerConnect(this.client, this.clientEntity);
 				this.clientEntity = null;
 			}
 		}
 
-		if (this.field_14156++ == 600) {
+		if (this.loginTicks++ == 600) {
 			this.disconnect(new TranslatableTextComponent("multiplayer.disconnect.slow_login"));
 		}
 	}
@@ -86,11 +86,11 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 			this.profile = this.toOfflineProfile(this.profile);
 		}
 
-		TextComponent textComponent = this.server.getConfigurationManager().method_14586(this.client.getAddress(), this.profile);
+		TextComponent textComponent = this.server.getPlayerManager().method_14586(this.client.getAddress(), this.profile);
 		if (textComponent != null) {
 			this.disconnect(textComponent);
 		} else {
-			this.field_14163 = ServerLoginNetworkHandler.State.field_14172;
+			this.state = ServerLoginNetworkHandler.State.field_14172;
 			if (this.server.getNetworkCompressionThreshold() >= 0 && !this.client.isLocal()) {
 				this.client
 					.sendPacket(
@@ -100,12 +100,12 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 			}
 
 			this.client.sendPacket(new class_2901(this.profile));
-			ServerPlayerEntity serverPlayerEntity = this.server.getConfigurationManager().getPlayer(this.profile.getId());
+			ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId());
 			if (serverPlayerEntity != null) {
-				this.field_14163 = ServerLoginNetworkHandler.State.field_14171;
-				this.clientEntity = this.server.getConfigurationManager().method_14613(this.profile);
+				this.state = ServerLoginNetworkHandler.State.field_14171;
+				this.clientEntity = this.server.getPlayerManager().method_14613(this.profile);
 			} else {
-				this.server.getConfigurationManager().onPlayerConnect(this.client, this.server.getConfigurationManager().method_14613(this.profile));
+				this.server.getPlayerManager().onPlayerConnect(this.client, this.server.getPlayerManager().method_14613(this.profile));
 			}
 		}
 	}
@@ -120,26 +120,26 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 	}
 
 	@Override
-	public void method_12641(LoginHelloServerPacket loginHelloServerPacket) {
-		Validate.validState(this.field_14163 == ServerLoginNetworkHandler.State.field_14170, "Unexpected hello packet");
+	public void onHello(LoginHelloServerPacket loginHelloServerPacket) {
+		Validate.validState(this.state == ServerLoginNetworkHandler.State.field_14170, "Unexpected hello packet");
 		this.profile = loginHelloServerPacket.getProfile();
 		if (this.server.isOnlineMode() && !this.client.isLocal()) {
-			this.field_14163 = ServerLoginNetworkHandler.State.field_14175;
+			this.state = ServerLoginNetworkHandler.State.field_14175;
 			this.client.sendPacket(new class_2905("", this.server.getKeyPair().getPublic(), this.field_14167));
 		} else {
-			this.field_14163 = ServerLoginNetworkHandler.State.field_14168;
+			this.state = ServerLoginNetworkHandler.State.field_14168;
 		}
 	}
 
 	@Override
 	public void method_12642(LoginKeyServerPacket loginKeyServerPacket) {
-		Validate.validState(this.field_14163 == ServerLoginNetworkHandler.State.field_14175, "Unexpected key packet");
+		Validate.validState(this.state == ServerLoginNetworkHandler.State.field_14175, "Unexpected key packet");
 		PrivateKey privateKey = this.server.getKeyPair().getPrivate();
 		if (!Arrays.equals(this.field_14167, loginKeyServerPacket.method_12655(privateKey))) {
 			throw new IllegalStateException("Invalid nonce!");
 		} else {
 			this.field_14159 = loginKeyServerPacket.method_12654(privateKey);
-			this.field_14163 = ServerLoginNetworkHandler.State.field_14169;
+			this.state = ServerLoginNetworkHandler.State.field_14169;
 			this.client.setupEncryption(this.field_14159);
 			Thread thread = new Thread("User Authenticator #" + field_14157.incrementAndGet()) {
 				public void run() {
@@ -156,11 +156,11 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 						if (ServerLoginNetworkHandler.this.profile != null) {
 							ServerLoginNetworkHandler.LOGGER
 								.info("UUID of player {} is {}", ServerLoginNetworkHandler.this.profile.getName(), ServerLoginNetworkHandler.this.profile.getId());
-							ServerLoginNetworkHandler.this.field_14163 = ServerLoginNetworkHandler.State.field_14168;
+							ServerLoginNetworkHandler.this.state = ServerLoginNetworkHandler.State.field_14168;
 						} else if (ServerLoginNetworkHandler.this.server.isSinglePlayer()) {
 							ServerLoginNetworkHandler.LOGGER.warn("Failed to verify username but will let them in anyway!");
 							ServerLoginNetworkHandler.this.profile = ServerLoginNetworkHandler.this.toOfflineProfile(gameProfile);
-							ServerLoginNetworkHandler.this.field_14163 = ServerLoginNetworkHandler.State.field_14168;
+							ServerLoginNetworkHandler.this.state = ServerLoginNetworkHandler.State.field_14168;
 						} else {
 							ServerLoginNetworkHandler.this.disconnect(new TranslatableTextComponent("multiplayer.disconnect.unverified_username"));
 							ServerLoginNetworkHandler.LOGGER.error("Username '{}' tried to join with an invalid session", gameProfile.getName());
@@ -169,7 +169,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 						if (ServerLoginNetworkHandler.this.server.isSinglePlayer()) {
 							ServerLoginNetworkHandler.LOGGER.warn("Authentication servers are down but will let them in anyway!");
 							ServerLoginNetworkHandler.this.profile = ServerLoginNetworkHandler.this.toOfflineProfile(gameProfile);
-							ServerLoginNetworkHandler.this.field_14163 = ServerLoginNetworkHandler.State.field_14168;
+							ServerLoginNetworkHandler.this.state = ServerLoginNetworkHandler.State.field_14168;
 						} else {
 							ServerLoginNetworkHandler.this.disconnect(new TranslatableTextComponent("multiplayer.disconnect.authservers_down"));
 							ServerLoginNetworkHandler.LOGGER.error("Couldn't verify username because servers are unavailable");

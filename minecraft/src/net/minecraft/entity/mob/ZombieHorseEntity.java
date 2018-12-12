@@ -1,7 +1,7 @@
 package net.minecraft.entity.mob;
 
 import javax.annotation.Nullable;
-import net.minecraft.class_1310;
+import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -30,8 +30,8 @@ public class ZombieHorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public class_1310 method_6046() {
-		return class_1310.field_6289;
+	public EntityGroup getGroup() {
+		return EntityGroup.UNDEAD;
 	}
 
 	@Override

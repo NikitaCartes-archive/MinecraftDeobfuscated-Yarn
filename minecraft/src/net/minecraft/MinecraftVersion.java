@@ -26,10 +26,10 @@ public class MinecraftVersion implements GameVersion {
 
 	public MinecraftVersion() {
 		this.id = UUID.randomUUID().toString().replaceAll("-", "");
-		this.name = "18w49a";
+		this.name = "18w50a";
 		this.stable = false;
-		this.worldVersion = 1916;
-		this.protocolVersion = 450;
+		this.worldVersion = 1919;
+		this.protocolVersion = 451;
 		this.packVersion = 4;
 		this.buildTime = new Date();
 		this.releaseTarget = "1.14";
