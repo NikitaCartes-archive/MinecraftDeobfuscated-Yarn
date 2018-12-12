@@ -10,11 +10,11 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class SalmonEntityRenderer extends EntityMobRenderer<SalmonEntity> {
+public class SalmonEntityRenderer extends MobEntityRenderer<SalmonEntity, SalmonEntityModel<SalmonEntity>> {
 	private static final Identifier field_4767 = new Identifier("textures/entity/fish/salmon.png");
 
 	public SalmonEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new SalmonEntityModel(), 0.2F);
+		super(entityRenderDispatcher, new SalmonEntityModel<>(), 0.2F);
 	}
 
 	@Nullable
@@ -23,7 +23,7 @@ public class SalmonEntityRenderer extends EntityMobRenderer<SalmonEntity> {
 	}
 
 	protected void method_4100(SalmonEntity salmonEntity, float f, float g, float h) {
-		super.method_4058(salmonEntity, f, g, h);
+		super.setupTransforms(salmonEntity, f, g, h);
 		float i = 1.0F;
 		float j = 1.0F;
 		if (!salmonEntity.isInsideWater()) {

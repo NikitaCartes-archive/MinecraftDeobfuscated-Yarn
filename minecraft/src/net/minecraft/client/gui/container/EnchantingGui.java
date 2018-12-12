@@ -6,18 +6,18 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_308;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.FontRenderer;
 import net.minecraft.client.gui.ContainerGui;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.entity.model.EnchantingTableBookEntityModel;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.EnchantingPhrases;
+import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.container.EnchantingTableContainer;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.sortme.Matrix4f;
 import net.minecraft.text.TextFormat;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Nameable;
@@ -96,7 +96,7 @@ public class EnchantingGui extends ContainerGui {
 		float g = 1.0F;
 		GlStateManager.matrixMode(5888);
 		GlStateManager.loadIdentity();
-		class_308.method_1452();
+		GuiLighting.enable();
 		GlStateManager.translatef(0.0F, 3.3F, -16.0F);
 		GlStateManager.scalef(1.0F, 1.0F, 1.0F);
 		float h = 5.0F;
@@ -129,15 +129,15 @@ public class EnchantingGui extends ContainerGui {
 		}
 
 		GlStateManager.enableRescaleNormal();
-		field_2908.render(null, 0.0F, o, p, n, 0.0F, 0.0625F);
+		field_2908.method_17072(0.0F, o, p, n, 0.0F, 0.0625F);
 		GlStateManager.disableRescaleNormal();
-		class_308.method_1450();
+		GuiLighting.disable();
 		GlStateManager.matrixMode(5889);
 		GlStateManager.viewport(0, 0, this.client.window.getWindowWidth(), this.client.window.getWindowHeight());
 		GlStateManager.popMatrix();
 		GlStateManager.matrixMode(5888);
 		GlStateManager.popMatrix();
-		class_308.method_1450();
+		GuiLighting.disable();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		EnchantingPhrases.getInstance().setSeed((long)this.container.enchantmentSeed);
 		int q = this.container.method_7638();
@@ -155,7 +155,7 @@ public class EnchantingGui extends ContainerGui {
 				String string = "" + u;
 				int v = 86 - this.fontRenderer.getStringWidth(string);
 				String string2 = EnchantingPhrases.getInstance().generatePhrase(this.fontRenderer, v);
-				FontRenderer fontRenderer = this.client.method_1568().method_2019(MinecraftClient.field_1749);
+				FontRenderer fontRenderer = this.client.getFontManager().getFontRenderer(MinecraftClient.altFontRendererId);
 				int w = 6839882;
 				if ((q < r + 1 || this.client.player.experience < u) && !this.client.player.abilities.creativeMode) {
 					this.drawTexturedRect(s, l + 14 + 19 * r, 0, 185, 108, 19);

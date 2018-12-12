@@ -7,8 +7,7 @@ import net.minecraft.block.TallPlantBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.DoublePlantFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class DoublePlantFeature extends Feature<DoublePlantFeatureConfig> {
 	public DoublePlantFeature(Function<Dynamic<?>, ? extends DoublePlantFeatureConfig> function) {
@@ -17,7 +16,7 @@ public class DoublePlantFeature extends Feature<DoublePlantFeatureConfig> {
 
 	public boolean method_13019(
 		IWorld iWorld,
-		ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator,
+		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,
 		BlockPos blockPos,
 		DoublePlantFeatureConfig doublePlantFeatureConfig

@@ -24,7 +24,7 @@ public class SetCountLootFunction extends ConditionalLootFunction {
 		return itemStack;
 	}
 
-	public static ConditionalLootFunction.Builder<?> method_621(LootTableRange lootTableRange) {
+	public static ConditionalLootFunction.Builder<?> builder(LootTableRange lootTableRange) {
 		return create(lootConditions -> new SetCountLootFunction(lootConditions, lootTableRange));
 	}
 

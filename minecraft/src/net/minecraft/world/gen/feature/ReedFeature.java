@@ -8,8 +8,7 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class ReedFeature extends Feature<DefaultFeatureConfig> {
 	public ReedFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
@@ -17,7 +16,7 @@ public class ReedFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean method_13782(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		int i = 0;
 

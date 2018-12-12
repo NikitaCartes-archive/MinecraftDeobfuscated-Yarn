@@ -9,8 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.decorator.CountChanceDecoratorConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class CountChanceHeightmapDecorator extends Decorator<CountChanceDecoratorConfig> {
 	public CountChanceHeightmapDecorator(Function<Dynamic<?>, ? extends CountChanceDecoratorConfig> function) {
@@ -19,7 +18,7 @@ public class CountChanceHeightmapDecorator extends Decorator<CountChanceDecorato
 
 	public Stream<BlockPos> method_15902(
 		IWorld iWorld,
-		ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator,
+		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,
 		CountChanceDecoratorConfig countChanceDecoratorConfig,
 		BlockPos blockPos

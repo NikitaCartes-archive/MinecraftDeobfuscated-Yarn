@@ -42,20 +42,20 @@ public class ExplodingWitherSkullEntityRenderer extends EntityRenderer<Exploding
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
 		GlStateManager.enableAlphaTest();
-		this.method_3925(explodingWitherSkullEntity);
-		if (this.field_4674) {
+		this.bindEntityTexture(explodingWitherSkullEntity);
+		if (this.renderOutlines) {
 			GlStateManager.enableColorMaterial();
-			GlStateManager.setupSolidRenderingTextureCombine(this.method_3929(explodingWitherSkullEntity));
+			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(explodingWitherSkullEntity));
 		}
 
-		this.field_4816.render(explodingWitherSkullEntity, 0.0F, 0.0F, 0.0F, i, j, 0.0625F);
-		if (this.field_4674) {
+		this.field_4816.setRotationAngles(0.0F, 0.0F, 0.0F, i, j, 0.0625F);
+		if (this.renderOutlines) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}
 
 		GlStateManager.popMatrix();
-		super.method_3936(explodingWitherSkullEntity, d, e, f, g, h);
+		super.render(explodingWitherSkullEntity, d, e, f, g, h);
 	}
 
 	protected Identifier getTexture(ExplodingWitherSkullEntity explodingWitherSkullEntity) {

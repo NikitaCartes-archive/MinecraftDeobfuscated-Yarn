@@ -9,8 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.decorator.HeightmapRangeDecoratorConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class HeightmapRangeDecorator extends Decorator<HeightmapRangeDecoratorConfig> {
 	public HeightmapRangeDecorator(Function<Dynamic<?>, ? extends HeightmapRangeDecoratorConfig> function) {
@@ -19,7 +18,7 @@ public class HeightmapRangeDecorator extends Decorator<HeightmapRangeDecoratorCo
 
 	public Stream<BlockPos> method_15945(
 		IWorld iWorld,
-		ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator,
+		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,
 		HeightmapRangeDecoratorConfig heightmapRangeDecoratorConfig,
 		BlockPos blockPos

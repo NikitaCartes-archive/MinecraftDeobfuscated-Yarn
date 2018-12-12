@@ -26,66 +26,66 @@ public class GrindstoneBlock extends WallMountedBlock {
 	public static final VoxelShape field_16392 = Block.createCubeShape(12.0, 0.0, 6.0, 14.0, 7.0, 10.0);
 	public static final VoxelShape field_16366 = Block.createCubeShape(2.0, 7.0, 5.0, 4.0, 13.0, 11.0);
 	public static final VoxelShape field_16339 = Block.createCubeShape(12.0, 7.0, 5.0, 14.0, 13.0, 11.0);
-	public static final VoxelShape field_16348 = VoxelShapes.method_1084(field_16379, field_16366);
-	public static final VoxelShape field_16365 = VoxelShapes.method_1084(field_16392, field_16339);
-	public static final VoxelShape field_16385 = VoxelShapes.method_1084(field_16348, field_16365);
-	public static final VoxelShape field_16380 = VoxelShapes.method_1084(field_16385, Block.createCubeShape(4.0, 4.0, 2.0, 12.0, 16.0, 14.0));
+	public static final VoxelShape field_16348 = VoxelShapes.union(field_16379, field_16366);
+	public static final VoxelShape field_16365 = VoxelShapes.union(field_16392, field_16339);
+	public static final VoxelShape field_16385 = VoxelShapes.union(field_16348, field_16365);
+	public static final VoxelShape field_16380 = VoxelShapes.union(field_16385, Block.createCubeShape(4.0, 4.0, 2.0, 12.0, 16.0, 14.0));
 	public static final VoxelShape field_16373 = Block.createCubeShape(6.0, 0.0, 2.0, 10.0, 7.0, 4.0);
 	public static final VoxelShape field_16346 = Block.createCubeShape(6.0, 0.0, 12.0, 10.0, 7.0, 14.0);
 	public static final VoxelShape field_16343 = Block.createCubeShape(5.0, 7.0, 2.0, 11.0, 13.0, 4.0);
 	public static final VoxelShape field_16374 = Block.createCubeShape(5.0, 7.0, 12.0, 11.0, 13.0, 14.0);
-	public static final VoxelShape field_16386 = VoxelShapes.method_1084(field_16373, field_16343);
-	public static final VoxelShape field_16378 = VoxelShapes.method_1084(field_16346, field_16374);
-	public static final VoxelShape field_16362 = VoxelShapes.method_1084(field_16386, field_16378);
-	public static final VoxelShape field_16338 = VoxelShapes.method_1084(field_16362, Block.createCubeShape(2.0, 4.0, 4.0, 14.0, 16.0, 12.0));
+	public static final VoxelShape field_16386 = VoxelShapes.union(field_16373, field_16343);
+	public static final VoxelShape field_16378 = VoxelShapes.union(field_16346, field_16374);
+	public static final VoxelShape field_16362 = VoxelShapes.union(field_16386, field_16378);
+	public static final VoxelShape field_16338 = VoxelShapes.union(field_16362, Block.createCubeShape(2.0, 4.0, 4.0, 14.0, 16.0, 12.0));
 	public static final VoxelShape field_16352 = Block.createCubeShape(2.0, 6.0, 0.0, 4.0, 10.0, 7.0);
 	public static final VoxelShape field_16377 = Block.createCubeShape(12.0, 6.0, 0.0, 14.0, 10.0, 7.0);
 	public static final VoxelShape field_16393 = Block.createCubeShape(2.0, 5.0, 7.0, 4.0, 11.0, 13.0);
 	public static final VoxelShape field_16371 = Block.createCubeShape(12.0, 5.0, 7.0, 14.0, 11.0, 13.0);
-	public static final VoxelShape field_16340 = VoxelShapes.method_1084(field_16352, field_16393);
-	public static final VoxelShape field_16354 = VoxelShapes.method_1084(field_16377, field_16371);
-	public static final VoxelShape field_16369 = VoxelShapes.method_1084(field_16340, field_16354);
-	public static final VoxelShape field_16399 = VoxelShapes.method_1084(field_16369, Block.createCubeShape(4.0, 2.0, 4.0, 12.0, 14.0, 16.0));
+	public static final VoxelShape field_16340 = VoxelShapes.union(field_16352, field_16393);
+	public static final VoxelShape field_16354 = VoxelShapes.union(field_16377, field_16371);
+	public static final VoxelShape field_16369 = VoxelShapes.union(field_16340, field_16354);
+	public static final VoxelShape field_16399 = VoxelShapes.union(field_16369, Block.createCubeShape(4.0, 2.0, 4.0, 12.0, 14.0, 16.0));
 	public static final VoxelShape field_16363 = Block.createCubeShape(2.0, 6.0, 7.0, 4.0, 10.0, 16.0);
 	public static final VoxelShape field_16347 = Block.createCubeShape(12.0, 6.0, 7.0, 14.0, 10.0, 16.0);
 	public static final VoxelShape field_16401 = Block.createCubeShape(2.0, 5.0, 3.0, 4.0, 11.0, 9.0);
 	public static final VoxelShape field_16367 = Block.createCubeShape(12.0, 5.0, 3.0, 14.0, 11.0, 9.0);
-	public static final VoxelShape field_16388 = VoxelShapes.method_1084(field_16363, field_16401);
-	public static final VoxelShape field_16396 = VoxelShapes.method_1084(field_16347, field_16367);
-	public static final VoxelShape field_16368 = VoxelShapes.method_1084(field_16388, field_16396);
-	public static final VoxelShape field_16356 = VoxelShapes.method_1084(field_16368, Block.createCubeShape(4.0, 2.0, 0.0, 12.0, 14.0, 12.0));
+	public static final VoxelShape field_16388 = VoxelShapes.union(field_16363, field_16401);
+	public static final VoxelShape field_16396 = VoxelShapes.union(field_16347, field_16367);
+	public static final VoxelShape field_16368 = VoxelShapes.union(field_16388, field_16396);
+	public static final VoxelShape field_16356 = VoxelShapes.union(field_16368, Block.createCubeShape(4.0, 2.0, 0.0, 12.0, 14.0, 12.0));
 	public static final VoxelShape field_16342 = Block.createCubeShape(7.0, 6.0, 2.0, 16.0, 10.0, 4.0);
 	public static final VoxelShape field_16358 = Block.createCubeShape(7.0, 6.0, 12.0, 16.0, 10.0, 14.0);
 	public static final VoxelShape field_16390 = Block.createCubeShape(3.0, 5.0, 2.0, 9.0, 11.0, 4.0);
 	public static final VoxelShape field_16382 = Block.createCubeShape(3.0, 5.0, 12.0, 9.0, 11.0, 14.0);
-	public static final VoxelShape field_16359 = VoxelShapes.method_1084(field_16342, field_16390);
-	public static final VoxelShape field_16351 = VoxelShapes.method_1084(field_16358, field_16382);
-	public static final VoxelShape field_16344 = VoxelShapes.method_1084(field_16359, field_16351);
-	public static final VoxelShape field_16376 = VoxelShapes.method_1084(field_16344, Block.createCubeShape(0.0, 2.0, 4.0, 12.0, 14.0, 12.0));
+	public static final VoxelShape field_16359 = VoxelShapes.union(field_16342, field_16390);
+	public static final VoxelShape field_16351 = VoxelShapes.union(field_16358, field_16382);
+	public static final VoxelShape field_16344 = VoxelShapes.union(field_16359, field_16351);
+	public static final VoxelShape field_16376 = VoxelShapes.union(field_16344, Block.createCubeShape(0.0, 2.0, 4.0, 12.0, 14.0, 12.0));
 	public static final VoxelShape field_16394 = Block.createCubeShape(0.0, 6.0, 2.0, 9.0, 10.0, 4.0);
 	public static final VoxelShape field_16375 = Block.createCubeShape(0.0, 6.0, 12.0, 9.0, 10.0, 14.0);
 	public static final VoxelShape field_16345 = Block.createCubeShape(7.0, 5.0, 2.0, 13.0, 11.0, 4.0);
 	public static final VoxelShape field_16350 = Block.createCubeShape(7.0, 5.0, 12.0, 13.0, 11.0, 14.0);
-	public static final VoxelShape field_16372 = VoxelShapes.method_1084(field_16394, field_16345);
-	public static final VoxelShape field_16381 = VoxelShapes.method_1084(field_16375, field_16350);
-	public static final VoxelShape field_16391 = VoxelShapes.method_1084(field_16372, field_16381);
-	public static final VoxelShape field_16370 = VoxelShapes.method_1084(field_16391, Block.createCubeShape(4.0, 2.0, 4.0, 16.0, 14.0, 12.0));
+	public static final VoxelShape field_16372 = VoxelShapes.union(field_16394, field_16345);
+	public static final VoxelShape field_16381 = VoxelShapes.union(field_16375, field_16350);
+	public static final VoxelShape field_16391 = VoxelShapes.union(field_16372, field_16381);
+	public static final VoxelShape field_16370 = VoxelShapes.union(field_16391, Block.createCubeShape(4.0, 2.0, 4.0, 16.0, 14.0, 12.0));
 	public static final VoxelShape field_16341 = Block.createCubeShape(2.0, 9.0, 6.0, 4.0, 16.0, 10.0);
 	public static final VoxelShape field_16355 = Block.createCubeShape(12.0, 9.0, 6.0, 14.0, 16.0, 10.0);
 	public static final VoxelShape field_16384 = Block.createCubeShape(2.0, 3.0, 5.0, 4.0, 9.0, 11.0);
 	public static final VoxelShape field_16400 = Block.createCubeShape(12.0, 3.0, 5.0, 14.0, 9.0, 11.0);
-	public static final VoxelShape field_16364 = VoxelShapes.method_1084(field_16341, field_16384);
-	public static final VoxelShape field_16349 = VoxelShapes.method_1084(field_16355, field_16400);
-	public static final VoxelShape field_16397 = VoxelShapes.method_1084(field_16364, field_16349);
-	public static final VoxelShape field_16361 = VoxelShapes.method_1084(field_16397, Block.createCubeShape(4.0, 0.0, 2.0, 12.0, 12.0, 14.0));
+	public static final VoxelShape field_16364 = VoxelShapes.union(field_16341, field_16384);
+	public static final VoxelShape field_16349 = VoxelShapes.union(field_16355, field_16400);
+	public static final VoxelShape field_16397 = VoxelShapes.union(field_16364, field_16349);
+	public static final VoxelShape field_16361 = VoxelShapes.union(field_16397, Block.createCubeShape(4.0, 0.0, 2.0, 12.0, 12.0, 14.0));
 	public static final VoxelShape field_16387 = Block.createCubeShape(6.0, 9.0, 2.0, 10.0, 16.0, 4.0);
 	public static final VoxelShape field_16398 = Block.createCubeShape(6.0, 9.0, 12.0, 10.0, 16.0, 14.0);
 	public static final VoxelShape field_16357 = Block.createCubeShape(5.0, 3.0, 2.0, 11.0, 9.0, 4.0);
 	public static final VoxelShape field_16353 = Block.createCubeShape(5.0, 3.0, 12.0, 11.0, 9.0, 14.0);
-	public static final VoxelShape field_16395 = VoxelShapes.method_1084(field_16387, field_16357);
-	public static final VoxelShape field_16360 = VoxelShapes.method_1084(field_16398, field_16353);
-	public static final VoxelShape field_16389 = VoxelShapes.method_1084(field_16395, field_16360);
-	public static final VoxelShape field_16383 = VoxelShapes.method_1084(field_16389, Block.createCubeShape(2.0, 0.0, 4.0, 14.0, 12.0, 12.0));
+	public static final VoxelShape field_16395 = VoxelShapes.union(field_16387, field_16357);
+	public static final VoxelShape field_16360 = VoxelShapes.union(field_16398, field_16353);
+	public static final VoxelShape field_16389 = VoxelShapes.union(field_16395, field_16360);
+	public static final VoxelShape field_16383 = VoxelShapes.union(field_16389, Block.createCubeShape(2.0, 0.0, 4.0, 14.0, 12.0, 12.0));
 
 	protected GrindstoneBlock(Block.Settings settings) {
 		super(settings);
@@ -93,8 +93,8 @@ public class GrindstoneBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public RenderTypeBlock getRenderType(BlockState blockState) {
-		return RenderTypeBlock.MODEL;
+	public BlockRenderType method_9604(BlockState blockState) {
+		return BlockRenderType.field_11458;
 	}
 
 	private VoxelShape method_16119(BlockState blockState) {
@@ -130,7 +130,7 @@ public class GrindstoneBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public VoxelShape method_9549(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		return this.method_16119(blockState);
 	}
 
@@ -145,10 +145,10 @@ public class GrindstoneBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			playerEntity.openContainer(new GrindstoneBlock.class_3804(world, blockPos));
 		}
 
@@ -162,7 +162,7 @@ public class GrindstoneBlock extends WallMountedBlock {
 
 	@Override
 	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.method_10345(blockState.get(field_11177)));
+		return blockState.applyRotation(mirror.getRotation(blockState.get(field_11177)));
 	}
 
 	@Override
@@ -182,11 +182,6 @@ public class GrindstoneBlock extends WallMountedBlock {
 		@Override
 		public TextComponent getName() {
 			return new TranslatableTextComponent(Blocks.field_16337.getTranslationKey());
-		}
-
-		@Override
-		public boolean hasCustomName() {
-			return false;
 		}
 
 		@Override

@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.function.Consumer;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemContainer;
+import net.minecraft.item.ItemProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -27,8 +27,8 @@ public class ItemEntry extends LeafEntry {
 		consumer.accept(new ItemStack(this.item));
 	}
 
-	public static LeafEntry.Builder<?> method_411(ItemContainer itemContainer) {
-		return create((i, j, lootConditions, lootFunctions) -> new ItemEntry(itemContainer.getItem(), i, j, lootConditions, lootFunctions));
+	public static LeafEntry.Builder<?> builder(ItemProvider itemProvider) {
+		return create((i, j, lootConditions, lootFunctions) -> new ItemEntry(itemProvider.getItem(), i, j, lootConditions, lootFunctions));
 	}
 
 	public static class Serializer extends LeafEntry.Serializer<ItemEntry> {

@@ -2,12 +2,11 @@ package net.minecraft.sortme.structures;
 
 import java.util.Random;
 import net.minecraft.class_3418;
-import net.minecraft.class_3485;
-import net.minecraft.class_3730;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.block.enums.StairShape;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -26,7 +25,7 @@ public class SwampHutGenerator extends class_3418 {
 		super(StructurePiece.field_16918, random, i, 64, j, 7, 7, 9);
 	}
 
-	public SwampHutGenerator(class_3485 arg, CompoundTag compoundTag) {
+	public SwampHutGenerator(StructureManager structureManager, CompoundTag compoundTag) {
 		super(StructurePiece.field_16918, compoundTag);
 		this.field_15322 = compoundTag.getBoolean("Witch");
 		this.field_16445 = compoundTag.getBoolean("Cat");
@@ -65,10 +64,10 @@ public class SwampHutGenerator extends class_3418 {
 			this.addBlock(iWorld, Blocks.field_10593.getDefaultState(), 4, 2, 6, mutableIntBoundingBox);
 			this.addBlock(iWorld, Blocks.field_10620.getDefaultState(), 1, 2, 1, mutableIntBoundingBox);
 			this.addBlock(iWorld, Blocks.field_10620.getDefaultState(), 5, 2, 1, mutableIntBoundingBox);
-			BlockState blockState = Blocks.field_10569.getDefaultState().with(StairsBlock.field_11571, Direction.NORTH);
-			BlockState blockState2 = Blocks.field_10569.getDefaultState().with(StairsBlock.field_11571, Direction.EAST);
-			BlockState blockState3 = Blocks.field_10569.getDefaultState().with(StairsBlock.field_11571, Direction.WEST);
-			BlockState blockState4 = Blocks.field_10569.getDefaultState().with(StairsBlock.field_11571, Direction.SOUTH);
+			BlockState blockState = Blocks.field_10569.getDefaultState().with(StairsBlock.FACING, Direction.NORTH);
+			BlockState blockState2 = Blocks.field_10569.getDefaultState().with(StairsBlock.FACING, Direction.EAST);
+			BlockState blockState3 = Blocks.field_10569.getDefaultState().with(StairsBlock.FACING, Direction.WEST);
+			BlockState blockState4 = Blocks.field_10569.getDefaultState().with(StairsBlock.FACING, Direction.SOUTH);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 4, 1, 6, 4, 1, blockState, blockState, false);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 4, 2, 0, 4, 7, blockState2, blockState2, false);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 6, 4, 2, 6, 4, 7, blockState3, blockState3, false);
@@ -90,10 +89,10 @@ public class SwampHutGenerator extends class_3418 {
 				int k = this.applyZTransform(2, 5);
 				if (mutableIntBoundingBox.contains(new BlockPos(i, j, k))) {
 					this.field_15322 = true;
-					WitchEntity witchEntity = new WitchEntity(iWorld.method_8410());
+					WitchEntity witchEntity = new WitchEntity(iWorld.getWorld());
 					witchEntity.setPersistent();
 					witchEntity.setPositionAndAngles((double)i + 0.5, (double)j, (double)k + 0.5, 0.0F, 0.0F);
-					witchEntity.method_5943(iWorld, iWorld.getLocalDifficulty(new BlockPos(i, j, k)), class_3730.field_16474, null, null);
+					witchEntity.prepareEntityData(iWorld, iWorld.getLocalDifficulty(new BlockPos(i, j, k)), SpawnType.field_16474, null, null);
 					iWorld.spawnEntity(witchEntity);
 				}
 			}
@@ -110,10 +109,10 @@ public class SwampHutGenerator extends class_3418 {
 			int k = this.applyZTransform(2, 5);
 			if (mutableIntBoundingBox.contains(new BlockPos(i, j, k))) {
 				this.field_16445 = true;
-				CatEntity catEntity = new CatEntity(iWorld.method_8410());
+				CatEntity catEntity = new CatEntity(iWorld.getWorld());
 				catEntity.setPersistent();
 				catEntity.setPositionAndAngles((double)i + 0.5, (double)j, (double)k + 0.5, 0.0F, 0.0F);
-				catEntity.method_5943(iWorld, iWorld.getLocalDifficulty(new BlockPos(i, j, k)), class_3730.field_16474, null, null);
+				catEntity.prepareEntityData(iWorld, iWorld.getLocalDifficulty(new BlockPos(i, j, k)), SpawnType.field_16474, null, null);
 				iWorld.spawnEntity(catEntity);
 			}
 		}

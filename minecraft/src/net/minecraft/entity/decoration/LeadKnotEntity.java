@@ -46,7 +46,7 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public void method_6892(Direction direction) {
+	public void setFacing(Direction direction) {
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 
 	@Override
 	public boolean interact(PlayerEntity playerEntity, Hand hand) {
-		if (this.world.isRemote) {
+		if (this.world.isClient) {
 			return true;
 		} else {
 			boolean bl = false;

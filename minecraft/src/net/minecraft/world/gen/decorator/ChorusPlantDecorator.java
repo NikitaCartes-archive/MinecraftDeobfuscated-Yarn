@@ -10,8 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.decorator.NopeDecoratorConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class ChorusPlantDecorator extends Decorator<NopeDecoratorConfig> {
 	public ChorusPlantDecorator(Function<Dynamic<?>, ? extends NopeDecoratorConfig> function) {
@@ -19,7 +18,7 @@ public class ChorusPlantDecorator extends Decorator<NopeDecoratorConfig> {
 	}
 
 	public Stream<BlockPos> method_14373(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos
 	) {
 		int i = random.nextInt(5);
 		return IntStream.range(0, i).mapToObj(ix -> {

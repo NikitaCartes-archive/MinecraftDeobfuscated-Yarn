@@ -2,11 +2,11 @@ package net.minecraft.client.gui;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2870;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.server.network.packet.UpdateCommandBlockServerPacket;
 import net.minecraft.sortme.CommandBlockExecutor;
 import net.minecraft.util.math.BlockPos;
 
@@ -25,7 +25,7 @@ public class CommandBlockGui extends AbstractCommandBlockGui {
 	}
 
 	@Override
-	CommandBlockExecutor method_2351() {
+	CommandBlockExecutor getCommandExecutor() {
 		return this.field_2865.getCommandExecutor();
 	}
 
@@ -102,7 +102,7 @@ public class CommandBlockGui extends AbstractCommandBlockGui {
 		this.client
 			.getNetworkHandler()
 			.sendPacket(
-				new class_2870(
+				new UpdateCommandBlockServerPacket(
 					new BlockPos(commandBlockExecutor.getPos()),
 					this.consoleCommandTextField.getText(),
 					this.type,

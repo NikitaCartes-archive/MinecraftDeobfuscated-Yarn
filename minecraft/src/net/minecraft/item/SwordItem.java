@@ -16,15 +16,15 @@ import net.minecraft.world.World;
 
 public class SwordItem extends ToolItem {
 	private final float weaponDamage;
-	private final float field_8919;
+	private final float weaponCooldownSpeed;
 
 	public SwordItem(ToolMaterial toolMaterial, int i, float f, Item.Settings settings) {
 		super(toolMaterial, settings);
-		this.field_8919 = f;
+		this.weaponCooldownSpeed = f;
 		this.weaponDamage = (float)i + toolMaterial.getAttackDamage();
 	}
 
-	public float method_8020() {
+	public float getWeaponDamage() {
 		return this.weaponDamage;
 	}
 
@@ -80,7 +80,7 @@ public class SwordItem extends ToolItem {
 			);
 			multimap.put(
 				EntityAttributes.ATTACK_SPEED.getId(),
-				new EntityAttributeModifier(MODIFIER_SWING_SPEED, "Weapon modifier", (double)this.field_8919, EntityAttributeModifier.Operation.field_6328)
+				new EntityAttributeModifier(MODIFIER_SWING_SPEED, "Weapon modifier", (double)this.weaponCooldownSpeed, EntityAttributeModifier.Operation.field_6328)
 			);
 		}
 

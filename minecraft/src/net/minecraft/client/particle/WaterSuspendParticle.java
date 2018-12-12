@@ -2,7 +2,7 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.particle.TexturedParticle;
+import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -28,7 +28,7 @@ public class WaterSuspendParticle extends Particle {
 		this.prevPosX = this.posX;
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;
-		this.addPos(this.velocityX, this.velocityY, this.velocityZ);
+		this.move(this.velocityX, this.velocityY, this.velocityZ);
 		if (!this.world.getFluidState(new BlockPos(this.posX, this.posY, this.posZ)).matches(FluidTags.field_15517)) {
 			this.markDead();
 		}
@@ -39,8 +39,8 @@ public class WaterSuspendParticle extends Particle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class class_724 implements FactoryParticle<TexturedParticle> {
-		public Particle createParticle(TexturedParticle texturedParticle, World world, double d, double e, double f, double g, double h, double i) {
+	public static class UnderwaterFactory implements ParticleFactory<DefaultParticleType> {
+		public Particle method_3104(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new WaterSuspendParticle(world, d, e, f, g, h, i);
 		}
 	}

@@ -81,7 +81,7 @@ public class ResourceImpl implements Resource {
 				return null;
 			} else {
 				String string = resourceMetadataReader.getKey();
-				return this.metadata.has(string) ? resourceMetadataReader.read(JsonHelper.getObject(this.metadata, string)) : null;
+				return this.metadata.has(string) ? resourceMetadataReader.fromJson(JsonHelper.getObject(this.metadata, string)) : null;
 			}
 		}
 	}

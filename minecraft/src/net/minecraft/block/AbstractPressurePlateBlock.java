@@ -38,10 +38,12 @@ public abstract class AbstractPressurePlateBlock extends Block {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		return direction == Direction.DOWN && !blockState.canPlaceAt(iWorld, blockPos)
 			? Blocks.field_10124.getDefaultState()
-			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
@@ -53,7 +55,7 @@ public abstract class AbstractPressurePlateBlock extends Block {
 
 	@Override
 	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			int i = this.getRedstoneOutput(blockState);
 			if (i > 0) {
 				this.updatePlateState(world, blockPos, blockState, i);
@@ -63,7 +65,7 @@ public abstract class AbstractPressurePlateBlock extends Block {
 
 	@Override
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			int i = this.getRedstoneOutput(blockState);
 			if (i == 0) {
 				this.updatePlateState(world, blockPos, blockState, i);
@@ -79,7 +81,7 @@ public abstract class AbstractPressurePlateBlock extends Block {
 			blockState = this.setRedstoneOutput(blockState, j);
 			world.setBlockState(blockPos, blockState, 2);
 			this.method_9437(world, blockPos);
-			world.method_16109(blockPos);
+			world.scheduleBlockRender(blockPos);
 		}
 
 		if (!bl2 && bl) {
@@ -114,12 +116,12 @@ public abstract class AbstractPressurePlateBlock extends Block {
 	}
 
 	@Override
-	public int method_9524(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
 		return this.getRedstoneOutput(blockState);
 	}
 
 	@Override
-	public int method_9603(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+	public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
 		return direction == Direction.UP ? this.getRedstoneOutput(blockState) : 0;
 	}
 

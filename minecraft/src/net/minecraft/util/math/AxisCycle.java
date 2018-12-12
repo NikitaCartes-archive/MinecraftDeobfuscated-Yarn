@@ -1,14 +1,14 @@
 package net.minecraft.util.math;
 
 public enum AxisCycle {
-	field_10962 {
+	NONE {
 		@Override
 		public int method_10056(int i, int j, int k, Direction.Axis axis) {
 			return axis.choose(i, j, k);
 		}
 
 		@Override
-		public Direction.Axis method_10058(Direction.Axis axis) {
+		public Direction.Axis cycle(Direction.Axis axis) {
 			return axis;
 		}
 
@@ -17,40 +17,40 @@ public enum AxisCycle {
 			return this;
 		}
 	},
-	field_10963 {
+	NEXT {
 		@Override
 		public int method_10056(int i, int j, int k, Direction.Axis axis) {
 			return axis.choose(k, i, j);
 		}
 
 		@Override
-		public Direction.Axis method_10058(Direction.Axis axis) {
-			return field_10961[Math.floorMod(axis.ordinal() + 1, 3)];
+		public Direction.Axis cycle(Direction.Axis axis) {
+			return AXES[Math.floorMod(axis.ordinal() + 1, 3)];
 		}
 
 		@Override
 		public AxisCycle opposite() {
-			return field_10965;
+			return PREVIOUS;
 		}
 	},
-	field_10965 {
+	PREVIOUS {
 		@Override
 		public int method_10056(int i, int j, int k, Direction.Axis axis) {
 			return axis.choose(j, k, i);
 		}
 
 		@Override
-		public Direction.Axis method_10058(Direction.Axis axis) {
-			return field_10961[Math.floorMod(axis.ordinal() - 1, 3)];
+		public Direction.Axis cycle(Direction.Axis axis) {
+			return AXES[Math.floorMod(axis.ordinal() - 1, 3)];
 		}
 
 		@Override
 		public AxisCycle opposite() {
-			return field_10963;
+			return NEXT;
 		}
 	};
 
-	public static final Direction.Axis[] field_10961 = Direction.Axis.values();
+	public static final Direction.Axis[] AXES = Direction.Axis.values();
 	public static final AxisCycle[] VALUES = values();
 
 	private AxisCycle() {
@@ -58,11 +58,11 @@ public enum AxisCycle {
 
 	public abstract int method_10056(int i, int j, int k, Direction.Axis axis);
 
-	public abstract Direction.Axis method_10058(Direction.Axis axis);
+	public abstract Direction.Axis cycle(Direction.Axis axis);
 
 	public abstract AxisCycle opposite();
 
-	public static AxisCycle method_10057(Direction.Axis axis, Direction.Axis axis2) {
+	public static AxisCycle between(Direction.Axis axis, Direction.Axis axis2) {
 		return VALUES[Math.floorMod(axis2.ordinal() - axis.ordinal(), 3)];
 	}
 }

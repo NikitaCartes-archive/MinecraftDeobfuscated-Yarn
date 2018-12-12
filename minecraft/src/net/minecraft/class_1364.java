@@ -13,7 +13,7 @@ public class class_1364 extends class_1361 {
 
 	@Override
 	public boolean canStart() {
-		if (this.field_6495.method_7235()) {
+		if (this.field_6495.isTrading()) {
 			this.field_6484 = this.field_6495.getCurrentCustomer();
 			return true;
 		} else {

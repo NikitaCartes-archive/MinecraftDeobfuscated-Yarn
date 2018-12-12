@@ -36,7 +36,7 @@ public class ErrorGui extends Gui {
 	}
 
 	@Override
-	public boolean canClose() {
+	public boolean doesEscapeKeyClose() {
 		return false;
 	}
 }

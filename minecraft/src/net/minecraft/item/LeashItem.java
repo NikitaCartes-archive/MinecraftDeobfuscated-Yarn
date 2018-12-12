@@ -22,7 +22,7 @@ public class LeashItem extends Item {
 		Block block = world.getBlockState(blockPos).getBlock();
 		if (block.matches(BlockTags.field_16584)) {
 			PlayerEntity playerEntity = itemUsageContext.getPlayer();
-			if (!world.isRemote && playerEntity != null) {
+			if (!world.isClient && playerEntity != null) {
 				method_7994(playerEntity, world, blockPos);
 			}
 

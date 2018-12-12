@@ -4,7 +4,7 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.FallingBlockEntity;
-import net.minecraft.particle.BlockStateParticle;
+import net.minecraft.particle.BlockStateParticleParameters;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -23,19 +23,21 @@ public class FallingBlock extends Block {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		iWorld.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(iWorld));
-		return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
 	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!world.isRemote) {
-			this.method_10131(world, blockPos);
+		if (!world.isClient) {
+			this.tryStartFalling(world, blockPos);
 		}
 	}
 
-	private void method_10131(World world, BlockPos blockPos) {
+	private void tryStartFalling(World world, BlockPos blockPos) {
 		if (canFallThrough(world.getBlockState(blockPos.down())) && blockPos.getY() >= 0) {
 			int i = 32;
 			if (!world.isAreaLoaded(blockPos.add(-32, -32, -32), blockPos.add(32, 32, 32))) {
@@ -52,17 +54,17 @@ public class FallingBlock extends Block {
 				if (blockPos2.getY() > 0) {
 					world.setBlockState(blockPos2.up(), this.getDefaultState());
 				}
-			} else if (!world.isRemote) {
+			} else if (!world.isClient) {
 				FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(
 					world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, world.getBlockState(blockPos)
 				);
-				this.method_10132(fallingBlockEntity);
+				this.configureFallingBlockEntity(fallingBlockEntity);
 				world.spawnEntity(fallingBlockEntity);
 			}
 		}
 	}
 
-	protected void method_10132(FallingBlockEntity fallingBlockEntity) {
+	protected void configureFallingBlockEntity(FallingBlockEntity fallingBlockEntity) {
 	}
 
 	@Override
@@ -73,13 +75,13 @@ public class FallingBlock extends Block {
 	public static boolean canFallThrough(BlockState blockState) {
 		Block block = blockState.getBlock();
 		Material material = blockState.getMaterial();
-		return blockState.isAir() || block == Blocks.field_10036 || material.method_15797() || material.method_15800();
+		return blockState.isAir() || block == Blocks.field_10036 || material.isLiquid() || material.isReplaceable();
 	}
 
-	public void method_10127(World world, BlockPos blockPos, BlockState blockState, BlockState blockState2) {
+	public void onLanding(World world, BlockPos blockPos, BlockState blockState, BlockState blockState2) {
 	}
 
-	public void method_10129(World world, BlockPos blockPos) {
+	public void onDestroyedOnLanding(World world, BlockPos blockPos) {
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -91,7 +93,7 @@ public class FallingBlock extends Block {
 				double d = (double)((float)blockPos.getX() + random.nextFloat());
 				double e = (double)blockPos.getY() - 0.05;
 				double f = (double)((float)blockPos.getZ() + random.nextFloat());
-				world.method_8406(new BlockStateParticle(ParticleTypes.field_11206, blockState), d, e, f, 0.0, 0.0, 0.0);
+				world.method_8406(new BlockStateParticleParameters(ParticleTypes.field_11206, blockState), d, e, f, 0.0, 0.0, 0.0);
 			}
 		}
 	}

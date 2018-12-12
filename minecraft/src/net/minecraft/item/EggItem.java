@@ -25,9 +25,10 @@ public class EggItem extends Item {
 		world.playSound(
 			null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_15012, SoundCategory.field_15248, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F)
 		);
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			ThrownEggEntity thrownEggEntity = new ThrownEggEntity(world, playerEntity);
-			thrownEggEntity.method_7489(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 1.5F, 1.0F);
+			thrownEggEntity.method_16940(itemStack);
+			thrownEggEntity.calculateVelocity(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 1.5F, 1.0F);
 			world.spawnEntity(thrownEggEntity);
 		}
 

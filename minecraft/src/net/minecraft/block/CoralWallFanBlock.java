@@ -28,7 +28,9 @@ public class CoralWallFanBlock extends CoralDeadWallFanBlock {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if (direction.getOpposite() == blockState.get(field_9933) && !blockState.canPlaceAt(iWorld, blockPos)) {
 			return Blocks.field_10124.getDefaultState();
 		} else {
@@ -37,7 +39,7 @@ public class CoralWallFanBlock extends CoralDeadWallFanBlock {
 			}
 
 			this.method_9430(blockState, iWorld, blockPos);
-			return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		}
 	}
 }

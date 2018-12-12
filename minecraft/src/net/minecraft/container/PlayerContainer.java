@@ -3,7 +3,6 @@ package net.minecraft.container;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1662;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.MobEntity;
@@ -14,6 +13,7 @@ import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeFinder;
 
 public class PlayerContainer extends CraftingContainer {
 	private static final String[] field_7829 = new String[]{
@@ -87,8 +87,8 @@ public class PlayerContainer extends CraftingContainer {
 	}
 
 	@Override
-	public void method_7654(class_1662 arg) {
-		this.invCrafting.method_7683(arg);
+	public void populateRecipeFinder(RecipeFinder recipeFinder) {
+		this.invCrafting.provideRecipeInputs(recipeFinder);
 	}
 
 	@Override
@@ -104,14 +104,14 @@ public class PlayerContainer extends CraftingContainer {
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
-		this.method_7599(this.owner.world, this.owner, this.invCrafting, this.invCraftingResult);
+		this.onCraftingContentChanged(this.owner.world, this.owner, this.invCrafting, this.invCraftingResult);
 	}
 
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
 		this.invCraftingResult.clearInv();
-		if (!playerEntity.world.isRemote) {
+		if (!playerEntity.world.isClient) {
 			this.method_7607(playerEntity, playerEntity.world, this.invCrafting);
 		}
 	}
@@ -199,13 +199,13 @@ public class PlayerContainer extends CraftingContainer {
 	}
 
 	@Override
-	public int getCrafitngHeight() {
+	public int getCraftingHeight() {
 		return this.invCrafting.getInvHeight();
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int method_7658() {
+	public int getCraftingSlotCount() {
 		return 5;
 	}
 }

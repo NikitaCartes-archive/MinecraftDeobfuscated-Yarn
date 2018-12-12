@@ -46,10 +46,12 @@ public class StemAttachedBlock extends PlantBlock {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		return blockState2.getBlock() != this.field_9875 && direction == blockState.get(field_9873)
 			? this.field_9875.method_10679().getDefaultState().with(StemBlock.field_11584, Integer.valueOf(7))
-			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
@@ -79,7 +81,7 @@ public class StemAttachedBlock extends PlantBlock {
 
 	@Override
 	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.method_10345(blockState.get(field_9873)));
+		return blockState.applyRotation(mirror.getRotation(blockState.get(field_9873)));
 	}
 
 	@Override

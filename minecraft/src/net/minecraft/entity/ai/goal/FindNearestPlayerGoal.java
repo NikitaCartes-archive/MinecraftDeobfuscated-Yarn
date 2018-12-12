@@ -19,7 +19,7 @@ public class FindNearestPlayerGoal extends Goal {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final MobEntity owner;
 	private final Predicate<Entity> field_6650;
-	private final FollowTargetGoal.class_1401 field_6648;
+	private final FollowTargetGoal.ClosestSelector field_6648;
 	private LivingEntity target;
 
 	public FindNearestPlayerGoal(MobEntity mobEntity) {
@@ -51,7 +51,7 @@ public class FindNearestPlayerGoal extends Goal {
 				return (double)entity.distanceTo(this.owner) > d ? false : TrackTargetGoal.canTrack(this.owner, (LivingEntity)entity, false, true);
 			}
 		};
-		this.field_6648 = new FollowTargetGoal.class_1401(mobEntity);
+		this.field_6648 = new FollowTargetGoal.ClosestSelector(mobEntity);
 	}
 
 	@Override

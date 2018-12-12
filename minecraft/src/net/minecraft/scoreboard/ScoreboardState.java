@@ -2,15 +2,15 @@ package net.minecraft.scoreboard;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.PersistedState;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormat;
+import net.minecraft.world.PersistentState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ScoreboardState extends PersistedState {
+public class ScoreboardState extends PersistentState {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private Scoreboard scoreboard;
 	private CompoundTag tag;
@@ -26,12 +26,12 @@ public class ScoreboardState extends PersistedState {
 	public void setScoreboard(Scoreboard scoreboard) {
 		this.scoreboard = scoreboard;
 		if (this.tag != null) {
-			this.deserialize(this.tag);
+			this.fromTag(this.tag);
 		}
 	}
 
 	@Override
-	public void deserialize(CompoundTag compoundTag) {
+	public void fromTag(CompoundTag compoundTag) {
 		if (this.scoreboard == null) {
 			this.tag = compoundTag;
 		} else {
@@ -146,7 +146,7 @@ public class ScoreboardState extends PersistedState {
 	}
 
 	@Override
-	public CompoundTag serialize(CompoundTag compoundTag) {
+	public CompoundTag toTag(CompoundTag compoundTag) {
 		if (this.scoreboard == null) {
 			LOGGER.warn("Tried to save scoreboard without having a scoreboard...");
 			return compoundTag;

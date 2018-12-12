@@ -17,7 +17,7 @@ public class class_1386 extends Goal {
 	public boolean canStart() {
 		if (!this.field_6597.isTamed()) {
 			return false;
-		} else if (this.field_6597.method_5816()) {
+		} else if (this.field_6597.isInsideWaterOrBubbleColumn()) {
 			return false;
 		} else if (!this.field_6597.onGround) {
 			return false;

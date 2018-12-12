@@ -62,7 +62,7 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttacker & class
 			double d = this.entity.squaredDistanceTo(livingEntity);
 			boolean bl3 = (d > (double)this.field_6591 || this.field_6592 < 5) && this.field_16529 == 0;
 			if (bl3) {
-				this.entity.getNavigation().method_6335(livingEntity, this.method_16352() ? this.field_6590 : this.field_6590 * 0.5);
+				this.entity.getNavigation().startMovingTo(livingEntity, this.method_16352() ? this.field_6590 : this.field_6590 * 0.5);
 			} else {
 				this.entity.getNavigation().method_6340();
 			}

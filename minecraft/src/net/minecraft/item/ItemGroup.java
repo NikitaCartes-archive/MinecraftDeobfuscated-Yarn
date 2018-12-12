@@ -85,10 +85,10 @@ public abstract class ItemGroup {
 				EnchantmentTarget.CHEST,
 				EnchantmentTarget.BOW,
 				EnchantmentTarget.WEAPON,
-				EnchantmentTarget.field_9078,
+				EnchantmentTarget.WEARABLE,
 				EnchantmentTarget.TOOL,
-				EnchantmentTarget.field_9073,
-				EnchantmentTarget.field_9081
+				EnchantmentTarget.TRIDENT,
+				EnchantmentTarget.CROSSBOW
 			}
 		);
 	public static final ItemGroup BREWING = new ItemGroup(10, "brewing") {

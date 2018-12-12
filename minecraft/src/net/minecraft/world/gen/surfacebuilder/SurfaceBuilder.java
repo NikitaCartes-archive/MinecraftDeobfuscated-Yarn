@@ -8,8 +8,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.config.surfacebuilder.SurfaceConfig;
-import net.minecraft.world.gen.config.surfacebuilder.TernarySurfaceConfig;
 
 public abstract class SurfaceBuilder<C extends SurfaceConfig> {
 	public static final BlockState AIR = Blocks.field_10124.getDefaultState();
@@ -25,20 +23,20 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
 	public static final BlockState MYCELIUM = Blocks.field_10402.getDefaultState();
 	public static final BlockState NETHERRACK = Blocks.field_10515.getDefaultState();
 	public static final BlockState END_STONE = Blocks.field_10471.getDefaultState();
-	public static final TernarySurfaceConfig AIR_CONFIG = new TernarySurfaceConfig(AIR, AIR, AIR);
-	public static final TernarySurfaceConfig PODZOL_CONFIG = new TernarySurfaceConfig(PODZOL, DIRT, GRAVEL);
-	public static final TernarySurfaceConfig GRAVEL_CONFIG = new TernarySurfaceConfig(GRAVEL, GRAVEL, GRAVEL);
-	public static final TernarySurfaceConfig GRASS_CONFIG = new TernarySurfaceConfig(GRASS_BLOCK, DIRT, GRAVEL);
-	public static final TernarySurfaceConfig DIRT_CONFIG = new TernarySurfaceConfig(DIRT, DIRT, GRAVEL);
-	public static final TernarySurfaceConfig STONE_CONFIG = new TernarySurfaceConfig(STONE, STONE, GRAVEL);
-	public static final TernarySurfaceConfig COARSE_DIRT_CONFIG = new TernarySurfaceConfig(COARSE_DIRT, DIRT, GRAVEL);
-	public static final TernarySurfaceConfig SAND_CONFIG = new TernarySurfaceConfig(SAND, SAND, GRAVEL);
-	public static final TernarySurfaceConfig GRASS_SAND_UNDERWATER_CONFIG = new TernarySurfaceConfig(GRASS_BLOCK, DIRT, SAND);
-	public static final TernarySurfaceConfig SAND_SAND_UNDERWATER_CONFIG = new TernarySurfaceConfig(SAND, SAND, SAND);
-	public static final TernarySurfaceConfig BADLANDS_CONFIG = new TernarySurfaceConfig(RED_SAND, WHITE_TERRACOTTA, GRAVEL);
-	public static final TernarySurfaceConfig MYCELIUM_CONFIG = new TernarySurfaceConfig(MYCELIUM, DIRT, GRAVEL);
-	public static final TernarySurfaceConfig NETHER_CONFIG = new TernarySurfaceConfig(NETHERRACK, NETHERRACK, NETHERRACK);
-	public static final TernarySurfaceConfig END_CONFIG = new TernarySurfaceConfig(END_STONE, END_STONE, END_STONE);
+	public static final TernarySurfaceConfig field_15676 = new TernarySurfaceConfig(AIR, AIR, AIR);
+	public static final TernarySurfaceConfig field_15691 = new TernarySurfaceConfig(PODZOL, DIRT, GRAVEL);
+	public static final TernarySurfaceConfig field_15673 = new TernarySurfaceConfig(GRAVEL, GRAVEL, GRAVEL);
+	public static final TernarySurfaceConfig field_15677 = new TernarySurfaceConfig(GRASS_BLOCK, DIRT, GRAVEL);
+	public static final TernarySurfaceConfig field_15695 = new TernarySurfaceConfig(DIRT, DIRT, GRAVEL);
+	public static final TernarySurfaceConfig field_15670 = new TernarySurfaceConfig(STONE, STONE, GRAVEL);
+	public static final TernarySurfaceConfig field_15678 = new TernarySurfaceConfig(COARSE_DIRT, DIRT, GRAVEL);
+	public static final TernarySurfaceConfig field_15694 = new TernarySurfaceConfig(SAND, SAND, GRAVEL);
+	public static final TernarySurfaceConfig field_15697 = new TernarySurfaceConfig(GRASS_BLOCK, DIRT, SAND);
+	public static final TernarySurfaceConfig field_15687 = new TernarySurfaceConfig(SAND, SAND, SAND);
+	public static final TernarySurfaceConfig field_15672 = new TernarySurfaceConfig(RED_SAND, WHITE_TERRACOTTA, GRAVEL);
+	public static final TernarySurfaceConfig field_15705 = new TernarySurfaceConfig(MYCELIUM, DIRT, GRAVEL);
+	public static final TernarySurfaceConfig field_15690 = new TernarySurfaceConfig(NETHERRACK, NETHERRACK, NETHERRACK);
+	public static final TernarySurfaceConfig field_15671 = new TernarySurfaceConfig(END_STONE, END_STONE, END_STONE);
 	public static final SurfaceBuilder<TernarySurfaceConfig> DEFAULT = register("default", new DefaultSurfaceBuilder(TernarySurfaceConfig::deserialize));
 	public static final SurfaceBuilder<TernarySurfaceConfig> MOUNTAIN = register("mountain", new MountainSurfaceBuilder(TernarySurfaceConfig::deserialize));
 	public static final SurfaceBuilder<TernarySurfaceConfig> SHATTERED_SAVANNA = register(
@@ -73,7 +71,7 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
 		this.factory = function;
 	}
 
-	public abstract void generate(
+	public abstract void method_15305(
 		Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, long m, C surfaceConfig
 	);
 

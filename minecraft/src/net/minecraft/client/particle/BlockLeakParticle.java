@@ -5,8 +5,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.particle.TexturedParticle;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -73,7 +73,7 @@ public class BlockLeakParticle extends Particle {
 			this.setSpriteIndex(112);
 		}
 
-		this.addPos(this.velocityX, this.velocityY, this.velocityZ);
+		this.move(this.velocityX, this.velocityY, this.velocityZ);
 		this.velocityX *= 0.98F;
 		this.velocityY *= 0.98F;
 		this.velocityZ *= 0.98F;
@@ -104,15 +104,15 @@ public class BlockLeakParticle extends Particle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class FactoryWater implements FactoryParticle<TexturedParticle> {
-		public Particle createParticle(TexturedParticle texturedParticle, World world, double d, double e, double f, double g, double h, double i) {
+	public static class LavaFactory implements ParticleFactory<DefaultParticleType> {
+		public Particle method_3017(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new BlockLeakParticle(world, d, e, f, Fluids.LAVA);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class class_665 implements FactoryParticle<TexturedParticle> {
-		public Particle createParticle(TexturedParticle texturedParticle, World world, double d, double e, double f, double g, double h, double i) {
+	public static class WaterFactory implements ParticleFactory<DefaultParticleType> {
+		public Particle method_3018(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new BlockLeakParticle(world, d, e, f, Fluids.WATER);
 		}
 	}

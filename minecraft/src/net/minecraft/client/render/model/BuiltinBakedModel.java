@@ -8,24 +8,24 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.json.ModelItemPropertyOverrideList;
-import net.minecraft.client.render.model.json.ModelTransformations;
+import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
 public class BuiltinBakedModel implements BakedModel {
-	private final ModelTransformations transformations;
-	private final ModelItemPropertyOverrideList itemOverrideList;
+	private final ModelTransformation transformation;
+	private final ModelItemPropertyOverrideList itemPropertyOverrides;
 	private final Sprite sprite;
 
-	public BuiltinBakedModel(ModelTransformations modelTransformations, ModelItemPropertyOverrideList modelItemPropertyOverrideList, Sprite sprite) {
-		this.transformations = modelTransformations;
-		this.itemOverrideList = modelItemPropertyOverrideList;
+	public BuiltinBakedModel(ModelTransformation modelTransformation, ModelItemPropertyOverrideList modelItemPropertyOverrideList, Sprite sprite) {
+		this.transformation = modelTransformation;
+		this.itemPropertyOverrides = modelItemPropertyOverrideList;
 		this.sprite = sprite;
 	}
 
 	@Override
-	public List<BakedQuad> method_4707(@Nullable BlockState blockState, @Nullable Direction direction, Random random) {
+	public List<BakedQuad> getQuads(@Nullable BlockState blockState, @Nullable Direction direction, Random random) {
 		return Collections.emptyList();
 	}
 
@@ -50,12 +50,12 @@ public class BuiltinBakedModel implements BakedModel {
 	}
 
 	@Override
-	public ModelTransformations getTransformations() {
-		return this.transformations;
+	public ModelTransformation getTransformation() {
+		return this.transformation;
 	}
 
 	@Override
 	public ModelItemPropertyOverrideList getItemPropertyOverrides() {
-		return this.itemOverrideList;
+		return this.itemPropertyOverrides;
 	}
 }

@@ -4,7 +4,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import net.minecraft.class_3730;
 import net.minecraft.command.arguments.EntitySummonArgumentType;
 import net.minecraft.command.arguments.NbtCompoundTagArgumentType;
 import net.minecraft.command.arguments.Vec3ArgumentType;
@@ -12,6 +11,7 @@ import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.TranslatableTextComponent;
@@ -76,14 +76,16 @@ public class SummonCommand {
 			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.summon.success", entity.getDisplayName()), true);
 			return 1;
 		} else {
-			Entity entity = ChunkSaveHandlerImpl.method_12399(compoundTag2, serverCommandSource.getWorld(), vec3d.x, vec3d.y, vec3d.z, true);
+			Entity entity = ChunkSaveHandlerImpl.readEntity(compoundTag2, serverCommandSource.getWorld(), vec3d.x, vec3d.y, vec3d.z, true);
 			if (entity == null) {
 				throw FAILED_EXCEPTION.create();
 			} else {
 				entity.setPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, entity.yaw, entity.pitch);
 				if (bl && entity instanceof MobEntity) {
 					((MobEntity)entity)
-						.method_5943(serverCommandSource.getWorld(), serverCommandSource.getWorld().getLocalDifficulty(new BlockPos(entity)), class_3730.field_16462, null, null);
+						.prepareEntityData(
+							serverCommandSource.getWorld(), serverCommandSource.getWorld().getLocalDifficulty(new BlockPos(entity)), SpawnType.field_16462, null, null
+						);
 				}
 
 				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.summon.success", entity.getDisplayName()), true);

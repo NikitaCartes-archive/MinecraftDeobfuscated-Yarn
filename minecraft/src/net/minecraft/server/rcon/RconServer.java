@@ -10,8 +10,8 @@ import java.net.SocketTimeoutException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import net.minecraft.class_3806;
 import net.minecraft.server.dedicated.DedicatedServer;
+import net.minecraft.server.dedicated.ServerPropertiesHandler;
 
 public class RconServer extends RconBase {
 	private int port;
@@ -22,9 +22,9 @@ public class RconServer extends RconBase {
 
 	public RconServer(DedicatedServer dedicatedServer) {
 		super(dedicatedServer, "RCON Listener");
-		class_3806 lv = dedicatedServer.method_16705();
-		this.port = lv.field_16828;
-		this.password = lv.field_16823;
+		ServerPropertiesHandler serverPropertiesHandler = dedicatedServer.getProperties();
+		this.port = serverPropertiesHandler.rconPort;
+		this.password = serverPropertiesHandler.rconPassword;
 		this.hostname = dedicatedServer.getHostname();
 		if (this.hostname.isEmpty()) {
 			this.hostname = "0.0.0.0";

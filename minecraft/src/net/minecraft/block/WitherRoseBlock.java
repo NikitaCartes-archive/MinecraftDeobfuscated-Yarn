@@ -55,7 +55,7 @@ public class WitherRoseBlock extends FlowerBlock {
 
 	@Override
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-		if (!world.isRemote && world.getDifficulty() != Difficulty.PEACEFUL) {
+		if (!world.isClient && world.getDifficulty() != Difficulty.PEACEFUL) {
 			if (entity instanceof LivingEntity) {
 				LivingEntity livingEntity = (LivingEntity)entity;
 				if (!livingEntity.isInvulnerableTo(DamageSource.WITHER)) {

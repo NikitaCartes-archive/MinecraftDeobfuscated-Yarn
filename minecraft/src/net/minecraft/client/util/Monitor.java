@@ -5,22 +5,21 @@ import java.util.List;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_323;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.glfw.GLFWVidMode.Buffer;
 
 @Environment(EnvType.CLIENT)
 public final class Monitor {
-	private final class_323 field_1801;
+	private final MonitorTracker monitorTracker;
 	private final long handle;
 	private final List<VideoMode> videoModes;
 	private VideoMode currentVideoMode;
 	private int x;
 	private int y;
 
-	public Monitor(class_323 arg, long l) {
-		this.field_1801 = arg;
+	public Monitor(MonitorTracker monitorTracker, long l) {
+		this.monitorTracker = monitorTracker;
 		this.handle = l;
 		this.videoModes = Lists.<VideoMode>newArrayList();
 		this.populateVideoModes();

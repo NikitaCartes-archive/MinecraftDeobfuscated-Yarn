@@ -20,8 +20,8 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 	private static final Identifier WIND_VERTICAL_TEX = new Identifier("textures/entity/conduit/wind_vertical.png");
 	private static final Identifier OPEN_EYE_TEX = new Identifier("textures/entity/conduit/open_eye.png");
 	private static final Identifier CLOSED_EYE_TEX = new Identifier("textures/entity/conduit/closed_eye.png");
-	private final Model field_4372 = new ConduitBlockEntityRenderer.class_832();
-	private final Model field_4375 = new ConduitBlockEntityRenderer.class_830();
+	private final ConduitBlockEntityRenderer.class_832 field_4372 = new ConduitBlockEntityRenderer.class_832();
+	private final ConduitBlockEntityRenderer.class_830 field_4375 = new ConduitBlockEntityRenderer.class_830();
 	private final ConduitBlockEntityRenderer.class_833 field_4374 = new ConduitBlockEntityRenderer.class_833();
 	private final ConduitBlockEntityRenderer.class_831 field_4376 = new ConduitBlockEntityRenderer.class_831();
 
@@ -33,7 +33,7 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
 			GlStateManager.rotatef(j, 0.0F, 1.0F, 0.0F);
-			this.field_4372.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+			this.field_4372.method_17142(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 			GlStateManager.popMatrix();
 		} else if (conduitBlockEntity.method_11065()) {
 			float j = conduitBlockEntity.method_11061(g) * (180.0F / (float)Math.PI);
@@ -44,7 +44,7 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef((float)d + 0.5F, (float)e + 0.3F + k * 0.2F, (float)f + 0.5F);
 			GlStateManager.rotatef(j, 0.5F, 1.0F, 0.5F);
-			this.field_4375.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+			this.field_4375.method_17140(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 			GlStateManager.popMatrix();
 			int l = 3;
 			int m = conduitBlockEntity.field_11936 / 3 % ConduitBlockEntityRenderer.class_833.field_4385;
@@ -55,14 +55,14 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 					this.bindTexture(WIND_TEX);
 					GlStateManager.pushMatrix();
 					GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
-					this.field_4374.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+					this.field_4374.method_17143(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 					GlStateManager.popMatrix();
 					GlStateManager.pushMatrix();
 					GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
 					GlStateManager.scalef(0.875F, 0.875F, 0.875F);
 					GlStateManager.rotatef(180.0F, 1.0F, 0.0F, 0.0F);
 					GlStateManager.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
-					this.field_4374.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+					this.field_4374.method_17143(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 					GlStateManager.popMatrix();
 					break;
 				case 1:
@@ -70,14 +70,14 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 					GlStateManager.pushMatrix();
 					GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
 					GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
-					this.field_4374.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+					this.field_4374.method_17143(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 					GlStateManager.popMatrix();
 					GlStateManager.pushMatrix();
 					GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
 					GlStateManager.scalef(0.875F, 0.875F, 0.875F);
 					GlStateManager.rotatef(180.0F, 1.0F, 0.0F, 0.0F);
 					GlStateManager.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
-					this.field_4374.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+					this.field_4374.method_17143(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 					GlStateManager.popMatrix();
 					break;
 				case 2:
@@ -85,14 +85,14 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 					GlStateManager.pushMatrix();
 					GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
 					GlStateManager.rotatef(90.0F, 0.0F, 0.0F, 1.0F);
-					this.field_4374.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+					this.field_4374.method_17143(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 					GlStateManager.popMatrix();
 					GlStateManager.pushMatrix();
 					GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
 					GlStateManager.scalef(0.875F, 0.875F, 0.875F);
 					GlStateManager.rotatef(180.0F, 1.0F, 0.0F, 0.0F);
 					GlStateManager.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
-					this.field_4374.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+					this.field_4374.method_17143(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 					GlStateManager.popMatrix();
 			}
 
@@ -114,7 +114,7 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 			GlStateManager.rotatef(-vec2f.y, 0.0F, 1.0F, 0.0F);
 			GlStateManager.rotatef(vec2f.x, 1.0F, 0.0F, 0.0F);
 			GlStateManager.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
-			this.field_4376.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.083333336F);
+			this.field_4376.method_17141(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.083333336F);
 			GlStateManager.popMatrix();
 		}
 
@@ -132,8 +132,7 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 			this.field_4381.addBox(-4.0F, -4.0F, -4.0F, 8, 8, 8);
 		}
 
-		@Override
-		public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
+		public void method_17140(float f, float g, float h, float i, float j, float k) {
 			this.field_4381.render(k);
 		}
 	}
@@ -149,8 +148,7 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 			this.field_4382.addBox(-4.0F, -4.0F, 0.0F, 8, 8, 0, 0.01F);
 		}
 
-		@Override
-		public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
+		public void method_17141(float f, float g, float h, float i, float j, float k) {
 			this.field_4382.render(k);
 		}
 	}
@@ -166,8 +164,7 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 			this.field_4383.addBox(-3.0F, -3.0F, -3.0F, 6, 6, 6);
 		}
 
-		@Override
-		public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
+		public void method_17142(float f, float g, float h, float i, float j, float k) {
 			this.field_4383.render(k);
 		}
 	}
@@ -188,8 +185,7 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 			}
 		}
 
-		@Override
-		public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
+		public void method_17143(float f, float g, float h, float i, float j, float k) {
 			this.field_4386[this.field_4384].render(k);
 		}
 

@@ -7,7 +7,7 @@ import net.minecraft.entity.mob.IllagerBeastEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class IllagerBeastEntityRenderer extends EntityMobRenderer<IllagerBeastEntity> {
+public class IllagerBeastEntityRenderer extends MobEntityRenderer<IllagerBeastEntity, IllagerBeastEntityModel> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/illager/beast.png");
 
 	public IllagerBeastEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {

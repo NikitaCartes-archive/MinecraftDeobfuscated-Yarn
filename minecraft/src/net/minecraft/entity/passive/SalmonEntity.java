@@ -1,6 +1,5 @@
 package net.minecraft.entity.passive;
 
-import net.minecraft.class_1425;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
@@ -9,19 +8,19 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 
-public class SalmonEntity extends class_1425 {
+public class SalmonEntity extends SchoolingFishEntity {
 	public SalmonEntity(World world) {
 		super(EntityType.SALMON, world);
 		this.setSize(0.7F, 0.4F);
 	}
 
 	@Override
-	public int method_6465() {
+	public int getMaxGroupSize() {
 		return 5;
 	}
 
 	@Override
-	protected ItemStack method_6452() {
+	protected ItemStack getFishBucketItem() {
 		return new ItemStack(Items.field_8714);
 	}
 
@@ -41,7 +40,7 @@ public class SalmonEntity extends class_1425 {
 	}
 
 	@Override
-	protected SoundEvent method_6457() {
+	protected SoundEvent getFlopSound() {
 		return SoundEvents.field_14563;
 	}
 }

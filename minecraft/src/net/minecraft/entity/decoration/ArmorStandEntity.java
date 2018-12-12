@@ -26,7 +26,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.particle.BlockStateParticle;
+import net.minecraft.particle.BlockStateParticleParameters;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sortme.OptionMainHand;
@@ -61,7 +61,7 @@ public class ArmorStandEntity extends LivingEntity {
 	private boolean field_7111;
 	public long field_7112;
 	private int disabledSlots;
-	private boolean field_7109;
+	private boolean prevIsMarker;
 	private Rotation headRotation = DEFAULT_HEAD_ROTATION;
 	private Rotation bodyRotation = DEFAULT_BODY_ROTATION;
 	private Rotation leftArmRotation = DEFAULT_LEFT_ARM_ROTATION;
@@ -236,7 +236,7 @@ public class ArmorStandEntity extends LivingEntity {
 		this.disabledSlots = compoundTag.getInt("DisabledSlots");
 		this.setHideBasePlate(compoundTag.getBoolean("NoBasePlate"));
 		this.setMarker(compoundTag.getBoolean("Marker"));
-		this.field_7109 = !this.method_6912();
+		this.prevIsMarker = !this.method_6912();
 		this.noClip = this.isUnaffectedByGravity();
 		CompoundTag compoundTag2 = compoundTag.getCompound("Pose");
 		this.deserializePose(compoundTag2);
@@ -287,7 +287,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public boolean method_5810() {
+	public boolean isPushable() {
 		return false;
 	}
 
@@ -312,7 +312,7 @@ public class ArmorStandEntity extends LivingEntity {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (this.method_6912() || itemStack.getItem() == Items.field_8448) {
 			return ActionResult.PASS;
-		} else if (!this.world.isRemote && !playerEntity.isSpectator()) {
+		} else if (!this.world.isClient && !playerEntity.isSpectator()) {
 			EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
 			if (itemStack.isEmpty()) {
 				EquipmentSlot equipmentSlot2 = this.method_6916(vec3d);
@@ -385,7 +385,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Override
 	public boolean damage(DamageSource damageSource, float f) {
-		if (this.world.isRemote || this.invalid) {
+		if (this.world.isClient || this.invalid) {
 			return false;
 		} else if (DamageSource.OUT_OF_WORLD.equals(damageSource)) {
 			this.invalidate();
@@ -422,7 +422,7 @@ public class ArmorStandEntity extends LivingEntity {
 			} else {
 				long l = this.world.getTime();
 				if (l - this.field_7112 > 5L && !bl) {
-					this.world.method_8421(this, (byte)32);
+					this.world.summonParticle(this, (byte)32);
 					this.field_7112 = l;
 				} else {
 					this.method_6924(damageSource);
@@ -439,7 +439,7 @@ public class ArmorStandEntity extends LivingEntity {
 	@Override
 	public void method_5711(byte b) {
 		if (b == 32) {
-			if (this.world.isRemote) {
+			if (this.world.isClient) {
 				this.world.playSound(this.x, this.y, this.z, SoundEvents.field_14897, this.getSoundCategory(), 0.3F, 1.0F, false);
 				this.field_7112 = this.world.getTime();
 			}
@@ -464,7 +464,7 @@ public class ArmorStandEntity extends LivingEntity {
 		if (this.world instanceof ServerWorld) {
 			((ServerWorld)this.world)
 				.method_14199(
-					new BlockStateParticle(ParticleTypes.field_11217, Blocks.field_10161.getDefaultState()),
+					new BlockStateParticleParameters(ParticleTypes.field_11217, Blocks.field_10161.getDefaultState()),
 					this.x,
 					this.y + (double)this.height / 1.5,
 					this.z,
@@ -545,13 +545,13 @@ public class ArmorStandEntity extends LivingEntity {
 	@Override
 	public void setYaw(float f) {
 		this.field_6220 = this.prevYaw = f;
-		this.prevHeadPitch = this.headPitch = f;
+		this.prevHeadYaw = this.headYaw = f;
 	}
 
 	@Override
-	public void setHeadPitch(float f) {
+	public void setHeadYaw(float f) {
 		this.field_6220 = this.prevYaw = f;
-		this.prevHeadPitch = this.headPitch = f;
+		this.prevHeadYaw = this.headYaw = f;
 	}
 
 	@Override
@@ -588,14 +588,14 @@ public class ArmorStandEntity extends LivingEntity {
 		}
 
 		boolean bl = this.method_6912();
-		if (this.field_7109 != bl) {
-			this.onSmallValueChange(bl);
+		if (this.prevIsMarker != bl) {
+			this.onMarkerValueChange(bl);
 			this.field_6033 = !bl;
-			this.field_7109 = bl;
+			this.prevIsMarker = bl;
 		}
 	}
 
-	private void onSmallValueChange(boolean bl) {
+	private void onMarkerValueChange(boolean bl) {
 		if (bl) {
 			this.setSize(0.0F, 0.0F);
 		} else {

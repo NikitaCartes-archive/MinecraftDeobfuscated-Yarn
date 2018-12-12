@@ -3,12 +3,11 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class PhantomEntityModel extends Model {
+public class PhantomEntityModel<T extends Entity> extends EntityModel<T> {
 	private final Cuboid field_3475;
 	private final Cuboid field_3477;
 	private final Cuboid field_3476;
@@ -62,16 +61,16 @@ public class PhantomEntityModel extends Model {
 	}
 
 	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
+	public void render(T entity, float f, float g, float h, float i, float j, float k) {
 		this.field_3475.render(k);
 	}
 
 	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
+	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
 		float l = ((float)(entity.getEntityId() * 3) + h) * 0.13F;
 		float m = 16.0F;
-		this.field_3477.roll = (0.0F + MathHelper.cos(l) * 16.0F) * (float) (Math.PI / 180.0);
-		this.field_3476.roll = (0.0F + MathHelper.cos(l) * 16.0F) * (float) (Math.PI / 180.0);
+		this.field_3477.roll = MathHelper.cos(l) * 16.0F * (float) (Math.PI / 180.0);
+		this.field_3476.roll = MathHelper.cos(l) * 16.0F * (float) (Math.PI / 180.0);
 		this.field_3474.roll = -this.field_3477.roll;
 		this.field_3472.roll = -this.field_3476.roll;
 		this.field_3471.pitch = -(5.0F + MathHelper.cos(l * 2.0F) * 5.0F) * (float) (Math.PI / 180.0);

@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3485;
 import net.minecraft.class_3492;
 import net.minecraft.class_3499;
 import net.minecraft.block.BlockState;
@@ -20,6 +19,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sortme.structures.StructureManager;
 import net.minecraft.sortme.structures.processor.BlockRotStructureProcessor;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
@@ -118,10 +118,10 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		}
 
 		this.seed = compoundTag.getLong("seed");
-		this.method_11348();
+		this.updateBlockMode();
 	}
 
-	private void method_11348() {
+	private void updateBlockMode() {
 		if (this.world != null) {
 			BlockPos blockPos = this.getPos();
 			BlockState blockState = this.world.getBlockState(blockPos);
@@ -142,12 +142,12 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		return this.toTag(new CompoundTag());
 	}
 
-	public boolean method_11351(PlayerEntity playerEntity) {
+	public boolean openGui(PlayerEntity playerEntity) {
 		if (!playerEntity.method_7338()) {
 			return false;
 		} else {
-			if (playerEntity.getEntityWorld().isRemote) {
-				playerEntity.openStructureBlock(this);
+			if (playerEntity.getEntityWorld().isClient) {
+				playerEntity.openStructureBlockGui(this);
 			}
 
 			return true;
@@ -371,23 +371,23 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	public boolean method_11366(boolean bl) {
-		if (this.mode == StructureMode.field_12695 && !this.world.isRemote && this.structureName != null) {
+		if (this.mode == StructureMode.field_12695 && !this.world.isClient && this.structureName != null) {
 			BlockPos blockPos = this.getPos().add(this.offset);
 			ServerWorld serverWorld = (ServerWorld)this.world;
-			class_3485 lv = serverWorld.method_14183();
+			StructureManager structureManager = serverWorld.method_14183();
 
-			class_3499 lv2;
+			class_3499 lv;
 			try {
-				lv2 = lv.method_15091(this.structureName);
+				lv = structureManager.method_15091(this.structureName);
 			} catch (InvalidIdentifierException var8) {
 				return false;
 			}
 
-			lv2.method_15174(this.world, blockPos, this.size, !this.ignoreEntities, Blocks.field_10369);
-			lv2.method_15161(this.author);
+			lv.method_15174(this.world, blockPos, this.size, !this.ignoreEntities, Blocks.field_10369);
+			lv.method_15161(this.author);
 			if (bl) {
 				try {
-					return lv.method_15093(this.structureName);
+					return structureManager.method_15093(this.structureName);
 				} catch (InvalidIdentifierException var7) {
 					return false;
 				}
@@ -404,27 +404,27 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	public boolean method_11368(boolean bl) {
-		if (this.mode == StructureMode.field_12697 && !this.world.isRemote && this.structureName != null) {
+		if (this.mode == StructureMode.field_12697 && !this.world.isClient && this.structureName != null) {
 			BlockPos blockPos = this.getPos();
 			BlockPos blockPos2 = blockPos.add(this.offset);
 			ServerWorld serverWorld = (ServerWorld)this.world;
-			class_3485 lv = serverWorld.method_14183();
+			StructureManager structureManager = serverWorld.method_14183();
 
-			class_3499 lv2;
+			class_3499 lv;
 			try {
-				lv2 = lv.method_15094(this.structureName);
+				lv = structureManager.method_15094(this.structureName);
 			} catch (InvalidIdentifierException var10) {
 				return false;
 			}
 
-			if (lv2 == null) {
+			if (lv == null) {
 				return false;
 			} else {
-				if (!ChatUtil.isEmpty(lv2.method_15181())) {
-					this.author = lv2.method_15181();
+				if (!ChatUtil.isEmpty(lv.method_15181())) {
+					this.author = lv.method_15181();
 				}
 
-				BlockPos blockPos3 = lv2.method_15160();
+				BlockPos blockPos3 = lv.method_15160();
 				boolean bl2 = this.size.equals(blockPos3);
 				if (!bl2) {
 					this.size = blockPos3;
@@ -436,12 +436,12 @@ public class StructureBlockBlockEntity extends BlockEntity {
 				if (bl && !bl2) {
 					return false;
 				} else {
-					class_3492 lv3 = new class_3492().method_15125(this.mirror).method_15123(this.rotation).method_15133(this.ignoreEntities).method_15130(null);
+					class_3492 lv2 = new class_3492().method_15125(this.mirror).method_15123(this.rotation).method_15133(this.ignoreEntities).method_15130(null);
 					if (this.integrity < 1.0F) {
-						lv3.method_16183().method_16184(new BlockRotStructureProcessor(MathHelper.clamp(this.integrity, 0.0F, 1.0F))).method_15118(this.seed);
+						lv2.method_16183().method_16184(new BlockRotStructureProcessor(MathHelper.clamp(this.integrity, 0.0F, 1.0F))).method_15118(this.seed);
 					}
 
-					lv2.method_15182(this.world, blockPos2, lv3);
+					lv.method_15182(this.world, blockPos2, lv2);
 					return true;
 				}
 			}
@@ -453,18 +453,18 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	public void method_11361() {
 		if (this.structureName != null) {
 			ServerWorld serverWorld = (ServerWorld)this.world;
-			class_3485 lv = serverWorld.method_14183();
-			lv.method_15087(this.structureName);
+			StructureManager structureManager = serverWorld.method_14183();
+			structureManager.method_15087(this.structureName);
 		}
 	}
 
 	public boolean method_11372() {
-		if (this.mode == StructureMode.field_12697 && !this.world.isRemote && this.structureName != null) {
+		if (this.mode == StructureMode.field_12697 && !this.world.isClient && this.structureName != null) {
 			ServerWorld serverWorld = (ServerWorld)this.world;
-			class_3485 lv = serverWorld.method_14183();
+			StructureManager structureManager = serverWorld.method_14183();
 
 			try {
-				return lv.method_15094(this.structureName) != null;
+				return structureManager.method_15094(this.structureName) != null;
 			} catch (InvalidIdentifierException var4) {
 				return false;
 			}
@@ -499,7 +499,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		this.showBoundingBox = bl;
 	}
 
-	public static enum class_2634 {
+	public static enum Action {
 		field_12108,
 		field_12110,
 		field_12109,

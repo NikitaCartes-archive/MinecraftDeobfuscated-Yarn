@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
@@ -18,8 +17,8 @@ public class StonecutterBlock extends Block {
 	}
 
 	@Override
-	public RenderTypeBlock getRenderType(BlockState blockState) {
-		return RenderTypeBlock.MODEL;
+	public BlockRenderType method_9604(BlockState blockState) {
+		return BlockRenderType.field_11458;
 	}
 
 	@Override

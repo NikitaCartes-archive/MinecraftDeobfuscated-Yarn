@@ -5,14 +5,14 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.particle.Particle;
+import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -78,7 +78,7 @@ public abstract class WaterFluid extends BaseFluid {
 	@Nullable
 	@Environment(EnvType.CLIENT)
 	@Override
-	public Particle getParticle() {
+	public ParticleParameters method_15787() {
 		return ParticleTypes.field_11232;
 	}
 
@@ -90,7 +90,7 @@ public abstract class WaterFluid extends BaseFluid {
 	@Override
 	protected void method_15730(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
 		BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? iWorld.getBlockEntity(blockPos) : null;
-		Block.dropStacks(blockState, iWorld.method_8410(), blockPos, blockEntity);
+		Block.dropStacks(blockState, iWorld.getWorld(), blockPos, blockEntity);
 	}
 
 	@Override

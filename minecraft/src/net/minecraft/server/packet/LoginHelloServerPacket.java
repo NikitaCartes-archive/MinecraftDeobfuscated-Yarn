@@ -27,7 +27,7 @@ public class LoginHelloServerPacket implements Packet<ServerLoginPacketListener>
 	}
 
 	public void apply(ServerLoginPacketListener serverLoginPacketListener) {
-		serverLoginPacketListener.method_12641(this);
+		serverLoginPacketListener.onHello(this);
 	}
 
 	public GameProfile getProfile() {

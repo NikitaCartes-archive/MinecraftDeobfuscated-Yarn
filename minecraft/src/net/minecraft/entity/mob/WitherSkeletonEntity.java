@@ -1,12 +1,12 @@
 package net.minecraft.entity.mob;
 
 import javax.annotation.Nullable;
-import net.minecraft.class_3730;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -56,7 +56,7 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 			CreeperEntity creeperEntity = (CreeperEntity)entity;
 			if (creeperEntity.method_7008()) {
 				creeperEntity.method_7002();
-				this.dropItem(Items.field_8791);
+				this.method_5706(Items.field_8791);
 			}
 		}
 	}
@@ -72,10 +72,10 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 
 	@Nullable
 	@Override
-	public EntityData method_5943(
-		IWorld iWorld, LocalDifficulty localDifficulty, class_3730 arg, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	public EntityData prepareEntityData(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		EntityData entityData2 = super.method_5943(iWorld, localDifficulty, arg, entityData, compoundTag);
+		EntityData entityData2 = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(4.0);
 		this.method_6997();
 		return entityData2;

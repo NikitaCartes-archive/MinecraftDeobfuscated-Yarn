@@ -3,10 +3,10 @@ package net.minecraft.client.render.entity;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.RenderTypeBlock;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.model.Model;
+import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.MinecartEntityModel;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
@@ -17,7 +17,7 @@ import net.minecraft.util.math.Vec3d;
 @Environment(EnvType.CLIENT)
 public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends EntityRenderer<T> {
 	private static final Identifier SKIN = new Identifier("textures/entity/minecart.png");
-	protected Model field_4747 = new MinecartEntityModel();
+	protected EntityModel<T> field_4747 = new MinecartEntityModel<>();
 
 	public MinecartEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
@@ -26,7 +26,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 
 	public void method_4063(T abstractMinecartEntity, double d, double e, double f, float g, float h) {
 		GlStateManager.pushMatrix();
-		this.method_3925(abstractMinecartEntity);
+		this.bindEntityTexture(abstractMinecartEntity);
 		long l = (long)abstractMinecartEntity.getEntityId() * 493286711L;
 		l = l * l * 4392167121L + l * 98761L;
 		float i = (((float)(l >> 16 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
@@ -75,13 +75,13 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 		}
 
 		int t = abstractMinecartEntity.getBlockOffset();
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.enableColorMaterial();
-			GlStateManager.setupSolidRenderingTextureCombine(this.method_3929(abstractMinecartEntity));
+			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(abstractMinecartEntity));
 		}
 
 		BlockState blockState = abstractMinecartEntity.getContainedBlock();
-		if (blockState.getRenderType() != RenderTypeBlock.NONE) {
+		if (blockState.getRenderType() != BlockRenderType.field_11455) {
 			GlStateManager.pushMatrix();
 			this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 			float u = 0.75F;
@@ -90,18 +90,18 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 			this.method_4064(abstractMinecartEntity, h, blockState);
 			GlStateManager.popMatrix();
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.method_3925(abstractMinecartEntity);
+			this.bindEntityTexture(abstractMinecartEntity);
 		}
 
 		GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
 		this.field_4747.render(abstractMinecartEntity, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
 		GlStateManager.popMatrix();
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}
 
-		super.method_3936(abstractMinecartEntity, d, e, f, g, h);
+		super.render(abstractMinecartEntity, d, e, f, g, h);
 	}
 
 	protected Identifier getTexture(T abstractMinecartEntity) {
@@ -110,7 +110,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 
 	protected void method_4064(T abstractMinecartEntity, float f, BlockState blockState) {
 		GlStateManager.pushMatrix();
-		MinecraftClient.getInstance().getBlockRenderManager().render(blockState, abstractMinecartEntity.method_5718());
+		MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(blockState, abstractMinecartEntity.method_5718());
 		GlStateManager.popMatrix();
 	}
 }

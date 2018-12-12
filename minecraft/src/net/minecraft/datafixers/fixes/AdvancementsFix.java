@@ -12,7 +12,7 @@ import java.util.Map;
 import net.minecraft.datafixers.TypeReferences;
 
 public class AdvancementsFix extends DataFix {
-	private static final Map<String, String> field_15788 = ImmutableMap.builder()
+	private static final Map<String, String> RENAMED_ADVANCEMENTS = ImmutableMap.builder()
 		.put("minecraft:recipes/brewing/speckled_melon", "minecraft:recipes/brewing/glistering_melon_slice")
 		.put("minecraft:recipes/building_blocks/black_stained_hardened_clay", "minecraft:recipes/building_blocks/black_terracotta")
 		.put("minecraft:recipes/building_blocks/blue_stained_hardened_clay", "minecraft:recipes/building_blocks/blue_terracotta")
@@ -81,7 +81,7 @@ public class AdvancementsFix extends DataFix {
 			this.getInputSchema().getType(TypeReferences.ADVANCEMENTS),
 			typed -> typed.update(DSL.remainderFinder(), dynamic -> dynamic.updateMapValues(pair -> {
 						String string = (String)((Dynamic)pair.getFirst()).getStringValue().orElse("");
-						return pair.mapFirst(dynamic2 -> dynamic.createString((String)field_15788.getOrDefault(string, string)));
+						return pair.mapFirst(dynamic2 -> dynamic.createString((String)RENAMED_ADVANCEMENTS.getOrDefault(string, string)));
 					}))
 		);
 	}

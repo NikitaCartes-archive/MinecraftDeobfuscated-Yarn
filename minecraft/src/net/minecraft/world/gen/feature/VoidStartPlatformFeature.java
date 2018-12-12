@@ -7,8 +7,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class VoidStartPlatformFeature extends Feature<DefaultFeatureConfig> {
 	public VoidStartPlatformFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
@@ -16,9 +15,9 @@ public class VoidStartPlatformFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean method_14165(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
-		BlockPos blockPos2 = iWorld.method_8395();
+		BlockPos blockPos2 = iWorld.getSpawnPos();
 		int i = 16;
 		double d = blockPos2.squaredDistanceTo(blockPos.add(8, blockPos2.getY(), 8));
 		if (d > 1024.0) {

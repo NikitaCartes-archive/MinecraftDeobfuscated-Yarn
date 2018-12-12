@@ -29,7 +29,7 @@ public class ExperienceCommand {
 				.then(
 					ServerCommandManager.literal("add")
 						.then(
-							ServerCommandManager.argument("targets", EntityArgumentType.method_9308())
+							ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
 								.then(
 									((RequiredArgumentBuilder)((RequiredArgumentBuilder)ServerCommandManager.argument("amount", IntegerArgumentType.integer())
 												.executes(
@@ -68,7 +68,7 @@ public class ExperienceCommand {
 				.then(
 					ServerCommandManager.literal("set")
 						.then(
-							ServerCommandManager.argument("targets", EntityArgumentType.method_9308())
+							ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
 								.then(
 									((RequiredArgumentBuilder)((RequiredArgumentBuilder)ServerCommandManager.argument("amount", IntegerArgumentType.integer(0))
 												.executes(
@@ -107,7 +107,7 @@ public class ExperienceCommand {
 				.then(
 					ServerCommandManager.literal("query")
 						.then(
-							ServerCommandManager.argument("targets", EntityArgumentType.method_9305())
+							ServerCommandManager.argument("targets", EntityArgumentType.onePlayer())
 								.then(
 									ServerCommandManager.literal("points")
 										.executes(

@@ -1,6 +1,6 @@
 package net.minecraft.item;
 
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -20,7 +20,7 @@ public class BucketMilkItem extends Item {
 	public ItemStack onItemFinishedUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
 		if (livingEntity instanceof ServerPlayerEntity) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
-			CriterionCriterions.CONSUME_ITEM.handle(serverPlayerEntity, itemStack);
+			Criterions.CONSUME_ITEM.handle(serverPlayerEntity, itemStack);
 			serverPlayerEntity.incrementStat(Stats.field_15372.method_14956(this));
 		}
 
@@ -28,7 +28,7 @@ public class BucketMilkItem extends Item {
 			itemStack.subtractAmount(1);
 		}
 
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			livingEntity.clearPotionEffects();
 		}
 

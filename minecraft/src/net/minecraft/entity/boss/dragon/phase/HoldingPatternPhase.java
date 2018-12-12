@@ -1,7 +1,6 @@
 package net.minecraft.entity.boss.dragon.phase;
 
 import javax.annotation.Nullable;
-import net.minecraft.class_3033;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -11,6 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.gen.feature.EndPortalFeature;
 
 public class HoldingPatternPhase extends AbstractPhase {
 	private Path field_7043;
@@ -29,7 +29,7 @@ public class HoldingPatternPhase extends AbstractPhase {
 	@Override
 	public void method_6855() {
 		double d = this.field_7045 == null ? 0.0 : this.field_7045.squaredDistanceTo(this.dragon.x, this.dragon.y, this.dragon.z);
-		if (d < 100.0 || d > 22500.0 || this.dragon.field_5976 || this.dragon.field_5992) {
+		if (d < 100.0 || d > 22500.0 || this.dragon.horizontalCollision || this.dragon.verticalCollision) {
 			this.method_6841();
 		}
 	}
@@ -48,7 +48,7 @@ public class HoldingPatternPhase extends AbstractPhase {
 
 	private void method_6841() {
 		if (this.field_7043 != null && this.field_7043.isFinished()) {
-			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(class_3033.field_13600));
+			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(EndPortalFeature.ORIGIN));
 			int i = this.dragon.getFight() == null ? 0 : this.dragon.getFight().method_12517();
 			if (this.dragon.getRand().nextInt(i + 3) == 0) {
 				this.dragon.getPhaseManager().setPhase(PhaseType.LANDING_APPROACH);

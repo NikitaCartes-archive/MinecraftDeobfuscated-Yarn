@@ -2,21 +2,20 @@ package net.minecraft.world;
 
 import java.io.IOException;
 import javax.annotation.Nullable;
-import net.minecraft.class_2839;
-import net.minecraft.util.MinecraftException;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ProtoChunk;
 
 public interface ChunkSaveHandler extends AutoCloseable {
 	@Nullable
-	class_2839 method_12411(IWorld iWorld, int i, int j);
+	ProtoChunk readChunk(IWorld iWorld, int i, int j);
 
-	void method_12410(World world, Chunk chunk) throws IOException, MinecraftException;
+	void saveChunk(World world, Chunk chunk) throws IOException, SessionLockException;
 
-	default boolean method_12412() {
+	default boolean saveNextChunk() {
 		return false;
 	}
 
-	void save();
+	void saveAllChunks();
 
 	default void close() {
 	}

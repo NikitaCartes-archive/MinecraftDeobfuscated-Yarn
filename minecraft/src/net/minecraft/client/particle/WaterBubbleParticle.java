@@ -2,7 +2,7 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.particle.TexturedParticle;
+import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -29,7 +29,7 @@ public class WaterBubbleParticle extends Particle {
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;
 		this.velocityY += 0.002;
-		this.addPos(this.velocityX, this.velocityY, this.velocityZ);
+		this.move(this.velocityX, this.velocityY, this.velocityZ);
 		this.velocityX *= 0.85F;
 		this.velocityY *= 0.85F;
 		this.velocityZ *= 0.85F;
@@ -43,8 +43,8 @@ public class WaterBubbleParticle extends Particle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class class_654 implements FactoryParticle<TexturedParticle> {
-		public Particle createParticle(TexturedParticle texturedParticle, World world, double d, double e, double f, double g, double h, double i) {
+	public static class Factory implements ParticleFactory<DefaultParticleType> {
+		public Particle method_3011(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new WaterBubbleParticle(world, d, e, f, g, h, i);
 		}
 	}

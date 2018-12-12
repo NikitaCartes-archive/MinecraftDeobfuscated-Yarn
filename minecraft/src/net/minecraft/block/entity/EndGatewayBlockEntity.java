@@ -23,9 +23,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.TheEndDimension;
-import net.minecraft.world.gen.config.feature.EndGatewayFeatureConfig;
-import net.minecraft.world.gen.config.feature.FeatureConfig;
+import net.minecraft.world.gen.feature.EndGatewayFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.FeatureConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -79,7 +79,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 		++this.age;
 		if (bl2) {
 			--this.field_12130;
-		} else if (!this.world.isRemote) {
+		} else if (!this.world.isClient) {
 			List<Entity> list = this.world.getVisibleEntities(Entity.class, new BoundingBox(this.getPos()));
 			if (!list.isEmpty()) {
 				this.method_11409((Entity)list.get(0));
@@ -125,7 +125,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	}
 
 	public void method_11411() {
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			this.field_12130 = 40;
 			this.world.addBlockAction(this.getPos(), this.getCachedState().getBlock(), 1, 0);
 			this.markDirty();
@@ -133,17 +133,17 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	}
 
 	@Override
-	public boolean method_11004(int i, int j) {
+	public boolean onBlockAction(int i, int j) {
 		if (i == 1) {
 			this.field_12130 = 40;
 			return true;
 		} else {
-			return super.method_11004(i, j);
+			return super.onBlockAction(i, j);
 		}
 	}
 
 	public void method_11409(Entity entity) {
-		if (!this.world.isRemote && !this.method_11421()) {
+		if (!this.world.isClient && !this.method_11421()) {
 			this.field_12130 = 100;
 			if (this.portalExitPos == null && this.world.dimension instanceof TheEndDimension) {
 				this.method_11422();
@@ -183,7 +183,9 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 			this.portalExitPos = new BlockPos(vec3d2.x + 0.5, 75.0, vec3d2.z + 0.5);
 			LOGGER.debug("Failed to find suitable block, settling on {}", this.portalExitPos);
 			Feature.field_13574
-				.generate(this.world, this.world.getChunkManager().getChunkGenerator(), new Random(this.portalExitPos.asLong()), this.portalExitPos, FeatureConfig.DEFAULT);
+				.method_13151(
+					this.world, this.world.getChunkManager().getChunkGenerator(), new Random(this.portalExitPos.asLong()), this.portalExitPos, FeatureConfig.field_13603
+				);
 		} else {
 			LOGGER.debug("Found block at {}", this.portalExitPos);
 		}
@@ -204,7 +206,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 					for(int l = 255; l > (blockPos2 == null ? 0 : blockPos2.getY()); --l) {
 						BlockPos blockPos3 = new BlockPos(blockPos.getX() + j, l, blockPos.getZ() + k);
 						BlockState blockState = blockView.getBlockState(blockPos3);
-						if (blockState.blocksLight(blockView, blockPos3) && (bl || blockState.getBlock() != Blocks.field_9987)) {
+						if (blockState.method_11603(blockView, blockPos3) && (bl || blockState.getBlock() != Blocks.field_9987)) {
 							blockPos2 = blockPos3;
 							break;
 						}
@@ -217,7 +219,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	}
 
 	private static WorldChunk getChunk(World world, Vec3d vec3d) {
-		return world.getChunk(MathHelper.floor(vec3d.x / 16.0), MathHelper.floor(vec3d.z / 16.0));
+		return world.getWorldChunk(MathHelper.floor(vec3d.x / 16.0), MathHelper.floor(vec3d.z / 16.0));
 	}
 
 	@Nullable
@@ -234,8 +236,8 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 			BlockPos blockPos5 = blockPos4.up();
 			BlockPos blockPos6 = blockPos4.up(2);
 			if (blockState.getBlock() == Blocks.field_10471
-				&& !worldChunk.getBlockState(blockPos5).blocksLight(worldChunk, blockPos5)
-				&& !worldChunk.getBlockState(blockPos6).blocksLight(worldChunk, blockPos6)) {
+				&& !worldChunk.getBlockState(blockPos5).method_11603(worldChunk, blockPos5)
+				&& !worldChunk.getBlockState(blockPos6).method_11603(worldChunk, blockPos6)) {
 				double e = blockPos4.squaredDistanceToCenter(0.0, 0.0, 0.0);
 				if (blockPos3 == null || e < d) {
 					blockPos3 = blockPos4;
@@ -248,7 +250,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	}
 
 	private void generatePortal(BlockPos blockPos) {
-		Feature.field_13564.generate(this.world, this.world.getChunkManager().getChunkGenerator(), new Random(), blockPos, new EndGatewayFeatureConfig(false));
+		Feature.field_13564.method_13151(this.world, this.world.getChunkManager().getChunkGenerator(), new Random(), blockPos, new EndGatewayFeatureConfig(false));
 		BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
 		if (blockEntity instanceof EndGatewayBlockEntity) {
 			EndGatewayBlockEntity endGatewayBlockEntity = (EndGatewayBlockEntity)blockEntity;
@@ -262,7 +264,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean method_11400(Direction direction) {
-		return Block.method_9607(this.getCachedState(), this.world, this.getPos(), direction);
+		return Block.shouldDrawSide(this.getCachedState(), this.world, this.getPos(), direction);
 	}
 
 	@Environment(EnvType.CLIENT)

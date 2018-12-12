@@ -25,8 +25,8 @@ import org.apache.commons.lang3.StringUtils;
 public class JsonHelper {
 	private static final Gson GSON = new GsonBuilder().create();
 
-	public static boolean method_15289(JsonObject jsonObject, String string) {
-		return !isPrimitive(jsonObject, string) ? false : jsonObject.getAsJsonPrimitive(string).isString();
+	public static boolean hasString(JsonObject jsonObject, String string) {
+		return !hasPrimitive(jsonObject, string) ? false : jsonObject.getAsJsonPrimitive(string).isString();
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -39,15 +39,15 @@ public class JsonHelper {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static boolean isBoolean(JsonObject jsonObject, String string) {
-		return !isPrimitive(jsonObject, string) ? false : jsonObject.getAsJsonPrimitive(string).isBoolean();
+	public static boolean hasBoolean(JsonObject jsonObject, String string) {
+		return !hasPrimitive(jsonObject, string) ? false : jsonObject.getAsJsonPrimitive(string).isBoolean();
 	}
 
-	public static boolean isArray(JsonObject jsonObject, String string) {
+	public static boolean hasArray(JsonObject jsonObject, String string) {
 		return !hasElement(jsonObject, string) ? false : jsonObject.get(string).isJsonArray();
 	}
 
-	public static boolean isPrimitive(JsonObject jsonObject, String string) {
+	public static boolean hasPrimitive(JsonObject jsonObject, String string) {
 		return !hasElement(jsonObject, string) ? false : jsonObject.get(string).isJsonPrimitive();
 	}
 

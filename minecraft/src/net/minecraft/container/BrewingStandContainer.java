@@ -1,6 +1,6 @@
 package net.minecraft.container;
 
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -182,7 +182,7 @@ public class BrewingStandContainer extends Container {
 		public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
 			Potion potion = PotionUtil.getPotion(itemStack);
 			if (playerEntity instanceof ServerPlayerEntity) {
-				CriterionCriterions.BREWED_POTION.handle((ServerPlayerEntity)playerEntity, potion);
+				Criterions.BREWED_POTION.handle((ServerPlayerEntity)playerEntity, potion);
 			}
 
 			super.onTakeItem(playerEntity, itemStack);

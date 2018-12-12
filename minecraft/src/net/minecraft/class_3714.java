@@ -18,13 +18,13 @@ public class class_3714 implements Consumer<BiConsumer<Identifier, LootSupplier.
 				.withPool(
 					LootPool.create()
 						.withRolls(ConstantLootTableRange.create(1))
-						.method_351(ItemEntry.method_411(Items.field_8245).setWeight(10))
-						.method_351(ItemEntry.method_411(Items.field_8073).setWeight(10))
-						.method_351(ItemEntry.method_411(Items.field_8726).setWeight(10))
-						.method_351(ItemEntry.method_411(Items.field_8153).setWeight(10))
-						.method_351(ItemEntry.method_411(Items.field_8511).setWeight(10))
-						.method_351(ItemEntry.method_411(Items.field_8276).setWeight(10))
-						.method_351(ItemEntry.method_411(Items.field_8614).setWeight(2))
+						.withEntry(ItemEntry.builder(Items.field_8245).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.field_8073).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.field_8726).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.field_8153).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.field_8511).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.field_8276).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.field_8614).setWeight(2))
 				)
 		);
 	}

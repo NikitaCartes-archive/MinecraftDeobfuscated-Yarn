@@ -3,13 +3,11 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class BatEntityModel extends Model {
+public class BatEntityModel extends EntityModel<BatEntity> {
 	private final Cuboid field_3321;
 	private final Cuboid field_3323;
 	private final Cuboid field_3322;
@@ -50,16 +48,14 @@ public class BatEntityModel extends Model {
 		this.field_3320.addChild(this.field_3324);
 	}
 
-	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		this.setRotationAngles(f, g, h, i, j, k, entity);
+	public void method_17068(BatEntity batEntity, float f, float g, float h, float i, float j, float k) {
+		this.method_17069(batEntity, f, g, h, i, j, k);
 		this.field_3321.render(k);
 		this.field_3323.render(k);
 	}
 
-	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
-		if (((BatEntity)entity).isRoosting()) {
+	public void method_17069(BatEntity batEntity, float f, float g, float h, float i, float j, float k) {
+		if (batEntity.isRoosting()) {
 			this.field_3321.pitch = j * (float) (Math.PI / 180.0);
 			this.field_3321.yaw = (float) Math.PI - i * (float) (Math.PI / 180.0);
 			this.field_3321.roll = (float) Math.PI;

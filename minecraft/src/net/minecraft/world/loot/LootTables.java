@@ -13,12 +13,15 @@ public class LootTables {
 	public static final Identifier CHEST_END_CITY_TREASURE = method_269("chests/end_city_treasure");
 	public static final Identifier CHEST_SIMPLE_DUNGEON = method_269("chests/simple_dungeon");
 	public static final Identifier CHEST_VILLAGE_BLACKSMITH = method_269("chests/village/village_weaponsmith");
+	public static final Identifier field_17107 = method_269("chests/village/village_toolsmith");
 	public static final Identifier field_17009 = method_269("chests/village/village_armorer");
 	public static final Identifier field_16751 = method_269("chests/village/village_cartographer");
 	public static final Identifier field_17010 = method_269("chests/village/village_mason");
 	public static final Identifier field_17011 = method_269("chests/village/village_shepherd");
 	public static final Identifier field_17012 = method_269("chests/village/village_butcher");
+	public static final Identifier field_17108 = method_269("chests/village/village_fletcher");
 	public static final Identifier field_16750 = method_269("chests/village/village_tannery");
+	public static final Identifier field_17109 = method_269("chests/village/village_temple");
 	public static final Identifier field_16752 = method_269("chests/village/village_desert_house");
 	public static final Identifier field_16748 = method_269("chests/village/village_plains_house");
 	public static final Identifier field_16749 = method_269("chests/village/village_taiga_house");

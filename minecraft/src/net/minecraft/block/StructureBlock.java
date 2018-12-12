@@ -30,16 +30,16 @@ public class StructureBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
-		return blockEntity instanceof StructureBlockBlockEntity ? ((StructureBlockBlockEntity)blockEntity).method_11351(playerEntity) : false;
+		return blockEntity instanceof StructureBlockBlockEntity ? ((StructureBlockBlockEntity)blockEntity).openGui(playerEntity) : false;
 	}
 
 	@Override
 	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			if (livingEntity != null) {
 				BlockEntity blockEntity = world.getBlockEntity(blockPos);
 				if (blockEntity instanceof StructureBlockBlockEntity) {
@@ -50,8 +50,8 @@ public class StructureBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public RenderTypeBlock getRenderType(BlockState blockState) {
-		return RenderTypeBlock.MODEL;
+	public BlockRenderType method_9604(BlockState blockState) {
+		return BlockRenderType.field_11458;
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class StructureBlock extends BlockWithEntity {
 
 	@Override
 	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof StructureBlockBlockEntity) {
 				StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)blockEntity;

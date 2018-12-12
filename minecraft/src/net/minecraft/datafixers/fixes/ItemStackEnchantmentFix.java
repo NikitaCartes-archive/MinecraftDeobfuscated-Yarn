@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 import net.minecraft.datafixers.TypeReferences;
 
 public class ItemStackEnchantmentFix extends DataFix {
-	private static final Int2ObjectMap<String> enchants = DataFixUtils.make(new Int2ObjectOpenHashMap(), int2ObjectOpenHashMap -> {
+	private static final Int2ObjectMap<String> ID_TO_ENCHANTMENTS_MAP = DataFixUtils.make(new Int2ObjectOpenHashMap(), int2ObjectOpenHashMap -> {
 		int2ObjectOpenHashMap.put(0, "minecraft:protection");
 		int2ObjectOpenHashMap.put(1, "minecraft:fire_protection");
 		int2ObjectOpenHashMap.put(2, "minecraft:feather_falling");
@@ -69,7 +69,9 @@ public class ItemStackEnchantmentFix extends DataFix {
 	private Dynamic<?> method_5035(Dynamic<?> dynamic) {
 		Optional<Dynamic<?>> optional = dynamic.get("ench")
 			.flatMap(Dynamic::getStream)
-			.map(stream -> stream.map(dynamicx -> dynamicx.set("id", dynamicx.createString((String)enchants.getOrDefault(dynamicx.getInt("id"), "null")))))
+			.map(
+				stream -> stream.map(dynamicx -> dynamicx.set("id", dynamicx.createString((String)ID_TO_ENCHANTMENTS_MAP.getOrDefault(dynamicx.getInt("id"), "null"))))
+			)
 			.map(dynamic::createList);
 		if (optional.isPresent()) {
 			dynamic = dynamic.remove("ench").set("Enchantments", (Dynamic<?>)optional.get());
@@ -79,7 +81,11 @@ public class ItemStackEnchantmentFix extends DataFix {
 			"StoredEnchantments",
 			dynamicx -> DataFixUtils.orElse(
 					dynamicx.getStream()
-						.map(stream -> stream.map(dynamicxx -> dynamicxx.set("id", dynamicxx.createString((String)enchants.getOrDefault(dynamicxx.getInt("id"), "null")))))
+						.map(
+							stream -> stream.map(
+									dynamicxx -> dynamicxx.set("id", dynamicxx.createString((String)ID_TO_ENCHANTMENTS_MAP.getOrDefault(dynamicxx.getInt("id"), "null")))
+								)
+						)
 						.map(dynamicx::createList),
 					dynamicx
 				)

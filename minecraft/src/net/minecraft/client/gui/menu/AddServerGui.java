@@ -9,8 +9,8 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiEventListener;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.settings.ServerEntry;
 import net.minecraft.util.ChatUtil;
 
 @Environment(EnvType.CLIENT)
@@ -91,30 +91,30 @@ public class AddServerGui extends Gui {
 		);
 		this.field_2474 = new TextFieldWidget(1, this.fontRenderer, this.width / 2 - 100, 106, 200, 20) {
 			@Override
-			public void method_1876(boolean bl) {
-				super.method_1876(bl);
+			public void setFocused(boolean bl) {
+				super.setFocused(bl);
 				if (bl) {
-					AddServerGui.this.field_2471.method_1876(false);
+					AddServerGui.this.field_2471.setFocused(false);
 				}
 			}
 		};
 		this.field_2474.setMaxLength(128);
 		this.field_2474.setText(this.field_2469.address);
 		this.field_2474.method_1890(this.field_2475);
-		this.field_2474.method_1863(this::method_2171);
+		this.field_2474.setChangedListener(this::method_2171);
 		this.listeners.add(this.field_2474);
 		this.field_2471 = new TextFieldWidget(0, this.fontRenderer, this.width / 2 - 100, 66, 200, 20) {
 			@Override
-			public void method_1876(boolean bl) {
-				super.method_1876(bl);
+			public void setFocused(boolean bl) {
+				super.setFocused(bl);
 				if (bl) {
-					AddServerGui.this.field_2474.method_1876(false);
+					AddServerGui.this.field_2474.setFocused(false);
 				}
 			}
 		};
-		this.field_2471.method_1876(true);
+		this.field_2471.setFocused(true);
 		this.field_2471.setText(this.field_2469.name);
-		this.field_2471.method_1863(this::method_2171);
+		this.field_2471.setChangedListener(this::method_2171);
 		this.listeners.add(this.field_2471);
 		this.close();
 	}
@@ -152,9 +152,9 @@ public class AddServerGui extends Gui {
 	public boolean keyPressed(int i, int j, int k) {
 		if (i == 258) {
 			if (this.field_2471.isFocused()) {
-				this.field_2474.method_1876(true);
+				this.field_2474.setFocused(true);
 			} else {
-				this.field_2471.method_1876(true);
+				this.field_2471.setFocused(true);
 			}
 
 			return true;

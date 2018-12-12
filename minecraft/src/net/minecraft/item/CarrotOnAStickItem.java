@@ -16,7 +16,7 @@ public class CarrotOnAStickItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (world.isRemote) {
+		if (world.isClient) {
 			return new TypedActionResult<>(ActionResult.PASS, itemStack);
 		} else {
 			if (playerEntity.hasVehicle() && playerEntity.getRiddenEntity() instanceof PigEntity) {

@@ -145,7 +145,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	public boolean method_11045() {
 		this.conditionMet = true;
 		if (this.isConditionalCommandBlock()) {
-			BlockPos blockPos = this.pos.method_10093(((Direction)this.world.getBlockState(this.pos).get(CommandBlock.field_10791)).getOpposite());
+			BlockPos blockPos = this.pos.offset(((Direction)this.world.getBlockState(this.pos).get(CommandBlock.FACING)).getOpposite());
 			if (this.world.getBlockState(blockPos).getBlock() instanceof CommandBlock) {
 				BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
 				this.conditionMet = blockEntity instanceof CommandBlockBlockEntity && ((CommandBlockBlockEntity)blockEntity).getCommandExecutor().getSuccessCount() > 0;

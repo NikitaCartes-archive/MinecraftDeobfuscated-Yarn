@@ -4,10 +4,10 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.item.Item;
-import net.minecraft.particle.Particle;
+import net.minecraft.particle.ParticleParameters;
 import net.minecraft.state.StateFactory;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.IdList;
@@ -62,7 +62,7 @@ public abstract class Fluid {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	protected Particle getParticle() {
+	protected ParticleParameters method_15787() {
 		return null;
 	}
 

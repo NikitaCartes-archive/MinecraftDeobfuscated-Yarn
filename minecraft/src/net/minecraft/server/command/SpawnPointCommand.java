@@ -21,7 +21,7 @@ public class SpawnPointCommand {
 						)
 				)
 				.then(
-					ServerCommandManager.argument("targets", EntityArgumentType.method_9308())
+					ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
 						.executes(
 							commandContext -> method_13645(
 									commandContext.getSource(), EntityArgumentType.method_9312(commandContext, "targets"), new BlockPos(commandContext.getSource().getPosition())

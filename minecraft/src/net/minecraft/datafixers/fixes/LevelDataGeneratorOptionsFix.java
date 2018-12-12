@@ -29,7 +29,7 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.SystemUtil;
 
 public class LevelDataGeneratorOptionsFix extends DataFix {
-	static final Map<String, String> biomes = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+	static final Map<String, String> NUMERICAL_IDS_TO_BIOME_IDS = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
 		hashMap.put("0", "minecraft:ocean");
 		hashMap.put("1", "minecraft:plains");
 		hashMap.put("2", "minecraft:desert");
@@ -139,7 +139,7 @@ public class LevelDataGeneratorOptionsFix extends DataFix {
 			list = method_5103((String)iterator.next());
 			if (!list.isEmpty()) {
 				if (iterator.hasNext()) {
-					string2 = (String)biomes.getOrDefault(iterator.next(), "minecraft:plains");
+					string2 = (String)NUMERICAL_IDS_TO_BIOME_IDS.getOrDefault(iterator.next(), "minecraft:plains");
 				}
 
 				if (iterator.hasNext()) {

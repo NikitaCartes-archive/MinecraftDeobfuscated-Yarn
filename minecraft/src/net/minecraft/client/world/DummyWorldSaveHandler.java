@@ -5,11 +5,11 @@ import java.io.File;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3485;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.MinecraftException;
+import net.minecraft.sortme.structures.StructureManager;
 import net.minecraft.world.ChunkSaveHandler;
 import net.minecraft.world.PlayerSaveHandler;
+import net.minecraft.world.SessionLockException;
 import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
@@ -23,7 +23,7 @@ public class DummyWorldSaveHandler implements WorldSaveHandler {
 	}
 
 	@Override
-	public void checkSessionLock() throws MinecraftException {
+	public void checkSessionLock() throws SessionLockException {
 	}
 
 	@Override
@@ -56,12 +56,12 @@ public class DummyWorldSaveHandler implements WorldSaveHandler {
 	}
 
 	@Override
-	public class_3485 method_134() {
+	public StructureManager getStructureManager() {
 		return null;
 	}
 
 	@Override
-	public DataFixer method_130() {
+	public DataFixer getDataFixer() {
 		return null;
 	}
 }

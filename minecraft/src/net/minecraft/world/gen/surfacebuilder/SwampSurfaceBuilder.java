@@ -8,7 +8,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.config.surfacebuilder.TernarySurfaceConfig;
 
 public class SwampSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 	public SwampSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
@@ -49,6 +48,6 @@ public class SwampSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 			}
 		}
 
-		SurfaceBuilder.DEFAULT.generate(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, ternarySurfaceConfig);
+		SurfaceBuilder.DEFAULT.method_15305(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, ternarySurfaceConfig);
 	}
 }

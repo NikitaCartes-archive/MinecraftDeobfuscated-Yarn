@@ -58,7 +58,7 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 			try {
 				String string = GSON.toJson((JsonElement)jsonObject);
 				String string2 = SHA1.hashUnencodedChars(string).toString();
-				if (!Objects.equals(dataCache.method_10323(path), string2) || !Files.exists(path, new LinkOption[0])) {
+				if (!Objects.equals(dataCache.getOldSha1(path), string2) || !Files.exists(path, new LinkOption[0])) {
 					Files.createDirectories(path.getParent());
 					BufferedWriter bufferedWriter = Files.newBufferedWriter(path);
 					Throwable var12 = null;
@@ -83,7 +83,7 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 					}
 				}
 
-				dataCache.method_10325(path, string2);
+				dataCache.updateSha1(path, string2);
 			} catch (IOException var24) {
 				LOGGER.error("Couldn't save tags to {}", path, var24);
 			}

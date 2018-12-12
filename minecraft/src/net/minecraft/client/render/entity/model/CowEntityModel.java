@@ -3,9 +3,10 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
+import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
-public class CowEntityModel extends QuadrupedEntityModel {
+public class CowEntityModel<T extends Entity> extends QuadrupedEntityModel<T> {
 	public CowEntityModel() {
 		super(12, 0.0F);
 		this.head = new Cuboid(this, 0, 0);

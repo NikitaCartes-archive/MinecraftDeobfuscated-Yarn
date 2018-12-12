@@ -4,11 +4,10 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
 import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
-public class SlimeEntityModel extends Model {
+public class SlimeEntityModel<T extends Entity> extends EntityModel<T> {
 	private final Cuboid field_3571;
 	private final Cuboid field_3573;
 	private final Cuboid field_3572;
@@ -34,8 +33,8 @@ public class SlimeEntityModel extends Model {
 	}
 
 	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		this.setRotationAngles(f, g, h, i, j, k, entity);
+	public void render(T entity, float f, float g, float h, float i, float j, float k) {
+		this.setAngles(entity, f, g, h, i, j, k);
 		GlStateManager.translatef(0.0F, 0.001F, 0.0F);
 		this.field_3571.render(k);
 		if (this.field_3573 != null) {

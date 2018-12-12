@@ -8,7 +8,7 @@ import net.minecraft.text.TextFormat;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class RabbitEntityRenderer extends EntityMobRenderer<RabbitEntity> {
+public class RabbitEntityRenderer extends MobEntityRenderer<RabbitEntity, RabbitEntityModel<RabbitEntity>> {
 	private static final Identifier BROWN_SKIN = new Identifier("textures/entity/rabbit/brown.png");
 	private static final Identifier WHITE_SKIN = new Identifier("textures/entity/rabbit/white.png");
 	private static final Identifier BLACK_SKIN = new Identifier("textures/entity/rabbit/black.png");
@@ -19,7 +19,7 @@ public class RabbitEntityRenderer extends EntityMobRenderer<RabbitEntity> {
 	private static final Identifier field_4769 = new Identifier("textures/entity/rabbit/caerbannog.png");
 
 	public RabbitEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new RabbitEntityModel(), 0.3F);
+		super(entityRenderDispatcher, new RabbitEntityModel<>(), 0.3F);
 	}
 
 	protected Identifier getTexture(RabbitEntity rabbitEntity) {

@@ -19,7 +19,7 @@ public class class_1398 extends Goal {
 	private static final Logger field_6635 = LogManager.getLogger();
 	private final MobEntity field_6636;
 	private final Predicate<LivingEntity> field_6634;
-	private final FollowTargetGoal.class_1401 field_6631;
+	private final FollowTargetGoal.ClosestSelector field_6631;
 	private LivingEntity field_6632;
 	private final Class<? extends LivingEntity> field_6633;
 
@@ -42,7 +42,7 @@ public class class_1398 extends Goal {
 				return (double)livingEntity.distanceTo(this.field_6636) > d ? false : TrackTargetGoal.canTrack(this.field_6636, livingEntity, false, true);
 			}
 		};
-		this.field_6631 = new FollowTargetGoal.class_1401(mobEntity);
+		this.field_6631 = new FollowTargetGoal.ClosestSelector(mobEntity);
 	}
 
 	@Override

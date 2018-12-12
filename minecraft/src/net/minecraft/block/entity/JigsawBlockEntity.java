@@ -8,9 +8,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
 
 public class JigsawBlockEntity extends BlockEntity {
-	private Identifier field_16550 = new Identifier("empty");
-	private Identifier field_16552 = new Identifier("empty");
-	private String field_16551 = "minecraft:air";
+	private Identifier attachmentType = new Identifier("empty");
+	private Identifier targetPool = new Identifier("empty");
+	private String finalState = "minecraft:air";
 
 	public JigsawBlockEntity(BlockEntityType<?> blockEntityType) {
 		super(blockEntityType);
@@ -21,50 +21,50 @@ public class JigsawBlockEntity extends BlockEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Identifier method_16381() {
-		return this.field_16550;
+	public Identifier getAttachmentType() {
+		return this.attachmentType;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Identifier method_16382() {
-		return this.field_16552;
+	public Identifier getTargetPool() {
+		return this.targetPool;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public String method_16380() {
-		return this.field_16551;
+	public String getFinalState() {
+		return this.finalState;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_16379(Identifier identifier) {
-		this.field_16550 = identifier;
+	public void setAttachmentType(Identifier identifier) {
+		this.attachmentType = identifier;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_16378(Identifier identifier) {
-		this.field_16552 = identifier;
+	public void setTargetPool(Identifier identifier) {
+		this.targetPool = identifier;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_16377(String string) {
-		this.field_16551 = string;
+	public void setFinalState(String string) {
+		this.finalState = string;
 	}
 
 	@Override
 	public CompoundTag toTag(CompoundTag compoundTag) {
 		super.toTag(compoundTag);
-		compoundTag.putString("attachement_type", this.field_16550.toString());
-		compoundTag.putString("target_pool", this.field_16552.toString());
-		compoundTag.putString("final_state", this.field_16551);
+		compoundTag.putString("attachement_type", this.attachmentType.toString());
+		compoundTag.putString("target_pool", this.targetPool.toString());
+		compoundTag.putString("final_state", this.finalState);
 		return compoundTag;
 	}
 
 	@Override
 	public void fromTag(CompoundTag compoundTag) {
 		super.fromTag(compoundTag);
-		this.field_16550 = new Identifier(compoundTag.getString("attachement_type"));
-		this.field_16552 = new Identifier(compoundTag.getString("target_pool"));
-		this.field_16551 = compoundTag.getString("final_state");
+		this.attachmentType = new Identifier(compoundTag.getString("attachement_type"));
+		this.targetPool = new Identifier(compoundTag.getString("target_pool"));
+		this.finalState = compoundTag.getString("final_state");
 	}
 
 	@Nullable

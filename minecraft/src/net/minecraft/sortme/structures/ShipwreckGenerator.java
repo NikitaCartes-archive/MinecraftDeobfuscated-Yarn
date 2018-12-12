@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Random;
 import net.minecraft.class_3443;
 import net.minecraft.class_3470;
-import net.minecraft.class_3485;
 import net.minecraft.class_3492;
 import net.minecraft.class_3499;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
@@ -19,7 +18,7 @@ import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.Heightmap;
-import net.minecraft.world.gen.config.feature.ShipwreckFeatureConfig;
+import net.minecraft.world.gen.feature.ShipwreckFeatureConfig;
 import net.minecraft.world.loot.LootTables;
 
 public class ShipwreckGenerator {
@@ -61,10 +60,10 @@ public class ShipwreckGenerator {
 	};
 
 	public static void method_14834(
-		class_3485 arg, BlockPos blockPos, Rotation rotation, List<class_3443> list, Random random, ShipwreckFeatureConfig shipwreckFeatureConfig
+		StructureManager structureManager, BlockPos blockPos, Rotation rotation, List<class_3443> list, Random random, ShipwreckFeatureConfig shipwreckFeatureConfig
 	) {
 		Identifier identifier = shipwreckFeatureConfig.isBeached ? field_14534[random.nextInt(field_14534.length)] : field_14535[random.nextInt(field_14535.length)];
-		list.add(new ShipwreckGenerator.class_3416(arg, identifier, blockPos, rotation, shipwreckFeatureConfig.isBeached));
+		list.add(new ShipwreckGenerator.class_3416(structureManager, identifier, blockPos, rotation, shipwreckFeatureConfig.isBeached));
 	}
 
 	public static class class_3416 extends class_3470 {
@@ -72,21 +71,21 @@ public class ShipwreckGenerator {
 		private final Identifier field_14537;
 		private final boolean field_14538;
 
-		public class_3416(class_3485 arg, Identifier identifier, BlockPos blockPos, Rotation rotation, boolean bl) {
+		public class_3416(StructureManager structureManager, Identifier identifier, BlockPos blockPos, Rotation rotation, boolean bl) {
 			super(StructurePiece.field_16935, 0);
 			this.field_15432 = blockPos;
 			this.field_14539 = rotation;
 			this.field_14537 = identifier;
 			this.field_14538 = bl;
-			this.method_14837(arg);
+			this.method_14837(structureManager);
 		}
 
-		public class_3416(class_3485 arg, CompoundTag compoundTag) {
+		public class_3416(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16935, compoundTag);
 			this.field_14537 = new Identifier(compoundTag.getString("Template"));
 			this.field_14538 = compoundTag.getBoolean("isBeached");
 			this.field_14539 = Rotation.valueOf(compoundTag.getString("Rot"));
-			this.method_14837(arg);
+			this.method_14837(structureManager);
 		}
 
 		@Override
@@ -97,8 +96,8 @@ public class ShipwreckGenerator {
 			compoundTag.putString("Rot", this.field_14539.name());
 		}
 
-		private void method_14837(class_3485 arg) {
-			class_3499 lv = arg.method_15091(this.field_14537);
+		private void method_14837(StructureManager structureManager) {
+			class_3499 lv = structureManager.method_15091(this.field_14537);
 			class_3492 lv2 = new class_3492()
 				.method_15123(this.field_14539)
 				.method_15125(Mirror.NONE)

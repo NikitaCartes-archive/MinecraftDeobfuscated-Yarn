@@ -21,7 +21,7 @@ public abstract class class_3418 extends class_3443 {
 		this.height = m;
 		this.depth = n;
 		this.method_14926(Direction.class_2353.HORIZONTAL.random(random));
-		if (this.method_14934().getAxis() == Direction.Axis.Z) {
+		if (this.getFacing().getAxis() == Direction.Axis.Z) {
 			this.structureBounds = new MutableIntBoundingBox(i, j, k, i + l - 1, j + m - 1, k + n - 1);
 		} else {
 			this.structureBounds = new MutableIntBoundingBox(i, j, k, i + n - 1, j + m - 1, k + l - 1);

@@ -2,20 +2,20 @@ package net.minecraft.block.sapling;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
+import net.minecraft.world.gen.feature.AbstractTreeFeature;
 import net.minecraft.world.gen.feature.DarkOakTreeFeature;
-import net.minecraft.world.gen.feature.TreeFeature;
+import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 
 public class DarkOakSaplingGenerator extends LargeTreeSaplingGenerator {
 	@Nullable
 	@Override
-	protected TreeFeature<DefaultFeatureConfig> createTreeFeature(Random random) {
+	protected AbstractTreeFeature<DefaultFeatureConfig> method_11430(Random random) {
 		return null;
 	}
 
 	@Nullable
 	@Override
-	protected TreeFeature<DefaultFeatureConfig> createLargeTreeFeature(Random random) {
+	protected AbstractTreeFeature<DefaultFeatureConfig> method_11443(Random random) {
 		return new DarkOakTreeFeature(DefaultFeatureConfig::deserialize, true);
 	}
 }

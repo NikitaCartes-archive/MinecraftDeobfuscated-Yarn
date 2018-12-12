@@ -3,26 +3,23 @@ package net.minecraft.client.render.entity;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.entity.feature.WitchHeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.WitchEntityModel;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class WitchEntityRenderer extends EntityMobRenderer<WitchEntity> {
+public class WitchEntityRenderer extends MobEntityRenderer<WitchEntity, WitchEntityModel<WitchEntity>> {
 	private static final Identifier SKIN = new Identifier("textures/entity/witch.png");
 
 	public WitchEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new WitchEntityModel(0.0F), 0.5F);
-		this.addLayer(new WitchHeldItemEntityRenderer(this));
-	}
-
-	public WitchEntityModel method_4156() {
-		return (WitchEntityModel)super.method_4038();
+		super(entityRenderDispatcher, new WitchEntityModel<>(0.0F), 0.5F);
+		this.addFeature(new WitchHeldItemFeatureRenderer<>(this));
 	}
 
 	public void method_4155(WitchEntity witchEntity, double d, double e, double f, float g, float h) {
-		((WitchEntityModel)this.model).method_2840(!witchEntity.getMainHandStack().isEmpty());
-		super.method_4072(witchEntity, d, e, f, g, h);
+		this.model.method_2840(!witchEntity.getMainHandStack().isEmpty());
+		super.render(witchEntity, d, e, f, g, h);
 	}
 
 	protected Identifier getTexture(WitchEntity witchEntity) {

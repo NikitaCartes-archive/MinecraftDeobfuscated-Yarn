@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Map.Entry;
-import net.minecraft.class_1310;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -114,9 +114,9 @@ public class EnchantmentHelper {
 		return mutableInt.intValue();
 	}
 
-	public static float getAttackDamage(ItemStack itemStack, class_1310 arg) {
+	public static float getAttackDamage(ItemStack itemStack, EntityGroup entityGroup) {
 		MutableFloat mutableFloat = new MutableFloat();
-		accept((enchantment, i) -> mutableFloat.add(enchantment.getAttackDamage(i, arg)), itemStack);
+		accept((enchantment, i) -> mutableFloat.add(enchantment.getAttackDamage(i, entityGroup)), itemStack);
 		return mutableFloat.floatValue();
 	}
 
@@ -261,8 +261,8 @@ public class EnchantmentHelper {
 		}
 	}
 
-	public static ItemStack method_8233(Random random, ItemStack itemStack, int i, boolean bl) {
-		List<InfoEnchantment> list = method_8230(random, itemStack, i, bl);
+	public static ItemStack enchant(Random random, ItemStack itemStack, int i, boolean bl) {
+		List<InfoEnchantment> list = getEnchantments(random, itemStack, i, bl);
 		boolean bl2 = itemStack.getItem() == Items.field_8529;
 		if (bl2) {
 			itemStack = new ItemStack(Items.field_8598);
@@ -279,7 +279,7 @@ public class EnchantmentHelper {
 		return itemStack;
 	}
 
-	public static List<InfoEnchantment> method_8230(Random random, ItemStack itemStack, int i, boolean bl) {
+	public static List<InfoEnchantment> getEnchantments(Random random, ItemStack itemStack, int i, boolean bl) {
 		List<InfoEnchantment> list = Lists.<InfoEnchantment>newArrayList();
 		Item item = itemStack.getItem();
 		int j = item.getEnchantability();

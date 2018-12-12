@@ -1,5 +1,6 @@
 package net.minecraft;
 
+import net.minecraft.util.math.NorthWestCoordinateTransformer;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
@@ -9,7 +10,7 @@ import net.minecraft.world.biome.layer.MergingLayer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public enum class_3648 implements MergingLayer, class_3739 {
+public enum class_3648 implements MergingLayer, NorthWestCoordinateTransformer {
 	field_16134;
 
 	private static final Logger LOGGER = LogManager.getLogger();

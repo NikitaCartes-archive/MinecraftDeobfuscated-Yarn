@@ -21,17 +21,17 @@ public class class_402 extends AbstractListWidget {
 	}
 
 	@Override
-	protected boolean method_1937(int i, int j, double d, double e) {
+	protected boolean selectEntry(int i, int j, double d, double e) {
 		return this.field_2344.selectItem(i, j, d, e);
 	}
 
 	@Override
-	protected boolean isSelected(int i) {
+	protected boolean isSelectedEntry(int i) {
 		return this.field_2344.isSelectedItem(i);
 	}
 
 	@Override
-	protected void method_1936() {
+	protected void drawBackground() {
 		this.field_2344.renderBackground();
 	}
 
@@ -45,7 +45,7 @@ public class class_402 extends AbstractListWidget {
 	}
 
 	@Override
-	protected int getContentHeight() {
+	protected int getMaxScrollPosition() {
 		return this.field_2344.getMaxPosition();
 	}
 

@@ -4,7 +4,7 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class LoyaltyEnchantment extends Enchantment {
 	public LoyaltyEnchantment(Enchantment.Weight weight, EquipmentSlot... equipmentSlots) {
-		super(weight, EnchantmentTarget.field_9073, equipmentSlots);
+		super(weight, EnchantmentTarget.TRIDENT, equipmentSlots);
 	}
 
 	@Override

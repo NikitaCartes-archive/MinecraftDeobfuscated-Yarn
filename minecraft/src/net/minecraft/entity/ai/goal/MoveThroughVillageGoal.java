@@ -84,7 +84,7 @@ public class MoveThroughVillageGoal extends Goal {
 
 	@Override
 	public void start() {
-		this.field_6525.getNavigation().method_6334(this.field_6523, this.field_6520);
+		this.field_6525.getNavigation().startMovingAlong(this.field_6523, this.field_6520);
 	}
 
 	@Override

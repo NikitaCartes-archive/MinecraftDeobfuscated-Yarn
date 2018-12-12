@@ -10,7 +10,6 @@ import net.minecraft.class_1372;
 import net.minecraft.class_1376;
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
-import net.minecraft.class_1948;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -30,8 +29,9 @@ import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.particle.BlockStateParticle;
+import net.minecraft.particle.BlockStateParticleParameters;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sortme.SpawnHelper;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -42,7 +42,7 @@ import net.minecraft.world.World;
 
 public class IronGolemEntity extends GolemEntity {
 	protected static final TrackedData<Byte> IRON_GOLEM_FLAGS = DataTracker.registerData(IronGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
-	private int field_6760;
+	private int findVillageDelay;
 	@Nullable
 	private VillageProperties villageProperties;
 	private int field_6762;
@@ -82,8 +82,8 @@ public class IronGolemEntity extends GolemEntity {
 
 	@Override
 	protected void mobTick() {
-		if (--this.field_6760 <= 0) {
-			this.field_6760 = 70 + this.random.nextInt(50);
+		if (--this.findVillageDelay <= 0) {
+			this.findVillageDelay = 70 + this.random.nextInt(50);
 			this.villageProperties = this.world.getVillageManager().getNearestVillage(new BlockPos(this), 32);
 			if (this.villageProperties == null) {
 				this.setAiRangeUnlimited();
@@ -137,7 +137,7 @@ public class IronGolemEntity extends GolemEntity {
 			if (!blockState.isAir()) {
 				this.world
 					.method_8406(
-						new BlockStateParticle(ParticleTypes.field_11217, blockState),
+						new BlockStateParticleParameters(ParticleTypes.field_11217, blockState),
 						this.x + ((double)this.random.nextFloat() - 0.5) * (double)this.width,
 						this.getBoundingBox().minY + 0.1,
 						this.z + ((double)this.random.nextFloat() - 0.5) * (double)this.width,
@@ -173,7 +173,7 @@ public class IronGolemEntity extends GolemEntity {
 	@Override
 	public boolean method_6121(Entity entity) {
 		this.field_6762 = 10;
-		this.world.method_8421(this, (byte)4);
+		this.world.summonParticle(this, (byte)4);
 		boolean bl = entity.damage(DamageSource.mob(this), (float)(7 + this.random.nextInt(15)));
 		if (bl) {
 			entity.velocityY += 0.4F;
@@ -211,10 +211,10 @@ public class IronGolemEntity extends GolemEntity {
 	public void method_6497(boolean bl) {
 		if (bl) {
 			this.field_6759 = 400;
-			this.world.method_8421(this, (byte)11);
+			this.world.summonParticle(this, (byte)11);
 		} else {
 			this.field_6759 = 0;
-			this.world.method_8421(this, (byte)34);
+			this.world.summonParticle(this, (byte)34);
 		}
 	}
 
@@ -253,7 +253,7 @@ public class IronGolemEntity extends GolemEntity {
 	@Override
 	public void onDeath(DamageSource damageSource) {
 		if (!this.isPlayerCreated() && this.field_6258 != null && this.villageProperties != null) {
-			this.villageProperties.method_6393(this.field_6258.getGameProfile().getName(), -5);
+			this.villageProperties.changeRating(this.field_6258.getGameProfile().getName(), -5);
 		}
 
 		super.onDeath(damageSource);
@@ -268,8 +268,8 @@ public class IronGolemEntity extends GolemEntity {
 		BlockPos blockPos3 = blockPos.up();
 		BlockState blockState3 = viewableWorld.getBlockState(blockPos3);
 		return blockState2.hasSolidTopSurface(viewableWorld, blockPos2)
-			&& class_1948.method_8662(viewableWorld, blockPos3, blockState3, blockState3.getFluidState())
-			&& class_1948.method_8662(viewableWorld, blockPos, blockState, Fluids.field_15906.getDefaultState())
+			&& SpawnHelper.isClearForSpawn(viewableWorld, blockPos3, blockState3, blockState3.getFluidState())
+			&& SpawnHelper.isClearForSpawn(viewableWorld, blockPos, blockState, Fluids.EMPTY.getDefaultState())
 			&& viewableWorld.method_8587(this, this.getBoundingBox())
 			&& viewableWorld.method_8606(this, this.getBoundingBox());
 	}

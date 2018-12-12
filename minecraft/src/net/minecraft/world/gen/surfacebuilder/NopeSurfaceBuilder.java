@@ -6,7 +6,6 @@ import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.config.surfacebuilder.TernarySurfaceConfig;
 
 public class NopeSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 	public NopeSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {

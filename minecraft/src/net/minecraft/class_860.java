@@ -110,12 +110,12 @@ public class class_860 implements RenderDebug.DebugRenderer {
 				for(int l = j - 12; l <= j + 12; ++l) {
 					ChunkPos chunkPos = new ChunkPos(k, l);
 					String string = "";
-					WorldChunk worldChunk = clientChunkManager.method_12126(k, l, false);
+					WorldChunk worldChunk = clientChunkManager.getWorldChunk(k, l, false);
 					string = string + "Client: ";
 					if (worldChunk == null) {
 						string = string + "0n/a\n";
 					} else {
-						string = string + (worldChunk.method_12223() ? " E" : "");
+						string = string + (worldChunk.isEmpty() ? " E" : "");
 						string = string + "\n";
 					}
 
@@ -131,7 +131,7 @@ public class class_860 implements RenderDebug.DebugRenderer {
 				for(int kxx = i - 12; kxx <= i + 12; ++kxx) {
 					for(int lxx = j - 12; lxx <= j + 12; ++lxx) {
 						ChunkPos chunkPosxx = new ChunkPos(kxx, lxx);
-						builderxx.put(chunkPosxx, "Server: " + serverChunkManager.method_14124(chunkPosxx));
+						builderxx.put(chunkPosxx, "Server: " + serverChunkManager.method_17294(chunkPosxx));
 					}
 				}
 

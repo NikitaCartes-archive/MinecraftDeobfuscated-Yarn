@@ -2,7 +2,7 @@ package net.minecraft.entity;
 
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.CompoundTag;
@@ -65,7 +65,7 @@ public class LightningEntity extends AbstractLightningEntity {
 		}
 
 		if (this.field_7185 >= 0) {
-			if (this.world.isRemote) {
+			if (this.world.isClient) {
 				this.world.setTicksSinceLightningClient(2);
 			} else if (!this.field_7184) {
 				double d = 3.0;
@@ -78,14 +78,14 @@ public class LightningEntity extends AbstractLightningEntity {
 				}
 
 				if (this.field_7182 != null) {
-					CriterionCriterions.CHANNELED_LIGHTNING.method_8803(this.field_7182, list);
+					Criterions.CHANNELED_LIGHTNING.method_8803(this.field_7182, list);
 				}
 			}
 		}
 	}
 
 	private void method_6960(int i) {
-		if (!this.field_7184 && !this.world.isRemote && this.world.getGameRules().getBoolean("doFireTick")) {
+		if (!this.field_7184 && !this.world.isClient && this.world.getGameRules().getBoolean("doFireTick")) {
 			BlockState blockState = Blocks.field_10036.getDefaultState();
 			BlockPos blockPos = new BlockPos(this);
 			if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {

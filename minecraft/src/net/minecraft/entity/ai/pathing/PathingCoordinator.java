@@ -7,7 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particle.Particle;
+import net.minecraft.particle.ParticleParameters;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.BooleanBiFunction;
@@ -47,8 +47,8 @@ public class PathingCoordinator implements WorldListener {
 	}
 
 	protected boolean method_6368(BlockView blockView, BlockPos blockPos, BlockState blockState, BlockState blockState2) {
-		VoxelShape voxelShape = blockState.method_11628(blockView, blockPos);
-		VoxelShape voxelShape2 = blockState2.method_11628(blockView, blockPos);
+		VoxelShape voxelShape = blockState.getCollisionShape(blockView, blockPos);
+		VoxelShape voxelShape2 = blockState2.getCollisionShape(blockView, blockPos);
 		return VoxelShapes.compareShapes(voxelShape, voxelShape2, BooleanBiFunction.NOT_SAME);
 	}
 
@@ -57,15 +57,15 @@ public class PathingCoordinator implements WorldListener {
 	}
 
 	@Override
-	public void method_8565(@Nullable PlayerEntity playerEntity, SoundEvent soundEvent, SoundCategory soundCategory, Entity entity, float f, float g) {
+	public void onSoundFromEntity(@Nullable PlayerEntity playerEntity, SoundEvent soundEvent, SoundCategory soundCategory, Entity entity, float f, float g) {
 	}
 
 	@Override
-	public void addParticle(Particle particle, boolean bl, double d, double e, double f, double g, double h, double i) {
+	public void method_8568(ParticleParameters particleParameters, boolean bl, double d, double e, double f, double g, double h, double i) {
 	}
 
 	@Override
-	public void addParticle(Particle particle, boolean bl, boolean bl2, double d, double e, double f, double g, double h, double i) {
+	public void method_8563(ParticleParameters particleParameters, boolean bl, boolean bl2, double d, double e, double f, double g, double h, double i) {
 	}
 
 	@Override

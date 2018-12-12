@@ -2,9 +2,9 @@ package net.minecraft.client.tutorial;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_372;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tag.BlockTags;
@@ -19,7 +19,7 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 	private static final TextComponent TITLE = new TranslatableTextComponent("tutorial.punch_tree.title");
 	private static final TextComponent DESCRIPTION = new TranslatableTextComponent("tutorial.punch_tree.description", TutorialManager.getKeybindName("attack"));
 	private final TutorialManager manager;
-	private class_372 field_5637;
+	private TutorialToast field_5637;
 	private int ticks;
 	private int field_5635;
 
@@ -49,7 +49,7 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 			}
 
 			if ((this.ticks >= 600 || this.field_5635 > 3) && this.field_5637 == null) {
-				this.field_5637 = new class_372(class_372.class_373.field_2235, TITLE, DESCRIPTION, true);
+				this.field_5637 = new TutorialToast(TutorialToast.class_373.field_2235, TITLE, DESCRIPTION, true);
 				this.manager.getClient().getToastManager().add(this.field_5637);
 			}
 		}

@@ -2,7 +2,6 @@ package net.minecraft.sortme.structures;
 
 import java.util.Random;
 import net.minecraft.class_3418;
-import net.minecraft.class_3485;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.StairsBlock;
@@ -21,7 +20,7 @@ public class DesertTempleGenerator extends class_3418 {
 		super(StructurePiece.field_16933, random, i, 64, j, 21, 15, 21);
 	}
 
-	public DesertTempleGenerator(class_3485 arg, CompoundTag compoundTag) {
+	public DesertTempleGenerator(StructureManager structureManager, CompoundTag compoundTag) {
 		super(StructurePiece.field_16933, compoundTag);
 		this.field_14397[0] = compoundTag.getBoolean("hasPlacedChest0");
 		this.field_14397[1] = compoundTag.getBoolean("hasPlacedChest1");
@@ -80,10 +79,10 @@ public class DesertTempleGenerator extends class_3418 {
 			}
 		}
 
-		BlockState blockState = Blocks.field_10142.getDefaultState().with(StairsBlock.field_11571, Direction.NORTH);
-		BlockState blockState2 = Blocks.field_10142.getDefaultState().with(StairsBlock.field_11571, Direction.SOUTH);
-		BlockState blockState3 = Blocks.field_10142.getDefaultState().with(StairsBlock.field_11571, Direction.EAST);
-		BlockState blockState4 = Blocks.field_10142.getDefaultState().with(StairsBlock.field_11571, Direction.WEST);
+		BlockState blockState = Blocks.field_10142.getDefaultState().with(StairsBlock.FACING, Direction.NORTH);
+		BlockState blockState2 = Blocks.field_10142.getDefaultState().with(StairsBlock.FACING, Direction.SOUTH);
+		BlockState blockState3 = Blocks.field_10142.getDefaultState().with(StairsBlock.FACING, Direction.EAST);
+		BlockState blockState4 = Blocks.field_10142.getDefaultState().with(StairsBlock.FACING, Direction.WEST);
 		this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 4, 9, 4, Blocks.field_9979.getDefaultState(), Blocks.field_10124.getDefaultState(), false);
 		this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 10, 1, 3, 10, 3, Blocks.field_9979.getDefaultState(), Blocks.field_9979.getDefaultState(), false);
 		this.addBlock(iWorld, blockState, 2, 10, 0, mutableIntBoundingBox);

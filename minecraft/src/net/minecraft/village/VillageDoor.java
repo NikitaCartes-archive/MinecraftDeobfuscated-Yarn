@@ -6,16 +6,16 @@ import net.minecraft.util.math.Direction;
 public class VillageDoor {
 	private final BlockPos position;
 	private final BlockPos field_6712;
-	private final Direction field_6711;
+	private final Direction facing;
 	private int lastTimeSeenByVillager;
 	private boolean field_6710;
 	private int entityInsideTicks;
 
 	public VillageDoor(BlockPos blockPos, int i, int j, int k) {
-		this(blockPos, method_6427(i, j), k);
+		this(blockPos, getFacing(i, j), k);
 	}
 
-	private static Direction method_6427(int i, int j) {
+	private static Direction getFacing(int i, int j) {
 		if (i < 0) {
 			return Direction.WEST;
 		} else if (i > 0) {
@@ -27,8 +27,8 @@ public class VillageDoor {
 
 	public VillageDoor(BlockPos blockPos, Direction direction, int i) {
 		this.position = blockPos.toImmutable();
-		this.field_6711 = direction;
-		this.field_6712 = blockPos.method_10079(direction, 2);
+		this.facing = direction;
+		this.field_6712 = blockPos.offset(direction, 2);
 		this.lastTimeSeenByVillager = i;
 	}
 
@@ -47,7 +47,7 @@ public class VillageDoor {
 	public boolean method_6425(BlockPos blockPos) {
 		int i = blockPos.getX() - this.position.getX();
 		int j = blockPos.getZ() - this.position.getY();
-		return i * this.field_6711.getOffsetX() + j * this.field_6711.getOffsetZ() >= 0;
+		return i * this.facing.getOffsetX() + j * this.facing.getOffsetZ() >= 0;
 	}
 
 	public void clearEntityInsideTicks() {
@@ -71,11 +71,11 @@ public class VillageDoor {
 	}
 
 	public int insideDirectionX() {
-		return this.field_6711.getOffsetX() * 2;
+		return this.facing.getOffsetX() * 2;
 	}
 
 	public int insideDirectionY() {
-		return this.field_6711.getOffsetZ() * 2;
+		return this.facing.getOffsetZ() * 2;
 	}
 
 	public int getLastTimeSeenByVillager() {
@@ -94,7 +94,7 @@ public class VillageDoor {
 		this.field_6710 = bl;
 	}
 
-	public Direction method_6424() {
-		return this.field_6711;
+	public Direction getFacing() {
+		return this.facing;
 	}
 }

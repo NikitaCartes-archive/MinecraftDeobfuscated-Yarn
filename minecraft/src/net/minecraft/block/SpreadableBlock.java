@@ -14,19 +14,19 @@ public abstract class SpreadableBlock extends SnowyBlock {
 	private static boolean method_10614(ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.up();
 		return viewableWorld.method_8602(blockPos2) >= 4
-			|| viewableWorld.getBlockState(blockPos2).method_11581(viewableWorld, blockPos2) < viewableWorld.getMaxLightLevel();
+			|| viewableWorld.getBlockState(blockPos2).getLightSubtracted(viewableWorld, blockPos2) < viewableWorld.getMaxLightLevel();
 	}
 
 	private static boolean method_10613(ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.up();
 		return viewableWorld.method_8602(blockPos2) >= 4
-			&& viewableWorld.getBlockState(blockPos2).method_11581(viewableWorld, blockPos2) < viewableWorld.getMaxLightLevel()
+			&& viewableWorld.getBlockState(blockPos2).getLightSubtracted(viewableWorld, blockPos2) < viewableWorld.getMaxLightLevel()
 			&& !viewableWorld.getFluidState(blockPos2).matches(FluidTags.field_15517);
 	}
 
 	@Override
 	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			if (!method_10614(world, blockPos)) {
 				world.setBlockState(blockPos, Blocks.field_10566.getDefaultState());
 			} else {

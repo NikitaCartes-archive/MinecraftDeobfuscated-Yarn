@@ -1,9 +1,7 @@
 package net.minecraft.server.dedicated;
 
-import net.minecraft.class_3806;
-
 public interface DedicatedServer {
-	class_3806 method_16705();
+	ServerPropertiesHandler getProperties();
 
 	String getHostname();
 
@@ -23,7 +21,7 @@ public interface DedicatedServer {
 
 	String method_12916();
 
-	String method_12934(String string);
+	String executeRconCommand(String string);
 
 	boolean isDebuggingEnabled();
 

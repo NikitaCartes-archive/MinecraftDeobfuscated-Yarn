@@ -7,8 +7,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.GlFramebuffer;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
@@ -49,15 +49,15 @@ public class SplashGui extends Gui {
 		GlStateManager.disableDepthTest();
 		GlStateManager.enableTexture();
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-		vertexBuffer.begin(7, VertexFormats.POSITION_UV_COLOR);
-		vertexBuffer.vertex(0.0, (double)this.client.window.getWindowHeight(), 0.0).texture(0.0, 0.0).color(255, 255, 255, 255).next();
-		vertexBuffer.vertex((double)this.client.window.getWindowWidth(), (double)this.client.window.getWindowHeight(), 0.0)
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+		bufferBuilder.vertex(0.0, (double)this.client.window.getWindowHeight(), 0.0).texture(0.0, 0.0).color(255, 255, 255, 255).next();
+		bufferBuilder.vertex((double)this.client.window.getWindowWidth(), (double)this.client.window.getWindowHeight(), 0.0)
 			.texture(0.0, 0.0)
 			.color(255, 255, 255, 255)
 			.next();
-		vertexBuffer.vertex((double)this.client.window.getWindowWidth(), 0.0, 0.0).texture(0.0, 0.0).color(255, 255, 255, 255).next();
-		vertexBuffer.vertex(0.0, 0.0, 0.0).texture(0.0, 0.0).color(255, 255, 255, 255).next();
+		bufferBuilder.vertex((double)this.client.window.getWindowWidth(), 0.0, 0.0).texture(0.0, 0.0).color(255, 255, 255, 255).next();
+		bufferBuilder.vertex(0.0, 0.0, 0.0).texture(0.0, 0.0).color(255, 255, 255, 255).next();
 		tessellator.draw();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		int k = 256;

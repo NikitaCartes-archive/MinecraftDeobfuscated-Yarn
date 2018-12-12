@@ -17,7 +17,7 @@ import net.minecraft.text.TextComponent;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportElement;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -103,7 +103,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 	}
 
 	public boolean execute(World world) {
-		if (world.isRemote || world.getTime() == this.lastExecution) {
+		if (world.isClient || world.getTime() == this.lastExecution) {
 			return false;
 		} else if ("Searge".equalsIgnoreCase(this.command)) {
 			this.lastOutput = new StringTextComponent("#itzlipofutzli");
@@ -123,9 +123,9 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 					minecraftServer.getCommandManager().execute(serverCommandSource, this.command);
 				} catch (Throwable var6) {
 					CrashReport crashReport = CrashReport.create(var6, "Executing command block");
-					CrashReportElement crashReportElement = crashReport.addElement("Command to be executed");
-					crashReportElement.add("Command", this::getCommand);
-					crashReportElement.add("Name", (ICrashCallable<String>)(() -> this.getCustomName().getString()));
+					CrashReportSection crashReportSection = crashReport.method_562("Command to be executed");
+					crashReportSection.add("Command", this::getCommand);
+					crashReportSection.add("Name", (ICrashCallable<String>)(() -> this.getCustomName().getString()));
 					throw new CrashException(crashReport);
 				}
 			}
@@ -177,8 +177,8 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		if (!playerEntity.method_7338()) {
 			return false;
 		} else {
-			if (playerEntity.getEntityWorld().isRemote) {
-				playerEntity.openCommandBlockMinecart(this);
+			if (playerEntity.getEntityWorld().isClient) {
+				playerEntity.openCommandBlockMinecartGui(this);
 			}
 
 			return true;

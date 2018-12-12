@@ -65,11 +65,11 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	protected void method_16078() {
-		super.method_16078();
+	protected void dropInventory() {
+		super.dropInventory();
 		if (this.hasChest()) {
-			if (!this.world.isRemote) {
-				this.dropItem(Blocks.field_10034);
+			if (!this.world.isClient) {
+				this.method_5706(Blocks.field_10034);
 			}
 
 			this.setHasChest(false);

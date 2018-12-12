@@ -7,11 +7,11 @@ import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class CowEntityRenderer extends EntityMobRenderer<CowEntity> {
+public class CowEntityRenderer extends MobEntityRenderer<CowEntity, CowEntityModel<CowEntity>> {
 	private static final Identifier SKIN = new Identifier("textures/entity/cow/cow.png");
 
 	public CowEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new CowEntityModel(), 0.7F);
+		super(entityRenderDispatcher, new CowEntityModel<>(), 0.7F);
 	}
 
 	protected Identifier getTexture(CowEntity cowEntity) {

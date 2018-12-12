@@ -22,9 +22,10 @@ public class SplashPotionItem extends PotionItem {
 		world.playSound(
 			null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_14910, SoundCategory.field_15248, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F)
 		);
-		if (!world.isRemote) {
-			ThrownPotionEntity thrownPotionEntity = new ThrownPotionEntity(world, playerEntity, itemStack2);
-			thrownPotionEntity.method_7489(playerEntity, playerEntity.pitch, playerEntity.yaw, -20.0F, 0.5F, 1.0F);
+		if (!world.isClient) {
+			ThrownPotionEntity thrownPotionEntity = new ThrownPotionEntity(world, playerEntity);
+			thrownPotionEntity.setItemStack(itemStack2);
+			thrownPotionEntity.calculateVelocity(playerEntity, playerEntity.pitch, playerEntity.yaw, -20.0F, 0.5F, 1.0F);
 			world.spawnEntity(thrownPotionEntity);
 		}
 

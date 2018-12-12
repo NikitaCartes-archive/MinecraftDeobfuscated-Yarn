@@ -6,8 +6,8 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.gui.widget.OptionSliderWidget;
+import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.settings.GameOptions;
 import net.minecraft.client.util.NarratorManager;
 
 @Environment(EnvType.CLIENT)
@@ -67,7 +67,7 @@ public class ChatSettingsGui extends Gui {
 		this.addButton(new ButtonWidget(200, this.width / 2 - 100, this.height / 6 + 144, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
-				ChatSettingsGui.this.client.options.write();
+				ChatSettingsGui.this.client.field_1690.write();
 				ChatSettingsGui.this.client.openGui(ChatSettingsGui.this.parent);
 			}
 		});
@@ -75,7 +75,7 @@ public class ChatSettingsGui extends Gui {
 
 	@Override
 	public void close() {
-		this.client.options.write();
+		this.client.field_1690.write();
 		super.close();
 	}
 

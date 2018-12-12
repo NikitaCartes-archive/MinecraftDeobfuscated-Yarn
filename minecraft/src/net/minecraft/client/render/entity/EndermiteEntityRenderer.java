@@ -7,11 +7,11 @@ import net.minecraft.entity.mob.EndermiteEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class EndermiteEntityRenderer extends EntityMobRenderer<EndermiteEntity> {
+public class EndermiteEntityRenderer extends MobEntityRenderer<EndermiteEntity, EndermiteEntityModel<EndermiteEntity>> {
 	private static final Identifier SKIN = new Identifier("textures/entity/endermite.png");
 
 	public EndermiteEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new EndermiteEntityModel(), 0.3F);
+		super(entityRenderDispatcher, new EndermiteEntityModel<>(), 0.3F);
 	}
 
 	protected float method_3919(EndermiteEntity endermiteEntity) {

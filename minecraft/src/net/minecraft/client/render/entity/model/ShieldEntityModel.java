@@ -19,7 +19,7 @@ public class ShieldEntityModel extends Model {
 		this.field_3551.addBox(-1.0F, -3.0F, -1.0F, 2, 6, 6, 0.0F);
 	}
 
-	public void method_2828() {
+	public void renderItem() {
 		this.field_3550.render(0.0625F);
 		this.field_3551.render(0.0625F);
 	}

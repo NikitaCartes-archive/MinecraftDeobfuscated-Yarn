@@ -6,7 +6,7 @@ import net.minecraft.text.TextComponent;
 import net.minecraft.util.JsonHelper;
 
 public class PackResourceMetadataReader implements ResourceMetadataReader<PackResourceMetadata> {
-	public PackResourceMetadata read(JsonObject jsonObject) {
+	public PackResourceMetadata fromJson(JsonObject jsonObject) {
 		TextComponent textComponent = TextComponent.Serializer.fromJson(jsonObject.get("description"));
 		if (textComponent == null) {
 			throw new JsonParseException("Invalid/missing description!");

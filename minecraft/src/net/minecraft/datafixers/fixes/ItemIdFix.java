@@ -15,7 +15,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.datafixers.TypeReferences;
 
 public class ItemIdFix extends DataFix {
-	private static final Int2ObjectMap<String> items = DataFixUtils.make(new Int2ObjectOpenHashMap(), int2ObjectOpenHashMap -> {
+	private static final Int2ObjectMap<String> NUMERICAL_ID_TO_STRING_ID_MAP = DataFixUtils.make(new Int2ObjectOpenHashMap(), int2ObjectOpenHashMap -> {
 		int2ObjectOpenHashMap.put(1, "minecraft:stone");
 		int2ObjectOpenHashMap.put(2, "minecraft:grass");
 		int2ObjectOpenHashMap.put(3, "minecraft:dirt");
@@ -339,7 +339,7 @@ public class ItemIdFix extends DataFix {
 	}
 
 	public static String fromId(int i) {
-		return (String)items.get(i);
+		return (String)NUMERICAL_ID_TO_STRING_ID_MAP.get(i);
 	}
 
 	@Override

@@ -5,9 +5,6 @@ import java.util.BitSet;
 import java.util.Map;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_2839;
-import net.minecraft.class_2843;
-import net.minecraft.class_3449;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -16,6 +13,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sortme.structures.StructureStart;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ChunkTickScheduler;
@@ -24,11 +22,11 @@ import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.Heightmap;
 
-public class ReadOnlyChunk extends class_2839 {
+public class ReadOnlyChunk extends ProtoChunk {
 	private final WorldChunk wrapped;
 
 	public ReadOnlyChunk(WorldChunk worldChunk) {
-		super(worldChunk.getPos(), class_2843.field_12950);
+		super(worldChunk.getPos(), UpgradeData.NO_UPGRADE_DATA);
 		this.wrapped = worldChunk;
 	}
 
@@ -69,7 +67,7 @@ public class ReadOnlyChunk extends class_2839 {
 	}
 
 	@Override
-	public void method_12308(ChunkStatus chunkStatus) {
+	public void setStatus(ChunkStatus chunkStatus) {
 	}
 
 	@Override
@@ -79,12 +77,12 @@ public class ReadOnlyChunk extends class_2839 {
 
 	@Nullable
 	@Override
-	public LightingProvider method_12023() {
-		return this.wrapped.method_12023();
+	public LightingProvider getLightingProvider() {
+		return this.wrapped.getLightingProvider();
 	}
 
 	@Override
-	public void method_12037(Heightmap.Type type, long[] ls) {
+	public void setHeightmap(Heightmap.Type type, long[] ls) {
 	}
 
 	private Heightmap.Type method_12239(Heightmap.Type type) {
@@ -106,44 +104,44 @@ public class ReadOnlyChunk extends class_2839 {
 	}
 
 	@Override
-	public void method_12043(long l) {
+	public void setLastSaveTime(long l) {
 	}
 
 	@Nullable
 	@Override
-	public class_3449 method_12181(String string) {
-		return this.wrapped.method_12181(string);
+	public StructureStart getStructureStart(String string) {
+		return this.wrapped.getStructureStart(string);
 	}
 
 	@Override
-	public void method_12184(String string, class_3449 arg) {
+	public void setStructureStart(String string, StructureStart structureStart) {
 	}
 
 	@Override
-	public Map<String, class_3449> method_12016() {
-		return this.wrapped.method_12016();
+	public Map<String, StructureStart> getStructureStarts() {
+		return this.wrapped.getStructureStarts();
 	}
 
 	@Override
-	public void method_12034(Map<String, class_3449> map) {
+	public void setStructureStarts(Map<String, StructureStart> map) {
 	}
 
 	@Override
-	public LongSet method_12180(String string) {
-		return this.wrapped.method_12180(string);
+	public LongSet getStructureReferences(String string) {
+		return this.wrapped.getStructureReferences(string);
 	}
 
 	@Override
-	public void method_12182(String string, long l) {
+	public void addStructureReference(String string, long l) {
 	}
 
 	@Override
-	public Map<String, LongSet> method_12179() {
-		return this.wrapped.method_12179();
+	public Map<String, LongSet> getStructureReferences() {
+		return this.wrapped.getStructureReferences();
 	}
 
 	@Override
-	public void method_12183(Map<String, LongSet> map) {
+	public void setStructureReferences(Map<String, LongSet> map) {
 	}
 
 	@Override
@@ -152,11 +150,11 @@ public class ReadOnlyChunk extends class_2839 {
 	}
 
 	@Override
-	public void method_12008(boolean bl) {
+	public void setShouldSave(boolean bl) {
 	}
 
 	@Override
-	public boolean method_12044() {
+	public boolean needsSaving() {
 		return false;
 	}
 
@@ -179,12 +177,12 @@ public class ReadOnlyChunk extends class_2839 {
 
 	@Nullable
 	@Override
-	public CompoundTag method_12024(BlockPos blockPos) {
-		return this.wrapped.method_12024(blockPos);
+	public CompoundTag getBlockEntityTagAt(BlockPos blockPos) {
+		return this.wrapped.getBlockEntityTagAt(blockPos);
 	}
 
 	@Override
-	public void setBiomes(Biome[] biomes) {
+	public void setBiomeArray(Biome[] biomes) {
 	}
 
 	@Override
@@ -193,18 +191,18 @@ public class ReadOnlyChunk extends class_2839 {
 	}
 
 	@Override
-	public ChunkTickScheduler<Block> method_12303() {
+	public ChunkTickScheduler<Block> getBlockTickScheduler() {
 		return new ChunkTickScheduler<>(block -> block.getDefaultState().isAir(), Registry.BLOCK::getId, Registry.BLOCK::get, this.getPos());
 	}
 
 	@Override
-	public ChunkTickScheduler<Fluid> method_12313() {
-		return new ChunkTickScheduler<>(fluid -> fluid == Fluids.field_15906, Registry.FLUID::getId, Registry.FLUID::get, this.getPos());
+	public ChunkTickScheduler<Fluid> getFluidTickScheduler() {
+		return new ChunkTickScheduler<>(fluid -> fluid == Fluids.EMPTY, Registry.FLUID::getId, Registry.FLUID::get, this.getPos());
 	}
 
 	@Override
-	public BitSet method_12025(GenerationStep.Carver carver) {
-		return this.wrapped.method_12025(carver);
+	public BitSet getCarvingMask(GenerationStep.Carver carver) {
+		return this.wrapped.getCarvingMask(carver);
 	}
 
 	public WorldChunk method_12240() {
@@ -212,12 +210,12 @@ public class ReadOnlyChunk extends class_2839 {
 	}
 
 	@Override
-	public boolean method_12038() {
-		return this.wrapped.method_12038();
+	public boolean isLightOn() {
+		return this.wrapped.isLightOn();
 	}
 
 	@Override
-	public void method_12020(boolean bl) {
-		this.wrapped.method_12020(bl);
+	public void setLightOn(boolean bl) {
+		this.wrapped.setLightOn(bl);
 	}
 }

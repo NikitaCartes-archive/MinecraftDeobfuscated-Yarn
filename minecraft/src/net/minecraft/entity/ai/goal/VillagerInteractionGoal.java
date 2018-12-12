@@ -21,7 +21,7 @@ public class VillagerInteractionGoal extends class_1358 {
 	@Override
 	public void start() {
 		super.start();
-		if (this.villager.method_7234() && this.field_6484 instanceof VillagerEntity && ((VillagerEntity)this.field_6484).method_7239()) {
+		if (this.villager.method_7234() && this.field_6484 instanceof VillagerEntity && ((VillagerEntity)this.field_6484).canBreed()) {
 			this.delay = 10;
 		} else {
 			this.delay = 0;
@@ -61,7 +61,7 @@ public class VillagerInteractionGoal extends class_1358 {
 						double d = this.villager.y - 0.3F + (double)this.villager.getEyeHeight();
 						ItemEntity itemEntity = new ItemEntity(this.villager.world, this.villager.x, d, this.villager.z, itemStack2);
 						float f = 0.3F;
-						float g = this.villager.headPitch;
+						float g = this.villager.headYaw;
 						float h = this.villager.pitch;
 						itemEntity.velocityX = (double)(-MathHelper.sin(g * (float) (Math.PI / 180.0)) * MathHelper.cos(h * (float) (Math.PI / 180.0)) * 0.3F);
 						itemEntity.velocityZ = (double)(MathHelper.cos(g * (float) (Math.PI / 180.0)) * MathHelper.cos(h * (float) (Math.PI / 180.0)) * 0.3F);

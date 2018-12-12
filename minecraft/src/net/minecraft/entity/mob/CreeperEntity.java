@@ -165,7 +165,7 @@ public class CreeperEntity extends HostileEntity {
 			CreeperEntity creeperEntity = (CreeperEntity)entity;
 			if (creeperEntity.method_7008()) {
 				creeperEntity.method_7002();
-				this.dropItem(Items.field_8681);
+				this.method_5706(Items.field_8681);
 			}
 		}
 	}
@@ -204,7 +204,7 @@ public class CreeperEntity extends HostileEntity {
 		if (itemStack.getItem() == Items.field_8884) {
 			this.world.playSound(playerEntity, this.x, this.y, this.z, SoundEvents.field_15145, this.getSoundCategory(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
 			playerEntity.swingHand(hand);
-			if (!this.world.isRemote) {
+			if (!this.world.isClient) {
 				this.setIgnited();
 				itemStack.applyDamage(1, playerEntity);
 				return true;
@@ -215,7 +215,7 @@ public class CreeperEntity extends HostileEntity {
 	}
 
 	private void method_7006() {
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			boolean bl = this.world.getGameRules().getBoolean("mobGriefing");
 			float f = this.isCharged() ? 2.0F : 1.0F;
 			this.dead = true;

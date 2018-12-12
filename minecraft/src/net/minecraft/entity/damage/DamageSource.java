@@ -26,7 +26,7 @@ public class DamageSource {
 	public static final DamageSource FLY_INTO_WALL = new DamageSource("flyIntoWall").setBypassesArmor();
 	public static final DamageSource OUT_OF_WORLD = new DamageSource("outOfWorld").setBypassesArmor().setDamageToCreative();
 	public static final DamageSource GENERIC = new DamageSource("generic").setBypassesArmor();
-	public static final DamageSource MAGIC = new DamageSource("magic").setBypassesArmor().setMagic();
+	public static final DamageSource MAGIC = new DamageSource("magic").setBypassesArmor().setUsesMagic();
 	public static final DamageSource WITHER = new DamageSource("wither").setBypassesArmor();
 	public static final DamageSource ANVIL = new DamageSource("anvil");
 	public static final DamageSource FALLING_BLOCK = new DamageSource("fallingBlock");
@@ -76,11 +76,11 @@ public class DamageSource {
 	}
 
 	public static DamageSource magic(Entity entity, @Nullable Entity entity2) {
-		return new ProjectileDamageSource("indirectMagic", entity, entity2).setBypassesArmor().setMagic();
+		return new ProjectileDamageSource("indirectMagic", entity, entity2).setBypassesArmor().setUsesMagic();
 	}
 
 	public static DamageSource thorns(Entity entity) {
-		return new EntityDamageSource("thorns", entity).method_5550().setMagic();
+		return new EntityDamageSource("thorns", entity).method_5550().setUsesMagic();
 	}
 
 	public static DamageSource explosion(@Nullable Explosion explosion) {
@@ -195,11 +195,11 @@ public class DamageSource {
 		return this.scaleWithDifficulty;
 	}
 
-	public boolean setMagic() {
+	public boolean getMagic() {
 		return this.magic;
 	}
 
-	public DamageSource setMagic() {
+	public DamageSource setUsesMagic() {
 		this.magic = true;
 		return this;
 	}

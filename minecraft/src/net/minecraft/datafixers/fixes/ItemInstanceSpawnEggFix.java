@@ -17,7 +17,7 @@ import java.util.Optional;
 import net.minecraft.datafixers.TypeReferences;
 
 public class ItemInstanceSpawnEggFix extends DataFix {
-	private static final Map<String, String> entityEggs = DataFixUtils.make(Maps.newHashMap(), hashMap -> {
+	private static final Map<String, String> ENTITY_SPAWN_EGGS = DataFixUtils.make(Maps.newHashMap(), hashMap -> {
 		hashMap.put("minecraft:bat", "minecraft:bat_spawn_egg");
 		hashMap.put("minecraft:blaze", "minecraft:blaze_spawn_egg");
 		hashMap.put("minecraft:cave_spider", "minecraft:cave_spider_spawn_egg");
@@ -83,7 +83,7 @@ public class ItemInstanceSpawnEggFix extends DataFix {
 				Typed<?> typed3 = typed2.getOrCreateTyped(opticFinder4);
 				Optional<String> optional2 = typed3.getOptional(opticFinder2);
 				if (optional2.isPresent()) {
-					return typed.set(opticFinder, Pair.of(TypeReferences.ITEM_NAME.typeName(), entityEggs.getOrDefault(optional2.get(), "minecraft:pig_spawn_egg")));
+					return typed.set(opticFinder, Pair.of(TypeReferences.ITEM_NAME.typeName(), ENTITY_SPAWN_EGGS.getOrDefault(optional2.get(), "minecraft:pig_spawn_egg")));
 				}
 			}
 

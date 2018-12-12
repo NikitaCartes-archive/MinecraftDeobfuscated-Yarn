@@ -19,7 +19,7 @@ public class LecternBlock extends BlockWithEntity {
 	public static final DirectionProperty field_16404 = HorizontalFacingBlock.field_11177;
 	public static final VoxelShape field_16406 = Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
 	public static final VoxelShape field_16405 = Block.createCubeShape(4.0, 2.0, 4.0, 12.0, 14.0, 12.0);
-	public static final VoxelShape field_16403 = VoxelShapes.method_1084(field_16406, field_16405);
+	public static final VoxelShape field_16403 = VoxelShapes.union(field_16406, field_16405);
 
 	protected LecternBlock(Block.Settings settings) {
 		super(settings);
@@ -27,17 +27,17 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public RenderTypeBlock getRenderType(BlockState blockState) {
-		return RenderTypeBlock.MODEL;
+	public BlockRenderType method_9604(BlockState blockState) {
+		return BlockRenderType.field_11458;
 	}
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(field_16404, itemPlacementContext.method_8042().getOpposite());
+		return this.getDefaultState().with(field_16404, itemPlacementContext.getPlayerHorizontalFacing().getOpposite());
 	}
 
 	@Override
-	public VoxelShape method_9549(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		return field_16403;
 	}
 
@@ -53,7 +53,7 @@ public class LecternBlock extends BlockWithEntity {
 
 	@Override
 	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.method_10345(blockState.get(field_16404)));
+		return blockState.applyRotation(mirror.getRotation(blockState.get(field_16404)));
 	}
 
 	@Override

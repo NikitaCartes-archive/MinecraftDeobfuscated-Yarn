@@ -5,15 +5,14 @@ import java.util.List;
 import java.util.Random;
 import net.minecraft.class_3443;
 import net.minecraft.class_3470;
-import net.minecraft.class_3485;
 import net.minecraft.class_3492;
 import net.minecraft.class_3499;
-import net.minecraft.class_3730;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.CompoundTag;
@@ -32,8 +31,8 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.Heightmap;
-import net.minecraft.world.gen.config.feature.OceanRuinFeatureConfig;
 import net.minecraft.world.gen.feature.OceanRuinFeature;
+import net.minecraft.world.gen.feature.OceanRuinFeatureConfig;
 import net.minecraft.world.loot.LootTables;
 
 public class OceanTempleGenerator {
@@ -111,18 +110,18 @@ public class OceanTempleGenerator {
 	}
 
 	public static void method_14827(
-		class_3485 arg, BlockPos blockPos, Rotation rotation, List<class_3443> list, Random random, OceanRuinFeatureConfig oceanRuinFeatureConfig
+		StructureManager structureManager, BlockPos blockPos, Rotation rotation, List<class_3443> list, Random random, OceanRuinFeatureConfig oceanRuinFeatureConfig
 	) {
 		boolean bl = random.nextFloat() <= oceanRuinFeatureConfig.largeProbability;
 		float f = bl ? 0.9F : 0.8F;
-		method_14822(arg, blockPos, rotation, list, random, oceanRuinFeatureConfig, bl, f);
+		method_14822(structureManager, blockPos, rotation, list, random, oceanRuinFeatureConfig, bl, f);
 		if (bl && random.nextFloat() <= oceanRuinFeatureConfig.clusterProbability) {
-			method_14825(arg, random, rotation, blockPos, oceanRuinFeatureConfig, list);
+			method_14825(structureManager, random, rotation, blockPos, oceanRuinFeatureConfig, list);
 		}
 	}
 
 	private static void method_14825(
-		class_3485 arg, Random random, Rotation rotation, BlockPos blockPos, OceanRuinFeatureConfig oceanRuinFeatureConfig, List<class_3443> list
+		StructureManager structureManager, Random random, Rotation rotation, BlockPos blockPos, OceanRuinFeatureConfig oceanRuinFeatureConfig, List<class_3443> list
 	) {
 		int i = blockPos.getX();
 		int j = blockPos.getZ();
@@ -142,7 +141,7 @@ public class OceanTempleGenerator {
 				BlockPos blockPos5 = class_3499.method_15168(new BlockPos(5, 0, 6), Mirror.NONE, rotation2, new BlockPos(0, 0, 0)).add(n, 0, o);
 				MutableIntBoundingBox mutableIntBoundingBox2 = MutableIntBoundingBox.create(n, 0, o, blockPos5.getX(), 0, blockPos5.getZ());
 				if (!mutableIntBoundingBox2.intersects(mutableIntBoundingBox)) {
-					method_14822(arg, blockPos4, rotation2, list, random, oceanRuinFeatureConfig, false, 0.8F);
+					method_14822(structureManager, blockPos4, rotation2, list, random, oceanRuinFeatureConfig, false, 0.8F);
 				}
 			}
 		}
@@ -162,7 +161,7 @@ public class OceanTempleGenerator {
 	}
 
 	private static void method_14822(
-		class_3485 arg,
+		StructureManager structureManager,
 		BlockPos blockPos,
 		Rotation rotation,
 		List<class_3443> list,
@@ -173,15 +172,15 @@ public class OceanTempleGenerator {
 	) {
 		if (oceanRuinFeatureConfig.biomeTemperature == OceanRuinFeature.BiomeTemperature.WARM) {
 			Identifier identifier = bl ? method_14826(random) : method_14824(random);
-			list.add(new OceanTempleGenerator.class_3410(arg, identifier, blockPos, rotation, f, oceanRuinFeatureConfig.biomeTemperature, bl));
+			list.add(new OceanTempleGenerator.class_3410(structureManager, identifier, blockPos, rotation, f, oceanRuinFeatureConfig.biomeTemperature, bl));
 		} else if (oceanRuinFeatureConfig.biomeTemperature == OceanRuinFeature.BiomeTemperature.COLD) {
 			Identifier[] identifiers = bl ? field_14516 : field_14518;
 			Identifier[] identifiers2 = bl ? field_14520 : field_14519;
 			Identifier[] identifiers3 = bl ? field_14517 : field_14522;
 			int i = random.nextInt(identifiers.length);
-			list.add(new OceanTempleGenerator.class_3410(arg, identifiers[i], blockPos, rotation, f, oceanRuinFeatureConfig.biomeTemperature, bl));
-			list.add(new OceanTempleGenerator.class_3410(arg, identifiers2[i], blockPos, rotation, 0.7F, oceanRuinFeatureConfig.biomeTemperature, bl));
-			list.add(new OceanTempleGenerator.class_3410(arg, identifiers3[i], blockPos, rotation, 0.5F, oceanRuinFeatureConfig.biomeTemperature, bl));
+			list.add(new OceanTempleGenerator.class_3410(structureManager, identifiers[i], blockPos, rotation, f, oceanRuinFeatureConfig.biomeTemperature, bl));
+			list.add(new OceanTempleGenerator.class_3410(structureManager, identifiers2[i], blockPos, rotation, 0.7F, oceanRuinFeatureConfig.biomeTemperature, bl));
+			list.add(new OceanTempleGenerator.class_3410(structureManager, identifiers3[i], blockPos, rotation, 0.5F, oceanRuinFeatureConfig.biomeTemperature, bl));
 		}
 	}
 
@@ -193,7 +192,13 @@ public class OceanTempleGenerator {
 		private final boolean field_14525;
 
 		public class_3410(
-			class_3485 arg, Identifier identifier, BlockPos blockPos, Rotation rotation, float f, OceanRuinFeature.BiomeTemperature biomeTemperature, boolean bl
+			StructureManager structureManager,
+			Identifier identifier,
+			BlockPos blockPos,
+			Rotation rotation,
+			float f,
+			OceanRuinFeature.BiomeTemperature biomeTemperature,
+			boolean bl
 		) {
 			super(StructurePiece.field_16932, 0);
 			this.field_14523 = identifier;
@@ -202,21 +207,21 @@ public class OceanTempleGenerator {
 			this.field_14524 = f;
 			this.field_14527 = biomeTemperature;
 			this.field_14525 = bl;
-			this.method_14828(arg);
+			this.method_14828(structureManager);
 		}
 
-		public class_3410(class_3485 arg, CompoundTag compoundTag) {
+		public class_3410(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePiece.field_16932, compoundTag);
 			this.field_14523 = new Identifier(compoundTag.getString("Template"));
 			this.field_14526 = Rotation.valueOf(compoundTag.getString("Rot"));
 			this.field_14524 = compoundTag.getFloat("Integrity");
 			this.field_14527 = OceanRuinFeature.BiomeTemperature.valueOf(compoundTag.getString("BiomeType"));
 			this.field_14525 = compoundTag.getBoolean("IsLarge");
-			this.method_14828(arg);
+			this.method_14828(structureManager);
 		}
 
-		private void method_14828(class_3485 arg) {
-			class_3499 lv = arg.method_15091(this.field_14523);
+		private void method_14828(StructureManager structureManager) {
+			class_3499 lv = structureManager.method_15091(this.field_14523);
 			class_3492 lv2 = new class_3492().method_15123(this.field_14526).method_15125(Mirror.NONE).method_16184(BlockIgnoreStructureProcessor.field_16721);
 			this.method_15027(lv, this.field_15432, lv2);
 		}
@@ -244,10 +249,10 @@ public class OceanTempleGenerator {
 					((ChestBlockEntity)blockEntity).setLootTable(this.field_14525 ? LootTables.field_300 : LootTables.field_397, random.nextLong());
 				}
 			} else if ("drowned".equals(string)) {
-				DrownedEntity drownedEntity = new DrownedEntity(iWorld.method_8410());
+				DrownedEntity drownedEntity = new DrownedEntity(iWorld.getWorld());
 				drownedEntity.setPersistent();
 				drownedEntity.setPositionAndAngles(blockPos, 0.0F, 0.0F);
-				drownedEntity.method_5943(iWorld, iWorld.getLocalDifficulty(blockPos), class_3730.field_16474, null, null);
+				drownedEntity.prepareEntityData(iWorld, iWorld.getLocalDifficulty(blockPos), SpawnType.field_16474, null, null);
 				iWorld.spawnEntity(drownedEntity);
 				if (blockPos.getY() > iWorld.getSeaLevel()) {
 					iWorld.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 2);

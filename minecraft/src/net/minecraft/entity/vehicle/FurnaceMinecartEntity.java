@@ -25,7 +25,7 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	private int fuel;
 	public double pushX;
 	public double pushZ;
-	private static final Ingredient field_7738 = Ingredient.ofItems(Items.field_8713, Items.field_8665);
+	private static final Ingredient field_7738 = Ingredient.method_8091(Items.field_8713, Items.field_8665);
 
 	public FurnaceMinecartEntity(World world) {
 		super(EntityType.FURNACE_MINECART, world);
@@ -73,7 +73,7 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	public void dropItems(DamageSource damageSource) {
 		super.dropItems(damageSource);
 		if (!damageSource.isExplosive() && this.world.getGameRules().getBoolean("doEntityDrops")) {
-			this.dropItem(Blocks.field_10181);
+			this.method_5706(Blocks.field_10181);
 		}
 	}
 
@@ -160,6 +160,6 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 
 	@Override
 	public BlockState getDefaultContainedBlock() {
-		return Blocks.field_10181.getDefaultState().with(FurnaceBlock.field_11104, Direction.NORTH).with(FurnaceBlock.field_11105, Boolean.valueOf(this.isLit()));
+		return Blocks.field_10181.getDefaultState().with(FurnaceBlock.FACING, Direction.NORTH).with(FurnaceBlock.field_11105, Boolean.valueOf(this.isLit()));
 	}
 }

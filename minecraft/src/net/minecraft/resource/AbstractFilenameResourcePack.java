@@ -101,7 +101,7 @@ public abstract class AbstractFilenameResourcePack implements ResourcePack {
 			return null;
 		} else {
 			try {
-				return resourceMetadataReader.read(JsonHelper.getObject(jsonObject, resourceMetadataReader.getKey()));
+				return resourceMetadataReader.fromJson(JsonHelper.getObject(jsonObject, resourceMetadataReader.getKey()));
 			} catch (JsonParseException var15) {
 				LOGGER.error("Couldn't load {} metadata", resourceMetadataReader.getKey(), var15);
 				return null;

@@ -9,8 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.decorator.TopSolidHeightmapNoiseBiasedDecoratorConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class HeightmapNoiseBiasedDecorator extends Decorator<TopSolidHeightmapNoiseBiasedDecoratorConfig> {
 	public HeightmapNoiseBiasedDecorator(Function<Dynamic<?>, ? extends TopSolidHeightmapNoiseBiasedDecoratorConfig> function) {
@@ -19,7 +18,7 @@ public class HeightmapNoiseBiasedDecorator extends Decorator<TopSolidHeightmapNo
 
 	public Stream<BlockPos> method_15943(
 		IWorld iWorld,
-		ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator,
+		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,
 		TopSolidHeightmapNoiseBiasedDecoratorConfig topSolidHeightmapNoiseBiasedDecoratorConfig,
 		BlockPos blockPos

@@ -18,7 +18,7 @@ public abstract class Dimension {
 	protected World world;
 	private final DimensionType type;
 	protected boolean field_13057;
-	protected boolean field_13056;
+	protected boolean isNether;
 	protected final float[] field_13053 = new float[16];
 	private final float[] field_13054 = new float[4];
 
@@ -85,12 +85,12 @@ public abstract class Dimension {
 		return this.field_13057;
 	}
 
-	public boolean method_12451() {
-		return this.type.method_12491();
+	public boolean hasSkyLight() {
+		return this.type.hasSkyLight();
 	}
 
-	public boolean method_12467() {
-		return this.field_13056;
+	public boolean isNether() {
+		return this.isNether;
 	}
 
 	public float[] method_12456() {
@@ -107,7 +107,7 @@ public abstract class Dimension {
 	public void method_12458(ServerPlayerEntity serverPlayerEntity) {
 	}
 
-	public void method_12450() {
+	public void saveWorldData() {
 	}
 
 	public void method_12461() {
@@ -121,7 +121,7 @@ public abstract class Dimension {
 	@Nullable
 	public abstract BlockPos method_12444(int i, int j, boolean bl);
 
-	public abstract float method_12464(long l, float f);
+	public abstract float getSkyAngle(long l, float f);
 
 	public abstract boolean hasVisibleSky();
 

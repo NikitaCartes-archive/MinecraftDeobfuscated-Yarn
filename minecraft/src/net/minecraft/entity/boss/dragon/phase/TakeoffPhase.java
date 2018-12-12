@@ -1,12 +1,12 @@
 package net.minecraft.entity.boss.dragon.phase;
 
 import javax.annotation.Nullable;
-import net.minecraft.class_3033;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.gen.feature.EndPortalFeature;
 
 public class TakeoffPhase extends AbstractPhase {
 	private boolean field_7056;
@@ -20,7 +20,7 @@ public class TakeoffPhase extends AbstractPhase {
 	@Override
 	public void method_6855() {
 		if (!this.field_7056 && this.field_7054 != null) {
-			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, class_3033.field_13600);
+			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
 			double d = this.dragon.squaredDistanceToCenter(blockPos);
 			if (d > 100.0) {
 				this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);

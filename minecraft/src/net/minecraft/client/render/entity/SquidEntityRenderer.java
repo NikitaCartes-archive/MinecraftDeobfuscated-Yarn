@@ -9,11 +9,11 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class SquidEntityRenderer extends EntityMobRenderer<SquidEntity> {
+public class SquidEntityRenderer extends MobEntityRenderer<SquidEntity, SquidEntityModel<SquidEntity>> {
 	private static final Identifier SKIN = new Identifier("textures/entity/squid.png");
 
 	public SquidEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new SquidEntityModel(), 0.7F);
+		super(entityRenderDispatcher, new SquidEntityModel<>(), 0.7F);
 	}
 
 	protected Identifier getTexture(SquidEntity squidEntity) {

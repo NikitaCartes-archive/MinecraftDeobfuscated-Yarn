@@ -3,11 +3,10 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
 import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
-public class LlamaSpitEntityModel extends Model {
+public class LlamaSpitEntityModel<T extends Entity> extends EntityModel<T> {
 	private final Cuboid field_3433 = new Cuboid(this);
 
 	public LlamaSpitEntityModel() {
@@ -27,8 +26,8 @@ public class LlamaSpitEntityModel extends Model {
 	}
 
 	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		this.setRotationAngles(f, g, h, i, j, k, entity);
+	public void render(T entity, float f, float g, float h, float i, float j, float k) {
+		this.setAngles(entity, f, g, h, i, j, k);
 		this.field_3433.render(k);
 	}
 }

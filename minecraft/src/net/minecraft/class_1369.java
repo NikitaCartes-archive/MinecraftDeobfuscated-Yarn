@@ -55,6 +55,6 @@ public class class_1369 extends Goal {
 
 	@Override
 	public void start() {
-		this.field_6528.getNavigation().method_6337(this.field_6527, this.field_6526, this.field_6531, this.field_6530);
+		this.field_6528.getNavigation().startMovingTo(this.field_6527, this.field_6526, this.field_6531, this.field_6530);
 	}
 }

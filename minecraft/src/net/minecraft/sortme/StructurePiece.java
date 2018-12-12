@@ -3,9 +3,7 @@ package net.minecraft.sortme;
 import java.util.Locale;
 import net.minecraft.class_3366;
 import net.minecraft.class_3443;
-import net.minecraft.class_3485;
 import net.minecraft.class_3789;
-import net.minecraft.class_3791;
 import net.minecraft.class_3813;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sortme.structures.DesertTempleGenerator;
@@ -18,9 +16,11 @@ import net.minecraft.sortme.structures.NetherFortressGenerator;
 import net.minecraft.sortme.structures.OceanTempleGenerator;
 import net.minecraft.sortme.structures.ShipwreckGenerator;
 import net.minecraft.sortme.structures.StrongholdGenerator;
+import net.minecraft.sortme.structures.StructureManager;
 import net.minecraft.sortme.structures.SwampHutGenerator;
 import net.minecraft.sortme.structures.VillageGenerator;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.gen.features.village.PillagerVillageData;
 
 public interface StructurePiece {
 	StructurePiece field_16969 = setPieceId(MineshaftGenerator.MineshaftCorridor::new, "MSCorridor");
@@ -40,7 +40,7 @@ public interface StructurePiece {
 	StructurePiece field_16910 = setPieceId(VillageGenerator.class_3462::new, "ViSR");
 	StructurePiece field_16913 = setPieceId(VillageGenerator.class_3463::new, "ViTRH");
 	StructurePiece field_16938 = setPieceId(VillageGenerator.class_3467::new, "ViW");
-	StructurePiece field_16950 = setPieceId(class_3791.class_3792::new, "PCP");
+	StructurePiece field_16950 = setPieceId(PillagerVillageData.class_3792::new, "PCP");
 	StructurePiece field_16954 = setPieceId(class_3813.class_3814::new, "NVi");
 	StructurePiece field_16926 = setPieceId(NetherFortressGenerator.class_3391::new, "NeBCr");
 	StructurePiece field_16903 = setPieceId(NetherFortressGenerator.class_3392::new, "NeBEF");
@@ -92,7 +92,7 @@ public interface StructurePiece {
 	StructurePiece field_16960 = setPieceId(class_3789.class_3339::new, "BTP");
 	StructurePiece field_16935 = setPieceId(ShipwreckGenerator.class_3416::new, "Shipwreck");
 
-	class_3443 load(class_3485 arg, CompoundTag compoundTag);
+	class_3443 load(StructureManager structureManager, CompoundTag compoundTag);
 
 	static StructurePiece setPieceId(StructurePiece structurePiece, String string) {
 		return Registry.register(Registry.STRUCTURE_PIECE, string.toLowerCase(Locale.ROOT), structurePiece);

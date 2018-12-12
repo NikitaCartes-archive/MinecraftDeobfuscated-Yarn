@@ -27,10 +27,12 @@ public class CarpetBlock extends Block {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		return !blockState.canPlaceAt(iWorld, blockPos)
 			? Blocks.field_10124.getDefaultState()
-			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override

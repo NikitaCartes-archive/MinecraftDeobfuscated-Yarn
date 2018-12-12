@@ -81,10 +81,6 @@ public class Slot {
 		return this.inventory.takeInvStack(this.invSlot, i);
 	}
 
-	public boolean matches(Inventory inventory, int i) {
-		return inventory == this.inventory && i == this.invSlot;
-	}
-
 	public boolean canTakeItems(PlayerEntity playerEntity) {
 		return true;
 	}

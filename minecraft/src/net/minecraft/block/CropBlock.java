@@ -5,7 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.IllagerBeastEntity;
-import net.minecraft.item.ItemContainer;
+import net.minecraft.item.ItemProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.state.StateFactory;
@@ -69,7 +69,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 	@Override
 	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		super.scheduledTick(blockState, world, blockPos, random);
-		if (world.method_8624(blockPos.up(), 0) >= 9) {
+		if (world.getLightLevel(blockPos.up(), 0) >= 9) {
 			int i = this.getCropAge(blockState);
 			if (i < this.getCropAgeMaximum()) {
 				float f = method_9830(this, world, blockPos);
@@ -140,7 +140,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		return (viewableWorld.method_8624(blockPos, 0) >= 8 || viewableWorld.getSkyLightLevel(blockPos)) && super.canPlaceAt(blockState, viewableWorld, blockPos);
+		return (viewableWorld.getLightLevel(blockPos, 0) >= 8 || viewableWorld.isSkyVisible(blockPos)) && super.canPlaceAt(blockState, viewableWorld, blockPos);
 	}
 
 	@Override
@@ -153,7 +153,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	protected ItemContainer getCropItem() {
+	protected ItemProvider getCropItem() {
 		return Items.field_8317;
 	}
 

@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity> {
 	private static final Identifier field_4699 = new Identifier("textures/entity/illager/evoker_fangs.png");
-	private final EvokerFangsEntityModel model = new EvokerFangsEntityModel();
+	private final EvokerFangsEntityModel<EvokerFangsEntity> model = new EvokerFangsEntityModel<>();
 
 	public EvokerFangsEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
@@ -27,7 +27,7 @@ public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity>
 			GlStateManager.pushMatrix();
 			GlStateManager.disableCull();
 			GlStateManager.enableAlphaTest();
-			this.method_3925(evokerFangsEntity);
+			this.bindEntityTexture(evokerFangsEntity);
 			GlStateManager.translatef((float)d, (float)e, (float)f);
 			GlStateManager.rotatef(90.0F - evokerFangsEntity.yaw, 0.0F, 1.0F, 0.0F);
 			GlStateManager.scalef(-j, -j, j);
@@ -36,7 +36,7 @@ public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity>
 			this.model.render(evokerFangsEntity, i, 0.0F, 0.0F, evokerFangsEntity.yaw, evokerFangsEntity.pitch, 0.03125F);
 			GlStateManager.popMatrix();
 			GlStateManager.enableCull();
-			super.method_3936(evokerFangsEntity, d, e, f, g, h);
+			super.render(evokerFangsEntity, d, e, f, g, h);
 		}
 	}
 

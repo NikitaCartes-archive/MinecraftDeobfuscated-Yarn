@@ -19,7 +19,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportElement;
+import net.minecraft.util.crash.CrashReportSection;
 
 public class NbtIo {
 	public static CompoundTag readCompressed(InputStream inputStream) throws IOException {
@@ -132,8 +132,8 @@ public class NbtIo {
 				return tag;
 			} catch (IOException var8) {
 				CrashReport crashReport = CrashReport.create(var8, "Loading NBT data");
-				CrashReportElement crashReportElement = crashReport.addElement("NBT Tag");
-				crashReportElement.add("Tag type", b);
+				CrashReportSection crashReportSection = crashReport.method_562("NBT Tag");
+				crashReportSection.add("Tag type", b);
 				throw new CrashException(crashReport);
 			}
 		}

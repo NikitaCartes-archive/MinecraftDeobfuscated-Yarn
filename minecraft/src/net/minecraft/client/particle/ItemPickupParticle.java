@@ -5,7 +5,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.VertexBuffer;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
@@ -29,7 +29,7 @@ public class ItemPickupParticle extends Particle {
 	}
 
 	@Override
-	public void buildGeometry(VertexBuffer vertexBuffer, Entity entity, float f, float g, float h, float i, float j, float k) {
+	public void buildGeometry(BufferBuilder bufferBuilder, Entity entity, float f, float g, float h, float i, float j, float k) {
 		float l = ((float)this.field_3826 + f) / (float)this.field_3825;
 		l *= l;
 		double d = this.field_3823.x;
@@ -46,11 +46,11 @@ public class ItemPickupParticle extends Particle {
 		int v = t / 65536;
 		GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, (float)u, (float)v);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		q -= lerpX;
-		r -= lerpY;
-		s -= lerpZ;
+		q -= cameraX;
+		r -= cameraY;
+		s -= cameraZ;
 		GlStateManager.enableLighting();
-		this.field_3824.method_3954(this.field_3823, q, r, s, this.field_3823.yaw, f, false);
+		this.field_3824.render(this.field_3823, q, r, s, this.field_3823.yaw, f, false);
 	}
 
 	@Override

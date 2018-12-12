@@ -9,8 +9,8 @@ import net.minecraft.client.audio.SoundLoader;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
+import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.settings.GameOptions;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
@@ -58,16 +58,16 @@ public class AudioSettingsGui extends Gui {
 			) {
 				@Override
 				public void onPressed(double d, double e) {
-					AudioSettingsGui.this.client.options.updateOption(GameOptions.Option.SHOW_SUBTITLES, 1);
-					this.text = AudioSettingsGui.this.client.options.getTranslatedName(GameOptions.Option.SHOW_SUBTITLES);
-					AudioSettingsGui.this.client.options.write();
+					AudioSettingsGui.this.client.field_1690.updateOption(GameOptions.Option.SHOW_SUBTITLES, 1);
+					this.text = AudioSettingsGui.this.client.field_1690.getTranslatedName(GameOptions.Option.SHOW_SUBTITLES);
+					AudioSettingsGui.this.client.field_1690.write();
 				}
 			}
 		);
 		this.addButton(new ButtonWidget(200, this.width / 2 - 100, this.height / 6 + 168, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
-				AudioSettingsGui.this.client.options.write();
+				AudioSettingsGui.this.client.field_1690.write();
 				AudioSettingsGui.this.client.openGui(AudioSettingsGui.this.parent);
 			}
 		});
@@ -75,7 +75,7 @@ public class AudioSettingsGui extends Gui {
 
 	@Override
 	public void close() {
-		this.client.options.write();
+		this.client.field_1690.write();
 		super.close();
 	}
 
@@ -117,8 +117,8 @@ public class AudioSettingsGui extends Gui {
 				if (this.field_2623) {
 					this.field_2620 = (double)((float)(i - (this.x + 4)) / (float)(this.width - 8));
 					this.field_2620 = MathHelper.clamp(this.field_2620, 0.0, 1.0);
-					minecraftClient.options.setSoundVolume(this.field_2622, (float)this.field_2620);
-					minecraftClient.options.write();
+					minecraftClient.field_1690.setSoundVolume(this.field_2622, (float)this.field_2620);
+					minecraftClient.field_1690.write();
 					this.text = this.field_2621 + ": " + AudioSettingsGui.this.method_2256(this.field_2622);
 				}
 
@@ -132,14 +132,14 @@ public class AudioSettingsGui extends Gui {
 		public void onPressed(double d, double e) {
 			this.field_2620 = (d - (double)(this.x + 4)) / (double)(this.width - 8);
 			this.field_2620 = MathHelper.clamp(this.field_2620, 0.0, 1.0);
-			AudioSettingsGui.this.client.options.setSoundVolume(this.field_2622, (float)this.field_2620);
-			AudioSettingsGui.this.client.options.write();
+			AudioSettingsGui.this.client.field_1690.setSoundVolume(this.field_2622, (float)this.field_2620);
+			AudioSettingsGui.this.client.field_1690.write();
 			this.text = this.field_2621 + ": " + AudioSettingsGui.this.method_2256(this.field_2622);
 			this.field_2623 = true;
 		}
 
 		@Override
-		public void onPressed(SoundLoader soundLoader) {
+		public void playPressedSound(SoundLoader soundLoader) {
 		}
 
 		@Override

@@ -1,10 +1,11 @@
 package net.minecraft;
 
+import net.minecraft.util.math.NorthWestCoordinateTransformer;
 import net.minecraft.world.biome.layer.LayerSampleContext;
 import net.minecraft.world.biome.layer.LayerSampler;
 import net.minecraft.world.biome.layer.ParentedLayer;
 
-public interface class_3662 extends ParentedLayer, class_3739 {
+public interface class_3662 extends ParentedLayer, NorthWestCoordinateTransformer {
 	int method_15867(class_3630 arg, int i, int j, int k, int l, int m);
 
 	@Override

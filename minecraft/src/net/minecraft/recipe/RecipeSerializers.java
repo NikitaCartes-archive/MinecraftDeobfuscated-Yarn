@@ -19,7 +19,9 @@ import net.minecraft.recipe.crafting.ShieldDecorationRecipe;
 import net.minecraft.recipe.crafting.ShulkerBoxColoringRecipe;
 import net.minecraft.recipe.crafting.SuspiciousStewRecipe;
 import net.minecraft.recipe.crafting.TippedArrowRecipe;
+import net.minecraft.recipe.smelting.BlastingRecipe;
 import net.minecraft.recipe.smelting.SmeltingRecipe;
+import net.minecraft.recipe.smelting.SmokingRecipe;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.PacketByteBuf;
@@ -65,6 +67,8 @@ public class RecipeSerializers {
 		new RecipeSerializers.Dummy<>("crafting_special_suspiciousstew", SuspiciousStewRecipe::new)
 	);
 	public static final RecipeSerializer<SmeltingRecipe> SMELTING = register(new SmeltingRecipe.Serializer());
+	public static final RecipeSerializer<BlastingRecipe> field_17084 = register(new BlastingRecipe.class_3860());
+	public static final RecipeSerializer<SmokingRecipe> field_17085 = register(new SmokingRecipe.class_3863());
 
 	public static <S extends RecipeSerializer<T>, T extends Recipe> S register(S recipeSerializer) {
 		if (serializers.containsKey(recipeSerializer.getId())) {

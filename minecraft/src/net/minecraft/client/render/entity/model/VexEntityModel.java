@@ -3,13 +3,12 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.sortme.OptionMainHand;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class VexEntityModel extends BipedEntityModel {
+public class VexEntityModel extends BipedEntityModel<VexEntity> {
 	private final Cuboid field_3601;
 	private final Cuboid field_3602;
 
@@ -31,17 +30,14 @@ public class VexEntityModel extends BipedEntityModel {
 		this.field_3601.addBox(0.0F, 0.0F, 0.0F, 20, 12, 1);
 	}
 
-	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		super.render(entity, f, g, h, i, j, k);
+	public void method_17126(VexEntity vexEntity, float f, float g, float h, float i, float j, float k) {
+		super.method_17088(vexEntity, f, g, h, i, j, k);
 		this.field_3602.render(k);
 		this.field_3601.render(k);
 	}
 
-	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
-		super.setRotationAngles(f, g, h, i, j, k, entity);
-		VexEntity vexEntity = (VexEntity)entity;
+	public void method_17127(VexEntity vexEntity, float f, float g, float h, float i, float j, float k) {
+		super.method_17087(vexEntity, f, g, h, i, j, k);
 		if (vexEntity.method_7176()) {
 			if (vexEntity.getMainHand() == OptionMainHand.field_6183) {
 				this.armRight.pitch = 3.7699115F;

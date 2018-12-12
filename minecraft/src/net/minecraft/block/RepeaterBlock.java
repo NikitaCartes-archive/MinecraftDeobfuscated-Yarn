@@ -5,7 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.particle.DustParticle;
+import net.minecraft.particle.DustParticleParameters;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntegerProperty;
@@ -34,7 +34,7 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
 		if (!playerEntity.abilities.allowModifyWorld) {
@@ -57,10 +57,12 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-		return !iWorld.isRemote() && direction.getAxis() != ((Direction)blockState.get(field_11177)).getAxis()
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
+		return !iWorld.isClient() && direction.getAxis() != ((Direction)blockState.get(field_11177)).getAxis()
 			? blockState.with(field_11452, Boolean.valueOf(this.method_9996(iWorld, blockPos, blockState)))
-			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
@@ -89,7 +91,7 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 			g /= 16.0F;
 			double h = (double)(g * (float)direction.getOffsetX());
 			double i = (double)(g * (float)direction.getOffsetZ());
-			world.method_8406(DustParticle.field_11188, d + h, e, f + i, 0.0, 0.0, 0.0);
+			world.method_8406(DustParticleParameters.RED, d + h, e, f + i, 0.0, 0.0, 0.0);
 		}
 	}
 

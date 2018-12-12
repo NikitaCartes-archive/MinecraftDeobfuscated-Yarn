@@ -13,7 +13,7 @@ import java.util.Objects;
 import net.minecraft.datafixers.TypeReferences;
 
 public class BiomesFix extends DataFix {
-	public static final Map<String, String> biomes = ImmutableMap.builder()
+	public static final Map<String, String> RENAMED_BIOMES = ImmutableMap.builder()
 		.put("minecraft:extreme_hills", "minecraft:mountains")
 		.put("minecraft:swampland", "minecraft:swamp")
 		.put("minecraft:hell", "minecraft:nether")
@@ -79,7 +79,7 @@ public class BiomesFix extends DataFix {
 		if (!Objects.equals(type, this.getInputSchema().getType(TypeReferences.BIOME))) {
 			throw new IllegalStateException("Biome type is not what was expected.");
 		} else {
-			return this.fixTypeEverywhere("Biomes fix", type, dynamicOps -> pair -> pair.mapSecond(string -> (String)biomes.getOrDefault(string, string)));
+			return this.fixTypeEverywhere("Biomes fix", type, dynamicOps -> pair -> pair.mapSecond(string -> (String)RENAMED_BIOMES.getOrDefault(string, string)));
 		}
 	}
 }

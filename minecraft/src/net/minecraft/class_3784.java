@@ -5,6 +5,7 @@ import com.mojang.datafixers.types.DynamicOps;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.sortme.StructurePoolElement;
+import net.minecraft.sortme.structures.StructureManager;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
@@ -14,9 +15,9 @@ import net.minecraft.world.IWorld;
 public abstract class class_3784 {
 	private class_3785.Projection field_16862 = class_3785.Projection.RIGID;
 
-	public abstract List<class_3499.class_3501> method_16627(class_3485 arg, BlockPos blockPos, Rotation rotation, Random random);
+	public abstract List<class_3499.class_3501> method_16627(StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random);
 
-	public abstract MutableIntBoundingBox method_16628(class_3485 arg, BlockPos blockPos, Rotation rotation);
+	public abstract MutableIntBoundingBox method_16628(StructureManager structureManager, BlockPos blockPos, Rotation rotation);
 
 	public abstract boolean method_16626(IWorld iWorld, BlockPos blockPos, Rotation rotation, MutableIntBoundingBox mutableIntBoundingBox, Random random);
 

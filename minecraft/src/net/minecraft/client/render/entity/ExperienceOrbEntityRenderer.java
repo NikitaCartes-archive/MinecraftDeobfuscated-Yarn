@@ -4,9 +4,9 @@ import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_308;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.util.Identifier;
@@ -23,11 +23,11 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 	}
 
 	public void method_3966(ExperienceOrbEntity experienceOrbEntity, double d, double e, double f, float g, float h) {
-		if (!this.field_4674) {
+		if (!this.renderOutlines) {
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef((float)d, (float)e, (float)f);
-			this.method_3925(experienceOrbEntity);
-			class_308.method_1452();
+			this.bindEntityTexture(experienceOrbEntity);
+			GuiLighting.enable();
 			int i = experienceOrbEntity.getOrbSize();
 			float j = (float)(i % 4 * 16 + 0) / 64.0F;
 			float k = (float)(i % 4 * 16 + 16) / 64.0F;
@@ -52,17 +52,17 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 			float y = 0.3F;
 			GlStateManager.scalef(0.3F, 0.3F, 0.3F);
 			Tessellator tessellator = Tessellator.getInstance();
-			VertexBuffer vertexBuffer = tessellator.getVertexBuffer();
-			vertexBuffer.begin(7, VertexFormats.POSITION_UV_COLOR_NORMAL);
-			vertexBuffer.vertex(-0.5, -0.25, 0.0).texture((double)j, (double)m).color(v, 255, x, 128).normal(0.0F, 1.0F, 0.0F).next();
-			vertexBuffer.vertex(0.5, -0.25, 0.0).texture((double)k, (double)m).color(v, 255, x, 128).normal(0.0F, 1.0F, 0.0F).next();
-			vertexBuffer.vertex(0.5, 0.75, 0.0).texture((double)k, (double)l).color(v, 255, x, 128).normal(0.0F, 1.0F, 0.0F).next();
-			vertexBuffer.vertex(-0.5, 0.75, 0.0).texture((double)j, (double)l).color(v, 255, x, 128).normal(0.0F, 1.0F, 0.0F).next();
+			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_NORMAL);
+			bufferBuilder.vertex(-0.5, -0.25, 0.0).texture((double)j, (double)m).color(v, 255, x, 128).normal(0.0F, 1.0F, 0.0F).next();
+			bufferBuilder.vertex(0.5, -0.25, 0.0).texture((double)k, (double)m).color(v, 255, x, 128).normal(0.0F, 1.0F, 0.0F).next();
+			bufferBuilder.vertex(0.5, 0.75, 0.0).texture((double)k, (double)l).color(v, 255, x, 128).normal(0.0F, 1.0F, 0.0F).next();
+			bufferBuilder.vertex(-0.5, 0.75, 0.0).texture((double)j, (double)l).color(v, 255, x, 128).normal(0.0F, 1.0F, 0.0F).next();
 			tessellator.draw();
 			GlStateManager.disableBlend();
 			GlStateManager.disableRescaleNormal();
 			GlStateManager.popMatrix();
-			super.method_3936(experienceOrbEntity, d, e, f, g, h);
+			super.render(experienceOrbEntity, d, e, f, g, h);
 		}
 	}
 

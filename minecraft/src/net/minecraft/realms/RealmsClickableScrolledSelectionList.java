@@ -57,7 +57,7 @@ public abstract class RealmsClickableScrolledSelectionList extends RealmsGuiEven
 	}
 
 	public void scroll(int i) {
-		this.proxy.scrollByY(i);
+		this.proxy.scroll(i);
 	}
 
 	public int getScroll() {
@@ -74,7 +74,7 @@ public abstract class RealmsClickableScrolledSelectionList extends RealmsGuiEven
 	}
 
 	public void setLeftPos(int i) {
-		this.proxy.setLeftPos(i);
+		this.proxy.setX(i);
 	}
 
 	public int method_1915() {
@@ -90,7 +90,7 @@ public abstract class RealmsClickableScrolledSelectionList extends RealmsGuiEven
 	}
 
 	public double method_1917() {
-		return this.proxy.method_2086();
+		return this.proxy.getScrollY();
 	}
 
 	public int itemHeight() {
@@ -98,6 +98,6 @@ public abstract class RealmsClickableScrolledSelectionList extends RealmsGuiEven
 	}
 
 	public boolean isVisible() {
-		return this.proxy.method_1939();
+		return this.proxy.isVisible();
 	}
 }

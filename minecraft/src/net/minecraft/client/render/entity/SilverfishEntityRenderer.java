@@ -7,11 +7,11 @@ import net.minecraft.entity.mob.SilverfishEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class SilverfishEntityRenderer extends EntityMobRenderer<SilverfishEntity> {
+public class SilverfishEntityRenderer extends MobEntityRenderer<SilverfishEntity, SilverfishEntityModel<SilverfishEntity>> {
 	private static final Identifier SKIN = new Identifier("textures/entity/silverfish.png");
 
 	public SilverfishEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new SilverfishEntityModel(), 0.3F);
+		super(entityRenderDispatcher, new SilverfishEntityModel<>(), 0.3F);
 	}
 
 	protected float method_4107(SilverfishEntity silverfishEntity) {

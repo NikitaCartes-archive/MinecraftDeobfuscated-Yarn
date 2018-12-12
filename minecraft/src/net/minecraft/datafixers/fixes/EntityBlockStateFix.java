@@ -19,7 +19,7 @@ import java.util.function.Function;
 import net.minecraft.datafixers.TypeReferences;
 
 public class EntityBlockStateFix extends DataFix {
-	private static final Map<String, Integer> field_15891 = DataFixUtils.make(Maps.newHashMap(), hashMap -> {
+	private static final Map<String, Integer> BLOCK_NAME_TO_ID = DataFixUtils.make(Maps.newHashMap(), hashMap -> {
 		hashMap.put("minecraft:air", 0);
 		hashMap.put("minecraft:stone", 1);
 		hashMap.put("minecraft:grass", 2);
@@ -280,8 +280,8 @@ public class EntityBlockStateFix extends DataFix {
 		super(schema, bl);
 	}
 
-	public static int method_15686(String string) {
-		Integer integer = (Integer)field_15891.get(string);
+	public static int getNumericalBlockId(String string) {
+		Integer integer = (Integer)BLOCK_NAME_TO_ID.get(string);
 		return integer == null ? 0 : integer;
 	}
 
@@ -327,7 +327,7 @@ public class EntityBlockStateFix extends DataFix {
 		);
 		Dynamic<?> dynamic = typed.get(DSL.remainderFinder());
 		return typed.update(type.finder(), type2, either -> {
-			int i = either.map(pair -> ((Either)pair.getSecond()).map(integer -> integer, EntityBlockStateFix::method_15686), unit -> {
+			int i = either.map(pair -> ((Either)pair.getSecond()).map(integer -> integer, EntityBlockStateFix::getNumericalBlockId), unit -> {
 				Optional<Number> optional = dynamic.get("TileID").flatMap(Dynamic::getNumberValue);
 				return (Integer)optional.map(Number::intValue).orElseGet(() -> dynamic.getByte("Tile") & 0xFF);
 			});
@@ -343,7 +343,7 @@ public class EntityBlockStateFix extends DataFix {
 		Type<Pair<String, Dynamic<?>>> type2 = DSL.field(string3, DSL.named(TypeReferences.BLOCK_STATE.typeName(), DSL.remainderType()));
 		Dynamic<?> dynamic = typed.getOrCreate(DSL.remainderFinder());
 		return typed.update(type.finder(), type2, pair -> {
-			int i = ((Either)pair.getSecond()).map(integer -> integer, EntityBlockStateFix::method_15686);
+			int i = ((Either)pair.getSecond()).map(integer -> integer, EntityBlockStateFix::getNumericalBlockId);
 			int j = dynamic.getInt(string2) & 15;
 			return Pair.of(TypeReferences.BLOCK_STATE.typeName(), BlockStateFlattening.lookupState(i << 4 | j));
 		}).set(DSL.remainderFinder(), dynamic.remove(string2));

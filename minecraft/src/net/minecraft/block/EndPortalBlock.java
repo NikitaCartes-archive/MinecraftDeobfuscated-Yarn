@@ -35,7 +35,7 @@ public class EndPortalBlock extends BlockWithEntity {
 
 	@Override
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-		if (!world.isRemote
+		if (!world.isClient
 			&& !entity.hasVehicle()
 			&& !entity.hasPassengers()
 			&& entity.canUsePortals()

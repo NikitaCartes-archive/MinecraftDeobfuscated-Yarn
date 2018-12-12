@@ -11,10 +11,10 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiEventListener;
 import net.minecraft.client.gui.widget.AbstractListWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
+import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.resource.language.LanguageDefinition;
 import net.minecraft.client.resource.language.LanguageManager;
-import net.minecraft.client.settings.GameOptions;
 
 @Environment(EnvType.CLIENT)
 public class LanguageSettingsGui extends Gui {
@@ -93,7 +93,7 @@ public class LanguageSettingsGui extends Gui {
 		}
 
 		@Override
-		protected boolean method_1937(int i, int j, double d, double e) {
+		protected boolean selectEntry(int i, int j, double d, double e) {
 			LanguageDefinition languageDefinition = (LanguageDefinition)this.field_2493.get(this.field_2492.get(i));
 			LanguageSettingsGui.this.languageManager.setLanguage(languageDefinition);
 			LanguageSettingsGui.this.settings.language = languageDefinition.getCode();
@@ -107,17 +107,17 @@ public class LanguageSettingsGui extends Gui {
 		}
 
 		@Override
-		protected boolean isSelected(int i) {
+		protected boolean isSelectedEntry(int i) {
 			return ((String)this.field_2492.get(i)).equals(LanguageSettingsGui.this.languageManager.getLanguage().getCode());
 		}
 
 		@Override
-		protected int getContentHeight() {
+		protected int getMaxScrollPosition() {
 			return this.getEntryCount() * 18;
 		}
 
 		@Override
-		protected void method_1936() {
+		protected void drawBackground() {
 			LanguageSettingsGui.this.drawBackground();
 		}
 

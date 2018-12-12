@@ -10,7 +10,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.config.feature.SeaPickleFeatureConfig;
 
 public class SeaPickleFeature extends Feature<SeaPickleFeatureConfig> {
 	public SeaPickleFeature(Function<Dynamic<?>, ? extends SeaPickleFeatureConfig> function) {

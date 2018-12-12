@@ -134,7 +134,7 @@ public class LootPool {
 			return this;
 		}
 
-		public LootPool.Builder method_351(LootEntry.Builder<?> builder) {
+		public LootPool.Builder withEntry(LootEntry.Builder<?> builder) {
 			this.entries.add(builder.build());
 			return this;
 		}

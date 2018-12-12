@@ -1,6 +1,5 @@
 package net.minecraft.entity;
 
-import net.minecraft.class_1310;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,8 +18,8 @@ public abstract class WaterCreatureEntity extends MobEntityWithAi implements Liv
 	}
 
 	@Override
-	public class_1310 method_6046() {
-		return class_1310.field_6292;
+	public EntityGroup getGroup() {
+		return EntityGroup.AQUATIC;
 	}
 
 	@Override
@@ -34,17 +33,17 @@ public abstract class WaterCreatureEntity extends MobEntityWithAi implements Liv
 	}
 
 	@Override
-	public boolean method_5974(double d) {
+	public boolean canImmediatelyDespawn(double d) {
 		return true;
 	}
 
 	@Override
-	protected int method_6110(PlayerEntity playerEntity) {
+	protected int getCurrentExperience(PlayerEntity playerEntity) {
 		return 1 + this.world.random.nextInt(3);
 	}
 
 	protected void method_6673(int i) {
-		if (this.isValid() && !this.method_5816()) {
+		if (this.isValid() && !this.isInsideWaterOrBubbleColumn()) {
 			this.setBreath(i - 1);
 			if (this.getBreath() == -20) {
 				this.setBreath(0);

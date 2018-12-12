@@ -4,11 +4,10 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
 import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
-public class EndCrystalEntityModel extends Model {
+public class EndCrystalEntityModel<T extends Entity> extends EntityModel<T> {
 	private final Cuboid cube;
 	private final Cuboid glass = new Cuboid(this, "glass");
 	private final Cuboid base;
@@ -26,7 +25,7 @@ public class EndCrystalEntityModel extends Model {
 	}
 
 	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
+	public void render(T entity, float f, float g, float h, float i, float j, float k) {
 		GlStateManager.pushMatrix();
 		GlStateManager.scalef(2.0F, 2.0F, 2.0F);
 		GlStateManager.translatef(0.0F, -0.5F, 0.0F);

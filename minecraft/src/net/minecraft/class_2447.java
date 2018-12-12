@@ -12,11 +12,12 @@ import java.util.Map.Entry;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.AdvancementRewards;
+import net.minecraft.advancement.CriteriaMerger;
 import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemContainer;
+import net.minecraft.item.ItemProvider;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
@@ -33,25 +34,25 @@ public class class_2447 {
 	private final SimpleAdvancement.Builder field_11379 = SimpleAdvancement.Builder.create();
 	private String field_11381;
 
-	public class_2447(ItemContainer itemContainer, int i) {
-		this.field_11380 = itemContainer.getItem();
+	public class_2447(ItemProvider itemProvider, int i) {
+		this.field_11380 = itemProvider.getItem();
 		this.field_11378 = i;
 	}
 
-	public static class_2447 method_10437(ItemContainer itemContainer) {
-		return method_10436(itemContainer, 1);
+	public static class_2447 method_10437(ItemProvider itemProvider) {
+		return method_10436(itemProvider, 1);
 	}
 
-	public static class_2447 method_10436(ItemContainer itemContainer, int i) {
-		return new class_2447(itemContainer, i);
+	public static class_2447 method_10436(ItemProvider itemProvider, int i) {
+		return new class_2447(itemProvider, i);
 	}
 
 	public class_2447 method_10433(Character character, Tag<Item> tag) {
 		return this.method_10428(character, Ingredient.fromTag(tag));
 	}
 
-	public class_2447 method_10434(Character character, ItemContainer itemContainer) {
-		return this.method_10428(character, Ingredient.ofItems(itemContainer));
+	public class_2447 method_10434(Character character, ItemProvider itemProvider) {
+		return this.method_10428(character, Ingredient.method_8091(itemProvider));
 	}
 
 	public class_2447 method_10428(Character character, Ingredient ingredient) {
@@ -102,8 +103,8 @@ public class class_2447 {
 		this.field_11379
 			.parent(new Identifier("recipes/root"))
 			.criterion("has_the_recipe", new RecipeUnlockedCriterion.Conditions(identifier))
-			.method_703(AdvancementRewards.Builder.method_753(identifier))
-			.method_704(class_193.OR);
+			.rewards(AdvancementRewards.Builder.recipe(identifier))
+			.criteriaMerger(CriteriaMerger.OR);
 		consumer.accept(
 			new class_2447.class_2448(
 				identifier,
@@ -140,7 +141,7 @@ public class class_2447 {
 				throw new IllegalStateException("Ingredients are defined but not used in pattern for recipe " + identifier);
 			} else if (this.field_11377.size() == 1 && ((String)this.field_11377.get(0)).length() == 1) {
 				throw new IllegalStateException("Shaped recipe " + identifier + " only takes in a single item - should it be a shapeless recipe instead?");
-			} else if (this.field_11379.method_710().isEmpty()) {
+			} else if (this.field_11379.getCriteria().isEmpty()) {
 				throw new IllegalStateException("No way of obtaining recipe " + identifier);
 			}
 		}
@@ -216,7 +217,7 @@ public class class_2447 {
 		@Nullable
 		@Override
 		public JsonObject method_10415() {
-			return this.field_11389.method_698();
+			return this.field_11389.toJson();
 		}
 
 		@Nullable

@@ -1,6 +1,6 @@
 package net.minecraft.item;
 
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,12 +22,12 @@ public class FoodCropItem extends FoodItem {
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		IWorld iWorld = itemUsageContext.getWorld();
 		BlockPos blockPos = itemUsageContext.getPos().up();
-		if (itemUsageContext.method_8038() == Direction.UP && iWorld.isAir(blockPos) && this.crop.canPlaceAt(iWorld, blockPos)) {
+		if (itemUsageContext.getFacing() == Direction.UP && iWorld.isAir(blockPos) && this.crop.canPlaceAt(iWorld, blockPos)) {
 			iWorld.setBlockState(blockPos, this.crop, 11);
 			PlayerEntity playerEntity = itemUsageContext.getPlayer();
 			ItemStack itemStack = itemUsageContext.getItemStack();
 			if (playerEntity instanceof ServerPlayerEntity) {
-				CriterionCriterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos, itemStack);
+				Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos, itemStack);
 			}
 
 			itemStack.subtractAmount(1);

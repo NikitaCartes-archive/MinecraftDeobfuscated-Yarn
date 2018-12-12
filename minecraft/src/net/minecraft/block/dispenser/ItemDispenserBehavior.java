@@ -13,7 +13,7 @@ public class ItemDispenserBehavior implements DispenserBehavior {
 	public final ItemStack dispense(BlockPointer blockPointer, ItemStack itemStack) {
 		ItemStack itemStack2 = this.method_10135(blockPointer, itemStack);
 		this.playSound(blockPointer);
-		this.method_10133(blockPointer, blockPointer.getBlockState().get(DispenserBlock.field_10918));
+		this.spawnParticles(blockPointer, blockPointer.getBlockState().get(DispenserBlock.field_10918));
 		return itemStack2;
 	}
 
@@ -21,11 +21,11 @@ public class ItemDispenserBehavior implements DispenserBehavior {
 		Direction direction = blockPointer.getBlockState().get(DispenserBlock.field_10918);
 		Position position = DispenserBlock.getOutputLocation(blockPointer);
 		ItemStack itemStack2 = itemStack.split(1);
-		method_10134(blockPointer.getWorld(), itemStack2, 6, direction, position);
+		dispenseItem(blockPointer.getWorld(), itemStack2, 6, direction, position);
 		return itemStack;
 	}
 
-	public static void method_10134(World world, ItemStack itemStack, int i, Direction direction, Position position) {
+	public static void dispenseItem(World world, ItemStack itemStack, int i, Direction direction, Position position) {
 		double d = position.getX();
 		double e = position.getY();
 		double f = position.getZ();
@@ -50,7 +50,7 @@ public class ItemDispenserBehavior implements DispenserBehavior {
 		blockPointer.getWorld().fireWorldEvent(1000, blockPointer.getBlockPos(), 0);
 	}
 
-	protected void method_10133(BlockPointer blockPointer, Direction direction) {
+	protected void spawnParticles(BlockPointer blockPointer, Direction direction) {
 		blockPointer.getWorld().fireWorldEvent(2000, blockPointer.getBlockPos(), direction.getId());
 	}
 }

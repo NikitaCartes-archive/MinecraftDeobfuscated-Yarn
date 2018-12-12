@@ -5,7 +5,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BrewingStandBlockEntity;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.container.Container;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -26,7 +25,7 @@ import net.minecraft.world.World;
 
 public class BrewingStandBlock extends BlockWithEntity {
 	public static final BooleanProperty[] BOTTLE_PROPERTIES = new BooleanProperty[]{Properties.HAS_BOTTLE_0, Properties.HAS_BOTTLE_1, Properties.HAS_BOTTLE_2};
-	protected static final VoxelShape field_10701 = VoxelShapes.method_1084(
+	protected static final VoxelShape field_10701 = VoxelShapes.union(
 		Block.createCubeShape(1.0, 0.0, 1.0, 15.0, 2.0, 15.0), Block.createCubeShape(7.0, 0.0, 7.0, 9.0, 14.0, 9.0)
 	);
 
@@ -42,8 +41,8 @@ public class BrewingStandBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public RenderTypeBlock getRenderType(BlockState blockState) {
-		return RenderTypeBlock.MODEL;
+	public BlockRenderType method_9604(BlockState blockState) {
+		return BlockRenderType.field_11458;
 	}
 
 	@Override
@@ -57,16 +56,16 @@ public class BrewingStandBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
-		if (world.isRemote) {
+		if (world.isClient) {
 			return true;
 		} else {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof BrewingStandBlockEntity) {
 				playerEntity.openInventory((BrewingStandBlockEntity)blockEntity);
-				playerEntity.method_7281(Stats.field_15407);
+				playerEntity.increaseStat(Stats.field_15407);
 			}
 
 			return true;

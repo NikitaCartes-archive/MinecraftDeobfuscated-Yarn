@@ -4,7 +4,7 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class PiercingEnchantment extends Enchantment {
 	public PiercingEnchantment(Enchantment.Weight weight, EquipmentSlot... equipmentSlots) {
-		super(weight, EnchantmentTarget.field_9081, equipmentSlots);
+		super(weight, EnchantmentTarget.CROSSBOW, equipmentSlots);
 	}
 
 	@Override

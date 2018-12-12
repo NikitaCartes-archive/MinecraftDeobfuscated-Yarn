@@ -22,17 +22,17 @@ public class class_400 extends AbstractListWidget {
 	}
 
 	@Override
-	protected boolean method_1937(int i, int j, double d, double e) {
+	protected boolean selectEntry(int i, int j, double d, double e) {
 		return this.field_2342.selectItem(i, j, d, e);
 	}
 
 	@Override
-	protected boolean isSelected(int i) {
+	protected boolean isSelectedEntry(int i) {
 		return this.field_2342.isSelectedItem(i);
 	}
 
 	@Override
-	protected void method_1936() {
+	protected void drawBackground() {
 		this.field_2342.renderBackground();
 	}
 
@@ -46,7 +46,7 @@ public class class_400 extends AbstractListWidget {
 	}
 
 	@Override
-	protected int getContentHeight() {
+	protected int getMaxScrollPosition() {
 		return this.field_2342.getMaxPosition();
 	}
 
@@ -90,7 +90,7 @@ public class class_400 extends AbstractListWidget {
 				this.method_1952(n, i, o, f);
 			}
 
-			if (this.field_2171 && this.isSelected(n)) {
+			if (this.field_2171 && this.isSelectedEntry(n)) {
 				this.method_2088(this.width, o, p, Tezzelator.instance);
 			}
 
@@ -110,8 +110,8 @@ public class class_400 extends AbstractListWidget {
 		return this.field_2174;
 	}
 
-	public double method_2086() {
-		return this.field_2175;
+	public double getScrollY() {
+		return this.scrollY;
 	}
 
 	public int method_2087() {

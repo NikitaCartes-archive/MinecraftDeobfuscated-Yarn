@@ -14,11 +14,11 @@ public class DefaultEntityRenderer extends EntityRenderer<Entity> {
 	}
 
 	@Override
-	public void method_3936(Entity entity, double d, double e, double f, float g, float h) {
+	public void render(Entity entity, double d, double e, double f, float g, float h) {
 		GlStateManager.pushMatrix();
-		method_3922(entity.getBoundingBox(), d - entity.prevRenderX, e - entity.prevRenderY, f - entity.prevRenderZ);
+		renderBox(entity.getBoundingBox(), d - entity.prevRenderX, e - entity.prevRenderY, f - entity.prevRenderZ);
 		GlStateManager.popMatrix();
-		super.method_3936(entity, d, e, f, g, h);
+		super.render(entity, d, e, f, g, h);
 	}
 
 	@Nullable

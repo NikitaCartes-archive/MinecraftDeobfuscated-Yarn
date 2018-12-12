@@ -17,7 +17,7 @@ import java.util.Optional;
 import net.minecraft.datafixers.TypeReferences;
 
 public class EntityMinecartIdentifiersFix extends DataFix {
-	private static final List<String> minecarts = Lists.newArrayList("MinecartRideable", "MinecartChest", "MinecartFurnace");
+	private static final List<String> MINECARTS = Lists.newArrayList("MinecartRideable", "MinecartChest", "MinecartFurnace");
 
 	public EntityMinecartIdentifiersFix(Schema schema, boolean bl) {
 		super(schema, bl);
@@ -39,8 +39,8 @@ public class EntityMinecartIdentifiersFix extends DataFix {
 						Dynamic<?> dynamic = typed.getOrCreate(DSL.remainderFinder());
 						int i = dynamic.getInt("Type");
 						String string;
-						if (i > 0 && i < minecarts.size()) {
-							string = (String)minecarts.get(i);
+						if (i > 0 && i < MINECARTS.size()) {
+							string = (String)MINECARTS.get(i);
 						} else {
 							string = "MinecartRideable";
 						}

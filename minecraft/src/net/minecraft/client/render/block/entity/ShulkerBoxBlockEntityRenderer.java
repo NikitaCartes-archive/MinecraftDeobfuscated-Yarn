@@ -13,9 +13,9 @@ import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
 public class ShulkerBoxBlockEntityRenderer extends BlockEntityRenderer<ShulkerBoxBlockEntity> {
-	private final ShulkerEntityModel model;
+	private final ShulkerEntityModel<?> model;
 
-	public ShulkerBoxBlockEntityRenderer(ShulkerEntityModel shulkerEntityModel) {
+	public ShulkerBoxBlockEntityRenderer(ShulkerEntityModel<?> shulkerEntityModel) {
 		this.model = shulkerEntityModel;
 	}
 

@@ -6,6 +6,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.network.packet.QueryBlockNbtServerPacket;
+import net.minecraft.server.network.packet.QueryEntityNbtServerPacket;
 import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
@@ -36,11 +38,11 @@ public class class_300 {
 
 	public void method_1405(int i, Consumer<CompoundTag> consumer) {
 		int j = this.method_1402(consumer);
-		this.field_1640.sendPacket(new class_2822(j, i));
+		this.field_1640.sendPacket(new QueryEntityNbtServerPacket(j, i));
 	}
 
 	public void method_1403(BlockPos blockPos, Consumer<CompoundTag> consumer) {
 		int i = this.method_1402(consumer);
-		this.field_1640.sendPacket(new class_2795(i, blockPos));
+		this.field_1640.sendPacket(new QueryBlockNbtServerPacket(i, blockPos));
 	}
 }

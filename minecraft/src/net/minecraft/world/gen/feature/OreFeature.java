@@ -9,8 +9,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.OreFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class OreFeature extends Feature<OreFeatureConfig> {
 	public OreFeature(Function<Dynamic<?>, ? extends OreFeatureConfig> function) {
@@ -18,7 +17,7 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 	}
 
 	public boolean method_13628(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, Random random, BlockPos blockPos, OreFeatureConfig oreFeatureConfig
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, OreFeatureConfig oreFeatureConfig
 	) {
 		float f = random.nextFloat() * (float) Math.PI;
 		float g = (float)oreFeatureConfig.size / 8.0F;

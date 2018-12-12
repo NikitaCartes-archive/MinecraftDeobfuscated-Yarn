@@ -3,7 +3,7 @@ package net.minecraft.client.particle;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.particle.TexturedParticle;
+import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
@@ -40,7 +40,7 @@ public class SpellParticle extends Particle {
 
 		this.setSpriteIndex(this.field_3889 + 7 - this.age * 8 / this.maxAge);
 		this.velocityY += 0.004;
-		this.addPos(this.velocityX, this.velocityY, this.velocityZ);
+		this.move(this.velocityX, this.velocityY, this.velocityZ);
 		if (this.posY == this.prevPosY) {
 			this.velocityX *= 1.1;
 			this.velocityZ *= 1.1;
@@ -60,26 +60,15 @@ public class SpellParticle extends Particle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class FactoryInstant implements FactoryParticle<TexturedParticle> {
-		public Particle createParticle(TexturedParticle texturedParticle, World world, double d, double e, double f, double g, double h, double i) {
-			Particle particle = new SpellParticle(world, d, e, f, g, h, i);
-			((SpellParticle)particle).method_3095(144);
-			return particle;
+	public static class DefaultFactory implements ParticleFactory<DefaultParticleType> {
+		public Particle method_3099(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+			return new SpellParticle(world, d, e, f, g, h, i);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class FactoryMob implements FactoryParticle<TexturedParticle> {
-		public Particle createParticle(TexturedParticle texturedParticle, World world, double d, double e, double f, double g, double h, double i) {
-			Particle particle = new SpellParticle(world, d, e, f, g, h, i);
-			particle.setColor((float)g, (float)h, (float)i);
-			return particle;
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static class FactoryMobAmbient implements FactoryParticle<TexturedParticle> {
-		public Particle createParticle(TexturedParticle texturedParticle, World world, double d, double e, double f, double g, double h, double i) {
+	public static class EntityAmbientFactory implements ParticleFactory<DefaultParticleType> {
+		public Particle method_3096(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			Particle particle = new SpellParticle(world, d, e, f, g, h, i);
 			particle.setColorAlpha(0.15F);
 			particle.setColor((float)g, (float)h, (float)i);
@@ -88,20 +77,31 @@ public class SpellParticle extends Particle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class FactoryWitch implements FactoryParticle<TexturedParticle> {
-		public Particle createParticle(TexturedParticle texturedParticle, World world, double d, double e, double f, double g, double h, double i) {
+	public static class EntityFactory implements ParticleFactory<DefaultParticleType> {
+		public Particle method_3098(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			Particle particle = new SpellParticle(world, d, e, f, g, h, i);
-			((SpellParticle)particle).method_3095(144);
-			float j = world.random.nextFloat() * 0.5F + 0.35F;
-			particle.setColor(1.0F * j, 0.0F * j, 1.0F * j);
+			particle.setColor((float)g, (float)h, (float)i);
 			return particle;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class class_715 implements FactoryParticle<TexturedParticle> {
-		public Particle createParticle(TexturedParticle texturedParticle, World world, double d, double e, double f, double g, double h, double i) {
-			return new SpellParticle(world, d, e, f, g, h, i);
+	public static class InstantFactory implements ParticleFactory<DefaultParticleType> {
+		public Particle method_3097(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+			Particle particle = new SpellParticle(world, d, e, f, g, h, i);
+			((SpellParticle)particle).method_3095(144);
+			return particle;
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class WitchFactory implements ParticleFactory<DefaultParticleType> {
+		public Particle method_3100(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+			Particle particle = new SpellParticle(world, d, e, f, g, h, i);
+			((SpellParticle)particle).method_3095(144);
+			float j = world.random.nextFloat() * 0.5F + 0.35F;
+			particle.setColor(1.0F * j, 0.0F * j, 1.0F * j);
+			return particle;
 		}
 	}
 }

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.sortme.StructurePoolElement;
+import net.minecraft.sortme.structures.StructureManager;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
@@ -18,12 +19,12 @@ public class class_3777 extends class_3784 {
 	}
 
 	@Override
-	public List<class_3499.class_3501> method_16627(class_3485 arg, BlockPos blockPos, Rotation rotation, Random random) {
+	public List<class_3499.class_3501> method_16627(StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random) {
 		return Collections.emptyList();
 	}
 
 	@Override
-	public MutableIntBoundingBox method_16628(class_3485 arg, BlockPos blockPos, Rotation rotation) {
+	public MutableIntBoundingBox method_16628(StructureManager structureManager, BlockPos blockPos, Rotation rotation) {
 		return MutableIntBoundingBox.maxSize();
 	}
 

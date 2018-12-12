@@ -2,8 +2,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_2402;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -20,7 +18,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
-public class KelpBlock extends Block implements class_2402 {
+public class KelpBlock extends Block implements FluidFillable {
 	public static final IntegerProperty field_11194 = Properties.AGE_25;
 	protected static final VoxelShape field_11195 = Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 9.0, 16.0);
 
@@ -76,12 +74,14 @@ public class KelpBlock extends Block implements class_2402 {
 		if (block == Blocks.field_10092) {
 			return false;
 		} else {
-			return block == this || block == Blocks.field_10463 || Block.method_9501(blockState2.method_11628(viewableWorld, blockPos2), Direction.UP);
+			return block == this || block == Blocks.field_10463 || Block.isFaceFullCube(blockState2.getCollisionShape(viewableWorld, blockPos2), Direction.UP);
 		}
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if (!blockState.canPlaceAt(iWorld, blockPos)) {
 			if (direction == Direction.DOWN) {
 				return Blocks.field_10124.getDefaultState();
@@ -94,7 +94,7 @@ public class KelpBlock extends Block implements class_2402 {
 			return Blocks.field_10463.getDefaultState();
 		} else {
 			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
-			return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		}
 	}
 
@@ -104,12 +104,12 @@ public class KelpBlock extends Block implements class_2402 {
 	}
 
 	@Override
-	public boolean method_10310(BlockView blockView, BlockPos blockPos, BlockState blockState, Fluid fluid) {
+	public boolean canFillWithFluid(BlockView blockView, BlockPos blockPos, BlockState blockState, Fluid fluid) {
 		return false;
 	}
 
 	@Override
-	public boolean method_10311(IWorld iWorld, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
+	public boolean tryFillWithFluid(IWorld iWorld, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
 		return false;
 	}
 }

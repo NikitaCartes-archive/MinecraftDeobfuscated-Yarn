@@ -4,11 +4,11 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.sortme.OptionMainHand;
 
 @Environment(EnvType.CLIENT)
-public class PlayerEntityModel extends BipedEntityModel {
+public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<T> {
 	public Cuboid leftArmOverlay;
 	public Cuboid rightArmOverlay;
 	public Cuboid leftLegOverlay;
@@ -66,8 +66,8 @@ public class PlayerEntityModel extends BipedEntityModel {
 	}
 
 	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		super.render(entity, f, g, h, i, j, k);
+	public void method_17088(T livingEntity, float f, float g, float h, float i, float j, float k) {
+		super.method_17088(livingEntity, f, g, h, i, j, k);
 		GlStateManager.pushMatrix();
 		if (this.isChild) {
 			float l = 2.0F;
@@ -79,7 +79,7 @@ public class PlayerEntityModel extends BipedEntityModel {
 			this.rightArmOverlay.render(k);
 			this.bodyOverlay.render(k);
 		} else {
-			if (entity.isSneaking()) {
+			if (livingEntity.isSneaking()) {
 				GlStateManager.translatef(0.0F, 0.2F, 0.0F);
 			}
 
@@ -94,7 +94,7 @@ public class PlayerEntityModel extends BipedEntityModel {
 	}
 
 	public void method_2824(float f) {
-		copyAngles(this.head, this.mau5Ears);
+		this.mau5Ears.method_17138(this.head);
 		this.mau5Ears.rotationPointX = 0.0F;
 		this.mau5Ears.rotationPointY = 0.0F;
 		this.mau5Ears.render(f);
@@ -105,14 +105,14 @@ public class PlayerEntityModel extends BipedEntityModel {
 	}
 
 	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
-		super.setRotationAngles(f, g, h, i, j, k, entity);
-		copyAngles(this.legLeft, this.leftLegOverlay);
-		copyAngles(this.legRight, this.rightLegOverlay);
-		copyAngles(this.armLeft, this.leftArmOverlay);
-		copyAngles(this.armRight, this.rightArmOverlay);
-		copyAngles(this.body, this.bodyOverlay);
-		if (entity.isSneaking()) {
+	public void method_17087(T livingEntity, float f, float g, float h, float i, float j, float k) {
+		super.method_17087(livingEntity, f, g, h, i, j, k);
+		this.leftLegOverlay.method_17138(this.legLeft);
+		this.rightLegOverlay.method_17138(this.legRight);
+		this.leftArmOverlay.method_17138(this.armLeft);
+		this.rightArmOverlay.method_17138(this.armRight);
+		this.bodyOverlay.method_17138(this.body);
+		if (livingEntity.isSneaking()) {
 			this.cape.rotationPointY = 2.0F;
 		} else {
 			this.cape.rotationPointY = 0.0F;

@@ -6,15 +6,14 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.class_3443;
-import net.minecraft.class_3449;
-import net.minecraft.class_3485;
 import net.minecraft.entity.EntityType;
 import net.minecraft.sortme.structures.NetherFortressGenerator;
+import net.minecraft.sortme.structures.StructureManager;
+import net.minecraft.sortme.structures.StructureStart;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
 
 public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig> {
 	private static final List<Biome.SpawnEntry> field_13705 = Lists.<Biome.SpawnEntry>newArrayList(
@@ -42,7 +41,7 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 		} else if (j != (l << 4) + 4 + random.nextInt(8)) {
 			return false;
 		} else {
-			Biome biome = chunkGenerator.getBiomeSource().method_8758(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
+			Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
 			return chunkGenerator.hasStructure(biome, Feature.NETHER_BRIDGE);
 		}
 	}
@@ -63,17 +62,17 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 	}
 
 	@Override
-	public List<Biome.SpawnEntry> method_13149() {
+	public List<Biome.SpawnEntry> getMonsterSpawns() {
 		return field_13705;
 	}
 
-	public static class class_3109 extends class_3449 {
+	public static class class_3109 extends StructureStart {
 		public class_3109(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
 			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, class_3485 arg, int i, int j, Biome biome) {
+		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
 			NetherFortressGenerator.class_3407 lv = new NetherFortressGenerator.class_3407(this.field_16715, (i << 4) + 2, (j << 4) + 2);
 			this.children.add(lv);
 			lv.method_14918(lv, this.children, this.field_16715);

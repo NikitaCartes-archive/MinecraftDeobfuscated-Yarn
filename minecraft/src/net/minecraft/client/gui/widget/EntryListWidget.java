@@ -11,96 +11,69 @@ import net.minecraft.util.SystemUtil;
 
 @Environment(EnvType.CLIENT)
 public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extends AbstractListWidget {
-	private final List<E> field_2142 = new EntryListWidget.class_352();
+	private final List<E> entries = new EntryListWidget.Entries();
 
 	public EntryListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
 		super(minecraftClient, i, j, k, l, m);
 	}
 
 	@Override
-	protected boolean method_1937(int i, int j, double d, double e) {
-		return this.method_1900(i).mouseClicked(d, e, j);
+	protected boolean selectEntry(int i, int j, double d, double e) {
+		return this.getEntry(i).mouseClicked(d, e, j);
 	}
 
 	@Override
-	protected boolean isSelected(int i) {
+	protected boolean isSelectedEntry(int i) {
 		return false;
 	}
 
 	@Override
-	protected void method_1936() {
+	protected void drawBackground() {
 	}
 
 	@Override
 	protected void drawEntry(int i, int j, int k, int l, int m, int n, float f) {
-		this.method_1900(i).drawEntry(this.getEntryWidth(), l, m, n, this.method_1938((double)m, (double)n) && this.method_1956((double)m, (double)n) == i, f);
+		this.getEntry(i).draw(this.getEntryWidth(), l, m, n, this.isSelected((double)m, (double)n) && this.getSelectedEntry((double)m, (double)n) == i, f);
 	}
 
 	@Override
 	protected void method_1952(int i, int j, int k, float f) {
-		this.method_1900(i).method_1904(f);
+		this.getEntry(i).method_1904(f);
 	}
 
 	@Override
-	public final List<E> getListeners() {
-		return this.field_2142;
+	public final List<E> getEntries() {
+		return this.entries;
 	}
 
-	protected final void method_1902() {
-		this.field_2142.clear();
+	protected final void clearEntries() {
+		this.entries.clear();
 	}
 
-	private E method_1900(int i) {
-		return (E)this.getListeners().get(i);
+	private E getEntry(int i) {
+		return (E)this.getEntries().get(i);
 	}
 
-	protected final void method_1901(E entry) {
-		this.field_2142.add(entry);
+	protected final void addEntry(E entry) {
+		this.entries.add(entry);
 	}
 
 	@Override
 	public void method_1946(int i) {
 		this.field_2176 = i;
-		this.field_2177 = SystemUtil.getMeasuringTimeMili();
+		this.field_2177 = SystemUtil.getMeasuringTimeMs();
 	}
 
 	@Override
 	protected final int getEntryCount() {
-		return this.getListeners().size();
+		return this.getEntries().size();
 	}
 
 	@Environment(EnvType.CLIENT)
-	public abstract static class Entry<E extends EntryListWidget.Entry<E>> implements GuiEventListener {
-		protected EntryListWidget<E> field_2144;
-		protected int field_2143;
-
-		protected EntryListWidget<E> method_1905() {
-			return this.field_2144;
-		}
-
-		protected int method_1908() {
-			return this.field_2143;
-		}
-
-		protected int method_1906() {
-			return this.field_2144.y1 + 4 - this.field_2144.getScrollY() + this.field_2143 * this.field_2144.entryHeight + this.field_2144.field_2174;
-		}
-
-		protected int method_1907() {
-			return this.field_2144.x1 + this.field_2144.width / 2 - this.field_2144.getEntryWidth() / 2 + 2;
-		}
-
-		protected void method_1904(float f) {
-		}
-
-		public abstract void drawEntry(int i, int j, int k, int l, boolean bl, float f);
-	}
-
-	@Environment(EnvType.CLIENT)
-	class class_352 extends AbstractList<E> {
+	class Entries extends AbstractList<E> {
 		private final List<E> field_2146 = Lists.<E>newArrayList();
 
-		private class_352() {
+		private Entries() {
 		}
 
 		public E method_1912(int i) {
@@ -113,14 +86,14 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 
 		public E method_1909(int i, E entry) {
 			E entry2 = (E)this.field_2146.set(i, entry);
-			entry.field_2144 = EntryListWidget.this;
+			entry.parent = EntryListWidget.this;
 			entry.field_2143 = i;
 			return entry2;
 		}
 
 		public void method_1910(int i, E entry) {
 			this.field_2146.add(i, entry);
-			entry.field_2144 = EntryListWidget.this;
+			entry.parent = EntryListWidget.this;
 			entry.field_2143 = i;
 			int j = i + 1;
 
@@ -139,5 +112,32 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 
 			return entry;
 		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public abstract static class Entry<E extends EntryListWidget.Entry<E>> implements GuiEventListener {
+		protected EntryListWidget<E> parent;
+		protected int field_2143;
+
+		protected EntryListWidget<E> getParent() {
+			return this.parent;
+		}
+
+		protected int method_1908() {
+			return this.field_2143;
+		}
+
+		protected int getY() {
+			return this.parent.y1 + 4 - this.parent.getScrollY() + this.field_2143 * this.parent.entryHeight + this.parent.field_2174;
+		}
+
+		protected int getX() {
+			return this.parent.x1 + this.parent.width / 2 - this.parent.getEntryWidth() / 2 + 2;
+		}
+
+		protected void method_1904(float f) {
+		}
+
+		public abstract void draw(int i, int j, int k, int l, boolean bl, float f);
 	}
 }

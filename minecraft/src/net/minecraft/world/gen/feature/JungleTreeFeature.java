@@ -4,7 +4,6 @@ import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
 
 public class JungleTreeFeature extends OakTreeFeature {
 	public JungleTreeFeature(

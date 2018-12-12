@@ -18,7 +18,7 @@ public class SayCommand {
 								TextComponent textComponent = MessageArgumentType.getMessageArgument(commandContext, "message");
 								commandContext.getSource()
 									.getMinecraftServer()
-									.getConfigurationManager()
+									.getPlayerManager()
 									.sendToAll(new TranslatableTextComponent("chat.type.announcement", commandContext.getSource().getDisplayName(), textComponent));
 								return 1;
 							}

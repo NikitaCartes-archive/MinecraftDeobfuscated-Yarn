@@ -41,7 +41,7 @@ public abstract class GolemEntity extends MobEntityWithAi implements Living {
 	}
 
 	@Override
-	public boolean method_5974(double d) {
+	public boolean canImmediatelyDespawn(double d) {
 		return false;
 	}
 }

@@ -12,7 +12,7 @@ public class SmithingTableBlock extends CraftingTableBlock {
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
 		return false;

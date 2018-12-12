@@ -17,7 +17,7 @@ public class class_231 implements class_234<MinecraftServer> {
 		CommandFunctionManager commandFunctionManager = minecraftServer.getCommandFunctionManager();
 		CommandFunction commandFunction = commandFunctionManager.getFunction(this.field_1304);
 		if (commandFunction != null) {
-			commandFunctionManager.method_12904(commandFunction, commandFunctionManager.method_12899());
+			commandFunctionManager.execute(commandFunction, commandFunctionManager.getFunctionCommandSource());
 		}
 	}
 

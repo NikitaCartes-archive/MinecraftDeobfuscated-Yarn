@@ -74,8 +74,8 @@ public class MobSpawnerBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	@Override
-	public boolean method_11004(int i, int j) {
-		return this.logic.method_8275(i) ? true : super.method_11004(i, j);
+	public boolean onBlockAction(int i, int j) {
+		return this.logic.method_8275(i) ? true : super.onBlockAction(i, j);
 	}
 
 	@Override

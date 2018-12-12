@@ -6,7 +6,6 @@ import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
 
 public class DefaultFlowerFeature extends FlowerFeature {
 	public DefaultFlowerFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {

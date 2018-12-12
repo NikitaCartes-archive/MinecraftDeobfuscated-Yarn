@@ -42,7 +42,7 @@ public class DropperBlock extends DispenserBlock {
 			ItemStack itemStack = dispenserBlockEntity.getInvStack(i);
 			if (!itemStack.isEmpty()) {
 				Direction direction = world.getBlockState(blockPos).get(field_10918);
-				Inventory inventory = HopperBlockEntity.method_11250(world, blockPos.method_10093(direction));
+				Inventory inventory = HopperBlockEntity.getInventoryAt(world, blockPos.offset(direction));
 				ItemStack itemStack2;
 				if (inventory == null) {
 					itemStack2 = field_10949.dispense(blockPointerImpl, itemStack);

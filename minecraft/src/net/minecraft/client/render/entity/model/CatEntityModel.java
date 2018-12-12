@@ -2,12 +2,10 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.CatEntity;
 
 @Environment(EnvType.CLIENT)
-public class CatEntityModel extends OcelotEntityModel {
+public class CatEntityModel<T extends CatEntity> extends OcelotEntityModel<T> {
 	private float field_16245;
 	private float field_16244;
 	private float field_16243;
@@ -16,9 +14,7 @@ public class CatEntityModel extends OcelotEntityModel {
 		super(f);
 	}
 
-	@Override
-	public void animateModel(LivingEntity livingEntity, float f, float g, float h) {
-		CatEntity catEntity = (CatEntity)livingEntity;
+	public void method_17074(T catEntity, float f, float g, float h) {
 		this.field_16245 = catEntity.method_16082(h);
 		this.field_16244 = catEntity.method_16091(h);
 		this.field_16243 = catEntity.method_16095(h);
@@ -37,7 +33,7 @@ public class CatEntityModel extends OcelotEntityModel {
 			this.field_3441.rotationPointY = 18.0F;
 		}
 
-		super.animateModel(livingEntity, f, g, h);
+		super.animateModel(catEntity, f, g, h);
 		if (catEntity.isSitting()) {
 			this.field_3437.pitch = (float) (Math.PI / 4);
 			this.field_3437.rotationPointY += -4.0F;
@@ -66,9 +62,8 @@ public class CatEntityModel extends OcelotEntityModel {
 		}
 	}
 
-	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
-		super.setRotationAngles(f, g, h, i, j, k, entity);
+	public void method_17075(T catEntity, float f, float g, float h, float i, float j, float k) {
+		super.setAngles(catEntity, f, g, h, i, j, k);
 		if (this.field_16245 > 0.0F) {
 			this.field_3435.roll = this.method_16018(this.field_3435.roll, -1.2707963F, this.field_16245);
 			this.field_3435.yaw = this.method_16018(this.field_3435.yaw, 1.2707963F, this.field_16245);

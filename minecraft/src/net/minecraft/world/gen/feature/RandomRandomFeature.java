@@ -6,8 +6,7 @@ import java.util.function.Function;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.RandomRandomFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class RandomRandomFeature extends Feature<RandomRandomFeatureConfig> {
 	public RandomRandomFeature(Function<Dynamic<?>, ? extends RandomRandomFeatureConfig> function) {
@@ -16,7 +15,7 @@ public class RandomRandomFeature extends Feature<RandomRandomFeatureConfig> {
 
 	public boolean method_13696(
 		IWorld iWorld,
-		ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator,
+		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,
 		BlockPos blockPos,
 		RandomRandomFeatureConfig randomRandomFeatureConfig

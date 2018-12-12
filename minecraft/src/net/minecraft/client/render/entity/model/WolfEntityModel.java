@@ -4,14 +4,11 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class WolfEntityModel extends Model {
+public class WolfEntityModel<T extends WolfEntity> extends EntityModel<T> {
 	private final Cuboid field_3621;
 	private final Cuboid field_3623;
 	private final Cuboid field_3622;
@@ -53,10 +50,9 @@ public class WolfEntityModel extends Model {
 		this.field_3621.setTextureOffset(0, 10).addBox(-0.5F, 0.0F, -5.0F, 3, 3, 4, 0.0F);
 	}
 
-	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		super.render(entity, f, g, h, i, j, k);
-		this.setRotationAngles(f, g, h, i, j, k, entity);
+	public void method_17132(T wolfEntity, float f, float g, float h, float i, float j, float k) {
+		super.render(wolfEntity, f, g, h, i, j, k);
+		this.method_17133(wolfEntity, f, g, h, i, j, k);
 		if (this.isChild) {
 			float l = 2.0F;
 			GlStateManager.pushMatrix();
@@ -86,9 +82,7 @@ public class WolfEntityModel extends Model {
 		}
 	}
 
-	@Override
-	public void animateModel(LivingEntity livingEntity, float f, float g, float h) {
-		WolfEntity wolfEntity = (WolfEntity)livingEntity;
+	public void method_17131(T wolfEntity, float f, float g, float h) {
 		if (wolfEntity.isAngry()) {
 			this.field_3617.yaw = 0.0F;
 		} else {
@@ -132,9 +126,8 @@ public class WolfEntityModel extends Model {
 		this.field_3617.roll = wolfEntity.method_6715(h, -0.2F);
 	}
 
-	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
-		super.setRotationAngles(f, g, h, i, j, k, entity);
+	public void method_17133(T wolfEntity, float f, float g, float h, float i, float j, float k) {
+		super.setAngles(wolfEntity, f, g, h, i, j, k);
 		this.field_3621.pitch = j * (float) (Math.PI / 180.0);
 		this.field_3621.yaw = i * (float) (Math.PI / 180.0);
 		this.field_3617.pitch = h;

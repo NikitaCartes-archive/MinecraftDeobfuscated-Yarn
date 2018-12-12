@@ -18,8 +18,8 @@ public class SignItem extends WallStandingBlockItem {
 	@Override
 	protected boolean afterBlockPlaced(BlockPos blockPos, World world, @Nullable PlayerEntity playerEntity, ItemStack itemStack, BlockState blockState) {
 		boolean bl = super.afterBlockPlaced(blockPos, world, playerEntity, itemStack, blockState);
-		if (!world.isRemote && !bl && playerEntity != null) {
-			playerEntity.openSignEditor((SignBlockEntity)world.getBlockEntity(blockPos));
+		if (!world.isClient && !bl && playerEntity != null) {
+			playerEntity.openSignEditorGui((SignBlockEntity)world.getBlockEntity(blockPos));
 		}
 
 		return bl;

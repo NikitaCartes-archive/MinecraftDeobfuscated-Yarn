@@ -70,7 +70,7 @@ public class FollowParentGoal extends Goal {
 	public void tick() {
 		if (--this.field_6454 <= 0) {
 			this.field_6454 = 10;
-			this.owner.getNavigation().method_6335(this.parent, this.field_6453);
+			this.owner.getNavigation().startMovingTo(this.parent, this.field_6453);
 		}
 	}
 }

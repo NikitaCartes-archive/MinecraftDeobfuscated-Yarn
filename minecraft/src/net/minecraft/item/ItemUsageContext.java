@@ -11,7 +11,7 @@ public class ItemUsageContext {
 	protected final float hitX;
 	protected final float hitY;
 	protected final float hitZ;
-	protected final Direction field_8943;
+	protected final Direction facing;
 	protected final World world;
 	protected final ItemStack stack;
 	protected final BlockPos pos;
@@ -24,7 +24,7 @@ public class ItemUsageContext {
 		World world, @Nullable PlayerEntity playerEntity, ItemStack itemStack, BlockPos blockPos, Direction direction, float f, float g, float h
 	) {
 		this.player = playerEntity;
-		this.field_8943 = direction;
+		this.facing = direction;
 		this.hitX = f;
 		this.hitY = g;
 		this.hitZ = h;
@@ -50,8 +50,8 @@ public class ItemUsageContext {
 		return this.world;
 	}
 
-	public Direction method_8038() {
-		return this.field_8943;
+	public Direction getFacing() {
+		return this.facing;
 	}
 
 	public float getHitX() {
@@ -66,8 +66,8 @@ public class ItemUsageContext {
 		return this.hitZ;
 	}
 
-	public Direction method_8042() {
-		return this.player == null ? Direction.NORTH : this.player.method_5735();
+	public Direction getPlayerHorizontalFacing() {
+		return this.player == null ? Direction.NORTH : this.player.getHorizontalFacing();
 	}
 
 	public boolean isPlayerSneaking() {

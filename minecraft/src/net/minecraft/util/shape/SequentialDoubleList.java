@@ -6,7 +6,7 @@ public class SequentialDoubleList extends AbstractDoubleList {
 	private final int count;
 	private final int offset;
 
-	public SequentialDoubleList(int i, int j) {
+	SequentialDoubleList(int i, int j) {
 		this.count = i;
 		this.offset = j;
 	}

@@ -72,7 +72,7 @@ public class ProjectileAttackGoal extends Goal {
 		if (!(d > (double)this.field_6584) && this.field_6579 >= 5) {
 			this.mobEntity.getNavigation().method_6340();
 		} else {
-			this.mobEntity.getNavigation().method_6335(this.target, this.field_6586);
+			this.mobEntity.getNavigation().startMovingTo(this.target, this.field_6586);
 		}
 
 		this.mobEntity.getLookControl().lookAt(this.target, 30.0F, 30.0F);

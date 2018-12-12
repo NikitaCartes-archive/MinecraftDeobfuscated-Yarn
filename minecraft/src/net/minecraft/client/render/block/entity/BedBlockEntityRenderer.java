@@ -31,7 +31,7 @@ public class BedBlockEntityRenderer extends BlockEntityRenderer<BedBlockEntity> 
 			GlStateManager.translatef(0.0625F, 0.0625F, 0.0625F);
 			GlStateManager.matrixMode(5888);
 		} else {
-			Identifier identifier = TEXTURES[bedBlockEntity.method_11018().getId()];
+			Identifier identifier = TEXTURES[bedBlockEntity.getColor().getId()];
 			if (identifier != null) {
 				this.bindTexture(identifier);
 			}

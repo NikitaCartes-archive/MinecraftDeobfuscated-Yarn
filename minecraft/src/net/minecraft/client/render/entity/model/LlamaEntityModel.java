@@ -4,11 +4,10 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
 
 @Environment(EnvType.CLIENT)
-public class LlamaEntityModel extends QuadrupedEntityModel {
+public class LlamaEntityModel<T extends AbstractDonkeyEntity> extends QuadrupedEntityModel<T> {
 	private final Cuboid field_3430;
 	private final Cuboid field_3429;
 
@@ -58,11 +57,9 @@ public class LlamaEntityModel extends QuadrupedEntityModel {
 		this.field_3537 += 2.0F;
 	}
 
-	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		AbstractDonkeyEntity abstractDonkeyEntity = (AbstractDonkeyEntity)entity;
+	public void method_17100(T abstractDonkeyEntity, float f, float g, float h, float i, float j, float k) {
 		boolean bl = !abstractDonkeyEntity.isChild() && abstractDonkeyEntity.hasChest();
-		this.setRotationAngles(f, g, h, i, j, k, entity);
+		this.setAngles(abstractDonkeyEntity, f, g, h, i, j, k);
 		if (this.isChild) {
 			float l = 2.0F;
 			GlStateManager.pushMatrix();

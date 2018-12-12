@@ -17,9 +17,11 @@ public class SnowyBlock extends Block {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if (direction != Direction.UP) {
-			return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		} else {
 			Block block = blockState2.getBlock();
 			return blockState.with(snowy, Boolean.valueOf(block == Blocks.field_10491 || block == Blocks.field_10477));

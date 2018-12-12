@@ -2,7 +2,7 @@ package net.minecraft.client.gui.menu;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_424;
+import net.minecraft.client.gui.CloseWorldGui;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.MainMenuGui;
 import net.minecraft.client.gui.ingame.ConfirmChatLinkGui;
@@ -21,12 +21,12 @@ public class PauseMenuGui extends Gui {
 			new ButtonWidget(1, this.width / 2 - 102, this.height / 4 + 120 + -16, 204, 20, I18n.translate("menu.returnToMenu")) {
 				@Override
 				public void onPressed(double d, double e) {
-					boolean bl = PauseMenuGui.this.client.method_1542();
+					boolean bl = PauseMenuGui.this.client.isIntegratedServerRunning();
 					boolean bl2 = PauseMenuGui.this.client.isConnectedToRealms();
 					this.enabled = false;
 					PauseMenuGui.this.client.world.method_8525();
 					if (bl) {
-						PauseMenuGui.this.client.method_1550(null, new class_424(I18n.translate("menu.savingLevel")));
+						PauseMenuGui.this.client.method_1550(null, new CloseWorldGui(I18n.translate("menu.savingLevel")));
 					} else {
 						PauseMenuGui.this.client.method_1481(null);
 					}
@@ -42,7 +42,7 @@ public class PauseMenuGui extends Gui {
 				}
 			}
 		);
-		if (!this.client.method_1542()) {
+		if (!this.client.isIntegratedServerRunning()) {
 			buttonWidget.text = I18n.translate("menu.disconnect");
 		}
 
@@ -50,13 +50,13 @@ public class PauseMenuGui extends Gui {
 			@Override
 			public void onPressed(double d, double e) {
 				PauseMenuGui.this.client.openGui(null);
-				PauseMenuGui.this.client.mouse.method_1612();
+				PauseMenuGui.this.client.field_1729.lockCursor();
 			}
 		});
 		this.addButton(new ButtonWidget(0, this.width / 2 - 102, this.height / 4 + 96 + -16, 98, 20, I18n.translate("menu.options")) {
 			@Override
 			public void onPressed(double d, double e) {
-				PauseMenuGui.this.client.openGui(new SettingsGui(PauseMenuGui.this, PauseMenuGui.this.client.options));
+				PauseMenuGui.this.client.openGui(new SettingsGui(PauseMenuGui.this, PauseMenuGui.this.client.field_1690));
 			}
 		});
 		ButtonWidget buttonWidget2 = this.addButton(new ButtonWidget(7, this.width / 2 + 4, this.height / 4 + 96 + -16, 98, 20, I18n.translate("menu.shareToLan")) {

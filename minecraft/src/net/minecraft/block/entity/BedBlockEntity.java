@@ -7,7 +7,7 @@ import net.minecraft.client.network.packet.BlockEntityUpdateClientPacket;
 import net.minecraft.util.DyeColor;
 
 public class BedBlockEntity extends BlockEntity {
-	private DyeColor field_11869;
+	private DyeColor color;
 
 	public BedBlockEntity() {
 		super(BlockEntityType.BED);
@@ -15,7 +15,7 @@ public class BedBlockEntity extends BlockEntity {
 
 	public BedBlockEntity(DyeColor dyeColor) {
 		this();
-		this.method_11019(dyeColor);
+		this.setColor(dyeColor);
 	}
 
 	@Override
@@ -24,15 +24,15 @@ public class BedBlockEntity extends BlockEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public DyeColor method_11018() {
-		if (this.field_11869 == null) {
-			this.field_11869 = ((BedBlock)this.getCachedState().getBlock()).getColor();
+	public DyeColor getColor() {
+		if (this.color == null) {
+			this.color = ((BedBlock)this.getCachedState().getBlock()).getColor();
 		}
 
-		return this.field_11869;
+		return this.color;
 	}
 
-	public void method_11019(DyeColor dyeColor) {
-		this.field_11869 = dyeColor;
+	public void setColor(DyeColor dyeColor) {
+		this.color = dyeColor;
 	}
 }

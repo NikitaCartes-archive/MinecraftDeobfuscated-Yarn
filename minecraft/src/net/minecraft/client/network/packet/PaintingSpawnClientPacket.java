@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.decoration.PaintingEntity;
+import net.minecraft.entity.decoration.painting.PaintingEntity;
+import net.minecraft.entity.decoration.painting.PaintingMotive;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.sortme.PaintingMotive;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -18,7 +18,7 @@ public class PaintingSpawnClientPacket implements Packet<ClientPlayPacketListene
 	private UUID uuid;
 	private BlockPos pos;
 	private Direction facing;
-	private int field_12010;
+	private int motive;
 
 	public PaintingSpawnClientPacket() {
 	}
@@ -27,15 +27,15 @@ public class PaintingSpawnClientPacket implements Packet<ClientPlayPacketListene
 		this.id = paintingEntity.getEntityId();
 		this.uuid = paintingEntity.getUuid();
 		this.pos = paintingEntity.getDecorationBlockPos();
-		this.facing = paintingEntity.field_7099;
-		this.field_12010 = Registry.MOTIVE.getRawId(paintingEntity.type);
+		this.facing = paintingEntity.facing;
+		this.motive = Registry.MOTIVE.getRawId(paintingEntity.motive);
 	}
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.id = packetByteBuf.readVarInt();
 		this.uuid = packetByteBuf.readUuid();
-		this.field_12010 = packetByteBuf.readVarInt();
+		this.motive = packetByteBuf.readVarInt();
 		this.pos = packetByteBuf.readBlockPos();
 		this.facing = Direction.fromHorizontal(packetByteBuf.readUnsignedByte());
 	}
@@ -44,7 +44,7 @@ public class PaintingSpawnClientPacket implements Packet<ClientPlayPacketListene
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeVarInt(this.id);
 		packetByteBuf.writeUuid(this.uuid);
-		packetByteBuf.writeVarInt(this.field_12010);
+		packetByteBuf.writeVarInt(this.motive);
 		packetByteBuf.writeBlockPos(this.pos);
 		packetByteBuf.writeByte(this.facing.getHorizontal());
 	}
@@ -74,7 +74,7 @@ public class PaintingSpawnClientPacket implements Packet<ClientPlayPacketListene
 	}
 
 	@Environment(EnvType.CLIENT)
-	public PaintingMotive method_11221() {
-		return Registry.MOTIVE.getInt(this.field_12010);
+	public PaintingMotive getMotive() {
+		return Registry.MOTIVE.getInt(this.motive);
 	}
 }

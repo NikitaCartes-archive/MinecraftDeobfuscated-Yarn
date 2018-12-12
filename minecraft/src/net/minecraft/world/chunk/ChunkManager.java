@@ -9,20 +9,20 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
-public abstract class ChunkManager implements ChunkView, AutoCloseable {
+public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
 	@Nullable
-	public WorldChunk method_12126(int i, int j, boolean bl) {
-		return (WorldChunk)this.getChunkSync(i, j, ChunkStatus.field_12803, bl);
+	public WorldChunk getWorldChunk(int i, int j, boolean bl) {
+		return (WorldChunk)this.getChunkSync(i, j, ChunkStatus.FULL, bl);
 	}
 
 	@Nullable
 	@Override
-	public BlockView get(int i, int j) {
-		return this.getChunkSync(i, j, ChunkStatus.field_12798, false);
+	public BlockView getChunk(int i, int j) {
+		return this.getChunkSync(i, j, ChunkStatus.EMPTY, false);
 	}
 
-	public boolean method_12123(int i, int j) {
-		return this.getChunkSync(i, j, ChunkStatus.field_12803, false) != null;
+	public boolean isChunkLoaded(int i, int j) {
+		return this.getChunkSync(i, j, ChunkStatus.FULL, false) != null;
 	}
 
 	@Nullable

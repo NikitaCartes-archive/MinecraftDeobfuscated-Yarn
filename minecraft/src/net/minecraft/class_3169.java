@@ -35,7 +35,7 @@ public class class_3169 implements class_3162 {
 			) {
 				return argumentBuilder.then(
 					ServerCommandManager.literal("entity")
-						.then((ArgumentBuilder<ServerCommandSource, ?>)function.apply(ServerCommandManager.argument(string, EntityArgumentType.create())))
+						.then((ArgumentBuilder<ServerCommandSource, ?>)function.apply(ServerCommandManager.argument(string, EntityArgumentType.oneEntity())))
 				);
 			}
 		};
@@ -58,7 +58,7 @@ public class class_3169 implements class_3162 {
 
 	@Override
 	public CompoundTag method_13881() {
-		return NbtPredicate.method_9076(this.field_13801);
+		return NbtPredicate.entityToTag(this.field_13801);
 	}
 
 	@Override

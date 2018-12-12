@@ -7,7 +7,6 @@ import net.minecraft.block.entity.BedBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -40,10 +39,10 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	protected static final VoxelShape field_16784 = Block.createCubeShape(0.0, 0.0, 13.0, 3.0, 3.0, 16.0);
 	protected static final VoxelShape field_16786 = Block.createCubeShape(13.0, 0.0, 0.0, 16.0, 3.0, 3.0);
 	protected static final VoxelShape field_16789 = Block.createCubeShape(13.0, 0.0, 13.0, 16.0, 3.0, 16.0);
-	protected static final VoxelShape field_16787 = VoxelShapes.method_1084(field_16788, VoxelShapes.method_1084(field_16782, field_16786));
-	protected static final VoxelShape field_16785 = VoxelShapes.method_1084(field_16788, VoxelShapes.method_1084(field_16784, field_16789));
-	protected static final VoxelShape field_16783 = VoxelShapes.method_1084(field_16788, VoxelShapes.method_1084(field_16782, field_16784));
-	protected static final VoxelShape field_16790 = VoxelShapes.method_1084(field_16788, VoxelShapes.method_1084(field_16786, field_16789));
+	protected static final VoxelShape field_16787 = VoxelShapes.union(field_16788, VoxelShapes.union(field_16782, field_16786));
+	protected static final VoxelShape field_16785 = VoxelShapes.union(field_16788, VoxelShapes.union(field_16784, field_16789));
+	protected static final VoxelShape field_16783 = VoxelShapes.union(field_16788, VoxelShapes.union(field_16782, field_16784));
+	protected static final VoxelShape field_16790 = VoxelShapes.union(field_16788, VoxelShapes.union(field_16786, field_16789));
 	private final DyeColor color;
 
 	public BedBlock(DyeColor dyeColor, Block.Settings settings) {
@@ -58,14 +57,14 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	}
 
 	@Override
-	public boolean method_9534(
+	public boolean activate(
 		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
 	) {
-		if (world.isRemote) {
+		if (world.isClient) {
 			return true;
 		} else {
 			if (blockState.get(field_9967) != BedPart.field_12560) {
-				blockPos = blockPos.method_10093(blockState.get(field_11177));
+				blockPos = blockPos.offset(blockState.get(field_11177));
 				blockState = world.getBlockState(blockPos);
 				if (blockState.getBlock() != this) {
 					return true;
@@ -102,7 +101,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 				}
 			} else {
 				world.clearBlockState(blockPos);
-				BlockPos blockPos2 = blockPos.method_10093(((Direction)blockState.get(field_11177)).getOpposite());
+				BlockPos blockPos2 = blockPos.offset(((Direction)blockState.get(field_11177)).getOpposite());
 				if (world.getBlockState(blockPos2).getBlock() == this) {
 					world.clearBlockState(blockPos2);
 				}
@@ -144,13 +143,15 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if (direction == method_9488(blockState.get(field_9967), blockState.get(field_11177))) {
 			return blockState2.getBlock() == this && blockState2.get(field_9967) != blockState.get(field_9967)
 				? blockState.with(field_9968, blockState2.get(field_9968))
 				: Blocks.field_10124.getDefaultState();
 		} else {
-			return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		}
 	}
 
@@ -176,12 +177,12 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	@Override
 	public void onBreak(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
 		BedPart bedPart = blockState.get(field_9967);
-		BlockPos blockPos2 = blockPos.method_10093(method_9488(bedPart, blockState.get(field_11177)));
+		BlockPos blockPos2 = blockPos.offset(method_9488(bedPart, blockState.get(field_11177)));
 		BlockState blockState2 = world.getBlockState(blockPos2);
 		if (blockState2.getBlock() == this && blockState2.get(field_9967) != bedPart) {
 			world.setBlockState(blockPos2, Blocks.field_10124.getDefaultState(), 35);
 			world.fireWorldEvent(playerEntity, 2001, blockPos2, Block.getRawIdFromState(blockState2));
-			if (!world.isRemote && !playerEntity.isCreative()) {
+			if (!world.isClient && !playerEntity.isCreative()) {
 				ItemStack itemStack = playerEntity.getMainHandStack();
 				dropStacks(blockState, world, blockPos, null, playerEntity, itemStack);
 				dropStacks(blockState2, world, blockPos2, null, playerEntity, itemStack);
@@ -196,9 +197,9 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		Direction direction = itemPlacementContext.method_8042();
+		Direction direction = itemPlacementContext.getPlayerHorizontalFacing();
 		BlockPos blockPos = itemPlacementContext.getPos();
-		BlockPos blockPos2 = blockPos.method_10093(direction);
+		BlockPos blockPos2 = blockPos.offset(direction);
 		return itemPlacementContext.getWorld().getBlockState(blockPos2).method_11587(itemPlacementContext)
 			? this.getDefaultState().with(field_11177, direction)
 			: null;
@@ -274,8 +275,8 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	}
 
 	@Override
-	public RenderTypeBlock getRenderType(BlockState blockState) {
-		return RenderTypeBlock.field_11456;
+	public BlockRenderType method_9604(BlockState blockState) {
+		return BlockRenderType.field_11456;
 	}
 
 	@Override
@@ -291,11 +292,11 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	@Override
 	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
 		super.onPlaced(world, blockPos, blockState, livingEntity, itemStack);
-		if (!world.isRemote) {
-			BlockPos blockPos2 = blockPos.method_10093(blockState.get(field_11177));
+		if (!world.isClient) {
+			BlockPos blockPos2 = blockPos.offset(blockState.get(field_11177));
 			world.setBlockState(blockPos2, blockState.with(field_9967, BedPart.field_12560), 3);
 			world.updateNeighbors(blockPos, Blocks.field_10124);
-			blockState.method_11635(world, blockPos, 3);
+			blockState.updateNeighborStates(world, blockPos, 3);
 		}
 	}
 
@@ -306,8 +307,8 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public long getPosRandom(BlockState blockState, BlockPos blockPos) {
-		BlockPos blockPos2 = blockPos.method_10079(blockState.get(field_11177), blockState.get(field_9967) == BedPart.field_12560 ? 0 : 1);
+	public long getRenderingSeed(BlockState blockState, BlockPos blockPos) {
+		BlockPos blockPos2 = blockPos.offset(blockState.get(field_11177), blockState.get(field_9967) == BedPart.field_12560 ? 0 : 1);
 		return MathHelper.hashCode(blockPos2.getX(), blockPos.getY(), blockPos2.getZ());
 	}
 

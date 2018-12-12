@@ -86,7 +86,7 @@ public class ExecuteCommand {
 				.then(method_13298(literalCommandNode, ServerCommandManager.literal("unless"), false))
 				.then(
 					ServerCommandManager.literal("as")
-						.then(ServerCommandManager.argument("targets", EntityArgumentType.method_9306()).fork(literalCommandNode, commandContext -> {
+						.then(ServerCommandManager.argument("targets", EntityArgumentType.multipleEntities()).fork(literalCommandNode, commandContext -> {
 							List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
 				
 							for(Entity entity : EntityArgumentType.method_9307(commandContext, "targets")) {
@@ -98,7 +98,7 @@ public class ExecuteCommand {
 				)
 				.then(
 					ServerCommandManager.literal("at")
-						.then(ServerCommandManager.argument("targets", EntityArgumentType.method_9306()).fork(literalCommandNode, commandContext -> {
+						.then(ServerCommandManager.argument("targets", EntityArgumentType.multipleEntities()).fork(literalCommandNode, commandContext -> {
 							List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
 				
 							for(Entity entity : EntityArgumentType.method_9307(commandContext, "targets")) {
@@ -121,7 +121,7 @@ public class ExecuteCommand {
 						)
 						.then(
 							ServerCommandManager.literal("as")
-								.then(ServerCommandManager.argument("targets", EntityArgumentType.method_9306()).fork(literalCommandNode, commandContext -> {
+								.then(ServerCommandManager.argument("targets", EntityArgumentType.multipleEntities()).fork(literalCommandNode, commandContext -> {
 									List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
 						
 									for(Entity entity : EntityArgumentType.method_9307(commandContext, "targets")) {
@@ -144,7 +144,7 @@ public class ExecuteCommand {
 						)
 						.then(
 							ServerCommandManager.literal("as")
-								.then(ServerCommandManager.argument("targets", EntityArgumentType.method_9306()).fork(literalCommandNode, commandContext -> {
+								.then(ServerCommandManager.argument("targets", EntityArgumentType.multipleEntities()).fork(literalCommandNode, commandContext -> {
 									List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
 						
 									for(Entity entity : EntityArgumentType.method_9307(commandContext, "targets")) {
@@ -160,7 +160,7 @@ public class ExecuteCommand {
 						.then(
 							ServerCommandManager.literal("entity")
 								.then(
-									ServerCommandManager.argument("targets", EntityArgumentType.method_9306())
+									ServerCommandManager.argument("targets", EntityArgumentType.multipleEntities())
 										.then(ServerCommandManager.argument("anchor", EntityAnchorArgumentType.create()).fork(literalCommandNode, commandContext -> {
 											List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
 											EntityAnchorArgumentType.EntityAnchor entityAnchor = EntityAnchorArgumentType.getAnchorArgument(commandContext, "anchor");
@@ -362,7 +362,7 @@ public class ExecuteCommand {
 	private static ServerCommandSource method_13290(
 		ServerCommandSource serverCommandSource, Collection<String> collection, ScoreboardObjective scoreboardObjective, boolean bl
 	) {
-		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
+		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
 		return serverCommandSource.mergeConsumers((commandContext, bl2, i) -> {
 			for(String string : collection) {
 				ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, scoreboardObjective);
@@ -390,7 +390,7 @@ public class ExecuteCommand {
 			try {
 				CompoundTag compoundTag = arg.method_13881();
 				int j = bl ? i : (bl2 ? 1 : 0);
-				arg2.method_9368(compoundTag, (Tag)intFunction.apply(j));
+				arg2.method_9368(compoundTag, () -> (Tag)intFunction.apply(j));
 				arg.method_13880(compoundTag);
 			} catch (CommandSyntaxException var9) {
 			}
@@ -530,7 +530,7 @@ public class ExecuteCommand {
 			.then(
 				ServerCommandManager.literal("entity")
 					.then(
-						ServerCommandManager.argument("entities", EntityArgumentType.method_9306())
+						ServerCommandManager.argument("entities", EntityArgumentType.multipleEntities())
 							.fork(commandNode, commandContext -> method_13319(commandContext, bl, !EntityArgumentType.method_9307(commandContext, "entities").isEmpty()))
 							.executes(method_13323(bl, commandContext -> EntityArgumentType.method_9307(commandContext, "entities").size()))
 					)
@@ -586,7 +586,7 @@ public class ExecuteCommand {
 		ScoreboardObjective scoreboardObjective = ObjectiveArgumentType.getObjectiveArgument(commandContext, "targetObjective");
 		String string2 = ScoreHolderArgumentType.getHolderArgument(commandContext, "source");
 		ScoreboardObjective scoreboardObjective2 = ObjectiveArgumentType.getObjectiveArgument(commandContext, "sourceObjective");
-		Scoreboard scoreboard = commandContext.getSource().getMinecraftServer().method_3845();
+		Scoreboard scoreboard = commandContext.getSource().getMinecraftServer().getScoreboard();
 		if (scoreboard.playerHasObjective(string, scoreboardObjective) && scoreboard.playerHasObjective(string2, scoreboardObjective2)) {
 			ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, scoreboardObjective);
 			ScoreboardPlayerScore scoreboardPlayerScore2 = scoreboard.getPlayerScore(string2, scoreboardObjective2);
@@ -599,7 +599,7 @@ public class ExecuteCommand {
 	private static boolean method_13313(CommandContext<ServerCommandSource> commandContext, NumberRange.Integer integer) throws CommandSyntaxException {
 		String string = ScoreHolderArgumentType.getHolderArgument(commandContext, "target");
 		ScoreboardObjective scoreboardObjective = ObjectiveArgumentType.getObjectiveArgument(commandContext, "targetObjective");
-		Scoreboard scoreboard = commandContext.getSource().getMinecraftServer().method_3845();
+		Scoreboard scoreboard = commandContext.getSource().getMinecraftServer().getScoreboard();
 		return !scoreboard.playerHasObjective(string, scoreboardObjective) ? false : integer.test(scoreboard.getPlayerScore(string, scoreboardObjective).getScore());
 	}
 

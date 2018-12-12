@@ -9,8 +9,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.NetherSpringFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class NetherSpringFeature extends Feature<NetherSpringFeatureConfig> {
 	private static final BlockState NETHERRACK = Blocks.field_10515.getDefaultState();
@@ -21,7 +20,7 @@ public class NetherSpringFeature extends Feature<NetherSpringFeatureConfig> {
 
 	public boolean method_13555(
 		IWorld iWorld,
-		ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator,
+		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,
 		BlockPos blockPos,
 		NetherSpringFeatureConfig netherSpringFeatureConfig

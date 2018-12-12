@@ -2,7 +2,7 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
-import net.minecraft.advancement.ServerAdvancementManager;
+import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.util.Identifier;
 
 public class ImpossibleCriterion implements Criterion<ImpossibleCriterion.Conditions> {
@@ -14,17 +14,19 @@ public class ImpossibleCriterion implements Criterion<ImpossibleCriterion.Condit
 	}
 
 	@Override
-	public void addCondition(ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<ImpossibleCriterion.Conditions> conditionsContainer) {
-	}
-
-	@Override
-	public void removeCondition(
-		ServerAdvancementManager serverAdvancementManager, Criterion.ConditionsContainer<ImpossibleCriterion.Conditions> conditionsContainer
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<ImpossibleCriterion.Conditions> conditionsContainer
 	) {
 	}
 
 	@Override
-	public void removePlayer(ServerAdvancementManager serverAdvancementManager) {
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<ImpossibleCriterion.Conditions> conditionsContainer
+	) {
+	}
+
+	@Override
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
 	}
 
 	public ImpossibleCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {

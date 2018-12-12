@@ -2,9 +2,10 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
-public class PigEntityModel extends QuadrupedEntityModel {
+public class PigEntityModel<T extends Entity> extends QuadrupedEntityModel<T> {
 	public PigEntityModel() {
 		this(0.0F);
 	}

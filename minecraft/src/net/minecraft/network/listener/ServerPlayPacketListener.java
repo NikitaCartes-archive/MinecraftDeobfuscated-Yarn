@@ -2,64 +2,64 @@ package net.minecraft.network.listener;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2793;
-import net.minecraft.class_2795;
-import net.minecraft.class_2799;
-import net.minecraft.class_2805;
-import net.minecraft.class_2809;
-import net.minecraft.class_2813;
-import net.minecraft.class_2822;
-import net.minecraft.class_2827;
-import net.minecraft.class_2828;
-import net.minecraft.class_2833;
-import net.minecraft.class_2836;
-import net.minecraft.class_2838;
-import net.minecraft.class_2842;
-import net.minecraft.class_2848;
-import net.minecraft.class_2851;
-import net.minecraft.class_2853;
-import net.minecraft.class_2855;
-import net.minecraft.class_2856;
-import net.minecraft.class_2859;
-import net.minecraft.class_2863;
-import net.minecraft.class_2866;
-import net.minecraft.class_2868;
-import net.minecraft.class_2870;
-import net.minecraft.class_2871;
-import net.minecraft.class_2873;
-import net.minecraft.class_2875;
-import net.minecraft.class_2877;
-import net.minecraft.class_2879;
-import net.minecraft.class_2884;
-import net.minecraft.class_3753;
 import net.minecraft.network.ButtonClickServerPacket;
+import net.minecraft.server.network.packet.AdvancementTabServerPacket;
+import net.minecraft.server.network.packet.BoatPaddleStateServerPacket;
 import net.minecraft.server.network.packet.BookUpdateServerPacket;
 import net.minecraft.server.network.packet.ChatMessageServerPacket;
+import net.minecraft.server.network.packet.ClickWindowServerPacket;
+import net.minecraft.server.network.packet.ClientCommandServerPacket;
 import net.minecraft.server.network.packet.ClientSettingsServerPacket;
+import net.minecraft.server.network.packet.ClientStatusServerPacket;
+import net.minecraft.server.network.packet.CraftRequestServerPacket;
+import net.minecraft.server.network.packet.CreativeInventoryActionServerPacket;
 import net.minecraft.server.network.packet.CustomPayloadServerPacket;
+import net.minecraft.server.network.packet.GuiActionConfirmServerPacket;
 import net.minecraft.server.network.packet.GuiCloseServerPacket;
+import net.minecraft.server.network.packet.HandSwingServerPacket;
+import net.minecraft.server.network.packet.KeepAliveServerPacket;
+import net.minecraft.server.network.packet.PickFromInventoryServerPacket;
 import net.minecraft.server.network.packet.PlayerActionServerPacket;
 import net.minecraft.server.network.packet.PlayerInteractBlockServerPacket;
 import net.minecraft.server.network.packet.PlayerInteractEntityServerPacket;
 import net.minecraft.server.network.packet.PlayerInteractItemServerPacket;
-import net.minecraft.server.network.packet.RecipeClickServerPacket;
+import net.minecraft.server.network.packet.PlayerLookServerPacket;
+import net.minecraft.server.network.packet.PlayerMoveServerMessage;
+import net.minecraft.server.network.packet.QueryBlockNbtServerPacket;
+import net.minecraft.server.network.packet.QueryEntityNbtServerPacket;
+import net.minecraft.server.network.packet.RecipeBookDataServerPacket;
+import net.minecraft.server.network.packet.RenameItemServerPacket;
+import net.minecraft.server.network.packet.RequestCommandCompletionsServerPacket;
+import net.minecraft.server.network.packet.ResourcePackStatusServerPacket;
+import net.minecraft.server.network.packet.SelectVillagerTradeServerPacket;
+import net.minecraft.server.network.packet.SpectatorTeleportServerPacket;
+import net.minecraft.server.network.packet.TeleportConfirmServerPacket;
+import net.minecraft.server.network.packet.UpdateBeaconServerPacket;
+import net.minecraft.server.network.packet.UpdateCommandBlockMinecartServerPacket;
+import net.minecraft.server.network.packet.UpdateCommandBlockServerPacket;
+import net.minecraft.server.network.packet.UpdateJigsawServerPacket;
+import net.minecraft.server.network.packet.UpdatePlayerAbilitiesServerPacket;
+import net.minecraft.server.network.packet.UpdateSelectedSlotServerPacket;
+import net.minecraft.server.network.packet.UpdateSignServerPacket;
+import net.minecraft.server.network.packet.UpdateStructureBlockServerPacket;
+import net.minecraft.server.network.packet.VehicleMoveServerPacket;
 
 public interface ServerPlayPacketListener extends PacketListener {
-	void method_12052(class_2879 arg);
+	void onHandSwing(HandSwingServerPacket handSwingServerPacket);
 
 	void onChatMessage(ChatMessageServerPacket chatMessageServerPacket);
 
-	void method_12068(class_2799 arg);
+	void onClientStatus(ClientStatusServerPacket clientStatusServerPacket);
 
 	void onClientSettings(ClientSettingsServerPacket clientSettingsServerPacket);
 
-	void method_12079(class_2809 arg);
+	void onConfirmTransaction(GuiActionConfirmServerPacket guiActionConfirmServerPacket);
 
-	void method_12055(ButtonClickServerPacket buttonClickServerPacket);
+	void onButtonClick(ButtonClickServerPacket buttonClickServerPacket);
 
-	void method_12076(class_2813 arg);
+	void onClickWindow(ClickWindowServerPacket clickWindowServerPacket);
 
-	void method_12061(RecipeClickServerPacket recipeClickServerPacket);
+	void method_12061(CraftRequestServerPacket craftRequestServerPacket);
 
 	void onGuiClose(GuiCloseServerPacket guiCloseServerPacket);
 
@@ -67,64 +67,64 @@ public interface ServerPlayPacketListener extends PacketListener {
 
 	void onPlayerInteractEntity(PlayerInteractEntityServerPacket playerInteractEntityServerPacket);
 
-	void method_12082(class_2827 arg);
+	void onKeepAlive(KeepAliveServerPacket keepAliveServerPacket);
 
-	void method_12063(class_2828 arg);
+	void onPlayerMove(PlayerMoveServerMessage playerMoveServerMessage);
 
-	void method_12083(class_2842 arg);
+	void onPlayerAbilities(UpdatePlayerAbilitiesServerPacket updatePlayerAbilitiesServerPacket);
 
 	void onPlayerAction(PlayerActionServerPacket playerActionServerPacket);
 
-	void method_12045(class_2848 arg);
+	void onClientCommand(ClientCommandServerPacket clientCommandServerPacket);
 
-	void method_12067(class_2851 arg);
+	void onPlayerLook(PlayerLookServerPacket playerLookServerPacket);
 
-	void method_12056(class_2868 arg);
+	void onUpdateSelectedSlot(UpdateSelectedSlotServerPacket updateSelectedSlotServerPacket);
 
-	void method_12070(class_2873 arg);
+	void onCreativeInventoryAction(CreativeInventoryActionServerPacket creativeInventoryActionServerPacket);
 
-	void method_12071(class_2877 arg);
+	void onSignUpdate(UpdateSignServerPacket updateSignServerPacket);
 
 	void onPlayerInteractBlock(PlayerInteractBlockServerPacket playerInteractBlockServerPacket);
 
 	void onPlayerInteractItem(PlayerInteractItemServerPacket playerInteractItemServerPacket);
 
-	void method_12073(class_2884 arg);
+	void onSpectatorTeleport(SpectatorTeleportServerPacket spectatorTeleportServerPacket);
 
-	void method_12081(class_2856 arg);
+	void onResourcePackStatus(ResourcePackStatusServerPacket resourcePackStatusServerPacket);
 
-	void method_12064(class_2836 arg);
+	void onBoatPaddleState(BoatPaddleStateServerPacket boatPaddleStateServerPacket);
 
-	void method_12078(class_2833 arg);
+	void onVehicleMove(VehicleMoveServerPacket vehicleMoveServerPacket);
 
-	void method_12050(class_2793 arg);
+	void onTeleportConfirm(TeleportConfirmServerPacket teleportConfirmServerPacket);
 
-	void method_12047(class_2853 arg);
+	void onRecipeBookData(RecipeBookDataServerPacket recipeBookDataServerPacket);
 
-	void method_12058(class_2859 arg);
+	void onAdvancementTab(AdvancementTabServerPacket advancementTabServerPacket);
 
-	void method_12059(class_2805 arg);
+	void onRequestCommandCompletions(RequestCommandCompletionsServerPacket requestCommandCompletionsServerPacket);
 
-	void method_12077(class_2870 arg);
+	void onUpdateCommandBlock(UpdateCommandBlockServerPacket updateCommandBlockServerPacket);
 
-	void method_12049(class_2871 arg);
+	void onUpdateCommandBlockMinecart(UpdateCommandBlockMinecartServerPacket updateCommandBlockMinecartServerPacket);
 
-	void method_12084(class_2838 arg);
+	void onPickFromInventory(PickFromInventoryServerPacket pickFromInventoryServerPacket);
 
-	void method_12060(class_2855 arg);
+	void onRenameItem(RenameItemServerPacket renameItemServerPacket);
 
-	void method_12057(class_2866 arg);
+	void onUpdateBeacon(UpdateBeaconServerPacket updateBeaconServerPacket);
 
-	void method_12051(class_2875 arg);
+	void onStructureBlockUpdate(UpdateStructureBlockServerPacket updateStructureBlockServerPacket);
 
-	void method_12080(class_2863 arg);
+	void onVillagerTradeSelect(SelectVillagerTradeServerPacket selectVillagerTradeServerPacket);
 
 	void onBookUpdate(BookUpdateServerPacket bookUpdateServerPacket);
 
-	void method_12074(class_2822 arg);
+	void onQueryEntityNbt(QueryEntityNbtServerPacket queryEntityNbtServerPacket);
 
-	void method_12072(class_2795 arg);
+	void onQueryBlockNbt(QueryBlockNbtServerPacket queryBlockNbtServerPacket);
 
 	@Environment(EnvType.CLIENT)
-	void method_16383(class_3753 arg);
+	void onJigsawUpdate(UpdateJigsawServerPacket updateJigsawServerPacket);
 }

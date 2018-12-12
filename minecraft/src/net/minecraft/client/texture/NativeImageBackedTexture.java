@@ -15,7 +15,7 @@ public class NativeImageBackedTexture extends AbstractTexture implements AutoClo
 	public NativeImageBackedTexture(NativeImage nativeImage) {
 		this.image = nativeImage;
 		TextureUtil.prepareImage(this.getGlId(), this.image.getWidth(), this.image.getHeight());
-		this.method_4524();
+		this.upload();
 	}
 
 	public NativeImageBackedTexture(int i, int j, boolean bl) {
@@ -27,7 +27,7 @@ public class NativeImageBackedTexture extends AbstractTexture implements AutoClo
 	public void load(ResourceManager resourceManager) throws IOException {
 	}
 
-	public void method_4524() {
+	public void upload() {
 		this.bindTexture();
 		this.image.upload(0, 0, 0, false);
 	}

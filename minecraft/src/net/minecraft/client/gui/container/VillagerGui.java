@@ -3,45 +3,42 @@ package net.minecraft.client.gui.container;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2863;
-import net.minecraft.class_308;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.ContainerGui;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.container.VillagerContainer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.packet.SelectVillagerTradeServerPacket;
 import net.minecraft.text.TextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.village.Villager;
 import net.minecraft.village.VillagerRecipe;
 import net.minecraft.village.VillagerRecipeList;
 import net.minecraft.world.World;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class VillagerGui extends ContainerGui {
-	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/villager.png");
 	private final Villager villager;
 	private VillagerGui.WidgetButtonPage buttonPageNext;
 	private VillagerGui.WidgetButtonPage buttonPagePrevious;
 	private int field_2947;
 	private final TextComponent villagerName;
-	private final PlayerInventory field_2948;
+	private final PlayerInventory playerInventory;
 
 	public VillagerGui(PlayerInventory playerInventory, Villager villager, World world) {
 		super(new VillagerContainer(playerInventory, villager, world));
 		this.villager = villager;
 		this.villagerName = villager.getDisplayName();
-		this.field_2948 = playerInventory;
+		this.playerInventory = playerInventory;
 	}
 
 	private void method_2496() {
 		((VillagerContainer)this.container).setRecipeIndex(this.field_2947);
-		this.client.getNetworkHandler().sendPacket(new class_2863(this.field_2947));
+		this.client.getNetworkHandler().sendPacket(new SelectVillagerTradeServerPacket(this.field_2947));
 	}
 
 	@Override
@@ -53,7 +50,7 @@ public class VillagerGui extends ContainerGui {
 			@Override
 			public void onPressed(double d, double e) {
 				VillagerGui.this.field_2947++;
-				VillagerRecipeList villagerRecipeList = VillagerGui.this.villager.getRecipes(VillagerGui.this.client.player);
+				VillagerRecipeList villagerRecipeList = VillagerGui.this.villager.getRecipes();
 				if (villagerRecipeList != null && VillagerGui.this.field_2947 >= villagerRecipeList.size()) {
 					VillagerGui.this.field_2947 = villagerRecipeList.size() - 1;
 				}
@@ -80,17 +77,15 @@ public class VillagerGui extends ContainerGui {
 	protected void drawForeground(int i, int j) {
 		String string = this.villagerName.getFormattedText();
 		this.fontRenderer.draw(string, (float)(this.containerWidth / 2 - this.fontRenderer.getStringWidth(string) / 2), 6.0F, 4210752);
-		this.fontRenderer.draw(this.field_2948.getDisplayName().getFormattedText(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
+		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
 	}
 
 	@Override
 	public void update() {
 		super.update();
-		VillagerRecipeList villagerRecipeList = this.villager.getRecipes(this.client.player);
-		if (villagerRecipeList != null) {
-			this.buttonPageNext.enabled = this.field_2947 < villagerRecipeList.size() - 1;
-			this.buttonPagePrevious.enabled = this.field_2947 > 0;
-		}
+		VillagerRecipeList villagerRecipeList = this.villager.getRecipes();
+		this.buttonPageNext.enabled = this.field_2947 < villagerRecipeList.size() - 1;
+		this.buttonPagePrevious.enabled = this.field_2947 > 0;
 	}
 
 	@Override
@@ -100,8 +95,8 @@ public class VillagerGui extends ContainerGui {
 		int k = (this.width - this.containerWidth) / 2;
 		int l = (this.height - this.containerHeight) / 2;
 		this.drawTexturedRect(k, l, 0, 0, this.containerWidth, this.containerHeight);
-		VillagerRecipeList villagerRecipeList = this.villager.getRecipes(this.client.player);
-		if (villagerRecipeList != null && !villagerRecipeList.isEmpty()) {
+		VillagerRecipeList villagerRecipeList = this.villager.getRecipes();
+		if (!villagerRecipeList.isEmpty()) {
 			int m = this.field_2947;
 			if (m < 0 || m >= villagerRecipeList.size()) {
 				return;
@@ -122,8 +117,8 @@ public class VillagerGui extends ContainerGui {
 	public void draw(int i, int j, float f) {
 		this.drawBackground();
 		super.draw(i, j, f);
-		VillagerRecipeList villagerRecipeList = this.villager.getRecipes(this.client.player);
-		if (villagerRecipeList != null && !villagerRecipeList.isEmpty()) {
+		VillagerRecipeList villagerRecipeList = this.villager.getRecipes();
+		if (!villagerRecipeList.isEmpty()) {
 			int k = (this.width - this.containerWidth) / 2;
 			int l = (this.height - this.containerHeight) / 2;
 			int m = this.field_2947;
@@ -132,7 +127,7 @@ public class VillagerGui extends ContainerGui {
 			ItemStack itemStack2 = villagerRecipe.getSecondBuyItem();
 			ItemStack itemStack3 = villagerRecipe.getSellItem();
 			GlStateManager.pushMatrix();
-			class_308.method_1453();
+			GuiLighting.enableForItems();
 			GlStateManager.disableLighting();
 			GlStateManager.enableRescaleNormal();
 			GlStateManager.enableColorMaterial();
@@ -151,9 +146,9 @@ public class VillagerGui extends ContainerGui {
 			GlStateManager.disableLighting();
 			if (this.isPointWithinBounds(36, 24, 16, 16, (double)i, (double)j) && !itemStack.isEmpty()) {
 				this.drawStackTooltip(itemStack, i, j);
-			} else if (!itemStack2.isEmpty() && this.isPointWithinBounds(62, 24, 16, 16, (double)i, (double)j) && !itemStack2.isEmpty()) {
+			} else if (!itemStack2.isEmpty() && this.isPointWithinBounds(62, 24, 16, 16, (double)i, (double)j)) {
 				this.drawStackTooltip(itemStack2, i, j);
-			} else if (!itemStack3.isEmpty() && this.isPointWithinBounds(120, 24, 16, 16, (double)i, (double)j) && !itemStack3.isEmpty()) {
+			} else if (!itemStack3.isEmpty() && this.isPointWithinBounds(120, 24, 16, 16, (double)i, (double)j)) {
 				this.drawStackTooltip(itemStack3, i, j);
 			} else if (villagerRecipe.isDisabled()
 				&& (this.isPointWithinBounds(83, 21, 28, 21, (double)i, (double)j) || this.isPointWithinBounds(83, 51, 28, 21, (double)i, (double)j))) {
@@ -163,7 +158,7 @@ public class VillagerGui extends ContainerGui {
 			GlStateManager.popMatrix();
 			GlStateManager.enableLighting();
 			GlStateManager.enableDepthTest();
-			class_308.method_1452();
+			GuiLighting.enable();
 		}
 
 		this.drawMousoverTooltip(i, j);

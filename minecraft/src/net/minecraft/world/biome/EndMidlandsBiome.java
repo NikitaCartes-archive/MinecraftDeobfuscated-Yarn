@@ -5,17 +5,17 @@ import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.world.gen.GenerationStep;
-import net.minecraft.world.gen.config.decorator.DecoratorConfig;
-import net.minecraft.world.gen.config.feature.FeatureConfig;
 import net.minecraft.world.gen.decorator.Decorator;
+import net.minecraft.world.gen.decorator.DecoratorConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
 public class EndMidlandsBiome extends Biome {
 	public EndMidlandsBiome() {
 		super(
 			new Biome.Settings()
-				.configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.END_CONFIG)
+				.method_8737(SurfaceBuilder.DEFAULT, SurfaceBuilder.field_15671)
 				.precipitation(Biome.Precipitation.NONE)
 				.category(Biome.Category.THE_END)
 				.depth(0.1F)
@@ -26,8 +26,8 @@ public class EndMidlandsBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.addStructureFeature(Feature.END_CITY, FeatureConfig.DEFAULT);
-		this.addFeature(GenerationStep.Feature.field_13173, configureFeature(Feature.END_CITY, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT));
+		this.method_8710(Feature.END_CITY, FeatureConfig.field_13603);
+		this.addFeature(GenerationStep.Feature.field_13173, method_8699(Feature.END_CITY, FeatureConfig.field_13603, Decorator.NOPE, DecoratorConfig.field_13436));
 		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 4, 4));
 	}
 

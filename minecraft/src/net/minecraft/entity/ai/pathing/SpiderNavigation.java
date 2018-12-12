@@ -26,10 +26,10 @@ public class SpiderNavigation extends EntityMobNavigation {
 	}
 
 	@Override
-	public boolean method_6335(Entity entity, double d) {
+	public boolean startMovingTo(Entity entity, double d) {
 		Path path = this.findPathTo(entity);
 		if (path != null) {
-			return this.method_6334(path, d);
+			return this.startMovingAlong(path, d);
 		} else {
 			this.field_6687 = new BlockPos(entity);
 			this.field_6668 = d;

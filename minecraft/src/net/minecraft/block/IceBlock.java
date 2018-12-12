@@ -4,7 +4,6 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
@@ -35,7 +34,7 @@ public class IceBlock extends TransparentBlock {
 			}
 
 			Material material = world.getBlockState(blockPos.down()).getMaterial();
-			if (material.suffocates() || material.method_15797()) {
+			if (material.suffocates() || material.isLiquid()) {
 				world.setBlockState(blockPos, Blocks.field_10382.getDefaultState());
 			}
 		}
@@ -43,7 +42,7 @@ public class IceBlock extends TransparentBlock {
 
 	@Override
 	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (world.getLightLevel(LightType.field_9282, blockPos) > 11 - blockState.method_11581(world, blockPos)) {
+		if (world.getLightLevel(LightType.BLOCK_LIGHT, blockPos) > 11 - blockState.getLightSubtracted(world, blockPos)) {
 			this.method_10275(blockState, world, blockPos);
 		}
 	}

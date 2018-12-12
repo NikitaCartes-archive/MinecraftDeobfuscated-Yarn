@@ -3,12 +3,11 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class SnowmanEntityModel extends Model {
+public class SnowmanEntityModel<T extends Entity> extends EntityModel<T> {
 	private final Cuboid field_3567;
 	private final Cuboid field_3569;
 	private final Cuboid field_3568;
@@ -36,8 +35,8 @@ public class SnowmanEntityModel extends Model {
 	}
 
 	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
-		super.setRotationAngles(f, g, h, i, j, k, entity);
+	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
+		super.setAngles(entity, f, g, h, i, j, k);
 		this.field_3568.yaw = i * (float) (Math.PI / 180.0);
 		this.field_3568.pitch = j * (float) (Math.PI / 180.0);
 		this.field_3567.yaw = i * (float) (Math.PI / 180.0) * 0.25F;
@@ -54,8 +53,8 @@ public class SnowmanEntityModel extends Model {
 	}
 
 	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		this.setRotationAngles(f, g, h, i, j, k, entity);
+	public void render(T entity, float f, float g, float h, float i, float j, float k) {
+		this.setAngles(entity, f, g, h, i, j, k);
 		this.field_3567.render(k);
 		this.field_3569.render(k);
 		this.field_3568.render(k);

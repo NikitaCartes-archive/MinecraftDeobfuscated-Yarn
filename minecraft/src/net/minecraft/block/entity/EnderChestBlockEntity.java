@@ -69,12 +69,12 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 	}
 
 	@Override
-	public boolean method_11004(int i, int j) {
+	public boolean onBlockAction(int i, int j) {
 		if (i == 1) {
 			this.viewers = j;
 			return true;
 		} else {
-			return super.method_11004(i, j);
+			return super.onBlockAction(i, j);
 		}
 	}
 

@@ -14,7 +14,7 @@ import java.util.Optional;
 import net.minecraft.datafixers.TypeReferences;
 
 public class ItemShulkerBoxColorFix extends DataFix {
-	public static final String[] colorNames = new String[]{
+	public static final String[] COLORED_SHULKER_BOX_IDS = new String[]{
 		"minecraft:white_shulker_box",
 		"minecraft:orange_shulker_box",
 		"minecraft:magenta_shulker_box",
@@ -59,7 +59,7 @@ public class ItemShulkerBoxColorFix extends DataFix {
 							int i = dynamic.getInt("Color");
 							dynamic.remove("Color");
 							return typed.set(opticFinder2, typed2.set(opticFinder3, typed3.set(DSL.remainderFinder(), dynamic)))
-								.set(opticFinder, Pair.of(TypeReferences.ITEM_NAME.typeName(), colorNames[i % 16]));
+								.set(opticFinder, Pair.of(TypeReferences.ITEM_NAME.typeName(), COLORED_SHULKER_BOX_IDS[i % 16]));
 						}
 					}
 				}

@@ -9,7 +9,7 @@ public interface ModelRotationContainer {
 		return ModelRotation.X0_Y0;
 	}
 
-	default boolean method_3512() {
+	default boolean isUvLocked() {
 		return false;
 	}
 }

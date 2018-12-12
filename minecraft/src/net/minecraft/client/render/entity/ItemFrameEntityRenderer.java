@@ -4,12 +4,12 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_308;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModelManager;
-import net.minecraft.client.render.model.json.ModelTransformations;
+import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.entity.decoration.ItemFrameEntity;
@@ -48,13 +48,13 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		ModelIdentifier modelIdentifier = itemFrameEntity.getHeldItemStack().getItem() == Items.field_8204 ? field_4723 : field_4721;
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef(-0.5F, -0.5F, -0.5F);
-		if (this.field_4674) {
+		if (this.renderOutlines) {
 			GlStateManager.enableColorMaterial();
-			GlStateManager.setupSolidRenderingTextureCombine(this.method_3929(itemFrameEntity));
+			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(itemFrameEntity));
 		}
 
-		blockRenderManager.getRenderer().render(bakedModelManager.getModel(modelIdentifier), 1.0F, 1.0F, 1.0F, 1.0F);
-		if (this.field_4674) {
+		blockRenderManager.method_3350().render(bakedModelManager.getModel(modelIdentifier), 1.0F, 1.0F, 1.0F, 1.0F);
+		if (this.renderOutlines) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		}
@@ -63,23 +63,20 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		GlStateManager.enableLighting();
 		if (itemFrameEntity.getHeldItemStack().getItem() == Items.field_8204) {
 			GlStateManager.pushLightingAttributes();
-			class_308.method_1452();
+			GuiLighting.enable();
 		}
 
 		GlStateManager.translatef(0.0F, 0.0F, 0.4375F);
 		this.method_3992(itemFrameEntity);
 		if (itemFrameEntity.getHeldItemStack().getItem() == Items.field_8204) {
-			class_308.method_1450();
+			GuiLighting.disable();
 			GlStateManager.popAttributes();
 		}
 
 		GlStateManager.enableLighting();
 		GlStateManager.popMatrix();
 		this.method_3995(
-			itemFrameEntity,
-			d + (double)((float)itemFrameEntity.field_7099.getOffsetX() * 0.3F),
-			e - 0.25,
-			f + (double)((float)itemFrameEntity.field_7099.getOffsetZ() * 0.3F)
+			itemFrameEntity, d + (double)((float)itemFrameEntity.facing.getOffsetX() * 0.3F), e - 0.25, f + (double)((float)itemFrameEntity.facing.getOffsetZ() * 0.3F)
 		);
 	}
 
@@ -105,11 +102,11 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 				MapState mapState = FilledMapItem.method_8001(itemStack, itemFrameEntity.world);
 				GlStateManager.translatef(0.0F, 0.0F, -1.0F);
 				if (mapState != null) {
-					this.client.worldRenderer.method_3194().method_1773(mapState, true);
+					this.client.field_1773.method_3194().method_1773(mapState, true);
 				}
 			} else {
 				GlStateManager.scalef(0.5F, 0.5F, 0.5F);
-				this.itemRenderer.renderItemWithTransformation(itemStack, ModelTransformations.Type.FIXED);
+				this.itemRenderer.renderItemWithTransformation(itemStack, ModelTransformation.Type.FIXED);
 			}
 
 			GlStateManager.popMatrix();

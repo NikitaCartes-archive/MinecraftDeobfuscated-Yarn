@@ -12,7 +12,7 @@ import net.minecraft.util.PacketByteBuf;
 
 public class ScoreboardObjectiveUpdateClientPacket implements Packet<ClientPlayPacketListener> {
 	private String name;
-	private TextComponent field_12591;
+	private TextComponent displayName;
 	private ScoreboardCriterion.Type type;
 	private int mode;
 
@@ -21,7 +21,7 @@ public class ScoreboardObjectiveUpdateClientPacket implements Packet<ClientPlayP
 
 	public ScoreboardObjectiveUpdateClientPacket(ScoreboardObjective scoreboardObjective, int i) {
 		this.name = scoreboardObjective.getName();
-		this.field_12591 = scoreboardObjective.getDisplayName();
+		this.displayName = scoreboardObjective.getDisplayName();
 		this.type = scoreboardObjective.getCriterionType();
 		this.mode = i;
 	}
@@ -31,7 +31,7 @@ public class ScoreboardObjectiveUpdateClientPacket implements Packet<ClientPlayP
 		this.name = packetByteBuf.readString(16);
 		this.mode = packetByteBuf.readByte();
 		if (this.mode == 0 || this.mode == 2) {
-			this.field_12591 = packetByteBuf.readTextComponent();
+			this.displayName = packetByteBuf.readTextComponent();
 			this.type = packetByteBuf.readEnumConstant(ScoreboardCriterion.Type.class);
 		}
 	}
@@ -41,7 +41,7 @@ public class ScoreboardObjectiveUpdateClientPacket implements Packet<ClientPlayP
 		packetByteBuf.writeString(this.name);
 		packetByteBuf.writeByte(this.mode);
 		if (this.mode == 0 || this.mode == 2) {
-			packetByteBuf.writeTextComponent(this.field_12591);
+			packetByteBuf.writeTextComponent(this.displayName);
 			packetByteBuf.writeEnumConstant(this.type);
 		}
 	}
@@ -56,8 +56,8 @@ public class ScoreboardObjectiveUpdateClientPacket implements Packet<ClientPlayP
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent getValue() {
-		return this.field_12591;
+	public TextComponent getDisplayName() {
+		return this.displayName;
 	}
 
 	@Environment(EnvType.CLIENT)

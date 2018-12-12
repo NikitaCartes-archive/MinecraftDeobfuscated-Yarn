@@ -7,12 +7,13 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.FurnaceBlock;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.BedPart;
+import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ViewableWorld;
 
-public class class_1373 extends class_1367 {
+public class class_1373 extends MoveToTargetPosGoal {
 	private final CatEntity field_6545;
 
 	public class_1373(CatEntity catEntity, double d) {
@@ -41,7 +42,7 @@ public class class_1373 extends class_1367 {
 	public void tick() {
 		super.tick();
 		this.field_6545.method_6176().method_6311(false);
-		if (!this.method_6295()) {
+		if (!this.hasReached()) {
 			this.field_6545.setSitting(false);
 		} else if (!this.field_6545.isSitting()) {
 			this.field_6545.setSitting(true);
@@ -49,7 +50,7 @@ public class class_1373 extends class_1367 {
 	}
 
 	@Override
-	protected boolean method_6296(ViewableWorld viewableWorld, BlockPos blockPos) {
+	protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
 		if (!viewableWorld.isAir(blockPos.up())) {
 			return false;
 		} else {

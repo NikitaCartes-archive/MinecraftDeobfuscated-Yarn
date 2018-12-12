@@ -52,7 +52,7 @@ public class SnbtProvider implements DataProvider {
 			try {
 				String string2 = IOUtils.toString(bufferedReader);
 				String string3 = SHA1.hashUnencodedChars(string2).toString();
-				if (!Objects.equals(dataCache.method_10323(path3), string3) || !Files.exists(path3, new LinkOption[0])) {
+				if (!Objects.equals(dataCache.getOldSha1(path3), string3) || !Files.exists(path3, new LinkOption[0])) {
 					Files.createDirectories(path3.getParent());
 					OutputStream outputStream = Files.newOutputStream(path3);
 					Throwable var11 = null;
@@ -77,7 +77,7 @@ public class SnbtProvider implements DataProvider {
 					}
 				}
 
-				dataCache.method_10325(path3, string3);
+				dataCache.updateSha1(path3, string3);
 			} catch (Throwable var40) {
 				var7 = var40;
 				throw var40;

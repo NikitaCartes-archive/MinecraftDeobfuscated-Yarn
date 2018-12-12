@@ -5,8 +5,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.settings.GameOptions;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 
@@ -28,7 +28,7 @@ public class DemoGui extends Gui {
 			@Override
 			public void onPressed(double d, double e) {
 				DemoGui.this.client.openGui(null);
-				DemoGui.this.client.mouse.method_1612();
+				DemoGui.this.client.field_1729.lockCursor();
 			}
 		});
 	}
@@ -50,7 +50,7 @@ public class DemoGui extends Gui {
 		int l = (this.height - 166) / 2 + 8;
 		this.fontRenderer.draw(I18n.translate("demo.help.title"), (float)k, (float)l, 2039583);
 		l += 12;
-		GameOptions gameOptions = this.client.options;
+		GameOptions gameOptions = this.client.field_1690;
 		this.fontRenderer
 			.draw(
 				I18n.translate(

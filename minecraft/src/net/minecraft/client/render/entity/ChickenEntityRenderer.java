@@ -8,11 +8,11 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class ChickenEntityRenderer extends EntityMobRenderer<ChickenEntity> {
+public class ChickenEntityRenderer extends MobEntityRenderer<ChickenEntity, ChickenEntityModel<ChickenEntity>> {
 	private static final Identifier SKIN = new Identifier("textures/entity/chicken.png");
 
 	public ChickenEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new ChickenEntityModel(), 0.3F);
+		super(entityRenderDispatcher, new ChickenEntityModel<>(), 0.3F);
 	}
 
 	protected Identifier getTexture(ChickenEntity chickenEntity) {

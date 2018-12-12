@@ -11,7 +11,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.config.ProbabilityConfig;
+import net.minecraft.world.gen.ProbabilityConfig;
 
 public class UnderwaterCaveCarver extends CaveCarver {
 	public UnderwaterCaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> function) {
@@ -102,7 +102,7 @@ public class UnderwaterCaveCarver extends CaveCarver {
 					float f = random.nextFloat();
 					if ((double)f < 0.25) {
 						chunk.setBlockState(mutable, Blocks.field_10092.getDefaultState(), false);
-						chunk.method_12013().schedule(mutable, Blocks.field_10092, 0);
+						chunk.getBlockTickScheduler().schedule(mutable, Blocks.field_10092, 0);
 					} else {
 						chunk.setBlockState(mutable, Blocks.field_10540.getDefaultState(), false);
 					}
@@ -119,7 +119,7 @@ public class UnderwaterCaveCarver extends CaveCarver {
 						int s = m + direction.getOffsetZ();
 						if (r >> 4 != j || s >> 4 != k || chunk.getBlockState(mutable.set(r, o, s)).isAir()) {
 							chunk.setBlockState(mutable, WATER.getBlockState(), false);
-							chunk.method_12014().schedule(mutable, WATER.getFluid(), 0);
+							chunk.getFluidTickScheduler().schedule(mutable, WATER.getFluid(), 0);
 							bl = true;
 							break;
 						}

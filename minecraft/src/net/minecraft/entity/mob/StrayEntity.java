@@ -1,7 +1,7 @@
 package net.minecraft.entity.mob;
 
-import net.minecraft.class_3730;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -19,8 +19,8 @@ public class StrayEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	public boolean method_5979(IWorld iWorld, class_3730 arg) {
-		return super.method_5979(iWorld, arg) && (arg == class_3730.field_16469 || iWorld.getSkyLightLevel(new BlockPos(this)));
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
+		return super.canSpawn(iWorld, spawnType) && (spawnType == SpawnType.field_16469 || iWorld.isSkyVisible(new BlockPos(this)));
 	}
 
 	@Override

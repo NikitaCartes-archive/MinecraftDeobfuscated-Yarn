@@ -93,7 +93,7 @@ public class AxeItem extends MiningToolItem {
 		if (block != null) {
 			PlayerEntity playerEntity = itemUsageContext.getPlayer();
 			world.playSound(playerEntity, blockPos, SoundEvents.field_14675, SoundCategory.field_15245, 1.0F, 1.0F);
-			if (!world.isRemote) {
+			if (!world.isClient) {
 				world.setBlockState(blockPos, block.getDefaultState().with(PillarBlock.AXIS, blockState.get(PillarBlock.AXIS)), 11);
 				if (playerEntity != null) {
 					itemUsageContext.getItemStack().applyDamage(1, playerEntity);

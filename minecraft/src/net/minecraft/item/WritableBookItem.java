@@ -18,7 +18,7 @@ public class WritableBookItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		playerEntity.openBookEditor(itemStack, hand);
+		playerEntity.openBookEditorGui(itemStack, hand);
 		playerEntity.incrementStat(Stats.field_15372.method_14956(this));
 		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 	}

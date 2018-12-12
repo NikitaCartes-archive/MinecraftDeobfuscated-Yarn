@@ -9,8 +9,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
+import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.settings.ServerEntry;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.ServerAddress;
@@ -26,7 +26,7 @@ import org.apache.logging.log4j.Logger;
 public class ServerConnectingGui extends Gui {
 	private static final AtomicInteger field_2408 = new AtomicInteger(0);
 	private static final Logger LOGGER = LogManager.getLogger();
-	private ClientConnection field_2411;
+	private ClientConnection connection;
 	private boolean field_2409;
 	private final Gui parent;
 	private TextComponent field_2413 = new TranslatableTextComponent("connect.connecting");
@@ -36,7 +36,7 @@ public class ServerConnectingGui extends Gui {
 		this.parent = gui;
 		ServerAddress serverAddress = ServerAddress.parse(serverEntry.address);
 		minecraftClient.method_1481(null);
-		minecraftClient.setCurrentServerEntry(serverEntry);
+		minecraftClient.method_1584(serverEntry);
 		this.method_2130(serverAddress.getAddress(), serverAddress.getPort());
 	}
 
@@ -59,18 +59,18 @@ public class ServerConnectingGui extends Gui {
 					}
 
 					inetAddress = InetAddress.getByName(string);
-					ServerConnectingGui.this.field_2411 = ClientConnection.connect(inetAddress, i, ServerConnectingGui.this.client.options.shouldUseNativeTransport());
-					ServerConnectingGui.this.field_2411
+					ServerConnectingGui.this.connection = ClientConnection.connect(inetAddress, i, ServerConnectingGui.this.client.field_1690.shouldUseNativeTransport());
+					ServerConnectingGui.this.connection
 						.setPacketListener(
 							new ClientLoginNetworkHandler(
-								ServerConnectingGui.this.field_2411,
+								ServerConnectingGui.this.connection,
 								ServerConnectingGui.this.client,
 								ServerConnectingGui.this.parent,
 								textComponent -> ServerConnectingGui.this.method_2131(textComponent)
 							)
 						);
-					ServerConnectingGui.this.field_2411.sendPacket(new HandshakeServerPacket(string, i, NetworkState.LOGIN));
-					ServerConnectingGui.this.field_2411.sendPacket(new LoginHelloServerPacket(ServerConnectingGui.this.client.getSession().getProfile()));
+					ServerConnectingGui.this.connection.sendPacket(new HandshakeServerPacket(string, i, NetworkState.LOGIN));
+					ServerConnectingGui.this.connection.sendPacket(new LoginHelloServerPacket(ServerConnectingGui.this.client.getSession().getProfile()));
 				} catch (UnknownHostException var4) {
 					if (ServerConnectingGui.this.field_2409) {
 						return;
@@ -109,17 +109,17 @@ public class ServerConnectingGui extends Gui {
 
 	@Override
 	public void update() {
-		if (this.field_2411 != null) {
-			if (this.field_2411.isOpen()) {
-				this.field_2411.tick();
+		if (this.connection != null) {
+			if (this.connection.isOpen()) {
+				this.connection.tick();
 			} else {
-				this.field_2411.handleDisconnection();
+				this.connection.handleDisconnection();
 			}
 		}
 	}
 
 	@Override
-	public boolean canClose() {
+	public boolean doesEscapeKeyClose() {
 		return false;
 	}
 
@@ -129,8 +129,8 @@ public class ServerConnectingGui extends Gui {
 			@Override
 			public void onPressed(double d, double e) {
 				ServerConnectingGui.this.field_2409 = true;
-				if (ServerConnectingGui.this.field_2411 != null) {
-					ServerConnectingGui.this.field_2411.disconnect(new TranslatableTextComponent("connect.aborted"));
+				if (ServerConnectingGui.this.connection != null) {
+					ServerConnectingGui.this.connection.disconnect(new TranslatableTextComponent("connect.aborted"));
 				}
 
 				ServerConnectingGui.this.client.openGui(ServerConnectingGui.this.parent);

@@ -56,7 +56,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 
 	@Override
 	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return !blockState.method_11628(blockView, blockPos).method_1098(Direction.UP).isEmpty();
+		return !blockState.getCollisionShape(blockView, blockPos).getFace(Direction.UP).isEmpty();
 	}
 
 	@Override
@@ -66,7 +66,9 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		if (!blockState.canPlaceAt(iWorld, blockPos)) {
 			return Blocks.field_10124.getDefaultState();
 		} else {
@@ -74,7 +76,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 				iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
 			}
 
-			return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		}
 	}
 

@@ -10,7 +10,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.MaterialColor;
 import net.minecraft.block.RedstoneWireBlock;
 import net.minecraft.block.StemBlock;
-import net.minecraft.block.enums.BlockHalf;
+import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.util.IdList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -25,7 +25,7 @@ public class BlockColorMap {
 		BlockColorMap blockColorMap = new BlockColorMap();
 		blockColorMap.register(
 			(blockState, extendedBlockView, blockPos, i) -> extendedBlockView != null && blockPos != null
-					? BiomeColors.grassColorAt(extendedBlockView, blockState.get(class_2475.field_11484) == BlockHalf.field_12609 ? blockPos.down() : blockPos)
+					? BiomeColors.grassColorAt(extendedBlockView, blockState.get(class_2475.field_11484) == DoubleBlockHalf.field_12609 ? blockPos.down() : blockPos)
 					: -1,
 			Blocks.field_10313,
 			Blocks.field_10214

@@ -18,23 +18,34 @@ public interface Inventory extends class_3829, Nameable {
 
 	void setInvStack(int i, ItemStack itemStack);
 
-	int getInvMaxStackAmount();
+	default int getInvMaxStackAmount() {
+		return 64;
+	}
 
 	void markDirty();
 
 	boolean canPlayerUseInv(PlayerEntity playerEntity);
 
-	void onInvOpen(PlayerEntity playerEntity);
+	default void onInvOpen(PlayerEntity playerEntity) {
+	}
 
-	void onInvClose(PlayerEntity playerEntity);
+	default void onInvClose(PlayerEntity playerEntity) {
+	}
 
-	boolean isValidInvStack(int i, ItemStack itemStack);
+	default boolean isValidInvStack(int i, ItemStack itemStack) {
+		return true;
+	}
 
-	int getInvProperty(int i);
+	default int getInvProperty(int i) {
+		return 0;
+	}
 
-	void setInvProperty(int i, int j);
+	default void setInvProperty(int i, int j) {
+	}
 
-	int getInvPropertyCount();
+	default int getInvPropertyCount() {
+		return 0;
+	}
 
 	default int getInvHeight() {
 		return 0;

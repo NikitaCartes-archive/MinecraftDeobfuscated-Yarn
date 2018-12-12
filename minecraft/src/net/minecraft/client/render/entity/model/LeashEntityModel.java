@@ -3,11 +3,10 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
 import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
-public class LeashEntityModel extends Model {
+public class LeashEntityModel<T extends Entity> extends EntityModel<T> {
 	private final Cuboid field_3431;
 
 	public LeashEntityModel() {
@@ -23,14 +22,14 @@ public class LeashEntityModel extends Model {
 	}
 
 	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		this.setRotationAngles(f, g, h, i, j, k, entity);
+	public void render(T entity, float f, float g, float h, float i, float j, float k) {
+		this.setAngles(entity, f, g, h, i, j, k);
 		this.field_3431.render(k);
 	}
 
 	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
-		super.setRotationAngles(f, g, h, i, j, k, entity);
+	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
+		super.setAngles(entity, f, g, h, i, j, k);
 		this.field_3431.yaw = i * (float) (Math.PI / 180.0);
 		this.field_3431.pitch = j * (float) (Math.PI / 180.0);
 	}

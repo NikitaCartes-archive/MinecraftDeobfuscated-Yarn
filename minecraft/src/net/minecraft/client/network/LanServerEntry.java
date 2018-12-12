@@ -13,7 +13,7 @@ public class LanServerEntry {
 	public LanServerEntry(String string, String string2) {
 		this.motd = string;
 		this.addressPort = string2;
-		this.lastTimeMillis = SystemUtil.getMeasuringTimeMili();
+		this.lastTimeMillis = SystemUtil.getMeasuringTimeMs();
 	}
 
 	public String getMotd() {
@@ -25,6 +25,6 @@ public class LanServerEntry {
 	}
 
 	public void updateLastTime() {
-		this.lastTimeMillis = SystemUtil.getMeasuringTimeMili();
+		this.lastTimeMillis = SystemUtil.getMeasuringTimeMs();
 	}
 }

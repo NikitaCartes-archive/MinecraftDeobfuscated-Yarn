@@ -237,7 +237,7 @@ public class WorldBorder {
 			this.oldSize = d;
 			this.newSize = e;
 			this.timeDuration = (double)l;
-			this.timeStart = SystemUtil.getMeasuringTimeMili();
+			this.timeStart = SystemUtil.getMeasuringTimeMs();
 			this.timeEnd = this.timeStart + l;
 		}
 
@@ -263,7 +263,7 @@ public class WorldBorder {
 
 		@Override
 		public double getSize() {
-			double d = (double)(SystemUtil.getMeasuringTimeMili() - this.timeStart) / this.timeDuration;
+			double d = (double)(SystemUtil.getMeasuringTimeMs() - this.timeStart) / this.timeDuration;
 			return d < 1.0 ? MathHelper.lerp(d, this.oldSize, this.newSize) : this.newSize;
 		}
 
@@ -275,7 +275,7 @@ public class WorldBorder {
 
 		@Override
 		public long getTargetRemainingTime() {
-			return this.timeEnd - SystemUtil.getMeasuringTimeMili();
+			return this.timeEnd - SystemUtil.getMeasuringTimeMs();
 		}
 
 		@Override

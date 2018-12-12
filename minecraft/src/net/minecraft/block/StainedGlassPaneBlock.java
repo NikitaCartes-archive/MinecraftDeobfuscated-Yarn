@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -34,7 +33,7 @@ public class StainedGlassPaneBlock extends PaneBlock {
 	@Override
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
 		if (blockState2.getBlock() != blockState.getBlock()) {
-			if (!world.isRemote) {
+			if (!world.isClient) {
 				BeaconBlock.method_9463(world, blockPos);
 			}
 		}
@@ -43,7 +42,7 @@ public class StainedGlassPaneBlock extends PaneBlock {
 	@Override
 	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState.getBlock() != blockState2.getBlock()) {
-			if (!world.isRemote) {
+			if (!world.isClient) {
 				BeaconBlock.method_9463(world, blockPos);
 			}
 		}

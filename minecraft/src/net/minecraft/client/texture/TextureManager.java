@@ -15,7 +15,7 @@ import net.minecraft.resource.ResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportElement;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.crash.ICrashCallable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -67,9 +67,9 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 			bl = false;
 		} catch (Throwable var9) {
 			CrashReport crashReport = CrashReport.create(var9, "Registering texture");
-			CrashReportElement crashReportElement = crashReport.addElement("Resource location being registered");
-			crashReportElement.add("Resource location", identifier);
-			crashReportElement.add("Texture object class", (ICrashCallable<String>)(() -> texture.getClass().getName()));
+			CrashReportSection crashReportSection = crashReport.method_562("Resource location being registered");
+			crashReportSection.add("Resource location", identifier);
+			crashReportSection.add("Texture object class", (ICrashCallable<String>)(() -> texture.getClass().getName()));
 			throw new CrashException(crashReport);
 		}
 

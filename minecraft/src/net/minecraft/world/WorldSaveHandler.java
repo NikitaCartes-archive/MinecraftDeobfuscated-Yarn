@@ -3,9 +3,8 @@ package net.minecraft.world;
 import com.mojang.datafixers.DataFixer;
 import java.io.File;
 import javax.annotation.Nullable;
-import net.minecraft.class_3485;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.MinecraftException;
+import net.minecraft.sortme.structures.StructureManager;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.LevelProperties;
@@ -14,7 +13,7 @@ public interface WorldSaveHandler {
 	@Nullable
 	LevelProperties readProperties();
 
-	void checkSessionLock() throws MinecraftException;
+	void checkSessionLock() throws SessionLockException;
 
 	ChunkSaveHandler createChunkSaveHandler(Dimension dimension);
 
@@ -29,7 +28,7 @@ public interface WorldSaveHandler {
 	@Nullable
 	File getDataFile(DimensionType dimensionType, String string);
 
-	class_3485 method_134();
+	StructureManager getStructureManager();
 
-	DataFixer method_130();
+	DataFixer getDataFixer();
 }

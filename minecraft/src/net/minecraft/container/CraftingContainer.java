@@ -2,11 +2,11 @@ package net.minecraft.container;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1662;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeFinder;
 
 public abstract class CraftingContainer extends Container {
-	public abstract void method_7654(class_1662 arg);
+	public abstract void populateRecipeFinder(RecipeFinder recipeFinder);
 
 	public abstract void clearCraftingSlots();
 
@@ -16,8 +16,8 @@ public abstract class CraftingContainer extends Container {
 
 	public abstract int getCraftingWidth();
 
-	public abstract int getCrafitngHeight();
+	public abstract int getCraftingHeight();
 
 	@Environment(EnvType.CLIENT)
-	public abstract int method_7658();
+	public abstract int getCraftingSlotCount();
 }

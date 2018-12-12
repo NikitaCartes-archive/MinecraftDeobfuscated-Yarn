@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.particle.DustParticle;
+import net.minecraft.particle.DustParticleParameters;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
@@ -44,8 +44,10 @@ public class RedstoneTorchWallBlock extends RedstoneTorchBlock {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-		return Blocks.field_10099.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
+		return Blocks.field_10099.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Nullable
@@ -64,18 +66,18 @@ public class RedstoneTorchWallBlock extends RedstoneTorchBlock {
 			double e = (double)blockPos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.2 + 0.27 * (double)direction.getOffsetX();
 			double f = (double)blockPos.getY() + 0.7 + (random.nextDouble() - 0.5) * 0.2 + 0.22;
 			double g = (double)blockPos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.2 + 0.27 * (double)direction.getOffsetZ();
-			world.method_8406(DustParticle.field_11188, e, f, g, 0.0, 0.0, 0.0);
+			world.method_8406(DustParticleParameters.RED, e, f, g, 0.0, 0.0, 0.0);
 		}
 	}
 
 	@Override
 	protected boolean method_10488(World world, BlockPos blockPos, BlockState blockState) {
 		Direction direction = ((Direction)blockState.get(field_11443)).getOpposite();
-		return world.method_8459(blockPos.method_10093(direction), direction);
+		return world.isEmittingRedstonePower(blockPos.offset(direction), direction);
 	}
 
 	@Override
-	public int method_9524(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
 		return blockState.get(field_11444) && blockState.get(field_11443) != direction ? 15 : 0;
 	}
 

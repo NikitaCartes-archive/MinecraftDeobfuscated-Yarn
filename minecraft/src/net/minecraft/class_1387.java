@@ -38,7 +38,7 @@ public class class_1387 extends Goal {
 
 	@Override
 	public void start() {
-		this.field_6602.getNavigation().method_6337(this.field_6600, this.field_6599, this.field_6603, this.field_6601);
+		this.field_6602.getNavigation().startMovingTo(this.field_6600, this.field_6599, this.field_6603, this.field_6601);
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class class_1387 extends Goal {
 
 			this.field_6602.removeAllPassengers();
 			this.field_6602.method_6757();
-			this.field_6602.world.method_8421(this.field_6602, (byte)6);
+			this.field_6602.world.summonParticle(this.field_6602, (byte)6);
 		}
 	}
 }

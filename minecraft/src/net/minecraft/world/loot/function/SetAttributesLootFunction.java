@@ -108,10 +108,10 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 			UniformLootTableRange uniformLootTableRange = JsonHelper.deserialize(jsonObject, "amount", jsonDeserializationContext, UniformLootTableRange.class);
 			UUID uUID = null;
 			EquipmentSlot[] equipmentSlots;
-			if (JsonHelper.method_15289(jsonObject, "slot")) {
+			if (JsonHelper.hasString(jsonObject, "slot")) {
 				equipmentSlots = new EquipmentSlot[]{EquipmentSlot.byName(JsonHelper.getString(jsonObject, "slot"))};
 			} else {
-				if (!JsonHelper.isArray(jsonObject, "slot")) {
+				if (!JsonHelper.hasArray(jsonObject, "slot")) {
 					throw new JsonSyntaxException("Invalid or missing attribute modifier slot; must be either string or array of strings.");
 				}
 

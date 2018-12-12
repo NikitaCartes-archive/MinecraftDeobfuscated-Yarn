@@ -6,7 +6,6 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import net.minecraft.class_3667;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.gen.config.decorator.ChanceRangeDecoratorConfig;
 
 public class ChanceRangeDecorator extends class_3667<ChanceRangeDecoratorConfig> {
 	public ChanceRangeDecorator(Function<Dynamic<?>, ? extends ChanceRangeDecoratorConfig> function) {

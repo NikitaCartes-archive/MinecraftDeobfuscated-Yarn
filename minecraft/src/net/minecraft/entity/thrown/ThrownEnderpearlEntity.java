@@ -3,7 +3,8 @@ package net.minecraft.entity.thrown;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.minecraft.class_3857;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EndGatewayBlockEntity;
 import net.minecraft.entity.Entity;
@@ -12,6 +13,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.EndermiteEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.HitResult;
@@ -19,7 +22,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
-public class ThrownEnderpearlEntity extends ThrownEntity {
+public class ThrownEnderpearlEntity extends class_3857 {
 	private LivingEntity owner;
 
 	public ThrownEnderpearlEntity(World world) {
@@ -34,6 +37,11 @@ public class ThrownEnderpearlEntity extends ThrownEntity {
 	@Environment(EnvType.CLIENT)
 	public ThrownEnderpearlEntity(World world, double d, double e, double f) {
 		super(EntityType.ENDER_PEARL, d, e, f, world);
+	}
+
+	@Override
+	protected Item method_16942() {
+		return Items.field_8634;
 	}
 
 	@Override
@@ -54,7 +62,7 @@ public class ThrownEnderpearlEntity extends ThrownEntity {
 				EndGatewayBlockEntity endGatewayBlockEntity = (EndGatewayBlockEntity)blockEntity;
 				if (livingEntity != null) {
 					if (livingEntity instanceof ServerPlayerEntity) {
-						CriterionCriterions.ENTER_BLOCK.method_8885((ServerPlayerEntity)livingEntity, this.world.getBlockState(blockPos));
+						Criterions.ENTER_BLOCK.method_8885((ServerPlayerEntity)livingEntity, this.world.getBlockState(blockPos));
 					}
 
 					endGatewayBlockEntity.method_11409(livingEntity);
@@ -74,7 +82,7 @@ public class ThrownEnderpearlEntity extends ThrownEntity {
 				);
 		}
 
-		if (!this.world.isRemote) {
+		if (!this.world.isClient) {
 			if (livingEntity instanceof ServerPlayerEntity) {
 				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
 				if (serverPlayerEntity.networkHandler.getConnection().isOpen() && serverPlayerEntity.world == this.world && !serverPlayerEntity.isSleeping()) {

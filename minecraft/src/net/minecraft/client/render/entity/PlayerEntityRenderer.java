@@ -3,8 +3,16 @@ package net.minecraft.client.render.entity;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_998;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.render.entity.feature.ArmorBipedFeatureRenderer;
+import net.minecraft.client.render.entity.feature.CapeFeatureRenderer;
+import net.minecraft.client.render.entity.feature.Deadmau5FeatureRenderer;
+import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
+import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
+import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
+import net.minecraft.client.render.entity.feature.ShoulderParrotFeatureRenderer;
+import net.minecraft.client.render.entity.feature.StuckArrowsFeatureRenderer;
+import net.minecraft.client.render.entity.feature.TridentRiptideFeatureRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.item.CrossbowItem;
@@ -21,44 +29,40 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
-public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPlayerEntity> {
+public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
 	public PlayerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		this(entityRenderDispatcher, false);
 	}
 
 	public PlayerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, boolean bl) {
-		super(entityRenderDispatcher, new PlayerEntityModel(0.0F, bl), 0.5F);
-		this.addLayer(new ArmorBipedEntityRenderer(this));
-		this.addLayer(new HeldItemEntityRenderer(this));
-		this.addLayer(new StuckArrowsEntityRenderer(this));
-		this.addLayer(new DeadmauEntityRenderer5(this));
-		this.addLayer(new CapeEntityRenderer(this));
-		this.addLayer(new HeadEntityRenderer(this.method_4214().head));
-		this.addLayer(new ElytraEntityRenderer(this));
-		this.addLayer(new ShoulderParrotEntityRenderer(entityRenderDispatcher));
-		this.addLayer(new class_998(this));
+		super(entityRenderDispatcher, new PlayerEntityModel<>(0.0F, bl), 0.5F);
+		this.addFeature(new ArmorBipedFeatureRenderer<>(this, new BipedEntityModel(0.5F), new BipedEntityModel(1.0F)));
+		this.addFeature(new HeldItemFeatureRenderer<>(this));
+		this.addFeature(new StuckArrowsFeatureRenderer<>(this));
+		this.addFeature(new Deadmau5FeatureRenderer(this));
+		this.addFeature(new CapeFeatureRenderer(this));
+		this.addFeature(new HeadFeatureRenderer<>(this));
+		this.addFeature(new ElytraFeatureRenderer<>(this));
+		this.addFeature(new ShoulderParrotFeatureRenderer<>(this));
+		this.addFeature(new TridentRiptideFeatureRenderer<>(this));
 	}
 
-	public PlayerEntityModel method_4214() {
-		return (PlayerEntityModel)super.method_4038();
-	}
-
-	public void method_4215(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f, float g, float h) {
+	public void render(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f, float g, float h) {
 		if (!abstractClientPlayerEntity.method_7340() || this.renderManager.field_4686 == abstractClientPlayerEntity) {
 			double i = e;
 			if (abstractClientPlayerEntity.isSneaking()) {
 				i = e - 0.125;
 			}
 
-			this.method_4218(abstractClientPlayerEntity);
+			this.setModelPose(abstractClientPlayerEntity);
 			GlStateManager.setProfile(GlStateManager.RenderMode.PLAYER_SKIN);
-			super.method_4054(abstractClientPlayerEntity, d, i, f, g, h);
+			super.render(abstractClientPlayerEntity, d, i, f, g, h);
 			GlStateManager.unsetProfile(GlStateManager.RenderMode.PLAYER_SKIN);
 		}
 	}
 
-	private void method_4218(AbstractClientPlayerEntity abstractClientPlayerEntity) {
-		PlayerEntityModel playerEntityModel = this.method_4214();
+	private void setModelPose(AbstractClientPlayerEntity abstractClientPlayerEntity) {
+		PlayerEntityModel<AbstractClientPlayerEntity> playerEntityModel = this.getModel();
 		if (abstractClientPlayerEntity.isSpectator()) {
 			playerEntityModel.setVisible(false);
 			playerEntityModel.head.visible = true;
@@ -138,7 +142,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 				this.renderEntityLabel(
 					abstractClientPlayerEntity, scoreboardPlayerScore.getScore() + " " + scoreboardObjective.getDisplayName().getFormattedText(), d, e, f, 64
 				);
-				e += (double)((float)this.getFontRenderer().FONT_HEIGHT * 1.15F * 0.025F);
+				e += (double)((float)this.getFontRenderer().fontHeight * 1.15F * 0.025F);
 			}
 		}
 
@@ -149,13 +153,13 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		float f = 1.0F;
 		GlStateManager.color3f(1.0F, 1.0F, 1.0F);
 		float g = 0.0625F;
-		PlayerEntityModel playerEntityModel = this.method_4214();
-		this.method_4218(abstractClientPlayerEntity);
+		PlayerEntityModel<AbstractClientPlayerEntity> playerEntityModel = this.getModel();
+		this.setModelPose(abstractClientPlayerEntity);
 		GlStateManager.enableBlend();
 		playerEntityModel.swingProgress = 0.0F;
 		playerEntityModel.isSneaking = false;
 		playerEntityModel.field_3396 = 0.0F;
-		playerEntityModel.setRotationAngles(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F, abstractClientPlayerEntity);
+		playerEntityModel.method_17087(abstractClientPlayerEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 		playerEntityModel.armRight.pitch = 0.0F;
 		playerEntityModel.armRight.render(0.0625F);
 		playerEntityModel.rightArmOverlay.pitch = 0.0F;
@@ -167,13 +171,13 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		float f = 1.0F;
 		GlStateManager.color3f(1.0F, 1.0F, 1.0F);
 		float g = 0.0625F;
-		PlayerEntityModel playerEntityModel = this.method_4214();
-		this.method_4218(abstractClientPlayerEntity);
+		PlayerEntityModel<AbstractClientPlayerEntity> playerEntityModel = this.getModel();
+		this.setModelPose(abstractClientPlayerEntity);
 		GlStateManager.enableBlend();
 		playerEntityModel.isSneaking = false;
 		playerEntityModel.swingProgress = 0.0F;
 		playerEntityModel.field_3396 = 0.0F;
-		playerEntityModel.setRotationAngles(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F, abstractClientPlayerEntity);
+		playerEntityModel.method_17087(abstractClientPlayerEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 		playerEntityModel.armLeft.pitch = 0.0F;
 		playerEntityModel.armLeft.render(0.0625F);
 		playerEntityModel.leftArmOverlay.pitch = 0.0F;
@@ -198,13 +202,13 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		float i = abstractClientPlayerEntity.method_6024(h);
 		if (abstractClientPlayerEntity.isValid() && abstractClientPlayerEntity.isSleeping()) {
 			GlStateManager.rotatef(abstractClientPlayerEntity.method_7319(), 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotatef(this.method_4039(abstractClientPlayerEntity), 0.0F, 0.0F, 1.0F);
+			GlStateManager.rotatef(this.getLyingAngle(abstractClientPlayerEntity), 0.0F, 0.0F, 1.0F);
 			GlStateManager.rotatef(270.0F, 0.0F, 1.0F, 0.0F);
 		} else if (abstractClientPlayerEntity.isFallFlying()) {
-			super.method_4058(abstractClientPlayerEntity, f, g, h);
+			super.setupTransforms(abstractClientPlayerEntity, f, g, h);
 			float j = (float)abstractClientPlayerEntity.method_6003() + h;
 			float k = MathHelper.clamp(j * j / 100.0F, 0.0F, 1.0F);
-			if (!abstractClientPlayerEntity.method_6123()) {
+			if (!abstractClientPlayerEntity.isUsingRiptide()) {
 				GlStateManager.rotatef(k * (-90.0F - abstractClientPlayerEntity.pitch), 1.0F, 0.0F, 0.0F);
 			}
 
@@ -218,13 +222,13 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 				GlStateManager.rotatef((float)(Math.signum(m) * Math.acos(l)) * 180.0F / (float) Math.PI, 0.0F, 1.0F, 0.0F);
 			}
 		} else if (i > 0.0F) {
-			super.method_4058(abstractClientPlayerEntity, f, g, h);
+			super.setupTransforms(abstractClientPlayerEntity, f, g, h);
 			GlStateManager.rotatef(MathHelper.lerp(i, abstractClientPlayerEntity.pitch, -90.0F - abstractClientPlayerEntity.pitch), 1.0F, 0.0F, 0.0F);
 			if (abstractClientPlayerEntity.isSwimming()) {
 				GlStateManager.translatef(0.0F, -1.0F, 0.3F);
 			}
 		} else {
-			super.method_4058(abstractClientPlayerEntity, f, g, h);
+			super.setupTransforms(abstractClientPlayerEntity, f, g, h);
 		}
 	}
 }

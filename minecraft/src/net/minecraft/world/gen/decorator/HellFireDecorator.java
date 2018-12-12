@@ -8,7 +8,6 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import net.minecraft.class_3667;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.gen.config.decorator.CountDecoratorConfig;
 
 public class HellFireDecorator extends class_3667<CountDecoratorConfig> {
 	public HellFireDecorator(Function<Dynamic<?>, ? extends CountDecoratorConfig> function) {

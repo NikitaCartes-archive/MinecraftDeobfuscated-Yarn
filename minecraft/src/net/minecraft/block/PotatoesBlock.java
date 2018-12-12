@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.item.ItemContainer;
+import net.minecraft.item.ItemProvider;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
@@ -26,7 +26,7 @@ public class PotatoesBlock extends CropBlock {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	protected ItemContainer getCropItem() {
+	protected ItemProvider getCropItem() {
 		return Items.field_8567;
 	}
 

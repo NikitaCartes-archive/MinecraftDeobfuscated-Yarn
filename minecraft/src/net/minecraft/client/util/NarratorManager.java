@@ -5,10 +5,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_370;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.settings.GameOptions;
-import net.minecraft.client.sortme.ChatMessageType;
+import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.sortme.ClientChatListener;
 import net.minecraft.client.toast.ToastManager;
+import net.minecraft.sortme.ChatMessageType;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 
@@ -18,8 +18,8 @@ public class NarratorManager implements ClientChatListener {
 	private final Narrator narrator = Narrator.getNarrator();
 
 	@Override
-	public void onChatMessage(ChatMessageType chatMessageType, TextComponent textComponent) {
-		int i = MinecraftClient.getInstance().options.narrator;
+	public void method_1794(ChatMessageType chatMessageType, TextComponent textComponent) {
+		int i = MinecraftClient.getInstance().field_1690.narrator;
 		if (i != 0 && this.narrator.active()) {
 			if (i == 1 || i == 2 && chatMessageType == ChatMessageType.field_11737 || i == 3 && chatMessageType == ChatMessageType.field_11735) {
 				if (textComponent instanceof TranslatableTextComponent && "chat.type.text".equals(((TranslatableTextComponent)textComponent).getKey())) {

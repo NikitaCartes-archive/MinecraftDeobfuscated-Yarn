@@ -1,7 +1,7 @@
 package net.minecraft.entity.mob;
 
-import net.minecraft.class_3730;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -36,14 +36,14 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 	protected void method_16827() {
 		float f = this.method_5718();
 		if (f > 0.5F) {
-			this.field_6278 += 2;
+			this.despawnCounter += 2;
 		}
 	}
 
 	@Override
 	public void update() {
 		super.update();
-		if (!this.world.isRemote && this.world.getDifficulty() == Difficulty.PEACEFUL) {
+		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.PEACEFUL) {
 			this.invalidate();
 		}
 	}
@@ -83,9 +83,9 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 		return 0.5F - viewableWorld.method_8610(blockPos);
 	}
 
-	protected boolean method_7075() {
+	protected boolean checkLightLevelForSpawn() {
 		BlockPos blockPos = new BlockPos(this.x, this.getBoundingBox().minY, this.z);
-		if (this.world.getLightLevel(LightType.field_9284, blockPos) > this.random.nextInt(32)) {
+		if (this.world.getLightLevel(LightType.SKY_LIGHT, blockPos) > this.random.nextInt(32)) {
 			return false;
 		} else {
 			int i = this.world.isThundering() ? this.world.method_8603(blockPos, 10) : this.world.method_8602(blockPos);
@@ -94,8 +94,8 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 	}
 
 	@Override
-	public boolean method_5979(IWorld iWorld, class_3730 arg) {
-		return iWorld.getDifficulty() != Difficulty.PEACEFUL && this.method_7075() && super.method_5979(iWorld, arg);
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
+		return iWorld.getDifficulty() != Difficulty.PEACEFUL && this.checkLightLevelForSpawn() && super.canSpawn(iWorld, spawnType);
 	}
 
 	@Override

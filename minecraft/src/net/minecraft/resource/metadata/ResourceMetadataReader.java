@@ -5,5 +5,5 @@ import com.google.gson.JsonObject;
 public interface ResourceMetadataReader<T> {
 	String getKey();
 
-	T read(JsonObject jsonObject);
+	T fromJson(JsonObject jsonObject);
 }

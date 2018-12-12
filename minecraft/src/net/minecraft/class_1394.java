@@ -19,7 +19,7 @@ public class class_1394 extends class_1379 {
 	@Nullable
 	@Override
 	protected Vec3d method_6302() {
-		if (this.field_6566.method_5816()) {
+		if (this.field_6566.isInsideWaterOrBubbleColumn()) {
 			Vec3d vec3d = class_1414.method_6378(this.field_6566, 15, 7);
 			return vec3d == null ? super.method_6302() : vec3d;
 		} else {

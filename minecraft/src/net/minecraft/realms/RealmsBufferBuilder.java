@@ -3,19 +3,19 @@ package net.minecraft.realms;
 import java.nio.ByteBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.VertexBuffer;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.VertexFormat;
 
 @Environment(EnvType.CLIENT)
 public class RealmsBufferBuilder {
-	private VertexBuffer field_5669;
+	private BufferBuilder field_5669;
 
-	public RealmsBufferBuilder(VertexBuffer vertexBuffer) {
-		this.field_5669 = vertexBuffer;
+	public RealmsBufferBuilder(BufferBuilder bufferBuilder) {
+		this.field_5669 = bufferBuilder;
 	}
 
-	public RealmsBufferBuilder from(VertexBuffer vertexBuffer) {
-		this.field_5669 = vertexBuffer;
+	public RealmsBufferBuilder from(BufferBuilder bufferBuilder) {
+		this.field_5669 = bufferBuilder;
 		return this;
 	}
 
@@ -43,7 +43,7 @@ public class RealmsBufferBuilder {
 		this.field_5669.setOffset(d, e, f);
 	}
 
-	public void restoreState(VertexBuffer.State state) {
+	public void restoreState(BufferBuilder.State state) {
 		this.field_5669.restoreState(state);
 	}
 

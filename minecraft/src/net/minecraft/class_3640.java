@@ -3,7 +3,7 @@ package net.minecraft;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.layer.BiomeLayers;
-import net.minecraft.world.gen.chunk.OverworldChunkGeneratorSettings;
+import net.minecraft.world.gen.chunk.OverworldChunkGeneratorConfig;
 import net.minecraft.world.level.LevelGeneratorType;
 
 public class class_3640 implements class_3661 {
@@ -28,15 +28,15 @@ public class class_3640 implements class_3661 {
 	private static final int[] field_16062 = new int[]{field_16071, field_16080, field_16072, field_16083, field_16074, field_16078};
 	private static final int[] field_16068 = new int[]{field_16071, field_16072, field_16077, field_16083};
 	private static final int[] field_16066 = new int[]{field_16069, field_16069, field_16069, field_16076};
-	private final OverworldChunkGeneratorSettings field_16075;
+	private final OverworldChunkGeneratorConfig field_16075;
 	private int[] field_16070 = field_16064;
 
-	public class_3640(LevelGeneratorType levelGeneratorType, OverworldChunkGeneratorSettings overworldChunkGeneratorSettings) {
+	public class_3640(LevelGeneratorType levelGeneratorType, OverworldChunkGeneratorConfig overworldChunkGeneratorConfig) {
 		if (levelGeneratorType == LevelGeneratorType.DEFAULT_1_1) {
 			this.field_16070 = field_16082;
 			this.field_16075 = null;
 		} else {
-			this.field_16075 = overworldChunkGeneratorSettings;
+			this.field_16075 = overworldChunkGeneratorConfig;
 		}
 	}
 

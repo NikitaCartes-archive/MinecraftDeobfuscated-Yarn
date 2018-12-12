@@ -13,6 +13,6 @@ public class ItemFrameItem extends DecorationItem {
 
 	@Override
 	protected boolean method_7834(PlayerEntity playerEntity, Direction direction, ItemStack itemStack, BlockPos blockPos) {
-		return !World.isHeightInvaid(blockPos) && playerEntity.method_7343(blockPos, direction, itemStack);
+		return !World.isHeightInvalid(blockPos) && playerEntity.canPlaceBlock(blockPos, direction, itemStack);
 	}
 }

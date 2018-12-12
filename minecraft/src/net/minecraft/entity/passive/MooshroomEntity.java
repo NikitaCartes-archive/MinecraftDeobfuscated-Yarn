@@ -32,7 +32,7 @@ public class MooshroomEntity extends CowEntity {
 			return true;
 		} else if (itemStack.getItem() == Items.field_8868 && this.getBreedingAge() >= 0) {
 			this.world.method_8406(ParticleTypes.field_11236, this.x, this.y + (double)(this.height / 2.0F), this.z, 0.0, 0.0, 0.0);
-			if (!this.world.isRemote) {
+			if (!this.world.isClient) {
 				this.invalidate();
 				CowEntity cowEntity = new CowEntity(this.world);
 				cowEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);

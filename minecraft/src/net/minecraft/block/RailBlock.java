@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import net.minecraft.class_2452;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.EnumProperty;
@@ -21,7 +20,7 @@ public class RailBlock extends AbstractRailBlock {
 
 	@Override
 	protected void method_9477(BlockState blockState, World world, BlockPos blockPos, Block block) {
-		if (block.getDefaultState().emitsRedstonePower() && new class_2452(world, blockPos, blockState).method_10460() == 3) {
+		if (block.getDefaultState().emitsRedstonePower() && new RailPlacementHelper(world, blockPos, blockState).method_10460() == 3) {
 			this.method_9475(world, blockPos, blockState, false);
 		}
 	}

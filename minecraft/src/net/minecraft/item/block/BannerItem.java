@@ -49,7 +49,7 @@ public class BannerItem extends WallStandingBlockItem {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void addInformation(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
 		addBannerInformation(itemStack, list);
 	}
 }

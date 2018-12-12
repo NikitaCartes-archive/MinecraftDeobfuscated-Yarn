@@ -52,6 +52,7 @@ public class SoundEvents {
 	public static final SoundEvent field_15045 = register("block.beacon.ambient");
 	public static final SoundEvent field_15176 = register("block.beacon.deactivate");
 	public static final SoundEvent field_14891 = register("block.beacon.power_select");
+	public static final SoundEvent field_17265 = register("block.bell.use");
 	public static final SoundEvent field_14991 = register("entity.blaze.ambient");
 	public static final SoundEvent field_14734 = register("entity.blaze.burn");
 	public static final SoundEvent field_14580 = register("entity.blaze.death");
@@ -489,8 +490,7 @@ public class SoundEvents {
 	public static final SoundEvent field_14872 = register("entity.rabbit.death");
 	public static final SoundEvent field_15164 = register("entity.rabbit.hurt");
 	public static final SoundEvent field_15091 = register("entity.rabbit.jump");
-	public static final SoundEvent field_16689 = register("event.raid.horn_local");
-	public static final SoundEvent field_16690 = register("event.raid.horn_distant");
+	public static final SoundEvent field_17266 = register("event.raid.horn");
 	public static final SoundEvent field_14654 = register("music_disc.11");
 	public static final SoundEvent field_14592 = register("music_disc.13");
 	public static final SoundEvent field_14829 = register("music_disc.blocks");

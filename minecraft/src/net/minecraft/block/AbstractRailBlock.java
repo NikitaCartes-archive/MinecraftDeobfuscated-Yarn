@@ -1,9 +1,7 @@
 package net.minecraft.block;
 
-import net.minecraft.class_2452;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -13,31 +11,31 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class AbstractRailBlock extends Block {
-	protected static final VoxelShape field_9958 = Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
-	protected static final VoxelShape field_9960 = Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
-	private final boolean field_9959;
+	protected static final VoxelShape SHAPE = Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
+	protected static final VoxelShape ASCENDING_SHAPE = Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
+	private final boolean allowCurves;
 
 	public static boolean isRail(World world, BlockPos blockPos) {
-		return method_9476(world.getBlockState(blockPos));
+		return isRail(world.getBlockState(blockPos));
 	}
 
-	public static boolean method_9476(BlockState blockState) {
+	public static boolean isRail(BlockState blockState) {
 		return blockState.matches(BlockTags.field_15463);
 	}
 
 	protected AbstractRailBlock(boolean bl, Block.Settings settings) {
 		super(settings);
-		this.field_9959 = bl;
+		this.allowCurves = bl;
 	}
 
-	public boolean method_9478() {
-		return this.field_9959;
+	public boolean canMakeCurves() {
+		return this.allowCurves;
 	}
 
 	@Override
 	public VoxelShape getBoundingShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		RailShape railShape = blockState.getBlock() == this ? blockState.get(this.getShapeProperty()) : null;
-		return railShape != null && railShape.isAscending() ? field_9960 : field_9958;
+		return railShape != null && railShape.isAscending() ? ASCENDING_SHAPE : SHAPE;
 	}
 
 	@Override
@@ -49,9 +47,9 @@ public abstract class AbstractRailBlock extends Block {
 	@Override
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
 		if (blockState2.getBlock() != blockState.getBlock()) {
-			if (!world.isRemote) {
+			if (!world.isClient) {
 				blockState = this.method_9475(world, blockPos, blockState, true);
-				if (this.field_9959) {
+				if (this.allowCurves) {
 					blockState.neighborUpdate(world, blockPos, this, blockPos);
 				}
 			}
@@ -60,7 +58,7 @@ public abstract class AbstractRailBlock extends Block {
 
 	@Override
 	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
-		if (!world.isRemote) {
+		if (!world.isClient) {
 			RailShape railShape = blockState.get(this.getShapeProperty());
 			boolean bl = false;
 			BlockPos blockPos3 = blockPos.down();
@@ -101,7 +99,9 @@ public abstract class AbstractRailBlock extends Block {
 	}
 
 	protected BlockState method_9475(World world, BlockPos blockPos, BlockState blockState, boolean bl) {
-		return world.isRemote ? blockState : new class_2452(world, blockPos, blockState).method_10459(world.isReceivingRedstonePower(blockPos), bl).method_10462();
+		return world.isClient
+			? blockState
+			: new RailPlacementHelper(world, blockPos, blockState).method_10459(world.isReceivingRedstonePower(blockPos), bl).getBlockState();
 	}
 
 	@Override
@@ -122,7 +122,7 @@ public abstract class AbstractRailBlock extends Block {
 				world.updateNeighborsAlways(blockPos.up(), this);
 			}
 
-			if (this.field_9959) {
+			if (this.allowCurves) {
 				world.updateNeighborsAlways(blockPos, this);
 				world.updateNeighborsAlways(blockPos.down(), this);
 			}

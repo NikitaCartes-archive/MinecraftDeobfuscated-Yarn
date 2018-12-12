@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.settings.GameOptions;
+import net.minecraft.client.options.GameOptions;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -29,8 +29,8 @@ public class OptionSliderWidget extends ButtonWidget {
 		this.field_2160 = d;
 		this.field_2159 = e;
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		this.field_2161 = option.method_1651(minecraftClient.options.method_1637(option));
-		this.text = minecraftClient.options.getTranslatedName(option);
+		this.field_2161 = option.method_1651(minecraftClient.field_1690.method_1637(option));
+		this.text = minecraftClient.field_1690.getTranslatedName(option);
 	}
 
 	@Override
@@ -48,9 +48,9 @@ public class OptionSliderWidget extends ButtonWidget {
 
 			if (this.dragging || this.option == GameOptions.Option.FULLSCREEN_RESOLUTION) {
 				double d = this.option.method_1645(this.field_2161);
-				minecraftClient.options.method_1625(this.option, d);
+				minecraftClient.field_1690.method_1625(this.option, d);
 				this.field_2161 = this.option.method_1651(d);
-				this.text = minecraftClient.options.getTranslatedName(this.option);
+				this.text = minecraftClient.field_1690.getTranslatedName(this.option);
 			}
 
 			minecraftClient.getTextureManager().bindTexture(WIDGET_TEX);
@@ -65,8 +65,8 @@ public class OptionSliderWidget extends ButtonWidget {
 		this.field_2161 = (d - (double)(this.x + 4)) / (double)(this.width - 8);
 		this.field_2161 = MathHelper.clamp(this.field_2161, 0.0, 1.0);
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		minecraftClient.options.method_1625(this.option, this.option.method_1645(this.field_2161));
-		this.text = minecraftClient.options.getTranslatedName(this.option);
+		minecraftClient.field_1690.method_1625(this.option, this.option.method_1645(this.field_2161));
+		this.text = minecraftClient.field_1690.getTranslatedName(this.option);
 		this.dragging = true;
 	}
 

@@ -6,7 +6,7 @@ import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 
 public abstract class HorizontalFacingBlock extends Block {
-	public static final DirectionProperty field_11177 = Properties.field_12481;
+	public static final DirectionProperty field_11177 = Properties.FACING_HORIZONTAL;
 
 	protected HorizontalFacingBlock(Block.Settings settings) {
 		super(settings);
@@ -19,6 +19,6 @@ public abstract class HorizontalFacingBlock extends Block {
 
 	@Override
 	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.method_10345(blockState.get(field_11177)));
+		return blockState.applyRotation(mirror.getRotation(blockState.get(field_11177)));
 	}
 }

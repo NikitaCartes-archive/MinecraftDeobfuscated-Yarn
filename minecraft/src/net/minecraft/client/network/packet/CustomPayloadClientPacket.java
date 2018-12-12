@@ -11,7 +11,6 @@ import net.minecraft.util.PacketByteBuf;
 public class CustomPayloadClientPacket implements Packet<ClientPlayPacketListener> {
 	public static final Identifier TRADER_LIST = new Identifier("trader_list");
 	public static final Identifier BRAND = new Identifier("brand");
-	public static final Identifier BOOK_OPEN = new Identifier("book_open");
 	public static final Identifier DEBUG_PATH = new Identifier("debug/path");
 	public static final Identifier DEBUG_NEIGHBORS_UPDATE = new Identifier("debug/neighbors_update");
 	public static final Identifier DEBUG_CAVES = new Identifier("debug/caves");

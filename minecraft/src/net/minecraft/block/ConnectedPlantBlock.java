@@ -14,7 +14,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 
 public class ConnectedPlantBlock extends Block {
-	private static final Direction[] field_11334 = Direction.values();
+	private static final Direction[] FACINGS = Direction.values();
 	public static final BooleanProperty NORTH = Properties.NORTH_BOOL;
 	public static final BooleanProperty EAST = Properties.EAST_BOOL;
 	public static final BooleanProperty SOUTH = Properties.SOUTH_BOOL;
@@ -42,10 +42,10 @@ public class ConnectedPlantBlock extends Block {
 		VoxelShape voxelShape = Block.createCubeShape(
 			(double)(g * 16.0F), (double)(g * 16.0F), (double)(g * 16.0F), (double)(h * 16.0F), (double)(h * 16.0F), (double)(h * 16.0F)
 		);
-		VoxelShape[] voxelShapes = new VoxelShape[field_11334.length];
+		VoxelShape[] voxelShapes = new VoxelShape[FACINGS.length];
 
-		for(int i = 0; i < field_11334.length; ++i) {
-			Direction direction = field_11334[i];
+		for(int i = 0; i < FACINGS.length; ++i) {
+			Direction direction = FACINGS[i];
 			voxelShapes[i] = VoxelShapes.cube(
 				0.5 + Math.min((double)(-f), (double)direction.getOffsetX() * 0.5),
 				0.5 + Math.min((double)(-f), (double)direction.getOffsetY() * 0.5),
@@ -61,9 +61,9 @@ public class ConnectedPlantBlock extends Block {
 		for(int j = 0; j < 64; ++j) {
 			VoxelShape voxelShape2 = voxelShape;
 
-			for(int k = 0; k < field_11334.length; ++k) {
+			for(int k = 0; k < FACINGS.length; ++k) {
 				if ((j & 1 << k) != 0) {
-					voxelShape2 = VoxelShapes.method_1084(voxelShape2, voxelShapes[k]);
+					voxelShape2 = VoxelShapes.union(voxelShape2, voxelShapes[k]);
 				}
 			}
 
@@ -74,7 +74,7 @@ public class ConnectedPlantBlock extends Block {
 	}
 
 	@Override
-	public boolean method_9579(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean isTranslucent(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return false;
 	}
 
@@ -86,8 +86,8 @@ public class ConnectedPlantBlock extends Block {
 	protected int method_10368(BlockState blockState) {
 		int i = 0;
 
-		for(int j = 0; j < field_11334.length; ++j) {
-			if (blockState.get((Property)FACING_PROPERTIES.get(field_11334[j]))) {
+		for(int j = 0; j < FACINGS.length; ++j) {
+			if (blockState.get((Property)FACING_PROPERTIES.get(FACINGS[j]))) {
 				i |= 1 << j;
 			}
 		}

@@ -82,7 +82,7 @@ public class ServerMetadata {
 			public ServerMetadata.Players method_12689(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 				JsonObject jsonObject = JsonHelper.asObject(jsonElement, "players");
 				ServerMetadata.Players players = new ServerMetadata.Players(JsonHelper.getInt(jsonObject, "max"), JsonHelper.getInt(jsonObject, "online"));
-				if (JsonHelper.isArray(jsonObject, "sample")) {
+				if (JsonHelper.hasArray(jsonObject, "sample")) {
 					JsonArray jsonArray = JsonHelper.getArray(jsonObject, "sample");
 					if (jsonArray.size() > 0) {
 						GameProfile[] gameProfiles = new GameProfile[jsonArray.size()];

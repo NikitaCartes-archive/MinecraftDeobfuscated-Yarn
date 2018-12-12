@@ -2,7 +2,7 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.particle.TexturedParticle;
+import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
@@ -18,14 +18,14 @@ public class EndRodParticle extends AnimatedParticle {
 	}
 
 	@Override
-	public void addPos(double d, double e, double f) {
+	public void move(double d, double e, double f) {
 		this.setBoundingBox(this.getBoundingBox().offset(d, e, f));
 		this.repositionFromBoundingBox();
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Factory implements FactoryParticle<TexturedParticle> {
-		public Particle createParticle(TexturedParticle texturedParticle, World world, double d, double e, double f, double g, double h, double i) {
+	public static class Factory implements ParticleFactory<DefaultParticleType> {
+		public Particle method_3024(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new EndRodParticle(world, d, e, f, g, h, i);
 		}
 	}

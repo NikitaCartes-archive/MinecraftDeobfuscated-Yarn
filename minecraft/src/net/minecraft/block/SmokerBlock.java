@@ -9,13 +9,12 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Hand;
+import net.minecraft.stat.Stats;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class SmokerBlock extends FurnaceBlock {
+public class SmokerBlock extends AbstractFurnaceBlock {
 	protected SmokerBlock(Block.Settings settings) {
 		super(settings);
 	}
@@ -26,10 +25,12 @@ public class SmokerBlock extends FurnaceBlock {
 	}
 
 	@Override
-	public boolean method_9534(
-		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
-	) {
-		return false;
+	protected void method_17025(World world, BlockPos blockPos, PlayerEntity playerEntity) {
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
+		if (blockEntity instanceof SmokerBlockEntity) {
+			playerEntity.openInventory((SmokerBlockEntity)blockEntity);
+			playerEntity.increaseStat(Stats.field_17273);
+		}
 	}
 
 	@Environment(EnvType.CLIENT)

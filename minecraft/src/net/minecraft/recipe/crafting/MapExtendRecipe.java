@@ -22,15 +22,15 @@ public class MapExtendRecipe extends ShapedRecipe {
 			3,
 			DefaultedList.create(
 				Ingredient.EMPTY,
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8204),
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8407)
+				Ingredient.method_8091(Items.field_8407),
+				Ingredient.method_8091(Items.field_8407),
+				Ingredient.method_8091(Items.field_8407),
+				Ingredient.method_8091(Items.field_8407),
+				Ingredient.method_8091(Items.field_8204),
+				Ingredient.method_8091(Items.field_8407),
+				Ingredient.method_8091(Items.field_8407),
+				Ingredient.method_8091(Items.field_8407),
+				Ingredient.method_8091(Items.field_8407)
 			),
 			new ItemStack(Items.field_8895)
 		);

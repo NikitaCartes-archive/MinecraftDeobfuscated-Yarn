@@ -5,12 +5,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1361;
 import net.minecraft.class_1399;
-import net.minecraft.class_3730;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
@@ -194,12 +194,12 @@ public class VexEntity extends HostileEntity {
 
 	@Nullable
 	@Override
-	public EntityData method_5943(
-		IWorld iWorld, LocalDifficulty localDifficulty, class_3730 arg, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	public EntityData prepareEntityData(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		this.initEquipment(localDifficulty);
 		this.method_5984(localDifficulty);
-		return super.method_5943(iWorld, localDifficulty, arg, entityData, compoundTag);
+		return super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	@Override

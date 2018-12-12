@@ -3,9 +3,9 @@ package net.minecraft.world.gen.feature;
 import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.class_3485;
 import net.minecraft.class_3492;
 import net.minecraft.class_3499;
+import net.minecraft.sortme.structures.StructureManager;
 import net.minecraft.sortme.structures.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.sortme.structures.processor.BlockRotStructureProcessor;
 import net.minecraft.util.Identifier;
@@ -17,8 +17,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.config.feature.DefaultFeatureConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class FossilFeature extends Feature<DefaultFeatureConfig> {
 	private static final Identifier SPINE_1 = new Identifier("fossil/spine_1");
@@ -47,25 +46,25 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean method_13236(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorSettings> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		Random random2 = iWorld.getRandom();
 		Rotation[] rotations = Rotation.values();
 		Rotation rotation = rotations[random2.nextInt(rotations.length)];
 		int i = random2.nextInt(FOSSILS.length);
-		class_3485 lv = iWorld.getSaveHandler().method_134();
-		class_3499 lv2 = lv.method_15091(FOSSILS[i]);
-		class_3499 lv3 = lv.method_15091(COAL_FOSSILS[i]);
+		StructureManager structureManager = iWorld.getSaveHandler().getStructureManager();
+		class_3499 lv = structureManager.method_15091(FOSSILS[i]);
+		class_3499 lv2 = structureManager.method_15091(COAL_FOSSILS[i]);
 		ChunkPos chunkPos = new ChunkPos(blockPos);
 		MutableIntBoundingBox mutableIntBoundingBox = new MutableIntBoundingBox(
 			chunkPos.getXStart(), 0, chunkPos.getZStart(), chunkPos.getXEnd(), 256, chunkPos.getZEnd()
 		);
-		class_3492 lv4 = new class_3492()
+		class_3492 lv3 = new class_3492()
 			.method_15123(rotation)
 			.method_15126(mutableIntBoundingBox)
 			.method_15112(random2)
 			.method_16184(BlockIgnoreStructureProcessor.field_16721);
-		BlockPos blockPos2 = lv2.method_15166(rotation);
+		BlockPos blockPos2 = lv.method_15166(rotation);
 		int j = random2.nextInt(16 - blockPos2.getX());
 		int k = random2.nextInt(16 - blockPos2.getZ());
 		int l = 256;
@@ -77,14 +76,14 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 		}
 
 		int m = Math.max(l - 15 - random2.nextInt(10), 10);
-		BlockPos blockPos3 = lv2.method_15167(blockPos.add(j, m, k), Mirror.NONE, rotation);
+		BlockPos blockPos3 = lv.method_15167(blockPos.add(j, m, k), Mirror.NONE, rotation);
 		BlockRotStructureProcessor blockRotStructureProcessor = new BlockRotStructureProcessor(0.9F);
-		lv4.method_16183().method_16184(blockRotStructureProcessor);
-		lv2.method_15172(iWorld, blockPos3, lv4, 4);
-		lv4.method_16664(blockRotStructureProcessor);
+		lv3.method_16183().method_16184(blockRotStructureProcessor);
+		lv.method_15172(iWorld, blockPos3, lv3, 4);
+		lv3.method_16664(blockRotStructureProcessor);
 		BlockRotStructureProcessor blockRotStructureProcessor2 = new BlockRotStructureProcessor(0.1F);
-		lv4.method_16183().method_16184(blockRotStructureProcessor2);
-		lv3.method_15172(iWorld, blockPos3, lv4, 4);
+		lv3.method_16183().method_16184(blockRotStructureProcessor2);
+		lv2.method_15172(iWorld, blockPos3, lv3, 4);
 		return true;
 	}
 }

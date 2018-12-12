@@ -17,7 +17,7 @@ public class SoulSandBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape method_9549(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		return field_11521;
 	}
 

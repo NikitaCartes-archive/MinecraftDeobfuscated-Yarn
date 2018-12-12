@@ -15,7 +15,7 @@ import java.util.Optional;
 import net.minecraft.datafixers.TypeReferences;
 
 public class ItemSpawnEggFix extends DataFix {
-	private static final String[] entities = DataFixUtils.make(new String[256], strings -> {
+	private static final String[] DAMAGE_TO_ENTITY_IDS = DataFixUtils.make(new String[256], strings -> {
 		strings[1] = "Item";
 		strings[2] = "XPOrb";
 		strings[7] = "ThrownEgg";
@@ -111,7 +111,7 @@ public class ItemSpawnEggFix extends DataFix {
 					Optional<? extends Typed<?>> optional4 = optional3.flatMap(typedx -> typedx.getOptionalTyped(opticFinder5));
 					Optional<String> optional5 = optional4.flatMap(typedx -> typedx.getOptional(opticFinder2));
 					Typed<?> typed2 = typed;
-					String string = entities[s & 255];
+					String string = DAMAGE_TO_ENTITY_IDS[s & 255];
 					if (string != null && (!optional5.isPresent() || !Objects.equals(optional5.get(), string))) {
 						Typed<?> typed3 = typed.getOrCreateTyped(opticFinder3);
 						Typed<?> typed4 = typed3.getOrCreateTyped(opticFinder4);

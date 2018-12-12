@@ -24,7 +24,7 @@ public abstract class ButtonWidget extends Drawable implements GuiEventListener 
 	public boolean enabled = true;
 	public boolean visible = true;
 	protected boolean hovered;
-	private boolean field_2073;
+	private boolean pressed;
 
 	public ButtonWidget(int i, int j, int k, String string) {
 		this(i, j, k, 200, 20, string);
@@ -84,22 +84,22 @@ public abstract class ButtonWidget extends Drawable implements GuiEventListener 
 	}
 
 	public void onPressed(double d, double e) {
-		this.field_2073 = true;
+		this.pressed = true;
 	}
 
 	public void onReleased(double d, double e) {
-		this.field_2073 = false;
+		this.pressed = false;
 	}
 
-	protected void method_1822(double d, double e, double f, double g) {
+	protected void onDragged(double d, double e, double f, double g) {
 	}
 
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
 		if (i == 0) {
-			boolean bl = this.method_1829(d, e);
+			boolean bl = this.isSelected(d, e);
 			if (bl) {
-				this.onPressed(MinecraftClient.getInstance().getSoundLoader());
+				this.playPressedSound(MinecraftClient.getInstance().getSoundLoader());
 				this.onPressed(d, e);
 				return true;
 			}
@@ -121,14 +121,14 @@ public abstract class ButtonWidget extends Drawable implements GuiEventListener 
 	@Override
 	public boolean mouseDragged(double d, double e, int i, double f, double g) {
 		if (i == 0) {
-			this.method_1822(d, e, f, g);
+			this.onDragged(d, e, f, g);
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	protected boolean method_1829(double d, double e) {
+	protected boolean isSelected(double d, double e) {
 		return this.enabled && this.visible && d >= (double)this.x && e >= (double)this.y && d < (double)(this.x + this.width) && e < (double)(this.y + this.height);
 	}
 
@@ -139,7 +139,7 @@ public abstract class ButtonWidget extends Drawable implements GuiEventListener 
 	public void onHover(int i, int j) {
 	}
 
-	public void onPressed(SoundLoader soundLoader) {
+	public void playPressedSound(SoundLoader soundLoader) {
 		soundLoader.play(PositionedSoundInstance.master(SoundEvents.field_15015, 1.0F));
 	}
 

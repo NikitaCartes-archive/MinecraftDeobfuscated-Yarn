@@ -4,13 +4,11 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.PandaEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class PandaEntityModel extends QuadrupedEntityModel {
+public class PandaEntityModel<T extends PandaEntity> extends QuadrupedEntityModel<T> {
 	private float field_3470;
 	private float field_3469;
 	private float field_3468;
@@ -44,19 +42,15 @@ public class PandaEntityModel extends QuadrupedEntityModel {
 		this.leg4.setRotationPoint(5.5F, 15.0F, -9.0F);
 	}
 
-	@Override
-	public void animateModel(LivingEntity livingEntity, float f, float g, float h) {
-		super.animateModel(livingEntity, f, g, h);
-		PandaEntity pandaEntity = (PandaEntity)livingEntity;
+	public void method_17102(T pandaEntity, float f, float g, float h) {
+		super.animateModel(pandaEntity, f, g, h);
 		this.field_3470 = pandaEntity.method_6534(h);
 		this.field_3469 = pandaEntity.method_6555(h);
 		this.field_3468 = pandaEntity.isChild() ? 0.0F : pandaEntity.method_6560(h);
 	}
 
-	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
-		super.setRotationAngles(f, g, h, i, j, k, entity);
-		PandaEntity pandaEntity = (PandaEntity)entity;
+	public void method_17103(T pandaEntity, float f, float g, float h, float i, float j, float k) {
+		super.setAngles(pandaEntity, f, g, h, i, j, k);
 		boolean bl = pandaEntity.method_6521() > 0;
 		boolean bl2 = pandaEntity.method_6545();
 		int l = pandaEntity.method_6532();
@@ -136,9 +130,8 @@ public class PandaEntityModel extends QuadrupedEntityModel {
 		return f + h * i;
 	}
 
-	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		this.setRotationAngles(f, g, h, i, j, k, entity);
+	public void method_17104(T pandaEntity, float f, float g, float h, float i, float j, float k) {
+		this.method_17103(pandaEntity, f, g, h, i, j, k);
 		if (this.isChild) {
 			float l = 3.0F;
 			GlStateManager.pushMatrix();

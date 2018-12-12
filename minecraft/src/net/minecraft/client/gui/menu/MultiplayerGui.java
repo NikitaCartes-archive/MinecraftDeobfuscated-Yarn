@@ -9,12 +9,11 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiEventListener;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EntryListWidget;
-import net.minecraft.client.gui.widget.ServerListWidget;
 import net.minecraft.client.network.LanServerEntry;
 import net.minecraft.client.network.LanServerQueryManager;
+import net.minecraft.client.options.ServerEntry;
+import net.minecraft.client.options.ServerList;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.settings.ServerEntry;
-import net.minecraft.client.settings.ServerList;
 import net.minecraft.sortme.ServerEntryNetworkPart;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,7 +23,7 @@ public class MultiplayerGui extends Gui {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final ServerEntryNetworkPart field_3037 = new ServerEntryNetworkPart();
 	private final Gui parent;
-	private ServerListWidget field_3043;
+	private ServerListGuiWidget field_3043;
 	private ServerList field_3040;
 	private ButtonWidget field_3041;
 	private ButtonWidget field_3050;
@@ -67,8 +66,8 @@ public class MultiplayerGui extends Gui {
 				LOGGER.warn("Unable to start LAN server detection: {}", var2.getMessage());
 			}
 
-			this.field_3043 = new ServerListWidget(this, this.client, this.width, this.height, 32, this.height - 64, 36);
-			this.field_3043.setUserServers(this.field_3040);
+			this.field_3043 = new ServerListGuiWidget(this, this.client, this.width, this.height, 32, this.height - 64, 36);
+			this.field_3043.method_2564(this.field_3040);
 		}
 
 		this.method_2540();
@@ -81,10 +80,10 @@ public class MultiplayerGui extends Gui {
 				public void onPressed(double d, double e) {
 					EntryListWidget.Entry<?> entry = MultiplayerGui.this.field_3043.getIndex() < 0
 						? null
-						: (EntryListWidget.Entry)MultiplayerGui.this.field_3043.getListeners().get(MultiplayerGui.this.field_3043.getIndex());
+						: (EntryListWidget.Entry)MultiplayerGui.this.field_3043.getEntries().get(MultiplayerGui.this.field_3043.getIndex());
 					MultiplayerGui.this.field_3036 = true;
-					if (entry instanceof ListEntryRemoteServer) {
-						ServerEntry serverEntry = ((ListEntryRemoteServer)entry).method_2556();
+					if (entry instanceof RemoteServerListEntry) {
+						ServerEntry serverEntry = ((RemoteServerListEntry)entry).method_2556();
 						MultiplayerGui.this.field_3051 = new ServerEntry(serverEntry.name, serverEntry.address, false);
 						MultiplayerGui.this.field_3051.copyFrom(serverEntry);
 						MultiplayerGui.this.client.openGui(new AddServerGui(MultiplayerGui.this, MultiplayerGui.this.field_3051));
@@ -98,9 +97,9 @@ public class MultiplayerGui extends Gui {
 				public void onPressed(double d, double e) {
 					EntryListWidget.Entry<?> entry = MultiplayerGui.this.field_3043.getIndex() < 0
 						? null
-						: (EntryListWidget.Entry)MultiplayerGui.this.field_3043.getListeners().get(MultiplayerGui.this.field_3043.getIndex());
-					if (entry instanceof ListEntryRemoteServer) {
-						String string = ((ListEntryRemoteServer)entry).method_2556().name;
+						: (EntryListWidget.Entry)MultiplayerGui.this.field_3043.getEntries().get(MultiplayerGui.this.field_3043.getIndex());
+					if (entry instanceof RemoteServerListEntry) {
+						String string = ((RemoteServerListEntry)entry).method_2556().name;
 						if (string != null) {
 							MultiplayerGui.this.field_3039 = true;
 							String string2 = I18n.translate("selectServer.deleteQuestion");
@@ -181,16 +180,14 @@ public class MultiplayerGui extends Gui {
 
 	@Override
 	public void handle(boolean bl, int i) {
-		EntryListWidget.Entry<?> entry = this.field_3043.getIndex() < 0
-			? null
-			: (EntryListWidget.Entry)this.field_3043.getListeners().get(this.field_3043.getIndex());
+		EntryListWidget.Entry<?> entry = this.field_3043.getIndex() < 0 ? null : (EntryListWidget.Entry)this.field_3043.getEntries().get(this.field_3043.getIndex());
 		if (this.field_3039) {
 			this.field_3039 = false;
-			if (bl && entry instanceof ListEntryRemoteServer) {
+			if (bl && entry instanceof RemoteServerListEntry) {
 				this.field_3040.remove(this.field_3043.getIndex());
 				this.field_3040.saveFile();
 				this.field_3043.setIndex(-1);
-				this.field_3043.setUserServers(this.field_3040);
+				this.field_3043.method_2564(this.field_3040);
 			}
 
 			this.client.openGui(this);
@@ -207,19 +204,19 @@ public class MultiplayerGui extends Gui {
 				this.field_3040.add(this.field_3051);
 				this.field_3040.saveFile();
 				this.field_3043.setIndex(-1);
-				this.field_3043.setUserServers(this.field_3040);
+				this.field_3043.method_2564(this.field_3040);
 			}
 
 			this.client.openGui(this);
 		} else if (this.field_3036) {
 			this.field_3036 = false;
-			if (bl && entry instanceof ListEntryRemoteServer) {
-				ServerEntry serverEntry = ((ListEntryRemoteServer)entry).method_2556();
+			if (bl && entry instanceof RemoteServerListEntry) {
+				ServerEntry serverEntry = ((RemoteServerListEntry)entry).method_2556();
 				serverEntry.name = this.field_3051.name;
 				serverEntry.address = this.field_3051.address;
 				serverEntry.copyFrom(this.field_3051);
 				this.field_3040.saveFile();
-				this.field_3043.setUserServers(this.field_3040);
+				this.field_3043.method_2564(this.field_3040);
 			}
 
 			this.client.openGui(this);
@@ -229,7 +226,7 @@ public class MultiplayerGui extends Gui {
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
 		int l = this.field_3043.getIndex();
-		EntryListWidget.Entry<?> entry = l < 0 ? null : (EntryListWidget.Entry)this.field_3043.getListeners().get(l);
+		EntryListWidget.Entry<?> entry = l < 0 ? null : (EntryListWidget.Entry)this.field_3043.getEntries().get(l);
 		if (i == 294) {
 			this.method_2534();
 			return true;
@@ -237,19 +234,19 @@ public class MultiplayerGui extends Gui {
 			if (l >= 0) {
 				if (i == 265) {
 					if (isShiftPressed()) {
-						if (l > 0 && entry instanceof ListEntryRemoteServer) {
+						if (l > 0 && entry instanceof RemoteServerListEntry) {
 							this.field_3040.swapEntries(l, l - 1);
 							this.setIndex(this.field_3043.getIndex() - 1);
-							this.field_3043.scrollByY(-this.field_3043.getEntryHeight());
-							this.field_3043.setUserServers(this.field_3040);
+							this.field_3043.scroll(-this.field_3043.getEntryHeight());
+							this.field_3043.method_2564(this.field_3040);
 						}
 					} else if (l > 0) {
 						this.setIndex(this.field_3043.getIndex() - 1);
-						this.field_3043.scrollByY(-this.field_3043.getEntryHeight());
-						if (this.field_3043.getListeners().get(this.field_3043.getIndex()) instanceof ListEntryLocalScanProgress) {
+						this.field_3043.scroll(-this.field_3043.getEntryHeight());
+						if (this.field_3043.getEntries().get(this.field_3043.getIndex()) instanceof LocalScanProgressListEntry) {
 							if (this.field_3043.getIndex() > 0) {
-								this.setIndex(this.field_3043.getListeners().size() - 1);
-								this.field_3043.scrollByY(-this.field_3043.getEntryHeight());
+								this.setIndex(this.field_3043.getEntries().size() - 1);
+								this.field_3043.scroll(-this.field_3043.getEntryHeight());
 							} else {
 								this.setIndex(-1);
 							}
@@ -266,16 +263,16 @@ public class MultiplayerGui extends Gui {
 						if (l < this.field_3040.size() - 1) {
 							this.field_3040.swapEntries(l, l + 1);
 							this.setIndex(l + 1);
-							this.field_3043.scrollByY(this.field_3043.getEntryHeight());
-							this.field_3043.setUserServers(this.field_3040);
+							this.field_3043.scroll(this.field_3043.getEntryHeight());
+							this.field_3043.method_2564(this.field_3040);
 						}
-					} else if (l < this.field_3043.getListeners().size()) {
+					} else if (l < this.field_3043.getEntries().size()) {
 						this.setIndex(this.field_3043.getIndex() + 1);
-						this.field_3043.scrollByY(this.field_3043.getEntryHeight());
-						if (this.field_3043.getListeners().get(this.field_3043.getIndex()) instanceof ListEntryLocalScanProgress) {
-							if (this.field_3043.getIndex() < this.field_3043.getListeners().size() - 1) {
-								this.setIndex(this.field_3043.getListeners().size() + 1);
-								this.field_3043.scrollByY(this.field_3043.getEntryHeight());
+						this.field_3043.scroll(this.field_3043.getEntryHeight());
+						if (this.field_3043.getEntries().get(this.field_3043.getIndex()) instanceof LocalScanProgressListEntry) {
+							if (this.field_3043.getIndex() < this.field_3043.getEntries().size() - 1) {
+								this.setIndex(this.field_3043.getEntries().size() + 1);
+								this.field_3043.scroll(this.field_3043.getEntryHeight());
 							} else {
 								this.setIndex(-1);
 							}
@@ -310,13 +307,11 @@ public class MultiplayerGui extends Gui {
 	}
 
 	public void method_2536() {
-		EntryListWidget.Entry<?> entry = this.field_3043.getIndex() < 0
-			? null
-			: (EntryListWidget.Entry)this.field_3043.getListeners().get(this.field_3043.getIndex());
-		if (entry instanceof ListEntryRemoteServer) {
-			this.method_2548(((ListEntryRemoteServer)entry).method_2556());
-		} else if (entry instanceof ListEntryLocalServer) {
-			LanServerEntry lanServerEntry = ((ListEntryLocalServer)entry).getLanServerEntry();
+		EntryListWidget.Entry<?> entry = this.field_3043.getIndex() < 0 ? null : (EntryListWidget.Entry)this.field_3043.getEntries().get(this.field_3043.getIndex());
+		if (entry instanceof RemoteServerListEntry) {
+			this.method_2548(((RemoteServerListEntry)entry).method_2556());
+		} else if (entry instanceof LocalServerListEntry) {
+			LanServerEntry lanServerEntry = ((LocalServerListEntry)entry).getLanServerEntry();
 			this.method_2548(new ServerEntry(lanServerEntry.getMotd(), lanServerEntry.getAddressPort(), true));
 		}
 	}
@@ -327,13 +322,13 @@ public class MultiplayerGui extends Gui {
 
 	public void setIndex(int i) {
 		this.field_3043.setIndex(i);
-		EntryListWidget.Entry<?> entry = i < 0 ? null : (EntryListWidget.Entry)this.field_3043.getListeners().get(i);
+		EntryListWidget.Entry<?> entry = i < 0 ? null : (EntryListWidget.Entry)this.field_3043.getEntries().get(i);
 		this.field_3050.enabled = false;
 		this.field_3041.enabled = false;
 		this.field_3047.enabled = false;
-		if (entry != null && !(entry instanceof ListEntryLocalScanProgress)) {
+		if (entry != null && !(entry instanceof LocalScanProgressListEntry)) {
 			this.field_3050.enabled = true;
-			if (entry instanceof ListEntryRemoteServer) {
+			if (entry instanceof RemoteServerListEntry) {
 				this.field_3041.enabled = true;
 				this.field_3047.enabled = true;
 			}
@@ -352,31 +347,31 @@ public class MultiplayerGui extends Gui {
 		return this.field_3040;
 	}
 
-	public boolean method_2533(ListEntryRemoteServer listEntryRemoteServer, int i) {
+	public boolean method_2533(RemoteServerListEntry remoteServerListEntry, int i) {
 		return i > 0;
 	}
 
-	public boolean method_2547(ListEntryRemoteServer listEntryRemoteServer, int i) {
+	public boolean method_2547(RemoteServerListEntry remoteServerListEntry, int i) {
 		return i < this.field_3040.size() - 1;
 	}
 
-	public void method_2531(ListEntryRemoteServer listEntryRemoteServer, int i, boolean bl) {
+	public void method_2531(RemoteServerListEntry remoteServerListEntry, int i, boolean bl) {
 		int j = bl ? 0 : i - 1;
 		this.field_3040.swapEntries(i, j);
 		if (this.field_3043.getIndex() == i) {
 			this.setIndex(j);
 		}
 
-		this.field_3043.setUserServers(this.field_3040);
+		this.field_3043.method_2564(this.field_3040);
 	}
 
-	public void method_2553(ListEntryRemoteServer listEntryRemoteServer, int i, boolean bl) {
+	public void method_2553(RemoteServerListEntry remoteServerListEntry, int i, boolean bl) {
 		int j = bl ? this.field_3040.size() - 1 : i + 1;
 		this.field_3040.swapEntries(i, j);
 		if (this.field_3043.getIndex() == i) {
 			this.setIndex(j);
 		}
 
-		this.field_3043.setUserServers(this.field_3040);
+		this.field_3043.method_2564(this.field_3040);
 	}
 }

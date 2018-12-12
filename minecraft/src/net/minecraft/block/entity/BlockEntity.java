@@ -9,7 +9,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
-import net.minecraft.util.crash.CrashReportElement;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -145,7 +145,7 @@ public abstract class BlockEntity {
 		this.invalid = false;
 	}
 
-	public boolean method_11004(int i, int j) {
+	public boolean onBlockAction(int i, int j) {
 		return false;
 	}
 
@@ -153,11 +153,11 @@ public abstract class BlockEntity {
 		this.cachedState = null;
 	}
 
-	public void populateCrashReport(CrashReportElement crashReportElement) {
-		crashReportElement.add("Name", (ICrashCallable<String>)(() -> Registry.BLOCK_ENTITY.getId(this.getType()) + " // " + this.getClass().getCanonicalName()));
+	public void method_11003(CrashReportSection crashReportSection) {
+		crashReportSection.add("Name", (ICrashCallable<String>)(() -> Registry.BLOCK_ENTITY.getId(this.getType()) + " // " + this.getClass().getCanonicalName()));
 		if (this.world != null) {
-			CrashReportElement.addBlockInfo(crashReportElement, this.pos, this.getCachedState());
-			CrashReportElement.addBlockInfo(crashReportElement, this.pos, this.world.getBlockState(this.pos));
+			CrashReportSection.addBlockInfo(crashReportSection, this.pos, this.getCachedState());
+			CrashReportSection.addBlockInfo(crashReportSection, this.pos, this.world.getBlockState(this.pos));
 		}
 	}
 

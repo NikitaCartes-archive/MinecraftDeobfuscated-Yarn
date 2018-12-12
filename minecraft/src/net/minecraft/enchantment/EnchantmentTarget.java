@@ -75,7 +75,7 @@ public enum EnchantmentTarget {
 			return item instanceof FishingRodItem;
 		}
 	},
-	field_9073 {
+	TRIDENT {
 		@Override
 		public boolean isAcceptableItem(Item item) {
 			return item instanceof TridentItem;
@@ -93,14 +93,14 @@ public enum EnchantmentTarget {
 			return item instanceof BowItem;
 		}
 	},
-	field_9078 {
+	WEARABLE {
 		@Override
 		public boolean isAcceptableItem(Item item) {
 			Block block = Block.getBlockFromItem(item);
 			return item instanceof ArmorItem || item instanceof ElytraItem || block instanceof AbstractSkullBlock || block instanceof PumpkinBlock;
 		}
 	},
-	field_9081 {
+	CROSSBOW {
 		@Override
 		public boolean isAcceptableItem(Item item) {
 			return item instanceof CrossbowItem;

@@ -5,6 +5,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.container.BlastFurnaceContainer;
 import net.minecraft.container.CraftingContainer;
 import net.minecraft.container.FurnaceContainer;
 import net.minecraft.recipe.Recipe;
@@ -17,6 +18,10 @@ public class RecipeBook {
 	protected boolean filteringCraftable;
 	protected boolean furnaceGuiOpen;
 	protected boolean furnaceFilteringCraftable;
+	protected boolean blastFurnaceGuiOpen;
+	protected boolean blastFurnaceFilteringCraftable;
+	protected boolean smokerGuiOpen;
+	protected boolean smokerFilteringCraftable;
 
 	public void copyFrom(RecipeBook recipeBook) {
 		this.recipes.clear();
@@ -25,44 +30,44 @@ public class RecipeBook {
 		this.toBeDisplayed.addAll(recipeBook.toBeDisplayed);
 	}
 
-	public void method_14876(Recipe recipe) {
+	public void add(Recipe recipe) {
 		if (!recipe.isIgnoredInRecipeBook()) {
-			this.method_14881(recipe.getId());
+			this.add(recipe.getId());
 		}
 	}
 
-	protected void method_14881(Identifier identifier) {
+	protected void add(Identifier identifier) {
 		this.recipes.add(identifier);
 	}
 
-	public boolean method_14878(@Nullable Recipe recipe) {
+	public boolean contains(@Nullable Recipe recipe) {
 		return recipe == null ? false : this.recipes.contains(recipe.getId());
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_14893(Recipe recipe) {
-		this.method_14879(recipe.getId());
+	public void remove(Recipe recipe) {
+		this.remove(recipe.getId());
 	}
 
-	protected void method_14879(Identifier identifier) {
+	protected void remove(Identifier identifier) {
 		this.recipes.remove(identifier);
 		this.toBeDisplayed.remove(identifier);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_14883(Recipe recipe) {
+	public boolean shouldDisplay(Recipe recipe) {
 		return this.toBeDisplayed.contains(recipe.getId());
 	}
 
-	public void method_14886(Recipe recipe) {
+	public void onRecipeDisplayed(Recipe recipe) {
 		this.toBeDisplayed.remove(recipe.getId());
 	}
 
-	public void method_14885(Recipe recipe) {
-		this.method_14877(recipe.getId());
+	public void display(Recipe recipe) {
+		this.display(recipe.getId());
 	}
 
-	protected void method_14877(Identifier identifier) {
+	protected void display(Identifier identifier) {
 		this.toBeDisplayed.add(identifier);
 	}
 
@@ -77,7 +82,11 @@ public class RecipeBook {
 
 	@Environment(EnvType.CLIENT)
 	public boolean isFilteringCraftable(CraftingContainer craftingContainer) {
-		return craftingContainer instanceof FurnaceContainer ? this.furnaceFilteringCraftable : this.filteringCraftable;
+		if (craftingContainer instanceof FurnaceContainer) {
+			return this.furnaceFilteringCraftable;
+		} else {
+			return craftingContainer instanceof BlastFurnaceContainer ? this.blastFurnaceFilteringCraftable : this.filteringCraftable;
+		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -105,5 +114,41 @@ public class RecipeBook {
 
 	public void setFurnaceFilteringCraftable(boolean bl) {
 		this.furnaceFilteringCraftable = bl;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public boolean isBlastFurnaceGuiOpen() {
+		return this.blastFurnaceGuiOpen;
+	}
+
+	public void setBlastFurnaceGuiOpen(boolean bl) {
+		this.blastFurnaceGuiOpen = bl;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public boolean isBlastFurnaceFilteringCraftable() {
+		return this.blastFurnaceFilteringCraftable;
+	}
+
+	public void setBlastFurnaceFilteringCraftable(boolean bl) {
+		this.blastFurnaceFilteringCraftable = bl;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public boolean isSmokerGuiOpen() {
+		return this.smokerGuiOpen;
+	}
+
+	public void setSmokerGuiOpen(boolean bl) {
+		this.smokerGuiOpen = bl;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public boolean isSmokerFilteringCraftable() {
+		return this.smokerFilteringCraftable;
+	}
+
+	public void setSmokerFilteringCraftable(boolean bl) {
+		this.smokerFilteringCraftable = bl;
 	}
 }

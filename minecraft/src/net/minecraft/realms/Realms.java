@@ -12,7 +12,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.MainMenuGui;
-import net.minecraft.client.settings.GameOptions;
+import net.minecraft.client.options.GameOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.util.Session;
@@ -22,7 +22,7 @@ import net.minecraft.world.GameMode;
 @Environment(EnvType.CLIENT)
 public class Realms {
 	public static boolean isTouchScreen() {
-		return MinecraftClient.getInstance().options.touchscreen;
+		return MinecraftClient.getInstance().field_1690.touchscreen;
 	}
 
 	public static Proxy getProxy() {
@@ -40,7 +40,7 @@ public class Realms {
 	}
 
 	public static long currentTimeMillis() {
-		return SystemUtil.getMeasuringTimeMili();
+		return SystemUtil.getMeasuringTimeMs();
 	}
 
 	public static String getSessionId() {
@@ -111,7 +111,7 @@ public class Realms {
 	}
 
 	public static boolean getRealmsNotificationsEnabled() {
-		return MinecraftClient.getInstance().options.isEnabled(GameOptions.Option.REALMS_NOTIFICATIONS);
+		return MinecraftClient.getInstance().field_1690.isEnabled(GameOptions.Option.REALMS_NOTIFICATIONS);
 	}
 
 	public static boolean inTitleScreen() {

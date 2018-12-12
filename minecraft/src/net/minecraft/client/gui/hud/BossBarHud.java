@@ -34,7 +34,7 @@ public class BossBarHud extends Drawable {
 				this.drawBossBar(k, j, clientBossBar);
 				String string = clientBossBar.getName().getFormattedText();
 				this.client.fontRenderer.drawWithShadow(string, (float)(i / 2 - this.client.fontRenderer.getStringWidth(string) / 2), (float)(j - 9), 16777215);
-				j += 10 + this.client.fontRenderer.FONT_HEIGHT;
+				j += 10 + this.client.fontRenderer.fontHeight;
 				if (j >= this.client.window.getScaledHeight() / 3) {
 					break;
 				}

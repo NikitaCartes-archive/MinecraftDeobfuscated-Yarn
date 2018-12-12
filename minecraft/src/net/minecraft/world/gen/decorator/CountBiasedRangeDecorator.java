@@ -7,7 +7,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import net.minecraft.class_3667;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.gen.config.decorator.RangeDecoratorConfig;
 
 public class CountBiasedRangeDecorator extends class_3667<RangeDecoratorConfig> {
 	public CountBiasedRangeDecorator(Function<Dynamic<?>, ? extends RangeDecoratorConfig> function) {

@@ -7,7 +7,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import net.minecraft.class_3667;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.gen.config.decorator.NopeDecoratorConfig;
 
 public class EmeraldOreDecorator extends class_3667<NopeDecoratorConfig> {
 	public EmeraldOreDecorator(Function<Dynamic<?>, ? extends NopeDecoratorConfig> function) {

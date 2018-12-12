@@ -1,5 +1,6 @@
 package net.minecraft.container;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -58,6 +59,12 @@ public class DoubleLockableContainer implements LockableContainer {
 		return this.first.hasCustomName() || this.second.hasCustomName();
 	}
 
+	@Nullable
+	@Override
+	public TextComponent getCustomName() {
+		return this.first.hasCustomName() ? this.first.getCustomName() : this.second.getCustomName();
+	}
+
 	@Override
 	public ItemStack getInvStack(int i) {
 		return i >= this.first.getInvSize() ? this.second.getInvStack(i - this.first.getInvSize()) : this.first.getInvStack(i);
@@ -112,7 +119,7 @@ public class DoubleLockableContainer implements LockableContainer {
 
 	@Override
 	public boolean isValidInvStack(int i, ItemStack itemStack) {
-		return true;
+		return i >= this.first.getInvSize() ? this.second.isValidInvStack(i - this.first.getInvSize(), itemStack) : this.first.isValidInvStack(i, itemStack);
 	}
 
 	@Override

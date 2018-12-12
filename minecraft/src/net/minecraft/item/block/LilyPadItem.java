@@ -1,6 +1,6 @@
 package net.minecraft.item.block;
 
-import net.minecraft.advancement.criterion.CriterionCriterions;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -41,8 +41,7 @@ public class LilyPadItem extends BlockItem {
 		} else {
 			if (hitResult.type == HitResult.Type.BLOCK) {
 				BlockPos blockPos = hitResult.getBlockPos();
-				if (!world.canPlayerModifyAt(playerEntity, blockPos)
-					|| !playerEntity.method_7343(blockPos.method_10093(hitResult.field_1327), hitResult.field_1327, itemStack)) {
+				if (!world.canPlayerModifyAt(playerEntity, blockPos) || !playerEntity.canPlaceBlock(blockPos.offset(hitResult.side), hitResult.side, itemStack)) {
 					return new TypedActionResult<>(ActionResult.FAILURE, itemStack);
 				}
 
@@ -53,7 +52,7 @@ public class LilyPadItem extends BlockItem {
 				if ((fluidState.getFluid() == Fluids.WATER || material == Material.ICE) && world.isAir(blockPos2)) {
 					world.setBlockState(blockPos2, Blocks.field_10588.getDefaultState(), 11);
 					if (playerEntity instanceof ServerPlayerEntity) {
-						CriterionCriterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
+						Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
 					}
 
 					if (!playerEntity.abilities.creativeMode) {

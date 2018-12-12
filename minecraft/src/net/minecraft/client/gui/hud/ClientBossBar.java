@@ -16,7 +16,7 @@ public class ClientBossBar extends BossBar {
 		super(bossBarClientPacket.getUuid(), bossBarClientPacket.getName(), bossBarClientPacket.getColor(), bossBarClientPacket.getOverlay());
 		this.healthLatest = bossBarClientPacket.getPercent();
 		this.percent = bossBarClientPacket.getPercent();
-		this.timeHealthSet = SystemUtil.getMeasuringTimeMili();
+		this.timeHealthSet = SystemUtil.getMeasuringTimeMs();
 		this.setDarkenSky(bossBarClientPacket.shouldDarkenSky());
 		this.setDragonMusic(bossBarClientPacket.hasDragonMusic());
 		this.setThickenFog(bossBarClientPacket.shouldThickenFog());
@@ -26,12 +26,12 @@ public class ClientBossBar extends BossBar {
 	public void setPercent(float f) {
 		this.percent = this.getPercent();
 		this.healthLatest = f;
-		this.timeHealthSet = SystemUtil.getMeasuringTimeMili();
+		this.timeHealthSet = SystemUtil.getMeasuringTimeMs();
 	}
 
 	@Override
 	public float getPercent() {
-		long l = SystemUtil.getMeasuringTimeMili() - this.timeHealthSet;
+		long l = SystemUtil.getMeasuringTimeMs() - this.timeHealthSet;
 		float f = MathHelper.clamp((float)l / 100.0F, 0.0F, 1.0F);
 		return MathHelper.lerp(f, this.percent, this.healthLatest);
 	}

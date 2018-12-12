@@ -34,7 +34,7 @@ public class EmptyChunk extends WorldChunk {
 
 	@Nullable
 	@Override
-	public LightingProvider method_12023() {
+	public LightingProvider getLightingProvider() {
 		return null;
 	}
 
@@ -94,7 +94,7 @@ public class EmptyChunk extends WorldChunk {
 	}
 
 	@Override
-	public boolean method_12223() {
+	public boolean isEmpty() {
 		return true;
 	}
 

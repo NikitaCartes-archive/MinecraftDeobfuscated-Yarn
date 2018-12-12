@@ -2,7 +2,6 @@ package net.minecraft.server.dedicated;
 
 import com.mojang.authlib.GameProfile;
 import java.io.IOException;
-import net.minecraft.class_3806;
 import net.minecraft.server.PlayerManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,10 +10,10 @@ public class DedicatedPlayerManager extends PlayerManager {
 	private static final Logger field_13804 = LogManager.getLogger();
 
 	public DedicatedPlayerManager(MinecraftDedicatedServer minecraftDedicatedServer) {
-		super(minecraftDedicatedServer, minecraftDedicatedServer.method_16705().field_16814);
-		class_3806 lv = minecraftDedicatedServer.method_16705();
-		this.setViewDistance(lv.field_16844);
-		super.setWhitelistEnabled(lv.field_16804.get());
+		super(minecraftDedicatedServer, minecraftDedicatedServer.getProperties().maxPlayers);
+		ServerPropertiesHandler serverPropertiesHandler = minecraftDedicatedServer.getProperties();
+		this.setViewDistance(serverPropertiesHandler.viewDistance);
+		super.setWhitelistEnabled(serverPropertiesHandler.whiteList.get());
 		if (!minecraftDedicatedServer.isSinglePlayer()) {
 			this.getUserBanList().setEnabled(true);
 			this.getIpBanList().setEnabled(true);
@@ -35,7 +34,7 @@ public class DedicatedPlayerManager extends PlayerManager {
 	@Override
 	public void setWhitelistEnabled(boolean bl) {
 		super.setWhitelistEnabled(bl);
-		this.getDedicatedServer().method_16712(bl);
+		this.getDedicatedServer().setUseWhitelist(bl);
 	}
 
 	@Override

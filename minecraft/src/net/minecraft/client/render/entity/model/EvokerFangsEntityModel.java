@@ -3,12 +3,11 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class EvokerFangsEntityModel extends Model {
+public class EvokerFangsEntityModel<T extends Entity> extends EntityModel<T> {
 	private final Cuboid field_3374 = new Cuboid(this, 0, 0);
 	private final Cuboid field_3376;
 	private final Cuboid field_3375;
@@ -25,7 +24,7 @@ public class EvokerFangsEntityModel extends Model {
 	}
 
 	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
+	public void render(T entity, float f, float g, float h, float i, float j, float k) {
 		float l = f * 2.0F;
 		if (l > 1.0F) {
 			l = 1.0F;

@@ -1,9 +1,9 @@
 package net.minecraft.entity.ai.goal;
 
-import net.minecraft.class_3730;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.entity.mob.SkeletonHorseEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
@@ -44,7 +44,7 @@ public class SkeletonHorseGoal extends Goal {
 
 	private HorseBaseEntity method_6810(LocalDifficulty localDifficulty) {
 		SkeletonHorseEntity skeletonHorseEntity = new SkeletonHorseEntity(this.owner.world);
-		skeletonHorseEntity.method_5943(this.owner.world, localDifficulty, class_3730.field_16461, null, null);
+		skeletonHorseEntity.prepareEntityData(this.owner.world, localDifficulty, SpawnType.field_16461, null, null);
 		skeletonHorseEntity.setPosition(this.owner.x, this.owner.y, this.owner.z);
 		skeletonHorseEntity.field_6008 = 60;
 		skeletonHorseEntity.setPersistent();
@@ -56,7 +56,7 @@ public class SkeletonHorseGoal extends Goal {
 
 	private SkeletonEntity method_6811(LocalDifficulty localDifficulty, HorseBaseEntity horseBaseEntity) {
 		SkeletonEntity skeletonEntity = new SkeletonEntity(horseBaseEntity.world);
-		skeletonEntity.method_5943(horseBaseEntity.world, localDifficulty, class_3730.field_16461, null, null);
+		skeletonEntity.prepareEntityData(horseBaseEntity.world, localDifficulty, SpawnType.field_16461, null, null);
 		skeletonEntity.setPosition(horseBaseEntity.x, horseBaseEntity.y, horseBaseEntity.z);
 		skeletonEntity.field_6008 = 60;
 		skeletonEntity.setPersistent();
@@ -66,19 +66,19 @@ public class SkeletonHorseGoal extends Goal {
 
 		skeletonEntity.setEquippedStack(
 			EquipmentSlot.HAND_MAIN,
-			EnchantmentHelper.method_8233(
+			EnchantmentHelper.enchant(
 				skeletonEntity.getRand(),
 				skeletonEntity.getMainHandStack(),
-				(int)(5.0F + localDifficulty.method_5458() * (float)skeletonEntity.getRand().nextInt(18)),
+				(int)(5.0F + localDifficulty.getClampedLocalDifficulty() * (float)skeletonEntity.getRand().nextInt(18)),
 				false
 			)
 		);
 		skeletonEntity.setEquippedStack(
 			EquipmentSlot.HEAD,
-			EnchantmentHelper.method_8233(
+			EnchantmentHelper.enchant(
 				skeletonEntity.getRand(),
 				skeletonEntity.getEquippedStack(EquipmentSlot.HEAD),
-				(int)(5.0F + localDifficulty.method_5458() * (float)skeletonEntity.getRand().nextInt(18)),
+				(int)(5.0F + localDifficulty.getClampedLocalDifficulty() * (float)skeletonEntity.getRand().nextInt(18)),
 				false
 			)
 		);

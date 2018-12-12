@@ -8,7 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.GlAllocationUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -37,12 +37,12 @@ public class class_758 {
 	private int field_4031 = -1;
 	private int field_4041 = -1;
 	private long field_4042 = -1L;
-	private final WorldRenderer field_4035;
+	private final GameRenderer field_4035;
 	private final MinecraftClient field_4037;
 
-	public class_758(WorldRenderer worldRenderer) {
-		this.field_4035 = worldRenderer;
-		this.field_4037 = worldRenderer.getGame();
+	public class_758(GameRenderer gameRenderer) {
+		this.field_4035 = gameRenderer;
+		this.field_4037 = gameRenderer.getGame();
 		this.field_4036.put(0.0F).put(0.0F).put(0.0F).put(1.0F).flip();
 	}
 
@@ -130,9 +130,9 @@ public class class_758 {
 	}
 
 	private void method_3208(Entity entity, World world, float f) {
-		float g = 0.25F + 0.75F * (float)this.field_4037.options.viewDistance / 32.0F;
+		float g = 0.25F + 0.75F * (float)this.field_4037.field_1690.viewDistance / 32.0F;
 		g = 1.0F - (float)Math.pow((double)g, 0.25);
-		Vec3d vec3d = world.method_8548(this.field_4037.getCameraEntity(), f);
+		Vec3d vec3d = world.getSkyColor(this.field_4037.getCameraEntity(), f);
 		float h = (float)vec3d.x;
 		float i = (float)vec3d.y;
 		float j = (float)vec3d.z;
@@ -140,7 +140,7 @@ public class class_758 {
 		this.field_4034 = (float)vec3d2.x;
 		this.field_4033 = (float)vec3d2.y;
 		this.field_4032 = (float)vec3d2.z;
-		if (this.field_4037.options.viewDistance >= 4) {
+		if (this.field_4037.field_1690.viewDistance >= 4) {
 			double d = MathHelper.sin(world.method_8442(f)) > 0.0F ? -1.0 : 1.0;
 			Vec3d vec3d3 = new Vec3d(d, 0.0, 0.0);
 			float k = (float)entity.getRotationVec(f).dotProduct(vec3d3);
@@ -149,7 +149,7 @@ public class class_758 {
 			}
 
 			if (k > 0.0F) {
-				float[] fs = world.dimension.method_12446(world.method_8400(f), f);
+				float[] fs = world.dimension.method_12446(world.getSkyAngle(f), f);
 				if (fs != null) {
 					k *= fs[3];
 					this.field_4034 = this.field_4034 * (1.0F - k) + fs[0] * k;
@@ -181,7 +181,7 @@ public class class_758 {
 	}
 
 	private void method_3213(Entity entity, ViewableWorld viewableWorld, float f) {
-		long l = SystemUtil.getMeasuringTimeMili();
+		long l = SystemUtil.getMeasuringTimeMs();
 		int i = viewableWorld.getBiome(new BlockPos(class_295.method_1379(entity, (double)f))).getWaterFogColor();
 		if (this.field_4042 < 0L) {
 			this.field_4031 = i;

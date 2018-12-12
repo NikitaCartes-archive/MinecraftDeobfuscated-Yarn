@@ -55,7 +55,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 			BlockPos blockPos = lootContext.get(Parameters.field_1232);
 			if (blockPos != null) {
 				ServerWorld serverWorld = lootContext.getWorld();
-				BlockPos blockPos2 = serverWorld.method_8487(this.destination, blockPos, this.searchRadius, this.skipExistingChunks);
+				BlockPos blockPos2 = serverWorld.locateStructure(this.destination, blockPos, this.searchRadius, this.skipExistingChunks);
 				if (blockPos2 != null) {
 					ItemStack itemStack2 = FilledMapItem.method_8005(serverWorld, blockPos2.getX(), blockPos2.getZ(), this.zoom, true, true);
 					FilledMapItem.method_8002(serverWorld, itemStack2);

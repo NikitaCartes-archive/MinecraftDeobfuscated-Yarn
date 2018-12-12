@@ -3,13 +3,10 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 
 @Environment(EnvType.CLIENT)
-public class IronGolemEntityModel extends Model {
+public class IronGolemEntityModel<T extends IronGolemEntity> extends EntityModel<T> {
 	private final Cuboid field_3415;
 	private final Cuboid field_3413;
 	public Cuboid field_3414;
@@ -51,9 +48,8 @@ public class IronGolemEntityModel extends Model {
 		this.field_3416.addBox(-3.5F, -3.0F, -3.0F, 6, 16, 5, f);
 	}
 
-	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		this.setRotationAngles(f, g, h, i, j, k, entity);
+	public void method_17096(T ironGolemEntity, float f, float g, float h, float i, float j, float k) {
+		this.method_17097(ironGolemEntity, f, g, h, i, j, k);
 		this.field_3415.render(k);
 		this.field_3413.render(k);
 		this.field_3411.render(k);
@@ -62,8 +58,7 @@ public class IronGolemEntityModel extends Model {
 		this.field_3412.render(k);
 	}
 
-	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
+	public void method_17097(T ironGolemEntity, float f, float g, float h, float i, float j, float k) {
 		this.field_3415.yaw = i * (float) (Math.PI / 180.0);
 		this.field_3415.pitch = j * (float) (Math.PI / 180.0);
 		this.field_3411.pitch = -1.5F * this.method_2810(f, 13.0F) * g;
@@ -72,9 +67,7 @@ public class IronGolemEntityModel extends Model {
 		this.field_3416.yaw = 0.0F;
 	}
 
-	@Override
-	public void animateModel(LivingEntity livingEntity, float f, float g, float h) {
-		IronGolemEntity ironGolemEntity = (IronGolemEntity)livingEntity;
+	public void method_17095(T ironGolemEntity, float f, float g, float h) {
 		int i = ironGolemEntity.method_6501();
 		if (i > 0) {
 			this.field_3414.pitch = -2.0F + 1.5F * this.method_2810((float)i - h, 10.0F);

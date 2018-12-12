@@ -9,13 +9,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Hand;
+import net.minecraft.stat.Stats;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class BlastFurnaceBlock extends FurnaceBlock {
+public class BlastFurnaceBlock extends AbstractFurnaceBlock {
 	protected BlastFurnaceBlock(Block.Settings settings) {
 		super(settings);
 	}
@@ -26,10 +26,12 @@ public class BlastFurnaceBlock extends FurnaceBlock {
 	}
 
 	@Override
-	public boolean method_9534(
-		BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, Direction direction, float f, float g, float h
-	) {
-		return false;
+	protected void method_17025(World world, BlockPos blockPos, PlayerEntity playerEntity) {
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
+		if (blockEntity instanceof BlastFurnaceBlockEntity) {
+			playerEntity.openInventory((BlastFurnaceBlockEntity)blockEntity);
+			playerEntity.increaseStat(Stats.field_17272);
+		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -43,7 +45,7 @@ public class BlastFurnaceBlock extends FurnaceBlock {
 				world.playSound(d, e, f, SoundEvents.field_15006, SoundCategory.field_15245, 1.0F, 1.0F, false);
 			}
 
-			Direction direction = blockState.get(field_11104);
+			Direction direction = blockState.get(FACING);
 			Direction.Axis axis = direction.getAxis();
 			double g = 0.52;
 			double h = random.nextDouble() * 0.6 - 0.3;

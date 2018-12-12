@@ -1,5 +1,6 @@
 package net.minecraft.client.network;
 
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.container.Container;
@@ -36,5 +37,11 @@ public class ClientDummyContainerProvider implements ContainerProvider {
 	@Override
 	public String getContainerId() {
 		return this.id;
+	}
+
+	@Nullable
+	@Override
+	public TextComponent getCustomName() {
+		return this.name;
 	}
 }

@@ -13,18 +13,18 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class BakedModelManager implements ResourceReloadListener {
 	private Map<Identifier, BakedModel> modelMap;
-	private final SpriteAtlasTexture spriteMap;
+	private final SpriteAtlasTexture spriteAtlas;
 	private final BlockModels blockStateMaps;
 	private BakedModel missingModel;
 
 	public BakedModelManager(SpriteAtlasTexture spriteAtlasTexture) {
-		this.spriteMap = spriteAtlasTexture;
+		this.spriteAtlas = spriteAtlasTexture;
 		this.blockStateMaps = new BlockModels(this);
 	}
 
 	@Override
 	public void onResourceReload(ResourceManager resourceManager) {
-		this.modelMap = new ModelLoader(resourceManager, this.spriteMap).getBakedModelMap();
+		this.modelMap = new ModelLoader(resourceManager, this.spriteAtlas).getBakedModelMap();
 		this.missingModel = (BakedModel)this.modelMap.get(ModelLoader.MISSING);
 		this.blockStateMaps.reload();
 	}

@@ -124,8 +124,8 @@ public class class_15 extends LandPathNodeMaker {
 	private double method_66(BlockPos blockPos) {
 		if (!this.entity.isInsideWater()) {
 			BlockPos blockPos2 = blockPos.down();
-			VoxelShape voxelShape = this.blockView.getBlockState(blockPos2).method_11628(this.blockView, blockPos2);
-			return (double)blockPos2.getY() + (voxelShape.isEmpty() ? 0.0 : voxelShape.method_1105(Direction.Axis.Y));
+			VoxelShape voxelShape = this.blockView.getBlockState(blockPos2).getCollisionShape(this.blockView, blockPos2);
+			return (double)blockPos2.getY() + (voxelShape.isEmpty() ? 0.0 : voxelShape.getMaximum(Direction.Axis.Y));
 		} else {
 			return (double)blockPos.getY() + 0.5;
 		}

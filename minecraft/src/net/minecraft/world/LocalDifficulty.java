@@ -6,30 +6,30 @@ import net.minecraft.util.math.MathHelper;
 @Immutable
 public class LocalDifficulty {
 	private final Difficulty field_5798;
-	private final float field_5799;
+	private final float localDifficulty;
 
 	public LocalDifficulty(Difficulty difficulty, long l, long m, float f) {
 		this.field_5798 = difficulty;
-		this.field_5799 = this.method_5456(difficulty, l, m, f);
+		this.localDifficulty = this.method_5456(difficulty, l, m, f);
 	}
 
 	public Difficulty method_5454() {
 		return this.field_5798;
 	}
 
-	public float method_5457() {
-		return this.field_5799;
+	public float getLocalDifficulty() {
+		return this.localDifficulty;
 	}
 
 	public boolean method_5455(float f) {
-		return this.field_5799 > f;
+		return this.localDifficulty > f;
 	}
 
-	public float method_5458() {
-		if (this.field_5799 < 2.0F) {
+	public float getClampedLocalDifficulty() {
+		if (this.localDifficulty < 2.0F) {
 			return 0.0F;
 		} else {
-			return this.field_5799 > 4.0F ? 1.0F : (this.field_5799 - 2.0F) / 2.0F;
+			return this.localDifficulty > 4.0F ? 1.0F : (this.localDifficulty - 2.0F) / 2.0F;
 		}
 	}
 

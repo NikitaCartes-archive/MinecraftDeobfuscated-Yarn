@@ -27,17 +27,17 @@ import net.minecraft.world.loot.context.LootContextTypes;
 import net.minecraft.world.loot.context.Parameters;
 
 public class AdvancementRewards {
-	public static final AdvancementRewards NONE = new AdvancementRewards(0, new Identifier[0], new Identifier[0], CommandFunction.class_2159.field_9809);
+	public static final AdvancementRewards NONE = new AdvancementRewards(0, new Identifier[0], new Identifier[0], CommandFunction.LazyContainer.EMPTY);
 	private final int experience;
 	private final Identifier[] loot;
 	private final Identifier[] recipes;
-	private final CommandFunction.class_2159 field_1163;
+	private final CommandFunction.LazyContainer function;
 
-	public AdvancementRewards(int i, Identifier[] identifiers, Identifier[] identifiers2, CommandFunction.class_2159 arg) {
+	public AdvancementRewards(int i, Identifier[] identifiers, Identifier[] identifiers2, CommandFunction.LazyContainer lazyContainer) {
 		this.experience = i;
 		this.loot = identifiers;
 		this.recipes = identifiers2;
-		this.field_1163 = arg;
+		this.function = lazyContainer;
 	}
 
 	public void apply(ServerPlayerEntity serverPlayerEntity) {
@@ -79,13 +79,13 @@ public class AdvancementRewards {
 		}
 
 		if (this.recipes.length > 0) {
-			serverPlayerEntity.method_7335(this.recipes);
+			serverPlayerEntity.unlockRecipes(this.recipes);
 		}
 
 		MinecraftServer minecraftServer = serverPlayerEntity.server;
-		CommandFunction commandFunction = this.field_1163.method_9196(minecraftServer.getCommandFunctionManager());
+		CommandFunction commandFunction = this.function.get(minecraftServer.getCommandFunctionManager());
 		if (commandFunction != null) {
-			minecraftServer.getCommandFunctionManager().method_12904(commandFunction, serverPlayerEntity.getCommandSource().withSilent().withLevel(2));
+			minecraftServer.getCommandFunctionManager().execute(commandFunction, serverPlayerEntity.getCommandSource().withSilent().withLevel(2));
 		}
 	}
 
@@ -97,11 +97,11 @@ public class AdvancementRewards {
 			+ ", recipes="
 			+ Arrays.toString(this.recipes)
 			+ ", function="
-			+ this.field_1163
+			+ this.function
 			+ '}';
 	}
 
-	public JsonElement method_747() {
+	public JsonElement toJson() {
 		if (this == NONE) {
 			return JsonNull.INSTANCE;
 		} else {
@@ -130,8 +130,8 @@ public class AdvancementRewards {
 				jsonObject.add("recipes", jsonArray);
 			}
 
-			if (this.field_1163.method_9197() != null) {
-				jsonObject.addProperty("function", this.field_1163.method_9197().toString());
+			if (this.function.getId() != null) {
+				jsonObject.addProperty("function", this.function.getId().toString());
 			}
 
 			return jsonObject;
@@ -139,36 +139,36 @@ public class AdvancementRewards {
 	}
 
 	public static class Builder {
-		private int field_1169;
-		private final List<Identifier> field_1171 = Lists.<Identifier>newArrayList();
-		private final List<Identifier> field_1168 = Lists.<Identifier>newArrayList();
+		private int experience;
+		private final List<Identifier> loot = Lists.<Identifier>newArrayList();
+		private final List<Identifier> recipes = Lists.<Identifier>newArrayList();
 		@Nullable
-		private Identifier field_1170;
+		private Identifier function;
 
-		public static AdvancementRewards.Builder method_750(int i) {
-			return new AdvancementRewards.Builder().method_749(i);
+		public static AdvancementRewards.Builder experience(int i) {
+			return new AdvancementRewards.Builder().setExperience(i);
 		}
 
-		public AdvancementRewards.Builder method_749(int i) {
-			this.field_1169 += i;
+		public AdvancementRewards.Builder setExperience(int i) {
+			this.experience += i;
 			return this;
 		}
 
-		public static AdvancementRewards.Builder method_753(Identifier identifier) {
-			return new AdvancementRewards.Builder().method_752(identifier);
+		public static AdvancementRewards.Builder recipe(Identifier identifier) {
+			return new AdvancementRewards.Builder().addRecipe(identifier);
 		}
 
-		public AdvancementRewards.Builder method_752(Identifier identifier) {
-			this.field_1168.add(identifier);
+		public AdvancementRewards.Builder addRecipe(Identifier identifier) {
+			this.recipes.add(identifier);
 			return this;
 		}
 
 		public AdvancementRewards build() {
 			return new AdvancementRewards(
-				this.field_1169,
-				(Identifier[])this.field_1171.toArray(new Identifier[0]),
-				(Identifier[])this.field_1168.toArray(new Identifier[0]),
-				this.field_1170 == null ? CommandFunction.class_2159.field_9809 : new CommandFunction.class_2159(this.field_1170)
+				this.experience,
+				(Identifier[])this.loot.toArray(new Identifier[0]),
+				(Identifier[])this.recipes.toArray(new Identifier[0]),
+				this.function == null ? CommandFunction.LazyContainer.EMPTY : new CommandFunction.LazyContainer(this.function)
 			);
 		}
 	}
@@ -191,14 +191,14 @@ public class AdvancementRewards {
 				identifiers2[k] = new Identifier(JsonHelper.asString(jsonArray2.get(k), "recipes[" + k + "]"));
 			}
 
-			CommandFunction.class_2159 lv;
+			CommandFunction.LazyContainer lazyContainer;
 			if (jsonObject.has("function")) {
-				lv = new CommandFunction.class_2159(new Identifier(JsonHelper.getString(jsonObject, "function")));
+				lazyContainer = new CommandFunction.LazyContainer(new Identifier(JsonHelper.getString(jsonObject, "function")));
 			} else {
-				lv = CommandFunction.class_2159.field_9809;
+				lazyContainer = CommandFunction.LazyContainer.EMPTY;
 			}
 
-			return new AdvancementRewards(i, identifiers, identifiers2, lv);
+			return new AdvancementRewards(i, identifiers, identifiers2, lazyContainer);
 		}
 	}
 }

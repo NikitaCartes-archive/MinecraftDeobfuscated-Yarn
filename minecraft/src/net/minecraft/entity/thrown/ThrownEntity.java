@@ -47,10 +47,6 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 		this.field_7644 = livingEntity.getUuid();
 	}
 
-	@Override
-	protected void initDataTracker() {
-	}
-
 	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean shouldRenderAtDistance(double d) {
@@ -63,7 +59,7 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 		return d < e * e;
 	}
 
-	public void method_7489(Entity entity, float f, float g, float h, float i, float j) {
+	public void calculateVelocity(Entity entity, float f, float g, float h, float i, float j) {
 		float k = -MathHelper.sin(g * (float) (Math.PI / 180.0)) * MathHelper.cos(f * (float) (Math.PI / 180.0));
 		float l = -MathHelper.sin((f + h) * (float) (Math.PI / 180.0));
 		float m = MathHelper.cos(g * (float) (Math.PI / 180.0)) * MathHelper.cos(f * (float) (Math.PI / 180.0));

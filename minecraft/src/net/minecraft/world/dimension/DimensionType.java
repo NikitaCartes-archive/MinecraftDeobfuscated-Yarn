@@ -15,7 +15,7 @@ public class DimensionType {
 	private final String suffix;
 	private final String saveDir;
 	private final BiFunction<World, DimensionType, ? extends Dimension> factory;
-	private final boolean field_13073;
+	private final boolean hasSkyLight;
 
 	private static DimensionType register(String string, DimensionType dimensionType) {
 		return Registry.set(Registry.DIMENSION, dimensionType.id, string, dimensionType);
@@ -26,7 +26,7 @@ public class DimensionType {
 		this.suffix = string;
 		this.saveDir = string2;
 		this.factory = biFunction;
-		this.field_13073 = bl;
+		this.hasSkyLight = bl;
 	}
 
 	public static Iterable<DimensionType> getAll() {
@@ -68,7 +68,7 @@ public class DimensionType {
 		return Registry.DIMENSION.getId(dimensionType);
 	}
 
-	public boolean method_12491() {
-		return this.field_13073;
+	public boolean hasSkyLight() {
+		return this.hasSkyLight;
 	}
 }

@@ -15,8 +15,8 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.LockButtonWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.gui.widget.OptionSliderWidget;
+import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.settings.GameOptions;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.world.Difficulty;
 
@@ -117,63 +117,63 @@ public class SettingsGui extends Gui {
 		this.addButton(new ButtonWidget(110, this.width / 2 - 155, this.height / 6 + 48 - 6, 150, 20, I18n.translate("options.skinCustomisation")) {
 			@Override
 			public void onPressed(double d, double e) {
-				SettingsGui.this.client.options.write();
+				SettingsGui.this.client.field_1690.write();
 				SettingsGui.this.client.openGui(new SkinSettingsGui(SettingsGui.this));
 			}
 		});
 		this.addButton(new ButtonWidget(106, this.width / 2 + 5, this.height / 6 + 48 - 6, 150, 20, I18n.translate("options.sounds")) {
 			@Override
 			public void onPressed(double d, double e) {
-				SettingsGui.this.client.options.write();
+				SettingsGui.this.client.field_1690.write();
 				SettingsGui.this.client.openGui(new AudioSettingsGui(SettingsGui.this, SettingsGui.this.settings));
 			}
 		});
 		this.addButton(new ButtonWidget(101, this.width / 2 - 155, this.height / 6 + 72 - 6, 150, 20, I18n.translate("options.video")) {
 			@Override
 			public void onPressed(double d, double e) {
-				SettingsGui.this.client.options.write();
+				SettingsGui.this.client.field_1690.write();
 				SettingsGui.this.client.openGui(new VideoSettingsGui(SettingsGui.this, SettingsGui.this.settings));
 			}
 		});
 		this.addButton(new ButtonWidget(100, this.width / 2 + 5, this.height / 6 + 72 - 6, 150, 20, I18n.translate("options.controls")) {
 			@Override
 			public void onPressed(double d, double e) {
-				SettingsGui.this.client.options.write();
+				SettingsGui.this.client.field_1690.write();
 				SettingsGui.this.client.openGui(new ControlsSettingsGui(SettingsGui.this, SettingsGui.this.settings));
 			}
 		});
 		this.addButton(new ButtonWidget(102, this.width / 2 - 155, this.height / 6 + 96 - 6, 150, 20, I18n.translate("options.language")) {
 			@Override
 			public void onPressed(double d, double e) {
-				SettingsGui.this.client.options.write();
+				SettingsGui.this.client.field_1690.write();
 				SettingsGui.this.client.openGui(new LanguageSettingsGui(SettingsGui.this, SettingsGui.this.settings, SettingsGui.this.client.getLanguageManager()));
 			}
 		});
 		this.addButton(new ButtonWidget(103, this.width / 2 + 5, this.height / 6 + 96 - 6, 150, 20, I18n.translate("options.chat.title")) {
 			@Override
 			public void onPressed(double d, double e) {
-				SettingsGui.this.client.options.write();
+				SettingsGui.this.client.field_1690.write();
 				SettingsGui.this.client.openGui(new ChatSettingsGui(SettingsGui.this, SettingsGui.this.settings));
 			}
 		});
 		this.addButton(new ButtonWidget(105, this.width / 2 - 155, this.height / 6 + 120 - 6, 150, 20, I18n.translate("options.resourcepack")) {
 			@Override
 			public void onPressed(double d, double e) {
-				SettingsGui.this.client.options.write();
+				SettingsGui.this.client.field_1690.write();
 				SettingsGui.this.client.openGui(new ResourcePackSettingsGui(SettingsGui.this));
 			}
 		});
 		this.addButton(new ButtonWidget(104, this.width / 2 + 5, this.height / 6 + 120 - 6, 150, 20, I18n.translate("options.snooper.view")) {
 			@Override
 			public void onPressed(double d, double e) {
-				SettingsGui.this.client.options.write();
+				SettingsGui.this.client.field_1690.write();
 				SettingsGui.this.client.openGui(new SnooperSettingsGui(SettingsGui.this, SettingsGui.this.settings));
 			}
 		});
 		this.addButton(new ButtonWidget(200, this.width / 2 - 100, this.height / 6 + 168, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
-				SettingsGui.this.client.options.write();
+				SettingsGui.this.client.field_1690.write();
 				SettingsGui.this.client.openGui(SettingsGui.this.parent);
 			}
 		});
@@ -196,7 +196,7 @@ public class SettingsGui extends Gui {
 
 	@Override
 	public void close() {
-		this.client.options.write();
+		this.client.field_1690.write();
 		super.close();
 	}
 

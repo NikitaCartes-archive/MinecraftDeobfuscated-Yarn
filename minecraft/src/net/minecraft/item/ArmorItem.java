@@ -3,7 +3,6 @@ package net.minecraft.item;
 import com.google.common.collect.Multimap;
 import java.util.List;
 import java.util.UUID;
-import net.minecraft.class_1741;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
@@ -36,13 +35,13 @@ public class ArmorItem extends Item {
 			return itemStack2.isEmpty() ? super.method_10135(blockPointer, itemStack) : itemStack2;
 		}
 	};
-	protected final EquipmentSlot field_7880;
+	protected final EquipmentSlot slot;
 	protected final int protection;
 	protected final float toughness;
-	protected final class_1741 type;
+	protected final ArmorMaterial type;
 
 	public static ItemStack dispenseArmor(BlockPointer blockPointer, ItemStack itemStack) {
-		BlockPos blockPos = blockPointer.getBlockPos().method_10093(blockPointer.getBlockState().get(DispenserBlock.field_10918));
+		BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.field_10918));
 		List<LivingEntity> list = blockPointer.getWorld()
 			.getEntities(LivingEntity.class, new BoundingBox(blockPos), EntityPredicates.EXCEPT_SPECTATOR.and(new EntityPredicates.CanPickup(itemStack)));
 		if (list.isEmpty()) {
@@ -61,31 +60,31 @@ public class ArmorItem extends Item {
 		}
 	}
 
-	public ArmorItem(class_1741 arg, EquipmentSlot equipmentSlot, Item.Settings settings) {
-		super(settings.durabilityIfNotSet(arg.method_7696(equipmentSlot)));
-		this.type = arg;
-		this.field_7880 = equipmentSlot;
-		this.protection = arg.method_7697(equipmentSlot);
-		this.toughness = arg.method_7700();
+	public ArmorItem(ArmorMaterial armorMaterial, EquipmentSlot equipmentSlot, Item.Settings settings) {
+		super(settings.durabilityIfNotSet(armorMaterial.getDurability(equipmentSlot)));
+		this.type = armorMaterial;
+		this.slot = equipmentSlot;
+		this.protection = armorMaterial.getProtectionAmount(equipmentSlot);
+		this.toughness = armorMaterial.getToughness();
 		DispenserBlock.registerBehavior(this, DISPENSER_BEHAVIOR);
 	}
 
 	public EquipmentSlot getSlotType() {
-		return this.field_7880;
+		return this.slot;
 	}
 
 	@Override
 	public int getEnchantability() {
-		return this.type.method_7699();
+		return this.type.getEnchantability();
 	}
 
-	public class_1741 getMaterial() {
+	public ArmorMaterial getMaterial() {
 		return this.type;
 	}
 
 	@Override
 	public boolean canRepair(ItemStack itemStack, ItemStack itemStack2) {
-		return this.type.method_7695().matches(itemStack2) || super.canRepair(itemStack, itemStack2);
+		return this.type.getRepairIngredient().matches(itemStack2) || super.canRepair(itemStack, itemStack2);
 	}
 
 	@Override
@@ -105,7 +104,7 @@ public class ArmorItem extends Item {
 	@Override
 	public Multimap<String, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot equipmentSlot) {
 		Multimap<String, EntityAttributeModifier> multimap = super.getAttributeModifiers(equipmentSlot);
-		if (equipmentSlot == this.field_7880) {
+		if (equipmentSlot == this.slot) {
 			multimap.put(
 				EntityAttributes.ARMOR.getId(),
 				new EntityAttributeModifier(
@@ -123,7 +122,7 @@ public class ArmorItem extends Item {
 		return multimap;
 	}
 
-	public int method_7687() {
+	public int getProtection() {
 		return this.protection;
 	}
 }

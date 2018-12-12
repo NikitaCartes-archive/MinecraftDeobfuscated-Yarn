@@ -3,12 +3,11 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.client.model.Model;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class CodEntityModel extends Model {
+public class CodEntityModel<T extends Entity> extends EntityModel<T> {
 	private final Cuboid field_3353;
 	private final Cuboid field_3355;
 	private final Cuboid field_3354;
@@ -47,8 +46,8 @@ public class CodEntityModel extends Model {
 	}
 
 	@Override
-	public void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-		this.setRotationAngles(f, g, h, i, j, k, entity);
+	public void render(T entity, float f, float g, float h, float i, float j, float k) {
+		this.setAngles(entity, f, g, h, i, j, k);
 		this.field_3353.render(k);
 		this.field_3354.render(k);
 		this.field_3352.render(k);
@@ -59,7 +58,7 @@ public class CodEntityModel extends Model {
 	}
 
 	@Override
-	public void setRotationAngles(float f, float g, float h, float i, float j, float k, Entity entity) {
+	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
 		float l = 1.0F;
 		if (!entity.isInsideWater()) {
 			l = 1.5F;

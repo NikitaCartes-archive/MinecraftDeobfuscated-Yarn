@@ -8,7 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.json.ModelItemPropertyOverrideList;
-import net.minecraft.client.render.model.json.ModelTransformations;
+import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.WeightedPicker;
 import net.minecraft.util.math.Direction;
@@ -26,8 +26,8 @@ public class WeightedBakedModel implements BakedModel {
 	}
 
 	@Override
-	public List<BakedQuad> method_4707(@Nullable BlockState blockState, @Nullable Direction direction, Random random) {
-		return WeightedPicker.getAt(this.models, Math.abs((int)random.nextLong()) % this.totalWeight).model.method_4707(blockState, direction, random);
+	public List<BakedQuad> getQuads(@Nullable BlockState blockState, @Nullable Direction direction, Random random) {
+		return WeightedPicker.getAt(this.models, Math.abs((int)random.nextLong()) % this.totalWeight).model.getQuads(blockState, direction, random);
 	}
 
 	@Override
@@ -51,8 +51,8 @@ public class WeightedBakedModel implements BakedModel {
 	}
 
 	@Override
-	public ModelTransformations getTransformations() {
-		return this.defaultModel.getTransformations();
+	public ModelTransformation getTransformation() {
+		return this.defaultModel.getTransformation();
 	}
 
 	@Override

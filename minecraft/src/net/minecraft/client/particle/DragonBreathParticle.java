@@ -2,9 +2,9 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.VertexBuffer;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.entity.Entity;
-import net.minecraft.particle.TexturedParticle;
+import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
@@ -46,7 +46,7 @@ public class DragonBreathParticle extends Particle {
 				this.velocityY += 0.002;
 			}
 
-			this.addPos(this.velocityX, this.velocityY, this.velocityZ);
+			this.move(this.velocityX, this.velocityY, this.velocityZ);
 			if (this.posY == this.prevPosY) {
 				this.velocityX *= 1.1;
 				this.velocityZ *= 1.1;
@@ -61,14 +61,14 @@ public class DragonBreathParticle extends Particle {
 	}
 
 	@Override
-	public void buildGeometry(VertexBuffer vertexBuffer, Entity entity, float f, float g, float h, float i, float j, float k) {
+	public void buildGeometry(BufferBuilder bufferBuilder, Entity entity, float f, float g, float h, float i, float j, float k) {
 		this.size = this.field_3791 * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
-		super.buildGeometry(vertexBuffer, entity, f, g, h, i, j, k);
+		super.buildGeometry(bufferBuilder, entity, f, g, h, i, j, k);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Factory implements FactoryParticle<TexturedParticle> {
-		public Particle createParticle(TexturedParticle texturedParticle, World world, double d, double e, double f, double g, double h, double i) {
+	public static class Factory implements ParticleFactory<DefaultParticleType> {
+		public Particle method_3019(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new DragonBreathParticle(world, d, e, f, g, h, i);
 		}
 	}
