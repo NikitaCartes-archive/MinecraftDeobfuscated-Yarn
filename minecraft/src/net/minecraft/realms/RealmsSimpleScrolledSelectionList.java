@@ -2,8 +2,8 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_364;
 import net.minecraft.class_401;
-import net.minecraft.client.gui.GuiEventListener;
 
 @Environment(EnvType.CLIENT)
 public abstract class RealmsSimpleScrolledSelectionList extends RealmsGuiEventListener {
@@ -14,11 +14,11 @@ public abstract class RealmsSimpleScrolledSelectionList extends RealmsGuiEventLi
 	}
 
 	public void render(int i, int j, float f) {
-		this.proxy.draw(i, j, f);
+		this.proxy.method_1930(i, j, f);
 	}
 
 	public int width() {
-		return this.proxy.getWidth();
+		return this.proxy.method_2093();
 	}
 
 	protected void renderItem(int i, int j, int k, int l, Tezzelator tezzelator, int m, int n) {
@@ -48,20 +48,20 @@ public abstract class RealmsSimpleScrolledSelectionList extends RealmsGuiEventLi
 	}
 
 	public int getScrollbarPosition() {
-		return this.proxy.getWidth() / 2 + 124;
+		return this.proxy.method_2093() / 2 + 124;
 	}
 
 	@Override
-	public GuiEventListener getProxy() {
+	public class_364 getProxy() {
 		return this.proxy;
 	}
 
 	public void scroll(int i) {
-		this.proxy.scroll(i);
+		this.proxy.method_1951(i);
 	}
 
 	public int getScroll() {
-		return this.proxy.getScrollY();
+		return this.proxy.method_1944();
 	}
 
 	protected void renderList(int i, int j, int k, int l) {

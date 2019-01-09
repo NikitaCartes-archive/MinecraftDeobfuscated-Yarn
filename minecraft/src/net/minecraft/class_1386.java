@@ -1,45 +1,41 @@
 package net.minecraft;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.passive.TameableEntity;
-
-public class class_1386 extends Goal {
-	private final TameableEntity field_6597;
+public class class_1386 extends class_1352 {
+	private final class_1321 field_6597;
 	private boolean field_6598;
 
-	public class_1386(TameableEntity tameableEntity) {
-		this.field_6597 = tameableEntity;
-		this.setControlBits(5);
+	public class_1386(class_1321 arg) {
+		this.field_6597 = arg;
+		this.method_6265(5);
 	}
 
 	@Override
-	public boolean canStart() {
-		if (!this.field_6597.isTamed()) {
+	public boolean method_6264() {
+		if (!this.field_6597.method_6181()) {
 			return false;
-		} else if (this.field_6597.isInsideWaterOrBubbleColumn()) {
+		} else if (this.field_6597.method_5816()) {
 			return false;
-		} else if (!this.field_6597.onGround) {
+		} else if (!this.field_6597.field_5952) {
 			return false;
 		} else {
-			LivingEntity livingEntity = this.field_6597.getOwner();
-			if (livingEntity == null) {
+			class_1309 lv = this.field_6597.method_6177();
+			if (lv == null) {
 				return true;
 			} else {
-				return this.field_6597.squaredDistanceTo(livingEntity) < 144.0 && livingEntity.getAttacker() != null ? false : this.field_6598;
+				return this.field_6597.method_5858(lv) < 144.0 && lv.method_6065() != null ? false : this.field_6598;
 			}
 		}
 	}
 
 	@Override
-	public void start() {
-		this.field_6597.getNavigation().method_6340();
-		this.field_6597.setSitting(true);
+	public void method_6269() {
+		this.field_6597.method_5942().method_6340();
+		this.field_6597.method_6179(true);
 	}
 
 	@Override
-	public void onRemove() {
-		this.field_6597.setSitting(false);
+	public void method_6270() {
+		this.field_6597.method_6179(false);
 	}
 
 	public void method_6311(boolean bl) {

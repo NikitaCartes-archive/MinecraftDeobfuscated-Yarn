@@ -1,22 +1,19 @@
 package net.minecraft;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.Identifier;
-
 @FunctionalInterface
 public interface class_234<T> {
 	void method_974(T object, class_236<T> arg, long l);
 
 	public abstract static class class_235<T, C extends class_234<T>> {
-		private final Identifier field_1309;
+		private final class_2960 field_1309;
 		private final Class<?> field_1310;
 
-		public class_235(Identifier identifier, Class<?> class_) {
-			this.field_1309 = identifier;
+		public class_235(class_2960 arg, Class<?> class_) {
+			this.field_1309 = arg;
 			this.field_1310 = class_;
 		}
 
-		public Identifier method_977() {
+		public class_2960 method_977() {
 			return this.field_1309;
 		}
 
@@ -24,8 +21,8 @@ public interface class_234<T> {
 			return this.field_1310;
 		}
 
-		public abstract void method_975(CompoundTag compoundTag, C arg);
+		public abstract void method_975(class_2487 arg, C arg2);
 
-		public abstract C method_976(CompoundTag compoundTag);
+		public abstract C method_976(class_2487 arg);
 	}
 }

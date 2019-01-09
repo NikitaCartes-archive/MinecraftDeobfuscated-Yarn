@@ -2,28 +2,22 @@ package net.minecraft;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockRenderLayer;
-import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.client.render.chunk.ChunkRenderData;
-import net.minecraft.client.render.chunk.ChunkRenderer;
-import net.minecraft.client.util.GlAllocationUtils;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class class_848 extends ChunkRenderer {
-	private final int field_4449 = GlAllocationUtils.genLists(BlockRenderLayer.values().length);
+public class class_848 extends class_851 {
+	private final int field_4449 = class_311.method_1593(class_1921.values().length);
 
-	public class_848(World world, WorldRenderer worldRenderer) {
-		super(world, worldRenderer);
+	public class_848(class_1937 arg, class_761 arg2) {
+		super(arg, arg2);
 	}
 
-	public int method_3639(BlockRenderLayer blockRenderLayer, ChunkRenderData chunkRenderData) {
-		return !chunkRenderData.method_3641(blockRenderLayer) ? this.field_4449 + blockRenderLayer.ordinal() : -1;
+	public int method_3639(class_1921 arg, class_849 arg2) {
+		return !arg2.method_3641(arg) ? this.field_4449 + arg.ordinal() : -1;
 	}
 
 	@Override
-	public void delete() {
-		super.delete();
-		GlAllocationUtils.deleteLists(this.field_4449, BlockRenderLayer.values().length);
+	public void method_3659() {
+		super.method_3659();
+		class_311.method_1594(this.field_4449, class_1921.values().length);
 	}
 }

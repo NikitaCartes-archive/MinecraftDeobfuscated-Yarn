@@ -2,17 +2,15 @@ package net.minecraft;
 
 import com.google.common.math.IntMath;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
-import net.minecraft.util.shape.FractionalDoubleList;
-import net.minecraft.util.shape.VoxelShapes;
 
 public final class class_248 implements class_255 {
-	private final FractionalDoubleList field_1367;
+	private final class_246 field_1367;
 	private final int field_1370;
 	private final int field_1369;
 	private final int field_1368;
 
-	public class_248(int i, int j) {
-		this.field_1367 = new FractionalDoubleList((int)VoxelShapes.lcm(i, j));
+	class_248(int i, int j) {
+		this.field_1367 = new class_246((int)class_259.method_1079(i, j));
 		this.field_1370 = i;
 		this.field_1369 = j;
 		this.field_1368 = IntMath.gcd(i, j);

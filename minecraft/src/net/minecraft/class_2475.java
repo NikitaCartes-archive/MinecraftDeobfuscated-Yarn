@@ -1,22 +1,15 @@
 package net.minecraft;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.TallPlantBlock;
-import net.minecraft.block.enums.DoubleBlockHalf;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.state.property.EnumProperty;
+public class class_2475 extends class_2320 {
+	public static final class_2754<class_2756> field_11484 = class_2320.field_10929;
 
-public class class_2475 extends TallPlantBlock {
-	public static final EnumProperty<DoubleBlockHalf> field_11484 = TallPlantBlock.PROPERTY_HALF;
-
-	public class_2475(Block.Settings settings) {
-		super(settings);
+	public class_2475(class_2248.class_2251 arg) {
+		super(arg);
 	}
 
 	@Override
-	public boolean method_9616(BlockState blockState, ItemPlacementContext itemPlacementContext) {
-		boolean bl = super.method_9616(blockState, itemPlacementContext);
-		return bl && itemPlacementContext.getItemStack().getItem() == this.getItem() ? false : bl;
+	public boolean method_9616(class_2680 arg, class_1750 arg2) {
+		boolean bl = super.method_9616(arg, arg2);
+		return bl && arg2.method_8041().method_7909() == this.method_8389() ? false : bl;
 	}
 }

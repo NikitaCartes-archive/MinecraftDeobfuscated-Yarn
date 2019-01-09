@@ -1,48 +1,45 @@
 package net.minecraft;
 
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.mob.MobEntityWithAi;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-
-public class class_1370 extends Goal {
-	private final MobEntityWithAi field_6536;
-	private double x;
-	private double y;
-	private double z;
+public class class_1370 extends class_1352 {
+	private final class_1314 field_6536;
+	private double field_6535;
+	private double field_6534;
+	private double field_6533;
 	private final double field_6537;
 
-	public class_1370(MobEntityWithAi mobEntityWithAi, double d) {
-		this.field_6536 = mobEntityWithAi;
+	public class_1370(class_1314 arg, double d) {
+		this.field_6536 = arg;
 		this.field_6537 = d;
-		this.setControlBits(1);
+		this.method_6265(1);
 	}
 
 	@Override
-	public boolean canStart() {
-		if (this.field_6536.isInAiRange()) {
+	public boolean method_6264() {
+		if (this.field_6536.method_6152()) {
 			return false;
 		} else {
-			BlockPos blockPos = this.field_6536.getAiHome();
-			Vec3d vec3d = class_1414.method_6373(this.field_6536, 16, 7, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
-			if (vec3d == null) {
+			class_2338 lv = this.field_6536.method_6141();
+			class_243 lv2 = class_1414.method_6373(
+				this.field_6536, 16, 7, new class_243((double)lv.method_10263(), (double)lv.method_10264(), (double)lv.method_10260())
+			);
+			if (lv2 == null) {
 				return false;
 			} else {
-				this.x = vec3d.x;
-				this.y = vec3d.y;
-				this.z = vec3d.z;
+				this.field_6535 = lv2.field_1352;
+				this.field_6534 = lv2.field_1351;
+				this.field_6533 = lv2.field_1350;
 				return true;
 			}
 		}
 	}
 
 	@Override
-	public boolean shouldContinue() {
-		return !this.field_6536.getNavigation().method_6357();
+	public boolean method_6266() {
+		return !this.field_6536.method_5942().method_6357();
 	}
 
 	@Override
-	public void start() {
-		this.field_6536.getNavigation().startMovingTo(this.x, this.y, this.z, this.field_6537);
+	public void method_6269() {
+		this.field_6536.method_5942().method_6337(this.field_6535, this.field_6534, this.field_6533, this.field_6537);
 	}
 }

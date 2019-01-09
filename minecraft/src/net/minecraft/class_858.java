@@ -2,7 +2,6 @@ package net.minecraft;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.math.BoundingBox;
 
 @Environment(EnvType.CLIENT)
 public class class_858 implements class_856 {
@@ -32,7 +31,7 @@ public class class_858 implements class_856 {
 	}
 
 	@Override
-	public boolean method_3699(BoundingBox boundingBox) {
-		return this.method_3703(boundingBox.minX, boundingBox.minY, boundingBox.minZ, boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ);
+	public boolean method_3699(class_238 arg) {
+		return this.method_3703(arg.field_1323, arg.field_1322, arg.field_1321, arg.field_1320, arg.field_1325, arg.field_1324);
 	}
 }

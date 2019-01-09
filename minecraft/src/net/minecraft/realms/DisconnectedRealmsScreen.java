@@ -3,27 +3,27 @@ package net.minecraft.realms;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.text.TextComponent;
+import net.minecraft.class_2561;
 
 @Environment(EnvType.CLIENT)
 public class DisconnectedRealmsScreen extends RealmsScreen {
 	private final String title;
-	private final TextComponent reason;
+	private final class_2561 reason;
 	private List<String> lines;
 	private final RealmsScreen parent;
 	private int textHeight;
 
-	public DisconnectedRealmsScreen(RealmsScreen realmsScreen, String string, TextComponent textComponent) {
+	public DisconnectedRealmsScreen(RealmsScreen realmsScreen, String string, class_2561 arg) {
 		this.parent = realmsScreen;
 		this.title = getLocalizedString(string);
-		this.reason = textComponent;
+		this.reason = arg;
 	}
 
 	@Override
 	public void init() {
 		Realms.setConnectedToRealms(false);
 		Realms.clearResourcePack();
-		this.lines = this.fontSplit(this.reason.getFormattedText(), this.width() - 50);
+		this.lines = this.fontSplit(this.reason.method_10863(), this.width() - 50);
 		this.textHeight = this.lines.size() * this.fontLineHeight();
 		this.buttonsAdd(
 			new RealmsButton(0, this.width() / 2 - 100, this.height() / 2 + this.textHeight / 2 + this.fontLineHeight(), getLocalizedString("gui.back")) {
