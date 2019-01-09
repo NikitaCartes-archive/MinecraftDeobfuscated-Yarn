@@ -1,22 +1,17 @@
 package net.minecraft;
 
-import net.minecraft.util.math.NorthWestCoordinateTransformer;
-import net.minecraft.world.biome.layer.LayerSampleContext;
-import net.minecraft.world.biome.layer.LayerSampler;
-import net.minecraft.world.biome.layer.ParentedLayer;
-
-public interface class_3662 extends ParentedLayer, NorthWestCoordinateTransformer {
+public interface class_3662 extends class_3660, class_3739 {
 	int method_15867(class_3630 arg, int i, int j, int k, int l, int m);
 
 	@Override
-	default int sample(LayerSampleContext<?> layerSampleContext, LayerSampler layerSampler, int i, int j) {
+	default int method_15863(class_3628<?> arg, class_3625 arg2, int i, int j) {
 		return this.method_15867(
-			layerSampleContext,
-			layerSampler.sample(this.transformX(i + 0), this.transformY(j + 2)),
-			layerSampler.sample(this.transformX(i + 2), this.transformY(j + 2)),
-			layerSampler.sample(this.transformX(i + 2), this.transformY(j + 0)),
-			layerSampler.sample(this.transformX(i + 0), this.transformY(j + 0)),
-			layerSampler.sample(this.transformX(i + 1), this.transformY(j + 1))
+			arg,
+			arg2.method_15825(this.method_16342(i + 0), this.method_16343(j + 2)),
+			arg2.method_15825(this.method_16342(i + 2), this.method_16343(j + 2)),
+			arg2.method_15825(this.method_16342(i + 2), this.method_16343(j + 0)),
+			arg2.method_15825(this.method_16342(i + 0), this.method_16343(j + 0)),
+			arg2.method_15825(this.method_16342(i + 1), this.method_16343(j + 1))
 		);
 	}
 }

@@ -1,44 +1,36 @@
 package net.minecraft;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.passive.ParrotBaseEntity;
-import net.minecraft.entity.player.PlayerEntity;
-
-public class class_1360 extends Goal {
-	private final ParrotBaseEntity field_6478;
-	private PlayerEntity field_6479;
+public class class_1360 extends class_1352 {
+	private final class_1471 field_6478;
+	private class_1657 field_6479;
 	private boolean field_6480;
 
-	public class_1360(ParrotBaseEntity parrotBaseEntity) {
-		this.field_6478 = parrotBaseEntity;
+	public class_1360(class_1471 arg) {
+		this.field_6478 = arg;
 	}
 
 	@Override
-	public boolean canStart() {
-		LivingEntity livingEntity = this.field_6478.getOwner();
-		boolean bl = livingEntity != null
-			&& !((PlayerEntity)livingEntity).isSpectator()
-			&& !((PlayerEntity)livingEntity).abilities.flying
-			&& !livingEntity.isInsideWater();
-		return !this.field_6478.isSitting() && bl && this.field_6478.method_6626();
+	public boolean method_6264() {
+		class_1309 lv = this.field_6478.method_6177();
+		boolean bl = lv != null && !((class_1657)lv).method_7325() && !((class_1657)lv).field_7503.field_7479 && !lv.method_5799();
+		return !this.field_6478.method_6172() && bl && this.field_6478.method_6626();
 	}
 
 	@Override
-	public boolean canStop() {
+	public boolean method_6267() {
 		return !this.field_6480;
 	}
 
 	@Override
-	public void start() {
-		this.field_6479 = (PlayerEntity)this.field_6478.getOwner();
+	public void method_6269() {
+		this.field_6479 = (class_1657)this.field_6478.method_6177();
 		this.field_6480 = false;
 	}
 
 	@Override
-	public void tick() {
-		if (!this.field_6480 && !this.field_6478.isSitting() && !this.field_6478.isLeashed()) {
-			if (this.field_6478.getBoundingBox().intersects(this.field_6479.getBoundingBox())) {
+	public void method_6268() {
+		if (!this.field_6480 && !this.field_6478.method_6172() && !this.field_6478.method_5934()) {
+			if (this.field_6478.method_5829().method_994(this.field_6479.method_5829())) {
 				this.field_6480 = this.field_6478.method_6627(this.field_6479);
 			}
 		}

@@ -1,9 +1,7 @@
 package net.minecraft;
 
-import net.minecraft.util.math.noise.PerlinNoiseSampler;
-
 public interface class_3630 {
-	int nextInt(int i);
+	int method_15834(int i);
 
-	PerlinNoiseSampler getNoiseSampler();
+	class_3756 method_15835();
 }

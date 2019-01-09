@@ -4,27 +4,24 @@ import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockRenderLayer;
-import net.minecraft.client.gl.GlBuffer;
-import net.minecraft.client.render.chunk.ChunkRenderer;
 
 @Environment(EnvType.CLIENT)
 public class class_292 extends class_752 {
 	@Override
-	public void method_3160(BlockRenderLayer blockRenderLayer) {
+	public void method_3160(class_1921 arg) {
 		if (this.field_3956) {
-			for (ChunkRenderer chunkRenderer : this.field_3955) {
-				GlBuffer glBuffer = chunkRenderer.method_3656(blockRenderLayer.ordinal());
+			for (class_851 lv : this.field_3955) {
+				class_291 lv2 = lv.method_3656(arg.ordinal());
 				GlStateManager.pushMatrix();
-				this.method_3157(chunkRenderer);
-				chunkRenderer.method_3664();
-				glBuffer.bind();
+				this.method_3157(lv);
+				lv.method_3664();
+				lv2.method_1353();
 				this.method_1356();
-				glBuffer.draw(7);
+				lv2.method_1351(7);
 				GlStateManager.popMatrix();
 			}
 
-			GlBuffer.unbind();
+			class_291.method_1354();
 			GlStateManager.clearCurrentColor();
 			this.field_3955.clear();
 		}

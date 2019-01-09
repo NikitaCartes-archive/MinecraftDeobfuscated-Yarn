@@ -4,76 +4,64 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.JigsawBlock;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.sortme.StructurePoolElement;
-import net.minecraft.sortme.structures.StructureManager;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MutableIntBoundingBox;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 public class class_3776 extends class_3784 {
-	private final ConfiguredFeature<?> field_16661;
-	private final CompoundTag field_16662;
+	private final class_2975<?> field_16661;
+	private final class_2487 field_16662;
 
-	public class_3776(ConfiguredFeature<?> configuredFeature) {
-		this.field_16661 = configuredFeature;
-		this.field_16662 = new CompoundTag();
-		this.field_16662.putString("target_pool", "minecraft:empty");
-		this.field_16662.putString("attachement_type", "minecraft:bottom");
-		this.field_16662.putString("final_state", "minecraft:air");
+	public class_3776(class_2975<?> arg) {
+		this.field_16661 = arg;
+		this.field_16662 = new class_2487();
+		this.field_16662.method_10582("target_pool", "minecraft:empty");
+		this.field_16662.method_10582("attachement_type", "minecraft:bottom");
+		this.field_16662.method_10582("final_state", "minecraft:air");
 	}
 
 	public <T> class_3776(Dynamic<T> dynamic) {
-		this(ConfiguredFeature.deserialize((Dynamic<T>)dynamic.get("feature").orElseGet(dynamic::emptyMap)));
+		this(class_2975.method_12861(dynamic.get("feature").orElseEmptyMap()));
 	}
 
-	public BlockPos method_16601(StructureManager structureManager, Rotation rotation) {
-		return new BlockPos(0, 0, 0);
-	}
-
-	@Override
-	public List<class_3499.class_3501> method_16627(StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random) {
-		ArrayList<class_3499.class_3501> arrayList = Lists.newArrayList();
-		arrayList.add(new class_3499.class_3501(blockPos, Blocks.field_16540.getDefaultState().with(JigsawBlock.field_10927, Direction.DOWN), this.field_16662));
-		return arrayList;
+	public class_2338 method_16601(class_3485 arg, class_2470 arg2) {
+		return new class_2338(0, 0, 0);
 	}
 
 	@Override
-	public MutableIntBoundingBox method_16628(StructureManager structureManager, BlockPos blockPos, Rotation rotation) {
-		BlockPos blockPos2 = this.method_16601(structureManager, rotation);
-		return new MutableIntBoundingBox(
-			blockPos.getX(),
-			blockPos.getY(),
-			blockPos.getZ(),
-			blockPos.getX() + blockPos2.getX(),
-			blockPos.getY() + blockPos2.getY(),
-			blockPos.getZ() + blockPos2.getZ()
+	public List<class_3499.class_3501> method_16627(class_3485 arg, class_2338 arg2, class_2470 arg3, Random random) {
+		List<class_3499.class_3501> list = Lists.<class_3499.class_3501>newArrayList();
+		list.add(new class_3499.class_3501(arg2, class_2246.field_16540.method_9564().method_11657(class_3748.field_10927, class_2350.field_11033), this.field_16662));
+		return list;
+	}
+
+	@Override
+	public class_3341 method_16628(class_3485 arg, class_2338 arg2, class_2470 arg3) {
+		class_2338 lv = this.method_16601(arg, arg3);
+		return new class_3341(
+			arg2.method_10263(),
+			arg2.method_10264(),
+			arg2.method_10260(),
+			arg2.method_10263() + lv.method_10263(),
+			arg2.method_10264() + lv.method_10264(),
+			arg2.method_10260() + lv.method_10260()
 		);
 	}
 
 	@Override
-	public boolean method_16626(IWorld iWorld, BlockPos blockPos, Rotation rotation, MutableIntBoundingBox mutableIntBoundingBox, Random random) {
-		ChunkGenerator<?> chunkGenerator = iWorld.getChunkManager().getChunkGenerator();
-		return this.field_16661.generate(iWorld, (ChunkGenerator<? extends ChunkGeneratorConfig>)chunkGenerator, random, blockPos);
+	public boolean method_16626(class_1936 arg, class_2338 arg2, class_2470 arg3, class_3341 arg4, Random random) {
+		class_2794<?> lv = arg.method_8398().method_12129();
+		return this.field_16661.method_12862(arg, (class_2794<? extends class_2888>)lv, random, arg2);
 	}
 
 	@Override
 	public <T> Dynamic<T> method_16625(DynamicOps<T> dynamicOps) {
-		return new Dynamic<>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("feature"), this.field_16661.serialize(dynamicOps).getValue())));
+		return new Dynamic<>(
+			dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("feature"), this.field_16661.method_16584(dynamicOps).getValue()))
+		);
 	}
 
 	@Override
-	public StructurePoolElement method_16757() {
-		return StructurePoolElement.field_16971;
+	public class_3816 method_16757() {
+		return class_3816.field_16971;
 	}
 }

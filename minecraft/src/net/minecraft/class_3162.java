@@ -1,19 +1,15 @@
 package net.minecraft;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.command.arguments.NbtPathArgumentType;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.text.TextComponent;
 
 public interface class_3162 {
-	void method_13880(CompoundTag compoundTag) throws CommandSyntaxException;
+	void method_13880(class_2487 arg) throws CommandSyntaxException;
 
-	CompoundTag method_13881() throws CommandSyntaxException;
+	class_2487 method_13881() throws CommandSyntaxException;
 
-	TextComponent method_13883();
+	class_2561 method_13883();
 
-	TextComponent method_13882(Tag tag);
+	class_2561 method_13882(class_2520 arg);
 
-	TextComponent method_13879(NbtPathArgumentType.class_2209 arg, double d, int i);
+	class_2561 method_13879(class_2203.class_2209 arg, double d, int i);
 }

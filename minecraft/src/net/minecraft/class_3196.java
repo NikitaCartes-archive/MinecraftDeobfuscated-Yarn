@@ -1,52 +1,47 @@
 package net.minecraft;
 
-import net.minecraft.sortme.LevelIndexedProcessor;
-import net.minecraft.world.chunk.ChunkPos;
-
-public abstract class class_3196 extends LevelIndexedProcessor {
-	protected static final long CHUNK_POS_OUT_OF_WORLD = ChunkPos.toLong(1875016, 1875016);
-
+public abstract class class_3196 extends class_3554 {
 	protected class_3196(int i, int j, int k) {
 		super(i, j, k);
 	}
 
 	@Override
-	protected boolean isInvalidIndex(long l) {
-		return l == CHUNK_POS_OUT_OF_WORLD;
+	protected boolean method_15494(long l) {
+		return l == class_1923.field_17348;
 	}
 
 	@Override
-	protected void processLevelAt(long l, int i, boolean bl) {
-		ChunkPos chunkPos = new ChunkPos(l);
-		int j = chunkPos.x;
-		int k = chunkPos.z;
+	protected void method_15487(long l, int i, boolean bl) {
+		class_1923 lv = new class_1923(l);
+		int j = lv.field_9181;
+		int k = lv.field_9180;
 
 		for (int m = -1; m <= 1; m++) {
 			for (int n = -1; n <= 1; n++) {
-				long o = ChunkPos.toLong(j + m, k + n);
+				long o = class_1923.method_8331(j + m, k + n);
 				if (o != l) {
-					this.scheduleUpdateRecursively(l, o, i, bl);
+					this.method_15484(l, o, i, bl);
 				}
 			}
 		}
 	}
 
 	@Override
-	protected int getMergedLevel(long l, long m, int i) {
+	protected int method_15486(long l, long m, int i) {
 		int j = i;
-		ChunkPos chunkPos = new ChunkPos(l);
-		int k = chunkPos.x;
-		int n = chunkPos.z;
+		class_1923 lv = new class_1923(l);
+		int k = lv.field_9181;
+		int n = lv.field_9180;
 
 		for (int o = -1; o <= 1; o++) {
 			for (int p = -1; p <= 1; p++) {
-				long q = ChunkPos.toLong(k + o, n + p);
+				long q = class_1923.method_8331(k + o, n + p);
 				if (q == l) {
-					q = CHUNK_POS_OUT_OF_WORLD;
+					q = class_1923.field_17348;
 				}
 
 				if (q != m) {
-					int r = this.getBaseLevelFor(q, l, this.getCurrentLevelFor(q));
+					int r = this.method_15488(q, l, this.method_15480(q));
 					if (j > r) {
 						j = r;
 					}
@@ -62,13 +57,13 @@ public abstract class class_3196 extends LevelIndexedProcessor {
 	}
 
 	@Override
-	protected int getBaseLevelFor(long l, long m, int i) {
-		return l == CHUNK_POS_OUT_OF_WORLD ? this.method_14028(m) : i + 1;
+	protected int method_15488(long l, long m, int i) {
+		return l == class_1923.field_17348 ? this.method_14028(m) : i + 1;
 	}
 
 	protected abstract int method_14028(long l);
 
-	public void scheduleNewLevelUpdate(long l, int i, boolean bl) {
-		this.scheduleNewLevelUpdate(CHUNK_POS_OUT_OF_WORLD, l, i, bl);
+	public void method_14027(long l, int i, boolean bl) {
+		this.method_15478(class_1923.field_17348, l, i, bl);
 	}
 }

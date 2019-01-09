@@ -15,258 +15,224 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
 import java.util.function.IntFunction;
+import java.util.function.IntSupplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.ChunkDataClientPacket;
-import net.minecraft.client.network.packet.LightUpdateClientPacket;
-import net.minecraft.network.Packet;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ChunkTicketManager;
-import net.minecraft.server.world.ServerChunkManager;
-import net.minecraft.server.world.ServerChunkManagerEntry;
-import net.minecraft.server.world.chunk.light.ServerLightingProvider;
-import net.minecraft.util.SystemUtil;
-import net.minecraft.util.crash.CrashException;
-import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.world.ChunkSaveHandler;
-import net.minecraft.world.SessionLockException;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.ChunkPos;
-import net.minecraft.world.chunk.ChunkProvider;
-import net.minecraft.world.chunk.ChunkStatus;
-import net.minecraft.world.chunk.ProtoChunk;
-import net.minecraft.world.chunk.ReadOnlyChunk;
-import net.minecraft.world.chunk.UpgradeData;
-import net.minecraft.world.chunk.WorldChunk;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class class_3898 implements AutoCloseable {
-	private static final Logger LOGGER = LogManager.getLogger();
-	private final Long2ObjectLinkedOpenHashMap<ServerChunkManagerEntry> posToEntryMapSource = new Long2ObjectLinkedOpenHashMap<>();
-	private final World world;
-	private final ServerLightingProvider serverLightingProvider;
+	private static final Logger field_17212 = LogManager.getLogger();
+	private final Long2ObjectLinkedOpenHashMap<class_3193> field_17213 = new Long2ObjectLinkedOpenHashMap<>();
+	private final class_1937 field_17214;
+	private final class_3227 field_17215;
 	private final Executor field_17216;
-	private final ServerChunkManagerEntry.class_3897 field_17217;
-	private final ChunkGenerator<?> chunkGenerator;
-	private final Executor field_17219;
-	private volatile Long2ObjectLinkedOpenHashMap<ServerChunkManagerEntry> posToEntryMap = this.posToEntryMapSource.clone();
+	private final class_3193.class_3897 field_17217;
+	private final class_2794<?> field_17218;
+	private volatile Long2ObjectLinkedOpenHashMap<class_3193> field_17220 = this.field_17213.clone();
 	private final LongSet field_17221 = new LongOpenHashSet();
-	private boolean posToEntryMapSourceDirty = false;
+	private boolean field_17222;
 	private final class_3900 field_17223;
-	private final class_3846<Runnable> field_17224;
-	private final class_3899 field_17225;
-	private final class_3846<Runnable> field_17226;
-	private final ChunkSaveHandler chunkSaveHandler;
+	private final class_3906<class_3900.class_3946<Runnable>> field_17224;
+	private final class_3906<class_3900.class_3946<Runnable>> field_17226;
+	private final class_3949 field_17442;
+	private final class_2858 field_17227;
 	private final class_3898.class_3216 field_17228;
-	private int field_17229 = 0;
 	private final AtomicInteger field_17230 = new AtomicInteger();
 
 	public class_3898(
-		Executor executor,
-		ServerChunkManagerEntry.class_3897 arg,
-		Executor executor2,
-		ChunkSaveHandler chunkSaveHandler,
-		ChunkProvider chunkProvider,
-		World world,
-		ChunkGenerator<?> chunkGenerator
+		Executor executor, class_3193.class_3897 arg, Executor executor2, class_2858 arg2, class_2823 arg3, class_1937 arg4, class_2794<?> arg5, class_3949 arg6
 	) {
-		this.world = world;
+		this.field_17214 = arg4;
 		this.field_17217 = arg;
-		this.chunkGenerator = chunkGenerator;
-		this.field_17219 = executor;
+		this.field_17218 = arg5;
 		this.field_17216 = executor2;
-		this.chunkSaveHandler = chunkSaveHandler;
-		this.field_17224 = class_3846.method_16902(executor, "worldgen");
-		this.field_17226 = class_3846.method_16902(executor2, "main");
-		class_3846<Runnable> lv = class_3846.method_16902(executor, "light");
-		this.field_17223 = new class_3900(ImmutableList.of(this.field_17224, this.field_17226, lv), executor);
-		this.serverLightingProvider = new ServerLightingProvider(chunkProvider, this, this.world.getDimension().hasSkyLight(), executor, this.field_17223, lv);
-		this.field_17225 = this.field_17223.method_17281(this.field_17224);
-		this.field_17228 = new class_3898.class_3216();
+		this.field_17227 = arg2;
+		class_3846<Runnable> lv = class_3846.method_16902(executor, "worldgen");
+		class_3846<Runnable> lv2 = class_3846.method_16902(executor2, "main");
+		this.field_17442 = arg6;
+		class_3846<Runnable> lv3 = class_3846.method_16902(executor, "light");
+		this.field_17223 = new class_3900(ImmutableList.of(lv, lv2, lv3), executor, Integer.MAX_VALUE);
+		this.field_17224 = this.field_17223.method_17622(lv, false);
+		this.field_17226 = this.field_17223.method_17622(lv2, false);
+		this.field_17215 = new class_3227(arg3, this, this.field_17214.method_8597().method_12451(), lv3, this.field_17223.method_17622(lv3, false));
+		this.field_17228 = new class_3898.class_3216(executor, executor2);
 	}
 
-	public ServerLightingProvider getLightProvider() {
-		return this.serverLightingProvider;
-	}
-
-	@Nullable
-	private ServerChunkManagerEntry method_17255(long l) {
-		return this.posToEntryMapSource.get(l);
+	protected class_3227 method_17212() {
+		return this.field_17215;
 	}
 
 	@Nullable
-	public ServerChunkManagerEntry getEntry(long l) {
-		return this.posToEntryMap.get(l);
+	protected class_3193 method_17255(long l) {
+		return this.field_17213.get(l);
 	}
 
-	public int method_17246(long l) {
-		ServerChunkManagerEntry serverChunkManagerEntry = this.getEntry(l);
-		return serverChunkManagerEntry == null ? ServerChunkManager.FULL_CHUNK_LEVEL + 2 : serverChunkManagerEntry.method_17208();
+	@Nullable
+	protected class_3193 method_17216(long l) {
+		return this.field_17220.get(l);
+	}
+
+	protected IntSupplier method_17604(long l) {
+		return () -> {
+			class_3193 lv = this.method_17216(l);
+			return lv == null ? class_3899.field_17241 - 1 : Math.min(lv.method_17208(), class_3899.field_17241 - 1);
+		};
 	}
 
 	@Environment(EnvType.CLIENT)
-	public String method_17218(ChunkPos chunkPos) {
-		ServerChunkManagerEntry serverChunkManagerEntry = this.getEntry(chunkPos.toLong());
-		if (serverChunkManagerEntry == null) {
+	public String method_17218(class_1923 arg) {
+		class_3193 lv = this.method_17216(arg.method_8324());
+		if (lv == null) {
 			return "null";
 		} else {
-			String string = serverChunkManagerEntry.getLevel() + "\n";
-			ChunkStatus chunkStatus = serverChunkManagerEntry.method_16141();
-			Chunk chunk = serverChunkManagerEntry.method_14010();
-			if (chunkStatus != null) {
-				string = string + "St: §" + chunkStatus.getIndex() + chunkStatus + '§' + "r\n";
+			String string = lv.method_14005() + "\n";
+			class_2806 lv2 = lv.method_16141();
+			class_2791 lv3 = lv.method_14010();
+			if (lv2 != null) {
+				string = string + "St: §" + lv2.method_16559() + lv2 + '§' + "r\n";
 			}
 
-			if (chunk != null) {
-				string = string + "Ch: §" + chunk.getStatus().getIndex() + chunk.getStatus() + '§' + "r\n";
+			if (lv3 != null) {
+				string = string + "Ch: §" + lv3.method_12009().method_16559() + lv3.method_12009() + '§' + "r\n";
 			}
 
-			ServerChunkManagerEntry.class_3194 lv = serverChunkManagerEntry.method_13995();
-			string = string + "§" + lv.ordinal() + lv;
+			class_3193.class_3194 lv4 = lv.method_13995();
+			string = string + "§" + lv4.ordinal() + lv4;
 			return string + '§' + "r";
 		}
 	}
 
-	private CompletableFuture<Either<List<Chunk>, ServerChunkManagerEntry.Unloaded>> method_17220(ChunkPos chunkPos, int i, IntFunction<ChunkStatus> intFunction) {
-		List<CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>>> list = Lists.<CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>>>newArrayList();
-		int j = chunkPos.x;
-		int k = chunkPos.z;
+	private CompletableFuture<Either<List<class_2791>, class_3193.class_3724>> method_17220(class_1923 arg, int i, IntFunction<class_2806> intFunction) {
+		List<CompletableFuture<Either<class_2791, class_3193.class_3724>>> list = Lists.<CompletableFuture<Either<class_2791, class_3193.class_3724>>>newArrayList();
+		int j = arg.field_9181;
+		int k = arg.field_9180;
 
 		for (int l = -i; l <= i; l++) {
 			for (int m = -i; m <= i; m++) {
 				int n = Math.max(Math.abs(m), Math.abs(l));
-				final ChunkPos chunkPos2 = new ChunkPos(j + m, k + l);
-				long o = chunkPos2.toLong();
-				ServerChunkManagerEntry serverChunkManagerEntry = this.method_17255(o);
-				if (serverChunkManagerEntry == null) {
-					return CompletableFuture.completedFuture(Either.right(new ServerChunkManagerEntry.Unloaded() {
+				final class_1923 lv = new class_1923(j + m, k + l);
+				long o = lv.method_8324();
+				class_3193 lv2 = this.method_17255(o);
+				if (lv2 == null) {
+					return CompletableFuture.completedFuture(Either.right(new class_3193.class_3724() {
 						public String toString() {
-							return "Unloaded " + chunkPos2.toString();
+							return "Unloaded " + lv.toString();
 						}
 					}));
 				}
 
-				ChunkStatus chunkStatus = (ChunkStatus)intFunction.apply(n);
-				CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>> completableFuture = serverChunkManagerEntry.method_13993(chunkStatus, this);
+				class_2806 lv3 = (class_2806)intFunction.apply(n);
+				CompletableFuture<Either<class_2791, class_3193.class_3724>> completableFuture = lv2.method_13993(lv3, this);
 				list.add(completableFuture);
 			}
 		}
 
-		CompletableFuture<List<Either<Chunk, ServerChunkManagerEntry.Unloaded>>> completableFuture2 = SystemUtil.method_652(list);
-		return completableFuture2.thenApply(
-			listx -> {
-				List<Chunk> list2 = Lists.<Chunk>newArrayList();
-				int l = 0;
+		CompletableFuture<List<Either<class_2791, class_3193.class_3724>>> completableFuture2 = class_156.method_652(list);
+		return completableFuture2.thenApply(listx -> {
+			List<class_2791> list2 = Lists.<class_2791>newArrayList();
+			int l = 0;
 
-				for (final Either<Chunk, ServerChunkManagerEntry.Unloaded> either : listx) {
-					Optional<Chunk> optional = either.left();
-					if (!optional.isPresent()) {
-						final int mx = l;
-						return Either.right(
-							new ServerChunkManagerEntry.Unloaded() {
-								public String toString() {
-									return "Unloaded "
-										+ new ChunkPos(j + mx % (i * 2 + 1), k + mx / (i * 2 + 1))
-										+ " "
-										+ ((ServerChunkManagerEntry.Unloaded)either.right().get()).toString();
-								}
-							}
-						);
-					}
-
-					list2.add(optional.get());
-					l++;
+			for (final Either<class_2791, class_3193.class_3724> either : listx) {
+				Optional<class_2791> optional = either.left();
+				if (!optional.isPresent()) {
+					final int mx = l;
+					return Either.right(new class_3193.class_3724() {
+						public String toString() {
+							return "Unloaded " + new class_1923(j + mx % (i * 2 + 1), k + mx / (i * 2 + 1)) + " " + ((class_3193.class_3724)either.right().get()).toString();
+						}
+					});
 				}
 
-				return Either.left(list2);
+				list2.add(optional.get());
+				l++;
 			}
-		);
+
+			return Either.left(list2);
+		});
 	}
 
-	public CompletableFuture<Either<WorldChunk, ServerChunkManagerEntry.Unloaded>> method_17247(ChunkPos chunkPos) {
-		return this.method_17220(chunkPos, 2, i -> ChunkStatus.FULL).thenApply(either -> either.mapLeft(list -> (WorldChunk)list.get(list.size() / 2)));
+	public CompletableFuture<Either<class_2818, class_3193.class_3724>> method_17247(class_1923 arg) {
+		return this.method_17220(arg, 2, i -> class_2806.field_12803)
+			.thenApplyAsync(either -> either.mapLeft(list -> (class_2818)list.get(list.size() / 2)), this.field_17216);
 	}
 
 	@Nullable
-	private ServerChunkManagerEntry method_17217(long l, int i, @Nullable ServerChunkManagerEntry serverChunkManagerEntry, int j) {
-		if (j > ServerChunkManager.FULL_CHUNK_LEVEL && i > ServerChunkManager.FULL_CHUNK_LEVEL) {
-			return serverChunkManagerEntry;
+	private class_3193 method_17217(long l, int i, @Nullable class_3193 arg, int j) {
+		if (j > class_3215.field_13922 && i > class_3215.field_13922) {
+			return arg;
 		} else {
-			if (serverChunkManagerEntry != null) {
-				serverChunkManagerEntry.setLevel(i);
+			if (arg != null) {
+				arg.method_15890(i);
 			}
 
-			if (serverChunkManagerEntry != null) {
-				if (i > ServerChunkManager.FULL_CHUNK_LEVEL) {
+			if (arg != null) {
+				if (i > class_3215.field_13922) {
 					this.field_17221.add(l);
 				} else {
 					this.field_17221.remove(l);
 				}
 			}
 
-			if (i <= ServerChunkManager.FULL_CHUNK_LEVEL && serverChunkManagerEntry == null) {
-				serverChunkManagerEntry = new ServerChunkManagerEntry(new ChunkPos(l), i, this.serverLightingProvider, this.field_17223, this.field_17217);
-				this.posToEntryMapSource.put(l, serverChunkManagerEntry);
-				this.posToEntryMapSourceDirty = true;
+			if (i <= class_3215.field_13922 && arg == null) {
+				arg = new class_3193(new class_1923(l), i, this.field_17215, this.field_17223, this.field_17217);
+				this.field_17213.put(l, arg);
+				this.field_17222 = true;
 			}
 
-			return serverChunkManagerEntry;
+			return arg;
 		}
 	}
 
 	public void close() {
 		this.field_17223.close();
-		this.posToEntryMap.values().forEach(serverChunkManagerEntry -> {
-			Chunk chunk = serverChunkManagerEntry.method_14010();
-			if (chunk != null) {
-				this.save(chunk, false);
+		this.field_17220.values().forEach(arg -> {
+			class_2791 lv = arg.method_14010();
+			if (lv != null) {
+				this.method_17228(lv, false);
 			}
 		});
-		this.chunkSaveHandler.close();
+		this.field_17227.close();
 	}
 
-	public void save(boolean bl) {
-		for (ServerChunkManagerEntry serverChunkManagerEntry : this.posToEntryMap.values()) {
-			WorldChunk worldChunk = serverChunkManagerEntry.getChunk();
-			if (worldChunk != null) {
-				this.save(worldChunk, false);
+	protected void method_17242(boolean bl) {
+		for (class_3193 lv : this.field_17220.values()) {
+			class_2818 lv2 = lv.method_16144();
+			if (lv2 != null) {
+				this.method_17228(lv2, false);
 			}
 		}
 
 		if (bl) {
-			this.chunkSaveHandler.saveAllChunks();
+			this.field_17227.method_12413();
 		}
 	}
 
-	public void method_17233(BooleanSupplier booleanSupplier) {
-		if (!this.world.isSavingDisabled()) {
+	protected void method_17233(BooleanSupplier booleanSupplier) {
+		if (!this.field_17214.method_8458()) {
 			LongIterator longIterator = this.field_17221.iterator();
 
 			for (int i = 0; longIterator.hasNext() && (booleanSupplier.getAsBoolean() || i < 200 || this.field_17221.size() > 2000); longIterator.remove()) {
 				long l = longIterator.nextLong();
-				ServerChunkManagerEntry serverChunkManagerEntry = this.posToEntryMapSource.remove(l);
-				if (serverChunkManagerEntry != null) {
-					this.posToEntryMapSourceDirty = true;
+				class_3193 lv = this.field_17213.remove(l);
+				if (lv != null) {
+					this.field_17222 = true;
 					i++;
-					CompletableFuture<Chunk> completableFuture = serverChunkManagerEntry.getChunkFuture();
-					completableFuture.thenAcceptAsync(chunk -> {
-						if (chunk != null) {
-							this.save(chunk, true);
+					CompletableFuture<class_2791> completableFuture = lv.method_14000();
+					completableFuture.thenAcceptAsync(arg -> {
+						if (arg != null) {
+							this.method_17228(arg, true);
 
 							for (int ix = 0; ix < 16; ix++) {
-								this.serverLightingProvider.scheduleChunkLightUpdate(chunk.getPos().x, ix, chunk.getPos().z, true);
+								this.field_17215.method_15551(arg.method_12004().field_9181, ix, arg.method_12004().field_9180, true);
 							}
 
-							this.serverLightingProvider.method_17303();
+							this.field_17215.method_17303();
+							this.field_17442.method_17670(arg.method_12004(), null);
 						}
 					}, this.field_17216);
 				}
@@ -274,226 +240,199 @@ public class class_3898 implements AutoCloseable {
 		}
 	}
 
-	public void syncPosToEntryMap() {
-		if (this.posToEntryMapSourceDirty) {
-			this.posToEntryMap = this.posToEntryMapSource.clone();
-			this.posToEntryMapSourceDirty = false;
+	protected void method_17244() {
+		if (this.field_17222) {
+			this.field_17220 = this.field_17213.clone();
+			this.field_17222 = false;
 		}
 	}
 
-	public CompletableFuture<Either<Chunk, ServerChunkManagerEntry.Unloaded>> method_17236(
-		ServerChunkManagerEntry serverChunkManagerEntry, ChunkStatus chunkStatus
-	) {
-		ChunkPos chunkPos = serverChunkManagerEntry.getPos();
-		if (chunkStatus == ChunkStatus.EMPTY) {
+	public CompletableFuture<Either<class_2791, class_3193.class_3724>> method_17236(class_3193 arg, class_2806 arg2) {
+		class_1923 lv = arg.method_13994();
+		if (arg2 == class_2806.field_12798) {
 			return CompletableFuture.supplyAsync(() -> {
-				Chunk chunk = this.chunkSaveHandler.readChunk(this.world, chunkPos.x, chunkPos.z);
-				if (chunk != null) {
-					chunk.setLastSaveTime(this.world.getTime());
-					return Either.left(chunk);
+				class_2791 lvx = this.field_17227.method_12411(this.field_17214, lv.field_9181, lv.field_9180);
+				if (lvx != null) {
+					lvx.method_12043(this.field_17214.method_8510());
+					return Either.left(lvx);
 				} else {
-					return Either.left(new ProtoChunk(chunkPos, UpgradeData.NO_UPGRADE_DATA));
+					return Either.left(new class_2839(lv, class_2843.field_12950));
 				}
 			}, this.field_17216);
 		} else {
-			CompletableFuture<Either<List<Chunk>, ServerChunkManagerEntry.Unloaded>> completableFuture = CompletableFuture.supplyAsync(
-					() -> null, runnable -> this.field_17223.method_17284(this.field_17226, serverChunkManagerEntry, () -> this.field_17216.execute(runnable))
-				)
-				.thenCompose(object -> this.method_17220(chunkPos, chunkStatus.method_12152(), i -> this.method_17229(chunkStatus, i)));
+			CompletableFuture<Either<List<class_2791>, class_3193.class_3724>> completableFuture = this.method_17220(
+				lv, arg2.method_12152(), i -> this.method_17229(arg2, i)
+			);
 			return completableFuture.thenComposeAsync(
-				either -> (CompletableFuture)either.map(list -> {
-						try {
-							return chunkStatus.method_12154(this.world, this.chunkGenerator, this.serverLightingProvider, this::method_17226, list).thenApply(Either::left);
-						} catch (Exception var8) {
-							CrashReport crashReport = CrashReport.create(var8, "Exception generating new chunk");
-							CrashReportSection crashReportSection = crashReport.method_562("Chunk to be generated");
-							crashReportSection.add("Location", String.format("%d,%d", chunkPos.x, chunkPos.z));
-							crashReportSection.add("Position hash", ChunkPos.toLong(chunkPos.x, chunkPos.z));
-							crashReportSection.add("Generator", this.chunkGenerator);
-							throw new CrashException(crashReport);
-						}
-					}, unloaded -> CompletableFuture.completedFuture(Either.right(unloaded))),
-				runnable -> this.field_17223.method_17284(this.field_17224, serverChunkManagerEntry, runnable)
+				either -> (CompletableFuture)either.map(
+						list -> {
+							try {
+								CompletableFuture<Either<class_2791, class_3193.class_3724>> completableFuturex = arg2.method_12154(
+										this.field_17214, this.field_17218, this.field_17215, this::method_17226, list
+									)
+									.thenApply(Either::left);
+								this.field_17442.method_17670(lv, arg2);
+								return completableFuturex;
+							} catch (Exception var8) {
+								class_128 lvx = class_128.method_560(var8, "Exception generating new chunk");
+								class_129 lv2 = lvx.method_562("Chunk to be generated");
+								lv2.method_578("Location", String.format("%d,%d", lv.field_9181, lv.field_9180));
+								lv2.method_578("Position hash", class_1923.method_8331(lv.field_9181, lv.field_9180));
+								lv2.method_578("Generator", this.field_17218);
+								throw new class_148(lvx);
+							}
+						},
+						argxx -> CompletableFuture.completedFuture(Either.right(argxx))
+					),
+				runnable -> this.field_17224.method_16901(class_3900.method_17629(arg, runnable))
 			);
 		}
 	}
 
-	private ChunkStatus method_17229(ChunkStatus chunkStatus, int i) {
-		ChunkStatus chunkStatus2;
+	private class_2806 method_17229(class_2806 arg, int i) {
+		class_2806 lv;
 		if (i == 0) {
-			chunkStatus2 = chunkStatus.getPrevious();
+			lv = arg.method_16560();
 		} else {
-			chunkStatus2 = ChunkStatus.getByIndex(ChunkStatus.getIndex(chunkStatus) + i);
+			lv = class_2806.method_12161(class_2806.method_12175(arg) + i);
 		}
 
-		return chunkStatus2;
+		return lv;
 	}
 
-	public CompletableFuture<Chunk> method_17226(Chunk chunk) {
-		ChunkPos chunkPos = chunk.getPos();
-		ServerChunkManagerEntry serverChunkManagerEntry = this.getEntry(chunkPos.toLong());
-		if (serverChunkManagerEntry == null) {
-			throw new IllegalStateException("No chunk holder while trying to convert to full chunk: " + chunkPos);
+	public CompletableFuture<class_2791> method_17226(class_2791 arg) {
+		class_1923 lv = arg.method_12004();
+		class_3193 lv2 = this.method_17216(lv.method_8324());
+		if (lv2 == null) {
+			throw new IllegalStateException("No chunk holder while trying to convert to full chunk: " + lv);
 		} else {
 			return CompletableFuture.supplyAsync(() -> {
-				WorldChunk worldChunk;
-				if (chunk instanceof ReadOnlyChunk) {
-					worldChunk = ((ReadOnlyChunk)chunk).method_12240();
+				class_2818 lvx;
+				if (arg instanceof class_2821) {
+					lvx = ((class_2821)arg).method_12240();
 				} else {
-					worldChunk = new WorldChunk(this.world, (ProtoChunk)chunk, chunkPos.x, chunkPos.z);
+					lvx = new class_2818(this.field_17214, (class_2839)arg, lv.field_9181, lv.field_9180);
 				}
 
-				worldChunk.method_12207(() -> ServerChunkManagerEntry.method_14008(serverChunkManagerEntry.getLevel()));
-				worldChunk.loadToWorld();
-				return worldChunk;
-			}, runnable -> this.field_17223.method_17284(this.field_17226, serverChunkManagerEntry, () -> this.field_17216.execute(runnable)));
+				lvx.method_12207(() -> class_3193.method_14008(lv2.method_14005()));
+				lvx.method_12206();
+				return lvx;
+			}, runnable -> this.field_17226.method_16901(class_3900.method_17629(lv2, () -> this.field_17216.execute(runnable))));
 		}
 	}
 
-	public CompletableFuture<Either<WorldChunk, ServerChunkManagerEntry.Unloaded>> method_17235(ServerChunkManagerEntry serverChunkManagerEntry) {
-		ChunkPos chunkPos = serverChunkManagerEntry.getPos();
-		CompletableFuture<Either<List<Chunk>, ServerChunkManagerEntry.Unloaded>> completableFuture = this.method_17220(chunkPos, 1, i -> ChunkStatus.FULL);
+	public CompletableFuture<Either<class_2818, class_3193.class_3724>> method_17235(class_3193 arg) {
+		class_1923 lv = arg.method_13994();
+		CompletableFuture<Either<List<class_2791>, class_3193.class_3724>> completableFuture = this.method_17220(lv, 1, i -> class_2806.field_12803);
 		return completableFuture.thenApplyAsync(either -> either.flatMap(list -> {
-				final WorldChunk worldChunk = (WorldChunk)list.get(list.size() / 2);
-				if (!Objects.equals(chunkPos, worldChunk.getPos())) {
+				final class_2818 lvx = (class_2818)list.get(list.size() / 2);
+				if (!Objects.equals(lv, lvx.method_12004())) {
 					throw new IllegalStateException();
-				} else if (!worldChunk.isLoadedToWorld()) {
-					return Either.right(new ServerChunkManagerEntry.Unloaded() {
+				} else if (!lvx.method_12229()) {
+					return Either.right(new class_3193.class_3724() {
 						public String toString() {
-							return "Not isLoaded " + worldChunk.getPos().toString();
+							return "Not isLoaded " + lv.method_12004().toString();
 						}
 					});
 				} else {
-					worldChunk.runPostProcessing();
+					lvx.method_12221();
 					this.field_17230.getAndIncrement();
-					Packet<?>[] packets = new Packet[2];
-					this.field_17217.method_17211(chunkPos, false, true).forEach(serverPlayerEntity -> {
-						if (packets[0] == null) {
-							packets[0] = new ChunkDataClientPacket(worldChunk, 65535);
-							packets[1] = new LightUpdateClientPacket(worldChunk.getPos(), this.serverLightingProvider);
+					class_2596<?>[] lvs = new class_2596[2];
+					this.field_17217.method_17211(lv, false, true).forEach(arg3 -> {
+						if (lvs[0] == null) {
+							lvs[0] = new class_2672(lvx, 65535);
+							lvs[1] = new class_2676(lvx.method_12004(), this.field_17215);
 						}
 
-						serverPlayerEntity.sendInitialChunkPackets(chunkPos, packets[0], packets[1]);
+						arg3.method_14205(lv, lvs[0], lvs[1]);
 					});
-					return Either.left(worldChunk);
+					return Either.left(lvx);
 				}
-			}), runnable -> this.field_17223.method_17284(this.field_17226, serverChunkManagerEntry, () -> this.field_17216.execute(runnable)));
+			}), runnable -> this.field_17226.method_16901(class_3900.method_17629(arg, () -> this.field_17216.execute(runnable))));
 	}
 
 	public int method_17253() {
 		return this.field_17230.get();
 	}
 
-	public void method_17213(int i) {
-		this.field_17229 = i;
-		this.field_17230.set(0);
-		this.field_17225.method_17276();
-	}
-
-	private void save(Chunk chunk, boolean bl) {
+	private void method_17228(class_2791 arg, boolean bl) {
 		try {
-			if (bl && chunk instanceof WorldChunk) {
-				((WorldChunk)chunk).unloadFromWorld();
+			if (bl && arg instanceof class_2818) {
+				((class_2818)arg).method_12213();
 			}
 
-			if (!chunk.needsSaving()) {
+			if (!arg.method_12044()) {
 				return;
 			}
 
-			chunk.setLastSaveTime(this.world.getTime());
-			this.chunkSaveHandler.saveChunk(this.world, chunk);
-			chunk.setShouldSave(false);
+			arg.method_12043(this.field_17214.method_8510());
+			this.field_17227.method_12410(this.field_17214, arg);
+			arg.method_12008(false);
 		} catch (IOException var4) {
-			LOGGER.error("Couldn't save chunk", (Throwable)var4);
-		} catch (SessionLockException var5) {
-			LOGGER.error("Couldn't save chunk; already in use by another instance of Minecraft?", (Throwable)var5);
+			field_17212.error("Couldn't save chunk", (Throwable)var4);
+		} catch (class_1939 var5) {
+			field_17212.error("Couldn't save chunk; already in use by another instance of Minecraft?", (Throwable)var5);
 		}
 	}
 
-	public void method_17214(int i, int j) {
-		for (ServerChunkManagerEntry serverChunkManagerEntry : this.posToEntryMapSource.values()) {
-			ChunkPos chunkPos = serverChunkManagerEntry.getPos();
-			Packet<?>[] packets = new Packet[2];
-			this.field_17217.method_17210(chunkPos, false).forEach(serverPlayerEntity -> {
-				int k = ServerChunkManager.getWatchDistance(chunkPos, serverPlayerEntity);
+	protected void method_17214(int i, int j) {
+		for (class_3193 lv : this.field_17213.values()) {
+			class_1923 lv2 = lv.method_13994();
+			class_2596<?>[] lvs = new class_2596[2];
+			this.field_17217.method_17210(lv2, false).forEach(arg2 -> {
+				int k = class_3215.method_14141(lv2, arg2);
 				boolean bl = k <= i;
 				boolean bl2 = k <= j;
-				this.method_17241(serverPlayerEntity, chunkPos, packets, bl, bl2);
+				this.method_17241(arg2, lv2, lvs, bl, bl2);
 			});
 		}
 	}
 
-	public void method_17241(ServerPlayerEntity serverPlayerEntity, ChunkPos chunkPos, Packet<?>[] packets, boolean bl, boolean bl2) {
-		if (serverPlayerEntity.world == this.world) {
+	protected void method_17241(class_3222 arg, class_1923 arg2, class_2596<?>[] args, boolean bl, boolean bl2) {
+		if (arg.field_6002 == this.field_17214) {
 			if (bl2 && !bl) {
-				ServerChunkManagerEntry serverChunkManagerEntry = this.getEntry(chunkPos.toLong());
-				if (serverChunkManagerEntry != null) {
-					WorldChunk worldChunk = serverChunkManagerEntry.getChunk();
-					if (worldChunk != null) {
-						if (packets[0] == null) {
-							packets[0] = new ChunkDataClientPacket(worldChunk, 65535);
-							packets[1] = new LightUpdateClientPacket(chunkPos, this.serverLightingProvider);
+				class_3193 lv = this.method_17216(arg2.method_8324());
+				if (lv != null) {
+					class_2818 lv2 = lv.method_16144();
+					if (lv2 != null) {
+						if (args[0] == null) {
+							args[0] = new class_2672(lv2, 65535);
+							args[1] = new class_2676(arg2, this.field_17215);
 						}
 
-						serverPlayerEntity.sendInitialChunkPackets(chunkPos, packets[0], packets[1]);
+						arg.method_14205(arg2, args[0], args[1]);
 					}
 				}
 			}
 
 			if (!bl2 && bl) {
-				serverPlayerEntity.sendRemoveChunkPacket(chunkPos);
+				arg.method_14246(arg2);
 			}
 		}
 	}
 
 	public int method_17260() {
-		return this.posToEntryMap.size();
+		return this.field_17220.size();
 	}
 
-	public class_3898.class_3216 getTicketManager() {
+	protected class_3898.class_3216 method_17263() {
 		return this.field_17228;
 	}
 
-	public ObjectBidirectionalIterator<Entry<ServerChunkManagerEntry>> method_17264() {
-		return this.posToEntryMap.long2ObjectEntrySet().fastIterator();
+	protected ObjectBidirectionalIterator<Entry<class_3193>> method_17264() {
+		return this.field_17220.long2ObjectEntrySet().fastIterator();
 	}
 
 	public void method_17250(BooleanSupplier booleanSupplier) {
 		boolean bl;
 		do {
-			bl = this.chunkSaveHandler.saveNextChunk();
+			bl = this.field_17227.method_12412();
 		} while (bl && booleanSupplier.getAsBoolean());
 	}
 
-	public int method_17265() {
-		return this.field_17225.method_17278();
-	}
-
-	public int method_17266() {
-		return this.field_17225.method_17279();
-	}
-
-	public String method_17267() {
-		int i = this.method_17265();
-		int j = this.method_17266();
-		int k = this.method_17268();
-		int l = this.method_17253();
-		return String.format(
-			"%5d | %5d | %5d | %5d (%3d%% %3d%%)", i, i - j, k, l, (int)((float)j * 100.0F / (float)i), (int)((float)l * 100.0F / (float)this.field_17229)
-		);
-	}
-
-	private int method_17268() {
-		if (this.field_17219 instanceof ForkJoinPool) {
-			ForkJoinPool forkJoinPool = (ForkJoinPool)this.field_17219;
-			return forkJoinPool.getQueuedSubmissionCount() + (int)forkJoinPool.getQueuedTaskCount();
-		} else {
-			return 0;
-		}
-	}
-
-	class class_3216 extends ChunkTicketManager {
-		private class_3216() {
+	class class_3216 extends class_3204 {
+		protected class_3216(Executor executor, Executor executor2) {
+			super(executor, executor2);
 		}
 
 		@Override
@@ -503,14 +442,14 @@ public class class_3898 implements AutoCloseable {
 
 		@Nullable
 		@Override
-		protected ServerChunkManagerEntry method_14038(long l) {
+		protected class_3193 method_14038(long l) {
 			return class_3898.this.method_17255(l);
 		}
 
 		@Nullable
 		@Override
-		protected ServerChunkManagerEntry method_14053(long l, int i, @Nullable ServerChunkManagerEntry serverChunkManagerEntry, int j) {
-			return class_3898.this.method_17217(l, i, serverChunkManagerEntry, j);
+		protected class_3193 method_14053(long l, int i, @Nullable class_3193 arg, int j) {
+			return class_3898.this.method_17217(l, i, arg, j);
 		}
 	}
 }

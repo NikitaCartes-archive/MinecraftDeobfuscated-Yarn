@@ -2,10 +2,6 @@ package net.minecraft;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.command.arguments.Vec3ArgumentType;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.util.math.Vec2f;
-import net.minecraft.util.math.Vec3d;
 
 public class class_2280 implements class_2267 {
 	private final class_2278 field_10765;
@@ -19,15 +15,15 @@ public class class_2280 implements class_2267 {
 	}
 
 	@Override
-	public Vec3d method_9708(ServerCommandSource serverCommandSource) {
-		Vec3d vec3d = serverCommandSource.getPosition();
-		return new Vec3d(this.field_10765.method_9740(vec3d.x), this.field_10764.method_9740(vec3d.y), this.field_10766.method_9740(vec3d.z));
+	public class_243 method_9708(class_2168 arg) {
+		class_243 lv = arg.method_9222();
+		return new class_243(this.field_10765.method_9740(lv.field_1352), this.field_10764.method_9740(lv.field_1351), this.field_10766.method_9740(lv.field_1350));
 	}
 
 	@Override
-	public Vec2f method_9709(ServerCommandSource serverCommandSource) {
-		Vec2f vec2f = serverCommandSource.getRotation();
-		return new Vec2f((float)this.field_10765.method_9740((double)vec2f.x), (float)this.field_10764.method_9740((double)vec2f.y));
+	public class_241 method_9709(class_2168 arg) {
+		class_241 lv = arg.method_9210();
+		return new class_241((float)this.field_10765.method_9740((double)lv.field_1343), (float)this.field_10764.method_9740((double)lv.field_1342));
 	}
 
 	@Override
@@ -72,11 +68,11 @@ public class class_2280 implements class_2267 {
 				return new class_2280(lv, lv2, lv3);
 			} else {
 				stringReader.setCursor(i);
-				throw Vec3ArgumentType.INCOMPLETE_EXCEPTION.createWithContext(stringReader);
+				throw class_2277.field_10755.createWithContext(stringReader);
 			}
 		} else {
 			stringReader.setCursor(i);
-			throw Vec3ArgumentType.INCOMPLETE_EXCEPTION.createWithContext(stringReader);
+			throw class_2277.field_10755.createWithContext(stringReader);
 		}
 	}
 
@@ -92,11 +88,11 @@ public class class_2280 implements class_2267 {
 				return new class_2280(lv, lv2, lv3);
 			} else {
 				stringReader.setCursor(i);
-				throw Vec3ArgumentType.INCOMPLETE_EXCEPTION.createWithContext(stringReader);
+				throw class_2277.field_10755.createWithContext(stringReader);
 			}
 		} else {
 			stringReader.setCursor(i);
-			throw Vec3ArgumentType.INCOMPLETE_EXCEPTION.createWithContext(stringReader);
+			throw class_2277.field_10755.createWithContext(stringReader);
 		}
 	}
 

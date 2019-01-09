@@ -1,23 +1,19 @@
 package net.minecraft;
 
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.biome.Biomes;
-import net.minecraft.world.biome.layer.BiomeLayers;
-
 public enum class_3637 implements class_3662 {
-	INSTANCE;
+	field_16055;
 
-	private static final int MUSHROOM_FIELDS_ID = Registry.BIOME.getRawId(Biomes.field_9462);
+	private static final int field_16054 = class_2378.field_11153.method_10249(class_1972.field_9462);
 
 	@Override
 	public int method_15867(class_3630 arg, int i, int j, int k, int l, int m) {
-		return BiomeLayers.isShallowOcean(m)
-				&& BiomeLayers.isShallowOcean(l)
-				&& BiomeLayers.isShallowOcean(i)
-				&& BiomeLayers.isShallowOcean(k)
-				&& BiomeLayers.isShallowOcean(j)
-				&& arg.nextInt(100) == 0
-			? MUSHROOM_FIELDS_ID
+		return class_3645.method_15846(m)
+				&& class_3645.method_15846(l)
+				&& class_3645.method_15846(i)
+				&& class_3645.method_15846(k)
+				&& class_3645.method_15846(j)
+				&& arg.method_15834(100) == 0
+			? field_16054
 			: m;
 	}
 }

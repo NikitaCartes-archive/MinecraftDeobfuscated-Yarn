@@ -8,10 +8,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class class_3846<T> implements AutoCloseable, Runnable {
-	private static final Logger LOGGER = LogManager.getLogger();
+public class class_3846<T> implements class_3906<T>, AutoCloseable, Runnable {
+	private static final Logger field_17040 = LogManager.getLogger();
 	private final AtomicInteger field_17041 = new AtomicInteger(0);
-	public final class_3847<T, ? extends Runnable> field_17039;
+	public final class_3847<? super T, ? extends Runnable> field_17039;
 	private final Executor field_17042;
 	private final String field_17043;
 
@@ -19,7 +19,7 @@ public class class_3846<T> implements AutoCloseable, Runnable {
 		return new class_3846<>(new class_3847.class_3849<>(new ConcurrentLinkedQueue()), executor, string);
 	}
 
-	public class_3846(class_3847<T, ? extends Runnable> arg, Executor executor, String string) {
+	public class_3846(class_3847<? super T, ? extends Runnable> arg, Executor executor, String string) {
 		this.field_17042 = executor;
 		this.field_17039 = arg;
 		this.field_17043 = string;
@@ -48,6 +48,7 @@ public class class_3846<T> implements AutoCloseable, Runnable {
 		return (this.field_17041.get() & 1) != 0 ? false : !this.field_17039.method_16911();
 	}
 
+	@Override
 	public void close() {
 		int i;
 		do {
@@ -82,6 +83,7 @@ public class class_3846<T> implements AutoCloseable, Runnable {
 		}
 	}
 
+	@Override
 	public void method_16901(T object) {
 		this.field_17039.method_16910(object);
 		this.method_16908();
@@ -95,7 +97,7 @@ public class class_3846<T> implements AutoCloseable, Runnable {
 				try {
 					this.field_17042.execute(this);
 				} catch (RejectedExecutionException var3) {
-					LOGGER.error("Cound not schedule mailbox", (Throwable)var3);
+					field_17040.error("Cound not schedule mailbox", (Throwable)var3);
 				}
 			}
 		}
@@ -115,6 +117,7 @@ public class class_3846<T> implements AutoCloseable, Runnable {
 		return this.field_17043 + " " + this.field_17041.get() + " " + this.field_17039.method_16911();
 	}
 
+	@Override
 	public String method_16898() {
 		return this.field_17043;
 	}

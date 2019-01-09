@@ -1,37 +1,32 @@
 package net.minecraft;
 
 import it.unimi.dsi.fastutil.doubles.DoubleList;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.shape.AbstractVoxelShapeContainer;
-import net.minecraft.util.shape.FractionalDoubleList;
-import net.minecraft.util.shape.OffsetVoxelShapeContainer;
-import net.minecraft.util.shape.VoxelShape;
 
-public class class_263 extends VoxelShape {
-	private final VoxelShape parent;
-	private final Direction.Axis axis;
-	private final DoubleList axisList = new FractionalDoubleList(1);
+public class class_263 extends class_265 {
+	private final class_265 field_1397;
+	private final class_2350.class_2351 field_1396;
+	private final DoubleList field_1395 = new class_246(1);
 
-	public class_263(VoxelShape voxelShape, Direction.Axis axis, int i) {
-		super(offset(voxelShape.shape, axis, i));
-		this.parent = voxelShape;
-		this.axis = axis;
+	public class_263(class_265 arg, class_2350.class_2351 arg2, int i) {
+		super(method_1088(arg.field_1401, arg2, i));
+		this.field_1397 = arg;
+		this.field_1396 = arg2;
 	}
 
-	private static AbstractVoxelShapeContainer offset(AbstractVoxelShapeContainer abstractVoxelShapeContainer, Direction.Axis axis, int i) {
-		return new OffsetVoxelShapeContainer(
-			abstractVoxelShapeContainer,
-			axis.choose(i, 0, 0),
-			axis.choose(0, i, 0),
-			axis.choose(0, 0, i),
-			axis.choose(i + 1, abstractVoxelShapeContainer.xSize, abstractVoxelShapeContainer.xSize),
-			axis.choose(abstractVoxelShapeContainer.ySize, i + 1, abstractVoxelShapeContainer.ySize),
-			axis.choose(abstractVoxelShapeContainer.zSize, abstractVoxelShapeContainer.zSize, i + 1)
+	private static class_251 method_1088(class_251 arg, class_2350.class_2351 arg2, int i) {
+		return new class_262(
+			arg,
+			arg2.method_10173(i, 0, 0),
+			arg2.method_10173(0, i, 0),
+			arg2.method_10173(0, 0, i),
+			arg2.method_10173(i + 1, arg.field_1374, arg.field_1374),
+			arg2.method_10173(arg.field_1373, i + 1, arg.field_1373),
+			arg2.method_10173(arg.field_1372, arg.field_1372, i + 1)
 		);
 	}
 
 	@Override
-	protected DoubleList getIncludedPoints(Direction.Axis axis) {
-		return axis == this.axis ? this.axisList : this.parent.getIncludedPoints(axis);
+	protected DoubleList method_1109(class_2350.class_2351 arg) {
+		return arg == this.field_1396 ? this.field_1395 : this.field_1397.method_1109(arg);
 	}
 }

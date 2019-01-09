@@ -15,11 +15,11 @@ import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_1041;
+import net.minecraft.class_287;
+import net.minecraft.class_289;
+import net.minecraft.class_290;
 import net.minecraft.class_3677;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.util.Window;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.Version;
@@ -60,7 +60,7 @@ public class GLX {
 	public static int GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT;
 	public static int GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER;
 	public static int GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER;
-	private static GLX.FBOMode fboMode;
+	private static GLX.class_1010 fboMode;
 	public static final boolean useFbo = true;
 	private static boolean hasShaders;
 	private static boolean useShaderArb;
@@ -224,8 +224,8 @@ public class GLX {
 			: GlStateManager.getString(7937) + " GL version " + GlStateManager.getString(7938) + ", " + GlStateManager.getString(7936);
 	}
 
-	public static int getRefreshRate(Window window) {
-		long l = GLFW.glfwGetWindowMonitor(window.getHandle());
+	public static int getRefreshRate(class_1041 arg) {
+		long l = GLFW.glfwGetWindowMonitor(arg.method_4490());
 		if (l == 0L) {
 			l = GLFW.glfwGetPrimaryMonitor();
 		}
@@ -239,7 +239,7 @@ public class GLX {
 	}
 
 	public static LongSupplier initGlfw() {
-		Window.method_4492((integer, stringx) -> {
+		class_1041.method_4492((integer, stringx) -> {
 			throw new IllegalStateException(String.format("GLFW error before init: [0x%X]%s", integer, stringx));
 		});
 		List<String> list = Lists.<String>newArrayList();
@@ -262,8 +262,8 @@ public class GLX {
 		GLFW.glfwSetErrorCallback(gLFWErrorCallbackI).free();
 	}
 
-	public static boolean shouldClose(Window window) {
-		return GLFW.glfwWindowShouldClose(window.getHandle());
+	public static boolean shouldClose(class_1041 arg) {
+		return GLFW.glfwWindowShouldClose(arg.method_4490());
 	}
 
 	public static void pollEvents() {
@@ -284,7 +284,7 @@ public class GLX {
 
 	public static void setupNvFogDistance() {
 		if (GL.getCapabilities().GL_NV_fog_distance) {
-			GlStateManager.fog(34138, 34139);
+			GlStateManager.fogi(34138, 34139);
 		}
 	}
 
@@ -375,7 +375,7 @@ public class GLX {
 		capsString = capsString + "Using framebuffer objects because ";
 		if (gLCapabilities.OpenGL30) {
 			capsString = capsString + "OpenGL 3.0 is supported and separate blending is supported.\n";
-			fboMode = GLX.FBOMode.BASE;
+			fboMode = GLX.class_1010.field_4981;
 			GL_FRAMEBUFFER = 36160;
 			GL_RENDERBUFFER = 36161;
 			GL_COLOR_ATTACHMENT0 = 36064;
@@ -387,7 +387,7 @@ public class GLX {
 			GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER = 36060;
 		} else if (gLCapabilities.GL_ARB_framebuffer_object) {
 			capsString = capsString + "ARB_framebuffer_object is supported and separate blending is supported.\n";
-			fboMode = GLX.FBOMode.ARB;
+			fboMode = GLX.class_1010.field_4983;
 			GL_FRAMEBUFFER = 36160;
 			GL_RENDERBUFFER = 36161;
 			GL_COLOR_ATTACHMENT0 = 36064;
@@ -399,7 +399,7 @@ public class GLX {
 			GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER = 36060;
 		} else if (gLCapabilities.GL_EXT_framebuffer_object) {
 			capsString = capsString + "EXT_framebuffer_object is supported.\n";
-			fboMode = GLX.FBOMode.EXT;
+			fboMode = GLX.class_1010.field_4984;
 			GL_FRAMEBUFFER = 36160;
 			GL_RENDERBUFFER = 36161;
 			GL_COLOR_ATTACHMENT0 = 36064;
@@ -706,63 +706,63 @@ public class GLX {
 
 	public static void glBindFramebuffer(int i, int j) {
 		switch (fboMode) {
-			case BASE:
+			case field_4981:
 				GL30.glBindFramebuffer(i, j);
 				break;
-			case ARB:
+			case field_4983:
 				ARBFramebufferObject.glBindFramebuffer(i, j);
 				break;
-			case EXT:
+			case field_4984:
 				EXTFramebufferObject.glBindFramebufferEXT(i, j);
 		}
 	}
 
 	public static void glBindRenderbuffer(int i, int j) {
 		switch (fboMode) {
-			case BASE:
+			case field_4981:
 				GL30.glBindRenderbuffer(i, j);
 				break;
-			case ARB:
+			case field_4983:
 				ARBFramebufferObject.glBindRenderbuffer(i, j);
 				break;
-			case EXT:
+			case field_4984:
 				EXTFramebufferObject.glBindRenderbufferEXT(i, j);
 		}
 	}
 
 	public static void glDeleteRenderbuffers(int i) {
 		switch (fboMode) {
-			case BASE:
+			case field_4981:
 				GL30.glDeleteRenderbuffers(i);
 				break;
-			case ARB:
+			case field_4983:
 				ARBFramebufferObject.glDeleteRenderbuffers(i);
 				break;
-			case EXT:
+			case field_4984:
 				EXTFramebufferObject.glDeleteRenderbuffersEXT(i);
 		}
 	}
 
 	public static void glDeleteFramebuffers(int i) {
 		switch (fboMode) {
-			case BASE:
+			case field_4981:
 				GL30.glDeleteFramebuffers(i);
 				break;
-			case ARB:
+			case field_4983:
 				ARBFramebufferObject.glDeleteFramebuffers(i);
 				break;
-			case EXT:
+			case field_4984:
 				EXTFramebufferObject.glDeleteFramebuffersEXT(i);
 		}
 	}
 
 	public static int glGenFramebuffers() {
 		switch (fboMode) {
-			case BASE:
+			case field_4981:
 				return GL30.glGenFramebuffers();
-			case ARB:
+			case field_4983:
 				return ARBFramebufferObject.glGenFramebuffers();
-			case EXT:
+			case field_4984:
 				return EXTFramebufferObject.glGenFramebuffersEXT();
 			default:
 				return -1;
@@ -771,11 +771,11 @@ public class GLX {
 
 	public static int glGenRenderbuffers() {
 		switch (fboMode) {
-			case BASE:
+			case field_4981:
 				return GL30.glGenRenderbuffers();
-			case ARB:
+			case field_4983:
 				return ARBFramebufferObject.glGenRenderbuffers();
-			case EXT:
+			case field_4984:
 				return EXTFramebufferObject.glGenRenderbuffersEXT();
 			default:
 				return -1;
@@ -784,37 +784,37 @@ public class GLX {
 
 	public static void glRenderbufferStorage(int i, int j, int k, int l) {
 		switch (fboMode) {
-			case BASE:
+			case field_4981:
 				GL30.glRenderbufferStorage(i, j, k, l);
 				break;
-			case ARB:
+			case field_4983:
 				ARBFramebufferObject.glRenderbufferStorage(i, j, k, l);
 				break;
-			case EXT:
+			case field_4984:
 				EXTFramebufferObject.glRenderbufferStorageEXT(i, j, k, l);
 		}
 	}
 
 	public static void glFramebufferRenderbuffer(int i, int j, int k, int l) {
 		switch (fboMode) {
-			case BASE:
+			case field_4981:
 				GL30.glFramebufferRenderbuffer(i, j, k, l);
 				break;
-			case ARB:
+			case field_4983:
 				ARBFramebufferObject.glFramebufferRenderbuffer(i, j, k, l);
 				break;
-			case EXT:
+			case field_4984:
 				EXTFramebufferObject.glFramebufferRenderbufferEXT(i, j, k, l);
 		}
 	}
 
 	public static int glCheckFramebufferStatus(int i) {
 		switch (fboMode) {
-			case BASE:
+			case field_4981:
 				return GL30.glCheckFramebufferStatus(i);
-			case ARB:
+			case field_4983:
 				return ARBFramebufferObject.glCheckFramebufferStatus(i);
-			case EXT:
+			case field_4984:
 				return EXTFramebufferObject.glCheckFramebufferStatusEXT(i);
 			default:
 				return -1;
@@ -823,24 +823,24 @@ public class GLX {
 
 	public static void glFramebufferTexture2D(int i, int j, int k, int l, int m) {
 		switch (fboMode) {
-			case BASE:
+			case field_4981:
 				GL30.glFramebufferTexture2D(i, j, k, l, m);
 				break;
-			case ARB:
+			case field_4983:
 				ARBFramebufferObject.glFramebufferTexture2D(i, j, k, l, m);
 				break;
-			case EXT:
+			case field_4984:
 				EXTFramebufferObject.glFramebufferTexture2DEXT(i, j, k, l, m);
 		}
 	}
 
 	public static int getBoundFramebuffer() {
 		switch (fboMode) {
-			case BASE:
+			case field_4981:
 				return GlStateManager.getInteger(36006);
-			case ARB:
+			case field_4983:
 				return GlStateManager.getInteger(36006);
-			case EXT:
+			case field_4984:
 				return GlStateManager.getInteger(36006);
 			default:
 				return 0;
@@ -898,44 +898,44 @@ public class GLX {
 	public static void renderCrosshair(int i, boolean bl, boolean bl2, boolean bl3) {
 		GlStateManager.disableTexture();
 		GlStateManager.depthMask(false);
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		class_289 lv = class_289.method_1348();
+		class_287 lv2 = lv.method_1349();
 		GL11.glLineWidth(4.0F);
-		bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
+		lv2.method_1328(1, class_290.field_1576);
 		if (bl) {
-			bufferBuilder.vertex(0.0, 0.0, 0.0).color(0, 0, 0, 255).next();
-			bufferBuilder.vertex((double)i, 0.0, 0.0).color(0, 0, 0, 255).next();
+			lv2.method_1315(0.0, 0.0, 0.0).method_1323(0, 0, 0, 255).method_1344();
+			lv2.method_1315((double)i, 0.0, 0.0).method_1323(0, 0, 0, 255).method_1344();
 		}
 
 		if (bl2) {
-			bufferBuilder.vertex(0.0, 0.0, 0.0).color(0, 0, 0, 255).next();
-			bufferBuilder.vertex(0.0, (double)i, 0.0).color(0, 0, 0, 255).next();
+			lv2.method_1315(0.0, 0.0, 0.0).method_1323(0, 0, 0, 255).method_1344();
+			lv2.method_1315(0.0, (double)i, 0.0).method_1323(0, 0, 0, 255).method_1344();
 		}
 
 		if (bl3) {
-			bufferBuilder.vertex(0.0, 0.0, 0.0).color(0, 0, 0, 255).next();
-			bufferBuilder.vertex(0.0, 0.0, (double)i).color(0, 0, 0, 255).next();
+			lv2.method_1315(0.0, 0.0, 0.0).method_1323(0, 0, 0, 255).method_1344();
+			lv2.method_1315(0.0, 0.0, (double)i).method_1323(0, 0, 0, 255).method_1344();
 		}
 
-		tessellator.draw();
+		lv.method_1350();
 		GL11.glLineWidth(2.0F);
-		bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
+		lv2.method_1328(1, class_290.field_1576);
 		if (bl) {
-			bufferBuilder.vertex(0.0, 0.0, 0.0).color(255, 0, 0, 255).next();
-			bufferBuilder.vertex((double)i, 0.0, 0.0).color(255, 0, 0, 255).next();
+			lv2.method_1315(0.0, 0.0, 0.0).method_1323(255, 0, 0, 255).method_1344();
+			lv2.method_1315((double)i, 0.0, 0.0).method_1323(255, 0, 0, 255).method_1344();
 		}
 
 		if (bl2) {
-			bufferBuilder.vertex(0.0, 0.0, 0.0).color(0, 255, 0, 255).next();
-			bufferBuilder.vertex(0.0, (double)i, 0.0).color(0, 255, 0, 255).next();
+			lv2.method_1315(0.0, 0.0, 0.0).method_1323(0, 255, 0, 255).method_1344();
+			lv2.method_1315(0.0, (double)i, 0.0).method_1323(0, 255, 0, 255).method_1344();
 		}
 
 		if (bl3) {
-			bufferBuilder.vertex(0.0, 0.0, 0.0).color(127, 127, 255, 255).next();
-			bufferBuilder.vertex(0.0, 0.0, (double)i).color(127, 127, 255, 255).next();
+			lv2.method_1315(0.0, 0.0, 0.0).method_1323(127, 127, 255, 255).method_1344();
+			lv2.method_1315(0.0, 0.0, (double)i).method_1323(127, 127, 255, 255).method_1344();
 		}
 
-		tessellator.draw();
+		lv.method_1350();
 		GL11.glLineWidth(1.0F);
 		GlStateManager.depthMask(true);
 		GlStateManager.enableTexture();
@@ -955,9 +955,9 @@ public class GLX {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static enum FBOMode {
-		BASE,
-		ARB,
-		EXT;
+	static enum class_1010 {
+		field_4981,
+		field_4983,
+		field_4984;
 	}
 }

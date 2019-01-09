@@ -4,94 +4,85 @@ import com.google.common.collect.ImmutableSet;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.FluidRayTraceMode;
-import net.minecraft.world.World;
 
 public final class class_1675 {
-	public static HitResult method_7482(Entity entity, boolean bl, boolean bl2, @Nullable Entity entity2) {
-		double d = entity.x;
-		double e = entity.y;
-		double f = entity.z;
-		double g = entity.velocityX;
-		double h = entity.velocityY;
-		double i = entity.velocityZ;
-		World world = entity.world;
-		Vec3d vec3d = new Vec3d(d, e, f);
-		if (!world.method_8590(entity, entity.getBoundingBox(), (Set<Entity>)(!bl2 && entity2 != null ? method_7483(entity2) : ImmutableSet.of()))) {
-			return new HitResult(HitResult.Type.BLOCK, vec3d, Direction.getFacing(g, h, i), new BlockPos(entity));
+	public static class_239 method_7482(class_1297 arg, boolean bl, boolean bl2, @Nullable class_1297 arg2) {
+		double d = arg.field_5987;
+		double e = arg.field_6010;
+		double f = arg.field_6035;
+		double g = arg.field_5967;
+		double h = arg.field_5984;
+		double i = arg.field_6006;
+		class_1937 lv = arg.field_6002;
+		class_243 lv2 = new class_243(d, e, f);
+		if (!lv.method_8590(arg, arg.method_5829(), (Set<class_1297>)(!bl2 && arg2 != null ? method_7483(arg2) : ImmutableSet.of()))) {
+			return new class_239(class_239.class_240.field_1332, lv2, class_2350.method_10142(g, h, i), new class_2338(arg));
 		} else {
-			Vec3d vec3d2 = new Vec3d(d + g, e + h, f + i);
-			HitResult hitResult = world.rayTrace(vec3d, vec3d2, FluidRayTraceMode.NONE, true, false);
+			class_243 lv3 = new class_243(d + g, e + h, f + i);
+			class_239 lv4 = lv.method_8531(lv2, lv3, class_242.field_1348, true, false);
 			if (bl) {
-				if (hitResult != null) {
-					vec3d2 = new Vec3d(hitResult.pos.x, hitResult.pos.y, hitResult.pos.z);
+				if (lv4 != null) {
+					lv3 = new class_243(lv4.field_1329.field_1352, lv4.field_1329.field_1351, lv4.field_1329.field_1350);
 				}
 
-				Entity entity3 = null;
-				List<Entity> list = world.getVisibleEntities(entity, entity.getBoundingBox().stretch(g, h, i).expand(1.0));
+				class_1297 lv5 = null;
+				List<class_1297> list = lv.method_8335(arg, arg.method_5829().method_1012(g, h, i).method_1014(1.0));
 				double j = 0.0;
 
 				for (int k = 0; k < list.size(); k++) {
-					Entity entity4 = (Entity)list.get(k);
-					if (entity4.doesCollide() && (bl2 || !entity4.isPartOf(entity2)) && !entity4.noClip) {
-						BoundingBox boundingBox = entity4.getBoundingBox().expand(0.3F);
-						HitResult hitResult2 = boundingBox.rayTrace(vec3d, vec3d2);
-						if (hitResult2 != null) {
-							double l = vec3d.squaredDistanceTo(hitResult2.pos);
+					class_1297 lv6 = (class_1297)list.get(k);
+					if (lv6.method_5863() && (bl2 || !lv6.method_5779(arg2)) && !lv6.field_5960) {
+						class_238 lv7 = lv6.method_5829().method_1014(0.3F);
+						class_239 lv8 = lv7.method_1004(lv2, lv3);
+						if (lv8 != null) {
+							double l = lv2.method_1025(lv8.field_1329);
 							if (l < j || j == 0.0) {
-								entity3 = entity4;
+								lv5 = lv6;
 								j = l;
 							}
 						}
 					}
 				}
 
-				if (entity3 != null) {
-					hitResult = new HitResult(entity3);
+				if (lv5 != null) {
+					lv4 = new class_239(lv5);
 				}
 			}
 
-			return hitResult;
+			return lv4;
 		}
 	}
 
-	private static Set<Entity> method_7483(Entity entity) {
-		Entity entity2 = entity.getRiddenEntity();
-		return entity2 != null ? ImmutableSet.of(entity, entity2) : ImmutableSet.of(entity);
+	private static Set<class_1297> method_7483(class_1297 arg) {
+		class_1297 lv = arg.method_5854();
+		return lv != null ? ImmutableSet.of(arg, lv) : ImmutableSet.of(arg);
 	}
 
-	public static final void method_7484(Entity entity, float f) {
-		double d = entity.velocityX;
-		double e = entity.velocityY;
-		double g = entity.velocityZ;
-		float h = MathHelper.sqrt(d * d + g * g);
-		entity.yaw = (float)(MathHelper.atan2(g, d) * 180.0F / (float)Math.PI) + 90.0F;
-		entity.pitch = (float)(MathHelper.atan2((double)h, e) * 180.0F / (float)Math.PI) - 90.0F;
+	public static final void method_7484(class_1297 arg, float f) {
+		double d = arg.field_5967;
+		double e = arg.field_5984;
+		double g = arg.field_6006;
+		float h = class_3532.method_15368(d * d + g * g);
+		arg.field_6031 = (float)(class_3532.method_15349(g, d) * 180.0F / (float)Math.PI) + 90.0F;
+		arg.field_5965 = (float)(class_3532.method_15349((double)h, e) * 180.0F / (float)Math.PI) - 90.0F;
 
-		while (entity.pitch - entity.prevPitch < -180.0F) {
-			entity.prevPitch -= 360.0F;
+		while (arg.field_5965 - arg.field_6004 < -180.0F) {
+			arg.field_6004 -= 360.0F;
 		}
 
-		while (entity.pitch - entity.prevPitch >= 180.0F) {
-			entity.prevPitch += 360.0F;
+		while (arg.field_5965 - arg.field_6004 >= 180.0F) {
+			arg.field_6004 += 360.0F;
 		}
 
-		while (entity.yaw - entity.prevYaw < -180.0F) {
-			entity.prevYaw -= 360.0F;
+		while (arg.field_6031 - arg.field_5982 < -180.0F) {
+			arg.field_5982 -= 360.0F;
 		}
 
-		while (entity.yaw - entity.prevYaw >= 180.0F) {
-			entity.prevYaw += 360.0F;
+		while (arg.field_6031 - arg.field_5982 >= 180.0F) {
+			arg.field_5982 += 360.0F;
 		}
 
-		entity.pitch = MathHelper.lerp(f, entity.prevPitch, entity.pitch);
-		entity.yaw = MathHelper.lerp(f, entity.prevYaw, entity.yaw);
+		arg.field_5965 = class_3532.method_16439(f, arg.field_6004, arg.field_5965);
+		arg.field_6031 = class_3532.method_16439(f, arg.field_5982, arg.field_6031);
 	}
 }

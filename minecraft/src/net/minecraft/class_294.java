@@ -2,21 +2,18 @@ package net.minecraft;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gl.GlBuffer;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
 
 @Environment(EnvType.CLIENT)
-public class class_294 extends BufferRenderer {
-	private GlBuffer field_1604;
+public class class_294 extends class_286 {
+	private class_291 field_1604;
 
 	@Override
-	public void draw(BufferBuilder bufferBuilder) {
-		bufferBuilder.clear();
-		this.field_1604.set(bufferBuilder.getByteBuffer());
+	public void method_1309(class_287 arg) {
+		arg.method_1343();
+		this.field_1604.method_1352(arg.method_1342());
 	}
 
-	public void method_1372(GlBuffer glBuffer) {
-		this.field_1604 = glBuffer;
+	public void method_1372(class_291 arg) {
+		this.field_1604 = arg;
 	}
 }

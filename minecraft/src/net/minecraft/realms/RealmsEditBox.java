@@ -2,78 +2,78 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.GuiEventListener;
-import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.class_310;
+import net.minecraft.class_342;
+import net.minecraft.class_364;
 
 @Environment(EnvType.CLIENT)
 public class RealmsEditBox extends RealmsGuiEventListener {
-	private final TextFieldWidget editBox;
+	private final class_342 editBox;
 
 	public RealmsEditBox(int i, int j, int k, int l, int m) {
-		this.editBox = new TextFieldWidget(i, MinecraftClient.getInstance().fontRenderer, j, k, l, m);
+		this.editBox = new class_342(i, class_310.method_1551().field_1772, j, k, l, m);
 	}
 
 	public String getValue() {
-		return this.editBox.getText();
+		return this.editBox.method_1882();
 	}
 
 	public void tick() {
-		this.editBox.tick();
+		this.editBox.method_1865();
 	}
 
 	public void setValue(String string) {
-		this.editBox.setText(string);
+		this.editBox.method_1852(string);
 	}
 
 	@Override
 	public boolean charTyped(char c, int i) {
-		return this.editBox.charTyped(c, i);
+		return this.editBox.method_16806(c, i);
 	}
 
 	@Override
-	public GuiEventListener getProxy() {
+	public class_364 getProxy() {
 		return this.editBox;
 	}
 
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
-		return this.editBox.keyPressed(i, j, k);
+		return this.editBox.method_16805(i, j, k);
 	}
 
 	public boolean isFocused() {
-		return this.editBox.isFocused();
+		return this.editBox.method_1871();
 	}
 
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
-		return this.editBox.mouseClicked(d, e, i);
+		return this.editBox.method_16807(d, e, i);
 	}
 
 	@Override
 	public boolean mouseReleased(double d, double e, int i) {
-		return this.editBox.mouseReleased(d, e, i);
+		return this.editBox.method_16804(d, e, i);
 	}
 
 	@Override
 	public boolean mouseDragged(double d, double e, int i, double f, double g) {
-		return this.editBox.mouseDragged(d, e, i, f, g);
+		return this.editBox.method_16801(d, e, i, f, g);
 	}
 
 	@Override
 	public boolean mouseScrolled(double d) {
-		return this.editBox.mouseScrolled(d);
+		return this.editBox.method_16802(d);
 	}
 
 	public void render(int i, int j, float f) {
-		this.editBox.render(i, j, f);
+		this.editBox.method_1857(i, j, f);
 	}
 
 	public void setMaxLength(int i) {
-		this.editBox.setMaxLength(i);
+		this.editBox.method_1880(i);
 	}
 
 	public void setIsEditable(boolean bl) {
-		this.editBox.setIsEditable(bl);
+		this.editBox.method_1888(bl);
 	}
 }

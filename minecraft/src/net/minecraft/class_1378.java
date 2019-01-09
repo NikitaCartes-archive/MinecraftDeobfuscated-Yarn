@@ -1,30 +1,26 @@
 package net.minecraft;
 
 import javax.annotation.Nullable;
-import net.minecraft.block.PlacementEnvironment;
-import net.minecraft.entity.mob.MobEntityWithAi;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 
 public class class_1378 extends class_1379 {
-	public class_1378(MobEntityWithAi mobEntityWithAi, double d, int i) {
-		super(mobEntityWithAi, d, i);
+	public class_1378(class_1314 arg, double d, int i) {
+		super(arg, d, i);
 	}
 
 	@Nullable
 	@Override
-	protected Vec3d method_6302() {
-		Vec3d vec3d = class_1414.method_6375(this.field_6566, 10, 7);
+	protected class_243 method_6302() {
+		class_243 lv = class_1414.method_6375(this.field_6566, 10, 7);
 		int i = 0;
 
 		while (
-			vec3d != null
-				&& !this.field_6566.world.getBlockState(new BlockPos(vec3d)).canPlaceAtSide(this.field_6566.world, new BlockPos(vec3d), PlacementEnvironment.field_48)
+			lv != null
+				&& !this.field_6566.field_6002.method_8320(new class_2338(lv)).method_11609(this.field_6566.field_6002, new class_2338(lv), class_10.field_48)
 				&& i++ < 10
 		) {
-			vec3d = class_1414.method_6375(this.field_6566, 10, 7);
+			lv = class_1414.method_6375(this.field_6566, 10, 7);
 		}
 
-		return vec3d;
+		return lv;
 	}
 }

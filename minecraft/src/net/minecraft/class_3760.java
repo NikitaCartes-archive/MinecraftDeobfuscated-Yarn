@@ -1,16 +1,21 @@
 package net.minecraft;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.FollowTargetGoal;
-import net.minecraft.entity.raid.RaiderEntity;
+import java.util.function.Predicate;
+import javax.annotation.Nullable;
 
-public class class_3760<T extends LivingEntity> extends FollowTargetGoal<T> {
-	public class_3760(RaiderEntity raiderEntity, Class<T> class_, boolean bl) {
-		super(raiderEntity, class_, bl);
+public class class_3760<T extends class_1309> extends class_1400<T> {
+	private boolean field_17281 = true;
+
+	public class_3760(class_3763 arg, Class<T> class_, int i, boolean bl, boolean bl2, @Nullable Predicate<? super T> predicate) {
+		super(arg, class_, i, bl, bl2, predicate);
+	}
+
+	public void method_17351(boolean bl) {
+		this.field_17281 = bl;
 	}
 
 	@Override
-	public boolean canStart() {
-		return ((RaiderEntity)this.entity).hasActiveRaid() && this.field_6643.isAssignableFrom(RaiderEntity.class);
+	public boolean method_6264() {
+		return this.field_17281 && super.method_6264();
 	}
 }

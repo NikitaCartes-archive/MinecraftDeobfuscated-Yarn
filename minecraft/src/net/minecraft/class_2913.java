@@ -4,50 +4,47 @@ import java.io.IOException;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.Packet;
-import net.minecraft.network.listener.ServerLoginPacketListener;
-import net.minecraft.util.PacketByteBuf;
 
-public class class_2913 implements Packet<ServerLoginPacketListener> {
+public class class_2913 implements class_2596<class_2911> {
 	private int field_13259;
-	private PacketByteBuf field_13258;
+	private class_2540 field_13258;
 
 	public class_2913() {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public class_2913(int i, @Nullable PacketByteBuf packetByteBuf) {
+	public class_2913(int i, @Nullable class_2540 arg) {
 		this.field_13259 = i;
-		this.field_13258 = packetByteBuf;
+		this.field_13258 = arg;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.field_13259 = packetByteBuf.readVarInt();
-		if (packetByteBuf.readBoolean()) {
-			int i = packetByteBuf.readableBytes();
+	public void method_11053(class_2540 arg) throws IOException {
+		this.field_13259 = arg.method_10816();
+		if (arg.readBoolean()) {
+			int i = arg.readableBytes();
 			if (i < 0 || i > 1048576) {
 				throw new IOException("Payload may not be larger than 1048576 bytes");
 			}
 
-			this.field_13258 = new PacketByteBuf(packetByteBuf.readBytes(i));
+			this.field_13258 = new class_2540(arg.readBytes(i));
 		} else {
 			this.field_13258 = null;
 		}
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.field_13259);
+	public void method_11052(class_2540 arg) throws IOException {
+		arg.method_10804(this.field_13259);
 		if (this.field_13258 != null) {
-			packetByteBuf.writeBoolean(true);
-			packetByteBuf.writeBytes(this.field_13258.copy());
+			arg.writeBoolean(true);
+			arg.writeBytes(this.field_13258.copy());
 		} else {
-			packetByteBuf.writeBoolean(false);
+			arg.writeBoolean(false);
 		}
 	}
 
-	public void apply(ServerLoginPacketListener serverLoginPacketListener) {
-		serverLoginPacketListener.method_12640(this);
+	public void method_12645(class_2911 arg) {
+		arg.method_12640(this);
 	}
 }

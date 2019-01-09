@@ -2,29 +2,22 @@ package net.minecraft;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import net.minecraft.item.Items;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.loot.ConstantLootTableRange;
-import net.minecraft.world.loot.LootPool;
-import net.minecraft.world.loot.LootSupplier;
-import net.minecraft.world.loot.LootTables;
-import net.minecraft.world.loot.entry.ItemEntry;
 
-public class class_3714 implements Consumer<BiConsumer<Identifier, LootSupplier.Builder>> {
-	public void method_16120(BiConsumer<Identifier, LootSupplier.Builder> biConsumer) {
+public class class_3714 implements Consumer<BiConsumer<class_2960, class_52.class_53>> {
+	public void method_16120(BiConsumer<class_2960, class_52.class_53> biConsumer) {
 		biConsumer.accept(
-			LootTables.field_16216,
-			LootSupplier.create()
-				.withPool(
-					LootPool.create()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.field_8245).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.field_8073).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.field_8726).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.field_8153).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.field_8511).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.field_8276).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.field_8614).setWeight(2))
+			class_39.field_16216,
+			class_52.method_324()
+				.method_336(
+					class_55.method_347()
+						.method_352(class_44.method_289(1))
+						.method_351(class_77.method_411(class_1802.field_8245).method_437(10))
+						.method_351(class_77.method_411(class_1802.field_8073).method_437(10))
+						.method_351(class_77.method_411(class_1802.field_8726).method_437(10))
+						.method_351(class_77.method_411(class_1802.field_8153).method_437(10))
+						.method_351(class_77.method_411(class_1802.field_8511).method_437(10))
+						.method_351(class_77.method_411(class_1802.field_8276).method_437(10))
+						.method_351(class_77.method_411(class_1802.field_8614).method_437(2))
 				)
 		);
 	}

@@ -4,79 +4,67 @@ import com.google.common.collect.Lists;
 import com.mojang.datafixers.Dynamic;
 import java.util.List;
 import java.util.Random;
-import net.minecraft.datafixers.NbtOps;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.sortme.StructurePiece;
-import net.minecraft.sortme.structures.StructureManager;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.chunk.ChunkPos;
-import net.minecraft.world.gen.feature.structure.JigsawJunction;
 
 public abstract class class_3790 extends class_3443 {
-	protected class_3784 field_16693;
-	protected BlockPos field_16695;
-	private int field_16692;
-	protected Rotation field_16694;
-	private final List<JigsawJunction> field_16696 = Lists.<JigsawJunction>newArrayList();
+	protected final class_3784 field_16693;
+	protected class_2338 field_16695;
+	private final int field_16692;
+	protected final class_2470 field_16694;
+	private final List<class_3780> field_16696 = Lists.<class_3780>newArrayList();
 
-	public class_3790(StructurePiece structurePiece, StructureManager structureManager, class_3784 arg, BlockPos blockPos, int i, Rotation rotation) {
-		super(structurePiece, 0);
-		this.field_16693 = arg;
-		this.field_16695 = blockPos;
+	public class_3790(class_3773 arg, class_3485 arg2, class_3784 arg3, class_2338 arg4, int i, class_2470 arg5) {
+		super(arg, 0);
+		this.field_16693 = arg3;
+		this.field_16695 = arg4;
 		this.field_16692 = i;
-		this.field_16694 = rotation;
-		this.structureBounds = arg.method_16628(structureManager, blockPos, rotation);
+		this.field_16694 = arg5;
+		this.field_15315 = arg3.method_16628(arg2, arg4, arg5);
 	}
 
-	public class_3790(StructureManager structureManager, CompoundTag compoundTag, StructurePiece structurePiece) {
-		super(structurePiece, compoundTag);
-		this.field_16695 = new BlockPos(compoundTag.getInt("PosX"), compoundTag.getInt("PosY"), compoundTag.getInt("PosZ"));
-		this.field_16692 = compoundTag.getInt("ground_level_delta");
-		this.field_16693 = class_3817.deserialize(
-			new Dynamic<>(NbtOps.INSTANCE, compoundTag.getCompound("pool_element")), Registry.STRUCTURE_POOL_ELEMENT, "element_type", class_3777.field_16663
+	public class_3790(class_3485 arg, class_2487 arg2, class_3773 arg3) {
+		super(arg3, arg2);
+		this.field_16695 = new class_2338(arg2.method_10550("PosX"), arg2.method_10550("PosY"), arg2.method_10550("PosZ"));
+		this.field_16692 = arg2.method_10550("ground_level_delta");
+		this.field_16693 = class_3817.method_16758(
+			new Dynamic<>(class_2509.field_11560, arg2.method_10562("pool_element")), class_2378.field_16793, "element_type", class_3777.field_16663
 		);
-		this.field_16694 = Rotation.valueOf(compoundTag.getString("rotation"));
-		this.structureBounds = this.field_16693.method_16628(structureManager, this.field_16695, this.field_16694);
-		ListTag listTag = compoundTag.getList("junctions", 10);
+		this.field_16694 = class_2470.valueOf(arg2.method_10558("rotation"));
+		this.field_15315 = this.field_16693.method_16628(arg, this.field_16695, this.field_16694);
+		class_2499 lv = arg2.method_10554("junctions", 10);
 		this.field_16696.clear();
-		listTag.forEach(tag -> this.field_16696.add(JigsawJunction.deserialize(new Dynamic<>(NbtOps.INSTANCE, tag))));
+		lv.forEach(argx -> this.field_16696.add(class_3780.method_16613(new Dynamic<>(class_2509.field_11560, argx))));
 	}
 
 	@Override
-	protected void toNbt(CompoundTag compoundTag) {
-		compoundTag.putInt("PosX", this.field_16695.getX());
-		compoundTag.putInt("PosY", this.field_16695.getY());
-		compoundTag.putInt("PosZ", this.field_16695.getZ());
-		compoundTag.putInt("ground_level_delta", this.field_16692);
-		compoundTag.put("pool_element", this.field_16693.method_16755(NbtOps.INSTANCE).getValue());
-		compoundTag.putString("rotation", this.field_16694.name());
-		ListTag listTag = new ListTag();
+	protected void method_14943(class_2487 arg) {
+		arg.method_10569("PosX", this.field_16695.method_10263());
+		arg.method_10569("PosY", this.field_16695.method_10264());
+		arg.method_10569("PosZ", this.field_16695.method_10260());
+		arg.method_10569("ground_level_delta", this.field_16692);
+		arg.method_10566("pool_element", this.field_16693.method_16755(class_2509.field_11560).getValue());
+		arg.method_10582("rotation", this.field_16694.name());
+		class_2499 lv = new class_2499();
 
-		for (JigsawJunction jigsawJunction : this.field_16696) {
-			listTag.add(jigsawJunction.serialize(NbtOps.INSTANCE).getValue());
+		for (class_3780 lv2 : this.field_16696) {
+			lv.method_10606(lv2.method_16612(class_2509.field_11560).getValue());
 		}
 
-		compoundTag.put("junctions", listTag);
+		arg.method_10566("junctions", lv);
 	}
 
 	@Override
-	public boolean method_14931(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
-		return this.field_16693.method_16626(iWorld, this.field_16695, this.field_16694, mutableIntBoundingBox, random);
+	public boolean method_14931(class_1936 arg, Random random, class_3341 arg2, class_1923 arg3) {
+		return this.field_16693.method_16626(arg, this.field_16695, this.field_16694, arg2, random);
 	}
 
 	@Override
-	public void translate(int i, int j, int k) {
-		super.translate(i, j, k);
-		this.field_16695 = this.field_16695.add(i, j, k);
+	public void method_14922(int i, int j, int k) {
+		super.method_14922(i, j, k);
+		this.field_16695 = this.field_16695.method_10069(i, j, k);
 	}
 
 	@Override
-	public Rotation method_16888() {
+	public class_2470 method_16888() {
 		return this.field_16694;
 	}
 
@@ -88,7 +76,7 @@ public abstract class class_3790 extends class_3443 {
 		return this.field_16693;
 	}
 
-	public BlockPos method_16648() {
+	public class_2338 method_16648() {
 		return this.field_16695;
 	}
 
@@ -96,11 +84,11 @@ public abstract class class_3790 extends class_3443 {
 		return this.field_16692;
 	}
 
-	public void method_16647(JigsawJunction jigsawJunction) {
-		this.field_16696.add(jigsawJunction);
+	public void method_16647(class_3780 arg) {
+		this.field_16696.add(arg);
 	}
 
-	public List<JigsawJunction> method_16645() {
+	public List<class_3780> method_16645() {
 		return this.field_16696;
 	}
 }

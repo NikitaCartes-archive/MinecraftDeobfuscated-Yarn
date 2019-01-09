@@ -4,40 +4,27 @@ import com.google.common.collect.Sets;
 import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
-import net.minecraft.entity.boss.BossBar;
-import net.minecraft.entity.boss.ServerBossBar;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TextComponent;
-import net.minecraft.text.TextFormatter;
-import net.minecraft.text.event.HoverEvent;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.TagHelper;
-import net.minecraft.util.math.MathHelper;
 
-public class class_3002 extends ServerBossBar {
-	private final Identifier field_13441;
+public class class_3002 extends class_3213 {
+	private final class_2960 field_13441;
 	private final Set<UUID> field_13440 = Sets.<UUID>newHashSet();
 	private int field_13443;
 	private int field_13442 = 100;
 
-	public class_3002(Identifier identifier, TextComponent textComponent) {
-		super(textComponent, BossBar.Color.field_5786, BossBar.Overlay.field_5795);
-		this.field_13441 = identifier;
-		this.setPercent(0.0F);
+	public class_3002(class_2960 arg, class_2561 arg2) {
+		super(arg2, class_1259.class_1260.field_5786, class_1259.class_1261.field_5795);
+		this.field_13441 = arg;
+		this.method_5408(0.0F);
 	}
 
-	public Identifier method_12959() {
+	public class_2960 method_12959() {
 		return this.field_13441;
 	}
 
 	@Override
-	public void method_14088(ServerPlayerEntity serverPlayerEntity) {
-		super.method_14088(serverPlayerEntity);
-		this.field_13440.add(serverPlayerEntity.getUuid());
+	public void method_14088(class_3222 arg) {
+		super.method_14088(arg);
+		this.field_13440.add(arg.method_5667());
 	}
 
 	public void method_12964(UUID uUID) {
@@ -45,9 +32,9 @@ public class class_3002 extends ServerBossBar {
 	}
 
 	@Override
-	public void method_14089(ServerPlayerEntity serverPlayerEntity) {
-		super.method_14089(serverPlayerEntity);
-		this.field_13440.remove(serverPlayerEntity.getUuid());
+	public void method_14089(class_3222 arg) {
+		super.method_14089(arg);
+		this.field_13440.remove(arg.method_5667());
 	}
 
 	@Override
@@ -66,32 +53,32 @@ public class class_3002 extends ServerBossBar {
 
 	public void method_12954(int i) {
 		this.field_13443 = i;
-		this.setPercent(MathHelper.clamp((float)i / (float)this.field_13442, 0.0F, 1.0F));
+		this.method_5408(class_3532.method_15363((float)i / (float)this.field_13442, 0.0F, 1.0F));
 	}
 
 	public void method_12956(int i) {
 		this.field_13442 = i;
-		this.setPercent(MathHelper.clamp((float)this.field_13443 / (float)i, 0.0F, 1.0F));
+		this.method_5408(class_3532.method_15363((float)this.field_13443 / (float)i, 0.0F, 1.0F));
 	}
 
-	public final TextComponent method_12965() {
-		return TextFormatter.bracketed(this.getName())
-			.modifyStyle(
-				style -> style.setColor(this.getColor().getTextFormat())
-						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent(this.method_12959().toString())))
-						.setInsertion(this.method_12959().toString())
+	public final class_2561 method_12965() {
+		return class_2564.method_10885(this.method_5414())
+			.method_10859(
+				arg -> arg.method_10977(this.method_5420().method_5423())
+						.method_10949(new class_2568(class_2568.class_2569.field_11762, new class_2585(this.method_12959().toString())))
+						.method_10975(this.method_12959().toString())
 			);
 	}
 
-	public boolean method_12962(Collection<ServerPlayerEntity> collection) {
+	public boolean method_12962(Collection<class_3222> collection) {
 		Set<UUID> set = Sets.<UUID>newHashSet();
-		Set<ServerPlayerEntity> set2 = Sets.<ServerPlayerEntity>newHashSet();
+		Set<class_3222> set2 = Sets.<class_3222>newHashSet();
 
 		for (UUID uUID : this.field_13440) {
 			boolean bl = false;
 
-			for (ServerPlayerEntity serverPlayerEntity : collection) {
-				if (serverPlayerEntity.getUuid().equals(uUID)) {
+			for (class_3222 lv : collection) {
+				if (lv.method_5667().equals(uUID)) {
 					bl = true;
 					break;
 				}
@@ -102,25 +89,25 @@ public class class_3002 extends ServerBossBar {
 			}
 		}
 
-		for (ServerPlayerEntity serverPlayerEntity2 : collection) {
+		for (class_3222 lv2 : collection) {
 			boolean bl = false;
 
 			for (UUID uUID2 : this.field_13440) {
-				if (serverPlayerEntity2.getUuid().equals(uUID2)) {
+				if (lv2.method_5667().equals(uUID2)) {
 					bl = true;
 					break;
 				}
 			}
 
 			if (!bl) {
-				set2.add(serverPlayerEntity2);
+				set2.add(lv2);
 			}
 		}
 
 		for (UUID uUID : set) {
-			for (ServerPlayerEntity serverPlayerEntity3 : this.method_14092()) {
-				if (serverPlayerEntity3.getUuid().equals(uUID)) {
-					this.method_14089(serverPlayerEntity3);
+			for (class_3222 lv3 : this.method_14092()) {
+				if (lv3.method_5667().equals(uUID)) {
+					this.method_14089(lv3);
 					break;
 				}
 			}
@@ -128,60 +115,60 @@ public class class_3002 extends ServerBossBar {
 			this.field_13440.remove(uUID);
 		}
 
-		for (ServerPlayerEntity serverPlayerEntity2 : set2) {
-			this.method_14088(serverPlayerEntity2);
+		for (class_3222 lv2 : set2) {
+			this.method_14088(lv2);
 		}
 
 		return !set.isEmpty() || !set2.isEmpty();
 	}
 
-	public CompoundTag method_12963() {
-		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.putString("Name", TextComponent.Serializer.toJsonString(this.name));
-		compoundTag.putBoolean("Visible", this.method_14093());
-		compoundTag.putInt("Value", this.field_13443);
-		compoundTag.putInt("Max", this.field_13442);
-		compoundTag.putString("Color", this.getColor().getName());
-		compoundTag.putString("Overlay", this.getOverlay().getName());
-		compoundTag.putBoolean("DarkenScreen", this.getDarkenSky());
-		compoundTag.putBoolean("PlayBossMusic", this.hasDragonMusic());
-		compoundTag.putBoolean("CreateWorldFog", this.getThickenFog());
-		ListTag listTag = new ListTag();
+	public class_2487 method_12963() {
+		class_2487 lv = new class_2487();
+		lv.method_10582("Name", class_2561.class_2562.method_10867(this.field_5777));
+		lv.method_10556("Visible", this.method_14093());
+		lv.method_10569("Value", this.field_13443);
+		lv.method_10569("Max", this.field_13442);
+		lv.method_10582("Color", this.method_5420().method_5421());
+		lv.method_10582("Overlay", this.method_5415().method_5425());
+		lv.method_10556("DarkenScreen", this.method_5417());
+		lv.method_10556("PlayBossMusic", this.method_5418());
+		lv.method_10556("CreateWorldFog", this.method_5419());
+		class_2499 lv2 = new class_2499();
 
 		for (UUID uUID : this.field_13440) {
-			listTag.add((Tag)TagHelper.serializeUuid(uUID));
+			lv2.method_10606(class_2512.method_10689(uUID));
 		}
 
-		compoundTag.put("Players", listTag);
-		return compoundTag;
+		lv.method_10566("Players", lv2);
+		return lv;
 	}
 
-	public static class_3002 method_12966(CompoundTag compoundTag, Identifier identifier) {
-		class_3002 lv = new class_3002(identifier, TextComponent.Serializer.fromJsonString(compoundTag.getString("Name")));
-		lv.setVisible(compoundTag.getBoolean("Visible"));
-		lv.method_12954(compoundTag.getInt("Value"));
-		lv.method_12956(compoundTag.getInt("Max"));
-		lv.setColor(BossBar.Color.byName(compoundTag.getString("Color")));
-		lv.setOverlay(BossBar.Overlay.byName(compoundTag.getString("Overlay")));
-		lv.setDarkenSky(compoundTag.getBoolean("DarkenScreen"));
-		lv.setDragonMusic(compoundTag.getBoolean("PlayBossMusic"));
-		lv.setThickenFog(compoundTag.getBoolean("CreateWorldFog"));
-		ListTag listTag = compoundTag.getList("Players", 10);
+	public static class_3002 method_12966(class_2487 arg, class_2960 arg2) {
+		class_3002 lv = new class_3002(arg2, class_2561.class_2562.method_10877(arg.method_10558("Name")));
+		lv.method_14091(arg.method_10577("Visible"));
+		lv.method_12954(arg.method_10550("Value"));
+		lv.method_12956(arg.method_10550("Max"));
+		lv.method_5416(class_1259.class_1260.method_5422(arg.method_10558("Color")));
+		lv.method_5409(class_1259.class_1261.method_5424(arg.method_10558("Overlay")));
+		lv.method_5406(arg.method_10577("DarkenScreen"));
+		lv.method_5410(arg.method_10577("PlayBossMusic"));
+		lv.method_5411(arg.method_10577("CreateWorldFog"));
+		class_2499 lv2 = arg.method_10554("Players", 10);
 
-		for (int i = 0; i < listTag.size(); i++) {
-			lv.method_12964(TagHelper.deserializeUuid(listTag.getCompoundTag(i)));
+		for (int i = 0; i < lv2.size(); i++) {
+			lv.method_12964(class_2512.method_10690(lv2.method_10602(i)));
 		}
 
 		return lv;
 	}
 
-	public void method_12957(ServerPlayerEntity serverPlayerEntity) {
-		if (this.field_13440.contains(serverPlayerEntity.getUuid())) {
-			this.method_14088(serverPlayerEntity);
+	public void method_12957(class_3222 arg) {
+		if (this.field_13440.contains(arg.method_5667())) {
+			this.method_14088(arg);
 		}
 	}
 
-	public void method_12961(ServerPlayerEntity serverPlayerEntity) {
-		super.method_14089(serverPlayerEntity);
+	public void method_12961(class_3222 arg) {
+		super.method_14089(arg);
 	}
 }

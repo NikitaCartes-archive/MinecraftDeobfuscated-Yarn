@@ -3,11 +3,6 @@ package net.minecraft;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Objects;
-import net.minecraft.command.arguments.Vec3ArgumentType;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec2f;
-import net.minecraft.util.math.Vec3d;
 
 public class class_2268 implements class_2267 {
 	private final double field_10714;
@@ -21,27 +16,27 @@ public class class_2268 implements class_2267 {
 	}
 
 	@Override
-	public Vec3d method_9708(ServerCommandSource serverCommandSource) {
-		Vec2f vec2f = serverCommandSource.getRotation();
-		Vec3d vec3d = serverCommandSource.getEntityAnchor().positionAt(serverCommandSource);
-		float f = MathHelper.cos((vec2f.y + 90.0F) * (float) (Math.PI / 180.0));
-		float g = MathHelper.sin((vec2f.y + 90.0F) * (float) (Math.PI / 180.0));
-		float h = MathHelper.cos(-vec2f.x * (float) (Math.PI / 180.0));
-		float i = MathHelper.sin(-vec2f.x * (float) (Math.PI / 180.0));
-		float j = MathHelper.cos((-vec2f.x + 90.0F) * (float) (Math.PI / 180.0));
-		float k = MathHelper.sin((-vec2f.x + 90.0F) * (float) (Math.PI / 180.0));
-		Vec3d vec3d2 = new Vec3d((double)(f * h), (double)i, (double)(g * h));
-		Vec3d vec3d3 = new Vec3d((double)(f * j), (double)k, (double)(g * j));
-		Vec3d vec3d4 = vec3d2.crossProduct(vec3d3).multiply(-1.0);
-		double d = vec3d2.x * this.field_10712 + vec3d3.x * this.field_10713 + vec3d4.x * this.field_10714;
-		double e = vec3d2.y * this.field_10712 + vec3d3.y * this.field_10713 + vec3d4.y * this.field_10714;
-		double l = vec3d2.z * this.field_10712 + vec3d3.z * this.field_10713 + vec3d4.z * this.field_10714;
-		return new Vec3d(vec3d.x + d, vec3d.y + e, vec3d.z + l);
+	public class_243 method_9708(class_2168 arg) {
+		class_241 lv = arg.method_9210();
+		class_243 lv2 = arg.method_9219().method_9299(arg);
+		float f = class_3532.method_15362((lv.field_1342 + 90.0F) * (float) (Math.PI / 180.0));
+		float g = class_3532.method_15374((lv.field_1342 + 90.0F) * (float) (Math.PI / 180.0));
+		float h = class_3532.method_15362(-lv.field_1343 * (float) (Math.PI / 180.0));
+		float i = class_3532.method_15374(-lv.field_1343 * (float) (Math.PI / 180.0));
+		float j = class_3532.method_15362((-lv.field_1343 + 90.0F) * (float) (Math.PI / 180.0));
+		float k = class_3532.method_15374((-lv.field_1343 + 90.0F) * (float) (Math.PI / 180.0));
+		class_243 lv3 = new class_243((double)(f * h), (double)i, (double)(g * h));
+		class_243 lv4 = new class_243((double)(f * j), (double)k, (double)(g * j));
+		class_243 lv5 = lv3.method_1036(lv4).method_1021(-1.0);
+		double d = lv3.field_1352 * this.field_10712 + lv4.field_1352 * this.field_10713 + lv5.field_1352 * this.field_10714;
+		double e = lv3.field_1351 * this.field_10712 + lv4.field_1351 * this.field_10713 + lv5.field_1351 * this.field_10714;
+		double l = lv3.field_1350 * this.field_10712 + lv4.field_1350 * this.field_10713 + lv5.field_1350 * this.field_10714;
+		return new class_243(lv2.field_1352 + d, lv2.field_1351 + e, lv2.field_1350 + l);
 	}
 
 	@Override
-	public Vec2f method_9709(ServerCommandSource serverCommandSource) {
-		return Vec2f.ZERO;
+	public class_241 method_9709(class_2168 arg) {
+		return class_241.field_1340;
 	}
 
 	@Override
@@ -71,11 +66,11 @@ public class class_2268 implements class_2267 {
 				return new class_2268(d, e, f);
 			} else {
 				stringReader.setCursor(i);
-				throw Vec3ArgumentType.INCOMPLETE_EXCEPTION.createWithContext(stringReader);
+				throw class_2277.field_10755.createWithContext(stringReader);
 			}
 		} else {
 			stringReader.setCursor(i);
-			throw Vec3ArgumentType.INCOMPLETE_EXCEPTION.createWithContext(stringReader);
+			throw class_2277.field_10755.createWithContext(stringReader);
 		}
 	}
 
@@ -84,7 +79,7 @@ public class class_2268 implements class_2267 {
 			throw class_2278.field_10759.createWithContext(stringReader);
 		} else if (stringReader.peek() != '^') {
 			stringReader.setCursor(i);
-			throw Vec3ArgumentType.MIXED_COORDINATE_EXCEPTION.createWithContext(stringReader);
+			throw class_2277.field_10757.createWithContext(stringReader);
 		} else {
 			stringReader.skip();
 			return stringReader.canRead() && stringReader.peek() != ' ' ? stringReader.readDouble() : 0.0;

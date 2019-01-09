@@ -11,29 +11,18 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import javax.annotation.Nullable;
-import net.minecraft.item.Item;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.command.CommandSource;
-import net.minecraft.sortme.JsonLikeTagParser;
-import net.minecraft.state.property.Property;
-import net.minecraft.tag.ItemTags;
-import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class class_2291 {
-	public static final SimpleCommandExceptionType field_10800 = new SimpleCommandExceptionType(new TranslatableTextComponent("argument.item.tag.disallowed"));
-	public static final DynamicCommandExceptionType field_10799 = new DynamicCommandExceptionType(
-		object -> new TranslatableTextComponent("argument.item.id.invalid", object)
-	);
+	public static final SimpleCommandExceptionType field_10800 = new SimpleCommandExceptionType(new class_2588("argument.item.tag.disallowed"));
+	public static final DynamicCommandExceptionType field_10799 = new DynamicCommandExceptionType(object -> new class_2588("argument.item.id.invalid", object));
 	private static final Function<SuggestionsBuilder, CompletableFuture<Suggestions>> field_10806 = SuggestionsBuilder::buildFuture;
 	private final StringReader field_10802;
 	private final boolean field_10804;
-	private final Map<Property<?>, Comparable<?>> field_10801 = Maps.<Property<?>, Comparable<?>>newHashMap();
-	private Item field_10803;
+	private final Map<class_2769<?>, Comparable<?>> field_10801 = Maps.<class_2769<?>, Comparable<?>>newHashMap();
+	private class_1792 field_10803;
 	@Nullable
-	private CompoundTag field_10807;
-	private Identifier field_10808 = new Identifier("");
+	private class_2487 field_10807;
+	private class_2960 field_10808 = new class_2960("");
 	private int field_10809;
 	private Function<SuggestionsBuilder, CompletableFuture<Suggestions>> field_10805 = field_10806;
 
@@ -42,27 +31,27 @@ public class class_2291 {
 		this.field_10804 = bl;
 	}
 
-	public Item method_9786() {
+	public class_1792 method_9786() {
 		return this.field_10803;
 	}
 
 	@Nullable
-	public CompoundTag method_9797() {
+	public class_2487 method_9797() {
 		return this.field_10807;
 	}
 
-	public Identifier method_9790() {
+	public class_2960 method_9790() {
 		return this.field_10808;
 	}
 
 	public void method_9795() throws CommandSyntaxException {
 		int i = this.field_10802.getCursor();
-		Identifier identifier = Identifier.parse(this.field_10802);
-		if (Registry.ITEM.contains(identifier)) {
-			this.field_10803 = Registry.ITEM.get(identifier);
+		class_2960 lv = class_2960.method_12835(this.field_10802);
+		if (class_2378.field_11142.method_10250(lv)) {
+			this.field_10803 = class_2378.field_11142.method_10223(lv);
 		} else {
 			this.field_10802.setCursor(i);
-			throw field_10799.createWithContext(this.field_10802, identifier.toString());
+			throw field_10799.createWithContext(this.field_10802, lv.toString());
 		}
 	}
 
@@ -73,12 +62,12 @@ public class class_2291 {
 			this.field_10805 = this::method_9796;
 			this.field_10802.expect('#');
 			this.field_10809 = this.field_10802.getCursor();
-			this.field_10808 = Identifier.parse(this.field_10802);
+			this.field_10808 = class_2960.method_12835(this.field_10802);
 		}
 	}
 
 	public void method_9788() throws CommandSyntaxException {
-		this.field_10807 = new JsonLikeTagParser(this.field_10802).parseCompoundTag();
+		this.field_10807 = new class_2522(this.field_10802).method_10727();
 	}
 
 	public class_2291 method_9789() throws CommandSyntaxException {
@@ -107,15 +96,15 @@ public class class_2291 {
 	}
 
 	private CompletableFuture<Suggestions> method_9796(SuggestionsBuilder suggestionsBuilder) {
-		return CommandSource.suggestIdentifiers(ItemTags.getContainer().getKeys(), suggestionsBuilder.createOffset(this.field_10809));
+		return class_2172.method_9270(class_3489.method_15106().method_15189(), suggestionsBuilder.createOffset(this.field_10809));
 	}
 
 	private CompletableFuture<Suggestions> method_9791(SuggestionsBuilder suggestionsBuilder) {
 		if (this.field_10804) {
-			CommandSource.suggestIdentifiers(ItemTags.getContainer().getKeys(), suggestionsBuilder, String.valueOf('#'));
+			class_2172.method_9258(class_3489.method_15106().method_15189(), suggestionsBuilder, String.valueOf('#'));
 		}
 
-		return CommandSource.suggestIdentifiers(Registry.ITEM.keys(), suggestionsBuilder);
+		return class_2172.method_9270(class_2378.field_11142.method_10235(), suggestionsBuilder);
 	}
 
 	public CompletableFuture<Suggestions> method_9793(SuggestionsBuilder suggestionsBuilder) {

@@ -32,8 +32,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import javax.annotation.Nullable;
-import net.minecraft.datafixers.TypeReferences;
-import net.minecraft.util.PackedIntegerArray;
 
 public class class_1191 extends DataFix {
 	private static final int[][] field_5687 = new int[][]{{-1, 0, 0}, {1, 0, 0}, {0, -1, 0}, {0, 1, 0}, {0, 0, -1}, {0, 0, 1}};
@@ -72,7 +70,7 @@ public class class_1191 extends DataFix {
 
 	@Override
 	protected TypeRewriteRule makeRule() {
-		Type<?> type = this.getInputSchema().getType(TypeReferences.CHUNK);
+		Type<?> type = this.getInputSchema().getType(class_1208.field_5726);
 		OpticFinder<?> opticFinder = type.findField("Level");
 		OpticFinder<?> opticFinder2 = opticFinder.type().findField("Sections");
 		Type<?> type2 = opticFinder2.type();
@@ -154,14 +152,14 @@ public class class_1191 extends DataFix {
 											}
 										}
 
-										return typedxx.updateTyped(opticFinder3, typedxxx -> int2ObjectMap.get(typedxxx.get(DSL.remainderFinder()).getInt("Y")).method_5083(typedxxx));
+										return typedxx.updateTyped(opticFinder3, typedxxx -> int2ObjectMap.get(typedxxx.get(DSL.remainderFinder()).get("Y").asInt(0)).method_5083(typedxxx));
 									}
 								}
 							);
 							if (is[0] != 0) {
 								typed2 = typed2.update(DSL.remainderFinder(), dynamic -> {
-									Dynamic<?> dynamic2 = DataFixUtils.orElse(dynamic.get("UpgradeData"), dynamic.emptyMap());
-									return dynamic.set("UpgradeData", dynamic2.set("Sides", dynamic.createByte((byte)(dynamic2.getByte("Sides") | is[0]))));
+									Dynamic<?> dynamic2 = DataFixUtils.orElse(dynamic.get("UpgradeData").get(), dynamic.emptyMap());
+									return dynamic.set("UpgradeData", dynamic2.set("Sides", dynamic.createByte((byte)(dynamic2.get("Sides").asByte((byte)0) | is[0]))));
 								});
 							}
 
@@ -235,9 +233,9 @@ public class class_1191 extends DataFix {
 
 			for (int i = 0; i < this.field_5692.size(); i++) {
 				Dynamic<?> dynamic = (Dynamic<?>)this.field_5692.get(i);
-				String string = dynamic.getString("Name");
+				String string = dynamic.get("Name").asString("");
 				if (class_1191.field_5688.containsKey(string)) {
-					boolean bl = Objects.equals(dynamic.get("Properties").flatMap(dynamicx -> dynamicx.get("decayable")).flatMap(Dynamic::getStringValue).orElse(""), "false");
+					boolean bl = Objects.equals(dynamic.get("Properties").get("decayable").asString(""), "false");
 					this.field_5689.add(i);
 					this.field_5690.put(this.method_5082(string, bl, 7), i);
 					this.field_5692.set(i, this.method_5072(dynamic, string, bl, 7));
@@ -269,17 +267,13 @@ public class class_1191 extends DataFix {
 		}
 
 		private int method_5065(int i) {
-			return this.method_5068(i)
-				? 0
-				: Integer.parseInt(
-					(String)((Dynamic)this.field_5692.get(i)).get("Properties").flatMap(dynamic -> dynamic.get("distance")).flatMap(Dynamic::getStringValue).orElse("")
-				);
+			return this.method_5068(i) ? 0 : Integer.parseInt(((Dynamic)this.field_5692.get(i)).get("Properties").get("distance").asString(""));
 		}
 
 		private void method_5070(int i, int j, int k) {
 			Dynamic<?> dynamic = (Dynamic<?>)this.field_5692.get(j);
-			String string = dynamic.getString("Name");
-			boolean bl = Objects.equals(dynamic.get("Properties").flatMap(dynamicx -> dynamicx.get("persistent")).flatMap(Dynamic::getStringValue).orElse(""), "true");
+			String string = dynamic.get("Name").asString("");
+			boolean bl = Objects.equals(dynamic.get("Properties").get("persistent").asString(""), "true");
 			int l = this.method_5082(string, bl, k);
 			if (!this.field_5690.containsKey(l)) {
 				int m = this.field_5692.size();
@@ -289,36 +283,36 @@ public class class_1191 extends DataFix {
 			}
 
 			int m = this.field_5690.get(l);
-			if (1 << this.field_5696.getElementBits() <= m) {
-				PackedIntegerArray packedIntegerArray = new PackedIntegerArray(this.field_5696.getElementBits() + 1, 4096);
+			if (1 << this.field_5696.method_15213() <= m) {
+				class_3508 lv = new class_3508(this.field_5696.method_15213() + 1, 4096);
 
 				for (int n = 0; n < 4096; n++) {
-					packedIntegerArray.set(n, this.field_5696.get(n));
+					lv.method_15210(n, this.field_5696.method_15211(n));
 				}
 
-				this.field_5696 = packedIntegerArray;
+				this.field_5696 = lv;
 			}
 
-			this.field_5696.set(i, m);
+			this.field_5696.method_15210(i, m);
 		}
 	}
 
 	public abstract static class class_1193 {
-		final Type<Pair<String, Dynamic<?>>> field_5695 = DSL.named(TypeReferences.BLOCK_STATE.typeName(), DSL.remainderType());
+		private final Type<Pair<String, Dynamic<?>>> field_5695 = DSL.named(class_1208.field_5720.typeName(), DSL.remainderType());
 		protected final OpticFinder<List<Pair<String, Dynamic<?>>>> field_5693 = DSL.fieldFinder("Palette", DSL.list(this.field_5695));
 		protected final List<Dynamic<?>> field_5692;
 		protected final int field_5694;
 		@Nullable
-		protected PackedIntegerArray field_5696;
+		protected class_3508 field_5696;
 
 		public class_1193(Typed<?> typed, Schema schema) {
-			if (!Objects.equals(schema.getType(TypeReferences.BLOCK_STATE), this.field_5695)) {
+			if (!Objects.equals(schema.getType(class_1208.field_5720), this.field_5695)) {
 				throw new IllegalStateException("Block state type is not what was expected.");
 			} else {
 				Optional<List<Pair<String, Dynamic<?>>>> optional = typed.getOptional(this.field_5693);
 				this.field_5692 = (List<Dynamic<?>>)optional.map(list -> (List)list.stream().map(Pair::getSecond).collect(Collectors.toList())).orElse(ImmutableList.of());
 				Dynamic<?> dynamic = typed.get(DSL.remainderFinder());
-				this.field_5694 = dynamic.getInt("Y");
+				this.field_5694 = dynamic.get("Y").asInt(0);
 				this.method_5074(dynamic);
 			}
 		}
@@ -327,22 +321,19 @@ public class class_1191 extends DataFix {
 			if (this.method_5076()) {
 				this.field_5696 = null;
 			} else {
-				long[] ls = ((LongStream)dynamic.get("BlockStates").flatMap(Dynamic::getLongStream).get()).toArray();
+				long[] ls = ((LongStream)dynamic.get("BlockStates").asLongStreamOpt().get()).toArray();
 				int i = Math.max(4, DataFixUtils.ceillog2(this.field_5692.size()));
-				this.field_5696 = new PackedIntegerArray(i, 4096, ls);
+				this.field_5696 = new class_3508(i, 4096, ls);
 			}
 		}
 
 		public Typed<?> method_5083(Typed<?> typed) {
 			return this.method_5079()
 				? typed
-				: typed.update(DSL.remainderFinder(), dynamic -> dynamic.set("BlockStates", dynamic.createLongList(Arrays.stream(this.field_5696.getStorage()))))
+				: typed.update(DSL.remainderFinder(), dynamic -> dynamic.set("BlockStates", dynamic.createLongList(Arrays.stream(this.field_5696.method_15212()))))
 					.set(
 						this.field_5693,
-						(List<Pair<String, Dynamic<?>>>)this.field_5692
-							.stream()
-							.map(dynamic -> Pair.of(TypeReferences.BLOCK_STATE.typeName(), dynamic))
-							.collect(Collectors.toList())
+						(List<Pair<String, Dynamic<?>>>)this.field_5692.stream().map(dynamic -> Pair.of(class_1208.field_5720.typeName(), dynamic)).collect(Collectors.toList())
 					);
 		}
 
@@ -351,14 +342,14 @@ public class class_1191 extends DataFix {
 		}
 
 		public int method_5075(int i) {
-			return this.field_5696.get(i);
+			return this.field_5696.method_15211(i);
 		}
 
 		protected int method_5082(String string, boolean bl, int i) {
 			return class_1191.field_5688.get(string) << 5 | (bl ? 16 : 0) | i;
 		}
 
-		public int method_5077() {
+		int method_5077() {
 			return this.field_5694;
 		}
 

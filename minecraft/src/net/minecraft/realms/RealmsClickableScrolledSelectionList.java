@@ -2,8 +2,8 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_364;
 import net.minecraft.class_400;
-import net.minecraft.client.gui.GuiEventListener;
 
 @Environment(EnvType.CLIENT)
 public abstract class RealmsClickableScrolledSelectionList extends RealmsGuiEventListener {
@@ -14,11 +14,11 @@ public abstract class RealmsClickableScrolledSelectionList extends RealmsGuiEven
 	}
 
 	public void render(int i, int j, float f) {
-		this.proxy.draw(i, j, f);
+		this.proxy.method_1930(i, j, f);
 	}
 
 	public int width() {
-		return this.proxy.width();
+		return this.proxy.method_2085();
 	}
 
 	protected void renderItem(int i, int j, int k, int l, Tezzelator tezzelator, int m, int n) {
@@ -48,20 +48,20 @@ public abstract class RealmsClickableScrolledSelectionList extends RealmsGuiEven
 	}
 
 	public int getScrollbarPosition() {
-		return this.proxy.width() / 2 + 124;
+		return this.proxy.method_2085() / 2 + 124;
 	}
 
 	@Override
-	public GuiEventListener getProxy() {
+	public class_364 getProxy() {
 		return this.proxy;
 	}
 
 	public void scroll(int i) {
-		this.proxy.scroll(i);
+		this.proxy.method_1951(i);
 	}
 
 	public int getScroll() {
-		return this.proxy.getScrollY();
+		return this.proxy.method_1944();
 	}
 
 	protected void renderList(int i, int j, int k, int l) {
@@ -74,7 +74,7 @@ public abstract class RealmsClickableScrolledSelectionList extends RealmsGuiEven
 	}
 
 	public void setLeftPos(int i) {
-		this.proxy.setX(i);
+		this.proxy.method_1945(i);
 	}
 
 	public int method_1915() {
@@ -90,7 +90,7 @@ public abstract class RealmsClickableScrolledSelectionList extends RealmsGuiEven
 	}
 
 	public double method_1917() {
-		return this.proxy.getScrollY();
+		return this.proxy.method_2086();
 	}
 
 	public int itemHeight() {
@@ -98,6 +98,6 @@ public abstract class RealmsClickableScrolledSelectionList extends RealmsGuiEven
 	}
 
 	public boolean isVisible() {
-		return this.proxy.isVisible();
+		return this.proxy.method_1939();
 	}
 }

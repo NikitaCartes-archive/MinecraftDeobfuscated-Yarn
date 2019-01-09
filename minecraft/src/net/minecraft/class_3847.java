@@ -1,7 +1,6 @@
 package net.minecraft;
 
 import com.google.common.collect.Queues;
-import com.mojang.datafixers.util.Pair;
 import java.util.Collection;
 import java.util.List;
 import java.util.Queue;
@@ -17,29 +16,28 @@ public interface class_3847<T, F> {
 
 	boolean method_16911();
 
-	public static final class class_3848<T> implements class_3847<Pair<Integer, T>, T> {
-		private final List<Queue<T>> field_17044;
+	public static final class class_3848 implements class_3847<class_3847.class_3907, Runnable> {
+		private final List<Queue<Runnable>> field_17044;
 
 		public class_3848(int i) {
-			this.field_17044 = (List<Queue<T>>)IntStream.range(0, i).mapToObj(ix -> Queues.newConcurrentLinkedQueue()).collect(Collectors.toList());
+			this.field_17044 = (List<Queue<Runnable>>)IntStream.range(0, i).mapToObj(ix -> Queues.newConcurrentLinkedQueue()).collect(Collectors.toList());
 		}
 
 		@Nullable
-		@Override
-		public T method_16909() {
-			for (Queue<T> queue : this.field_17044) {
-				T object = (T)queue.poll();
-				if (object != null) {
-					return object;
+		public Runnable method_17346() {
+			for (Queue<Runnable> queue : this.field_17044) {
+				Runnable runnable = (Runnable)queue.poll();
+				if (runnable != null) {
+					return runnable;
 				}
 			}
 
 			return null;
 		}
 
-		public boolean method_16913(Pair<Integer, T> pair) {
-			int i = pair.getFirst();
-			((Queue)this.field_17044.get(i)).add(pair.getSecond());
+		public boolean method_16913(class_3847.class_3907 arg) {
+			int i = arg.method_17347();
+			((Queue)this.field_17044.get(i)).add(arg);
 			return true;
 		}
 
@@ -70,6 +68,24 @@ public interface class_3847<T, F> {
 		@Override
 		public boolean method_16911() {
 			return this.field_17045.isEmpty();
+		}
+	}
+
+	public static final class class_3907 implements Runnable {
+		private final int field_17278;
+		private final Runnable field_17279;
+
+		public class_3907(int i, Runnable runnable) {
+			this.field_17278 = i;
+			this.field_17279 = runnable;
+		}
+
+		public void run() {
+			this.field_17279.run();
+		}
+
+		public int method_17347() {
+			return this.field_17278;
 		}
 	}
 }

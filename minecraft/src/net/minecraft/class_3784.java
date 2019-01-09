@@ -4,36 +4,27 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.List;
 import java.util.Random;
-import net.minecraft.sortme.StructurePoolElement;
-import net.minecraft.sortme.structures.StructureManager;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
 
 public abstract class class_3784 {
-	private class_3785.Projection field_16862 = class_3785.Projection.RIGID;
+	private class_3785.class_3786 field_16862 = class_3785.class_3786.field_16687;
 
-	public abstract List<class_3499.class_3501> method_16627(StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random);
+	public abstract List<class_3499.class_3501> method_16627(class_3485 arg, class_2338 arg2, class_2470 arg3, Random random);
 
-	public abstract MutableIntBoundingBox method_16628(StructureManager structureManager, BlockPos blockPos, Rotation rotation);
+	public abstract class_3341 method_16628(class_3485 arg, class_2338 arg2, class_2470 arg3);
 
-	public abstract boolean method_16626(IWorld iWorld, BlockPos blockPos, Rotation rotation, MutableIntBoundingBox mutableIntBoundingBox, Random random);
+	public abstract boolean method_16626(class_1936 arg, class_2338 arg2, class_2470 arg3, class_3341 arg4, Random random);
 
-	public abstract StructurePoolElement method_16757();
+	public abstract class_3816 method_16757();
 
-	public void method_16756(
-		IWorld iWorld, class_3499.class_3501 arg, BlockPos blockPos, Rotation rotation, Random random, MutableIntBoundingBox mutableIntBoundingBox
-	) {
+	public void method_16756(class_1936 arg, class_3499.class_3501 arg2, class_2338 arg3, class_2470 arg4, Random random, class_3341 arg5) {
 	}
 
-	public class_3784 method_16622(class_3785.Projection projection) {
-		this.field_16862 = projection;
+	public class_3784 method_16622(class_3785.class_3786 arg) {
+		this.field_16862 = arg;
 		return this;
 	}
 
-	public class_3785.Projection method_16624() {
+	public class_3785.class_3786 method_16624() {
 		return this.field_16862;
 	}
 
@@ -45,7 +36,7 @@ public abstract class class_3784 {
 			dynamicOps.mergeInto(
 				this.method_16625(dynamicOps).getValue(),
 				dynamicOps.createString("element_type"),
-				dynamicOps.createString(Registry.STRUCTURE_POOL_ELEMENT.getId(this.method_16757()).toString())
+				dynamicOps.createString(class_2378.field_16793.method_10221(this.method_16757()).toString())
 			)
 		);
 	}

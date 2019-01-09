@@ -1,52 +1,50 @@
 package net.minecraft;
 
-import net.minecraft.world.biome.layer.BiomeLayers;
-
 public enum class_3636 implements class_3663 {
 	field_16052;
 
 	@Override
-	public int sample(class_3630 arg, int i, int j, int k, int l, int m) {
-		if (BiomeLayers.isShallowOcean(m)) {
+	public int method_15868(class_3630 arg, int i, int j, int k, int l, int m) {
+		if (class_3645.method_15846(m)) {
 			int n = 0;
-			if (BiomeLayers.isShallowOcean(i)) {
+			if (class_3645.method_15846(i)) {
 				n++;
 			}
 
-			if (BiomeLayers.isShallowOcean(j)) {
+			if (class_3645.method_15846(j)) {
 				n++;
 			}
 
-			if (BiomeLayers.isShallowOcean(l)) {
+			if (class_3645.method_15846(l)) {
 				n++;
 			}
 
-			if (BiomeLayers.isShallowOcean(k)) {
+			if (class_3645.method_15846(k)) {
 				n++;
 			}
 
 			if (n > 3) {
-				if (m == BiomeLayers.WARM_OCEAN_ID) {
-					return BiomeLayers.DEEP_WARM_OCEAN_ID;
+				if (m == class_3645.field_16115) {
+					return class_3645.field_16110;
 				}
 
-				if (m == BiomeLayers.LUKEWARM_OCEAN_ID) {
-					return BiomeLayers.DEEP_LUKEWARM_OCEAN_ID;
+				if (m == class_3645.field_16114) {
+					return class_3645.field_16109;
 				}
 
-				if (m == BiomeLayers.OCEAN_ID) {
-					return BiomeLayers.DEEP_OCEAN_ID;
+				if (m == class_3645.field_16113) {
+					return class_3645.field_16108;
 				}
 
-				if (m == BiomeLayers.COLD_OCEAN_ID) {
-					return BiomeLayers.DEEP_COLD_OCEAN_ID;
+				if (m == class_3645.field_16112) {
+					return class_3645.field_16107;
 				}
 
-				if (m == BiomeLayers.FROZEN_OCEAN_ID) {
-					return BiomeLayers.DEEP_FROZEN_OCEAN_ID;
+				if (m == class_3645.field_16111) {
+					return class_3645.field_16116;
 				}
 
-				return BiomeLayers.DEEP_OCEAN_ID;
+				return class_3645.field_16108;
 			}
 		}
 

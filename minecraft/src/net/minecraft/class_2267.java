@@ -1,17 +1,12 @@
 package net.minecraft;
 
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec2f;
-import net.minecraft.util.math.Vec3d;
-
 public interface class_2267 {
-	Vec3d method_9708(ServerCommandSource serverCommandSource);
+	class_243 method_9708(class_2168 arg);
 
-	Vec2f method_9709(ServerCommandSource serverCommandSource);
+	class_241 method_9709(class_2168 arg);
 
-	default BlockPos method_9704(ServerCommandSource serverCommandSource) {
-		return new BlockPos(this.method_9708(serverCommandSource));
+	default class_2338 method_9704(class_2168 arg) {
+		return new class_2338(this.method_9708(arg));
 	}
 
 	boolean method_9705();

@@ -11,57 +11,46 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
-import net.minecraft.advancement.AdvancementRewards;
-import net.minecraft.advancement.CriteriaMerger;
-import net.minecraft.advancement.SimpleAdvancement;
-import net.minecraft.advancement.criterion.CriterionConditions;
-import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemProvider;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class class_2447 {
-	private static final Logger LOGGER = LogManager.getLogger();
-	private final Item field_11380;
+	private static final Logger field_11382 = LogManager.getLogger();
+	private final class_1792 field_11380;
 	private final int field_11378;
 	private final List<String> field_11377 = Lists.<String>newArrayList();
-	private final Map<Character, Ingredient> field_11376 = Maps.<Character, Ingredient>newLinkedHashMap();
-	private final SimpleAdvancement.Builder field_11379 = SimpleAdvancement.Builder.create();
+	private final Map<Character, class_1856> field_11376 = Maps.<Character, class_1856>newLinkedHashMap();
+	private final class_161.class_162 field_11379 = class_161.class_162.method_707();
 	private String field_11381;
 
-	public class_2447(ItemProvider itemProvider, int i) {
-		this.field_11380 = itemProvider.getItem();
+	public class_2447(class_1935 arg, int i) {
+		this.field_11380 = arg.method_8389();
 		this.field_11378 = i;
 	}
 
-	public static class_2447 method_10437(ItemProvider itemProvider) {
-		return method_10436(itemProvider, 1);
+	public static class_2447 method_10437(class_1935 arg) {
+		return method_10436(arg, 1);
 	}
 
-	public static class_2447 method_10436(ItemProvider itemProvider, int i) {
-		return new class_2447(itemProvider, i);
+	public static class_2447 method_10436(class_1935 arg, int i) {
+		return new class_2447(arg, i);
 	}
 
-	public class_2447 method_10433(Character character, Tag<Item> tag) {
-		return this.method_10428(character, Ingredient.fromTag(tag));
+	public class_2447 method_10433(Character character, class_3494<class_1792> arg) {
+		return this.method_10428(character, class_1856.method_8106(arg));
 	}
 
-	public class_2447 method_10434(Character character, ItemProvider itemProvider) {
-		return this.method_10428(character, Ingredient.method_8091(itemProvider));
+	public class_2447 method_10434(Character character, class_1935 arg) {
+		return this.method_10428(character, class_1856.method_8091(arg));
 	}
 
-	public class_2447 method_10428(Character character, Ingredient ingredient) {
+	public class_2447 method_10428(Character character, class_1856 arg) {
 		if (this.field_11376.containsKey(character)) {
 			throw new IllegalArgumentException("Symbol '" + character + "' is already defined!");
 		} else if (character == ' ') {
 			throw new IllegalArgumentException("Symbol ' ' (whitespace) is reserved and cannot be defined");
 		} else {
-			this.field_11376.put(character, ingredient);
+			this.field_11376.put(character, arg);
 			return this;
 		}
 	}
@@ -75,8 +64,8 @@ public class class_2447 {
 		}
 	}
 
-	public class_2447 method_10429(String string, CriterionConditions criterionConditions) {
-		this.field_11379.criterion(string, criterionConditions);
+	public class_2447 method_10429(String string, class_184 arg) {
+		this.field_11379.method_709(string, arg);
 		return this;
 	}
 
@@ -86,42 +75,42 @@ public class class_2447 {
 	}
 
 	public void method_10431(Consumer<class_2444> consumer) {
-		this.method_10430(consumer, Registry.ITEM.getId(this.field_11380));
+		this.method_10430(consumer, class_2378.field_11142.method_10221(this.field_11380));
 	}
 
 	public void method_10438(Consumer<class_2444> consumer, String string) {
-		Identifier identifier = Registry.ITEM.getId(this.field_11380);
-		if (new Identifier(string).equals(identifier)) {
+		class_2960 lv = class_2378.field_11142.method_10221(this.field_11380);
+		if (new class_2960(string).equals(lv)) {
 			throw new IllegalStateException("Shaped Recipe " + string + " should remove its 'save' argument");
 		} else {
-			this.method_10430(consumer, new Identifier(string));
+			this.method_10430(consumer, new class_2960(string));
 		}
 	}
 
-	public void method_10430(Consumer<class_2444> consumer, Identifier identifier) {
-		this.method_10432(identifier);
+	public void method_10430(Consumer<class_2444> consumer, class_2960 arg) {
+		this.method_10432(arg);
 		this.field_11379
-			.parent(new Identifier("recipes/root"))
-			.criterion("has_the_recipe", new RecipeUnlockedCriterion.Conditions(identifier))
-			.rewards(AdvancementRewards.Builder.recipe(identifier))
-			.criteriaMerger(CriteriaMerger.OR);
+			.method_708(new class_2960("recipes/root"))
+			.method_709("has_the_recipe", new class_2119.class_2121(arg))
+			.method_703(class_170.class_171.method_753(arg))
+			.method_704(class_193.field_1257);
 		consumer.accept(
 			new class_2447.class_2448(
-				identifier,
+				arg,
 				this.field_11380,
 				this.field_11378,
 				this.field_11381 == null ? "" : this.field_11381,
 				this.field_11377,
 				this.field_11376,
 				this.field_11379,
-				new Identifier(identifier.getNamespace(), "recipes/" + this.field_11380.getItemGroup().method_7751() + "/" + identifier.getPath())
+				new class_2960(arg.method_12836(), "recipes/" + this.field_11380.method_7859().method_7751() + "/" + arg.method_12832())
 			)
 		);
 	}
 
-	private void method_10432(Identifier identifier) {
+	private void method_10432(class_2960 arg) {
 		if (this.field_11377.isEmpty()) {
-			throw new IllegalStateException("No pattern is defined for shaped recipe " + identifier + "!");
+			throw new IllegalStateException("No pattern is defined for shaped recipe " + arg + "!");
 		} else {
 			Set<Character> set = Sets.<Character>newHashSet(this.field_11376.keySet());
 			set.remove(' ');
@@ -130,7 +119,7 @@ public class class_2447 {
 				for (int i = 0; i < string.length(); i++) {
 					char c = string.charAt(i);
 					if (!this.field_11376.containsKey(c) && c != ' ') {
-						throw new IllegalStateException("Pattern in recipe " + identifier + " uses undefined symbol '" + c + "'");
+						throw new IllegalStateException("Pattern in recipe " + arg + " uses undefined symbol '" + c + "'");
 					}
 
 					set.remove(c);
@@ -138,43 +127,36 @@ public class class_2447 {
 			}
 
 			if (!set.isEmpty()) {
-				throw new IllegalStateException("Ingredients are defined but not used in pattern for recipe " + identifier);
+				throw new IllegalStateException("Ingredients are defined but not used in pattern for recipe " + arg);
 			} else if (this.field_11377.size() == 1 && ((String)this.field_11377.get(0)).length() == 1) {
-				throw new IllegalStateException("Shaped recipe " + identifier + " only takes in a single item - should it be a shapeless recipe instead?");
-			} else if (this.field_11379.getCriteria().isEmpty()) {
-				throw new IllegalStateException("No way of obtaining recipe " + identifier);
+				throw new IllegalStateException("Shaped recipe " + arg + " only takes in a single item - should it be a shapeless recipe instead?");
+			} else if (this.field_11379.method_710().isEmpty()) {
+				throw new IllegalStateException("No way of obtaining recipe " + arg);
 			}
 		}
 	}
 
 	class class_2448 implements class_2444 {
-		private final Identifier field_11385;
-		private final Item field_11383;
+		private final class_2960 field_11385;
+		private final class_1792 field_11383;
 		private final int field_11386;
 		private final String field_11387;
 		private final List<String> field_11384;
-		private final Map<Character, Ingredient> field_11388;
-		private final SimpleAdvancement.Builder field_11389;
-		private final Identifier field_11390;
+		private final Map<Character, class_1856> field_11388;
+		private final class_161.class_162 field_11389;
+		private final class_2960 field_11390;
 
 		public class_2448(
-			Identifier identifier,
-			Item item,
-			int i,
-			String string,
-			List<String> list,
-			Map<Character, Ingredient> map,
-			SimpleAdvancement.Builder builder,
-			Identifier identifier2
+			class_2960 arg2, class_1792 arg3, int i, String string, List<String> list, Map<Character, class_1856> map, class_161.class_162 arg4, class_2960 arg5
 		) {
-			this.field_11385 = identifier;
-			this.field_11383 = item;
+			this.field_11385 = arg2;
+			this.field_11383 = arg3;
 			this.field_11386 = i;
 			this.field_11387 = string;
 			this.field_11384 = list;
 			this.field_11388 = map;
-			this.field_11389 = builder;
-			this.field_11390 = identifier2;
+			this.field_11389 = arg4;
+			this.field_11390 = arg5;
 		}
 
 		@Override
@@ -194,13 +176,13 @@ public class class_2447 {
 			jsonObject.add("pattern", jsonArray);
 			JsonObject jsonObject2 = new JsonObject();
 
-			for (Entry<Character, Ingredient> entry : this.field_11388.entrySet()) {
-				jsonObject2.add(String.valueOf(entry.getKey()), ((Ingredient)entry.getValue()).toJson());
+			for (Entry<Character, class_1856> entry : this.field_11388.entrySet()) {
+				jsonObject2.add(String.valueOf(entry.getKey()), ((class_1856)entry.getValue()).method_8089());
 			}
 
 			jsonObject.add("key", jsonObject2);
 			JsonObject jsonObject3 = new JsonObject();
-			jsonObject3.addProperty("item", Registry.ITEM.getId(this.field_11383).toString());
+			jsonObject3.addProperty("item", class_2378.field_11142.method_10221(this.field_11383).toString());
 			if (this.field_11386 > 1) {
 				jsonObject3.addProperty("count", this.field_11386);
 			}
@@ -210,19 +192,19 @@ public class class_2447 {
 		}
 
 		@Override
-		public Identifier method_10417() {
+		public class_2960 method_10417() {
 			return this.field_11385;
 		}
 
 		@Nullable
 		@Override
 		public JsonObject method_10415() {
-			return this.field_11389.toJson();
+			return this.field_11389.method_698();
 		}
 
 		@Nullable
 		@Override
-		public Identifier method_10418() {
+		public class_2960 method_10418() {
 			return this.field_11390;
 		}
 	}

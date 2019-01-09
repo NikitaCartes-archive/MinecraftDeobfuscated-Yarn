@@ -3,32 +3,24 @@ package net.minecraft;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.util.math.Matrix4f;
-import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class class_751 {
-	private final Identifier[] field_3952 = new Identifier[6];
+	private final class_2960[] field_3952 = new class_2960[6];
 
-	public class_751(Identifier identifier) {
+	public class_751(class_2960 arg) {
 		for (int i = 0; i < 6; i++) {
-			this.field_3952[i] = new Identifier(identifier.getNamespace(), identifier.getPath() + '_' + i + ".png");
+			this.field_3952[i] = new class_2960(arg.method_12836(), arg.method_12832() + '_' + i + ".png");
 		}
 	}
 
-	public void method_3156(MinecraftClient minecraftClient, float f, float g) {
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+	public void method_3156(class_310 arg, float f, float g) {
+		class_289 lv = class_289.method_1348();
+		class_287 lv2 = lv.method_1349();
 		GlStateManager.matrixMode(5889);
 		GlStateManager.pushMatrix();
 		GlStateManager.loadIdentity();
-		GlStateManager.multMatrix(
-			Matrix4f.method_4929(85.0, (float)minecraftClient.window.getWindowWidth() / (float)minecraftClient.window.getWindowHeight(), 0.05F, 10.0F)
-		);
+		GlStateManager.multMatrix(class_1159.method_4929(85.0, (float)arg.field_1704.method_4489() / (float)arg.field_1704.method_4506(), 0.05F, 10.0F));
 		GlStateManager.matrixMode(5888);
 		GlStateManager.pushMatrix();
 		GlStateManager.loadIdentity();
@@ -39,10 +31,7 @@ public class class_751 {
 		GlStateManager.disableCull();
 		GlStateManager.depthMask(false);
 		GlStateManager.blendFuncSeparate(
-			GlStateManager.SrcBlendFactor.SRC_ALPHA,
-			GlStateManager.DstBlendFactor.ONE_MINUS_SRC_ALPHA,
-			GlStateManager.SrcBlendFactor.ONE,
-			GlStateManager.DstBlendFactor.ZERO
+			GlStateManager.class_1033.field_5138, GlStateManager.class_1027.field_5088, GlStateManager.class_1033.field_5140, GlStateManager.class_1027.field_5084
 		);
 		int i = 2;
 
@@ -56,59 +45,59 @@ public class class_751 {
 			GlStateManager.rotatef(g, 0.0F, 1.0F, 0.0F);
 
 			for (int m = 0; m < 6; m++) {
-				minecraftClient.getTextureManager().bindTexture(this.field_3952[m]);
-				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+				arg.method_1531().method_4618(this.field_3952[m]);
+				lv2.method_1328(7, class_290.field_1575);
 				int n = 255 / (j + 1);
 				if (m == 0) {
-					bufferBuilder.vertex(-1.0, -1.0, 1.0).texture(0.0, 0.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(-1.0, 1.0, 1.0).texture(0.0, 1.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(1.0, 1.0, 1.0).texture(1.0, 1.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(1.0, -1.0, 1.0).texture(1.0, 0.0).color(255, 255, 255, n).next();
+					lv2.method_1315(-1.0, -1.0, 1.0).method_1312(0.0, 0.0).method_1323(255, 255, 255, n).method_1344();
+					lv2.method_1315(-1.0, 1.0, 1.0).method_1312(0.0, 1.0).method_1323(255, 255, 255, n).method_1344();
+					lv2.method_1315(1.0, 1.0, 1.0).method_1312(1.0, 1.0).method_1323(255, 255, 255, n).method_1344();
+					lv2.method_1315(1.0, -1.0, 1.0).method_1312(1.0, 0.0).method_1323(255, 255, 255, n).method_1344();
 				}
 
 				if (m == 1) {
-					bufferBuilder.vertex(1.0, -1.0, 1.0).texture(0.0, 0.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(1.0, 1.0, 1.0).texture(0.0, 1.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(1.0, 1.0, -1.0).texture(1.0, 1.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(1.0, -1.0, -1.0).texture(1.0, 0.0).color(255, 255, 255, n).next();
+					lv2.method_1315(1.0, -1.0, 1.0).method_1312(0.0, 0.0).method_1323(255, 255, 255, n).method_1344();
+					lv2.method_1315(1.0, 1.0, 1.0).method_1312(0.0, 1.0).method_1323(255, 255, 255, n).method_1344();
+					lv2.method_1315(1.0, 1.0, -1.0).method_1312(1.0, 1.0).method_1323(255, 255, 255, n).method_1344();
+					lv2.method_1315(1.0, -1.0, -1.0).method_1312(1.0, 0.0).method_1323(255, 255, 255, n).method_1344();
 				}
 
 				if (m == 2) {
-					bufferBuilder.vertex(1.0, -1.0, -1.0).texture(0.0, 0.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(1.0, 1.0, -1.0).texture(0.0, 1.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(-1.0, 1.0, -1.0).texture(1.0, 1.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(-1.0, -1.0, -1.0).texture(1.0, 0.0).color(255, 255, 255, n).next();
+					lv2.method_1315(1.0, -1.0, -1.0).method_1312(0.0, 0.0).method_1323(255, 255, 255, n).method_1344();
+					lv2.method_1315(1.0, 1.0, -1.0).method_1312(0.0, 1.0).method_1323(255, 255, 255, n).method_1344();
+					lv2.method_1315(-1.0, 1.0, -1.0).method_1312(1.0, 1.0).method_1323(255, 255, 255, n).method_1344();
+					lv2.method_1315(-1.0, -1.0, -1.0).method_1312(1.0, 0.0).method_1323(255, 255, 255, n).method_1344();
 				}
 
 				if (m == 3) {
-					bufferBuilder.vertex(-1.0, -1.0, -1.0).texture(0.0, 0.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(-1.0, 1.0, -1.0).texture(0.0, 1.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(-1.0, 1.0, 1.0).texture(1.0, 1.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(-1.0, -1.0, 1.0).texture(1.0, 0.0).color(255, 255, 255, n).next();
+					lv2.method_1315(-1.0, -1.0, -1.0).method_1312(0.0, 0.0).method_1323(255, 255, 255, n).method_1344();
+					lv2.method_1315(-1.0, 1.0, -1.0).method_1312(0.0, 1.0).method_1323(255, 255, 255, n).method_1344();
+					lv2.method_1315(-1.0, 1.0, 1.0).method_1312(1.0, 1.0).method_1323(255, 255, 255, n).method_1344();
+					lv2.method_1315(-1.0, -1.0, 1.0).method_1312(1.0, 0.0).method_1323(255, 255, 255, n).method_1344();
 				}
 
 				if (m == 4) {
-					bufferBuilder.vertex(-1.0, -1.0, -1.0).texture(0.0, 0.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(-1.0, -1.0, 1.0).texture(0.0, 1.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(1.0, -1.0, 1.0).texture(1.0, 1.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(1.0, -1.0, -1.0).texture(1.0, 0.0).color(255, 255, 255, n).next();
+					lv2.method_1315(-1.0, -1.0, -1.0).method_1312(0.0, 0.0).method_1323(255, 255, 255, n).method_1344();
+					lv2.method_1315(-1.0, -1.0, 1.0).method_1312(0.0, 1.0).method_1323(255, 255, 255, n).method_1344();
+					lv2.method_1315(1.0, -1.0, 1.0).method_1312(1.0, 1.0).method_1323(255, 255, 255, n).method_1344();
+					lv2.method_1315(1.0, -1.0, -1.0).method_1312(1.0, 0.0).method_1323(255, 255, 255, n).method_1344();
 				}
 
 				if (m == 5) {
-					bufferBuilder.vertex(-1.0, 1.0, 1.0).texture(0.0, 0.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(-1.0, 1.0, -1.0).texture(0.0, 1.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(1.0, 1.0, -1.0).texture(1.0, 1.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(1.0, 1.0, 1.0).texture(1.0, 0.0).color(255, 255, 255, n).next();
+					lv2.method_1315(-1.0, 1.0, 1.0).method_1312(0.0, 0.0).method_1323(255, 255, 255, n).method_1344();
+					lv2.method_1315(-1.0, 1.0, -1.0).method_1312(0.0, 1.0).method_1323(255, 255, 255, n).method_1344();
+					lv2.method_1315(1.0, 1.0, -1.0).method_1312(1.0, 1.0).method_1323(255, 255, 255, n).method_1344();
+					lv2.method_1315(1.0, 1.0, 1.0).method_1312(1.0, 0.0).method_1323(255, 255, 255, n).method_1344();
 				}
 
-				tessellator.draw();
+				lv.method_1350();
 			}
 
 			GlStateManager.popMatrix();
 			GlStateManager.colorMask(true, true, true, false);
 		}
 
-		bufferBuilder.setOffset(0.0, 0.0, 0.0);
+		lv2.method_1331(0.0, 0.0, 0.0);
 		GlStateManager.colorMask(true, true, true, true);
 		GlStateManager.matrixMode(5889);
 		GlStateManager.popMatrix();

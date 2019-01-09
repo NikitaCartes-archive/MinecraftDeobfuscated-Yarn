@@ -5,56 +5,43 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import net.minecraft.sortme.StructurePoolElement;
-import net.minecraft.sortme.structures.StructureManager;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
 
 public class class_3782 extends class_3784 {
-	private final List<class_3784> elements;
+	private final List<class_3784> field_16676;
 
 	public class_3782(List<class_3784> list) {
 		if (list.isEmpty()) {
 			throw new IllegalArgumentException("Elements are empty");
 		} else {
-			this.elements = list;
+			this.field_16676 = list;
 		}
 	}
 
 	public class_3782(Dynamic<?> dynamic) {
-		this(
-			(List<class_3784>)((Stream)dynamic.get("elements").flatMap(Dynamic::getStream).orElseGet(Stream::empty))
-				.map(dynamicx -> class_3817.deserialize(dynamicx, Registry.STRUCTURE_POOL_ELEMENT, "element_type", class_3777.field_16663))
-				.collect(Collectors.toList())
-		);
+		this(dynamic.get("elements").asList(dynamicx -> class_3817.method_16758(dynamicx, class_2378.field_16793, "element_type", class_3777.field_16663)));
 	}
 
 	@Override
-	public List<class_3499.class_3501> method_16627(StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random) {
-		return ((class_3784)this.elements.get(0)).method_16627(structureManager, blockPos, rotation, random);
+	public List<class_3499.class_3501> method_16627(class_3485 arg, class_2338 arg2, class_2470 arg3, Random random) {
+		return ((class_3784)this.field_16676.get(0)).method_16627(arg, arg2, arg3, random);
 	}
 
 	@Override
-	public MutableIntBoundingBox method_16628(StructureManager structureManager, BlockPos blockPos, Rotation rotation) {
-		MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.maxSize();
+	public class_3341 method_16628(class_3485 arg, class_2338 arg2, class_2470 arg3) {
+		class_3341 lv = class_3341.method_14665();
 
-		for (class_3784 lv : this.elements) {
-			MutableIntBoundingBox mutableIntBoundingBox2 = lv.method_16628(structureManager, blockPos, rotation);
-			mutableIntBoundingBox.setFrom(mutableIntBoundingBox2);
+		for (class_3784 lv2 : this.field_16676) {
+			class_3341 lv3 = lv2.method_16628(arg, arg2, arg3);
+			lv.method_14668(lv3);
 		}
 
-		return mutableIntBoundingBox;
+		return lv;
 	}
 
 	@Override
-	public boolean method_16626(IWorld iWorld, BlockPos blockPos, Rotation rotation, MutableIntBoundingBox mutableIntBoundingBox, Random random) {
-		for (class_3784 lv : this.elements) {
-			if (!lv.method_16626(iWorld, blockPos, rotation, mutableIntBoundingBox, random)) {
+	public boolean method_16626(class_1936 arg, class_2338 arg2, class_2470 arg3, class_3341 arg4, Random random) {
+		for (class_3784 lv : this.field_16676) {
+			if (!lv.method_16626(arg, arg2, arg3, arg4, random)) {
 				return false;
 			}
 		}
@@ -63,19 +50,19 @@ public class class_3782 extends class_3784 {
 	}
 
 	@Override
-	public StructurePoolElement method_16757() {
-		return StructurePoolElement.field_16974;
+	public class_3816 method_16757() {
+		return class_3816.field_16974;
 	}
 
 	@Override
-	public class_3784 method_16622(class_3785.Projection projection) {
-		this.elements.forEach(arg -> arg.method_16622(projection));
+	public class_3784 method_16622(class_3785.class_3786 arg) {
+		this.field_16676.forEach(arg2 -> arg2.method_16622(arg));
 		return this;
 	}
 
 	@Override
 	public <T> Dynamic<T> method_16625(DynamicOps<T> dynamicOps) {
-		T object = dynamicOps.createList(this.elements.stream().map(arg -> arg.method_16755(dynamicOps).getValue()));
+		T object = dynamicOps.createList(this.field_16676.stream().map(arg -> arg.method_16755(dynamicOps).getValue()));
 		return new Dynamic<>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("elements"), object)));
 	}
 }

@@ -11,7 +11,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.texture.NativeImage;
+import net.minecraft.class_1011;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
@@ -32,18 +32,18 @@ public class TextureUtil {
 	}
 
 	public static void prepareImage(int i, int j, int k) {
-		prepareImage(NativeImage.class_1013.field_5012, i, 0, j, k);
+		prepareImage(class_1011.class_1013.field_5012, i, 0, j, k);
 	}
 
-	public static void prepareImage(NativeImage.class_1013 arg, int i, int j, int k) {
+	public static void prepareImage(class_1011.class_1013 arg, int i, int j, int k) {
 		prepareImage(arg, i, 0, j, k);
 	}
 
 	public static void prepareImage(int i, int j, int k, int l) {
-		prepareImage(NativeImage.class_1013.field_5012, i, j, k, l);
+		prepareImage(class_1011.class_1013.field_5012, i, j, k, l);
 	}
 
-	public static void prepareImage(NativeImage.class_1013 arg, int i, int j, int k, int l) {
+	public static void prepareImage(class_1011.class_1013 arg, int i, int j, int k, int l) {
 		bind(i);
 		if (j >= 0) {
 			GlStateManager.texParameter(3553, 33085, j);
@@ -110,9 +110,9 @@ public class TextureUtil {
 			int n = k >> m;
 			int o = l >> m;
 
-			try (NativeImage nativeImage = new NativeImage(n, o, false)) {
-				nativeImage.method_4327(m, false);
-				nativeImage.writeFile(string2);
+			try (class_1011 lv = new class_1011(n, o, false)) {
+				lv.method_4327(m, false);
+				lv.method_15877(string2);
 				LOGGER.debug("Exported png to: {}", new File(string2).getAbsolutePath());
 			} catch (IOException var22) {
 				LOGGER.debug("Unable to write: ", (Throwable)var22);

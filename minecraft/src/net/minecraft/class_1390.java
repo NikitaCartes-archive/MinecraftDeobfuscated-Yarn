@@ -1,44 +1,40 @@
 package net.minecraft;
 
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
+public class class_1390 extends class_1352 {
+	private final class_1646 field_6610;
 
-public class class_1390 extends Goal {
-	private final VillagerEntity field_6610;
-
-	public class_1390(VillagerEntity villagerEntity) {
-		this.field_6610 = villagerEntity;
-		this.setControlBits(5);
+	public class_1390(class_1646 arg) {
+		this.field_6610 = arg;
+		this.method_6265(5);
 	}
 
 	@Override
-	public boolean canStart() {
-		if (!this.field_6610.isValid()) {
+	public boolean method_6264() {
+		if (!this.field_6610.method_5805()) {
 			return false;
-		} else if (this.field_6610.isInsideWater()) {
+		} else if (this.field_6610.method_5799()) {
 			return false;
-		} else if (!this.field_6610.onGround) {
+		} else if (!this.field_6610.field_5952) {
 			return false;
-		} else if (this.field_6610.velocityModified) {
+		} else if (this.field_6610.field_6037) {
 			return false;
 		} else {
-			PlayerEntity playerEntity = this.field_6610.getCurrentCustomer();
-			if (playerEntity == null) {
+			class_1657 lv = this.field_6610.method_8257();
+			if (lv == null) {
 				return false;
 			} else {
-				return this.field_6610.squaredDistanceTo(playerEntity) > 16.0 ? false : playerEntity.container != null;
+				return this.field_6610.method_5858(lv) > 16.0 ? false : lv.field_7512 != null;
 			}
 		}
 	}
 
 	@Override
-	public void start() {
-		this.field_6610.getNavigation().method_6340();
+	public void method_6269() {
+		this.field_6610.method_5942().method_6340();
 	}
 
 	@Override
-	public void onRemove() {
-		this.field_6610.setCurrentCustomer(null);
+	public void method_6270() {
+		this.field_6610.method_8259(null);
 	}
 }

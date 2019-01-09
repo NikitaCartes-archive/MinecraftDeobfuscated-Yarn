@@ -1,61 +1,53 @@
 package net.minecraft;
 
 import java.util.List;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MovementType;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.mob.MobEntityWithAi;
-import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
 
-public class class_1346 extends Goal {
+public class class_1346 extends class_1352 {
 	private int field_6428;
-	private final MobEntityWithAi field_6426;
-	private LivingEntity field_6427;
+	private final class_1314 field_6426;
+	private class_1309 field_6427;
 	private class_1340 field_6425;
 
-	public class_1346(MobEntityWithAi mobEntityWithAi) {
-		this.field_6426 = mobEntityWithAi;
+	public class_1346(class_1314 arg) {
+		this.field_6426 = arg;
 	}
 
 	@Override
-	public boolean canStart() {
-		List<BoatEntity> list = this.field_6426.world.getVisibleEntities(BoatEntity.class, this.field_6426.getBoundingBox().expand(5.0));
+	public boolean method_6264() {
+		List<class_1690> list = this.field_6426.field_6002.method_8403(class_1690.class, this.field_6426.method_5829().method_1014(5.0));
 		boolean bl = false;
 
-		for (BoatEntity boatEntity : list) {
-			if (boatEntity.getPrimaryPassenger() != null
-				&& (
-					MathHelper.abs(((LivingEntity)boatEntity.getPrimaryPassenger()).field_6212) > 0.0F
-						|| MathHelper.abs(((LivingEntity)boatEntity.getPrimaryPassenger()).field_6250) > 0.0F
-				)) {
+		for (class_1690 lv : list) {
+			if (lv.method_5642() != null
+				&& (class_3532.method_15379(((class_1309)lv.method_5642()).field_6212) > 0.0F || class_3532.method_15379(((class_1309)lv.method_5642()).field_6250) > 0.0F)
+				)
+			 {
 				bl = true;
 				break;
 			}
 		}
 
-		return this.field_6427 != null && (MathHelper.abs(this.field_6427.field_6212) > 0.0F || MathHelper.abs(this.field_6427.field_6250) > 0.0F) || bl;
+		return this.field_6427 != null && (class_3532.method_15379(this.field_6427.field_6212) > 0.0F || class_3532.method_15379(this.field_6427.field_6250) > 0.0F)
+			|| bl;
 	}
 
 	@Override
-	public boolean canStop() {
+	public boolean method_6267() {
 		return true;
 	}
 
 	@Override
-	public boolean shouldContinue() {
+	public boolean method_6266() {
 		return this.field_6427 != null
-			&& this.field_6427.hasVehicle()
-			&& (MathHelper.abs(this.field_6427.field_6212) > 0.0F || MathHelper.abs(this.field_6427.field_6250) > 0.0F);
+			&& this.field_6427.method_5765()
+			&& (class_3532.method_15379(this.field_6427.field_6212) > 0.0F || class_3532.method_15379(this.field_6427.field_6250) > 0.0F);
 	}
 
 	@Override
-	public void start() {
-		for (BoatEntity boatEntity : this.field_6426.world.getVisibleEntities(BoatEntity.class, this.field_6426.getBoundingBox().expand(5.0))) {
-			if (boatEntity.getPrimaryPassenger() != null && boatEntity.getPrimaryPassenger() instanceof LivingEntity) {
-				this.field_6427 = (LivingEntity)boatEntity.getPrimaryPassenger();
+	public void method_6269() {
+		for (class_1690 lv : this.field_6426.field_6002.method_8403(class_1690.class, this.field_6426.method_5829().method_1014(5.0))) {
+			if (lv.method_5642() != null && lv.method_5642() instanceof class_1309) {
+				this.field_6427 = (class_1309)lv.method_5642();
 				break;
 			}
 		}
@@ -65,31 +57,31 @@ public class class_1346 extends Goal {
 	}
 
 	@Override
-	public void onRemove() {
+	public void method_6270() {
 		this.field_6427 = null;
 	}
 
 	@Override
-	public void tick() {
-		boolean bl = MathHelper.abs(this.field_6427.field_6212) > 0.0F || MathHelper.abs(this.field_6427.field_6250) > 0.0F;
+	public void method_6268() {
+		boolean bl = class_3532.method_15379(this.field_6427.field_6212) > 0.0F || class_3532.method_15379(this.field_6427.field_6250) > 0.0F;
 		float f = this.field_6425 == class_1340.field_6400 ? (bl ? 0.17999999F : 0.0F) : 0.135F;
 		this.field_6426.method_5724(this.field_6426.field_6212, this.field_6426.field_6227, this.field_6426.field_6250, f);
-		this.field_6426.move(MovementType.SELF, this.field_6426.velocityX, this.field_6426.velocityY, this.field_6426.velocityZ);
+		this.field_6426.method_5784(class_1313.field_6308, this.field_6426.field_5967, this.field_6426.field_5984, this.field_6426.field_6006);
 		if (--this.field_6428 <= 0) {
 			this.field_6428 = 10;
 			if (this.field_6425 == class_1340.field_6401) {
-				BlockPos blockPos = new BlockPos(this.field_6427).offset(this.field_6427.getHorizontalFacing().getOpposite());
-				blockPos = blockPos.add(0, -1, 0);
-				this.field_6426.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0);
-				if (this.field_6426.distanceTo(this.field_6427) < 4.0F) {
+				class_2338 lv = new class_2338(this.field_6427).method_10093(this.field_6427.method_5735().method_10153());
+				lv = lv.method_10069(0, -1, 0);
+				this.field_6426.method_5942().method_6337((double)lv.method_10263(), (double)lv.method_10264(), (double)lv.method_10260(), 1.0);
+				if (this.field_6426.method_5739(this.field_6427) < 4.0F) {
 					this.field_6428 = 0;
 					this.field_6425 = class_1340.field_6400;
 				}
 			} else if (this.field_6425 == class_1340.field_6400) {
-				Direction direction = this.field_6427.method_5755();
-				BlockPos blockPos2 = new BlockPos(this.field_6427).offset(direction, 10);
-				this.field_6426.getNavigation().startMovingTo((double)blockPos2.getX(), (double)(blockPos2.getY() - 1), (double)blockPos2.getZ(), 1.0);
-				if (this.field_6426.distanceTo(this.field_6427) > 12.0F) {
+				class_2350 lv2 = this.field_6427.method_5755();
+				class_2338 lv3 = new class_2338(this.field_6427).method_10079(lv2, 10);
+				this.field_6426.method_5942().method_6337((double)lv3.method_10263(), (double)(lv3.method_10264() - 1), (double)lv3.method_10260(), 1.0);
+				if (this.field_6426.method_5739(this.field_6427) > 12.0F) {
 					this.field_6428 = 0;
 					this.field_6425 = class_1340.field_6401;
 				}

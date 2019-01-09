@@ -3,12 +3,10 @@ package net.minecraft;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import net.minecraft.command.arguments.Vec3ArgumentType;
-import net.minecraft.text.TranslatableTextComponent;
 
 public class class_2278 {
-	public static final SimpleCommandExceptionType field_10759 = new SimpleCommandExceptionType(new TranslatableTextComponent("argument.pos.missing.double"));
-	public static final SimpleCommandExceptionType field_10761 = new SimpleCommandExceptionType(new TranslatableTextComponent("argument.pos.missing.int"));
+	public static final SimpleCommandExceptionType field_10759 = new SimpleCommandExceptionType(new class_2588("argument.pos.missing.double"));
+	public static final SimpleCommandExceptionType field_10761 = new SimpleCommandExceptionType(new class_2588("argument.pos.missing.int"));
 	private final boolean field_10760;
 	private final double field_10758;
 
@@ -23,7 +21,7 @@ public class class_2278 {
 
 	public static class_2278 method_9743(StringReader stringReader, boolean bl) throws CommandSyntaxException {
 		if (stringReader.canRead() && stringReader.peek() == '^') {
-			throw Vec3ArgumentType.MIXED_COORDINATE_EXCEPTION.createWithContext(stringReader);
+			throw class_2277.field_10757.createWithContext(stringReader);
 		} else if (!stringReader.canRead()) {
 			throw field_10759.createWithContext(stringReader);
 		} else {
@@ -45,7 +43,7 @@ public class class_2278 {
 
 	public static class_2278 method_9739(StringReader stringReader) throws CommandSyntaxException {
 		if (stringReader.canRead() && stringReader.peek() == '^') {
-			throw Vec3ArgumentType.MIXED_COORDINATE_EXCEPTION.createWithContext(stringReader);
+			throw class_2277.field_10757.createWithContext(stringReader);
 		} else if (!stringReader.canRead()) {
 			throw field_10761.createWithContext(stringReader);
 		} else {

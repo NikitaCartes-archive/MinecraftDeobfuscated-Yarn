@@ -6,14 +6,11 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class class_236<T> {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger field_1315 = LogManager.getLogger();
 	private final class_233<T> field_1314;
 	private final Queue<class_236.class_237<T>> field_1313 = new PriorityQueue(method_987());
 	private UnsignedLong field_1311 = UnsignedLong.ZERO;
@@ -21,7 +18,7 @@ public class class_236<T> {
 
 	private static <T> Comparator<class_236.class_237<T>> method_987() {
 		return (arg, arg2) -> {
-			int i = Long.compare(arg.trigerTime, arg2.trigerTime);
+			int i = Long.compare(arg.field_1318, arg2.field_1318);
 			return i != 0 ? i : arg.field_1319.compareTo(arg2.field_1319);
 		};
 	}
@@ -33,12 +30,12 @@ public class class_236<T> {
 	public void method_988(T object, long l) {
 		while (true) {
 			class_236.class_237<T> lv = (class_236.class_237<T>)this.field_1313.peek();
-			if (lv == null || lv.trigerTime > l) {
+			if (lv == null || lv.field_1318 > l) {
 				return;
 			}
 
 			this.field_1313.remove();
-			this.field_1312.remove(lv.name);
+			this.field_1312.remove(lv.field_1317);
 			lv.field_1316.method_974(object, this, l);
 		}
 	}
@@ -68,55 +65,55 @@ public class class_236<T> {
 		this.method_985(string, l, arg);
 	}
 
-	private void method_986(CompoundTag compoundTag) {
-		CompoundTag compoundTag2 = compoundTag.getCompound("Callback");
-		class_234<T> lv = this.field_1314.method_972(compoundTag2);
-		if (lv != null) {
-			String string = compoundTag.getString("Name");
-			long l = compoundTag.getLong("TriggerTime");
-			this.method_981(string, l, lv);
+	private void method_986(class_2487 arg) {
+		class_2487 lv = arg.method_10562("Callback");
+		class_234<T> lv2 = this.field_1314.method_972(lv);
+		if (lv2 != null) {
+			String string = arg.method_10558("Name");
+			long l = arg.method_10537("TriggerTime");
+			this.method_981(string, l, lv2);
 		}
 	}
 
-	public void method_979(ListTag listTag) {
+	public void method_979(class_2499 arg) {
 		this.field_1313.clear();
 		this.field_1312.clear();
 		this.field_1311 = UnsignedLong.ZERO;
-		if (!listTag.isEmpty()) {
-			if (listTag.getListType() != 10) {
-				LOGGER.warn("Invalid format of events: " + listTag);
+		if (!arg.isEmpty()) {
+			if (arg.method_10601() != 10) {
+				field_1315.warn("Invalid format of events: " + arg);
 			} else {
-				for (Tag tag : listTag) {
-					this.method_986((CompoundTag)tag);
+				for (class_2520 lv : arg) {
+					this.method_986((class_2487)lv);
 				}
 			}
 		}
 	}
 
-	private CompoundTag method_980(class_236.class_237<T> arg) {
-		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.putString("Name", arg.name);
-		compoundTag.putLong("TriggerTime", arg.trigerTime);
-		compoundTag.put("Callback", this.field_1314.method_973(arg.field_1316));
-		return compoundTag;
+	private class_2487 method_980(class_236.class_237<T> arg) {
+		class_2487 lv = new class_2487();
+		lv.method_10582("Name", arg.field_1317);
+		lv.method_10544("TriggerTime", arg.field_1318);
+		lv.method_10566("Callback", this.field_1314.method_973(arg.field_1316));
+		return lv;
 	}
 
-	public ListTag method_982() {
-		ListTag listTag = new ListTag();
-		this.field_1313.stream().sorted(method_987()).map(this::method_980).forEach(listTag::add);
-		return listTag;
+	public class_2499 method_982() {
+		class_2499 lv = new class_2499();
+		this.field_1313.stream().sorted(method_987()).map(this::method_980).forEach(lv::method_10606);
+		return lv;
 	}
 
 	public static class class_237<T> {
-		public final long trigerTime;
+		public final long field_1318;
 		public final UnsignedLong field_1319;
-		public final String name;
+		public final String field_1317;
 		public final class_234<T> field_1316;
 
 		private class_237(long l, UnsignedLong unsignedLong, String string, class_234<T> arg) {
-			this.trigerTime = l;
+			this.field_1318 = l;
 			this.field_1319 = unsignedLong;
-			this.name = string;
+			this.field_1317 = string;
 			this.field_1316 = arg;
 		}
 	}

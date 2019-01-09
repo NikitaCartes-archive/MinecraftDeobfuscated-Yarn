@@ -4,15 +4,13 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import java.nio.FloatBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.GlAllocationUtils;
-import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class class_855 extends class_857 {
 	private static final class_855 field_4495 = new class_855();
-	private final FloatBuffer field_4496 = GlAllocationUtils.allocateFloatBuffer(16);
-	private final FloatBuffer field_4494 = GlAllocationUtils.allocateFloatBuffer(16);
-	private final FloatBuffer field_4493 = GlAllocationUtils.allocateFloatBuffer(16);
+	private final FloatBuffer field_4496 = class_311.method_1597(16);
+	private final FloatBuffer field_4494 = class_311.method_1597(16);
+	private final FloatBuffer field_4493 = class_311.method_1597(16);
 
 	public static class_857 method_3696() {
 		field_4495.method_3698();
@@ -20,7 +18,7 @@ public class class_855 extends class_857 {
 	}
 
 	private void method_3697(float[] fs) {
-		float f = MathHelper.sqrt(fs[0] * fs[0] + fs[1] * fs[1] + fs[2] * fs[2]);
+		float f = class_3532.method_15355(fs[0] * fs[0] + fs[1] * fs[1] + fs[2] * fs[2]);
 		fs[0] /= f;
 		fs[1] /= f;
 		fs[2] /= f;
