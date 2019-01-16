@@ -1,17 +1,20 @@
 package net.minecraft;
 
-public class class_1364 extends class_1361 {
-	private final class_1646 field_6495;
+import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.entity.player.PlayerEntity;
 
-	public class_1364(class_1646 arg) {
-		super(arg, class_1657.class, 8.0F);
-		this.field_6495 = arg;
+public class class_1364 extends class_1361 {
+	private final VillagerEntity field_6495;
+
+	public class_1364(VillagerEntity villagerEntity) {
+		super(villagerEntity, PlayerEntity.class, 8.0F);
+		this.field_6495 = villagerEntity;
 	}
 
 	@Override
-	public boolean method_6264() {
-		if (this.field_6495.method_7235()) {
-			this.field_6484 = this.field_6495.method_8257();
+	public boolean canStart() {
+		if (this.field_6495.isTrading()) {
+			this.field_6484 = this.field_6495.getCurrentCustomer();
 			return true;
 		} else {
 			return false;

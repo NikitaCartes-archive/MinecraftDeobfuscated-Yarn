@@ -40,6 +40,7 @@ import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import joptsimple.OptionParser;
@@ -47,204 +48,199 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1255;
-import net.minecraft.class_1257;
-import net.minecraft.class_1267;
-import net.minecraft.class_1276;
-import net.minecraft.class_1279;
-import net.minecraft.class_128;
-import net.minecraft.class_140;
-import net.minecraft.class_148;
-import net.minecraft.class_155;
-import net.minecraft.class_156;
-import net.minecraft.class_1657;
-import net.minecraft.class_1863;
-import net.minecraft.class_1923;
-import net.minecraft.class_1928;
-import net.minecraft.class_1932;
-import net.minecraft.class_1934;
-import net.minecraft.class_1937;
-import net.minecraft.class_1939;
-import net.minecraft.class_1940;
-import net.minecraft.class_1942;
-import net.minecraft.class_2165;
-import net.minecraft.class_2168;
-import net.minecraft.class_2170;
-import net.minecraft.class_2338;
-import net.minecraft.class_2378;
-import net.minecraft.class_24;
-import net.minecraft.class_241;
-import net.minecraft.class_243;
-import net.minecraft.class_2561;
-import net.minecraft.class_2585;
-import net.minecraft.class_2588;
-import net.minecraft.class_2761;
-import net.minecraft.class_2874;
-import net.minecraft.class_2926;
-import net.minecraft.class_2966;
-import net.minecraft.class_2981;
-import net.minecraft.class_2989;
-import net.minecraft.class_2991;
-import net.minecraft.class_2995;
-import net.minecraft.class_30;
-import net.minecraft.class_3000;
-import net.minecraft.class_3004;
-import net.minecraft.class_31;
-import net.minecraft.class_3176;
-import net.minecraft.class_3199;
-import net.minecraft.class_32;
-import net.minecraft.class_3202;
-import net.minecraft.class_3215;
-import net.minecraft.class_3218;
-import net.minecraft.class_3221;
-import net.minecraft.class_3222;
-import net.minecraft.class_3230;
-import net.minecraft.class_3242;
-import net.minecraft.class_3262;
-import net.minecraft.class_3264;
-import net.minecraft.class_3279;
-import net.minecraft.class_3283;
-import net.minecraft.class_3286;
-import net.minecraft.class_3288;
-import net.minecraft.class_3296;
-import net.minecraft.class_3304;
-import net.minecraft.class_3312;
-import net.minecraft.class_3324;
-import net.minecraft.class_3327;
-import net.minecraft.class_3337;
-import net.minecraft.class_3505;
-import net.minecraft.class_3517;
-import net.minecraft.class_3532;
-import net.minecraft.class_3536;
-import net.minecraft.class_3551;
-import net.minecraft.class_3689;
-import net.minecraft.class_37;
+import net.minecraft.Bootstrap;
+import net.minecraft.SharedConstants;
 import net.minecraft.class_3738;
-import net.minecraft.class_3807;
-import net.minecraft.class_3902;
-import net.minecraft.class_3949;
-import net.minecraft.class_3950;
-import net.minecraft.class_3951;
-import net.minecraft.class_60;
+import net.minecraft.client.network.packet.WorldTimeUpdateClientPacket;
+import net.minecraft.datafixers.Schemas;
+import net.minecraft.entity.boss.BossBarManager;
+import net.minecraft.entity.player.ChunkTicketType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.recipe.RecipeManager;
+import net.minecraft.resource.DefaultResourcePackCreator;
+import net.minecraft.resource.FileResourcePackCreator;
+import net.minecraft.resource.ReloadableResourceManager;
+import net.minecraft.resource.ReloadableResourceManagerImpl;
+import net.minecraft.resource.ResourcePack;
+import net.minecraft.resource.ResourcePackContainer;
+import net.minecraft.resource.ResourcePackContainerManager;
+import net.minecraft.resource.ResourceType;
+import net.minecraft.scoreboard.ServerScoreboard;
+import net.minecraft.server.command.CommandOutput;
+import net.minecraft.server.command.ServerCommandManager;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.config.OperatorEntry;
+import net.minecraft.server.config.WhitelistList;
+import net.minecraft.server.dedicated.EulaReader;
+import net.minecraft.server.dedicated.MinecraftDedicatedServer;
+import net.minecraft.server.dedicated.ServerPropertiesLoader;
+import net.minecraft.server.function.CommandFunctionManager;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.SecondaryServerWorld;
+import net.minecraft.server.world.ServerChunkManager;
+import net.minecraft.server.world.ServerDemoWorld;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.world.ServerWorldListener;
+import net.minecraft.tag.TagManager;
+import net.minecraft.text.StringTextComponent;
+import net.minecraft.text.TextComponent;
+import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.util.MetricsData;
+import net.minecraft.util.ProgressListener;
+import net.minecraft.util.SystemUtil;
+import net.minecraft.util.ThreadTaskQueue;
+import net.minecraft.util.Tickable;
+import net.minecraft.util.UncaughtExceptionLogger;
+import net.minecraft.util.UserCache;
+import net.minecraft.util.crash.CrashException;
+import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.ICrashCallable;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.profiler.DisableableProfiler;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.snooper.Snooper;
+import net.minecraft.util.snooper.SnooperListener;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.ForcedChunkState;
+import net.minecraft.world.GameMode;
+import net.minecraft.world.GameRules;
+import net.minecraft.world.PersistentStateManager;
+import net.minecraft.world.SessionLockException;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldSaveHandler;
+import net.minecraft.world.chunk.ChunkPos;
+import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.level.LevelGeneratorType;
+import net.minecraft.world.level.LevelInfo;
+import net.minecraft.world.level.LevelProperties;
+import net.minecraft.world.level.storage.AnvilLevelStorage;
+import net.minecraft.world.level.storage.LevelStorage;
+import net.minecraft.world.loot.LootManager;
+import net.minecraft.world.updater.WorldUpdater;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class MinecraftServer extends class_1255<class_3738> implements class_1279, class_2165, AutoCloseable, Runnable {
-	private static final Logger field_4546 = LogManager.getLogger();
-	public static final File field_4588 = new File("usercache.json");
-	private final AtomicInteger field_17201 = new AtomicInteger(1);
+public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implements SnooperListener, CommandOutput, AutoCloseable, Runnable {
+	private static final Logger LOGGER = LogManager.getLogger();
+	public static final File USER_CACHE_FILE = new File("usercache.json");
+	private final AtomicInteger serverWorkerThreadCounter = new AtomicInteger(1);
 	@Nullable
-	private final class_32 field_4606;
-	private final class_1276 field_4582 = new class_1276("server", this, class_156.method_658());
+	private final LevelStorage levelStorage;
+	private final Snooper snooper = new Snooper("server", this, SystemUtil.getMeasuringTimeMs());
 	@Nullable
-	private final File field_4605;
-	private final List<class_3000> field_4568 = Lists.<class_3000>newArrayList();
-	private final class_3689 field_16258 = new class_3689(this::method_3780);
+	private final File gameDir;
+	private final List<Tickable> tickables = Lists.<Tickable>newArrayList();
+	private final DisableableProfiler profiler = new DisableableProfiler(this::getTicks);
 	@Nullable
-	private final class_3242 field_4563;
-	protected final class_3950 field_17439;
-	private final class_2926 field_4593 = new class_2926();
-	private final Random field_4602 = new Random();
-	private final DataFixer field_4587;
-	private String field_4585;
-	private int field_4555 = -1;
-	private final Map<class_2874, class_3218> field_4589 = Maps.<class_2874, class_3218>newIdentityHashMap();
-	private class_3324 field_4550;
-	private volatile boolean field_4544 = true;
-	private boolean field_4561;
-	private int field_4572;
+	private final ServerNetworkIO networkIO;
+	protected final WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory;
+	private final ServerMetadata metadata = new ServerMetadata();
+	private final Random random = new Random();
+	private final DataFixer dataFixer;
+	private String serverIp;
+	private int serverPort = -1;
+	private final Map<DimensionType, ServerWorld> worlds = Maps.<DimensionType, ServerWorld>newIdentityHashMap();
+	private PlayerManager playerManager;
+	private volatile boolean running = true;
+	private boolean stopped;
+	private int ticks;
 	protected final Proxy field_4599;
-	private boolean field_4543;
-	private boolean field_4560;
-	private boolean field_4575;
-	private boolean field_4590;
-	private boolean field_4604;
-	private boolean field_4554;
+	private boolean onlineMode;
+	private boolean preventProxyConnections;
+	private boolean spawnAnimals;
+	private boolean spawnNpcs;
+	private boolean pvpEnabled;
+	private boolean flightEnabled;
 	@Nullable
-	private String field_4564;
-	private int field_4579;
-	private int field_4596;
-	public final long[] field_4573 = new long[100];
-	protected final Map<class_2874, long[]> field_4600 = Maps.<class_2874, long[]>newIdentityHashMap();
+	private String motd;
+	private int worldHeight;
+	private int playerIdleTimeout;
+	public final long[] lastTickLengths = new long[100];
+	protected final Map<DimensionType, long[]> field_4600 = Maps.<DimensionType, long[]>newIdentityHashMap();
 	@Nullable
-	private KeyPair field_4552;
+	private KeyPair keyPair;
 	@Nullable
-	private String field_4578;
+	private String userName;
 	@Nullable
-	private String field_4565;
+	private String levelName;
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	private String field_4574;
-	private boolean field_4549;
-	private boolean field_4569;
-	private String field_4607 = "";
-	private String field_4584 = "";
+	private String displayName;
+	private boolean demo;
+	private boolean bonusChest;
+	private String resourcePackUrl = "";
+	private String resourcePackHash = "";
 	private volatile boolean field_4547;
 	private long field_4557;
 	@Nullable
-	private class_2561 field_4601;
+	private TextComponent field_4601;
 	private boolean field_4597;
-	private boolean field_4545;
+	private boolean forceGameMode;
 	@Nullable
-	private final YggdrasilAuthenticationService field_4594;
-	private final MinecraftSessionService field_4603;
-	private final GameProfileRepository field_4608;
-	private final class_3312 field_4556;
+	private final YggdrasilAuthenticationService authService;
+	private final MinecraftSessionService sessionService;
+	private final GameProfileRepository gameProfileRepo;
+	private final UserCache userCache;
 	private long field_4551;
-	protected final Thread field_16257 = class_156.method_654(
-		new Thread(this, "Server thread"), thread -> thread.setUncaughtExceptionHandler((threadx, throwable) -> field_4546.error(throwable))
+	protected final Thread serverThread = SystemUtil.consume(
+		new Thread(this, "Server thread"), thread -> thread.setUncaughtExceptionHandler((threadx, throwable) -> LOGGER.error(throwable))
 	);
-	private long field_4571 = class_156.method_658();
+	private long timeReference = SystemUtil.getMeasuringTimeMs();
 	@Environment(EnvType.CLIENT)
-	private boolean field_4577;
-	private final class_3296 field_4576 = new class_3304(class_3264.field_14190);
-	private final class_3283<class_3288> field_4595 = new class_3283<>(class_3288::new);
+	private boolean iconFilePresent;
+	private final ReloadableResourceManager dataManager = new ReloadableResourceManagerImpl(ResourceType.DATA);
+	private final ResourcePackContainerManager<ResourcePackContainer> field_4595 = new ResourcePackContainerManager<>(ResourcePackContainer::new);
 	@Nullable
-	private class_3279 field_4553;
-	private final class_2170 field_4562;
-	private final class_1863 field_4566 = new class_1863();
-	private final class_3505 field_4583 = new class_3505();
-	private final class_2995 field_4558 = new class_2995(this);
-	private final class_3004 field_4548 = new class_3004(this);
-	private final class_60 field_4580 = new class_60();
-	private final class_2989 field_4567 = new class_2989();
-	private final class_2991 field_4591 = new class_2991(this);
-	private final class_3517 field_16205 = new class_3517();
-	private final long field_16204 = class_156.method_648();
+	private FileResourcePackCreator field_4553;
+	private final ServerCommandManager commandManager;
+	private final RecipeManager recipeManager = new RecipeManager();
+	private final TagManager tagManager = new TagManager();
+	private final ServerScoreboard scoreboard = new ServerScoreboard(this);
+	private final BossBarManager bossBarManager = new BossBarManager(this);
+	private final LootManager lootManager = new LootManager();
+	private final ServerAdvancementLoader advancementManager = new ServerAdvancementLoader();
+	private final CommandFunctionManager commandFunctionManager = new CommandFunctionManager(this);
+	private final MetricsData field_16205 = new MetricsData();
+	private final long field_16204 = SystemUtil.getMeasuringTimeNano();
 	private boolean field_4570;
-	private boolean field_4586;
-	private float field_4592;
+	private boolean forceWorldUpgrade;
+	private float tickTime;
 	private final ExecutorService field_17200;
+	@Nullable
+	private String field_17601;
 
 	public MinecraftServer(
 		@Nullable File file,
 		Proxy proxy,
 		DataFixer dataFixer,
-		class_2170 arg,
+		ServerCommandManager serverCommandManager,
 		YggdrasilAuthenticationService yggdrasilAuthenticationService,
 		MinecraftSessionService minecraftSessionService,
 		GameProfileRepository gameProfileRepository,
-		class_3312 arg2,
-		class_3950 arg3
+		UserCache userCache,
+		WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory
 	) {
 		this.field_4599 = proxy;
-		this.field_4562 = arg;
-		this.field_4594 = yggdrasilAuthenticationService;
-		this.field_4603 = minecraftSessionService;
-		this.field_4608 = gameProfileRepository;
-		this.field_4556 = arg2;
-		this.field_4605 = file;
-		this.field_4563 = file == null ? null : new class_3242(this);
-		this.field_17439 = arg3;
-		this.field_4606 = file == null ? null : new class_24(file.toPath(), file.toPath().resolve("../backups"), dataFixer);
-		this.field_4587 = dataFixer;
-		this.field_4576.method_14477(this.field_4583);
-		this.field_4576.method_14477(this.field_4566);
-		this.field_4576.method_14477(this.field_4580);
-		this.field_4576.method_14477(this.field_4591);
-		this.field_4576.method_14477(this.field_4567);
-		this.field_17200 = this.method_17191(class_3532.method_15340(Runtime.getRuntime().availableProcessors() - 1, 1, 7));
+		this.commandManager = serverCommandManager;
+		this.authService = yggdrasilAuthenticationService;
+		this.sessionService = minecraftSessionService;
+		this.gameProfileRepo = gameProfileRepository;
+		this.userCache = userCache;
+		this.gameDir = file;
+		this.networkIO = file == null ? null : new ServerNetworkIO(this);
+		this.worldGenerationProgressListenerFactory = worldGenerationProgressListenerFactory;
+		this.levelStorage = file == null ? null : new AnvilLevelStorage(file.toPath(), file.toPath().resolve("../backups"), dataFixer);
+		this.dataFixer = dataFixer;
+		this.dataManager.addListener(this.tagManager);
+		this.dataManager.addListener(this.recipeManager);
+		this.dataManager.addListener(this.lootManager);
+		this.dataManager.addListener(this.commandFunctionManager);
+		this.dataManager.addListener(this.advancementManager);
+		this.field_17200 = this.method_17191(MathHelper.clamp(Runtime.getRuntime().availableProcessors() - 1, 1, 7));
 	}
 
 	private ExecutorService method_17191(int i) {
@@ -255,73 +251,73 @@ public abstract class MinecraftServer extends class_1255<class_3738> implements 
 			executorService = new ForkJoinPool(i, forkJoinPool -> {
 				ForkJoinWorkerThread forkJoinWorkerThread = new ForkJoinWorkerThread(forkJoinPool) {
 				};
-				forkJoinWorkerThread.setName("Server-Worker-" + this.field_17201.getAndIncrement());
+				forkJoinWorkerThread.setName("Server-Worker-" + this.serverWorkerThreadCounter.getAndIncrement());
 				return forkJoinWorkerThread;
-			}, (thread, throwable) -> field_4546.error(String.format("Caught exception in thread %s", thread), throwable), true);
+			}, (thread, throwable) -> LOGGER.error(String.format("Caught exception in thread %s", thread), throwable), true);
 		}
 
 		return executorService;
 	}
 
-	protected abstract boolean method_3823() throws IOException;
+	protected abstract boolean setupServer() throws IOException;
 
 	protected void method_3755(String string) {
-		if (this.method_3781().method_231(string)) {
-			field_4546.info("Converting map!");
-			this.method_3768(new class_2588("menu.convertingLevel"));
-			this.method_3781().method_234(string, new class_3536() {
-				private long field_4609 = class_156.method_658();
+		if (this.getLevelStorage().requiresConversion(string)) {
+			LOGGER.info("Converting map!");
+			this.method_3768(new TranslatableTextComponent("menu.convertingLevel"));
+			this.getLevelStorage().convertLevel(string, new ProgressListener() {
+				private long lastProgressUpdate = SystemUtil.getMeasuringTimeMs();
 
 				@Override
-				public void method_15412(class_2561 arg) {
+				public void method_15412(TextComponent textComponent) {
 				}
 
 				@Environment(EnvType.CLIENT)
 				@Override
-				public void method_15413(class_2561 arg) {
+				public void method_15413(TextComponent textComponent) {
 				}
 
 				@Override
-				public void method_15410(int i) {
-					if (class_156.method_658() - this.field_4609 >= 1000L) {
-						this.field_4609 = class_156.method_658();
-						MinecraftServer.field_4546.info("Converting... {}%", i);
+				public void progressStagePercentage(int i) {
+					if (SystemUtil.getMeasuringTimeMs() - this.lastProgressUpdate >= 1000L) {
+						this.lastProgressUpdate = SystemUtil.getMeasuringTimeMs();
+						MinecraftServer.LOGGER.info("Converting... {}%", i);
 					}
 				}
 
 				@Environment(EnvType.CLIENT)
 				@Override
-				public void method_15411() {
+				public void setDone() {
 				}
 
 				@Override
-				public void method_15414(class_2561 arg) {
+				public void method_15414(TextComponent textComponent) {
 				}
 			});
 		}
 
-		if (this.field_4586) {
-			field_4546.info("Forcing world upgrade!");
-			class_31 lv = this.method_3781().method_238(this.method_3865());
-			if (lv != null) {
-				class_1257 lv2 = new class_1257(this.method_3865(), this.method_3781(), lv);
-				class_2561 lv3 = null;
+		if (this.forceWorldUpgrade) {
+			LOGGER.info("Forcing world upgrade!");
+			LevelProperties levelProperties = this.getLevelStorage().getLevelProperties(this.getLevelName());
+			if (levelProperties != null) {
+				WorldUpdater worldUpdater = new WorldUpdater(this.getLevelName(), this.getLevelStorage(), levelProperties);
+				TextComponent textComponent = null;
 
-				while (!lv2.method_5403()) {
-					class_2561 lv4 = lv2.method_5394();
-					if (lv3 != lv4) {
-						lv3 = lv4;
-						field_4546.info(lv2.method_5394().getString());
+				while (!worldUpdater.isDone()) {
+					TextComponent textComponent2 = worldUpdater.getStatus();
+					if (textComponent != textComponent2) {
+						textComponent = textComponent2;
+						LOGGER.info(worldUpdater.getStatus().getString());
 					}
 
-					int i = lv2.method_5397();
+					int i = worldUpdater.getTotalChunkCount();
 					if (i > 0) {
-						int j = lv2.method_5400() + lv2.method_5399();
-						field_4546.info("{}% completed ({} / {} chunks)...", class_3532.method_15375((float)j / (float)i * 100.0F), j, i);
+						int j = worldUpdater.getUpgradedChunkCount() + worldUpdater.getSkippedChunkCount();
+						LOGGER.info("{}% completed ({} / {} chunks)...", MathHelper.floor((float)j / (float)i * 100.0F), j, i);
 					}
 
-					if (this.method_3750()) {
-						lv2.method_5402();
+					if (this.isStopped()) {
+						worldUpdater.cancel();
 					} else {
 						try {
 							Thread.sleep(1000L);
@@ -333,213 +329,251 @@ public abstract class MinecraftServer extends class_1255<class_3738> implements 
 		}
 	}
 
-	protected synchronized void method_3768(class_2561 arg) {
-		this.field_4601 = arg;
+	protected synchronized void method_3768(TextComponent textComponent) {
+		this.field_4601 = textComponent;
 	}
 
-	protected void method_3735(String string, String string2, long l, class_1942 arg, JsonElement jsonElement) {
+	protected void method_3735(String string, String string2, long l, LevelGeneratorType levelGeneratorType, JsonElement jsonElement) {
 		this.method_3755(string);
-		this.method_3768(new class_2588("menu.loadingLevel"));
-		class_30 lv = this.method_3781().method_242(string, this);
-		this.method_3861(this.method_3865(), lv);
-		class_31 lv2 = lv.method_133();
-		class_1940 lv3;
-		if (lv2 == null) {
-			if (this.method_3799()) {
-				lv3 = class_3199.field_13884;
+		this.method_3768(new TranslatableTextComponent("menu.loadingLevel"));
+		WorldSaveHandler worldSaveHandler = this.getLevelStorage().method_242(string, this);
+		this.method_3861(this.getLevelName(), worldSaveHandler);
+		LevelProperties levelProperties = worldSaveHandler.readProperties();
+		LevelInfo levelInfo;
+		if (levelProperties == null) {
+			if (this.isDemo()) {
+				levelInfo = ServerDemoWorld.INFO;
 			} else {
-				lv3 = new class_1940(l, this.method_3790(), this.method_3792(), this.method_3754(), arg);
-				lv3.method_8579(jsonElement);
-				if (this.field_4569) {
-					lv3.method_8575();
+				levelInfo = new LevelInfo(l, this.getDefaultGameMode(), this.shouldGenerateStructures(), this.isHardcore(), levelGeneratorType);
+				levelInfo.method_8579(jsonElement);
+				if (this.bonusChest) {
+					levelInfo.setBonusChest();
 				}
 			}
 
-			lv2 = new class_31(lv3, string2);
+			levelProperties = new LevelProperties(levelInfo, string2);
 		} else {
-			lv2.method_182(string2);
-			lv3 = new class_1940(lv2);
+			levelProperties.setLevelName(string2);
+			levelInfo = new LevelInfo(levelProperties);
 		}
 
-		this.method_3800(lv.method_132(), lv2);
-		class_37 lv4 = new class_37(lv);
-		class_3949 lv5 = this.field_17439.create(11);
-		this.method_3786(lv, lv4, lv2, lv3, lv5);
-		this.method_3776(this.method_3722());
-		this.method_3774(lv4, lv5);
+		this.method_3800(worldSaveHandler.getWorldDir(), levelProperties);
+		PersistentStateManager persistentStateManager = new PersistentStateManager(worldSaveHandler);
+		WorldGenerationProgressListener worldGenerationProgressListener = this.worldGenerationProgressListenerFactory.create(11);
+		this.createWorlds(worldSaveHandler, persistentStateManager, levelProperties, levelInfo, worldGenerationProgressListener);
+		this.setDifficulty(this.getDefaultDifficulty());
+		this.prepareStartRegion(persistentStateManager, worldGenerationProgressListener);
 	}
 
-	protected void method_3786(class_30 arg, class_37 arg2, class_31 arg3, class_1940 arg4, class_3949 arg5) {
-		if (this.method_3799()) {
-			this.field_4589
-				.put(class_2874.field_13072, new class_3199(this, this.field_17200, arg, arg2, arg3, class_2874.field_13072, this.field_16258, arg5).method_14185());
+	protected void createWorlds(
+		WorldSaveHandler worldSaveHandler,
+		PersistentStateManager persistentStateManager,
+		LevelProperties levelProperties,
+		LevelInfo levelInfo,
+		WorldGenerationProgressListener worldGenerationProgressListener
+	) {
+		if (this.isDemo()) {
+			this.worlds
+				.put(
+					DimensionType.field_13072,
+					new ServerDemoWorld(
+							this,
+							this.field_17200,
+							worldSaveHandler,
+							persistentStateManager,
+							levelProperties,
+							DimensionType.field_13072,
+							this.profiler,
+							worldGenerationProgressListener
+						)
+						.initialize()
+				);
 		} else {
-			this.field_4589
-				.put(class_2874.field_13072, new class_3218(this, this.field_17200, arg, arg2, arg3, class_2874.field_13072, this.field_16258, arg5).method_14185());
+			this.worlds
+				.put(
+					DimensionType.field_13072,
+					new ServerWorld(
+							this,
+							this.field_17200,
+							worldSaveHandler,
+							persistentStateManager,
+							levelProperties,
+							DimensionType.field_13072,
+							this.profiler,
+							worldGenerationProgressListener
+						)
+						.initialize()
+				);
 		}
 
-		class_3218 lv = this.method_3847(class_2874.field_13072);
-		lv.method_8414(arg4);
-		lv.method_8521(new class_3221(this, lv));
-		if (!this.method_3724()) {
-			lv.method_8401().method_193(this.method_3790());
+		ServerWorld serverWorld = this.getWorld(DimensionType.field_13072);
+		serverWorld.init(levelInfo);
+		serverWorld.registerListener(new ServerWorldListener(this, serverWorld));
+		if (!this.isSinglePlayer()) {
+			serverWorld.getLevelProperties().setGameMode(this.getDefaultGameMode());
 		}
 
-		class_3202 lv2 = new class_3202(this, this.field_17200, arg, class_2874.field_13076, lv, this.field_16258, arg5).method_14033();
-		this.field_4589.put(class_2874.field_13076, lv2);
-		lv2.method_8521(new class_3221(this, lv2));
-		if (!this.method_3724()) {
-			lv2.method_8401().method_193(this.method_3790());
+		SecondaryServerWorld secondaryServerWorld = new SecondaryServerWorld(
+				this, this.field_17200, worldSaveHandler, DimensionType.field_13076, serverWorld, this.profiler, worldGenerationProgressListener
+			)
+			.initializeAsSecondaryWorld();
+		this.worlds.put(DimensionType.field_13076, secondaryServerWorld);
+		secondaryServerWorld.registerListener(new ServerWorldListener(this, secondaryServerWorld));
+		if (!this.isSinglePlayer()) {
+			secondaryServerWorld.getLevelProperties().setGameMode(this.getDefaultGameMode());
 		}
 
-		class_3202 lv3 = new class_3202(this, this.field_17200, arg, class_2874.field_13078, lv, this.field_16258, arg5).method_14033();
-		this.field_4589.put(class_2874.field_13078, lv3);
-		lv3.method_8521(new class_3221(this, lv3));
-		if (!this.method_3724()) {
-			lv3.method_8401().method_193(this.method_3790());
+		SecondaryServerWorld secondaryServerWorld2 = new SecondaryServerWorld(
+				this, this.field_17200, worldSaveHandler, DimensionType.field_13078, serverWorld, this.profiler, worldGenerationProgressListener
+			)
+			.initializeAsSecondaryWorld();
+		this.worlds.put(DimensionType.field_13078, secondaryServerWorld2);
+		secondaryServerWorld2.registerListener(new ServerWorldListener(this, secondaryServerWorld2));
+		if (!this.isSinglePlayer()) {
+			secondaryServerWorld2.getLevelProperties().setGameMode(this.getDefaultGameMode());
 		}
 
-		this.method_3760().method_14591(lv);
-		if (arg3.method_228() != null) {
-			this.method_3837().method_12972(arg3.method_228());
+		this.getPlayerManager().method_14591(serverWorld);
+		if (levelProperties.getCustomBossEvents() != null) {
+			this.getBossBarManager().fromTag(levelProperties.getCustomBossEvents());
 		}
 	}
 
-	protected void method_3800(File file, class_31 arg) {
-		this.field_4595.method_14443(new class_3286());
-		this.field_4553 = new class_3279(new File(file, "datapacks"));
-		this.field_4595.method_14443(this.field_4553);
-		this.field_4595.method_14445();
-		List<class_3288> list = Lists.<class_3288>newArrayList();
+	protected void method_3800(File file, LevelProperties levelProperties) {
+		this.field_4595.addCreator(new DefaultResourcePackCreator());
+		this.field_4553 = new FileResourcePackCreator(new File(file, "datapacks"));
+		this.field_4595.addCreator(this.field_4553);
+		this.field_4595.callCreators();
+		List<ResourcePackContainer> list = Lists.<ResourcePackContainer>newArrayList();
 
-		for (String string : arg.method_179()) {
-			class_3288 lv = this.field_4595.method_14449(string);
-			if (lv != null) {
-				list.add(lv);
+		for (String string : levelProperties.getEnabledDataPacks()) {
+			ResourcePackContainer resourcePackContainer = this.field_4595.getContainer(string);
+			if (resourcePackContainer != null) {
+				list.add(resourcePackContainer);
 			} else {
-				field_4546.warn("Missing data pack {}", string);
+				LOGGER.warn("Missing data pack {}", string);
 			}
 		}
 
-		this.field_4595.method_14447(list);
-		this.method_3752(arg);
+		this.field_4595.setEnabled(list);
+		this.reloadDataPacks(levelProperties);
 	}
 
-	protected void method_3774(class_37 arg, class_3949 arg2) {
-		this.method_3768(new class_2588("menu.generatingTerrain"));
-		class_3218 lv = this.method_3847(class_2874.field_13072);
-		field_4546.info("Preparing start region for dimension " + class_2874.method_12485(lv.field_9247.method_12460()));
-		class_2338 lv2 = lv.method_8395();
-		arg2.method_17669(new class_1923(lv2));
-		class_3215 lv3 = lv.method_14178();
-		lv3.method_17293().method_17304(500);
-		this.field_4571 = class_156.method_658();
-		lv3.method_17297(class_3230.field_14030, new class_1923(lv2), 11, class_3902.field_17274);
+	protected void prepareStartRegion(PersistentStateManager persistentStateManager, WorldGenerationProgressListener worldGenerationProgressListener) {
+		this.method_3768(new TranslatableTextComponent("menu.generatingTerrain"));
+		ServerWorld serverWorld = this.getWorld(DimensionType.field_13072);
+		LOGGER.info("Preparing start region for dimension " + DimensionType.getId(serverWorld.dimension.getType()));
+		BlockPos blockPos = serverWorld.getSpawnPos();
+		worldGenerationProgressListener.start(new ChunkPos(blockPos));
+		ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
+		serverChunkManager.getLightingProvider().method_17304(500);
+		this.timeReference = SystemUtil.getMeasuringTimeMs();
+		serverChunkManager.addTicket(ChunkTicketType.START, new ChunkPos(blockPos), 11, net.minecraft.util.Void.INSTANCE);
 
-		while (lv3.method_17301() != 441) {
-			this.field_4571 += 100L;
-			lv3.method_17293().method_17303();
+		while (serverChunkManager.getTotalChunksLoadedCount() != 441) {
+			this.timeReference += 100L;
+			serverChunkManager.getLightingProvider().tick();
 			this.method_16208();
 		}
 
-		this.field_4571 += 100L;
-		lv3.method_17293().method_17303();
+		this.timeReference += 100L;
+		serverChunkManager.getLightingProvider().tick();
 		this.method_16208();
 
-		for (class_2874 lv4 : class_2874.method_12482()) {
-			class_1932 lv5 = arg.method_268(lv4, class_1932::new, "chunks");
-			if (lv5 != null) {
-				class_3218 lv6 = this.method_3847(lv4);
-				LongIterator longIterator = lv5.method_8375().iterator();
+		for (DimensionType dimensionType : DimensionType.getAll()) {
+			ForcedChunkState forcedChunkState = persistentStateManager.get(dimensionType, ForcedChunkState::new, "chunks");
+			if (forcedChunkState != null) {
+				ServerWorld serverWorld2 = this.getWorld(dimensionType);
+				LongIterator longIterator = forcedChunkState.getChunks().iterator();
 
 				while (longIterator.hasNext()) {
 					long l = longIterator.nextLong();
-					class_1923 lv7 = new class_1923(l);
-					lv6.method_14178().method_12124(lv7, true);
+					ChunkPos chunkPos = new ChunkPos(l);
+					serverWorld2.getChunkManager().setChunkForced(chunkPos, true);
 				}
 			}
 		}
 
-		this.field_4571 += 100L;
-		lv3.method_17293().method_17303();
+		this.timeReference += 100L;
+		serverChunkManager.getLightingProvider().tick();
 		this.method_16208();
-		arg2.method_17671();
-		lv3.method_17293().method_17304(5);
+		worldGenerationProgressListener.stop();
+		serverChunkManager.getLightingProvider().method_17304(5);
 	}
 
-	protected void method_3861(String string, class_30 arg) {
-		File file = new File(arg.method_132(), "resources.zip");
+	protected void method_3861(String string, WorldSaveHandler worldSaveHandler) {
+		File file = new File(worldSaveHandler.getWorldDir(), "resources.zip");
 		if (file.isFile()) {
 			try {
-				this.method_3843("level://" + URLEncoder.encode(string, StandardCharsets.UTF_8.toString()) + "/" + "resources.zip", "");
+				this.setResourcePack("level://" + URLEncoder.encode(string, StandardCharsets.UTF_8.toString()) + "/" + "resources.zip", "");
 			} catch (UnsupportedEncodingException var5) {
-				field_4546.warn("Something went wrong url encoding {}", string);
+				LOGGER.warn("Something went wrong url encoding {}", string);
 			}
 		}
 	}
 
-	public abstract boolean method_3792();
+	public abstract boolean shouldGenerateStructures();
 
-	public abstract class_1934 method_3790();
+	public abstract GameMode getDefaultGameMode();
 
-	public abstract class_1267 method_3722();
+	public abstract Difficulty getDefaultDifficulty();
 
-	public abstract boolean method_3754();
+	public abstract boolean isHardcore();
 
-	public abstract int method_3798();
+	public abstract int getOpPermissionLevel();
 
-	public abstract boolean method_3732();
+	public abstract boolean shouldBroadcastRconToOps();
 
-	protected void method_3723(boolean bl, boolean bl2) {
-		for (class_3218 lv : this.method_3738()) {
-			if (lv != null) {
+	protected void save(boolean bl, boolean bl2) {
+		for (ServerWorld serverWorld : this.getWorlds()) {
+			if (serverWorld != null) {
 				if (!bl) {
-					field_4546.info("Saving chunks for level '{}'/{}", lv.method_8401().method_150(), class_2874.method_12485(lv.field_9247.method_12460()));
+					LOGGER.info("Saving chunks for level '{}'/{}", serverWorld.getLevelProperties().getLevelName(), DimensionType.getId(serverWorld.dimension.getType()));
 				}
 
 				try {
-					lv.method_14176(null, bl2);
-				} catch (class_1939 var6) {
-					field_4546.warn(var6.getMessage());
+					serverWorld.save(null, bl2);
+				} catch (SessionLockException var6) {
+					LOGGER.warn(var6.getMessage());
 				}
 			}
 		}
 	}
 
 	public void close() {
-		this.method_3782();
+		this.shutdown();
 	}
 
-	protected void method_3782() {
-		field_4546.info("Stopping server");
-		if (this.method_3787() != null) {
-			this.method_3787().method_14356();
+	protected void shutdown() {
+		LOGGER.info("Stopping server");
+		if (this.getNetworkIO() != null) {
+			this.getNetworkIO().stop();
 		}
 
-		if (this.field_4550 != null) {
-			field_4546.info("Saving players");
-			this.field_4550.method_14617();
-			this.field_4550.method_14597();
+		if (this.playerManager != null) {
+			LOGGER.info("Saving players");
+			this.playerManager.saveAllPlayerData();
+			this.playerManager.disconnectAllPlayers();
 		}
 
-		field_4546.info("Saving worlds");
+		LOGGER.info("Saving worlds");
 
-		for (class_3218 lv : this.method_3738()) {
-			if (lv != null) {
-				lv.field_13957 = false;
+		for (ServerWorld serverWorld : this.getWorlds()) {
+			if (serverWorld != null) {
+				serverWorld.savingDisabled = false;
 			}
 		}
 
-		this.method_3723(false, true);
+		this.save(false, true);
 
-		for (class_3218 lvx : this.method_3738()) {
-			if (lvx != null) {
-				lvx.close();
+		for (ServerWorld serverWorldx : this.getWorlds()) {
+			if (serverWorldx != null) {
+				serverWorldx.close();
 			}
 		}
 
-		if (this.field_4582.method_5483()) {
-			this.field_4582.method_5487();
+		if (this.snooper.isActive()) {
+			this.snooper.cancel();
 		}
 
 		this.field_17200.shutdown();
@@ -556,85 +590,85 @@ public abstract class MinecraftServer extends class_1255<class_3738> implements 
 		}
 	}
 
-	public String method_3819() {
-		return this.field_4585;
+	public String getServerIp() {
+		return this.serverIp;
 	}
 
-	public void method_3842(String string) {
-		this.field_4585 = string;
+	public void setServerIp(String string) {
+		this.serverIp = string;
 	}
 
-	public boolean method_3806() {
-		return this.field_4544;
+	public boolean isRunning() {
+		return this.running;
 	}
 
-	public void method_3747(boolean bl) {
-		this.field_4544 = false;
+	public void stop(boolean bl) {
+		this.running = false;
 		if (bl) {
 			try {
-				this.field_16257.join();
+				this.serverThread.join();
 			} catch (InterruptedException var3) {
-				field_4546.error("Error while shutting down", (Throwable)var3);
+				LOGGER.error("Error while shutting down", (Throwable)var3);
 			}
 		}
 	}
 
-	private boolean method_3866() {
-		return class_156.method_658() < this.field_4571;
+	private boolean shouldKeepTicking() {
+		return SystemUtil.getMeasuringTimeMs() < this.timeReference;
 	}
 
 	public void run() {
 		try {
-			if (this.method_3823()) {
-				this.field_4571 = class_156.method_658();
-				this.field_4593.method_12684(new class_2585(this.field_4564));
-				this.field_4593.method_12679(new class_2926.class_2930(class_155.method_16673().getName(), class_155.method_16673().getProtocolVersion()));
-				this.method_3791(this.field_4593);
+			if (this.setupServer()) {
+				this.timeReference = SystemUtil.getMeasuringTimeMs();
+				this.metadata.setDescription(new StringTextComponent(this.motd));
+				this.metadata.setVersion(new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion()));
+				this.method_3791(this.metadata);
 
-				while (this.field_4544) {
-					long l = class_156.method_658() - this.field_4571;
-					if (l > 2000L && this.field_4571 - this.field_4557 >= 15000L) {
+				while (this.running) {
+					long l = SystemUtil.getMeasuringTimeMs() - this.timeReference;
+					if (l > 2000L && this.timeReference - this.field_4557 >= 15000L) {
 						long m = l / 50L;
-						field_4546.warn("Can't keep up! Is the server overloaded? Running {}ms or {} ticks behind", l, m);
-						this.field_4571 += m * 50L;
-						this.field_4557 = this.field_4571;
+						LOGGER.warn("Can't keep up! Is the server overloaded? Running {}ms or {} ticks behind", l, m);
+						this.timeReference += m * 50L;
+						this.field_4557 = this.timeReference;
 					}
 
-					this.field_4571 += 50L;
-					this.method_3748(this::method_3866);
+					this.timeReference += 50L;
+					this.method_3748(this::shouldKeepTicking);
 					this.method_16208();
 					this.field_4547 = true;
 				}
 			} else {
-				this.method_3744(null);
+				this.setCrashReport(null);
 			}
 		} catch (Throwable var44) {
-			field_4546.error("Encountered an unexpected exception", var44);
-			class_128 lv;
-			if (var44 instanceof class_148) {
-				lv = this.method_3859(((class_148)var44).method_631());
+			LOGGER.error("Encountered an unexpected exception", var44);
+			CrashReport crashReport;
+			if (var44 instanceof CrashException) {
+				crashReport = this.populateCrashReport(((CrashException)var44).getReport());
 			} else {
-				lv = this.method_3859(new class_128("Exception in server tick loop", var44));
+				crashReport = this.populateCrashReport(new CrashReport("Exception in server tick loop", var44));
 			}
 
 			File file = new File(
-				new File(this.method_3831(), "crash-reports"), "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-server.txt"
+				new File(this.getRunDirectory(), "crash-reports"), "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-server.txt"
 			);
-			if (lv.method_569(file)) {
-				field_4546.error("This crash report has been saved to: {}", file.getAbsolutePath());
+			if (crashReport.writeToFile(file)) {
+				LOGGER.error("This crash report has been saved to: {}", file.getAbsolutePath());
 			} else {
-				field_4546.error("We were unable to save this crash report to disk.");
+				LOGGER.error("We were unable to save this crash report to disk.");
 			}
 
-			this.method_3744(lv);
+			this.setCrashReport(crashReport);
 		} finally {
 			try {
-				this.field_4561 = true;
-				this.method_3782();
+				this.stopped = true;
+				this.shutdown();
 			} catch (Throwable var42) {
-				field_4546.error("Exception stopping the server", var42);
+				LOGGER.error("Exception stopping the server", var42);
 			} finally {
-				this.method_3821();
+				this.exit();
 			}
 		}
 	}
@@ -642,47 +676,47 @@ public abstract class MinecraftServer extends class_1255<class_3738> implements 
 	protected void method_16208() {
 		boolean bl;
 		do {
-			bl = this.method_16075();
+			bl = this.executeQueuedTask();
 			if (!bl) {
 				Thread.yield();
 			}
-		} while (bl || this.method_3866());
+		} while (bl || this.shouldKeepTicking());
 	}
 
 	protected class_3738 method_16209(Runnable runnable) {
-		return new class_3738(this.field_4572, runnable);
+		return new class_3738(this.ticks, runnable);
 	}
 
 	@Override
-	public boolean method_16075() {
-		if (this.method_3866()) {
-			for (class_3218 lv : this.method_3738()) {
-				if (lv.method_14178().method_17302()) {
+	public boolean executeQueuedTask() {
+		if (this.shouldKeepTicking()) {
+			for (ServerWorld serverWorld : this.getWorlds()) {
+				if (serverWorld.getChunkManager().method_17302()) {
 					return true;
 				}
 			}
 		}
 
-		class_3738 lv2 = (class_3738)this.field_5750.peek();
-		if (lv2 == null) {
+		class_3738 lv = (class_3738)this.taskQueue.peek();
+		if (lv == null) {
 			return false;
-		} else if (!this.method_3866() && lv2.method_16338() + 3 >= this.field_4572) {
+		} else if (!this.shouldKeepTicking() && lv.method_16338() + 3 >= this.ticks) {
 			return false;
 		} else {
 			try {
-				((class_3738)this.field_5750.remove()).run();
+				((class_3738)this.taskQueue.remove()).run();
 			} catch (Exception var3) {
-				field_4546.fatal("Error executing task", (Throwable)var3);
+				LOGGER.fatal("Error executing task", (Throwable)var3);
 			}
 
 			return true;
 		}
 	}
 
-	public void method_3791(class_2926 arg) {
-		File file = this.method_3758("server-icon.png");
+	public void method_3791(ServerMetadata serverMetadata) {
+		File file = this.getFile("server-icon.png");
 		if (!file.exists()) {
-			file = this.method_3781().method_239(this.method_3865(), "icon.png");
+			file = this.getLevelStorage().resolveFile(this.getLevelName(), "icon.png");
 		}
 
 		if (file.isFile()) {
@@ -694,9 +728,9 @@ public abstract class MinecraftServer extends class_1255<class_3738> implements 
 				Validate.validState(bufferedImage.getHeight() == 64, "Must be 64 pixels high");
 				ImageIO.write(bufferedImage, "PNG", new ByteBufOutputStream(byteBuf));
 				ByteBuffer byteBuffer = Base64.getEncoder().encode(byteBuf.nioBuffer());
-				arg.method_12677("data:image/png;base64," + StandardCharsets.UTF_8.decode(byteBuffer));
+				serverMetadata.setFavicon("data:image/png;base64," + StandardCharsets.UTF_8.decode(byteBuffer));
 			} catch (Exception var9) {
-				field_4546.error("Couldn't load server icon", (Throwable)var9);
+				LOGGER.error("Couldn't load server icon", (Throwable)var9);
 			} finally {
 				byteBuf.release();
 			}
@@ -704,139 +738,144 @@ public abstract class MinecraftServer extends class_1255<class_3738> implements 
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_3771() {
-		this.field_4577 = this.field_4577 || this.method_3725().isFile();
-		return this.field_4577;
+	public boolean hasIconFile() {
+		this.iconFilePresent = this.iconFilePresent || this.getIconFile().isFile();
+		return this.iconFilePresent;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public File method_3725() {
-		return this.method_3781().method_239(this.method_3865(), "icon.png");
+	public File getIconFile() {
+		return this.getLevelStorage().resolveFile(this.getLevelName(), "icon.png");
 	}
 
-	public File method_3831() {
+	public File getRunDirectory() {
 		return new File(".");
 	}
 
-	protected void method_3744(class_128 arg) {
+	protected void setCrashReport(CrashReport crashReport) {
 	}
 
-	protected void method_3821() {
+	protected void exit() {
 	}
 
 	protected void method_3748(BooleanSupplier booleanSupplier) {
-		long l = class_156.method_648();
-		this.field_4572++;
+		long l = SystemUtil.getMeasuringTimeNano();
+		this.ticks++;
 		if (this.field_4597) {
 			this.field_4597 = false;
-			this.field_16258.method_16055().method_16060();
+			this.profiler.getController().enable();
 		}
 
-		this.field_16258.method_16065();
-		this.method_3813(booleanSupplier);
+		this.profiler.startTick();
+		this.tick(booleanSupplier);
 		if (l - this.field_4551 >= 5000000000L) {
 			this.field_4551 = l;
-			this.field_4593.method_12681(new class_2926.class_2927(this.method_3802(), this.method_3788()));
-			GameProfile[] gameProfiles = new GameProfile[Math.min(this.method_3788(), 12)];
-			int i = class_3532.method_15395(this.field_4602, 0, this.method_3788() - gameProfiles.length);
+			this.metadata.setPlayers(new ServerMetadata.Players(this.getMaxPlayerCount(), this.getCurrentPlayerCount()));
+			GameProfile[] gameProfiles = new GameProfile[Math.min(this.getCurrentPlayerCount(), 12)];
+			int i = MathHelper.nextInt(this.random, 0, this.getCurrentPlayerCount() - gameProfiles.length);
 
 			for (int j = 0; j < gameProfiles.length; j++) {
-				gameProfiles[j] = ((class_3222)this.field_4550.method_14571().get(i + j)).method_7334();
+				gameProfiles[j] = ((ServerPlayerEntity)this.playerManager.getPlayerList().get(i + j)).getGameProfile();
 			}
 
 			Collections.shuffle(Arrays.asList(gameProfiles));
-			this.field_4593.method_12682().method_12686(gameProfiles);
+			this.metadata.getPlayers().setSample(gameProfiles);
 		}
 
-		if (this.field_4572 % 900 == 0) {
-			this.field_16258.method_15396("save");
-			this.field_4550.method_14617();
-			this.method_3723(true, false);
-			this.field_16258.method_15407();
+		if (this.ticks % 900 == 0) {
+			this.profiler.push("save");
+			this.playerManager.saveAllPlayerData();
+			this.save(true, false);
+			this.profiler.pop();
 		}
 
-		this.field_16258.method_15396("snooper");
-		if (!this.field_4582.method_5483() && this.field_4572 > 100) {
-			this.field_4582.method_5482();
+		this.profiler.push("snooper");
+		if (!this.snooper.isActive() && this.ticks > 100) {
+			this.snooper.method_5482();
 		}
 
-		if (this.field_4572 % 6000 == 0) {
-			this.field_4582.method_5485();
+		if (this.ticks % 6000 == 0) {
+			this.snooper.update();
 		}
 
-		this.field_16258.method_15407();
-		this.field_16258.method_15396("tallying");
-		long m = this.field_4573[this.field_4572 % 100] = class_156.method_648() - l;
-		this.field_4592 = this.field_4592 * 0.8F + (float)m / 1000000.0F * 0.19999999F;
-		long n = class_156.method_648();
-		this.field_16205.method_15247(n - l);
-		this.field_16258.method_15407();
-		this.field_16258.method_16066();
+		this.profiler.pop();
+		this.profiler.push("tallying");
+		long m = this.lastTickLengths[this.ticks % 100] = SystemUtil.getMeasuringTimeNano() - l;
+		this.tickTime = this.tickTime * 0.8F + (float)m / 1000000.0F * 0.19999999F;
+		long n = SystemUtil.getMeasuringTimeNano();
+		this.field_16205.pushSample(n - l);
+		this.profiler.pop();
+		this.profiler.endTick();
 	}
 
-	protected void method_3813(BooleanSupplier booleanSupplier) {
-		this.field_16258.method_15396("commandFunctions");
-		this.method_3740().method_16896();
-		this.field_16258.method_15405("levels");
+	protected void tick(BooleanSupplier booleanSupplier) {
+		this.profiler.push("commandFunctions");
+		this.getCommandFunctionManager().tick();
+		this.profiler.swap("levels");
 
-		for (class_3218 lv : this.method_3738()) {
-			long l = class_156.method_648();
-			if (lv.field_9247.method_12460() == class_2874.field_13072 || this.method_3839()) {
-				this.field_16258.method_15400(() -> lv.method_8401().method_150() + " " + class_2378.field_11155.method_10221(lv.field_9247.method_12460()));
-				if (this.field_4572 % 20 == 0) {
-					this.field_16258.method_15396("timeSync");
-					this.field_4550
-						.method_14589(new class_2761(lv.method_8510(), lv.method_8532(), lv.method_8450().method_8355("doDaylightCycle")), lv.field_9247.method_12460());
-					this.field_16258.method_15407();
+		for (ServerWorld serverWorld : this.getWorlds()) {
+			long l = SystemUtil.getMeasuringTimeNano();
+			if (serverWorld.dimension.getType() == DimensionType.field_13072 || this.isNetherAllowed()) {
+				this.profiler
+					.push((Supplier<String>)(() -> serverWorld.getLevelProperties().getLevelName() + " " + Registry.DIMENSION.getId(serverWorld.dimension.getType())));
+				if (this.ticks % 20 == 0) {
+					this.profiler.push("timeSync");
+					this.playerManager
+						.sendToDimension(
+							new WorldTimeUpdateClientPacket(serverWorld.getTime(), serverWorld.getTimeOfDay(), serverWorld.getGameRules().getBoolean("doDaylightCycle")),
+							serverWorld.dimension.getType()
+						);
+					this.profiler.pop();
 				}
 
-				this.field_16258.method_15396("tick");
+				this.profiler.push("tick");
 
 				try {
-					lv.method_8441(booleanSupplier);
+					serverWorld.tick(booleanSupplier);
 				} catch (Throwable var9) {
-					class_128 lv2 = class_128.method_560(var9, "Exception ticking world");
-					lv.method_8538(lv2);
-					throw new class_148(lv2);
+					CrashReport crashReport = CrashReport.create(var9, "Exception ticking world");
+					serverWorld.addDetailsToCrashReport(crashReport);
+					throw new CrashException(crashReport);
 				}
 
 				try {
-					lv.method_8429();
+					serverWorld.updateEntities();
 				} catch (Throwable var8) {
-					class_128 lv2 = class_128.method_560(var8, "Exception ticking world entities");
-					lv.method_8538(lv2);
-					throw new class_148(lv2);
+					CrashReport crashReport = CrashReport.create(var8, "Exception ticking world entities");
+					serverWorld.addDetailsToCrashReport(crashReport);
+					throw new CrashException(crashReport);
 				}
 
-				this.field_16258.method_15407();
-				this.field_16258.method_15396("tracker");
-				lv.method_14180().method_14078();
-				this.field_16258.method_15407();
-				this.field_16258.method_15407();
+				this.profiler.pop();
+				this.profiler.push("tracker");
+				serverWorld.getEntityTracker().method_14078();
+				this.profiler.pop();
+				this.profiler.pop();
 			}
 
-			((long[])this.field_4600.computeIfAbsent(lv.field_9247.method_12460(), arg -> new long[100]))[this.field_4572 % 100] = class_156.method_648() - l;
+			((long[])this.field_4600.computeIfAbsent(serverWorld.dimension.getType(), dimensionType -> new long[100]))[this.ticks % 100] = SystemUtil.getMeasuringTimeNano()
+				- l;
 		}
 
-		this.field_16258.method_15405("connection");
-		this.method_3787().method_14357();
-		this.field_16258.method_15405("players");
-		this.field_4550.method_14601();
-		this.field_16258.method_15405("tickables");
+		this.profiler.swap("connection");
+		this.getNetworkIO().tick();
+		this.profiler.swap("players");
+		this.playerManager.updatePlayerLatency();
+		this.profiler.swap("tickables");
 
-		for (int i = 0; i < this.field_4568.size(); i++) {
-			((class_3000)this.field_4568.get(i)).method_16896();
+		for (int i = 0; i < this.tickables.size(); i++) {
+			((Tickable)this.tickables.get(i)).tick();
 		}
 
-		this.field_16258.method_15407();
+		this.profiler.pop();
 	}
 
-	public boolean method_3839() {
+	public boolean isNetherAllowed() {
 		return true;
 	}
 
-	public void method_3742(class_3000 arg) {
-		this.field_4568.add(arg);
+	public void registerTickable(Tickable tickable) {
+		this.tickables.add(tickable);
 	}
 
 	public static void main(String[] strings) {
@@ -851,7 +890,8 @@ public abstract class MinecraftServer extends class_1255<class_3738> implements 
 		OptionSpec<String> optionSpec8 = optionParser.accepts("universe").withRequiredArg().defaultsTo(".");
 		OptionSpec<String> optionSpec9 = optionParser.accepts("world").withRequiredArg();
 		OptionSpec<Integer> optionSpec10 = optionParser.accepts("port").withRequiredArg().<Integer>ofType(Integer.class).defaultsTo(-1);
-		OptionSpec<String> optionSpec11 = optionParser.nonOptions();
+		OptionSpec<String> optionSpec11 = optionParser.accepts("serverId").withRequiredArg();
+		OptionSpec<String> optionSpec12 = optionParser.nonOptions();
 
 		try {
 			OptionSet optionSet = optionParser.parse(strings);
@@ -861,114 +901,126 @@ public abstract class MinecraftServer extends class_1255<class_3738> implements 
 			}
 
 			Path path = Paths.get("server.properties");
-			class_3807 lv = new class_3807(path);
-			lv.method_16719();
+			ServerPropertiesLoader serverPropertiesLoader = new ServerPropertiesLoader(path);
+			serverPropertiesLoader.store();
 			Path path2 = Paths.get("eula.txt");
-			class_2981 lv2 = new class_2981(path2);
+			EulaReader eulaReader = new EulaReader(path2);
 			if (optionSet.has(optionSpec2)) {
-				field_4546.info("Initialized '" + path.toAbsolutePath().toString() + "' and '" + path2.toAbsolutePath().toString() + "'");
+				LOGGER.info("Initialized '" + path.toAbsolutePath().toString() + "' and '" + path2.toAbsolutePath().toString() + "'");
 				return;
 			}
 
-			if (!lv2.method_12866()) {
-				field_4546.info("You need to agree to the EULA in order to run the server. Go to eula.txt for more info.");
+			if (!eulaReader.isEulaAgreedTo()) {
+				LOGGER.info("You need to agree to the EULA in order to run the server. Go to eula.txt for more info.");
 				return;
 			}
 
-			class_2966.method_12851();
-			class_2966.method_17598();
+			Bootstrap.initialize();
+			Bootstrap.method_17598();
 			String string = optionSet.valueOf(optionSpec8);
 			YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(Proxy.NO_PROXY, UUID.randomUUID().toString());
 			MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
 			GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
-			class_3312 lv3 = new class_3312(gameProfileRepository, new File(string, field_4588.getName()));
-			final class_3176 lv4 = new class_3176(
-				new File(string), lv, class_3551.method_15450(), yggdrasilAuthenticationService, minecraftSessionService, gameProfileRepository, lv3, class_3951::new
+			UserCache userCache = new UserCache(gameProfileRepository, new File(string, USER_CACHE_FILE.getName()));
+			final MinecraftDedicatedServer minecraftDedicatedServer = new MinecraftDedicatedServer(
+				new File(string),
+				serverPropertiesLoader,
+				Schemas.getFixer(),
+				yggdrasilAuthenticationService,
+				minecraftSessionService,
+				gameProfileRepository,
+				userCache,
+				WorldGenerationProgressLogger::new
 			);
-			lv4.method_3817(optionSet.valueOf(optionSpec7));
-			lv4.method_3807(optionSet.valueOf(optionSpec9));
-			lv4.method_3779(optionSet.valueOf(optionSpec10));
-			lv4.method_3730(optionSet.has(optionSpec3));
-			lv4.method_3778(optionSet.has(optionSpec4));
-			lv4.method_3797(optionSet.has(optionSpec5));
-			boolean bl = !optionSet.has(optionSpec) && !optionSet.valuesOf(optionSpec11).contains("nogui");
+			minecraftDedicatedServer.setUserName(optionSet.valueOf(optionSpec7));
+			minecraftDedicatedServer.setLevelName(optionSet.valueOf(optionSpec9));
+			minecraftDedicatedServer.setServerPort(optionSet.valueOf(optionSpec10));
+			minecraftDedicatedServer.setDemo(optionSet.has(optionSpec3));
+			minecraftDedicatedServer.setBonusChest(optionSet.has(optionSpec4));
+			minecraftDedicatedServer.setForceWorldUpgrade(optionSet.has(optionSpec5));
+			minecraftDedicatedServer.method_17819(optionSet.valueOf(optionSpec11));
+			boolean bl = !optionSet.has(optionSpec) && !optionSet.valuesOf(optionSpec12).contains("nogui");
 			if (bl && !GraphicsEnvironment.isHeadless()) {
-				lv4.method_13948();
+				minecraftDedicatedServer.createGui();
 			}
 
-			lv4.method_3717();
+			minecraftDedicatedServer.start();
 			Thread thread = new Thread("Server Shutdown Thread") {
 				public void run() {
-					lv4.method_3747(true);
+					minecraftDedicatedServer.stop(true);
 				}
 			};
-			thread.setUncaughtExceptionHandler(new class_140(field_4546));
+			thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
 			Runtime.getRuntime().addShutdownHook(thread);
-		} catch (Exception var26) {
-			field_4546.fatal("Failed to start the minecraft server", (Throwable)var26);
+		} catch (Exception var27) {
+			LOGGER.fatal("Failed to start the minecraft server", (Throwable)var27);
 		}
 	}
 
-	protected void method_3797(boolean bl) {
-		this.field_4586 = bl;
+	protected void method_17819(String string) {
+		this.field_17601 = string;
 	}
 
-	public void method_3717() {
-		this.field_16257.start();
+	protected void setForceWorldUpgrade(boolean bl) {
+		this.forceWorldUpgrade = bl;
+	}
+
+	public void start() {
+		this.serverThread.start();
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_16043() {
-		return !this.field_16257.isAlive();
+	public boolean isServerThreadAlive() {
+		return !this.serverThread.isAlive();
 	}
 
-	public File method_3758(String string) {
-		return new File(this.method_3831(), string);
+	public File getFile(String string) {
+		return new File(this.getRunDirectory(), string);
 	}
 
-	public void method_3720(String string) {
-		field_4546.info(string);
+	public void info(String string) {
+		LOGGER.info(string);
 	}
 
-	public void method_3743(String string) {
-		field_4546.warn(string);
+	public void warn(String string) {
+		LOGGER.warn(string);
 	}
 
-	public class_3218 method_3847(class_2874 arg) {
-		return (class_3218)this.field_4589.get(arg);
+	public ServerWorld getWorld(DimensionType dimensionType) {
+		return (ServerWorld)this.worlds.get(dimensionType);
 	}
 
-	public Iterable<class_3218> method_3738() {
-		return this.field_4589.values();
+	public Iterable<ServerWorld> getWorlds() {
+		return this.worlds.values();
 	}
 
-	public String method_3827() {
-		return class_155.method_16673().getName();
+	public String getVersion() {
+		return SharedConstants.getGameVersion().getName();
 	}
 
-	public int method_3788() {
-		return this.field_4550.method_14574();
+	public int getCurrentPlayerCount() {
+		return this.playerManager.getCurrentPlayerCount();
 	}
 
-	public int method_3802() {
-		return this.field_4550.method_14592();
+	public int getMaxPlayerCount() {
+		return this.playerManager.getMaxPlayerCount();
 	}
 
-	public String[] method_3858() {
-		return this.field_4550.method_14580();
+	public String[] getPlayerNames() {
+		return this.playerManager.getPlayerNames();
 	}
 
-	public boolean method_3766() {
+	public boolean isDebuggingEnabled() {
 		return false;
 	}
 
-	public void method_3762(String string) {
-		field_4546.error(string);
+	public void logError(String string) {
+		LOGGER.error(string);
 	}
 
-	public void method_3770(String string) {
-		if (this.method_3766()) {
-			field_4546.info(string);
+	public void log(String string) {
+		if (this.isDebuggingEnabled()) {
+			LOGGER.info(string);
 		}
 	}
 
@@ -976,261 +1028,272 @@ public abstract class MinecraftServer extends class_1255<class_3738> implements 
 		return "vanilla";
 	}
 
-	public class_128 method_3859(class_128 arg) {
-		if (this.field_4550 != null) {
-			arg.method_567()
-				.method_577("Player Count", () -> this.field_4550.method_14574() + " / " + this.field_4550.method_14592() + "; " + this.field_4550.method_14571());
+	public CrashReport populateCrashReport(CrashReport crashReport) {
+		if (this.playerManager != null) {
+			crashReport.getSystemDetailsSection()
+				.add(
+					"Player Count",
+					(ICrashCallable<String>)(() -> this.playerManager.getCurrentPlayerCount()
+							+ " / "
+							+ this.playerManager.getMaxPlayerCount()
+							+ "; "
+							+ this.playerManager.getPlayerList())
+				);
 		}
 
-		arg.method_567().method_577("Data Packs", () -> {
+		crashReport.getSystemDetailsSection().add("Data Packs", (ICrashCallable<String>)(() -> {
 			StringBuilder stringBuilder = new StringBuilder();
 
-			for (class_3288 lv : this.field_4595.method_14444()) {
+			for (ResourcePackContainer resourcePackContainer : this.field_4595.getEnabledContainers()) {
 				if (stringBuilder.length() > 0) {
 					stringBuilder.append(", ");
 				}
 
-				stringBuilder.append(lv.method_14463());
-				if (!lv.method_14460().method_14437()) {
+				stringBuilder.append(resourcePackContainer.getName());
+				if (!resourcePackContainer.getCompatibility().isCompatible()) {
 					stringBuilder.append(" (incompatible)");
 				}
 			}
 
 			return stringBuilder.toString();
-		});
-		return arg;
+		}));
+		if (this.field_17601 != null) {
+			crashReport.getSystemDetailsSection().add("Server Id", (ICrashCallable<String>)(() -> this.field_17601));
+		}
+
+		return crashReport;
 	}
 
 	public boolean method_3814() {
-		return this.field_4605 != null;
+		return this.gameDir != null;
 	}
 
 	@Override
-	public void method_9203(class_2561 arg) {
-		field_4546.info(arg.getString());
+	public void appendCommandFeedback(TextComponent textComponent) {
+		LOGGER.info(textComponent.getString());
 	}
 
-	public KeyPair method_3716() {
-		return this.field_4552;
+	public KeyPair getKeyPair() {
+		return this.keyPair;
 	}
 
-	public int method_3756() {
-		return this.field_4555;
+	public int getServerPort() {
+		return this.serverPort;
 	}
 
-	public void method_3779(int i) {
-		this.field_4555 = i;
+	public void setServerPort(int i) {
+		this.serverPort = i;
 	}
 
-	public String method_3811() {
-		return this.field_4578;
+	public String getUserName() {
+		return this.userName;
 	}
 
-	public void method_3817(String string) {
-		this.field_4578 = string;
+	public void setUserName(String string) {
+		this.userName = string;
 	}
 
-	public boolean method_3724() {
-		return this.field_4578 != null;
+	public boolean isSinglePlayer() {
+		return this.userName != null;
 	}
 
-	public String method_3865() {
-		return this.field_4565;
+	public String getLevelName() {
+		return this.levelName;
 	}
 
-	public void method_3807(String string) {
-		this.field_4565 = string;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public void method_3849(String string) {
-		this.field_4574 = string;
+	public void setLevelName(String string) {
+		this.levelName = string;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public String method_3726() {
-		return this.field_4574;
+	public void setServerName(String string) {
+		this.displayName = string;
 	}
 
-	public void method_3853(KeyPair keyPair) {
-		this.field_4552 = keyPair;
+	@Environment(EnvType.CLIENT)
+	public String getServerName() {
+		return this.displayName;
 	}
 
-	public void method_3776(class_1267 arg) {
-		for (class_3218 lv : this.method_3738()) {
-			if (lv.method_8401().method_152()) {
-				lv.method_8401().method_208(class_1267.field_5807);
-				lv.method_8424(true, true);
-			} else if (this.method_3724()) {
-				lv.method_8401().method_208(arg);
-				lv.method_8424(lv.method_8407() != class_1267.field_5801, true);
+	public void setKeyPair(KeyPair keyPair) {
+		this.keyPair = keyPair;
+	}
+
+	public void setDifficulty(Difficulty difficulty) {
+		for (ServerWorld serverWorld : this.getWorlds()) {
+			if (serverWorld.getLevelProperties().isHardcore()) {
+				serverWorld.getLevelProperties().setDifficulty(Difficulty.HARD);
+				serverWorld.setMobSpawnOptions(true, true);
+			} else if (this.isSinglePlayer()) {
+				serverWorld.getLevelProperties().setDifficulty(difficulty);
+				serverWorld.setMobSpawnOptions(serverWorld.getDifficulty() != Difficulty.PEACEFUL, true);
 			} else {
-				lv.method_8401().method_208(arg);
-				lv.method_8424(this.method_3783(), this.field_4575);
+				serverWorld.getLevelProperties().setDifficulty(difficulty);
+				serverWorld.setMobSpawnOptions(this.isMonsterSpawningEnabled(), this.spawnAnimals);
 			}
 		}
 	}
 
-	protected boolean method_3783() {
+	protected boolean isMonsterSpawningEnabled() {
 		return true;
 	}
 
-	public boolean method_3799() {
-		return this.field_4549;
+	public boolean isDemo() {
+		return this.demo;
 	}
 
-	public void method_3730(boolean bl) {
-		this.field_4549 = bl;
+	public void setDemo(boolean bl) {
+		this.demo = bl;
 	}
 
-	public void method_3778(boolean bl) {
-		this.field_4569 = bl;
+	public void setBonusChest(boolean bl) {
+		this.bonusChest = bl;
 	}
 
-	public class_32 method_3781() {
-		return this.field_4606;
+	public LevelStorage getLevelStorage() {
+		return this.levelStorage;
 	}
 
-	public String method_3784() {
-		return this.field_4607;
+	public String getResourcePackUrl() {
+		return this.resourcePackUrl;
 	}
 
-	public String method_3805() {
-		return this.field_4584;
+	public String getResourcePackHash() {
+		return this.resourcePackHash;
 	}
 
-	public void method_3843(String string, String string2) {
-		this.field_4607 = string;
-		this.field_4584 = string2;
+	public void setResourcePack(String string, String string2) {
+		this.resourcePackUrl = string;
+		this.resourcePackHash = string2;
 	}
 
 	@Override
-	public void method_5495(class_1276 arg) {
-		arg.method_5481("whitelist_enabled", false);
-		arg.method_5481("whitelist_count", 0);
-		if (this.field_4550 != null) {
-			arg.method_5481("players_current", this.method_3788());
-			arg.method_5481("players_max", this.method_3802());
-			arg.method_5481("players_seen", this.field_4550.method_14562().length);
+	public void addSnooperInfo(Snooper snooper) {
+		snooper.addInfo("whitelist_enabled", false);
+		snooper.addInfo("whitelist_count", 0);
+		if (this.playerManager != null) {
+			snooper.addInfo("players_current", this.getCurrentPlayerCount());
+			snooper.addInfo("players_max", this.getMaxPlayerCount());
+			snooper.addInfo("players_seen", this.playerManager.getSavedPlayerIds().length);
 		}
 
-		arg.method_5481("uses_auth", this.field_4543);
-		arg.method_5481("gui_state", this.method_3727() ? "enabled" : "disabled");
-		arg.method_5481("run_time", (class_156.method_658() - arg.method_5484()) / 60L * 1000L);
-		arg.method_5481("avg_tick_ms", (int)(class_3532.method_15373(this.field_4573) * 1.0E-6));
+		snooper.addInfo("uses_auth", this.onlineMode);
+		snooper.addInfo("gui_state", this.hasGui() ? "enabled" : "disabled");
+		snooper.addInfo("run_time", (SystemUtil.getMeasuringTimeMs() - snooper.getStartTime()) / 60L * 1000L);
+		snooper.addInfo("avg_tick_ms", (int)(MathHelper.average(this.lastTickLengths) * 1.0E-6));
 		int i = 0;
 
-		for (class_3218 lv : this.method_3738()) {
-			if (lv != null) {
-				class_31 lv2 = lv.method_8401();
-				arg.method_5481("world[" + i + "][dimension]", lv.field_9247.method_12460());
-				arg.method_5481("world[" + i + "][mode]", lv2.method_210());
-				arg.method_5481("world[" + i + "][difficulty]", lv.method_8407());
-				arg.method_5481("world[" + i + "][hardcore]", lv2.method_152());
-				arg.method_5481("world[" + i + "][generator_name]", lv2.method_153().method_8635());
-				arg.method_5481("world[" + i + "][generator_version]", lv2.method_153().method_8636());
-				arg.method_5481("world[" + i + "][height]", this.field_4579);
-				arg.method_5481("world[" + i + "][chunks_loaded]", lv.method_14178().method_14151());
+		for (ServerWorld serverWorld : this.getWorlds()) {
+			if (serverWorld != null) {
+				LevelProperties levelProperties = serverWorld.getLevelProperties();
+				snooper.addInfo("world[" + i + "][dimension]", serverWorld.dimension.getType());
+				snooper.addInfo("world[" + i + "][mode]", levelProperties.getGameMode());
+				snooper.addInfo("world[" + i + "][difficulty]", serverWorld.getDifficulty());
+				snooper.addInfo("world[" + i + "][hardcore]", levelProperties.isHardcore());
+				snooper.addInfo("world[" + i + "][generator_name]", levelProperties.getGeneratorType().getName());
+				snooper.addInfo("world[" + i + "][generator_version]", levelProperties.getGeneratorType().getVersion());
+				snooper.addInfo("world[" + i + "][height]", this.worldHeight);
+				snooper.addInfo("world[" + i + "][chunks_loaded]", serverWorld.getChunkManager().getLoadedChunkCount());
 				i++;
 			}
 		}
 
-		arg.method_5481("worlds", i);
+		snooper.addInfo("worlds", i);
 	}
 
-	public abstract boolean method_3816();
+	public abstract boolean isDedicated();
 
-	public boolean method_3828() {
-		return this.field_4543;
+	public boolean isOnlineMode() {
+		return this.onlineMode;
 	}
 
-	public void method_3864(boolean bl) {
-		this.field_4543 = bl;
+	public void setOnlineMode(boolean bl) {
+		this.onlineMode = bl;
 	}
 
-	public boolean method_3775() {
-		return this.field_4560;
+	public boolean shouldPreventProxyConnections() {
+		return this.preventProxyConnections;
 	}
 
-	public void method_3764(boolean bl) {
-		this.field_4560 = bl;
+	public void setPreventProxyConnections(boolean bl) {
+		this.preventProxyConnections = bl;
 	}
 
-	public boolean method_3796() {
-		return this.field_4575;
+	public boolean shouldSpawnAnimals() {
+		return this.spawnAnimals;
 	}
 
-	public void method_3840(boolean bl) {
-		this.field_4575 = bl;
+	public void setSpawnAnimals(boolean bl) {
+		this.spawnAnimals = bl;
 	}
 
-	public boolean method_3736() {
-		return this.field_4590;
+	public boolean shouldSpawnNpcs() {
+		return this.spawnNpcs;
 	}
 
-	public abstract boolean method_3759();
+	public abstract boolean isUsingNativeTransport();
 
-	public void method_3769(boolean bl) {
-		this.field_4590 = bl;
+	public void setSpawnNpcs(boolean bl) {
+		this.spawnNpcs = bl;
 	}
 
-	public boolean method_3852() {
-		return this.field_4604;
+	public boolean isPvpEnabled() {
+		return this.pvpEnabled;
 	}
 
-	public void method_3815(boolean bl) {
-		this.field_4604 = bl;
+	public void setPvpEnabled(boolean bl) {
+		this.pvpEnabled = bl;
 	}
 
-	public boolean method_3718() {
-		return this.field_4554;
+	public boolean isFlightEnabled() {
+		return this.flightEnabled;
 	}
 
-	public void method_3745(boolean bl) {
-		this.field_4554 = bl;
+	public void setFlightEnabled(boolean bl) {
+		this.flightEnabled = bl;
 	}
 
-	public abstract boolean method_3812();
+	public abstract boolean areCommandBlocksEnabled();
 
-	public String method_3818() {
-		return this.field_4564;
+	public String getServerMotd() {
+		return this.motd;
 	}
 
-	public void method_3834(String string) {
-		this.field_4564 = string;
+	public void setMotd(String string) {
+		this.motd = string;
 	}
 
-	public int method_3833() {
-		return this.field_4579;
+	public int getWorldHeight() {
+		return this.worldHeight;
 	}
 
-	public void method_3850(int i) {
-		this.field_4579 = i;
+	public void setWorldHeight(int i) {
+		this.worldHeight = i;
 	}
 
-	public boolean method_3750() {
-		return this.field_4561;
+	public boolean isStopped() {
+		return this.stopped;
 	}
 
-	public class_3324 method_3760() {
-		return this.field_4550;
+	public PlayerManager getPlayerManager() {
+		return this.playerManager;
 	}
 
-	public void method_3846(class_3324 arg) {
-		this.field_4550 = arg;
+	public void setPlayerManager(PlayerManager playerManager) {
+		this.playerManager = playerManager;
 	}
 
-	public abstract boolean method_3860();
+	public abstract boolean isRemote();
 
-	public void method_3838(class_1934 arg) {
-		for (class_3218 lv : this.method_3738()) {
-			lv.method_8401().method_193(arg);
+	public void setDefaultGameMode(GameMode gameMode) {
+		for (ServerWorld serverWorld : this.getWorlds()) {
+			serverWorld.getLevelProperties().setGameMode(gameMode);
 		}
 	}
 
 	@Nullable
-	public class_3242 method_3787() {
-		return this.field_4563;
+	public ServerNetworkIO getNetworkIO() {
+		return this.networkIO;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -1238,14 +1301,14 @@ public abstract class MinecraftServer extends class_1255<class_3738> implements 
 		return this.field_4547;
 	}
 
-	public boolean method_3727() {
+	public boolean hasGui() {
 		return false;
 	}
 
-	public abstract boolean method_3763(class_1934 arg, boolean bl, int i);
+	public abstract boolean openToLan(GameMode gameMode, boolean bl, int i);
 
-	public int method_3780() {
-		return this.field_4572;
+	public int getTicks() {
+		return this.ticks;
 	}
 
 	public void method_3832() {
@@ -1253,203 +1316,203 @@ public abstract class MinecraftServer extends class_1255<class_3738> implements 
 	}
 
 	@Environment(EnvType.CLIENT)
-	public class_1276 method_3795() {
-		return this.field_4582;
+	public Snooper getSnooper() {
+		return this.snooper;
 	}
 
-	public int method_3841() {
+	public int getSpawnProtectionRadius() {
 		return 16;
 	}
 
-	public boolean method_3785(class_1937 arg, class_2338 arg2, class_1657 arg3) {
+	public boolean isSpawnProtected(World world, BlockPos blockPos, PlayerEntity playerEntity) {
 		return false;
 	}
 
-	public void method_3794(boolean bl) {
-		this.field_4545 = bl;
+	public void setForceGameMode(boolean bl) {
+		this.forceGameMode = bl;
 	}
 
-	public boolean method_3761() {
-		return this.field_4545;
+	public boolean shouldForceGameMode() {
+		return this.forceGameMode;
 	}
 
-	public int method_3862() {
-		return this.field_4596;
+	public int getPlayerIdleTimeout() {
+		return this.playerIdleTimeout;
 	}
 
-	public void method_3803(int i) {
-		this.field_4596 = i;
+	public void setPlayerIdleTimeout(int i) {
+		this.playerIdleTimeout = i;
 	}
 
-	public MinecraftSessionService method_3844() {
-		return this.field_4603;
+	public MinecraftSessionService getSessionService() {
+		return this.sessionService;
 	}
 
-	public GameProfileRepository method_3719() {
-		return this.field_4608;
+	public GameProfileRepository getGameProfileRepo() {
+		return this.gameProfileRepo;
 	}
 
-	public class_3312 method_3793() {
-		return this.field_4556;
+	public UserCache getUserCache() {
+		return this.userCache;
 	}
 
-	public class_2926 method_3765() {
-		return this.field_4593;
+	public ServerMetadata getServerMetadata() {
+		return this.metadata;
 	}
 
 	public void method_3856() {
 		this.field_4551 = 0L;
 	}
 
-	public int method_3749() {
+	public int getMaxWorldBorderRadius() {
 		return 29999984;
 	}
 
 	@Override
-	public boolean method_5384() {
-		return super.method_5384() && !this.method_3750();
+	public boolean isOffThread() {
+		return super.isOffThread() && !this.isStopped();
 	}
 
 	@Override
-	public boolean method_5387() {
-		return Thread.currentThread() == this.field_16257;
+	public boolean isMainThread() {
+		return Thread.currentThread() == this.serverThread;
 	}
 
-	public int method_3773() {
+	public int getNetworkCompressionThreshold() {
 		return 256;
 	}
 
-	public long method_3826() {
-		return this.field_4571;
+	public long getServerStartTime() {
+		return this.timeReference;
 	}
 
-	public Thread method_3777() {
-		return this.field_16257;
+	public Thread getMainThread() {
+		return this.serverThread;
 	}
 
-	public DataFixer method_3855() {
-		return this.field_4587;
+	public DataFixer getDataFixer() {
+		return this.dataFixer;
 	}
 
-	public int method_3829(@Nullable class_3218 arg) {
-		return arg != null ? arg.method_8450().method_8356("spawnRadius") : 10;
+	public int getSpawnRadius(@Nullable ServerWorld serverWorld) {
+		return serverWorld != null ? serverWorld.getGameRules().getInteger("spawnRadius") : 10;
 	}
 
-	public class_2989 method_3851() {
-		return this.field_4567;
+	public ServerAdvancementLoader getAdvancementManager() {
+		return this.advancementManager;
 	}
 
-	public class_2991 method_3740() {
-		return this.field_4591;
+	public CommandFunctionManager getCommandFunctionManager() {
+		return this.commandFunctionManager;
 	}
 
-	public void method_3848() {
-		if (!this.method_5387()) {
-			this.execute(this::method_3848);
+	public void reload() {
+		if (!this.isMainThread()) {
+			this.execute(this::reload);
 		} else {
-			this.method_3760().method_14617();
-			this.field_4595.method_14445();
-			this.method_3752(this.method_3847(class_2874.field_13072).method_8401());
-			this.method_3760().method_14572();
+			this.getPlayerManager().saveAllPlayerData();
+			this.field_4595.callCreators();
+			this.reloadDataPacks(this.getWorld(DimensionType.field_13072).getLevelProperties());
+			this.getPlayerManager().onDataPacksReloaded();
 		}
 	}
 
-	private void method_3752(class_31 arg) {
-		List<class_3288> list = Lists.<class_3288>newArrayList(this.field_4595.method_14444());
+	private void reloadDataPacks(LevelProperties levelProperties) {
+		List<ResourcePackContainer> list = Lists.<ResourcePackContainer>newArrayList(this.field_4595.getEnabledContainers());
 
-		for (class_3288 lv : this.field_4595.method_14441()) {
-			if (!arg.method_209().contains(lv.method_14463()) && !list.contains(lv)) {
-				field_4546.info("Found new data pack {}, loading it automatically", lv.method_14463());
-				lv.method_14466().method_14468(list, lv, argx -> argx, false);
+		for (ResourcePackContainer resourcePackContainer : this.field_4595.getAlphabeticallyOrderedContainers()) {
+			if (!levelProperties.getDisabledDataPacks().contains(resourcePackContainer.getName()) && !list.contains(resourcePackContainer)) {
+				LOGGER.info("Found new data pack {}, loading it automatically", resourcePackContainer.getName());
+				resourcePackContainer.getSortingDirection().locate(list, resourcePackContainer, resourcePackContainerx -> resourcePackContainerx, false);
 			}
 		}
 
-		this.field_4595.method_14447(list);
-		List<class_3262> list2 = Lists.<class_3262>newArrayList();
-		this.field_4595.method_14444().forEach(argx -> list2.add(argx.method_14458()));
-		this.field_4576.method_14478(list2);
-		arg.method_179().clear();
-		arg.method_209().clear();
-		this.field_4595.method_14444().forEach(arg2 -> arg.method_179().add(arg2.method_14463()));
-		this.field_4595.method_14441().forEach(arg2 -> {
-			if (!this.field_4595.method_14444().contains(arg2)) {
-				arg.method_209().add(arg2.method_14463());
+		this.field_4595.setEnabled(list);
+		List<ResourcePack> list2 = Lists.<ResourcePack>newArrayList();
+		this.field_4595.getEnabledContainers().forEach(resourcePackContainerx -> list2.add(resourcePackContainerx.createResourcePack()));
+		this.dataManager.reload(list2);
+		levelProperties.getEnabledDataPacks().clear();
+		levelProperties.getDisabledDataPacks().clear();
+		this.field_4595.getEnabledContainers().forEach(resourcePackContainerx -> levelProperties.getEnabledDataPacks().add(resourcePackContainerx.getName()));
+		this.field_4595.getAlphabeticallyOrderedContainers().forEach(resourcePackContainerx -> {
+			if (!this.field_4595.getEnabledContainers().contains(resourcePackContainerx)) {
+				levelProperties.getDisabledDataPacks().add(resourcePackContainerx.getName());
 			}
 		});
 	}
 
-	public void method_3728(class_2168 arg) {
+	public void method_3728(ServerCommandSource serverCommandSource) {
 		if (this.method_3729()) {
-			class_3324 lv = arg.method_9211().method_3760();
-			class_3337 lv2 = lv.method_14590();
-			if (lv2.method_14639()) {
-				for (class_3222 lv3 : Lists.newArrayList(lv.method_14571())) {
-					if (!lv2.method_14653(lv3.method_7334())) {
-						lv3.field_13987.method_14367(new class_2588("multiplayer.disconnect.not_whitelisted"));
+			PlayerManager playerManager = serverCommandSource.getMinecraftServer().getPlayerManager();
+			WhitelistList whitelistList = playerManager.getWhitelist();
+			if (whitelistList.isEnabled()) {
+				for (ServerPlayerEntity serverPlayerEntity : Lists.newArrayList(playerManager.getPlayerList())) {
+					if (!whitelistList.method_14653(serverPlayerEntity.getGameProfile())) {
+						serverPlayerEntity.networkHandler.disconnect(new TranslatableTextComponent("multiplayer.disconnect.not_whitelisted"));
 					}
 				}
 			}
 		}
 	}
 
-	public class_3296 method_3809() {
-		return this.field_4576;
+	public ReloadableResourceManager getDataManager() {
+		return this.dataManager;
 	}
 
-	public class_3283<class_3288> method_3836() {
+	public ResourcePackContainerManager<ResourcePackContainer> method_3836() {
 		return this.field_4595;
 	}
 
-	public class_2170 method_3734() {
-		return this.field_4562;
+	public ServerCommandManager getCommandManager() {
+		return this.commandManager;
 	}
 
-	public class_2168 method_3739() {
-		return new class_2168(
+	public ServerCommandSource getCommandSource() {
+		return new ServerCommandSource(
 			this,
-			this.method_3847(class_2874.field_13072) == null ? class_243.field_1353 : new class_243(this.method_3847(class_2874.field_13072).method_8395()),
-			class_241.field_1340,
-			this.method_3847(class_2874.field_13072),
+			this.getWorld(DimensionType.field_13072) == null ? Vec3d.ZERO : new Vec3d(this.getWorld(DimensionType.field_13072).getSpawnPos()),
+			Vec2f.ZERO,
+			this.getWorld(DimensionType.field_13072),
 			4,
 			"Server",
-			new class_2585("Server"),
+			new StringTextComponent("Server"),
 			this,
 			null
 		);
 	}
 
 	@Override
-	public boolean method_9200() {
+	public boolean sendCommandFeedback() {
 		return true;
 	}
 
 	@Override
-	public boolean method_9202() {
+	public boolean shouldTrackOutput() {
 		return true;
 	}
 
-	public class_1863 method_3772() {
-		return this.field_4566;
+	public RecipeManager getRecipeManager() {
+		return this.recipeManager;
 	}
 
-	public class_3505 method_3801() {
-		return this.field_4583;
+	public TagManager getTagManager() {
+		return this.tagManager;
 	}
 
-	public class_2995 method_3845() {
-		return this.field_4558;
+	public ServerScoreboard getScoreboard() {
+		return this.scoreboard;
 	}
 
-	public class_60 method_3857() {
-		return this.field_4580;
+	public LootManager getLootManager() {
+		return this.lootManager;
 	}
 
-	public class_1928 method_3767() {
-		return this.method_3847(class_2874.field_13072).method_8450();
+	public GameRules getGameRules() {
+		return this.getWorld(DimensionType.field_13072).getGameRules();
 	}
 
-	public class_3004 method_3837() {
-		return this.field_4548;
+	public BossBarManager getBossBarManager() {
+		return this.bossBarManager;
 	}
 
 	public boolean method_3729() {
@@ -1461,23 +1524,23 @@ public abstract class MinecraftServer extends class_1255<class_3738> implements 
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_3830() {
-		return this.field_4592;
+	public float getTickTime() {
+		return this.tickTime;
 	}
 
-	public int method_3835(GameProfile gameProfile) {
-		if (this.method_3760().method_14569(gameProfile)) {
-			class_3327 lv = this.method_3760().method_14603().method_14640(gameProfile);
-			if (lv != null) {
-				return lv.method_14623();
-			} else if (this.method_3724()) {
-				if (this.method_3811().equals(gameProfile.getName())) {
+	public int getPermissionLevel(GameProfile gameProfile) {
+		if (this.getPlayerManager().isOperator(gameProfile)) {
+			OperatorEntry operatorEntry = this.getPlayerManager().getOpList().get(gameProfile);
+			if (operatorEntry != null) {
+				return operatorEntry.getPermissionLevel();
+			} else if (this.isSinglePlayer()) {
+				if (this.getUserName().equals(gameProfile.getName())) {
 					return 4;
 				} else {
-					return this.method_3760().method_14579() ? 4 : 0;
+					return this.getPlayerManager().areCheatsAllowed() ? 4 : 0;
 				}
 			} else {
-				return this.method_3798();
+				return this.getOpPermissionLevel();
 			}
 		} else {
 			return 0;
@@ -1485,11 +1548,11 @@ public abstract class MinecraftServer extends class_1255<class_3738> implements 
 	}
 
 	@Environment(EnvType.CLIENT)
-	public class_3517 method_15876() {
+	public MetricsData getMetricsData() {
 		return this.field_16205;
 	}
 
-	public class_3689 method_16044() {
-		return this.field_16258;
+	public DisableableProfiler getProfiler() {
+		return this.profiler;
 	}
 }

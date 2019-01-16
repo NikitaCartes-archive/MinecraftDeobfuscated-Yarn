@@ -4,12 +4,12 @@ import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 
-final class class_254 implements class_255 {
+public final class class_254 implements class_255 {
 	private final DoubleArrayList field_1377;
 	private final IntArrayList field_1376;
 	private final IntArrayList field_1378;
 
-	class_254(DoubleList doubleList, DoubleList doubleList2, boolean bl, boolean bl2) {
+	public class_254(DoubleList doubleList, DoubleList doubleList2, boolean bl, boolean bl2) {
 		int i = 0;
 		int j = 0;
 		double d = Double.NaN;

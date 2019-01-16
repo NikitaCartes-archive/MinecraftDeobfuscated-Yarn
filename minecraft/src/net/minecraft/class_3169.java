@@ -7,58 +7,72 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.function.Function;
+import net.minecraft.command.arguments.EntityArgumentType;
+import net.minecraft.command.arguments.NbtPathArgumentType;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.predicate.NbtPredicate;
+import net.minecraft.server.command.DataCommand;
+import net.minecraft.server.command.ServerCommandManager;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.TextComponent;
+import net.minecraft.text.TranslatableTextComponent;
 
 public class class_3169 implements class_3162 {
-	private static final SimpleCommandExceptionType field_13799 = new SimpleCommandExceptionType(new class_2588("commands.data.entity.invalid"));
-	public static final Function<String, class_3164.class_3167> field_13800 = string -> new class_3164.class_3167() {
+	private static final SimpleCommandExceptionType field_13799 = new SimpleCommandExceptionType(new TranslatableTextComponent("commands.data.entity.invalid"));
+	public static final Function<String, DataCommand.class_3167> field_13800 = string -> new DataCommand.class_3167() {
 			@Override
-			public class_3162 method_13924(CommandContext<class_2168> commandContext) throws CommandSyntaxException {
-				return new class_3169(class_2186.method_9313(commandContext, string));
+			public class_3162 method_13924(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
+				return new class_3169(EntityArgumentType.method_9313(commandContext, string));
 			}
 
 			@Override
-			public ArgumentBuilder<class_2168, ?> method_13925(
-				ArgumentBuilder<class_2168, ?> argumentBuilder, Function<ArgumentBuilder<class_2168, ?>, ArgumentBuilder<class_2168, ?>> function
+			public ArgumentBuilder<ServerCommandSource, ?> method_13925(
+				ArgumentBuilder<ServerCommandSource, ?> argumentBuilder,
+				Function<ArgumentBuilder<ServerCommandSource, ?>, ArgumentBuilder<ServerCommandSource, ?>> function
 			) {
 				return argumentBuilder.then(
-					class_2170.method_9247("entity").then((ArgumentBuilder<class_2168, ?>)function.apply(class_2170.method_9244(string, class_2186.method_9309())))
+					ServerCommandManager.literal("entity")
+						.then((ArgumentBuilder<ServerCommandSource, ?>)function.apply(ServerCommandManager.argument(string, EntityArgumentType.oneEntity())))
 				);
 			}
 		};
-	private final class_1297 field_13801;
+	private final Entity field_13801;
 
-	public class_3169(class_1297 arg) {
-		this.field_13801 = arg;
+	public class_3169(Entity entity) {
+		this.field_13801 = entity;
 	}
 
 	@Override
-	public void method_13880(class_2487 arg) throws CommandSyntaxException {
-		if (this.field_13801 instanceof class_1657) {
+	public void method_13880(CompoundTag compoundTag) throws CommandSyntaxException {
+		if (this.field_13801 instanceof PlayerEntity) {
 			throw field_13799.create();
 		} else {
-			UUID uUID = this.field_13801.method_5667();
-			this.field_13801.method_5651(arg);
-			this.field_13801.method_5826(uUID);
+			UUID uUID = this.field_13801.getUuid();
+			this.field_13801.fromTag(compoundTag);
+			this.field_13801.setUuid(uUID);
 		}
 	}
 
 	@Override
-	public class_2487 method_13881() {
-		return class_2105.method_9076(this.field_13801);
+	public CompoundTag method_13881() {
+		return NbtPredicate.entityToTag(this.field_13801);
 	}
 
 	@Override
-	public class_2561 method_13883() {
-		return new class_2588("commands.data.entity.modified", this.field_13801.method_5476());
+	public TextComponent method_13883() {
+		return new TranslatableTextComponent("commands.data.entity.modified", this.field_13801.getDisplayName());
 	}
 
 	@Override
-	public class_2561 method_13882(class_2520 arg) {
-		return new class_2588("commands.data.entity.query", this.field_13801.method_5476(), arg.method_10715());
+	public TextComponent method_13882(Tag tag) {
+		return new TranslatableTextComponent("commands.data.entity.query", this.field_13801.getDisplayName(), tag.toTextComponent());
 	}
 
 	@Override
-	public class_2561 method_13879(class_2203.class_2209 arg, double d, int i) {
-		return new class_2588("commands.data.entity.get", arg, this.field_13801.method_5476(), String.format(Locale.ROOT, "%.2f", d), i);
+	public TextComponent method_13879(NbtPathArgumentType.class_2209 arg, double d, int i) {
+		return new TranslatableTextComponent("commands.data.entity.get", arg, this.field_13801.getDisplayName(), String.format(Locale.ROOT, "%.2f", d), i);
 	}
 }

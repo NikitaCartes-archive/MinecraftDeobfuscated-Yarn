@@ -1,40 +1,44 @@
 package net.minecraft;
 
-public class class_1406 extends class_1405 {
-	private final class_1321 field_6666;
-	private class_1309 field_6667;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.goal.TrackTargetGoal;
+import net.minecraft.entity.passive.TameableEntity;
+
+public class class_1406 extends TrackTargetGoal {
+	private final TameableEntity field_6666;
+	private LivingEntity field_6667;
 	private int field_6665;
 
-	public class_1406(class_1321 arg) {
-		super(arg, false);
-		this.field_6666 = arg;
-		this.method_6265(1);
+	public class_1406(TameableEntity tameableEntity) {
+		super(tameableEntity, false);
+		this.field_6666 = tameableEntity;
+		this.setControlBits(1);
 	}
 
 	@Override
-	public boolean method_6264() {
-		if (!this.field_6666.method_6181()) {
+	public boolean canStart() {
+		if (!this.field_6666.isTamed()) {
 			return false;
 		} else {
-			class_1309 lv = this.field_6666.method_6177();
-			if (lv == null) {
+			LivingEntity livingEntity = this.field_6666.getOwner();
+			if (livingEntity == null) {
 				return false;
 			} else {
-				this.field_6667 = lv.method_6052();
-				int i = lv.method_6083();
-				return i != this.field_6665 && this.method_6328(this.field_6667, false) && this.field_6666.method_6178(this.field_6667, lv);
+				this.field_6667 = livingEntity.method_6052();
+				int i = livingEntity.method_6083();
+				return i != this.field_6665 && this.canTrack(this.field_6667, false) && this.field_6666.method_6178(this.field_6667, livingEntity);
 			}
 		}
 	}
 
 	@Override
-	public void method_6269() {
-		this.field_6660.method_5980(this.field_6667);
-		class_1309 lv = this.field_6666.method_6177();
-		if (lv != null) {
-			this.field_6665 = lv.method_6083();
+	public void start() {
+		this.entity.setTarget(this.field_6667);
+		LivingEntity livingEntity = this.field_6666.getOwner();
+		if (livingEntity != null) {
+			this.field_6665 = livingEntity.method_6083();
 		}
 
-		super.method_6269();
+		super.start();
 	}
 }

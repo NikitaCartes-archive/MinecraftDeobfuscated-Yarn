@@ -7,15 +7,18 @@ import java.util.EnumSet;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.util.SystemUtil;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
 public class class_852 {
 	private static final int field_4477 = (int)Math.pow(16.0, 0.0);
 	private static final int field_4476 = (int)Math.pow(16.0, 1.0);
 	private static final int field_4475 = (int)Math.pow(16.0, 2.0);
-	private static final class_2350[] field_4479 = class_2350.values();
+	private static final Direction[] field_4479 = Direction.values();
 	private final BitSet field_4478 = new BitSet(4096);
-	private static final int[] field_4474 = class_156.method_654(new int[1352], is -> {
+	private static final int[] field_4474 = SystemUtil.consume(new int[1352], is -> {
 		int i = 0;
 		int j = 15;
 		int k = 0;
@@ -32,13 +35,13 @@ public class class_852 {
 	});
 	private int field_4473 = 4096;
 
-	public void method_3682(class_2338 arg) {
-		this.field_4478.set(method_3683(arg), true);
+	public void method_3682(BlockPos blockPos) {
+		this.field_4478.set(method_3683(blockPos), true);
 		this.field_4473--;
 	}
 
-	private static int method_3683(class_2338 arg) {
-		return method_3681(arg.method_10263() & 15, arg.method_10264() & 15, arg.method_10260() & 15);
+	private static int method_3683(BlockPos blockPos) {
+		return method_3681(blockPos.getX() & 15, blockPos.getY() & 15, blockPos.getZ() & 15);
 	}
 
 	private static int method_3681(int i, int j, int k) {
@@ -62,12 +65,12 @@ public class class_852 {
 		return lv;
 	}
 
-	public Set<class_2350> method_3686(class_2338 arg) {
-		return this.method_3687(method_3683(arg));
+	public Set<Direction> method_3686(BlockPos blockPos) {
+		return this.method_3687(method_3683(blockPos));
 	}
 
-	private Set<class_2350> method_3687(int i) {
-		Set<class_2350> set = EnumSet.noneOf(class_2350.class);
+	private Set<Direction> method_3687(int i) {
+		Set<Direction> set = EnumSet.noneOf(Direction.class);
 		IntPriorityQueue intPriorityQueue = new IntArrayFIFOQueue();
 		intPriorityQueue.enqueue(i);
 		this.field_4478.set(i, true);
@@ -76,8 +79,8 @@ public class class_852 {
 			int j = intPriorityQueue.dequeueInt();
 			this.method_3684(j, set);
 
-			for (class_2350 lv : field_4479) {
-				int k = this.method_3685(j, lv);
+			for (Direction direction : field_4479) {
+				int k = this.method_3685(j, direction);
 				if (k >= 0 && !this.field_4478.get(k)) {
 					this.field_4478.set(k, true);
 					intPriorityQueue.enqueue(k);
@@ -88,62 +91,62 @@ public class class_852 {
 		return set;
 	}
 
-	private void method_3684(int i, Set<class_2350> set) {
+	private void method_3684(int i, Set<Direction> set) {
 		int j = i >> 0 & 15;
 		if (j == 0) {
-			set.add(class_2350.field_11039);
+			set.add(Direction.WEST);
 		} else if (j == 15) {
-			set.add(class_2350.field_11034);
+			set.add(Direction.EAST);
 		}
 
 		int k = i >> 8 & 15;
 		if (k == 0) {
-			set.add(class_2350.field_11033);
+			set.add(Direction.DOWN);
 		} else if (k == 15) {
-			set.add(class_2350.field_11036);
+			set.add(Direction.UP);
 		}
 
 		int l = i >> 4 & 15;
 		if (l == 0) {
-			set.add(class_2350.field_11043);
+			set.add(Direction.NORTH);
 		} else if (l == 15) {
-			set.add(class_2350.field_11035);
+			set.add(Direction.SOUTH);
 		}
 	}
 
-	private int method_3685(int i, class_2350 arg) {
-		switch (arg) {
-			case field_11033:
+	private int method_3685(int i, Direction direction) {
+		switch (direction) {
+			case DOWN:
 				if ((i >> 8 & 15) == 0) {
 					return -1;
 				}
 
 				return i - field_4475;
-			case field_11036:
+			case UP:
 				if ((i >> 8 & 15) == 15) {
 					return -1;
 				}
 
 				return i + field_4475;
-			case field_11043:
+			case NORTH:
 				if ((i >> 4 & 15) == 0) {
 					return -1;
 				}
 
 				return i - field_4476;
-			case field_11035:
+			case SOUTH:
 				if ((i >> 4 & 15) == 15) {
 					return -1;
 				}
 
 				return i + field_4476;
-			case field_11039:
+			case WEST:
 				if ((i >> 0 & 15) == 0) {
 					return -1;
 				}
 
 				return i - field_4477;
-			case field_11034:
+			case EAST:
 				if ((i >> 0 & 15) == 15) {
 					return -1;
 				}

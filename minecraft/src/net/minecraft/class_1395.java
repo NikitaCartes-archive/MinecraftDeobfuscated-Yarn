@@ -1,48 +1,54 @@
 package net.minecraft;
 
 import javax.annotation.Nullable;
+import net.minecraft.block.Block;
+import net.minecraft.block.LeavesBlock;
+import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.tag.BlockTags;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 public class class_1395 extends class_1394 {
-	public class_1395(class_1314 arg, double d) {
-		super(arg, d);
+	public class_1395(MobEntityWithAi mobEntityWithAi, double d) {
+		super(mobEntityWithAi, d);
 	}
 
 	@Nullable
 	@Override
-	protected class_243 method_6302() {
-		class_243 lv = null;
-		if (this.field_6566.method_5799()) {
-			lv = class_1414.method_6378(this.field_6566, 15, 15);
+	protected Vec3d method_6302() {
+		Vec3d vec3d = null;
+		if (this.field_6566.isInsideWater()) {
+			vec3d = class_1414.method_6378(this.field_6566, 15, 15);
 		}
 
-		if (this.field_6566.method_6051().nextFloat() >= this.field_6626) {
-			lv = this.method_6314();
+		if (this.field_6566.getRand().nextFloat() >= this.field_6626) {
+			vec3d = this.method_6314();
 		}
 
-		return lv == null ? super.method_6302() : lv;
+		return vec3d == null ? super.method_6302() : vec3d;
 	}
 
 	@Nullable
-	private class_243 method_6314() {
-		class_2338 lv = new class_2338(this.field_6566);
-		class_2338.class_2339 lv2 = new class_2338.class_2339();
-		class_2338.class_2339 lv3 = new class_2338.class_2339();
+	private Vec3d method_6314() {
+		BlockPos blockPos = new BlockPos(this.field_6566);
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
+		BlockPos.Mutable mutable2 = new BlockPos.Mutable();
 
-		for (class_2338 lv4 : class_2338.class_2339.method_10068(
-			class_3532.method_15357(this.field_6566.field_5987 - 3.0),
-			class_3532.method_15357(this.field_6566.field_6010 - 6.0),
-			class_3532.method_15357(this.field_6566.field_6035 - 3.0),
-			class_3532.method_15357(this.field_6566.field_5987 + 3.0),
-			class_3532.method_15357(this.field_6566.field_6010 + 6.0),
-			class_3532.method_15357(this.field_6566.field_6035 + 3.0)
+		for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(
+			MathHelper.floor(this.field_6566.x - 3.0),
+			MathHelper.floor(this.field_6566.y - 6.0),
+			MathHelper.floor(this.field_6566.z - 3.0),
+			MathHelper.floor(this.field_6566.x + 3.0),
+			MathHelper.floor(this.field_6566.y + 6.0),
+			MathHelper.floor(this.field_6566.z + 3.0)
 		)) {
-			if (!lv.equals(lv4)) {
-				class_2248 lv5 = this.field_6566.field_6002.method_8320(lv3.method_10101(lv4).method_10098(class_2350.field_11033)).method_11614();
-				boolean bl = lv5 instanceof class_2397 || lv5.method_9525(class_3481.field_15475);
-				if (bl && this.field_6566.field_6002.method_8623(lv4) && this.field_6566.field_6002.method_8623(lv2.method_10101(lv4).method_10098(class_2350.field_11036))
-					)
-				 {
-					return new class_243((double)lv4.method_10263(), (double)lv4.method_10264(), (double)lv4.method_10260());
+			if (!blockPos.equals(blockPos2)) {
+				Block block = this.field_6566.world.getBlockState(mutable2.set(blockPos2).setOffset(Direction.DOWN)).getBlock();
+				boolean bl = block instanceof LeavesBlock || block.matches(BlockTags.field_15475);
+				if (bl && this.field_6566.world.isAir(blockPos2) && this.field_6566.world.isAir(mutable.set(blockPos2).setOffset(Direction.UP))) {
+					return new Vec3d((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
 				}
 			}
 		}

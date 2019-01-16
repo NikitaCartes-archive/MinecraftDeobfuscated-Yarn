@@ -4,16 +4,24 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.sortme.structures.processor.AbstractStructureProcessor;
+import net.minecraft.util.Mirror;
+import net.minecraft.util.Rotation;
+import net.minecraft.util.SystemUtil;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
+import net.minecraft.world.chunk.ChunkPos;
+import net.minecraft.world.gen.ChunkRandom;
 
 public class class_3492 {
-	private class_2415 field_15564 = class_2415.field_11302;
-	private class_2470 field_15569 = class_2470.field_11467;
-	private class_2338 field_15566 = new class_2338(0, 0, 0);
+	private Mirror field_15564 = Mirror.NONE;
+	private Rotation field_15569 = Rotation.ROT_0;
+	private BlockPos field_15566 = BlockPos.ORIGIN;
 	private boolean field_15571;
 	@Nullable
-	private class_1923 field_15563;
+	private ChunkPos field_15563;
 	@Nullable
-	private class_3341 field_15565;
+	private MutableIntBoundingBox field_15565;
 	private boolean field_15567 = true;
 	@Nullable
 	private Random field_15570;
@@ -22,7 +30,7 @@ public class class_3492 {
 	@Nullable
 	private Integer field_15572;
 	private int field_15575;
-	private final List<class_3491> field_16446 = Lists.<class_3491>newArrayList();
+	private final List<AbstractStructureProcessor> field_16446 = Lists.<AbstractStructureProcessor>newArrayList();
 	private boolean field_16587;
 
 	public class_3492 method_15128() {
@@ -43,18 +51,18 @@ public class class_3492 {
 		return lv;
 	}
 
-	public class_3492 method_15125(class_2415 arg) {
-		this.field_15564 = arg;
+	public class_3492 method_15125(Mirror mirror) {
+		this.field_15564 = mirror;
 		return this;
 	}
 
-	public class_3492 method_15123(class_2470 arg) {
-		this.field_15569 = arg;
+	public class_3492 method_15123(Rotation rotation) {
+		this.field_15569 = rotation;
 		return this;
 	}
 
-	public class_3492 method_15119(class_2338 arg) {
-		this.field_15566 = arg;
+	public class_3492 method_15119(BlockPos blockPos) {
+		this.field_15566 = blockPos;
 		return this;
 	}
 
@@ -63,13 +71,13 @@ public class class_3492 {
 		return this;
 	}
 
-	public class_3492 method_15130(class_1923 arg) {
-		this.field_15563 = arg;
+	public class_3492 method_15130(ChunkPos chunkPos) {
+		this.field_15563 = chunkPos;
 		return this;
 	}
 
-	public class_3492 method_15126(class_3341 arg) {
-		this.field_15565 = arg;
+	public class_3492 method_15126(MutableIntBoundingBox mutableIntBoundingBox) {
+		this.field_15565 = mutableIntBoundingBox;
 		return this;
 	}
 
@@ -93,35 +101,35 @@ public class class_3492 {
 		return this;
 	}
 
-	public class_3492 method_16184(class_3491 arg) {
-		this.field_16446.add(arg);
+	public class_3492 method_16184(AbstractStructureProcessor abstractStructureProcessor) {
+		this.field_16446.add(abstractStructureProcessor);
 		return this;
 	}
 
-	public class_3492 method_16664(class_3491 arg) {
-		this.field_16446.remove(arg);
+	public class_3492 method_16664(AbstractStructureProcessor abstractStructureProcessor) {
+		this.field_16446.remove(abstractStructureProcessor);
 		return this;
 	}
 
-	public class_2415 method_15114() {
+	public Mirror method_15114() {
 		return this.field_15564;
 	}
 
-	public class_2470 method_15113() {
+	public Rotation method_15113() {
 		return this.field_15569;
 	}
 
-	public class_2338 method_15134() {
+	public BlockPos method_15134() {
 		return this.field_15566;
 	}
 
-	public Random method_15115(@Nullable class_2338 arg) {
+	public Random method_15115(@Nullable BlockPos blockPos) {
 		if (this.field_15570 != null) {
 			return this.field_15570;
 		} else if (this.field_15574 != null) {
-			return this.field_15574 == 0L ? new Random(class_156.method_658()) : new Random(this.field_15574);
+			return this.field_15574 == 0L ? new Random(SystemUtil.getMeasuringTimeMs()) : new Random(this.field_15574);
 		} else {
-			return arg == null ? new Random(class_156.method_658()) : class_2919.method_12662(arg.method_10263(), arg.method_10260(), 0L, 987234911L);
+			return blockPos == null ? new Random(SystemUtil.getMeasuringTimeMs()) : ChunkRandom.method_12662(blockPos.getX(), blockPos.getZ(), 0L, 987234911L);
 		}
 	}
 
@@ -130,7 +138,7 @@ public class class_3492 {
 	}
 
 	@Nullable
-	public class_3341 method_15124() {
+	public MutableIntBoundingBox method_15124() {
 		if (this.field_15565 == null && this.field_15563 != null) {
 			this.method_15132();
 		}
@@ -142,7 +150,7 @@ public class class_3492 {
 		return this.field_16587;
 	}
 
-	public List<class_3491> method_16182() {
+	public List<AbstractStructureProcessor> method_16182() {
 		return this.field_16446;
 	}
 
@@ -156,24 +164,24 @@ public class class_3492 {
 		return this.field_15567;
 	}
 
-	public List<class_3499.class_3501> method_15121(List<List<class_3499.class_3501>> list, @Nullable class_2338 arg) {
+	public List<class_3499.class_3501> method_15121(List<List<class_3499.class_3501>> list, @Nullable BlockPos blockPos) {
 		this.field_15572 = 8;
 		if (this.field_15572 != null && this.field_15572 >= 0 && this.field_15572 < list.size()) {
 			return (List<class_3499.class_3501>)list.get(this.field_15572);
 		} else {
-			this.field_15572 = this.method_15115(arg).nextInt(list.size());
+			this.field_15572 = this.method_15115(blockPos).nextInt(list.size());
 			return (List<class_3499.class_3501>)list.get(this.field_15572);
 		}
 	}
 
 	@Nullable
-	private class_3341 method_15117(@Nullable class_1923 arg) {
-		if (arg == null) {
+	private MutableIntBoundingBox method_15117(@Nullable ChunkPos chunkPos) {
+		if (chunkPos == null) {
 			return this.field_15565;
 		} else {
-			int i = arg.field_9181 * 16;
-			int j = arg.field_9180 * 16;
-			return new class_3341(i, 0, j, i + 16 - 1, 255, j + 16 - 1);
+			int i = chunkPos.x * 16;
+			int j = chunkPos.z * 16;
+			return new MutableIntBoundingBox(i, 0, j, i + 16 - 1, 255, j + 16 - 1);
 		}
 	}
 }

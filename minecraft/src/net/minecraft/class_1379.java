@@ -1,9 +1,12 @@
 package net.minecraft;
 
 import javax.annotation.Nullable;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.util.math.Vec3d;
 
-public class class_1379 extends class_1352 {
-	protected final class_1314 field_6566;
+public class class_1379 extends Goal {
+	protected final MobEntityWithAi field_6566;
 	protected double field_6563;
 	protected double field_6562;
 	protected double field_6561;
@@ -11,39 +14,39 @@ public class class_1379 extends class_1352 {
 	protected int field_6564;
 	protected boolean field_6565;
 
-	public class_1379(class_1314 arg, double d) {
-		this(arg, d, 120);
+	public class_1379(MobEntityWithAi mobEntityWithAi, double d) {
+		this(mobEntityWithAi, d, 120);
 	}
 
-	public class_1379(class_1314 arg, double d, int i) {
-		this.field_6566 = arg;
+	public class_1379(MobEntityWithAi mobEntityWithAi, double d, int i) {
+		this.field_6566 = mobEntityWithAi;
 		this.field_6567 = d;
 		this.field_6564 = i;
-		this.method_6265(1);
+		this.setControlBits(1);
 	}
 
 	@Override
-	public boolean method_6264() {
-		if (this.field_6566.method_5782()) {
+	public boolean canStart() {
+		if (this.field_6566.hasPassengers()) {
 			return false;
 		} else {
 			if (!this.field_6565) {
-				if (this.field_6566.method_6131() >= 100) {
+				if (this.field_6566.getDespawnCounter() >= 100) {
 					return false;
 				}
 
-				if (this.field_6566.method_6051().nextInt(this.field_6564) != 0) {
+				if (this.field_6566.getRand().nextInt(this.field_6564) != 0) {
 					return false;
 				}
 			}
 
-			class_243 lv = this.method_6302();
-			if (lv == null) {
+			Vec3d vec3d = this.method_6302();
+			if (vec3d == null) {
 				return false;
 			} else {
-				this.field_6563 = lv.field_1352;
-				this.field_6562 = lv.field_1351;
-				this.field_6561 = lv.field_1350;
+				this.field_6563 = vec3d.x;
+				this.field_6562 = vec3d.y;
+				this.field_6561 = vec3d.z;
 				this.field_6565 = false;
 				return true;
 			}
@@ -51,18 +54,18 @@ public class class_1379 extends class_1352 {
 	}
 
 	@Nullable
-	protected class_243 method_6302() {
+	protected Vec3d method_6302() {
 		return class_1414.method_6375(this.field_6566, 10, 7);
 	}
 
 	@Override
-	public boolean method_6266() {
-		return !this.field_6566.method_5942().method_6357();
+	public boolean shouldContinue() {
+		return !this.field_6566.getNavigation().method_6357();
 	}
 
 	@Override
-	public void method_6269() {
-		this.field_6566.method_5942().method_6337(this.field_6563, this.field_6562, this.field_6561, this.field_6567);
+	public void start() {
+		this.field_6566.getNavigation().startMovingTo(this.field_6563, this.field_6562, this.field_6561, this.field_6567);
 	}
 
 	public void method_6304() {

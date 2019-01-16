@@ -4,60 +4,64 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.text.TextComponent;
 
 @Environment(EnvType.CLIENT)
-public class class_403 extends class_437 {
+public class class_403 extends Gui {
 	private final Runnable field_2345;
-	protected final class_2561 field_2350;
-	protected final class_2561 field_2346;
+	protected final TextComponent field_2350;
+	protected final TextComponent field_2346;
 	private final List<String> field_2348 = Lists.<String>newArrayList();
 	protected final String field_2349;
 	private int field_2347;
 
-	public class_403(Runnable runnable, class_2561 arg, class_2561 arg2) {
-		this(runnable, arg, arg2, "gui.back");
+	public class_403(Runnable runnable, TextComponent textComponent, TextComponent textComponent2) {
+		this(runnable, textComponent, textComponent2, "gui.back");
 	}
 
-	public class_403(Runnable runnable, class_2561 arg, class_2561 arg2, String string) {
+	public class_403(Runnable runnable, TextComponent textComponent, TextComponent textComponent2, String string) {
 		this.field_2345 = runnable;
-		this.field_2350 = arg;
-		this.field_2346 = arg2;
-		this.field_2349 = class_1074.method_4662(string);
+		this.field_2350 = textComponent;
+		this.field_2346 = textComponent2;
+		this.field_2349 = I18n.translate(string);
 	}
 
 	@Override
-	protected void method_2224() {
-		super.method_2224();
-		this.method_2219(new class_339(0, this.field_2561 / 2 - 100, this.field_2559 / 6 + 168, this.field_2349) {
+	protected void onInitialized() {
+		super.onInitialized();
+		this.addButton(new ButtonWidget(0, this.width / 2 - 100, this.height / 6 + 168, this.field_2349) {
 			@Override
-			public void method_1826(double d, double e) {
+			public void onPressed(double d, double e) {
 				class_403.this.field_2345.run();
 			}
 		});
 		this.field_2348.clear();
-		this.field_2348.addAll(this.field_2554.method_1728(this.field_2346.method_10863(), this.field_2561 - 50));
+		this.field_2348.addAll(this.fontRenderer.wrapStringToWidthAsList(this.field_2346.getFormattedText(), this.width - 50));
 	}
 
 	@Override
-	public void method_2214(int i, int j, float f) {
-		this.method_2240();
-		this.method_1789(this.field_2554, this.field_2350.method_10863(), this.field_2561 / 2, 70, 16777215);
+	public void draw(int i, int j, float f) {
+		this.drawBackground();
+		this.drawStringCentered(this.fontRenderer, this.field_2350.getFormattedText(), this.width / 2, 70, 16777215);
 		int k = 90;
 
 		for (String string : this.field_2348) {
-			this.method_1789(this.field_2554, string, this.field_2561 / 2, k, 16777215);
+			this.drawStringCentered(this.fontRenderer, string, this.width / 2, k, 16777215);
 			k += 9;
 		}
 
-		super.method_2214(i, j, f);
+		super.draw(i, j, f);
 	}
 
 	@Override
-	public void method_2225() {
-		super.method_2225();
+	public void update() {
+		super.update();
 		if (--this.field_2347 == 0) {
-			for (class_339 lv : this.field_2564) {
-				lv.field_2078 = true;
+			for (ButtonWidget buttonWidget : this.buttons) {
+				buttonWidget.enabled = true;
 			}
 		}
 	}

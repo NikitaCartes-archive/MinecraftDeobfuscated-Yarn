@@ -1,29 +1,35 @@
 package net.minecraft;
 
-public class class_1399 extends class_1405 {
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.goal.TrackTargetGoal;
+import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.util.math.BoundingBox;
+
+public class class_1399 extends TrackTargetGoal {
 	private boolean field_6639;
 	private int field_6638;
 	private final Class<?>[] field_6637;
 	private Class<?>[] field_6640;
 
-	public class_1399(class_1314 arg, Class<?>... classs) {
-		super(arg, true);
+	public class_1399(MobEntityWithAi mobEntityWithAi, Class<?>... classs) {
+		super(mobEntityWithAi, true);
 		this.field_6637 = classs;
-		this.method_6265(1);
+		this.setControlBits(1);
 	}
 
 	@Override
-	public boolean method_6264() {
-		int i = this.field_6660.method_6117();
-		class_1309 lv = this.field_6660.method_6065();
-		if (i != this.field_6638 && lv != null) {
+	public boolean canStart() {
+		int i = this.entity.getLastAttackedTime();
+		LivingEntity livingEntity = this.entity.getAttacker();
+		if (i != this.field_6638 && livingEntity != null) {
 			for (Class<?> class_ : this.field_6637) {
-				if (class_.isAssignableFrom(lv.getClass())) {
+				if (class_.isAssignableFrom(livingEntity.getClass())) {
 					return false;
 				}
 			}
 
-			return this.method_6328(lv, false);
+			return this.canTrack(livingEntity, false);
 		} else {
 			return false;
 		}
@@ -36,56 +42,48 @@ public class class_1399 extends class_1405 {
 	}
 
 	@Override
-	public void method_6269() {
-		this.field_6660.method_5980(this.field_6660.method_6065());
-		this.field_6664 = this.field_6660.method_5968();
-		this.field_6638 = this.field_6660.method_6117();
-		this.field_6657 = 300;
+	public void start() {
+		this.entity.setTarget(this.entity.getAttacker());
+		this.field_6664 = this.entity.getTarget();
+		this.field_6638 = this.entity.getLastAttackedTime();
+		this.maxTimeWithoutVisibility = 300;
 		if (this.field_6639) {
 			this.method_6317();
 		}
 
-		super.method_6269();
+		super.start();
 	}
 
 	protected void method_6317() {
-		double d = this.method_6326();
+		double d = this.getFollowRange();
 
-		for (class_1314 lv : this.field_6660
-			.field_6002
-			.method_8403(
-				this.field_6660.getClass(),
-				new class_238(
-						this.field_6660.field_5987,
-						this.field_6660.field_6010,
-						this.field_6660.field_6035,
-						this.field_6660.field_5987 + 1.0,
-						this.field_6660.field_6010 + 1.0,
-						this.field_6660.field_6035 + 1.0
-					)
-					.method_1009(d, 10.0, d)
+		for (MobEntityWithAi mobEntityWithAi : this.entity
+			.world
+			.getVisibleEntities(
+				this.entity.getClass(),
+				new BoundingBox(this.entity.x, this.entity.y, this.entity.z, this.entity.x + 1.0, this.entity.y + 1.0, this.entity.z + 1.0).expand(d, 10.0, d)
 			)) {
-			if (this.field_6660 != lv
-				&& lv.method_5968() == null
-				&& (!(this.field_6660 instanceof class_1321) || ((class_1321)this.field_6660).method_6177() == ((class_1321)lv).method_6177())
-				&& !lv.method_5722(this.field_6660.method_6065())) {
+			if (this.entity != mobEntityWithAi
+				&& mobEntityWithAi.getTarget() == null
+				&& (!(this.entity instanceof TameableEntity) || ((TameableEntity)this.entity).getOwner() == ((TameableEntity)mobEntityWithAi).getOwner())
+				&& !mobEntityWithAi.isTeammate(this.entity.getAttacker())) {
 				boolean bl = false;
 
 				for (Class<?> class_ : this.field_6640) {
-					if (lv.getClass() == class_) {
+					if (mobEntityWithAi.getClass() == class_) {
 						bl = true;
 						break;
 					}
 				}
 
 				if (!bl) {
-					this.method_6319(lv, this.field_6660.method_6065());
+					this.method_6319(mobEntityWithAi, this.entity.getAttacker());
 				}
 			}
 		}
 	}
 
-	protected void method_6319(class_1314 arg, class_1309 arg2) {
-		arg.method_5980(arg2);
+	protected void method_6319(MobEntityWithAi mobEntityWithAi, LivingEntity livingEntity) {
+		mobEntityWithAi.setTarget(livingEntity);
 	}
 }

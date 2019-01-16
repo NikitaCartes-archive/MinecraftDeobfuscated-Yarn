@@ -6,76 +6,82 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Locale;
 import java.util.function.Function;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.command.arguments.BlockPosArgumentType;
+import net.minecraft.command.arguments.NbtPathArgumentType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.command.DataCommand;
+import net.minecraft.server.command.ServerCommandManager;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.TextComponent;
+import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.util.math.BlockPos;
 
 public class class_3161 implements class_3162 {
-	private static final SimpleCommandExceptionType field_13785 = new SimpleCommandExceptionType(new class_2588("commands.data.block.invalid"));
-	public static final Function<String, class_3164.class_3167> field_13786 = string -> new class_3164.class_3167() {
+	private static final SimpleCommandExceptionType field_13785 = new SimpleCommandExceptionType(new TranslatableTextComponent("commands.data.block.invalid"));
+	public static final Function<String, DataCommand.class_3167> field_13786 = string -> new DataCommand.class_3167() {
 			@Override
-			public class_3162 method_13924(CommandContext<class_2168> commandContext) throws CommandSyntaxException {
-				class_2338 lv = class_2262.method_9696(commandContext, string + "Pos");
-				class_2586 lv2 = ((class_2168)commandContext.getSource()).method_9225().method_8321(lv);
-				if (lv2 == null) {
+			public class_3162 method_13924(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
+				BlockPos blockPos = BlockPosArgumentType.getValidPosArgument(commandContext, string + "Pos");
+				BlockEntity blockEntity = ((ServerCommandSource)commandContext.getSource()).getWorld().getBlockEntity(blockPos);
+				if (blockEntity == null) {
 					throw class_3161.field_13785.create();
 				} else {
-					return new class_3161(lv2, lv);
+					return new class_3161(blockEntity, blockPos);
 				}
 			}
 
 			@Override
-			public ArgumentBuilder<class_2168, ?> method_13925(
-				ArgumentBuilder<class_2168, ?> argumentBuilder, Function<ArgumentBuilder<class_2168, ?>, ArgumentBuilder<class_2168, ?>> function
+			public ArgumentBuilder<ServerCommandSource, ?> method_13925(
+				ArgumentBuilder<ServerCommandSource, ?> argumentBuilder,
+				Function<ArgumentBuilder<ServerCommandSource, ?>, ArgumentBuilder<ServerCommandSource, ?>> function
 			) {
 				return argumentBuilder.then(
-					class_2170.method_9247("block").then((ArgumentBuilder<class_2168, ?>)function.apply(class_2170.method_9244(string + "Pos", class_2262.method_9698())))
+					ServerCommandManager.literal("block")
+						.then((ArgumentBuilder<ServerCommandSource, ?>)function.apply(ServerCommandManager.argument(string + "Pos", BlockPosArgumentType.create())))
 				);
 			}
 		};
-	private final class_2586 field_13784;
-	private final class_2338 field_13783;
+	private final BlockEntity field_13784;
+	private final BlockPos pos;
 
-	public class_3161(class_2586 arg, class_2338 arg2) {
-		this.field_13784 = arg;
-		this.field_13783 = arg2;
+	public class_3161(BlockEntity blockEntity, BlockPos blockPos) {
+		this.field_13784 = blockEntity;
+		this.pos = blockPos;
 	}
 
 	@Override
-	public void method_13880(class_2487 arg) {
-		arg.method_10569("x", this.field_13783.method_10263());
-		arg.method_10569("y", this.field_13783.method_10264());
-		arg.method_10569("z", this.field_13783.method_10260());
-		this.field_13784.method_11014(arg);
-		this.field_13784.method_5431();
-		class_2680 lv = this.field_13784.method_10997().method_8320(this.field_13783);
-		this.field_13784.method_10997().method_8413(this.field_13783, lv, lv, 3);
+	public void method_13880(CompoundTag compoundTag) {
+		compoundTag.putInt("x", this.pos.getX());
+		compoundTag.putInt("y", this.pos.getY());
+		compoundTag.putInt("z", this.pos.getZ());
+		this.field_13784.fromTag(compoundTag);
+		this.field_13784.markDirty();
+		BlockState blockState = this.field_13784.getWorld().getBlockState(this.pos);
+		this.field_13784.getWorld().updateListeners(this.pos, blockState, blockState, 3);
 	}
 
 	@Override
-	public class_2487 method_13881() {
-		return this.field_13784.method_11007(new class_2487());
+	public CompoundTag method_13881() {
+		return this.field_13784.toTag(new CompoundTag());
 	}
 
 	@Override
-	public class_2561 method_13883() {
-		return new class_2588("commands.data.block.modified", this.field_13783.method_10263(), this.field_13783.method_10264(), this.field_13783.method_10260());
+	public TextComponent method_13883() {
+		return new TranslatableTextComponent("commands.data.block.modified", this.pos.getX(), this.pos.getY(), this.pos.getZ());
 	}
 
 	@Override
-	public class_2561 method_13882(class_2520 arg) {
-		return new class_2588(
-			"commands.data.block.query", this.field_13783.method_10263(), this.field_13783.method_10264(), this.field_13783.method_10260(), arg.method_10715()
-		);
+	public TextComponent method_13882(Tag tag) {
+		return new TranslatableTextComponent("commands.data.block.query", this.pos.getX(), this.pos.getY(), this.pos.getZ(), tag.toTextComponent());
 	}
 
 	@Override
-	public class_2561 method_13879(class_2203.class_2209 arg, double d, int i) {
-		return new class_2588(
-			"commands.data.block.get",
-			arg,
-			this.field_13783.method_10263(),
-			this.field_13783.method_10264(),
-			this.field_13783.method_10260(),
-			String.format(Locale.ROOT, "%.2f", d),
-			i
+	public TextComponent method_13879(NbtPathArgumentType.class_2209 arg, double d, int i) {
+		return new TranslatableTextComponent(
+			"commands.data.block.get", arg, this.pos.getX(), this.pos.getY(), this.pos.getZ(), String.format(Locale.ROOT, "%.2f", d), i
 		);
 	}
 }

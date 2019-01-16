@@ -178,9 +178,9 @@
 		"url": "https://libraries.minecraft.net/net/java/dev/jna/platform/3.4.0/platform-3.4.0.jar"
 	},
 	{
-		"sha1sum": "92c452fbfe1e203779d0c044ee81c0bdebebfa0b",
-		"name": "realms-1.14.0.jar",
-		"url": "https://libraries.minecraft.net/com/mojang/realms/1.14.0/realms-1.14.0.jar"
+		"sha1sum": "4b5fabbdf723522e998c7498219d1e5a547428a9",
+		"name": "realms-1.14.1.jar",
+		"url": "https://libraries.minecraft.net/com/mojang/realms/1.14.1/realms-1.14.1.jar"
 	},
 	{
 		"sha1sum": "419c05fe9be71f792b2d76cfc9b67f1ed0fec7f6",

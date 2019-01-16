@@ -1,67 +1,77 @@
 package net.minecraft;
 
-public class class_1407 extends class_1408 {
-	public class_1407(class_1308 arg, class_1937 arg2) {
-		super(arg, arg2);
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.ai.pathing.EntityNavigation;
+import net.minecraft.entity.ai.pathing.Path;
+import net.minecraft.entity.ai.pathing.PathNodeNavigator;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
+
+public class class_1407 extends EntityNavigation {
+	public class_1407(MobEntity mobEntity, World world) {
+		super(mobEntity, world);
 	}
 
 	@Override
-	protected class_13 method_6336() {
+	protected PathNodeNavigator createPathNodeNavigator() {
 		this.field_6678 = new class_6();
-		this.field_6678.method_15(true);
-		return new class_13(this.field_6678);
+		this.field_6678.setCanEnterOpenDoors(true);
+		return new PathNodeNavigator(this.field_6678);
 	}
 
 	@Override
-	protected boolean method_6358() {
-		return this.method_6350() && this.method_6351() || !this.field_6684.method_5765();
+	protected boolean isAtValidPosition() {
+		return this.method_6350() && this.isInLiquid() || !this.entity.hasVehicle();
 	}
 
 	@Override
-	protected class_243 method_6347() {
-		return new class_243(this.field_6684.field_5987, this.field_6684.field_6010, this.field_6684.field_6035);
+	protected Vec3d method_6347() {
+		return new Vec3d(this.entity.x, this.entity.y, this.entity.z);
 	}
 
 	@Override
-	public class_11 method_6349(class_1297 arg) {
-		return this.method_6348(new class_2338(arg));
+	public Path findPathTo(Entity entity) {
+		return this.findPathTo(new BlockPos(entity));
 	}
 
 	@Override
-	public void method_6360() {
-		this.field_6675++;
-		if (this.field_6679) {
+	public void tick() {
+		this.tickCount++;
+		if (this.idle) {
 			this.method_6356();
 		}
 
 		if (!this.method_6357()) {
-			if (this.method_6358()) {
+			if (this.isAtValidPosition()) {
 				this.method_6339();
-			} else if (this.field_6681 != null && this.field_6681.method_39() < this.field_6681.method_38()) {
-				class_243 lv = this.field_6681.method_47(this.field_6684, this.field_6681.method_39());
-				if (class_3532.method_15357(this.field_6684.field_5987) == class_3532.method_15357(lv.field_1352)
-					&& class_3532.method_15357(this.field_6684.field_6010) == class_3532.method_15357(lv.field_1351)
-					&& class_3532.method_15357(this.field_6684.field_6035) == class_3532.method_15357(lv.field_1350)) {
-					this.field_6681.method_42(this.field_6681.method_39() + 1);
+			} else if (this.field_6681 != null && this.field_6681.getCurrentNodeIndex() < this.field_6681.getPathLength()) {
+				Vec3d vec3d = this.field_6681.getNodePosition(this.entity, this.field_6681.getCurrentNodeIndex());
+				if (MathHelper.floor(this.entity.x) == MathHelper.floor(vec3d.x)
+					&& MathHelper.floor(this.entity.y) == MathHelper.floor(vec3d.y)
+					&& MathHelper.floor(this.entity.z) == MathHelper.floor(vec3d.z)) {
+					this.field_6681.setCurrentPosition(this.field_6681.getCurrentNodeIndex() + 1);
 				}
 			}
 
 			this.method_6353();
 			if (!this.method_6357()) {
-				class_243 lv = this.field_6681.method_49(this.field_6684);
-				this.field_6684.method_5962().method_6239(lv.field_1352, lv.field_1351, lv.field_1350, this.field_6668);
+				Vec3d vec3d = this.field_6681.getNodePosition(this.entity);
+				this.entity.getMoveControl().method_6239(vec3d.x, vec3d.y, vec3d.z, this.field_6668);
 			}
 		}
 	}
 
 	@Override
-	protected boolean method_6341(class_243 arg, class_243 arg2, int i, int j, int k) {
-		int l = class_3532.method_15357(arg.field_1352);
-		int m = class_3532.method_15357(arg.field_1351);
-		int n = class_3532.method_15357(arg.field_1350);
-		double d = arg2.field_1352 - arg.field_1352;
-		double e = arg2.field_1351 - arg.field_1351;
-		double f = arg2.field_1350 - arg.field_1350;
+	protected boolean method_6341(Vec3d vec3d, Vec3d vec3d2, int i, int j, int k) {
+		int l = MathHelper.floor(vec3d.x);
+		int m = MathHelper.floor(vec3d.y);
+		int n = MathHelper.floor(vec3d.z);
+		double d = vec3d2.x - vec3d.x;
+		double e = vec3d2.y - vec3d.y;
+		double f = vec3d2.z - vec3d.z;
 		double g = d * d + e * e + f * f;
 		if (g < 1.0E-8) {
 			return false;
@@ -73,9 +83,9 @@ public class class_1407 extends class_1408 {
 			double o = 1.0 / Math.abs(d);
 			double p = 1.0 / Math.abs(e);
 			double q = 1.0 / Math.abs(f);
-			double r = (double)l - arg.field_1352;
-			double s = (double)m - arg.field_1351;
-			double t = (double)n - arg.field_1350;
+			double r = (double)l - vec3d.x;
+			double s = (double)m - vec3d.y;
+			double t = (double)n - vec3d.z;
 			if (d >= 0.0) {
 				r++;
 			}
@@ -94,9 +104,9 @@ public class class_1407 extends class_1408 {
 			int u = d < 0.0 ? -1 : 1;
 			int v = e < 0.0 ? -1 : 1;
 			int w = f < 0.0 ? -1 : 1;
-			int x = class_3532.method_15357(arg2.field_1352);
-			int y = class_3532.method_15357(arg2.field_1351);
-			int z = class_3532.method_15357(arg2.field_1350);
+			int x = MathHelper.floor(vec3d2.x);
+			int y = MathHelper.floor(vec3d2.y);
+			int z = MathHelper.floor(vec3d2.z);
 			int aa = x - l;
 			int ab = y - m;
 			int ac = z - n;
@@ -122,15 +132,15 @@ public class class_1407 extends class_1408 {
 	}
 
 	public void method_6332(boolean bl) {
-		this.field_6678.method_20(bl);
+		this.field_6678.setCanPathThroughDoors(bl);
 	}
 
 	public void method_6331(boolean bl) {
-		this.field_6678.method_15(bl);
+		this.field_6678.setCanEnterOpenDoors(bl);
 	}
 
 	@Override
-	public boolean method_6333(class_2338 arg) {
-		return this.field_6677.method_8320(arg).method_11631(this.field_6677, arg);
+	public boolean isValidPosition(BlockPos blockPos) {
+		return this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos);
 	}
 }

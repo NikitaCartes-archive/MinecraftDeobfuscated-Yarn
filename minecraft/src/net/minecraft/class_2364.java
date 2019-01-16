@@ -1,4 +1,6 @@
 package net.minecraft;
 
-public interface class_2364 extends class_2365 {
+import net.minecraft.util.math.WorldPosition;
+
+public interface class_2364 extends WorldPosition {
 }

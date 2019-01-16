@@ -4,16 +4,24 @@ import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
+import net.minecraft.world.gen.decorator.Decorator;
+import net.minecraft.world.gen.decorator.DecoratorConfig;
 
-public abstract class class_3667<DC extends class_2998> extends class_3284<DC> {
+public abstract class class_3667<DC extends DecoratorConfig> extends Decorator<DC> {
 	public class_3667(Function<Dynamic<?>, ? extends DC> function) {
 		super(function);
 	}
 
 	@Override
-	public final Stream<class_2338> method_14452(class_1936 arg, class_2794<? extends class_2888> arg2, Random random, DC arg3, class_2338 arg4) {
-		return this.method_15941(random, arg3, arg4);
+	public final Stream<BlockPos> method_14452(
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, DC decoratorConfig, BlockPos blockPos
+	) {
+		return this.method_15941(random, decoratorConfig, blockPos);
 	}
 
-	protected abstract Stream<class_2338> method_15941(Random random, DC arg, class_2338 arg2);
+	protected abstract Stream<BlockPos> method_15941(Random random, DC decoratorConfig, BlockPos blockPos);
 }

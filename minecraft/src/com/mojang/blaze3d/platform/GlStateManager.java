@@ -7,9 +7,9 @@ import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1159;
 import net.minecraft.class_301;
-import net.minecraft.class_308;
+import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.util.math.Matrix4f;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
@@ -23,30 +23,30 @@ public class GlStateManager {
 		MemoryUtil.memAllocFloat(16), floatBuffer -> class_301.method_1407(MemoryUtil.memAddress(floatBuffer))
 	);
 	private static final FloatBuffer COLOR_BUFFER = GLX.make(MemoryUtil.memAllocFloat(4), floatBuffer -> class_301.method_1407(MemoryUtil.memAddress(floatBuffer)));
-	private static final GlStateManager.class_1016 ALPHA_TEST = new GlStateManager.class_1016();
-	private static final GlStateManager.class_1018 LIGHTING = new GlStateManager.class_1018(2896);
-	private static final GlStateManager.class_1018[] LIGHT_ENABLE = (GlStateManager.class_1018[])IntStream.range(0, 8)
-		.mapToObj(i -> new GlStateManager.class_1018(16384 + i))
-		.toArray(GlStateManager.class_1018[]::new);
-	private static final GlStateManager.class_1023 COLOR_MATERIAL = new GlStateManager.class_1023();
-	private static final GlStateManager.class_1017 BLEND = new GlStateManager.class_1017();
-	private static final GlStateManager.class_1026 DEPTH = new GlStateManager.class_1026();
-	private static final GlStateManager.class_1029 FOG = new GlStateManager.class_1029();
-	private static final GlStateManager.class_1025 CULL = new GlStateManager.class_1025();
-	private static final GlStateManager.class_1031 POLY_OFFSET = new GlStateManager.class_1031();
-	private static final GlStateManager.class_1021 COLOR_LOGIC = new GlStateManager.class_1021();
-	private static final GlStateManager.class_1038 TEX_GEN = new GlStateManager.class_1038();
-	private static final GlStateManager.class_1019 CLEAR = new GlStateManager.class_1019();
-	private static final GlStateManager.class_1035 STENCIL = new GlStateManager.class_1035();
-	private static final GlStateManager.class_1018 NORMALIZE = new GlStateManager.class_1018(2977);
+	private static final GlStateManager.AlphaTestState ALPHA_TEST = new GlStateManager.AlphaTestState();
+	private static final GlStateManager.CapabilityTracker LIGHTING = new GlStateManager.CapabilityTracker(2896);
+	private static final GlStateManager.CapabilityTracker[] LIGHT_ENABLE = (GlStateManager.CapabilityTracker[])IntStream.range(0, 8)
+		.mapToObj(i -> new GlStateManager.CapabilityTracker(16384 + i))
+		.toArray(GlStateManager.CapabilityTracker[]::new);
+	private static final GlStateManager.ColorMaterialState COLOR_MATERIAL = new GlStateManager.ColorMaterialState();
+	private static final GlStateManager.BlendFuncState BLEND = new GlStateManager.BlendFuncState();
+	private static final GlStateManager.DepthTestState DEPTH = new GlStateManager.DepthTestState();
+	private static final GlStateManager.FogState FOG = new GlStateManager.FogState();
+	private static final GlStateManager.CullFaceState CULL = new GlStateManager.CullFaceState();
+	private static final GlStateManager.PolygonOffsetState POLY_OFFSET = new GlStateManager.PolygonOffsetState();
+	private static final GlStateManager.LogicOpState COLOR_LOGIC = new GlStateManager.LogicOpState();
+	private static final GlStateManager.TexGenState TEX_GEN = new GlStateManager.TexGenState();
+	private static final GlStateManager.ClearState CLEAR = new GlStateManager.ClearState();
+	private static final GlStateManager.StencilState STENCIL = new GlStateManager.StencilState();
+	private static final GlStateManager.CapabilityTracker NORMALIZE = new GlStateManager.CapabilityTracker(2977);
 	private static int activeTexture;
-	private static final GlStateManager.class_1039[] TEXTURES = (GlStateManager.class_1039[])IntStream.range(0, 8)
-		.mapToObj(i -> new GlStateManager.class_1039())
-		.toArray(GlStateManager.class_1039[]::new);
+	private static final GlStateManager.Texture2DState[] TEXTURES = (GlStateManager.Texture2DState[])IntStream.range(0, 8)
+		.mapToObj(i -> new GlStateManager.Texture2DState())
+		.toArray(GlStateManager.Texture2DState[]::new);
 	private static int shadeModel = 7425;
-	private static final GlStateManager.class_1018 RESCALE_NORMAL = new GlStateManager.class_1018(32826);
-	private static final GlStateManager.class_1022 COLOR_MASK = new GlStateManager.class_1022();
-	private static final GlStateManager.class_1020 COLOR = new GlStateManager.class_1020();
+	private static final GlStateManager.CapabilityTracker RESCALE_NORMAL = new GlStateManager.CapabilityTracker(32826);
+	private static final GlStateManager.ColorMask COLOR_MASK = new GlStateManager.ColorMask();
+	private static final GlStateManager.Color4 COLOR = new GlStateManager.Color4();
 	private static final float DEFAULTALPHACUTOFF = 0.1F;
 
 	public static void pushLightingAttributes() {
@@ -62,49 +62,49 @@ public class GlStateManager {
 	}
 
 	public static void disableAlphaTest() {
-		ALPHA_TEST.field_5042.method_4469();
+		ALPHA_TEST.capState.disable();
 	}
 
 	public static void enableAlphaTest() {
-		ALPHA_TEST.field_5042.method_4471();
+		ALPHA_TEST.capState.enable();
 	}
 
 	public static void alphaFunc(int i, float f) {
-		if (i != ALPHA_TEST.field_5044 || f != ALPHA_TEST.field_5043) {
-			ALPHA_TEST.field_5044 = i;
-			ALPHA_TEST.field_5043 = f;
+		if (i != ALPHA_TEST.func || f != ALPHA_TEST.ref) {
+			ALPHA_TEST.func = i;
+			ALPHA_TEST.ref = f;
 			GL11.glAlphaFunc(i, f);
 		}
 	}
 
 	public static void enableLighting() {
-		LIGHTING.method_4471();
+		LIGHTING.enable();
 	}
 
 	public static void disableLighting() {
-		LIGHTING.method_4469();
+		LIGHTING.disable();
 	}
 
 	public static void enableLight(int i) {
-		LIGHT_ENABLE[i].method_4471();
+		LIGHT_ENABLE[i].enable();
 	}
 
 	public static void disableLight(int i) {
-		LIGHT_ENABLE[i].method_4469();
+		LIGHT_ENABLE[i].disable();
 	}
 
 	public static void enableColorMaterial() {
-		COLOR_MATERIAL.field_5064.method_4471();
+		COLOR_MATERIAL.capState.enable();
 	}
 
 	public static void disableColorMaterial() {
-		COLOR_MATERIAL.field_5064.method_4469();
+		COLOR_MATERIAL.capState.disable();
 	}
 
 	public static void colorMaterial(int i, int j) {
-		if (i != COLOR_MATERIAL.field_5066 || j != COLOR_MATERIAL.field_5065) {
-			COLOR_MATERIAL.field_5066 = i;
-			COLOR_MATERIAL.field_5065 = j;
+		if (i != COLOR_MATERIAL.face || j != COLOR_MATERIAL.mode) {
+			COLOR_MATERIAL.face = i;
+			COLOR_MATERIAL.mode = j;
 			GL11.glColorMaterial(i, j);
 		}
 	}
@@ -122,43 +122,43 @@ public class GlStateManager {
 	}
 
 	public static void disableDepthTest() {
-		DEPTH.field_5074.method_4469();
+		DEPTH.capState.disable();
 	}
 
 	public static void enableDepthTest() {
-		DEPTH.field_5074.method_4471();
+		DEPTH.capState.enable();
 	}
 
 	public static void depthFunc(int i) {
-		if (i != DEPTH.field_5075) {
-			DEPTH.field_5075 = i;
+		if (i != DEPTH.func) {
+			DEPTH.func = i;
 			GL11.glDepthFunc(i);
 		}
 	}
 
 	public static void depthMask(boolean bl) {
-		if (bl != DEPTH.field_5076) {
-			DEPTH.field_5076 = bl;
+		if (bl != DEPTH.mask) {
+			DEPTH.mask = bl;
 			GL11.glDepthMask(bl);
 		}
 	}
 
 	public static void disableBlend() {
-		BLEND.field_5045.method_4469();
+		BLEND.capState.disable();
 	}
 
 	public static void enableBlend() {
-		BLEND.field_5045.method_4471();
+		BLEND.capState.enable();
 	}
 
 	public static void blendFunc(GlStateManager.class_1033 arg, GlStateManager.class_1027 arg2) {
-		blendFunc(arg.field_5135, arg2.field_5089);
+		blendFunc(arg.value, arg2.value);
 	}
 
 	public static void blendFunc(int i, int j) {
-		if (i != BLEND.field_5049 || j != BLEND.field_5048) {
-			BLEND.field_5049 = i;
-			BLEND.field_5048 = j;
+		if (i != BLEND.sfactor || j != BLEND.dfactor) {
+			BLEND.sfactor = i;
+			BLEND.dfactor = j;
 			GL11.glBlendFunc(i, j);
 		}
 	}
@@ -166,15 +166,15 @@ public class GlStateManager {
 	public static void blendFuncSeparate(
 		GlStateManager.class_1033 arg, GlStateManager.class_1027 arg2, GlStateManager.class_1033 arg3, GlStateManager.class_1027 arg4
 	) {
-		blendFuncSeparate(arg.field_5135, arg2.field_5089, arg3.field_5135, arg4.field_5089);
+		blendFuncSeparate(arg.value, arg2.value, arg3.value, arg4.value);
 	}
 
 	public static void blendFuncSeparate(int i, int j, int k, int l) {
-		if (i != BLEND.field_5049 || j != BLEND.field_5048 || k != BLEND.field_5047 || l != BLEND.field_5046) {
-			BLEND.field_5049 = i;
-			BLEND.field_5048 = j;
-			BLEND.field_5047 = k;
-			BLEND.field_5046 = l;
+		if (i != BLEND.sfactor || j != BLEND.dfactor || k != BLEND.srcAlpha || l != BLEND.dstAlpha) {
+			BLEND.sfactor = i;
+			BLEND.dfactor = j;
+			BLEND.srcAlpha = k;
+			BLEND.dstAlpha = l;
 			GLX.glBlendFuncSeparate(i, j, k, l);
 		}
 	}
@@ -209,41 +209,41 @@ public class GlStateManager {
 	}
 
 	public static void enableFog() {
-		FOG.field_5100.method_4471();
+		FOG.capState.enable();
 	}
 
 	public static void disableFog() {
-		FOG.field_5100.method_4469();
+		FOG.capState.disable();
 	}
 
-	public static void fogMode(GlStateManager.class_1028 arg) {
-		fogMode(arg.field_5093);
+	public static void fogMode(GlStateManager.FogMode fogMode) {
+		fogMode(fogMode.glValue);
 	}
 
 	private static void fogMode(int i) {
-		if (i != FOG.field_5102) {
-			FOG.field_5102 = i;
+		if (i != FOG.mode) {
+			FOG.mode = i;
 			GL11.glFogi(2917, i);
 		}
 	}
 
 	public static void fogDensity(float f) {
-		if (f != FOG.field_5101) {
-			FOG.field_5101 = f;
+		if (f != FOG.density) {
+			FOG.density = f;
 			GL11.glFogf(2914, f);
 		}
 	}
 
 	public static void fogStart(float f) {
-		if (f != FOG.field_5099) {
-			FOG.field_5099 = f;
+		if (f != FOG.start) {
+			FOG.start = f;
 			GL11.glFogf(2915, f);
 		}
 	}
 
 	public static void fogEnd(float f) {
-		if (f != FOG.field_5098) {
-			FOG.field_5098 = f;
+		if (f != FOG.end) {
+			FOG.end = f;
 			GL11.glFogf(2916, f);
 		}
 	}
@@ -252,25 +252,25 @@ public class GlStateManager {
 		GL11.glFogfv(i, floatBuffer);
 	}
 
-	public static void fogi(int i, int j) {
+	public static void fog(int i, int j) {
 		GL11.glFogi(i, j);
 	}
 
 	public static void enableCull() {
-		CULL.field_5072.method_4471();
+		CULL.capState.enable();
 	}
 
 	public static void disableCull() {
-		CULL.field_5072.method_4469();
+		CULL.capState.disable();
 	}
 
-	public static void cullFace(GlStateManager.class_1024 arg) {
-		cullFace(arg.field_5069);
+	public static void cullFace(GlStateManager.FaceSides faceSides) {
+		cullFace(faceSides.glValue);
 	}
 
 	private static void cullFace(int i) {
-		if (i != CULL.field_5073) {
-			CULL.field_5073 = i;
+		if (i != CULL.mode) {
+			CULL.mode = i;
 			GL11.glCullFace(i);
 		}
 	}
@@ -280,80 +280,80 @@ public class GlStateManager {
 	}
 
 	public static void enablePolygonOffset() {
-		POLY_OFFSET.field_5123.method_4471();
+		POLY_OFFSET.capFill.enable();
 	}
 
 	public static void disablePolygonOffset() {
-		POLY_OFFSET.field_5123.method_4469();
+		POLY_OFFSET.capFill.disable();
 	}
 
 	public static void enableLineOffset() {
-		POLY_OFFSET.field_5121.method_4471();
+		POLY_OFFSET.capLine.enable();
 	}
 
 	public static void disableLineOffset() {
-		POLY_OFFSET.field_5121.method_4469();
+		POLY_OFFSET.capLine.disable();
 	}
 
 	public static void polygonOffset(float f, float g) {
-		if (f != POLY_OFFSET.field_5124 || g != POLY_OFFSET.field_5122) {
-			POLY_OFFSET.field_5124 = f;
-			POLY_OFFSET.field_5122 = g;
+		if (f != POLY_OFFSET.factor || g != POLY_OFFSET.units) {
+			POLY_OFFSET.factor = f;
+			POLY_OFFSET.units = g;
 			GL11.glPolygonOffset(f, g);
 		}
 	}
 
 	public static void enableColorLogicOp() {
-		COLOR_LOGIC.field_5058.method_4471();
+		COLOR_LOGIC.capState.enable();
 	}
 
 	public static void disableColorLogicOp() {
-		COLOR_LOGIC.field_5058.method_4469();
+		COLOR_LOGIC.capState.disable();
 	}
 
-	public static void logicOp(GlStateManager.class_1030 arg) {
-		logicOp(arg.field_5108);
+	public static void logicOp(GlStateManager.LogicOp logicOp) {
+		logicOp(logicOp.glValue);
 	}
 
 	public static void logicOp(int i) {
-		if (i != COLOR_LOGIC.field_5059) {
-			COLOR_LOGIC.field_5059 = i;
+		if (i != COLOR_LOGIC.opcode) {
+			COLOR_LOGIC.opcode = i;
 			GL11.glLogicOp(i);
 		}
 	}
 
-	public static void enableTexGen(GlStateManager.class_1036 arg) {
-		getTexGen(arg).field_5159.method_4471();
+	public static void enableTexGen(GlStateManager.TexCoord texCoord) {
+		getTexGen(texCoord).capState.enable();
 	}
 
-	public static void disableTexGen(GlStateManager.class_1036 arg) {
-		getTexGen(arg).field_5159.method_4469();
+	public static void disableTexGen(GlStateManager.TexCoord texCoord) {
+		getTexGen(texCoord).capState.disable();
 	}
 
-	public static void texGenMode(GlStateManager.class_1036 arg, int i) {
-		GlStateManager.class_1037 lv = getTexGen(arg);
-		if (i != lv.field_5160) {
-			lv.field_5160 = i;
-			GL11.glTexGeni(lv.field_5161, 9472, i);
+	public static void texGenMode(GlStateManager.TexCoord texCoord, int i) {
+		GlStateManager.TexGenCoordState texGenCoordState = getTexGen(texCoord);
+		if (i != texGenCoordState.mode) {
+			texGenCoordState.mode = i;
+			GL11.glTexGeni(texGenCoordState.coord, 9472, i);
 		}
 	}
 
-	public static void texGenParam(GlStateManager.class_1036 arg, int i, FloatBuffer floatBuffer) {
-		GL11.glTexGenfv(getTexGen(arg).field_5161, i, floatBuffer);
+	public static void texGenParam(GlStateManager.TexCoord texCoord, int i, FloatBuffer floatBuffer) {
+		GL11.glTexGenfv(getTexGen(texCoord).coord, i, floatBuffer);
 	}
 
-	private static GlStateManager.class_1037 getTexGen(GlStateManager.class_1036 arg) {
-		switch (arg) {
+	private static GlStateManager.TexGenCoordState getTexGen(GlStateManager.TexCoord texCoord) {
+		switch (texCoord) {
 			case field_5154:
-				return TEX_GEN.field_5162;
+				return TEX_GEN.s;
 			case field_5155:
-				return TEX_GEN.field_5163;
+				return TEX_GEN.t;
 			case field_5156:
-				return TEX_GEN.field_5164;
+				return TEX_GEN.r;
 			case field_5157:
-				return TEX_GEN.field_5165;
+				return TEX_GEN.q;
 			default:
-				return TEX_GEN.field_5162;
+				return TEX_GEN.s;
 		}
 	}
 
@@ -365,11 +365,11 @@ public class GlStateManager {
 	}
 
 	public static void enableTexture() {
-		TEXTURES[activeTexture].field_5166.method_4471();
+		TEXTURES[activeTexture].capState.enable();
 	}
 
 	public static void disableTexture() {
-		TEXTURES[activeTexture].field_5166.method_4469();
+		TEXTURES[activeTexture].capState.disable();
 	}
 
 	public static void texEnv(int i, int j, FloatBuffer floatBuffer) {
@@ -403,16 +403,16 @@ public class GlStateManager {
 	public static void deleteTexture(int i) {
 		GL11.glDeleteTextures(i);
 
-		for (GlStateManager.class_1039 lv : TEXTURES) {
-			if (lv.field_5167 == i) {
-				lv.field_5167 = -1;
+		for (GlStateManager.Texture2DState texture2DState : TEXTURES) {
+			if (texture2DState.boundTexture == i) {
+				texture2DState.boundTexture = -1;
 			}
 		}
 	}
 
 	public static void bindTexture(int i) {
-		if (i != TEXTURES[activeTexture].field_5167) {
-			TEXTURES[activeTexture].field_5167 = i;
+		if (i != TEXTURES[activeTexture].boundTexture) {
+			TEXTURES[activeTexture].boundTexture = i;
 			GL11.glBindTexture(3553, i);
 		}
 	}
@@ -434,11 +434,11 @@ public class GlStateManager {
 	}
 
 	public static void enableNormalize() {
-		NORMALIZE.method_4471();
+		NORMALIZE.enable();
 	}
 
 	public static void disableNormalize() {
-		NORMALIZE.method_4469();
+		NORMALIZE.disable();
 	}
 
 	public static void shadeModel(int i) {
@@ -449,36 +449,36 @@ public class GlStateManager {
 	}
 
 	public static void enableRescaleNormal() {
-		RESCALE_NORMAL.method_4471();
+		RESCALE_NORMAL.enable();
 	}
 
 	public static void disableRescaleNormal() {
-		RESCALE_NORMAL.method_4469();
+		RESCALE_NORMAL.disable();
 	}
 
 	public static void viewport(int i, int j, int k, int l) {
-		GlStateManager.class_1040.field_5169.field_5172 = i;
-		GlStateManager.class_1040.field_5169.field_5171 = j;
-		GlStateManager.class_1040.field_5169.field_5170 = k;
-		GlStateManager.class_1040.field_5169.field_5168 = l;
+		GlStateManager.Viewport.INSTANCE.x = i;
+		GlStateManager.Viewport.INSTANCE.y = j;
+		GlStateManager.Viewport.INSTANCE.width = k;
+		GlStateManager.Viewport.INSTANCE.height = l;
 		GL11.glViewport(i, j, k, l);
 	}
 
 	public static void colorMask(boolean bl, boolean bl2, boolean bl3, boolean bl4) {
-		if (bl != COLOR_MASK.field_5063 || bl2 != COLOR_MASK.field_5062 || bl3 != COLOR_MASK.field_5061 || bl4 != COLOR_MASK.field_5060) {
-			COLOR_MASK.field_5063 = bl;
-			COLOR_MASK.field_5062 = bl2;
-			COLOR_MASK.field_5061 = bl3;
-			COLOR_MASK.field_5060 = bl4;
+		if (bl != COLOR_MASK.red || bl2 != COLOR_MASK.green || bl3 != COLOR_MASK.blue || bl4 != COLOR_MASK.alpha) {
+			COLOR_MASK.red = bl;
+			COLOR_MASK.green = bl2;
+			COLOR_MASK.blue = bl3;
+			COLOR_MASK.alpha = bl4;
 			GL11.glColorMask(bl, bl2, bl3, bl4);
 		}
 	}
 
 	public static void stencilFunc(int i, int j, int k) {
-		if (i != STENCIL.field_5149.field_5148 || i != STENCIL.field_5149.field_16203 || i != STENCIL.field_5149.field_5147) {
-			STENCIL.field_5149.field_5148 = i;
-			STENCIL.field_5149.field_16203 = j;
-			STENCIL.field_5149.field_5147 = k;
+		if (i != STENCIL.subState.func || i != STENCIL.subState.field_16203 || i != STENCIL.subState.field_5147) {
+			STENCIL.subState.func = i;
+			STENCIL.subState.field_16203 = j;
+			STENCIL.subState.field_5147 = k;
 			GL11.glStencilFunc(i, j, k);
 		}
 	}
@@ -500,18 +500,18 @@ public class GlStateManager {
 	}
 
 	public static void clearDepth(double d) {
-		if (d != CLEAR.field_5053) {
-			CLEAR.field_5053 = d;
+		if (d != CLEAR.clearDepth) {
+			CLEAR.clearDepth = d;
 			GL11.glClearDepth(d);
 		}
 	}
 
 	public static void clearColor(float f, float g, float h, float i) {
-		if (f != CLEAR.field_5052.field_5057 || g != CLEAR.field_5052.field_5056 || h != CLEAR.field_5052.field_5055 || i != CLEAR.field_5052.field_5054) {
-			CLEAR.field_5052.field_5057 = f;
-			CLEAR.field_5052.field_5056 = g;
-			CLEAR.field_5052.field_5055 = h;
-			CLEAR.field_5052.field_5054 = i;
+		if (f != CLEAR.clearColor.red || g != CLEAR.clearColor.green || h != CLEAR.clearColor.blue || i != CLEAR.clearColor.alpha) {
+			CLEAR.clearColor.red = f;
+			CLEAR.clearColor.green = g;
+			CLEAR.clearColor.blue = h;
+			CLEAR.clearColor.alpha = i;
 			GL11.glClearColor(f, g, h, i);
 		}
 	}
@@ -550,13 +550,13 @@ public class GlStateManager {
 		GL11.glGetFloatv(i, floatBuffer);
 	}
 
-	public static class_1159 getMatrix4f(int i) {
+	public static Matrix4f getMatrix4f(int i) {
 		GL11.glGetFloatv(i, MATRIX_BUFFER);
 		MATRIX_BUFFER.rewind();
-		class_1159 lv = new class_1159();
-		lv.method_4928(MATRIX_BUFFER);
+		Matrix4f matrix4f = new Matrix4f();
+		matrix4f.setFromBuffer(MATRIX_BUFFER);
 		MATRIX_BUFFER.rewind();
-		return lv;
+		return matrix4f;
 	}
 
 	public static void ortho(double d, double e, double f, double g, double h, double i) {
@@ -591,18 +591,18 @@ public class GlStateManager {
 		GL11.glMultMatrixf(floatBuffer);
 	}
 
-	public static void multMatrix(class_1159 arg) {
-		arg.method_4932(MATRIX_BUFFER);
+	public static void multMatrix(Matrix4f matrix4f) {
+		matrix4f.putIntoBuffer(MATRIX_BUFFER);
 		MATRIX_BUFFER.rewind();
 		GL11.glMultMatrixf(MATRIX_BUFFER);
 	}
 
 	public static void color4f(float f, float g, float h, float i) {
-		if (f != COLOR.field_5057 || g != COLOR.field_5056 || h != COLOR.field_5055 || i != COLOR.field_5054) {
-			COLOR.field_5057 = f;
-			COLOR.field_5056 = g;
-			COLOR.field_5055 = h;
-			COLOR.field_5054 = i;
+		if (f != COLOR.red || g != COLOR.green || h != COLOR.blue || i != COLOR.alpha) {
+			COLOR.red = f;
+			COLOR.green = g;
+			COLOR.blue = h;
+			COLOR.alpha = i;
 			GL11.glColor4f(f, g, h, i);
 		}
 	}
@@ -620,10 +620,10 @@ public class GlStateManager {
 	}
 
 	public static void clearCurrentColor() {
-		COLOR.field_5057 = -1.0F;
-		COLOR.field_5056 = -1.0F;
-		COLOR.field_5055 = -1.0F;
-		COLOR.field_5054 = -1.0F;
+		COLOR.red = -1.0F;
+		COLOR.green = -1.0F;
+		COLOR.blue = -1.0F;
+		COLOR.alpha = -1.0F;
 	}
 
 	public static void normalPointer(int i, int j, int k) {
@@ -734,207 +734,174 @@ public class GlStateManager {
 		return GL11.glGetInteger(i);
 	}
 
-	public static void setProfile(GlStateManager.class_1032 arg) {
-		arg.method_4472();
+	public static void setProfile(GlStateManager.RenderMode renderMode) {
+		renderMode.begin();
 	}
 
-	public static void unsetProfile(GlStateManager.class_1032 arg) {
-		arg.method_4473();
-	}
-
-	@Environment(EnvType.CLIENT)
-	static class class_1016 {
-		public final GlStateManager.class_1018 field_5042 = new GlStateManager.class_1018(3008);
-		public int field_5044 = 519;
-		public float field_5043 = -1.0F;
-
-		private class_1016() {
-		}
+	public static void unsetProfile(GlStateManager.RenderMode renderMode) {
+		renderMode.end();
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class class_1017 {
-		public final GlStateManager.class_1018 field_5045 = new GlStateManager.class_1018(3042);
-		public int field_5049 = 1;
-		public int field_5048 = 0;
-		public int field_5047 = 1;
-		public int field_5046 = 0;
+	static class AlphaTestState {
+		public final GlStateManager.CapabilityTracker capState = new GlStateManager.CapabilityTracker(3008);
+		public int func = 519;
+		public float ref = -1.0F;
 
-		private class_1017() {
+		private AlphaTestState() {
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class class_1018 {
-		private final int field_5050;
-		private boolean field_5051;
+	static class BlendFuncState {
+		public final GlStateManager.CapabilityTracker capState = new GlStateManager.CapabilityTracker(3042);
+		public int sfactor = 1;
+		public int dfactor = 0;
+		public int srcAlpha = 1;
+		public int dstAlpha = 0;
 
-		public class_1018(int i) {
-			this.field_5050 = i;
+		private BlendFuncState() {
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	static class CapabilityTracker {
+		private final int cap;
+		private boolean state;
+
+		public CapabilityTracker(int i) {
+			this.cap = i;
 		}
 
-		public void method_4469() {
-			this.method_4470(false);
+		public void disable() {
+			this.setState(false);
 		}
 
-		public void method_4471() {
-			this.method_4470(true);
+		public void enable() {
+			this.setState(true);
 		}
 
-		public void method_4470(boolean bl) {
-			if (bl != this.field_5051) {
-				this.field_5051 = bl;
+		public void setState(boolean bl) {
+			if (bl != this.state) {
+				this.state = bl;
 				if (bl) {
-					GL11.glEnable(this.field_5050);
+					GL11.glEnable(this.cap);
 				} else {
-					GL11.glDisable(this.field_5050);
+					GL11.glDisable(this.cap);
 				}
 			}
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class class_1019 {
-		public double field_5053 = 1.0;
-		public final GlStateManager.class_1020 field_5052 = new GlStateManager.class_1020(0.0F, 0.0F, 0.0F, 0.0F);
+	static class ClearState {
+		public double clearDepth = 1.0;
+		public final GlStateManager.Color4 clearColor = new GlStateManager.Color4(0.0F, 0.0F, 0.0F, 0.0F);
 		public int field_16202;
 
-		private class_1019() {
+		private ClearState() {
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class class_1020 {
-		public float field_5057 = 1.0F;
-		public float field_5056 = 1.0F;
-		public float field_5055 = 1.0F;
-		public float field_5054 = 1.0F;
+	static class Color4 {
+		public float red = 1.0F;
+		public float green = 1.0F;
+		public float blue = 1.0F;
+		public float alpha = 1.0F;
 
-		public class_1020() {
+		public Color4() {
 			this(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 
-		public class_1020(float f, float g, float h, float i) {
-			this.field_5057 = f;
-			this.field_5056 = g;
-			this.field_5055 = h;
-			this.field_5054 = i;
+		public Color4(float f, float g, float h, float i) {
+			this.red = f;
+			this.green = g;
+			this.blue = h;
+			this.alpha = i;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class class_1021 {
-		public final GlStateManager.class_1018 field_5058 = new GlStateManager.class_1018(3058);
-		public int field_5059 = 5379;
+	static class ColorMask {
+		public boolean red = true;
+		public boolean green = true;
+		public boolean blue = true;
+		public boolean alpha = true;
 
-		private class_1021() {
+		private ColorMask() {
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class class_1022 {
-		public boolean field_5063 = true;
-		public boolean field_5062 = true;
-		public boolean field_5061 = true;
-		public boolean field_5060 = true;
+	static class ColorMaterialState {
+		public final GlStateManager.CapabilityTracker capState = new GlStateManager.CapabilityTracker(2903);
+		public int face = 1032;
+		public int mode = 5634;
 
-		private class_1022() {
+		private ColorMaterialState() {
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class class_1023 {
-		public final GlStateManager.class_1018 field_5064 = new GlStateManager.class_1018(2903);
-		public int field_5066 = 1032;
-		public int field_5065 = 5634;
+	static class CullFaceState {
+		public final GlStateManager.CapabilityTracker capState = new GlStateManager.CapabilityTracker(2884);
+		public int mode = 1029;
 
-		private class_1023() {
+		private CullFaceState() {
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static enum class_1024 {
+	static class DepthTestState {
+		public final GlStateManager.CapabilityTracker capState = new GlStateManager.CapabilityTracker(2929);
+		public boolean mask = true;
+		public int func = 513;
+
+		private DepthTestState() {
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static enum FaceSides {
 		field_5068(1028),
 		field_5070(1029),
 		field_5071(1032);
 
-		public final int field_5069;
+		public final int glValue;
 
-		private class_1024(int j) {
-			this.field_5069 = j;
+		private FaceSides(int j) {
+			this.glValue = j;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class class_1025 {
-		public final GlStateManager.class_1018 field_5072 = new GlStateManager.class_1018(2884);
-		public int field_5073 = 1029;
-
-		private class_1025() {
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	static class class_1026 {
-		public final GlStateManager.class_1018 field_5074 = new GlStateManager.class_1018(2929);
-		public boolean field_5076 = true;
-		public int field_5075 = 513;
-
-		private class_1026() {
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static enum class_1027 {
-		field_5086(32771),
-		field_5091(32769),
-		field_5092(772),
-		field_5077(774),
-		field_5078(1),
-		field_5079(32772),
-		field_5080(32770),
-		field_5087(773),
-		field_5085(775),
-		field_5088(771),
-		field_5083(769),
-		field_5082(770),
-		field_5081(768),
-		field_5084(0);
-
-		public final int field_5089;
-
-		private class_1027(int j) {
-			this.field_5089 = j;
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static enum class_1028 {
+	public static enum FogMode {
 		field_5095(9729),
 		field_5096(2048),
 		field_5097(2049);
 
-		public final int field_5093;
+		public final int glValue;
 
-		private class_1028(int j) {
-			this.field_5093 = j;
+		private FogMode(int j) {
+			this.glValue = j;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class class_1029 {
-		public final GlStateManager.class_1018 field_5100 = new GlStateManager.class_1018(2912);
-		public int field_5102 = 2048;
-		public float field_5101 = 1.0F;
-		public float field_5099;
-		public float field_5098 = 1.0F;
+	static class FogState {
+		public final GlStateManager.CapabilityTracker capState = new GlStateManager.CapabilityTracker(2912);
+		public int mode = 2048;
+		public float density = 1.0F;
+		public float start;
+		public float end = 1.0F;
 
-		private class_1029() {
+		private FogState() {
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static enum class_1030 {
+	public static enum LogicOp {
 		field_5120(5377),
 		field_5112(5380),
 		field_5117(5378),
@@ -952,44 +919,53 @@ public class GlStateManager {
 		field_5107(5391),
 		field_5111(5382);
 
-		public final int field_5108;
+		public final int glValue;
 
-		private class_1030(int j) {
-			this.field_5108 = j;
+		private LogicOp(int j) {
+			this.glValue = j;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class class_1031 {
-		public final GlStateManager.class_1018 field_5123 = new GlStateManager.class_1018(32823);
-		public final GlStateManager.class_1018 field_5121 = new GlStateManager.class_1018(10754);
-		public float field_5124;
-		public float field_5122;
+	static class LogicOpState {
+		public final GlStateManager.CapabilityTracker capState = new GlStateManager.CapabilityTracker(3058);
+		public int opcode = 5379;
 
-		private class_1031() {
+		private LogicOpState() {
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static enum class_1032 {
-		field_5127 {
+	static class PolygonOffsetState {
+		public final GlStateManager.CapabilityTracker capFill = new GlStateManager.CapabilityTracker(32823);
+		public final GlStateManager.CapabilityTracker capLine = new GlStateManager.CapabilityTracker(10754);
+		public float factor;
+		public float units;
+
+		private PolygonOffsetState() {
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static enum RenderMode {
+		DEFAULT {
 			@Override
-			public void method_4472() {
+			public void begin() {
 				GlStateManager.disableAlphaTest();
 				GlStateManager.alphaFunc(519, 0.0F);
 				GlStateManager.disableLighting();
-				GlStateManager.lightModel(2899, class_308.method_1451(0.2F, 0.2F, 0.2F, 1.0F));
+				GlStateManager.lightModel(2899, GuiLighting.singletonBuffer(0.2F, 0.2F, 0.2F, 1.0F));
 
 				for (int i = 0; i < 8; i++) {
 					GlStateManager.disableLight(i);
-					GlStateManager.light(16384 + i, 4608, class_308.method_1451(0.0F, 0.0F, 0.0F, 1.0F));
-					GlStateManager.light(16384 + i, 4611, class_308.method_1451(0.0F, 0.0F, 1.0F, 0.0F));
+					GlStateManager.light(16384 + i, 4608, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 1.0F));
+					GlStateManager.light(16384 + i, 4611, GuiLighting.singletonBuffer(0.0F, 0.0F, 1.0F, 0.0F));
 					if (i == 0) {
-						GlStateManager.light(16384 + i, 4609, class_308.method_1451(1.0F, 1.0F, 1.0F, 1.0F));
-						GlStateManager.light(16384 + i, 4610, class_308.method_1451(1.0F, 1.0F, 1.0F, 1.0F));
+						GlStateManager.light(16384 + i, 4609, GuiLighting.singletonBuffer(1.0F, 1.0F, 1.0F, 1.0F));
+						GlStateManager.light(16384 + i, 4610, GuiLighting.singletonBuffer(1.0F, 1.0F, 1.0F, 1.0F));
 					} else {
-						GlStateManager.light(16384 + i, 4609, class_308.method_1451(0.0F, 0.0F, 0.0F, 1.0F));
-						GlStateManager.light(16384 + i, 4610, class_308.method_1451(0.0F, 0.0F, 0.0F, 1.0F));
+						GlStateManager.light(16384 + i, 4609, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 1.0F));
+						GlStateManager.light(16384 + i, 4610, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 1.0F));
 					}
 				}
 
@@ -999,40 +975,40 @@ public class GlStateManager {
 				GlStateManager.depthFunc(513);
 				GlStateManager.depthMask(true);
 				GlStateManager.disableBlend();
-				GlStateManager.blendFunc(GlStateManager.class_1033.field_5140, GlStateManager.class_1027.field_5084);
+				GlStateManager.blendFunc(GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO);
 				GlStateManager.blendFuncSeparate(
-					GlStateManager.class_1033.field_5140, GlStateManager.class_1027.field_5084, GlStateManager.class_1033.field_5140, GlStateManager.class_1027.field_5084
+					GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
 				);
 				GlStateManager.blendEquation(32774);
 				GlStateManager.disableFog();
-				GlStateManager.fogi(2917, 2048);
+				GlStateManager.fog(2917, 2048);
 				GlStateManager.fogDensity(1.0F);
 				GlStateManager.fogStart(0.0F);
 				GlStateManager.fogEnd(1.0F);
-				GlStateManager.fog(2918, class_308.method_1451(0.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.fog(2918, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
 				if (GL.getCapabilities().GL_NV_fog_distance) {
-					GlStateManager.fogi(2917, 34140);
+					GlStateManager.fog(2917, 34140);
 				}
 
 				GlStateManager.polygonOffset(0.0F, 0.0F);
 				GlStateManager.disableColorLogicOp();
 				GlStateManager.logicOp(5379);
-				GlStateManager.disableTexGen(GlStateManager.class_1036.field_5154);
-				GlStateManager.texGenMode(GlStateManager.class_1036.field_5154, 9216);
-				GlStateManager.texGenParam(GlStateManager.class_1036.field_5154, 9474, class_308.method_1451(1.0F, 0.0F, 0.0F, 0.0F));
-				GlStateManager.texGenParam(GlStateManager.class_1036.field_5154, 9217, class_308.method_1451(1.0F, 0.0F, 0.0F, 0.0F));
-				GlStateManager.disableTexGen(GlStateManager.class_1036.field_5155);
-				GlStateManager.texGenMode(GlStateManager.class_1036.field_5155, 9216);
-				GlStateManager.texGenParam(GlStateManager.class_1036.field_5155, 9474, class_308.method_1451(0.0F, 1.0F, 0.0F, 0.0F));
-				GlStateManager.texGenParam(GlStateManager.class_1036.field_5155, 9217, class_308.method_1451(0.0F, 1.0F, 0.0F, 0.0F));
-				GlStateManager.disableTexGen(GlStateManager.class_1036.field_5156);
-				GlStateManager.texGenMode(GlStateManager.class_1036.field_5156, 9216);
-				GlStateManager.texGenParam(GlStateManager.class_1036.field_5156, 9474, class_308.method_1451(0.0F, 0.0F, 0.0F, 0.0F));
-				GlStateManager.texGenParam(GlStateManager.class_1036.field_5156, 9217, class_308.method_1451(0.0F, 0.0F, 0.0F, 0.0F));
-				GlStateManager.disableTexGen(GlStateManager.class_1036.field_5157);
-				GlStateManager.texGenMode(GlStateManager.class_1036.field_5157, 9216);
-				GlStateManager.texGenParam(GlStateManager.class_1036.field_5157, 9474, class_308.method_1451(0.0F, 0.0F, 0.0F, 0.0F));
-				GlStateManager.texGenParam(GlStateManager.class_1036.field_5157, 9217, class_308.method_1451(0.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.disableTexGen(GlStateManager.TexCoord.field_5154);
+				GlStateManager.texGenMode(GlStateManager.TexCoord.field_5154, 9216);
+				GlStateManager.texGenParam(GlStateManager.TexCoord.field_5154, 9474, GuiLighting.singletonBuffer(1.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.texGenParam(GlStateManager.TexCoord.field_5154, 9217, GuiLighting.singletonBuffer(1.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.disableTexGen(GlStateManager.TexCoord.field_5155);
+				GlStateManager.texGenMode(GlStateManager.TexCoord.field_5155, 9216);
+				GlStateManager.texGenParam(GlStateManager.TexCoord.field_5155, 9474, GuiLighting.singletonBuffer(0.0F, 1.0F, 0.0F, 0.0F));
+				GlStateManager.texGenParam(GlStateManager.TexCoord.field_5155, 9217, GuiLighting.singletonBuffer(0.0F, 1.0F, 0.0F, 0.0F));
+				GlStateManager.disableTexGen(GlStateManager.TexCoord.field_5156);
+				GlStateManager.texGenMode(GlStateManager.TexCoord.field_5156, 9216);
+				GlStateManager.texGenParam(GlStateManager.TexCoord.field_5156, 9474, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.texGenParam(GlStateManager.TexCoord.field_5156, 9217, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.disableTexGen(GlStateManager.TexCoord.field_5157);
+				GlStateManager.texGenMode(GlStateManager.TexCoord.field_5157, 9216);
+				GlStateManager.texGenParam(GlStateManager.TexCoord.field_5157, 9474, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.texGenParam(GlStateManager.TexCoord.field_5157, 9217, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
 				GlStateManager.activeTexture(0);
 				GlStateManager.texParameter(3553, 10240, 9729);
 				GlStateManager.texParameter(3553, 10241, 9986);
@@ -1043,7 +1019,7 @@ public class GlStateManager {
 				GlStateManager.texParameter(3553, 33082, -1000);
 				GlStateManager.texParameter(3553, 34049, 0.0F);
 				GlStateManager.texEnv(8960, 8704, 8448);
-				GlStateManager.texEnv(8960, 8705, class_308.method_1451(0.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.texEnv(8960, 8705, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
 				GlStateManager.texEnv(8960, 34161, 8448);
 				GlStateManager.texEnv(8960, 34162, 8448);
 				GlStateManager.texEnv(8960, 34176, 5890);
@@ -1072,96 +1048,71 @@ public class GlStateManager {
 			}
 
 			@Override
-			public void method_4473() {
+			public void end() {
 			}
 		},
-		field_5128 {
+		PLAYER_SKIN {
 			@Override
-			public void method_4472() {
+			public void begin() {
 				GlStateManager.enableBlend();
 				GlStateManager.blendFuncSeparate(770, 771, 1, 0);
 			}
 
 			@Override
-			public void method_4473() {
+			public void end() {
 				GlStateManager.disableBlend();
 			}
 		},
-		field_5125 {
+		TRANSPARENT_MODEL {
 			@Override
-			public void method_4472() {
+			public void begin() {
 				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 0.15F);
 				GlStateManager.depthMask(false);
 				GlStateManager.enableBlend();
-				GlStateManager.blendFunc(GlStateManager.class_1033.field_5138, GlStateManager.class_1027.field_5088);
+				GlStateManager.blendFunc(GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA);
 				GlStateManager.alphaFunc(516, 0.003921569F);
 			}
 
 			@Override
-			public void method_4473() {
+			public void end() {
 				GlStateManager.disableBlend();
 				GlStateManager.alphaFunc(516, 0.1F);
 				GlStateManager.depthMask(true);
 			}
 		};
 
-		private class_1032() {
+		private RenderMode() {
 		}
 
-		public abstract void method_4472();
+		public abstract void begin();
 
-		public abstract void method_4473();
+		public abstract void end();
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static enum class_1033 {
-		field_5136(32771),
-		field_5130(32769),
-		field_5131(772),
-		field_5139(774),
-		field_5140(1),
-		field_5133(32772),
-		field_5134(32770),
-		field_5137(773),
-		field_5142(775),
-		field_5132(771),
-		field_5143(769),
-		field_5138(770),
-		field_5144(776),
-		field_5145(768),
-		field_5146(0);
-
-		public final int field_5135;
-
-		private class_1033(int j) {
-			this.field_5135 = j;
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	static class class_1034 {
-		public int field_5148 = 519;
-		public int field_16203;
-		public int field_5147 = -1;
-
-		private class_1034() {
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	static class class_1035 {
-		public final GlStateManager.class_1034 field_5149 = new GlStateManager.class_1034();
+	static class StencilState {
+		public final GlStateManager.StencilSubState subState = new GlStateManager.StencilSubState();
 		public int field_5153 = -1;
 		public int field_5152 = 7680;
 		public int field_5151 = 7680;
 		public int field_5150 = 7680;
 
-		private class_1035() {
+		private StencilState() {
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static enum class_1036 {
+	static class StencilSubState {
+		public int func = 519;
+		public int field_16203;
+		public int field_5147 = -1;
+
+		private StencilSubState() {
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static enum TexCoord {
 		field_5154,
 		field_5155,
 		field_5156,
@@ -1169,44 +1120,93 @@ public class GlStateManager {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class class_1037 {
-		public final GlStateManager.class_1018 field_5159;
-		public final int field_5161;
-		public int field_5160 = -1;
+	static class TexGenCoordState {
+		public final GlStateManager.CapabilityTracker capState;
+		public final int coord;
+		public int mode = -1;
 
-		public class_1037(int i, int j) {
-			this.field_5161 = i;
-			this.field_5159 = new GlStateManager.class_1018(j);
+		public TexGenCoordState(int i, int j) {
+			this.coord = i;
+			this.capState = new GlStateManager.CapabilityTracker(j);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class class_1038 {
-		public final GlStateManager.class_1037 field_5162 = new GlStateManager.class_1037(8192, 3168);
-		public final GlStateManager.class_1037 field_5163 = new GlStateManager.class_1037(8193, 3169);
-		public final GlStateManager.class_1037 field_5164 = new GlStateManager.class_1037(8194, 3170);
-		public final GlStateManager.class_1037 field_5165 = new GlStateManager.class_1037(8195, 3171);
+	static class TexGenState {
+		public final GlStateManager.TexGenCoordState s = new GlStateManager.TexGenCoordState(8192, 3168);
+		public final GlStateManager.TexGenCoordState t = new GlStateManager.TexGenCoordState(8193, 3169);
+		public final GlStateManager.TexGenCoordState r = new GlStateManager.TexGenCoordState(8194, 3170);
+		public final GlStateManager.TexGenCoordState q = new GlStateManager.TexGenCoordState(8195, 3171);
 
-		private class_1038() {
+		private TexGenState() {
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class class_1039 {
-		public final GlStateManager.class_1018 field_5166 = new GlStateManager.class_1018(3553);
-		public int field_5167;
+	static class Texture2DState {
+		public final GlStateManager.CapabilityTracker capState = new GlStateManager.CapabilityTracker(3553);
+		public int boundTexture;
 
-		private class_1039() {
+		private Texture2DState() {
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static enum class_1040 {
-		field_5169;
+	public static enum Viewport {
+		INSTANCE;
 
-		protected int field_5172;
-		protected int field_5171;
-		protected int field_5170;
-		protected int field_5168;
+		protected int x;
+		protected int y;
+		protected int width;
+		protected int height;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static enum class_1027 {
+		CONSTANT_ALPHA(32771),
+		CONSTANT_COLOR(32769),
+		DST_ALPHA(772),
+		DST_COLOR(774),
+		ONE(1),
+		ONE_MINUS_CONSTANT_ALPHA(32772),
+		ONE_MINUS_CONSTANT_COLOR(32770),
+		ONE_MINUS_DST_ALPHA(773),
+		ONE_MINUS_DST_COLOR(775),
+		ONE_MINUS_SRC_ALPHA(771),
+		ONE_MINUS_SRC_COLOR(769),
+		SRC_ALPHA(770),
+		SRC_COLOR(768),
+		ZERO(0);
+
+		public final int value;
+
+		private class_1027(int j) {
+			this.value = j;
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static enum class_1033 {
+		CONSTANT_ALPHA(32771),
+		CONSTANT_COLOR(32769),
+		DST_ALPHA(772),
+		DST_COLOR(774),
+		ONE(1),
+		ONE_MINUS_CONSTANT_ALPHA(32772),
+		ONE_MINUS_CONSTANT_COLOR(32770),
+		ONE_MINUS_DST_ALPHA(773),
+		ONE_MINUS_DST_COLOR(775),
+		ONE_MINUS_SRC_ALPHA(771),
+		ONE_MINUS_SRC_COLOR(769),
+		SRC_ALPHA(770),
+		SRC_ALPHA_SATURATE(776),
+		SRC_COLOR(768),
+		ZERO(0);
+
+		public final int value;
+
+		private class_1033(int j) {
+			this.value = j;
+		}
 	}
 }

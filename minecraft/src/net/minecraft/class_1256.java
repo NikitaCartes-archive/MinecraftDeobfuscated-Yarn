@@ -9,26 +9,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import net.minecraft.world.chunk.ChunkPos;
+import net.minecraft.world.chunk.storage.RegionFile;
+import net.minecraft.world.dimension.DimensionType;
 
 public class class_1256 {
 	private static final Pattern field_5752 = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
 	private final File field_5754;
-	private final Map<class_2874, List<class_1923>> field_5753;
+	private final Map<DimensionType, List<ChunkPos>> field_5753;
 
 	public class_1256(File file) {
 		this.field_5754 = file;
-		Builder<class_2874, List<class_1923>> builder = ImmutableMap.builder();
+		Builder<DimensionType, List<ChunkPos>> builder = ImmutableMap.builder();
 
-		for (class_2874 lv : class_2874.method_12482()) {
-			builder.put(lv, this.method_5389(lv));
+		for (DimensionType dimensionType : DimensionType.getAll()) {
+			builder.put(dimensionType, this.method_5389(dimensionType));
 		}
 
 		this.field_5753 = builder.build();
 	}
 
-	private List<class_1923> method_5389(class_2874 arg) {
-		List<class_1923> list = Lists.<class_1923>newArrayList();
-		File file = arg.method_12488(this.field_5754);
+	private List<ChunkPos> method_5389(DimensionType dimensionType) {
+		List<ChunkPos> list = Lists.<ChunkPos>newArrayList();
+		File file = dimensionType.getFile(this.field_5754);
 		List<File> list2 = this.method_5392(file);
 
 		for (File file2 : list2) {
@@ -39,9 +42,9 @@ public class class_1256 {
 		return list;
 	}
 
-	private List<class_1923> method_5388(File file) {
-		List<class_1923> list = Lists.<class_1923>newArrayList();
-		class_2861 lv = null;
+	private List<ChunkPos> method_5388(File file) {
+		List<ChunkPos> list = Lists.<ChunkPos>newArrayList();
+		RegionFile regionFile = null;
 
 		try {
 			Matcher matcher = field_5752.matcher(file.getName());
@@ -51,21 +54,21 @@ public class class_1256 {
 
 			int i = Integer.parseInt(matcher.group(1)) << 5;
 			int j = Integer.parseInt(matcher.group(2)) << 5;
-			lv = new class_2861(file);
+			regionFile = new RegionFile(file);
 
 			for (int k = 0; k < 32; k++) {
 				for (int l = 0; l < 32; l++) {
-					if (lv.method_12420(k, l)) {
-						list.add(new class_1923(k + i, l + j));
+					if (regionFile.method_12420(k, l)) {
+						list.add(new ChunkPos(k + i, l + j));
 					}
 				}
 			}
 		} catch (Throwable var18) {
-			return Lists.<class_1923>newArrayList();
+			return Lists.<ChunkPos>newArrayList();
 		} finally {
-			if (lv != null) {
+			if (regionFile != null) {
 				try {
-					lv.method_12429();
+					regionFile.close();
 				} catch (IOException var17) {
 				}
 			}
@@ -80,7 +83,7 @@ public class class_1256 {
 		return files != null ? Lists.<File>newArrayList(files) : Lists.<File>newArrayList();
 	}
 
-	public List<class_1923> method_5391(class_2874 arg) {
-		return (List<class_1923>)this.field_5753.get(arg);
+	public List<ChunkPos> method_5391(DimensionType dimensionType) {
+		return (List<ChunkPos>)this.field_5753.get(dimensionType);
 	}
 }

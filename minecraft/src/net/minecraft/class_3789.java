@@ -1,64 +1,76 @@
 package net.minecraft;
 
 import java.util.Random;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sortme.StructurePiece;
+import net.minecraft.sortme.structures.StructureManager;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MutableIntBoundingBox;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.chunk.ChunkPos;
+import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.loot.LootTables;
 
 public class class_3789 {
 	public static class class_3339 extends class_3443 {
-		public class_3339(class_2338 arg) {
-			super(class_3773.field_16960, 0);
-			this.field_15315 = new class_3341(arg.method_10263(), arg.method_10264(), arg.method_10260(), arg.method_10263(), arg.method_10264(), arg.method_10260());
+		public class_3339(BlockPos blockPos) {
+			super(StructurePiece.field_16960, 0);
+			this.structureBounds = new MutableIntBoundingBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX(), blockPos.getY(), blockPos.getZ());
 		}
 
-		public class_3339(class_3485 arg, class_2487 arg2) {
-			super(class_3773.field_16960, arg2);
-		}
-
-		@Override
-		protected void method_14943(class_2487 arg) {
+		public class_3339(StructureManager structureManager, CompoundTag compoundTag) {
+			super(StructurePiece.field_16960, compoundTag);
 		}
 
 		@Override
-		public boolean method_14931(class_1936 arg, Random random, class_3341 arg2, class_1923 arg3) {
-			int i = arg.method_8589(class_2902.class_2903.field_13195, this.field_15315.field_14381, this.field_15315.field_14379);
-			class_2338.class_2339 lv = new class_2338.class_2339(this.field_15315.field_14381, i, this.field_15315.field_14379);
+		protected void toNbt(CompoundTag compoundTag) {
+		}
 
-			while (lv.method_10264() > 0) {
-				class_2680 lv2 = arg.method_8320(lv);
-				class_2680 lv3 = arg.method_8320(lv.method_10074());
-				if (lv3 == class_2246.field_9979.method_9564()
-					|| lv3 == class_2246.field_10340.method_9564()
-					|| lv3 == class_2246.field_10115.method_9564()
-					|| lv3 == class_2246.field_10474.method_9564()
-					|| lv3 == class_2246.field_10508.method_9564()) {
-					class_2680 lv4 = !lv2.method_11588() && !this.method_14655(lv2) ? lv2 : class_2246.field_10102.method_9564();
+		@Override
+		public boolean method_14931(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+			int i = iWorld.getTop(Heightmap.Type.OCEAN_FLOOR_WG, this.structureBounds.minX, this.structureBounds.minZ);
+			BlockPos.Mutable mutable = new BlockPos.Mutable(this.structureBounds.minX, i, this.structureBounds.minZ);
 
-					for (class_2350 lv5 : class_2350.values()) {
-						class_2338 lv6 = lv.method_10093(lv5);
-						class_2680 lv7 = arg.method_8320(lv6);
-						if (lv7.method_11588() || this.method_14655(lv7)) {
-							class_2338 lv8 = lv6.method_10074();
-							class_2680 lv9 = arg.method_8320(lv8);
-							if ((lv9.method_11588() || this.method_14655(lv9)) && lv5 != class_2350.field_11036) {
-								arg.method_8652(lv6, lv3, 3);
+			while (mutable.getY() > 0) {
+				BlockState blockState = iWorld.getBlockState(mutable);
+				BlockState blockState2 = iWorld.getBlockState(mutable.down());
+				if (blockState2 == Blocks.field_9979.getDefaultState()
+					|| blockState2 == Blocks.field_10340.getDefaultState()
+					|| blockState2 == Blocks.field_10115.getDefaultState()
+					|| blockState2 == Blocks.field_10474.getDefaultState()
+					|| blockState2 == Blocks.field_10508.getDefaultState()) {
+					BlockState blockState3 = !blockState.isAir() && !this.method_14655(blockState) ? blockState : Blocks.field_10102.getDefaultState();
+
+					for (Direction direction : Direction.values()) {
+						BlockPos blockPos = mutable.offset(direction);
+						BlockState blockState4 = iWorld.getBlockState(blockPos);
+						if (blockState4.isAir() || this.method_14655(blockState4)) {
+							BlockPos blockPos2 = blockPos.down();
+							BlockState blockState5 = iWorld.getBlockState(blockPos2);
+							if ((blockState5.isAir() || this.method_14655(blockState5)) && direction != Direction.UP) {
+								iWorld.setBlockState(blockPos, blockState2, 3);
 							} else {
-								arg.method_8652(lv6, lv4, 3);
+								iWorld.setBlockState(blockPos, blockState3, 3);
 							}
 						}
 					}
 
-					return this.method_14921(
-						arg, arg2, random, new class_2338(this.field_15315.field_14381, lv.method_10264(), this.field_15315.field_14379), class_39.field_251, null
+					return this.addChest(
+						iWorld, mutableIntBoundingBox, random, new BlockPos(this.structureBounds.minX, mutable.getY(), this.structureBounds.minZ), LootTables.field_251, null
 					);
 				}
 
-				lv.method_10100(0, -1, 0);
+				mutable.method_10100(0, -1, 0);
 			}
 
 			return false;
 		}
 
-		private boolean method_14655(class_2680 arg) {
-			return arg == class_2246.field_10382.method_9564() || arg == class_2246.field_10164.method_9564();
+		private boolean method_14655(BlockState blockState) {
+			return blockState == Blocks.field_10382.getDefaultState() || blockState == Blocks.field_10164.getDefaultState();
 		}
 	}
 }

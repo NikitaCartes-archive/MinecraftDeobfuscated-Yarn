@@ -1,18 +1,20 @@
 package net.minecraft;
 
+import net.minecraft.container.PropertyDelegate;
+
 public abstract class class_3915 {
 	private int field_17307;
 
-	public static class_3915 method_17405(class_3913 arg, int i) {
+	public static class_3915 method_17405(PropertyDelegate propertyDelegate, int i) {
 		return new class_3915() {
 			@Override
 			public int method_17407() {
-				return arg.method_17390(i);
+				return propertyDelegate.get(i);
 			}
 
 			@Override
 			public void method_17404(int i) {
-				arg.method_17391(i, i);
+				propertyDelegate.set(i, i);
 			}
 		};
 	}

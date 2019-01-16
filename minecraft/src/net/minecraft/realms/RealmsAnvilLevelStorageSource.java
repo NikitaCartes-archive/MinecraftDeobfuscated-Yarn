@@ -4,60 +4,60 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_32;
-import net.minecraft.class_33;
-import net.minecraft.class_34;
-import net.minecraft.class_3536;
+import net.minecraft.util.ProgressListener;
+import net.minecraft.world.level.storage.LevelStorage;
+import net.minecraft.world.level.storage.LevelStorageException;
+import net.minecraft.world.level.storage.LevelSummary;
 
 @Environment(EnvType.CLIENT)
 public class RealmsAnvilLevelStorageSource {
-	private final class_32 levelStorageSource;
+	private final LevelStorage levelStorageSource;
 
-	public RealmsAnvilLevelStorageSource(class_32 arg) {
-		this.levelStorageSource = arg;
+	public RealmsAnvilLevelStorageSource(LevelStorage levelStorage) {
+		this.levelStorageSource = levelStorage;
 	}
 
 	public String getName() {
-		return this.levelStorageSource.method_232();
+		return this.levelStorageSource.getName();
 	}
 
 	public boolean levelExists(String string) {
-		return this.levelStorageSource.method_230(string);
+		return this.levelStorageSource.exists(string);
 	}
 
-	public boolean convertLevel(String string, class_3536 arg) {
-		return this.levelStorageSource.method_234(string, arg);
+	public boolean convertLevel(String string, ProgressListener progressListener) {
+		return this.levelStorageSource.convertLevel(string, progressListener);
 	}
 
 	public boolean requiresConversion(String string) {
-		return this.levelStorageSource.method_231(string);
+		return this.levelStorageSource.requiresConversion(string);
 	}
 
 	public boolean isNewLevelIdAcceptable(String string) {
-		return this.levelStorageSource.method_240(string);
+		return this.levelStorageSource.canCreate(string);
 	}
 
 	public boolean deleteLevel(String string) {
-		return this.levelStorageSource.method_233(string);
+		return this.levelStorageSource.delete(string);
 	}
 
 	public boolean isConvertible(String string) {
-		return this.levelStorageSource.method_244(string);
+		return this.levelStorageSource.isConvertible(string);
 	}
 
 	public void renameLevel(String string, String string2) {
-		this.levelStorageSource.method_241(string, string2);
+		this.levelStorageSource.rename(string, string2);
 	}
 
 	public void clearAll() {
-		this.levelStorageSource.method_245();
+		this.levelStorageSource.clearAll();
 	}
 
-	public List<RealmsLevelSummary> getLevelList() throws class_33 {
+	public List<RealmsLevelSummary> getLevelList() throws LevelStorageException {
 		List<RealmsLevelSummary> list = Lists.<RealmsLevelSummary>newArrayList();
 
-		for (class_34 lv : this.levelStorageSource.method_235()) {
-			list.add(new RealmsLevelSummary(lv));
+		for (LevelSummary levelSummary : this.levelStorageSource.getAvailableLevels()) {
+			list.add(new RealmsLevelSummary(levelSummary));
 		}
 
 		return list;

@@ -9,27 +9,39 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.render.debug.DebugRenderer;
+import net.minecraft.client.world.ClientChunkManager;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.server.integrated.IntegratedServer;
+import net.minecraft.server.world.ServerChunkManager;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.SystemUtil;
+import net.minecraft.world.chunk.ChunkPos;
+import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.dimension.DimensionType;
 
 @Environment(EnvType.CLIENT)
-public class class_860 implements class_863.class_864 {
-	private final class_310 field_4509;
+public class class_860 implements DebugRenderer.DebugRenderer {
+	private final MinecraftClient field_4509;
 	private double field_4510 = Double.MIN_VALUE;
 	private final int field_4511 = 12;
 	@Nullable
 	private class_860.class_861 field_4512;
 
-	public class_860(class_310 arg) {
-		this.field_4509 = arg;
+	public class_860(MinecraftClient minecraftClient) {
+		this.field_4509 = minecraftClient;
 	}
 
 	@Override
-	public void method_3715(float f, long l) {
-		double d = (double)class_156.method_648();
+	public void render(float f, long l) {
+		double d = (double)SystemUtil.getMeasuringTimeNano();
 		if (d - this.field_4510 > 3.0E9) {
 			this.field_4510 = d;
-			class_1132 lv = this.field_4509.method_1576();
-			if (lv != null) {
-				this.field_4512 = new class_860.class_861(lv);
+			IntegratedServer integratedServer = this.field_4509.getServer();
+			if (integratedServer != null) {
+				this.field_4512 = new class_860.class_861(integratedServer);
 			} else {
 				this.field_4512 = null;
 			}
@@ -39,26 +51,26 @@ public class class_860 implements class_863.class_864 {
 			GlStateManager.disableFog();
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(
-				GlStateManager.class_1033.field_5138, GlStateManager.class_1027.field_5088, GlStateManager.class_1033.field_5140, GlStateManager.class_1027.field_5084
+				GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
 			);
 			GlStateManager.lineWidth(2.0F);
 			GlStateManager.disableTexture();
 			GlStateManager.depthMask(false);
-			Map<class_1923, String> map = (Map<class_1923, String>)this.field_4512.field_4514.getNow(null);
-			double e = this.field_4509.field_1724.field_6010 * 0.85;
+			Map<ChunkPos, String> map = (Map<ChunkPos, String>)this.field_4512.field_4514.getNow(null);
+			double e = this.field_4509.player.y * 0.85;
 
-			for (Entry<class_1923, String> entry : this.field_4512.field_4515.entrySet()) {
-				class_1923 lv2 = (class_1923)entry.getKey();
+			for (Entry<ChunkPos, String> entry : this.field_4512.field_4515.entrySet()) {
+				ChunkPos chunkPos = (ChunkPos)entry.getKey();
 				String string = (String)entry.getValue();
 				if (map != null) {
-					string = string + (String)map.get(lv2);
+					string = string + (String)map.get(chunkPos);
 				}
 
 				String[] strings = string.split("\n");
 				int i = 0;
 
 				for (String string2 : strings) {
-					class_863.method_3712(string2, (double)((lv2.field_9181 << 4) + 8), e + (double)i, (double)((lv2.field_9180 << 4) + 8), f, -1, 0.15F);
+					DebugRenderer.method_3712(string2, (double)((chunkPos.x << 4) + 8), e + (double)i, (double)((chunkPos.z << 4) + 8), f, -1, 0.15F);
 					i -= 2;
 				}
 			}
@@ -72,51 +84,51 @@ public class class_860 implements class_863.class_864 {
 
 	@Environment(EnvType.CLIENT)
 	final class class_861 {
-		private final Map<class_1923, String> field_4515;
-		private final CompletableFuture<Map<class_1923, String>> field_4514;
+		private final Map<ChunkPos, String> field_4515;
+		private final CompletableFuture<Map<ChunkPos, String>> field_4514;
 
-		private class_861(class_1132 arg2) {
-			class_638 lv = class_860.this.field_4509.field_1687;
-			class_2874 lv2 = class_860.this.field_4509.field_1687.field_9247.method_12460();
-			class_3218 lv3;
-			if (arg2.method_3847(lv2) != null) {
-				lv3 = arg2.method_3847(lv2);
+		private class_861(IntegratedServer integratedServer) {
+			ClientWorld clientWorld = class_860.this.field_4509.world;
+			DimensionType dimensionType = class_860.this.field_4509.world.dimension.getType();
+			ServerWorld serverWorld;
+			if (integratedServer.getWorld(dimensionType) != null) {
+				serverWorld = integratedServer.getWorld(dimensionType);
 			} else {
-				lv3 = null;
+				serverWorld = null;
 			}
 
-			class_746 lv4 = class_860.this.field_4509.field_1724;
-			int i = (int)lv4.field_5987 >> 4;
-			int j = (int)lv4.field_6035 >> 4;
-			Builder<class_1923, String> builder = ImmutableMap.builder();
-			class_631 lv5 = lv.method_2935();
+			ClientPlayerEntity clientPlayerEntity = class_860.this.field_4509.player;
+			int i = (int)clientPlayerEntity.x >> 4;
+			int j = (int)clientPlayerEntity.z >> 4;
+			Builder<ChunkPos, String> builder = ImmutableMap.builder();
+			ClientChunkManager clientChunkManager = clientWorld.getChunkProvider();
 
 			for (int k = i - 12; k <= i + 12; k++) {
 				for (int l = j - 12; l <= j + 12; l++) {
-					class_1923 lv6 = new class_1923(k, l);
+					ChunkPos chunkPos = new ChunkPos(k, l);
 					String string = "";
-					class_2818 lv7 = lv5.method_12126(k, l, false);
+					WorldChunk worldChunk = clientChunkManager.getWorldChunk(k, l, false);
 					string = string + "Client: ";
-					if (lv7 == null) {
+					if (worldChunk == null) {
 						string = string + "0n/a\n";
 					} else {
-						string = string + (lv7.method_12223() ? " E" : "");
+						string = string + (worldChunk.isEmpty() ? " E" : "");
 						string = string + "\n";
 					}
 
-					builder.put(lv6, string);
+					builder.put(chunkPos, string);
 				}
 			}
 
 			this.field_4515 = builder.build();
-			this.field_4514 = arg2.method_5385(() -> {
-				Builder<class_1923, String> builderx = ImmutableMap.builder();
-				class_3215 lvx = lv3.method_14178();
+			this.field_4514 = integratedServer.executeFuture(() -> {
+				Builder<ChunkPos, String> builderx = ImmutableMap.builder();
+				ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
 
 				for (int kx = i - 12; kx <= i + 12; kx++) {
 					for (int lx = j - 12; lx <= j + 12; lx++) {
-						class_1923 lv2x = new class_1923(kx, lx);
-						builderx.put(lv2x, "Server: " + lvx.method_17294(lv2x));
+						ChunkPos chunkPosx = new ChunkPos(kx, lx);
+						builderx.put(chunkPosx, "Server: " + serverChunkManager.getDebugString(chunkPosx));
 					}
 				}
 

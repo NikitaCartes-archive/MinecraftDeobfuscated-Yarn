@@ -1,20 +1,24 @@
 package net.minecraft;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.util.registry.Registry;
+
 public class class_3229 {
-	private final class_2680 field_14026;
+	private final BlockState field_14026;
 	private final int field_14028;
 	private int field_14027;
 
-	public class_3229(int i, class_2248 arg) {
+	public class_3229(int i, Block block) {
 		this.field_14028 = i;
-		this.field_14026 = arg.method_9564();
+		this.field_14026 = block.getDefaultState();
 	}
 
 	public int method_14289() {
 		return this.field_14028;
 	}
 
-	public class_2680 method_14286() {
+	public BlockState method_14286() {
 		return this.field_14026;
 	}
 
@@ -27,6 +31,6 @@ public class class_3229 {
 	}
 
 	public String toString() {
-		return (this.field_14028 > 1 ? this.field_14028 + "*" : "") + class_2378.field_11146.method_10221(this.field_14026.method_11614());
+		return (this.field_14028 > 1 ? this.field_14028 + "*" : "") + Registry.BLOCK.getId(this.field_14026.getBlock());
 	}
 }

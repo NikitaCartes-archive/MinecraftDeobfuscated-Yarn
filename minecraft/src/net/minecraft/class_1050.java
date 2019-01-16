@@ -21,8 +21,8 @@ import org.lwjgl.system.MemoryUtil;
 
 @Environment(EnvType.CLIENT)
 public class class_1050 {
-	public final int field_5227;
-	public final int field_5226;
+	public final int width;
+	public final int height;
 
 	public class_1050(String string, InputStream inputStream) throws IOException {
 		try (
@@ -43,8 +43,8 @@ public class class_1050 {
 				throw new IOException("Could not read info from the PNG file " + string + " " + STBImage.stbi_failure_reason());
 			}
 
-			this.field_5227 = intBuffer.get(0);
-			this.field_5226 = intBuffer2.get(0);
+			this.width = intBuffer.get(0);
+			this.height = intBuffer2.get(0);
 		}
 	}
 

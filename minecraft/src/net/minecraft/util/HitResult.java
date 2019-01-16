@@ -1,0 +1,23 @@
+package net.minecraft.util;
+
+import net.minecraft.util.math.Vec3d;
+
+public abstract class HitResult {
+	protected final Vec3d pos;
+
+	protected HitResult(Vec3d vec3d) {
+		this.pos = vec3d;
+	}
+
+	public abstract HitResult.Type getType();
+
+	public Vec3d getPos() {
+		return this.pos;
+	}
+
+	public static enum Type {
+		NONE,
+		BLOCK,
+		ENTITY;
+	}
+}

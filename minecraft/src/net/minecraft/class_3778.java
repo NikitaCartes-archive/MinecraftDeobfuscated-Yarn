@@ -3,6 +3,17 @@ package net.minecraft;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Random;
+import net.minecraft.block.JigsawBlock;
+import net.minecraft.sortme.structures.StructureManager;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Rotation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MutableIntBoundingBox;
+import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.StructureFeatures;
+import net.minecraft.world.gen.feature.structure.JigsawJunction;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -11,42 +22,56 @@ public class class_3778 {
 	public static final class_3787 field_16666 = new class_3787();
 
 	public static void method_16605(
-		class_2960 arg, int i, class_3778.class_3779 arg2, class_2794<?> arg3, class_3485 arg4, class_2338 arg5, List<class_3443> list, Random random
+		Identifier identifier,
+		int i,
+		class_3778.class_3779 arg,
+		ChunkGenerator<?> chunkGenerator,
+		StructureManager structureManager,
+		BlockPos blockPos,
+		List<class_3443> list,
+		Random random
 	) {
-		class_3420.method_16651();
-		class_2470 lv = class_2470.method_16548(random);
-		class_3785 lv2 = field_16666.method_16639(arg);
-		class_3784 lv3 = lv2.method_16631(random);
-		class_3790 lv4 = arg2.create(arg4, lv3, arg5, 1, lv);
-		class_3341 lv5 = lv4.method_14935();
-		int j = (lv5.field_14378 + lv5.field_14381) / 2;
-		int k = (lv5.field_14376 + lv5.field_14379) / 2;
-		lv4.method_14922(0, arg3.method_16397(j, k, class_2902.class_2903.field_13194) - lv5.field_14380, 0);
-		method_16607(arg2, lv4, arg3, arg4, list, random, 0, i);
+		StructureFeatures.method_16651();
+		Rotation rotation = Rotation.method_16548(random);
+		class_3785 lv = field_16666.method_16639(identifier);
+		class_3784 lv2 = lv.method_16631(random);
+		class_3790 lv3 = arg.create(structureManager, lv2, blockPos, 1, rotation);
+		MutableIntBoundingBox mutableIntBoundingBox = lv3.method_14935();
+		int j = (mutableIntBoundingBox.maxX + mutableIntBoundingBox.minX) / 2;
+		int k = (mutableIntBoundingBox.maxZ + mutableIntBoundingBox.minZ) / 2;
+		lv3.translate(0, chunkGenerator.produceHeight(j, k, Heightmap.Type.WORLD_SURFACE_WG) - mutableIntBoundingBox.minY, 0);
+		method_16607(arg, lv3, chunkGenerator, structureManager, list, random, 0, i);
 	}
 
 	private static void method_16607(
-		class_3778.class_3779 arg, class_3790 arg2, class_2794<?> arg3, class_3485 arg4, List<class_3443> list, Random random, int i, int j
+		class_3778.class_3779 arg,
+		class_3790 arg2,
+		ChunkGenerator<?> chunkGenerator,
+		StructureManager structureManager,
+		List<class_3443> list,
+		Random random,
+		int i,
+		int j
 	) {
 		list.add(arg2);
 		if (i <= j) {
 			class_3784 lv = arg2.method_16644();
-			class_2338 lv2 = arg2.method_16648();
-			class_2470 lv3 = arg2.method_16888();
-			List<class_3341> list2 = Lists.<class_3341>newArrayList();
+			BlockPos blockPos = arg2.method_16648();
+			Rotation rotation = arg2.method_16888();
+			List<MutableIntBoundingBox> list2 = Lists.<MutableIntBoundingBox>newArrayList();
 
-			for (class_3499.class_3501 lv4 : lv.method_16627(arg4, lv2, lv3, random)) {
-				class_2350 lv5 = lv4.field_15596.method_11654(class_3748.field_10927);
-				class_2338 lv6 = lv4.field_15597.method_10093(lv5);
-				class_3785 lv7 = field_16666.method_16639(new class_2960(lv4.field_15595.method_10558("target_pool")));
-				class_3785 lv8 = field_16666.method_16639(lv7.method_16634());
-				if (lv7 != class_3785.field_16746 && (lv7.method_16632() != 0 || lv7 == class_3785.field_16679)) {
-					class_3341 lv9 = lv.method_16628(arg4, lv2, lv3);
-					if (i == j || !method_16606(arg, arg2, arg3, arg4, list, random, lv, lv4, lv9, list2, lv6, lv7, i, j)) {
-						method_16606(arg, arg2, arg3, arg4, list, random, lv, lv4, lv9, list2, lv6, lv8, i, j);
+			for (class_3499.class_3501 lv2 : lv.method_16627(structureManager, blockPos, rotation, random)) {
+				Direction direction = lv2.field_15596.get(JigsawBlock.field_10927);
+				BlockPos blockPos2 = lv2.field_15597.offset(direction);
+				class_3785 lv3 = field_16666.method_16639(new Identifier(lv2.field_15595.getString("target_pool")));
+				class_3785 lv4 = field_16666.method_16639(lv3.method_16634());
+				if (lv3 != class_3785.field_16746 && (lv3.method_16632() != 0 || lv3 == class_3785.field_16679)) {
+					MutableIntBoundingBox mutableIntBoundingBox = lv.method_16628(structureManager, blockPos, rotation);
+					if (i == j || !method_16606(arg, arg2, chunkGenerator, structureManager, list, random, lv, lv2, mutableIntBoundingBox, list2, blockPos2, lv3, i, j)) {
+						method_16606(arg, arg2, chunkGenerator, structureManager, list, random, lv, lv2, mutableIntBoundingBox, list2, blockPos2, lv4, i, j);
 					}
 				} else {
-					field_16665.warn("Empty or none existent pool: {}", lv4.field_15595.method_10558("target_pool"));
+					field_16665.warn("Empty or none existent pool: {}", lv2.field_15595.getString("target_pool"));
 				}
 			}
 		}
@@ -55,82 +80,80 @@ public class class_3778 {
 	private static boolean method_16606(
 		class_3778.class_3779 arg,
 		class_3790 arg2,
-		class_2794<?> arg3,
-		class_3485 arg4,
+		ChunkGenerator<?> chunkGenerator,
+		StructureManager structureManager,
 		List<class_3443> list,
 		Random random,
-		class_3784 arg5,
-		class_3499.class_3501 arg6,
-		class_3341 arg7,
-		List<class_3341> list2,
-		class_2338 arg8,
-		class_3785 arg9,
+		class_3784 arg3,
+		class_3499.class_3501 arg4,
+		MutableIntBoundingBox mutableIntBoundingBox,
+		List<MutableIntBoundingBox> list2,
+		BlockPos blockPos,
+		class_3785 arg5,
 		int i,
 		int j
 	) {
-		boolean bl = arg7.method_14662(arg8);
+		boolean bl = mutableIntBoundingBox.contains(blockPos);
 
-		for (int k : arg9.method_16633(random)) {
-			class_3784 lv = arg9.method_16630(k);
+		for (int k : arg5.method_16633(random)) {
+			class_3784 lv = arg5.method_16630(k);
 			if (lv == class_3777.field_16663) {
 				return true;
 			}
 
-			for (class_2470 lv2 : class_2470.method_16547(random)) {
-				for (class_3499.class_3501 lv3 : lv.method_16627(arg4, new class_2338(0, 0, 0), lv2, random)) {
-					if (class_3748.method_16546(arg6, lv3)) {
-						class_2338 lv4 = new class_2338(
-							arg8.method_10263() - lv3.field_15597.method_10263(),
-							arg8.method_10264() - lv3.field_15597.method_10264(),
-							arg8.method_10260() - lv3.field_15597.method_10260()
+			for (Rotation rotation : Rotation.method_16547(random)) {
+				for (class_3499.class_3501 lv2 : lv.method_16627(structureManager, BlockPos.ORIGIN, rotation, random)) {
+					if (JigsawBlock.method_16546(arg4, lv2)) {
+						BlockPos blockPos2 = new BlockPos(
+							blockPos.getX() - lv2.field_15597.getX(), blockPos.getY() - lv2.field_15597.getY(), blockPos.getZ() - lv2.field_15597.getZ()
 						);
-						class_3785.class_3786 lv5 = arg2.method_16644().method_16624();
-						class_3785.class_3786 lv6 = lv.method_16624();
-						int l = arg6.field_15597.method_10264() - arg7.field_14380;
-						int m = lv3.field_15597.method_10264();
-						int n = l - m + ((class_2350)arg6.field_15596.method_11654(class_3748.field_10927)).method_10164();
+						class_3785.Projection projection = arg2.method_16644().method_16624();
+						class_3785.Projection projection2 = lv.method_16624();
+						int l = arg4.field_15597.getY() - mutableIntBoundingBox.minY;
+						int m = lv2.field_15597.getY();
+						int n = l - m + ((Direction)arg4.field_15596.get(JigsawBlock.field_10927)).getOffsetY();
 						int o = arg2.method_16646();
 						int p;
-						if (lv6 == class_3785.class_3786.field_16687) {
+						if (projection2 == class_3785.Projection.RIGID) {
 							p = o - n;
 						} else {
 							p = 1;
 						}
 
-						class_3341 lv7 = lv.method_16628(arg4, lv4, lv2);
+						MutableIntBoundingBox mutableIntBoundingBox2 = lv.method_16628(structureManager, blockPos2, rotation);
 						int q;
-						if (lv5 == class_3785.class_3786.field_16687 && lv6 == class_3785.class_3786.field_16687) {
-							q = arg7.field_14380 + n;
+						if (projection == class_3785.Projection.RIGID && projection2 == class_3785.Projection.RIGID) {
+							q = mutableIntBoundingBox.minY + n;
 						} else {
-							q = arg3.method_16397(arg6.field_15597.method_10263(), arg6.field_15597.method_10260(), class_2902.class_2903.field_13194) - 1 + n;
+							q = chunkGenerator.produceHeight(arg4.field_15597.getX(), arg4.field_15597.getZ(), Heightmap.Type.WORLD_SURFACE_WG) - 1 + n;
 						}
 
-						int r = q - lv7.field_14380;
-						lv7.method_14661(0, r, 0);
-						if (lv7.field_14377 - lv7.field_14380 < 16) {
-							lv7.field_14377 += 8;
-							lv7.field_14380 -= 8;
+						int r = q - mutableIntBoundingBox2.minY;
+						mutableIntBoundingBox2.translate(0, r, 0);
+						if (mutableIntBoundingBox2.maxY - mutableIntBoundingBox2.minY < 16) {
+							mutableIntBoundingBox2.maxY += 8;
+							mutableIntBoundingBox2.minY -= 8;
 						}
 
-						lv4 = lv4.method_10069(0, r, 0);
-						if (bl && method_16608(arg7, list2, lv7) || method_16604(list, lv7)) {
+						blockPos2 = blockPos2.add(0, r, 0);
+						if (bl && method_16608(mutableIntBoundingBox, list2, mutableIntBoundingBox2) || method_16604(list, mutableIntBoundingBox2)) {
 							if (bl) {
-								list2.add(lv7);
+								list2.add(mutableIntBoundingBox2);
 							}
 
-							class_3790 lv8 = arg.create(arg4, lv, lv4, p, lv2);
+							class_3790 lv3 = arg.create(structureManager, lv, blockPos2, p, rotation);
 							int s;
-							if (lv5 == class_3785.class_3786.field_16687) {
-								s = arg7.field_14380 + l;
-							} else if (lv6 == class_3785.class_3786.field_16687) {
+							if (projection == class_3785.Projection.RIGID) {
+								s = mutableIntBoundingBox.minY + l;
+							} else if (projection2 == class_3785.Projection.RIGID) {
 								s = q + m;
 							} else {
-								s = arg3.method_16397(arg6.field_15597.method_10263(), arg6.field_15597.method_10260(), class_2902.class_2903.field_13194) - 1 + n / 2;
+								s = chunkGenerator.produceHeight(arg4.field_15597.getX(), arg4.field_15597.getZ(), Heightmap.Type.WORLD_SURFACE_WG) - 1 + n / 2;
 							}
 
-							arg2.method_16647(new class_3780(arg8.method_10263(), s - l + o, arg8.method_10260(), n, lv6));
-							lv8.method_16647(new class_3780(arg6.field_15597.method_10263(), s - m + p, arg6.field_15597.method_10260(), -n, arg5.method_16624()));
-							method_16607(arg, lv8, arg3, arg4, list, random, i + 1, j);
+							arg2.method_16647(new JigsawJunction(blockPos.getX(), s - l + o, blockPos.getZ(), n, projection2));
+							lv3.method_16647(new JigsawJunction(arg4.field_15597.getX(), s - m + p, arg4.field_15597.getZ(), -n, arg3.method_16624()));
+							method_16607(arg, lv3, chunkGenerator, structureManager, list, random, i + 1, j);
 							return true;
 						}
 					}
@@ -141,10 +164,15 @@ public class class_3778 {
 		return false;
 	}
 
-	private static boolean method_16608(class_3341 arg, List<class_3341> list, class_3341 arg2) {
-		if (arg2.field_14381 >= arg.field_14381 && arg2.field_14378 <= arg.field_14378 && arg2.field_14379 >= arg.field_14379 && arg2.field_14376 <= arg.field_14376) {
-			for (class_3341 lv : list) {
-				if (arg2.method_14657(lv)) {
+	private static boolean method_16608(
+		MutableIntBoundingBox mutableIntBoundingBox, List<MutableIntBoundingBox> list, MutableIntBoundingBox mutableIntBoundingBox2
+	) {
+		if (mutableIntBoundingBox2.minX >= mutableIntBoundingBox.minX
+			&& mutableIntBoundingBox2.maxX <= mutableIntBoundingBox.maxX
+			&& mutableIntBoundingBox2.minZ >= mutableIntBoundingBox.minZ
+			&& mutableIntBoundingBox2.maxZ <= mutableIntBoundingBox.maxZ) {
+			for (MutableIntBoundingBox mutableIntBoundingBox3 : list) {
+				if (mutableIntBoundingBox2.intersects(mutableIntBoundingBox3)) {
 					return false;
 				}
 			}
@@ -155,9 +183,9 @@ public class class_3778 {
 		}
 	}
 
-	private static boolean method_16604(List<class_3443> list, class_3341 arg) {
+	private static boolean method_16604(List<class_3443> list, MutableIntBoundingBox mutableIntBoundingBox) {
 		for (class_3443 lv : list) {
-			if (arg.method_14657(lv.method_14935())) {
+			if (mutableIntBoundingBox.intersects(lv.method_14935())) {
 				return false;
 			}
 		}
@@ -170,6 +198,6 @@ public class class_3778 {
 	}
 
 	public interface class_3779 {
-		class_3790 create(class_3485 arg, class_3784 arg2, class_2338 arg3, int i, class_2470 arg4);
+		class_3790 create(StructureManager structureManager, class_3784 arg, BlockPos blockPos, int i, Rotation rotation);
 	}
 }

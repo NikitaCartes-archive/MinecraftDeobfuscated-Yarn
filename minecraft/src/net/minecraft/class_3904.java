@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import net.minecraft.datafixers.TypeReferences;
+import net.minecraft.datafixers.schemas.SchemaIdentifierNormalize;
 
 public class class_3904 extends DataFix {
 	public class_3904(Schema schema, boolean bl) {
@@ -22,14 +24,14 @@ public class class_3904 extends DataFix {
 
 	@Override
 	protected TypeRewriteRule makeRule() {
-		CompoundListType<String, ?> compoundListType = DSL.compoundList(DSL.string(), this.getInputSchema().getType(class_1208.field_5724));
+		CompoundListType<String, ?> compoundListType = DSL.compoundList(DSL.string(), this.getInputSchema().getType(TypeReferences.STRUCTURE_FEATURE));
 		OpticFinder<? extends List<? extends Pair<String, ?>>> opticFinder = compoundListType.finder();
 		return this.method_17334(compoundListType);
 	}
 
 	private <SF> TypeRewriteRule method_17334(CompoundListType<String, SF> compoundListType) {
-		Type<?> type = this.getInputSchema().getType(class_1208.field_5726);
-		Type<?> type2 = this.getInputSchema().getType(class_1208.field_5724);
+		Type<?> type = this.getInputSchema().getType(TypeReferences.CHUNK);
+		Type<?> type2 = this.getInputSchema().getType(TypeReferences.STRUCTURE_FEATURE);
 		OpticFinder<?> opticFinder = type.findField("Level");
 		OpticFinder<?> opticFinder2 = opticFinder.type().findField("Structures");
 		OpticFinder<?> opticFinder3 = opticFinder2.type().findField("Starts");
@@ -73,7 +75,7 @@ public class class_3904 extends DataFix {
 						DSL.remainderFinder(),
 						dynamic -> dynamic.update(
 								"id",
-								dynamicx -> Objects.equals(class_1220.method_5193(dynamicx.asString("")), "minecraft:new_village")
+								dynamicx -> Objects.equals(SchemaIdentifierNormalize.normalize(dynamicx.asString("")), "minecraft:new_village")
 										? dynamicx.createString("minecraft:village")
 										: dynamicx
 							)

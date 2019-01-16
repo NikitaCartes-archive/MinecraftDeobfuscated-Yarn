@@ -2,64 +2,70 @@ package net.minecraft;
 
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
-public class class_1344 extends class_1352 {
-	private final class_1314 field_6419;
+public class class_1344 extends Goal {
+	private final MobEntityWithAi field_6419;
 	private double field_6417;
 	private double field_6416;
 	private double field_6415;
 	private final double field_6420;
-	private final class_1937 field_6418;
+	private final World field_6418;
 
-	public class_1344(class_1314 arg, double d) {
-		this.field_6419 = arg;
+	public class_1344(MobEntityWithAi mobEntityWithAi, double d) {
+		this.field_6419 = mobEntityWithAi;
 		this.field_6420 = d;
-		this.field_6418 = arg.field_6002;
-		this.method_6265(1);
+		this.field_6418 = mobEntityWithAi.world;
+		this.setControlBits(1);
 	}
 
 	@Override
-	public boolean method_6264() {
-		if (!this.field_6418.method_8530()) {
+	public boolean canStart() {
+		if (!this.field_6418.isDaylight()) {
 			return false;
-		} else if (!this.field_6419.method_5809()) {
+		} else if (!this.field_6419.isOnFire()) {
 			return false;
-		} else if (!this.field_6418.method_8311(new class_2338(this.field_6419.field_5987, this.field_6419.method_5829().field_1322, this.field_6419.field_6035))) {
+		} else if (!this.field_6418.isSkyVisible(new BlockPos(this.field_6419.x, this.field_6419.getBoundingBox().minY, this.field_6419.z))) {
 			return false;
-		} else if (!this.field_6419.method_6118(class_1304.field_6169).method_7960()) {
+		} else if (!this.field_6419.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
 			return false;
 		} else {
-			class_243 lv = this.method_6257();
-			if (lv == null) {
+			Vec3d vec3d = this.method_6257();
+			if (vec3d == null) {
 				return false;
 			} else {
-				this.field_6417 = lv.field_1352;
-				this.field_6416 = lv.field_1351;
-				this.field_6415 = lv.field_1350;
+				this.field_6417 = vec3d.x;
+				this.field_6416 = vec3d.y;
+				this.field_6415 = vec3d.z;
 				return true;
 			}
 		}
 	}
 
 	@Override
-	public boolean method_6266() {
-		return !this.field_6419.method_5942().method_6357();
+	public boolean shouldContinue() {
+		return !this.field_6419.getNavigation().method_6357();
 	}
 
 	@Override
-	public void method_6269() {
-		this.field_6419.method_5942().method_6337(this.field_6417, this.field_6416, this.field_6415, this.field_6420);
+	public void start() {
+		this.field_6419.getNavigation().startMovingTo(this.field_6417, this.field_6416, this.field_6415, this.field_6420);
 	}
 
 	@Nullable
-	private class_243 method_6257() {
-		Random random = this.field_6419.method_6051();
-		class_2338 lv = new class_2338(this.field_6419.field_5987, this.field_6419.method_5829().field_1322, this.field_6419.field_6035);
+	private Vec3d method_6257() {
+		Random random = this.field_6419.getRand();
+		BlockPos blockPos = new BlockPos(this.field_6419.x, this.field_6419.getBoundingBox().minY, this.field_6419.z);
 
 		for (int i = 0; i < 10; i++) {
-			class_2338 lv2 = lv.method_10069(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);
-			if (!this.field_6418.method_8311(lv2) && this.field_6419.method_6149(lv2) < 0.0F) {
-				return new class_243((double)lv2.method_10263(), (double)lv2.method_10264(), (double)lv2.method_10260());
+			BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);
+			if (!this.field_6418.isSkyVisible(blockPos2) && this.field_6419.method_6149(blockPos2) < 0.0F) {
+				return new Vec3d((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
 			}
 		}
 

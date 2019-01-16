@@ -3,40 +3,49 @@ package net.minecraft;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.ExtendedBlockView;
+import net.minecraft.world.LightType;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.chunk.WorldChunk;
 
 @Environment(EnvType.CLIENT)
-public class class_853 implements class_1920 {
+public class class_853 implements ExtendedBlockView {
 	protected final int field_4488;
 	protected final int field_4487;
-	protected final class_2338 field_4481;
+	protected final BlockPos field_4481;
 	protected final int field_4486;
 	protected final int field_4484;
 	protected final int field_4482;
-	protected final class_2818[][] field_4483;
-	protected final class_2680[] field_4489;
-	protected final class_3610[] field_4485;
-	protected final class_1937 field_4490;
+	protected final WorldChunk[][] field_4483;
+	protected final BlockState[] field_4489;
+	protected final FluidState[] field_4485;
+	protected final World field_4490;
 
 	@Nullable
-	public static class_853 method_3689(class_1937 arg, class_2338 arg2, class_2338 arg3, int i) {
-		int j = arg2.method_10263() - i >> 4;
-		int k = arg2.method_10260() - i >> 4;
-		int l = arg3.method_10263() + i >> 4;
-		int m = arg3.method_10260() + i >> 4;
-		class_2818[][] lvs = new class_2818[l - j + 1][m - k + 1];
+	public static class_853 method_3689(World world, BlockPos blockPos, BlockPos blockPos2, int i) {
+		int j = blockPos.getX() - i >> 4;
+		int k = blockPos.getZ() - i >> 4;
+		int l = blockPos2.getX() + i >> 4;
+		int m = blockPos2.getZ() + i >> 4;
+		WorldChunk[][] worldChunks = new WorldChunk[l - j + 1][m - k + 1];
 
 		for (int n = j; n <= l; n++) {
 			for (int o = k; o <= m; o++) {
-				lvs[n - j][o - k] = arg.method_8497(n, o);
+				worldChunks[n - j][o - k] = world.getWorldChunk(n, o);
 			}
 		}
 
 		boolean bl = true;
 
-		for (int o = arg2.method_10263() >> 4; o <= arg3.method_10263() >> 4; o++) {
-			for (int p = arg2.method_10260() >> 4; p <= arg3.method_10260() >> 4; p++) {
-				class_2818 lv = lvs[o - j][p - k];
-				if (!lv.method_12228(arg2.method_10264(), arg3.method_10264())) {
+		for (int o = blockPos.getX() >> 4; o <= blockPos2.getX() >> 4; o++) {
+			for (int p = blockPos.getZ() >> 4; p <= blockPos2.getZ() >> 4; p++) {
+				WorldChunk worldChunk = worldChunks[o - j][p - k];
+				if (!worldChunk.method_12228(blockPos.getY(), blockPos2.getY())) {
 					bl = false;
 				}
 			}
@@ -46,77 +55,77 @@ public class class_853 implements class_1920 {
 			return null;
 		} else {
 			int o = 1;
-			class_2338 lv2 = arg2.method_10069(-1, -1, -1);
-			class_2338 lv3 = arg3.method_10069(1, 1, 1);
-			return new class_853(arg, j, k, lvs, lv2, lv3);
+			BlockPos blockPos3 = blockPos.add(-1, -1, -1);
+			BlockPos blockPos4 = blockPos2.add(1, 1, 1);
+			return new class_853(world, j, k, worldChunks, blockPos3, blockPos4);
 		}
 	}
 
-	public class_853(class_1937 arg, int i, int j, class_2818[][] args, class_2338 arg2, class_2338 arg3) {
-		this.field_4490 = arg;
+	public class_853(World world, int i, int j, WorldChunk[][] worldChunks, BlockPos blockPos, BlockPos blockPos2) {
+		this.field_4490 = world;
 		this.field_4488 = i;
 		this.field_4487 = j;
-		this.field_4483 = args;
-		this.field_4481 = arg2;
-		this.field_4486 = arg3.method_10263() - arg2.method_10263() + 1;
-		this.field_4484 = arg3.method_10264() - arg2.method_10264() + 1;
-		this.field_4482 = arg3.method_10260() - arg2.method_10260() + 1;
-		this.field_4489 = new class_2680[this.field_4486 * this.field_4484 * this.field_4482];
-		this.field_4485 = new class_3610[this.field_4486 * this.field_4484 * this.field_4482];
+		this.field_4483 = worldChunks;
+		this.field_4481 = blockPos;
+		this.field_4486 = blockPos2.getX() - blockPos.getX() + 1;
+		this.field_4484 = blockPos2.getY() - blockPos.getY() + 1;
+		this.field_4482 = blockPos2.getZ() - blockPos.getZ() + 1;
+		this.field_4489 = new BlockState[this.field_4486 * this.field_4484 * this.field_4482];
+		this.field_4485 = new FluidState[this.field_4486 * this.field_4484 * this.field_4482];
 
-		for (class_2338.class_2339 lv : class_2338.method_10082(arg2, arg3)) {
-			int k = (lv.method_10263() >> 4) - i;
-			int l = (lv.method_10260() >> 4) - j;
-			class_2818 lv2 = args[k][l];
-			int m = this.method_3691(lv);
-			this.field_4489[m] = lv2.method_8320(lv);
-			this.field_4485[m] = lv2.method_8316(lv);
+		for (BlockPos blockPos3 : BlockPos.iterateBoxPositions(blockPos, blockPos2)) {
+			int k = (blockPos3.getX() >> 4) - i;
+			int l = (blockPos3.getZ() >> 4) - j;
+			WorldChunk worldChunk = worldChunks[k][l];
+			int m = this.method_3691(blockPos3);
+			this.field_4489[m] = worldChunk.getBlockState(blockPos3);
+			this.field_4485[m] = worldChunk.getFluidState(blockPos3);
 		}
 	}
 
-	protected final int method_3691(class_2338 arg) {
-		return this.method_3690(arg.method_10263(), arg.method_10264(), arg.method_10260());
+	protected final int method_3691(BlockPos blockPos) {
+		return this.method_3690(blockPos.getX(), blockPos.getY(), blockPos.getZ());
 	}
 
 	protected int method_3690(int i, int j, int k) {
-		int l = i - this.field_4481.method_10263();
-		int m = j - this.field_4481.method_10264();
-		int n = k - this.field_4481.method_10260();
+		int l = i - this.field_4481.getX();
+		int m = j - this.field_4481.getY();
+		int n = k - this.field_4481.getZ();
 		return n * this.field_4486 * this.field_4484 + m * this.field_4486 + l;
 	}
 
 	@Override
-	public class_2680 method_8320(class_2338 arg) {
-		return this.field_4489[this.method_3691(arg)];
+	public BlockState getBlockState(BlockPos blockPos) {
+		return this.field_4489[this.method_3691(blockPos)];
 	}
 
 	@Override
-	public class_3610 method_8316(class_2338 arg) {
-		return this.field_4485[this.method_3691(arg)];
+	public FluidState getFluidState(BlockPos blockPos) {
+		return this.field_4485[this.method_3691(blockPos)];
 	}
 
 	@Override
-	public int method_8314(class_1944 arg, class_2338 arg2) {
-		return this.field_4490.method_8314(arg, arg2);
+	public int getLightLevel(LightType lightType, BlockPos blockPos) {
+		return this.field_4490.getLightLevel(lightType, blockPos);
 	}
 
 	@Override
-	public class_1959 method_8310(class_2338 arg) {
-		int i = (arg.method_10263() >> 4) - this.field_4488;
-		int j = (arg.method_10260() >> 4) - this.field_4487;
-		return this.field_4483[i][j].method_16552(arg);
+	public Biome getBiome(BlockPos blockPos) {
+		int i = (blockPos.getX() >> 4) - this.field_4488;
+		int j = (blockPos.getZ() >> 4) - this.field_4487;
+		return this.field_4483[i][j].getBiome(blockPos);
 	}
 
 	@Nullable
 	@Override
-	public class_2586 method_8321(class_2338 arg) {
-		return this.method_3688(arg, class_2818.class_2819.field_12860);
+	public BlockEntity getBlockEntity(BlockPos blockPos) {
+		return this.method_3688(blockPos, WorldChunk.AccessType.CREATE);
 	}
 
 	@Nullable
-	public class_2586 method_3688(class_2338 arg, class_2818.class_2819 arg2) {
-		int i = (arg.method_10263() >> 4) - this.field_4488;
-		int j = (arg.method_10260() >> 4) - this.field_4487;
-		return this.field_4483[i][j].method_12201(arg, arg2);
+	public BlockEntity method_3688(BlockPos blockPos, WorldChunk.AccessType accessType) {
+		int i = (blockPos.getX() >> 4) - this.field_4488;
+		int j = (blockPos.getZ() >> 4) - this.field_4487;
+		return this.field_4483[i][j].getBlockEntity(blockPos, accessType);
 	}
 }

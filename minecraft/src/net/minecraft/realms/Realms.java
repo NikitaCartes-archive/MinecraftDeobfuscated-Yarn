@@ -10,61 +10,61 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_156;
-import net.minecraft.class_1934;
-import net.minecraft.class_2487;
-import net.minecraft.class_2507;
-import net.minecraft.class_310;
-import net.minecraft.class_315;
-import net.minecraft.class_320;
-import net.minecraft.class_442;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.MainMenuGui;
+import net.minecraft.client.options.GameOptions;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.util.Session;
+import net.minecraft.util.SystemUtil;
+import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class Realms {
 	public static boolean isTouchScreen() {
-		return class_310.method_1551().field_1690.field_1854;
+		return MinecraftClient.getInstance().options.touchscreen;
 	}
 
 	public static Proxy getProxy() {
-		return class_310.method_1551().method_1487();
+		return MinecraftClient.getInstance().getNetworkProxy();
 	}
 
 	public static String sessionId() {
-		class_320 lv = class_310.method_1551().method_1548();
-		return lv == null ? null : lv.method_1675();
+		Session session = MinecraftClient.getInstance().getSession();
+		return session == null ? null : session.getSessionId();
 	}
 
 	public static String userName() {
-		class_320 lv = class_310.method_1551().method_1548();
-		return lv == null ? null : lv.method_1676();
+		Session session = MinecraftClient.getInstance().getSession();
+		return session == null ? null : session.getUsername();
 	}
 
 	public static long currentTimeMillis() {
-		return class_156.method_658();
+		return SystemUtil.getMeasuringTimeMs();
 	}
 
 	public static String getSessionId() {
-		return class_310.method_1551().method_1548().method_1675();
+		return MinecraftClient.getInstance().getSession().getSessionId();
 	}
 
 	public static String getUUID() {
-		return class_310.method_1551().method_1548().method_1673();
+		return MinecraftClient.getInstance().getSession().getUuid();
 	}
 
 	public static String getName() {
-		return class_310.method_1551().method_1548().method_1676();
+		return MinecraftClient.getInstance().getSession().getUsername();
 	}
 
 	public static String uuidToName(String string) {
-		return class_310.method_1551().method_1495().fillProfileProperties(new GameProfile(UUIDTypeAdapter.fromString(string), null), false).getName();
+		return MinecraftClient.getInstance().getSessionService().fillProfileProperties(new GameProfile(UUIDTypeAdapter.fromString(string), null), false).getName();
 	}
 
 	public static <V> CompletableFuture<V> execute(Supplier<V> supplier) {
-		return class_310.method_1551().method_5385(supplier);
+		return MinecraftClient.getInstance().executeFuture(supplier);
 	}
 
 	public static void execute(Runnable runnable) {
-		class_310.method_1551().method_5382(runnable);
+		MinecraftClient.getInstance().executeFuture(runnable);
 	}
 
 	public static void setScreen(RealmsScreen realmsScreen) {
@@ -75,56 +75,56 @@ public class Realms {
 	}
 
 	public static void setScreenDirect(RealmsScreen realmsScreen) {
-		class_310.method_1551().method_1507(realmsScreen.getProxy());
+		MinecraftClient.getInstance().openGui(realmsScreen.getProxy());
 	}
 
 	public static String getGameDirectoryPath() {
-		return class_310.method_1551().field_1697.getAbsolutePath();
+		return MinecraftClient.getInstance().runDirectory.getAbsolutePath();
 	}
 
 	public static int survivalId() {
-		return class_1934.field_9215.method_8379();
+		return GameMode.field_9215.getId();
 	}
 
 	public static int creativeId() {
-		return class_1934.field_9220.method_8379();
+		return GameMode.field_9220.getId();
 	}
 
 	public static int adventureId() {
-		return class_1934.field_9216.method_8379();
+		return GameMode.field_9216.getId();
 	}
 
 	public static int spectatorId() {
-		return class_1934.field_9219.method_8379();
+		return GameMode.field_9219.getId();
 	}
 
 	public static void setConnectedToRealms(boolean bl) {
-		class_310.method_1551().method_1537(bl);
+		MinecraftClient.getInstance().setConnectedToRealms(bl);
 	}
 
 	public static CompletableFuture<?> downloadResourcePack(String string, String string2) {
-		return class_310.method_1551().method_1516().method_4640(string, string2);
+		return MinecraftClient.getInstance().getResourcePackDownloader().download(string, string2);
 	}
 
 	public static void clearResourcePack() {
-		class_310.method_1551().method_1516().method_4642();
+		MinecraftClient.getInstance().getResourcePackDownloader().clear();
 	}
 
 	public static boolean getRealmsNotificationsEnabled() {
-		return class_310.method_1551().field_1690.method_1628(class_315.class_316.field_1953);
+		return MinecraftClient.getInstance().options.isEnabled(GameOptions.Option.REALMS_NOTIFICATIONS);
 	}
 
 	public static boolean inTitleScreen() {
-		return class_310.method_1551().field_1755 != null && class_310.method_1551().field_1755 instanceof class_442;
+		return MinecraftClient.getInstance().currentGui != null && MinecraftClient.getInstance().currentGui instanceof MainMenuGui;
 	}
 
 	public static void deletePlayerTag(File file) {
 		if (file.exists()) {
 			try {
-				class_2487 lv = class_2507.method_10629(new FileInputStream(file));
-				class_2487 lv2 = lv.method_10562("Data");
-				lv2.method_10551("Player");
-				class_2507.method_10634(lv, new FileOutputStream(file));
+				CompoundTag compoundTag = NbtIo.readCompressed(new FileInputStream(file));
+				CompoundTag compoundTag2 = compoundTag.getCompound("Data");
+				compoundTag2.remove("Player");
+				NbtIo.writeCompressed(compoundTag, new FileOutputStream(file));
 			} catch (Exception var3) {
 				var3.printStackTrace();
 			}

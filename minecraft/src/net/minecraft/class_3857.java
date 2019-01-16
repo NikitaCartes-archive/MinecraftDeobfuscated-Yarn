@@ -4,63 +4,75 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvironmentInterface;
 import net.fabricmc.api.EnvironmentInterfaces;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.FlyingItemEntity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.thrown.ThrownEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.SystemUtil;
+import net.minecraft.world.World;
 
 @EnvironmentInterfaces({@EnvironmentInterface(
 		value = EnvType.CLIENT,
-		itf = class_3856.class
+		itf = FlyingItemEntity.class
 	)})
-public abstract class class_3857 extends class_1682 implements class_3856 {
-	private static final class_2940<class_1799> field_17082 = class_2945.method_12791(class_3857.class, class_2943.field_13322);
+public abstract class class_3857 extends ThrownEntity implements FlyingItemEntity {
+	private static final TrackedData<ItemStack> field_17082 = DataTracker.registerData(class_3857.class, TrackedDataHandlerRegistry.ITEM_STACK);
 
-	public class_3857(class_1299<?> arg, class_1937 arg2) {
-		super(arg, arg2);
+	public class_3857(EntityType<?> entityType, World world) {
+		super(entityType, world);
 	}
 
-	public class_3857(class_1299<?> arg, double d, double e, double f, class_1937 arg2) {
-		super(arg, d, e, f, arg2);
+	public class_3857(EntityType<?> entityType, double d, double e, double f, World world) {
+		super(entityType, d, e, f, world);
 	}
 
-	public class_3857(class_1299<?> arg, class_1309 arg2, class_1937 arg3) {
-		super(arg, arg2, arg3);
+	public class_3857(EntityType<?> entityType, LivingEntity livingEntity, World world) {
+		super(entityType, livingEntity, world);
 	}
 
-	public void method_16940(class_1799 arg) {
-		if (arg.method_7909() != this.method_16942() || arg.method_7985()) {
-			this.method_5841().method_12778(field_17082, class_156.method_654(arg.method_7972(), argx -> argx.method_7939(1)));
+	public void method_16940(ItemStack itemStack) {
+		if (itemStack.getItem() != this.method_16942() || itemStack.hasTag()) {
+			this.getDataTracker().set(field_17082, SystemUtil.consume(itemStack.copy(), itemStackx -> itemStackx.setAmount(1)));
 		}
 	}
 
-	protected abstract class_1792 method_16942();
+	protected abstract Item method_16942();
 
-	protected class_1799 method_16943() {
-		return this.method_5841().method_12789(field_17082);
+	protected ItemStack method_16943() {
+		return this.getDataTracker().get(field_17082);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public class_1799 method_7495() {
-		class_1799 lv = this.method_16943();
-		return lv.method_7960() ? new class_1799(this.method_16942()) : lv;
+	public ItemStack getItem() {
+		ItemStack itemStack = this.method_16943();
+		return itemStack.isEmpty() ? new ItemStack(this.method_16942()) : itemStack;
 	}
 
 	@Override
-	protected void method_5693() {
-		this.method_5841().method_12784(field_17082, class_1799.field_8037);
+	protected void initDataTracker() {
+		this.getDataTracker().startTracking(field_17082, ItemStack.EMPTY);
 	}
 
 	@Override
-	public void method_5652(class_2487 arg) {
-		super.method_5652(arg);
-		class_1799 lv = this.method_16943();
-		if (!lv.method_7960()) {
-			arg.method_10566("Item", lv.method_7953(new class_2487()));
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		ItemStack itemStack = this.method_16943();
+		if (!itemStack.isEmpty()) {
+			compoundTag.put("Item", itemStack.toTag(new CompoundTag()));
 		}
 	}
 
 	@Override
-	public void method_5749(class_2487 arg) {
-		super.method_5749(arg);
-		class_1799 lv = class_1799.method_7915(arg.method_10562("Item"));
-		this.method_16940(lv);
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		ItemStack itemStack = ItemStack.fromTag(compoundTag.getCompound("Item"));
+		this.method_16940(itemStack);
 	}
 }

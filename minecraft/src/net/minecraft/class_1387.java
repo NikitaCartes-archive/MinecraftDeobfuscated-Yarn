@@ -1,28 +1,34 @@
 package net.minecraft;
 
-public class class_1387 extends class_1352 {
-	private final class_1496 field_6602;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.passive.HorseBaseEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.Vec3d;
+
+public class class_1387 extends Goal {
+	private final HorseBaseEntity field_6602;
 	private final double field_6601;
 	private double field_6600;
 	private double field_6599;
 	private double field_6603;
 
-	public class_1387(class_1496 arg, double d) {
-		this.field_6602 = arg;
+	public class_1387(HorseBaseEntity horseBaseEntity, double d) {
+		this.field_6602 = horseBaseEntity;
 		this.field_6601 = d;
-		this.method_6265(1);
+		this.setControlBits(1);
 	}
 
 	@Override
-	public boolean method_6264() {
-		if (!this.field_6602.method_6727() && this.field_6602.method_5782()) {
-			class_243 lv = class_1414.method_6375(this.field_6602, 5, 4);
-			if (lv == null) {
+	public boolean canStart() {
+		if (!this.field_6602.isTame() && this.field_6602.hasPassengers()) {
+			Vec3d vec3d = class_1414.method_6375(this.field_6602, 5, 4);
+			if (vec3d == null) {
 				return false;
 			} else {
-				this.field_6600 = lv.field_1352;
-				this.field_6599 = lv.field_1351;
-				this.field_6603 = lv.field_1350;
+				this.field_6600 = vec3d.x;
+				this.field_6599 = vec3d.y;
+				this.field_6603 = vec3d.z;
 				return true;
 			}
 		} else {
@@ -31,37 +37,37 @@ public class class_1387 extends class_1352 {
 	}
 
 	@Override
-	public void method_6269() {
-		this.field_6602.method_5942().method_6337(this.field_6600, this.field_6599, this.field_6603, this.field_6601);
+	public void start() {
+		this.field_6602.getNavigation().startMovingTo(this.field_6600, this.field_6599, this.field_6603, this.field_6601);
 	}
 
 	@Override
-	public boolean method_6266() {
-		return !this.field_6602.method_6727() && !this.field_6602.method_5942().method_6357() && this.field_6602.method_5782();
+	public boolean shouldContinue() {
+		return !this.field_6602.isTame() && !this.field_6602.getNavigation().method_6357() && this.field_6602.hasPassengers();
 	}
 
 	@Override
-	public void method_6268() {
-		if (!this.field_6602.method_6727() && this.field_6602.method_6051().nextInt(50) == 0) {
-			class_1297 lv = (class_1297)this.field_6602.method_5685().get(0);
-			if (lv == null) {
+	public void tick() {
+		if (!this.field_6602.isTame() && this.field_6602.getRand().nextInt(50) == 0) {
+			Entity entity = (Entity)this.field_6602.getPassengerList().get(0);
+			if (entity == null) {
 				return;
 			}
 
-			if (lv instanceof class_1657) {
-				int i = this.field_6602.method_6729();
+			if (entity instanceof PlayerEntity) {
+				int i = this.field_6602.getTemper();
 				int j = this.field_6602.method_6755();
-				if (j > 0 && this.field_6602.method_6051().nextInt(j) < i) {
-					this.field_6602.method_6752((class_1657)lv);
+				if (j > 0 && this.field_6602.getRand().nextInt(j) < i) {
+					this.field_6602.method_6752((PlayerEntity)entity);
 					return;
 				}
 
 				this.field_6602.method_6745(5);
 			}
 
-			this.field_6602.method_5772();
+			this.field_6602.removeAllPassengers();
 			this.field_6602.method_6757();
-			this.field_6602.field_6002.method_8421(this.field_6602, (byte)6);
+			this.field_6602.world.summonParticle(this.field_6602, (byte)6);
 		}
 	}
 }

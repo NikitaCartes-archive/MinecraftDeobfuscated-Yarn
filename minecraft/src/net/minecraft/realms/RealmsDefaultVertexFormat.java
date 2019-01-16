@@ -2,40 +2,40 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_293;
-import net.minecraft.class_296;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormatElement;
 
 @Environment(EnvType.CLIENT)
 public class RealmsDefaultVertexFormat {
-	public static final RealmsVertexFormat BLOCK = new RealmsVertexFormat(new class_293());
-	public static final RealmsVertexFormat BLOCK_NORMALS = new RealmsVertexFormat(new class_293());
-	public static final RealmsVertexFormat ENTITY = new RealmsVertexFormat(new class_293());
-	public static final RealmsVertexFormat PARTICLE = new RealmsVertexFormat(new class_293());
-	public static final RealmsVertexFormat POSITION = new RealmsVertexFormat(new class_293());
-	public static final RealmsVertexFormat POSITION_COLOR = new RealmsVertexFormat(new class_293());
-	public static final RealmsVertexFormat POSITION_TEX = new RealmsVertexFormat(new class_293());
-	public static final RealmsVertexFormat POSITION_NORMAL = new RealmsVertexFormat(new class_293());
-	public static final RealmsVertexFormat POSITION_TEX_COLOR = new RealmsVertexFormat(new class_293());
-	public static final RealmsVertexFormat POSITION_TEX_NORMAL = new RealmsVertexFormat(new class_293());
-	public static final RealmsVertexFormat POSITION_TEX2_COLOR = new RealmsVertexFormat(new class_293());
-	public static final RealmsVertexFormat POSITION_TEX_COLOR_NORMAL = new RealmsVertexFormat(new class_293());
+	public static final RealmsVertexFormat BLOCK = new RealmsVertexFormat(new VertexFormat());
+	public static final RealmsVertexFormat BLOCK_NORMALS = new RealmsVertexFormat(new VertexFormat());
+	public static final RealmsVertexFormat ENTITY = new RealmsVertexFormat(new VertexFormat());
+	public static final RealmsVertexFormat PARTICLE = new RealmsVertexFormat(new VertexFormat());
+	public static final RealmsVertexFormat POSITION = new RealmsVertexFormat(new VertexFormat());
+	public static final RealmsVertexFormat POSITION_COLOR = new RealmsVertexFormat(new VertexFormat());
+	public static final RealmsVertexFormat POSITION_TEX = new RealmsVertexFormat(new VertexFormat());
+	public static final RealmsVertexFormat POSITION_NORMAL = new RealmsVertexFormat(new VertexFormat());
+	public static final RealmsVertexFormat POSITION_TEX_COLOR = new RealmsVertexFormat(new VertexFormat());
+	public static final RealmsVertexFormat POSITION_TEX_NORMAL = new RealmsVertexFormat(new VertexFormat());
+	public static final RealmsVertexFormat POSITION_TEX2_COLOR = new RealmsVertexFormat(new VertexFormat());
+	public static final RealmsVertexFormat POSITION_TEX_COLOR_NORMAL = new RealmsVertexFormat(new VertexFormat());
 	public static final RealmsVertexFormatElement ELEMENT_POSITION = new RealmsVertexFormatElement(
-		new class_296(0, class_296.class_297.field_1623, class_296.class_298.field_1633, 3)
+		new VertexFormatElement(0, VertexFormatElement.Format.FLOAT, VertexFormatElement.Type.POSITION, 3)
 	);
 	public static final RealmsVertexFormatElement ELEMENT_COLOR = new RealmsVertexFormatElement(
-		new class_296(0, class_296.class_297.field_1624, class_296.class_298.field_1632, 4)
+		new VertexFormatElement(0, VertexFormatElement.Format.UNSIGNED_BYTE, VertexFormatElement.Type.COLOR, 4)
 	);
 	public static final RealmsVertexFormatElement ELEMENT_UV0 = new RealmsVertexFormatElement(
-		new class_296(0, class_296.class_297.field_1623, class_296.class_298.field_1636, 2)
+		new VertexFormatElement(0, VertexFormatElement.Format.FLOAT, VertexFormatElement.Type.UV, 2)
 	);
 	public static final RealmsVertexFormatElement ELEMENT_UV1 = new RealmsVertexFormatElement(
-		new class_296(1, class_296.class_297.field_1625, class_296.class_298.field_1636, 2)
+		new VertexFormatElement(1, VertexFormatElement.Format.SHORT, VertexFormatElement.Type.UV, 2)
 	);
 	public static final RealmsVertexFormatElement ELEMENT_NORMAL = new RealmsVertexFormatElement(
-		new class_296(0, class_296.class_297.field_1621, class_296.class_298.field_1635, 3)
+		new VertexFormatElement(0, VertexFormatElement.Format.BYTE, VertexFormatElement.Type.NORMAL, 3)
 	);
 	public static final RealmsVertexFormatElement ELEMENT_PADDING = new RealmsVertexFormatElement(
-		new class_296(0, class_296.class_297.field_1621, class_296.class_298.field_1629, 1)
+		new VertexFormatElement(0, VertexFormatElement.Format.BYTE, VertexFormatElement.Type.PADDING, 1)
 	);
 
 	static {

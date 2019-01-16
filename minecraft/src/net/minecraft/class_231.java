@@ -1,34 +1,38 @@
 package net.minecraft;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.function.CommandFunction;
+import net.minecraft.server.function.CommandFunctionManager;
+import net.minecraft.util.Identifier;
 
 public class class_231 implements class_234<MinecraftServer> {
-	private final class_2960 field_1304;
+	private final Identifier field_1304;
 
-	public class_231(class_2960 arg) {
-		this.field_1304 = arg;
+	public class_231(Identifier identifier) {
+		this.field_1304 = identifier;
 	}
 
 	public void method_967(MinecraftServer minecraftServer, class_236<MinecraftServer> arg, long l) {
-		class_2991 lv = minecraftServer.method_3740();
-		class_2158 lv2 = lv.method_12905(this.field_1304);
-		if (lv2 != null) {
-			lv.method_12904(lv2, lv.method_12899());
+		CommandFunctionManager commandFunctionManager = minecraftServer.getCommandFunctionManager();
+		CommandFunction commandFunction = commandFunctionManager.getFunction(this.field_1304);
+		if (commandFunction != null) {
+			commandFunctionManager.execute(commandFunction, commandFunctionManager.getFunctionCommandSource());
 		}
 	}
 
 	public static class class_232 extends class_234.class_235<MinecraftServer, class_231> {
 		public class_232() {
-			super(new class_2960("function"), class_231.class);
+			super(new Identifier("function"), class_231.class);
 		}
 
-		public void method_968(class_2487 arg, class_231 arg2) {
-			arg.method_10582("Name", arg2.field_1304.toString());
+		public void method_968(CompoundTag compoundTag, class_231 arg) {
+			compoundTag.putString("Name", arg.field_1304.toString());
 		}
 
-		public class_231 method_969(class_2487 arg) {
-			class_2960 lv = new class_2960(arg.method_10558("Name"));
-			return new class_231(lv);
+		public class_231 method_969(CompoundTag compoundTag) {
+			Identifier identifier = new Identifier(compoundTag.getString("Name"));
+			return new class_231(identifier);
 		}
 	}
 }

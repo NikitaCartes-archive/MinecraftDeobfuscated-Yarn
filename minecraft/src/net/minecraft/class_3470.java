@@ -3,71 +3,83 @@ package net.minecraft;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Random;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.enums.StructureMode;
+import net.minecraft.command.arguments.BlockArgumentParser;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sortme.StructurePiece;
+import net.minecraft.util.Rotation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MutableIntBoundingBox;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.chunk.ChunkPos;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public abstract class class_3470 extends class_3443 {
 	private static final Logger field_16586 = LogManager.getLogger();
-	protected class_3499 field_15433;
-	protected class_3492 field_15434;
-	protected class_2338 field_15432;
+	public class_3499 field_15433;
+	public class_3492 field_15434;
+	public BlockPos field_15432;
 
-	public class_3470(class_3773 arg, int i) {
-		super(arg, i);
+	public class_3470(StructurePiece structurePiece, int i) {
+		super(structurePiece, i);
 	}
 
-	public class_3470(class_3773 arg, class_2487 arg2) {
-		super(arg, arg2);
-		this.field_15432 = new class_2338(arg2.method_10550("TPX"), arg2.method_10550("TPY"), arg2.method_10550("TPZ"));
+	public class_3470(StructurePiece structurePiece, CompoundTag compoundTag) {
+		super(structurePiece, compoundTag);
+		this.field_15432 = new BlockPos(compoundTag.getInt("TPX"), compoundTag.getInt("TPY"), compoundTag.getInt("TPZ"));
 	}
 
-	protected void method_15027(class_3499 arg, class_2338 arg2, class_3492 arg3) {
+	protected void method_15027(class_3499 arg, BlockPos blockPos, class_3492 arg2) {
 		this.field_15433 = arg;
-		this.method_14926(class_2350.field_11043);
-		this.field_15432 = arg2;
-		this.field_15434 = arg3;
-		this.field_15315 = arg.method_16187(arg3, arg2);
+		this.method_14926(Direction.NORTH);
+		this.field_15432 = blockPos;
+		this.field_15434 = arg2;
+		this.structureBounds = arg.method_16187(arg2, blockPos);
 	}
 
 	@Override
-	protected void method_14943(class_2487 arg) {
-		arg.method_10569("TPX", this.field_15432.method_10263());
-		arg.method_10569("TPY", this.field_15432.method_10264());
-		arg.method_10569("TPZ", this.field_15432.method_10260());
+	protected void toNbt(CompoundTag compoundTag) {
+		compoundTag.putInt("TPX", this.field_15432.getX());
+		compoundTag.putInt("TPY", this.field_15432.getY());
+		compoundTag.putInt("TPZ", this.field_15432.getZ());
 	}
 
 	@Override
-	public boolean method_14931(class_1936 arg, Random random, class_3341 arg2, class_1923 arg3) {
-		this.field_15434.method_15126(arg2);
-		if (this.field_15433.method_15172(arg, this.field_15432, this.field_15434, 2)) {
-			for (class_3499.class_3501 lv : this.field_15433.method_16445(this.field_15432, this.field_15434, class_2246.field_10465)) {
+	public boolean method_14931(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+		this.field_15434.method_15126(mutableIntBoundingBox);
+		if (this.field_15433.method_15172(iWorld, this.field_15432, this.field_15434, 2)) {
+			for (class_3499.class_3501 lv : this.field_15433.method_16445(this.field_15432, this.field_15434, Blocks.field_10465)) {
 				if (lv.field_15595 != null) {
-					class_2776 lv2 = class_2776.valueOf(lv.field_15595.method_10558("mode"));
-					if (lv2 == class_2776.field_12696) {
-						this.method_15026(lv.field_15595.method_10558("metadata"), lv.field_15597, arg, random, arg2);
+					StructureMode structureMode = StructureMode.valueOf(lv.field_15595.getString("mode"));
+					if (structureMode == StructureMode.field_12696) {
+						this.method_15026(lv.field_15595.getString("metadata"), lv.field_15597, iWorld, random, mutableIntBoundingBox);
 					}
 				}
 			}
 
-			for (class_3499.class_3501 lv3 : this.field_15433.method_16445(this.field_15432, this.field_15434, class_2246.field_16540)) {
-				if (lv3.field_15595 != null) {
-					String string = lv3.field_15595.method_10558("final_state");
-					class_2259 lv4 = new class_2259(new StringReader(string), false);
-					class_2680 lv5 = class_2246.field_10124.method_9564();
+			for (class_3499.class_3501 lv2 : this.field_15433.method_16445(this.field_15432, this.field_15434, Blocks.field_16540)) {
+				if (lv2.field_15595 != null) {
+					String string = lv2.field_15595.getString("final_state");
+					BlockArgumentParser blockArgumentParser = new BlockArgumentParser(new StringReader(string), false);
+					BlockState blockState = Blocks.field_10124.getDefaultState();
 
 					try {
-						lv4.method_9678(true);
-						class_2680 lv6 = lv4.method_9669();
-						if (lv6 != null) {
-							lv5 = lv6;
+						blockArgumentParser.parse(true);
+						BlockState blockState2 = blockArgumentParser.getBlockState();
+						if (blockState2 != null) {
+							blockState = blockState2;
 						} else {
-							field_16586.error("Error while parsing blockstate {} in jigsaw block @ {}", string, lv3.field_15597);
+							field_16586.error("Error while parsing blockstate {} in jigsaw block @ {}", string, lv2.field_15597);
 						}
 					} catch (CommandSyntaxException var13) {
-						field_16586.error("Error while parsing blockstate {} in jigsaw block @ {}", string, lv3.field_15597);
+						field_16586.error("Error while parsing blockstate {} in jigsaw block @ {}", string, lv2.field_15597);
 					}
 
-					arg.method_8652(lv3.field_15597, lv5, 3);
+					iWorld.setBlockState(lv2.field_15597, blockState, 3);
 				}
 			}
 		}
@@ -75,16 +87,16 @@ public abstract class class_3470 extends class_3443 {
 		return true;
 	}
 
-	protected abstract void method_15026(String string, class_2338 arg, class_1936 arg2, Random random, class_3341 arg3);
+	protected abstract void method_15026(String string, BlockPos blockPos, IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox);
 
 	@Override
-	public void method_14922(int i, int j, int k) {
-		super.method_14922(i, j, k);
-		this.field_15432 = this.field_15432.method_10069(i, j, k);
+	public void translate(int i, int j, int k) {
+		super.translate(i, j, k);
+		this.field_15432 = this.field_15432.add(i, j, k);
 	}
 
 	@Override
-	public class_2470 method_16888() {
+	public Rotation method_16888() {
 		return this.field_15434.method_15113();
 	}
 }

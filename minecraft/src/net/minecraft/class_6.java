@@ -4,179 +4,188 @@ import com.google.common.collect.Sets;
 import java.util.EnumSet;
 import java.util.Set;
 import javax.annotation.Nullable;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
+import net.minecraft.entity.ai.pathing.PathNode;
+import net.minecraft.entity.ai.pathing.PathNodeType;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.BlockView;
 
-public class class_6 extends class_14 {
+public class class_6 extends LandPathNodeMaker {
 	@Override
-	public void method_12(class_1922 arg, class_1308 arg2) {
-		super.method_12(arg, arg2);
-		this.field_63 = arg2.method_5944(class_7.field_18);
+	public void init(BlockView blockView, MobEntity mobEntity) {
+		super.init(blockView, mobEntity);
+		this.waterPathNodeTypeWeight = mobEntity.getPathNodeTypeWeight(PathNodeType.WATER);
 	}
 
 	@Override
-	public void method_19() {
-		this.field_33.method_5941(class_7.field_18, this.field_63);
-		super.method_19();
+	public void clear() {
+		this.entity.setPathNodeTypeWeight(PathNodeType.WATER, this.waterPathNodeTypeWeight);
+		super.clear();
 	}
 
 	@Override
-	public class_9 method_21() {
+	public PathNode getStart() {
 		int i;
-		if (this.method_22() && this.field_33.method_5799()) {
-			i = (int)this.field_33.method_5829().field_1322;
-			class_2338.class_2339 lv = new class_2338.class_2339(class_3532.method_15357(this.field_33.field_5987), i, class_3532.method_15357(this.field_33.field_6035));
+		if (this.canSwim() && this.entity.isInsideWater()) {
+			i = (int)this.entity.getBoundingBox().minY;
+			BlockPos.Mutable mutable = new BlockPos.Mutable(MathHelper.floor(this.entity.x), i, MathHelper.floor(this.entity.z));
 
-			for (class_2248 lv2 = this.field_26.method_8320(lv).method_11614(); lv2 == class_2246.field_10382; lv2 = this.field_26.method_8320(lv).method_11614()) {
-				lv.method_10103(class_3532.method_15357(this.field_33.field_5987), ++i, class_3532.method_15357(this.field_33.field_6035));
+			for (Block block = this.blockView.getBlockState(mutable).getBlock(); block == Blocks.field_10382; block = this.blockView.getBlockState(mutable).getBlock()) {
+				mutable.set(MathHelper.floor(this.entity.x), ++i, MathHelper.floor(this.entity.z));
 			}
 		} else {
-			i = class_3532.method_15357(this.field_33.method_5829().field_1322 + 0.5);
+			i = MathHelper.floor(this.entity.getBoundingBox().minY + 0.5);
 		}
 
-		class_2338 lv3 = new class_2338(this.field_33);
-		class_7 lv4 = this.method_9(this.field_33, lv3.method_10263(), i, lv3.method_10260());
-		if (this.field_33.method_5944(lv4) < 0.0F) {
-			Set<class_2338> set = Sets.<class_2338>newHashSet();
-			set.add(new class_2338(this.field_33.method_5829().field_1323, (double)i, this.field_33.method_5829().field_1321));
-			set.add(new class_2338(this.field_33.method_5829().field_1323, (double)i, this.field_33.method_5829().field_1324));
-			set.add(new class_2338(this.field_33.method_5829().field_1320, (double)i, this.field_33.method_5829().field_1321));
-			set.add(new class_2338(this.field_33.method_5829().field_1320, (double)i, this.field_33.method_5829().field_1324));
+		BlockPos blockPos = new BlockPos(this.entity);
+		PathNodeType pathNodeType = this.method_9(this.entity, blockPos.getX(), i, blockPos.getZ());
+		if (this.entity.getPathNodeTypeWeight(pathNodeType) < 0.0F) {
+			Set<BlockPos> set = Sets.<BlockPos>newHashSet();
+			set.add(new BlockPos(this.entity.getBoundingBox().minX, (double)i, this.entity.getBoundingBox().minZ));
+			set.add(new BlockPos(this.entity.getBoundingBox().minX, (double)i, this.entity.getBoundingBox().maxZ));
+			set.add(new BlockPos(this.entity.getBoundingBox().maxX, (double)i, this.entity.getBoundingBox().minZ));
+			set.add(new BlockPos(this.entity.getBoundingBox().maxX, (double)i, this.entity.getBoundingBox().maxZ));
 
-			for (class_2338 lv5 : set) {
-				class_7 lv6 = this.method_10(this.field_33, lv5);
-				if (this.field_33.method_5944(lv6) >= 0.0F) {
-					return super.method_13(lv5.method_10263(), lv5.method_10264(), lv5.method_10260());
+			for (BlockPos blockPos2 : set) {
+				PathNodeType pathNodeType2 = this.method_10(this.entity, blockPos2);
+				if (this.entity.getPathNodeTypeWeight(pathNodeType2) >= 0.0F) {
+					return super.getPathNode(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
 				}
 			}
 		}
 
-		return super.method_13(lv3.method_10263(), i, lv3.method_10260());
+		return super.getPathNode(blockPos.getX(), i, blockPos.getZ());
 	}
 
 	@Override
-	public class_9 method_16(double d, double e, double f) {
-		return super.method_13(class_3532.method_15357(d), class_3532.method_15357(e), class_3532.method_15357(f));
+	public PathNode getPathNode(double d, double e, double f) {
+		return super.getPathNode(MathHelper.floor(d), MathHelper.floor(e), MathHelper.floor(f));
 	}
 
 	@Override
-	public int method_18(class_9[] args, class_9 arg, class_9 arg2, float f) {
+	public int getPathNodes(PathNode[] pathNodes, PathNode pathNode, PathNode pathNode2, float f) {
 		int i = 0;
-		class_9 lv = this.method_13(arg.field_40, arg.field_39, arg.field_38 + 1);
-		class_9 lv2 = this.method_13(arg.field_40 - 1, arg.field_39, arg.field_38);
-		class_9 lv3 = this.method_13(arg.field_40 + 1, arg.field_39, arg.field_38);
-		class_9 lv4 = this.method_13(arg.field_40, arg.field_39, arg.field_38 - 1);
-		class_9 lv5 = this.method_13(arg.field_40, arg.field_39 + 1, arg.field_38);
-		class_9 lv6 = this.method_13(arg.field_40, arg.field_39 - 1, arg.field_38);
-		if (lv != null && !lv.field_42 && lv.method_31(arg2) < f) {
-			args[i++] = lv;
+		PathNode pathNode3 = this.getPathNode(pathNode.x, pathNode.y, pathNode.z + 1);
+		PathNode pathNode4 = this.getPathNode(pathNode.x - 1, pathNode.y, pathNode.z);
+		PathNode pathNode5 = this.getPathNode(pathNode.x + 1, pathNode.y, pathNode.z);
+		PathNode pathNode6 = this.getPathNode(pathNode.x, pathNode.y, pathNode.z - 1);
+		PathNode pathNode7 = this.getPathNode(pathNode.x, pathNode.y + 1, pathNode.z);
+		PathNode pathNode8 = this.getPathNode(pathNode.x, pathNode.y - 1, pathNode.z);
+		if (pathNode3 != null && !pathNode3.field_42 && pathNode3.distance(pathNode2) < f) {
+			pathNodes[i++] = pathNode3;
 		}
 
-		if (lv2 != null && !lv2.field_42 && lv2.method_31(arg2) < f) {
-			args[i++] = lv2;
+		if (pathNode4 != null && !pathNode4.field_42 && pathNode4.distance(pathNode2) < f) {
+			pathNodes[i++] = pathNode4;
 		}
 
-		if (lv3 != null && !lv3.field_42 && lv3.method_31(arg2) < f) {
-			args[i++] = lv3;
+		if (pathNode5 != null && !pathNode5.field_42 && pathNode5.distance(pathNode2) < f) {
+			pathNodes[i++] = pathNode5;
 		}
 
-		if (lv4 != null && !lv4.field_42 && lv4.method_31(arg2) < f) {
-			args[i++] = lv4;
+		if (pathNode6 != null && !pathNode6.field_42 && pathNode6.distance(pathNode2) < f) {
+			pathNodes[i++] = pathNode6;
 		}
 
-		if (lv5 != null && !lv5.field_42 && lv5.method_31(arg2) < f) {
-			args[i++] = lv5;
+		if (pathNode7 != null && !pathNode7.field_42 && pathNode7.distance(pathNode2) < f) {
+			pathNodes[i++] = pathNode7;
 		}
 
-		if (lv6 != null && !lv6.field_42 && lv6.method_31(arg2) < f) {
-			args[i++] = lv6;
+		if (pathNode8 != null && !pathNode8.field_42 && pathNode8.distance(pathNode2) < f) {
+			pathNodes[i++] = pathNode8;
 		}
 
-		boolean bl = lv4 == null || lv4.field_43 != 0.0F;
-		boolean bl2 = lv == null || lv.field_43 != 0.0F;
-		boolean bl3 = lv3 == null || lv3.field_43 != 0.0F;
-		boolean bl4 = lv2 == null || lv2.field_43 != 0.0F;
-		boolean bl5 = lv5 == null || lv5.field_43 != 0.0F;
-		boolean bl6 = lv6 == null || lv6.field_43 != 0.0F;
+		boolean bl = pathNode6 == null || pathNode6.field_43 != 0.0F;
+		boolean bl2 = pathNode3 == null || pathNode3.field_43 != 0.0F;
+		boolean bl3 = pathNode5 == null || pathNode5.field_43 != 0.0F;
+		boolean bl4 = pathNode4 == null || pathNode4.field_43 != 0.0F;
+		boolean bl5 = pathNode7 == null || pathNode7.field_43 != 0.0F;
+		boolean bl6 = pathNode8 == null || pathNode8.field_43 != 0.0F;
 		if (bl && bl4) {
-			class_9 lv7 = this.method_13(arg.field_40 - 1, arg.field_39, arg.field_38 - 1);
-			if (lv7 != null && !lv7.field_42 && lv7.method_31(arg2) < f) {
-				args[i++] = lv7;
+			PathNode pathNode9 = this.getPathNode(pathNode.x - 1, pathNode.y, pathNode.z - 1);
+			if (pathNode9 != null && !pathNode9.field_42 && pathNode9.distance(pathNode2) < f) {
+				pathNodes[i++] = pathNode9;
 			}
 		}
 
 		if (bl && bl3) {
-			class_9 lv7 = this.method_13(arg.field_40 + 1, arg.field_39, arg.field_38 - 1);
-			if (lv7 != null && !lv7.field_42 && lv7.method_31(arg2) < f) {
-				args[i++] = lv7;
+			PathNode pathNode9 = this.getPathNode(pathNode.x + 1, pathNode.y, pathNode.z - 1);
+			if (pathNode9 != null && !pathNode9.field_42 && pathNode9.distance(pathNode2) < f) {
+				pathNodes[i++] = pathNode9;
 			}
 		}
 
 		if (bl2 && bl4) {
-			class_9 lv7 = this.method_13(arg.field_40 - 1, arg.field_39, arg.field_38 + 1);
-			if (lv7 != null && !lv7.field_42 && lv7.method_31(arg2) < f) {
-				args[i++] = lv7;
+			PathNode pathNode9 = this.getPathNode(pathNode.x - 1, pathNode.y, pathNode.z + 1);
+			if (pathNode9 != null && !pathNode9.field_42 && pathNode9.distance(pathNode2) < f) {
+				pathNodes[i++] = pathNode9;
 			}
 		}
 
 		if (bl2 && bl3) {
-			class_9 lv7 = this.method_13(arg.field_40 + 1, arg.field_39, arg.field_38 + 1);
-			if (lv7 != null && !lv7.field_42 && lv7.method_31(arg2) < f) {
-				args[i++] = lv7;
+			PathNode pathNode9 = this.getPathNode(pathNode.x + 1, pathNode.y, pathNode.z + 1);
+			if (pathNode9 != null && !pathNode9.field_42 && pathNode9.distance(pathNode2) < f) {
+				pathNodes[i++] = pathNode9;
 			}
 		}
 
 		if (bl && bl5) {
-			class_9 lv7 = this.method_13(arg.field_40, arg.field_39 + 1, arg.field_38 - 1);
-			if (lv7 != null && !lv7.field_42 && lv7.method_31(arg2) < f) {
-				args[i++] = lv7;
+			PathNode pathNode9 = this.getPathNode(pathNode.x, pathNode.y + 1, pathNode.z - 1);
+			if (pathNode9 != null && !pathNode9.field_42 && pathNode9.distance(pathNode2) < f) {
+				pathNodes[i++] = pathNode9;
 			}
 		}
 
 		if (bl2 && bl5) {
-			class_9 lv7 = this.method_13(arg.field_40, arg.field_39 + 1, arg.field_38 + 1);
-			if (lv7 != null && !lv7.field_42 && lv7.method_31(arg2) < f) {
-				args[i++] = lv7;
+			PathNode pathNode9 = this.getPathNode(pathNode.x, pathNode.y + 1, pathNode.z + 1);
+			if (pathNode9 != null && !pathNode9.field_42 && pathNode9.distance(pathNode2) < f) {
+				pathNodes[i++] = pathNode9;
 			}
 		}
 
 		if (bl3 && bl5) {
-			class_9 lv7 = this.method_13(arg.field_40 + 1, arg.field_39 + 1, arg.field_38);
-			if (lv7 != null && !lv7.field_42 && lv7.method_31(arg2) < f) {
-				args[i++] = lv7;
+			PathNode pathNode9 = this.getPathNode(pathNode.x + 1, pathNode.y + 1, pathNode.z);
+			if (pathNode9 != null && !pathNode9.field_42 && pathNode9.distance(pathNode2) < f) {
+				pathNodes[i++] = pathNode9;
 			}
 		}
 
 		if (bl4 && bl5) {
-			class_9 lv7 = this.method_13(arg.field_40 - 1, arg.field_39 + 1, arg.field_38);
-			if (lv7 != null && !lv7.field_42 && lv7.method_31(arg2) < f) {
-				args[i++] = lv7;
+			PathNode pathNode9 = this.getPathNode(pathNode.x - 1, pathNode.y + 1, pathNode.z);
+			if (pathNode9 != null && !pathNode9.field_42 && pathNode9.distance(pathNode2) < f) {
+				pathNodes[i++] = pathNode9;
 			}
 		}
 
 		if (bl && bl6) {
-			class_9 lv7 = this.method_13(arg.field_40, arg.field_39 - 1, arg.field_38 - 1);
-			if (lv7 != null && !lv7.field_42 && lv7.method_31(arg2) < f) {
-				args[i++] = lv7;
+			PathNode pathNode9 = this.getPathNode(pathNode.x, pathNode.y - 1, pathNode.z - 1);
+			if (pathNode9 != null && !pathNode9.field_42 && pathNode9.distance(pathNode2) < f) {
+				pathNodes[i++] = pathNode9;
 			}
 		}
 
 		if (bl2 && bl6) {
-			class_9 lv7 = this.method_13(arg.field_40, arg.field_39 - 1, arg.field_38 + 1);
-			if (lv7 != null && !lv7.field_42 && lv7.method_31(arg2) < f) {
-				args[i++] = lv7;
+			PathNode pathNode9 = this.getPathNode(pathNode.x, pathNode.y - 1, pathNode.z + 1);
+			if (pathNode9 != null && !pathNode9.field_42 && pathNode9.distance(pathNode2) < f) {
+				pathNodes[i++] = pathNode9;
 			}
 		}
 
 		if (bl3 && bl6) {
-			class_9 lv7 = this.method_13(arg.field_40 + 1, arg.field_39 - 1, arg.field_38);
-			if (lv7 != null && !lv7.field_42 && lv7.method_31(arg2) < f) {
-				args[i++] = lv7;
+			PathNode pathNode9 = this.getPathNode(pathNode.x + 1, pathNode.y - 1, pathNode.z);
+			if (pathNode9 != null && !pathNode9.field_42 && pathNode9.distance(pathNode2) < f) {
+				pathNodes[i++] = pathNode9;
 			}
 		}
 
 		if (bl4 && bl6) {
-			class_9 lv7 = this.method_13(arg.field_40 - 1, arg.field_39 - 1, arg.field_38);
-			if (lv7 != null && !lv7.field_42 && lv7.method_31(arg2) < f) {
-				args[i++] = lv7;
+			PathNode pathNode9 = this.getPathNode(pathNode.x - 1, pathNode.y - 1, pathNode.z);
+			if (pathNode9 != null && !pathNode9.field_42 && pathNode9.distance(pathNode2) < f) {
+				pathNodes[i++] = pathNode9;
 			}
 		}
 
@@ -185,72 +194,76 @@ public class class_6 extends class_14 {
 
 	@Nullable
 	@Override
-	protected class_9 method_13(int i, int j, int k) {
-		class_9 lv = null;
-		class_7 lv2 = this.method_9(this.field_33, i, j, k);
-		float f = this.field_33.method_5944(lv2);
+	protected PathNode getPathNode(int i, int j, int k) {
+		PathNode pathNode = null;
+		PathNodeType pathNodeType = this.method_9(this.entity, i, j, k);
+		float f = this.entity.getPathNodeTypeWeight(pathNodeType);
 		if (f >= 0.0F) {
-			lv = super.method_13(i, j, k);
-			lv.field_41 = lv2;
-			lv.field_43 = Math.max(lv.field_43, f);
-			if (lv2 == class_7.field_12) {
-				lv.field_43++;
+			pathNode = super.getPathNode(i, j, k);
+			pathNode.type = pathNodeType;
+			pathNode.field_43 = Math.max(pathNode.field_43, f);
+			if (pathNodeType == PathNodeType.NORMAL) {
+				pathNode.field_43++;
 			}
 		}
 
-		return lv2 != class_7.field_7 && lv2 != class_7.field_12 ? lv : lv;
+		return pathNodeType != PathNodeType.AIR && pathNodeType != PathNodeType.NORMAL ? pathNode : pathNode;
 	}
 
 	@Override
-	public class_7 method_17(class_1922 arg, int i, int j, int k, class_1308 arg2, int l, int m, int n, boolean bl, boolean bl2) {
-		EnumSet<class_7> enumSet = EnumSet.noneOf(class_7.class);
-		class_7 lv = class_7.field_22;
-		class_2338 lv2 = new class_2338(arg2);
-		lv = this.method_64(arg, i, j, k, l, m, n, bl, bl2, enumSet, lv, lv2);
-		if (enumSet.contains(class_7.field_10)) {
-			return class_7.field_10;
+	public PathNodeType getPathNodeType(BlockView blockView, int i, int j, int k, MobEntity mobEntity, int l, int m, int n, boolean bl, boolean bl2) {
+		EnumSet<PathNodeType> enumSet = EnumSet.noneOf(PathNodeType.class);
+		PathNodeType pathNodeType = PathNodeType.BLOCKED;
+		BlockPos blockPos = new BlockPos(mobEntity);
+		pathNodeType = this.method_64(blockView, i, j, k, l, m, n, bl, bl2, enumSet, pathNodeType, blockPos);
+		if (enumSet.contains(PathNodeType.FENCE)) {
+			return PathNodeType.FENCE;
 		} else {
-			class_7 lv3 = class_7.field_22;
+			PathNodeType pathNodeType2 = PathNodeType.BLOCKED;
 
-			for (class_7 lv4 : enumSet) {
-				if (arg2.method_5944(lv4) < 0.0F) {
-					return lv4;
+			for (PathNodeType pathNodeType3 : enumSet) {
+				if (mobEntity.getPathNodeTypeWeight(pathNodeType3) < 0.0F) {
+					return pathNodeType3;
 				}
 
-				if (arg2.method_5944(lv4) >= arg2.method_5944(lv3)) {
-					lv3 = lv4;
+				if (mobEntity.getPathNodeTypeWeight(pathNodeType3) >= mobEntity.getPathNodeTypeWeight(pathNodeType2)) {
+					pathNodeType2 = pathNodeType3;
 				}
 			}
 
-			return lv == class_7.field_7 && arg2.method_5944(lv3) == 0.0F ? class_7.field_7 : lv3;
+			return pathNodeType == PathNodeType.AIR && mobEntity.getPathNodeTypeWeight(pathNodeType2) == 0.0F ? PathNodeType.AIR : pathNodeType2;
 		}
 	}
 
 	@Override
-	public class_7 method_25(class_1922 arg, int i, int j, int k) {
-		class_7 lv = this.method_58(arg, i, j, k);
-		if (lv == class_7.field_7 && j >= 1) {
-			class_2248 lv2 = arg.method_8320(new class_2338(i, j - 1, k)).method_11614();
-			class_7 lv3 = this.method_58(arg, i, j - 1, k);
-			if (lv3 == class_7.field_3 || lv2 == class_2246.field_10092 || lv3 == class_7.field_14 || lv2 == class_2246.field_17350) {
-				lv = class_7.field_3;
-			} else if (lv3 == class_7.field_11) {
-				lv = class_7.field_11;
-			} else if (lv3 == class_7.field_17) {
-				lv = class_7.field_17;
+	public PathNodeType getPathNodeType(BlockView blockView, int i, int j, int k) {
+		PathNodeType pathNodeType = this.getBasicPathNodeType(blockView, i, j, k);
+		if (pathNodeType == PathNodeType.AIR && j >= 1) {
+			Block block = blockView.getBlockState(new BlockPos(i, j - 1, k)).getBlock();
+			PathNodeType pathNodeType2 = this.getBasicPathNodeType(blockView, i, j - 1, k);
+			if (pathNodeType2 == PathNodeType.FIRE || block == Blocks.field_10092 || pathNodeType2 == PathNodeType.LAVA || block == Blocks.field_17350) {
+				pathNodeType = PathNodeType.FIRE;
+			} else if (pathNodeType2 == PathNodeType.CACTUS) {
+				pathNodeType = PathNodeType.CACTUS;
+			} else if (pathNodeType2 == PathNodeType.field_17) {
+				pathNodeType = PathNodeType.field_17;
 			} else {
-				lv = lv3 != class_7.field_12 && lv3 != class_7.field_7 && lv3 != class_7.field_18 ? class_7.field_12 : class_7.field_7;
+				pathNodeType = pathNodeType2 != PathNodeType.NORMAL && pathNodeType2 != PathNodeType.AIR && pathNodeType2 != PathNodeType.WATER
+					? PathNodeType.NORMAL
+					: PathNodeType.AIR;
 			}
 		}
 
-		return this.method_59(arg, i, j, k, lv);
+		return this.method_59(blockView, i, j, k, pathNodeType);
 	}
 
-	private class_7 method_10(class_1308 arg, class_2338 arg2) {
-		return this.method_9(arg, arg2.method_10263(), arg2.method_10264(), arg2.method_10260());
+	private PathNodeType method_10(MobEntity mobEntity, BlockPos blockPos) {
+		return this.method_9(mobEntity, blockPos.getX(), blockPos.getY(), blockPos.getZ());
 	}
 
-	private class_7 method_9(class_1308 arg, int i, int j, int k) {
-		return this.method_17(this.field_26, i, j, k, arg, this.field_31, this.field_30, this.field_28, this.method_24(), this.method_23());
+	private PathNodeType method_9(MobEntity mobEntity, int i, int j, int k) {
+		return this.getPathNodeType(
+			this.blockView, i, j, k, mobEntity, this.field_31, this.field_30, this.field_28, this.canPathThroughDoors(), this.canEnterOpenDoors()
+		);
 	}
 }

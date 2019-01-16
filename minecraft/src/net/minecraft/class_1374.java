@@ -1,31 +1,38 @@
 package net.minecraft;
 
 import javax.annotation.Nullable;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.tag.FluidTags;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.BlockView;
 
-public class class_1374 extends class_1352 {
-	protected final class_1314 field_6549;
+public class class_1374 extends Goal {
+	protected final MobEntityWithAi field_6549;
 	protected final double field_6548;
 	protected double field_6547;
 	protected double field_6546;
 	protected double field_6550;
 
-	public class_1374(class_1314 arg, double d) {
-		this.field_6549 = arg;
+	public class_1374(MobEntityWithAi mobEntityWithAi, double d) {
+		this.field_6549 = mobEntityWithAi;
 		this.field_6548 = d;
-		this.method_6265(1);
+		this.setControlBits(1);
 	}
 
 	@Override
-	public boolean method_6264() {
-		if (this.field_6549.method_6065() == null && !this.field_6549.method_5809()) {
+	public boolean canStart() {
+		if (this.field_6549.getAttacker() == null && !this.field_6549.isOnFire()) {
 			return false;
 		} else {
-			if (this.field_6549.method_5809()) {
-				class_2338 lv = this.method_6300(this.field_6549.field_6002, this.field_6549, 5, 4);
-				if (lv != null) {
-					this.field_6547 = (double)lv.method_10263();
-					this.field_6546 = (double)lv.method_10264();
-					this.field_6550 = (double)lv.method_10260();
+			if (this.field_6549.isOnFire()) {
+				BlockPos blockPos = this.method_6300(this.field_6549.world, this.field_6549, 5, 4);
+				if (blockPos != null) {
+					this.field_6547 = (double)blockPos.getX();
+					this.field_6546 = (double)blockPos.getY();
+					this.field_6550 = (double)blockPos.getZ();
 					return true;
 				}
 			}
@@ -35,52 +42,52 @@ public class class_1374 extends class_1352 {
 	}
 
 	protected boolean method_6301() {
-		class_243 lv = class_1414.method_6375(this.field_6549, 5, 4);
-		if (lv == null) {
+		Vec3d vec3d = class_1414.method_6375(this.field_6549, 5, 4);
+		if (vec3d == null) {
 			return false;
 		} else {
-			this.field_6547 = lv.field_1352;
-			this.field_6546 = lv.field_1351;
-			this.field_6550 = lv.field_1350;
+			this.field_6547 = vec3d.x;
+			this.field_6546 = vec3d.y;
+			this.field_6550 = vec3d.z;
 			return true;
 		}
 	}
 
 	@Override
-	public void method_6269() {
-		this.field_6549.method_5942().method_6337(this.field_6547, this.field_6546, this.field_6550, this.field_6548);
+	public void start() {
+		this.field_6549.getNavigation().startMovingTo(this.field_6547, this.field_6546, this.field_6550, this.field_6548);
 	}
 
 	@Override
-	public boolean method_6266() {
-		return !this.field_6549.method_5942().method_6357();
+	public boolean shouldContinue() {
+		return !this.field_6549.getNavigation().method_6357();
 	}
 
 	@Nullable
-	protected class_2338 method_6300(class_1922 arg, class_1297 arg2, int i, int j) {
-		class_2338 lv = new class_2338(arg2);
-		int k = lv.method_10263();
-		int l = lv.method_10264();
-		int m = lv.method_10260();
+	protected BlockPos method_6300(BlockView blockView, Entity entity, int i, int j) {
+		BlockPos blockPos = new BlockPos(entity);
+		int k = blockPos.getX();
+		int l = blockPos.getY();
+		int m = blockPos.getZ();
 		float f = (float)(i * i * j * 2);
-		class_2338 lv2 = null;
-		class_2338.class_2339 lv3 = new class_2338.class_2339();
+		BlockPos blockPos2 = null;
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int n = k - i; n <= k + i; n++) {
 			for (int o = l - j; o <= l + j; o++) {
 				for (int p = m - i; p <= m + i; p++) {
-					lv3.method_10103(n, o, p);
-					if (arg.method_8316(lv3).method_15767(class_3486.field_15517)) {
+					mutable.set(n, o, p);
+					if (blockView.getFluidState(mutable).matches(FluidTags.field_15517)) {
 						float g = (float)((n - k) * (n - k) + (o - l) * (o - l) + (p - m) * (p - m));
 						if (g < f) {
 							f = g;
-							lv2 = new class_2338(lv3);
+							blockPos2 = new BlockPos(mutable);
 						}
 					}
 				}
 			}
 		}
 
-		return lv2;
+		return blockPos2;
 	}
 }

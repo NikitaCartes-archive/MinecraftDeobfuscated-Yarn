@@ -8,15 +8,16 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.ServerNetworkIO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class class_3238 extends ChannelInboundHandlerAdapter {
 	private static final Logger field_14101 = LogManager.getLogger();
-	private final class_3242 field_14102;
+	private final ServerNetworkIO field_14102;
 
-	public class_3238(class_3242 arg) {
-		this.field_14102 = arg;
+	public class_3238(ServerNetworkIO serverNetworkIO) {
+		this.field_14102 = serverNetworkIO;
 	}
 
 	@Override
@@ -32,12 +33,12 @@ public class class_3238 extends ChannelInboundHandlerAdapter {
 				}
 
 				InetSocketAddress inetSocketAddress = (InetSocketAddress)channelHandlerContext.channel().remoteAddress();
-				MinecraftServer minecraftServer = this.field_14102.method_14351();
+				MinecraftServer minecraftServer = this.field_14102.getServer();
 				int i = byteBuf.readableBytes();
 				switch (i) {
 					case 0: {
 						field_14101.debug("Ping: (<1.3.x) from {}:{}", inetSocketAddress.getAddress(), inetSocketAddress.getPort());
-						String string = String.format("%s§%d§%d", minecraftServer.method_3818(), minecraftServer.method_3788(), minecraftServer.method_3802());
+						String string = String.format("%s§%d§%d", minecraftServer.getServerMotd(), minecraftServer.getCurrentPlayerCount(), minecraftServer.getMaxPlayerCount());
 						this.method_14344(channelHandlerContext, this.method_14345(string));
 						break;
 					}
@@ -50,10 +51,10 @@ public class class_3238 extends ChannelInboundHandlerAdapter {
 						String string = String.format(
 							"§1\u0000%d\u0000%s\u0000%s\u0000%d\u0000%d",
 							127,
-							minecraftServer.method_3827(),
-							minecraftServer.method_3818(),
-							minecraftServer.method_3788(),
-							minecraftServer.method_3802()
+							minecraftServer.getVersion(),
+							minecraftServer.getServerMotd(),
+							minecraftServer.getCurrentPlayerCount(),
+							minecraftServer.getMaxPlayerCount()
 						);
 						this.method_14344(channelHandlerContext, this.method_14345(string));
 						break;
@@ -75,10 +76,10 @@ public class class_3238 extends ChannelInboundHandlerAdapter {
 						String string2 = String.format(
 							"§1\u0000%d\u0000%s\u0000%s\u0000%d\u0000%d",
 							127,
-							minecraftServer.method_3827(),
-							minecraftServer.method_3818(),
-							minecraftServer.method_3788(),
-							minecraftServer.method_3802()
+							minecraftServer.getVersion(),
+							minecraftServer.getServerMotd(),
+							minecraftServer.getCurrentPlayerCount(),
+							minecraftServer.getMaxPlayerCount()
 						);
 						ByteBuf byteBuf2 = this.method_14345(string2);
 

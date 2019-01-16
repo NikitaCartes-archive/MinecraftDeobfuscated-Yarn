@@ -4,86 +4,86 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_293;
-import net.minecraft.class_296;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormatElement;
 
 @Environment(EnvType.CLIENT)
 public class RealmsVertexFormat {
-	private class_293 field_5663;
+	private VertexFormat field_5663;
 
-	public RealmsVertexFormat(class_293 arg) {
-		this.field_5663 = arg;
+	public RealmsVertexFormat(VertexFormat vertexFormat) {
+		this.field_5663 = vertexFormat;
 	}
 
-	public RealmsVertexFormat from(class_293 arg) {
-		this.field_5663 = arg;
+	public RealmsVertexFormat from(VertexFormat vertexFormat) {
+		this.field_5663 = vertexFormat;
 		return this;
 	}
 
-	public class_293 getVertexFormat() {
+	public VertexFormat getVertexFormat() {
 		return this.field_5663;
 	}
 
 	public void clear() {
-		this.field_5663.method_1366();
+		this.field_5663.clear();
 	}
 
 	public int getUvOffset(int i) {
-		return this.field_5663.method_1370(i);
+		return this.field_5663.getUvOffset(i);
 	}
 
 	public int getElementCount() {
-		return this.field_5663.method_1363();
+		return this.field_5663.getElementCount();
 	}
 
 	public boolean hasColor() {
-		return this.field_5663.method_1369();
+		return this.field_5663.hasColorElement();
 	}
 
 	public boolean hasUv(int i) {
-		return this.field_5663.method_1367(i);
+		return this.field_5663.hasUvElement(i);
 	}
 
 	public RealmsVertexFormatElement getElement(int i) {
-		return new RealmsVertexFormatElement(this.field_5663.method_1364(i));
+		return new RealmsVertexFormatElement(this.field_5663.getElement(i));
 	}
 
 	public RealmsVertexFormat addElement(RealmsVertexFormatElement realmsVertexFormatElement) {
-		return this.from(this.field_5663.method_1361(realmsVertexFormatElement.getVertexFormatElement()));
+		return this.from(this.field_5663.add(realmsVertexFormatElement.getVertexFormatElement()));
 	}
 
 	public int getColorOffset() {
-		return this.field_5663.method_1360();
+		return this.field_5663.getColorOffset();
 	}
 
 	public List<RealmsVertexFormatElement> getElements() {
 		List<RealmsVertexFormatElement> list = Lists.<RealmsVertexFormatElement>newArrayList();
 
-		for (class_296 lv : this.field_5663.method_1357()) {
-			list.add(new RealmsVertexFormatElement(lv));
+		for (VertexFormatElement vertexFormatElement : this.field_5663.getElements()) {
+			list.add(new RealmsVertexFormatElement(vertexFormatElement));
 		}
 
 		return list;
 	}
 
 	public boolean hasNormal() {
-		return this.field_5663.method_1368();
+		return this.field_5663.hasNormalElement();
 	}
 
 	public int getVertexSize() {
-		return this.field_5663.method_1362();
+		return this.field_5663.getVertexSize();
 	}
 
 	public int getOffset(int i) {
-		return this.field_5663.method_1365(i);
+		return this.field_5663.getElementOffset(i);
 	}
 
 	public int getNormalOffset() {
-		return this.field_5663.method_1358();
+		return this.field_5663.getNormalOffset();
 	}
 
 	public int getIntegerSize() {
-		return this.field_5663.method_1359();
+		return this.field_5663.getVertexSizeInteger();
 	}
 
 	public boolean equals(Object object) {
