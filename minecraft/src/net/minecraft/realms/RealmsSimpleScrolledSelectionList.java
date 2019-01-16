@@ -2,23 +2,23 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_364;
-import net.minecraft.class_401;
+import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.SimpleScrolledSelectionList;
 
 @Environment(EnvType.CLIENT)
 public abstract class RealmsSimpleScrolledSelectionList extends RealmsGuiEventListener {
-	private final class_401 proxy;
+	private final SimpleScrolledSelectionList proxy;
 
 	public RealmsSimpleScrolledSelectionList(int i, int j, int k, int l, int m) {
-		this.proxy = new class_401(this, i, j, k, l, m);
+		this.proxy = new SimpleScrolledSelectionList(this, i, j, k, l, m);
 	}
 
 	public void render(int i, int j, float f) {
-		this.proxy.method_1930(i, j, f);
+		this.proxy.draw(i, j, f);
 	}
 
 	public int width() {
-		return this.proxy.method_2093();
+		return this.proxy.getWidth();
 	}
 
 	protected void renderItem(int i, int j, int k, int l, Tezzelator tezzelator, int m, int n) {
@@ -48,20 +48,20 @@ public abstract class RealmsSimpleScrolledSelectionList extends RealmsGuiEventLi
 	}
 
 	public int getScrollbarPosition() {
-		return this.proxy.method_2093() / 2 + 124;
+		return this.proxy.getWidth() / 2 + 124;
 	}
 
 	@Override
-	public class_364 getProxy() {
+	public GuiEventListener getProxy() {
 		return this.proxy;
 	}
 
 	public void scroll(int i) {
-		this.proxy.method_1951(i);
+		this.proxy.scroll(i);
 	}
 
 	public int getScroll() {
-		return this.proxy.method_1944();
+		return this.proxy.getScrollY();
 	}
 
 	protected void renderList(int i, int j, int k, int l) {

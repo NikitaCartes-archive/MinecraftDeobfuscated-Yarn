@@ -4,12 +4,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.raid.RaiderEntity;
 
-public class class_3909<T extends class_1309> extends class_1400<T> {
+public class class_3909<T extends LivingEntity> extends FollowTargetGoal<T> {
 	private int field_17282 = 0;
 
-	public class_3909(class_3763 arg, Class<T> class_, boolean bl, @Nullable Predicate<? super T> predicate) {
-		super(arg, class_, 500, bl, false, predicate);
+	public class_3909(RaiderEntity raiderEntity, Class<T> class_, boolean bl, @Nullable Predicate<? super T> predicate) {
+		super(raiderEntity, class_, 500, bl, false, predicate);
 	}
 
 	public int method_17352() {
@@ -21,11 +24,11 @@ public class class_3909<T extends class_1309> extends class_1400<T> {
 	}
 
 	@Override
-	public boolean method_6264() {
-		if (this.field_17282 > 0 || !this.field_6660.method_6051().nextBoolean()) {
+	public boolean canStart() {
+		if (this.field_17282 > 0 || !this.entity.getRand().nextBoolean()) {
 			return false;
-		} else if (((class_3763)this.field_6660).method_16482() && this.field_6643.isAssignableFrom(class_3763.class)) {
-			List<T> list = this.field_6660.field_6002.method_8390(this.field_6643, this.method_6321(this.method_6326()), this.field_6642);
+		} else if (((RaiderEntity)this.entity).hasActiveRaid() && this.field_6643.isAssignableFrom(RaiderEntity.class)) {
+			List<T> list = this.entity.world.getEntities(this.field_6643, this.getSearchBox(this.getFollowRange()), this.field_6642);
 			if (list.isEmpty()) {
 				return false;
 			} else {
@@ -39,8 +42,8 @@ public class class_3909<T extends class_1309> extends class_1400<T> {
 	}
 
 	@Override
-	public void method_6269() {
+	public void start() {
 		this.field_17282 = 200;
-		super.method_6269();
+		super.start();
 	}
 }

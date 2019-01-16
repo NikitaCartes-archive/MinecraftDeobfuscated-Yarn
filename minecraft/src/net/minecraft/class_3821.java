@@ -5,35 +5,41 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.block.BlockState;
+import net.minecraft.datafixers.NbtOps;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sortme.rule.AbstractRuleTest;
+import net.minecraft.sortme.rule.AlwaysTrueRuleTest;
+import net.minecraft.util.registry.Registry;
 
 public class class_3821 {
-	private final class_3825 field_16872;
-	private final class_3825 field_16873;
-	private final class_2680 field_16874;
+	private final AbstractRuleTest field_16872;
+	private final AbstractRuleTest field_16873;
+	private final BlockState field_16874;
 	@Nullable
-	private final class_2487 field_16875;
+	private final CompoundTag field_16875;
 
-	public class_3821(class_3825 arg, class_3825 arg2, class_2680 arg3) {
-		this(arg, arg2, arg3, null);
+	public class_3821(AbstractRuleTest abstractRuleTest, AbstractRuleTest abstractRuleTest2, BlockState blockState) {
+		this(abstractRuleTest, abstractRuleTest2, blockState, null);
 	}
 
-	public class_3821(class_3825 arg, class_3825 arg2, class_2680 arg3, @Nullable class_2487 arg4) {
-		this.field_16872 = arg;
-		this.field_16873 = arg2;
-		this.field_16874 = arg3;
-		this.field_16875 = arg4;
+	public class_3821(AbstractRuleTest abstractRuleTest, AbstractRuleTest abstractRuleTest2, BlockState blockState, @Nullable CompoundTag compoundTag) {
+		this.field_16872 = abstractRuleTest;
+		this.field_16873 = abstractRuleTest2;
+		this.field_16874 = blockState;
+		this.field_16875 = compoundTag;
 	}
 
-	public boolean method_16762(class_2680 arg, class_2680 arg2, Random random) {
-		return this.field_16872.method_16768(arg, random) && this.field_16873.method_16768(arg2, random);
+	public boolean method_16762(BlockState blockState, BlockState blockState2, Random random) {
+		return this.field_16872.test(blockState, random) && this.field_16873.test(blockState2, random);
 	}
 
-	public class_2680 method_16763() {
+	public BlockState method_16763() {
 		return this.field_16874;
 	}
 
 	@Nullable
-	public class_2487 method_16760() {
+	public CompoundTag method_16760() {
 		return this.field_16875;
 	}
 
@@ -45,24 +51,24 @@ public class class_3821 {
 				dynamicOps.createString("location_predicate"),
 				this.field_16873.method_16767(dynamicOps).getValue(),
 				dynamicOps.createString("output_state"),
-				class_2680.method_16550(dynamicOps, this.field_16874).getValue()
+				BlockState.serialize(dynamicOps, this.field_16874).getValue()
 			)
 		);
 		return this.field_16875 == null
 			? new Dynamic<>(dynamicOps, object)
 			: new Dynamic<>(
 				dynamicOps,
-				dynamicOps.mergeInto(object, dynamicOps.createString("output_nbt"), new Dynamic<>(class_2509.field_11560, this.field_16875).convert(dynamicOps).getValue())
+				dynamicOps.mergeInto(object, dynamicOps.createString("output_nbt"), new Dynamic<>(NbtOps.INSTANCE, this.field_16875).convert(dynamicOps).getValue())
 			);
 	}
 
 	public static <T> class_3821 method_16765(Dynamic<T> dynamic) {
 		Dynamic<T> dynamic2 = dynamic.get("input_predicate").orElseEmptyMap();
 		Dynamic<T> dynamic3 = dynamic.get("location_predicate").orElseEmptyMap();
-		class_3825 lv = class_3817.method_16758(dynamic2, class_2378.field_16792, "predicate_type", class_3818.field_16868);
-		class_3825 lv2 = class_3817.method_16758(dynamic3, class_2378.field_16792, "predicate_type", class_3818.field_16868);
-		class_2680 lv3 = class_2680.method_11633(dynamic.get("output_state").orElseEmptyMap());
-		class_2487 lv4 = (class_2487)dynamic.get("output_nbt").map(dynamicx -> dynamicx.convert(class_2509.field_11560).getValue()).orElse(null);
-		return new class_3821(lv, lv2, lv3, lv4);
+		AbstractRuleTest abstractRuleTest = class_3817.deserialize(dynamic2, Registry.RULE_TEST, "predicate_type", AlwaysTrueRuleTest.INSTANCE);
+		AbstractRuleTest abstractRuleTest2 = class_3817.deserialize(dynamic3, Registry.RULE_TEST, "predicate_type", AlwaysTrueRuleTest.INSTANCE);
+		BlockState blockState = BlockState.deserialize(dynamic.get("output_state").orElseEmptyMap());
+		CompoundTag compoundTag = (CompoundTag)dynamic.get("output_nbt").map(dynamicx -> dynamicx.convert(NbtOps.INSTANCE).getValue()).orElse(null);
+		return new class_3821(abstractRuleTest, abstractRuleTest2, blockState, compoundTag);
 	}
 }

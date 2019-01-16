@@ -1,23 +1,26 @@
 package net.minecraft;
 
+import net.minecraft.block.Block;
+import net.minecraft.util.math.BlockPos;
+
 public class class_1919 {
-	private final class_2338 field_9173;
-	private final class_2248 field_9172;
+	private final BlockPos field_9173;
+	private final Block field_9172;
 	private final int field_9171;
 	private final int field_9170;
 
-	public class_1919(class_2338 arg, class_2248 arg2, int i, int j) {
-		this.field_9173 = arg;
-		this.field_9172 = arg2;
+	public class_1919(BlockPos blockPos, Block block, int i, int j) {
+		this.field_9173 = blockPos;
+		this.field_9172 = block;
 		this.field_9171 = i;
 		this.field_9170 = j;
 	}
 
-	public class_2338 method_8306() {
+	public BlockPos method_8306() {
 		return this.field_9173;
 	}
 
-	public class_2248 method_8309() {
+	public Block method_8309() {
 		return this.field_9172;
 	}
 

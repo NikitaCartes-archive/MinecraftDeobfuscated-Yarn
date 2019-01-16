@@ -1,19 +1,26 @@
 package net.minecraft;
 
-public enum class_3652 implements class_3659, class_3740 {
+import net.minecraft.util.registry.Registry;
+import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.layer.BiomeLayers;
+import net.minecraft.world.biome.layer.LayerSampler;
+import net.minecraft.world.biome.layer.MergingLayer;
+import net.minecraft.world.biome.layer.VoidCoordinateTransformer;
+
+public enum class_3652 implements MergingLayer, VoidCoordinateTransformer {
 	field_16161;
 
-	private static final int field_16165 = class_2378.field_11153.method_10249(class_1972.field_9463);
-	private static final int field_16164 = class_2378.field_11153.method_10249(class_1972.field_9452);
-	private static final int field_16163 = class_2378.field_11153.method_10249(class_1972.field_9462);
-	private static final int field_16162 = class_2378.field_11153.method_10249(class_1972.field_9407);
-	private static final int field_16160 = class_2378.field_11153.method_10249(class_1972.field_9438);
+	private static final int field_16165 = Registry.BIOME.getRawId(Biomes.field_9463);
+	private static final int field_16164 = Registry.BIOME.getRawId(Biomes.field_9452);
+	private static final int field_16163 = Registry.BIOME.getRawId(Biomes.field_9462);
+	private static final int field_16162 = Registry.BIOME.getRawId(Biomes.field_9407);
+	private static final int field_16160 = Registry.BIOME.getRawId(Biomes.field_9438);
 
 	@Override
-	public int method_15861(class_3630 arg, class_3625 arg2, class_3625 arg3, int i, int j) {
-		int k = arg2.method_15825(this.method_16342(i), this.method_16343(j));
-		int l = arg3.method_15825(this.method_16342(i), this.method_16343(j));
-		if (class_3645.method_15845(k)) {
+	public int sample(class_3630 arg, LayerSampler layerSampler, LayerSampler layerSampler2, int i, int j) {
+		int k = layerSampler.sample(this.transformX(i), this.transformY(j));
+		int l = layerSampler2.sample(this.transformX(i), this.transformY(j));
+		if (BiomeLayers.isOcean(k)) {
 			return k;
 		} else if (l == field_16160) {
 			if (k == field_16164) {

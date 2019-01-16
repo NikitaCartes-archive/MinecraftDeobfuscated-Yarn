@@ -2,9 +2,10 @@ package net.minecraft;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
+import net.minecraft.util.Identifier;
 
 public class class_3787 {
-	private final Map<class_2960, class_3785> field_16688 = Maps.<class_2960, class_3785>newHashMap();
+	private final Map<Identifier, class_3785> field_16688 = Maps.<Identifier, class_3785>newHashMap();
 
 	public class_3787() {
 		this.method_16640(class_3785.field_16679);
@@ -14,8 +15,8 @@ public class class_3787 {
 		this.field_16688.put(arg.method_16629(), arg);
 	}
 
-	public class_3785 method_16639(class_2960 arg) {
-		class_3785 lv = (class_3785)this.field_16688.get(arg);
+	public class_3785 method_16639(Identifier identifier) {
+		class_3785 lv = (class_3785)this.field_16688.get(identifier);
 		return lv != null ? lv : class_3785.field_16746;
 	}
 }

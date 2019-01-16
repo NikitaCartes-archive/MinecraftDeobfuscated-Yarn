@@ -1,0 +1,39 @@
+package net.minecraft.client.network.packet;
+
+import java.io.IOException;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.network.Packet;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.util.PacketByteBuf;
+import net.minecraft.util.math.BlockPos;
+
+public class PlayerSpawnPositionClientPacket implements Packet<ClientPlayPacketListener> {
+	private BlockPos pos;
+
+	public PlayerSpawnPositionClientPacket() {
+	}
+
+	public PlayerSpawnPositionClientPacket(BlockPos blockPos) {
+		this.pos = blockPos;
+	}
+
+	@Override
+	public void read(PacketByteBuf packetByteBuf) throws IOException {
+		this.pos = packetByteBuf.readBlockPos();
+	}
+
+	@Override
+	public void write(PacketByteBuf packetByteBuf) throws IOException {
+		packetByteBuf.writeBlockPos(this.pos);
+	}
+
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+		clientPlayPacketListener.onPlayerSpawnPosition(this);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public BlockPos getPos() {
+		return this.pos;
+	}
+}

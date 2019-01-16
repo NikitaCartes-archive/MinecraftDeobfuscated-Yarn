@@ -1,11 +1,16 @@
 package net.minecraft;
 
-public interface class_3664 extends class_3660, class_3739 {
-	int method_15869(class_3630 arg, int i);
+import net.minecraft.util.math.NorthWestCoordinateTransformer;
+import net.minecraft.world.biome.layer.LayerSampleContext;
+import net.minecraft.world.biome.layer.LayerSampler;
+import net.minecraft.world.biome.layer.ParentedLayer;
+
+public interface class_3664 extends ParentedLayer, NorthWestCoordinateTransformer {
+	int sample(class_3630 arg, int i);
 
 	@Override
-	default int method_15863(class_3628<?> arg, class_3625 arg2, int i, int j) {
-		int k = arg2.method_15825(this.method_16342(i + 1), this.method_16343(j + 1));
-		return this.method_15869(arg, k);
+	default int sample(LayerSampleContext<?> layerSampleContext, LayerSampler layerSampler, int i, int j) {
+		int k = layerSampler.sample(this.transformX(i + 1), this.transformY(j + 1));
+		return this.sample(layerSampleContext, k);
 	}
 }

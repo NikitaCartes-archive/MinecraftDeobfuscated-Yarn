@@ -1,41 +1,45 @@
 package net.minecraft;
 
-public class class_1389 extends class_1352 {
-	private final class_1548 field_6608;
-	private class_1309 field_6609;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.mob.CreeperEntity;
 
-	public class_1389(class_1548 arg) {
-		this.field_6608 = arg;
-		this.method_6265(1);
+public class class_1389 extends Goal {
+	private final CreeperEntity field_6608;
+	private LivingEntity field_6609;
+
+	public class_1389(CreeperEntity creeperEntity) {
+		this.field_6608 = creeperEntity;
+		this.setControlBits(1);
 	}
 
 	@Override
-	public boolean method_6264() {
-		class_1309 lv = this.field_6608.method_5968();
-		return this.field_6608.method_7007() > 0 || lv != null && this.field_6608.method_5858(lv) < 9.0;
+	public boolean canStart() {
+		LivingEntity livingEntity = this.field_6608.getTarget();
+		return this.field_6608.getFuseSpeed() > 0 || livingEntity != null && this.field_6608.squaredDistanceTo(livingEntity) < 9.0;
 	}
 
 	@Override
-	public void method_6269() {
-		this.field_6608.method_5942().method_6340();
-		this.field_6609 = this.field_6608.method_5968();
+	public void start() {
+		this.field_6608.getNavigation().method_6340();
+		this.field_6609 = this.field_6608.getTarget();
 	}
 
 	@Override
-	public void method_6270() {
+	public void onRemove() {
 		this.field_6609 = null;
 	}
 
 	@Override
-	public void method_6268() {
+	public void tick() {
 		if (this.field_6609 == null) {
-			this.field_6608.method_7005(-1);
-		} else if (this.field_6608.method_5858(this.field_6609) > 49.0) {
-			this.field_6608.method_7005(-1);
-		} else if (!this.field_6608.method_5985().method_6369(this.field_6609)) {
-			this.field_6608.method_7005(-1);
+			this.field_6608.setFuseSpeed(-1);
+		} else if (this.field_6608.squaredDistanceTo(this.field_6609) > 49.0) {
+			this.field_6608.setFuseSpeed(-1);
+		} else if (!this.field_6608.getVisibilityCache().canSee(this.field_6609)) {
+			this.field_6608.setFuseSpeed(-1);
 		} else {
-			this.field_6608.method_7005(1);
+			this.field_6608.setFuseSpeed(1);
 		}
 	}
 }

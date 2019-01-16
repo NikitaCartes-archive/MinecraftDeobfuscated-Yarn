@@ -2,14 +2,15 @@ package net.minecraft;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gl.GlShader;
 
 @Environment(EnvType.CLIENT)
 public interface class_3679 {
-	int method_1270();
+	int getProgramRef();
 
-	void method_1279();
+	void markUniformStateDirty();
 
-	class_281 method_1274();
+	GlShader getVertexShader();
 
-	class_281 method_1278();
+	GlShader getFragmentShader();
 }
