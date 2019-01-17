@@ -2,6 +2,7 @@ package net.minecraft;
 
 import com.google.common.collect.ImmutableSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
@@ -44,9 +45,9 @@ public final class class_1675 {
 					Entity entity4 = (Entity)list.get(k);
 					if (entity4.doesCollide() && (bl2 || !entity4.isPartOf(entity2)) && !entity4.noClip) {
 						BoundingBox boundingBox = entity4.getBoundingBox().expand(0.3F);
-						Vec3d vec3d3 = boundingBox.rayTrace(vec3d, vec3d2);
-						if (vec3d3 != null) {
-							double l = vec3d.squaredDistanceTo(vec3d3);
+						Optional<Vec3d> optional = boundingBox.rayTrace(vec3d, vec3d2);
+						if (optional.isPresent()) {
+							double l = vec3d.squaredDistanceTo((Vec3d)optional.get());
 							if (l < j || j == 0.0) {
 								entity3 = entity4;
 								j = l;

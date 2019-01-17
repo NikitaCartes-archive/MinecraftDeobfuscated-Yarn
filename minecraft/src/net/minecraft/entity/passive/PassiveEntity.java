@@ -20,8 +20,6 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	protected int breedingAge;
 	protected int field_5948;
 	protected int field_5947;
-	private float lastWidth = -1.0F;
-	private float lastHeight;
 
 	protected PassiveEntity(EntityType<?> entityType, World world) {
 		super(entityType, world);
@@ -102,7 +100,7 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	public void setBreedingAge(int i) {
 		this.dataTracker.set(CHILD, i < 0);
 		this.breedingAge = i;
-		this.setSize(this.isChild());
+		this.method_17824();
 	}
 
 	@Override
@@ -122,7 +120,7 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
 		if (CHILD.equals(trackedData)) {
-			this.setSize(this.isChild());
+			this.method_17824();
 		}
 
 		super.onTrackedDataSet(trackedData);
@@ -169,18 +167,9 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 		return this.getBreedingAge() < 0;
 	}
 
-	public void setSize(boolean bl) {
-		this.setSize(bl ? 0.5F : 1.0F);
-	}
-
-	@Override
-	protected final void setSize(float f, float g) {
-		this.lastWidth = f;
-		this.lastHeight = g;
-		this.setSize(1.0F);
-	}
-
-	protected final void setSize(float f) {
-		super.setSize(this.lastWidth * f, this.lastHeight * f);
+	public final void method_17824() {
+		float f = this.method_17825();
+		EntityType<?> entityType = this.getType();
+		this.setSize(entityType.method_17685() * f, entityType.method_17686() * f);
 	}
 }

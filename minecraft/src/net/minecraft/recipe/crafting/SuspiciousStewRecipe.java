@@ -76,7 +76,7 @@ public class SuspiciousStewRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> method_8119() {
-		return RecipeSerializer.field_9030;
+	public RecipeSerializer<?> getSerializer() {
+		return RecipeSerializer.SUSPICIOUS_STEW;
 	}
 }

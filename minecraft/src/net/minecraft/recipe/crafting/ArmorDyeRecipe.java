@@ -117,7 +117,7 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> method_8119() {
-		return RecipeSerializer.field_9028;
+	public RecipeSerializer<?> getSerializer() {
+		return RecipeSerializer.ARMOR_DYE;
 	}
 }

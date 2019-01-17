@@ -136,15 +136,6 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 		this.dataTracker.set(OWNER_UUID, Optional.ofNullable(uUID));
 	}
 
-	public float method_6770() {
-		return 0.5F;
-	}
-
-	@Override
-	public void setSize(boolean bl) {
-		this.setSize(bl ? this.method_6770() : 1.0F);
-	}
-
 	public boolean method_6763() {
 		return this.field_6968;
 	}

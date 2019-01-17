@@ -4168,18 +4168,18 @@ public class RecipesProvider implements DataProvider {
 			.method_10439("##")
 			.method_10429("has_string", this.method_10426(Items.field_8276))
 			.method_10431(consumer);
-		class_2456.method_10476(RecipeSerializer.field_9028).method_10475(consumer, "armor_dye");
-		class_2456.method_10476(RecipeSerializer.field_9038).method_10475(consumer, "banner_duplicate");
-		class_2456.method_10476(RecipeSerializer.field_9029).method_10475(consumer, "book_cloning");
-		class_2456.method_10476(RecipeSerializer.field_9043).method_10475(consumer, "firework_rocket");
-		class_2456.method_10476(RecipeSerializer.field_9036).method_10475(consumer, "firework_star");
-		class_2456.method_10476(RecipeSerializer.field_9034).method_10475(consumer, "firework_star_fade");
-		class_2456.method_10476(RecipeSerializer.field_9044).method_10475(consumer, "map_cloning");
-		class_2456.method_10476(RecipeSerializer.field_9039).method_10475(consumer, "map_extending");
-		class_2456.method_10476(RecipeSerializer.field_9040).method_10475(consumer, "shield_decoration");
-		class_2456.method_10476(RecipeSerializer.field_9041).method_10475(consumer, "shulker_box_coloring");
-		class_2456.method_10476(RecipeSerializer.field_9037).method_10475(consumer, "tipped_arrow");
-		class_2456.method_10476(RecipeSerializer.field_9030).method_10475(consumer, "suspicious_stew");
+		class_2456.method_10476(RecipeSerializer.ARMOR_DYE).method_10475(consumer, "armor_dye");
+		class_2456.method_10476(RecipeSerializer.BANNER_DUPLICATE).method_10475(consumer, "banner_duplicate");
+		class_2456.method_10476(RecipeSerializer.BOOK_CLONING).method_10475(consumer, "book_cloning");
+		class_2456.method_10476(RecipeSerializer.FIREWORK_ROCKET).method_10475(consumer, "firework_rocket");
+		class_2456.method_10476(RecipeSerializer.FIREWORK_STAR).method_10475(consumer, "firework_star");
+		class_2456.method_10476(RecipeSerializer.FIREWORK_STAR_FADE).method_10475(consumer, "firework_star_fade");
+		class_2456.method_10476(RecipeSerializer.MAP_CLONING).method_10475(consumer, "map_cloning");
+		class_2456.method_10476(RecipeSerializer.MAP_EXTENDING).method_10475(consumer, "map_extending");
+		class_2456.method_10476(RecipeSerializer.SHIELD_DECORATION).method_10475(consumer, "shield_decoration");
+		class_2456.method_10476(RecipeSerializer.SHULKER_BOX).method_10475(consumer, "shulker_box_coloring");
+		class_2456.method_10476(RecipeSerializer.TIPPED_ARROW).method_10475(consumer, "tipped_arrow");
+		class_2456.method_10476(RecipeSerializer.SUSPICIOUS_STEW).method_10475(consumer, "suspicious_stew");
 		class_2454.method_17802(Ingredient.ofItems(Items.field_8567), Items.field_8512, 0.35F, 200)
 			.method_10469("has_potato", this.method_10426(Items.field_8567))
 			.method_10470(consumer);

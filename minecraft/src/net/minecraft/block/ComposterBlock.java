@@ -4,7 +4,6 @@ import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.player.PlayerEntity;
@@ -115,6 +114,8 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		registerCompostableItem(0.5F, Items.field_17529);
 		registerCompostableItem(0.5F, Items.field_8561);
 		registerCompostableItem(0.8F, Items.field_17528);
+		registerCompostableItem(0.8F, Items.field_8506);
+		registerCompostableItem(0.8F, Items.field_8682);
 		registerCompostableItem(0.8F, Items.field_8229);
 		registerCompostableItem(0.8F, Items.field_8512);
 		registerCompostableItem(0.8F, Items.field_8423);
@@ -239,11 +240,6 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		} else {
 			return (SidedInventory)(i < 7 ? new ComposterBlock.ComposterInventory(blockState, iWorld, blockPos) : new ComposterBlock.class_3925());
 		}
-	}
-
-	@Override
-	public PistonBehavior getPistonBehavior(BlockState blockState) {
-		return PistonBehavior.field_15972;
 	}
 
 	static class ComposterInventory extends BasicInventory implements SidedInventory {

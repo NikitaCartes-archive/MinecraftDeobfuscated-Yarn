@@ -53,7 +53,7 @@ public interface Recipe<C extends Inventory> {
 
 	Identifier getId();
 
-	RecipeSerializer<?> method_8119();
+	RecipeSerializer<?> getSerializer();
 
 	RecipeType<?> getType();
 }

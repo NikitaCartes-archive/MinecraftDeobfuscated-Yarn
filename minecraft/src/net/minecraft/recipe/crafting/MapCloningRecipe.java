@@ -79,7 +79,7 @@ public class MapCloningRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> method_8119() {
-		return RecipeSerializer.field_9044;
+	public RecipeSerializer<?> getSerializer() {
+		return RecipeSerializer.MAP_CLONING;
 	}
 }

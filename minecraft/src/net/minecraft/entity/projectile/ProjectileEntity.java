@@ -340,9 +340,10 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	}
 
 	protected void method_7457(HitResult hitResult) {
-		if (hitResult.getType() == HitResult.Type.ENTITY) {
+		HitResult.Type type = hitResult.getType();
+		if (type == HitResult.Type.ENTITY) {
 			this.method_7454((EntityHitResult)hitResult);
-		} else {
+		} else if (type == HitResult.Type.BLOCK) {
 			BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 			BlockPos blockPos = blockHitResult.getBlockPos();
 			this.xTile = blockPos.getX();
@@ -503,9 +504,9 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 			Entity entity2 = (Entity)list.get(i);
 			if ((entity2 != this.getOwner() || this.field_7577 >= 5) && (this.field_7590 == null || !this.field_7590.contains(entity2.getEntityId()))) {
 				BoundingBox boundingBox = entity2.getBoundingBox().expand(0.3F);
-				Vec3d vec3d3 = boundingBox.rayTrace(vec3d, vec3d2);
-				if (vec3d3 != null) {
-					double e = vec3d.squaredDistanceTo(vec3d3);
+				Optional<Vec3d> optional = boundingBox.rayTrace(vec3d, vec3d2);
+				if (optional.isPresent()) {
+					double e = vec3d.squaredDistanceTo((Vec3d)optional.get());
 					if (e < d || d == 0.0) {
 						entity = entity2;
 						d = e;

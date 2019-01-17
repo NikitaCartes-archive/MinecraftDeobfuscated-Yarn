@@ -38,7 +38,7 @@ public class BucketItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		HitResult hitResult = method_7872(
+		HitResult hitResult = getHitResult(
 			world, playerEntity, this.fluid == Fluids.EMPTY ? RayTraceContext.FluidHandling.field_1345 : RayTraceContext.FluidHandling.NONE
 		);
 		if (hitResult.getType() == HitResult.Type.NONE) {

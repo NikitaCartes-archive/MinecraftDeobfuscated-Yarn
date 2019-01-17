@@ -87,7 +87,7 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> method_8119() {
-		return RecipeSerializer.field_9043;
+	public RecipeSerializer<?> getSerializer() {
+		return RecipeSerializer.FIREWORK_ROCKET;
 	}
 }

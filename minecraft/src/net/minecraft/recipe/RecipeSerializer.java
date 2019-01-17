@@ -27,28 +27,28 @@ import net.minecraft.util.registry.Registry;
 public interface RecipeSerializer<T extends Recipe<?>> {
 	RecipeSerializer<ShapedRecipe> SHAPED = register("crafting_shaped", new ShapedRecipe.Serializer());
 	RecipeSerializer<ShapelessRecipe> SHAPELESS = register("crafting_shapeless", new ShapelessRecipe.Serializer());
-	SpecialRecipeSerializer<ArmorDyeRecipe> field_9028 = register("crafting_special_armordye", new SpecialRecipeSerializer<>(ArmorDyeRecipe::new));
-	SpecialRecipeSerializer<BookCloningRecipe> field_9029 = register("crafting_special_bookcloning", new SpecialRecipeSerializer<>(BookCloningRecipe::new));
-	SpecialRecipeSerializer<MapCloningRecipe> field_9044 = register("crafting_special_mapcloning", new SpecialRecipeSerializer<>(MapCloningRecipe::new));
-	SpecialRecipeSerializer<MapExtendingRecipe> field_9039 = register("crafting_special_mapextending", new SpecialRecipeSerializer<>(MapExtendingRecipe::new));
-	SpecialRecipeSerializer<FireworkRocketRecipe> field_9043 = register(
+	SpecialRecipeSerializer<ArmorDyeRecipe> ARMOR_DYE = register("crafting_special_armordye", new SpecialRecipeSerializer<>(ArmorDyeRecipe::new));
+	SpecialRecipeSerializer<BookCloningRecipe> BOOK_CLONING = register("crafting_special_bookcloning", new SpecialRecipeSerializer<>(BookCloningRecipe::new));
+	SpecialRecipeSerializer<MapCloningRecipe> MAP_CLONING = register("crafting_special_mapcloning", new SpecialRecipeSerializer<>(MapCloningRecipe::new));
+	SpecialRecipeSerializer<MapExtendingRecipe> MAP_EXTENDING = register("crafting_special_mapextending", new SpecialRecipeSerializer<>(MapExtendingRecipe::new));
+	SpecialRecipeSerializer<FireworkRocketRecipe> FIREWORK_ROCKET = register(
 		"crafting_special_firework_rocket", new SpecialRecipeSerializer<>(FireworkRocketRecipe::new)
 	);
-	SpecialRecipeSerializer<FireworkStarRecipe> field_9036 = register("crafting_special_firework_star", new SpecialRecipeSerializer<>(FireworkStarRecipe::new));
-	SpecialRecipeSerializer<FireworkStarFadeRecipe> field_9034 = register(
+	SpecialRecipeSerializer<FireworkStarRecipe> FIREWORK_STAR = register("crafting_special_firework_star", new SpecialRecipeSerializer<>(FireworkStarRecipe::new));
+	SpecialRecipeSerializer<FireworkStarFadeRecipe> FIREWORK_STAR_FADE = register(
 		"crafting_special_firework_star_fade", new SpecialRecipeSerializer<>(FireworkStarFadeRecipe::new)
 	);
-	SpecialRecipeSerializer<TippedArrowRecipe> field_9037 = register("crafting_special_tippedarrow", new SpecialRecipeSerializer<>(TippedArrowRecipe::new));
-	SpecialRecipeSerializer<BannerDuplicateRecipe> field_9038 = register(
+	SpecialRecipeSerializer<TippedArrowRecipe> TIPPED_ARROW = register("crafting_special_tippedarrow", new SpecialRecipeSerializer<>(TippedArrowRecipe::new));
+	SpecialRecipeSerializer<BannerDuplicateRecipe> BANNER_DUPLICATE = register(
 		"crafting_special_bannerduplicate", new SpecialRecipeSerializer<>(BannerDuplicateRecipe::new)
 	);
-	SpecialRecipeSerializer<ShieldDecorationRecipe> field_9040 = register(
+	SpecialRecipeSerializer<ShieldDecorationRecipe> SHIELD_DECORATION = register(
 		"crafting_special_shielddecoration", new SpecialRecipeSerializer<>(ShieldDecorationRecipe::new)
 	);
-	SpecialRecipeSerializer<ShulkerBoxColoringRecipe> field_9041 = register(
+	SpecialRecipeSerializer<ShulkerBoxColoringRecipe> SHULKER_BOX = register(
 		"crafting_special_shulkerboxcoloring", new SpecialRecipeSerializer<>(ShulkerBoxColoringRecipe::new)
 	);
-	SpecialRecipeSerializer<SuspiciousStewRecipe> field_9030 = register(
+	SpecialRecipeSerializer<SuspiciousStewRecipe> SUSPICIOUS_STEW = register(
 		"crafting_special_suspiciousstew", new SpecialRecipeSerializer<>(SuspiciousStewRecipe::new)
 	);
 	CookingRecipeSerializer<SmeltingRecipe> SMELTING = register("smelting", new CookingRecipeSerializer<>(SmeltingRecipe::new, 200));

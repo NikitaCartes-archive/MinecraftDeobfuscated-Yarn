@@ -658,11 +658,6 @@ public abstract class MobEntity extends LivingEntity {
 		return !viewableWorld.method_8599(this.getBoundingBox()) && viewableWorld.method_8606(this, this.getBoundingBox());
 	}
 
-	@Environment(EnvType.CLIENT)
-	public float method_5967() {
-		return 1.0F;
-	}
-
 	public int getLimitPerChunk() {
 		return 4;
 	}
