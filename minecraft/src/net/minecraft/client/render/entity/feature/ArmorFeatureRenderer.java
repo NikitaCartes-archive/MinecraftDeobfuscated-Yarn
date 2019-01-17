@@ -9,6 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
@@ -19,7 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>, A extends EntityModel<T>> extends FeatureRenderer<T, M> {
+public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityModel<T>, A extends BipedEntityModel<T>> extends FeatureRenderer<T, M> {
 	protected static final Identifier SKIN = new Identifier("textures/misc/enchanted_item_glint.png");
 	protected final A modelLeggings;
 	protected final A modelBody;
@@ -30,10 +31,10 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Ent
 	private boolean ignoreGlint;
 	private static final Map<String, Identifier> ARMOR_TEXTURE_CACHE = Maps.<String, Identifier>newHashMap();
 
-	protected ArmorFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext, A entityModel, A entityModel2) {
+	protected ArmorFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext, A bipedEntityModel, A bipedEntityModel2) {
 		super(featureRendererContext);
-		this.modelLeggings = entityModel;
-		this.modelBody = entityModel2;
+		this.modelLeggings = bipedEntityModel;
+		this.modelBody = bipedEntityModel2;
 	}
 
 	public void method_17157(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
@@ -53,10 +54,10 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Ent
 		if (itemStack.getItem() instanceof ArmorItem) {
 			ArmorItem armorItem = (ArmorItem)itemStack.getItem();
 			if (armorItem.getSlotType() == equipmentSlot) {
-				A entityModel = this.getArmor(equipmentSlot);
-				this.getModel().method_17081(entityModel);
-				entityModel.animateModel(livingEntity, f, g, h);
-				this.method_4170(entityModel, equipmentSlot);
+				A bipedEntityModel = this.getArmor(equipmentSlot);
+				this.getModel().setAttributes(bipedEntityModel);
+				bipedEntityModel.method_17086(livingEntity, f, g, h);
+				this.method_4170(bipedEntityModel, equipmentSlot);
 				boolean bl = this.isLegs(equipmentSlot);
 				this.bindTexture(this.getArmorTexture(armorItem, bl));
 				if (armorItem instanceof DyeableArmorItem) {
@@ -65,14 +66,14 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Ent
 					float o = (float)(m >> 8 & 0xFF) / 255.0F;
 					float p = (float)(m & 0xFF) / 255.0F;
 					GlStateManager.color4f(this.red * n, this.green * o, this.blue * p, this.alpha);
-					entityModel.render(livingEntity, f, g, i, j, k, l);
+					bipedEntityModel.method_17088(livingEntity, f, g, i, j, k, l);
 					this.bindTexture(this.method_4174(armorItem, bl, "overlay"));
 				}
 
 				GlStateManager.color4f(this.red, this.green, this.blue, this.alpha);
-				entityModel.render(livingEntity, f, g, i, j, k, l);
+				bipedEntityModel.method_17088(livingEntity, f, g, i, j, k, l);
 				if (!this.ignoreGlint && itemStack.hasEnchantments()) {
-					renderEnchantedGlint(this::bindTexture, livingEntity, entityModel, f, g, h, i, j, k, l);
+					renderEnchantedGlint(this::bindTexture, livingEntity, bipedEntityModel, f, g, h, i, j, k, l);
 				}
 			}
 		}
@@ -134,5 +135,7 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Ent
 		return (Identifier)ARMOR_TEXTURE_CACHE.computeIfAbsent(string2, Identifier::new);
 	}
 
-	protected abstract void method_4170(A entityModel, EquipmentSlot equipmentSlot);
+	protected abstract void method_4170(A bipedEntityModel, EquipmentSlot equipmentSlot);
+
+	protected abstract void method_4190(A bipedEntityModel);
 }

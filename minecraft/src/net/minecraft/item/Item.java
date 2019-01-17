@@ -259,7 +259,7 @@ public class Item implements ItemProvider {
 		return this.getMaxAmount() == 1 && this.canDamage();
 	}
 
-	protected static HitResult method_7872(World world, PlayerEntity playerEntity, RayTraceContext.FluidHandling fluidHandling) {
+	protected static HitResult getHitResult(World world, PlayerEntity playerEntity, RayTraceContext.FluidHandling fluidHandling) {
 		float f = playerEntity.pitch;
 		float g = playerEntity.yaw;
 		Vec3d vec3d = playerEntity.getCameraPosVec(1.0F);

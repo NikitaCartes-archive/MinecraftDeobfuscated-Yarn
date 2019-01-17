@@ -21,7 +21,7 @@ public class CampfireCookingRecipe extends AbstractCookingRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> method_8119() {
+	public RecipeSerializer<?> getSerializer() {
 		return RecipeSerializer.CAMPFIRE_COOKING;
 	}
 }

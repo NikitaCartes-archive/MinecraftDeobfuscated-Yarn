@@ -1,5 +1,6 @@
 package net.minecraft.util.math;
 
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -238,19 +239,17 @@ public class BoundingBox {
 		return this.expand(-d);
 	}
 
-	@Nullable
-	public Vec3d rayTrace(Vec3d vec3d, Vec3d vec3d2) {
+	public Optional<Vec3d> rayTrace(Vec3d vec3d, Vec3d vec3d2) {
 		double[] ds = new double[]{1.0};
-		Direction direction = null;
 		double d = vec3d2.x - vec3d.x;
 		double e = vec3d2.y - vec3d.y;
 		double f = vec3d2.z - vec3d.z;
-		direction = method_1007(this, vec3d, ds, direction, d, e, f);
+		Direction direction = method_1007(this, vec3d, ds, null, d, e, f);
 		if (direction == null) {
-			return null;
+			return Optional.empty();
 		} else {
 			double g = ds[0];
-			return new BlockHitResult(vec3d.add(g * d, g * e, g * f), direction, BlockPos.ORIGIN, false).getPos();
+			return Optional.of(vec3d.add(g * d, g * e, g * f));
 		}
 	}
 

@@ -48,24 +48,26 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 	}
 
 	public void render(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
-		VillagerData villagerData = livingEntity.getVillagerData();
-		VillagerType villagerType = villagerData.getType();
-		VillagerProfession villagerProfession = villagerData.getProfession();
-		VillagerResourceMetadata.HatType hatType = this.getHatType(this.villagerTypeToHat, "type", Registry.VILLAGER_TYPE, villagerType);
-		VillagerResourceMetadata.HatType hatType2 = this.getHatType(this.professionToHat, "profession", Registry.VILLAGER_PROFESSION, villagerProfession);
-		M entityModel = this.getModel();
-		this.bindTexture(this.findTexture("type", Registry.VILLAGER_TYPE.getId(villagerType)));
-		entityModel.method_17150(
-			hatType2 == VillagerResourceMetadata.HatType.field_17160
-				|| hatType2 == VillagerResourceMetadata.HatType.field_17161 && hatType != VillagerResourceMetadata.HatType.field_17162
-		);
-		entityModel.render(livingEntity, f, g, i, j, k, l);
-		entityModel.method_17150(true);
-		if (villagerProfession != VillagerProfession.field_17051 && !livingEntity.isChild()) {
-			this.bindTexture(this.findTexture("profession", Registry.VILLAGER_PROFESSION.getId(villagerProfession)));
+		if (!livingEntity.isInvisible()) {
+			VillagerData villagerData = livingEntity.getVillagerData();
+			VillagerType villagerType = villagerData.getType();
+			VillagerProfession villagerProfession = villagerData.getProfession();
+			VillagerResourceMetadata.HatType hatType = this.getHatType(this.villagerTypeToHat, "type", Registry.VILLAGER_TYPE, villagerType);
+			VillagerResourceMetadata.HatType hatType2 = this.getHatType(this.professionToHat, "profession", Registry.VILLAGER_PROFESSION, villagerProfession);
+			M entityModel = this.getModel();
+			this.bindTexture(this.findTexture("type", Registry.VILLAGER_TYPE.getId(villagerType)));
+			entityModel.method_17150(
+				hatType2 == VillagerResourceMetadata.HatType.field_17160
+					|| hatType2 == VillagerResourceMetadata.HatType.field_17161 && hatType != VillagerResourceMetadata.HatType.field_17162
+			);
 			entityModel.render(livingEntity, f, g, i, j, k, l);
-			this.bindTexture(this.findTexture("profession_level", LEVEL_TO_ID.get(MathHelper.clamp(villagerData.getLevel(), 1, LEVEL_TO_ID.size()))));
-			entityModel.render(livingEntity, f, g, i, j, k, l);
+			entityModel.method_17150(true);
+			if (villagerProfession != VillagerProfession.field_17051 && !livingEntity.isChild()) {
+				this.bindTexture(this.findTexture("profession", Registry.VILLAGER_PROFESSION.getId(villagerProfession)));
+				entityModel.render(livingEntity, f, g, i, j, k, l);
+				this.bindTexture(this.findTexture("profession_level", LEVEL_TO_ID.get(MathHelper.clamp(villagerData.getLevel(), 1, LEVEL_TO_ID.size()))));
+				entityModel.render(livingEntity, f, g, i, j, k, l);
+			}
 		}
 	}
 

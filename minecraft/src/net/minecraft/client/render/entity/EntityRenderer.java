@@ -155,7 +155,6 @@ public abstract class EntityRenderer<T extends Entity> {
 		float i = this.field_4673;
 		if (entity instanceof MobEntity) {
 			MobEntity mobEntity = (MobEntity)entity;
-			i *= mobEntity.method_5967();
 			if (mobEntity.isChild()) {
 				i *= 0.5F;
 			}

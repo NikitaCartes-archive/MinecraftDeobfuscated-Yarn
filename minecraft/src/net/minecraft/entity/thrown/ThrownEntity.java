@@ -1,6 +1,7 @@
 package net.minecraft.entity.thrown;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -153,9 +154,9 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 				} else {
 					bl = false;
 					BoundingBox boundingBox = entity2.getBoundingBox().expand(0.3F);
-					Vec3d vec3d3 = boundingBox.rayTrace(vec3d, vec3d2);
-					if (vec3d3 != null) {
-						double e = vec3d.squaredDistanceTo(vec3d3);
+					Optional<Vec3d> optional = boundingBox.rayTrace(vec3d, vec3d2);
+					if (optional.isPresent()) {
+						double e = vec3d.squaredDistanceTo((Vec3d)optional.get());
 						if (e < d || d == 0.0) {
 							entity = entity2;
 							d = e;

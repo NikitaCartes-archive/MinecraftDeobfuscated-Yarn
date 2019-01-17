@@ -64,8 +64,8 @@ public class SynchronizeRecipesClientPacket implements Packet<ClientPlayPacketLi
 	}
 
 	public static <T extends Recipe<?>> void method_17816(T recipe, PacketByteBuf packetByteBuf) {
-		packetByteBuf.writeIdentifier(Registry.RECIPE_SERIALIZER.getId(recipe.method_8119()));
+		packetByteBuf.writeIdentifier(Registry.RECIPE_SERIALIZER.getId(recipe.getSerializer()));
 		packetByteBuf.writeIdentifier(recipe.getId());
-		((RecipeSerializer<T>)recipe.method_8119()).write(packetByteBuf, recipe);
+		((RecipeSerializer<T>)recipe.getSerializer()).write(packetByteBuf, recipe);
 	}
 }

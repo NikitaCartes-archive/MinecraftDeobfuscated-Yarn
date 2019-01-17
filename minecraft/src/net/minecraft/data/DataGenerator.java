@@ -33,17 +33,19 @@ public class DataGenerator {
 	public void run() throws IOException {
 		DataCache dataCache = new DataCache(this.output, "cache");
 		dataCache.ignore(this.getOutput().resolve("version.json"));
-		Stopwatch stopwatch = Stopwatch.createUnstarted();
+		Stopwatch stopwatch = Stopwatch.createStarted();
+		Stopwatch stopwatch2 = Stopwatch.createUnstarted();
 
 		for (DataProvider dataProvider : this.providers) {
 			LOGGER.info("Starting provider: {}", dataProvider.getName());
-			stopwatch.start();
+			stopwatch2.start();
 			dataProvider.run(dataCache);
-			stopwatch.stop();
-			LOGGER.info("{} finished after {} ms", dataProvider.getName(), stopwatch.elapsed(TimeUnit.MILLISECONDS));
-			stopwatch.reset();
+			stopwatch2.stop();
+			LOGGER.info("{} finished after {} ms", dataProvider.getName(), stopwatch2.elapsed(TimeUnit.MILLISECONDS));
+			stopwatch2.reset();
 		}
 
+		LOGGER.info("All providers took: {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
 		dataCache.write();
 	}
 

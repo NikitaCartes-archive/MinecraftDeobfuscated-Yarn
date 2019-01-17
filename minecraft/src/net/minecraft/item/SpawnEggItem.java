@@ -96,7 +96,7 @@ public class SpawnEggItem extends Item {
 		if (world.isClient) {
 			return new TypedActionResult<>(ActionResult.PASS, itemStack);
 		} else {
-			HitResult hitResult = method_7872(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
+			HitResult hitResult = getHitResult(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
 			if (hitResult.getType() != HitResult.Type.BLOCK) {
 				return new TypedActionResult<>(ActionResult.PASS, itemStack);
 			} else {

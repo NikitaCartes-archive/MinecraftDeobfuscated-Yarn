@@ -596,7 +596,7 @@ public class VillagerEntity extends PassiveEntity implements RaidVictim, Npc, Vi
 	) {
 		this.setSpecificGoals();
 		if (spawnType == SpawnType.field_16466) {
-			this.setVillagerData(this.getVillagerData().withProfession(VillagerProfession.field_17051));
+			this.setVillagerData(this.getVillagerData().withProfession(Registry.VILLAGER_PROFESSION.getRandom(iWorld.getRandom())));
 		}
 
 		if (spawnType == SpawnType.field_16462 || spawnType == SpawnType.field_16465 || spawnType == SpawnType.field_16469) {

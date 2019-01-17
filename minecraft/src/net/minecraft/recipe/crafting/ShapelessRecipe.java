@@ -35,7 +35,7 @@ public class ShapelessRecipe implements CraftingRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> method_8119() {
+	public RecipeSerializer<?> getSerializer() {
 		return RecipeSerializer.SHAPELESS;
 	}
 

@@ -6,6 +6,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -328,25 +329,28 @@ public class GameRenderer implements AutoCloseable, ResourceReloadListener {
 				for (int j = 0; j < list.size(); j++) {
 					Entity entity2 = (Entity)list.get(j);
 					BoundingBox boundingBox = entity2.getBoundingBox().expand((double)entity2.getBoundingBoxMarginForTargeting());
-					net.minecraft.util.math.Vec3d vec3d5 = boundingBox.rayTrace(vec3d, vec3d3);
 					if (boundingBox.contains(vec3d)) {
 						if (h >= 0.0) {
 							this.targetedEntity = entity2;
-							vec3d4 = vec3d5 == null ? vec3d : vec3d5;
+							vec3d4 = (net.minecraft.util.math.Vec3d)boundingBox.rayTrace(vec3d, vec3d3).orElse(vec3d);
 							h = 0.0;
 						}
-					} else if (vec3d5 != null) {
-						double k = vec3d.distanceTo(vec3d5);
-						if (k < h || h == 0.0) {
-							if (entity2.getTopmostRiddenEntity() == entity.getTopmostRiddenEntity()) {
-								if (h == 0.0) {
+					} else {
+						Optional<net.minecraft.util.math.Vec3d> optional = boundingBox.rayTrace(vec3d, vec3d3);
+						if (optional.isPresent()) {
+							net.minecraft.util.math.Vec3d vec3d5 = (net.minecraft.util.math.Vec3d)optional.get();
+							double k = vec3d.distanceTo(vec3d5);
+							if (k < h || h == 0.0) {
+								if (entity2.getTopmostRiddenEntity() == entity.getTopmostRiddenEntity()) {
+									if (h == 0.0) {
+										this.targetedEntity = entity2;
+										vec3d4 = vec3d5;
+									}
+								} else {
 									this.targetedEntity = entity2;
 									vec3d4 = vec3d5;
+									h = k;
 								}
-							} else {
-								this.targetedEntity = entity2;
-								vec3d4 = vec3d5;
-								h = k;
 							}
 						}
 					}

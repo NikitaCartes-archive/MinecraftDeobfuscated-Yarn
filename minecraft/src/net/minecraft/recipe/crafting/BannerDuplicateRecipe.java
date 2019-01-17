@@ -87,8 +87,8 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> method_8119() {
-		return RecipeSerializer.field_9038;
+	public RecipeSerializer<?> getSerializer() {
+		return RecipeSerializer.BANNER_DUPLICATE;
 	}
 
 	@Environment(EnvType.CLIENT)

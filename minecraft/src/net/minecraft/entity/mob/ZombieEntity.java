@@ -72,8 +72,6 @@ public class ZombieEntity extends HostileEntity {
 	private boolean field_7432;
 	private int field_7426;
 	private int field_7424;
-	private float field_7435 = -1.0F;
-	private float field_7436;
 
 	public ZombieEntity(EntityType<?> entityType, World world) {
 		super(entityType, world);
@@ -536,21 +534,9 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	public void method_7214(boolean bl) {
-		this.method_7219(bl ? 0.5F : 1.0F);
-	}
-
-	@Override
-	protected final void setSize(float f, float g) {
-		boolean bl = this.field_7435 > 0.0F && this.field_7436 > 0.0F;
-		this.field_7435 = f;
-		this.field_7436 = g;
-		if (!bl) {
-			this.method_7219(1.0F);
-		}
-	}
-
-	protected final void method_7219(float f) {
-		super.setSize(this.field_7435 * f, this.field_7436 * f);
+		float f = bl ? 0.5F : 1.0F;
+		EntityType<?> entityType = this.getType();
+		this.setSize(entityType.method_17685() * f, entityType.method_17686() * f);
 	}
 
 	@Override

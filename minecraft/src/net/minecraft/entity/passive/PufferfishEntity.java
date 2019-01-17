@@ -36,8 +36,6 @@ public class PufferfishEntity extends FishEntity {
 				: false;
 		}
 	};
-	private float field_6831 = -1.0F;
-	private float field_6830;
 
 	public PufferfishEntity(World world) {
 		super(EntityType.PUFFERFISH, world);
@@ -66,21 +64,8 @@ public class PufferfishEntity extends FishEntity {
 			f = 0.5F;
 		}
 
-		this.method_6595(f);
-	}
-
-	@Override
-	protected final void setSize(float f, float g) {
-		boolean bl = this.field_6831 > 0.0F;
-		this.field_6831 = f;
-		this.field_6830 = g;
-		if (!bl) {
-			this.method_6595(1.0F);
-		}
-	}
-
-	private void method_6595(float f) {
-		super.setSize(this.field_6831 * f, this.field_6830 * f);
+		EntityType<?> entityType = this.getType();
+		this.setSize(entityType.method_17685() * f, entityType.method_17686() * f);
 	}
 
 	@Override

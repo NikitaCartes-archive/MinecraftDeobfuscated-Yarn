@@ -12,6 +12,7 @@ import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.datafixers.NbtOps;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.damage.DamageSource;
@@ -36,6 +37,8 @@ import net.minecraft.village.VillagerDataContainer;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.village.VillagerRecipeList;
 import net.minecraft.village.VillagerType;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
 @EnvironmentInterfaces({@EnvironmentInterface(
@@ -257,6 +260,18 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 
 	public void setOfferData(CompoundTag compoundTag) {
 		this.offerData = compoundTag;
+	}
+
+	@Nullable
+	@Override
+	public EntityData prepareEntityData(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	) {
+		if (spawnType == SpawnType.field_16462 || spawnType == SpawnType.field_16465 || spawnType == SpawnType.field_16469) {
+			this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(iWorld.getBiome(new BlockPos(this)))));
+		}
+
+		return super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	public void setVillagerData(VillagerData villagerData) {

@@ -28,7 +28,7 @@ public class BoatItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		HitResult hitResult = method_7872(world, playerEntity, RayTraceContext.FluidHandling.field_1347);
+		HitResult hitResult = getHitResult(world, playerEntity, RayTraceContext.FluidHandling.field_1347);
 		if (hitResult.getType() == HitResult.Type.NONE) {
 			return new TypedActionResult<>(ActionResult.PASS, itemStack);
 		} else {

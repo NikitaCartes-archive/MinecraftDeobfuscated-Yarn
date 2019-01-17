@@ -61,7 +61,7 @@ public class TippedArrowRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> method_8119() {
-		return RecipeSerializer.field_9037;
+	public RecipeSerializer<?> getSerializer() {
+		return RecipeSerializer.TIPPED_ARROW;
 	}
 }

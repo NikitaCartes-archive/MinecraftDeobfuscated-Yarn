@@ -135,7 +135,7 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> method_8119() {
-		return RecipeSerializer.field_9036;
+	public RecipeSerializer<?> getSerializer() {
+		return RecipeSerializer.FIREWORK_STAR;
 	}
 }

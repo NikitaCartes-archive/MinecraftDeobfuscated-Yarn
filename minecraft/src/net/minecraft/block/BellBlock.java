@@ -161,7 +161,8 @@ public class BellBlock extends BlockWithEntity {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		Attachment attachment = blockState.get(field_16326);
-		if (method_16115(blockState).getOpposite() == direction && !blockState.canPlaceAt(iWorld, blockPos) && attachment != Attachment.field_17101) {
+		Direction direction2 = method_16115(blockState).getOpposite();
+		if (direction2 == direction && !blockState.canPlaceAt(iWorld, blockPos) && attachment != Attachment.field_17101) {
 			return Blocks.field_10124.getDefaultState();
 		} else {
 			if (direction.getAxis() == ((Direction)blockState.get(field_16324)).getAxis()) {
@@ -169,7 +170,9 @@ public class BellBlock extends BlockWithEntity {
 					return blockState.with(field_16326, Attachment.field_17100).with(field_16324, direction.getOpposite());
 				}
 
-				if (attachment == Attachment.field_17100 && this.method_17027(blockState2, iWorld, blockPos2, blockState.get(field_16324))) {
+				if (attachment == Attachment.field_17100
+					&& direction2.getOpposite() == direction
+					&& this.method_17027(blockState2, iWorld, blockPos2, blockState.get(field_16324))) {
 					return blockState.with(field_16326, Attachment.field_17101);
 				}
 			}

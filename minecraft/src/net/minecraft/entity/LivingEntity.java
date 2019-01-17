@@ -356,6 +356,10 @@ public abstract class LivingEntity extends Entity {
 		return false;
 	}
 
+	public float method_17825() {
+		return this.isChild() ? 0.5F : 1.0F;
+	}
+
 	@Override
 	public boolean method_5788() {
 		return false;

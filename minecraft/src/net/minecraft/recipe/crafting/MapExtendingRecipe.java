@@ -97,7 +97,7 @@ public class MapExtendingRecipe extends ShapedRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> method_8119() {
-		return RecipeSerializer.field_9039;
+	public RecipeSerializer<?> getSerializer() {
+		return RecipeSerializer.MAP_EXTENDING;
 	}
 }

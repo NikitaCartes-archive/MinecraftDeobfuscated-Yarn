@@ -261,8 +261,8 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void setSize(boolean bl) {
-		this.setSize(bl ? 0.3F : 1.0F);
+	public float method_17825() {
+		return this.isChild() ? 0.3F : 1.0F;
 	}
 
 	@Override
