@@ -33,7 +33,7 @@ public class SeagrassFeature extends Feature<SeagrassFeatureConfig> {
 				BlockState blockState = bl ? Blocks.field_10238.getDefaultState() : Blocks.field_10376.getDefaultState();
 				if (blockState.canPlaceAt(iWorld, blockPos2)) {
 					if (bl) {
-						BlockState blockState2 = blockState.with(TallSeagrassBlock.PROPERTY_HALF, DoubleBlockHalf.field_12609);
+						BlockState blockState2 = blockState.with(TallSeagrassBlock.HALF, DoubleBlockHalf.field_12609);
 						BlockPos blockPos3 = blockPos2.up();
 						if (iWorld.getBlockState(blockPos3).getBlock() == Blocks.field_10382) {
 							iWorld.setBlockState(blockPos2, blockState, 2);

@@ -22,10 +22,10 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	private TextComponent customName;
 	private DyeColor baseColor = DyeColor.WHITE;
 	private ListTag patternListTag;
-	private boolean field_11770;
-	private List<BannerPattern> patternList;
-	private List<DyeColor> patternColorList;
-	private String field_11775;
+	private boolean patternListTagRead;
+	private List<BannerPattern> patterns;
+	private List<DyeColor> patternColors;
+	private String patternCacheKey;
 
 	public BannerBlockEntity() {
 		super(BlockEntityType.BANNER);
@@ -45,10 +45,10 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 		}
 
 		this.baseColor = dyeColor;
-		this.patternList = null;
-		this.patternColorList = null;
-		this.field_11775 = "";
-		this.field_11770 = true;
+		this.patterns = null;
+		this.patternColors = null;
+		this.patternCacheKey = "";
+		this.patternListTagRead = true;
 		this.customName = itemStack.hasDisplayName() ? itemStack.getDisplayName() : null;
 	}
 
@@ -95,10 +95,10 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 		}
 
 		this.patternListTag = compoundTag.getList("Patterns", 10);
-		this.patternList = null;
-		this.patternColorList = null;
-		this.field_11775 = null;
-		this.field_11770 = true;
+		this.patterns = null;
+		this.patternColors = null;
+		this.patternCacheKey = null;
+		this.patternListTagRead = true;
 	}
 
 	@Nullable
@@ -118,47 +118,47 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public List<BannerPattern> getPatternList() {
-		this.initPatternLists();
-		return this.patternList;
+	public List<BannerPattern> getPatterns() {
+		this.readPattern();
+		return this.patterns;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public List<DyeColor> getPatternColorList() {
-		this.initPatternLists();
-		return this.patternColorList;
+	public List<DyeColor> getPatternColors() {
+		this.readPattern();
+		return this.patternColors;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public String method_10915() {
-		this.initPatternLists();
-		return this.field_11775;
+	public String getPatternCacheKey() {
+		this.readPattern();
+		return this.patternCacheKey;
 	}
 
 	@Environment(EnvType.CLIENT)
-	private void initPatternLists() {
-		if (this.patternList == null || this.patternColorList == null || this.field_11775 == null) {
-			if (!this.field_11770) {
-				this.field_11775 = "";
+	private void readPattern() {
+		if (this.patterns == null || this.patternColors == null || this.patternCacheKey == null) {
+			if (!this.patternListTagRead) {
+				this.patternCacheKey = "";
 			} else {
-				this.patternList = Lists.<BannerPattern>newArrayList();
-				this.patternColorList = Lists.<DyeColor>newArrayList();
+				this.patterns = Lists.<BannerPattern>newArrayList();
+				this.patternColors = Lists.<DyeColor>newArrayList();
 				DyeColor dyeColor = this.getColorForState(this::getCachedState);
 				if (dyeColor == null) {
-					this.field_11775 = "banner_missing";
+					this.patternCacheKey = "banner_missing";
 				} else {
-					this.patternList.add(BannerPattern.BASE);
-					this.patternColorList.add(dyeColor);
-					this.field_11775 = "b" + dyeColor.getId();
+					this.patterns.add(BannerPattern.BASE);
+					this.patternColors.add(dyeColor);
+					this.patternCacheKey = "b" + dyeColor.getId();
 					if (this.patternListTag != null) {
 						for (int i = 0; i < this.patternListTag.size(); i++) {
 							CompoundTag compoundTag = this.patternListTag.getCompoundTag(i);
 							BannerPattern bannerPattern = BannerPattern.byId(compoundTag.getString("Pattern"));
 							if (bannerPattern != null) {
-								this.patternList.add(bannerPattern);
+								this.patterns.add(bannerPattern);
 								int j = compoundTag.getInt("Color");
-								this.patternColorList.add(DyeColor.byId(j));
-								this.field_11775 = this.field_11775 + bannerPattern.getId() + j;
+								this.patternColors.add(DyeColor.byId(j));
+								this.patternCacheKey = this.patternCacheKey + bannerPattern.getId() + j;
 							}
 						}
 					}

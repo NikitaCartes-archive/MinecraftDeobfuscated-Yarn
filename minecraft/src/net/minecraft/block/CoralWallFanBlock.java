@@ -7,23 +7,23 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
-public class CoralWallFanBlock extends CoralDeadWallFanBlock {
-	private final Block field_10819;
+public class CoralWallFanBlock extends DeadCoralWallFanBlock {
+	private final Block deadCoralBlock;
 
 	protected CoralWallFanBlock(Block block, Block.Settings settings) {
 		super(settings);
-		this.field_10819 = block;
+		this.deadCoralBlock = block;
 	}
 
 	@Override
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
-		this.method_9430(blockState, world, blockPos);
+		this.checkLivingConditions(blockState, world, blockPos);
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!method_9431(blockState, world, blockPos)) {
-			world.setBlockState(blockPos, this.field_10819.getDefaultState().with(WATERLOGGED, Boolean.valueOf(false)).with(field_9933, blockState.get(field_9933)), 2);
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if (!isInWater(blockState, world, blockPos)) {
+			world.setBlockState(blockPos, this.deadCoralBlock.getDefaultState().with(WATERLOGGED, Boolean.valueOf(false)).with(FACING, blockState.get(FACING)), 2);
 		}
 	}
 
@@ -31,14 +31,14 @@ public class CoralWallFanBlock extends CoralDeadWallFanBlock {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		if (direction.getOpposite() == blockState.get(field_9933) && !blockState.canPlaceAt(iWorld, blockPos)) {
+		if (direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos)) {
 			return Blocks.field_10124.getDefaultState();
 		} else {
 			if ((Boolean)blockState.get(WATERLOGGED)) {
-				iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
+				iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 			}
 
-			this.method_9430(blockState, iWorld, blockPos);
+			this.checkLivingConditions(blockState, iWorld, blockPos);
 			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		}
 	}

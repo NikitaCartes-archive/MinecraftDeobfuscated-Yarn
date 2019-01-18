@@ -21,7 +21,7 @@ public class CoralClawFeature extends CoralFeature {
 		if (!this.method_12864(iWorld, random, blockPos, blockState)) {
 			return false;
 		} else {
-			Direction direction = Direction.class_2353.HORIZONTAL.random(random);
+			Direction direction = Direction.Type.HORIZONTAL.random(random);
 			int i = random.nextInt(2) + 2;
 			List<Direction> list = Lists.<Direction>newArrayList(direction, direction.rotateYClockwise(), direction.rotateYCounterclockwise());
 			Collections.shuffle(list, random);

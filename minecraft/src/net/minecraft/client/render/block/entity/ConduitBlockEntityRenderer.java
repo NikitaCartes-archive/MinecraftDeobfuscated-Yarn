@@ -26,17 +26,17 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 	private final ConduitBlockEntityRenderer.EyeModel eyeModel = new ConduitBlockEntityRenderer.EyeModel();
 
 	public void render(ConduitBlockEntity conduitBlockEntity, double d, double e, double f, float g, int i) {
-		float h = (float)conduitBlockEntity.field_11936 + g;
-		if (!conduitBlockEntity.method_11065()) {
-			float j = conduitBlockEntity.method_11061(0.0F);
+		float h = (float)conduitBlockEntity.ticks + g;
+		if (!conduitBlockEntity.isActive()) {
+			float j = conduitBlockEntity.getRotation(0.0F);
 			this.bindTexture(BASE_TEX);
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
 			GlStateManager.rotatef(j, 0.0F, 1.0F, 0.0F);
 			this.baseModel.render(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 			GlStateManager.popMatrix();
-		} else if (conduitBlockEntity.method_11065()) {
-			float j = conduitBlockEntity.method_11061(g) * (180.0F / (float)Math.PI);
+		} else if (conduitBlockEntity.isActive()) {
+			float j = conduitBlockEntity.getRotation(g) * (180.0F / (float)Math.PI);
 			float k = MathHelper.sin(h * 0.1F) / 2.0F + 0.5F;
 			k = k * k + k;
 			this.bindTexture(CAGE_TEX);
@@ -47,9 +47,9 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 			this.cageModel.render(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 			GlStateManager.popMatrix();
 			int l = 3;
-			int m = conduitBlockEntity.field_11936 / 3 % 22;
+			int m = conduitBlockEntity.ticks / 3 % 22;
 			this.windModel.method_3573(m);
-			int n = conduitBlockEntity.field_11936 / 66 % 3;
+			int n = conduitBlockEntity.ticks / 66 % 3;
 			switch (n) {
 				case 0:
 					this.bindTexture(WIND_TEX);
@@ -102,7 +102,7 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 				vec2f = entity.getRotationClient();
 			}
 
-			if (conduitBlockEntity.isEyeOpenClient()) {
+			if (conduitBlockEntity.isEyeOpen()) {
 				this.bindTexture(OPEN_EYE_TEX);
 			} else {
 				this.bindTexture(CLOSED_EYE_TEX);

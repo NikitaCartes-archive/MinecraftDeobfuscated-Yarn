@@ -17,8 +17,8 @@ public class ScoreboardTeam extends AbstractScoreboardTeam {
 	private final String name;
 	private final Set<String> playerList = Sets.<String>newHashSet();
 	private TextComponent displayName;
-	private TextComponent field_1418 = new StringTextComponent("");
-	private TextComponent field_1419 = new StringTextComponent("");
+	private TextComponent prefix = new StringTextComponent("");
+	private TextComponent suffix = new StringTextComponent("");
 	private boolean friendlyFire = true;
 	private boolean showFriendlyInvisibles = true;
 	private AbstractScoreboardTeam.VisibilityRule nameTagVisibilityRule = AbstractScoreboardTeam.VisibilityRule.ALWAYS;
@@ -41,7 +41,7 @@ public class ScoreboardTeam extends AbstractScoreboardTeam {
 		return this.displayName;
 	}
 
-	public TextComponent method_1148() {
+	public TextComponent getPrefix() {
 		TextComponent textComponent = TextFormatter.bracketed(
 			this.displayName
 				.copy()
@@ -55,7 +55,7 @@ public class ScoreboardTeam extends AbstractScoreboardTeam {
 		return textComponent;
 	}
 
-	public void method_1137(TextComponent textComponent) {
+	public void setDisplayName(TextComponent textComponent) {
 		if (textComponent == null) {
 			throw new IllegalArgumentException("Name cannot be null");
 		} else {
@@ -64,22 +64,22 @@ public class ScoreboardTeam extends AbstractScoreboardTeam {
 		}
 	}
 
-	public void method_1138(@Nullable TextComponent textComponent) {
-		this.field_1418 = (TextComponent)(textComponent == null ? new StringTextComponent("") : textComponent.copy());
+	public void setPrefix(@Nullable TextComponent textComponent) {
+		this.prefix = (TextComponent)(textComponent == null ? new StringTextComponent("") : textComponent.copy());
 		this.scoreboard.updateScoreboardTeam(this);
 	}
 
-	public TextComponent method_1144() {
-		return this.field_1418;
+	public TextComponent getSuffix() {
+		return this.prefix;
 	}
 
-	public void method_1139(@Nullable TextComponent textComponent) {
-		this.field_1419 = (TextComponent)(textComponent == null ? new StringTextComponent("") : textComponent.copy());
+	public void setSuffix(@Nullable TextComponent textComponent) {
+		this.suffix = (TextComponent)(textComponent == null ? new StringTextComponent("") : textComponent.copy());
 		this.scoreboard.updateScoreboardTeam(this);
 	}
 
 	public TextComponent method_1136() {
-		return this.field_1419;
+		return this.suffix;
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class ScoreboardTeam extends AbstractScoreboardTeam {
 
 	@Override
 	public TextComponent method_1198(TextComponent textComponent) {
-		TextComponent textComponent2 = new StringTextComponent("").append(this.field_1418).append(textComponent).append(this.field_1419);
+		TextComponent textComponent2 = new StringTextComponent("").append(this.prefix).append(textComponent).append(this.suffix);
 		TextFormat textFormat = this.getColor();
 		if (textFormat != TextFormat.RESET) {
 			textComponent2.applyFormat(textFormat);

@@ -34,7 +34,7 @@ public class StainedGlassPaneBlock extends PaneBlock {
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
 		if (blockState2.getBlock() != blockState.getBlock()) {
 			if (!world.isClient) {
-				BeaconBlock.method_9463(world, blockPos);
+				BeaconBlock.onStainedGlassAdded(world, blockPos);
 			}
 		}
 	}
@@ -43,7 +43,7 @@ public class StainedGlassPaneBlock extends PaneBlock {
 	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState.getBlock() != blockState2.getBlock()) {
 			if (!world.isClient) {
-				BeaconBlock.method_9463(world, blockPos);
+				BeaconBlock.onStainedGlassAdded(world, blockPos);
 			}
 		}
 	}

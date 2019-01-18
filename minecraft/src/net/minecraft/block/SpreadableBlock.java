@@ -25,7 +25,7 @@ public abstract class SpreadableBlock extends SnowyBlock {
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (!world.isClient) {
 			if (!method_10614(world, blockPos)) {
 				world.setBlockState(blockPos, Blocks.field_10566.getDefaultState());

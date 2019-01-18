@@ -11,7 +11,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class WaterlilyBlock extends PlantBlock {
-	protected static final VoxelShape field_11728 = Block.createCubeShape(1.0, 0.0, 1.0, 15.0, 1.5, 15.0);
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 1.5, 15.0);
 
 	protected WaterlilyBlock(Block.Settings settings) {
 		super(settings);
@@ -27,7 +27,7 @@ public class WaterlilyBlock extends PlantBlock {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_11728;
+		return SHAPE;
 	}
 
 	@Override

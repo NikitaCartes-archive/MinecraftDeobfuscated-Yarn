@@ -9,11 +9,11 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
 
 public class SnowyBlock extends Block {
-	public static final BooleanProperty snowy = Properties.SNOWY;
+	public static final BooleanProperty SNOWY = Properties.SNOWY;
 
 	protected SnowyBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(snowy, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(SNOWY, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -24,18 +24,18 @@ public class SnowyBlock extends Block {
 			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		} else {
 			Block block = blockState2.getBlock();
-			return blockState.with(snowy, Boolean.valueOf(block == Blocks.field_10491 || block == Blocks.field_10477));
+			return blockState.with(SNOWY, Boolean.valueOf(block == Blocks.field_10491 || block == Blocks.field_10477));
 		}
 	}
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		Block block = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getPos().up()).getBlock();
-		return this.getDefaultState().with(snowy, Boolean.valueOf(block == Blocks.field_10491 || block == Blocks.field_10477));
+		Block block = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos().up()).getBlock();
+		return this.getDefaultState().with(SNOWY, Boolean.valueOf(block == Blocks.field_10491 || block == Blocks.field_10477));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(snowy);
+		builder.with(SNOWY);
 	}
 }

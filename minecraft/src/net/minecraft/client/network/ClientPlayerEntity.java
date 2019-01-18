@@ -473,7 +473,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void method_17356(SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
+	public void playSound(SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
 		this.world.playSound(this.x, this.y, this.z, soundEvent, soundCategory, f, g, false);
 	}
 

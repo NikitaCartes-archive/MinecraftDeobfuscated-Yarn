@@ -16,10 +16,10 @@ public class BeaconBlockEntityRenderer extends BlockEntityRenderer<BeaconBlockEn
 	private static final Identifier BEAM_TEX = new Identifier("textures/entity/beacon_beam.png");
 
 	public void render(BeaconBlockEntity beaconBlockEntity, double d, double e, double f, float g, int i) {
-		this.method_3543(d, e, f, (double)g, (double)beaconBlockEntity.method_10933(), beaconBlockEntity.method_10937(), beaconBlockEntity.getWorld().getTime());
+		this.render(d, e, f, (double)g, (double)beaconBlockEntity.getBeamTextureOffset(), beaconBlockEntity.getBeamSegments(), beaconBlockEntity.getWorld().getTime());
 	}
 
-	private void method_3543(double d, double e, double f, double g, double h, List<BeaconBlockEntity.class_2581> list, long l) {
+	private void render(double d, double e, double f, double g, double h, List<BeaconBlockEntity.BeamSegment> list, long l) {
 		GlStateManager.alphaFunc(516, 0.1F);
 		this.bindTexture(BEAM_TEX);
 		if (h > 0.0) {
@@ -27,20 +27,20 @@ public class BeaconBlockEntityRenderer extends BlockEntityRenderer<BeaconBlockEn
 			int i = 0;
 
 			for (int j = 0; j < list.size(); j++) {
-				BeaconBlockEntity.class_2581 lv = (BeaconBlockEntity.class_2581)list.get(j);
-				method_3544(d, e, f, g, h, l, i, lv.method_10943(), lv.method_10944());
-				i += lv.method_10943();
+				BeaconBlockEntity.BeamSegment beamSegment = (BeaconBlockEntity.BeamSegment)list.get(j);
+				renderBeaconLightBeam(d, e, f, g, h, l, i, beamSegment.getHeight(), beamSegment.getColor());
+				i += beamSegment.getHeight();
 			}
 
 			GlStateManager.enableFog();
 		}
 	}
 
-	private static void method_3544(double d, double e, double f, double g, double h, long l, int i, int j, float[] fs) {
-		method_3545(d, e, f, g, h, l, i, j, fs, 0.2, 0.25);
+	private static void renderBeaconLightBeam(double d, double e, double f, double g, double h, long l, int i, int j, float[] fs) {
+		renderLightBeam(d, e, f, g, h, l, i, j, fs, 0.2, 0.25);
 	}
 
-	public static void method_3545(double d, double e, double f, double g, double h, long l, int i, int j, float[] fs, double k, double m) {
+	public static void renderLightBeam(double d, double e, double f, double g, double h, long l, int i, int j, float[] fs, double k, double m) {
 		int n = i + j;
 		GlStateManager.texParameter(3553, 10242, 10497);
 		GlStateManager.texParameter(3553, 10243, 10497);

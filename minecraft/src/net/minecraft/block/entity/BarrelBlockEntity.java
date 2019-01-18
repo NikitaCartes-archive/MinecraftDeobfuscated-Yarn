@@ -19,9 +19,9 @@ import net.minecraft.util.math.Direction;
 
 public class BarrelBlockEntity extends LootableContainerBlockEntity implements Tickable {
 	private DefaultedList<ItemStack> inventory = DefaultedList.create(27, ItemStack.EMPTY);
-	protected int field_17583;
-	protected boolean field_17584;
-	private int field_17585;
+	protected int viewerCount;
+	protected boolean open;
+	private int ticksOpen;
 
 	private BarrelBlockEntity(BlockEntityType<?> blockEntityType) {
 		super(blockEntityType);
@@ -100,7 +100,7 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity implements T
 	}
 
 	@Override
-	protected TextComponent method_17823() {
+	protected TextComponent getContainerName() {
 		return new TranslatableTextComponent("container.barrel");
 	}
 
@@ -112,18 +112,18 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity implements T
 	@Override
 	public void onInvOpen(PlayerEntity playerEntity) {
 		if (!playerEntity.isSpectator()) {
-			if (this.field_17583 < 0) {
-				this.field_17583 = 0;
+			if (this.viewerCount < 0) {
+				this.viewerCount = 0;
 			}
 
-			this.field_17583++;
+			this.viewerCount++;
 		}
 	}
 
 	@Override
 	public void onInvClose(PlayerEntity playerEntity) {
 		if (!playerEntity.isSpectator()) {
-			this.field_17583--;
+			this.viewerCount--;
 		}
 	}
 
@@ -133,22 +133,22 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity implements T
 			int i = this.pos.getX();
 			int j = this.pos.getY();
 			int k = this.pos.getZ();
-			this.field_17585++;
-			this.field_17583 = ChestBlockEntity.method_17765(this.world, this, this.field_17585, i, j, k, this.field_17583);
-			if (this.field_17583 > 0 && !this.field_17584) {
-				this.method_17764(SoundEvents.field_17604);
-				this.field_17584 = true;
+			this.ticksOpen++;
+			this.viewerCount = ChestBlockEntity.recalculateViewerCountIfNecessary(this.world, this, this.ticksOpen, i, j, k, this.viewerCount);
+			if (this.viewerCount > 0 && !this.open) {
+				this.playSound(SoundEvents.field_17604);
+				this.open = true;
 			}
 
-			if (this.field_17583 == 0 && this.field_17584) {
-				this.method_17764(SoundEvents.field_17603);
-				this.field_17584 = false;
+			if (this.viewerCount == 0 && this.open) {
+				this.playSound(SoundEvents.field_17603);
+				this.open = false;
 			}
 		}
 	}
 
-	private void method_17764(SoundEvent soundEvent) {
-		Direction direction = this.getCachedState().get(BarrelBlock.field_16320);
+	private void playSound(SoundEvent soundEvent) {
+		Direction direction = this.getCachedState().get(BarrelBlock.FACING);
 		double d = (double)this.pos.getX() + 0.5 + (double)direction.getVector().getX() / 2.0;
 		double e = (double)this.pos.getY() + 0.5 + (double)direction.getVector().getZ() / 2.0;
 		double f = (double)this.pos.getZ() + 0.5;

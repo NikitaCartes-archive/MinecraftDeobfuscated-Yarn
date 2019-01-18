@@ -22,8 +22,8 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class TurtleEggBlock extends Block {
-	private static final VoxelShape field_11712 = Block.createCubeShape(3.0, 0.0, 3.0, 12.0, 7.0, 12.0);
-	private static final VoxelShape field_11709 = Block.createCubeShape(1.0, 0.0, 1.0, 15.0, 7.0, 15.0);
+	private static final VoxelShape field_11712 = Block.createCuboidShape(3.0, 0.0, 3.0, 12.0, 7.0, 12.0);
+	private static final VoxelShape field_11709 = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 7.0, 15.0);
 	public static final IntegerProperty field_11711 = Properties.HATCH;
 	public static final IntegerProperty field_11710 = Properties.EGGS;
 
@@ -69,7 +69,7 @@ public class TurtleEggBlock extends Block {
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (this.method_10832(world) && this.method_10831(world, blockPos)) {
 			int i = (Integer)blockState.get(field_11711);
 			if (i < 2) {
@@ -117,16 +117,16 @@ public class TurtleEggBlock extends Block {
 	}
 
 	@Override
-	public boolean method_9616(BlockState blockState, ItemPlacementContext itemPlacementContext) {
+	public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
 		return itemPlacementContext.getItemStack().getItem() == this.getItem() && blockState.get(field_11710) < 4
 			? true
-			: super.method_9616(blockState, itemPlacementContext);
+			: super.canReplace(blockState, itemPlacementContext);
 	}
 
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		BlockState blockState = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getPos());
+		BlockState blockState = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos());
 		return blockState.getBlock() == this
 			? blockState.with(field_11710, Integer.valueOf(Math.min(4, (Integer)blockState.get(field_11710) + 1)))
 			: super.getPlacementState(itemPlacementContext);

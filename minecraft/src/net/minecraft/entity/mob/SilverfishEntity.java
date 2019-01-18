@@ -5,7 +5,7 @@ import net.minecraft.class_1379;
 import net.minecraft.class_1399;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.StoneInfestedBlock;
+import net.minecraft.block.InfestedBlock;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
@@ -113,7 +113,7 @@ public class SilverfishEntity extends HostileEntity {
 
 	@Override
 	public float method_6144(BlockPos blockPos, ViewableWorld viewableWorld) {
-		return StoneInfestedBlock.method_10269(viewableWorld.getBlockState(blockPos.down())) ? 10.0F : super.method_6144(blockPos, viewableWorld);
+		return InfestedBlock.hasRegularBlock(viewableWorld.getBlockState(blockPos.down())) ? 10.0F : super.method_6144(blockPos, viewableWorld);
 	}
 
 	@Override
@@ -157,7 +157,7 @@ public class SilverfishEntity extends HostileEntity {
 					this.field_7368 = Direction.random(random);
 					BlockPos blockPos = new BlockPos(this.field_6566.x, this.field_6566.y + 0.5, this.field_6566.z).offset(this.field_7368);
 					BlockState blockState = this.field_6566.world.getBlockState(blockPos);
-					if (StoneInfestedBlock.method_10269(blockState)) {
+					if (InfestedBlock.hasRegularBlock(blockState)) {
 						this.field_7367 = true;
 						return true;
 					}
@@ -181,8 +181,8 @@ public class SilverfishEntity extends HostileEntity {
 				IWorld iWorld = this.field_6566.world;
 				BlockPos blockPos = new BlockPos(this.field_6566.x, this.field_6566.y + 0.5, this.field_6566.z).offset(this.field_7368);
 				BlockState blockState = iWorld.getBlockState(blockPos);
-				if (StoneInfestedBlock.method_10269(blockState)) {
-					iWorld.setBlockState(blockPos, StoneInfestedBlock.method_10270(blockState.getBlock()), 3);
+				if (InfestedBlock.hasRegularBlock(blockState)) {
+					iWorld.setBlockState(blockPos, InfestedBlock.getRegularBlock(blockState.getBlock()), 3);
 					this.field_6566.method_5990();
 					this.field_6566.invalidate();
 				}
@@ -223,11 +223,11 @@ public class SilverfishEntity extends HostileEntity {
 							BlockPos blockPos2 = blockPos.add(j, i, k);
 							BlockState blockState = world.getBlockState(blockPos2);
 							Block block = blockState.getBlock();
-							if (block instanceof StoneInfestedBlock) {
+							if (block instanceof InfestedBlock) {
 								if (world.getGameRules().getBoolean("mobGriefing")) {
 									world.breakBlock(blockPos2, true);
 								} else {
-									world.setBlockState(blockPos2, ((StoneInfestedBlock)block).method_10271().getDefaultState(), 3);
+									world.setBlockState(blockPos2, ((InfestedBlock)block).getRegularBlock().getDefaultState(), 3);
 								}
 
 								if (random.nextBoolean()) {

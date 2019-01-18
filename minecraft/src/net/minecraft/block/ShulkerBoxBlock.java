@@ -24,7 +24,6 @@ import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormat;
 import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
@@ -32,6 +31,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.InventoryUtil;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
@@ -43,7 +43,7 @@ import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.Parameters;
 
 public class ShulkerBoxBlock extends BlockWithEntity {
-	public static final EnumProperty<Direction> field_11496 = FacingBlock.field_10927;
+	public static final EnumProperty<Direction> FACING = FacingBlock.FACING;
 	public static final Identifier field_11495 = new Identifier("contents");
 	@Nullable
 	private final DyeColor color;
@@ -51,7 +51,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	public ShulkerBoxBlock(@Nullable DyeColor dyeColor, Block.Settings settings) {
 		super(settings);
 		this.color = dyeColor;
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11496, Direction.UP));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.UP));
 	}
 
 	@Override
@@ -76,7 +76,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (world.isClient) {
 			return true;
 		} else if (playerEntity.isSpectator()) {
@@ -84,7 +84,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		} else {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof ShulkerBoxBlockEntity) {
-				Direction direction = blockState.get(field_11496);
+				Direction direction = blockState.get(FACING);
 				ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
 				boolean bl;
 				if (shulkerBoxBlockEntity.getAnimationStage() == ShulkerBoxBlockEntity.AnimationStage.CLOSED) {
@@ -111,12 +111,12 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(field_11496, itemPlacementContext.getFacing());
+		return this.getDefaultState().with(FACING, itemPlacementContext.getFacing());
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_11496);
+		builder.with(FACING);
 	}
 
 	@Override
@@ -168,8 +168,8 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void addInformation(ItemStack itemStack, @Nullable BlockView blockView, List<TextComponent> list, TooltipOptions tooltipOptions) {
-		super.addInformation(itemStack, blockView, list, tooltipOptions);
+	public void buildTooltip(ItemStack itemStack, @Nullable BlockView blockView, List<TextComponent> list, TooltipOptions tooltipOptions) {
+		super.buildTooltip(itemStack, blockView, list, tooltipOptions);
 		CompoundTag compoundTag = itemStack.getSubCompoundTag("BlockEntityTag");
 		if (compoundTag != null) {
 			if (compoundTag.containsKey("LootTable", 8)) {
@@ -210,7 +210,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
 		return blockEntity instanceof ShulkerBoxBlockEntity
-			? VoxelShapes.cube(((ShulkerBoxBlockEntity)blockEntity).method_11314(blockState))
+			? VoxelShapes.cube(((ShulkerBoxBlockEntity)blockEntity).getBoundingBox(blockState))
 			: VoxelShapes.fullCube();
 	}
 
@@ -307,12 +307,12 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
-		return blockState.with(field_11496, rotation.method_10503(blockState.get(field_11496)));
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
+		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
-	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.getRotation(blockState.get(field_11496)));
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
+		return blockState.rotate(mirror.getRotation(blockState.get(FACING)));
 	}
 }

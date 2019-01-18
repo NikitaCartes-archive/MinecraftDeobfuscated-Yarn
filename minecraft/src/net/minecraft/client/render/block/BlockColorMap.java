@@ -58,7 +58,7 @@ public class BlockColorMap {
 			Blocks.field_10593
 		);
 		blockColorMap.register(
-			(blockState, extendedBlockView, blockPos, i) -> RedstoneWireBlock.getWireColor((Integer)blockState.get(RedstoneWireBlock.field_11432)), Blocks.field_10091
+			(blockState, extendedBlockView, blockPos, i) -> RedstoneWireBlock.getWireColor((Integer)blockState.get(RedstoneWireBlock.POWER)), Blocks.field_10091
 		);
 		blockColorMap.register(
 			(blockState, extendedBlockView, blockPos, i) -> extendedBlockView != null && blockPos != null ? BiomeColors.grassColorAt(extendedBlockView, blockPos) : -1,
@@ -66,7 +66,7 @@ public class BlockColorMap {
 		);
 		blockColorMap.register((blockState, extendedBlockView, blockPos, i) -> 14731036, Blocks.field_10150, Blocks.field_10331);
 		blockColorMap.register((blockState, extendedBlockView, blockPos, i) -> {
-			int j = (Integer)blockState.get(StemBlock.field_11584);
+			int j = (Integer)blockState.get(StemBlock.AGE);
 			int k = j * 32;
 			int l = 255 - j * 8;
 			int m = j * 4;
@@ -81,7 +81,7 @@ public class BlockColorMap {
 		if (blockColorMapper != null) {
 			return blockColorMapper.getColor(blockState, null, null, 0);
 		} else {
-			MaterialColor materialColor = blockState.getMaterialColor(world, blockPos);
+			MaterialColor materialColor = blockState.getTopMaterialColor(world, blockPos);
 			return materialColor != null ? materialColor.color : -1;
 		}
 	}

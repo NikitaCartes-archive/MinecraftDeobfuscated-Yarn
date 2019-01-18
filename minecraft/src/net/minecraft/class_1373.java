@@ -57,11 +57,11 @@ public class class_1373 extends MoveToTargetPosGoal {
 			BlockState blockState = viewableWorld.getBlockState(blockPos);
 			Block block = blockState.getBlock();
 			if (block == Blocks.field_10034) {
-				return ChestBlockEntity.method_11048(viewableWorld, blockPos) < 1;
+				return ChestBlockEntity.getPlayersLookingInChestCount(viewableWorld, blockPos) < 1;
 			} else {
-				return block == Blocks.field_10181 && blockState.get(FurnaceBlock.field_11105)
+				return block == Blocks.field_10181 && blockState.get(FurnaceBlock.LIT)
 					? true
-					: block.matches(BlockTags.field_16443) && blockState.get(BedBlock.field_9967) != BedPart.field_12560;
+					: block.matches(BlockTags.field_16443) && blockState.get(BedBlock.PART) != BedPart.field_12560;
 			}
 		}
 	}

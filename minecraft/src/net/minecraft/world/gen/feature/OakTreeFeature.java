@@ -95,19 +95,19 @@ public class OakTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
 						this.setBlockState(set, modifiableTestableWorld, blockPos.up(n), this.log);
 						if (this.field_13903 && n > 0) {
 							if (random.nextInt(3) > 0 && isAir(modifiableTestableWorld, blockPos.add(-1, n, 0))) {
-								this.method_14065(modifiableTestableWorld, blockPos.add(-1, n, 0), VineBlock.field_11702);
+								this.method_14065(modifiableTestableWorld, blockPos.add(-1, n, 0), VineBlock.EAST);
 							}
 
 							if (random.nextInt(3) > 0 && isAir(modifiableTestableWorld, blockPos.add(1, n, 0))) {
-								this.method_14065(modifiableTestableWorld, blockPos.add(1, n, 0), VineBlock.field_11696);
+								this.method_14065(modifiableTestableWorld, blockPos.add(1, n, 0), VineBlock.WEST);
 							}
 
 							if (random.nextInt(3) > 0 && isAir(modifiableTestableWorld, blockPos.add(0, n, -1))) {
-								this.method_14065(modifiableTestableWorld, blockPos.add(0, n, -1), VineBlock.field_11699);
+								this.method_14065(modifiableTestableWorld, blockPos.add(0, n, -1), VineBlock.SOUTH);
 							}
 
 							if (random.nextInt(3) > 0 && isAir(modifiableTestableWorld, blockPos.add(0, n, 1))) {
-								this.method_14065(modifiableTestableWorld, blockPos.add(0, n, 1), VineBlock.field_11706);
+								this.method_14065(modifiableTestableWorld, blockPos.add(0, n, 1), VineBlock.NORTH);
 							}
 						}
 					}
@@ -128,19 +128,19 @@ public class OakTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
 									BlockPos blockPos4 = mutable2.north();
 									BlockPos blockPos5 = mutable2.south();
 									if (random.nextInt(4) == 0 && isAir(modifiableTestableWorld, blockPos3)) {
-										this.method_14064(modifiableTestableWorld, blockPos3, VineBlock.field_11702);
+										this.method_14064(modifiableTestableWorld, blockPos3, VineBlock.EAST);
 									}
 
 									if (random.nextInt(4) == 0 && isAir(modifiableTestableWorld, blockPos2)) {
-										this.method_14064(modifiableTestableWorld, blockPos2, VineBlock.field_11696);
+										this.method_14064(modifiableTestableWorld, blockPos2, VineBlock.WEST);
 									}
 
 									if (random.nextInt(4) == 0 && isAir(modifiableTestableWorld, blockPos4)) {
-										this.method_14064(modifiableTestableWorld, blockPos4, VineBlock.field_11699);
+										this.method_14064(modifiableTestableWorld, blockPos4, VineBlock.SOUTH);
 									}
 
 									if (random.nextInt(4) == 0 && isAir(modifiableTestableWorld, blockPos5)) {
-										this.method_14064(modifiableTestableWorld, blockPos5, VineBlock.field_11706);
+										this.method_14064(modifiableTestableWorld, blockPos5, VineBlock.NORTH);
 									}
 								}
 							}
@@ -149,7 +149,7 @@ public class OakTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
 
 					if (random.nextInt(5) == 0 && i > 5) {
 						for (int nx = 0; nx < 2; nx++) {
-							for (Direction direction : Direction.class_2353.HORIZONTAL) {
+							for (Direction direction : Direction.Type.HORIZONTAL) {
 								if (random.nextInt(4 - nx) == 0) {
 									Direction direction2 = direction.getOpposite();
 									this.method_14063(modifiableTestableWorld, random.nextInt(3), blockPos.add(direction2.getOffsetX(), i - 5 + nx, direction2.getOffsetZ()), direction);
@@ -174,7 +174,7 @@ public class OakTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
 
 	private void method_14063(ModifiableWorld modifiableWorld, int i, BlockPos blockPos, Direction direction) {
 		this.setBlockState(
-			modifiableWorld, blockPos, Blocks.field_10302.getDefaultState().with(CocoaBlock.field_10779, Integer.valueOf(i)).with(CocoaBlock.field_11177, direction)
+			modifiableWorld, blockPos, Blocks.field_10302.getDefaultState().with(CocoaBlock.AGE, Integer.valueOf(i)).with(CocoaBlock.FACING, direction)
 		);
 	}
 

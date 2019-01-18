@@ -203,11 +203,11 @@ public abstract class class_3443 {
 		BlockPos blockPos = new BlockPos(this.applyXTransform(i, k), this.applyYTransform(j), this.applyZTransform(i, k));
 		if (mutableIntBoundingBox.contains(blockPos)) {
 			if (this.mirror != Mirror.NONE) {
-				blockState = blockState.applyMirror(this.mirror);
+				blockState = blockState.mirror(this.mirror);
 			}
 
 			if (this.rotation != Rotation.ROT_0) {
-				blockState = blockState.applyRotation(this.rotation);
+				blockState = blockState.rotate(this.rotation);
 			}
 
 			iWorld.setBlockState(blockPos, blockState, 2);
@@ -380,7 +380,7 @@ public abstract class class_3443 {
 	public static BlockState method_14916(BlockView blockView, BlockPos blockPos, BlockState blockState) {
 		Direction direction = null;
 
-		for (Direction direction2 : Direction.class_2353.HORIZONTAL) {
+		for (Direction direction2 : Direction.Type.HORIZONTAL) {
 			BlockPos blockPos2 = blockPos.offset(direction2);
 			BlockState blockState2 = blockView.getBlockState(blockPos2);
 			if (blockState2.getBlock() == Blocks.field_10034) {
@@ -398,9 +398,9 @@ public abstract class class_3443 {
 		}
 
 		if (direction != null) {
-			return blockState.with(HorizontalFacingBlock.field_11177, direction.getOpposite());
+			return blockState.with(HorizontalFacingBlock.FACING, direction.getOpposite());
 		} else {
-			Direction direction3 = blockState.get(HorizontalFacingBlock.field_11177);
+			Direction direction3 = blockState.get(HorizontalFacingBlock.FACING);
 			BlockPos blockPos3 = blockPos.offset(direction3);
 			if (blockView.getBlockState(blockPos3).isFullOpaque(blockView, blockPos3)) {
 				direction3 = direction3.getOpposite();
@@ -417,7 +417,7 @@ public abstract class class_3443 {
 				blockPos3 = blockPos.offset(direction3);
 			}
 
-			return blockState.with(HorizontalFacingBlock.field_11177, direction3);
+			return blockState.with(HorizontalFacingBlock.FACING, direction3);
 		}
 	}
 
@@ -446,7 +446,7 @@ public abstract class class_3443 {
 	) {
 		BlockPos blockPos = new BlockPos(this.applyXTransform(i, k), this.applyYTransform(j), this.applyZTransform(i, k));
 		if (mutableIntBoundingBox.contains(blockPos) && iWorld.getBlockState(blockPos).getBlock() != Blocks.field_10200) {
-			this.addBlock(iWorld, Blocks.field_10200.getDefaultState().with(DispenserBlock.field_10918, direction), i, j, k, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10200.getDefaultState().with(DispenserBlock.FACING, direction), i, j, k, mutableIntBoundingBox);
 			BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
 			if (blockEntity instanceof DispenserBlockEntity) {
 				((DispenserBlockEntity)blockEntity).setLootTable(identifier, random.nextLong());

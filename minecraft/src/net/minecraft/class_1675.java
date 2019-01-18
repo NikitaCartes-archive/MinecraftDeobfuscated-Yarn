@@ -6,9 +6,9 @@ import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.BlockHitResult;
-import net.minecraft.util.EntityHitResult;
-import net.minecraft.util.HitResult;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
@@ -31,7 +31,9 @@ public final class class_1675 {
 			return new BlockHitResult(vec3d, Direction.getFacing(g, h, i), new BlockPos(entity), false);
 		} else {
 			Vec3d vec3d2 = new Vec3d(d + g, e + h, f + i);
-			HitResult hitResult = world.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.NONE, entity));
+			HitResult hitResult = world.method_17742(
+				new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.NONE, entity)
+			);
 			if (bl) {
 				if (hitResult.getType() != HitResult.Type.NONE) {
 					vec3d2 = hitResult.getPos();

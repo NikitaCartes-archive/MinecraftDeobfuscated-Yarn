@@ -26,7 +26,7 @@ public class EndGatewayBlock extends BlockWithEntity {
 	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof EndGatewayBlockEntity) {
-			int i = ((EndGatewayBlockEntity)blockEntity).method_11415();
+			int i = ((EndGatewayBlockEntity)blockEntity).getDrawnSidesCount();
 
 			for (int j = 0; j < i; j++) {
 				double d = (double)((float)blockPos.getX() + random.nextFloat());

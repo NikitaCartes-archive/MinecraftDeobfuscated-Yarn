@@ -112,7 +112,6 @@ import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormat;
 import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
@@ -124,6 +123,7 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.crash.ICrashCallable;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
@@ -450,7 +450,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 							.world
 							.setBlockState(
 								blockPos,
-								blockState.with(CommandBlock.FACING, direction).with(CommandBlock.field_10793, Boolean.valueOf(updateCommandBlockServerPacket.isConditional())),
+								blockState.with(CommandBlock.FACING, direction).with(CommandBlock.CONDITIONAL, Boolean.valueOf(updateCommandBlockServerPacket.isConditional())),
 								2
 							);
 						break;
@@ -461,7 +461,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 							.world
 							.setBlockState(
 								blockPos,
-								blockState.with(CommandBlock.FACING, direction).with(CommandBlock.field_10793, Boolean.valueOf(updateCommandBlockServerPacket.isConditional())),
+								blockState.with(CommandBlock.FACING, direction).with(CommandBlock.CONDITIONAL, Boolean.valueOf(updateCommandBlockServerPacket.isConditional())),
 								2
 							);
 						break;
@@ -473,7 +473,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 							.world
 							.setBlockState(
 								blockPos,
-								blockState.with(CommandBlock.FACING, direction).with(CommandBlock.field_10793, Boolean.valueOf(updateCommandBlockServerPacket.isConditional())),
+								blockState.with(CommandBlock.FACING, direction).with(CommandBlock.CONDITIONAL, Boolean.valueOf(updateCommandBlockServerPacket.isConditional())),
 								2
 							);
 					}
@@ -557,12 +557,12 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	public void onStructureBlockUpdate(UpdateStructureBlockServerPacket updateStructureBlockServerPacket) {
 		NetworkThreadUtils.forceMainThread(updateStructureBlockServerPacket, this, this.player.getServerWorld());
 		if (this.player.method_7338()) {
-			BlockPos blockPos = updateStructureBlockServerPacket.method_12499();
+			BlockPos blockPos = updateStructureBlockServerPacket.getPos();
 			BlockState blockState = this.player.world.getBlockState(blockPos);
 			BlockEntity blockEntity = this.player.world.getBlockEntity(blockPos);
 			if (blockEntity instanceof StructureBlockBlockEntity) {
 				StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)blockEntity;
-				structureBlockBlockEntity.setMode(updateStructureBlockServerPacket.getMode());
+				structureBlockBlockEntity.method_11381(updateStructureBlockServerPacket.getMode());
 				structureBlockBlockEntity.setStructureName(updateStructureBlockServerPacket.getStructureName());
 				structureBlockBlockEntity.setOffset(updateStructureBlockServerPacket.getOffset());
 				structureBlockBlockEntity.setSize(updateStructureBlockServerPacket.getSize());
@@ -576,22 +576,22 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 				structureBlockBlockEntity.setSeed(updateStructureBlockServerPacket.getSeed());
 				if (structureBlockBlockEntity.hasStructureName()) {
 					String string = structureBlockBlockEntity.getStructureName();
-					if (updateStructureBlockServerPacket.method_12500() == StructureBlockBlockEntity.Action.field_12110) {
-						if (structureBlockBlockEntity.method_11365()) {
+					if (updateStructureBlockServerPacket.getAction() == StructureBlockBlockEntity.Action.field_12110) {
+						if (structureBlockBlockEntity.saveStructure()) {
 							this.player.addChatMessage(new TranslatableTextComponent("structure_block.save_success", string), false);
 						} else {
 							this.player.addChatMessage(new TranslatableTextComponent("structure_block.save_failure", string), false);
 						}
-					} else if (updateStructureBlockServerPacket.method_12500() == StructureBlockBlockEntity.Action.field_12109) {
-						if (!structureBlockBlockEntity.method_11372()) {
+					} else if (updateStructureBlockServerPacket.getAction() == StructureBlockBlockEntity.Action.field_12109) {
+						if (!structureBlockBlockEntity.isStructureAvailable()) {
 							this.player.addChatMessage(new TranslatableTextComponent("structure_block.load_not_found", string), false);
-						} else if (structureBlockBlockEntity.method_11376()) {
+						} else if (structureBlockBlockEntity.loadStructure()) {
 							this.player.addChatMessage(new TranslatableTextComponent("structure_block.load_success", string), false);
 						} else {
 							this.player.addChatMessage(new TranslatableTextComponent("structure_block.load_prepare", string), false);
 						}
-					} else if (updateStructureBlockServerPacket.method_12500() == StructureBlockBlockEntity.Action.field_12106) {
-						if (structureBlockBlockEntity.method_11383()) {
+					} else if (updateStructureBlockServerPacket.getAction() == StructureBlockBlockEntity.Action.field_12106) {
+						if (structureBlockBlockEntity.detectStructureSize()) {
 							this.player.addChatMessage(new TranslatableTextComponent("structure_block.size_success", string), false);
 						} else {
 							this.player.addChatMessage(new TranslatableTextComponent("structure_block.size_failure"), false);

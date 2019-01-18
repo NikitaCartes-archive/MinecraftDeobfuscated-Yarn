@@ -10,7 +10,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.FontRenderer;
 import net.minecraft.client.gui.ContainerGui;
 import net.minecraft.client.render.GuiLighting;
-import net.minecraft.client.render.entity.model.EnchantingTableBookEntityModel;
+import net.minecraft.client.render.entity.model.BookModel;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.EnchantingPhrases;
 import net.minecraft.client.util.math.Matrix4f;
@@ -27,15 +27,15 @@ import net.minecraft.util.math.MathHelper;
 public class EnchantingGui extends ContainerGui<EnchantingTableContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/enchanting_table.png");
 	private static final Identifier BOOK_TEXURE = new Identifier("textures/entity/enchanting_table_book.png");
-	private static final EnchantingTableBookEntityModel field_2908 = new EnchantingTableBookEntityModel();
+	private static final BookModel field_2908 = new BookModel();
 	private final Random random = new Random();
 	public int field_2915;
-	public float field_2912;
-	public float field_2914;
+	public float nextPageAngle;
+	public float pageAngle;
 	public float field_2909;
 	public float field_2906;
-	public float field_2905;
-	public float field_2904;
+	public float nextPageTurningSpeed;
+	public float pageTurningSpeed;
 	private ItemStack field_2913 = ItemStack.EMPTY;
 
 	public EnchantingGui(EnchantingTableContainer enchantingTableContainer, PlayerInventory playerInventory, TextComponent textComponent) {
@@ -97,12 +97,12 @@ public class EnchantingGui extends ContainerGui<EnchantingTableContainer> {
 		GlStateManager.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(BOOK_TEXURE);
 		GlStateManager.rotatef(20.0F, 1.0F, 0.0F, 0.0F);
-		float n = MathHelper.lerp(f, this.field_2904, this.field_2905);
+		float n = MathHelper.lerp(f, this.pageTurningSpeed, this.nextPageTurningSpeed);
 		GlStateManager.translatef((1.0F - n) * 0.2F, (1.0F - n) * 0.1F, (1.0F - n) * 0.25F);
 		GlStateManager.rotatef(-(1.0F - n) * 90.0F - 90.0F, 0.0F, 1.0F, 0.0F);
 		GlStateManager.rotatef(180.0F, 1.0F, 0.0F, 0.0F);
-		float o = MathHelper.lerp(f, this.field_2914, this.field_2912) + 0.25F;
-		float p = MathHelper.lerp(f, this.field_2914, this.field_2912) + 0.75F;
+		float o = MathHelper.lerp(f, this.pageAngle, this.nextPageAngle) + 0.25F;
+		float p = MathHelper.lerp(f, this.pageAngle, this.nextPageAngle) + 0.75F;
 		o = (o - (float)MathHelper.fastFloor((double)o)) * 1.6F - 0.3F;
 		p = (p - (float)MathHelper.fastFloor((double)p)) * 1.6F - 0.3F;
 		if (o < 0.0F) {
@@ -230,12 +230,12 @@ public class EnchantingGui extends ContainerGui<EnchantingTableContainer> {
 
 			do {
 				this.field_2909 = this.field_2909 + (float)(this.random.nextInt(4) - this.random.nextInt(4));
-			} while (this.field_2912 <= this.field_2909 + 1.0F && this.field_2912 >= this.field_2909 - 1.0F);
+			} while (this.nextPageAngle <= this.field_2909 + 1.0F && this.nextPageAngle >= this.field_2909 - 1.0F);
 		}
 
 		this.field_2915++;
-		this.field_2914 = this.field_2912;
-		this.field_2904 = this.field_2905;
+		this.pageAngle = this.nextPageAngle;
+		this.pageTurningSpeed = this.nextPageTurningSpeed;
 		boolean bl = false;
 
 		for (int i = 0; i < 3; i++) {
@@ -245,16 +245,16 @@ public class EnchantingGui extends ContainerGui<EnchantingTableContainer> {
 		}
 
 		if (bl) {
-			this.field_2905 += 0.2F;
+			this.nextPageTurningSpeed += 0.2F;
 		} else {
-			this.field_2905 -= 0.2F;
+			this.nextPageTurningSpeed -= 0.2F;
 		}
 
-		this.field_2905 = MathHelper.clamp(this.field_2905, 0.0F, 1.0F);
-		float f = (this.field_2909 - this.field_2912) * 0.4F;
+		this.nextPageTurningSpeed = MathHelper.clamp(this.nextPageTurningSpeed, 0.0F, 1.0F);
+		float f = (this.field_2909 - this.nextPageAngle) * 0.4F;
 		float g = 0.2F;
 		f = MathHelper.clamp(f, -0.2F, 0.2F);
 		this.field_2906 = this.field_2906 + (f - this.field_2906) * 0.9F;
-		this.field_2912 = this.field_2912 + this.field_2906;
+		this.nextPageAngle = this.nextPageAngle + this.field_2906;
 	}
 }

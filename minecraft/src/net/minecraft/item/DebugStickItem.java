@@ -47,7 +47,7 @@ public class DebugStickItem extends Item {
 		PlayerEntity playerEntity = itemUsageContext.getPlayer();
 		World world = itemUsageContext.getWorld();
 		if (!world.isClient && playerEntity != null) {
-			BlockPos blockPos = itemUsageContext.getPos();
+			BlockPos blockPos = itemUsageContext.getBlockPos();
 			this.method_7759(playerEntity, world.getBlockState(blockPos), world, blockPos, true, itemUsageContext.getItemStack());
 		}
 

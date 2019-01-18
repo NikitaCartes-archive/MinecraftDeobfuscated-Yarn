@@ -21,7 +21,7 @@ public class BucketMilkItem extends Item {
 		if (livingEntity instanceof ServerPlayerEntity) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
 			Criterions.CONSUME_ITEM.handle(serverPlayerEntity, itemStack);
-			serverPlayerEntity.incrementStat(Stats.field_15372.method_14956(this));
+			serverPlayerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 		}
 
 		if (livingEntity instanceof PlayerEntity && !((PlayerEntity)livingEntity).abilities.creativeMode) {

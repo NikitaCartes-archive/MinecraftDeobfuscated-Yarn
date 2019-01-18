@@ -72,11 +72,11 @@ public class BeaconGui extends ContainerGui<BeaconContainer> {
 			int j = 100;
 
 			for (int k = 0; k <= 2; k++) {
-				int l = BeaconBlockEntity.EFFECTS[k].length;
+				int l = BeaconBlockEntity.EFFECTS_BY_LEVEL[k].length;
 				int m = l * 22 + (l - 1) * 2;
 
 				for (int n = 0; n < l; n++) {
-					StatusEffect statusEffect = BeaconBlockEntity.EFFECTS[k][n];
+					StatusEffect statusEffect = BeaconBlockEntity.EFFECTS_BY_LEVEL[k][n];
 					BeaconGui.WidgetButtonIconEffect widgetButtonIconEffect = new BeaconGui.WidgetButtonIconEffect(
 						j++, this.left + 76 + n * 24 - m / 2, this.top + 22 + k * 25, statusEffect, true
 					);
@@ -90,11 +90,11 @@ public class BeaconGui extends ContainerGui<BeaconContainer> {
 			}
 
 			int k = 3;
-			int l = BeaconBlockEntity.EFFECTS[3].length + 1;
+			int l = BeaconBlockEntity.EFFECTS_BY_LEVEL[3].length + 1;
 			int m = l * 22 + (l - 1) * 2;
 
 			for (int nx = 0; nx < l - 1; nx++) {
-				StatusEffect statusEffect = BeaconBlockEntity.EFFECTS[3][nx];
+				StatusEffect statusEffect = BeaconBlockEntity.EFFECTS_BY_LEVEL[3][nx];
 				BeaconGui.WidgetButtonIconEffect widgetButtonIconEffect = new BeaconGui.WidgetButtonIconEffect(
 					j++, this.left + 167 + nx * 24 - m / 2, this.top + 47, statusEffect, false
 				);

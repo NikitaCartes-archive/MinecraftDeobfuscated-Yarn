@@ -36,7 +36,6 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.DyeColor;
@@ -46,6 +45,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.SystemUtil;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -88,7 +88,7 @@ public class Block implements ItemProvider {
 	@Nullable
 	private String translationKey;
 	@Nullable
-	private Item field_17562;
+	private Item cachedItem;
 	private static final ThreadLocal<Object2ByteLinkedOpenHashMap<Block.NeighborGroup>> FACE_CULL_MAP = ThreadLocal.withInitial(() -> {
 		Object2ByteLinkedOpenHashMap<Block.NeighborGroup> object2ByteLinkedOpenHashMap = new Object2ByteLinkedOpenHashMap<Block.NeighborGroup>(200) {
 			@Override
@@ -117,11 +117,11 @@ public class Block implements ItemProvider {
 		return item instanceof BlockItem ? ((BlockItem)item).getBlock() : Blocks.field_10124;
 	}
 
-	public static BlockState method_9582(BlockState blockState, BlockState blockState2, World world, BlockPos blockPos) {
-		VoxelShape voxelShape = VoxelShapes.method_1082(
+	public static BlockState pushEntitiesUpBeforeBlockChange(BlockState blockState, BlockState blockState2, World world, BlockPos blockPos) {
+		VoxelShape voxelShape = VoxelShapes.combine(
 				blockState.getCollisionShape(world, blockPos), blockState2.getCollisionShape(world, blockPos), BooleanBiFunction.ONLY_SECOND
 			)
-			.method_1096((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
+			.offset((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 
 		for (Entity entity : world.getVisibleEntities(null, voxelShape.getBoundingBox())) {
 			double d = VoxelShapes.calculateMaxOffset(Direction.Axis.Y, entity.getBoundingBox().offset(0.0, 1.0, 0.0), Stream.of(voxelShape), -1.0);
@@ -131,7 +131,7 @@ public class Block implements ItemProvider {
 		return blockState2;
 	}
 
-	public static VoxelShape createCubeShape(double d, double e, double f, double g, double h, double i) {
+	public static VoxelShape createCuboidShape(double d, double e, double f, double g, double h, double i) {
 		return VoxelShapes.cube(d / 16.0, e / 16.0, f / 16.0, g / 16.0, h / 16.0, i / 16.0);
 	}
 
@@ -156,7 +156,7 @@ public class Block implements ItemProvider {
 	}
 
 	@Deprecated
-	public MaterialColor getMaterialColor(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public MaterialColor getMapColor(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return this.materialColor;
 	}
 
@@ -212,12 +212,12 @@ public class Block implements ItemProvider {
 	}
 
 	@Deprecated
-	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
 		return blockState;
 	}
 
 	@Deprecated
-	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
 		return blockState;
 	}
 
@@ -307,7 +307,7 @@ public class Block implements ItemProvider {
 	}
 
 	@Deprecated
-	public boolean method_9616(BlockState blockState, ItemPlacementContext itemPlacementContext) {
+	public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
 		return this.material.isReplaceable() && itemPlacementContext.getItemStack().getItem() != this.getItem();
 	}
 
@@ -394,7 +394,7 @@ public class Block implements ItemProvider {
 		return VoxelShapes.empty();
 	}
 
-	public static boolean isFaceFullCube(VoxelShape voxelShape, Direction direction) {
+	public static boolean isFaceFullSquare(VoxelShape voxelShape, Direction direction) {
 		VoxelShape voxelShape2 = voxelShape.getFace(direction);
 		return isShapeFullCube(voxelShape2);
 	}
@@ -432,12 +432,12 @@ public class Block implements ItemProvider {
 	}
 
 	@Deprecated
-	public void randomTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		this.scheduledTick(blockState, world, blockPos, random);
+	public void onRandomTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		this.onScheduledTick(blockState, world, blockPos, random);
 	}
 
 	@Deprecated
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -457,7 +457,7 @@ public class Block implements ItemProvider {
 
 	@Nullable
 	@Deprecated
-	public NameableContainerProvider method_17454(BlockState blockState, World world, BlockPos blockPos) {
+	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
 		return null;
 	}
 
@@ -597,7 +597,7 @@ public class Block implements ItemProvider {
 	}
 
 	@Deprecated
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		return false;
 	}
 
@@ -635,7 +635,7 @@ public class Block implements ItemProvider {
 	public void afterBreak(
 		World world, PlayerEntity playerEntity, BlockPos blockPos, BlockState blockState, @Nullable BlockEntity blockEntity, ItemStack itemStack
 	) {
-		playerEntity.incrementStat(Stats.field_15427.method_14956(this));
+		playerEntity.incrementStat(Stats.field_15427.getOrCreateStat(this));
 		playerEntity.addExhaustion(0.005F);
 		dropStacks(blockState, world, blockPos, blockEntity, playerEntity, itemStack);
 	}
@@ -769,11 +769,11 @@ public class Block implements ItemProvider {
 
 	@Override
 	public Item getItem() {
-		if (this.field_17562 == null) {
-			this.field_17562 = Item.getItemFromBlock(this);
+		if (this.cachedItem == null) {
+			this.cachedItem = Item.getItemFromBlock(this);
 		}
 
-		return this.field_17562;
+		return this.cachedItem;
 	}
 
 	public boolean hasDynamicBounds() {
@@ -785,7 +785,7 @@ public class Block implements ItemProvider {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void addInformation(ItemStack itemStack, @Nullable BlockView blockView, List<TextComponent> list, TooltipOptions tooltipOptions) {
+	public void buildTooltip(ItemStack itemStack, @Nullable BlockView blockView, List<TextComponent> list, TooltipOptions tooltipOptions) {
 	}
 
 	public static boolean isNaturalStone(Block block) {

@@ -29,7 +29,7 @@ public class SplashPotionItem extends PotionItem {
 			world.spawnEntity(thrownPotionEntity);
 		}
 
-		playerEntity.incrementStat(Stats.field_15372.method_14956(this));
+		playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 	}
 }

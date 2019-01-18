@@ -55,7 +55,7 @@ public class BlockItem extends Item {
 				} else if (!this.setBlockState(itemPlacementContext2, blockState)) {
 					return ActionResult.FAILURE;
 				} else {
-					BlockPos blockPos = itemPlacementContext2.getPos();
+					BlockPos blockPos = itemPlacementContext2.getBlockPos();
 					World world = itemPlacementContext2.getWorld();
 					PlayerEntity playerEntity = itemPlacementContext2.getPlayer();
 					ItemStack itemStack = itemPlacementContext2.getItemStack();
@@ -91,7 +91,7 @@ public class BlockItem extends Item {
 	}
 
 	protected boolean afterBlockPlaced(BlockPos blockPos, World world, @Nullable PlayerEntity playerEntity, ItemStack itemStack, BlockState blockState) {
-		return deserializeBlockEntityTag(world, playerEntity, blockPos, itemStack);
+		return copyItemTagToBlockEntity(world, playerEntity, blockPos, itemStack);
 	}
 
 	@Nullable
@@ -101,15 +101,15 @@ public class BlockItem extends Item {
 	}
 
 	protected boolean canPlace(ItemPlacementContext itemPlacementContext, BlockState blockState) {
-		return blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getPos())
-			&& itemPlacementContext.getWorld().method_8628(blockState, itemPlacementContext.getPos());
+		return blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())
+			&& itemPlacementContext.getWorld().method_8628(blockState, itemPlacementContext.getBlockPos());
 	}
 
 	protected boolean setBlockState(ItemPlacementContext itemPlacementContext, BlockState blockState) {
-		return itemPlacementContext.getWorld().setBlockState(itemPlacementContext.getPos(), blockState, 11);
+		return itemPlacementContext.getWorld().setBlockState(itemPlacementContext.getBlockPos(), blockState, 11);
 	}
 
-	public static boolean deserializeBlockEntityTag(World world, @Nullable PlayerEntity playerEntity, BlockPos blockPos, ItemStack itemStack) {
+	public static boolean copyItemTagToBlockEntity(World world, @Nullable PlayerEntity playerEntity, BlockPos blockPos, ItemStack itemStack) {
 		MinecraftServer minecraftServer = world.getServer();
 		if (minecraftServer == null) {
 			return false;
@@ -118,7 +118,7 @@ public class BlockItem extends Item {
 			if (compoundTag != null) {
 				BlockEntity blockEntity = world.getBlockEntity(blockPos);
 				if (blockEntity != null) {
-					if (!world.isClient && blockEntity.method_11011() && (playerEntity == null || !playerEntity.method_7338())) {
+					if (!world.isClient && blockEntity.shouldNotCopyTagFromItem() && (playerEntity == null || !playerEntity.method_7338())) {
 						return false;
 					}
 
@@ -156,7 +156,7 @@ public class BlockItem extends Item {
 	@Override
 	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
 		super.buildTooltip(itemStack, world, list, tooltipOptions);
-		this.getBlock().addInformation(itemStack, world, list, tooltipOptions);
+		this.getBlock().buildTooltip(itemStack, world, list, tooltipOptions);
 	}
 
 	public Block getBlock() {

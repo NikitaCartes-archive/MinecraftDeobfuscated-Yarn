@@ -76,7 +76,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		method_9657(world, blockPos.up(), method_9656(world, blockPos));
 	}
 
@@ -93,7 +93,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 
 	public static boolean method_9658(IWorld iWorld, BlockPos blockPos) {
 		FluidState fluidState = iWorld.getFluidState(blockPos);
-		return iWorld.getBlockState(blockPos).getBlock() == Blocks.field_10382 && fluidState.method_15761() >= 8 && fluidState.isStill();
+		return iWorld.getBlockState(blockPos).getBlock() == Blocks.field_10382 && fluidState.getLevel() >= 8 && fluidState.isStill();
 	}
 
 	private static boolean method_9656(BlockView blockView, BlockPos blockPos) {
@@ -142,7 +142,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 				iWorld.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(iWorld));
 			}
 
-			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
+			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		}
 	}

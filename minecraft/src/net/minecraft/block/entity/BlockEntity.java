@@ -165,7 +165,7 @@ public abstract class BlockEntity {
 		this.pos = blockPos.toImmutable();
 	}
 
-	public boolean method_11011() {
+	public boolean shouldNotCopyTagFromItem() {
 		return false;
 	}
 

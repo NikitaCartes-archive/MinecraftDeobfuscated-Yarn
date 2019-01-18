@@ -199,7 +199,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 			BlockState blockState = this.world.getBlockState(blockPos);
 			if (!blockState.isAir()) {
 				if (blockState.getBlock() == Blocks.field_10008) {
-					Direction direction = blockState.get(PistonBlock.field_10927);
+					Direction direction = blockState.get(PistonBlock.FACING);
 					if (this.world.isAir(blockPos.offset(direction))) {
 						blockPos = blockPos.offset(direction);
 						this.dataTracker.set(ATTACHED_BLOCK, Optional.of(blockPos));
@@ -207,7 +207,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 						this.method_7127();
 					}
 				} else if (blockState.getBlock() == Blocks.field_10379) {
-					Direction direction = blockState.get(PistonHeadBlock.field_10927);
+					Direction direction = blockState.get(PistonHeadBlock.FACING);
 					if (this.world.isAir(blockPos.offset(direction))) {
 						blockPos = blockPos.offset(direction);
 						this.dataTracker.set(ATTACHED_BLOCK, Optional.of(blockPos));

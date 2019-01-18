@@ -7,23 +7,23 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
-public class CoralTubeFanBlock extends CoralDeadFanBlock {
-	private final Block field_10817;
+public class CoralTubeFanBlock extends DeadCoralFanBlock {
+	private final Block deadCoralBlock;
 
 	protected CoralTubeFanBlock(Block block, Block.Settings settings) {
 		super(settings);
-		this.field_10817 = block;
+		this.deadCoralBlock = block;
 	}
 
 	@Override
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
-		this.method_9430(blockState, world, blockPos);
+		this.checkLivingConditions(blockState, world, blockPos);
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!method_9431(blockState, world, blockPos)) {
-			world.setBlockState(blockPos, this.field_10817.getDefaultState().with(WATERLOGGED, Boolean.valueOf(false)), 2);
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if (!isInWater(blockState, world, blockPos)) {
+			world.setBlockState(blockPos, this.deadCoralBlock.getDefaultState().with(WATERLOGGED, Boolean.valueOf(false)), 2);
 		}
 	}
 
@@ -34,9 +34,9 @@ public class CoralTubeFanBlock extends CoralDeadFanBlock {
 		if (direction == Direction.DOWN && !blockState.canPlaceAt(iWorld, blockPos)) {
 			return Blocks.field_10124.getDefaultState();
 		} else {
-			this.method_9430(blockState, iWorld, blockPos);
+			this.checkLivingConditions(blockState, iWorld, blockPos);
 			if ((Boolean)blockState.get(WATERLOGGED)) {
-				iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
+				iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 			}
 
 			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);

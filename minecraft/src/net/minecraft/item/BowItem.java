@@ -93,7 +93,7 @@ public class BowItem extends BaseBowItem {
 						}
 					}
 
-					playerEntity.incrementStat(Stats.field_15372.method_14956(this));
+					playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 				}
 			}
 		}

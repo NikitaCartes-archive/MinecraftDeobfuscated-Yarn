@@ -28,6 +28,6 @@ public class AirBlockItem extends Item {
 	@Override
 	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
 		super.buildTooltip(itemStack, world, list, tooltipOptions);
-		this.block.addInformation(itemStack, world, list, tooltipOptions);
+		this.block.buildTooltip(itemStack, world, list, tooltipOptions);
 	}
 }

@@ -147,8 +147,8 @@ public class ServerStatHandler extends StatHandler {
 		if (identifier == null) {
 			return null;
 		} else {
-			T object = statType.method_14959().get(identifier);
-			return object == null ? null : statType.method_14956(object);
+			T object = statType.getRegistry().get(identifier);
+			return object == null ? null : statType.getOrCreateStat(object);
 		}
 	}
 
@@ -191,7 +191,7 @@ public class ServerStatHandler extends StatHandler {
 	}
 
 	private static <T> Identifier method_14907(Stat<T> stat) {
-		return stat.getType().method_14959().getId(stat.getValue());
+		return stat.getType().getRegistry().getId(stat.getValue());
 	}
 
 	public void method_14914() {

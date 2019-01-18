@@ -28,8 +28,8 @@ import net.minecraft.world.World;
 
 public class PortalBlock extends Block {
 	public static final EnumProperty<Direction.Axis> field_11310 = Properties.AXIS_XZ;
-	protected static final VoxelShape field_11309 = Block.createCubeShape(0.0, 0.0, 6.0, 16.0, 16.0, 10.0);
-	protected static final VoxelShape field_11308 = Block.createCubeShape(6.0, 0.0, 0.0, 10.0, 16.0, 16.0);
+	protected static final VoxelShape field_11309 = Block.createCuboidShape(0.0, 0.0, 6.0, 16.0, 16.0, 10.0);
+	protected static final VoxelShape field_11308 = Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 16.0, 16.0);
 
 	public PortalBlock(Block.Settings settings) {
 		super(settings);
@@ -48,7 +48,7 @@ public class PortalBlock extends Block {
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (world.dimension.hasVisibleSky() && world.getGameRules().getBoolean("doMobSpawning") && random.nextInt(2000) < world.getDifficulty().getId()) {
 			int i = blockPos.getY();
 			BlockPos blockPos2 = blockPos;
@@ -155,7 +155,7 @@ public class PortalBlock extends Block {
 	}
 
 	@Override
-	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
 		switch (rotation) {
 			case ROT_270:
 			case ROT_90:

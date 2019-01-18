@@ -420,11 +420,11 @@ public class LandPathNodeMaker extends PathNodeMaker {
 			return PathNodeType.CACTUS;
 		} else if (block == Blocks.field_16999) {
 			return PathNodeType.field_17;
-		} else if (block instanceof DoorBlock && material == Material.WOOD && !(Boolean)blockState.get(DoorBlock.field_10945)) {
+		} else if (block instanceof DoorBlock && material == Material.WOOD && !(Boolean)blockState.get(DoorBlock.OPEN)) {
 			return PathNodeType.DOOR_WOOD;
-		} else if (block instanceof DoorBlock && material == Material.METAL && !(Boolean)blockState.get(DoorBlock.field_10945)) {
+		} else if (block instanceof DoorBlock && material == Material.METAL && !(Boolean)blockState.get(DoorBlock.OPEN)) {
 			return PathNodeType.DOOR_METAL;
-		} else if (block instanceof DoorBlock && (Boolean)blockState.get(DoorBlock.field_10945)) {
+		} else if (block instanceof DoorBlock && (Boolean)blockState.get(DoorBlock.OPEN)) {
 			return PathNodeType.DOOR_OPEN;
 		} else if (block instanceof AbstractRailBlock) {
 			return PathNodeType.RAIL;
@@ -432,7 +432,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 			return PathNodeType.field_6;
 		} else if (!block.matches(BlockTags.field_16584)
 			&& !block.matches(BlockTags.field_15504)
-			&& (!(block instanceof FenceGateBlock) || (Boolean)blockState.get(FenceGateBlock.field_11026))) {
+			&& (!(block instanceof FenceGateBlock) || (Boolean)blockState.get(FenceGateBlock.OPEN))) {
 			FluidState fluidState = blockView.getFluidState(blockPos);
 			if (fluidState.matches(FluidTags.field_15517)) {
 				return PathNodeType.WATER;

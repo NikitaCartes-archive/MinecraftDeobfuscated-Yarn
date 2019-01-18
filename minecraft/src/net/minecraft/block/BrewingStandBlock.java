@@ -16,8 +16,8 @@ import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 public class BrewingStandBlock extends BlockWithEntity {
 	public static final BooleanProperty[] BOTTLE_PROPERTIES = new BooleanProperty[]{Properties.HAS_BOTTLE_0, Properties.HAS_BOTTLE_1, Properties.HAS_BOTTLE_2};
 	protected static final VoxelShape field_10701 = VoxelShapes.union(
-		Block.createCubeShape(1.0, 0.0, 1.0, 15.0, 2.0, 15.0), Block.createCubeShape(7.0, 0.0, 7.0, 9.0, 14.0, 9.0)
+		Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 2.0, 15.0), Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 14.0, 9.0)
 	);
 
 	public BrewingStandBlock(Block.Settings settings) {
@@ -57,7 +57,7 @@ public class BrewingStandBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (world.isClient) {
 			return true;
 		} else {

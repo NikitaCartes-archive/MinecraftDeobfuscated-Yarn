@@ -18,7 +18,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
 public class EndPortalBlock extends BlockWithEntity {
-	protected static final VoxelShape field_10959 = Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 12.0, 16.0);
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 12.0, 16.0);
 
 	protected EndPortalBlock(Block.Settings settings) {
 		super(settings);
@@ -31,7 +31,7 @@ public class EndPortalBlock extends BlockWithEntity {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_10959;
+		return SHAPE;
 	}
 
 	@Override

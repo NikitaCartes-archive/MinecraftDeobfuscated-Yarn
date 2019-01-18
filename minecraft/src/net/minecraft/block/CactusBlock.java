@@ -18,8 +18,8 @@ import net.minecraft.world.World;
 
 public class CactusBlock extends Block {
 	public static final IntegerProperty field_10709 = Properties.AGE_15;
-	protected static final VoxelShape field_10711 = Block.createCubeShape(1.0, 0.0, 1.0, 15.0, 15.0, 15.0);
-	protected static final VoxelShape field_10710 = Block.createCubeShape(1.0, 0.0, 1.0, 15.0, 16.0, 15.0);
+	protected static final VoxelShape field_10711 = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 15.0, 15.0);
+	protected static final VoxelShape field_10710 = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 16.0, 15.0);
 
 	protected CactusBlock(Block.Settings settings) {
 		super(settings);
@@ -27,7 +27,7 @@ public class CactusBlock extends Block {
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (!blockState.canPlaceAt(world, blockPos)) {
 			world.breakBlock(blockPos, true);
 		} else {
@@ -82,7 +82,7 @@ public class CactusBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		for (Direction direction : Direction.class_2353.HORIZONTAL) {
+		for (Direction direction : Direction.Type.HORIZONTAL) {
 			BlockState blockState2 = viewableWorld.getBlockState(blockPos.offset(direction));
 			Material material = blockState2.getMaterial();
 			if (material.method_15799() || viewableWorld.getFluidState(blockPos.offset(direction)).matches(FluidTags.field_15518)) {

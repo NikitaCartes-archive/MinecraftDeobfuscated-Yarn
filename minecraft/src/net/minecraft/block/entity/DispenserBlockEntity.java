@@ -39,7 +39,7 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 		return true;
 	}
 
-	public int method_11076() {
+	public int chooseNonEmptySlot() {
 		this.checkLootInteraction(null);
 		int i = -1;
 		int j = 1;
@@ -53,7 +53,7 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 		return i;
 	}
 
-	public int method_11075(ItemStack itemStack) {
+	public int addToFirstFreeSlot(ItemStack itemStack) {
 		for (int i = 0; i < this.inventory.size(); i++) {
 			if (this.inventory.get(i).isEmpty()) {
 				this.setInvStack(i, itemStack);
@@ -65,7 +65,7 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	protected TextComponent method_17823() {
+	protected TextComponent getContainerName() {
 		return new TranslatableTextComponent("container.dispenser");
 	}
 

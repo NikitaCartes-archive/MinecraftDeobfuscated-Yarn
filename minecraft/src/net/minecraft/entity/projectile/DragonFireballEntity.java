@@ -11,8 +11,8 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.util.EntityHitResult;
-import net.minecraft.util.HitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -31,7 +31,7 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 	}
 
 	@Override
-	protected void onCollision(HitResult hitResult) {
+	protected void method_7469(HitResult hitResult) {
 		if (hitResult.getType() != HitResult.Type.ENTITY || !((EntityHitResult)hitResult).getEntity().isPartOf(this.owner)) {
 			if (!this.world.isClient) {
 				List<LivingEntity> list = this.world.getVisibleEntities(LivingEntity.class, this.getBoundingBox().expand(4.0, 2.0, 4.0));

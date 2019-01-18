@@ -106,7 +106,7 @@ public class FollowOwnerGoal extends Goal {
 	protected boolean method_6263(int i, int j, int k, int l, int m) {
 		BlockPos blockPos = new BlockPos(i + l, k - 1, j + m);
 		BlockState blockState = this.world.getBlockState(blockPos);
-		return Block.isFaceFullCube(blockState.getCollisionShape(this.world, blockPos), Direction.DOWN)
+		return Block.isFaceFullSquare(blockState.getCollisionShape(this.world, blockPos), Direction.DOWN)
 			&& blockState.allowsSpawning(this.caller)
 			&& this.world.isAir(blockPos.up())
 			&& this.world.isAir(blockPos.up(2));

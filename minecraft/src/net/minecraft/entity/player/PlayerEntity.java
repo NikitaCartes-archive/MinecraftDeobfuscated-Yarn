@@ -400,7 +400,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.world.playSound(this, this.x, this.y, this.z, soundEvent, this.getSoundCategory(), f, g);
 	}
 
-	public void method_17356(SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
+	public void playSound(SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
 	}
 
 	@Override
@@ -616,8 +616,8 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 
 		this.increaseStat(Stats.field_15421);
-		this.resetStat(Stats.field_15419.method_14956(Stats.field_15400));
-		this.resetStat(Stats.field_15419.method_14956(Stats.field_15429));
+		this.resetStat(Stats.field_15419.getOrCreateStat(Stats.field_15400));
+		this.resetStat(Stats.field_15419.getOrCreateStat(Stats.field_15429));
 		this.extinguish();
 		this.setEntityFlag(0, false);
 	}
@@ -704,7 +704,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			ItemStack itemStack2 = this.spawnEntityItem(itemEntity);
 			if (bl2) {
 				if (!itemStack2.isEmpty()) {
-					this.incrementStat(Stats.field_15405.method_14956(itemStack2.getItem()), itemStack.getAmount());
+					this.incrementStat(Stats.field_15405.getOrCreateStat(itemStack2.getItem()), itemStack.getAmount());
 				}
 
 				this.increaseStat(Stats.field_15406);
@@ -1271,7 +1271,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public PlayerEntity.SleepResult trySleep(BlockPos blockPos) {
-		Direction direction = this.world.getBlockState(blockPos).get(HorizontalFacingBlock.field_11177);
+		Direction direction = this.world.getBlockState(blockPos).get(HorizontalFacingBlock.FACING);
 		if (!this.world.isClient) {
 			if (this.isSleeping() || !this.isValid()) {
 				return PlayerEntity.SleepResult.INVALID_ATTEMPT;
@@ -1316,7 +1316,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 
 		this.method_7262();
-		this.resetStat(Stats.field_15419.method_14956(Stats.field_15429));
+		this.resetStat(Stats.field_15419.getOrCreateStat(Stats.field_15429));
 		this.setSize(0.2F, 0.2F);
 		if (this.world.isBlockLoaded(blockPos)) {
 			float f = 0.5F + (float)direction.getOffsetX() * 0.4F;
@@ -1362,7 +1362,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.setSize(0.6F, 1.8F);
 		BlockState blockState = this.world.getBlockState(this.sleepingPos);
 		if (this.sleepingPos != null && blockState.getBlock() instanceof BedBlock) {
-			this.world.setBlockState(this.sleepingPos, blockState.with(BedBlock.field_9968, Boolean.valueOf(false)), 4);
+			this.world.setBlockState(this.sleepingPos, blockState.with(BedBlock.OCCUPIED, Boolean.valueOf(false)), 4);
 			BlockPos blockPos = BedBlock.method_9484(this.world, this.sleepingPos, 0);
 			if (blockPos == null) {
 				blockPos = this.sleepingPos.up();
@@ -1405,7 +1405,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Environment(EnvType.CLIENT)
 	public float method_7319() {
 		if (this.sleepingPos != null) {
-			Direction direction = this.world.getBlockState(this.sleepingPos).get(HorizontalFacingBlock.field_11177);
+			Direction direction = this.world.getBlockState(this.sleepingPos).get(HorizontalFacingBlock.FACING);
 			switch (direction) {
 				case SOUTH:
 					return 90.0F;
@@ -1456,11 +1456,11 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public void increaseStat(Identifier identifier) {
-		this.incrementStat(Stats.field_15419.method_14956(identifier));
+		this.incrementStat(Stats.field_15419.getOrCreateStat(identifier));
 	}
 
 	public void method_7339(Identifier identifier, int i) {
-		this.incrementStat(Stats.field_15419.method_14956(identifier), i);
+		this.incrementStat(Stats.field_15419.getOrCreateStat(identifier), i);
 	}
 
 	public void incrementStat(Stat<?> stat) {
@@ -1641,7 +1641,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public void method_5874(LivingEntity livingEntity) {
-		this.incrementStat(Stats.field_15403.method_14956(livingEntity.getType()));
+		this.incrementStat(Stats.field_15403.getOrCreateStat(livingEntity.getType()));
 	}
 
 	@Override

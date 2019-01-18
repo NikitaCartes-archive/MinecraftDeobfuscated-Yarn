@@ -12,8 +12,8 @@ import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -22,8 +22,8 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public abstract class SignBlock extends BlockWithEntity implements Waterloggable {
-	public static final BooleanProperty field_11491 = Properties.WATERLOGGED;
-	protected static final VoxelShape field_11492 = Block.createCubeShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
+	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
 
 	protected SignBlock(Block.Settings settings) {
 		super(settings);
@@ -33,8 +33,8 @@ public abstract class SignBlock extends BlockWithEntity implements Waterloggable
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		if ((Boolean)blockState.get(field_11491)) {
-			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
+		if ((Boolean)blockState.get(WATERLOGGED)) {
+			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 		}
 
 		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
@@ -42,7 +42,7 @@ public abstract class SignBlock extends BlockWithEntity implements Waterloggable
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_11492;
+		return SHAPE;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -62,7 +62,7 @@ public abstract class SignBlock extends BlockWithEntity implements Waterloggable
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (world.isClient) {
 			return true;
 		} else {
@@ -86,6 +86,6 @@ public abstract class SignBlock extends BlockWithEntity implements Waterloggable
 
 	@Override
 	public FluidState getFluidState(BlockState blockState) {
-		return blockState.get(field_11491) ? Fluids.WATER.getState(false) : super.getFluidState(blockState);
+		return blockState.get(WATERLOGGED) ? Fluids.WATER.getState(false) : super.getFluidState(blockState);
 	}
 }

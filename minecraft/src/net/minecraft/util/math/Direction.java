@@ -377,13 +377,13 @@ public enum Direction implements StringRepresentable {
 			return direction != null && direction.getAxis() == this;
 		}
 
-		public Direction.class_2353 method_10180() {
+		public Direction.Type method_10180() {
 			switch (this) {
 				case X:
 				case Z:
-					return Direction.class_2353.HORIZONTAL;
+					return Direction.Type.HORIZONTAL;
 				case Y:
-					return Direction.class_2353.VERTICAL;
+					return Direction.Type.VERTICAL;
 				default:
 					throw new Error("Someone's been tampering with the universe!");
 			}
@@ -420,14 +420,14 @@ public enum Direction implements StringRepresentable {
 		}
 	}
 
-	public static enum class_2353 implements Iterable<Direction>, Predicate<Direction> {
+	public static enum Type implements Iterable<Direction>, Predicate<Direction> {
 		HORIZONTAL(new Direction[]{Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST}, new Direction.Axis[]{Direction.Axis.X, Direction.Axis.Z}),
 		VERTICAL(new Direction[]{Direction.UP, Direction.DOWN}, new Direction.Axis[]{Direction.Axis.Y});
 
 		private final Direction[] facingArray;
 		private final Direction.Axis[] axisArray;
 
-		private class_2353(Direction[] directions, Direction.Axis[] axiss) {
+		private Type(Direction[] directions, Direction.Axis[] axiss) {
 			this.facingArray = directions;
 			this.axisArray = axiss;
 		}

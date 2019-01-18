@@ -50,8 +50,8 @@ public class HugeBrownMushroomFeature extends Feature<DefaultFeatureConfig> {
 
 				BlockState blockState2 = Blocks.field_10580
 					.getDefaultState()
-					.with(MushroomBlock.field_11166, Boolean.valueOf(true))
-					.with(MushroomBlock.field_11169, Boolean.valueOf(false));
+					.with(MushroomBlock.UP, Boolean.valueOf(true))
+					.with(MushroomBlock.DOWN, Boolean.valueOf(false));
 				int l = 3;
 
 				for (int m = -3; m <= 3; m++) {
@@ -72,10 +72,10 @@ public class HugeBrownMushroomFeature extends Feature<DefaultFeatureConfig> {
 								this.setBlockState(
 									iWorld,
 									mutable,
-									blockState2.with(MushroomBlock.field_11167, Boolean.valueOf(bl7))
-										.with(MushroomBlock.field_11172, Boolean.valueOf(bl8))
-										.with(MushroomBlock.field_11171, Boolean.valueOf(bl9))
-										.with(MushroomBlock.field_11170, Boolean.valueOf(bl10))
+									blockState2.with(MushroomBlock.WEST, Boolean.valueOf(bl7))
+										.with(MushroomBlock.EAST, Boolean.valueOf(bl8))
+										.with(MushroomBlock.NORTH, Boolean.valueOf(bl9))
+										.with(MushroomBlock.SOUTH, Boolean.valueOf(bl10))
 								);
 							}
 						}
@@ -84,8 +84,8 @@ public class HugeBrownMushroomFeature extends Feature<DefaultFeatureConfig> {
 
 				BlockState blockState3 = Blocks.field_10556
 					.getDefaultState()
-					.with(MushroomBlock.field_11166, Boolean.valueOf(false))
-					.with(MushroomBlock.field_11169, Boolean.valueOf(false));
+					.with(MushroomBlock.UP, Boolean.valueOf(false))
+					.with(MushroomBlock.DOWN, Boolean.valueOf(false));
 
 				for (int nxx = 0; nxx < i; nxx++) {
 					mutable.set(blockPos).setOffset(Direction.UP, nxx);

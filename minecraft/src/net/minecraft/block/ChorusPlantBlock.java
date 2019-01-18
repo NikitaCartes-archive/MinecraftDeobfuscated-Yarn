@@ -28,7 +28,7 @@ public class ChorusPlantBlock extends ConnectedPlantBlock {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.withConnectionProperties(itemPlacementContext.getWorld(), itemPlacementContext.getPos());
+		return this.withConnectionProperties(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos());
 	}
 
 	public BlockState withConnectionProperties(BlockView blockView, BlockPos blockPos) {
@@ -62,7 +62,7 @@ public class ChorusPlantBlock extends ConnectedPlantBlock {
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (!blockState.canPlaceAt(world, blockPos)) {
 			world.breakBlock(blockPos, true);
 		}
@@ -73,7 +73,7 @@ public class ChorusPlantBlock extends ConnectedPlantBlock {
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos.down());
 		boolean bl = !viewableWorld.getBlockState(blockPos.up()).isAir() && !blockState2.isAir();
 
-		for (Direction direction : Direction.class_2353.HORIZONTAL) {
+		for (Direction direction : Direction.Type.HORIZONTAL) {
 			BlockPos blockPos2 = blockPos.offset(direction);
 			Block block = viewableWorld.getBlockState(blockPos2).getBlock();
 			if (block == this) {

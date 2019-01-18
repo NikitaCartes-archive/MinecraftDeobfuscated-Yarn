@@ -20,7 +20,7 @@ public class MinecartItem extends Item {
 
 		@Override
 		public ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
-			Direction direction = blockPointer.getBlockState().get(DispenserBlock.field_10918);
+			Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
 			World world = blockPointer.getWorld();
 			double d = blockPointer.getX() + (double)direction.getOffsetX() * 1.125;
 			double e = Math.floor(blockPointer.getY()) + (double)direction.getOffsetY();
@@ -79,7 +79,7 @@ public class MinecartItem extends Item {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		World world = itemUsageContext.getWorld();
-		BlockPos blockPos = itemUsageContext.getPos();
+		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (!blockState.matches(BlockTags.field_15463)) {
 			return ActionResult.FAILURE;

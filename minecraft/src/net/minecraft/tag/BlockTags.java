@@ -6,7 +6,7 @@ import net.minecraft.util.Identifier;
 
 public class BlockTags {
 	private static TagContainer<Block> container = new TagContainer<>(identifier -> false, identifier -> null, "", false, "");
-	private static int contianerChanges;
+	private static int containerChanges;
 	public static final Tag<Block> field_15481 = register("wool");
 	public static final Tag<Block> field_15471 = register("planks");
 	public static final Tag<Block> field_15465 = register("stone_bricks");
@@ -58,7 +58,7 @@ public class BlockTags {
 
 	public static void setContainer(TagContainer<Block> tagContainer) {
 		container = tagContainer;
-		contianerChanges++;
+		containerChanges++;
 	}
 
 	public static TagContainer<Block> getContainer() {
@@ -78,9 +78,9 @@ public class BlockTags {
 		}
 
 		public boolean method_15076(Block block) {
-			if (this.field_15506 != BlockTags.contianerChanges) {
+			if (this.field_15506 != BlockTags.containerChanges) {
 				this.field_15505 = BlockTags.container.getOrCreate(this.getId());
-				this.field_15506 = BlockTags.contianerChanges;
+				this.field_15506 = BlockTags.containerChanges;
 			}
 
 			return this.field_15505.contains(block);
@@ -88,9 +88,9 @@ public class BlockTags {
 
 		@Override
 		public Collection<Block> values() {
-			if (this.field_15506 != BlockTags.contianerChanges) {
+			if (this.field_15506 != BlockTags.containerChanges) {
 				this.field_15505 = BlockTags.container.getOrCreate(this.getId());
-				this.field_15506 = BlockTags.contianerChanges;
+				this.field_15506 = BlockTags.containerChanges;
 			}
 
 			return this.field_15505.values();
@@ -98,9 +98,9 @@ public class BlockTags {
 
 		@Override
 		public Collection<Tag.Entry<Block>> entries() {
-			if (this.field_15506 != BlockTags.contianerChanges) {
+			if (this.field_15506 != BlockTags.containerChanges) {
 				this.field_15505 = BlockTags.container.getOrCreate(this.getId());
-				this.field_15506 = BlockTags.contianerChanges;
+				this.field_15506 = BlockTags.containerChanges;
 			}
 
 			return this.field_15505.entries();

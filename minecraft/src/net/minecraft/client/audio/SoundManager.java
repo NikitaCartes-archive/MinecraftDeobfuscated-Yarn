@@ -405,7 +405,7 @@ public class SoundManager {
 		this.pausedSoundIds.clear();
 	}
 
-	public void method_4852(SoundInstance soundInstance, int i) {
+	public void play(SoundInstance soundInstance, int i) {
 		this.field_5566.put(soundInstance, this.ticks + i);
 	}
 

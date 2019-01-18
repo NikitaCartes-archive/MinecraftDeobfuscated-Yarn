@@ -322,8 +322,8 @@ public abstract class PlayerManager {
 			serverPlayerEntity.networkHandler.sendPacket(new PlayerListClientPacket(PlayerListClientPacket.Type.ADD, (ServerPlayerEntity)this.players.get(i)));
 		}
 
-		serverWorld.spawnEntity(serverPlayerEntity);
 		this.method_14612(serverPlayerEntity, null);
+		serverWorld.spawnEntity(serverPlayerEntity);
 		this.server.getBossBarManager().method_12975(serverPlayerEntity);
 	}
 

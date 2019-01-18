@@ -1,15 +1,15 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.minecraft.class_3499;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.sortme.Structure;
 import net.minecraft.state.StateFactory;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Rotation;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
@@ -18,22 +18,22 @@ import net.minecraft.world.World;
 public class JigsawBlock extends FacingBlock implements BlockEntityProvider {
 	protected JigsawBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_10927, Direction.UP));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.UP));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_10927);
+		builder.with(FACING);
 	}
 
 	@Override
-	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
-		return blockState.with(field_10927, rotation.method_10503(blockState.get(field_10927)));
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
+		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(field_10927, itemPlacementContext.getFacing());
+		return this.getDefaultState().with(FACING, itemPlacementContext.getFacing());
 	}
 
 	@Nullable
@@ -43,7 +43,7 @@ public class JigsawBlock extends FacingBlock implements BlockEntityProvider {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof JigsawBlockEntity && playerEntity.method_7338()) {
 			playerEntity.openJigsawGui((JigsawBlockEntity)blockEntity);
@@ -53,8 +53,8 @@ public class JigsawBlock extends FacingBlock implements BlockEntityProvider {
 		}
 	}
 
-	public static boolean method_16546(class_3499.class_3501 arg, class_3499.class_3501 arg2) {
-		return arg.field_15596.get(field_10927) == ((Direction)arg2.field_15596.get(field_10927)).getOpposite()
-			&& arg.field_15595.getString("attachement_type").equals(arg2.field_15595.getString("attachement_type"));
+	public static boolean method_16546(Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2) {
+		return structureBlockInfo.state.get(FACING) == ((Direction)structureBlockInfo2.state.get(FACING)).getOpposite()
+			&& structureBlockInfo.tag.getString("attachement_type").equals(structureBlockInfo2.tag.getString("attachement_type"));
 	}
 }

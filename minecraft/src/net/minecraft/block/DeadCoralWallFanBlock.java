@@ -18,44 +18,44 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 
-public class CoralDeadWallFanBlock extends CoralDeadFanBlock {
-	public static final DirectionProperty field_9933 = HorizontalFacingBlock.field_11177;
-	private static final Map<Direction, VoxelShape> field_9934 = Maps.newEnumMap(
+public class DeadCoralWallFanBlock extends DeadCoralFanBlock {
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+	private static final Map<Direction, VoxelShape> FACING_TO_SHAPE = Maps.newEnumMap(
 		ImmutableMap.of(
 			Direction.NORTH,
-			Block.createCubeShape(0.0, 4.0, 5.0, 16.0, 12.0, 16.0),
+			Block.createCuboidShape(0.0, 4.0, 5.0, 16.0, 12.0, 16.0),
 			Direction.SOUTH,
-			Block.createCubeShape(0.0, 4.0, 0.0, 16.0, 12.0, 11.0),
+			Block.createCuboidShape(0.0, 4.0, 0.0, 16.0, 12.0, 11.0),
 			Direction.WEST,
-			Block.createCubeShape(5.0, 4.0, 0.0, 16.0, 12.0, 16.0),
+			Block.createCuboidShape(5.0, 4.0, 0.0, 16.0, 12.0, 16.0),
 			Direction.EAST,
-			Block.createCubeShape(0.0, 4.0, 0.0, 11.0, 12.0, 16.0)
+			Block.createCuboidShape(0.0, 4.0, 0.0, 11.0, 12.0, 16.0)
 		)
 	);
 
-	protected CoralDeadWallFanBlock(Block.Settings settings) {
+	protected DeadCoralWallFanBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_9933, Direction.NORTH).with(WATERLOGGED, Boolean.valueOf(true)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(WATERLOGGED, Boolean.valueOf(true)));
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return (VoxelShape)field_9934.get(blockState.get(field_9933));
+		return (VoxelShape)FACING_TO_SHAPE.get(blockState.get(FACING));
 	}
 
 	@Override
-	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
-		return blockState.with(field_9933, rotation.method_10503(blockState.get(field_9933)));
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
+		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
-	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.getRotation(blockState.get(field_9933)));
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
+		return blockState.rotate(mirror.getRotation(blockState.get(FACING)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_9933, WATERLOGGED);
+		builder.with(FACING, WATERLOGGED);
 	}
 
 	@Override
@@ -63,18 +63,18 @@ public class CoralDeadWallFanBlock extends CoralDeadFanBlock {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		if ((Boolean)blockState.get(WATERLOGGED)) {
-			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
+			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 		}
 
-		return direction.getOpposite() == blockState.get(field_9933) && !blockState.canPlaceAt(iWorld, blockPos) ? Blocks.field_10124.getDefaultState() : blockState;
+		return direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos) ? Blocks.field_10124.getDefaultState() : blockState;
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		Direction direction = blockState.get(field_9933);
+		Direction direction = blockState.get(FACING);
 		BlockPos blockPos2 = blockPos.offset(direction.getOpposite());
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-		return Block.isFaceFullCube(blockState2.getCollisionShape(viewableWorld, blockPos2), direction) && !method_9581(blockState2.getBlock());
+		return Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos2), direction) && !method_9581(blockState2.getBlock());
 	}
 
 	@Nullable
@@ -82,12 +82,12 @@ public class CoralDeadWallFanBlock extends CoralDeadFanBlock {
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockState blockState = super.getPlacementState(itemPlacementContext);
 		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
-		BlockPos blockPos = itemPlacementContext.getPos();
+		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		Direction[] directions = itemPlacementContext.getPlacementFacings();
 
 		for (Direction direction : directions) {
 			if (direction.getAxis().isHorizontal()) {
-				blockState = blockState.with(field_9933, direction.getOpposite());
+				blockState = blockState.with(FACING, direction.getOpposite());
 				if (blockState.canPlaceAt(viewableWorld, blockPos)) {
 					return blockState;
 				}

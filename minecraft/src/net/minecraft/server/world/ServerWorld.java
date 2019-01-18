@@ -16,7 +16,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1419;
-import net.minecraft.class_1919;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.network.packet.BlockActionClientPacket;
@@ -102,7 +101,7 @@ public class ServerWorld extends World {
 		this, fluid -> fluid == null || fluid == Fluids.EMPTY, Registry.FLUID::getId, Registry.FLUID::get, this::method_14171
 	);
 	protected final class_1419 field_13958 = new class_1419(this);
-	private final ObjectLinkedOpenHashSet<class_1919> field_13950 = new ObjectLinkedOpenHashSet<>();
+	private final ObjectLinkedOpenHashSet<BlockAction> pendingBlockActions = new ObjectLinkedOpenHashSet<>();
 	private boolean field_13953;
 
 	public ServerWorld(
@@ -218,7 +217,7 @@ public class ServerWorld extends World {
 		this.getProfiler().swap("raid");
 		this.raidManager.tick();
 		this.getProfiler().pop();
-		this.method_14192();
+		this.sendBlockActions();
 		this.field_13953 = false;
 	}
 
@@ -378,7 +377,7 @@ public class ServerWorld extends World {
 	private void method_14171(ScheduledTick<Fluid> scheduledTick) {
 		FluidState fluidState = this.getFluidState(scheduledTick.pos);
 		if (fluidState.getFluid() == scheduledTick.getObject()) {
-			fluidState.method_15770(this, scheduledTick.pos);
+			fluidState.onScheduledTick(this, scheduledTick.pos);
 		}
 	}
 
@@ -688,31 +687,33 @@ public class ServerWorld extends World {
 
 	@Override
 	public void addBlockAction(BlockPos blockPos, Block block, int i, int j) {
-		this.field_13950.add(new class_1919(blockPos, block, i, j));
+		this.pendingBlockActions.add(new BlockAction(blockPos, block, i, j));
 	}
 
-	private void method_14192() {
-		while (!this.field_13950.isEmpty()) {
-			class_1919 lv = this.field_13950.removeFirst();
-			if (this.method_14174(lv)) {
+	private void sendBlockActions() {
+		while (!this.pendingBlockActions.isEmpty()) {
+			BlockAction blockAction = this.pendingBlockActions.removeFirst();
+			if (this.method_14174(blockAction)) {
 				this.server
 					.getPlayerManager()
 					.sendToAround(
 						null,
-						(double)lv.method_8306().getX(),
-						(double)lv.method_8306().getY(),
-						(double)lv.method_8306().getZ(),
+						(double)blockAction.getPos().getX(),
+						(double)blockAction.getPos().getY(),
+						(double)blockAction.getPos().getZ(),
 						64.0,
 						this.dimension.getType(),
-						new BlockActionClientPacket(lv.method_8306(), lv.method_8309(), lv.method_8307(), lv.method_8308())
+						new BlockActionClientPacket(blockAction.getPos(), blockAction.method_8309(), blockAction.method_8307(), blockAction.method_8308())
 					);
 			}
 		}
 	}
 
-	private boolean method_14174(class_1919 arg) {
-		BlockState blockState = this.getBlockState(arg.method_8306());
-		return blockState.getBlock() == arg.method_8309() ? blockState.onBlockAction(this, arg.method_8306(), arg.method_8307(), arg.method_8308()) : false;
+	private boolean method_14174(BlockAction blockAction) {
+		BlockState blockState = this.getBlockState(blockAction.getPos());
+		return blockState.getBlock() == blockAction.method_8309()
+			? blockState.onBlockAction(this, blockAction.getPos(), blockAction.method_8307(), blockAction.method_8308())
+			: false;
 	}
 
 	@Override
@@ -767,7 +768,7 @@ public class ServerWorld extends World {
 		return this.portalForcer;
 	}
 
-	public StructureManager method_14183() {
+	public StructureManager getStructureManager() {
 		return this.saveHandler.getStructureManager();
 	}
 

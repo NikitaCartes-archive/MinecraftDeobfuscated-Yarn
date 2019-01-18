@@ -33,7 +33,7 @@ public abstract class BlockWithEntity extends Block implements BlockEntityProvid
 
 	@Nullable
 	@Override
-	public NameableContainerProvider method_17454(BlockState blockState, World world, BlockPos blockPos) {
+	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		return blockEntity instanceof NameableContainerProvider ? (NameableContainerProvider)blockEntity : null;
 	}

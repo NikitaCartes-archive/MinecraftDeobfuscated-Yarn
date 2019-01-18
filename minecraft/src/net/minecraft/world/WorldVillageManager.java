@@ -166,7 +166,7 @@ public class WorldVillageManager extends PersistentState {
 	}
 
 	private void method_6443(BlockState blockState, BlockPos blockPos) {
-		Direction direction = blockState.get(DoorBlock.field_10938);
+		Direction direction = blockState.get(DoorBlock.FACING);
 		Direction direction2 = direction.getOpposite();
 		int i = this.isDoorLeadingOutside(blockPos, direction, 5);
 		int j = this.isDoorLeadingOutside(blockPos, direction2, i + 1);

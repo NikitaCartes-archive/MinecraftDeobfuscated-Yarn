@@ -12,7 +12,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemProvider;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.cooking.AbstractCookingRecipe;
+import net.minecraft.recipe.cooking.CookingRecipe;
 import net.minecraft.recipe.cooking.CookingRecipeSerializer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -82,7 +82,7 @@ public class class_2454 {
 				this.field_11415,
 				this.field_11416,
 				new Identifier(identifier.getNamespace(), "recipes/" + this.field_11417.getItemGroup().method_7751() + "/" + identifier.getPath()),
-				(RecipeSerializer<? extends AbstractCookingRecipe>)this.field_17599
+				(RecipeSerializer<? extends CookingRecipe>)this.field_17599
 			)
 		);
 	}
@@ -102,7 +102,7 @@ public class class_2454 {
 		private final int cookingTime;
 		private final SimpleAdvancement.Builder field_11423;
 		private final Identifier field_11427;
-		private final RecipeSerializer<? extends AbstractCookingRecipe> field_17600;
+		private final RecipeSerializer<? extends CookingRecipe> field_17600;
 
 		public class_2455(
 			Identifier identifier,
@@ -113,7 +113,7 @@ public class class_2454 {
 			int i,
 			SimpleAdvancement.Builder builder,
 			Identifier identifier2,
-			RecipeSerializer<? extends AbstractCookingRecipe> recipeSerializer
+			RecipeSerializer<? extends CookingRecipe> recipeSerializer
 		) {
 			this.field_11424 = identifier;
 			this.group = string;

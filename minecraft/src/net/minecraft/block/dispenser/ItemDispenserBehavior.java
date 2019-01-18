@@ -13,12 +13,12 @@ public class ItemDispenserBehavior implements DispenserBehavior {
 	public final ItemStack dispense(BlockPointer blockPointer, ItemStack itemStack) {
 		ItemStack itemStack2 = this.method_10135(blockPointer, itemStack);
 		this.playSound(blockPointer);
-		this.spawnParticles(blockPointer, blockPointer.getBlockState().get(DispenserBlock.field_10918));
+		this.spawnParticles(blockPointer, blockPointer.getBlockState().get(DispenserBlock.FACING));
 		return itemStack2;
 	}
 
 	protected ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
-		Direction direction = blockPointer.getBlockState().get(DispenserBlock.field_10918);
+		Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
 		Position position = DispenserBlock.getOutputLocation(blockPointer);
 		ItemStack itemStack2 = itemStack.split(1);
 		dispenseItem(blockPointer.getWorld(), itemStack2, 6, direction, position);

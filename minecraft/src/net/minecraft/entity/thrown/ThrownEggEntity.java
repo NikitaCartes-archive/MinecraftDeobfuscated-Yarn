@@ -11,8 +11,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ItemStackParticleParameters;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.util.EntityHitResult;
-import net.minecraft.util.HitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 
 public class ThrownEggEntity extends class_3857 {
@@ -50,7 +50,7 @@ public class ThrownEggEntity extends class_3857 {
 	}
 
 	@Override
-	protected void onCollision(HitResult hitResult) {
+	protected void method_7492(HitResult hitResult) {
 		if (hitResult.getType() == HitResult.Type.ENTITY) {
 			((EntityHitResult)hitResult).getEntity().damage(DamageSource.thrownProjectile(this, this.getOwner()), 0.0F);
 		}

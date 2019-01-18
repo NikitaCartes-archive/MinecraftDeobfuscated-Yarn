@@ -20,7 +20,7 @@ public class DecorationItem extends Item {
 
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-		BlockPos blockPos = itemUsageContext.getPos();
+		BlockPos blockPos = itemUsageContext.getBlockPos();
 		Direction direction = itemUsageContext.getFacing();
 		BlockPos blockPos2 = blockPos.offset(direction);
 		PlayerEntity playerEntity = itemUsageContext.getPlayer();

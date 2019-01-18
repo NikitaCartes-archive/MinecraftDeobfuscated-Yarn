@@ -60,7 +60,7 @@ public class class_871 implements DebugRenderer.DebugRenderer {
 					float p = 0.0F;
 					float q = 0.0F;
 					float r = 0.5F;
-					if (Block.isFaceFullCube(blockState.getCollisionShape(blockView, blockPos2), Direction.WEST)) {
+					if (Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos2), Direction.WEST)) {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
@@ -71,7 +71,7 @@ public class class_871 implements DebugRenderer.DebugRenderer {
 						tessellator.draw();
 					}
 
-					if (Block.isFaceFullCube(blockState.getCollisionShape(blockView, blockPos2), Direction.SOUTH)) {
+					if (Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos2), Direction.SOUTH)) {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
@@ -82,7 +82,7 @@ public class class_871 implements DebugRenderer.DebugRenderer {
 						tessellator.draw();
 					}
 
-					if (Block.isFaceFullCube(blockState.getCollisionShape(blockView, blockPos2), Direction.EAST)) {
+					if (Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos2), Direction.EAST)) {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
@@ -93,7 +93,7 @@ public class class_871 implements DebugRenderer.DebugRenderer {
 						tessellator.draw();
 					}
 
-					if (Block.isFaceFullCube(blockState.getCollisionShape(blockView, blockPos2), Direction.NORTH)) {
+					if (Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos2), Direction.NORTH)) {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
@@ -104,7 +104,7 @@ public class class_871 implements DebugRenderer.DebugRenderer {
 						tessellator.draw();
 					}
 
-					if (Block.isFaceFullCube(blockState.getCollisionShape(blockView, blockPos2), Direction.DOWN)) {
+					if (Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos2), Direction.DOWN)) {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
@@ -115,7 +115,7 @@ public class class_871 implements DebugRenderer.DebugRenderer {
 						tessellator.draw();
 					}
 
-					if (Block.isFaceFullCube(blockState.getCollisionShape(blockView, blockPos2), Direction.UP)) {
+					if (Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos2), Direction.UP)) {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);

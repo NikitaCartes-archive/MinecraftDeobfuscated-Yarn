@@ -14,8 +14,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.util.BlockHitResult;
-import net.minecraft.util.HitResult;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
@@ -110,7 +110,7 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 
 	public static boolean method_4896(ClientPlayerEntity clientPlayerEntity) {
 		for (Block block : MATCHING_BLOCKS) {
-			if (clientPlayerEntity.getStats().getStat(Stats.field_15427.method_14956(block)) > 0) {
+			if (clientPlayerEntity.getStats().getStat(Stats.field_15427.getOrCreateStat(block)) > 0) {
 				return true;
 			}
 		}

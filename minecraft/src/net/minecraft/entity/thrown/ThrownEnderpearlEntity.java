@@ -17,9 +17,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.BlockHitResult;
-import net.minecraft.util.EntityHitResult;
-import net.minecraft.util.HitResult;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
@@ -47,7 +47,7 @@ public class ThrownEnderpearlEntity extends class_3857 {
 	}
 
 	@Override
-	protected void onCollision(HitResult hitResult) {
+	protected void method_7492(HitResult hitResult) {
 		LivingEntity livingEntity = this.getOwner();
 		if (hitResult.getType() == HitResult.Type.ENTITY) {
 			Entity entity = ((EntityHitResult)hitResult).getEntity();
@@ -68,12 +68,12 @@ public class ThrownEnderpearlEntity extends class_3857 {
 						Criterions.ENTER_BLOCK.method_8885((ServerPlayerEntity)livingEntity, this.world.getBlockState(blockPos));
 					}
 
-					endGatewayBlockEntity.method_11409(livingEntity);
+					endGatewayBlockEntity.tryTeleportingEntity(livingEntity);
 					this.invalidate();
 					return;
 				}
 
-				endGatewayBlockEntity.method_11409(this);
+				endGatewayBlockEntity.tryTeleportingEntity(this);
 				return;
 			}
 		}

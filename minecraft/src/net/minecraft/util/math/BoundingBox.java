@@ -4,7 +4,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.BlockHitResult;
+import net.minecraft.util.hit.BlockHitResult;
 
 public class BoundingBox {
 	public final double minX;

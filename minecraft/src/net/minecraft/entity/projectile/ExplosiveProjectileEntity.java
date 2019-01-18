@@ -11,7 +11,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.util.HitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -83,7 +83,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 			this.field_7602++;
 			HitResult hitResult = class_1675.method_7482(this, true, this.field_7602 >= 25, this.owner);
 			if (hitResult.getType() != HitResult.Type.NONE) {
-				this.onCollision(hitResult);
+				this.method_7469(hitResult);
 			}
 
 			this.x = this.x + this.velocityX;
@@ -134,7 +134,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 		return 0.95F;
 	}
 
-	protected abstract void onCollision(HitResult hitResult);
+	protected abstract void method_7469(HitResult hitResult);
 
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {

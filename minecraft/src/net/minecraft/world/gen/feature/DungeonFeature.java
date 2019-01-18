@@ -95,7 +95,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 					if (iWorld.isAir(blockPos3)) {
 						int x = 0;
 
-						for (Direction direction : Direction.class_2353.HORIZONTAL) {
+						for (Direction direction : Direction.Type.HORIZONTAL) {
 							if (iWorld.getBlockState(blockPos3.offset(direction)).getMaterial().method_15799()) {
 								x++;
 							}
@@ -103,7 +103,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 
 						if (x == 1) {
 							iWorld.setBlockState(blockPos3, class_3443.method_14916(iWorld, blockPos3, Blocks.field_10034.getDefaultState()), 2);
-							LootableContainerBlockEntity.method_11287(iWorld, random, blockPos3, LootTables.CHEST_SIMPLE_DUNGEON);
+							LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos3, LootTables.CHEST_SIMPLE_DUNGEON);
 							break;
 						}
 					}

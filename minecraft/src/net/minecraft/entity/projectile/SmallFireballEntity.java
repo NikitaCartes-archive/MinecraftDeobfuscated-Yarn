@@ -7,9 +7,9 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.util.BlockHitResult;
-import net.minecraft.util.EntityHitResult;
-import net.minecraft.util.HitResult;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -27,7 +27,7 @@ public class SmallFireballEntity extends class_3855 {
 	}
 
 	@Override
-	protected void onCollision(HitResult hitResult) {
+	protected void method_7469(HitResult hitResult) {
 		if (!this.world.isClient) {
 			if (hitResult.getType() == HitResult.Type.ENTITY) {
 				Entity entity = ((EntityHitResult)hitResult).getEntity();

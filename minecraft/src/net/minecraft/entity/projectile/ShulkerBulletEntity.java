@@ -19,9 +19,9 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.EntityHitResult;
-import net.minecraft.util.HitResult;
 import net.minecraft.util.TagHelper;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
@@ -257,7 +257,7 @@ public class ShulkerBulletEntity extends Entity {
 				}
 
 				HitResult hitResult = class_1675.method_7482(this, true, false, this.field_7630);
-				if (hitResult != null) {
+				if (hitResult.getType() != HitResult.Type.NONE) {
 					this.method_7488(hitResult);
 				}
 			}

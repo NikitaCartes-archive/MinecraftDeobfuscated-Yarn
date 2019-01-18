@@ -10,11 +10,11 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.CarvedPumpkinBlock;
 import net.minecraft.block.ComposterBlock;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.FireBlock;
 import net.minecraft.block.FluidDrainable;
-import net.minecraft.block.PumpkinCarvedBlock;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.SkullBlock;
 import net.minecraft.block.TntBlock;
@@ -62,12 +62,12 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.DebugPrintStreamLogger;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Language;
 import net.minecraft.util.PrintStreamLogger;
 import net.minecraft.util.SystemUtil;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
@@ -213,7 +213,7 @@ public class Bootstrap {
 		ItemDispenserBehavior itemDispenserBehavior = new ItemDispenserBehavior() {
 			@Override
 			public ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
-				Direction direction = blockPointer.getBlockState().get(DispenserBlock.field_10918);
+				Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
 				EntityType<?> entityType = ((SpawnEggItem)itemStack.getItem()).method_8015(itemStack.getTag());
 				if (entityType != null) {
 					entityType.spawnFromItemStack(
@@ -233,7 +233,7 @@ public class Bootstrap {
 		DispenserBlock.registerBehavior(Items.field_8639, new ItemDispenserBehavior() {
 			@Override
 			public ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
-				Direction direction = blockPointer.getBlockState().get(DispenserBlock.field_10918);
+				Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
 				double d = blockPointer.getX() + (double)direction.getOffsetX();
 				double e = (double)((float)blockPointer.getBlockPos().getY() + 0.2F);
 				double f = blockPointer.getZ() + (double)direction.getOffsetZ();
@@ -251,7 +251,7 @@ public class Bootstrap {
 		DispenserBlock.registerBehavior(Items.field_8814, new ItemDispenserBehavior() {
 			@Override
 			public ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
-				Direction direction = blockPointer.getBlockState().get(DispenserBlock.field_10918);
+				Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
 				Position position = DispenserBlock.getOutputLocation(blockPointer);
 				double d = position.getX() + (double)((float)direction.getOffsetX() * 0.3F);
 				double e = position.getY() + (double)((float)direction.getOffsetY() * 0.3F);
@@ -283,9 +283,9 @@ public class Bootstrap {
 			@Override
 			public ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
 				BucketItem bucketItem = (BucketItem)itemStack.getItem();
-				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.field_10918));
+				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
 				World world = blockPointer.getWorld();
-				if (bucketItem.placeFluid(null, world, blockPos, null)) {
+				if (bucketItem.method_7731(null, world, blockPos, null)) {
 					bucketItem.onEmptied(world, itemStack, blockPos);
 					return new ItemStack(Items.field_8550);
 				} else {
@@ -305,7 +305,7 @@ public class Bootstrap {
 			@Override
 			public ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
 				IWorld iWorld = blockPointer.getWorld();
-				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.field_10918));
+				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
 				BlockState blockState = iWorld.getBlockState(blockPos);
 				Block block = blockState.getBlock();
 				if (block instanceof FluidDrainable) {
@@ -318,7 +318,7 @@ public class Bootstrap {
 						if (itemStack.isEmpty()) {
 							return new ItemStack(item);
 						} else {
-							if (blockPointer.<DispenserBlockEntity>getBlockEntity().method_11075(new ItemStack(item)) < 0) {
+							if (blockPointer.<DispenserBlockEntity>getBlockEntity().addToFirstFreeSlot(new ItemStack(item)) < 0) {
 								this.field_13368.dispense(blockPointer, new ItemStack(item));
 							}
 
@@ -335,7 +335,7 @@ public class Bootstrap {
 			protected ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
 				World world = blockPointer.getWorld();
 				this.field_13364 = true;
-				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.field_10918));
+				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
 				BlockState blockState = world.getBlockState(blockPos);
 				if (FlintAndSteelItem.method_7825(blockState, world, blockPos)) {
 					world.setBlockState(blockPos, Blocks.field_10036.getDefaultState());
@@ -360,7 +360,7 @@ public class Bootstrap {
 			protected ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
 				this.field_13364 = true;
 				World world = blockPointer.getWorld();
-				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.field_10918));
+				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
 				if (!BoneMealItem.method_7720(itemStack, world, blockPos) && !BoneMealItem.method_7719(itemStack, world, blockPos, null)) {
 					this.field_13364 = false;
 				} else if (!world.isClient) {
@@ -374,7 +374,7 @@ public class Bootstrap {
 			@Override
 			protected ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
 				World world = blockPointer.getWorld();
-				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.field_10918));
+				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
 				PrimedTNTEntity primedTNTEntity = new PrimedTNTEntity(world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, null);
 				world.spawnEntity(primedTNTEntity);
 				world.playSound(null, primedTNTEntity.x, primedTNTEntity.y, primedTNTEntity.z, SoundEvents.field_15079, SoundCategory.field_15245, 1.0F, 1.0F);
@@ -400,20 +400,20 @@ public class Bootstrap {
 				@Override
 				protected ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
 					World world = blockPointer.getWorld();
-					Direction direction = blockPointer.getBlockState().get(DispenserBlock.field_10918);
+					Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
 					BlockPos blockPos = blockPointer.getBlockPos().offset(direction);
 					this.field_13364 = true;
-					if (world.isAir(blockPos) && WitherSkullBlock.method_10899(world, blockPos, itemStack)) {
+					if (world.isAir(blockPos) && WitherSkullBlock.canDispense(world, blockPos, itemStack)) {
 						world.setBlockState(
 							blockPos,
 							Blocks.field_10177
 								.getDefaultState()
-								.with(SkullBlock.field_11505, Integer.valueOf(direction.getAxis() == Direction.Axis.Y ? 0 : direction.getOpposite().getHorizontal() * 4)),
+								.with(SkullBlock.ROTATION, Integer.valueOf(direction.getAxis() == Direction.Axis.Y ? 0 : direction.getOpposite().getHorizontal() * 4)),
 							3
 						);
 						BlockEntity blockEntity = world.getBlockEntity(blockPos);
 						if (blockEntity instanceof SkullBlockEntity) {
-							WitherSkullBlock.method_10898(world, blockPos, (SkullBlockEntity)blockEntity);
+							WitherSkullBlock.onPlaced(world, blockPos, (SkullBlockEntity)blockEntity);
 						}
 
 						itemStack.subtractAmount(1);
@@ -429,12 +429,12 @@ public class Bootstrap {
 			@Override
 			protected ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
 				World world = blockPointer.getWorld();
-				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.field_10918));
-				PumpkinCarvedBlock pumpkinCarvedBlock = (PumpkinCarvedBlock)Blocks.field_10147;
+				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
+				CarvedPumpkinBlock carvedPumpkinBlock = (CarvedPumpkinBlock)Blocks.field_10147;
 				this.field_13364 = true;
-				if (world.isAir(blockPos) && pumpkinCarvedBlock.method_9733(world, blockPos)) {
+				if (world.isAir(blockPos) && carvedPumpkinBlock.method_9733(world, blockPos)) {
 					if (!world.isClient) {
-						world.setBlockState(blockPos, pumpkinCarvedBlock.getDefaultState(), 3);
+						world.setBlockState(blockPos, carvedPumpkinBlock.getDefaultState(), 3);
 					}
 
 					itemStack.subtractAmount(1);
@@ -460,7 +460,7 @@ public class Bootstrap {
 				World world = blockPointer.getWorld();
 				if (!world.isClient()) {
 					this.field_13364 = false;
-					BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.field_10918));
+					BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
 
 					for (SheepEntity sheepEntity : world.getVisibleEntities(SheepEntity.class, new BoundingBox(blockPos))) {
 						if (sheepEntity.isValid() && !sheepEntity.isSheared() && !sheepEntity.isChild()) {
@@ -556,7 +556,7 @@ public class Bootstrap {
 
 		@Override
 		public ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
-			Direction direction = blockPointer.getBlockState().get(DispenserBlock.field_10918);
+			Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
 			World world = blockPointer.getWorld();
 			double d = blockPointer.getX() + (double)((float)direction.getOffsetX() * 1.125F);
 			double e = blockPointer.getY() + (double)((float)direction.getOffsetY() * 1.125F);
@@ -601,7 +601,7 @@ public class Bootstrap {
 		}
 
 		@Override
-		public BlockPos getPos() {
+		public BlockPos getBlockPos() {
 			return this.field_17543.getBlockPos();
 		}
 
@@ -673,7 +673,7 @@ public class Bootstrap {
 			this.field_13364 = false;
 			Item item = itemStack.getItem();
 			if (item instanceof BlockItem) {
-				Direction direction = blockPointer.getBlockState().get(DispenserBlock.field_10918);
+				Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
 				BlockPos blockPos = blockPointer.getBlockPos().offset(direction);
 				Direction direction2 = blockPointer.getWorld().isAir(blockPos.down()) ? direction : Direction.UP;
 				this.field_13364 = ((BlockItem)item).place(new Bootstrap.class_2968(blockPointer.getWorld(), blockPos, direction, itemStack, direction2))

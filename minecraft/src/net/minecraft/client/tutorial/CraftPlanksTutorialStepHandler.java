@@ -71,7 +71,7 @@ public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
 
 	public static boolean method_4895(ClientPlayerEntity clientPlayerEntity, Tag<Item> tag) {
 		for (Item item : tag.values()) {
-			if (clientPlayerEntity.getStats().getStat(Stats.field_15370.method_14956(item)) > 0) {
+			if (clientPlayerEntity.getStats().getStat(Stats.field_15370.getOrCreateStat(item)) > 0) {
 				return true;
 			}
 		}

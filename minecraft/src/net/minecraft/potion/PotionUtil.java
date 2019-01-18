@@ -148,7 +148,7 @@ public class PotionUtil {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void addInformation(ItemStack itemStack, List<TextComponent> list, float f) {
+	public static void buildTooltip(ItemStack itemStack, List<TextComponent> list, float f) {
 		List<StatusEffectInstance> list2 = getPotionEffects(itemStack);
 		List<class_3545<String, EntityAttributeModifier>> list3 = Lists.<class_3545<String, EntityAttributeModifier>>newArrayList();
 		if (list2.isEmpty()) {

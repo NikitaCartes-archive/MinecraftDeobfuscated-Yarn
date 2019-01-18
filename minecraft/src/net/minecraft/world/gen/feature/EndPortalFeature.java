@@ -50,7 +50,7 @@ public class EndPortalFeature extends Feature<DefaultFeatureConfig> {
 
 		BlockPos blockPos3 = blockPos.up(2);
 
-		for (Direction direction : Direction.class_2353.HORIZONTAL) {
+		for (Direction direction : Direction.Type.HORIZONTAL) {
 			this.setBlockState(iWorld, blockPos3.offset(direction), Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, direction));
 		}
 

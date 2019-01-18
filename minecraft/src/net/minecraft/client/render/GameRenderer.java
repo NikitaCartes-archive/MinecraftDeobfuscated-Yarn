@@ -49,15 +49,15 @@ import net.minecraft.resource.ResourceReloadListener;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.util.BlockHitResult;
-import net.minecraft.util.EntityHitResult;
-import net.minecraft.util.HitResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.crash.ICrashCallable;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
@@ -285,14 +285,14 @@ public class GameRenderer implements AutoCloseable, ResourceReloadListener {
 		}
 	}
 
-	public void updateTargettedEntity(float f) {
+	public void updateTargetedEntity(float f) {
 		Entity entity = this.client.getCameraEntity();
 		if (entity != null) {
 			if (this.client.world != null) {
 				this.client.getProfiler().push("pick");
 				this.client.targetedEntity = null;
 				double d = (double)this.client.interactionManager.getReachDistance();
-				this.client.hitResult = entity.rayTrace(d, f, false);
+				this.client.hitResult = entity.method_5745(d, f, false);
 				net.minecraft.util.math.Vec3d vec3d = entity.getCameraPosVec(f);
 				boolean bl = false;
 				int i = 3;
@@ -466,7 +466,7 @@ public class GameRenderer implements AutoCloseable, ResourceReloadListener {
 				BlockState blockState = this.client.world.getBlockState(blockPos);
 				Block block = blockState.getBlock();
 				if (block instanceof BedBlock) {
-					GlStateManager.rotatef(((Direction)blockState.get(BedBlock.field_11177)).asRotation(), 0.0F, 1.0F, 0.0F);
+					GlStateManager.rotatef(((Direction)blockState.get(BedBlock.FACING)).asRotation(), 0.0F, 1.0F, 0.0F);
 				}
 
 				GlStateManager.rotatef(MathHelper.lerp(f, entity.prevYaw, entity.yaw) + 180.0F, 0.0F, -1.0F, 0.0F);
@@ -496,7 +496,7 @@ public class GameRenderer implements AutoCloseable, ResourceReloadListener {
 					r *= 0.1F;
 					HitResult hitResult = this.client
 						.world
-						.rayTrace(
+						.method_17742(
 							new RayTraceContext(
 								new net.minecraft.util.math.Vec3d(d + (double)p, e + (double)q, h + (double)r),
 								new net.minecraft.util.math.Vec3d(d - l + (double)p + (double)r, e - n + (double)q, h - m + (double)r),
@@ -769,7 +769,7 @@ public class GameRenderer implements AutoCloseable, ResourceReloadListener {
 					BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 					BlockState blockState = this.client.world.getBlockState(blockPos);
 					if (this.client.interactionManager.getCurrentGameMode() == GameMode.field_9219) {
-						bl = blockState.method_17526(this.client.world, blockPos) != null;
+						bl = blockState.createContainerProvider(this.client.world, blockPos) != null;
 					} else {
 						CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(this.client.world, blockPos, false);
 						bl = !itemStack.isEmpty()
@@ -791,7 +791,7 @@ public class GameRenderer implements AutoCloseable, ResourceReloadListener {
 			this.client.setCameraEntity(this.client.player);
 		}
 
-		this.updateTargettedEntity(f);
+		this.updateTargetedEntity(f);
 		GlStateManager.enableDepthTest();
 		GlStateManager.enableAlphaTest();
 		GlStateManager.alphaFunc(516, 0.5F);

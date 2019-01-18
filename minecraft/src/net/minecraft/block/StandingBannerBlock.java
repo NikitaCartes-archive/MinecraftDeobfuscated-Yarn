@@ -23,7 +23,7 @@ import net.minecraft.world.ViewableWorld;
 public class StandingBannerBlock extends AbstractBannerBlock {
 	public static final IntegerProperty field_9924 = Properties.ROTATION_16;
 	private static final Map<DyeColor, Block> field_9925 = Maps.<DyeColor, Block>newHashMap();
-	private static final VoxelShape field_9923 = Block.createCubeShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
+	private static final VoxelShape field_9923 = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
 
 	public StandingBannerBlock(DyeColor dyeColor, Block.Settings settings) {
 		super(dyeColor, settings);
@@ -57,12 +57,12 @@ public class StandingBannerBlock extends AbstractBannerBlock {
 	}
 
 	@Override
-	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
 		return blockState.with(field_9924, Integer.valueOf(rotation.method_10502((Integer)blockState.get(field_9924), 16)));
 	}
 
 	@Override
-	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
 		return blockState.with(field_9924, Integer.valueOf(mirror.method_10344((Integer)blockState.get(field_9924), 16)));
 	}
 

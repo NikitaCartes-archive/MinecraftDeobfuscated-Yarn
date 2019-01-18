@@ -26,7 +26,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class DetectorRailBlock extends AbstractRailBlock {
-	public static final EnumProperty<RailShape> field_10914 = Properties.RAIL_SHAPE_STRAIGHT;
+	public static final EnumProperty<RailShape> field_10914 = Properties.STRAIGHT_RAIL_SHAPE;
 	public static final BooleanProperty field_10913 = Properties.POWERED;
 
 	public DetectorRailBlock(Block.Settings settings) {
@@ -54,7 +54,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (!world.isClient && (Boolean)blockState.get(field_10913)) {
 			this.method_10002(world, blockPos, blockState);
 		}
@@ -166,7 +166,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	}
 
 	@Override
-	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
 		switch (rotation) {
 			case ROT_180:
 				switch ((RailShape)blockState.get(field_10914)) {
@@ -239,7 +239,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	}
 
 	@Override
-	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
 		RailShape railShape = blockState.get(field_10914);
 		switch (mirror) {
 			case LEFT_RIGHT:
@@ -257,7 +257,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 					case field_12663:
 						return blockState.with(field_10914, RailShape.field_12664);
 					default:
-						return super.applyMirror(blockState, mirror);
+						return super.mirror(blockState, mirror);
 				}
 			case FRONT_BACK:
 				switch (railShape) {
@@ -280,7 +280,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 				}
 		}
 
-		return super.applyMirror(blockState, mirror);
+		return super.mirror(blockState, mirror);
 	}
 
 	@Override

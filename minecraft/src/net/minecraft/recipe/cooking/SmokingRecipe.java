@@ -9,7 +9,7 @@ import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.util.Identifier;
 
-public class SmokingRecipe extends AbstractCookingRecipe {
+public class SmokingRecipe extends CookingRecipe {
 	public SmokingRecipe(Identifier identifier, String string, Ingredient ingredient, ItemStack itemStack, float f, int i) {
 		super(RecipeType.SMOKING, identifier, string, ingredient, itemStack, f, i);
 	}

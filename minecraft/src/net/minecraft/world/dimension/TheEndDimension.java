@@ -19,7 +19,7 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorType;
 import net.minecraft.world.gen.chunk.FloatingIslandsChunkGeneratorConfig;
 
 public class TheEndDimension extends Dimension {
-	public static final BlockPos field_13103 = new BlockPos(100, 50, 0);
+	public static final BlockPos SPAWN_POINT = new BlockPos(100, 50, 0);
 	private final EnderDragonFight enderDragonFight;
 
 	public TheEndDimension(World world, DimensionType dimensionType) {
@@ -99,7 +99,7 @@ public class TheEndDimension extends Dimension {
 
 	@Override
 	public BlockPos getForcedSpawnPoint() {
-		return field_13103;
+		return SPAWN_POINT;
 	}
 
 	@Nullable

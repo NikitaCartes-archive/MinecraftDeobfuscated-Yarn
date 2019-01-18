@@ -32,7 +32,7 @@ public class FireworksItem extends Item {
 		World world = itemUsageContext.getWorld();
 		if (!world.isClient) {
 			ItemStack itemStack = itemUsageContext.getItemStack();
-			Vec3d vec3d = itemUsageContext.method_17698();
+			Vec3d vec3d = itemUsageContext.getPos();
 			FireworkEntity fireworkEntity = new FireworkEntity(world, vec3d.x, vec3d.y, vec3d.z, itemStack);
 			world.spawnEntity(fireworkEntity);
 			itemStack.subtractAmount(1);

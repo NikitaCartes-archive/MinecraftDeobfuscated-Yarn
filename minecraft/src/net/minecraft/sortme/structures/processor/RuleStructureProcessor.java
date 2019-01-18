@@ -7,10 +7,10 @@ import com.mojang.datafixers.types.DynamicOps;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_3492;
-import net.minecraft.class_3499;
 import net.minecraft.class_3821;
 import net.minecraft.block.BlockState;
+import net.minecraft.sortme.Structure;
+import net.minecraft.sortme.StructurePlacementData;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ViewableWorld;
@@ -28,17 +28,23 @@ public class RuleStructureProcessor extends AbstractStructureProcessor {
 
 	@Nullable
 	@Override
-	public class_3499.class_3501 process(ViewableWorld viewableWorld, BlockPos blockPos, class_3499.class_3501 arg, class_3499.class_3501 arg2, class_3492 arg3) {
-		Random random = new Random(MathHelper.hashCode(arg2.field_15597));
-		BlockState blockState = viewableWorld.getBlockState(arg2.field_15597);
+	public Structure.StructureBlockInfo process(
+		ViewableWorld viewableWorld,
+		BlockPos blockPos,
+		Structure.StructureBlockInfo structureBlockInfo,
+		Structure.StructureBlockInfo structureBlockInfo2,
+		StructurePlacementData structurePlacementData
+	) {
+		Random random = new Random(MathHelper.hashCode(structureBlockInfo2.pos));
+		BlockState blockState = viewableWorld.getBlockState(structureBlockInfo2.pos);
 
 		for (class_3821 lv : this.rules) {
-			if (lv.method_16762(arg2.field_15596, blockState, random)) {
-				return new class_3499.class_3501(arg2.field_15597, lv.method_16763(), lv.method_16760());
+			if (lv.method_16762(structureBlockInfo2.state, blockState, random)) {
+				return new Structure.StructureBlockInfo(structureBlockInfo2.pos, lv.method_16763(), lv.method_16760());
 			}
 		}
 
-		return arg2;
+		return structureBlockInfo2;
 	}
 
 	@Override

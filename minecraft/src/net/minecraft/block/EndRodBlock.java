@@ -17,51 +17,51 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class EndRodBlock extends FacingBlock {
-	protected static final VoxelShape field_10971 = Block.createCubeShape(6.0, 0.0, 6.0, 10.0, 16.0, 10.0);
-	protected static final VoxelShape field_10970 = Block.createCubeShape(6.0, 6.0, 0.0, 10.0, 10.0, 16.0);
-	protected static final VoxelShape field_10969 = Block.createCubeShape(0.0, 6.0, 6.0, 16.0, 10.0, 10.0);
+	protected static final VoxelShape Y_SHAPE = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 16.0, 10.0);
+	protected static final VoxelShape Z_SHAPE = Block.createCuboidShape(6.0, 6.0, 0.0, 10.0, 10.0, 16.0);
+	protected static final VoxelShape X_SHAPE = Block.createCuboidShape(0.0, 6.0, 6.0, 16.0, 10.0, 10.0);
 
 	protected EndRodBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_10927, Direction.UP));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.UP));
 	}
 
 	@Override
-	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
-		return blockState.with(field_10927, rotation.method_10503(blockState.get(field_10927)));
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
+		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
-	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.with(field_10927, mirror.apply(blockState.get(field_10927)));
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
+		return blockState.with(FACING, mirror.apply(blockState.get(FACING)));
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		switch (((Direction)blockState.get(field_10927)).getAxis()) {
+		switch (((Direction)blockState.get(FACING)).getAxis()) {
 			case X:
 			default:
-				return field_10969;
+				return X_SHAPE;
 			case Z:
-				return field_10970;
+				return Z_SHAPE;
 			case Y:
-				return field_10971;
+				return Y_SHAPE;
 		}
 	}
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		Direction direction = itemPlacementContext.getFacing();
-		BlockState blockState = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getPos().offset(direction.getOpposite()));
-		return blockState.getBlock() == this && blockState.get(field_10927) == direction
-			? this.getDefaultState().with(field_10927, direction.getOpposite())
-			: this.getDefaultState().with(field_10927, direction);
+		BlockState blockState = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos().offset(direction.getOpposite()));
+		return blockState.getBlock() == this && blockState.get(FACING) == direction
+			? this.getDefaultState().with(FACING, direction.getOpposite())
+			: this.getDefaultState().with(FACING, direction);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		Direction direction = blockState.get(field_10927);
+		Direction direction = blockState.get(FACING);
 		double d = (double)blockPos.getX() + 0.55 - (double)(random.nextFloat() * 0.1F);
 		double e = (double)blockPos.getY() + 0.55 - (double)(random.nextFloat() * 0.1F);
 		double f = (double)blockPos.getZ() + 0.55 - (double)(random.nextFloat() * 0.1F);
@@ -86,7 +86,7 @@ public class EndRodBlock extends FacingBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_10927);
+		builder.with(FACING);
 	}
 
 	@Override

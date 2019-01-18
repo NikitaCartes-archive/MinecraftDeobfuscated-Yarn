@@ -67,7 +67,7 @@ public class WaterDebugRenderer implements DebugRenderer.DebugRenderer {
 			FluidState fluidState = viewableWorld.getFluidState(blockPos2x);
 			if (fluidState.matches(FluidTags.field_15517)) {
 				DebugRenderer.method_3714(
-					String.valueOf(fluidState.method_15761()),
+					String.valueOf(fluidState.getLevel()),
 					(double)blockPos2x.getX() + 0.5,
 					(double)((float)blockPos2x.getY() + fluidState.method_15763(viewableWorld, blockPos2x)),
 					(double)blockPos2x.getZ() + 0.5,

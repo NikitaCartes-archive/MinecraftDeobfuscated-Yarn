@@ -22,10 +22,10 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.util.BlockHitResult;
-import net.minecraft.util.HitResult;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -121,7 +121,7 @@ public class FallingBlockEntity extends Entity {
 				double d = this.velocityX * this.velocityX + this.velocityY * this.velocityY + this.velocityZ * this.velocityZ;
 				if (bl && d > 1.0) {
 					BlockHitResult blockHitResult = this.world
-						.rayTrace(
+						.method_17742(
 							new RayTraceContext(
 								new Vec3d(this.prevX, this.prevY, this.prevZ),
 								new Vec3d(this.x, this.y, this.z),

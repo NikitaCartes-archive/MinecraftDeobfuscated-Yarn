@@ -15,22 +15,22 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class NetherWartBlock extends PlantBlock {
-	public static final IntegerProperty field_11306 = Properties.AGE_3;
-	private static final VoxelShape[] field_11305 = new VoxelShape[]{
-		Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 5.0, 16.0),
-		Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0),
-		Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 11.0, 16.0),
-		Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 14.0, 16.0)
+	public static final IntegerProperty AGE = Properties.AGE_3;
+	private static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{
+		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 5.0, 16.0),
+		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0),
+		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 11.0, 16.0),
+		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 14.0, 16.0)
 	};
 
 	protected NetherWartBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11306, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(AGE, Integer.valueOf(0)));
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_11305[blockState.get(field_11306)];
+		return AGE_TO_SHAPE[blockState.get(AGE)];
 	}
 
 	@Override
@@ -39,14 +39,14 @@ public class NetherWartBlock extends PlantBlock {
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		int i = (Integer)blockState.get(field_11306);
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		int i = (Integer)blockState.get(AGE);
 		if (i < 3 && random.nextInt(10) == 0) {
-			blockState = blockState.with(field_11306, Integer.valueOf(i + 1));
+			blockState = blockState.with(AGE, Integer.valueOf(i + 1));
 			world.setBlockState(blockPos, blockState, 2);
 		}
 
-		super.scheduledTick(blockState, world, blockPos, random);
+		super.onScheduledTick(blockState, world, blockPos, random);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -57,6 +57,6 @@ public class NetherWartBlock extends PlantBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_11306);
+		builder.with(AGE);
 	}
 }

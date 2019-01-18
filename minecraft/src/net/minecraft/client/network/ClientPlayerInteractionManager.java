@@ -34,10 +34,10 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.stat.StatHandler;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.BlockHitResult;
-import net.minecraft.util.EntityHitResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -305,7 +305,7 @@ public class ClientPlayerInteractionManager {
 			} else {
 				boolean bl = !clientPlayerEntity.getMainHandStack().isEmpty() || !clientPlayerEntity.getOffHandStack().isEmpty();
 				boolean bl2 = clientPlayerEntity.isSneaking() && bl;
-				if (!bl2 && clientWorld.getBlockState(blockPos).activate(clientWorld, clientPlayerEntity, hand, blockHitResult)) {
+				if (!bl2 && clientWorld.getBlockState(blockPos).method_11629(clientWorld, clientPlayerEntity, hand, blockHitResult)) {
 					this.networkHandler.sendPacket(new PlayerInteractBlockServerPacket(hand, blockHitResult));
 					return ActionResult.SUCCESS;
 				} else {

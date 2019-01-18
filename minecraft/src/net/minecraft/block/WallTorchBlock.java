@@ -23,17 +23,17 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class WallTorchBlock extends TorchBlock {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	private static final Map<Direction, VoxelShape> BOUNDING_SHAPES = Maps.newEnumMap(
 		ImmutableMap.of(
 			Direction.NORTH,
-			Block.createCubeShape(5.5, 3.0, 11.0, 10.5, 13.0, 16.0),
+			Block.createCuboidShape(5.5, 3.0, 11.0, 10.5, 13.0, 16.0),
 			Direction.SOUTH,
-			Block.createCubeShape(5.5, 3.0, 0.0, 10.5, 13.0, 5.0),
+			Block.createCuboidShape(5.5, 3.0, 0.0, 10.5, 13.0, 5.0),
 			Direction.WEST,
-			Block.createCubeShape(11.0, 3.0, 5.5, 16.0, 13.0, 10.5),
+			Block.createCuboidShape(11.0, 3.0, 5.5, 16.0, 13.0, 10.5),
 			Direction.EAST,
-			Block.createCubeShape(0.0, 3.0, 5.5, 5.0, 13.0, 10.5)
+			Block.createCuboidShape(0.0, 3.0, 5.5, 5.0, 13.0, 10.5)
 		)
 	);
 
@@ -61,7 +61,7 @@ public class WallTorchBlock extends TorchBlock {
 		Direction direction = blockState.get(FACING);
 		BlockPos blockPos2 = blockPos.offset(direction.getOpposite());
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-		return Block.isFaceFullCube(blockState2.getCollisionShape(viewableWorld, blockPos2), direction) && !method_9581(blockState2.getBlock());
+		return Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos2), direction) && !method_9581(blockState2.getBlock());
 	}
 
 	@Nullable
@@ -69,7 +69,7 @@ public class WallTorchBlock extends TorchBlock {
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockState blockState = this.getDefaultState();
 		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
-		BlockPos blockPos = itemPlacementContext.getPos();
+		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		Direction[] directions = itemPlacementContext.getPlacementFacings();
 
 		for (Direction direction : directions) {
@@ -107,13 +107,13 @@ public class WallTorchBlock extends TorchBlock {
 	}
 
 	@Override
-	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
-		return blockState.with(FACING, rotation.method_10503(blockState.get(FACING)));
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
+		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
-	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.getRotation(blockState.get(FACING)));
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
+		return blockState.rotate(mirror.getRotation(blockState.get(FACING)));
 	}
 
 	@Override

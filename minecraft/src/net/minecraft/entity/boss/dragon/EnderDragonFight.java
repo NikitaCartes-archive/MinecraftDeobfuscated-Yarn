@@ -463,7 +463,7 @@ public class EnderDragonFight {
 			List<EnderCrystalEntity> list = Lists.<EnderCrystalEntity>newArrayList();
 			BlockPos blockPos2 = blockPos.up(1);
 
-			for (Direction direction : Direction.class_2353.HORIZONTAL) {
+			for (Direction direction : Direction.Type.HORIZONTAL) {
 				List<EnderCrystalEntity> list2 = this.world.getVisibleEntities(EnderCrystalEntity.class, new BoundingBox(blockPos2.offset(direction, 2)));
 				if (list2.isEmpty()) {
 					return;

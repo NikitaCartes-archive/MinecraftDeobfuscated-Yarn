@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 
 public class FurnaceOutputSlot extends Slot {
 	private final PlayerEntity player;
-	private int field_7819;
+	private int amountCrafted;
 
 	public FurnaceOutputSlot(PlayerEntity playerEntity, Inventory inventory, int i, int j, int k) {
 		super(inventory, i, j, k);
@@ -22,7 +22,7 @@ public class FurnaceOutputSlot extends Slot {
 	@Override
 	public ItemStack takeStack(int i) {
 		if (this.hasStack()) {
-			this.field_7819 = this.field_7819 + Math.min(i, this.getStack().getAmount());
+			this.amountCrafted = this.amountCrafted + Math.min(i, this.getStack().getAmount());
 		}
 
 		return super.takeStack(i);
@@ -37,17 +37,17 @@ public class FurnaceOutputSlot extends Slot {
 
 	@Override
 	protected void onCrafted(ItemStack itemStack, int i) {
-		this.field_7819 += i;
+		this.amountCrafted += i;
 		this.onCrafted(itemStack);
 	}
 
 	@Override
 	protected void onCrafted(ItemStack itemStack) {
-		itemStack.onCrafted(this.player.world, this.player, this.field_7819);
+		itemStack.onCrafted(this.player.world, this.player, this.amountCrafted);
 		if (!this.player.world.isClient && this.inventory instanceof AbstractFurnaceBlockEntity) {
-			((AbstractFurnaceBlockEntity)this.inventory).method_17763(this.player);
+			((AbstractFurnaceBlockEntity)this.inventory).dropExperience(this.player);
 		}
 
-		this.field_7819 = 0;
+		this.amountCrafted = 0;
 	}
 }

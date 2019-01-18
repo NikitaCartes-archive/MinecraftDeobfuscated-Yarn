@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Random;
 import net.minecraft.class_3443;
 import net.minecraft.class_3470;
-import net.minecraft.class_3492;
-import net.minecraft.class_3499;
 import net.minecraft.class_3545;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
@@ -14,7 +12,9 @@ import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sortme.Structure;
 import net.minecraft.sortme.StructurePiece;
+import net.minecraft.sortme.StructurePlacementData;
 import net.minecraft.sortme.structures.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rotation;
@@ -25,8 +25,12 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.loot.LootTables;
 
 public class EndCityGenerator {
-	private static final class_3492 field_14383 = new class_3492().method_15133(true).method_16184(BlockIgnoreStructureProcessor.field_16718);
-	private static final class_3492 field_14389 = new class_3492().method_15133(true).method_16184(BlockIgnoreStructureProcessor.field_16721);
+	private static final StructurePlacementData field_14383 = new StructurePlacementData()
+		.setIgnoreEntities(true)
+		.addProcessor(BlockIgnoreStructureProcessor.field_16718);
+	private static final StructurePlacementData field_14389 = new StructurePlacementData()
+		.setIgnoreEntities(true)
+		.addProcessor(BlockIgnoreStructureProcessor.field_16721);
 	private static final EndCityGenerator.class_3344 field_14390 = new EndCityGenerator.class_3344() {
 		@Override
 		public void method_14688() {
@@ -39,7 +43,7 @@ public class EndCityGenerator {
 			if (i > 8) {
 				return false;
 			} else {
-				Rotation rotation = arg.field_15434.method_15113();
+				Rotation rotation = arg.field_15434.getRotation();
 				EndCityGenerator.class_3343 lv = EndCityGenerator.method_14681(
 					list, EndCityGenerator.method_14684(structureManager, arg, blockPos, "base_floor", rotation, true)
 				);
@@ -76,7 +80,7 @@ public class EndCityGenerator {
 		public boolean method_14687(
 			StructureManager structureManager, int i, EndCityGenerator.class_3343 arg, BlockPos blockPos, List<class_3443> list, Random random
 		) {
-			Rotation rotation = arg.field_15434.method_15113();
+			Rotation rotation = arg.field_15434.getRotation();
 			EndCityGenerator.class_3343 lv = EndCityGenerator.method_14681(
 				list, EndCityGenerator.method_14684(structureManager, arg, new BlockPos(3 + random.nextInt(2), -3, 3 + random.nextInt(2)), "tower_base", rotation, true)
 			);
@@ -125,7 +129,7 @@ public class EndCityGenerator {
 		public boolean method_14687(
 			StructureManager structureManager, int i, EndCityGenerator.class_3343 arg, BlockPos blockPos, List<class_3443> list, Random random
 		) {
-			Rotation rotation = arg.field_15434.method_15113();
+			Rotation rotation = arg.field_15434.getRotation();
 			int j = random.nextInt(4) + 1;
 			EndCityGenerator.class_3343 lv = EndCityGenerator.method_14681(
 				list, EndCityGenerator.method_14684(structureManager, arg, new BlockPos(0, 0, -4), "bridge_piece", rotation, true)
@@ -183,7 +187,7 @@ public class EndCityGenerator {
 		public boolean method_14687(
 			StructureManager structureManager, int i, EndCityGenerator.class_3343 arg, BlockPos blockPos, List<class_3443> list, Random random
 		) {
-			Rotation rotation = arg.field_15434.method_15113();
+			Rotation rotation = arg.field_15434.getRotation();
 			EndCityGenerator.class_3343 lv = EndCityGenerator.method_14681(
 				list, EndCityGenerator.method_14684(structureManager, arg, new BlockPos(-3, 4, -3), "fat_tower_base", rotation, true)
 			);
@@ -292,9 +296,11 @@ public class EndCityGenerator {
 		}
 
 		private void method_14686(StructureManager structureManager) {
-			class_3499 lv = structureManager.method_15091(new Identifier("end_city/" + this.field_14391));
-			class_3492 lv2 = (this.field_14392 ? EndCityGenerator.field_14383 : EndCityGenerator.field_14389).method_15128().method_15123(this.field_14393);
-			this.method_15027(lv, this.field_15432, lv2);
+			Structure structure = structureManager.getStructureOrBlank(new Identifier("end_city/" + this.field_14391));
+			StructurePlacementData structurePlacementData = (this.field_14392 ? EndCityGenerator.field_14383 : EndCityGenerator.field_14389)
+				.copy()
+				.setRotation(this.field_14393);
+			this.method_15027(structure, this.field_15432, structurePlacementData);
 		}
 
 		@Override
@@ -310,7 +316,7 @@ public class EndCityGenerator {
 			if (string.startsWith("Chest")) {
 				BlockPos blockPos2 = blockPos.down();
 				if (mutableIntBoundingBox.contains(blockPos2)) {
-					LootableContainerBlockEntity.method_11287(iWorld, random, blockPos2, LootTables.CHEST_END_CITY_TREASURE);
+					LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos2, LootTables.CHEST_END_CITY_TREASURE);
 				}
 			} else if (string.startsWith("Sentry")) {
 				ShulkerEntity shulkerEntity = new ShulkerEntity(iWorld.getWorld());
@@ -318,7 +324,7 @@ public class EndCityGenerator {
 				shulkerEntity.setAttachedBlock(blockPos);
 				iWorld.spawnEntity(shulkerEntity);
 			} else if (string.startsWith("Elytra")) {
-				ItemFrameEntity itemFrameEntity = new ItemFrameEntity(iWorld.getWorld(), blockPos, this.field_14393.method_10503(Direction.SOUTH));
+				ItemFrameEntity itemFrameEntity = new ItemFrameEntity(iWorld.getWorld(), blockPos, this.field_14393.rotate(Direction.SOUTH));
 				itemFrameEntity.setHeldItemStack(new ItemStack(Items.field_8833), false);
 				iWorld.spawnEntity(itemFrameEntity);
 			}

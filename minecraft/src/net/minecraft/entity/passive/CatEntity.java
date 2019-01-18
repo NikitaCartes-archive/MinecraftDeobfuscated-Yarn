@@ -511,7 +511,7 @@ public class CatEntity extends TameableEntity {
 					BlockPos blockPos = new BlockPos(this.owner);
 					BlockState blockState = this.entity.world.getBlockState(blockPos);
 					if (blockState.getBlock().matches(BlockTags.field_16443)) {
-						Direction direction = blockState.get(BedBlock.field_11177);
+						Direction direction = blockState.get(BedBlock.FACING);
 						this.field_16294 = new BlockPos(blockPos.getX() - direction.getOffsetX(), blockPos.getY(), blockPos.getZ() - direction.getOffsetZ());
 						return !this.method_16098();
 					}

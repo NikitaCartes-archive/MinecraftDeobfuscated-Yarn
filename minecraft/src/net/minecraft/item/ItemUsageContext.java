@@ -2,7 +2,7 @@ package net.minecraft.item;
 
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.BlockHitResult;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
@@ -25,7 +25,7 @@ public class ItemUsageContext {
 		this.world = world;
 	}
 
-	public BlockPos getPos() {
+	public BlockPos getBlockPos() {
 		return this.field_17543.getBlockPos();
 	}
 
@@ -33,7 +33,7 @@ public class ItemUsageContext {
 		return this.field_17543.getSide();
 	}
 
-	public Vec3d method_17698() {
+	public Vec3d getPos() {
 		return this.field_17543.getPos();
 	}
 

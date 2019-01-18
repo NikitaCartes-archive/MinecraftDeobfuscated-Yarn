@@ -2,7 +2,7 @@ package net.minecraft.item;
 
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.BlockHitResult;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
@@ -41,12 +41,12 @@ public class ItemPlacementContext extends ItemUsageContext {
 	}
 
 	@Override
-	public BlockPos getPos() {
-		return this.field_7904 ? super.getPos() : this.placedPos;
+	public BlockPos getBlockPos() {
+		return this.field_7904 ? super.getBlockPos() : this.placedPos;
 	}
 
 	public boolean canPlace() {
-		return this.field_7904 || this.getWorld().getBlockState(this.getPos()).method_11587(this);
+		return this.field_7904 || this.getWorld().getBlockState(this.getBlockPos()).method_11587(this);
 	}
 
 	public boolean method_7717() {

@@ -26,9 +26,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
-import net.minecraft.util.BlockHitResult;
-import net.minecraft.util.EntityHitResult;
-import net.minecraft.util.HitResult;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
@@ -86,7 +86,7 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 	}
 
 	@Override
-	protected void onCollision(HitResult hitResult) {
+	protected void method_7492(HitResult hitResult) {
 		if (!this.world.isClient) {
 			ItemStack itemStack = this.getItem();
 			Potion potion = PotionUtil.getPotion(itemStack);
@@ -98,7 +98,7 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 				BlockPos blockPos = blockHitResult.getBlockPos().offset(direction);
 				this.extinguishFire(blockPos, direction);
 
-				for (Direction direction2 : Direction.class_2353.HORIZONTAL) {
+				for (Direction direction2 : Direction.Type.HORIZONTAL) {
 					this.extinguishFire(blockPos.offset(direction2), direction2);
 				}
 			}

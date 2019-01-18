@@ -7,8 +7,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -24,7 +24,7 @@ public class BeaconBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (world.isClient) {
 			return true;
 		} else {
@@ -63,7 +63,7 @@ public class BeaconBlock extends BlockWithEntity {
 		return BlockRenderLayer.CUTOUT;
 	}
 
-	public static void method_9463(World world, BlockPos blockPos) {
+	public static void onStainedGlassAdded(World world, BlockPos blockPos) {
 		NetworkUtils.downloadExecutor.submit((Runnable)(() -> {
 			for (int i = blockPos.getY() - 1; i >= 0; i--) {
 				BlockPos blockPos2 = new BlockPos(blockPos.getX(), i, blockPos.getZ());
@@ -76,7 +76,7 @@ public class BeaconBlock extends BlockWithEntity {
 					world.getServer().execute(() -> {
 						BlockEntity blockEntity = world.getBlockEntity(blockPos2);
 						if (blockEntity instanceof BeaconBlockEntity) {
-							((BeaconBlockEntity)blockEntity).method_10941();
+							((BeaconBlockEntity)blockEntity).update();
 							world.addBlockAction(blockPos2, Blocks.field_10327, 1, 0);
 						}
 					});

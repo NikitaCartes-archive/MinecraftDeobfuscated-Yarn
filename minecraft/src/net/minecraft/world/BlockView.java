@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.util.BlockHitResult;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -33,14 +33,14 @@ public interface BlockView {
 		return 256;
 	}
 
-	default BlockHitResult rayTrace(RayTraceContext rayTraceContext) {
+	default BlockHitResult method_17742(RayTraceContext rayTraceContext) {
 		return rayTrace(rayTraceContext, (rayTraceContextx, blockPos) -> {
 			BlockState blockState = this.getBlockState(blockPos);
 			FluidState fluidState = this.getFluidState(blockPos);
 			Vec3d vec3d = rayTraceContextx.getStart();
 			Vec3d vec3d2 = rayTraceContextx.getEnd();
 			VoxelShape voxelShape = rayTraceContextx.getBlockShape(blockState, this, blockPos);
-			BlockHitResult blockHitResult = this.rayTraceBlock(vec3d, vec3d2, blockPos, voxelShape, blockState);
+			BlockHitResult blockHitResult = this.method_17745(vec3d, vec3d2, blockPos, voxelShape, blockState);
 			VoxelShape voxelShape2 = rayTraceContextx.getFluidShape(fluidState, this, blockPos);
 			BlockHitResult blockHitResult2 = voxelShape2.rayTrace(vec3d, vec3d2, blockPos);
 			double d = blockHitResult == null ? Double.MAX_VALUE : rayTraceContextx.getStart().squaredDistanceTo(blockHitResult.getPos());
@@ -53,7 +53,7 @@ public interface BlockView {
 	}
 
 	@Nullable
-	default BlockHitResult rayTraceBlock(Vec3d vec3d, Vec3d vec3d2, BlockPos blockPos, VoxelShape voxelShape, BlockState blockState) {
+	default BlockHitResult method_17745(Vec3d vec3d, Vec3d vec3d2, BlockPos blockPos, VoxelShape voxelShape, BlockState blockState) {
 		BlockHitResult blockHitResult = voxelShape.rayTrace(vec3d, vec3d2, blockPos);
 		if (blockHitResult != null) {
 			BlockHitResult blockHitResult2 = blockState.getRayTraceShape(this, blockPos).rayTrace(vec3d, vec3d2, blockPos);

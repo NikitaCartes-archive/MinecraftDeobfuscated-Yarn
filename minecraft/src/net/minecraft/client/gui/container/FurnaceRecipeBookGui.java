@@ -35,6 +35,6 @@ public class FurnaceRecipeBookGui extends AbstractFurnaceRecipeBookGui {
 
 	@Override
 	protected Set<Item> getAllowedFuels() {
-		return AbstractFurnaceBlockEntity.createBurnableMap().keySet();
+		return AbstractFurnaceBlockEntity.createFuelTimeMap().keySet();
 	}
 }

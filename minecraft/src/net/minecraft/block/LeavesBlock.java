@@ -17,31 +17,31 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class LeavesBlock extends Block {
-	public static final IntegerProperty field_11199 = Properties.DISTANCE_1_7;
-	public static final BooleanProperty field_11200 = Properties.PERSISTENT;
+	public static final IntegerProperty DISTANCE = Properties.DISTANCE_1_7;
+	public static final BooleanProperty PERSISTENT = Properties.PERSISTENT;
 	protected static boolean translucentLeaves;
 
 	public LeavesBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11199, Integer.valueOf(7)).with(field_11200, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(DISTANCE, Integer.valueOf(7)).with(PERSISTENT, Boolean.valueOf(false)));
 	}
 
 	@Override
 	public boolean hasRandomTicks(BlockState blockState) {
-		return (Integer)blockState.get(field_11199) == 7 && !(Boolean)blockState.get(field_11200);
+		return (Integer)blockState.get(DISTANCE) == 7 && !(Boolean)blockState.get(PERSISTENT);
 	}
 
 	@Override
-	public void randomTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!(Boolean)blockState.get(field_11200) && (Integer)blockState.get(field_11199) == 7) {
+	public void onRandomTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if (!(Boolean)blockState.get(PERSISTENT) && (Integer)blockState.get(DISTANCE) == 7) {
 			dropStacks(blockState, world, blockPos);
 			world.clearBlockState(blockPos);
 		}
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		world.setBlockState(blockPos, method_10300(blockState, world, blockPos), 3);
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		world.setBlockState(blockPos, updateDistamceFromLogs(blockState, world, blockPos), 3);
 	}
 
 	@Override
@@ -53,35 +53,35 @@ public class LeavesBlock extends Block {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		int i = method_10302(blockState2) + 1;
-		if (i != 1 || (Integer)blockState.get(field_11199) != i) {
+		int i = getDistanceFromLog(blockState2) + 1;
+		if (i != 1 || (Integer)blockState.get(DISTANCE) != i) {
 			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
 		}
 
 		return blockState;
 	}
 
-	private static BlockState method_10300(BlockState blockState, IWorld iWorld, BlockPos blockPos) {
+	private static BlockState updateDistamceFromLogs(BlockState blockState, IWorld iWorld, BlockPos blockPos) {
 		int i = 7;
 
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 			for (Direction direction : Direction.values()) {
 				pooledMutable.set(blockPos).setOffset(direction);
-				i = Math.min(i, method_10302(iWorld.getBlockState(pooledMutable)) + 1);
+				i = Math.min(i, getDistanceFromLog(iWorld.getBlockState(pooledMutable)) + 1);
 				if (i == 1) {
 					break;
 				}
 			}
 		}
 
-		return blockState.with(field_11199, Integer.valueOf(i));
+		return blockState.with(DISTANCE, Integer.valueOf(i));
 	}
 
-	private static int method_10302(BlockState blockState) {
+	private static int getDistanceFromLog(BlockState blockState) {
 		if (BlockTags.field_15475.contains(blockState.getBlock())) {
 			return 0;
 		} else {
-			return blockState.getBlock() instanceof LeavesBlock ? (Integer)blockState.get(field_11199) : 7;
+			return blockState.getBlock() instanceof LeavesBlock ? (Integer)blockState.get(DISTANCE) : 7;
 		}
 	}
 
@@ -119,11 +119,13 @@ public class LeavesBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_11199, field_11200);
+		builder.with(DISTANCE, PERSISTENT);
 	}
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return method_10300(this.getDefaultState().with(field_11200, Boolean.valueOf(true)), itemPlacementContext.getWorld(), itemPlacementContext.getPos());
+		return updateDistamceFromLogs(
+			this.getDefaultState().with(PERSISTENT, Boolean.valueOf(true)), itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos()
+		);
 	}
 }

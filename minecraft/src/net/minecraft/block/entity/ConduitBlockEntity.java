@@ -30,15 +30,15 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class ConduitBlockEntity extends BlockEntity implements Tickable {
-	private static final Block[] field_11931 = new Block[]{Blocks.field_10135, Blocks.field_10006, Blocks.field_10174, Blocks.field_10297};
-	public int field_11936;
-	private float field_11932;
-	private boolean field_11934;
-	private boolean eyeOpenClient;
-	private final List<BlockPos> field_11937 = Lists.<BlockPos>newArrayList();
+	private static final Block[] ACTIVATING_BLOCKS = new Block[]{Blocks.field_10135, Blocks.field_10006, Blocks.field_10174, Blocks.field_10297};
+	public int ticks;
+	private float ticksActive;
+	private boolean active;
+	private boolean eyeOpen;
+	private final List<BlockPos> activatingBlocks = Lists.<BlockPos>newArrayList();
 	private LivingEntity targetEntity;
 	private UUID targetUuid;
-	private long field_11938;
+	private long nextAmbientSoundTime;
 
 	public ConduitBlockEntity() {
 		this(BlockEntityType.CONDUIT);
@@ -81,42 +81,42 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 
 	@Override
 	public void tick() {
-		this.field_11936++;
+		this.ticks++;
 		long l = this.world.getTime();
 		if (l % 40L == 0L) {
-			this.method_11057(this.method_11069());
-			if (!this.world.isClient && this.method_11065()) {
-				this.method_11055();
-				this.method_11068();
+			this.setActive(this.updateActivatingBlocks());
+			if (!this.world.isClient && this.isActive()) {
+				this.givePlayersEffects();
+				this.attackHostileEntity();
 			}
 		}
 
-		if (l % 80L == 0L && this.method_11065()) {
+		if (l % 80L == 0L && this.isActive()) {
 			this.playSound(SoundEvents.field_14632);
 		}
 
-		if (l > this.field_11938 && this.method_11065()) {
-			this.field_11938 = l + 60L + (long)this.world.getRandom().nextInt(40);
+		if (l > this.nextAmbientSoundTime && this.isActive()) {
+			this.nextAmbientSoundTime = l + 60L + (long)this.world.getRandom().nextInt(40);
 			this.playSound(SoundEvents.field_15071);
 		}
 
 		if (this.world.isClient) {
-			this.method_11064();
-			this.method_11063();
-			if (this.method_11065()) {
-				this.field_11932++;
+			this.updateTargetEntity();
+			this.spawnNautilusParticles();
+			if (this.isActive()) {
+				this.ticksActive++;
 			}
 		}
 	}
 
-	private boolean method_11069() {
-		this.field_11937.clear();
+	private boolean updateActivatingBlocks() {
+		this.activatingBlocks.clear();
 
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++) {
 				for (int k = -1; k <= 1; k++) {
 					BlockPos blockPos = this.pos.add(i, j, k);
-					if (!this.world.method_8585(blockPos)) {
+					if (!this.world.isWaterAt(blockPos)) {
 						return false;
 					}
 				}
@@ -133,9 +133,9 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 						BlockPos blockPos2 = this.pos.add(i, j, kx);
 						BlockState blockState = this.world.getBlockState(blockPos2);
 
-						for (Block block : field_11931) {
+						for (Block block : ACTIVATING_BLOCKS) {
 							if (blockState.getBlock() == block) {
-								this.field_11937.add(blockPos2);
+								this.activatingBlocks.add(blockPos2);
 							}
 						}
 					}
@@ -143,12 +143,12 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 			}
 		}
 
-		this.setEyeOpenClient(this.field_11937.size() >= 42);
-		return this.field_11937.size() >= 16;
+		this.setEyeOpen(this.activatingBlocks.size() >= 42);
+		return this.activatingBlocks.size() >= 16;
 	}
 
-	private void method_11055() {
-		int i = this.field_11937.size();
+	private void givePlayersEffects() {
+		int i = this.activatingBlocks.size();
 		int j = i / 7 * 16;
 		int k = this.pos.getX();
 		int l = this.pos.getY();
@@ -166,17 +166,17 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 		}
 	}
 
-	private void method_11068() {
+	private void attackHostileEntity() {
 		LivingEntity livingEntity = this.targetEntity;
-		int i = this.field_11937.size();
+		int i = this.activatingBlocks.size();
 		if (i < 42) {
 			this.targetEntity = null;
 		} else if (this.targetEntity == null && this.targetUuid != null) {
-			this.targetEntity = this.method_11056();
+			this.targetEntity = this.findTargetEntity();
 			this.targetUuid = null;
 		} else if (this.targetEntity == null) {
 			List<LivingEntity> list = this.world
-				.getEntities(LivingEntity.class, this.method_11059(), livingEntityx -> livingEntityx instanceof Monster && livingEntityx.isInsideWaterOrRain());
+				.getEntities(LivingEntity.class, this.getAttackZone(), livingEntityx -> livingEntityx instanceof Monster && livingEntityx.isInsideWaterOrRain());
 			if (!list.isEmpty()) {
 				this.targetEntity = (LivingEntity)list.get(this.world.random.nextInt(list.size()));
 			}
@@ -195,18 +195,18 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 		}
 	}
 
-	private void method_11064() {
+	private void updateTargetEntity() {
 		if (this.targetUuid == null) {
 			this.targetEntity = null;
 		} else if (this.targetEntity == null || !this.targetEntity.getUuid().equals(this.targetUuid)) {
-			this.targetEntity = this.method_11056();
+			this.targetEntity = this.findTargetEntity();
 			if (this.targetEntity == null) {
 				this.targetUuid = null;
 			}
 		}
 	}
 
-	private BoundingBox method_11059() {
+	private BoundingBox getAttackZone() {
 		int i = this.pos.getX();
 		int j = this.pos.getY();
 		int k = this.pos.getZ();
@@ -214,18 +214,18 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	@Nullable
-	private LivingEntity method_11056() {
-		List<LivingEntity> list = this.world.getEntities(LivingEntity.class, this.method_11059(), livingEntity -> livingEntity.getUuid().equals(this.targetUuid));
+	private LivingEntity findTargetEntity() {
+		List<LivingEntity> list = this.world.getEntities(LivingEntity.class, this.getAttackZone(), livingEntity -> livingEntity.getUuid().equals(this.targetUuid));
 		return list.size() == 1 ? (LivingEntity)list.get(0) : null;
 	}
 
-	private void method_11063() {
+	private void spawnNautilusParticles() {
 		Random random = this.world.random;
-		float f = MathHelper.sin((float)(this.field_11936 + 35) * 0.1F) / 2.0F + 0.5F;
+		float f = MathHelper.sin((float)(this.ticks + 35) * 0.1F) / 2.0F + 0.5F;
 		f = (f * f + f) * 0.3F;
 		Vec3d vec3d = new Vec3d((double)((float)this.pos.getX() + 0.5F), (double)((float)this.pos.getY() + 1.5F + f), (double)((float)this.pos.getZ() + 0.5F));
 
-		for (BlockPos blockPos : this.field_11937) {
+		for (BlockPos blockPos : this.activatingBlocks) {
 			if (random.nextInt(50) == 0) {
 				float g = -0.5F + random.nextFloat();
 				float h = -2.0F + random.nextFloat();
@@ -246,30 +246,30 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 		}
 	}
 
-	public boolean method_11065() {
-		return this.field_11934;
+	public boolean isActive() {
+		return this.active;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean isEyeOpenClient() {
-		return this.eyeOpenClient;
+	public boolean isEyeOpen() {
+		return this.eyeOpen;
 	}
 
-	private void method_11057(boolean bl) {
-		if (bl != this.field_11934) {
+	private void setActive(boolean bl) {
+		if (bl != this.active) {
 			this.playSound(bl ? SoundEvents.field_14700 : SoundEvents.field_14979);
 		}
 
-		this.field_11934 = bl;
+		this.active = bl;
 	}
 
-	private void setEyeOpenClient(boolean bl) {
-		this.eyeOpenClient = bl;
+	private void setEyeOpen(boolean bl) {
+		this.eyeOpen = bl;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_11061(float f) {
-		return (this.field_11932 + f) * -0.0375F;
+	public float getRotation(float f) {
+		return (this.ticksActive + f) * -0.0375F;
 	}
 
 	public void playSound(SoundEvent soundEvent) {

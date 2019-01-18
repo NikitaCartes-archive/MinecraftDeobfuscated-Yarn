@@ -19,12 +19,12 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class FarmlandBlock extends Block {
-	public static final IntegerProperty field_11009 = Properties.MOISTURE;
-	protected static final VoxelShape field_11010 = Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 15.0, 16.0);
+	public static final IntegerProperty MOISTURE = Properties.MOISTURE;
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 15.0, 16.0);
 
 	protected FarmlandBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11009, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(MOISTURE, Integer.valueOf(0)));
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class FarmlandBlock extends Block {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return !this.getDefaultState().canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getPos())
+		return !this.getDefaultState().canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())
 			? Blocks.field_10566.getDefaultState()
 			: super.getPlacementState(itemPlacementContext);
 	}
@@ -58,23 +58,23 @@ public class FarmlandBlock extends Block {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_11010;
+		return SHAPE;
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (!blockState.canPlaceAt(world, blockPos)) {
-			method_10125(blockState, world, blockPos);
+			setToDirt(blockState, world, blockPos);
 		} else {
-			int i = (Integer)blockState.get(field_11009);
+			int i = (Integer)blockState.get(MOISTURE);
 			if (!method_10126(world, blockPos) && !world.hasRain(blockPos.up())) {
 				if (i > 0) {
-					world.setBlockState(blockPos, blockState.with(field_11009, Integer.valueOf(i - 1)), 2);
-				} else if (!method_10124(world, blockPos)) {
-					method_10125(blockState, world, blockPos);
+					world.setBlockState(blockPos, blockState.with(MOISTURE, Integer.valueOf(i - 1)), 2);
+				} else if (!hasCrop(world, blockPos)) {
+					setToDirt(blockState, world, blockPos);
 				}
 			} else if (i < 7) {
-				world.setBlockState(blockPos, blockState.with(field_11009, Integer.valueOf(7)), 2);
+				world.setBlockState(blockPos, blockState.with(MOISTURE, Integer.valueOf(7)), 2);
 			}
 		}
 	}
@@ -86,17 +86,17 @@ public class FarmlandBlock extends Block {
 			&& entity instanceof LivingEntity
 			&& (entity instanceof PlayerEntity || world.getGameRules().getBoolean("mobGriefing"))
 			&& entity.getWidth() * entity.getWidth() * entity.getHeight() > 0.512F) {
-			method_10125(world.getBlockState(blockPos), world, blockPos);
+			setToDirt(world.getBlockState(blockPos), world, blockPos);
 		}
 
 		super.onLandedUpon(world, blockPos, entity, f);
 	}
 
-	public static void method_10125(BlockState blockState, World world, BlockPos blockPos) {
-		world.setBlockState(blockPos, method_9582(blockState, Blocks.field_10566.getDefaultState(), world, blockPos));
+	public static void setToDirt(BlockState blockState, World world, BlockPos blockPos) {
+		world.setBlockState(blockPos, pushEntitiesUpBeforeBlockChange(blockState, Blocks.field_10566.getDefaultState(), world, blockPos));
 	}
 
-	private static boolean method_10124(BlockView blockView, BlockPos blockPos) {
+	private static boolean hasCrop(BlockView blockView, BlockPos blockPos) {
 		Block block = blockView.getBlockState(blockPos.up()).getBlock();
 		return block instanceof CropBlock || block instanceof StemBlock || block instanceof AttachedStemBlock;
 	}
@@ -113,7 +113,7 @@ public class FarmlandBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_11009);
+		builder.with(MOISTURE);
 	}
 
 	@Override

@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 
 public class SugarCaneBlock extends Block {
 	public static final IntegerProperty AGE = Properties.AGE_15;
-	protected static final VoxelShape field_11611 = Block.createCubeShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0);
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0);
 
 	protected SugarCaneBlock(Block.Settings settings) {
 		super(settings);
@@ -26,11 +26,11 @@ public class SugarCaneBlock extends Block {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_11611;
+		return SHAPE;
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (blockState.canPlaceAt(world, blockPos) && world.isAir(blockPos.up())) {
 			int i = 1;
 
@@ -73,7 +73,7 @@ public class SugarCaneBlock extends Block {
 				|| block == Blocks.field_10534) {
 				BlockPos blockPos2 = blockPos.down();
 
-				for (Direction direction : Direction.class_2353.HORIZONTAL) {
+				for (Direction direction : Direction.Type.HORIZONTAL) {
 					BlockState blockState2 = viewableWorld.getBlockState(blockPos2.offset(direction));
 					FluidState fluidState = viewableWorld.getFluidState(blockPos2.offset(direction));
 					if (fluidState.matches(FluidTags.field_15517) || blockState2.getBlock() == Blocks.field_10110) {

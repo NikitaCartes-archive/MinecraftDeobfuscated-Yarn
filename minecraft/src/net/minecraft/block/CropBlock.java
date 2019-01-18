@@ -20,16 +20,16 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class CropBlock extends PlantBlock implements Fertilizable {
-	public static final IntegerProperty field_10835 = Properties.AGE_7;
-	private static final VoxelShape[] field_10836 = new VoxelShape[]{
-		Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0),
-		Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 4.0, 16.0),
-		Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 6.0, 16.0),
-		Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0),
-		Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 10.0, 16.0),
-		Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 12.0, 16.0),
-		Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 14.0, 16.0),
-		Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 16.0, 16.0)
+	public static final IntegerProperty AGE = Properties.AGE_7;
+	private static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{
+		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0),
+		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 4.0, 16.0),
+		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 6.0, 16.0),
+		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0),
+		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 10.0, 16.0),
+		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 12.0, 16.0),
+		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 14.0, 16.0),
+		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 16.0)
 	};
 
 	protected CropBlock(Block.Settings settings) {
@@ -39,7 +39,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_10836[blockState.get(this.getAgeProperty())];
+		return AGE_TO_SHAPE[blockState.get(this.getAgeProperty())];
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 	}
 
 	public IntegerProperty getAgeProperty() {
-		return field_10835;
+		return AGE;
 	}
 
 	public int getCropAgeMaximum() {
@@ -68,8 +68,8 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		super.scheduledTick(blockState, world, blockPos, random);
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		super.onScheduledTick(blockState, world, blockPos, random);
 		if (world.getLightLevel(blockPos.up(), 0) >= 9) {
 			int i = this.getCropAge(blockState);
 			if (i < this.getCropAgeMaximum()) {
@@ -105,7 +105,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 				BlockState blockState = blockView.getBlockState(blockPos2.add(i, 0, j));
 				if (blockState.getBlock() == Blocks.field_10362) {
 					g = 1.0F;
-					if ((Integer)blockState.get(FarmlandBlock.field_11009) > 0) {
+					if ((Integer)blockState.get(FarmlandBlock.MOISTURE) > 0) {
 						g = 3.0F;
 					}
 				}
@@ -181,6 +181,6 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_10835);
+		builder.with(AGE);
 	}
 }

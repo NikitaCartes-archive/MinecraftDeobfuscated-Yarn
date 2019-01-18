@@ -9,7 +9,6 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.stream.Stream;
-import net.minecraft.class_3499;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
@@ -17,6 +16,7 @@ import net.minecraft.datafixers.Schemas;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.sortme.JsonLikeTagParser;
+import net.minecraft.sortme.Structure;
 import net.minecraft.util.TagHelper;
 import org.apache.commons.io.IOUtils;
 
@@ -151,9 +151,9 @@ public class StructureValidatorProvider implements DataProvider {
 	}
 
 	private static CompoundTag method_16878(DataFixer dataFixer, CompoundTag compoundTag) {
-		class_3499 lv = new class_3499();
-		lv.method_15183(TagHelper.update(dataFixer, DataFixTypes.STRUCTURE, compoundTag, compoundTag.getInt("DataVersion")));
-		return lv.method_15175(new CompoundTag());
+		Structure structure = new Structure();
+		structure.fromTag(TagHelper.update(dataFixer, DataFixTypes.STRUCTURE, compoundTag, compoundTag.getInt("DataVersion")));
+		return structure.toTag(new CompoundTag());
 	}
 
 	static class class_3844 extends RuntimeException {

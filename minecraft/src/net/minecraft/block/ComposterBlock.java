@@ -17,10 +17,10 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntegerProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SystemUtil;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -37,8 +37,8 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		new VoxelShape[9],
 		voxelShapes -> {
 			for (int i = 0; i < 8; i++) {
-				voxelShapes[i] = VoxelShapes.combine(
-					RAY_TRACE_SHAPE, Block.createCubeShape(2.0, (double)Math.max(2, 1 + i * 2), 2.0, 14.0, 16.0, 14.0), BooleanBiFunction.ONLY_FIRST
+				voxelShapes[i] = VoxelShapes.combineAndSimplify(
+					RAY_TRACE_SHAPE, Block.createCuboidShape(2.0, (double)Math.max(2, 1 + i * 2), 2.0, 14.0, 16.0, 14.0), BooleanBiFunction.ONLY_FIRST
 				);
 			}
 
@@ -148,7 +148,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		int i = (Integer)blockState.get(LEVEL);
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (i < 8 && ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(itemStack.getItem())) {
@@ -203,13 +203,13 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if ((Integer)blockState.get(LEVEL) == 7) {
 			world.setBlockState(blockPos, blockState.method_11572(LEVEL), 3);
 			world.playSound(null, blockPos, SoundEvents.field_17609, SoundCategory.field_15245, 1.0F, 1.0F);
 		}
 
-		super.scheduledTick(blockState, world, blockPos, random);
+		super.onScheduledTick(blockState, world, blockPos, random);
 	}
 
 	@Override

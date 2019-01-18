@@ -49,8 +49,8 @@ public abstract class WaterFluid extends BaseFluid {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_15776(World world, BlockPos blockPos, FluidState fluidState, Random random) {
-		if (!fluidState.isStill() && !(Boolean)fluidState.get(STILL)) {
+	public void randomDisplayTick(World world, BlockPos blockPos, FluidState fluidState, Random random) {
+		if (!fluidState.isStill() && !(Boolean)fluidState.get(FALLING)) {
 			if (random.nextInt(64) == 0) {
 				world.playSound(
 					(double)blockPos.getX() + 0.5,
@@ -115,7 +115,7 @@ public abstract class WaterFluid extends BaseFluid {
 	}
 
 	@Override
-	public int method_15789(ViewableWorld viewableWorld) {
+	public int getTickRate(ViewableWorld viewableWorld) {
 		return 5;
 	}
 
@@ -137,7 +137,7 @@ public abstract class WaterFluid extends BaseFluid {
 		}
 
 		@Override
-		public int method_15779(FluidState fluidState) {
+		public int getLevel(FluidState fluidState) {
 			return (Integer)fluidState.get(LEVEL);
 		}
 
@@ -149,7 +149,7 @@ public abstract class WaterFluid extends BaseFluid {
 
 	public static class Still extends WaterFluid {
 		@Override
-		public int method_15779(FluidState fluidState) {
+		public int getLevel(FluidState fluidState) {
 			return 8;
 		}
 

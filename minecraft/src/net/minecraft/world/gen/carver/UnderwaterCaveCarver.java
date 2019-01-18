@@ -114,7 +114,7 @@ public class UnderwaterCaveCarver extends CaveCarver {
 				} else {
 					boolean bl = false;
 
-					for (Direction direction : Direction.class_2353.HORIZONTAL) {
+					for (Direction direction : Direction.Type.HORIZONTAL) {
 						int r = l + direction.getOffsetX();
 						int s = m + direction.getOffsetZ();
 						if (r >> 4 != j || s >> 4 != k || chunk.getBlockState(mutable.set(r, o, s)).isAir()) {

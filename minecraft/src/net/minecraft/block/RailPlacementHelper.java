@@ -128,7 +128,7 @@ public class RailPlacementHelper {
 	protected int method_10460() {
 		int i = 0;
 
-		for (Direction direction : Direction.class_2353.HORIZONTAL) {
+		for (Direction direction : Direction.Type.HORIZONTAL) {
 			if (this.method_10456(this.pos.offset(direction))) {
 				i++;
 			}
@@ -216,7 +216,7 @@ public class RailPlacementHelper {
 		}
 	}
 
-	public RailPlacementHelper method_10459(boolean bl, boolean bl2) {
+	public RailPlacementHelper updateBlockState(boolean bl, boolean bl2) {
 		BlockPos blockPos = this.pos.north();
 		BlockPos blockPos2 = this.pos.south();
 		BlockPos blockPos3 = this.pos.west();

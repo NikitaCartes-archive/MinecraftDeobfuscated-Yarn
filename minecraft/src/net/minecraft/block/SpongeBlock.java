@@ -19,24 +19,24 @@ public class SpongeBlock extends Block {
 	@Override
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
 		if (blockState2.getBlock() != blockState.getBlock()) {
-			this.method_10620(world, blockPos);
+			this.update(world, blockPos);
 		}
 	}
 
 	@Override
 	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
-		this.method_10620(world, blockPos);
+		this.update(world, blockPos);
 		super.neighborUpdate(blockState, world, blockPos, block, blockPos2);
 	}
 
-	protected void method_10620(World world, BlockPos blockPos) {
-		if (this.method_10619(world, blockPos)) {
+	protected void update(World world, BlockPos blockPos) {
+		if (this.absorbWater(world, blockPos)) {
 			world.setBlockState(blockPos, Blocks.field_10562.getDefaultState(), 2);
 			world.fireWorldEvent(2001, blockPos, Block.getRawIdFromState(Blocks.field_10382.getDefaultState()));
 		}
 	}
 
-	private boolean method_10619(World world, BlockPos blockPos) {
+	private boolean absorbWater(World world, BlockPos blockPos) {
 		Queue<class_3545<BlockPos, Integer>> queue = Lists.<class_3545<BlockPos, Integer>>newLinkedList();
 		queue.add(new class_3545<>(blockPos, 0));
 		int i = 0;

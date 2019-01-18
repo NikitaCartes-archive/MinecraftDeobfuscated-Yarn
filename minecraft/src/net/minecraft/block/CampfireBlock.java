@@ -28,10 +28,10 @@ import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -40,7 +40,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class CampfireBlock extends BlockWithEntity implements Waterloggable {
-	protected static final VoxelShape SHAPE = Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 7.0, 16.0);
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 7.0, 16.0);
 	public static final BooleanProperty LIT = Properties.LIT;
 	public static final BooleanProperty SIGNAL_FIRE = Properties.SIGNAL_FIRE;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
@@ -59,7 +59,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if ((Boolean)blockState.get(LIT)) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof CampfireBlockEntity) {
@@ -107,11 +107,11 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		IWorld iWorld = itemPlacementContext.getWorld();
-		BlockPos blockPos = itemPlacementContext.getPos();
+		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		FluidState fluidState = iWorld.getFluidState(blockPos);
 		return this.getDefaultState()
 			.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER))
-			.with(SIGNAL_FIRE, Boolean.valueOf(this.method_17456(iWorld.getBlockState(blockPos.down()))))
+			.with(SIGNAL_FIRE, Boolean.valueOf(this.doesBlockCauseSignalFire(iWorld.getBlockState(blockPos.down()))))
 			.with(LIT, Boolean.valueOf(fluidState.isEmpty()))
 			.with(FACING, itemPlacementContext.getPlayerHorizontalFacing());
 	}
@@ -121,15 +121,15 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		if ((Boolean)blockState.get(WATERLOGGED)) {
-			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
+			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 		}
 
 		return direction == Direction.DOWN
-			? blockState.with(SIGNAL_FIRE, Boolean.valueOf(this.method_17456(blockState2)))
+			? blockState.with(SIGNAL_FIRE, Boolean.valueOf(this.doesBlockCauseSignalFire(blockState2)))
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
-	private boolean method_17456(BlockState blockState) {
+	private boolean doesBlockCauseSignalFire(BlockState blockState) {
 		return blockState.getBlock() == Blocks.field_10359;
 	}
 
@@ -206,7 +206,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 			}
 
 			iWorld.setBlockState(blockPos, blockState.with(WATERLOGGED, Boolean.valueOf(true)).with(LIT, Boolean.valueOf(false)), 3);
-			iWorld.getFluidTickScheduler().schedule(blockPos, fluidState.getFluid(), fluidState.getFluid().method_15789(iWorld));
+			iWorld.getFluidTickScheduler().schedule(blockPos, fluidState.getFluid(), fluidState.getFluid().getTickRate(iWorld));
 			return true;
 		} else {
 			return false;
@@ -245,13 +245,13 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
-		return blockState.with(FACING, rotation.method_10503(blockState.get(FACING)));
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
+		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
-	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.getRotation(blockState.get(FACING)));
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
+		return blockState.rotate(mirror.getRotation(blockState.get(FACING)));
 	}
 
 	@Override

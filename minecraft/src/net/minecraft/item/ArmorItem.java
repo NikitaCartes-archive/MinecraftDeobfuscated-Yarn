@@ -41,7 +41,7 @@ public class ArmorItem extends Item {
 	protected final ArmorMaterial type;
 
 	public static ItemStack dispenseArmor(BlockPointer blockPointer, ItemStack itemStack) {
-		BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.field_10918));
+		BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
 		List<LivingEntity> list = blockPointer.getWorld()
 			.getEntities(LivingEntity.class, new BoundingBox(blockPos), EntityPredicates.EXCEPT_SPECTATOR.and(new EntityPredicates.CanPickup(itemStack)));
 		if (list.isEmpty()) {

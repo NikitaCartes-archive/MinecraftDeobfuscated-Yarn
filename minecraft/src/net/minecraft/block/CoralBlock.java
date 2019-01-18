@@ -11,23 +11,23 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class CoralBlock extends CoralParentBlock {
-	private final Block field_10833;
-	protected static final VoxelShape field_10834 = Block.createCubeShape(2.0, 0.0, 2.0, 14.0, 15.0, 14.0);
+	private final Block deadCoralBlock;
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 15.0, 14.0);
 
 	protected CoralBlock(Block block, Block.Settings settings) {
 		super(settings);
-		this.field_10833 = block;
+		this.deadCoralBlock = block;
 	}
 
 	@Override
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
-		this.method_9430(blockState, world, blockPos);
+		this.checkLivingConditions(blockState, world, blockPos);
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!method_9431(blockState, world, blockPos)) {
-			world.setBlockState(blockPos, this.field_10833.getDefaultState().with(WATERLOGGED, Boolean.valueOf(false)), 2);
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if (!isInWater(blockState, world, blockPos)) {
+			world.setBlockState(blockPos, this.deadCoralBlock.getDefaultState().with(WATERLOGGED, Boolean.valueOf(false)), 2);
 		}
 	}
 
@@ -38,9 +38,9 @@ public class CoralBlock extends CoralParentBlock {
 		if (direction == Direction.DOWN && !blockState.canPlaceAt(iWorld, blockPos)) {
 			return Blocks.field_10124.getDefaultState();
 		} else {
-			this.method_9430(blockState, iWorld, blockPos);
+			this.checkLivingConditions(blockState, iWorld, blockPos);
 			if ((Boolean)blockState.get(WATERLOGGED)) {
-				iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
+				iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 			}
 
 			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
@@ -49,6 +49,6 @@ public class CoralBlock extends CoralParentBlock {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_10834;
+		return SHAPE;
 	}
 }

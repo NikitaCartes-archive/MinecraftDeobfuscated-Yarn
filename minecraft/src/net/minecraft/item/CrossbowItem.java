@@ -272,7 +272,7 @@ public class CrossbowItem extends BaseBowItem {
 			Criterions.SHOT_CROSSBOW.method_9115((ServerPlayerEntity)playerEntity, itemStack);
 		}
 
-		playerEntity.incrementStat(Stats.field_15372.method_14956(this));
+		playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 		this.method_7766(itemStack);
 	}
 

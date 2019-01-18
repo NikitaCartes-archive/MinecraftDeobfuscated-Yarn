@@ -10,8 +10,8 @@ import net.minecraft.item.LeashItem;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -49,7 +49,7 @@ public class FenceBlock extends HorizontalConnectedBlock {
 	public boolean method_10184(BlockState blockState, boolean bl, Direction direction) {
 		Block block = blockState.getBlock();
 		boolean bl2 = block.matches(BlockTags.field_16584) && blockState.getMaterial() == this.material;
-		boolean bl3 = block instanceof FenceGateBlock && FenceGateBlock.method_16703(blockState, direction);
+		boolean bl3 = block instanceof FenceGateBlock && FenceGateBlock.canWallConnect(blockState, direction);
 		return !method_10185(block) && bl || bl2 || bl3;
 	}
 
@@ -65,7 +65,7 @@ public class FenceBlock extends HorizontalConnectedBlock {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (!world.isClient) {
 			return LeashItem.method_7994(playerEntity, world, blockPos);
 		} else {
@@ -77,8 +77,8 @@ public class FenceBlock extends HorizontalConnectedBlock {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockView blockView = itemPlacementContext.getWorld();
-		BlockPos blockPos = itemPlacementContext.getPos();
-		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getPos());
+		BlockPos blockPos = itemPlacementContext.getBlockPos();
+		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
 		BlockPos blockPos2 = blockPos.north();
 		BlockPos blockPos3 = blockPos.east();
 		BlockPos blockPos4 = blockPos.south();
@@ -90,19 +90,21 @@ public class FenceBlock extends HorizontalConnectedBlock {
 		return super.getPlacementState(itemPlacementContext)
 			.with(
 				NORTH,
-				Boolean.valueOf(this.method_10184(blockState, Block.isFaceFullCube(blockState.getCollisionShape(blockView, blockPos2), Direction.SOUTH), Direction.SOUTH))
+				Boolean.valueOf(this.method_10184(blockState, Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos2), Direction.SOUTH), Direction.SOUTH))
 			)
 			.with(
 				EAST,
-				Boolean.valueOf(this.method_10184(blockState2, Block.isFaceFullCube(blockState2.getCollisionShape(blockView, blockPos3), Direction.WEST), Direction.WEST))
+				Boolean.valueOf(this.method_10184(blockState2, Block.isFaceFullSquare(blockState2.getCollisionShape(blockView, blockPos3), Direction.WEST), Direction.WEST))
 			)
 			.with(
 				SOUTH,
-				Boolean.valueOf(this.method_10184(blockState3, Block.isFaceFullCube(blockState3.getCollisionShape(blockView, blockPos4), Direction.NORTH), Direction.NORTH))
+				Boolean.valueOf(
+					this.method_10184(blockState3, Block.isFaceFullSquare(blockState3.getCollisionShape(blockView, blockPos4), Direction.NORTH), Direction.NORTH)
+				)
 			)
 			.with(
 				WEST,
-				Boolean.valueOf(this.method_10184(blockState4, Block.isFaceFullCube(blockState4.getCollisionShape(blockView, blockPos5), Direction.EAST), Direction.EAST))
+				Boolean.valueOf(this.method_10184(blockState4, Block.isFaceFullSquare(blockState4.getCollisionShape(blockView, blockPos5), Direction.EAST), Direction.EAST))
 			)
 			.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 	}
@@ -112,14 +114,14 @@ public class FenceBlock extends HorizontalConnectedBlock {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		if ((Boolean)blockState.get(WATERLOGGED)) {
-			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
+			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 		}
 
-		return direction.getAxis().method_10180() == Direction.class_2353.HORIZONTAL
+		return direction.getAxis().method_10180() == Direction.Type.HORIZONTAL
 			? blockState.with(
 				(Property)FACING_PROPERTIES.get(direction),
 				Boolean.valueOf(
-					this.method_10184(blockState2, Block.isFaceFullCube(blockState2.getCollisionShape(iWorld, blockPos2), direction.getOpposite()), direction.getOpposite())
+					this.method_10184(blockState2, Block.isFaceFullSquare(blockState2.getCollisionShape(iWorld, blockPos2), direction.getOpposite()), direction.getOpposite())
 				)
 			)
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);

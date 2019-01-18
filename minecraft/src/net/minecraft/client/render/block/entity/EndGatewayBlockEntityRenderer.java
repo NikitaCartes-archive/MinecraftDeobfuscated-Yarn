@@ -17,16 +17,18 @@ public class EndGatewayBlockEntityRenderer extends EndPortalBlockEntityRenderer 
 	public void render(EndPortalBlockEntity endPortalBlockEntity, double d, double e, double f, float g, int i) {
 		GlStateManager.disableFog();
 		EndGatewayBlockEntity endGatewayBlockEntity = (EndGatewayBlockEntity)endPortalBlockEntity;
-		if (endGatewayBlockEntity.method_11420() || endGatewayBlockEntity.method_11421()) {
+		if (endGatewayBlockEntity.isRecentlyGenerated() || endGatewayBlockEntity.needsCooldownBeforeTeleporting()) {
 			GlStateManager.alphaFunc(516, 0.1F);
 			this.bindTexture(BEAM_TEXTURE);
-			float h = endGatewayBlockEntity.method_11420() ? endGatewayBlockEntity.method_11417(g) : endGatewayBlockEntity.method_11412(g);
-			double j = endGatewayBlockEntity.method_11420() ? 256.0 - e : 50.0;
+			float h = endGatewayBlockEntity.isRecentlyGenerated()
+				? endGatewayBlockEntity.getRecentlyGeneratedBeamHeight(g)
+				: endGatewayBlockEntity.getCooldownBeamHeight(g);
+			double j = endGatewayBlockEntity.isRecentlyGenerated() ? 256.0 - e : 50.0;
 			h = MathHelper.sin(h * (float) Math.PI);
 			int k = MathHelper.floor((double)h * j);
-			float[] fs = endGatewayBlockEntity.method_11420() ? DyeColor.MAGENTA.getColorComponents() : DyeColor.PURPLE.getColorComponents();
-			BeaconBlockEntityRenderer.method_3545(d, e, f, (double)g, (double)h, endGatewayBlockEntity.getWorld().getTime(), 0, k, fs, 0.15, 0.175);
-			BeaconBlockEntityRenderer.method_3545(d, e, f, (double)g, (double)h, endGatewayBlockEntity.getWorld().getTime(), 0, -k, fs, 0.15, 0.175);
+			float[] fs = endGatewayBlockEntity.isRecentlyGenerated() ? DyeColor.MAGENTA.getColorComponents() : DyeColor.PURPLE.getColorComponents();
+			BeaconBlockEntityRenderer.renderLightBeam(d, e, f, (double)g, (double)h, endGatewayBlockEntity.getWorld().getTime(), 0, k, fs, 0.15, 0.175);
+			BeaconBlockEntityRenderer.renderLightBeam(d, e, f, (double)g, (double)h, endGatewayBlockEntity.getWorld().getTime(), 0, -k, fs, 0.15, 0.175);
 		}
 
 		super.render(endPortalBlockEntity, d, e, f, g, i);

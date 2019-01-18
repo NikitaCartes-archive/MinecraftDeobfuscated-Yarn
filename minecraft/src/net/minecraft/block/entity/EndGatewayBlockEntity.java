@@ -34,9 +34,9 @@ import org.apache.logging.log4j.Logger;
 public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Tickable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private long age;
-	private int field_12130;
-	private BlockPos portalExitPos;
-	private boolean exitPosExact;
+	private int teleportCooldown;
+	private BlockPos exitPortalPos;
+	private boolean exactTeleport;
 
 	public EndGatewayBlockEntity() {
 		super(BlockEntityType.END_GATEWAY);
@@ -46,12 +46,12 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	public CompoundTag toTag(CompoundTag compoundTag) {
 		super.toTag(compoundTag);
 		compoundTag.putLong("Age", this.age);
-		if (this.portalExitPos != null) {
-			compoundTag.put("ExitPortal", TagHelper.serializeBlockPos(this.portalExitPos));
+		if (this.exitPortalPos != null) {
+			compoundTag.put("ExitPortal", TagHelper.serializeBlockPos(this.exitPortalPos));
 		}
 
-		if (this.exitPosExact) {
-			compoundTag.putBoolean("ExactTeleport", this.exitPosExact);
+		if (this.exactTeleport) {
+			compoundTag.putBoolean("ExactTeleport", this.exactTeleport);
 		}
 
 		return compoundTag;
@@ -62,10 +62,10 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 		super.fromTag(compoundTag);
 		this.age = compoundTag.getLong("Age");
 		if (compoundTag.containsKey("ExitPortal", 10)) {
-			this.portalExitPos = TagHelper.deserializeBlockPos(compoundTag.getCompound("ExitPortal"));
+			this.exitPortalPos = TagHelper.deserializeBlockPos(compoundTag.getCompound("ExitPortal"));
 		}
 
-		this.exitPosExact = compoundTag.getBoolean("ExactTeleport");
+		this.exactTeleport = compoundTag.getBoolean("ExactTeleport");
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -76,43 +76,43 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 
 	@Override
 	public void tick() {
-		boolean bl = this.method_11420();
-		boolean bl2 = this.method_11421();
+		boolean bl = this.isRecentlyGenerated();
+		boolean bl2 = this.needsCooldownBeforeTeleporting();
 		this.age++;
 		if (bl2) {
-			this.field_12130--;
+			this.teleportCooldown--;
 		} else if (!this.world.isClient) {
 			List<Entity> list = this.world.getVisibleEntities(Entity.class, new BoundingBox(this.getPos()));
 			if (!list.isEmpty()) {
-				this.method_11409((Entity)list.get(0));
+				this.tryTeleportingEntity((Entity)list.get(0));
 			}
 
 			if (this.age % 2400L == 0L) {
-				this.method_11411();
+				this.startTeleportCooldown();
 			}
 		}
 
-		if (bl != this.method_11420() || bl2 != this.method_11421()) {
+		if (bl != this.isRecentlyGenerated() || bl2 != this.needsCooldownBeforeTeleporting()) {
 			this.markDirty();
 		}
 	}
 
-	public boolean method_11420() {
+	public boolean isRecentlyGenerated() {
 		return this.age < 200L;
 	}
 
-	public boolean method_11421() {
-		return this.field_12130 > 0;
+	public boolean needsCooldownBeforeTeleporting() {
+		return this.teleportCooldown > 0;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_11417(float f) {
+	public float getRecentlyGeneratedBeamHeight(float f) {
 		return MathHelper.clamp(((float)this.age + f) / 200.0F, 0.0F, 1.0F);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_11412(float f) {
-		return 1.0F - MathHelper.clamp(((float)this.field_12130 - f) / 40.0F, 0.0F, 1.0F);
+	public float getCooldownBeamHeight(float f) {
+		return 1.0F - MathHelper.clamp(((float)this.teleportCooldown - f) / 40.0F, 0.0F, 1.0F);
 	}
 
 	@Nullable
@@ -126,9 +126,9 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 		return this.toTag(new CompoundTag());
 	}
 
-	public void method_11411() {
+	public void startTeleportCooldown() {
 		if (!this.world.isClient) {
-			this.field_12130 = 40;
+			this.teleportCooldown = 40;
 			this.world.addBlockAction(this.getPos(), this.getCachedState().getBlock(), 1, 0);
 			this.markDirty();
 		}
@@ -137,36 +137,36 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	@Override
 	public boolean onBlockAction(int i, int j) {
 		if (i == 1) {
-			this.field_12130 = 40;
+			this.teleportCooldown = 40;
 			return true;
 		} else {
 			return super.onBlockAction(i, j);
 		}
 	}
 
-	public void method_11409(Entity entity) {
-		if (!this.world.isClient && !this.method_11421()) {
-			this.field_12130 = 100;
-			if (this.portalExitPos == null && this.world.dimension instanceof TheEndDimension) {
-				this.method_11422();
+	public void tryTeleportingEntity(Entity entity) {
+		if (!this.world.isClient && !this.needsCooldownBeforeTeleporting()) {
+			this.teleportCooldown = 100;
+			if (this.exitPortalPos == null && this.world.dimension instanceof TheEndDimension) {
+				this.createPortal();
 			}
 
-			if (this.portalExitPos != null) {
-				BlockPos blockPos = this.exitPosExact ? this.portalExitPos : this.getBestPortalExitPos();
+			if (this.exitPortalPos != null) {
+				BlockPos blockPos = this.exactTeleport ? this.exitPortalPos : this.findBestPortalExitPos();
 				entity.method_5859((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
 			}
 
-			this.method_11411();
+			this.startTeleportCooldown();
 		}
 	}
 
-	private BlockPos getBestPortalExitPos() {
-		BlockPos blockPos = method_11410(this.world, this.portalExitPos, 5, false);
-		LOGGER.debug("Best exit position for portal at {} is {}", this.portalExitPos, blockPos);
+	private BlockPos findBestPortalExitPos() {
+		BlockPos blockPos = findExitPortalPos(this.world, this.exitPortalPos, 5, false);
+		LOGGER.debug("Best exit position for portal at {} is {}", this.exitPortalPos, blockPos);
 		return blockPos.up();
 	}
 
-	private void method_11422() {
+	private void createPortal() {
 		Vec3d vec3d = new Vec3d((double)this.getPos().getX(), 0.0, (double)this.getPos().getZ()).normalize();
 		Vec3d vec3d2 = vec3d.multiply(1024.0);
 
@@ -180,30 +180,30 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 
 		LOGGER.debug("Found chunk at {}", vec3d2);
 		WorldChunk worldChunk = getChunk(this.world, vec3d2);
-		this.portalExitPos = method_11413(worldChunk);
-		if (this.portalExitPos == null) {
-			this.portalExitPos = new BlockPos(vec3d2.x + 0.5, 75.0, vec3d2.z + 0.5);
-			LOGGER.debug("Failed to find suitable block, settling on {}", this.portalExitPos);
+		this.exitPortalPos = findPortalPosition(worldChunk);
+		if (this.exitPortalPos == null) {
+			this.exitPortalPos = new BlockPos(vec3d2.x + 0.5, 75.0, vec3d2.z + 0.5);
+			LOGGER.debug("Failed to find suitable block, settling on {}", this.exitPortalPos);
 			Feature.field_13574
 				.generate(
 					this.world,
 					(ChunkGenerator<? extends ChunkGeneratorConfig>)this.world.getChunkManager().getChunkGenerator(),
-					new Random(this.portalExitPos.asLong()),
-					this.portalExitPos,
+					new Random(this.exitPortalPos.asLong()),
+					this.exitPortalPos,
 					FeatureConfig.DEFAULT
 				);
 		} else {
-			LOGGER.debug("Found block at {}", this.portalExitPos);
+			LOGGER.debug("Found block at {}", this.exitPortalPos);
 		}
 
-		this.portalExitPos = method_11410(this.world, this.portalExitPos, 16, true);
-		LOGGER.debug("Creating portal at {}", this.portalExitPos);
-		this.portalExitPos = this.portalExitPos.up(10);
-		this.generatePortal(this.portalExitPos);
+		this.exitPortalPos = findExitPortalPos(this.world, this.exitPortalPos, 16, true);
+		LOGGER.debug("Creating portal at {}", this.exitPortalPos);
+		this.exitPortalPos = this.exitPortalPos.up(10);
+		this.createPortal(this.exitPortalPos);
 		this.markDirty();
 	}
 
-	private static BlockPos method_11410(BlockView blockView, BlockPos blockPos, int i, boolean bl) {
+	private static BlockPos findExitPortalPos(BlockView blockView, BlockPos blockPos, int i, boolean bl) {
 		BlockPos blockPos2 = null;
 
 		for (int j = -i; j <= i; j++) {
@@ -229,7 +229,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	}
 
 	@Nullable
-	private static BlockPos method_11413(WorldChunk worldChunk) {
+	private static BlockPos findPortalPosition(WorldChunk worldChunk) {
 		ChunkPos chunkPos = worldChunk.getPos();
 		BlockPos blockPos = new BlockPos(chunkPos.getXStart(), 30, chunkPos.getZStart());
 		int i = worldChunk.method_12031() + 16 - 1;
@@ -255,7 +255,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 		return blockPos3;
 	}
 
-	private void generatePortal(BlockPos blockPos) {
+	private void createPortal(BlockPos blockPos) {
 		Feature.field_13564
 			.generate(
 				this.world,
@@ -267,7 +267,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 		BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
 		if (blockEntity instanceof EndGatewayBlockEntity) {
 			EndGatewayBlockEntity endGatewayBlockEntity = (EndGatewayBlockEntity)blockEntity;
-			endGatewayBlockEntity.portalExitPos = new BlockPos(this.getPos());
+			endGatewayBlockEntity.exitPortalPos = new BlockPos(this.getPos());
 			endGatewayBlockEntity.markDirty();
 		} else {
 			LOGGER.warn("Couldn't save exit portal at {}", blockPos);
@@ -276,23 +276,23 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean method_11400(Direction direction) {
+	public boolean shouldDrawSide(Direction direction) {
 		return Block.shouldDrawSide(this.getCachedState(), this.world, this.getPos(), direction);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_11415() {
+	public int getDrawnSidesCount() {
 		int i = 0;
 
 		for (Direction direction : Direction.values()) {
-			i += this.method_11400(direction) ? 1 : 0;
+			i += this.shouldDrawSide(direction) ? 1 : 0;
 		}
 
 		return i;
 	}
 
-	public void method_11418(BlockPos blockPos) {
-		this.exitPosExact = true;
-		this.portalExitPos = blockPos;
+	public void setExitPortalPos(BlockPos blockPos) {
+		this.exactTeleport = true;
+		this.exitPortalPos = blockPos;
 	}
 }

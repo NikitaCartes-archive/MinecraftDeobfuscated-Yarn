@@ -294,7 +294,7 @@ public class EntityRenderDispatcher {
 			BlockState blockState = world.getBlockState(new BlockPos(entity));
 			Block block = blockState.getBlock();
 			if (block instanceof BedBlock) {
-				int i = ((Direction)blockState.get(BedBlock.field_11177)).getHorizontal();
+				int i = ((Direction)blockState.get(BedBlock.FACING)).getHorizontal();
 				this.field_4679 = (float)(i * 90 + 180);
 				this.field_4677 = 0.0F;
 			}

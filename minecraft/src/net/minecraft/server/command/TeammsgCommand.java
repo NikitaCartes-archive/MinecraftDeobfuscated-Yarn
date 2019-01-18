@@ -40,7 +40,7 @@ public class TeammsgCommand {
 		} else {
 			Consumer<Style> consumer = style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableTextComponent("chat.type.team.hover")))
 					.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/teammsg "));
-			TextComponent textComponent2 = scoreboardTeam.method_1148().modifyStyle(consumer);
+			TextComponent textComponent2 = scoreboardTeam.getPrefix().modifyStyle(consumer);
 
 			for (TextComponent textComponent3 : textComponent2.getChildren()) {
 				textComponent3.modifyStyle(consumer);

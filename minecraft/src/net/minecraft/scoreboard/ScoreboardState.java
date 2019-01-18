@@ -57,7 +57,7 @@ public class ScoreboardState extends PersistentState {
 			ScoreboardTeam scoreboardTeam = this.scoreboard.addTeam(string);
 			TextComponent textComponent = TextComponent.Serializer.fromJsonString(compoundTag.getString("DisplayName"));
 			if (textComponent != null) {
-				scoreboardTeam.method_1137(textComponent);
+				scoreboardTeam.setDisplayName(textComponent);
 			}
 
 			if (compoundTag.containsKey("TeamColor", 8)) {
@@ -75,14 +75,14 @@ public class ScoreboardState extends PersistentState {
 			if (compoundTag.containsKey("MemberNamePrefix", 8)) {
 				TextComponent textComponent2 = TextComponent.Serializer.fromJsonString(compoundTag.getString("MemberNamePrefix"));
 				if (textComponent2 != null) {
-					scoreboardTeam.method_1138(textComponent2);
+					scoreboardTeam.setPrefix(textComponent2);
 				}
 			}
 
 			if (compoundTag.containsKey("MemberNameSuffix", 8)) {
 				TextComponent textComponent2 = TextComponent.Serializer.fromJsonString(compoundTag.getString("MemberNameSuffix"));
 				if (textComponent2 != null) {
-					scoreboardTeam.method_1139(textComponent2);
+					scoreboardTeam.setSuffix(textComponent2);
 				}
 			}
 
@@ -171,7 +171,7 @@ public class ScoreboardState extends PersistentState {
 
 			compoundTag.putBoolean("AllowFriendlyFire", scoreboardTeam.isFriendlyFireAllowed());
 			compoundTag.putBoolean("SeeFriendlyInvisibles", scoreboardTeam.shouldShowFriendlyInvisibles());
-			compoundTag.putString("MemberNamePrefix", TextComponent.Serializer.toJsonString(scoreboardTeam.method_1144()));
+			compoundTag.putString("MemberNamePrefix", TextComponent.Serializer.toJsonString(scoreboardTeam.getSuffix()));
 			compoundTag.putString("MemberNameSuffix", TextComponent.Serializer.toJsonString(scoreboardTeam.method_1136()));
 			compoundTag.putString("NameTagVisibility", scoreboardTeam.getNameTagVisibilityRule().field_1445);
 			compoundTag.putString("DeathMessageVisibility", scoreboardTeam.getDeathMessageVisibilityRule().field_1445);

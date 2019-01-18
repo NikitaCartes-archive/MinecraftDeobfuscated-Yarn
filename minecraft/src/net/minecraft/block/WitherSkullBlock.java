@@ -21,8 +21,8 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 
 public class WitherSkullBlock extends SkullBlock {
-	private static BlockPattern field_11765;
-	private static BlockPattern field_11764;
+	private static BlockPattern witherBossPattern;
+	private static BlockPattern witherDispenserPattern;
 
 	protected WitherSkullBlock(Block.Settings settings) {
 		super(SkullBlock.Type.WITHER_SKELETON, settings);
@@ -33,11 +33,11 @@ public class WitherSkullBlock extends SkullBlock {
 		super.onPlaced(world, blockPos, blockState, livingEntity, itemStack);
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof SkullBlockEntity) {
-			method_10898(world, blockPos, (SkullBlockEntity)blockEntity);
+			onPlaced(world, blockPos, (SkullBlockEntity)blockEntity);
 		}
 	}
 
-	public static void method_10898(World world, BlockPos blockPos, SkullBlockEntity skullBlockEntity) {
+	public static void onPlaced(World world, BlockPos blockPos, SkullBlockEntity skullBlockEntity) {
 		Block block = skullBlockEntity.getCachedState().getBlock();
 		boolean bl = block == Blocks.field_10177 || block == Blocks.field_10101;
 		if (bl && blockPos.getY() >= 2 && world.getDifficulty() != Difficulty.PEACEFUL && !world.isClient) {
@@ -90,15 +90,15 @@ public class WitherSkullBlock extends SkullBlock {
 		}
 	}
 
-	public static boolean method_10899(World world, BlockPos blockPos, ItemStack itemStack) {
+	public static boolean canDispense(World world, BlockPos blockPos, ItemStack itemStack) {
 		return itemStack.getItem() == Items.field_8791 && blockPos.getY() >= 2 && world.getDifficulty() != Difficulty.PEACEFUL && !world.isClient
 			? getWitherDispenserPattern().searchAround(world, blockPos) != null
 			: false;
 	}
 
 	protected static BlockPattern getWitherBossPattern() {
-		if (field_11765 == null) {
-			field_11765 = BlockPatternBuilder.start()
+		if (witherBossPattern == null) {
+			witherBossPattern = BlockPatternBuilder.start()
 				.aisle("^^^", "###", "~#~")
 				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.field_10114)))
 				.where('^', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.field_10177).or(BlockStatePredicate.forBlock(Blocks.field_10101))))
@@ -106,18 +106,18 @@ public class WitherSkullBlock extends SkullBlock {
 				.build();
 		}
 
-		return field_11765;
+		return witherBossPattern;
 	}
 
 	protected static BlockPattern getWitherDispenserPattern() {
-		if (field_11764 == null) {
-			field_11764 = BlockPatternBuilder.start()
+		if (witherDispenserPattern == null) {
+			witherDispenserPattern = BlockPatternBuilder.start()
 				.aisle("   ", "###", "~#~")
 				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.field_10114)))
 				.where('~', CachedBlockPosition.matchesBlockState(class_2710.method_11746(Material.AIR)))
 				.build();
 		}
 
-		return field_11764;
+		return witherDispenserPattern;
 	}
 }

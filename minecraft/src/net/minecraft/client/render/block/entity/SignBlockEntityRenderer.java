@@ -38,7 +38,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		float h = 0.6666667F;
 		if (blockState.getBlock().matches(BlockTags.field_15472)) {
 			GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
-			GlStateManager.rotatef(-((float)((Integer)blockState.get(StandingSignBlock.field_11559) * 360) / 16.0F), 0.0F, 1.0F, 0.0F);
+			GlStateManager.rotatef(-((float)((Integer)blockState.get(StandingSignBlock.ROTATION) * 360) / 16.0F), 0.0F, 1.0F, 0.0F);
 			this.model.getSignpostModel().visible = true;
 		} else {
 			GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
@@ -72,7 +72,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		int k = signBlockEntity.getTextColor().method_16357();
 		if (i < 0) {
 			for (int l = 0; l < 4; l++) {
-				String string = signBlockEntity.method_11300(l, textComponent -> {
+				String string = signBlockEntity.getTextBeingEditedOnRow(l, textComponent -> {
 					List<TextComponent> list = TextComponentUtil.wrapLines(textComponent, 90, fontRenderer, false, true);
 					return list.isEmpty() ? "" : ((TextComponent)list.get(0)).getFormattedText();
 				});

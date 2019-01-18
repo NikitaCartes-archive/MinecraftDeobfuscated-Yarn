@@ -215,7 +215,7 @@ public class LoomGui extends ContainerGui<LoomContainer> {
 		} else {
 			BannerBlockEntity bannerBlockEntity = new BannerBlockEntity();
 			bannerBlockEntity.deserialize(itemStack, ((BannerItem)itemStack.getItem()).getColor());
-			this.field_2957 = TextureCache.BANNER.get(bannerBlockEntity.method_10915(), bannerBlockEntity.getPatternList(), bannerBlockEntity.getPatternColorList());
+			this.field_2957 = TextureCache.BANNER.get(bannerBlockEntity.getPatternCacheKey(), bannerBlockEntity.getPatterns(), bannerBlockEntity.getPatternColors());
 		}
 
 		ItemStack itemStack2 = this.container.method_17428().getStack();

@@ -22,16 +22,16 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class TripwireBlock extends Block {
-	public static final BooleanProperty field_11680 = Properties.POWERED;
-	public static final BooleanProperty field_11683 = Properties.ATTACHED;
-	public static final BooleanProperty field_11679 = Properties.DISARMED;
-	public static final BooleanProperty field_11675 = ConnectedPlantBlock.NORTH;
-	public static final BooleanProperty field_11673 = ConnectedPlantBlock.EAST;
-	public static final BooleanProperty field_11678 = ConnectedPlantBlock.SOUTH;
-	public static final BooleanProperty field_11674 = ConnectedPlantBlock.WEST;
-	private static final Map<Direction, BooleanProperty> field_11676 = HorizontalConnectedBlock.FACING_PROPERTIES;
-	protected static final VoxelShape field_11682 = Block.createCubeShape(0.0, 1.0, 0.0, 16.0, 2.5, 16.0);
-	protected static final VoxelShape field_11681 = Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
+	public static final BooleanProperty POWERED = Properties.POWERED;
+	public static final BooleanProperty ATTACHED = Properties.ATTACHED;
+	public static final BooleanProperty DISARMED = Properties.DISARMED;
+	public static final BooleanProperty NORTH = ConnectedPlantBlock.NORTH;
+	public static final BooleanProperty EAST = ConnectedPlantBlock.EAST;
+	public static final BooleanProperty SOUTH = ConnectedPlantBlock.SOUTH;
+	public static final BooleanProperty WEST = ConnectedPlantBlock.WEST;
+	private static final Map<Direction, BooleanProperty> FACING_PROPERTIES = HorizontalConnectedBlock.FACING_PROPERTIES;
+	protected static final VoxelShape ATTACHED_SHAPE = Block.createCuboidShape(0.0, 1.0, 0.0, 16.0, 2.5, 16.0);
+	protected static final VoxelShape DETACHED_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
 	private final TripwireHookBlock field_11677;
 
 	public TripwireBlock(TripwireHookBlock tripwireHookBlock, Block.Settings settings) {
@@ -39,31 +39,31 @@ public class TripwireBlock extends Block {
 		this.setDefaultState(
 			this.stateFactory
 				.getDefaultState()
-				.with(field_11680, Boolean.valueOf(false))
-				.with(field_11683, Boolean.valueOf(false))
-				.with(field_11679, Boolean.valueOf(false))
-				.with(field_11675, Boolean.valueOf(false))
-				.with(field_11673, Boolean.valueOf(false))
-				.with(field_11678, Boolean.valueOf(false))
-				.with(field_11674, Boolean.valueOf(false))
+				.with(POWERED, Boolean.valueOf(false))
+				.with(ATTACHED, Boolean.valueOf(false))
+				.with(DISARMED, Boolean.valueOf(false))
+				.with(NORTH, Boolean.valueOf(false))
+				.with(EAST, Boolean.valueOf(false))
+				.with(SOUTH, Boolean.valueOf(false))
+				.with(WEST, Boolean.valueOf(false))
 		);
 		this.field_11677 = tripwireHookBlock;
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return blockState.get(field_11683) ? field_11682 : field_11681;
+		return blockState.get(ATTACHED) ? ATTACHED_SHAPE : DETACHED_SHAPE;
 	}
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockView blockView = itemPlacementContext.getWorld();
-		BlockPos blockPos = itemPlacementContext.getPos();
+		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		return this.getDefaultState()
-			.with(field_11675, Boolean.valueOf(this.method_10778(blockView.getBlockState(blockPos.north()), Direction.NORTH)))
-			.with(field_11673, Boolean.valueOf(this.method_10778(blockView.getBlockState(blockPos.east()), Direction.EAST)))
-			.with(field_11678, Boolean.valueOf(this.method_10778(blockView.getBlockState(blockPos.south()), Direction.SOUTH)))
-			.with(field_11674, Boolean.valueOf(this.method_10778(blockView.getBlockState(blockPos.west()), Direction.WEST)));
+			.with(NORTH, Boolean.valueOf(this.method_10778(blockView.getBlockState(blockPos.north()), Direction.NORTH)))
+			.with(EAST, Boolean.valueOf(this.method_10778(blockView.getBlockState(blockPos.east()), Direction.EAST)))
+			.with(SOUTH, Boolean.valueOf(this.method_10778(blockView.getBlockState(blockPos.south()), Direction.SOUTH)))
+			.with(WEST, Boolean.valueOf(this.method_10778(blockView.getBlockState(blockPos.west()), Direction.WEST)));
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class TripwireBlock extends Block {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		return direction.getAxis().isHorizontal()
-			? blockState.with((Property)field_11676.get(direction), Boolean.valueOf(this.method_10778(blockState2, direction)))
+			? blockState.with((Property)FACING_PROPERTIES.get(direction), Boolean.valueOf(this.method_10778(blockState2, direction)))
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
@@ -90,14 +90,14 @@ public class TripwireBlock extends Block {
 	@Override
 	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (!bl && blockState.getBlock() != blockState2.getBlock()) {
-			this.method_10779(world, blockPos, blockState.with(field_11680, Boolean.valueOf(true)));
+			this.method_10779(world, blockPos, blockState.with(POWERED, Boolean.valueOf(true)));
 		}
 	}
 
 	@Override
 	public void onBreak(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
 		if (!world.isClient && !playerEntity.getMainHandStack().isEmpty() && playerEntity.getMainHandStack().getItem() == Items.field_8868) {
-			world.setBlockState(blockPos, blockState.with(field_11679, Boolean.valueOf(true)), 4);
+			world.setBlockState(blockPos, blockState.with(DISARMED, Boolean.valueOf(true)), 4);
 		}
 
 		super.onBreak(world, blockPos, blockState, playerEntity);
@@ -125,16 +125,16 @@ public class TripwireBlock extends Block {
 	@Override
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
 		if (!world.isClient) {
-			if (!(Boolean)blockState.get(field_11680)) {
+			if (!(Boolean)blockState.get(POWERED)) {
 				this.method_10780(world, blockPos);
 			}
 		}
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (!world.isClient) {
-			if ((Boolean)world.getBlockState(blockPos).get(field_11680)) {
+			if ((Boolean)world.getBlockState(blockPos).get(POWERED)) {
 				this.method_10780(world, blockPos);
 			}
 		}
@@ -142,7 +142,7 @@ public class TripwireBlock extends Block {
 
 	private void method_10780(World world, BlockPos blockPos) {
 		BlockState blockState = world.getBlockState(blockPos);
-		boolean bl = (Boolean)blockState.get(field_11680);
+		boolean bl = (Boolean)blockState.get(POWERED);
 		boolean bl2 = false;
 		List<? extends Entity> list = world.getVisibleEntities(null, blockState.getOutlineShape(world, blockPos).getBoundingBox().offset(blockPos));
 		if (!list.isEmpty()) {
@@ -155,7 +155,7 @@ public class TripwireBlock extends Block {
 		}
 
 		if (bl2 != bl) {
-			blockState = blockState.with(field_11680, Boolean.valueOf(bl2));
+			blockState = blockState.with(POWERED, Boolean.valueOf(bl2));
 			world.setBlockState(blockPos, blockState, 3);
 			this.method_10779(world, blockPos, blockState);
 		}
@@ -171,42 +171,33 @@ public class TripwireBlock extends Block {
 	}
 
 	@Override
-	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
 		switch (rotation) {
 			case ROT_180:
-				return blockState.with(field_11675, blockState.get(field_11678))
-					.with(field_11673, blockState.get(field_11674))
-					.with(field_11678, blockState.get(field_11675))
-					.with(field_11674, blockState.get(field_11673));
+				return blockState.with(NORTH, blockState.get(SOUTH)).with(EAST, blockState.get(WEST)).with(SOUTH, blockState.get(NORTH)).with(WEST, blockState.get(EAST));
 			case ROT_270:
-				return blockState.with(field_11675, blockState.get(field_11673))
-					.with(field_11673, blockState.get(field_11678))
-					.with(field_11678, blockState.get(field_11674))
-					.with(field_11674, blockState.get(field_11675));
+				return blockState.with(NORTH, blockState.get(EAST)).with(EAST, blockState.get(SOUTH)).with(SOUTH, blockState.get(WEST)).with(WEST, blockState.get(NORTH));
 			case ROT_90:
-				return blockState.with(field_11675, blockState.get(field_11674))
-					.with(field_11673, blockState.get(field_11675))
-					.with(field_11678, blockState.get(field_11673))
-					.with(field_11674, blockState.get(field_11678));
+				return blockState.with(NORTH, blockState.get(WEST)).with(EAST, blockState.get(NORTH)).with(SOUTH, blockState.get(EAST)).with(WEST, blockState.get(SOUTH));
 			default:
 				return blockState;
 		}
 	}
 
 	@Override
-	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
 		switch (mirror) {
 			case LEFT_RIGHT:
-				return blockState.with(field_11675, blockState.get(field_11678)).with(field_11678, blockState.get(field_11675));
+				return blockState.with(NORTH, blockState.get(SOUTH)).with(SOUTH, blockState.get(NORTH));
 			case FRONT_BACK:
-				return blockState.with(field_11673, blockState.get(field_11674)).with(field_11674, blockState.get(field_11673));
+				return blockState.with(EAST, blockState.get(WEST)).with(WEST, blockState.get(EAST));
 			default:
-				return super.applyMirror(blockState, mirror);
+				return super.mirror(blockState, mirror);
 		}
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_11680, field_11683, field_11679, field_11675, field_11673, field_11674, field_11678);
+		builder.with(POWERED, ATTACHED, DISARMED, NORTH, EAST, WEST, SOUTH);
 	}
 }

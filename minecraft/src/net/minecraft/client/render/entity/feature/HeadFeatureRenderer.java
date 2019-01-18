@@ -71,7 +71,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 				}
 
 				SkullBlockEntityRenderer.INSTANCE
-					.renderSkull(-0.5F, 0.0F, -0.5F, null, 180.0F, ((AbstractSkullBlock)((BlockItem)item).getBlock()).getSkullType(), gameProfile, -1, f);
+					.render(-0.5F, 0.0F, -0.5F, null, 180.0F, ((AbstractSkullBlock)((BlockItem)item).getBlock()).getSkullType(), gameProfile, -1, f);
 			} else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.HEAD) {
 				float mx = 0.625F;
 				GlStateManager.translatef(0.0F, -0.25F, 0.0F);

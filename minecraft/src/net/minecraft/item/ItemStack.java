@@ -148,7 +148,7 @@ public final class ItemStack {
 
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		PlayerEntity playerEntity = itemUsageContext.getPlayer();
-		BlockPos blockPos = itemUsageContext.getPos();
+		BlockPos blockPos = itemUsageContext.getBlockPos();
 		CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(itemUsageContext.getWorld(), blockPos, false);
 		if (playerEntity != null
 			&& !playerEntity.abilities.allowModifyWorld
@@ -158,7 +158,7 @@ public final class ItemStack {
 			Item item = this.getItem();
 			ActionResult actionResult = item.useOnBlock(itemUsageContext);
 			if (playerEntity != null && actionResult == ActionResult.SUCCESS) {
-				playerEntity.incrementStat(Stats.field_15372.method_14956(item));
+				playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(item));
 			}
 
 			return actionResult;
@@ -259,7 +259,7 @@ public final class ItemStack {
 					Item item = this.getItem();
 					this.subtractAmount(1);
 					if (livingEntity instanceof PlayerEntity) {
-						((PlayerEntity)livingEntity).incrementStat(Stats.field_15383.method_14956(item));
+						((PlayerEntity)livingEntity).incrementStat(Stats.field_15383.getOrCreateStat(item));
 					}
 
 					this.setDamage(0);
@@ -271,14 +271,14 @@ public final class ItemStack {
 	public void onEntityDamaged(LivingEntity livingEntity, PlayerEntity playerEntity) {
 		Item item = this.getItem();
 		if (item.onEntityDamaged(this, livingEntity, playerEntity)) {
-			playerEntity.incrementStat(Stats.field_15372.method_14956(item));
+			playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(item));
 		}
 	}
 
 	public void onBlockBroken(World world, BlockState blockState, BlockPos blockPos, PlayerEntity playerEntity) {
 		Item item = this.getItem();
 		if (item.onBlockBroken(this, world, blockState, blockPos, playerEntity)) {
-			playerEntity.incrementStat(Stats.field_15372.method_14956(item));
+			playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(item));
 		}
 	}
 
@@ -371,7 +371,7 @@ public final class ItemStack {
 	}
 
 	public void onCrafted(World world, PlayerEntity playerEntity, int i) {
-		playerEntity.incrementStat(Stats.field_15370.method_14956(this.getItem()), i);
+		playerEntity.incrementStat(Stats.field_15370.getOrCreateStat(this.getItem()), i);
 		this.getItem().onCrafted(this, world, playerEntity);
 	}
 

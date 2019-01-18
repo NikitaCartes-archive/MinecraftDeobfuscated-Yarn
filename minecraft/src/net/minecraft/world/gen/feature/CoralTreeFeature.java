@@ -31,7 +31,7 @@ public class CoralTreeFeature extends CoralFeature {
 
 		BlockPos blockPos2 = mutable.toImmutable();
 		int k = random.nextInt(3) + 2;
-		List<Direction> list = Lists.<Direction>newArrayList(Direction.class_2353.HORIZONTAL);
+		List<Direction> list = Lists.<Direction>newArrayList(Direction.Type.HORIZONTAL);
 		Collections.shuffle(list, random);
 
 		for (Direction direction : list.subList(0, k)) {

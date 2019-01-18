@@ -4,7 +4,7 @@ import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
-import net.minecraft.block.enums.StructureMode;
+import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.util.Mirror;
@@ -16,7 +16,7 @@ import net.minecraft.util.math.MathHelper;
 public class UpdateStructureBlockServerPacket implements Packet<ServerPlayPacketListener> {
 	private BlockPos pos;
 	private StructureBlockBlockEntity.Action action;
-	private StructureMode mode;
+	private StructureBlockMode mode;
 	private String structureName;
 	private BlockPos offset;
 	private BlockPos size;
@@ -36,7 +36,7 @@ public class UpdateStructureBlockServerPacket implements Packet<ServerPlayPacket
 	public UpdateStructureBlockServerPacket(
 		BlockPos blockPos,
 		StructureBlockBlockEntity.Action action,
-		StructureMode structureMode,
+		StructureBlockMode structureBlockMode,
 		String string,
 		BlockPos blockPos2,
 		BlockPos blockPos3,
@@ -51,7 +51,7 @@ public class UpdateStructureBlockServerPacket implements Packet<ServerPlayPacket
 	) {
 		this.pos = blockPos;
 		this.action = action;
-		this.mode = structureMode;
+		this.mode = structureBlockMode;
 		this.structureName = string;
 		this.offset = blockPos2;
 		this.size = blockPos3;
@@ -69,7 +69,7 @@ public class UpdateStructureBlockServerPacket implements Packet<ServerPlayPacket
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.pos = packetByteBuf.readBlockPos();
 		this.action = packetByteBuf.readEnumConstant(StructureBlockBlockEntity.Action.class);
-		this.mode = packetByteBuf.readEnumConstant(StructureMode.class);
+		this.mode = packetByteBuf.readEnumConstant(StructureBlockMode.class);
 		this.structureName = packetByteBuf.readString(32767);
 		this.offset = new BlockPos(
 			MathHelper.clamp(packetByteBuf.readByte(), -32, 32),
@@ -127,15 +127,15 @@ public class UpdateStructureBlockServerPacket implements Packet<ServerPlayPacket
 		serverPlayPacketListener.onStructureBlockUpdate(this);
 	}
 
-	public BlockPos method_12499() {
+	public BlockPos getPos() {
 		return this.pos;
 	}
 
-	public StructureBlockBlockEntity.Action method_12500() {
+	public StructureBlockBlockEntity.Action getAction() {
 		return this.action;
 	}
 
-	public StructureMode getMode() {
+	public StructureBlockMode getMode() {
 		return this.mode;
 	}
 

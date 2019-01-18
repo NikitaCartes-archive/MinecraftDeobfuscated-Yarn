@@ -41,7 +41,7 @@ public class MagmaBlock extends Block {
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		BubbleColumnBlock.method_9657(world, blockPos.up(), true);
 	}
 
@@ -57,7 +57,7 @@ public class MagmaBlock extends Block {
 	}
 
 	@Override
-	public void randomTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onRandomTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		BlockPos blockPos2 = blockPos.up();
 		if (world.getFluidState(blockPos).matches(FluidTags.field_15517)) {
 			world.playSound(

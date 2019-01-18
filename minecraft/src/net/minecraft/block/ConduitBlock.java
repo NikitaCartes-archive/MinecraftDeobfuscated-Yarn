@@ -22,17 +22,17 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class ConduitBlock extends BlockWithEntity implements Waterloggable {
-	public static final BooleanProperty field_10794 = Properties.WATERLOGGED;
-	protected static final VoxelShape field_10795 = Block.createCubeShape(5.0, 5.0, 5.0, 11.0, 11.0, 11.0);
+	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(5.0, 5.0, 5.0, 11.0, 11.0, 11.0);
 
 	public ConduitBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_10794, Boolean.valueOf(true)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(WATERLOGGED, Boolean.valueOf(true)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_10794);
+		builder.with(WATERLOGGED);
 	}
 
 	@Override
@@ -47,15 +47,15 @@ public class ConduitBlock extends BlockWithEntity implements Waterloggable {
 
 	@Override
 	public FluidState getFluidState(BlockState blockState) {
-		return blockState.get(field_10794) ? Fluids.WATER.getState(false) : super.getFluidState(blockState);
+		return blockState.get(WATERLOGGED) ? Fluids.WATER.getState(false) : super.getFluidState(blockState);
 	}
 
 	@Override
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		if ((Boolean)blockState.get(field_10794)) {
-			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
+		if ((Boolean)blockState.get(WATERLOGGED)) {
+			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 		}
 
 		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
@@ -63,7 +63,7 @@ public class ConduitBlock extends BlockWithEntity implements Waterloggable {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_10795;
+		return SHAPE;
 	}
 
 	@Override
@@ -79,8 +79,8 @@ public class ConduitBlock extends BlockWithEntity implements Waterloggable {
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getPos());
-		return this.getDefaultState().with(field_10794, Boolean.valueOf(fluidState.matches(FluidTags.field_15517) && fluidState.method_15761() == 8));
+		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
+		return this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(fluidState.matches(FluidTags.field_15517) && fluidState.getLevel() == 8));
 	}
 
 	@Override

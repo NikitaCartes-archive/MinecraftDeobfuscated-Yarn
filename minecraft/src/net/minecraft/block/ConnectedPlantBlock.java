@@ -29,17 +29,17 @@ public class ConnectedPlantBlock extends Block {
 		enumMap.put(Direction.UP, UP);
 		enumMap.put(Direction.DOWN, DOWN);
 	});
-	protected final VoxelShape[] field_11333;
+	protected final VoxelShape[] CONNECTIONS_TO_SHAPE;
 
 	protected ConnectedPlantBlock(float f, Block.Settings settings) {
 		super(settings);
-		this.field_11333 = this.method_10370(f);
+		this.CONNECTIONS_TO_SHAPE = this.generateFacingsToShapeMap(f);
 	}
 
-	private VoxelShape[] method_10370(float f) {
+	private VoxelShape[] generateFacingsToShapeMap(float f) {
 		float g = 0.5F - f;
 		float h = 0.5F + f;
-		VoxelShape voxelShape = Block.createCubeShape(
+		VoxelShape voxelShape = Block.createCuboidShape(
 			(double)(g * 16.0F), (double)(g * 16.0F), (double)(g * 16.0F), (double)(h * 16.0F), (double)(h * 16.0F), (double)(h * 16.0F)
 		);
 		VoxelShape[] voxelShapes = new VoxelShape[FACINGS.length];
@@ -80,10 +80,10 @@ public class ConnectedPlantBlock extends Block {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return this.field_11333[this.method_10368(blockState)];
+		return this.CONNECTIONS_TO_SHAPE[this.getConnectionMask(blockState)];
 	}
 
-	protected int method_10368(BlockState blockState) {
+	protected int getConnectionMask(BlockState blockState) {
 		int i = 0;
 
 		for (int j = 0; j < FACINGS.length; j++) {

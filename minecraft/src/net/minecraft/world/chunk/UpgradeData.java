@@ -257,21 +257,21 @@ public class UpgradeData {
 			public BlockState method_12358(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
 				if (blockState2.getBlock() == blockState.getBlock()
 					&& direction.getAxis().isHorizontal()
-					&& blockState.get(ChestBlock.field_10770) == ChestType.field_12569
-					&& blockState2.get(ChestBlock.field_10770) == ChestType.field_12569) {
+					&& blockState.get(ChestBlock.CHEST_TYPE) == ChestType.field_12569
+					&& blockState2.get(ChestBlock.CHEST_TYPE) == ChestType.field_12569) {
 					Direction direction2 = blockState.get(ChestBlock.FACING);
 					if (direction.getAxis() != direction2.getAxis() && direction2 == blockState2.get(ChestBlock.FACING)) {
 						ChestType chestType = direction == direction2.rotateYClockwise() ? ChestType.field_12574 : ChestType.field_12571;
-						iWorld.setBlockState(blockPos2, blockState2.with(ChestBlock.field_10770, chestType.method_11824()), 18);
+						iWorld.setBlockState(blockPos2, blockState2.with(ChestBlock.CHEST_TYPE, chestType.method_11824()), 18);
 						if (direction2 == Direction.NORTH || direction2 == Direction.EAST) {
 							BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
 							BlockEntity blockEntity2 = iWorld.getBlockEntity(blockPos2);
 							if (blockEntity instanceof ChestBlockEntity && blockEntity2 instanceof ChestBlockEntity) {
-								ChestBlockEntity.method_11047((ChestBlockEntity)blockEntity, (ChestBlockEntity)blockEntity2);
+								ChestBlockEntity.copyInventory((ChestBlockEntity)blockEntity, (ChestBlockEntity)blockEntity2);
 							}
 						}
 
-						return blockState.with(ChestBlock.field_10770, chestType);
+						return blockState.with(ChestBlock.CHEST_TYPE, chestType);
 					}
 				}
 
@@ -332,10 +332,10 @@ public class UpgradeData {
 		field_12958(Blocks.field_10168, Blocks.field_9984) {
 			@Override
 			public BlockState method_12358(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-				if ((Integer)blockState.get(StemBlock.field_11584) == 7) {
-					GourdBlock gourdBlock = ((StemBlock)blockState.getBlock()).method_10694();
+				if ((Integer)blockState.get(StemBlock.AGE) == 7) {
+					GourdBlock gourdBlock = ((StemBlock)blockState.getBlock()).getGourdBlock();
 					if (blockState2.getBlock() == gourdBlock) {
-						return gourdBlock.getAttachedStem().getDefaultState().with(HorizontalFacingBlock.field_11177, direction);
+						return gourdBlock.getAttachedStem().getDefaultState().with(HorizontalFacingBlock.FACING, direction);
 					}
 				}
 

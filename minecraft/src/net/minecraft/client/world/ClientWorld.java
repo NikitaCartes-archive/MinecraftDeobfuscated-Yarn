@@ -268,10 +268,10 @@ public class ClientWorld extends World {
 		blockState.getBlock().randomDisplayTick(blockState, this, mutable, random);
 		FluidState fluidState = this.getFluidState(mutable);
 		if (!fluidState.isEmpty()) {
-			fluidState.method_15768(this, mutable, random);
+			fluidState.randomDisplayTick(this, mutable, random);
 			ParticleParameters particleParameters = fluidState.method_15766();
 			if (particleParameters != null && this.random.nextInt(10) == 0) {
-				boolean bl2 = Block.isFaceFullCube(blockState.getCollisionShape(this, mutable), Direction.DOWN);
+				boolean bl2 = Block.isFaceFullSquare(blockState.getCollisionShape(this, mutable), Direction.DOWN);
 				BlockPos blockPos = mutable.down();
 				this.method_2938(blockPos, this.getBlockState(blockPos), particleParameters, bl2);
 			}
@@ -397,7 +397,7 @@ public class ClientWorld extends World {
 		}
 	}
 
-	public void playSoundClient(BlockPos blockPos, SoundEvent soundEvent, SoundCategory soundCategory, float f, float g, boolean bl) {
+	public void playSound(BlockPos blockPos, SoundEvent soundEvent, SoundCategory soundCategory, float f, float g, boolean bl) {
 		this.playSound((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, soundEvent, soundCategory, f, g, bl);
 	}
 
@@ -407,15 +407,15 @@ public class ClientWorld extends World {
 		PositionedSoundInstance positionedSoundInstance = new PositionedSoundInstance(soundEvent, soundCategory, g, h, (float)d, (float)e, (float)f);
 		if (bl && i > 100.0) {
 			double j = Math.sqrt(i) / 40.0;
-			this.client.getSoundLoader().method_4872(positionedSoundInstance, (int)(j * 20.0));
+			this.client.getSoundLoader().play(positionedSoundInstance, (int)(j * 20.0));
 		} else {
 			this.client.getSoundLoader().play(positionedSoundInstance);
 		}
 	}
 
 	@Override
-	public void method_8547(double d, double e, double f, double g, double h, double i, @Nullable CompoundTag compoundTag) {
-		this.client.particleManager.addParticle(new FireworksSparkParticle.class_681(this, d, e, f, g, h, i, this.client.particleManager, compoundTag));
+	public void addFireworkParticle(double d, double e, double f, double g, double h, double i, @Nullable CompoundTag compoundTag) {
+		this.client.particleManager.addParticle(new FireworksSparkParticle.create(this, d, e, f, g, h, i, this.client.particleManager, compoundTag));
 	}
 
 	@Override
@@ -428,7 +428,7 @@ public class ClientWorld extends World {
 		return this.netHandler.getRecipeManager();
 	}
 
-	public void method_2944(Scoreboard scoreboard) {
+	public void setScoreboard(Scoreboard scoreboard) {
 		this.scoreboard = scoreboard;
 	}
 

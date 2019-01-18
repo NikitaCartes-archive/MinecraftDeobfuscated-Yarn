@@ -185,10 +185,10 @@ public abstract class Biome {
 						return true;
 					}
 
-					boolean bl2 = viewableWorld.method_8585(blockPos.west())
-						&& viewableWorld.method_8585(blockPos.east())
-						&& viewableWorld.method_8585(blockPos.north())
-						&& viewableWorld.method_8585(blockPos.south());
+					boolean bl2 = viewableWorld.isWaterAt(blockPos.west())
+						&& viewableWorld.isWaterAt(blockPos.east())
+						&& viewableWorld.isWaterAt(blockPos.north())
+						&& viewableWorld.isWaterAt(blockPos.south());
 					if (!bl2) {
 						return true;
 					}

@@ -20,9 +20,9 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -34,37 +34,37 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biomes;
 
 public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvider {
-	public static final EnumProperty<BedPart> field_9967 = Properties.BED_PART;
-	public static final BooleanProperty field_9968 = Properties.OCCUPIED;
-	protected static final VoxelShape field_16788 = Block.createCubeShape(0.0, 3.0, 0.0, 16.0, 9.0, 16.0);
-	protected static final VoxelShape field_16782 = Block.createCubeShape(0.0, 0.0, 0.0, 3.0, 3.0, 3.0);
-	protected static final VoxelShape field_16784 = Block.createCubeShape(0.0, 0.0, 13.0, 3.0, 3.0, 16.0);
-	protected static final VoxelShape field_16786 = Block.createCubeShape(13.0, 0.0, 0.0, 16.0, 3.0, 3.0);
-	protected static final VoxelShape field_16789 = Block.createCubeShape(13.0, 0.0, 13.0, 16.0, 3.0, 16.0);
-	protected static final VoxelShape field_16787 = VoxelShapes.method_17786(field_16788, field_16782, field_16786);
-	protected static final VoxelShape field_16785 = VoxelShapes.method_17786(field_16788, field_16784, field_16789);
-	protected static final VoxelShape field_16783 = VoxelShapes.method_17786(field_16788, field_16782, field_16784);
-	protected static final VoxelShape field_16790 = VoxelShapes.method_17786(field_16788, field_16786, field_16789);
+	public static final EnumProperty<BedPart> PART = Properties.BED_PART;
+	public static final BooleanProperty OCCUPIED = Properties.OCCUPIED;
+	protected static final VoxelShape TOP_SHAPE = Block.createCuboidShape(0.0, 3.0, 0.0, 16.0, 9.0, 16.0);
+	protected static final VoxelShape LEG_1_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 3.0, 3.0, 3.0);
+	protected static final VoxelShape LEG_2_SHAPE = Block.createCuboidShape(0.0, 0.0, 13.0, 3.0, 3.0, 16.0);
+	protected static final VoxelShape LEG_3_SHAPE = Block.createCuboidShape(13.0, 0.0, 0.0, 16.0, 3.0, 3.0);
+	protected static final VoxelShape LEG_4_SHAPE = Block.createCuboidShape(13.0, 0.0, 13.0, 16.0, 3.0, 16.0);
+	protected static final VoxelShape NORTH_SHAPE = VoxelShapes.union(TOP_SHAPE, LEG_1_SHAPE, LEG_3_SHAPE);
+	protected static final VoxelShape SOUTH_SHAPE = VoxelShapes.union(TOP_SHAPE, LEG_2_SHAPE, LEG_4_SHAPE);
+	protected static final VoxelShape WEST_SHAPE = VoxelShapes.union(TOP_SHAPE, LEG_1_SHAPE, LEG_2_SHAPE);
+	protected static final VoxelShape EAST_SHAPE = VoxelShapes.union(TOP_SHAPE, LEG_3_SHAPE, LEG_4_SHAPE);
 	private final DyeColor color;
 
 	public BedBlock(DyeColor dyeColor, Block.Settings settings) {
 		super(settings);
 		this.color = dyeColor;
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_9967, BedPart.field_12557).with(field_9968, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(PART, BedPart.field_12557).with(OCCUPIED, Boolean.valueOf(false)));
 	}
 
 	@Override
-	public MaterialColor getMaterialColor(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return blockState.get(field_9967) == BedPart.field_12557 ? this.color.getMaterialColor() : MaterialColor.WEB;
+	public MaterialColor getMapColor(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		return blockState.get(PART) == BedPart.field_12557 ? this.color.getMaterialColor() : MaterialColor.WEB;
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (world.isClient) {
 			return true;
 		} else {
-			if (blockState.get(field_9967) != BedPart.field_12560) {
-				blockPos = blockPos.offset(blockState.get(field_11177));
+			if (blockState.get(PART) != BedPart.field_12560) {
+				blockPos = blockPos.offset(blockState.get(FACING));
 				blockState = world.getBlockState(blockPos);
 				if (blockState.getBlock() != this) {
 					return true;
@@ -72,20 +72,20 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 			}
 
 			if (world.dimension.method_12448() && world.getBiome(blockPos) != Biomes.field_9461) {
-				if ((Boolean)blockState.get(field_9968)) {
-					PlayerEntity playerEntity2 = this.method_9485(world, blockPos);
+				if ((Boolean)blockState.get(OCCUPIED)) {
+					PlayerEntity playerEntity2 = this.getPlayerInBed(world, blockPos);
 					if (playerEntity2 != null) {
 						playerEntity.addChatMessage(new TranslatableTextComponent("block.minecraft.bed.occupied"), true);
 						return true;
 					}
 
-					blockState = blockState.with(field_9968, Boolean.valueOf(false));
+					blockState = blockState.with(OCCUPIED, Boolean.valueOf(false));
 					world.setBlockState(blockPos, blockState, 4);
 				}
 
 				PlayerEntity.SleepResult sleepResult = playerEntity.trySleep(blockPos);
 				if (sleepResult == PlayerEntity.SleepResult.SUCCESS) {
-					blockState = blockState.with(field_9968, Boolean.valueOf(true));
+					blockState = blockState.with(OCCUPIED, Boolean.valueOf(true));
 					world.setBlockState(blockPos, blockState, 4);
 					return true;
 				} else {
@@ -101,7 +101,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 				}
 			} else {
 				world.clearBlockState(blockPos);
-				BlockPos blockPos2 = blockPos.offset(((Direction)blockState.get(field_11177)).getOpposite());
+				BlockPos blockPos2 = blockPos.offset(((Direction)blockState.get(FACING)).getOpposite());
 				if (world.getBlockState(blockPos2).getBlock() == this) {
 					world.clearBlockState(blockPos2);
 				}
@@ -115,7 +115,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	}
 
 	@Nullable
-	private PlayerEntity method_9485(World world, BlockPos blockPos) {
+	private PlayerEntity getPlayerInBed(World world, BlockPos blockPos) {
 		for (PlayerEntity playerEntity : world.players) {
 			if (playerEntity.isSleeping() && playerEntity.sleepingPos.equals(blockPos)) {
 				return playerEntity;
@@ -146,9 +146,9 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		if (direction == method_9488(blockState.get(field_9967), blockState.get(field_11177))) {
-			return blockState2.getBlock() == this && blockState2.get(field_9967) != blockState.get(field_9967)
-				? blockState.with(field_9968, blockState2.get(field_9968))
+		if (direction == method_9488(blockState.get(PART), blockState.get(FACING))) {
+			return blockState2.getBlock() == this && blockState2.get(PART) != blockState.get(PART)
+				? blockState.with(OCCUPIED, blockState2.get(OCCUPIED))
 				: Blocks.field_10124.getDefaultState();
 		} else {
 			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
@@ -176,10 +176,10 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 
 	@Override
 	public void onBreak(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
-		BedPart bedPart = blockState.get(field_9967);
-		BlockPos blockPos2 = blockPos.offset(method_9488(bedPart, blockState.get(field_11177)));
+		BedPart bedPart = blockState.get(PART);
+		BlockPos blockPos2 = blockPos.offset(method_9488(bedPart, blockState.get(FACING)));
 		BlockState blockState2 = world.getBlockState(blockPos2);
-		if (blockState2.getBlock() == this && blockState2.get(field_9967) != bedPart) {
+		if (blockState2.getBlock() == this && blockState2.get(PART) != bedPart) {
 			world.setBlockState(blockPos2, Blocks.field_10124.getDefaultState(), 35);
 			world.fireWorldEvent(playerEntity, 2001, blockPos2, Block.getRawIdFromState(blockState2));
 			if (!world.isClient && !playerEntity.isCreative()) {
@@ -188,7 +188,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 				dropStacks(blockState2, world, blockPos2, null, playerEntity, itemStack);
 			}
 
-			playerEntity.incrementStat(Stats.field_15427.method_14956(this));
+			playerEntity.incrementStat(Stats.field_15427.getOrCreateStat(this));
 		}
 
 		super.onBreak(world, blockPos, blockState, playerEntity);
@@ -198,26 +198,24 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		Direction direction = itemPlacementContext.getPlayerHorizontalFacing();
-		BlockPos blockPos = itemPlacementContext.getPos();
+		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		BlockPos blockPos2 = blockPos.offset(direction);
-		return itemPlacementContext.getWorld().getBlockState(blockPos2).method_11587(itemPlacementContext)
-			? this.getDefaultState().with(field_11177, direction)
-			: null;
+		return itemPlacementContext.getWorld().getBlockState(blockPos2).method_11587(itemPlacementContext) ? this.getDefaultState().with(FACING, direction) : null;
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		Direction direction = blockState.get(field_11177);
-		Direction direction2 = blockState.get(field_9967) == BedPart.field_12560 ? direction : direction.getOpposite();
+		Direction direction = blockState.get(FACING);
+		Direction direction2 = blockState.get(PART) == BedPart.field_12560 ? direction : direction.getOpposite();
 		switch (direction2) {
 			case NORTH:
-				return field_16787;
+				return NORTH_SHAPE;
 			case SOUTH:
-				return field_16785;
+				return SOUTH_SHAPE;
 			case WEST:
-				return field_16783;
+				return WEST_SHAPE;
 			default:
-				return field_16790;
+				return EAST_SHAPE;
 		}
 	}
 
@@ -229,7 +227,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 
 	@Nullable
 	public static BlockPos method_9484(BlockView blockView, BlockPos blockPos, int i) {
-		Direction direction = blockView.getBlockState(blockPos).get(field_11177);
+		Direction direction = blockView.getBlockState(blockPos).get(FACING);
 		int j = blockPos.getX();
 		int k = blockPos.getY();
 		int l = blockPos.getZ();
@@ -281,7 +279,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_11177, field_9967, field_9968);
+		builder.with(FACING, PART, OCCUPIED);
 	}
 
 	@Override
@@ -293,8 +291,8 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
 		super.onPlaced(world, blockPos, blockState, livingEntity, itemStack);
 		if (!world.isClient) {
-			BlockPos blockPos2 = blockPos.offset(blockState.get(field_11177));
-			world.setBlockState(blockPos2, blockState.with(field_9967, BedPart.field_12560), 3);
+			BlockPos blockPos2 = blockPos.offset(blockState.get(FACING));
+			world.setBlockState(blockPos2, blockState.with(PART, BedPart.field_12560), 3);
 			world.updateNeighbors(blockPos, Blocks.field_10124);
 			blockState.updateNeighborStates(world, blockPos, 3);
 		}
@@ -308,7 +306,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	@Environment(EnvType.CLIENT)
 	@Override
 	public long getRenderingSeed(BlockState blockState, BlockPos blockPos) {
-		BlockPos blockPos2 = blockPos.offset(blockState.get(field_11177), blockState.get(field_9967) == BedPart.field_12560 ? 0 : 1);
+		BlockPos blockPos2 = blockPos.offset(blockState.get(FACING), blockState.get(PART) == BedPart.field_12560 ? 0 : 1);
 		return MathHelper.hashCode(blockPos2.getX(), blockPos.getY(), blockPos2.getZ());
 	}
 

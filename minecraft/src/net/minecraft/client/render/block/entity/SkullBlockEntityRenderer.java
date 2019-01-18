@@ -50,12 +50,12 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 	});
 
 	public void render(SkullBlockEntity skullBlockEntity, double d, double e, double f, float g, int i) {
-		float h = skullBlockEntity.method_11338(g);
+		float h = skullBlockEntity.getTicksPowered(g);
 		BlockState blockState = skullBlockEntity.getCachedState();
 		boolean bl = blockState.getBlock() instanceof WallSkullBlock;
-		Direction direction = bl ? blockState.get(WallSkullBlock.field_11724) : null;
-		float j = 22.5F * (float)(bl ? (2 + direction.getHorizontal()) * 4 : (Integer)blockState.get(SkullBlock.field_11505));
-		this.renderSkull((float)d, (float)e, (float)f, direction, j, ((AbstractSkullBlock)blockState.getBlock()).getSkullType(), skullBlockEntity.getOwner(), i, h);
+		Direction direction = bl ? blockState.get(WallSkullBlock.FACING) : null;
+		float j = 22.5F * (float)(bl ? (2 + direction.getHorizontal()) * 4 : (Integer)blockState.get(SkullBlock.ROTATION));
+		this.render((float)d, (float)e, (float)f, direction, j, ((AbstractSkullBlock)blockState.getBlock()).getSkullType(), skullBlockEntity.getOwner(), i, h);
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 		INSTANCE = this;
 	}
 
-	public void renderSkull(
+	public void render(
 		float f, float g, float h, @Nullable Direction direction, float i, SkullBlock.SkullType skullType, @Nullable GameProfile gameProfile, int j, float k
 	) {
 		SkullEntityModel skullEntityModel = (SkullEntityModel)MODELS.get(skullType);

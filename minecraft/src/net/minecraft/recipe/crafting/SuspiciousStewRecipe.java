@@ -62,8 +62,8 @@ public class SuspiciousStewRecipe extends SpecialCraftingRecipe {
 		ItemStack itemStack3 = new ItemStack(Items.field_8766, 1);
 		if (itemStack.getItem() instanceof BlockItem && ((BlockItem)itemStack.getItem()).getBlock() instanceof FlowerBlock) {
 			FlowerBlock flowerBlock = (FlowerBlock)((BlockItem)itemStack.getItem()).getBlock();
-			StatusEffect statusEffect = flowerBlock.method_10188();
-			SuspiciousStewItem.method_8021(itemStack3, statusEffect, flowerBlock.method_10187());
+			StatusEffect statusEffect = flowerBlock.getEffectInStew();
+			SuspiciousStewItem.addEffectToStew(itemStack3, statusEffect, flowerBlock.getEffectInStewDuration());
 		}
 
 		return itemStack3;

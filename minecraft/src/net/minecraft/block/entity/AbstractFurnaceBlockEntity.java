@@ -22,7 +22,7 @@ import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeInputProvider;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.RecipeUnlocker;
-import net.minecraft.recipe.cooking.AbstractCookingRecipe;
+import net.minecraft.recipe.cooking.CookingRecipe;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.DefaultedList;
@@ -81,85 +81,85 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		}
 	};
 	private final Map<Identifier, Integer> recipesUsed = Maps.<Identifier, Integer>newHashMap();
-	protected final RecipeType<? extends AbstractCookingRecipe> field_17582;
+	protected final RecipeType<? extends CookingRecipe> recipeType;
 
-	protected AbstractFurnaceBlockEntity(BlockEntityType<?> blockEntityType, RecipeType<? extends AbstractCookingRecipe> recipeType) {
+	protected AbstractFurnaceBlockEntity(BlockEntityType<?> blockEntityType, RecipeType<? extends CookingRecipe> recipeType) {
 		super(blockEntityType);
-		this.field_17582 = recipeType;
+		this.recipeType = recipeType;
 	}
 
-	public static Map<Item, Integer> createBurnableMap() {
+	public static Map<Item, Integer> createFuelTimeMap() {
 		Map<Item, Integer> map = Maps.<Item, Integer>newLinkedHashMap();
-		addBurnable(map, Items.field_8187, 20000);
-		addBurnable(map, Blocks.field_10381, 16000);
-		addBurnable(map, Items.field_8894, 2400);
-		addBurnable(map, Items.field_8713, 1600);
-		addBurnable(map, Items.field_8665, 1600);
-		addBurnable(map, ItemTags.field_15539, 300);
-		addBurnable(map, ItemTags.field_15537, 300);
-		addBurnable(map, ItemTags.field_15557, 300);
-		addBurnable(map, ItemTags.field_15534, 150);
-		addBurnable(map, ItemTags.field_15550, 300);
-		addBurnable(map, ItemTags.field_15540, 300);
-		addBurnable(map, Blocks.field_10620, 300);
-		addBurnable(map, Blocks.field_10299, 300);
-		addBurnable(map, Blocks.field_10020, 300);
-		addBurnable(map, Blocks.field_10319, 300);
-		addBurnable(map, Blocks.field_10132, 300);
-		addBurnable(map, Blocks.field_10144, 300);
-		addBurnable(map, Blocks.field_10188, 300);
-		addBurnable(map, Blocks.field_10513, 300);
-		addBurnable(map, Blocks.field_10291, 300);
-		addBurnable(map, Blocks.field_10041, 300);
-		addBurnable(map, Blocks.field_10196, 300);
-		addBurnable(map, Blocks.field_10457, 300);
-		addBurnable(map, Blocks.field_10179, 300);
-		addBurnable(map, Blocks.field_10504, 300);
-		addBurnable(map, Blocks.field_16330, 300);
-		addBurnable(map, Blocks.field_10223, 300);
-		addBurnable(map, Blocks.field_10034, 300);
-		addBurnable(map, Blocks.field_10380, 300);
-		addBurnable(map, Blocks.field_9980, 300);
-		addBurnable(map, Blocks.field_10429, 300);
-		addBurnable(map, ItemTags.field_15556, 300);
-		addBurnable(map, Items.field_8102, 300);
-		addBurnable(map, Items.field_8378, 300);
-		addBurnable(map, Blocks.field_9983, 300);
-		addBurnable(map, ItemTags.field_15533, 200);
-		addBurnable(map, Items.field_8876, 200);
-		addBurnable(map, Items.field_8091, 200);
-		addBurnable(map, Items.field_8167, 200);
-		addBurnable(map, Items.field_8406, 200);
-		addBurnable(map, Items.field_8647, 200);
-		addBurnable(map, ItemTags.field_15552, 200);
-		addBurnable(map, ItemTags.field_15536, 200);
-		addBurnable(map, ItemTags.field_15544, 100);
-		addBurnable(map, ItemTags.field_15555, 100);
-		addBurnable(map, Items.field_8600, 100);
-		addBurnable(map, ItemTags.field_15528, 100);
-		addBurnable(map, Items.field_8428, 100);
-		addBurnable(map, ItemTags.field_15542, 67);
-		addBurnable(map, Blocks.field_10342, 4001);
-		addBurnable(map, Items.field_8399, 300);
-		addBurnable(map, Blocks.field_10211, 50);
-		addBurnable(map, Blocks.field_10428, 100);
-		addBurnable(map, Blocks.field_16492, 50);
-		addBurnable(map, Blocks.field_10083, 300);
-		addBurnable(map, Blocks.field_16328, 300);
-		addBurnable(map, Blocks.field_16336, 300);
-		addBurnable(map, Blocks.field_16331, 300);
-		addBurnable(map, Blocks.field_16329, 300);
-		addBurnable(map, Blocks.field_17563, 300);
+		addFuel(map, Items.field_8187, 20000);
+		addFuel(map, Blocks.field_10381, 16000);
+		addFuel(map, Items.field_8894, 2400);
+		addFuel(map, Items.field_8713, 1600);
+		addFuel(map, Items.field_8665, 1600);
+		addFuel(map, ItemTags.field_15539, 300);
+		addFuel(map, ItemTags.field_15537, 300);
+		addFuel(map, ItemTags.field_15557, 300);
+		addFuel(map, ItemTags.field_15534, 150);
+		addFuel(map, ItemTags.field_15550, 300);
+		addFuel(map, ItemTags.field_15540, 300);
+		addFuel(map, Blocks.field_10620, 300);
+		addFuel(map, Blocks.field_10299, 300);
+		addFuel(map, Blocks.field_10020, 300);
+		addFuel(map, Blocks.field_10319, 300);
+		addFuel(map, Blocks.field_10132, 300);
+		addFuel(map, Blocks.field_10144, 300);
+		addFuel(map, Blocks.field_10188, 300);
+		addFuel(map, Blocks.field_10513, 300);
+		addFuel(map, Blocks.field_10291, 300);
+		addFuel(map, Blocks.field_10041, 300);
+		addFuel(map, Blocks.field_10196, 300);
+		addFuel(map, Blocks.field_10457, 300);
+		addFuel(map, Blocks.field_10179, 300);
+		addFuel(map, Blocks.field_10504, 300);
+		addFuel(map, Blocks.field_16330, 300);
+		addFuel(map, Blocks.field_10223, 300);
+		addFuel(map, Blocks.field_10034, 300);
+		addFuel(map, Blocks.field_10380, 300);
+		addFuel(map, Blocks.field_9980, 300);
+		addFuel(map, Blocks.field_10429, 300);
+		addFuel(map, ItemTags.field_15556, 300);
+		addFuel(map, Items.field_8102, 300);
+		addFuel(map, Items.field_8378, 300);
+		addFuel(map, Blocks.field_9983, 300);
+		addFuel(map, ItemTags.field_15533, 200);
+		addFuel(map, Items.field_8876, 200);
+		addFuel(map, Items.field_8091, 200);
+		addFuel(map, Items.field_8167, 200);
+		addFuel(map, Items.field_8406, 200);
+		addFuel(map, Items.field_8647, 200);
+		addFuel(map, ItemTags.field_15552, 200);
+		addFuel(map, ItemTags.field_15536, 200);
+		addFuel(map, ItemTags.field_15544, 100);
+		addFuel(map, ItemTags.field_15555, 100);
+		addFuel(map, Items.field_8600, 100);
+		addFuel(map, ItemTags.field_15528, 100);
+		addFuel(map, Items.field_8428, 100);
+		addFuel(map, ItemTags.field_15542, 67);
+		addFuel(map, Blocks.field_10342, 4001);
+		addFuel(map, Items.field_8399, 300);
+		addFuel(map, Blocks.field_10211, 50);
+		addFuel(map, Blocks.field_10428, 100);
+		addFuel(map, Blocks.field_16492, 50);
+		addFuel(map, Blocks.field_10083, 300);
+		addFuel(map, Blocks.field_16328, 300);
+		addFuel(map, Blocks.field_16336, 300);
+		addFuel(map, Blocks.field_16331, 300);
+		addFuel(map, Blocks.field_16329, 300);
+		addFuel(map, Blocks.field_17563, 300);
 		return map;
 	}
 
-	private static void addBurnable(Map<Item, Integer> map, Tag<Item> tag, int i) {
+	private static void addFuel(Map<Item, Integer> map, Tag<Item> tag, int i) {
 		for (Item item : tag.values()) {
 			map.put(item, i);
 		}
 	}
 
-	private static void addBurnable(Map<Item, Integer> map, ItemProvider itemProvider, int i) {
+	private static void addFuel(Map<Item, Integer> map, ItemProvider itemProvider, int i) {
 		map.put(itemProvider.getItem(), i);
 	}
 
@@ -175,7 +175,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		this.burnTime = compoundTag.getShort("BurnTime");
 		this.cookTime = compoundTag.getShort("CookTime");
 		this.cookTimeTotal = compoundTag.getShort("CookTimeTotal");
-		this.fuelTime = this.getItemBurnTime(this.inventory.get(1));
+		this.fuelTime = this.getFuelTime(this.inventory.get(1));
 		int i = compoundTag.getShort("RecipesUsedSize");
 
 		for (int j = 0; j < i; j++) {
@@ -215,9 +215,9 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		if (!this.world.isClient) {
 			ItemStack itemStack = this.inventory.get(1);
 			if (this.isBurning() || !itemStack.isEmpty() && !this.inventory.get(0).isEmpty()) {
-				Recipe<?> recipe = (Recipe<?>)this.world.getRecipeManager().get(this.field_17582, this, this.world).orElse(null);
+				Recipe<?> recipe = (Recipe<?>)this.world.getRecipeManager().get(this.recipeType, this, this.world).orElse(null);
 				if (!this.isBurning() && this.canAcceptRecipeOutput(recipe)) {
-					this.burnTime = this.getItemBurnTime(itemStack);
+					this.burnTime = this.getFuelTime(itemStack);
 					this.fuelTime = this.burnTime;
 					if (this.isBurning()) {
 						bl2 = true;
@@ -249,7 +249,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 
 			if (bl != this.isBurning()) {
 				bl2 = true;
-				this.world.setBlockState(this.pos, this.world.getBlockState(this.pos).with(AbstractFurnaceBlock.field_11105, Boolean.valueOf(this.isBurning())), 3);
+				this.world.setBlockState(this.pos, this.world.getBlockState(this.pos).with(AbstractFurnaceBlock.LIT, Boolean.valueOf(this.isBurning())), 3);
 			}
 		}
 
@@ -303,21 +303,21 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		}
 	}
 
-	protected int getItemBurnTime(ItemStack itemStack) {
+	protected int getFuelTime(ItemStack itemStack) {
 		if (itemStack.isEmpty()) {
 			return 0;
 		} else {
 			Item item = itemStack.getItem();
-			return (Integer)createBurnableMap().getOrDefault(item, 0);
+			return (Integer)createFuelTimeMap().getOrDefault(item, 0);
 		}
 	}
 
 	protected int getCookTime() {
-		return (Integer)this.world.getRecipeManager().get(this.field_17582, this, this.world).map(AbstractCookingRecipe::getCookTime).orElse(200);
+		return (Integer)this.world.getRecipeManager().get(this.recipeType, this, this.world).map(CookingRecipe::getCookTime).orElse(200);
 	}
 
 	public static boolean canUseAsFuel(ItemStack itemStack) {
-		return createBurnableMap().containsKey(itemStack.getItem());
+		return createFuelTimeMap().containsKey(itemStack.getItem());
 	}
 
 	@Override
@@ -434,14 +434,14 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	public void unlockLastRecipe(PlayerEntity playerEntity) {
 	}
 
-	public void method_17763(PlayerEntity playerEntity) {
+	public void dropExperience(PlayerEntity playerEntity) {
 		if (!this.world.getGameRules().getBoolean("doLimitedCrafting")) {
 			List<Recipe<?>> list = Lists.<Recipe<?>>newArrayList();
 
 			for (Entry<Identifier, Integer> entry : this.recipesUsed.entrySet()) {
 				playerEntity.world.getRecipeManager().get((Identifier)entry.getKey()).ifPresent(recipe -> {
 					list.add(recipe);
-					method_17760(playerEntity, (Integer)entry.getValue(), ((AbstractCookingRecipe)recipe).getExperience());
+					dropExperience(playerEntity, (Integer)entry.getValue(), ((CookingRecipe)recipe).getExperience());
 				});
 			}
 
@@ -451,7 +451,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		this.recipesUsed.clear();
 	}
 
-	private static void method_17760(PlayerEntity playerEntity, int i, float f) {
+	private static void dropExperience(PlayerEntity playerEntity, int i, float f) {
 		if (f == 0.0F) {
 			i = 0;
 		} else if (f < 1.0F) {

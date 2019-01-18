@@ -19,8 +19,8 @@ public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 	public boolean generate(IWorld iWorld, BlockPos blockPos, BlockState blockState, Random random) {
 		for (int i = 0; i >= -1; i--) {
 			for (int j = 0; j >= -1; j--) {
-				if (method_11442(blockState, iWorld, blockPos, i, j)) {
-					return this.method_11444(iWorld, blockPos, blockState, random, i, j);
+				if (canGenerateLargeTree(blockState, iWorld, blockPos, i, j)) {
+					return this.generateLargeTree(iWorld, blockPos, blockState, random, i, j);
 				}
 			}
 		}
@@ -31,7 +31,7 @@ public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 	@Nullable
 	protected abstract AbstractTreeFeature<DefaultFeatureConfig> createLargeTreeFeature(Random random);
 
-	public boolean method_11444(IWorld iWorld, BlockPos blockPos, BlockState blockState, Random random, int i, int j) {
+	public boolean generateLargeTree(IWorld iWorld, BlockPos blockPos, BlockState blockState, Random random, int i, int j) {
 		AbstractTreeFeature<DefaultFeatureConfig> abstractTreeFeature = this.createLargeTreeFeature(random);
 		if (abstractTreeFeature == null) {
 			return false;
@@ -55,7 +55,7 @@ public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 		}
 	}
 
-	public static boolean method_11442(BlockState blockState, BlockView blockView, BlockPos blockPos, int i, int j) {
+	public static boolean canGenerateLargeTree(BlockState blockState, BlockView blockView, BlockPos blockPos, int i, int j) {
 		Block block = blockState.getBlock();
 		return block == blockView.getBlockState(blockPos.add(i, 0, j)).getBlock()
 			&& block == blockView.getBlockState(blockPos.add(i + 1, 0, j)).getBlock()

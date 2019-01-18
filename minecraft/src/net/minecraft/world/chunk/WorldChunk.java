@@ -367,9 +367,7 @@ public class WorldChunk implements Chunk {
 		entity.chunkX = this.pos.x;
 		entity.chunkY = k;
 		entity.chunkZ = this.pos.z;
-		if (!(entity instanceof PlayerEntity)) {
-			this.entitySections[k].add(entity);
-		}
+		this.entitySections[k].add(entity);
 	}
 
 	@Override

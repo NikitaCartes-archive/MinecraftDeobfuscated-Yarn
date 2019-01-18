@@ -41,7 +41,7 @@ public class PhantomSpawner {
 								LocalDifficulty localDifficulty = world.getLocalDifficulty(blockPos);
 								if (localDifficulty.method_5455(random.nextFloat() * 3.0F)) {
 									ServerStatHandler serverStatHandler = ((ServerPlayerEntity)playerEntity).method_14248();
-									int j = MathHelper.clamp(serverStatHandler.getStat(Stats.field_15419.method_14956(Stats.field_15429)), 1, Integer.MAX_VALUE);
+									int j = MathHelper.clamp(serverStatHandler.getStat(Stats.field_15419.getOrCreateStat(Stats.field_15429)), 1, Integer.MAX_VALUE);
 									int k = 24000;
 									if (random.nextInt(j) >= 72000) {
 										BlockPos blockPos2 = blockPos.up(20 + random.nextInt(15)).east(-10 + random.nextInt(21)).south(-10 + random.nextInt(21));

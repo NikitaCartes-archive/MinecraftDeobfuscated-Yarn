@@ -49,7 +49,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public void randomTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onRandomTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		world.getFluidState(blockPos).onRandomTick(world, blockPos, random);
 	}
 
@@ -92,7 +92,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 
 	@Override
 	public int getTickRate(ViewableWorld viewableWorld) {
-		return this.fluid.method_15789(viewableWorld);
+		return this.fluid.getTickRate(viewableWorld);
 	}
 
 	@Override

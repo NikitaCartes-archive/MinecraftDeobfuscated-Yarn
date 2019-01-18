@@ -24,11 +24,11 @@ public class FlintAndSteelItem extends Item {
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		PlayerEntity playerEntity = itemUsageContext.getPlayer();
 		IWorld iWorld = itemUsageContext.getWorld();
-		BlockPos blockPos = itemUsageContext.getPos();
+		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockPos blockPos2 = blockPos.offset(itemUsageContext.getFacing());
 		if (method_7825(iWorld.getBlockState(blockPos2), iWorld, blockPos2)) {
 			iWorld.playSound(playerEntity, blockPos2, SoundEvents.field_15145, SoundCategory.field_15245, 1.0F, random.nextFloat() * 0.4F + 0.8F);
-			BlockState blockState = ((FireBlock)Blocks.field_10036).method_10198(iWorld, blockPos2);
+			BlockState blockState = ((FireBlock)Blocks.field_10036).getStateForPosition(iWorld, blockPos2);
 			iWorld.setBlockState(blockPos2, blockState, 11);
 			ItemStack itemStack = itemUsageContext.getItemStack();
 			if (playerEntity instanceof ServerPlayerEntity) {
@@ -61,10 +61,10 @@ public class FlintAndSteelItem extends Item {
 	}
 
 	public static boolean method_7825(BlockState blockState, IWorld iWorld, BlockPos blockPos) {
-		BlockState blockState2 = ((FireBlock)Blocks.field_10036).method_10198(iWorld, blockPos);
+		BlockState blockState2 = ((FireBlock)Blocks.field_10036).getStateForPosition(iWorld, blockPos);
 		boolean bl = false;
 
-		for (Direction direction : Direction.class_2353.HORIZONTAL) {
+		for (Direction direction : Direction.Type.HORIZONTAL) {
 			if (iWorld.getBlockState(blockPos.offset(direction)).getBlock() == Blocks.field_10540
 				&& ((PortalBlock)Blocks.field_10316).method_10351(iWorld, blockPos) != null) {
 				bl = true;

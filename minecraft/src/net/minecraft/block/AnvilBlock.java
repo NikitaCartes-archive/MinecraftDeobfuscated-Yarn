@@ -12,9 +12,9 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Rotation;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -23,17 +23,17 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class AnvilBlock extends FallingBlock {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
-	private static final VoxelShape field_9882 = Block.createCubeShape(2.0, 0.0, 2.0, 14.0, 4.0, 14.0);
-	private static final VoxelShape field_9885 = Block.createCubeShape(3.0, 4.0, 4.0, 13.0, 5.0, 12.0);
-	private static final VoxelShape field_9888 = Block.createCubeShape(4.0, 5.0, 6.0, 12.0, 10.0, 10.0);
-	private static final VoxelShape field_9884 = Block.createCubeShape(0.0, 10.0, 3.0, 16.0, 16.0, 13.0);
-	private static final VoxelShape field_9891 = Block.createCubeShape(4.0, 4.0, 3.0, 12.0, 5.0, 13.0);
-	private static final VoxelShape field_9889 = Block.createCubeShape(6.0, 5.0, 4.0, 10.0, 10.0, 12.0);
-	private static final VoxelShape field_9886 = Block.createCubeShape(3.0, 10.0, 0.0, 13.0, 16.0, 16.0);
-	private static final VoxelShape field_9887 = VoxelShapes.method_17786(field_9882, field_9885, field_9888, field_9884);
-	private static final VoxelShape field_9892 = VoxelShapes.method_17786(field_9882, field_9891, field_9889, field_9886);
-	private static final TranslatableTextComponent field_17349 = new TranslatableTextComponent("container.repair");
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+	private static final VoxelShape field_9882 = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 4.0, 14.0);
+	private static final VoxelShape field_9885 = Block.createCuboidShape(3.0, 4.0, 4.0, 13.0, 5.0, 12.0);
+	private static final VoxelShape field_9888 = Block.createCuboidShape(4.0, 5.0, 6.0, 12.0, 10.0, 10.0);
+	private static final VoxelShape field_9884 = Block.createCuboidShape(0.0, 10.0, 3.0, 16.0, 16.0, 13.0);
+	private static final VoxelShape field_9891 = Block.createCuboidShape(4.0, 4.0, 3.0, 12.0, 5.0, 13.0);
+	private static final VoxelShape field_9889 = Block.createCuboidShape(6.0, 5.0, 4.0, 10.0, 10.0, 12.0);
+	private static final VoxelShape field_9886 = Block.createCuboidShape(3.0, 10.0, 0.0, 13.0, 16.0, 16.0);
+	private static final VoxelShape X_AXIS_SHAPE = VoxelShapes.union(field_9882, field_9885, field_9888, field_9884);
+	private static final VoxelShape Z_AXIS_SHAPE = VoxelShapes.union(field_9882, field_9891, field_9889, field_9886);
+	private static final TranslatableTextComponent CONTAINER_NAME = new TranslatableTextComponent("container.repair");
 
 	public AnvilBlock(Block.Settings settings) {
 		super(settings);
@@ -46,23 +46,23 @@ public class AnvilBlock extends FallingBlock {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		playerEntity.openContainer(blockState.method_17526(world, blockPos));
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
 		return true;
 	}
 
 	@Nullable
 	@Override
-	public NameableContainerProvider method_17454(BlockState blockState, World world, BlockPos blockPos) {
+	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
 		return new ClientDummyContainerProvider(
-			(i, playerInventory, playerEntity) -> new AnvilContainer(i, playerInventory, class_3914.method_17392(world, blockPos)), field_17349
+			(i, playerInventory, playerEntity) -> new AnvilContainer(i, playerInventory, class_3914.method_17392(world, blockPos)), CONTAINER_NAME
 		);
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		Direction direction = blockState.get(FACING);
-		return direction.getAxis() == Direction.Axis.X ? field_9887 : field_9892;
+		return direction.getAxis() == Direction.Axis.X ? X_AXIS_SHAPE : Z_AXIS_SHAPE;
 	}
 
 	@Override
@@ -91,8 +91,8 @@ public class AnvilBlock extends FallingBlock {
 	}
 
 	@Override
-	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
-		return blockState.with(FACING, rotation.method_10503(blockState.get(FACING)));
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
+		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override

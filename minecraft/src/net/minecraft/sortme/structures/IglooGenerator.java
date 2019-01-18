@@ -6,14 +6,14 @@ import java.util.Map;
 import java.util.Random;
 import net.minecraft.class_3443;
 import net.minecraft.class_3470;
-import net.minecraft.class_3492;
-import net.minecraft.class_3499;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sortme.Structure;
 import net.minecraft.sortme.StructurePiece;
+import net.minecraft.sortme.StructurePlacementData;
 import net.minecraft.sortme.structures.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Mirror;
@@ -73,13 +73,13 @@ public class IglooGenerator {
 		}
 
 		private void method_14708(StructureManager structureManager) {
-			class_3499 lv = structureManager.method_15091(this.field_14411);
-			class_3492 lv2 = new class_3492()
-				.method_15123(this.field_14412)
-				.method_15125(Mirror.NONE)
-				.method_15119((BlockPos)IglooGenerator.field_14408.get(this.field_14411))
-				.method_16184(BlockIgnoreStructureProcessor.field_16718);
-			this.method_15027(lv, this.field_15432, lv2);
+			Structure structure = structureManager.getStructureOrBlank(this.field_14411);
+			StructurePlacementData structurePlacementData = new StructurePlacementData()
+				.setRotation(this.field_14412)
+				.setMirrored(Mirror.NONE)
+				.setPosition((BlockPos)IglooGenerator.field_14408.get(this.field_14411))
+				.addProcessor(BlockIgnoreStructureProcessor.field_16718);
+			this.method_15027(structure, this.field_15432, structurePlacementData);
 		}
 
 		@Override
@@ -102,19 +102,19 @@ public class IglooGenerator {
 
 		@Override
 		public boolean method_14931(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
-			class_3492 lv = new class_3492()
-				.method_15123(this.field_14412)
-				.method_15125(Mirror.NONE)
-				.method_15119((BlockPos)IglooGenerator.field_14408.get(this.field_14411))
-				.method_16184(BlockIgnoreStructureProcessor.field_16718);
+			StructurePlacementData structurePlacementData = new StructurePlacementData()
+				.setRotation(this.field_14412)
+				.setMirrored(Mirror.NONE)
+				.setPosition((BlockPos)IglooGenerator.field_14408.get(this.field_14411))
+				.addProcessor(BlockIgnoreStructureProcessor.field_16718);
 			BlockPos blockPos = (BlockPos)IglooGenerator.field_14406.get(this.field_14411);
-			BlockPos blockPos2 = this.field_15432.add(class_3499.method_15171(lv, new BlockPos(3 - blockPos.getX(), 0, 0 - blockPos.getZ())));
+			BlockPos blockPos2 = this.field_15432.add(Structure.method_15171(structurePlacementData, new BlockPos(3 - blockPos.getX(), 0, 0 - blockPos.getZ())));
 			int i = iWorld.getTop(Heightmap.Type.WORLD_SURFACE_WG, blockPos2.getX(), blockPos2.getZ());
 			BlockPos blockPos3 = this.field_15432;
 			this.field_15432 = this.field_15432.add(0, i - 90 - 1, 0);
 			boolean bl = super.method_14931(iWorld, random, mutableIntBoundingBox, chunkPos);
 			if (this.field_14411.equals(IglooGenerator.field_14409)) {
-				BlockPos blockPos4 = this.field_15432.add(class_3499.method_15171(lv, new BlockPos(3, 0, 5)));
+				BlockPos blockPos4 = this.field_15432.add(Structure.method_15171(structurePlacementData, new BlockPos(3, 0, 5)));
 				BlockState blockState = iWorld.getBlockState(blockPos4.down());
 				if (!blockState.isAir() && blockState.getBlock() != Blocks.field_9983) {
 					iWorld.setBlockState(blockPos4, Blocks.field_10491.getDefaultState(), 3);

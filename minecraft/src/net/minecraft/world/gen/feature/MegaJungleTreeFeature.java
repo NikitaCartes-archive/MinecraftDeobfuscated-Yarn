@@ -52,8 +52,8 @@ public class MegaJungleTreeFeature extends MegaTreeFeature<DefaultFeatureConfig>
 				if (canTreeReplace(modifiableTestableWorld, blockPos2)) {
 					this.setBlockState(set, modifiableTestableWorld, blockPos2, this.field_13685);
 					if (q > 0) {
-						this.method_13507(modifiableTestableWorld, random, blockPos2.west(), VineBlock.field_11702);
-						this.method_13507(modifiableTestableWorld, random, blockPos2.north(), VineBlock.field_11699);
+						this.method_13507(modifiableTestableWorld, random, blockPos2.west(), VineBlock.EAST);
+						this.method_13507(modifiableTestableWorld, random, blockPos2.north(), VineBlock.SOUTH);
 					}
 				}
 
@@ -62,8 +62,8 @@ public class MegaJungleTreeFeature extends MegaTreeFeature<DefaultFeatureConfig>
 					if (canTreeReplace(modifiableTestableWorld, blockPos3)) {
 						this.setBlockState(set, modifiableTestableWorld, blockPos3, this.field_13685);
 						if (q > 0) {
-							this.method_13507(modifiableTestableWorld, random, blockPos3.east(), VineBlock.field_11696);
-							this.method_13507(modifiableTestableWorld, random, blockPos3.north(), VineBlock.field_11699);
+							this.method_13507(modifiableTestableWorld, random, blockPos3.east(), VineBlock.WEST);
+							this.method_13507(modifiableTestableWorld, random, blockPos3.north(), VineBlock.SOUTH);
 						}
 					}
 
@@ -71,8 +71,8 @@ public class MegaJungleTreeFeature extends MegaTreeFeature<DefaultFeatureConfig>
 					if (canTreeReplace(modifiableTestableWorld, blockPos4)) {
 						this.setBlockState(set, modifiableTestableWorld, blockPos4, this.field_13685);
 						if (q > 0) {
-							this.method_13507(modifiableTestableWorld, random, blockPos4.east(), VineBlock.field_11696);
-							this.method_13507(modifiableTestableWorld, random, blockPos4.south(), VineBlock.field_11706);
+							this.method_13507(modifiableTestableWorld, random, blockPos4.east(), VineBlock.WEST);
+							this.method_13507(modifiableTestableWorld, random, blockPos4.south(), VineBlock.NORTH);
 						}
 					}
 
@@ -80,8 +80,8 @@ public class MegaJungleTreeFeature extends MegaTreeFeature<DefaultFeatureConfig>
 					if (canTreeReplace(modifiableTestableWorld, blockPos5)) {
 						this.setBlockState(set, modifiableTestableWorld, blockPos5, this.field_13685);
 						if (q > 0) {
-							this.method_13507(modifiableTestableWorld, random, blockPos5.west(), VineBlock.field_11702);
-							this.method_13507(modifiableTestableWorld, random, blockPos5.south(), VineBlock.field_11706);
+							this.method_13507(modifiableTestableWorld, random, blockPos5.west(), VineBlock.EAST);
+							this.method_13507(modifiableTestableWorld, random, blockPos5.south(), VineBlock.NORTH);
 						}
 					}
 				}

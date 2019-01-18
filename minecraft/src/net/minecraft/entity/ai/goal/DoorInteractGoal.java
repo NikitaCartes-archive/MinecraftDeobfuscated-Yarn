@@ -33,7 +33,7 @@ public abstract class DoorInteractGoal extends Goal {
 				this.field_6412 = false;
 				return false;
 			} else {
-				return (Boolean)blockState.get(DoorBlock.field_10945);
+				return (Boolean)blockState.get(DoorBlock.OPEN);
 			}
 		}
 	}
@@ -42,7 +42,7 @@ public abstract class DoorInteractGoal extends Goal {
 		if (this.field_6412) {
 			BlockState blockState = this.owner.world.getBlockState(this.doorPos);
 			if (blockState.getBlock() instanceof DoorBlock) {
-				((DoorBlock)blockState.getBlock()).method_10033(this.owner.world, this.doorPos, bl);
+				((DoorBlock)blockState.getBlock()).onMobOpenedOrClosed(this.owner.world, this.doorPos, bl);
 			}
 		}
 	}

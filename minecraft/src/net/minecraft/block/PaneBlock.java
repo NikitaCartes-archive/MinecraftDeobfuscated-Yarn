@@ -29,8 +29,8 @@ public class PaneBlock extends HorizontalConnectedBlock {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockView blockView = itemPlacementContext.getWorld();
-		BlockPos blockPos = itemPlacementContext.getPos();
-		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getPos());
+		BlockPos blockPos = itemPlacementContext.getBlockPos();
+		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
 		BlockPos blockPos2 = blockPos.north();
 		BlockPos blockPos3 = blockPos.south();
 		BlockPos blockPos4 = blockPos.west();
@@ -40,10 +40,10 @@ public class PaneBlock extends HorizontalConnectedBlock {
 		BlockState blockState3 = blockView.getBlockState(blockPos4);
 		BlockState blockState4 = blockView.getBlockState(blockPos5);
 		return this.getDefaultState()
-			.with(NORTH, Boolean.valueOf(this.connectsTo(blockState, Block.isFaceFullCube(blockState.getCollisionShape(blockView, blockPos2), Direction.SOUTH))))
-			.with(SOUTH, Boolean.valueOf(this.connectsTo(blockState2, Block.isFaceFullCube(blockState2.getCollisionShape(blockView, blockPos3), Direction.NORTH))))
-			.with(WEST, Boolean.valueOf(this.connectsTo(blockState3, Block.isFaceFullCube(blockState3.getCollisionShape(blockView, blockPos4), Direction.EAST))))
-			.with(EAST, Boolean.valueOf(this.connectsTo(blockState4, Block.isFaceFullCube(blockState4.getCollisionShape(blockView, blockPos5), Direction.WEST))))
+			.with(NORTH, Boolean.valueOf(this.connectsTo(blockState, Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos2), Direction.SOUTH))))
+			.with(SOUTH, Boolean.valueOf(this.connectsTo(blockState2, Block.isFaceFullSquare(blockState2.getCollisionShape(blockView, blockPos3), Direction.NORTH))))
+			.with(WEST, Boolean.valueOf(this.connectsTo(blockState3, Block.isFaceFullSquare(blockState3.getCollisionShape(blockView, blockPos4), Direction.EAST))))
+			.with(EAST, Boolean.valueOf(this.connectsTo(blockState4, Block.isFaceFullSquare(blockState4.getCollisionShape(blockView, blockPos5), Direction.WEST))))
 			.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 	}
 
@@ -52,13 +52,13 @@ public class PaneBlock extends HorizontalConnectedBlock {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		if ((Boolean)blockState.get(WATERLOGGED)) {
-			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
+			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 		}
 
 		return direction.getAxis().isHorizontal()
 			? blockState.with(
 				(Property)FACING_PROPERTIES.get(direction),
-				Boolean.valueOf(this.connectsTo(blockState2, Block.isFaceFullCube(blockState2.getCollisionShape(iWorld, blockPos2), direction.getOpposite())))
+				Boolean.valueOf(this.connectsTo(blockState2, Block.isFaceFullSquare(blockState2.getCollisionShape(iWorld, blockPos2), direction.getOpposite())))
 			)
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}

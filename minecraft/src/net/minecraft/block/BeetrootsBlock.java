@@ -15,12 +15,12 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class BeetrootsBlock extends CropBlock {
-	public static final IntegerProperty field_9962 = Properties.AGE_3;
-	private static final VoxelShape[] field_9961 = new VoxelShape[]{
-		Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0),
-		Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 4.0, 16.0),
-		Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 6.0, 16.0),
-		Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0)
+	public static final IntegerProperty AGE = Properties.AGE_3;
+	private static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{
+		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0),
+		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 4.0, 16.0),
+		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 6.0, 16.0),
+		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0)
 	};
 
 	public BeetrootsBlock(Block.Settings settings) {
@@ -29,7 +29,7 @@ public class BeetrootsBlock extends CropBlock {
 
 	@Override
 	public IntegerProperty getAgeProperty() {
-		return field_9962;
+		return AGE;
 	}
 
 	@Override
@@ -44,9 +44,9 @@ public class BeetrootsBlock extends CropBlock {
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (random.nextInt(3) != 0) {
-			super.scheduledTick(blockState, world, blockPos, random);
+			super.onScheduledTick(blockState, world, blockPos, random);
 		}
 	}
 
@@ -57,11 +57,11 @@ public class BeetrootsBlock extends CropBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_9962);
+		builder.with(AGE);
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_9961[blockState.get(this.getAgeProperty())];
+		return AGE_TO_SHAPE[blockState.get(this.getAgeProperty())];
 	}
 }

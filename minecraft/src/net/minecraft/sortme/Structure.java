@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.sortme;
 
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.SharedConstants;
+import net.minecraft.class_3829;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -36,37 +38,37 @@ import net.minecraft.util.shape.BitSetVoxelShapeContainer;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
-public class class_3499 {
-	private final List<List<class_3499.class_3501>> field_15586 = Lists.<List<class_3499.class_3501>>newArrayList();
-	private final List<class_3499.class_3502> field_15589 = Lists.<class_3499.class_3502>newArrayList();
-	private BlockPos field_15587 = BlockPos.ORIGIN;
-	private String field_15588 = "?";
+public class Structure {
+	private final List<List<Structure.StructureBlockInfo>> blocks = Lists.<List<Structure.StructureBlockInfo>>newArrayList();
+	private final List<Structure.StructureEntityInfo> entities = Lists.<Structure.StructureEntityInfo>newArrayList();
+	private BlockPos size = BlockPos.ORIGIN;
+	private String author = "?";
 
-	public BlockPos method_15160() {
-		return this.field_15587;
+	public BlockPos getSize() {
+		return this.size;
 	}
 
-	public void method_15161(String string) {
-		this.field_15588 = string;
+	public void setAuthor(String string) {
+		this.author = string;
 	}
 
-	public String method_15181() {
-		return this.field_15588;
+	public String getAuthor() {
+		return this.author;
 	}
 
 	public void method_15174(World world, BlockPos blockPos, BlockPos blockPos2, boolean bl, @Nullable Block block) {
 		if (blockPos2.getX() >= 1 && blockPos2.getY() >= 1 && blockPos2.getZ() >= 1) {
 			BlockPos blockPos3 = blockPos.add(blockPos2).add(-1, -1, -1);
-			List<class_3499.class_3501> list = Lists.<class_3499.class_3501>newArrayList();
-			List<class_3499.class_3501> list2 = Lists.<class_3499.class_3501>newArrayList();
-			List<class_3499.class_3501> list3 = Lists.<class_3499.class_3501>newArrayList();
+			List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
+			List<Structure.StructureBlockInfo> list2 = Lists.<Structure.StructureBlockInfo>newArrayList();
+			List<Structure.StructureBlockInfo> list3 = Lists.<Structure.StructureBlockInfo>newArrayList();
 			BlockPos blockPos4 = new BlockPos(
 				Math.min(blockPos.getX(), blockPos3.getX()), Math.min(blockPos.getY(), blockPos3.getY()), Math.min(blockPos.getZ(), blockPos3.getZ())
 			);
 			BlockPos blockPos5 = new BlockPos(
 				Math.max(blockPos.getX(), blockPos3.getX()), Math.max(blockPos.getY(), blockPos3.getY()), Math.max(blockPos.getZ(), blockPos3.getZ())
 			);
-			this.field_15587 = blockPos2;
+			this.size = blockPos2;
 
 			for (BlockPos blockPos6 : BlockPos.iterateBoxPositions(blockPos4, blockPos5)) {
 				BlockPos blockPos7 = blockPos6.subtract(blockPos4);
@@ -78,32 +80,32 @@ public class class_3499 {
 						compoundTag.remove("x");
 						compoundTag.remove("y");
 						compoundTag.remove("z");
-						list2.add(new class_3499.class_3501(blockPos7, blockState, compoundTag));
+						list2.add(new Structure.StructureBlockInfo(blockPos7, blockState, compoundTag));
 					} else if (!blockState.isFullOpaque(world, blockPos6) && !blockState.method_11604(world, blockPos6)) {
-						list3.add(new class_3499.class_3501(blockPos7, blockState, null));
+						list3.add(new Structure.StructureBlockInfo(blockPos7, blockState, null));
 					} else {
-						list.add(new class_3499.class_3501(blockPos7, blockState, null));
+						list.add(new Structure.StructureBlockInfo(blockPos7, blockState, null));
 					}
 				}
 			}
 
-			List<class_3499.class_3501> list4 = Lists.<class_3499.class_3501>newArrayList();
+			List<Structure.StructureBlockInfo> list4 = Lists.<Structure.StructureBlockInfo>newArrayList();
 			list4.addAll(list);
 			list4.addAll(list2);
 			list4.addAll(list3);
-			this.field_15586.clear();
-			this.field_15586.add(list4);
+			this.blocks.clear();
+			this.blocks.add(list4);
 			if (bl) {
 				this.method_15164(world, blockPos4, blockPos5.add(1, 1, 1));
 			} else {
-				this.field_15589.clear();
+				this.entities.clear();
 			}
 		}
 	}
 
 	private void method_15164(World world, BlockPos blockPos, BlockPos blockPos2) {
 		List<Entity> list = world.getEntities(Entity.class, new BoundingBox(blockPos, blockPos2), entityx -> !(entityx instanceof PlayerEntity));
-		this.field_15589.clear();
+		this.entities.clear();
 
 		for (Entity entity : list) {
 			Vec3d vec3d = new Vec3d(entity.x - (double)blockPos.getX(), entity.y - (double)blockPos.getY(), entity.z - (double)blockPos.getZ());
@@ -116,24 +118,24 @@ public class class_3499 {
 				blockPos3 = new BlockPos(vec3d);
 			}
 
-			this.field_15589.add(new class_3499.class_3502(vec3d, blockPos3, compoundTag));
+			this.entities.add(new Structure.StructureEntityInfo(vec3d, blockPos3, compoundTag));
 		}
 	}
 
-	public List<class_3499.class_3501> method_16445(BlockPos blockPos, class_3492 arg, Block block) {
-		return this.method_15165(blockPos, arg, block, true);
+	public List<Structure.StructureBlockInfo> method_16445(BlockPos blockPos, StructurePlacementData structurePlacementData, Block block) {
+		return this.method_15165(blockPos, structurePlacementData, block, true);
 	}
 
-	public List<class_3499.class_3501> method_15165(BlockPos blockPos, class_3492 arg, Block block, boolean bl) {
-		List<class_3499.class_3501> list = Lists.<class_3499.class_3501>newArrayList();
-		MutableIntBoundingBox mutableIntBoundingBox = arg.method_15124();
+	public List<Structure.StructureBlockInfo> method_15165(BlockPos blockPos, StructurePlacementData structurePlacementData, Block block, boolean bl) {
+		List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
+		MutableIntBoundingBox mutableIntBoundingBox = structurePlacementData.method_15124();
 
-		for (class_3499.class_3501 lv : arg.method_15121(this.field_15586, blockPos)) {
-			BlockPos blockPos2 = bl ? method_15171(arg, lv.field_15597).add(blockPos) : lv.field_15597;
+		for (Structure.StructureBlockInfo structureBlockInfo : structurePlacementData.method_15121(this.blocks, blockPos)) {
+			BlockPos blockPos2 = bl ? method_15171(structurePlacementData, structureBlockInfo.pos).add(blockPos) : structureBlockInfo.pos;
 			if (mutableIntBoundingBox == null || mutableIntBoundingBox.contains(blockPos2)) {
-				BlockState blockState = lv.field_15596;
+				BlockState blockState = structureBlockInfo.state;
 				if (blockState.getBlock() == block) {
-					list.add(new class_3499.class_3501(blockPos2, blockState.applyRotation(arg.method_15113()), lv.field_15595));
+					list.add(new Structure.StructureBlockInfo(blockPos2, blockState.rotate(structurePlacementData.getRotation()), structureBlockInfo.tag));
 				}
 			}
 		}
@@ -141,36 +143,38 @@ public class class_3499 {
 		return list;
 	}
 
-	public BlockPos method_15180(class_3492 arg, BlockPos blockPos, class_3492 arg2, BlockPos blockPos2) {
-		BlockPos blockPos3 = method_15171(arg, blockPos);
-		BlockPos blockPos4 = method_15171(arg2, blockPos2);
+	public BlockPos method_15180(
+		StructurePlacementData structurePlacementData, BlockPos blockPos, StructurePlacementData structurePlacementData2, BlockPos blockPos2
+	) {
+		BlockPos blockPos3 = method_15171(structurePlacementData, blockPos);
+		BlockPos blockPos4 = method_15171(structurePlacementData2, blockPos2);
 		return blockPos3.subtract(blockPos4);
 	}
 
-	public static BlockPos method_15171(class_3492 arg, BlockPos blockPos) {
-		return method_15168(blockPos, arg.method_15114(), arg.method_15113(), arg.method_15134());
+	public static BlockPos method_15171(StructurePlacementData structurePlacementData, BlockPos blockPos) {
+		return method_15168(blockPos, structurePlacementData.getMirror(), structurePlacementData.getRotation(), structurePlacementData.getPosition());
 	}
 
-	public void method_15182(IWorld iWorld, BlockPos blockPos, class_3492 arg) {
-		arg.method_15132();
-		this.method_15178(iWorld, blockPos, arg);
+	public void place(IWorld iWorld, BlockPos blockPos, StructurePlacementData structurePlacementData) {
+		structurePlacementData.method_15132();
+		this.method_15178(iWorld, blockPos, structurePlacementData);
 	}
 
-	public void method_15178(IWorld iWorld, BlockPos blockPos, class_3492 arg) {
-		this.method_15172(iWorld, blockPos, arg, 2);
+	public void method_15178(IWorld iWorld, BlockPos blockPos, StructurePlacementData structurePlacementData) {
+		this.method_15172(iWorld, blockPos, structurePlacementData, 2);
 	}
 
-	public boolean method_15172(IWorld iWorld, BlockPos blockPos, class_3492 arg, int i) {
-		if (this.field_15586.isEmpty()) {
+	public boolean method_15172(IWorld iWorld, BlockPos blockPos, StructurePlacementData structurePlacementData, int i) {
+		if (this.blocks.isEmpty()) {
 			return false;
 		} else {
-			List<class_3499.class_3501> list = arg.method_15121(this.field_15586, blockPos);
-			if ((!list.isEmpty() || !arg.method_15135() && !this.field_15589.isEmpty())
-				&& this.field_15587.getX() >= 1
-				&& this.field_15587.getY() >= 1
-				&& this.field_15587.getZ() >= 1) {
-				MutableIntBoundingBox mutableIntBoundingBox = arg.method_15124();
-				List<BlockPos> list2 = Lists.<BlockPos>newArrayListWithCapacity(arg.method_15120() ? list.size() : 0);
+			List<Structure.StructureBlockInfo> list = structurePlacementData.method_15121(this.blocks, blockPos);
+			if ((!list.isEmpty() || !structurePlacementData.method_15135() && !this.entities.isEmpty())
+				&& this.size.getX() >= 1
+				&& this.size.getY() >= 1
+				&& this.size.getZ() >= 1) {
+				MutableIntBoundingBox mutableIntBoundingBox = structurePlacementData.method_15124();
+				List<BlockPos> list2 = Lists.<BlockPos>newArrayListWithCapacity(structurePlacementData.method_15120() ? list.size() : 0);
 				List<Pair<BlockPos, CompoundTag>> list3 = Lists.<Pair<BlockPos, CompoundTag>>newArrayListWithCapacity(list.size());
 				int j = Integer.MAX_VALUE;
 				int k = Integer.MAX_VALUE;
@@ -179,12 +183,12 @@ public class class_3499 {
 				int n = Integer.MIN_VALUE;
 				int o = Integer.MIN_VALUE;
 
-				for (class_3499.class_3501 lv : method_16446(iWorld, blockPos, arg, list)) {
-					BlockPos blockPos2 = lv.field_15597;
+				for (Structure.StructureBlockInfo structureBlockInfo : method_16446(iWorld, blockPos, structurePlacementData, list)) {
+					BlockPos blockPos2 = structureBlockInfo.pos;
 					if (mutableIntBoundingBox == null || mutableIntBoundingBox.contains(blockPos2)) {
-						FluidState fluidState = arg.method_15120() ? iWorld.getFluidState(blockPos2) : null;
-						BlockState blockState = lv.field_15596.applyMirror(arg.method_15114()).applyRotation(arg.method_15113());
-						if (lv.field_15595 != null) {
+						FluidState fluidState = structurePlacementData.method_15120() ? iWorld.getFluidState(blockPos2) : null;
+						BlockState blockState = structureBlockInfo.state.mirror(structurePlacementData.getMirror()).rotate(structurePlacementData.getRotation());
+						if (structureBlockInfo.tag != null) {
 							BlockEntity blockEntity = iWorld.getBlockEntity(blockPos2);
 							class_3829.method_16825(blockEntity);
 							iWorld.setBlockState(blockPos2, Blocks.field_10499.getDefaultState(), 4);
@@ -197,16 +201,16 @@ public class class_3499 {
 							m = Math.max(m, blockPos2.getX());
 							n = Math.max(n, blockPos2.getY());
 							o = Math.max(o, blockPos2.getZ());
-							list3.add(Pair.of(blockPos2, lv.field_15595));
-							if (lv.field_15595 != null) {
+							list3.add(Pair.of(blockPos2, structureBlockInfo.tag));
+							if (structureBlockInfo.tag != null) {
 								BlockEntity blockEntity = iWorld.getBlockEntity(blockPos2);
 								if (blockEntity != null) {
-									lv.field_15595.putInt("x", blockPos2.getX());
-									lv.field_15595.putInt("y", blockPos2.getY());
-									lv.field_15595.putInt("z", blockPos2.getZ());
-									blockEntity.fromTag(lv.field_15595);
-									blockEntity.applyMirror(arg.method_15114());
-									blockEntity.applyRotation(arg.method_15113());
+									structureBlockInfo.tag.putInt("x", blockPos2.getX());
+									structureBlockInfo.tag.putInt("y", blockPos2.getY());
+									structureBlockInfo.tag.putInt("z", blockPos2.getZ());
+									blockEntity.fromTag(structureBlockInfo.tag);
+									blockEntity.applyMirror(structurePlacementData.getMirror());
+									blockEntity.applyRotation(structurePlacementData.getRotation());
 								}
 							}
 
@@ -254,7 +258,7 @@ public class class_3499 {
 				}
 
 				if (j <= m) {
-					if (!arg.method_16444()) {
+					if (!structurePlacementData.method_16444()) {
 						AbstractVoxelShapeContainer abstractVoxelShapeContainer = new BitSetVoxelShapeContainer(m - j + 1, n - k + 1, o - l + 1);
 						int q = j;
 						int r = k;
@@ -284,7 +288,7 @@ public class class_3499 {
 
 					for (Pair<BlockPos, CompoundTag> pair2 : list3) {
 						BlockPos blockPos4 = pair2.getFirst();
-						if (!arg.method_16444()) {
+						if (!structurePlacementData.method_16444()) {
 							BlockState blockState3 = iWorld.getBlockState(blockPos4);
 							BlockState blockState2 = Block.getRenderingState(blockState3, iWorld, blockPos4);
 							if (blockState3 != blockState2) {
@@ -303,8 +307,10 @@ public class class_3499 {
 					}
 				}
 
-				if (!arg.method_15135()) {
-					this.method_15179(iWorld, blockPos, arg.method_15114(), arg.method_15113(), arg.method_15134(), mutableIntBoundingBox);
+				if (!structurePlacementData.method_15135()) {
+					this.method_15179(
+						iWorld, blockPos, structurePlacementData.getMirror(), structurePlacementData.getRotation(), structurePlacementData.getPosition(), mutableIntBoundingBox
+					);
 				}
 
 				return true;
@@ -314,20 +320,23 @@ public class class_3499 {
 		}
 	}
 
-	public static List<class_3499.class_3501> method_16446(IWorld iWorld, BlockPos blockPos, class_3492 arg, List<class_3499.class_3501> list) {
-		List<class_3499.class_3501> list2 = Lists.<class_3499.class_3501>newArrayList();
+	public static List<Structure.StructureBlockInfo> method_16446(
+		IWorld iWorld, BlockPos blockPos, StructurePlacementData structurePlacementData, List<Structure.StructureBlockInfo> list
+	) {
+		List<Structure.StructureBlockInfo> list2 = Lists.<Structure.StructureBlockInfo>newArrayList();
 
-		for (class_3499.class_3501 lv : list) {
-			BlockPos blockPos2 = method_15171(arg, lv.field_15597).add(blockPos);
-			class_3499.class_3501 lv2 = new class_3499.class_3501(blockPos2, lv.field_15596, lv.field_15595);
-			Iterator<AbstractStructureProcessor> iterator = arg.method_16182().iterator();
+		for (Structure.StructureBlockInfo structureBlockInfo : list) {
+			BlockPos blockPos2 = method_15171(structurePlacementData, structureBlockInfo.pos).add(blockPos);
+			Structure.StructureBlockInfo structureBlockInfo2 = new Structure.StructureBlockInfo(blockPos2, structureBlockInfo.state, structureBlockInfo.tag);
+			Iterator<AbstractStructureProcessor> iterator = structurePlacementData.getProcessors().iterator();
 
-			while (lv2 != null && iterator.hasNext()) {
-				lv2 = ((AbstractStructureProcessor)iterator.next()).process(iWorld, blockPos, lv, lv2, arg);
+			while (structureBlockInfo2 != null && iterator.hasNext()) {
+				structureBlockInfo2 = ((AbstractStructureProcessor)iterator.next())
+					.process(iWorld, blockPos, structureBlockInfo, structureBlockInfo2, structurePlacementData);
 			}
 
-			if (lv2 != null) {
-				list2.add(lv2);
+			if (structureBlockInfo2 != null) {
+				list2.add(structureBlockInfo2);
 			}
 		}
 
@@ -337,11 +346,11 @@ public class class_3499 {
 	private void method_15179(
 		IWorld iWorld, BlockPos blockPos, Mirror mirror, Rotation rotation, BlockPos blockPos2, @Nullable MutableIntBoundingBox mutableIntBoundingBox
 	) {
-		for (class_3499.class_3502 lv : this.field_15589) {
-			BlockPos blockPos3 = method_15168(lv.field_15600, mirror, rotation, blockPos2).add(blockPos);
+		for (Structure.StructureEntityInfo structureEntityInfo : this.entities) {
+			BlockPos blockPos3 = method_15168(structureEntityInfo.blockPos, mirror, rotation, blockPos2).add(blockPos);
 			if (mutableIntBoundingBox == null || mutableIntBoundingBox.contains(blockPos3)) {
-				CompoundTag compoundTag = lv.field_15598;
-				Vec3d vec3d = method_15176(lv.field_15599, mirror, rotation, blockPos2);
+				CompoundTag compoundTag = structureEntityInfo.tag;
+				Vec3d vec3d = method_15176(structureEntityInfo.pos, mirror, rotation, blockPos2);
 				Vec3d vec3d2 = vec3d.add((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 				ListTag listTag = new ListTag();
 				listTag.add(new DoubleTag(vec3d2.x));
@@ -371,9 +380,9 @@ public class class_3499 {
 		switch (rotation) {
 			case ROT_270:
 			case ROT_90:
-				return new BlockPos(this.field_15587.getZ(), this.field_15587.getY(), this.field_15587.getX());
+				return new BlockPos(this.size.getZ(), this.size.getY(), this.size.getX());
 			default:
-				return this.field_15587;
+				return this.size;
 		}
 	}
 
@@ -438,7 +447,7 @@ public class class_3499 {
 	}
 
 	public BlockPos method_15167(BlockPos blockPos, Mirror mirror, Rotation rotation) {
-		return method_15162(blockPos, mirror, rotation, this.method_15160().getX(), this.method_15160().getZ());
+		return method_15162(blockPos, mirror, rotation, this.getSize().getX(), this.getSize().getZ());
 	}
 
 	public static BlockPos method_15162(BlockPos blockPos, Mirror mirror, Rotation rotation, int i, int j) {
@@ -464,11 +473,11 @@ public class class_3499 {
 		return blockPos2;
 	}
 
-	public MutableIntBoundingBox method_16187(class_3492 arg, BlockPos blockPos) {
-		Rotation rotation = arg.method_15113();
-		BlockPos blockPos2 = arg.method_15134();
+	public MutableIntBoundingBox method_16187(StructurePlacementData structurePlacementData, BlockPos blockPos) {
+		Rotation rotation = structurePlacementData.getRotation();
+		BlockPos blockPos2 = structurePlacementData.getPosition();
 		BlockPos blockPos3 = this.method_15166(rotation);
-		Mirror mirror = arg.method_15114();
+		Mirror mirror = structurePlacementData.getMirror();
 		int i = blockPos2.getX();
 		int j = blockPos2.getZ();
 		int k = blockPos3.getX() - 1;
@@ -505,7 +514,7 @@ public class class_3499 {
 	private void method_16186(Rotation rotation, int i, int j, MutableIntBoundingBox mutableIntBoundingBox, Direction direction, Direction direction2) {
 		BlockPos blockPos = BlockPos.ORIGIN;
 		if (rotation == Rotation.ROT_90 || rotation == Rotation.ROT_270) {
-			blockPos = blockPos.offset(rotation.method_10503(direction), j);
+			blockPos = blockPos.offset(rotation.rotate(direction), j);
 		} else if (rotation == Rotation.ROT_180) {
 			blockPos = blockPos.offset(direction2, i);
 		} else {
@@ -515,37 +524,37 @@ public class class_3499 {
 		mutableIntBoundingBox.translate(blockPos.getX(), 0, blockPos.getZ());
 	}
 
-	public CompoundTag method_15175(CompoundTag compoundTag) {
-		if (this.field_15586.isEmpty()) {
+	public CompoundTag toTag(CompoundTag compoundTag) {
+		if (this.blocks.isEmpty()) {
 			compoundTag.put("blocks", new ListTag());
 			compoundTag.put("palette", new ListTag());
 		} else {
-			List<class_3499.class_3500> list = Lists.<class_3499.class_3500>newArrayList();
-			class_3499.class_3500 lv = new class_3499.class_3500();
+			List<Structure.class_3500> list = Lists.<Structure.class_3500>newArrayList();
+			Structure.class_3500 lv = new Structure.class_3500();
 			list.add(lv);
 
-			for (int i = 1; i < this.field_15586.size(); i++) {
-				list.add(new class_3499.class_3500());
+			for (int i = 1; i < this.blocks.size(); i++) {
+				list.add(new Structure.class_3500());
 			}
 
 			ListTag listTag = new ListTag();
-			List<class_3499.class_3501> list2 = (List<class_3499.class_3501>)this.field_15586.get(0);
+			List<Structure.StructureBlockInfo> list2 = (List<Structure.StructureBlockInfo>)this.blocks.get(0);
 
 			for (int j = 0; j < list2.size(); j++) {
-				class_3499.class_3501 lv2 = (class_3499.class_3501)list2.get(j);
+				Structure.StructureBlockInfo structureBlockInfo = (Structure.StructureBlockInfo)list2.get(j);
 				CompoundTag compoundTag2 = new CompoundTag();
-				compoundTag2.put("pos", this.method_15169(lv2.field_15597.getX(), lv2.field_15597.getY(), lv2.field_15597.getZ()));
-				int k = lv.method_15187(lv2.field_15596);
+				compoundTag2.put("pos", this.createIntListTag(structureBlockInfo.pos.getX(), structureBlockInfo.pos.getY(), structureBlockInfo.pos.getZ()));
+				int k = lv.method_15187(structureBlockInfo.state);
 				compoundTag2.putInt("state", k);
-				if (lv2.field_15595 != null) {
-					compoundTag2.put("nbt", lv2.field_15595);
+				if (structureBlockInfo.tag != null) {
+					compoundTag2.put("nbt", structureBlockInfo.tag);
 				}
 
 				listTag.add(compoundTag2);
 
-				for (int l = 1; l < this.field_15586.size(); l++) {
-					class_3499.class_3500 lv3 = (class_3499.class_3500)list.get(l);
-					lv3.method_15186(((class_3499.class_3501)((List)this.field_15586.get(l)).get(j)).field_15596, k);
+				for (int l = 1; l < this.blocks.size(); l++) {
+					Structure.class_3500 lv2 = (Structure.class_3500)list.get(l);
+					lv2.method_15186(((Structure.StructureBlockInfo)((List)this.blocks.get(l)).get(j)).state, k);
 				}
 			}
 
@@ -561,10 +570,10 @@ public class class_3499 {
 			} else {
 				ListTag listTag2 = new ListTag();
 
-				for (class_3499.class_3500 lv4 : list) {
+				for (Structure.class_3500 lv3 : list) {
 					ListTag listTag3 = new ListTag();
 
-					for (BlockState blockState2 : lv4) {
+					for (BlockState blockState2 : lv3) {
 						listTag3.add(TagHelper.serializeBlockState(blockState2));
 					}
 
@@ -577,28 +586,30 @@ public class class_3499 {
 
 		ListTag listTag4 = new ListTag();
 
-		for (class_3499.class_3502 lv5 : this.field_15589) {
+		for (Structure.StructureEntityInfo structureEntityInfo : this.entities) {
 			CompoundTag compoundTag3 = new CompoundTag();
-			compoundTag3.put("pos", this.method_15184(lv5.field_15599.x, lv5.field_15599.y, lv5.field_15599.z));
-			compoundTag3.put("blockPos", this.method_15169(lv5.field_15600.getX(), lv5.field_15600.getY(), lv5.field_15600.getZ()));
-			if (lv5.field_15598 != null) {
-				compoundTag3.put("nbt", lv5.field_15598);
+			compoundTag3.put("pos", this.createDoubleListTag(structureEntityInfo.pos.x, structureEntityInfo.pos.y, structureEntityInfo.pos.z));
+			compoundTag3.put(
+				"blockPos", this.createIntListTag(structureEntityInfo.blockPos.getX(), structureEntityInfo.blockPos.getY(), structureEntityInfo.blockPos.getZ())
+			);
+			if (structureEntityInfo.tag != null) {
+				compoundTag3.put("nbt", structureEntityInfo.tag);
 			}
 
 			listTag4.add(compoundTag3);
 		}
 
 		compoundTag.put("entities", listTag4);
-		compoundTag.put("size", this.method_15169(this.field_15587.getX(), this.field_15587.getY(), this.field_15587.getZ()));
+		compoundTag.put("size", this.createIntListTag(this.size.getX(), this.size.getY(), this.size.getZ()));
 		compoundTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
 		return compoundTag;
 	}
 
-	public void method_15183(CompoundTag compoundTag) {
-		this.field_15586.clear();
-		this.field_15589.clear();
+	public void fromTag(CompoundTag compoundTag) {
+		this.blocks.clear();
+		this.entities.clear();
 		ListTag listTag = compoundTag.getList("size", 3);
-		this.field_15587 = new BlockPos(listTag.getInt(0), listTag.getInt(1), listTag.getInt(2));
+		this.size = new BlockPos(listTag.getInt(0), listTag.getInt(1), listTag.getInt(2));
 		ListTag listTag2 = compoundTag.getList("blocks", 10);
 		if (compoundTag.containsKey("palettes", 9)) {
 			ListTag listTag3 = compoundTag.getList("palettes", 9);
@@ -620,14 +631,14 @@ public class class_3499 {
 			BlockPos blockPos = new BlockPos(listTag5.getInt(0), listTag5.getInt(1), listTag5.getInt(2));
 			if (compoundTag2.containsKey("nbt")) {
 				CompoundTag compoundTag3 = compoundTag2.getCompound("nbt");
-				this.field_15589.add(new class_3499.class_3502(vec3d, blockPos, compoundTag3));
+				this.entities.add(new Structure.StructureEntityInfo(vec3d, blockPos, compoundTag3));
 			}
 		}
 	}
 
 	private void method_15177(ListTag listTag, ListTag listTag2) {
-		class_3499.class_3500 lv = new class_3499.class_3500();
-		List<class_3499.class_3501> list = Lists.<class_3499.class_3501>newArrayList();
+		Structure.class_3500 lv = new Structure.class_3500();
+		List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
 
 		for (int i = 0; i < listTag.size(); i++) {
 			lv.method_15186(TagHelper.deserializeBlockState(listTag.getCompoundTag(i)), i);
@@ -645,14 +656,14 @@ public class class_3499 {
 				compoundTag2 = null;
 			}
 
-			list.add(new class_3499.class_3501(blockPos, blockState, compoundTag2));
+			list.add(new Structure.StructureBlockInfo(blockPos, blockState, compoundTag2));
 		}
 
-		list.sort(Comparator.comparingInt(arg -> arg.field_15597.getY()));
-		this.field_15586.add(list);
+		list.sort(Comparator.comparingInt(structureBlockInfo -> structureBlockInfo.pos.getY()));
+		this.blocks.add(list);
 	}
 
-	private ListTag method_15169(int... is) {
+	private ListTag createIntListTag(int... is) {
 		ListTag listTag = new ListTag();
 
 		for (int i : is) {
@@ -662,7 +673,7 @@ public class class_3499 {
 		return listTag;
 	}
 
-	private ListTag method_15184(double... ds) {
+	private ListTag createDoubleListTag(double... ds) {
 		ListTag listTag = new ListTag();
 
 		for (double d : ds) {
@@ -670,6 +681,34 @@ public class class_3499 {
 		}
 
 		return listTag;
+	}
+
+	public static class StructureBlockInfo {
+		public final BlockPos pos;
+		public final BlockState state;
+		public final CompoundTag tag;
+
+		public StructureBlockInfo(BlockPos blockPos, BlockState blockState, @Nullable CompoundTag compoundTag) {
+			this.pos = blockPos;
+			this.state = blockState;
+			this.tag = compoundTag;
+		}
+
+		public String toString() {
+			return String.format("<StructureBlockInfo | %s | %s | %s>", this.pos, this.state, this.tag);
+		}
+	}
+
+	public static class StructureEntityInfo {
+		public final Vec3d pos;
+		public final BlockPos blockPos;
+		public final CompoundTag tag;
+
+		public StructureEntityInfo(Vec3d vec3d, BlockPos blockPos, CompoundTag compoundTag) {
+			this.pos = vec3d;
+			this.blockPos = blockPos;
+			this.tag = compoundTag;
+		}
 	}
 
 	static class class_3500 implements Iterable<BlockState> {
@@ -702,34 +741,6 @@ public class class_3499 {
 
 		public void method_15186(BlockState blockState, int i) {
 			this.field_15591.set(blockState, i);
-		}
-	}
-
-	public static class class_3501 {
-		public final BlockPos field_15597;
-		public final BlockState field_15596;
-		public final CompoundTag field_15595;
-
-		public class_3501(BlockPos blockPos, BlockState blockState, @Nullable CompoundTag compoundTag) {
-			this.field_15597 = blockPos;
-			this.field_15596 = blockState;
-			this.field_15595 = compoundTag;
-		}
-
-		public String toString() {
-			return String.format("<StructureBlockInfo | %s | %s | %s>", this.field_15597, this.field_15596, this.field_15595);
-		}
-	}
-
-	public static class class_3502 {
-		public final Vec3d field_15599;
-		public final BlockPos field_15600;
-		public final CompoundTag field_15598;
-
-		public class_3502(Vec3d vec3d, BlockPos blockPos, CompoundTag compoundTag) {
-			this.field_15599 = vec3d;
-			this.field_15600 = blockPos;
-			this.field_15598 = compoundTag;
 		}
 	}
 }

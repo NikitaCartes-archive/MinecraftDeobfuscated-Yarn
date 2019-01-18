@@ -27,7 +27,7 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 		super(blockEntityType);
 	}
 
-	public static void method_11287(BlockView blockView, Random random, BlockPos blockPos, Identifier identifier) {
+	public static void setLootTable(BlockView blockView, Random random, BlockPos blockPos, Identifier identifier) {
 		BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
 		if (blockEntity instanceof LootableContainerBlockEntity) {
 			((LootableContainerBlockEntity)blockEntity).setLootTable(identifier, random.nextLong());
@@ -128,14 +128,14 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 	protected abstract void setInvStackList(DefaultedList<ItemStack> defaultedList);
 
 	@Override
-	public boolean method_17489(PlayerEntity playerEntity) {
-		return super.method_17489(playerEntity) && (this.lootTableId == null || !playerEntity.isSpectator());
+	public boolean checkUnlocked(PlayerEntity playerEntity) {
+		return super.checkUnlocked(playerEntity) && (this.lootTableId == null || !playerEntity.isSpectator());
 	}
 
 	@Nullable
 	@Override
 	public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-		if (this.method_17489(playerEntity)) {
+		if (this.checkUnlocked(playerEntity)) {
 			this.checkLootInteraction(playerInventory.player);
 			return this.createContainer(i, playerInventory);
 		} else {

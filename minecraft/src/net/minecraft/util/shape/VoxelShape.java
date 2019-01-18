@@ -8,9 +8,9 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_263;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.OffsetDoubleList;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.AxisCycle;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
@@ -60,7 +60,7 @@ public abstract class VoxelShape {
 		return this.shape.isEmpty();
 	}
 
-	public VoxelShape method_1096(double d, double e, double f) {
+	public VoxelShape offset(double d, double e, double f) {
 		return (VoxelShape)(this.isEmpty()
 			? VoxelShapes.empty()
 			: new ArrayVoxelShape(
@@ -71,9 +71,9 @@ public abstract class VoxelShape {
 			));
 	}
 
-	public VoxelShape method_1097() {
+	public VoxelShape simplify() {
 		VoxelShape[] voxelShapes = new VoxelShape[]{VoxelShapes.empty()};
-		this.method_1089((d, e, f, g, h, i) -> voxelShapes[0] = VoxelShapes.method_1082(voxelShapes[0], VoxelShapes.cube(d, e, f, g, h, i), BooleanBiFunction.OR));
+		this.method_1089((d, e, f, g, h, i) -> voxelShapes[0] = VoxelShapes.combine(voxelShapes[0], VoxelShapes.cube(d, e, f, g, h, i), BooleanBiFunction.OR));
 		return voxelShapes[0];
 	}
 

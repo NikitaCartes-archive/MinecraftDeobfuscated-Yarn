@@ -10,7 +10,7 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
 
-public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements RecipeSerializer<T> {
+public class CookingRecipeSerializer<T extends CookingRecipe> implements RecipeSerializer<T> {
 	private final int cookingTime;
 	private final CookingRecipeSerializer.RecipeFactory<T> recipeFactory;
 
@@ -46,15 +46,15 @@ public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements
 		return this.recipeFactory.create(identifier, string, ingredient, itemStack, f, i);
 	}
 
-	public void write(PacketByteBuf packetByteBuf, T abstractCookingRecipe) {
-		packetByteBuf.writeString(abstractCookingRecipe.group);
-		abstractCookingRecipe.input.write(packetByteBuf);
-		packetByteBuf.writeItemStack(abstractCookingRecipe.output);
-		packetByteBuf.writeFloat(abstractCookingRecipe.experience);
-		packetByteBuf.writeVarInt(abstractCookingRecipe.cookTime);
+	public void write(PacketByteBuf packetByteBuf, T cookingRecipe) {
+		packetByteBuf.writeString(cookingRecipe.group);
+		cookingRecipe.input.write(packetByteBuf);
+		packetByteBuf.writeItemStack(cookingRecipe.output);
+		packetByteBuf.writeFloat(cookingRecipe.experience);
+		packetByteBuf.writeVarInt(cookingRecipe.cookTime);
 	}
 
-	interface RecipeFactory<T extends AbstractCookingRecipe> {
+	interface RecipeFactory<T extends CookingRecipe> {
 		T create(Identifier identifier, String string, Ingredient ingredient, ItemStack itemStack, float f, int i);
 	}
 }

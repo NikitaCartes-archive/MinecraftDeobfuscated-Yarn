@@ -66,7 +66,7 @@ public class ShovelItem extends MiningToolItem {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		World world = itemUsageContext.getWorld();
-		BlockPos blockPos = itemUsageContext.getPos();
+		BlockPos blockPos = itemUsageContext.getBlockPos();
 		if (itemUsageContext.getFacing() != Direction.DOWN && world.getBlockState(blockPos.up()).isAir()) {
 			BlockState blockState = (BlockState)BLOCK_TRANSFORMATIONS_MAP.get(world.getBlockState(blockPos).getBlock());
 			if (blockState != null) {

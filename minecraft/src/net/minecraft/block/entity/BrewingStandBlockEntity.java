@@ -30,8 +30,8 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	private static final int[] SIDE_SLOTS = new int[]{0, 1, 2, 4};
 	private DefaultedList<ItemStack> inventory = DefaultedList.create(5, ItemStack.EMPTY);
 	private int brewTime;
-	private boolean[] field_11883;
-	private Item field_11881;
+	private boolean[] slotsEmptyLastTick;
+	private Item itemBrewing;
 	private int fuel;
 	protected final PropertyDelegate propertyDelegate = new PropertyDelegate() {
 		@Override
@@ -68,7 +68,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	}
 
 	@Override
-	protected TextComponent method_17823() {
+	protected TextComponent getContainerName() {
 		return new TranslatableTextComponent("container.brewing");
 	}
 
@@ -109,21 +109,21 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 			} else if (!bl) {
 				this.brewTime = 0;
 				this.markDirty();
-			} else if (this.field_11881 != itemStack2.getItem()) {
+			} else if (this.itemBrewing != itemStack2.getItem()) {
 				this.brewTime = 0;
 				this.markDirty();
 			}
 		} else if (bl && this.fuel > 0) {
 			this.fuel--;
 			this.brewTime = 400;
-			this.field_11881 = itemStack2.getItem();
+			this.itemBrewing = itemStack2.getItem();
 			this.markDirty();
 		}
 
 		if (!this.world.isClient) {
-			boolean[] bls = this.method_11028();
-			if (!Arrays.equals(bls, this.field_11883)) {
-				this.field_11883 = bls;
+			boolean[] bls = this.getSlotsEmpty();
+			if (!Arrays.equals(bls, this.slotsEmptyLastTick)) {
+				this.slotsEmptyLastTick = bls;
 				BlockState blockState = this.world.getBlockState(this.getPos());
 				if (!(blockState.getBlock() instanceof BrewingStandBlock)) {
 					return;
@@ -138,7 +138,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 		}
 	}
 
-	public boolean[] method_11028() {
+	public boolean[] getSlotsEmpty() {
 		boolean[] bls = new boolean[3];
 
 		for (int i = 0; i < 3; i++) {

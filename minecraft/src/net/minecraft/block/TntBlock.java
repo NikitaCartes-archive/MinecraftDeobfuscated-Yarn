@@ -14,8 +14,8 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
@@ -81,11 +81,11 @@ public class TntBlock extends Block {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		Item item = itemStack.getItem();
 		if (item != Items.field_8884 && item != Items.field_8814) {
-			return super.activate(blockState, world, blockPos, playerEntity, hand, blockHitResult);
+			return super.method_9534(blockState, world, blockPos, playerEntity, hand, blockHitResult);
 		} else {
 			primeTnt(world, blockPos, playerEntity);
 			world.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 11);

@@ -7,7 +7,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 
 public class VerticalEntityPositionImpl implements VerticalEntityPosition {
-	protected static final VerticalEntityPosition field_17593 = new VerticalEntityPositionImpl(false, -Double.MAX_VALUE, Items.AIR) {
+	protected static final VerticalEntityPosition MIN_VALUE = new VerticalEntityPositionImpl(false, -Double.MAX_VALUE, Items.AIR) {
 		@Override
 		public boolean isAboveBlock(VoxelShape voxelShape, BlockPos blockPos, boolean bl) {
 			return bl;

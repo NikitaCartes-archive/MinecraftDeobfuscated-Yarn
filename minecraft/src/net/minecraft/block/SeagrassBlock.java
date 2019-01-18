@@ -17,7 +17,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class SeagrassBlock extends PlantBlock implements Fertilizable, FluidFillable {
-	protected static final VoxelShape field_11485 = Block.createCubeShape(2.0, 0.0, 2.0, 14.0, 12.0, 14.0);
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 12.0, 14.0);
 
 	protected SeagrassBlock(Block.Settings settings) {
 		super(settings);
@@ -25,19 +25,19 @@ public class SeagrassBlock extends PlantBlock implements Fertilizable, FluidFill
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_11485;
+		return SHAPE;
 	}
 
 	@Override
 	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return Block.isFaceFullCube(blockState.getCollisionShape(blockView, blockPos), Direction.UP) && blockState.getBlock() != Blocks.field_10092;
+		return Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos), Direction.UP) && blockState.getBlock() != Blocks.field_10092;
 	}
 
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getPos());
-		return fluidState.matches(FluidTags.field_15517) && fluidState.method_15761() == 8 ? super.getPlacementState(itemPlacementContext) : null;
+		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
+		return fluidState.matches(FluidTags.field_15517) && fluidState.getLevel() == 8 ? super.getPlacementState(itemPlacementContext) : null;
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class SeagrassBlock extends PlantBlock implements Fertilizable, FluidFill
 	) {
 		BlockState blockState3 = super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		if (!blockState3.isAir()) {
-			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
+			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 		}
 
 		return blockState3;
@@ -70,7 +70,7 @@ public class SeagrassBlock extends PlantBlock implements Fertilizable, FluidFill
 	@Override
 	public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
 		BlockState blockState2 = Blocks.field_10238.getDefaultState();
-		BlockState blockState3 = blockState2.with(TallSeagrassBlock.PROPERTY_HALF, DoubleBlockHalf.field_12609);
+		BlockState blockState3 = blockState2.with(TallSeagrassBlock.HALF, DoubleBlockHalf.field_12609);
 		BlockPos blockPos2 = blockPos.up();
 		if (world.getBlockState(blockPos2).getBlock() == Blocks.field_10382) {
 			world.setBlockState(blockPos, blockState2, 2);

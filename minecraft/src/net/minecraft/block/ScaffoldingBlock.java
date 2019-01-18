@@ -21,34 +21,30 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class ScaffoldingBlock extends Block implements Waterloggable {
-	private static final VoxelShape field_16494;
-	private static final VoxelShape field_16497;
-	private static final VoxelShape field_17577 = Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
-	private static final VoxelShape field_17578 = VoxelShapes.fullCube().method_1096(0.0, -1.0, 0.0);
-	public static final IntegerProperty field_16495 = Properties.DISTANCE_0_7;
-	public static final BooleanProperty field_16496 = Properties.WATERLOGGED;
-	public static final BooleanProperty field_16547 = Properties.BOTTOM;
+	private static final VoxelShape NORMAL_OUTLINE_SHAPE;
+	private static final VoxelShape BOTTOM_OUTLINE_SHAPE;
+	private static final VoxelShape COLLISION_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
+	private static final VoxelShape field_17578 = VoxelShapes.fullCube().offset(0.0, -1.0, 0.0);
+	public static final IntegerProperty DISTANCE = Properties.DISTANCE_0_7;
+	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+	public static final BooleanProperty BOTTOM = Properties.BOTTOM;
 
 	protected ScaffoldingBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory
-				.getDefaultState()
-				.with(field_16495, Integer.valueOf(7))
-				.with(field_16496, Boolean.valueOf(false))
-				.with(field_16547, Boolean.valueOf(false))
+			this.stateFactory.getDefaultState().with(DISTANCE, Integer.valueOf(7)).with(WATERLOGGED, Boolean.valueOf(false)).with(BOTTOM, Boolean.valueOf(false))
 		);
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_16495, field_16496, field_16547);
+		builder.with(DISTANCE, WATERLOGGED, BOTTOM);
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		if (!verticalEntityPosition.method_17785(blockState.getBlock().getItem())) {
-			return blockState.get(field_16547) ? field_16497 : field_16494;
+			return blockState.get(BOTTOM) ? BOTTOM_OUTLINE_SHAPE : NORMAL_OUTLINE_SHAPE;
 		} else {
 			return VoxelShapes.fullCube();
 		}
@@ -65,7 +61,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public boolean method_9616(BlockState blockState, ItemPlacementContext itemPlacementContext) {
+	public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
 		return itemPlacementContext.getItemStack().getItem() == this.getItem();
 	}
 
@@ -76,19 +72,19 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 			return false;
 		} else {
 			BlockState blockState2 = viewableWorld.getBlockState(blockPos.offset(direction));
-			return blockState2.getBlock() != this || (Integer)blockState2.get(field_16495) + 1 <= 7;
+			return blockState2.getBlock() != this || (Integer)blockState2.get(DISTANCE) + 1 <= 7;
 		}
 	}
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		BlockPos blockPos = itemPlacementContext.getPos();
+		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		World world = itemPlacementContext.getWorld();
 		int i = this.method_16371(world, blockPos);
 		return this.getDefaultState()
-			.with(field_16496, Boolean.valueOf(world.getFluidState(blockPos).getFluid() == Fluids.WATER))
-			.with(field_16495, Integer.valueOf(i))
-			.with(field_16547, Boolean.valueOf(this.method_16373(world, blockPos, i)));
+			.with(WATERLOGGED, Boolean.valueOf(world.getFluidState(blockPos).getFluid() == Fluids.WATER))
+			.with(DISTANCE, Integer.valueOf(i))
+			.with(BOTTOM, Boolean.valueOf(this.method_16373(world, blockPos, i)));
 	}
 
 	@Override
@@ -102,8 +98,8 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		if ((Boolean)blockState.get(field_16496)) {
-			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
+		if ((Boolean)blockState.get(WATERLOGGED)) {
+			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 		}
 
 		if (!iWorld.isClient()) {
@@ -114,13 +110,13 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		int i = this.method_16371(world, blockPos);
-		BlockState blockState2 = blockState.with(field_16495, Integer.valueOf(i)).with(field_16547, Boolean.valueOf(this.method_16373(world, blockPos, i)));
-		if ((Integer)blockState2.get(field_16495) == 7) {
-			if ((Integer)blockState.get(field_16495) == 7) {
+		BlockState blockState2 = blockState.with(DISTANCE, Integer.valueOf(i)).with(BOTTOM, Boolean.valueOf(this.method_16373(world, blockPos, i)));
+		if ((Integer)blockState2.get(DISTANCE) == 7) {
+			if ((Integer)blockState.get(DISTANCE) == 7) {
 				FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(
-					world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, blockState2.with(field_16496, Boolean.valueOf(false))
+					world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, blockState2.with(WATERLOGGED, Boolean.valueOf(false))
 				);
 				world.spawnEntity(fallingBlockEntity);
 			} else {
@@ -136,15 +132,15 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 		if (verticalEntityPosition.isAboveBlock(VoxelShapes.fullCube(), blockPos, true) && !verticalEntityPosition.isSneaking()) {
 			return VoxelShapes.fullCube();
 		} else {
-			return blockState.get(field_16495) != 0 && blockState.get(field_16547) && verticalEntityPosition.isAboveBlock(field_17578, blockPos, true)
-				? field_17577
+			return blockState.get(DISTANCE) != 0 && blockState.get(BOTTOM) && verticalEntityPosition.isAboveBlock(field_17578, blockPos, true)
+				? COLLISION_SHAPE
 				: VoxelShapes.empty();
 		}
 	}
 
 	@Override
 	public FluidState getFluidState(BlockState blockState) {
-		return blockState.get(field_16496) ? Fluids.WATER.getState(false) : super.getFluidState(blockState);
+		return blockState.get(WATERLOGGED) ? Fluids.WATER.getState(false) : super.getFluidState(blockState);
 	}
 
 	private boolean method_16373(BlockView blockView, BlockPos blockPos, int i) {
@@ -156,16 +152,16 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 		BlockState blockState = blockView.getBlockState(blockPos.down());
 		if (blockState.getBlock() == this) {
 			return Direction.DOWN;
-		} else if (Block.isFaceFullCube(blockState.getCollisionShape(blockView, blockPos), Direction.UP)) {
+		} else if (Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos), Direction.UP)) {
 			return Direction.DOWN;
 		} else {
 			Direction direction = null;
 			int i = 7;
 
-			for (Direction direction2 : Direction.class_2353.HORIZONTAL) {
+			for (Direction direction2 : Direction.Type.HORIZONTAL) {
 				BlockState blockState2 = blockView.getBlockState(blockPos.offset(direction2));
 				if (blockState2.getBlock() == this) {
-					int j = (Integer)blockState2.get(field_16495);
+					int j = (Integer)blockState2.get(DISTANCE);
 					if (j < i) {
 						i = j;
 						direction = direction2;
@@ -183,21 +179,21 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 			return 7;
 		} else {
 			BlockState blockState = blockView.getBlockState(blockPos.offset(direction));
-			return blockState.getBlock() == this ? Math.min(7, (Integer)blockState.get(field_16495) + (direction.getAxis() == Direction.Axis.Y ? 0 : 1)) : 0;
+			return blockState.getBlock() == this ? Math.min(7, (Integer)blockState.get(DISTANCE) + (direction.getAxis() == Direction.Axis.Y ? 0 : 1)) : 0;
 		}
 	}
 
 	static {
-		VoxelShape voxelShape = Block.createCubeShape(0.0, 14.0, 0.0, 16.0, 16.0, 16.0);
-		VoxelShape voxelShape2 = Block.createCubeShape(0.0, 0.0, 0.0, 2.0, 16.0, 2.0);
-		VoxelShape voxelShape3 = Block.createCubeShape(14.0, 0.0, 0.0, 16.0, 16.0, 2.0);
-		VoxelShape voxelShape4 = Block.createCubeShape(0.0, 0.0, 14.0, 2.0, 16.0, 16.0);
-		VoxelShape voxelShape5 = Block.createCubeShape(14.0, 0.0, 14.0, 16.0, 16.0, 16.0);
-		field_16494 = VoxelShapes.method_17786(voxelShape, voxelShape2, voxelShape3, voxelShape4, voxelShape5);
-		VoxelShape voxelShape6 = Block.createCubeShape(0.0, 0.0, 0.0, 2.0, 2.0, 16.0);
-		VoxelShape voxelShape7 = Block.createCubeShape(14.0, 0.0, 0.0, 16.0, 2.0, 16.0);
-		VoxelShape voxelShape8 = Block.createCubeShape(0.0, 0.0, 14.0, 16.0, 2.0, 16.0);
-		VoxelShape voxelShape9 = Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 2.0, 2.0);
-		field_16497 = VoxelShapes.method_17786(ScaffoldingBlock.field_17577, field_16494, voxelShape7, voxelShape6, voxelShape9, voxelShape8);
+		VoxelShape voxelShape = Block.createCuboidShape(0.0, 14.0, 0.0, 16.0, 16.0, 16.0);
+		VoxelShape voxelShape2 = Block.createCuboidShape(0.0, 0.0, 0.0, 2.0, 16.0, 2.0);
+		VoxelShape voxelShape3 = Block.createCuboidShape(14.0, 0.0, 0.0, 16.0, 16.0, 2.0);
+		VoxelShape voxelShape4 = Block.createCuboidShape(0.0, 0.0, 14.0, 2.0, 16.0, 16.0);
+		VoxelShape voxelShape5 = Block.createCuboidShape(14.0, 0.0, 14.0, 16.0, 16.0, 16.0);
+		NORMAL_OUTLINE_SHAPE = VoxelShapes.union(voxelShape, voxelShape2, voxelShape3, voxelShape4, voxelShape5);
+		VoxelShape voxelShape6 = Block.createCuboidShape(0.0, 0.0, 0.0, 2.0, 2.0, 16.0);
+		VoxelShape voxelShape7 = Block.createCuboidShape(14.0, 0.0, 0.0, 16.0, 2.0, 16.0);
+		VoxelShape voxelShape8 = Block.createCuboidShape(0.0, 0.0, 14.0, 16.0, 2.0, 16.0);
+		VoxelShape voxelShape9 = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 2.0);
+		BOTTOM_OUTLINE_SHAPE = VoxelShapes.union(ScaffoldingBlock.COLLISION_SHAPE, NORMAL_OUTLINE_SHAPE, voxelShape7, voxelShape6, voxelShape9, voxelShape8);
 	}
 }

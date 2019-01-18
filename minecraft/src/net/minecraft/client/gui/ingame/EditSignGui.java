@@ -109,7 +109,7 @@ public class EditSignGui extends Gui {
 		BlockState blockState = this.sign.getCachedState();
 		float h;
 		if (blockState.getBlock().matches(BlockTags.field_15472)) {
-			h = (float)((Integer)blockState.get(StandingSignBlock.field_11559) * 360) / 16.0F;
+			h = (float)((Integer)blockState.get(StandingSignBlock.ROTATION) * 360) / 16.0F;
 		} else {
 			h = ((Direction)blockState.get(WallSignBlock.FACING)).asRotation();
 		}

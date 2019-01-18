@@ -64,7 +64,6 @@ import net.minecraft.text.TextComponent;
 import net.minecraft.text.event.HoverEvent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.HitResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.LoopingStream;
 import net.minecraft.util.Mirror;
@@ -74,6 +73,7 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.crash.ICrashCallable;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
@@ -1301,12 +1301,12 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public HitResult rayTrace(double d, float f, boolean bl) {
+	public HitResult method_5745(double d, float f, boolean bl) {
 		Vec3d vec3d = this.getCameraPosVec(f);
 		Vec3d vec3d2 = this.getRotationVec(f);
 		Vec3d vec3d3 = vec3d.add(vec3d2.x * d, vec3d2.y * d, vec3d2.z * d);
 		return this.world
-			.rayTrace(
+			.method_17742(
 				new RayTraceContext(
 					vec3d, vec3d3, RayTraceContext.ShapeType.field_17559, bl ? RayTraceContext.FluidHandling.field_1347 : RayTraceContext.FluidHandling.NONE, this
 				)

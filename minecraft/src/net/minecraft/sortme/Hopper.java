@@ -8,12 +8,12 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 
 public interface Hopper extends Inventory {
-	VoxelShape SHAPE_INSIDE = Block.createCubeShape(2.0, 11.0, 2.0, 14.0, 16.0, 14.0);
-	VoxelShape SHAPE_ABOVE = Block.createCubeShape(0.0, 16.0, 0.0, 16.0, 32.0, 16.0);
-	VoxelShape SHAPE_INPUT = VoxelShapes.union(SHAPE_INSIDE, SHAPE_ABOVE);
+	VoxelShape INSIDE_SHAPE = Block.createCuboidShape(2.0, 11.0, 2.0, 14.0, 16.0, 14.0);
+	VoxelShape ABOVE_SHAPE = Block.createCuboidShape(0.0, 16.0, 0.0, 16.0, 32.0, 16.0);
+	VoxelShape INPUT_AREA_SHAPE = VoxelShapes.union(INSIDE_SHAPE, ABOVE_SHAPE);
 
 	default VoxelShape getInputAreaShape() {
-		return SHAPE_INPUT;
+		return INPUT_AREA_SHAPE;
 	}
 
 	@Nullable

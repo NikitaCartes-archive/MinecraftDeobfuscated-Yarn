@@ -284,7 +284,7 @@ public class DesertTempleGenerator extends class_3418 {
 		this.addBlock(iWorld, Blocks.field_10292.getDefaultState(), 10, -10, 13, mutableIntBoundingBox);
 		this.addBlock(iWorld, Blocks.field_10361.getDefaultState(), 10, -11, 13, mutableIntBoundingBox);
 
-		for (Direction direction : Direction.class_2353.HORIZONTAL) {
+		for (Direction direction : Direction.Type.HORIZONTAL) {
 			if (!this.field_14397[direction.getHorizontal()]) {
 				int m = direction.getOffsetX() * 2;
 				int n = direction.getOffsetZ() * 2;

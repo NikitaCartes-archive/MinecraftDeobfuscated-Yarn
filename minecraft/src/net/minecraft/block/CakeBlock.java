@@ -7,8 +7,8 @@ import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntegerProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -20,13 +20,13 @@ import net.minecraft.world.World;
 public class CakeBlock extends Block {
 	public static final IntegerProperty field_10739 = Properties.BITES;
 	protected static final VoxelShape[] field_10738 = new VoxelShape[]{
-		Block.createCubeShape(1.0, 0.0, 1.0, 15.0, 8.0, 15.0),
-		Block.createCubeShape(3.0, 0.0, 1.0, 15.0, 8.0, 15.0),
-		Block.createCubeShape(5.0, 0.0, 1.0, 15.0, 8.0, 15.0),
-		Block.createCubeShape(7.0, 0.0, 1.0, 15.0, 8.0, 15.0),
-		Block.createCubeShape(9.0, 0.0, 1.0, 15.0, 8.0, 15.0),
-		Block.createCubeShape(11.0, 0.0, 1.0, 15.0, 8.0, 15.0),
-		Block.createCubeShape(13.0, 0.0, 1.0, 15.0, 8.0, 15.0)
+		Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 8.0, 15.0),
+		Block.createCuboidShape(3.0, 0.0, 1.0, 15.0, 8.0, 15.0),
+		Block.createCuboidShape(5.0, 0.0, 1.0, 15.0, 8.0, 15.0),
+		Block.createCuboidShape(7.0, 0.0, 1.0, 15.0, 8.0, 15.0),
+		Block.createCuboidShape(9.0, 0.0, 1.0, 15.0, 8.0, 15.0),
+		Block.createCuboidShape(11.0, 0.0, 1.0, 15.0, 8.0, 15.0),
+		Block.createCuboidShape(13.0, 0.0, 1.0, 15.0, 8.0, 15.0)
 	};
 
 	protected CakeBlock(Block.Settings settings) {
@@ -40,7 +40,7 @@ public class CakeBlock extends Block {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (!world.isClient) {
 			return this.method_9719(world, blockPos, blockState, playerEntity);
 		} else {

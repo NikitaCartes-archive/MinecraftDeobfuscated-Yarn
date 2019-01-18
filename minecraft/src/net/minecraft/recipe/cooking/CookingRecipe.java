@@ -11,7 +11,7 @@ import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
-public abstract class AbstractCookingRecipe implements Recipe<Inventory> {
+public abstract class CookingRecipe implements Recipe<Inventory> {
 	protected final RecipeType<?> type;
 	protected final Identifier id;
 	protected final String group;
@@ -20,7 +20,7 @@ public abstract class AbstractCookingRecipe implements Recipe<Inventory> {
 	protected final float experience;
 	protected final int cookTime;
 
-	public AbstractCookingRecipe(RecipeType<?> recipeType, Identifier identifier, String string, Ingredient ingredient, ItemStack itemStack, float f, int i) {
+	public CookingRecipe(RecipeType<?> recipeType, Identifier identifier, String string, Ingredient ingredient, ItemStack itemStack, float f, int i) {
 		this.type = recipeType;
 		this.id = identifier;
 		this.group = string;

@@ -134,30 +134,30 @@ public class FireworksSparkParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class class_681 extends Particle {
-		private int field_3808;
-		private final ParticleManager field_3805;
-		private ListTag field_3806;
-		private boolean field_3807;
+	public static class create extends Particle {
+		private int age;
+		private final ParticleManager particleManager;
+		private ListTag explosions;
+		private boolean flicker;
 
-		public class_681(World world, double d, double e, double f, double g, double h, double i, ParticleManager particleManager, @Nullable CompoundTag compoundTag) {
+		public create(World world, double d, double e, double f, double g, double h, double i, ParticleManager particleManager, @Nullable CompoundTag compoundTag) {
 			super(world, d, e, f, 0.0, 0.0, 0.0);
 			this.velocityX = g;
 			this.velocityY = h;
 			this.velocityZ = i;
-			this.field_3805 = particleManager;
+			this.particleManager = particleManager;
 			this.maxAge = 8;
 			if (compoundTag != null) {
-				this.field_3806 = compoundTag.getList("Explosions", 10);
-				if (this.field_3806.isEmpty()) {
-					this.field_3806 = null;
+				this.explosions = compoundTag.getList("Explosions", 10);
+				if (this.explosions.isEmpty()) {
+					this.explosions = null;
 				} else {
-					this.maxAge = this.field_3806.size() * 2 - 1;
+					this.maxAge = this.explosions.size() * 2 - 1;
 
-					for (int j = 0; j < this.field_3806.size(); j++) {
-						CompoundTag compoundTag2 = this.field_3806.getCompoundTag(j);
+					for (int j = 0; j < this.explosions.size(); j++) {
+						CompoundTag compoundTag2 = this.explosions.getCompoundTag(j);
 						if (compoundTag2.getBoolean("Flicker")) {
-							this.field_3807 = true;
+							this.flicker = true;
 							this.maxAge += 15;
 							break;
 						}
@@ -172,14 +172,14 @@ public class FireworksSparkParticle {
 
 		@Override
 		public void update() {
-			if (this.field_3808 == 0 && this.field_3806 != null) {
+			if (this.age == 0 && this.explosions != null) {
 				boolean bl = this.method_3029();
 				boolean bl2 = false;
-				if (this.field_3806.size() >= 3) {
+				if (this.explosions.size() >= 3) {
 					bl2 = true;
 				} else {
-					for (int i = 0; i < this.field_3806.size(); i++) {
-						CompoundTag compoundTag = this.field_3806.getCompoundTag(i);
+					for (int i = 0; i < this.explosions.size(); i++) {
+						CompoundTag compoundTag = this.explosions.getCompoundTag(i);
 						if (FireworksItem.Type.fromId(compoundTag.getByte("Type")) == FireworksItem.Type.field_7977) {
 							bl2 = true;
 							break;
@@ -197,9 +197,9 @@ public class FireworksSparkParticle {
 				this.world.playSound(this.posX, this.posY, this.posZ, soundEvent, SoundCategory.field_15256, 20.0F, 0.95F + this.random.nextFloat() * 0.1F, true);
 			}
 
-			if (this.field_3808 % 2 == 0 && this.field_3806 != null && this.field_3808 / 2 < this.field_3806.size()) {
-				int j = this.field_3808 / 2;
-				CompoundTag compoundTag2 = this.field_3806.getCompoundTag(j);
+			if (this.age % 2 == 0 && this.explosions != null && this.age / 2 < this.explosions.size()) {
+				int j = this.age / 2;
+				CompoundTag compoundTag2 = this.explosions.getCompoundTag(j);
 				FireworksItem.Type type = FireworksItem.Type.fromId(compoundTag2.getByte("Type"));
 				boolean bl3 = compoundTag2.getBoolean("Trail");
 				boolean bl4 = compoundTag2.getBoolean("Flicker");
@@ -258,12 +258,12 @@ public class FireworksSparkParticle {
 				float h = (float)((k & 0xFF) >> 0) / 255.0F;
 				FireworksSparkParticle.class_678 lv = new FireworksSparkParticle.class_678(this.world, this.posX, this.posY, this.posZ);
 				lv.setColor(f, g, h);
-				this.field_3805.addParticle(lv);
+				this.particleManager.addParticle(lv);
 			}
 
-			this.field_3808++;
-			if (this.field_3808 > this.maxAge) {
-				if (this.field_3807) {
+			this.age++;
+			if (this.age > this.maxAge) {
+				if (this.flicker) {
 					boolean blx = this.method_3029();
 					SoundEvent soundEvent2 = blx ? SoundEvents.field_14882 : SoundEvents.field_14800;
 					this.world.playSound(this.posX, this.posY, this.posZ, soundEvent2, SoundCategory.field_15256, 20.0F, 0.9F + this.random.nextFloat() * 0.15F, true);
@@ -279,7 +279,7 @@ public class FireworksSparkParticle {
 		}
 
 		private void method_3030(double d, double e, double f, double g, double h, double i, int[] is, int[] js, boolean bl, boolean bl2) {
-			FireworksSparkParticle.class_680 lv = new FireworksSparkParticle.class_680(this.world, d, e, f, g, h, i, this.field_3805);
+			FireworksSparkParticle.class_680 lv = new FireworksSparkParticle.class_680(this.world, d, e, f, g, h, i, this.particleManager);
 			lv.setColorAlpha(0.99F);
 			lv.method_3027(bl);
 			lv.method_3026(bl2);
@@ -289,7 +289,7 @@ public class FireworksSparkParticle {
 				lv.setTargetColor(js[this.random.nextInt(js.length)]);
 			}
 
-			this.field_3805.addParticle(lv);
+			this.particleManager.addParticle(lv);
 		}
 
 		private void method_3031(double d, int i, int[] is, int[] js, boolean bl, boolean bl2) {

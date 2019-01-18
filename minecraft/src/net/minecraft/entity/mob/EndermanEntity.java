@@ -34,9 +34,9 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.util.BlockHitResult;
-import net.minecraft.util.HitResult;
 import net.minecraft.util.TagHelper;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -329,7 +329,7 @@ public class EndermanEntity extends HostileEntity {
 			Block block = blockState.getBlock();
 			Vec3d vec3d = new Vec3d((double)MathHelper.floor(this.owner.x) + 0.5, (double)j + 0.5, (double)MathHelper.floor(this.owner.z) + 0.5);
 			Vec3d vec3d2 = new Vec3d((double)i + 0.5, (double)j + 0.5, (double)k + 0.5);
-			BlockHitResult blockHitResult = world.rayTrace(
+			BlockHitResult blockHitResult = world.method_17742(
 				new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.NONE, this.owner)
 			);
 			boolean bl = blockHitResult.getType() != HitResult.Type.NONE && blockHitResult.getBlockPos().equals(blockPos);

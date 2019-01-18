@@ -59,7 +59,7 @@ public class ObjectiveCriteriaArgumentType implements ArgumentType<ScoreboardCri
 		List<String> list = Lists.<String>newArrayList(ScoreboardCriterion.OBJECTIVES.keySet());
 
 		for (StatType<?> statType : Registry.STAT_TYPE) {
-			for (Object object : statType.method_14959()) {
+			for (Object object : statType.getRegistry()) {
 				String string = this.method_9400(statType, object);
 				list.add(string);
 			}

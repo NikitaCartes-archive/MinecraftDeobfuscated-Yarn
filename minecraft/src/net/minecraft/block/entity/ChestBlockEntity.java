@@ -40,8 +40,8 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	private DefaultedList<ItemStack> inventory = DefaultedList.create(27, ItemStack.EMPTY);
 	protected float animationAngle;
 	protected float lastAnimationAngle;
-	protected int field_11928;
-	private int field_11930;
+	protected int viewerCount;
+	private int ticksOpen;
 
 	protected ChestBlockEntity(BlockEntityType<?> blockEntityType) {
 		super(blockEntityType);
@@ -68,7 +68,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	protected TextComponent method_17823() {
+	protected TextComponent getContainerName() {
 		return new TranslatableTextComponent("container.chest");
 	}
 
@@ -96,17 +96,17 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 		int i = this.pos.getX();
 		int j = this.pos.getY();
 		int k = this.pos.getZ();
-		this.field_11930++;
-		this.field_11928 = method_17765(this.world, this, this.field_11930, i, j, k, this.field_11928);
+		this.ticksOpen++;
+		this.viewerCount = recalculateViewerCountIfNecessary(this.world, this, this.ticksOpen, i, j, k, this.viewerCount);
 		this.lastAnimationAngle = this.animationAngle;
 		float f = 0.1F;
-		if (this.field_11928 > 0 && this.animationAngle == 0.0F) {
+		if (this.viewerCount > 0 && this.animationAngle == 0.0F) {
 			this.playSound(SoundEvents.field_14982);
 		}
 
-		if (this.field_11928 == 0 && this.animationAngle > 0.0F || this.field_11928 > 0 && this.animationAngle < 1.0F) {
+		if (this.viewerCount == 0 && this.animationAngle > 0.0F || this.viewerCount > 0 && this.animationAngle < 1.0F) {
 			float g = this.animationAngle;
-			if (this.field_11928 > 0) {
+			if (this.viewerCount > 0) {
 				this.animationAngle += 0.1F;
 			} else {
 				this.animationAngle -= 0.1F;
@@ -127,7 +127,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 		}
 	}
 
-	public static int method_17765(World world, LockableContainerBlockEntity lockableContainerBlockEntity, int i, int j, int k, int l, int m) {
+	public static int recalculateViewerCountIfNecessary(World world, LockableContainerBlockEntity lockableContainerBlockEntity, int i, int j, int k, int l, int m) {
 		if (!world.isClient && m != 0 && (i + j + k + l) % 200 == 0) {
 			m = 0;
 			float f = 5.0F;
@@ -157,13 +157,13 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	private void playSound(SoundEvent soundEvent) {
-		ChestType chestType = this.getCachedState().get(ChestBlock.field_10770);
+		ChestType chestType = this.getCachedState().get(ChestBlock.CHEST_TYPE);
 		if (chestType != ChestType.field_12574) {
 			double d = (double)this.pos.getX() + 0.5;
 			double e = (double)this.pos.getY() + 0.5;
 			double f = (double)this.pos.getZ() + 0.5;
 			if (chestType == ChestType.field_12571) {
-				Direction direction = ChestBlock.method_9758(this.getCachedState());
+				Direction direction = ChestBlock.getFacing(this.getCachedState());
 				d += (double)direction.getOffsetX() * 0.5;
 				f += (double)direction.getOffsetZ() * 0.5;
 			}
@@ -175,7 +175,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	@Override
 	public boolean onBlockAction(int i, int j) {
 		if (i == 1) {
-			this.field_11928 = j;
+			this.viewerCount = j;
 			return true;
 		} else {
 			return super.onBlockAction(i, j);
@@ -185,27 +185,27 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	@Override
 	public void onInvOpen(PlayerEntity playerEntity) {
 		if (!playerEntity.isSpectator()) {
-			if (this.field_11928 < 0) {
-				this.field_11928 = 0;
+			if (this.viewerCount < 0) {
+				this.viewerCount = 0;
 			}
 
-			this.field_11928++;
-			this.method_11049();
+			this.viewerCount++;
+			this.onInvOpenOrClose();
 		}
 	}
 
 	@Override
 	public void onInvClose(PlayerEntity playerEntity) {
 		if (!playerEntity.isSpectator()) {
-			this.field_11928--;
-			this.method_11049();
+			this.viewerCount--;
+			this.onInvOpenOrClose();
 		}
 	}
 
-	protected void method_11049() {
+	protected void onInvOpenOrClose() {
 		Block block = this.getCachedState().getBlock();
 		if (block instanceof ChestBlock) {
-			this.world.addBlockAction(this.pos, block, 1, this.field_11928);
+			this.world.addBlockAction(this.pos, block, 1, this.viewerCount);
 			this.world.updateNeighborsAlways(this.pos, block);
 		}
 	}
@@ -226,19 +226,19 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 		return MathHelper.lerp(f, this.lastAnimationAngle, this.animationAngle);
 	}
 
-	public static int method_11048(BlockView blockView, BlockPos blockPos) {
+	public static int getPlayersLookingInChestCount(BlockView blockView, BlockPos blockPos) {
 		BlockState blockState = blockView.getBlockState(blockPos);
 		if (blockState.getBlock().hasBlockEntity()) {
 			BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
 			if (blockEntity instanceof ChestBlockEntity) {
-				return ((ChestBlockEntity)blockEntity).field_11928;
+				return ((ChestBlockEntity)blockEntity).viewerCount;
 			}
 		}
 
 		return 0;
 	}
 
-	public static void method_11047(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
+	public static void copyInventory(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
 		DefaultedList<ItemStack> defaultedList = chestBlockEntity.getInvStackList();
 		chestBlockEntity.setInvStackList(chestBlockEntity2.getInvStackList());
 		chestBlockEntity2.setInvStackList(defaultedList);

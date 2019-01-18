@@ -16,7 +16,7 @@ public class PillarBlock extends Block {
 	}
 
 	@Override
-	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
 		switch (rotation) {
 			case ROT_270:
 			case ROT_90:

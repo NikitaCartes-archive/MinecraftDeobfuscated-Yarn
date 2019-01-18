@@ -19,7 +19,7 @@ import net.minecraft.util.math.MathHelper;
 public class EnderChestBlockEntity extends BlockEntity implements ChestAnimationProgress, Tickable {
 	public float animationProgress;
 	public float lastAnimationProgress;
-	public int viewers;
+	public int viewerCount;
 	private int ticks;
 
 	public EnderChestBlockEntity() {
@@ -29,7 +29,7 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 	@Override
 	public void tick() {
 		if (++this.ticks % 20 * 4 == 0) {
-			this.world.addBlockAction(this.pos, Blocks.field_10443, 1, this.viewers);
+			this.world.addBlockAction(this.pos, Blocks.field_10443, 1, this.viewerCount);
 		}
 
 		this.lastAnimationProgress = this.animationProgress;
@@ -37,15 +37,15 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 		int j = this.pos.getY();
 		int k = this.pos.getZ();
 		float f = 0.1F;
-		if (this.viewers > 0 && this.animationProgress == 0.0F) {
+		if (this.viewerCount > 0 && this.animationProgress == 0.0F) {
 			double d = (double)i + 0.5;
 			double e = (double)k + 0.5;
 			this.world.playSound(null, d, (double)j + 0.5, e, SoundEvents.field_14952, SoundCategory.field_15245, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 		}
 
-		if (this.viewers == 0 && this.animationProgress > 0.0F || this.viewers > 0 && this.animationProgress < 1.0F) {
+		if (this.viewerCount == 0 && this.animationProgress > 0.0F || this.viewerCount > 0 && this.animationProgress < 1.0F) {
 			float g = this.animationProgress;
-			if (this.viewers > 0) {
+			if (this.viewerCount > 0) {
 				this.animationProgress += 0.1F;
 			} else {
 				this.animationProgress -= 0.1F;
@@ -71,7 +71,7 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 	@Override
 	public boolean onBlockAction(int i, int j) {
 		if (i == 1) {
-			this.viewers = j;
+			this.viewerCount = j;
 			return true;
 		} else {
 			return super.onBlockAction(i, j);
@@ -85,13 +85,13 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 	}
 
 	public void onOpen() {
-		this.viewers++;
-		this.world.addBlockAction(this.pos, Blocks.field_10443, 1, this.viewers);
+		this.viewerCount++;
+		this.world.addBlockAction(this.pos, Blocks.field_10443, 1, this.viewerCount);
 	}
 
 	public void onClose() {
-		this.viewers--;
-		this.world.addBlockAction(this.pos, Blocks.field_10443, 1, this.viewers);
+		this.viewerCount--;
+		this.world.addBlockAction(this.pos, Blocks.field_10443, 1, this.viewerCount);
 	}
 
 	public boolean canPlayerUse(PlayerEntity playerEntity) {

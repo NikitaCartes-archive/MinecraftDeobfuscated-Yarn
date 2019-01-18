@@ -26,7 +26,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.HitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
@@ -92,7 +92,7 @@ public class Explosion {
 						double p = MathHelper.lerp((double)m, boundingBox.minZ, boundingBox.maxZ);
 						Vec3d vec3d2 = new Vec3d(n + g, o, p + h);
 						if (entity.world
-								.rayTrace(new RayTraceContext(vec3d2, vec3d, RayTraceContext.ShapeType.field_17559, RayTraceContext.FluidHandling.NONE, entity))
+								.method_17742(new RayTraceContext(vec3d2, vec3d, RayTraceContext.ShapeType.field_17559, RayTraceContext.FluidHandling.NONE, entity))
 								.getType()
 							== HitResult.Type.NONE) {
 							i++;

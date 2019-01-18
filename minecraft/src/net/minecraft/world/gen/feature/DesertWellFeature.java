@@ -52,7 +52,7 @@ public class DesertWellFeature extends Feature<DefaultFeatureConfig> {
 
 			iWorld.setBlockState(blockPos, this.field_13449, 2);
 
-			for (Direction direction : Direction.class_2353.HORIZONTAL) {
+			for (Direction direction : Direction.Type.HORIZONTAL) {
 				iWorld.setBlockState(blockPos.offset(direction), this.field_13449, 2);
 			}
 

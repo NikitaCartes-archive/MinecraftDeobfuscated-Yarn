@@ -10,7 +10,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class SoulSandBlock extends Block {
-	protected static final VoxelShape field_11521 = Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 14.0, 16.0);
+	protected static final VoxelShape COLLISION_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 14.0, 16.0);
 
 	public SoulSandBlock(Block.Settings settings) {
 		super(settings);
@@ -18,7 +18,7 @@ public class SoulSandBlock extends Block {
 
 	@Override
 	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_11521;
+		return COLLISION_SHAPE;
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class SoulSandBlock extends Block {
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		BubbleColumnBlock.method_9657(world, blockPos.up(), false);
 	}
 

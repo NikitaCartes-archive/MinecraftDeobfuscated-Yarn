@@ -32,8 +32,8 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class BaseFluid extends Fluid {
-	public static final BooleanProperty STILL = Properties.FALLING;
-	public static final IntegerProperty LEVEL = Properties.BLOCK_LEVEL;
+	public static final BooleanProperty FALLING = Properties.FALLING;
+	public static final IntegerProperty LEVEL = Properties.FLUID_LEVEL;
 	private static final ThreadLocal<Object2ByteLinkedOpenHashMap<Block.NeighborGroup>> field_15901 = ThreadLocal.withInitial(() -> {
 		Object2ByteLinkedOpenHashMap<Block.NeighborGroup> object2ByteLinkedOpenHashMap = new Object2ByteLinkedOpenHashMap<Block.NeighborGroup>(200) {
 			@Override
@@ -47,7 +47,7 @@ public abstract class BaseFluid extends Fluid {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Fluid, FluidState> builder) {
-		builder.with(STILL);
+		builder.with(FALLING);
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public abstract class BaseFluid extends Fluid {
 
 		Vec3d var28;
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-			for (Direction direction : Direction.class_2353.HORIZONTAL) {
+			for (Direction direction : Direction.Type.HORIZONTAL) {
 				pooledMutable.set(blockPos).setOffset(direction);
 				FluidState fluidState2 = blockView.getFluidState(pooledMutable);
 				if (this.method_15748(fluidState2)) {
@@ -86,8 +86,8 @@ public abstract class BaseFluid extends Fluid {
 			}
 
 			Vec3d vec3d = new Vec3d(d, 0.0, e);
-			if ((Boolean)fluidState.get(STILL)) {
-				for (Direction direction2 : Direction.class_2353.HORIZONTAL) {
+			if ((Boolean)fluidState.get(FALLING)) {
+				for (Direction direction2 : Direction.Type.HORIZONTAL) {
 					pooledMutable.set(blockPos).setOffset(direction2);
 					if (this.method_15749(blockView, pooledMutable, direction2) || this.method_15749(blockView, pooledMutable.up(), direction2)) {
 						vec3d = vec3d.normalize().add(0.0, -6.0, 0.0);
@@ -118,7 +118,7 @@ public abstract class BaseFluid extends Fluid {
 			return false;
 		} else {
 			boolean bl = Block.method_9581(block) || block instanceof StairsBlock;
-			return !bl && Block.isFaceFullCube(blockState.getCollisionShape(blockView, blockPos), direction);
+			return !bl && Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos), direction);
 		}
 	}
 
@@ -140,8 +140,8 @@ public abstract class BaseFluid extends Fluid {
 	}
 
 	private void method_15744(IWorld iWorld, BlockPos blockPos, FluidState fluidState, BlockState blockState) {
-		int i = fluidState.method_15761() - this.method_15739(iWorld);
-		if ((Boolean)fluidState.get(STILL)) {
+		int i = fluidState.getLevel() - this.method_15739(iWorld);
+		if ((Boolean)fluidState.get(FALLING)) {
 			i = 7;
 		}
 
@@ -164,7 +164,7 @@ public abstract class BaseFluid extends Fluid {
 		int i = 0;
 		int j = 0;
 
-		for (Direction direction : Direction.class_2353.HORIZONTAL) {
+		for (Direction direction : Direction.Type.HORIZONTAL) {
 			BlockPos blockPos2 = blockPos.offset(direction);
 			BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
 			FluidState fluidState = blockState2.getFluidState();
@@ -173,7 +173,7 @@ public abstract class BaseFluid extends Fluid {
 					j++;
 				}
 
-				i = Math.max(i, fluidState.method_15761());
+				i = Math.max(i, fluidState.getLevel());
 			}
 		}
 
@@ -234,13 +234,13 @@ public abstract class BaseFluid extends Fluid {
 	public abstract Fluid getFlowing();
 
 	public FluidState method_15728(int i, boolean bl) {
-		return this.getFlowing().getDefaultState().with(LEVEL, Integer.valueOf(i)).with(STILL, Boolean.valueOf(bl));
+		return this.getFlowing().getDefaultState().with(LEVEL, Integer.valueOf(i)).with(FALLING, Boolean.valueOf(bl));
 	}
 
 	public abstract Fluid getStill();
 
 	public FluidState getState(boolean bl) {
-		return this.getStill().getDefaultState().with(STILL, Boolean.valueOf(bl));
+		return this.getStill().getDefaultState().with(FALLING, Boolean.valueOf(bl));
 	}
 
 	protected abstract boolean method_15737();
@@ -277,7 +277,7 @@ public abstract class BaseFluid extends Fluid {
 	) {
 		int j = 1000;
 
-		for (Direction direction2 : Direction.class_2353.HORIZONTAL) {
+		for (Direction direction2 : Direction.Type.HORIZONTAL) {
 			if (direction2 != direction) {
 				BlockPos blockPos3 = blockPos.offset(direction2);
 				short s = method_15747(blockPos2, blockPos3);
@@ -342,7 +342,7 @@ public abstract class BaseFluid extends Fluid {
 	private int method_15740(ViewableWorld viewableWorld, BlockPos blockPos) {
 		int i = 0;
 
-		for (Direction direction : Direction.class_2353.HORIZONTAL) {
+		for (Direction direction : Direction.Type.HORIZONTAL) {
 			BlockPos blockPos2 = blockPos.offset(direction);
 			FluidState fluidState = viewableWorld.getFluidState(blockPos2);
 			if (this.method_15752(fluidState)) {
@@ -359,7 +359,7 @@ public abstract class BaseFluid extends Fluid {
 		Short2ObjectMap<Pair<BlockState, FluidState>> short2ObjectMap = new Short2ObjectOpenHashMap<>();
 		Short2BooleanMap short2BooleanMap = new Short2BooleanOpenHashMap();
 
-		for (Direction direction : Direction.class_2353.HORIZONTAL) {
+		for (Direction direction : Direction.Type.HORIZONTAL) {
 			BlockPos blockPos2 = blockPos.offset(direction);
 			short s = method_15747(blockPos, blockPos2);
 			Pair<BlockState, FluidState> pair = short2ObjectMap.computeIfAbsent(s, ix -> {
@@ -432,11 +432,11 @@ public abstract class BaseFluid extends Fluid {
 	protected abstract int method_15739(ViewableWorld viewableWorld);
 
 	protected int method_15753(World world, BlockPos blockPos, FluidState fluidState, FluidState fluidState2) {
-		return this.method_15789(world);
+		return this.getTickRate(world);
 	}
 
 	@Override
-	public void method_15778(World world, BlockPos blockPos, FluidState fluidState) {
+	public void onScheduledTick(World world, BlockPos blockPos, FluidState fluidState) {
 		if (!fluidState.isStill()) {
 			FluidState fluidState2 = this.method_15727(world, blockPos, world.getBlockState(blockPos));
 			int i = this.method_15753(world, blockPos, fluidState, fluidState2);
@@ -456,7 +456,7 @@ public abstract class BaseFluid extends Fluid {
 	}
 
 	protected static int method_15741(FluidState fluidState) {
-		return fluidState.isStill() ? 0 : 8 - Math.min(fluidState.method_15761(), 8) + (fluidState.get(STILL) ? 8 : 0);
+		return fluidState.isStill() ? 0 : 8 - Math.min(fluidState.getLevel(), 8) + (fluidState.get(FALLING) ? 8 : 0);
 	}
 
 	private static boolean method_17774(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
@@ -465,12 +465,12 @@ public abstract class BaseFluid extends Fluid {
 
 	@Override
 	public float method_15788(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
-		return method_17774(fluidState, blockView, blockPos) ? 1.0F : (float)fluidState.method_15761() / 9.0F;
+		return method_17774(fluidState, blockView, blockPos) ? 1.0F : (float)fluidState.getLevel() / 9.0F;
 	}
 
 	@Override
 	public VoxelShape getShape(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
-		return fluidState.method_15761() == 9 && method_17774(fluidState, blockView, blockPos)
+		return fluidState.getLevel() == 9 && method_17774(fluidState, blockView, blockPos)
 			? VoxelShapes.fullCube()
 			: (VoxelShape)this.field_17587
 				.computeIfAbsent(fluidState, fluidStatex -> VoxelShapes.cube(0.0, 0.0, 0.0, 1.0, (double)fluidStatex.method_15763(blockView, blockPos), 1.0));

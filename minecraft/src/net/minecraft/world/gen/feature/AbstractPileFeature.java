@@ -43,7 +43,7 @@ public abstract class AbstractPileFeature extends Feature<DefaultFeatureConfig> 
 	private boolean method_16707(IWorld iWorld, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState = iWorld.getBlockState(blockPos2);
-		return Block.isFaceFullCube(blockState.getCollisionShape(iWorld, blockPos2), Direction.UP) || blockState.getBlock() == Blocks.field_10194;
+		return Block.isFaceFullSquare(blockState.getCollisionShape(iWorld, blockPos2), Direction.UP) || blockState.getBlock() == Blocks.field_10194;
 	}
 
 	private void method_16708(IWorld iWorld, BlockPos blockPos) {

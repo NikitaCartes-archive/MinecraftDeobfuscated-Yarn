@@ -19,7 +19,7 @@ public interface Waterloggable extends FluidDrainable, FluidFillable {
 		if (!(Boolean)blockState.get(Properties.WATERLOGGED) && fluidState.getFluid() == Fluids.WATER) {
 			if (!iWorld.isClient()) {
 				iWorld.setBlockState(blockPos, blockState.with(Properties.WATERLOGGED, Boolean.valueOf(true)), 3);
-				iWorld.getFluidTickScheduler().schedule(blockPos, fluidState.getFluid(), fluidState.getFluid().method_15789(iWorld));
+				iWorld.getFluidTickScheduler().schedule(blockPos, fluidState.getFluid(), fluidState.getFluid().getTickRate(iWorld));
 			}
 
 			return true;

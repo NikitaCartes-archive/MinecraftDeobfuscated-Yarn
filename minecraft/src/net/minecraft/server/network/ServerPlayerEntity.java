@@ -466,7 +466,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		this.getScoreboard().method_1162(ScoreboardCriterion.DEATH_COUNT, this.getEntityName(), ScoreboardPlayerScore::incrementScore);
 		LivingEntity livingEntity = this.method_6124();
 		if (livingEntity != null) {
-			this.incrementStat(Stats.field_15411.method_14956(livingEntity.getType()));
+			this.incrementStat(Stats.field_15411.getOrCreateStat(livingEntity.getType()));
 			livingEntity.method_5716(this, this.field_6232, damageSource);
 			if (!this.world.isClient && livingEntity instanceof EntityWither) {
 				BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
@@ -478,8 +478,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		}
 
 		this.increaseStat(Stats.field_15421);
-		this.resetStat(Stats.field_15419.method_14956(Stats.field_15400));
-		this.resetStat(Stats.field_15419.method_14956(Stats.field_15429));
+		this.resetStat(Stats.field_15419.getOrCreateStat(Stats.field_15400));
+		this.resetStat(Stats.field_15419.getOrCreateStat(Stats.field_15429));
 		this.extinguish();
 		this.setEntityFlag(0, false);
 		this.getDamageTracker().update();
@@ -757,7 +757,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	public void openBookEditorGui(ItemStack itemStack, Hand hand) {
 		Item item = itemStack.getItem();
 		if (item == Items.field_8360) {
-			if (WrittenBookItem.method_8054(itemStack, this.getCommandSource(), this)) {
+			if (WrittenBookItem.resolve(itemStack, this.getCommandSource(), this)) {
 				this.container.sendContentUpdates();
 			}
 
@@ -767,7 +767,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	public void openCommandBlockGui(CommandBlockBlockEntity commandBlockBlockEntity) {
-		commandBlockBlockEntity.method_11037(true);
+		commandBlockBlockEntity.setNeedsUpdatePacket(true);
 		this.sendBlockEntityUpdate(commandBlockBlockEntity);
 	}
 
@@ -1237,7 +1237,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void method_17356(SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
+	public void playSound(SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
 		this.networkHandler.sendPacket(new PlaySoundClientPacket(soundEvent, soundCategory, this.x, this.y, this.z, f, g));
 	}
 }

@@ -30,17 +30,17 @@ import net.minecraft.world.World;
 
 public class PistonBlock extends FacingBlock {
 	public static final BooleanProperty field_12191 = Properties.EXTENDED;
-	protected static final VoxelShape field_12188 = Block.createCubeShape(0.0, 0.0, 0.0, 12.0, 16.0, 16.0);
-	protected static final VoxelShape field_12184 = Block.createCubeShape(4.0, 0.0, 0.0, 16.0, 16.0, 16.0);
-	protected static final VoxelShape field_12186 = Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 16.0, 12.0);
-	protected static final VoxelShape field_12189 = Block.createCubeShape(0.0, 0.0, 4.0, 16.0, 16.0, 16.0);
-	protected static final VoxelShape field_12185 = Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 12.0, 16.0);
-	protected static final VoxelShape field_12190 = Block.createCubeShape(0.0, 4.0, 0.0, 16.0, 16.0, 16.0);
+	protected static final VoxelShape field_12188 = Block.createCuboidShape(0.0, 0.0, 0.0, 12.0, 16.0, 16.0);
+	protected static final VoxelShape field_12184 = Block.createCuboidShape(4.0, 0.0, 0.0, 16.0, 16.0, 16.0);
+	protected static final VoxelShape field_12186 = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 12.0);
+	protected static final VoxelShape field_12189 = Block.createCuboidShape(0.0, 0.0, 4.0, 16.0, 16.0, 16.0);
+	protected static final VoxelShape field_12185 = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 12.0, 16.0);
+	protected static final VoxelShape field_12190 = Block.createCuboidShape(0.0, 4.0, 0.0, 16.0, 16.0, 16.0);
 	private final boolean isSticky;
 
 	public PistonBlock(boolean bl, Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_10927, Direction.NORTH).with(field_12191, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(field_12191, Boolean.valueOf(false)));
 		this.isSticky = bl;
 	}
 
@@ -52,7 +52,7 @@ public class PistonBlock extends FacingBlock {
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		if ((Boolean)blockState.get(field_12191)) {
-			switch ((Direction)blockState.get(field_10927)) {
+			switch ((Direction)blockState.get(FACING)) {
 				case DOWN:
 					return field_12190;
 				case UP:
@@ -74,7 +74,7 @@ public class PistonBlock extends FacingBlock {
 
 	@Override
 	public boolean hasSolidTopSurface(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return !(Boolean)blockState.get(field_12191) || blockState.get(field_10927) == Direction.DOWN;
+		return !(Boolean)blockState.get(field_12191) || blockState.get(FACING) == Direction.DOWN;
 	}
 
 	@Override
@@ -107,11 +107,11 @@ public class PistonBlock extends FacingBlock {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(field_10927, itemPlacementContext.getPlayerFacing().getOpposite()).with(field_12191, Boolean.valueOf(false));
+		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite()).with(field_12191, Boolean.valueOf(false));
 	}
 
 	private void method_11483(World world, BlockPos blockPos, BlockState blockState) {
-		Direction direction = blockState.get(field_10927);
+		Direction direction = blockState.get(FACING);
 		boolean bl = this.method_11482(world, blockPos, direction);
 		if (bl && !(Boolean)blockState.get(field_12191)) {
 			if (new PistonHandler(world, blockPos, direction, true).calculatePush()) {
@@ -121,7 +121,7 @@ public class PistonBlock extends FacingBlock {
 			BlockPos blockPos2 = blockPos.offset(direction, 2);
 			BlockState blockState2 = world.getBlockState(blockPos2);
 			int i = 1;
-			if (blockState2.getBlock() == Blocks.field_10008 && blockState2.get(field_10927) == direction) {
+			if (blockState2.getBlock() == Blocks.field_10008 && blockState2.get(FACING) == direction) {
 				BlockEntity blockEntity = world.getBlockEntity(blockPos2);
 				if (blockEntity instanceof PistonBlockEntity) {
 					PistonBlockEntity pistonBlockEntity = (PistonBlockEntity)blockEntity;
@@ -160,7 +160,7 @@ public class PistonBlock extends FacingBlock {
 
 	@Override
 	public boolean onBlockAction(BlockState blockState, World world, BlockPos blockPos, int i, int j) {
-		Direction direction = blockState.get(field_10927);
+		Direction direction = blockState.get(FACING);
 		if (!world.isClient) {
 			boolean bl = this.method_11482(world, blockPos, direction);
 			if (bl && (i == 1 || i == 2)) {
@@ -195,7 +195,7 @@ public class PistonBlock extends FacingBlock {
 				3
 			);
 			world.setBlockEntity(
-				blockPos, PistonExtensionBlock.createBlockEntityPiston(this.getDefaultState().with(field_10927, Direction.byId(j & 7)), direction, false, true)
+				blockPos, PistonExtensionBlock.createBlockEntityPiston(this.getDefaultState().with(FACING, Direction.byId(j & 7)), direction, false, true)
 			);
 			if (this.isSticky) {
 				BlockPos blockPos2 = blockPos.add(direction.getOffsetX() * 2, direction.getOffsetY() * 2, direction.getOffsetZ() * 2);
@@ -306,7 +306,7 @@ public class PistonBlock extends FacingBlock {
 				BlockState blockState = world.getBlockState(blockPos4);
 				blockPos4 = blockPos4.offset(direction2);
 				set.remove(blockPos4);
-				world.setBlockState(blockPos4, Blocks.field_10008.getDefaultState().with(field_10927, direction), 68);
+				world.setBlockState(blockPos4, Blocks.field_10008.getDefaultState().with(FACING, direction), 68);
 				world.setBlockEntity(blockPos4, PistonExtensionBlock.createBlockEntityPiston((BlockState)list2.get(k), direction, bl, false));
 				j--;
 				blockStates[j] = blockState;
@@ -314,7 +314,7 @@ public class PistonBlock extends FacingBlock {
 
 			if (bl) {
 				PistonType pistonType = this.isSticky ? PistonType.field_12634 : PistonType.field_12637;
-				BlockState blockState2 = Blocks.field_10379.getDefaultState().with(PistonHeadBlock.field_10927, direction).with(PistonHeadBlock.field_12224, pistonType);
+				BlockState blockState2 = Blocks.field_10379.getDefaultState().with(PistonHeadBlock.FACING, direction).with(PistonHeadBlock.field_12224, pistonType);
 				BlockState blockState = Blocks.field_10008
 					.getDefaultState()
 					.with(PistonExtensionBlock.FACING, direction)
@@ -348,18 +348,18 @@ public class PistonBlock extends FacingBlock {
 	}
 
 	@Override
-	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
-		return blockState.with(field_10927, rotation.method_10503(blockState.get(field_10927)));
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
+		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
-	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.getRotation(blockState.get(field_10927)));
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
+		return blockState.rotate(mirror.getRotation(blockState.get(FACING)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_10927, field_12191);
+		builder.with(FACING, field_12191);
 	}
 
 	@Override

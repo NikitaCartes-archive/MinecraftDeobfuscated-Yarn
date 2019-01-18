@@ -19,42 +19,42 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 
 public class LadderBlock extends Block implements Waterloggable {
-	public static final DirectionProperty field_11253 = HorizontalFacingBlock.field_11177;
-	public static final BooleanProperty field_11257 = Properties.WATERLOGGED;
-	protected static final VoxelShape field_11255 = Block.createCubeShape(0.0, 0.0, 0.0, 3.0, 16.0, 16.0);
-	protected static final VoxelShape field_11252 = Block.createCubeShape(13.0, 0.0, 0.0, 16.0, 16.0, 16.0);
-	protected static final VoxelShape field_11254 = Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 16.0, 3.0);
-	protected static final VoxelShape field_11256 = Block.createCubeShape(0.0, 0.0, 13.0, 16.0, 16.0, 16.0);
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+	protected static final VoxelShape EAST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 3.0, 16.0, 16.0);
+	protected static final VoxelShape WEST_SHAPE = Block.createCuboidShape(13.0, 0.0, 0.0, 16.0, 16.0, 16.0);
+	protected static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 3.0);
+	protected static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 13.0, 16.0, 16.0, 16.0);
 
 	protected LadderBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11253, Direction.NORTH).with(field_11257, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(WATERLOGGED, Boolean.valueOf(false)));
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		switch ((Direction)blockState.get(field_11253)) {
+		switch ((Direction)blockState.get(FACING)) {
 			case NORTH:
-				return field_11256;
+				return NORTH_SHAPE;
 			case SOUTH:
-				return field_11254;
+				return SOUTH_SHAPE;
 			case WEST:
-				return field_11252;
+				return WEST_SHAPE;
 			case EAST:
 			default:
-				return field_11255;
+				return EAST_SHAPE;
 		}
 	}
 
 	private boolean method_10305(BlockView blockView, BlockPos blockPos, Direction direction) {
 		BlockState blockState = blockView.getBlockState(blockPos);
 		boolean bl = method_9581(blockState.getBlock());
-		return !bl && Block.isFaceFullCube(blockState.getCollisionShape(blockView, blockPos), direction) && !blockState.emitsRedstonePower();
+		return !bl && Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos), direction) && !blockState.emitsRedstonePower();
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		Direction direction = blockState.get(field_11253);
+		Direction direction = blockState.get(FACING);
 		return this.method_10305(viewableWorld, blockPos.offset(direction.getOpposite()), direction);
 	}
 
@@ -62,11 +62,11 @@ public class LadderBlock extends Block implements Waterloggable {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		if (direction.getOpposite() == blockState.get(field_11253) && !blockState.canPlaceAt(iWorld, blockPos)) {
+		if (direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos)) {
 			return Blocks.field_10124.getDefaultState();
 		} else {
-			if ((Boolean)blockState.get(field_11257)) {
-				iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
+			if ((Boolean)blockState.get(WATERLOGGED)) {
+				iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 			}
 
 			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
@@ -77,22 +77,23 @@ public class LadderBlock extends Block implements Waterloggable {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		if (!itemPlacementContext.method_7717()) {
-			BlockState blockState = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getPos().offset(itemPlacementContext.getFacing().getOpposite()));
-			if (blockState.getBlock() == this && blockState.get(field_11253) == itemPlacementContext.getFacing()) {
+			BlockState blockState = itemPlacementContext.getWorld()
+				.getBlockState(itemPlacementContext.getBlockPos().offset(itemPlacementContext.getFacing().getOpposite()));
+			if (blockState.getBlock() == this && blockState.get(FACING) == itemPlacementContext.getFacing()) {
 				return null;
 			}
 		}
 
 		BlockState blockState = this.getDefaultState();
 		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
-		BlockPos blockPos = itemPlacementContext.getPos();
-		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getPos());
+		BlockPos blockPos = itemPlacementContext.getBlockPos();
+		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
 
 		for (Direction direction : itemPlacementContext.getPlacementFacings()) {
 			if (direction.getAxis().isHorizontal()) {
-				blockState = blockState.with(field_11253, direction.getOpposite());
+				blockState = blockState.with(FACING, direction.getOpposite());
 				if (blockState.canPlaceAt(viewableWorld, blockPos)) {
-					return blockState.with(field_11257, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
+					return blockState.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 				}
 			}
 		}
@@ -106,22 +107,22 @@ public class LadderBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
-		return blockState.with(field_11253, rotation.method_10503(blockState.get(field_11253)));
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
+		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
-	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.getRotation(blockState.get(field_11253)));
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
+		return blockState.rotate(mirror.getRotation(blockState.get(FACING)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_11253, field_11257);
+		builder.with(FACING, WATERLOGGED);
 	}
 
 	@Override
 	public FluidState getFluidState(BlockState blockState) {
-		return blockState.get(field_11257) ? Fluids.WATER.getState(false) : super.getFluidState(blockState);
+		return blockState.get(WATERLOGGED) ? Fluids.WATER.getState(false) : super.getFluidState(blockState);
 	}
 }

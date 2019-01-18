@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.block.JigsawBlock;
+import net.minecraft.sortme.Structure;
 import net.minecraft.sortme.structures.StructureManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rotation;
@@ -60,18 +61,19 @@ public class class_3778 {
 			Rotation rotation = arg2.method_16888();
 			List<MutableIntBoundingBox> list2 = Lists.<MutableIntBoundingBox>newArrayList();
 
-			for (class_3499.class_3501 lv2 : lv.method_16627(structureManager, blockPos, rotation, random)) {
-				Direction direction = lv2.field_15596.get(JigsawBlock.field_10927);
-				BlockPos blockPos2 = lv2.field_15597.offset(direction);
-				class_3785 lv3 = field_16666.method_16639(new Identifier(lv2.field_15595.getString("target_pool")));
-				class_3785 lv4 = field_16666.method_16639(lv3.method_16634());
-				if (lv3 != class_3785.field_16746 && (lv3.method_16632() != 0 || lv3 == class_3785.field_16679)) {
+			for (Structure.StructureBlockInfo structureBlockInfo : lv.method_16627(structureManager, blockPos, rotation, random)) {
+				Direction direction = structureBlockInfo.state.get(JigsawBlock.FACING);
+				BlockPos blockPos2 = structureBlockInfo.pos.offset(direction);
+				class_3785 lv2 = field_16666.method_16639(new Identifier(structureBlockInfo.tag.getString("target_pool")));
+				class_3785 lv3 = field_16666.method_16639(lv2.method_16634());
+				if (lv2 != class_3785.field_16746 && (lv2.method_16632() != 0 || lv2 == class_3785.field_16679)) {
 					MutableIntBoundingBox mutableIntBoundingBox = lv.method_16628(structureManager, blockPos, rotation);
-					if (i == j || !method_16606(arg, arg2, chunkGenerator, structureManager, list, random, lv, lv2, mutableIntBoundingBox, list2, blockPos2, lv3, i, j)) {
-						method_16606(arg, arg2, chunkGenerator, structureManager, list, random, lv, lv2, mutableIntBoundingBox, list2, blockPos2, lv4, i, j);
+					if (i == j
+						|| !method_16606(arg, arg2, chunkGenerator, structureManager, list, random, lv, structureBlockInfo, mutableIntBoundingBox, list2, blockPos2, lv2, i, j)) {
+						method_16606(arg, arg2, chunkGenerator, structureManager, list, random, lv, structureBlockInfo, mutableIntBoundingBox, list2, blockPos2, lv3, i, j);
 					}
 				} else {
-					field_16665.warn("Empty or none existent pool: {}", lv2.field_15595.getString("target_pool"));
+					field_16665.warn("Empty or none existent pool: {}", structureBlockInfo.tag.getString("target_pool"));
 				}
 			}
 		}
@@ -85,33 +87,33 @@ public class class_3778 {
 		List<class_3443> list,
 		Random random,
 		class_3784 arg3,
-		class_3499.class_3501 arg4,
+		Structure.StructureBlockInfo structureBlockInfo,
 		MutableIntBoundingBox mutableIntBoundingBox,
 		List<MutableIntBoundingBox> list2,
 		BlockPos blockPos,
-		class_3785 arg5,
+		class_3785 arg4,
 		int i,
 		int j
 	) {
 		boolean bl = mutableIntBoundingBox.contains(blockPos);
 
-		for (int k : arg5.method_16633(random)) {
-			class_3784 lv = arg5.method_16630(k);
+		for (int k : arg4.method_16633(random)) {
+			class_3784 lv = arg4.method_16630(k);
 			if (lv == class_3777.field_16663) {
 				return true;
 			}
 
 			for (Rotation rotation : Rotation.method_16547(random)) {
-				for (class_3499.class_3501 lv2 : lv.method_16627(structureManager, BlockPos.ORIGIN, rotation, random)) {
-					if (JigsawBlock.method_16546(arg4, lv2)) {
+				for (Structure.StructureBlockInfo structureBlockInfo2 : lv.method_16627(structureManager, BlockPos.ORIGIN, rotation, random)) {
+					if (JigsawBlock.method_16546(structureBlockInfo, structureBlockInfo2)) {
 						BlockPos blockPos2 = new BlockPos(
-							blockPos.getX() - lv2.field_15597.getX(), blockPos.getY() - lv2.field_15597.getY(), blockPos.getZ() - lv2.field_15597.getZ()
+							blockPos.getX() - structureBlockInfo2.pos.getX(), blockPos.getY() - structureBlockInfo2.pos.getY(), blockPos.getZ() - structureBlockInfo2.pos.getZ()
 						);
 						class_3785.Projection projection = arg2.method_16644().method_16624();
 						class_3785.Projection projection2 = lv.method_16624();
-						int l = arg4.field_15597.getY() - mutableIntBoundingBox.minY;
-						int m = lv2.field_15597.getY();
-						int n = l - m + ((Direction)arg4.field_15596.get(JigsawBlock.field_10927)).getOffsetY();
+						int l = structureBlockInfo.pos.getY() - mutableIntBoundingBox.minY;
+						int m = structureBlockInfo2.pos.getY();
+						int n = l - m + ((Direction)structureBlockInfo.state.get(JigsawBlock.FACING)).getOffsetY();
 						int o = arg2.method_16646();
 						int p;
 						if (projection2 == class_3785.Projection.RIGID) {
@@ -125,7 +127,7 @@ public class class_3778 {
 						if (projection == class_3785.Projection.RIGID && projection2 == class_3785.Projection.RIGID) {
 							q = mutableIntBoundingBox.minY + n;
 						} else {
-							q = chunkGenerator.produceHeight(arg4.field_15597.getX(), arg4.field_15597.getZ(), Heightmap.Type.WORLD_SURFACE_WG) - 1 + n;
+							q = chunkGenerator.produceHeight(structureBlockInfo.pos.getX(), structureBlockInfo.pos.getZ(), Heightmap.Type.WORLD_SURFACE_WG) - 1 + n;
 						}
 
 						int r = q - mutableIntBoundingBox2.minY;
@@ -141,19 +143,19 @@ public class class_3778 {
 								list2.add(mutableIntBoundingBox2);
 							}
 
-							class_3790 lv3 = arg.create(structureManager, lv, blockPos2, p, rotation);
+							class_3790 lv2 = arg.create(structureManager, lv, blockPos2, p, rotation);
 							int s;
 							if (projection == class_3785.Projection.RIGID) {
 								s = mutableIntBoundingBox.minY + l;
 							} else if (projection2 == class_3785.Projection.RIGID) {
 								s = q + m;
 							} else {
-								s = chunkGenerator.produceHeight(arg4.field_15597.getX(), arg4.field_15597.getZ(), Heightmap.Type.WORLD_SURFACE_WG) - 1 + n / 2;
+								s = chunkGenerator.produceHeight(structureBlockInfo.pos.getX(), structureBlockInfo.pos.getZ(), Heightmap.Type.WORLD_SURFACE_WG) - 1 + n / 2;
 							}
 
 							arg2.method_16647(new JigsawJunction(blockPos.getX(), s - l + o, blockPos.getZ(), n, projection2));
-							lv3.method_16647(new JigsawJunction(arg4.field_15597.getX(), s - m + p, arg4.field_15597.getZ(), -n, arg3.method_16624()));
-							method_16607(arg, lv3, chunkGenerator, structureManager, list, random, i + 1, j);
+							lv2.method_16647(new JigsawJunction(structureBlockInfo.pos.getX(), s - m + p, structureBlockInfo.pos.getZ(), -n, arg3.method_16624()));
+							method_16607(arg, lv2, chunkGenerator, structureManager, list, random, i + 1, j);
 							return true;
 						}
 					}

@@ -23,9 +23,9 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class BambooBlock extends Block implements Fertilizable {
-	protected static final VoxelShape field_9912 = Block.createCubeShape(5.0, 0.0, 5.0, 11.0, 16.0, 11.0);
-	protected static final VoxelShape field_9915 = Block.createCubeShape(3.0, 0.0, 3.0, 13.0, 16.0, 13.0);
-	protected static final VoxelShape field_9913 = Block.createCubeShape(6.5, 0.0, 6.5, 9.5, 16.0, 9.5);
+	protected static final VoxelShape field_9912 = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 16.0, 11.0);
+	protected static final VoxelShape field_9915 = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 16.0, 13.0);
+	protected static final VoxelShape field_9913 = Block.createCuboidShape(6.5, 0.0, 6.5, 9.5, 16.0, 9.5);
 	public static final IntegerProperty field_9914 = Properties.AGE_1;
 	public static final EnumProperty<BambooLeaves> field_9917 = Properties.BAMBOO_LEAVES;
 	public static final IntegerProperty field_9916 = Properties.SAPLING_STAGE;
@@ -56,23 +56,23 @@ public class BambooBlock extends Block implements Fertilizable {
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		VoxelShape voxelShape = blockState.get(field_9917) == BambooLeaves.field_12468 ? field_9915 : field_9912;
 		Vec3d vec3d = blockState.getOffsetPos(blockView, blockPos);
-		return voxelShape.method_1096(vec3d.x, vec3d.y, vec3d.z);
+		return voxelShape.offset(vec3d.x, vec3d.y, vec3d.z);
 	}
 
 	@Override
 	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		Vec3d vec3d = blockState.getOffsetPos(blockView, blockPos);
-		return field_9913.method_1096(vec3d.x, vec3d.y, vec3d.z);
+		return field_9913.offset(vec3d.x, vec3d.y, vec3d.z);
 	}
 
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getPos());
+		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
 		if (!fluidState.isEmpty()) {
 			return null;
 		} else {
-			BlockState blockState = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getPos().down());
+			BlockState blockState = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos().down());
 			if (blockState.matches(BlockTags.field_15497)) {
 				Block block = blockState.getBlock();
 				if (block == Blocks.field_10108) {
@@ -90,7 +90,7 @@ public class BambooBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if ((Integer)blockState.get(field_9916) == 0) {
 			if (random.nextInt(3) == 0 && world.isAir(blockPos.up()) && world.getLightLevel(blockPos.up(), 0) >= 9) {
 				int i = this.method_9386(world, blockPos) + 1;

@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Random;
 import net.minecraft.class_3443;
 import net.minecraft.class_3470;
-import net.minecraft.class_3492;
-import net.minecraft.class_3499;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
@@ -16,7 +14,9 @@ import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sortme.Structure;
 import net.minecraft.sortme.StructurePiece;
+import net.minecraft.sortme.StructurePlacementData;
 import net.minecraft.sortme.structures.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.sortme.structures.processor.BlockRotStructureProcessor;
 import net.minecraft.tag.BlockTags;
@@ -125,7 +125,7 @@ public class OceanTempleGenerator {
 	) {
 		int i = blockPos.getX();
 		int j = blockPos.getZ();
-		BlockPos blockPos2 = class_3499.method_15168(new BlockPos(15, 0, 15), Mirror.NONE, rotation, BlockPos.ORIGIN).add(i, 0, j);
+		BlockPos blockPos2 = Structure.method_15168(new BlockPos(15, 0, 15), Mirror.NONE, rotation, BlockPos.ORIGIN).add(i, 0, j);
 		MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.create(i, 0, j, blockPos2.getX(), 0, blockPos2.getZ());
 		BlockPos blockPos3 = new BlockPos(Math.min(i, blockPos2.getX()), 0, Math.min(j, blockPos2.getZ()));
 		List<BlockPos> list2 = method_14821(random, blockPos3.getX(), blockPos3.getZ());
@@ -138,7 +138,7 @@ public class OceanTempleGenerator {
 				int n = blockPos4.getX();
 				int o = blockPos4.getZ();
 				Rotation rotation2 = Rotation.values()[random.nextInt(Rotation.values().length)];
-				BlockPos blockPos5 = class_3499.method_15168(new BlockPos(5, 0, 6), Mirror.NONE, rotation2, BlockPos.ORIGIN).add(n, 0, o);
+				BlockPos blockPos5 = Structure.method_15168(new BlockPos(5, 0, 6), Mirror.NONE, rotation2, BlockPos.ORIGIN).add(n, 0, o);
 				MutableIntBoundingBox mutableIntBoundingBox2 = MutableIntBoundingBox.create(n, 0, o, blockPos5.getX(), 0, blockPos5.getZ());
 				if (!mutableIntBoundingBox2.intersects(mutableIntBoundingBox)) {
 					method_14822(structureManager, blockPos4, rotation2, list, random, oceanRuinFeatureConfig, false, 0.8F);
@@ -221,9 +221,12 @@ public class OceanTempleGenerator {
 		}
 
 		private void method_14828(StructureManager structureManager) {
-			class_3499 lv = structureManager.method_15091(this.field_14523);
-			class_3492 lv2 = new class_3492().method_15123(this.field_14526).method_15125(Mirror.NONE).method_16184(BlockIgnoreStructureProcessor.field_16721);
-			this.method_15027(lv, this.field_15432, lv2);
+			Structure structure = structureManager.getStructureOrBlank(this.field_14523);
+			StructurePlacementData structurePlacementData = new StructurePlacementData()
+				.setRotation(this.field_14526)
+				.setMirrored(Mirror.NONE)
+				.addProcessor(BlockIgnoreStructureProcessor.field_16721);
+			this.method_15027(structure, this.field_15432, structurePlacementData);
 		}
 
 		@Override
@@ -241,7 +244,7 @@ public class OceanTempleGenerator {
 			if ("chest".equals(string)) {
 				iWorld.setBlockState(
 					blockPos,
-					Blocks.field_10034.getDefaultState().with(ChestBlock.field_10772, Boolean.valueOf(iWorld.getFluidState(blockPos).matches(FluidTags.field_15517))),
+					Blocks.field_10034.getDefaultState().with(ChestBlock.WATERLOGGED, Boolean.valueOf(iWorld.getFluidState(blockPos).matches(FluidTags.field_15517))),
 					2
 				);
 				BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
@@ -264,11 +267,11 @@ public class OceanTempleGenerator {
 
 		@Override
 		public boolean method_14931(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
-			this.field_15434.method_16183().method_16184(new BlockRotStructureProcessor(this.field_14524)).method_16184(BlockIgnoreStructureProcessor.field_16721);
+			this.field_15434.clearProcessors().addProcessor(new BlockRotStructureProcessor(this.field_14524)).addProcessor(BlockIgnoreStructureProcessor.field_16721);
 			int i = iWorld.getTop(Heightmap.Type.OCEAN_FLOOR_WG, this.field_15432.getX(), this.field_15432.getZ());
 			this.field_15432 = new BlockPos(this.field_15432.getX(), i, this.field_15432.getZ());
-			BlockPos blockPos = class_3499.method_15168(
-					new BlockPos(this.field_15433.method_15160().getX() - 1, 0, this.field_15433.method_15160().getZ() - 1), Mirror.NONE, this.field_14526, BlockPos.ORIGIN
+			BlockPos blockPos = Structure.method_15168(
+					new BlockPos(this.field_15433.getSize().getX() - 1, 0, this.field_15433.getSize().getZ() - 1), Mirror.NONE, this.field_14526, BlockPos.ORIGIN
 				)
 				.add(this.field_15432);
 			this.field_15432 = new BlockPos(this.field_15432.getX(), this.method_14829(this.field_15432, iWorld, blockPos), this.field_15432.getZ());

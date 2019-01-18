@@ -415,7 +415,7 @@ public class Blocks {
 		"crafting_table", new CraftingTableBlock(Block.Settings.of(Material.WOOD).strength(2.5F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10293 = register(
-		"wheat", new CropBlock(Block.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.field_17580))
+		"wheat", new CropBlock(Block.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.CROP))
 	);
 	public static final Block field_10362 = register(
 		"farmland", new FarmlandBlock(Block.Settings.of(Material.EARTH).ticksRandomly().strength(0.6F).sounds(BlockSoundGroup.GRAVEL))
@@ -554,11 +554,11 @@ public class Blocks {
 		new PortalBlock(Block.Settings.of(Material.PORTAL).noCollision().ticksRandomly().strength(-1.0F).sounds(BlockSoundGroup.GLASS).lightLevel(11).dropsNothing())
 	);
 	public static final Block field_10147 = register(
-		"carved_pumpkin", new PumpkinCarvedBlock(Block.Settings.of(Material.PUMPKIN, MaterialColor.ORANGE).strength(1.0F).sounds(BlockSoundGroup.WOOD))
+		"carved_pumpkin", new CarvedPumpkinBlock(Block.Settings.of(Material.PUMPKIN, MaterialColor.ORANGE).strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10009 = register(
 		"jack_o_lantern",
-		new PumpkinCarvedBlock(Block.Settings.of(Material.PUMPKIN, MaterialColor.ORANGE).strength(1.0F).sounds(BlockSoundGroup.WOOD).lightLevel(15))
+		new CarvedPumpkinBlock(Block.Settings.of(Material.PUMPKIN, MaterialColor.ORANGE).strength(1.0F).sounds(BlockSoundGroup.WOOD).lightLevel(15))
 	);
 	public static final Block field_10183 = register("cake", new CakeBlock(Block.Settings.of(Material.CAKE).strength(0.5F).sounds(BlockSoundGroup.WOOL)));
 	public static final Block field_10450 = register("repeater", new RepeaterBlock(Block.Settings.of(Material.PART).breakInstantly().sounds(BlockSoundGroup.WOOD)));
@@ -638,21 +638,21 @@ public class Blocks {
 	public static final Block field_10065 = register("mossy_stone_bricks", new Block(Block.Settings.of(Material.STONE).strength(1.5F, 6.0F)));
 	public static final Block field_10416 = register("cracked_stone_bricks", new Block(Block.Settings.of(Material.STONE).strength(1.5F, 6.0F)));
 	public static final Block field_10552 = register("chiseled_stone_bricks", new Block(Block.Settings.of(Material.STONE).strength(1.5F, 6.0F)));
-	public static final Block field_10277 = register("infested_stone", new StoneInfestedBlock(field_10340, Block.Settings.of(Material.CLAY).strength(0.0F, 0.75F)));
+	public static final Block field_10277 = register("infested_stone", new InfestedBlock(field_10340, Block.Settings.of(Material.CLAY).strength(0.0F, 0.75F)));
 	public static final Block field_10492 = register(
-		"infested_cobblestone", new StoneInfestedBlock(field_10445, Block.Settings.of(Material.CLAY).strength(0.0F, 0.75F))
+		"infested_cobblestone", new InfestedBlock(field_10445, Block.Settings.of(Material.CLAY).strength(0.0F, 0.75F))
 	);
 	public static final Block field_10387 = register(
-		"infested_stone_bricks", new StoneInfestedBlock(field_10056, Block.Settings.of(Material.CLAY).strength(0.0F, 0.75F))
+		"infested_stone_bricks", new InfestedBlock(field_10056, Block.Settings.of(Material.CLAY).strength(0.0F, 0.75F))
 	);
 	public static final Block field_10480 = register(
-		"infested_mossy_stone_bricks", new StoneInfestedBlock(field_10065, Block.Settings.of(Material.CLAY).strength(0.0F, 0.75F))
+		"infested_mossy_stone_bricks", new InfestedBlock(field_10065, Block.Settings.of(Material.CLAY).strength(0.0F, 0.75F))
 	);
 	public static final Block field_10100 = register(
-		"infested_cracked_stone_bricks", new StoneInfestedBlock(field_10416, Block.Settings.of(Material.CLAY).strength(0.0F, 0.75F))
+		"infested_cracked_stone_bricks", new InfestedBlock(field_10416, Block.Settings.of(Material.CLAY).strength(0.0F, 0.75F))
 	);
 	public static final Block field_10176 = register(
-		"infested_chiseled_stone_bricks", new StoneInfestedBlock(field_10552, Block.Settings.of(Material.CLAY).strength(0.0F, 0.75F))
+		"infested_chiseled_stone_bricks", new InfestedBlock(field_10552, Block.Settings.of(Material.CLAY).strength(0.0F, 0.75F))
 	);
 	public static final Block field_10580 = register(
 		"brown_mushroom_block", new MushroomBlock(Block.Settings.of(Material.WOOD, MaterialColor.DIRT).strength(0.2F).sounds(BlockSoundGroup.WOOD))
@@ -706,7 +706,7 @@ public class Blocks {
 	);
 	public static final Block field_10159 = register("nether_brick_stairs", new StairsBlock(field_10266.getDefaultState(), Block.Settings.copy(field_10266)));
 	public static final Block field_9974 = register(
-		"nether_wart", new NetherWartBlock(Block.Settings.of(Material.PLANT, MaterialColor.RED).noCollision().ticksRandomly().sounds(BlockSoundGroup.field_17581))
+		"nether_wart", new NetherWartBlock(Block.Settings.of(Material.PLANT, MaterialColor.RED).noCollision().ticksRandomly().sounds(BlockSoundGroup.NETHER_WART))
 	);
 	public static final Block field_10485 = register(
 		"enchanting_table", new EnchantingTableBlock(Block.Settings.of(Material.STONE, MaterialColor.RED).strength(5.0F, 1200.0F))
@@ -780,10 +780,10 @@ public class Blocks {
 	public static final Block field_10487 = register("potted_dead_bush", new FlowerPotBlock(field_10428, Block.Settings.of(Material.PART).breakInstantly()));
 	public static final Block field_10018 = register("potted_cactus", new FlowerPotBlock(field_10029, Block.Settings.of(Material.PART).breakInstantly()));
 	public static final Block field_10609 = register(
-		"carrots", new CarrotsBlock(Block.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.field_17580))
+		"carrots", new CarrotsBlock(Block.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.CROP))
 	);
 	public static final Block field_10247 = register(
-		"potatoes", new PotatoesBlock(Block.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.field_17580))
+		"potatoes", new PotatoesBlock(Block.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.CROP))
 	);
 	public static final Block field_10057 = register(
 		"oak_button", new WoodButtonBlock(Block.Settings.of(Material.PART).noCollision().strength(0.5F).sounds(BlockSoundGroup.WOOD))
@@ -1296,7 +1296,7 @@ public class Blocks {
 	public static final Block field_9992 = register("purpur_stairs", new StairsBlock(field_10286.getDefaultState(), Block.Settings.copy(field_10286)));
 	public static final Block field_10462 = register("end_stone_bricks", new Block(Block.Settings.of(Material.STONE, MaterialColor.SAND).strength(0.8F)));
 	public static final Block field_10341 = register(
-		"beetroots", new BeetrootsBlock(Block.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.field_17580))
+		"beetroots", new BeetrootsBlock(Block.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.CROP))
 	);
 	public static final Block field_10194 = register(
 		"grass_path", new GrassPathBlock(Block.Settings.of(Material.EARTH).strength(0.65F).sounds(BlockSoundGroup.GRASS))
@@ -1544,19 +1544,19 @@ public class Blocks {
 		new CoralBlockBlock(field_10488, Block.Settings.of(Material.STONE, MaterialColor.YELLOW).strength(1.5F, 6.0F).sounds(BlockSoundGroup.CORAL))
 	);
 	public static final Block field_10082 = register(
-		"dead_tube_coral", new CoralDeadBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly())
+		"dead_tube_coral", new DeadCoralBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly())
 	);
 	public static final Block field_10572 = register(
-		"dead_brain_coral", new CoralDeadBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly())
+		"dead_brain_coral", new DeadCoralBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly())
 	);
 	public static final Block field_10296 = register(
-		"dead_bubble_coral", new CoralDeadBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly())
+		"dead_bubble_coral", new DeadCoralBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly())
 	);
 	public static final Block field_10579 = register(
-		"dead_fire_coral", new CoralDeadBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly())
+		"dead_fire_coral", new DeadCoralBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly())
 	);
 	public static final Block field_10032 = register(
-		"dead_horn_coral", new CoralDeadBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly())
+		"dead_horn_coral", new DeadCoralBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly())
 	);
 	public static final Block field_10125 = register(
 		"tube_coral",
@@ -1583,19 +1583,19 @@ public class Blocks {
 		)
 	);
 	public static final Block field_10448 = register(
-		"dead_tube_coral_fan", new CoralDeadFanBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly())
+		"dead_tube_coral_fan", new DeadCoralFanBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly())
 	);
 	public static final Block field_10097 = register(
-		"dead_brain_coral_fan", new CoralDeadFanBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly())
+		"dead_brain_coral_fan", new DeadCoralFanBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly())
 	);
 	public static final Block field_10047 = register(
-		"dead_bubble_coral_fan", new CoralDeadFanBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly())
+		"dead_bubble_coral_fan", new DeadCoralFanBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly())
 	);
 	public static final Block field_10568 = register(
-		"dead_fire_coral_fan", new CoralDeadFanBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly())
+		"dead_fire_coral_fan", new DeadCoralFanBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly())
 	);
 	public static final Block field_10221 = register(
-		"dead_horn_coral_fan", new CoralDeadFanBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly())
+		"dead_horn_coral_fan", new DeadCoralFanBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly())
 	);
 	public static final Block field_10053 = register(
 		"tube_coral_fan",
@@ -1629,23 +1629,23 @@ public class Blocks {
 	);
 	public static final Block field_10347 = register(
 		"dead_tube_coral_wall_fan",
-		new CoralDeadWallFanBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly().dropsLike(field_10448))
+		new DeadCoralWallFanBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly().dropsLike(field_10448))
 	);
 	public static final Block field_10116 = register(
 		"dead_brain_coral_wall_fan",
-		new CoralDeadWallFanBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly().dropsLike(field_10097))
+		new DeadCoralWallFanBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly().dropsLike(field_10097))
 	);
 	public static final Block field_10094 = register(
 		"dead_bubble_coral_wall_fan",
-		new CoralDeadWallFanBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly().dropsLike(field_10047))
+		new DeadCoralWallFanBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly().dropsLike(field_10047))
 	);
 	public static final Block field_10557 = register(
 		"dead_fire_coral_wall_fan",
-		new CoralDeadWallFanBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly().dropsLike(field_10568))
+		new DeadCoralWallFanBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly().dropsLike(field_10568))
 	);
 	public static final Block field_10239 = register(
 		"dead_horn_coral_wall_fan",
-		new CoralDeadWallFanBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly().dropsLike(field_10221))
+		new DeadCoralWallFanBlock(Block.Settings.of(Material.STONE, MaterialColor.GRAY).noCollision().breakInstantly().dropsLike(field_10221))
 	);
 	public static final Block field_10584 = register(
 		"tube_coral_wall_fan",
@@ -1693,7 +1693,7 @@ public class Blocks {
 	);
 	public static final Block field_10108 = register(
 		"bamboo_sapling",
-		new SaplingBambooBlock(
+		new BambooSaplingBlock(
 			Block.Settings.of(Material.BAMBOO_SAPLING).ticksRandomly().breakInstantly().noCollision().strength(1.0F).sounds(BlockSoundGroup.BAMBOO_SAPLING)
 		)
 	);
@@ -1780,7 +1780,7 @@ public class Blocks {
 		new CampfireBlock(Block.Settings.of(Material.WOOD, MaterialColor.SPRUCE).strength(2.0F).sounds(BlockSoundGroup.WOOD).lightLevel(15).ticksRandomly())
 	);
 	public static final Block field_16999 = register(
-		"sweet_berry_bush", new SweetBerryBushBlock(Block.Settings.of(Material.PLANT).ticksRandomly().noCollision().sounds(BlockSoundGroup.field_17579))
+		"sweet_berry_bush", new SweetBerryBushBlock(Block.Settings.of(Material.PLANT).ticksRandomly().noCollision().sounds(BlockSoundGroup.SWEET_BERRY_BUSH))
 	);
 	public static final Block field_10465 = register(
 		"structure_block", new StructureBlock(Block.Settings.of(Material.METAL, MaterialColor.LIGHT_GRAY).strength(-1.0F, 3600000.0F).dropsNothing())

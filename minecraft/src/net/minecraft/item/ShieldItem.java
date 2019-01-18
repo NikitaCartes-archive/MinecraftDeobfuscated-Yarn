@@ -38,7 +38,7 @@ public class ShieldItem extends Item {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
-		BannerItem.addBannerInformation(itemStack, list);
+		BannerItem.buildBannerTooltip(itemStack, list);
 	}
 
 	@Override

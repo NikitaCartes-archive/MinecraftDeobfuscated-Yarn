@@ -419,8 +419,8 @@ public class StrongholdGenerator {
 				7,
 				5,
 				9,
-				Blocks.field_10136.getDefaultState().with(SlabBlock.field_11501, SlabType.field_12682),
-				Blocks.field_10136.getDefaultState().with(SlabBlock.field_11501, SlabType.field_12682),
+				Blocks.field_10136.getDefaultState().with(SlabBlock.TYPE, SlabType.field_12682),
+				Blocks.field_10136.getDefaultState().with(SlabBlock.TYPE, SlabType.field_12682),
 				false
 			);
 			this.addBlock(iWorld, Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, Direction.SOUTH), 6, 5, 6, mutableIntBoundingBox);
@@ -607,7 +607,7 @@ public class StrongholdGenerator {
 					}
 				}
 
-				BlockState blockState3 = Blocks.field_9983.getDefaultState().with(LadderBlock.field_11253, Direction.SOUTH);
+				BlockState blockState3 = Blocks.field_9983.getDefaultState().with(LadderBlock.FACING, Direction.SOUTH);
 				this.addBlock(iWorld, blockState3, 10, 1, 13, mutableIntBoundingBox);
 				this.addBlock(iWorld, blockState3, 10, 2, 13, mutableIntBoundingBox);
 				this.addBlock(iWorld, blockState3, 10, 3, 13, mutableIntBoundingBox);
@@ -744,10 +744,10 @@ public class StrongholdGenerator {
 				this.addBlock(iWorld, blockState3, k, 3, 6, mutableIntBoundingBox);
 			}
 
-			BlockState blockState4 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.PROPERTY_FACING, Direction.NORTH);
-			BlockState blockState5 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.PROPERTY_FACING, Direction.SOUTH);
-			BlockState blockState6 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.PROPERTY_FACING, Direction.EAST);
-			BlockState blockState7 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.PROPERTY_FACING, Direction.WEST);
+			BlockState blockState4 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.FACING, Direction.NORTH);
+			BlockState blockState5 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.FACING, Direction.SOUTH);
+			BlockState blockState6 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.FACING, Direction.EAST);
+			BlockState blockState7 = Blocks.field_10398.getDefaultState().with(EndPortalFrameBlock.FACING, Direction.WEST);
 			boolean bl = true;
 			boolean[] bls = new boolean[12];
 
@@ -756,18 +756,18 @@ public class StrongholdGenerator {
 				bl &= bls[l];
 			}
 
-			this.addBlock(iWorld, blockState4.with(EndPortalFrameBlock.field_10958, Boolean.valueOf(bls[0])), 4, 3, 8, mutableIntBoundingBox);
-			this.addBlock(iWorld, blockState4.with(EndPortalFrameBlock.field_10958, Boolean.valueOf(bls[1])), 5, 3, 8, mutableIntBoundingBox);
-			this.addBlock(iWorld, blockState4.with(EndPortalFrameBlock.field_10958, Boolean.valueOf(bls[2])), 6, 3, 8, mutableIntBoundingBox);
-			this.addBlock(iWorld, blockState5.with(EndPortalFrameBlock.field_10958, Boolean.valueOf(bls[3])), 4, 3, 12, mutableIntBoundingBox);
-			this.addBlock(iWorld, blockState5.with(EndPortalFrameBlock.field_10958, Boolean.valueOf(bls[4])), 5, 3, 12, mutableIntBoundingBox);
-			this.addBlock(iWorld, blockState5.with(EndPortalFrameBlock.field_10958, Boolean.valueOf(bls[5])), 6, 3, 12, mutableIntBoundingBox);
-			this.addBlock(iWorld, blockState6.with(EndPortalFrameBlock.field_10958, Boolean.valueOf(bls[6])), 3, 3, 9, mutableIntBoundingBox);
-			this.addBlock(iWorld, blockState6.with(EndPortalFrameBlock.field_10958, Boolean.valueOf(bls[7])), 3, 3, 10, mutableIntBoundingBox);
-			this.addBlock(iWorld, blockState6.with(EndPortalFrameBlock.field_10958, Boolean.valueOf(bls[8])), 3, 3, 11, mutableIntBoundingBox);
-			this.addBlock(iWorld, blockState7.with(EndPortalFrameBlock.field_10958, Boolean.valueOf(bls[9])), 7, 3, 9, mutableIntBoundingBox);
-			this.addBlock(iWorld, blockState7.with(EndPortalFrameBlock.field_10958, Boolean.valueOf(bls[10])), 7, 3, 10, mutableIntBoundingBox);
-			this.addBlock(iWorld, blockState7.with(EndPortalFrameBlock.field_10958, Boolean.valueOf(bls[11])), 7, 3, 11, mutableIntBoundingBox);
+			this.addBlock(iWorld, blockState4.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[0])), 4, 3, 8, mutableIntBoundingBox);
+			this.addBlock(iWorld, blockState4.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[1])), 5, 3, 8, mutableIntBoundingBox);
+			this.addBlock(iWorld, blockState4.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[2])), 6, 3, 8, mutableIntBoundingBox);
+			this.addBlock(iWorld, blockState5.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[3])), 4, 3, 12, mutableIntBoundingBox);
+			this.addBlock(iWorld, blockState5.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[4])), 5, 3, 12, mutableIntBoundingBox);
+			this.addBlock(iWorld, blockState5.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[5])), 6, 3, 12, mutableIntBoundingBox);
+			this.addBlock(iWorld, blockState6.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[6])), 3, 3, 9, mutableIntBoundingBox);
+			this.addBlock(iWorld, blockState6.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[7])), 3, 3, 10, mutableIntBoundingBox);
+			this.addBlock(iWorld, blockState6.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[8])), 3, 3, 11, mutableIntBoundingBox);
+			this.addBlock(iWorld, blockState7.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[9])), 7, 3, 9, mutableIntBoundingBox);
+			this.addBlock(iWorld, blockState7.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[10])), 7, 3, 10, mutableIntBoundingBox);
+			this.addBlock(iWorld, blockState7.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[11])), 7, 3, 11, mutableIntBoundingBox);
 			if (bl) {
 				BlockState blockState8 = Blocks.field_10027.getDefaultState();
 				this.addBlock(iWorld, blockState8, 4, 3, 9, mutableIntBoundingBox);
@@ -903,11 +903,8 @@ public class StrongholdGenerator {
 				8,
 				mutableIntBoundingBox
 			);
-			BlockState blockState = Blocks.field_9973.getDefaultState().with(DoorBlock.field_10938, Direction.WEST);
-			BlockState blockState2 = Blocks.field_9973
-				.getDefaultState()
-				.with(DoorBlock.field_10938, Direction.WEST)
-				.with(DoorBlock.field_10946, DoubleBlockHalf.field_12609);
+			BlockState blockState = Blocks.field_9973.getDefaultState().with(DoorBlock.FACING, Direction.WEST);
+			BlockState blockState2 = Blocks.field_9973.getDefaultState().with(DoorBlock.FACING, Direction.WEST).with(DoorBlock.HALF, DoubleBlockHalf.field_12609);
 			this.addBlock(iWorld, blockState, 4, 1, 2, mutableIntBoundingBox);
 			this.addBlock(iWorld, blockState2, 4, 2, 2, mutableIntBoundingBox);
 			this.addBlock(iWorld, blockState, 4, 1, 8, mutableIntBoundingBox);
@@ -1076,7 +1073,7 @@ public class StrongholdGenerator {
 						this.addBlock(iWorld, Blocks.field_10161.getDefaultState(), 8, 3, i, mutableIntBoundingBox);
 					}
 
-					BlockState blockState = Blocks.field_9983.getDefaultState().with(LadderBlock.field_11253, Direction.WEST);
+					BlockState blockState = Blocks.field_9983.getDefaultState().with(LadderBlock.FACING, Direction.WEST);
 					this.addBlock(iWorld, blockState, 9, 1, 3, mutableIntBoundingBox);
 					this.addBlock(iWorld, blockState, 9, 2, 3, mutableIntBoundingBox);
 					this.addBlock(iWorld, blockState, 9, 3, 3, mutableIntBoundingBox);
@@ -1116,7 +1113,7 @@ public class StrongholdGenerator {
 		public class_3433(StructurePiece structurePiece, int i, Random random, int j, int k) {
 			super(structurePiece, i);
 			this.field_15281 = true;
-			this.method_14926(Direction.class_2353.HORIZONTAL.random(random));
+			this.method_14926(Direction.Type.HORIZONTAL.random(random));
 			this.field_15287 = StrongholdGenerator.class_3437.class_3438.field_15288;
 			if (this.getFacing().getAxis() == Direction.Axis.Z) {
 				this.structureBounds = new MutableIntBoundingBox(j, 64, k, j + 5 - 1, 74, k + 5 - 1);
@@ -1352,9 +1349,7 @@ public class StrongholdGenerator {
 					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), i + 2, j + 1, k, mutableIntBoundingBox);
 					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), i + 2, j, k, mutableIntBoundingBox);
 					this.addBlock(iWorld, Blocks.field_10149.getDefaultState(), i + 1, j, k, mutableIntBoundingBox);
-					this.addBlock(
-						iWorld, Blocks.field_10149.getDefaultState().with(DoorBlock.field_10946, DoubleBlockHalf.field_12609), i + 1, j + 1, k, mutableIntBoundingBox
-					);
+					this.addBlock(iWorld, Blocks.field_10149.getDefaultState().with(DoorBlock.HALF, DoubleBlockHalf.field_12609), i + 1, j + 1, k, mutableIntBoundingBox);
 					break;
 				case field_15289:
 					this.addBlock(iWorld, Blocks.field_10543.getDefaultState(), i + 1, j, k, mutableIntBoundingBox);
@@ -1397,13 +1392,9 @@ public class StrongholdGenerator {
 					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), i + 2, j + 1, k, mutableIntBoundingBox);
 					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), i + 2, j, k, mutableIntBoundingBox);
 					this.addBlock(iWorld, Blocks.field_9973.getDefaultState(), i + 1, j, k, mutableIntBoundingBox);
-					this.addBlock(iWorld, Blocks.field_9973.getDefaultState().with(DoorBlock.field_10946, DoubleBlockHalf.field_12609), i + 1, j + 1, k, mutableIntBoundingBox);
-					this.addBlock(
-						iWorld, Blocks.field_10494.getDefaultState().with(AbstractButtonBlock.field_11177, Direction.NORTH), i + 2, j + 1, k + 1, mutableIntBoundingBox
-					);
-					this.addBlock(
-						iWorld, Blocks.field_10494.getDefaultState().with(AbstractButtonBlock.field_11177, Direction.SOUTH), i + 2, j + 1, k - 1, mutableIntBoundingBox
-					);
+					this.addBlock(iWorld, Blocks.field_9973.getDefaultState().with(DoorBlock.HALF, DoubleBlockHalf.field_12609), i + 1, j + 1, k, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10494.getDefaultState().with(AbstractButtonBlock.FACING, Direction.NORTH), i + 2, j + 1, k + 1, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10494.getDefaultState().with(AbstractButtonBlock.FACING, Direction.SOUTH), i + 2, j + 1, k - 1, mutableIntBoundingBox);
 			}
 		}
 

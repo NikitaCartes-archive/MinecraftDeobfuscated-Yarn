@@ -126,9 +126,9 @@ public class FilledMapItem extends MapItem {
 									int x = s + t * 231871;
 									x = x * x * 31287121 + x * 11;
 									if ((x >> 20 & 1) == 0) {
-										multiset.add(Blocks.field_10566.getDefaultState().getMaterialColor(world, BlockPos.ORIGIN), 10);
+										multiset.add(Blocks.field_10566.getDefaultState().getTopMaterialColor(world, BlockPos.ORIGIN), 10);
 									} else {
-										multiset.add(Blocks.field_10340.getDefaultState().getMaterialColor(world, BlockPos.ORIGIN), 100);
+										multiset.add(Blocks.field_10340.getDefaultState().getTopMaterialColor(world, BlockPos.ORIGIN), 100);
 									}
 
 									e = 100.0;
@@ -146,7 +146,7 @@ public class FilledMapItem extends MapItem {
 												do {
 													mutable.set(chunkPos.getXStart() + y + u, --aa, chunkPos.getZStart() + z + v);
 													blockState = worldChunk.getBlockState(mutable);
-												} while (blockState.getMaterialColor(world, mutable) == MaterialColor.AIR && aa > 0);
+												} while (blockState.getTopMaterialColor(world, mutable) == MaterialColor.AIR && aa > 0);
 
 												if (aa > 0 && !blockState.getFluidState().isEmpty()) {
 													int ab = aa - 1;
@@ -165,7 +165,7 @@ public class FilledMapItem extends MapItem {
 
 											mapState.method_109(world, chunkPos.getXStart() + y + u, chunkPos.getZStart() + z + v);
 											e += (double)aa / (double)(i * i);
-											multiset.add(blockState.getMaterialColor(world, mutable));
+											multiset.add(blockState.getTopMaterialColor(world, mutable));
 										}
 									}
 								}
@@ -214,7 +214,9 @@ public class FilledMapItem extends MapItem {
 
 	private BlockState method_7995(World world, BlockState blockState, BlockPos blockPos) {
 		FluidState fluidState = blockState.getFluidState();
-		return !fluidState.isEmpty() && !Block.isFaceFullCube(blockState.getCollisionShape(world, blockPos), Direction.UP) ? fluidState.getBlockState() : blockState;
+		return !fluidState.isEmpty() && !Block.isFaceFullSquare(blockState.getCollisionShape(world, blockPos), Direction.UP)
+			? fluidState.getBlockState()
+			: blockState;
 	}
 
 	private static boolean method_8004(Biome[] biomes, int i, int j, int k) {
@@ -404,11 +406,11 @@ public class FilledMapItem extends MapItem {
 
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-		BlockState blockState = itemUsageContext.getWorld().getBlockState(itemUsageContext.getPos());
+		BlockState blockState = itemUsageContext.getWorld().getBlockState(itemUsageContext.getBlockPos());
 		if (blockState.matches(BlockTags.field_15501)) {
 			if (!itemUsageContext.world.isClient) {
 				MapState mapState = method_8001(itemUsageContext.getItemStack(), itemUsageContext.getWorld());
-				mapState.method_108(itemUsageContext.getWorld(), itemUsageContext.getPos());
+				mapState.method_108(itemUsageContext.getWorld(), itemUsageContext.getBlockPos());
 			}
 
 			return ActionResult.SUCCESS;

@@ -1278,7 +1278,7 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 						this.profiler.push("randomTick");
 						BlockState blockState = chunkSection.getBlockState(blockPos3.getX() - j, blockPos3.getY() - l, blockPos3.getZ() - k);
 						if (blockState.hasRandomTicks()) {
-							blockState.randomTick(this, blockPos3, this.random);
+							blockState.onRandomTick(this, blockPos3, this.random);
 						}
 
 						FluidState fluidState = chunkSection.getFluidState(blockPos3.getX() - j, blockPos3.getY() - l, blockPos3.getZ() - k);
@@ -1964,13 +1964,13 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_8547(double d, double e, double f, double g, double h, double i, @Nullable CompoundTag compoundTag) {
+	public void addFireworkParticle(double d, double e, double f, double g, double h, double i, @Nullable CompoundTag compoundTag) {
 	}
 
 	public abstract Scoreboard getScoreboard();
 
 	public void updateHorizontalAdjacent(BlockPos blockPos, Block block) {
-		for (Direction direction : Direction.class_2353.HORIZONTAL) {
+		for (Direction direction : Direction.Type.HORIZONTAL) {
 			BlockPos blockPos2 = blockPos.offset(direction);
 			if (this.isBlockLoaded(blockPos2)) {
 				BlockState blockState = this.getBlockState(blockPos2);

@@ -21,11 +21,11 @@ import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.SystemUtil;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPointerImpl;
 import net.minecraft.util.math.BlockPos;
@@ -37,8 +37,8 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class DispenserBlock extends BlockWithEntity {
-	public static final DirectionProperty field_10918 = FacingBlock.field_10927;
-	public static final BooleanProperty field_10920 = Properties.TRIGGERED;
+	public static final DirectionProperty FACING = FacingBlock.FACING;
+	public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
 	private static final Map<Item, DispenserBehavior> BEHAVIORS = SystemUtil.consume(
 		new Object2ObjectOpenHashMap<>(), object2ObjectOpenHashMap -> object2ObjectOpenHashMap.defaultReturnValue(new ItemDispenserBehavior())
 	);
@@ -49,7 +49,7 @@ public class DispenserBlock extends BlockWithEntity {
 
 	protected DispenserBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_10918, Direction.NORTH).with(field_10920, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(TRIGGERED, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class DispenserBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (world.isClient) {
 			return true;
 		} else {
@@ -76,10 +76,10 @@ public class DispenserBlock extends BlockWithEntity {
 		}
 	}
 
-	protected void method_10012(World world, BlockPos blockPos) {
+	protected void dispense(World world, BlockPos blockPos) {
 		BlockPointerImpl blockPointerImpl = new BlockPointerImpl(world, blockPos);
 		DispenserBlockEntity dispenserBlockEntity = blockPointerImpl.getBlockEntity();
-		int i = dispenserBlockEntity.method_11076();
+		int i = dispenserBlockEntity.chooseNonEmptySlot();
 		if (i < 0) {
 			world.fireWorldEvent(1001, blockPos, 0);
 		} else {
@@ -98,19 +98,19 @@ public class DispenserBlock extends BlockWithEntity {
 	@Override
 	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
 		boolean bl = world.isReceivingRedstonePower(blockPos) || world.isReceivingRedstonePower(blockPos.up());
-		boolean bl2 = (Boolean)blockState.get(field_10920);
+		boolean bl2 = (Boolean)blockState.get(TRIGGERED);
 		if (bl && !bl2) {
 			world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
-			world.setBlockState(blockPos, blockState.with(field_10920, Boolean.valueOf(true)), 4);
+			world.setBlockState(blockPos, blockState.with(TRIGGERED, Boolean.valueOf(true)), 4);
 		} else if (!bl && bl2) {
-			world.setBlockState(blockPos, blockState.with(field_10920, Boolean.valueOf(false)), 4);
+			world.setBlockState(blockPos, blockState.with(TRIGGERED, Boolean.valueOf(false)), 4);
 		}
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (!world.isClient) {
-			this.method_10012(world, blockPos);
+			this.dispense(world, blockPos);
 		}
 	}
 
@@ -121,7 +121,7 @@ public class DispenserBlock extends BlockWithEntity {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(field_10918, itemPlacementContext.getPlayerFacing().getOpposite());
+		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite());
 	}
 
 	@Override
@@ -148,7 +148,7 @@ public class DispenserBlock extends BlockWithEntity {
 	}
 
 	public static Position getOutputLocation(BlockPointer blockPointer) {
-		Direction direction = blockPointer.getBlockState().get(field_10918);
+		Direction direction = blockPointer.getBlockState().get(FACING);
 		double d = blockPointer.getX() + 0.7 * (double)direction.getOffsetX();
 		double e = blockPointer.getY() + 0.7 * (double)direction.getOffsetY();
 		double f = blockPointer.getZ() + 0.7 * (double)direction.getOffsetZ();
@@ -171,17 +171,17 @@ public class DispenserBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
-		return blockState.with(field_10918, rotation.method_10503(blockState.get(field_10918)));
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
+		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
-	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.getRotation(blockState.get(field_10918)));
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
+		return blockState.rotate(mirror.getRotation(blockState.get(FACING)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_10918, field_10920);
+		builder.with(FACING, TRIGGERED);
 	}
 }

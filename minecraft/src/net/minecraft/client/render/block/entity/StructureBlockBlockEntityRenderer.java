@@ -6,7 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
-import net.minecraft.block.enums.StructureMode;
+import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
@@ -23,7 +23,8 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 			BlockPos blockPos = structureBlockBlockEntity.getOffset();
 			BlockPos blockPos2 = structureBlockBlockEntity.getSize();
 			if (blockPos2.getX() >= 1 && blockPos2.getY() >= 1 && blockPos2.getZ() >= 1) {
-				if (structureBlockBlockEntity.getMode() == StructureMode.field_12695 || structureBlockBlockEntity.getMode() == StructureMode.field_12697) {
+				if (structureBlockBlockEntity.method_11374() == StructureBlockMode.field_12695
+					|| structureBlockBlockEntity.method_11374() == StructureBlockMode.field_12697) {
 					double h = 0.01;
 					double j = (double)blockPos.getX();
 					double k = (double)blockPos.getZ();
@@ -88,11 +89,11 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 						GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
 					);
 					this.method_3570(true);
-					if (structureBlockBlockEntity.getMode() == StructureMode.field_12695 || structureBlockBlockEntity.shouldShowBoundingBox()) {
+					if (structureBlockBlockEntity.method_11374() == StructureBlockMode.field_12695 || structureBlockBlockEntity.shouldShowBoundingBox()) {
 						this.method_3586(tessellator, bufferBuilder, p, l, q, r, m, s, 255, 223, 127);
 					}
 
-					if (structureBlockBlockEntity.getMode() == StructureMode.field_12695 && structureBlockBlockEntity.shouldShowAir()) {
+					if (structureBlockBlockEntity.method_11374() == StructureBlockMode.field_12695 && structureBlockBlockEntity.shouldShowAir()) {
 						this.method_3585(structureBlockBlockEntity, d, e, f, blockPos, tessellator, bufferBuilder, true);
 						this.method_3585(structureBlockBlockEntity, d, e, f, blockPos, tessellator, bufferBuilder, false);
 					}

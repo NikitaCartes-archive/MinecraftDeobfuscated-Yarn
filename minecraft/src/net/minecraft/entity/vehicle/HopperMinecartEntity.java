@@ -107,12 +107,12 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	}
 
 	public boolean canOperate() {
-		if (HopperBlockEntity.tryExtract(this)) {
+		if (HopperBlockEntity.extract(this)) {
 			return true;
 		} else {
 			List<ItemEntity> list = this.world.getEntities(ItemEntity.class, this.getBoundingBox().expand(0.25, 0.0, 0.25), EntityPredicates.VALID_ENTITY);
 			if (!list.isEmpty()) {
-				HopperBlockEntity.method_11247(this, (ItemEntity)list.get(0));
+				HopperBlockEntity.extract(this, (ItemEntity)list.get(0));
 			}
 
 			return false;

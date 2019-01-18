@@ -24,13 +24,13 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class TripwireHookBlock extends Block {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty field_11671 = Properties.POWERED;
 	public static final BooleanProperty field_11669 = Properties.ATTACHED;
-	protected static final VoxelShape field_11665 = Block.createCubeShape(5.0, 0.0, 10.0, 11.0, 10.0, 16.0);
-	protected static final VoxelShape field_11668 = Block.createCubeShape(5.0, 0.0, 0.0, 11.0, 10.0, 6.0);
-	protected static final VoxelShape field_11670 = Block.createCubeShape(10.0, 0.0, 5.0, 16.0, 10.0, 11.0);
-	protected static final VoxelShape field_11667 = Block.createCubeShape(0.0, 0.0, 5.0, 6.0, 10.0, 11.0);
+	protected static final VoxelShape field_11665 = Block.createCuboidShape(5.0, 0.0, 10.0, 11.0, 10.0, 16.0);
+	protected static final VoxelShape field_11668 = Block.createCuboidShape(5.0, 0.0, 0.0, 11.0, 10.0, 6.0);
+	protected static final VoxelShape field_11670 = Block.createCuboidShape(10.0, 0.0, 5.0, 16.0, 10.0, 11.0);
+	protected static final VoxelShape field_11667 = Block.createCuboidShape(0.0, 0.0, 5.0, 6.0, 10.0, 11.0);
 
 	public TripwireHookBlock(Block.Settings settings) {
 		super(settings);
@@ -62,7 +62,7 @@ public class TripwireHookBlock extends Block {
 		boolean bl = method_9581(blockState2.getBlock());
 		return !bl
 			&& direction.getAxis().isHorizontal()
-			&& Block.isFaceFullCube(blockState2.getCollisionShape(viewableWorld, blockPos2), direction)
+			&& Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos2), direction)
 			&& !blockState2.emitsRedstonePower();
 	}
 
@@ -80,7 +80,7 @@ public class TripwireHookBlock extends Block {
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockState blockState = this.getDefaultState().with(field_11671, Boolean.valueOf(false)).with(field_11669, Boolean.valueOf(false));
 		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
-		BlockPos blockPos = itemPlacementContext.getPos();
+		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		Direction[] directions = itemPlacementContext.getPlacementFacings();
 
 		for (Direction direction : directions) {
@@ -128,8 +128,8 @@ public class TripwireHookBlock extends Block {
 					blockState3 = MoreObjects.firstNonNull(blockState2, blockState3);
 				}
 
-				boolean bl7 = !(Boolean)blockState3.get(TripwireBlock.field_11679);
-				boolean bl8 = (Boolean)blockState3.get(TripwireBlock.field_11680);
+				boolean bl7 = !(Boolean)blockState3.get(TripwireBlock.DISARMED);
+				boolean bl8 = (Boolean)blockState3.get(TripwireBlock.POWERED);
 				bl6 |= bl7 && bl8;
 				blockStates[k] = blockState3;
 				if (k == i) {
@@ -172,7 +172,7 @@ public class TripwireHookBlock extends Block {
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		this.method_10776(world, blockPos, blockState, false, true, -1, null);
 	}
 
@@ -236,13 +236,13 @@ public class TripwireHookBlock extends Block {
 	}
 
 	@Override
-	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
-		return blockState.with(FACING, rotation.method_10503(blockState.get(FACING)));
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
+		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
-	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.getRotation(blockState.get(FACING)));
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
+		return blockState.rotate(mirror.getRotation(blockState.get(FACING)));
 	}
 
 	@Override

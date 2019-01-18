@@ -25,7 +25,7 @@ public class FoodCropItem extends FoodItem {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		IWorld iWorld = itemUsageContext.getWorld();
-		BlockPos blockPos = itemUsageContext.getPos().up();
+		BlockPos blockPos = itemUsageContext.getBlockPos().up();
 		if (itemUsageContext.getFacing() == Direction.UP && iWorld.isAir(blockPos) && this.crop.canPlaceAt(iWorld, blockPos)) {
 			iWorld.setBlockState(blockPos, this.crop, 11);
 			iWorld.playSound(null, blockPos, this.field_17541, SoundCategory.field_15245, 1.0F, 1.0F);

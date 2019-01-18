@@ -18,20 +18,20 @@ import net.minecraft.world.ViewableWorld;
 
 public class CoralParentBlock extends Block implements Waterloggable {
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
-	private static final VoxelShape field_9939 = Block.createCubeShape(2.0, 0.0, 2.0, 14.0, 4.0, 14.0);
+	private static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 4.0, 14.0);
 
 	protected CoralParentBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateFactory.getDefaultState().with(WATERLOGGED, Boolean.valueOf(true)));
 	}
 
-	protected void method_9430(BlockState blockState, IWorld iWorld, BlockPos blockPos) {
-		if (!method_9431(blockState, iWorld, blockPos)) {
+	protected void checkLivingConditions(BlockState blockState, IWorld iWorld, BlockPos blockPos) {
+		if (!isInWater(blockState, iWorld, blockPos)) {
 			iWorld.getBlockTickScheduler().schedule(blockPos, this, 60 + iWorld.getRandom().nextInt(40));
 		}
 	}
 
-	protected static boolean method_9431(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	protected static boolean isInWater(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		if ((Boolean)blockState.get(WATERLOGGED)) {
 			return true;
 		} else {
@@ -48,13 +48,13 @@ public class CoralParentBlock extends Block implements Waterloggable {
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getPos());
-		return this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(fluidState.matches(FluidTags.field_15517) && fluidState.method_15761() == 8));
+		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
+		return this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(fluidState.matches(FluidTags.field_15517) && fluidState.getLevel() == 8));
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_9939;
+		return SHAPE;
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class CoralParentBlock extends Block implements Waterloggable {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		if ((Boolean)blockState.get(WATERLOGGED)) {
-			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
+			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 		}
 
 		return direction == Direction.DOWN && !this.canPlaceAt(blockState, iWorld, blockPos)

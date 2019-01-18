@@ -35,9 +35,9 @@ public class RecordItem extends Item {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		World world = itemUsageContext.getWorld();
-		BlockPos blockPos = itemUsageContext.getPos();
+		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (blockState.getBlock() == Blocks.field_10223 && !(Boolean)blockState.get(JukeboxBlock.field_11180)) {
+		if (blockState.getBlock() == Blocks.field_10223 && !(Boolean)blockState.get(JukeboxBlock.HAS_RECORD)) {
 			ItemStack itemStack = itemUsageContext.getItemStack();
 			if (!world.isClient) {
 				((JukeboxBlock)Blocks.field_10223).setRecord(world, blockPos, blockState, itemStack);

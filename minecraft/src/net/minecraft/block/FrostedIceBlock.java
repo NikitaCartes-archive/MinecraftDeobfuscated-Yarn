@@ -14,23 +14,23 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class FrostedIceBlock extends IceBlock {
-	public static final IntegerProperty field_11097 = Properties.AGE_3;
+	public static final IntegerProperty AGE = Properties.AGE_3;
 
 	public FrostedIceBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11097, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(AGE, Integer.valueOf(0)));
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if ((random.nextInt(3) == 0 || this.method_10202(world, blockPos, 4))
-			&& world.method_8602(blockPos) > 11 - (Integer)blockState.get(field_11097) - blockState.getLightSubtracted(world, blockPos)
-			&& this.method_10201(blockState, world, blockPos)) {
+			&& world.method_8602(blockPos) > 11 - (Integer)blockState.get(AGE) - blockState.getLightSubtracted(world, blockPos)
+			&& this.increaseAge(blockState, world, blockPos)) {
 			try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 				for (Direction direction : Direction.values()) {
 					pooledMutable.set(blockPos).setOffset(direction);
 					BlockState blockState2 = world.getBlockState(pooledMutable);
-					if (blockState2.getBlock() == this && !this.method_10201(blockState2, world, pooledMutable)) {
+					if (blockState2.getBlock() == this && !this.increaseAge(blockState2, world, pooledMutable)) {
 						world.getBlockTickScheduler().schedule(pooledMutable, this, MathHelper.nextInt(random, 20, 40));
 					}
 				}
@@ -40,13 +40,13 @@ public class FrostedIceBlock extends IceBlock {
 		}
 	}
 
-	private boolean method_10201(BlockState blockState, World world, BlockPos blockPos) {
-		int i = (Integer)blockState.get(field_11097);
+	private boolean increaseAge(BlockState blockState, World world, BlockPos blockPos) {
+		int i = (Integer)blockState.get(AGE);
 		if (i < 3) {
-			world.setBlockState(blockPos, blockState.with(field_11097, Integer.valueOf(i + 1)), 2);
+			world.setBlockState(blockPos, blockState.with(AGE, Integer.valueOf(i + 1)), 2);
 			return false;
 		} else {
-			this.method_10275(blockState, world, blockPos);
+			this.melt(blockState, world, blockPos);
 			return true;
 		}
 	}
@@ -54,7 +54,7 @@ public class FrostedIceBlock extends IceBlock {
 	@Override
 	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
 		if (block == this && this.method_10202(world, blockPos, 2)) {
-			this.method_10275(blockState, world, blockPos);
+			this.melt(blockState, world, blockPos);
 		}
 
 		super.neighborUpdate(blockState, world, blockPos, block, blockPos2);
@@ -79,7 +79,7 @@ public class FrostedIceBlock extends IceBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_11097);
+		builder.with(AGE);
 	}
 
 	@Environment(EnvType.CLIENT)

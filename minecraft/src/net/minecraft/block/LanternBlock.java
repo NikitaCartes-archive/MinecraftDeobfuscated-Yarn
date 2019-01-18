@@ -16,17 +16,17 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 
 public class LanternBlock extends Block {
-	public static final BooleanProperty field_16545 = Properties.HANGING;
-	protected static final VoxelShape field_16546 = VoxelShapes.union(
-		Block.createCubeShape(5.0, 0.0, 5.0, 11.0, 7.0, 11.0), Block.createCubeShape(6.0, 7.0, 6.0, 10.0, 9.0, 10.0)
+	public static final BooleanProperty HANGING = Properties.HANGING;
+	protected static final VoxelShape STANDING_SHAPE = VoxelShapes.union(
+		Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 7.0, 11.0), Block.createCuboidShape(6.0, 7.0, 6.0, 10.0, 9.0, 10.0)
 	);
-	protected static final VoxelShape field_16544 = VoxelShapes.union(
-		Block.createCubeShape(5.0, 1.0, 5.0, 11.0, 8.0, 11.0), Block.createCubeShape(6.0, 8.0, 6.0, 10.0, 10.0, 10.0)
+	protected static final VoxelShape HANGING_SHAPE = VoxelShapes.union(
+		Block.createCuboidShape(5.0, 1.0, 5.0, 11.0, 8.0, 11.0), Block.createCuboidShape(6.0, 8.0, 6.0, 10.0, 10.0, 10.0)
 	);
 
 	public LanternBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_16545, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(HANGING, Boolean.valueOf(false)));
 	}
 
 	@Nullable
@@ -34,8 +34,8 @@ public class LanternBlock extends Block {
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		for (Direction direction : itemPlacementContext.getPlacementFacings()) {
 			if (direction.getAxis() == Direction.Axis.Y) {
-				BlockState blockState = this.getDefaultState().with(field_16545, Boolean.valueOf(direction == Direction.UP));
-				if (blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getPos())) {
+				BlockState blockState = this.getDefaultState().with(HANGING, Boolean.valueOf(direction == Direction.UP));
+				if (blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) {
 					return blockState;
 				}
 			}
@@ -46,12 +46,12 @@ public class LanternBlock extends Block {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return blockState.get(field_16545) ? field_16544 : field_16546;
+		return blockState.get(HANGING) ? HANGING_SHAPE : STANDING_SHAPE;
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_16545);
+		builder.with(HANGING);
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public class LanternBlock extends Block {
 		if (method_9553(block)) {
 			return false;
 		} else {
-			boolean bl = Block.isFaceFullCube(blockState2.getCollisionShape(viewableWorld, blockPos2), direction.getOpposite())
+			boolean bl = Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos2), direction.getOpposite())
 				|| block.matches(BlockTags.field_16584)
 				|| block.matches(BlockTags.field_15504);
 			return direction == Direction.UP ? block == Blocks.field_10312 || bl : !method_9581(block) && bl;
@@ -76,7 +76,7 @@ public class LanternBlock extends Block {
 	}
 
 	protected static Direction method_16370(BlockState blockState) {
-		return blockState.get(field_16545) ? Direction.DOWN : Direction.UP;
+		return blockState.get(HANGING) ? Direction.DOWN : Direction.UP;
 	}
 
 	@Override

@@ -160,6 +160,6 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 
 	@Override
 	public BlockState getDefaultContainedBlock() {
-		return Blocks.field_10181.getDefaultState().with(FurnaceBlock.FACING, Direction.NORTH).with(FurnaceBlock.field_11105, Boolean.valueOf(this.isLit()));
+		return Blocks.field_10181.getDefaultState().with(FurnaceBlock.FACING, Direction.NORTH).with(FurnaceBlock.LIT, Boolean.valueOf(this.isLit()));
 	}
 }

@@ -21,7 +21,7 @@ public class Stat<T> extends ScoreboardCriterion {
 	}
 
 	public static <T> String method_14950(StatType<T> statType, T object) {
-		return method_14952(Registry.STAT_TYPE.getId(statType)) + ":" + method_14952(statType.method_14959().getId(object));
+		return method_14952(Registry.STAT_TYPE.getId(statType)) + ":" + method_14952(statType.getRegistry().getId(object));
 	}
 
 	private static <T> String method_14952(@Nullable Identifier identifier) {

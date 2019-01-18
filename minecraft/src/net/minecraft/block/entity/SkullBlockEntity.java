@@ -18,8 +18,8 @@ import net.minecraft.util.UserCache;
 
 public class SkullBlockEntity extends BlockEntity implements Tickable {
 	private GameProfile owner;
-	private int field_12085;
-	private boolean field_12086;
+	private int ticksPowered;
+	private boolean isPowered;
 	private static UserCache userCache;
 	private static MinecraftSessionService sessionService;
 
@@ -65,17 +65,17 @@ public class SkullBlockEntity extends BlockEntity implements Tickable {
 		Block block = this.getCachedState().getBlock();
 		if (block == Blocks.field_10337 || block == Blocks.field_10472) {
 			if (this.world.isReceivingRedstonePower(this.pos)) {
-				this.field_12086 = true;
-				this.field_12085++;
+				this.isPowered = true;
+				this.ticksPowered++;
 			} else {
-				this.field_12086 = false;
+				this.isPowered = false;
 			}
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_11338(float f) {
-		return this.field_12086 ? (float)this.field_12085 + f : (float)this.field_12085;
+	public float getTicksPowered(float f) {
+		return this.isPowered ? (float)this.ticksPowered + f : (float)this.ticksPowered;
 	}
 
 	@Nullable

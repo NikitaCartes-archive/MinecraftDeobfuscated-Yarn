@@ -21,16 +21,16 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class EndPortalFrameBlock extends Block {
-	public static final DirectionProperty PROPERTY_FACING = HorizontalFacingBlock.field_11177;
-	public static final BooleanProperty field_10958 = Properties.EYE;
-	protected static final VoxelShape field_10956 = Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 13.0, 16.0);
-	protected static final VoxelShape field_10953 = Block.createCubeShape(4.0, 13.0, 4.0, 12.0, 16.0, 12.0);
-	protected static final VoxelShape field_10955 = VoxelShapes.union(field_10956, field_10953);
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+	public static final BooleanProperty EYE = Properties.EYE;
+	protected static final VoxelShape FRAME_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 13.0, 16.0);
+	protected static final VoxelShape EYE_SHAPE = Block.createCuboidShape(4.0, 13.0, 4.0, 12.0, 16.0, 12.0);
+	protected static final VoxelShape FRAME_WITH_EYE_SHAPE = VoxelShapes.union(FRAME_SHAPE, EYE_SHAPE);
 	private static BlockPattern COMPLETED_FRAME;
 
 	public EndPortalFrameBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(PROPERTY_FACING, Direction.NORTH).with(field_10958, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(EYE, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -40,12 +40,12 @@ public class EndPortalFrameBlock extends Block {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return blockState.get(field_10958) ? field_10955 : field_10956;
+		return blockState.get(EYE) ? FRAME_WITH_EYE_SHAPE : FRAME_SHAPE;
 	}
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(PROPERTY_FACING, itemPlacementContext.getPlayerHorizontalFacing().getOpposite()).with(field_10958, Boolean.valueOf(false));
+		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerHorizontalFacing().getOpposite()).with(EYE, Boolean.valueOf(false));
 	}
 
 	@Override
@@ -55,22 +55,22 @@ public class EndPortalFrameBlock extends Block {
 
 	@Override
 	public int getComparatorOutput(BlockState blockState, World world, BlockPos blockPos) {
-		return blockState.get(field_10958) ? 15 : 0;
+		return blockState.get(EYE) ? 15 : 0;
 	}
 
 	@Override
-	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
-		return blockState.with(PROPERTY_FACING, rotation.method_10503(blockState.get(PROPERTY_FACING)));
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
+		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
-	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.getRotation(blockState.get(PROPERTY_FACING)));
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
+		return blockState.rotate(mirror.getRotation(blockState.get(FACING)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(PROPERTY_FACING, field_10958);
+		builder.with(FACING, EYE);
 	}
 
 	public static BlockPattern getCompletedFramePattern() {
@@ -81,25 +81,25 @@ public class EndPortalFrameBlock extends Block {
 				.where(
 					'^',
 					CachedBlockPosition.matchesBlockState(
-						BlockStatePredicate.forBlock(Blocks.field_10398).with(field_10958, Predicates.equalTo(true)).with(PROPERTY_FACING, Predicates.equalTo(Direction.SOUTH))
+						BlockStatePredicate.forBlock(Blocks.field_10398).with(EYE, Predicates.equalTo(true)).with(FACING, Predicates.equalTo(Direction.SOUTH))
 					)
 				)
 				.where(
 					'>',
 					CachedBlockPosition.matchesBlockState(
-						BlockStatePredicate.forBlock(Blocks.field_10398).with(field_10958, Predicates.equalTo(true)).with(PROPERTY_FACING, Predicates.equalTo(Direction.WEST))
+						BlockStatePredicate.forBlock(Blocks.field_10398).with(EYE, Predicates.equalTo(true)).with(FACING, Predicates.equalTo(Direction.WEST))
 					)
 				)
 				.where(
 					'v',
 					CachedBlockPosition.matchesBlockState(
-						BlockStatePredicate.forBlock(Blocks.field_10398).with(field_10958, Predicates.equalTo(true)).with(PROPERTY_FACING, Predicates.equalTo(Direction.NORTH))
+						BlockStatePredicate.forBlock(Blocks.field_10398).with(EYE, Predicates.equalTo(true)).with(FACING, Predicates.equalTo(Direction.NORTH))
 					)
 				)
 				.where(
 					'<',
 					CachedBlockPosition.matchesBlockState(
-						BlockStatePredicate.forBlock(Blocks.field_10398).with(field_10958, Predicates.equalTo(true)).with(PROPERTY_FACING, Predicates.equalTo(Direction.EAST))
+						BlockStatePredicate.forBlock(Blocks.field_10398).with(EYE, Predicates.equalTo(true)).with(FACING, Predicates.equalTo(Direction.EAST))
 					)
 				)
 				.build();

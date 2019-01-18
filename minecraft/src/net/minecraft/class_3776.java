@@ -9,6 +9,7 @@ import java.util.Random;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sortme.Structure;
 import net.minecraft.sortme.StructurePoolElement;
 import net.minecraft.sortme.structures.StructureManager;
 import net.minecraft.util.Rotation;
@@ -41,9 +42,9 @@ public class class_3776 extends class_3784 {
 	}
 
 	@Override
-	public List<class_3499.class_3501> method_16627(StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random) {
-		List<class_3499.class_3501> list = Lists.<class_3499.class_3501>newArrayList();
-		list.add(new class_3499.class_3501(blockPos, Blocks.field_16540.getDefaultState().with(JigsawBlock.field_10927, Direction.DOWN), this.field_16662));
+	public List<Structure.StructureBlockInfo> method_16627(StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random) {
+		List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
+		list.add(new Structure.StructureBlockInfo(blockPos, Blocks.field_16540.getDefaultState().with(JigsawBlock.FACING, Direction.DOWN), this.field_16662));
 		return list;
 	}
 

@@ -15,7 +15,7 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
-	protected static final VoxelShape field_11304 = Block.createCubeShape(5.0, 0.0, 5.0, 11.0, 6.0, 11.0);
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 6.0, 11.0);
 
 	public MushroomPlantBlock(Block.Settings settings) {
 		super(settings);
@@ -23,11 +23,11 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_11304;
+		return SHAPE;
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (random.nextInt(25) == 0) {
 			int i = 5;
 			int j = 4;
@@ -71,7 +71,7 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 			: true;
 	}
 
-	public boolean method_10349(IWorld iWorld, BlockPos blockPos, BlockState blockState, Random random) {
+	public boolean trySpawningBigMushroom(IWorld iWorld, BlockPos blockPos, BlockState blockState, Random random) {
 		iWorld.clearBlockState(blockPos);
 		Feature<DefaultFeatureConfig> feature = null;
 		if (this == Blocks.field_10251) {
@@ -103,7 +103,7 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
-		this.method_10349(world, blockPos, blockState, random);
+		this.trySpawningBigMushroom(world, blockPos, blockState, random);
 	}
 
 	@Override

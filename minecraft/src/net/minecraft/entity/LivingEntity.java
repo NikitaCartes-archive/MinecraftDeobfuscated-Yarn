@@ -76,9 +76,9 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
-import net.minecraft.util.HitResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.UseAction;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
@@ -929,7 +929,7 @@ public abstract class LivingEntity extends Entity {
 			if (itemStack != null) {
 				if (this instanceof ServerPlayerEntity) {
 					ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this;
-					serverPlayerEntity.incrementStat(Stats.field_15372.method_14956(Items.field_8288));
+					serverPlayerEntity.incrementStat(Stats.field_15372.getOrCreateStat(Items.field_8288));
 					Criterions.USED_TOTEM.handle(serverPlayerEntity, itemStack);
 				}
 
@@ -1118,9 +1118,9 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	private boolean method_6077(BlockPos blockPos, BlockState blockState) {
-		if ((Boolean)blockState.get(TrapdoorBlock.field_11631)) {
+		if ((Boolean)blockState.get(TrapdoorBlock.OPEN)) {
 			BlockState blockState2 = this.world.getBlockState(blockPos.down());
-			if (blockState2.getBlock() == Blocks.field_9983 && blockState2.get(LadderBlock.field_11253) == blockState.get(TrapdoorBlock.field_11177)) {
+			if (blockState2.getBlock() == Blocks.field_9983 && blockState2.get(LadderBlock.FACING) == blockState.get(TrapdoorBlock.FACING)) {
 				return true;
 			}
 		}
@@ -2146,7 +2146,7 @@ public abstract class LivingEntity extends Entity {
 	public boolean canSee(Entity entity) {
 		Vec3d vec3d = new Vec3d(this.x, this.y + (double)this.getEyeHeight(), this.z);
 		Vec3d vec3d2 = new Vec3d(entity.x, entity.y + (double)entity.getEyeHeight(), entity.z);
-		return this.world.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.NONE, this)).getType()
+		return this.world.method_17742(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.NONE, this)).getType()
 			== HitResult.Type.NONE;
 	}
 

@@ -24,34 +24,34 @@ import net.minecraft.world.World;
 public class PistonHeadBlock extends FacingBlock {
 	public static final EnumProperty<PistonType> field_12224 = Properties.PISTON_TYPE;
 	public static final BooleanProperty field_12227 = Properties.SHORT;
-	protected static final VoxelShape field_12222 = Block.createCubeShape(12.0, 0.0, 0.0, 16.0, 16.0, 16.0);
-	protected static final VoxelShape field_12214 = Block.createCubeShape(0.0, 0.0, 0.0, 4.0, 16.0, 16.0);
-	protected static final VoxelShape field_12228 = Block.createCubeShape(0.0, 0.0, 12.0, 16.0, 16.0, 16.0);
-	protected static final VoxelShape field_12213 = Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 16.0, 4.0);
-	protected static final VoxelShape field_12230 = Block.createCubeShape(0.0, 12.0, 0.0, 16.0, 16.0, 16.0);
-	protected static final VoxelShape field_12220 = Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 4.0, 16.0);
-	protected static final VoxelShape field_12215 = Block.createCubeShape(6.0, -4.0, 6.0, 10.0, 12.0, 10.0);
-	protected static final VoxelShape field_12226 = Block.createCubeShape(6.0, 4.0, 6.0, 10.0, 20.0, 10.0);
-	protected static final VoxelShape field_12221 = Block.createCubeShape(6.0, 6.0, -4.0, 10.0, 10.0, 12.0);
-	protected static final VoxelShape field_12229 = Block.createCubeShape(6.0, 6.0, 4.0, 10.0, 10.0, 20.0);
-	protected static final VoxelShape field_12218 = Block.createCubeShape(-4.0, 6.0, 6.0, 12.0, 10.0, 10.0);
-	protected static final VoxelShape field_12223 = Block.createCubeShape(4.0, 6.0, 6.0, 20.0, 10.0, 10.0);
-	protected static final VoxelShape field_12231 = Block.createCubeShape(6.0, 0.0, 6.0, 10.0, 12.0, 10.0);
-	protected static final VoxelShape field_12217 = Block.createCubeShape(6.0, 4.0, 6.0, 10.0, 16.0, 10.0);
-	protected static final VoxelShape field_12216 = Block.createCubeShape(6.0, 6.0, 0.0, 10.0, 10.0, 12.0);
-	protected static final VoxelShape field_12225 = Block.createCubeShape(6.0, 6.0, 4.0, 10.0, 10.0, 16.0);
-	protected static final VoxelShape field_12219 = Block.createCubeShape(0.0, 6.0, 6.0, 12.0, 10.0, 10.0);
-	protected static final VoxelShape field_12212 = Block.createCubeShape(4.0, 6.0, 6.0, 16.0, 10.0, 10.0);
+	protected static final VoxelShape field_12222 = Block.createCuboidShape(12.0, 0.0, 0.0, 16.0, 16.0, 16.0);
+	protected static final VoxelShape field_12214 = Block.createCuboidShape(0.0, 0.0, 0.0, 4.0, 16.0, 16.0);
+	protected static final VoxelShape field_12228 = Block.createCuboidShape(0.0, 0.0, 12.0, 16.0, 16.0, 16.0);
+	protected static final VoxelShape field_12213 = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 4.0);
+	protected static final VoxelShape field_12230 = Block.createCuboidShape(0.0, 12.0, 0.0, 16.0, 16.0, 16.0);
+	protected static final VoxelShape field_12220 = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 4.0, 16.0);
+	protected static final VoxelShape field_12215 = Block.createCuboidShape(6.0, -4.0, 6.0, 10.0, 12.0, 10.0);
+	protected static final VoxelShape field_12226 = Block.createCuboidShape(6.0, 4.0, 6.0, 10.0, 20.0, 10.0);
+	protected static final VoxelShape field_12221 = Block.createCuboidShape(6.0, 6.0, -4.0, 10.0, 10.0, 12.0);
+	protected static final VoxelShape field_12229 = Block.createCuboidShape(6.0, 6.0, 4.0, 10.0, 10.0, 20.0);
+	protected static final VoxelShape field_12218 = Block.createCuboidShape(-4.0, 6.0, 6.0, 12.0, 10.0, 10.0);
+	protected static final VoxelShape field_12223 = Block.createCuboidShape(4.0, 6.0, 6.0, 20.0, 10.0, 10.0);
+	protected static final VoxelShape field_12231 = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 12.0, 10.0);
+	protected static final VoxelShape field_12217 = Block.createCuboidShape(6.0, 4.0, 6.0, 10.0, 16.0, 10.0);
+	protected static final VoxelShape field_12216 = Block.createCuboidShape(6.0, 6.0, 0.0, 10.0, 10.0, 12.0);
+	protected static final VoxelShape field_12225 = Block.createCuboidShape(6.0, 6.0, 4.0, 10.0, 10.0, 16.0);
+	protected static final VoxelShape field_12219 = Block.createCuboidShape(0.0, 6.0, 6.0, 12.0, 10.0, 10.0);
+	protected static final VoxelShape field_12212 = Block.createCuboidShape(4.0, 6.0, 6.0, 16.0, 10.0, 10.0);
 
 	public PistonHeadBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory.getDefaultState().with(field_10927, Direction.NORTH).with(field_12224, PistonType.field_12637).with(field_12227, Boolean.valueOf(false))
+			this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(field_12224, PistonType.field_12637).with(field_12227, Boolean.valueOf(false))
 		);
 	}
 
 	private VoxelShape method_11520(BlockState blockState) {
-		switch ((Direction)blockState.get(field_10927)) {
+		switch ((Direction)blockState.get(FACING)) {
 			case DOWN:
 			default:
 				return field_12220;
@@ -80,7 +80,7 @@ public class PistonHeadBlock extends FacingBlock {
 
 	private VoxelShape method_11519(BlockState blockState) {
 		boolean bl = (Boolean)blockState.get(field_12227);
-		switch ((Direction)blockState.get(field_10927)) {
+		switch ((Direction)blockState.get(FACING)) {
 			case DOWN:
 			default:
 				return bl ? field_12217 : field_12226;
@@ -99,13 +99,13 @@ public class PistonHeadBlock extends FacingBlock {
 
 	@Override
 	public boolean hasSolidTopSurface(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return blockState.get(field_10927) == Direction.UP;
+		return blockState.get(FACING) == Direction.UP;
 	}
 
 	@Override
 	public void onBreak(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
 		if (!world.isClient && playerEntity.abilities.creativeMode) {
-			BlockPos blockPos2 = blockPos.offset(((Direction)blockState.get(field_10927)).getOpposite());
+			BlockPos blockPos2 = blockPos.offset(((Direction)blockState.get(FACING)).getOpposite());
 			Block block = world.getBlockState(blockPos2).getBlock();
 			if (block == Blocks.field_10560 || block == Blocks.field_10615) {
 				world.clearBlockState(blockPos2);
@@ -119,7 +119,7 @@ public class PistonHeadBlock extends FacingBlock {
 	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState.getBlock() != blockState2.getBlock()) {
 			super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
-			Direction direction = ((Direction)blockState.get(field_10927)).getOpposite();
+			Direction direction = ((Direction)blockState.get(FACING)).getOpposite();
 			blockPos = blockPos.offset(direction);
 			BlockState blockState3 = world.getBlockState(blockPos);
 			if ((blockState3.getBlock() == Blocks.field_10560 || blockState3.getBlock() == Blocks.field_10615) && (Boolean)blockState3.get(PistonBlock.field_12191)) {
@@ -133,21 +133,21 @@ public class PistonHeadBlock extends FacingBlock {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		return direction.getOpposite() == blockState.get(field_10927) && !blockState.canPlaceAt(iWorld, blockPos)
+		return direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos)
 			? Blocks.field_10124.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		Block block = viewableWorld.getBlockState(blockPos.offset(((Direction)blockState.get(field_10927)).getOpposite())).getBlock();
+		Block block = viewableWorld.getBlockState(blockPos.offset(((Direction)blockState.get(FACING)).getOpposite())).getBlock();
 		return block == Blocks.field_10560 || block == Blocks.field_10615 || block == Blocks.field_10008;
 	}
 
 	@Override
 	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
 		if (blockState.canPlaceAt(world, blockPos)) {
-			BlockPos blockPos3 = blockPos.offset(((Direction)blockState.get(field_10927)).getOpposite());
+			BlockPos blockPos3 = blockPos.offset(((Direction)blockState.get(FACING)).getOpposite());
 			world.getBlockState(blockPos3).neighborUpdate(world, blockPos3, block, blockPos2);
 		}
 	}
@@ -159,18 +159,18 @@ public class PistonHeadBlock extends FacingBlock {
 	}
 
 	@Override
-	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
-		return blockState.with(field_10927, rotation.method_10503(blockState.get(field_10927)));
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
+		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
-	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.getRotation(blockState.get(field_10927)));
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
+		return blockState.rotate(mirror.getRotation(blockState.get(FACING)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_10927, field_12224, field_12227);
+		builder.with(FACING, field_12224, field_12227);
 	}
 
 	@Override

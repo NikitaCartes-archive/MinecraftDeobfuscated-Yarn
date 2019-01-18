@@ -21,9 +21,9 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.BlockHitResult;
-import net.minecraft.util.EntityHitResult;
-import net.minecraft.util.HitResult;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
@@ -177,7 +177,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity {
 		Vec3d vec3d = new Vec3d(this.x, this.y, this.z);
 		Vec3d vec3d2 = new Vec3d(this.x + this.velocityX, this.y + this.velocityY, this.z + this.velocityZ);
 		HitResult hitResult = this.world
-			.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.NONE, this));
+			.method_17742(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.NONE, this));
 		vec3d = new Vec3d(this.x, this.y, this.z);
 		vec3d2 = new Vec3d(this.x + this.velocityX, this.y + this.velocityY, this.z + this.velocityZ);
 		if (hitResult.getType() != HitResult.Type.NONE) {
@@ -300,7 +300,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity {
 					for (int i = 0; i < 2; i++) {
 						Vec3d vec3d2 = new Vec3d(livingEntity.x, livingEntity.y + (double)livingEntity.getHeight() * 0.5 * (double)i, livingEntity.z);
 						HitResult hitResult = this.world
-							.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.NONE, this));
+							.method_17742(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.NONE, this));
 						if (hitResult.getType() == HitResult.Type.NONE) {
 							bl = true;
 							break;
@@ -330,7 +330,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity {
 		if (b == 17 && this.world.isClient) {
 			ItemStack itemStack = this.dataTracker.get(ITEM_STACK);
 			CompoundTag compoundTag = itemStack.isEmpty() ? null : itemStack.getSubCompoundTag("Fireworks");
-			this.world.method_8547(this.x, this.y, this.z, this.velocityX, this.velocityY, this.velocityZ, compoundTag);
+			this.world.addFireworkParticle(this.x, this.y, this.z, this.velocityX, this.velocityY, this.velocityZ, compoundTag);
 		}
 
 		super.method_5711(b);

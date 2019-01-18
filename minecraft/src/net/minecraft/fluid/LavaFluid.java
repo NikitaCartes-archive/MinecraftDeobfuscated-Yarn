@@ -47,7 +47,7 @@ public abstract class LavaFluid extends BaseFluid {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_15776(World world, BlockPos blockPos, FluidState fluidState, Random random) {
+	public void randomDisplayTick(World world, BlockPos blockPos, FluidState fluidState, Random random) {
 		BlockPos blockPos2 = blockPos.up();
 		if (world.getBlockState(blockPos2).isAir() && !world.getBlockState(blockPos2).isFullOpaque(world, blockPos2)) {
 			if (random.nextInt(100) == 0) {
@@ -141,7 +141,7 @@ public abstract class LavaFluid extends BaseFluid {
 
 	@Override
 	public int method_15733(ViewableWorld viewableWorld) {
-		return viewableWorld.getDimension().method_12465() ? 4 : 2;
+		return viewableWorld.getDimension().doesWaterVaporize() ? 4 : 2;
 	}
 
 	@Override
@@ -156,7 +156,7 @@ public abstract class LavaFluid extends BaseFluid {
 
 	@Override
 	public int method_15739(ViewableWorld viewableWorld) {
-		return viewableWorld.getDimension().method_12465() ? 1 : 2;
+		return viewableWorld.getDimension().doesWaterVaporize() ? 1 : 2;
 	}
 
 	@Override
@@ -165,17 +165,17 @@ public abstract class LavaFluid extends BaseFluid {
 	}
 
 	@Override
-	public int method_15789(ViewableWorld viewableWorld) {
+	public int getTickRate(ViewableWorld viewableWorld) {
 		return viewableWorld.getDimension().isNether() ? 10 : 30;
 	}
 
 	@Override
 	public int method_15753(World world, BlockPos blockPos, FluidState fluidState, FluidState fluidState2) {
-		int i = this.method_15789(world);
+		int i = this.getTickRate(world);
 		if (!fluidState.isEmpty()
 			&& !fluidState2.isEmpty()
-			&& !(Boolean)fluidState.get(STILL)
-			&& !(Boolean)fluidState2.get(STILL)
+			&& !(Boolean)fluidState.get(FALLING)
+			&& !(Boolean)fluidState2.get(FALLING)
 			&& fluidState2.method_15763(world, blockPos) > fluidState.method_15763(world, blockPos)
 			&& world.getRandom().nextInt(4) != 0) {
 			i *= 4;
@@ -237,7 +237,7 @@ public abstract class LavaFluid extends BaseFluid {
 		}
 
 		@Override
-		public int method_15779(FluidState fluidState) {
+		public int getLevel(FluidState fluidState) {
 			return (Integer)fluidState.get(LEVEL);
 		}
 
@@ -249,7 +249,7 @@ public abstract class LavaFluid extends BaseFluid {
 
 	public static class Still extends LavaFluid {
 		@Override
-		public int method_15779(FluidState fluidState) {
+		public int getLevel(FluidState fluidState) {
 			return 8;
 		}
 

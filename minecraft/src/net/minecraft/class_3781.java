@@ -9,7 +9,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.enums.StructureMode;
+import net.minecraft.block.enums.StructureBlockMode;
+import net.minecraft.sortme.Structure;
+import net.minecraft.sortme.StructurePlacementData;
 import net.minecraft.sortme.StructurePoolElement;
 import net.minecraft.sortme.structures.StructureManager;
 import net.minecraft.sortme.structures.processor.AbstractStructureProcessor;
@@ -44,16 +46,16 @@ public class class_3781 extends class_3784 {
 		);
 	}
 
-	public List<class_3499.class_3501> method_16614(StructureManager structureManager, BlockPos blockPos, Rotation rotation, boolean bl) {
-		class_3499 lv = structureManager.method_15091(this.location);
-		List<class_3499.class_3501> list = lv.method_15165(blockPos, new class_3492().method_15123(rotation), Blocks.field_10465, bl);
-		List<class_3499.class_3501> list2 = Lists.<class_3499.class_3501>newArrayList();
+	public List<Structure.StructureBlockInfo> method_16614(StructureManager structureManager, BlockPos blockPos, Rotation rotation, boolean bl) {
+		Structure structure = structureManager.getStructureOrBlank(this.location);
+		List<Structure.StructureBlockInfo> list = structure.method_15165(blockPos, new StructurePlacementData().setRotation(rotation), Blocks.field_10465, bl);
+		List<Structure.StructureBlockInfo> list2 = Lists.<Structure.StructureBlockInfo>newArrayList();
 
-		for (class_3499.class_3501 lv2 : list) {
-			if (lv2.field_15595 != null) {
-				StructureMode structureMode = StructureMode.valueOf(lv2.field_15595.getString("mode"));
-				if (structureMode == StructureMode.field_12696) {
-					list2.add(lv2);
+		for (Structure.StructureBlockInfo structureBlockInfo : list) {
+			if (structureBlockInfo.tag != null) {
+				StructureBlockMode structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.tag.getString("mode"));
+				if (structureBlockMode == StructureBlockMode.field_12696) {
+					list2.add(structureBlockInfo);
 				}
 			}
 		}
@@ -62,46 +64,48 @@ public class class_3781 extends class_3784 {
 	}
 
 	@Override
-	public List<class_3499.class_3501> method_16627(StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random) {
-		class_3499 lv = structureManager.method_15091(this.location);
-		List<class_3499.class_3501> list = lv.method_15165(blockPos, new class_3492().method_15123(rotation), Blocks.field_16540, true);
+	public List<Structure.StructureBlockInfo> method_16627(StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random) {
+		Structure structure = structureManager.getStructureOrBlank(this.location);
+		List<Structure.StructureBlockInfo> list = structure.method_15165(blockPos, new StructurePlacementData().setRotation(rotation), Blocks.field_16540, true);
 		Collections.shuffle(list, random);
 		return list;
 	}
 
 	@Override
 	public MutableIntBoundingBox method_16628(StructureManager structureManager, BlockPos blockPos, Rotation rotation) {
-		class_3499 lv = structureManager.method_15091(this.location);
-		return lv.method_16187(new class_3492().method_15123(rotation), blockPos);
+		Structure structure = structureManager.getStructureOrBlank(this.location);
+		return structure.method_16187(new StructurePlacementData().setRotation(rotation), blockPos);
 	}
 
 	@Override
 	public boolean method_16626(IWorld iWorld, BlockPos blockPos, Rotation rotation, MutableIntBoundingBox mutableIntBoundingBox, Random random) {
 		StructureManager structureManager = iWorld.getSaveHandler().getStructureManager();
-		class_3499 lv = structureManager.method_15091(this.location);
-		class_3492 lv2 = this.method_16616(rotation, mutableIntBoundingBox);
-		if (!lv.method_15172(iWorld, blockPos, lv2, 18)) {
+		Structure structure = structureManager.getStructureOrBlank(this.location);
+		StructurePlacementData structurePlacementData = this.method_16616(rotation, mutableIntBoundingBox);
+		if (!structure.method_15172(iWorld, blockPos, structurePlacementData, 18)) {
 			return false;
 		} else {
-			for (class_3499.class_3501 lv3 : class_3499.method_16446(iWorld, blockPos, lv2, this.method_16614(structureManager, blockPos, rotation, false))) {
-				this.method_16756(iWorld, lv3, blockPos, rotation, random, mutableIntBoundingBox);
+			for (Structure.StructureBlockInfo structureBlockInfo : Structure.method_16446(
+				iWorld, blockPos, structurePlacementData, this.method_16614(structureManager, blockPos, rotation, false)
+			)) {
+				this.method_16756(iWorld, structureBlockInfo, blockPos, rotation, random, mutableIntBoundingBox);
 			}
 
 			return true;
 		}
 	}
 
-	protected class_3492 method_16616(Rotation rotation, MutableIntBoundingBox mutableIntBoundingBox) {
-		class_3492 lv = new class_3492();
-		lv.method_15126(mutableIntBoundingBox);
-		lv.method_15123(rotation);
-		lv.method_15131(true);
-		lv.method_15133(false);
-		lv.method_16184(BlockIgnoreStructureProcessor.field_16721);
-		lv.method_16184(JigsawReplacementStructureProcessor.INSTANCE);
-		this.processors.forEach(lv::method_16184);
-		this.method_16624().method_16636().forEach(lv::method_16184);
-		return lv;
+	protected StructurePlacementData method_16616(Rotation rotation, MutableIntBoundingBox mutableIntBoundingBox) {
+		StructurePlacementData structurePlacementData = new StructurePlacementData();
+		structurePlacementData.setBoundingBox(mutableIntBoundingBox);
+		structurePlacementData.setRotation(rotation);
+		structurePlacementData.method_15131(true);
+		structurePlacementData.setIgnoreEntities(false);
+		structurePlacementData.addProcessor(BlockIgnoreStructureProcessor.field_16721);
+		structurePlacementData.addProcessor(JigsawReplacementStructureProcessor.INSTANCE);
+		this.processors.forEach(structurePlacementData::addProcessor);
+		this.method_16624().method_16636().forEach(structurePlacementData::addProcessor);
+		return structurePlacementData;
 	}
 
 	@Override

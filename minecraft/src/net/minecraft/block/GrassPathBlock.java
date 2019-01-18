@@ -12,7 +12,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class GrassPathBlock extends Block {
-	protected static final VoxelShape field_11106 = FarmlandBlock.field_11010;
+	protected static final VoxelShape SHAPE = FarmlandBlock.SHAPE;
 
 	protected GrassPathBlock(Block.Settings settings) {
 		super(settings);
@@ -25,8 +25,10 @@ public class GrassPathBlock extends Block {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return !this.getDefaultState().canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getPos())
-			? Block.method_9582(this.getDefaultState(), Blocks.field_10566.getDefaultState(), itemPlacementContext.getWorld(), itemPlacementContext.getPos())
+		return !this.getDefaultState().canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())
+			? Block.pushEntitiesUpBeforeBlockChange(
+				this.getDefaultState(), Blocks.field_10566.getDefaultState(), itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos()
+			)
 			: super.getPlacementState(itemPlacementContext);
 	}
 
@@ -42,8 +44,8 @@ public class GrassPathBlock extends Block {
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		FarmlandBlock.method_10125(blockState, world, blockPos);
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		FarmlandBlock.setToDirt(blockState, world, blockPos);
 	}
 
 	@Override
@@ -54,7 +56,7 @@ public class GrassPathBlock extends Block {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_11106;
+		return SHAPE;
 	}
 
 	@Override

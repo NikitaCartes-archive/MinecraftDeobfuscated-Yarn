@@ -21,12 +21,12 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class RedstoneTorchBlock extends TorchBlock {
-	public static final BooleanProperty field_11446 = Properties.LIT;
+	public static final BooleanProperty LIT = Properties.LIT;
 	private static final Map<BlockView, List<RedstoneTorchBlock.class_2460>> field_11445 = Maps.<BlockView, List<RedstoneTorchBlock.class_2460>>newHashMap();
 
 	protected RedstoneTorchBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11446, Boolean.valueOf(true)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(LIT, Boolean.valueOf(true)));
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class RedstoneTorchBlock extends TorchBlock {
 
 	@Override
 	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		return blockState.get(field_11446) && Direction.UP != direction ? 15 : 0;
+		return blockState.get(LIT) && Direction.UP != direction ? 15 : 0;
 	}
 
 	protected boolean method_10488(World world, BlockPos blockPos, BlockState blockState) {
@@ -60,7 +60,7 @@ public class RedstoneTorchBlock extends TorchBlock {
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		method_10490(blockState, world, blockPos, random, this.method_10488(world, blockPos, blockState));
 	}
 
@@ -71,9 +71,9 @@ public class RedstoneTorchBlock extends TorchBlock {
 			list.remove(0);
 		}
 
-		if ((Boolean)blockState.get(field_11446)) {
+		if ((Boolean)blockState.get(LIT)) {
 			if (bl) {
-				world.setBlockState(blockPos, blockState.with(field_11446, Boolean.valueOf(false)), 3);
+				world.setBlockState(blockPos, blockState.with(LIT, Boolean.valueOf(false)), 3);
 				if (method_10489(world, blockPos, true)) {
 					world.playSound(
 						null, blockPos, SoundEvents.field_14909, SoundCategory.field_15245, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F
@@ -90,13 +90,13 @@ public class RedstoneTorchBlock extends TorchBlock {
 				}
 			}
 		} else if (!bl && !method_10489(world, blockPos, false)) {
-			world.setBlockState(blockPos, blockState.with(field_11446, Boolean.valueOf(true)), 3);
+			world.setBlockState(blockPos, blockState.with(LIT, Boolean.valueOf(true)), 3);
 		}
 	}
 
 	@Override
 	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
-		if ((Boolean)blockState.get(field_11446) == this.method_10488(world, blockPos, blockState) && !world.getBlockTickScheduler().isTicking(blockPos, this)) {
+		if ((Boolean)blockState.get(LIT) == this.method_10488(world, blockPos, blockState) && !world.getBlockTickScheduler().isTicking(blockPos, this)) {
 			world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
 		}
 	}
@@ -114,7 +114,7 @@ public class RedstoneTorchBlock extends TorchBlock {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if ((Boolean)blockState.get(field_11446)) {
+		if ((Boolean)blockState.get(LIT)) {
 			double d = (double)blockPos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.2;
 			double e = (double)blockPos.getY() + 0.7 + (random.nextDouble() - 0.5) * 0.2;
 			double f = (double)blockPos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.2;
@@ -124,12 +124,12 @@ public class RedstoneTorchBlock extends TorchBlock {
 
 	@Override
 	public int getLuminance(BlockState blockState) {
-		return blockState.get(field_11446) ? super.getLuminance(blockState) : 0;
+		return blockState.get(LIT) ? super.getLuminance(blockState) : 0;
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_11446);
+		builder.with(LIT);
 	}
 
 	private static boolean method_10489(World world, BlockPos blockPos, boolean bl) {

@@ -21,7 +21,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	private boolean powered;
 	private boolean auto;
 	private boolean conditionMet;
-	private boolean field_11916;
+	private boolean needsUpdatePacket;
 	private final CommandBlockExecutor commandExecutor = new CommandBlockExecutor() {
 		@Override
 		public void setCommand(String string) {
@@ -96,8 +96,8 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	@Nullable
 	@Override
 	public BlockEntityUpdateClientPacket toUpdatePacket() {
-		if (this.method_11036()) {
-			this.method_11037(false);
+		if (this.needsUpdatePacket()) {
+			this.setNeedsUpdatePacket(false);
 			CompoundTag compoundTag = this.toTag(new CompoundTag());
 			return new BlockEntityUpdateClientPacket(this.pos, 2, compoundTag);
 		} else {
@@ -106,7 +106,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public boolean method_11011() {
+	public boolean shouldNotCopyTagFromItem() {
 		return true;
 	}
 
@@ -132,7 +132,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 		if (!bl2 && bl && !this.powered && this.world != null && this.getType() != CommandBlockBlockEntity.Type.CHAIN) {
 			Block block = this.getCachedState().getBlock();
 			if (block instanceof CommandBlock) {
-				this.method_11045();
+				this.updateConditionMet();
 				this.world.getBlockTickScheduler().schedule(this.pos, block, block.getTickRate(this.world));
 			}
 		}
@@ -142,7 +142,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 		return this.conditionMet;
 	}
 
-	public boolean method_11045() {
+	public boolean updateConditionMet() {
 		this.conditionMet = true;
 		if (this.isConditionalCommandBlock()) {
 			BlockPos blockPos = this.pos.offset(((Direction)this.world.getBlockState(this.pos).get(CommandBlock.FACING)).getOpposite());
@@ -157,12 +157,12 @@ public class CommandBlockBlockEntity extends BlockEntity {
 		return this.conditionMet;
 	}
 
-	public boolean method_11036() {
-		return this.field_11916;
+	public boolean needsUpdatePacket() {
+		return this.needsUpdatePacket;
 	}
 
-	public void method_11037(boolean bl) {
-		this.field_11916 = bl;
+	public void setNeedsUpdatePacket(boolean bl) {
+		this.needsUpdatePacket = bl;
 	}
 
 	public CommandBlockBlockEntity.Type getType() {
@@ -178,7 +178,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 
 	public boolean isConditionalCommandBlock() {
 		BlockState blockState = this.world.getBlockState(this.getPos());
-		return blockState.getBlock() instanceof CommandBlock ? (Boolean)blockState.get(CommandBlock.field_10793) : false;
+		return blockState.getBlock() instanceof CommandBlock ? (Boolean)blockState.get(CommandBlock.CONDITIONAL) : false;
 	}
 
 	@Override

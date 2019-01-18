@@ -275,7 +275,7 @@ public class ItemEntity extends Entity {
 					itemStack.setAmount(i);
 				}
 
-				playerEntity.incrementStat(Stats.field_15392.method_14956(item), i);
+				playerEntity.incrementStat(Stats.field_15392.getOrCreateStat(item), i);
 			}
 		}
 	}

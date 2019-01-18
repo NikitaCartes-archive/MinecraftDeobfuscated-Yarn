@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Random;
 import net.minecraft.class_3443;
 import net.minecraft.class_3470;
-import net.minecraft.class_3492;
-import net.minecraft.class_3499;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sortme.Structure;
 import net.minecraft.sortme.StructurePiece;
+import net.minecraft.sortme.StructurePlacementData;
 import net.minecraft.sortme.structures.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Mirror;
@@ -97,23 +97,23 @@ public class ShipwreckGenerator {
 		}
 
 		private void method_14837(StructureManager structureManager) {
-			class_3499 lv = structureManager.method_15091(this.field_14537);
-			class_3492 lv2 = new class_3492()
-				.method_15123(this.field_14539)
-				.method_15125(Mirror.NONE)
-				.method_15119(ShipwreckGenerator.field_14536)
-				.method_16184(BlockIgnoreStructureProcessor.field_16721);
-			this.method_15027(lv, this.field_15432, lv2);
+			Structure structure = structureManager.getStructureOrBlank(this.field_14537);
+			StructurePlacementData structurePlacementData = new StructurePlacementData()
+				.setRotation(this.field_14539)
+				.setMirrored(Mirror.NONE)
+				.setPosition(ShipwreckGenerator.field_14536)
+				.addProcessor(BlockIgnoreStructureProcessor.field_16721);
+			this.method_15027(structure, this.field_15432, structurePlacementData);
 		}
 
 		@Override
 		protected void method_15026(String string, BlockPos blockPos, IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox) {
 			if ("map_chest".equals(string)) {
-				LootableContainerBlockEntity.method_11287(iWorld, random, blockPos.down(), LootTables.field_841);
+				LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos.down(), LootTables.field_841);
 			} else if ("treasure_chest".equals(string)) {
-				LootableContainerBlockEntity.method_11287(iWorld, random, blockPos.down(), LootTables.field_665);
+				LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos.down(), LootTables.field_665);
 			} else if ("supply_chest".equals(string)) {
-				LootableContainerBlockEntity.method_11287(iWorld, random, blockPos.down(), LootTables.field_880);
+				LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos.down(), LootTables.field_880);
 			}
 		}
 
@@ -121,7 +121,7 @@ public class ShipwreckGenerator {
 		public boolean method_14931(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
 			int i = 256;
 			int j = 0;
-			BlockPos blockPos = this.field_15432.add(this.field_15433.method_15160().getX() - 1, 0, this.field_15433.method_15160().getZ() - 1);
+			BlockPos blockPos = this.field_15432.add(this.field_15433.getSize().getX() - 1, 0, this.field_15433.getSize().getZ() - 1);
 
 			for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(this.field_15432, blockPos)) {
 				int k = iWorld.getTop(this.field_14538 ? Heightmap.Type.WORLD_SURFACE_WG : Heightmap.Type.OCEAN_FLOOR_WG, blockPos2.getX(), blockPos2.getZ());
@@ -129,8 +129,8 @@ public class ShipwreckGenerator {
 				i = Math.min(i, k);
 			}
 
-			j /= this.field_15433.method_15160().getX() * this.field_15433.method_15160().getZ();
-			int l = this.field_14538 ? i - this.field_15433.method_15160().getY() / 2 - random.nextInt(3) : j;
+			j /= this.field_15433.getSize().getX() * this.field_15433.getSize().getZ();
+			int l = this.field_14538 ? i - this.field_15433.getSize().getY() / 2 - random.nextInt(3) : j;
 			this.field_15432 = new BlockPos(this.field_15432.getX(), l, this.field_15432.getZ());
 			return super.method_14931(iWorld, random, mutableIntBoundingBox, chunkPos);
 		}

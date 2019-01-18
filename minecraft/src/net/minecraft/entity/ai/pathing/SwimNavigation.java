@@ -2,8 +2,8 @@ package net.minecraft.entity.ai.pathing;
 
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.DolphinEntity;
-import net.minecraft.util.HitResult;
 import net.minecraft.util.SystemUtil;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -129,7 +129,7 @@ public class SwimNavigation extends EntityNavigation {
 	protected boolean method_6341(Vec3d vec3d, Vec3d vec3d2, int i, int j, int k) {
 		Vec3d vec3d3 = new Vec3d(vec3d2.x, vec3d2.y + (double)this.entity.getHeight() * 0.5, vec3d2.z);
 		return this.world
-				.rayTrace(new RayTraceContext(vec3d, vec3d3, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.NONE, this.entity))
+				.method_17742(new RayTraceContext(vec3d, vec3d3, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.NONE, this.entity))
 				.getType()
 			== HitResult.Type.NONE;
 	}

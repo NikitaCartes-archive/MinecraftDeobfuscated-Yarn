@@ -14,8 +14,8 @@ import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -26,35 +26,35 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class BellBlock extends BlockWithEntity {
-	public static final DirectionProperty field_16324 = HorizontalFacingBlock.field_11177;
-	private static final EnumProperty<Attachment> field_16326 = Properties.ATTACHMENT;
-	private static final VoxelShape field_16325 = Block.createCubeShape(0.0, 0.0, 4.0, 16.0, 16.0, 12.0);
-	private static final VoxelShape field_16322 = Block.createCubeShape(4.0, 0.0, 0.0, 12.0, 16.0, 16.0);
-	private static final VoxelShape field_17087 = Block.createCubeShape(5.0, 6.0, 5.0, 11.0, 13.0, 11.0);
-	private static final VoxelShape field_17088 = Block.createCubeShape(4.0, 4.0, 4.0, 12.0, 6.0, 12.0);
-	private static final VoxelShape field_17089 = VoxelShapes.union(field_17088, field_17087);
-	private static final VoxelShape field_17090 = VoxelShapes.union(field_17089, Block.createCubeShape(7.0, 13.0, 0.0, 9.0, 15.0, 16.0));
-	private static final VoxelShape field_16321 = VoxelShapes.union(field_17089, Block.createCubeShape(0.0, 13.0, 7.0, 16.0, 15.0, 9.0));
-	private static final VoxelShape field_17091 = VoxelShapes.union(field_17089, Block.createCubeShape(0.0, 13.0, 7.0, 13.0, 15.0, 9.0));
-	private static final VoxelShape field_17092 = VoxelShapes.union(field_17089, Block.createCubeShape(3.0, 13.0, 7.0, 16.0, 15.0, 9.0));
-	private static final VoxelShape field_16323 = VoxelShapes.union(field_17089, Block.createCubeShape(7.0, 13.0, 0.0, 9.0, 15.0, 13.0));
-	private static final VoxelShape field_17093 = VoxelShapes.union(field_17089, Block.createCubeShape(7.0, 13.0, 3.0, 9.0, 15.0, 16.0));
-	private static final VoxelShape field_17094 = VoxelShapes.union(field_17089, Block.createCubeShape(7.0, 13.0, 7.0, 9.0, 16.0, 9.0));
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+	private static final EnumProperty<Attachment> ATTACHMENT = Properties.ATTACHMENT;
+	private static final VoxelShape NORTH_SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 4.0, 16.0, 16.0, 12.0);
+	private static final VoxelShape EAST_WEST_SHAPE = Block.createCuboidShape(4.0, 0.0, 0.0, 12.0, 16.0, 16.0);
+	private static final VoxelShape field_17087 = Block.createCuboidShape(5.0, 6.0, 5.0, 11.0, 13.0, 11.0);
+	private static final VoxelShape field_17088 = Block.createCuboidShape(4.0, 4.0, 4.0, 12.0, 6.0, 12.0);
+	private static final VoxelShape BELL_SHAPE = VoxelShapes.union(field_17088, field_17087);
+	private static final VoxelShape NORTH_SOUTH_WALLS_SHAPE = VoxelShapes.union(BELL_SHAPE, Block.createCuboidShape(7.0, 13.0, 0.0, 9.0, 15.0, 16.0));
+	private static final VoxelShape EAST_WEST_WALLS_SHAPE = VoxelShapes.union(BELL_SHAPE, Block.createCuboidShape(0.0, 13.0, 7.0, 16.0, 15.0, 9.0));
+	private static final VoxelShape WEST_WALL_SHAPE = VoxelShapes.union(BELL_SHAPE, Block.createCuboidShape(0.0, 13.0, 7.0, 13.0, 15.0, 9.0));
+	private static final VoxelShape EAST_WALL_SHAPE = VoxelShapes.union(BELL_SHAPE, Block.createCuboidShape(3.0, 13.0, 7.0, 16.0, 15.0, 9.0));
+	private static final VoxelShape NORTH_WALL_SHAPE = VoxelShapes.union(BELL_SHAPE, Block.createCuboidShape(7.0, 13.0, 0.0, 9.0, 15.0, 13.0));
+	private static final VoxelShape SOUTH_WALL_SHAPE = VoxelShapes.union(BELL_SHAPE, Block.createCuboidShape(7.0, 13.0, 3.0, 9.0, 15.0, 16.0));
+	private static final VoxelShape HANGING_SHAPE = VoxelShapes.union(BELL_SHAPE, Block.createCuboidShape(7.0, 13.0, 7.0, 9.0, 16.0, 9.0));
 
 	public BellBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_16324, Direction.NORTH).with(field_16326, Attachment.field_17098));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(ATTACHMENT, Attachment.field_17098));
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		Direction direction = blockHitResult.getSide();
 		if (blockEntity instanceof BellBlockEntity
-			&& this.method_17028(blockState, direction, blockHitResult.getPos().y - (double)blockHitResult.getBlockPos().getY())) {
+			&& this.isPointOnBell(blockState, direction, blockHitResult.getPos().y - (double)blockHitResult.getBlockPos().getY())) {
 			((BellBlockEntity)blockEntity).activate(direction);
 			if (!world.isClient) {
-				this.method_17026(world, blockPos);
+				this.ring(world, blockPos);
 			}
 
 			return true;
@@ -63,10 +63,10 @@ public class BellBlock extends BlockWithEntity {
 		}
 	}
 
-	private boolean method_17028(BlockState blockState, Direction direction, double d) {
+	private boolean isPointOnBell(BlockState blockState, Direction direction, double d) {
 		if (direction.getAxis() != Direction.Axis.Y && !(d > 0.8124F)) {
-			Direction direction2 = blockState.get(field_16324);
-			Attachment attachment = blockState.get(field_16326);
+			Direction direction2 = blockState.get(FACING);
+			Attachment attachment = blockState.get(ATTACHMENT);
 			switch (attachment) {
 				case field_17098:
 					return direction2.getAxis() == direction.getAxis();
@@ -83,36 +83,36 @@ public class BellBlock extends BlockWithEntity {
 		}
 	}
 
-	private void method_17026(World world, BlockPos blockPos) {
+	private void ring(World world, BlockPos blockPos) {
 		world.playSound(null, blockPos, SoundEvents.field_17265, SoundCategory.field_15245, 1.0F, 1.0F);
 	}
 
-	private VoxelShape method_16116(BlockState blockState) {
-		Direction direction = blockState.get(field_16324);
-		Attachment attachment = blockState.get(field_16326);
+	private VoxelShape getShape(BlockState blockState) {
+		Direction direction = blockState.get(FACING);
+		Attachment attachment = blockState.get(ATTACHMENT);
 		if (attachment == Attachment.field_17098) {
-			return direction != Direction.NORTH && direction != Direction.SOUTH ? field_16322 : field_16325;
+			return direction != Direction.NORTH && direction != Direction.SOUTH ? EAST_WEST_SHAPE : NORTH_SOUTH_SHAPE;
 		} else if (attachment == Attachment.field_17099) {
-			return field_17094;
+			return HANGING_SHAPE;
 		} else if (attachment == Attachment.field_17101) {
-			return direction != Direction.NORTH && direction != Direction.SOUTH ? field_16321 : field_17090;
+			return direction != Direction.NORTH && direction != Direction.SOUTH ? EAST_WEST_WALLS_SHAPE : NORTH_SOUTH_WALLS_SHAPE;
 		} else if (direction == Direction.NORTH) {
-			return field_16323;
+			return NORTH_WALL_SHAPE;
 		} else if (direction == Direction.SOUTH) {
-			return field_17093;
+			return SOUTH_WALL_SHAPE;
 		} else {
-			return direction == Direction.EAST ? field_17092 : field_17091;
+			return direction == Direction.EAST ? EAST_WALL_SHAPE : WEST_WALL_SHAPE;
 		}
 	}
 
 	@Override
 	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return this.method_16116(blockState);
+		return this.getShape(blockState);
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return this.method_16116(blockState);
+		return this.getShape(blockState);
 	}
 
 	@Override
@@ -124,13 +124,13 @@ public class BellBlock extends BlockWithEntity {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		Direction direction = itemPlacementContext.getFacing();
-		BlockPos blockPos = itemPlacementContext.getPos();
+		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		World world = itemPlacementContext.getWorld();
 		Direction.Axis axis = direction.getAxis();
 		if (axis == Direction.Axis.Y) {
 			BlockState blockState = this.getDefaultState()
-				.with(field_16326, direction == Direction.DOWN ? Attachment.field_17099 : Attachment.field_17098)
-				.with(field_16324, itemPlacementContext.getPlayerHorizontalFacing());
+				.with(ATTACHMENT, direction == Direction.DOWN ? Attachment.field_17099 : Attachment.field_17098)
+				.with(FACING, itemPlacementContext.getPlayerHorizontalFacing());
 			if (blockState.canPlaceAt(itemPlacementContext.getWorld(), blockPos)) {
 				return blockState;
 			}
@@ -141,10 +141,8 @@ public class BellBlock extends BlockWithEntity {
 				|| axis == Direction.Axis.Z
 					&& this.method_17027(world.getBlockState(blockPos.north()), world, blockPos.north(), Direction.SOUTH)
 					&& this.method_17027(world.getBlockState(blockPos.south()), world, blockPos.south(), Direction.NORTH);
-			BlockState blockState = this.getDefaultState()
-				.with(field_16324, direction.getOpposite())
-				.with(field_16326, bl ? Attachment.field_17101 : Attachment.field_17100);
-			if (blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getPos())) {
+			BlockState blockState = this.getDefaultState().with(FACING, direction.getOpposite()).with(ATTACHMENT, bl ? Attachment.field_17101 : Attachment.field_17100);
+			if (blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) {
 				return blockState;
 			}
 		}
@@ -153,27 +151,27 @@ public class BellBlock extends BlockWithEntity {
 	}
 
 	private boolean method_17027(BlockState blockState, IWorld iWorld, BlockPos blockPos, Direction direction) {
-		return isFaceFullCube(blockState.getCollisionShape(iWorld, blockPos), direction) && !method_9553(blockState.getBlock());
+		return isFaceFullSquare(blockState.getCollisionShape(iWorld, blockPos), direction) && !method_9553(blockState.getBlock());
 	}
 
 	@Override
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		Attachment attachment = blockState.get(field_16326);
+		Attachment attachment = blockState.get(ATTACHMENT);
 		Direction direction2 = method_16115(blockState).getOpposite();
 		if (direction2 == direction && !blockState.canPlaceAt(iWorld, blockPos) && attachment != Attachment.field_17101) {
 			return Blocks.field_10124.getDefaultState();
 		} else {
-			if (direction.getAxis() == ((Direction)blockState.get(field_16324)).getAxis()) {
+			if (direction.getAxis() == ((Direction)blockState.get(FACING)).getAxis()) {
 				if (attachment == Attachment.field_17101 && !this.method_17027(blockState2, iWorld, blockPos2, direction)) {
-					return blockState.with(field_16326, Attachment.field_17100).with(field_16324, direction.getOpposite());
+					return blockState.with(ATTACHMENT, Attachment.field_17100).with(FACING, direction.getOpposite());
 				}
 
 				if (attachment == Attachment.field_17100
 					&& direction2.getOpposite() == direction
-					&& this.method_17027(blockState2, iWorld, blockPos2, blockState.get(field_16324))) {
-					return blockState.with(field_16326, Attachment.field_17101);
+					&& this.method_17027(blockState2, iWorld, blockPos2, blockState.get(FACING))) {
+					return blockState.with(ATTACHMENT, Attachment.field_17101);
 				}
 			}
 
@@ -190,19 +188,19 @@ public class BellBlock extends BlockWithEntity {
 		if (method_9553(block)) {
 			return false;
 		} else {
-			boolean bl = Block.isFaceFullCube(blockState2.getCollisionShape(viewableWorld, blockPos2), direction.getOpposite());
+			boolean bl = Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos2), direction.getOpposite());
 			return direction == Direction.UP ? block == Blocks.field_10312 || bl : !method_9581(block) && bl;
 		}
 	}
 
 	private static Direction method_16115(BlockState blockState) {
-		switch ((Attachment)blockState.get(field_16326)) {
+		switch ((Attachment)blockState.get(ATTACHMENT)) {
 			case field_17098:
 				return Direction.UP;
 			case field_17099:
 				return Direction.DOWN;
 			default:
-				return ((Direction)blockState.get(field_16324)).getOpposite();
+				return ((Direction)blockState.get(FACING)).getOpposite();
 		}
 	}
 
@@ -213,7 +211,7 @@ public class BellBlock extends BlockWithEntity {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_16324, field_16326);
+		builder.with(FACING, ATTACHMENT);
 	}
 
 	@Nullable

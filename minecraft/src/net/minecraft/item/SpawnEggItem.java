@@ -20,10 +20,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sortme.MobSpawnerLogic;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.HitResult;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.RayTraceContext;
@@ -50,7 +50,7 @@ public class SpawnEggItem extends Item {
 			return ActionResult.SUCCESS;
 		} else {
 			ItemStack itemStack = itemUsageContext.getItemStack();
-			BlockPos blockPos = itemUsageContext.getPos();
+			BlockPos blockPos = itemUsageContext.getBlockPos();
 			Direction direction = itemUsageContext.getFacing();
 			BlockState blockState = world.getBlockState(blockPos);
 			Block block = blockState.getBlock();
@@ -96,7 +96,7 @@ public class SpawnEggItem extends Item {
 		if (world.isClient) {
 			return new TypedActionResult<>(ActionResult.PASS, itemStack);
 		} else {
-			HitResult hitResult = getHitResult(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
+			HitResult hitResult = method_7872(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
 			if (hitResult.getType() != HitResult.Type.BLOCK) {
 				return new TypedActionResult<>(ActionResult.PASS, itemStack);
 			} else {
@@ -111,7 +111,7 @@ public class SpawnEggItem extends Item {
 							itemStack.subtractAmount(1);
 						}
 
-						playerEntity.incrementStat(Stats.field_15372.method_14956(this));
+						playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 						return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 					} else {
 						return new TypedActionResult<>(ActionResult.PASS, itemStack);

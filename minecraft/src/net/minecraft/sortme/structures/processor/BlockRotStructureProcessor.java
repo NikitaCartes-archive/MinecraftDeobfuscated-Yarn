@@ -5,8 +5,8 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_3492;
-import net.minecraft.class_3499;
+import net.minecraft.sortme.Structure;
+import net.minecraft.sortme.StructurePlacementData;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ViewableWorld;
@@ -24,9 +24,15 @@ public class BlockRotStructureProcessor extends AbstractStructureProcessor {
 
 	@Nullable
 	@Override
-	public class_3499.class_3501 process(ViewableWorld viewableWorld, BlockPos blockPos, class_3499.class_3501 arg, class_3499.class_3501 arg2, class_3492 arg3) {
-		Random random = new Random(MathHelper.hashCode(arg2.field_15597));
-		return !(this.integrity >= 1.0F) && !(random.nextFloat() <= this.integrity) ? null : arg2;
+	public Structure.StructureBlockInfo process(
+		ViewableWorld viewableWorld,
+		BlockPos blockPos,
+		Structure.StructureBlockInfo structureBlockInfo,
+		Structure.StructureBlockInfo structureBlockInfo2,
+		StructurePlacementData structurePlacementData
+	) {
+		Random random = new Random(MathHelper.hashCode(structureBlockInfo2.pos));
+		return !(this.integrity >= 1.0F) && !(random.nextFloat() <= this.integrity) ? null : structureBlockInfo2;
 	}
 
 	@Override

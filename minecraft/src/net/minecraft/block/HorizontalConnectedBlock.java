@@ -40,11 +40,11 @@ public class HorizontalConnectedBlock extends Block implements Waterloggable {
 		float l = 8.0F + f;
 		float m = 8.0F - g;
 		float n = 8.0F + g;
-		VoxelShape voxelShape = Block.createCubeShape((double)k, 0.0, (double)k, (double)l, (double)h, (double)l);
-		VoxelShape voxelShape2 = Block.createCubeShape((double)m, (double)i, 0.0, (double)n, (double)j, (double)n);
-		VoxelShape voxelShape3 = Block.createCubeShape((double)m, (double)i, (double)m, (double)n, (double)j, 16.0);
-		VoxelShape voxelShape4 = Block.createCubeShape(0.0, (double)i, (double)m, (double)n, (double)j, (double)n);
-		VoxelShape voxelShape5 = Block.createCubeShape((double)m, (double)i, (double)m, 16.0, (double)j, (double)n);
+		VoxelShape voxelShape = Block.createCuboidShape((double)k, 0.0, (double)k, (double)l, (double)h, (double)l);
+		VoxelShape voxelShape2 = Block.createCuboidShape((double)m, (double)i, 0.0, (double)n, (double)j, (double)n);
+		VoxelShape voxelShape3 = Block.createCuboidShape((double)m, (double)i, (double)m, (double)n, (double)j, 16.0);
+		VoxelShape voxelShape4 = Block.createCuboidShape(0.0, (double)i, (double)m, (double)n, (double)j, (double)n);
+		VoxelShape voxelShape5 = Block.createCuboidShape((double)m, (double)i, (double)m, 16.0, (double)j, (double)n);
 		VoxelShape voxelShape6 = VoxelShapes.union(voxelShape2, voxelShape5);
 		VoxelShape voxelShape7 = VoxelShapes.union(voxelShape3, voxelShape4);
 		VoxelShape[] voxelShapes = new VoxelShape[]{
@@ -124,7 +124,7 @@ public class HorizontalConnectedBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
 		switch (rotation) {
 			case ROT_180:
 				return blockState.with(NORTH, blockState.get(SOUTH)).with(EAST, blockState.get(WEST)).with(SOUTH, blockState.get(NORTH)).with(WEST, blockState.get(EAST));
@@ -138,14 +138,14 @@ public class HorizontalConnectedBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
 		switch (mirror) {
 			case LEFT_RIGHT:
 				return blockState.with(NORTH, blockState.get(SOUTH)).with(SOUTH, blockState.get(NORTH));
 			case FRONT_BACK:
 				return blockState.with(EAST, blockState.get(WEST)).with(WEST, blockState.get(EAST));
 			default:
-				return super.applyMirror(blockState, mirror);
+				return super.mirror(blockState, mirror);
 		}
 	}
 }

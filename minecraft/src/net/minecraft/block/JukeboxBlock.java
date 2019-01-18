@@ -10,26 +10,26 @@ import net.minecraft.item.RecordItem;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class JukeboxBlock extends BlockWithEntity {
-	public static final BooleanProperty field_11180 = Properties.HAS_RECORD;
+	public static final BooleanProperty HAS_RECORD = Properties.HAS_RECORD;
 
 	protected JukeboxBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11180, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(HAS_RECORD, Boolean.valueOf(false)));
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		if ((Boolean)blockState.get(field_11180)) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		if ((Boolean)blockState.get(HAS_RECORD)) {
 			this.removeRecord(world, blockPos);
-			blockState = blockState.with(field_11180, Boolean.valueOf(false));
+			blockState = blockState.with(HAS_RECORD, Boolean.valueOf(false));
 			world.setBlockState(blockPos, blockState, 2);
 			return true;
 		} else {
@@ -41,7 +41,7 @@ public class JukeboxBlock extends BlockWithEntity {
 		BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
 		if (blockEntity instanceof JukeboxBlockEntity) {
 			((JukeboxBlockEntity)blockEntity).setRecord(itemStack.copy());
-			iWorld.setBlockState(blockPos, blockState.with(field_11180, Boolean.valueOf(true)), 2);
+			iWorld.setBlockState(blockPos, blockState.with(HAS_RECORD, Boolean.valueOf(true)), 2);
 		}
 	}
 
@@ -106,6 +106,6 @@ public class JukeboxBlock extends BlockWithEntity {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_11180);
+		builder.with(HAS_RECORD);
 	}
 }

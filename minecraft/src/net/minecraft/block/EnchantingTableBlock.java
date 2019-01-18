@@ -16,16 +16,16 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.text.TextComponent;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Nameable;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class EnchantingTableBlock extends BlockWithEntity {
-	protected static final VoxelShape field_10951 = Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 12.0, 16.0);
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 12.0, 16.0);
 
 	protected EnchantingTableBlock(Block.Settings settings) {
 		super(settings);
@@ -38,7 +38,7 @@ public class EnchantingTableBlock extends BlockWithEntity {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_10951;
+		return SHAPE;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -87,18 +87,18 @@ public class EnchantingTableBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (world.isClient) {
 			return true;
 		} else {
-			playerEntity.openContainer(blockState.method_17526(world, blockPos));
+			playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
 			return true;
 		}
 	}
 
 	@Nullable
 	@Override
-	public NameableContainerProvider method_17454(BlockState blockState, World world, BlockPos blockPos) {
+	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof EnchantingTableBlockEntity) {
 			TextComponent textComponent = ((Nameable)blockEntity).getDisplayName();

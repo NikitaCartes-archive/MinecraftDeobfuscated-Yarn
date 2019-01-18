@@ -482,7 +482,7 @@ public class BoatEntity extends Entity {
 								BlockState blockState = this.world.getBlockState(pooledMutable);
 								if (!(blockState.getBlock() instanceof WaterlilyBlock)
 									&& VoxelShapes.compareShapes(
-										blockState.getCollisionShape(this.world, pooledMutable).method_1096((double)p, (double)s, (double)q), voxelShape, BooleanBiFunction.AND
+										blockState.getCollisionShape(this.world, pooledMutable).offset((double)p, (double)s, (double)q), voxelShape, BooleanBiFunction.AND
 									)) {
 									f += blockState.getBlock().getFrictionCoefficient();
 									o++;

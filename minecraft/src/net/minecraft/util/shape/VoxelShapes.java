@@ -110,18 +110,18 @@ public final class VoxelShapes {
 	}
 
 	public static VoxelShape union(VoxelShape voxelShape, VoxelShape voxelShape2) {
-		return combine(voxelShape, voxelShape2, BooleanBiFunction.OR);
+		return combineAndSimplify(voxelShape, voxelShape2, BooleanBiFunction.OR);
 	}
 
-	public static VoxelShape method_17786(VoxelShape voxelShape, VoxelShape... voxelShapes) {
+	public static VoxelShape union(VoxelShape voxelShape, VoxelShape... voxelShapes) {
 		return (VoxelShape)Arrays.stream(voxelShapes).reduce(voxelShape, VoxelShapes::union);
 	}
 
-	public static VoxelShape combine(VoxelShape voxelShape, VoxelShape voxelShape2, BooleanBiFunction booleanBiFunction) {
-		return method_1082(voxelShape, voxelShape2, booleanBiFunction).method_1097();
+	public static VoxelShape combineAndSimplify(VoxelShape voxelShape, VoxelShape voxelShape2, BooleanBiFunction booleanBiFunction) {
+		return combine(voxelShape, voxelShape2, booleanBiFunction).simplify();
 	}
 
-	public static VoxelShape method_1082(VoxelShape voxelShape, VoxelShape voxelShape2, BooleanBiFunction booleanBiFunction) {
+	public static VoxelShape combine(VoxelShape voxelShape, VoxelShape voxelShape2, BooleanBiFunction booleanBiFunction) {
 		if (booleanBiFunction.apply(false, false)) {
 			throw new IllegalArgumentException();
 		} else if (voxelShape == voxelShape2) {
@@ -273,7 +273,7 @@ public final class VoxelShapes {
 
 			return !compareShapes(
 				fullCube(),
-				method_1082(new class_263(voxelShape3, axis, voxelShape3.shape.getSize(axis) - 1), new class_263(voxelShape4, axis, 0), BooleanBiFunction.OR),
+				combine(new class_263(voxelShape3, axis, voxelShape3.shape.getSize(axis) - 1), new class_263(voxelShape4, axis, 0), BooleanBiFunction.OR),
 				BooleanBiFunction.ONLY_FIRST
 			);
 		} else {

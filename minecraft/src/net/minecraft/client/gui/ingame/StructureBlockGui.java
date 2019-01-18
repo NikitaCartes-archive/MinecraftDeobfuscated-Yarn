@@ -9,7 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
-import net.minecraft.block.enums.StructureMode;
+import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -28,7 +28,7 @@ public class StructureBlockGui extends Gui {
 	private final StructureBlockBlockEntity structureBlock;
 	private Mirror mirror = Mirror.NONE;
 	private Rotation rotation = Rotation.ROT_0;
-	private StructureMode mode = StructureMode.field_12696;
+	private StructureBlockMode mode = StructureBlockMode.field_12696;
 	private boolean field_2985;
 	private boolean field_2997;
 	private boolean field_2983;
@@ -87,7 +87,7 @@ public class StructureBlockGui extends Gui {
 	private void method_2514() {
 		this.structureBlock.setMirror(this.mirror);
 		this.structureBlock.setRotation(this.rotation);
-		this.structureBlock.setMode(this.mode);
+		this.structureBlock.method_11381(this.mode);
 		this.structureBlock.setIgnoreEntities(this.field_2985);
 		this.structureBlock.setShowAir(this.field_2997);
 		this.structureBlock.setShowBoundingBox(this.field_2983);
@@ -112,7 +112,7 @@ public class StructureBlockGui extends Gui {
 		this.buttonSave = this.addButton(new ButtonWidget(9, this.width / 2 + 4 + 100, 185, 50, 20, I18n.translate("structure_block.button.save")) {
 			@Override
 			public void onPressed(double d, double e) {
-				if (StructureBlockGui.this.structureBlock.getMode() == StructureMode.field_12695) {
+				if (StructureBlockGui.this.structureBlock.method_11374() == StructureBlockMode.field_12695) {
 					StructureBlockGui.this.method_2516(StructureBlockBlockEntity.Action.field_12110);
 					StructureBlockGui.this.client.openGui(null);
 				}
@@ -121,7 +121,7 @@ public class StructureBlockGui extends Gui {
 		this.buttonLoad = this.addButton(new ButtonWidget(10, this.width / 2 + 4 + 100, 185, 50, 20, I18n.translate("structure_block.button.load")) {
 			@Override
 			public void onPressed(double d, double e) {
-				if (StructureBlockGui.this.structureBlock.getMode() == StructureMode.field_12697) {
+				if (StructureBlockGui.this.structureBlock.method_11374() == StructureBlockMode.field_12697) {
 					StructureBlockGui.this.method_2516(StructureBlockBlockEntity.Action.field_12109);
 					StructureBlockGui.this.client.openGui(null);
 				}
@@ -130,14 +130,14 @@ public class StructureBlockGui extends Gui {
 		this.buttonMode = this.addButton(new ButtonWidget(18, this.width / 2 - 4 - 150, 185, 50, 20, "MODE") {
 			@Override
 			public void onPressed(double d, double e) {
-				StructureBlockGui.this.structureBlock.method_11380();
+				StructureBlockGui.this.structureBlock.cycleMode();
 				StructureBlockGui.this.updateMode();
 			}
 		});
 		this.buttonDetect = this.addButton(new ButtonWidget(19, this.width / 2 + 4 + 100, 120, 50, 20, I18n.translate("structure_block.button.detect_size")) {
 			@Override
 			public void onPressed(double d, double e) {
-				if (StructureBlockGui.this.structureBlock.getMode() == StructureMode.field_12695) {
+				if (StructureBlockGui.this.structureBlock.method_11374() == StructureBlockMode.field_12695) {
 					StructureBlockGui.this.method_2516(StructureBlockBlockEntity.Action.field_12106);
 					StructureBlockGui.this.client.openGui(null);
 				}
@@ -262,7 +262,7 @@ public class StructureBlockGui extends Gui {
 		this.updateMirrorButton();
 		this.rotation = this.structureBlock.getRotation();
 		this.updateRotationButton();
-		this.mode = this.structureBlock.getMode();
+		this.mode = this.structureBlock.method_11374();
 		this.updateMode();
 		this.field_2985 = this.structureBlock.shouldIgnoreEntities();
 		this.updateIgnoreEntitiesButton();
@@ -398,7 +398,7 @@ public class StructureBlockGui extends Gui {
 		this.buttonRotate270.visible = false;
 		this.buttonShowAir.visible = false;
 		this.buttonShowBoundingBox.visible = false;
-		switch (this.structureBlock.getMode()) {
+		switch (this.structureBlock.method_11374()) {
 			case field_12695:
 				this.inputName.setVisible(true);
 				this.inputPosX.setVisible(true);
@@ -436,7 +436,7 @@ public class StructureBlockGui extends Gui {
 				this.inputMetadata.setVisible(true);
 		}
 
-		this.buttonMode.text = I18n.translate("structure_block.mode." + this.structureBlock.getMode().asString());
+		this.buttonMode.text = I18n.translate("structure_block.mode." + this.structureBlock.method_11374().asString());
 	}
 
 	private boolean method_2516(StructureBlockBlockEntity.Action action) {
@@ -452,7 +452,7 @@ public class StructureBlockGui extends Gui {
 				new UpdateStructureBlockServerPacket(
 					this.structureBlock.getPos(),
 					action,
-					this.structureBlock.getMode(),
+					this.structureBlock.method_11374(),
 					this.inputName.getText(),
 					blockPos,
 					blockPos2,
@@ -557,14 +557,14 @@ public class StructureBlockGui extends Gui {
 	@Override
 	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		StructureMode structureMode = this.structureBlock.getMode();
+		StructureBlockMode structureBlockMode = this.structureBlock.method_11374();
 		this.drawStringCentered(this.fontRenderer, I18n.translate(Blocks.field_10465.getTranslationKey()), this.width / 2, 10, 16777215);
-		if (structureMode != StructureMode.field_12696) {
+		if (structureBlockMode != StructureBlockMode.field_12696) {
 			this.drawString(this.fontRenderer, I18n.translate("structure_block.structure_name"), this.width / 2 - 153, 30, 10526880);
 			this.inputName.render(i, j, f);
 		}
 
-		if (structureMode == StructureMode.field_12697 || structureMode == StructureMode.field_12695) {
+		if (structureBlockMode == StructureBlockMode.field_12697 || structureBlockMode == StructureBlockMode.field_12695) {
 			this.drawString(this.fontRenderer, I18n.translate("structure_block.position"), this.width / 2 - 153, 70, 10526880);
 			this.inputPosX.render(i, j, f);
 			this.inputPosY.render(i, j, f);
@@ -574,7 +574,7 @@ public class StructureBlockGui extends Gui {
 			this.drawString(this.fontRenderer, string, this.width / 2 + 154 - k, 150, 10526880);
 		}
 
-		if (structureMode == StructureMode.field_12695) {
+		if (structureBlockMode == StructureBlockMode.field_12695) {
 			this.drawString(this.fontRenderer, I18n.translate("structure_block.size"), this.width / 2 - 153, 110, 10526880);
 			this.inputSizeX.render(i, j, f);
 			this.inputSizeY.render(i, j, f);
@@ -587,7 +587,7 @@ public class StructureBlockGui extends Gui {
 			this.drawString(this.fontRenderer, string2, this.width / 2 + 154 - l, 70, 10526880);
 		}
 
-		if (structureMode == StructureMode.field_12697) {
+		if (structureBlockMode == StructureBlockMode.field_12697) {
 			this.drawString(this.fontRenderer, I18n.translate("structure_block.integrity"), this.width / 2 - 153, 110, 10526880);
 			this.inputIntegrity.render(i, j, f);
 			this.inputSeed.render(i, j, f);
@@ -596,12 +596,12 @@ public class StructureBlockGui extends Gui {
 			this.drawString(this.fontRenderer, string, this.width / 2 + 154 - k, 70, 10526880);
 		}
 
-		if (structureMode == StructureMode.field_12696) {
+		if (structureBlockMode == StructureBlockMode.field_12696) {
 			this.drawString(this.fontRenderer, I18n.translate("structure_block.custom_data"), this.width / 2 - 153, 110, 10526880);
 			this.inputMetadata.render(i, j, f);
 		}
 
-		String string = "structure_block.mode_info." + structureMode.asString();
+		String string = "structure_block.mode_info." + structureBlockMode.asString();
 		this.drawString(this.fontRenderer, I18n.translate(string), this.width / 2 - 153, 174, 10526880);
 		super.draw(i, j, f);
 	}

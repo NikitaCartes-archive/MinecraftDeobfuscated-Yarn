@@ -28,7 +28,7 @@ public class IceBlock extends TransparentBlock {
 	) {
 		super.afterBreak(world, playerEntity, blockPos, blockState, blockEntity, itemStack);
 		if (EnchantmentHelper.getLevel(Enchantments.field_9099, itemStack) == 0) {
-			if (world.dimension.method_12465()) {
+			if (world.dimension.doesWaterVaporize()) {
 				world.clearBlockState(blockPos);
 				return;
 			}
@@ -41,14 +41,14 @@ public class IceBlock extends TransparentBlock {
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (world.getLightLevel(LightType.BLOCK_LIGHT, blockPos) > 11 - blockState.getLightSubtracted(world, blockPos)) {
-			this.method_10275(blockState, world, blockPos);
+			this.melt(blockState, world, blockPos);
 		}
 	}
 
-	protected void method_10275(BlockState blockState, World world, BlockPos blockPos) {
-		if (world.dimension.method_12465()) {
+	protected void melt(BlockState blockState, World world, BlockPos blockPos) {
+		if (world.dimension.doesWaterVaporize()) {
 			world.clearBlockState(blockPos);
 		} else {
 			world.setBlockState(blockPos, Blocks.field_10382.getDefaultState());

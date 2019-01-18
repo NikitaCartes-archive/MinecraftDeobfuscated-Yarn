@@ -79,7 +79,7 @@ public class MobSpawnerBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	@Override
-	public boolean method_11011() {
+	public boolean shouldNotCopyTagFromItem() {
 		return true;
 	}
 

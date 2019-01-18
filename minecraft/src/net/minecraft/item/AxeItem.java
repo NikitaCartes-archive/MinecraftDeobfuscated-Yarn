@@ -87,7 +87,7 @@ public class AxeItem extends MiningToolItem {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		World world = itemUsageContext.getWorld();
-		BlockPos blockPos = itemUsageContext.getPos();
+		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
 		Block block = (Block)BLOCK_TRANSFORMATIONS_MAP.get(blockState.getBlock());
 		if (block != null) {

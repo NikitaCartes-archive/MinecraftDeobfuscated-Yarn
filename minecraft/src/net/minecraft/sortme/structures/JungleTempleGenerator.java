@@ -177,9 +177,9 @@ public class JungleTempleGenerator extends class_3418 {
 				iWorld,
 				Blocks.field_10589
 					.getDefaultState()
-					.with(TripwireBlock.field_11673, Boolean.valueOf(true))
-					.with(TripwireBlock.field_11674, Boolean.valueOf(true))
-					.with(TripwireBlock.field_11683, Boolean.valueOf(true)),
+					.with(TripwireBlock.EAST, Boolean.valueOf(true))
+					.with(TripwireBlock.WEST, Boolean.valueOf(true))
+					.with(TripwireBlock.ATTACHED, Boolean.valueOf(true)),
 				2,
 				-3,
 				8,
@@ -189,9 +189,9 @@ public class JungleTempleGenerator extends class_3418 {
 				iWorld,
 				Blocks.field_10589
 					.getDefaultState()
-					.with(TripwireBlock.field_11673, Boolean.valueOf(true))
-					.with(TripwireBlock.field_11674, Boolean.valueOf(true))
-					.with(TripwireBlock.field_11683, Boolean.valueOf(true)),
+					.with(TripwireBlock.EAST, Boolean.valueOf(true))
+					.with(TripwireBlock.WEST, Boolean.valueOf(true))
+					.with(TripwireBlock.ATTACHED, Boolean.valueOf(true)),
 				3,
 				-3,
 				8,
@@ -199,9 +199,11 @@ public class JungleTempleGenerator extends class_3418 {
 			);
 			BlockState blockState5 = Blocks.field_10091
 				.getDefaultState()
-				.with(RedstoneWireBlock.field_11440, WireConnection.field_12689)
-				.with(RedstoneWireBlock.field_11437, WireConnection.field_12689);
-			this.addBlock(iWorld, Blocks.field_10091.getDefaultState().with(RedstoneWireBlock.field_11437, WireConnection.field_12689), 5, -3, 7, mutableIntBoundingBox);
+				.with(RedstoneWireBlock.WIRE_CONNECTION_NORTH, WireConnection.field_12689)
+				.with(RedstoneWireBlock.WIRE_CONNECTION_SOUTH, WireConnection.field_12689);
+			this.addBlock(
+				iWorld, Blocks.field_10091.getDefaultState().with(RedstoneWireBlock.WIRE_CONNECTION_SOUTH, WireConnection.field_12689), 5, -3, 7, mutableIntBoundingBox
+			);
 			this.addBlock(iWorld, blockState5, 5, -3, 6, mutableIntBoundingBox);
 			this.addBlock(iWorld, blockState5, 5, -3, 5, mutableIntBoundingBox);
 			this.addBlock(iWorld, blockState5, 5, -3, 4, mutableIntBoundingBox);
@@ -211,20 +213,22 @@ public class JungleTempleGenerator extends class_3418 {
 				iWorld,
 				Blocks.field_10091
 					.getDefaultState()
-					.with(RedstoneWireBlock.field_11440, WireConnection.field_12689)
-					.with(RedstoneWireBlock.field_11439, WireConnection.field_12689),
+					.with(RedstoneWireBlock.WIRE_CONNECTION_NORTH, WireConnection.field_12689)
+					.with(RedstoneWireBlock.WIRE_CONNECTION_WEST, WireConnection.field_12689),
 				5,
 				-3,
 				1,
 				mutableIntBoundingBox
 			);
-			this.addBlock(iWorld, Blocks.field_10091.getDefaultState().with(RedstoneWireBlock.field_11436, WireConnection.field_12689), 4, -3, 1, mutableIntBoundingBox);
+			this.addBlock(
+				iWorld, Blocks.field_10091.getDefaultState().with(RedstoneWireBlock.WIRE_CONNECTION_EAST, WireConnection.field_12689), 4, -3, 1, mutableIntBoundingBox
+			);
 			this.addBlock(iWorld, Blocks.field_9989.getDefaultState(), 3, -3, 1, mutableIntBoundingBox);
 			if (!this.field_14400) {
 				this.field_14400 = this.addDispenser(iWorld, mutableIntBoundingBox, random, 3, -2, 1, Direction.NORTH, LootTables.DISPENSER_JUNGLE_TEMPLE);
 			}
 
-			this.addBlock(iWorld, Blocks.field_10597.getDefaultState().with(VineBlock.field_11699, Boolean.valueOf(true)), 3, -2, 2, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10597.getDefaultState().with(VineBlock.SOUTH, Boolean.valueOf(true)), 3, -2, 2, mutableIntBoundingBox);
 			this.addBlock(
 				iWorld,
 				Blocks.field_10348.getDefaultState().with(TripwireHookBlock.FACING, Direction.NORTH).with(TripwireHookBlock.field_11669, Boolean.valueOf(true)),
@@ -245,9 +249,9 @@ public class JungleTempleGenerator extends class_3418 {
 				iWorld,
 				Blocks.field_10589
 					.getDefaultState()
-					.with(TripwireBlock.field_11675, Boolean.valueOf(true))
-					.with(TripwireBlock.field_11678, Boolean.valueOf(true))
-					.with(TripwireBlock.field_11683, Boolean.valueOf(true)),
+					.with(TripwireBlock.NORTH, Boolean.valueOf(true))
+					.with(TripwireBlock.SOUTH, Boolean.valueOf(true))
+					.with(TripwireBlock.ATTACHED, Boolean.valueOf(true)),
 				7,
 				-3,
 				2,
@@ -257,9 +261,9 @@ public class JungleTempleGenerator extends class_3418 {
 				iWorld,
 				Blocks.field_10589
 					.getDefaultState()
-					.with(TripwireBlock.field_11675, Boolean.valueOf(true))
-					.with(TripwireBlock.field_11678, Boolean.valueOf(true))
-					.with(TripwireBlock.field_11683, Boolean.valueOf(true)),
+					.with(TripwireBlock.NORTH, Boolean.valueOf(true))
+					.with(TripwireBlock.SOUTH, Boolean.valueOf(true))
+					.with(TripwireBlock.ATTACHED, Boolean.valueOf(true)),
 				7,
 				-3,
 				3,
@@ -269,21 +273,23 @@ public class JungleTempleGenerator extends class_3418 {
 				iWorld,
 				Blocks.field_10589
 					.getDefaultState()
-					.with(TripwireBlock.field_11675, Boolean.valueOf(true))
-					.with(TripwireBlock.field_11678, Boolean.valueOf(true))
-					.with(TripwireBlock.field_11683, Boolean.valueOf(true)),
+					.with(TripwireBlock.NORTH, Boolean.valueOf(true))
+					.with(TripwireBlock.SOUTH, Boolean.valueOf(true))
+					.with(TripwireBlock.ATTACHED, Boolean.valueOf(true)),
 				7,
 				-3,
 				4,
 				mutableIntBoundingBox
 			);
-			this.addBlock(iWorld, Blocks.field_10091.getDefaultState().with(RedstoneWireBlock.field_11436, WireConnection.field_12689), 8, -3, 6, mutableIntBoundingBox);
+			this.addBlock(
+				iWorld, Blocks.field_10091.getDefaultState().with(RedstoneWireBlock.WIRE_CONNECTION_EAST, WireConnection.field_12689), 8, -3, 6, mutableIntBoundingBox
+			);
 			this.addBlock(
 				iWorld,
 				Blocks.field_10091
 					.getDefaultState()
-					.with(RedstoneWireBlock.field_11439, WireConnection.field_12689)
-					.with(RedstoneWireBlock.field_11437, WireConnection.field_12689),
+					.with(RedstoneWireBlock.WIRE_CONNECTION_WEST, WireConnection.field_12689)
+					.with(RedstoneWireBlock.WIRE_CONNECTION_SOUTH, WireConnection.field_12689),
 				9,
 				-3,
 				6,
@@ -293,21 +299,23 @@ public class JungleTempleGenerator extends class_3418 {
 				iWorld,
 				Blocks.field_10091
 					.getDefaultState()
-					.with(RedstoneWireBlock.field_11440, WireConnection.field_12689)
-					.with(RedstoneWireBlock.field_11437, WireConnection.field_12686),
+					.with(RedstoneWireBlock.WIRE_CONNECTION_NORTH, WireConnection.field_12689)
+					.with(RedstoneWireBlock.WIRE_CONNECTION_SOUTH, WireConnection.field_12686),
 				9,
 				-3,
 				5,
 				mutableIntBoundingBox
 			);
 			this.addBlock(iWorld, Blocks.field_9989.getDefaultState(), 9, -3, 4, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10091.getDefaultState().with(RedstoneWireBlock.field_11440, WireConnection.field_12689), 9, -2, 4, mutableIntBoundingBox);
+			this.addBlock(
+				iWorld, Blocks.field_10091.getDefaultState().with(RedstoneWireBlock.WIRE_CONNECTION_NORTH, WireConnection.field_12689), 9, -2, 4, mutableIntBoundingBox
+			);
 			if (!this.field_14399) {
 				this.field_14399 = this.addDispenser(iWorld, mutableIntBoundingBox, random, 9, -2, 3, Direction.WEST, LootTables.DISPENSER_JUNGLE_TEMPLE);
 			}
 
-			this.addBlock(iWorld, Blocks.field_10597.getDefaultState().with(VineBlock.field_11702, Boolean.valueOf(true)), 8, -1, 3, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10597.getDefaultState().with(VineBlock.field_11702, Boolean.valueOf(true)), 8, -2, 3, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10597.getDefaultState().with(VineBlock.EAST, Boolean.valueOf(true)), 8, -1, 3, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10597.getDefaultState().with(VineBlock.EAST, Boolean.valueOf(true)), 8, -2, 3, mutableIntBoundingBox);
 			if (!this.field_14402) {
 				this.field_14402 = this.method_14915(iWorld, mutableIntBoundingBox, random, 8, -3, 3, LootTables.CHEST_JUNGLE_TEMPLE);
 			}
@@ -326,23 +334,24 @@ public class JungleTempleGenerator extends class_3418 {
 			this.addBlock(iWorld, Blocks.field_10552.getDefaultState(), 8, -2, 11, mutableIntBoundingBox);
 			this.addBlock(iWorld, Blocks.field_10552.getDefaultState(), 9, -2, 11, mutableIntBoundingBox);
 			this.addBlock(iWorld, Blocks.field_10552.getDefaultState(), 10, -2, 11, mutableIntBoundingBox);
-			BlockState blockState6 = Blocks.field_10363
-				.getDefaultState()
-				.with(LeverBlock.field_11177, Direction.NORTH)
-				.with(LeverBlock.field_11007, WallMountLocation.field_12471);
+			BlockState blockState6 = Blocks.field_10363.getDefaultState().with(LeverBlock.FACING, Direction.NORTH).with(LeverBlock.FACE, WallMountLocation.field_12471);
 			this.addBlock(iWorld, blockState6, 8, -2, 12, mutableIntBoundingBox);
 			this.addBlock(iWorld, blockState6, 9, -2, 12, mutableIntBoundingBox);
 			this.addBlock(iWorld, blockState6, 10, -2, 12, mutableIntBoundingBox);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 8, -3, 8, 8, -3, 10, false, random, field_14403);
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 10, -3, 8, 10, -3, 10, false, random, field_14403);
 			this.addBlock(iWorld, Blocks.field_9989.getDefaultState(), 10, -2, 9, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10091.getDefaultState().with(RedstoneWireBlock.field_11440, WireConnection.field_12689), 8, -2, 9, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10091.getDefaultState().with(RedstoneWireBlock.field_11437, WireConnection.field_12689), 8, -2, 10, mutableIntBoundingBox);
+			this.addBlock(
+				iWorld, Blocks.field_10091.getDefaultState().with(RedstoneWireBlock.WIRE_CONNECTION_NORTH, WireConnection.field_12689), 8, -2, 9, mutableIntBoundingBox
+			);
+			this.addBlock(
+				iWorld, Blocks.field_10091.getDefaultState().with(RedstoneWireBlock.WIRE_CONNECTION_SOUTH, WireConnection.field_12689), 8, -2, 10, mutableIntBoundingBox
+			);
 			this.addBlock(iWorld, Blocks.field_10091.getDefaultState(), 10, -1, 9, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10615.getDefaultState().with(PistonBlock.field_10927, Direction.UP), 9, -2, 8, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10615.getDefaultState().with(PistonBlock.field_10927, Direction.WEST), 10, -2, 8, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10615.getDefaultState().with(PistonBlock.field_10927, Direction.WEST), 10, -1, 8, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10450.getDefaultState().with(RepeaterBlock.field_11177, Direction.NORTH), 10, -2, 10, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10615.getDefaultState().with(PistonBlock.FACING, Direction.UP), 9, -2, 8, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10615.getDefaultState().with(PistonBlock.FACING, Direction.WEST), 10, -2, 8, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10615.getDefaultState().with(PistonBlock.FACING, Direction.WEST), 10, -1, 8, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10450.getDefaultState().with(RepeaterBlock.FACING, Direction.NORTH), 10, -2, 10, mutableIntBoundingBox);
 			if (!this.field_14401) {
 				this.field_14401 = this.method_14915(iWorld, mutableIntBoundingBox, random, 9, -3, 10, LootTables.CHEST_JUNGLE_TEMPLE);
 			}

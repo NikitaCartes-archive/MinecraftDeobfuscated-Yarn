@@ -9,22 +9,22 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class StoneInfestedBlock extends Block {
-	private final Block field_11178;
-	private static final Map<Block, Block> field_11179 = Maps.<Block, Block>newIdentityHashMap();
+public class InfestedBlock extends Block {
+	private final Block regularBlock;
+	private static final Map<Block, Block> INFESTED_TO_REGULAR = Maps.<Block, Block>newIdentityHashMap();
 
-	public StoneInfestedBlock(Block block, Block.Settings settings) {
+	public InfestedBlock(Block block, Block.Settings settings) {
 		super(settings);
-		this.field_11178 = block;
-		field_11179.put(block, this);
+		this.regularBlock = block;
+		INFESTED_TO_REGULAR.put(block, this);
 	}
 
-	public Block method_10271() {
-		return this.field_11178;
+	public Block getRegularBlock() {
+		return this.regularBlock;
 	}
 
-	public static boolean method_10269(BlockState blockState) {
-		return field_11179.containsKey(blockState.getBlock());
+	public static boolean hasRegularBlock(BlockState blockState) {
+		return INFESTED_TO_REGULAR.containsKey(blockState.getBlock());
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class StoneInfestedBlock extends Block {
 		}
 	}
 
-	public static BlockState method_10270(Block block) {
-		return ((Block)field_11179.get(block)).getDefaultState();
+	public static BlockState getRegularBlock(Block block) {
+		return ((Block)INFESTED_TO_REGULAR.get(block)).getDefaultState();
 	}
 }

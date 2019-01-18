@@ -8,7 +8,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
-import net.minecraft.util.HitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -36,7 +36,7 @@ public class ThrownExperienceBottleEntity extends class_3857 {
 	}
 
 	@Override
-	protected void onCollision(HitResult hitResult) {
+	protected void method_7492(HitResult hitResult) {
 		if (!this.world.isClient) {
 			this.world.fireWorldEvent(2002, new BlockPos(this), PotionUtil.getColor(Potions.field_8991));
 			int i = 3 + this.world.random.nextInt(5) + this.world.random.nextInt(5);

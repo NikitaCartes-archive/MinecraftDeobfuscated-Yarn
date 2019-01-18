@@ -20,28 +20,28 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class KelpBlock extends Block implements FluidFillable {
-	public static final IntegerProperty field_11194 = Properties.AGE_25;
-	protected static final VoxelShape field_11195 = Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 9.0, 16.0);
+	public static final IntegerProperty AGE = Properties.AGE_25;
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 9.0, 16.0);
 
 	protected KelpBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11194, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(AGE, Integer.valueOf(0)));
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_11195;
+		return SHAPE;
 	}
 
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getPos());
-		return fluidState.matches(FluidTags.field_15517) && fluidState.method_15761() == 8 ? this.method_10292(itemPlacementContext.getWorld()) : null;
+		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
+		return fluidState.matches(FluidTags.field_15517) && fluidState.getLevel() == 8 ? this.getPlacementState(itemPlacementContext.getWorld()) : null;
 	}
 
-	public BlockState method_10292(IWorld iWorld) {
-		return this.getDefaultState().with(field_11194, Integer.valueOf(iWorld.getRandom().nextInt(25)));
+	public BlockState getPlacementState(IWorld iWorld) {
+		return this.getDefaultState().with(AGE, Integer.valueOf(iWorld.getRandom().nextInt(25)));
 	}
 
 	@Override
@@ -55,14 +55,14 @@ public class KelpBlock extends Block implements FluidFillable {
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (!blockState.canPlaceAt(world, blockPos)) {
 			world.breakBlock(blockPos, true);
 		} else {
 			BlockPos blockPos2 = blockPos.up();
 			BlockState blockState2 = world.getBlockState(blockPos2);
-			if (blockState2.getBlock() == Blocks.field_10382 && (Integer)blockState.get(field_11194) < 25 && random.nextDouble() < 0.14) {
-				world.setBlockState(blockPos2, blockState.method_11572(field_11194));
+			if (blockState2.getBlock() == Blocks.field_10382 && (Integer)blockState.get(AGE) < 25 && random.nextDouble() < 0.14) {
+				world.setBlockState(blockPos2, blockState.method_11572(AGE));
 			}
 		}
 	}
@@ -74,7 +74,7 @@ public class KelpBlock extends Block implements FluidFillable {
 		Block block = blockState2.getBlock();
 		return block == Blocks.field_10092
 			? false
-			: block == this || block == Blocks.field_10463 || Block.isFaceFullCube(blockState2.getCollisionShape(viewableWorld, blockPos2), Direction.UP);
+			: block == this || block == Blocks.field_10463 || Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos2), Direction.UP);
 	}
 
 	@Override
@@ -92,14 +92,14 @@ public class KelpBlock extends Block implements FluidFillable {
 		if (direction == Direction.UP && blockState2.getBlock() == this) {
 			return Blocks.field_10463.getDefaultState();
 		} else {
-			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
+			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		}
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_11194);
+		builder.with(AGE);
 	}
 
 	@Override

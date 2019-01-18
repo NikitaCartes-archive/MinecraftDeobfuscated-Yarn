@@ -19,18 +19,18 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
-public class PumpkinCarvedBlock extends HorizontalFacingBlock {
-	public static final DirectionProperty field_10748 = HorizontalFacingBlock.field_11177;
+public class CarvedPumpkinBlock extends HorizontalFacingBlock {
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	private BlockPattern field_10749;
 	private BlockPattern field_10750;
 	private BlockPattern field_10752;
 	private BlockPattern field_10753;
-	private static final Predicate<BlockState> field_10751 = blockState -> blockState != null
+	private static final Predicate<BlockState> IS_PUMPKIN_PREDICATE = blockState -> blockState != null
 			&& (blockState.getBlock() == Blocks.field_10147 || blockState.getBlock() == Blocks.field_10009);
 
-	protected PumpkinCarvedBlock(Block.Settings settings) {
+	protected CarvedPumpkinBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_10748, Direction.NORTH));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH));
 	}
 
 	@Override
@@ -112,12 +112,12 @@ public class PumpkinCarvedBlock extends HorizontalFacingBlock {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(field_10748, itemPlacementContext.getPlayerHorizontalFacing().getOpposite());
+		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerHorizontalFacing().getOpposite());
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_10748);
+		builder.with(FACING);
 	}
 
 	protected BlockPattern method_9732() {
@@ -135,7 +135,7 @@ public class PumpkinCarvedBlock extends HorizontalFacingBlock {
 		if (this.field_10750 == null) {
 			this.field_10750 = BlockPatternBuilder.start()
 				.aisle("^", "#", "#")
-				.where('^', CachedBlockPosition.matchesBlockState(field_10751))
+				.where('^', CachedBlockPosition.matchesBlockState(IS_PUMPKIN_PREDICATE))
 				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.field_10491)))
 				.build();
 		}
@@ -159,7 +159,7 @@ public class PumpkinCarvedBlock extends HorizontalFacingBlock {
 		if (this.field_10753 == null) {
 			this.field_10753 = BlockPatternBuilder.start()
 				.aisle("~^~", "###", "~#~")
-				.where('^', CachedBlockPosition.matchesBlockState(field_10751))
+				.where('^', CachedBlockPosition.matchesBlockState(IS_PUMPKIN_PREDICATE))
 				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.field_10085)))
 				.where('~', CachedBlockPosition.matchesBlockState(class_2710.method_11746(Material.AIR)))
 				.build();

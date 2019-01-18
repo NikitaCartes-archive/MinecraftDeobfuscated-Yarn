@@ -8,17 +8,17 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3492;
-import net.minecraft.class_3499;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.StructureBlock;
-import net.minecraft.block.enums.StructureMode;
+import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.client.network.packet.BlockEntityUpdateClientPacket;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sortme.Structure;
+import net.minecraft.sortme.StructurePlacementData;
 import net.minecraft.sortme.structures.StructureManager;
 import net.minecraft.sortme.structures.processor.BlockRotStructureProcessor;
 import net.minecraft.util.ChatUtil;
@@ -38,7 +38,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	private BlockPos size = BlockPos.ORIGIN;
 	private Mirror mirror = Mirror.NONE;
 	private Rotation rotation = Rotation.ROT_0;
-	private StructureMode mode = StructureMode.field_12696;
+	private StructureBlockMode field_12094 = StructureBlockMode.field_12696;
 	private boolean ignoreEntities = true;
 	private boolean powered;
 	private boolean showAir;
@@ -64,7 +64,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		compoundTag.putInt("sizeZ", this.size.getZ());
 		compoundTag.putString("rotation", this.rotation.toString());
 		compoundTag.putString("mirror", this.mirror.toString());
-		compoundTag.putString("mode", this.mode.toString());
+		compoundTag.putString("mode", this.field_12094.toString());
 		compoundTag.putBoolean("ignoreEntities", this.ignoreEntities);
 		compoundTag.putBoolean("powered", this.powered);
 		compoundTag.putBoolean("showair", this.showAir);
@@ -102,9 +102,9 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		}
 
 		try {
-			this.mode = StructureMode.valueOf(compoundTag.getString("mode"));
+			this.field_12094 = StructureBlockMode.valueOf(compoundTag.getString("mode"));
 		} catch (IllegalArgumentException var9) {
-			this.mode = StructureMode.field_12696;
+			this.field_12094 = StructureBlockMode.field_12696;
 		}
 
 		this.ignoreEntities = compoundTag.getBoolean("ignoreEntities");
@@ -126,7 +126,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 			BlockPos blockPos = this.getPos();
 			BlockState blockState = this.world.getBlockState(blockPos);
 			if (blockState.getBlock() == Blocks.field_10465) {
-				this.world.setBlockState(blockPos, blockState.with(StructureBlock.field_11586, this.mode), 2);
+				this.world.setBlockState(blockPos, blockState.with(StructureBlock.MODE, this.field_12094), 2);
 			}
 		}
 	}
@@ -219,32 +219,32 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		this.metadata = string;
 	}
 
-	public StructureMode getMode() {
-		return this.mode;
+	public StructureBlockMode method_11374() {
+		return this.field_12094;
 	}
 
-	public void setMode(StructureMode structureMode) {
-		this.mode = structureMode;
+	public void method_11381(StructureBlockMode structureBlockMode) {
+		this.field_12094 = structureBlockMode;
 		BlockState blockState = this.world.getBlockState(this.getPos());
 		if (blockState.getBlock() == Blocks.field_10465) {
-			this.world.setBlockState(this.getPos(), blockState.with(StructureBlock.field_11586, structureMode), 2);
+			this.world.setBlockState(this.getPos(), blockState.with(StructureBlock.MODE, structureBlockMode), 2);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_11380() {
-		switch (this.getMode()) {
+	public void cycleMode() {
+		switch (this.method_11374()) {
 			case field_12695:
-				this.setMode(StructureMode.field_12697);
+				this.method_11381(StructureBlockMode.field_12697);
 				break;
 			case field_12697:
-				this.setMode(StructureMode.field_12699);
+				this.method_11381(StructureBlockMode.field_12699);
 				break;
 			case field_12699:
-				this.setMode(StructureMode.field_12696);
+				this.method_11381(StructureBlockMode.field_12696);
 				break;
 			case field_12696:
-				this.setMode(StructureMode.field_12695);
+				this.method_11381(StructureBlockMode.field_12695);
 		}
 	}
 
@@ -275,20 +275,20 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		this.seed = l;
 	}
 
-	public boolean method_11383() {
-		if (this.mode != StructureMode.field_12695) {
+	public boolean detectStructureSize() {
+		if (this.field_12094 != StructureBlockMode.field_12695) {
 			return false;
 		} else {
 			BlockPos blockPos = this.getPos();
 			int i = 80;
 			BlockPos blockPos2 = new BlockPos(blockPos.getX() - 80, 0, blockPos.getZ() - 80);
 			BlockPos blockPos3 = new BlockPos(blockPos.getX() + 80, 255, blockPos.getZ() + 80);
-			List<StructureBlockBlockEntity> list = this.method_11369(blockPos2, blockPos3);
-			List<StructureBlockBlockEntity> list2 = this.method_11364(list);
+			List<StructureBlockBlockEntity> list = this.findStructureBlockEntities(blockPos2, blockPos3);
+			List<StructureBlockBlockEntity> list2 = this.findCorners(list);
 			if (list2.size() < 1) {
 				return false;
 			} else {
-				MutableIntBoundingBox mutableIntBoundingBox = this.method_11355(blockPos, list2);
+				MutableIntBoundingBox mutableIntBoundingBox = this.makeBoundingBox(blockPos, list2);
 				if (mutableIntBoundingBox.maxX - mutableIntBoundingBox.minX > 1
 					&& mutableIntBoundingBox.maxY - mutableIntBoundingBox.minY > 1
 					&& mutableIntBoundingBox.maxZ - mutableIntBoundingBox.minZ > 1) {
@@ -311,13 +311,13 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		}
 	}
 
-	private List<StructureBlockBlockEntity> method_11364(List<StructureBlockBlockEntity> list) {
-		Predicate<StructureBlockBlockEntity> predicate = structureBlockBlockEntity -> structureBlockBlockEntity.mode == StructureMode.field_12699
+	private List<StructureBlockBlockEntity> findCorners(List<StructureBlockBlockEntity> list) {
+		Predicate<StructureBlockBlockEntity> predicate = structureBlockBlockEntity -> structureBlockBlockEntity.field_12094 == StructureBlockMode.field_12699
 				&& Objects.equals(this.structureName, structureBlockBlockEntity.structureName);
 		return (List<StructureBlockBlockEntity>)list.stream().filter(predicate).collect(Collectors.toList());
 	}
 
-	private List<StructureBlockBlockEntity> method_11369(BlockPos blockPos, BlockPos blockPos2) {
+	private List<StructureBlockBlockEntity> findStructureBlockEntities(BlockPos blockPos, BlockPos blockPos2) {
 		List<StructureBlockBlockEntity> list = Lists.<StructureBlockBlockEntity>newArrayList();
 
 		for (BlockPos blockPos3 : BlockPos.iterateBoxPositions(blockPos, blockPos2)) {
@@ -333,7 +333,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		return list;
 	}
 
-	private MutableIntBoundingBox method_11355(BlockPos blockPos, List<StructureBlockBlockEntity> list) {
+	private MutableIntBoundingBox makeBoundingBox(BlockPos blockPos, List<StructureBlockBlockEntity> list) {
 		MutableIntBoundingBox mutableIntBoundingBox;
 		if (list.size() > 1) {
 			BlockPos blockPos2 = ((StructureBlockBlockEntity)list.get(0)).getPos();
@@ -366,28 +366,28 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		return mutableIntBoundingBox;
 	}
 
-	public boolean method_11365() {
-		return this.method_11366(true);
+	public boolean saveStructure() {
+		return this.saveStructure(true);
 	}
 
-	public boolean method_11366(boolean bl) {
-		if (this.mode == StructureMode.field_12695 && !this.world.isClient && this.structureName != null) {
+	public boolean saveStructure(boolean bl) {
+		if (this.field_12094 == StructureBlockMode.field_12695 && !this.world.isClient && this.structureName != null) {
 			BlockPos blockPos = this.getPos().add(this.offset);
 			ServerWorld serverWorld = (ServerWorld)this.world;
-			StructureManager structureManager = serverWorld.method_14183();
+			StructureManager structureManager = serverWorld.getStructureManager();
 
-			class_3499 lv;
+			Structure structure;
 			try {
-				lv = structureManager.method_15091(this.structureName);
+				structure = structureManager.getStructureOrBlank(this.structureName);
 			} catch (InvalidIdentifierException var8) {
 				return false;
 			}
 
-			lv.method_15174(this.world, blockPos, this.size, !this.ignoreEntities, Blocks.field_10369);
-			lv.method_15161(this.author);
+			structure.method_15174(this.world, blockPos, this.size, !this.ignoreEntities, Blocks.field_10369);
+			structure.setAuthor(this.author);
 			if (bl) {
 				try {
-					return structureManager.method_15093(this.structureName);
+					return structureManager.saveStructure(this.structureName);
 				} catch (InvalidIdentifierException var7) {
 					return false;
 				}
@@ -399,32 +399,32 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		}
 	}
 
-	public boolean method_11376() {
-		return this.method_11368(true);
+	public boolean loadStructure() {
+		return this.loadStructure(true);
 	}
 
-	public boolean method_11368(boolean bl) {
-		if (this.mode == StructureMode.field_12697 && !this.world.isClient && this.structureName != null) {
+	public boolean loadStructure(boolean bl) {
+		if (this.field_12094 == StructureBlockMode.field_12697 && !this.world.isClient && this.structureName != null) {
 			BlockPos blockPos = this.getPos();
 			BlockPos blockPos2 = blockPos.add(this.offset);
 			ServerWorld serverWorld = (ServerWorld)this.world;
-			StructureManager structureManager = serverWorld.method_14183();
+			StructureManager structureManager = serverWorld.getStructureManager();
 
-			class_3499 lv;
+			Structure structure;
 			try {
-				lv = structureManager.method_15094(this.structureName);
+				structure = structureManager.getStructure(this.structureName);
 			} catch (InvalidIdentifierException var10) {
 				return false;
 			}
 
-			if (lv == null) {
+			if (structure == null) {
 				return false;
 			} else {
-				if (!ChatUtil.isEmpty(lv.method_15181())) {
-					this.author = lv.method_15181();
+				if (!ChatUtil.isEmpty(structure.getAuthor())) {
+					this.author = structure.getAuthor();
 				}
 
-				BlockPos blockPos3 = lv.method_15160();
+				BlockPos blockPos3 = structure.getSize();
 				boolean bl2 = this.size.equals(blockPos3);
 				if (!bl2) {
 					this.size = blockPos3;
@@ -436,12 +436,18 @@ public class StructureBlockBlockEntity extends BlockEntity {
 				if (bl && !bl2) {
 					return false;
 				} else {
-					class_3492 lv2 = new class_3492().method_15125(this.mirror).method_15123(this.rotation).method_15133(this.ignoreEntities).method_15130(null);
+					StructurePlacementData structurePlacementData = new StructurePlacementData()
+						.setMirrored(this.mirror)
+						.setRotation(this.rotation)
+						.setIgnoreEntities(this.ignoreEntities)
+						.setChunkPosition(null);
 					if (this.integrity < 1.0F) {
-						lv2.method_16183().method_16184(new BlockRotStructureProcessor(MathHelper.clamp(this.integrity, 0.0F, 1.0F))).method_15118(this.seed);
+						structurePlacementData.clearProcessors()
+							.addProcessor(new BlockRotStructureProcessor(MathHelper.clamp(this.integrity, 0.0F, 1.0F)))
+							.method_15118(this.seed);
 					}
 
-					lv.method_15182(this.world, blockPos2, lv2);
+					structure.place(this.world, blockPos2, structurePlacementData);
 					return true;
 				}
 			}
@@ -450,21 +456,21 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		}
 	}
 
-	public void method_11361() {
+	public void unloadStructure() {
 		if (this.structureName != null) {
 			ServerWorld serverWorld = (ServerWorld)this.world;
-			StructureManager structureManager = serverWorld.method_14183();
-			structureManager.method_15087(this.structureName);
+			StructureManager structureManager = serverWorld.getStructureManager();
+			structureManager.unloadStructure(this.structureName);
 		}
 	}
 
-	public boolean method_11372() {
-		if (this.mode == StructureMode.field_12697 && !this.world.isClient && this.structureName != null) {
+	public boolean isStructureAvailable() {
+		if (this.field_12094 == StructureBlockMode.field_12697 && !this.world.isClient && this.structureName != null) {
 			ServerWorld serverWorld = (ServerWorld)this.world;
-			StructureManager structureManager = serverWorld.method_14183();
+			StructureManager structureManager = serverWorld.getStructureManager();
 
 			try {
-				return structureManager.method_15094(this.structureName) != null;
+				return structureManager.getStructure(this.structureName) != null;
 			} catch (InvalidIdentifierException var4) {
 				return false;
 			}

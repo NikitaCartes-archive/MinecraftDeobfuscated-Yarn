@@ -198,7 +198,7 @@ public class StatsGui extends Gui implements class_452 {
 
 		@Override
 		protected int getEntryCount() {
-			return Stats.field_15419.method_14960();
+			return Stats.field_15419.getStatCount();
 		}
 
 		@Override
@@ -255,7 +255,7 @@ public class StatsGui extends Gui implements class_452 {
 				boolean bl = false;
 
 				for (StatType<Item> statType : this.field_2655) {
-					if (statType.method_14958(item) && StatsGui.this.field_2647.getStat(statType.method_14956(item)) > 0) {
+					if (statType.hasStat(item) && StatsGui.this.field_2647.getStat(statType.getOrCreateStat(item)) > 0) {
 						bl = true;
 					}
 				}
@@ -269,7 +269,7 @@ public class StatsGui extends Gui implements class_452 {
 				boolean bl = false;
 
 				for (StatType<Block> statTypex : this.field_2656) {
-					if (statTypex.method_14958(block) && StatsGui.this.field_2647.getStat(statTypex.method_14956(block)) > 0) {
+					if (statTypex.hasStat(block) && StatsGui.this.field_2647.getStat(statTypex.getOrCreateStat(block)) > 0) {
 						bl = true;
 					}
 				}
@@ -313,7 +313,7 @@ public class StatsGui extends Gui implements class_452 {
 			for (int o = 0; o < this.field_2656.size(); o++) {
 				Stat<Block> stat;
 				if (item instanceof BlockItem) {
-					stat = ((StatType)this.field_2656.get(o)).method_14956(((BlockItem)item).getBlock());
+					stat = ((StatType)this.field_2656.get(o)).getOrCreateStat(((BlockItem)item).getBlock());
 				} else {
 					stat = null;
 				}
@@ -322,7 +322,7 @@ public class StatsGui extends Gui implements class_452 {
 			}
 
 			for (int o = 0; o < this.field_2655.size(); o++) {
-				this.method_2292(((StatType)this.field_2655.get(o)).method_14956(item), j + StatsGui.this.method_2285(o + this.field_2656.size()), k, i % 2 == 0);
+				this.method_2292(((StatType)this.field_2655.get(o)).getOrCreateStat(item), j + StatsGui.this.method_2285(o + this.field_2656.size()), k, i % 2 == 0);
 			}
 		}
 
@@ -487,8 +487,8 @@ public class StatsGui extends Gui implements class_452 {
 			this.method_1943(false);
 
 			for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
-				if (StatsGui.this.field_2647.getStat(Stats.field_15403.method_14956(entityType)) > 0
-					|| StatsGui.this.field_2647.getStat(Stats.field_15411.method_14956(entityType)) > 0) {
+				if (StatsGui.this.field_2647.getStat(Stats.field_15403.getOrCreateStat(entityType)) > 0
+					|| StatsGui.this.field_2647.getStat(Stats.field_15411.getOrCreateStat(entityType)) > 0) {
 					this.field_2664.add(entityType);
 				}
 			}
@@ -518,8 +518,8 @@ public class StatsGui extends Gui implements class_452 {
 		protected void drawEntry(int i, int j, int k, int l, int m, int n, float f) {
 			EntityType<?> entityType = (EntityType<?>)this.field_2664.get(i);
 			String string = I18n.translate(SystemUtil.createTranslationKey("entity", EntityType.getId(entityType)));
-			int o = StatsGui.this.field_2647.getStat(Stats.field_15403.method_14956(entityType));
-			int p = StatsGui.this.field_2647.getStat(Stats.field_15411.method_14956(entityType));
+			int o = StatsGui.this.field_2647.getStat(Stats.field_15403.getOrCreateStat(entityType));
+			int p = StatsGui.this.field_2647.getStat(Stats.field_15411.getOrCreateStat(entityType));
 			this.drawString(StatsGui.this.fontRenderer, string, j + 2 - 10, k + 1, 16777215);
 			this.drawString(StatsGui.this.fontRenderer, this.method_2299(string, o), j + 2, k + 1 + 9, o == 0 ? 6316128 : 9474192);
 			this.drawString(StatsGui.this.fontRenderer, this.method_2298(string, p), j + 2, k + 1 + 9 * 2, p == 0 ? 6316128 : 9474192);

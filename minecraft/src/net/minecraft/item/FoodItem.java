@@ -39,7 +39,7 @@ public class FoodItem extends Item {
 				null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_14990, SoundCategory.field_15248, 0.5F, world.random.nextFloat() * 0.1F + 0.9F
 			);
 			this.onConsumed(itemStack, world, playerEntity);
-			playerEntity.incrementStat(Stats.field_15372.method_14956(this));
+			playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 			if (playerEntity instanceof ServerPlayerEntity) {
 				Criterions.CONSUME_ITEM.handle((ServerPlayerEntity)playerEntity, itemStack);
 			}

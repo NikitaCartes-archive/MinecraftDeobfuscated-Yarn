@@ -115,7 +115,7 @@ public interface ViewableWorld extends ExtendedBlockView {
 
 	default boolean method_8628(BlockState blockState, BlockPos blockPos) {
 		VoxelShape voxelShape = blockState.getCollisionShape(this, blockPos);
-		return voxelShape.isEmpty() || this.method_8611(null, voxelShape.method_1096((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
+		return voxelShape.isEmpty() || this.method_8611(null, voxelShape.offset((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
 	}
 
 	default boolean method_8606(@Nullable Entity entity, BoundingBox boundingBox) {
@@ -169,14 +169,14 @@ public interface ViewableWorld extends ExtendedBlockView {
 						voxelShape2x = chunk.getBlockState(blockPos).getCollisionShape(this, blockPos, verticalEntityPosition);
 					}
 
-					VoxelShape voxelShape3 = voxelShape2.method_1096((double)(-o), (double)(-p), (double)(-q));
+					VoxelShape voxelShape3 = voxelShape2.offset((double)(-o), (double)(-p), (double)(-q));
 					if (VoxelShapes.compareShapes(voxelShape3, voxelShape2x, BooleanBiFunction.AND)) {
 						return VoxelShapes.empty();
 					} else if (voxelShape2x == VoxelShapes.fullCube()) {
 						abstractVoxelShapeContainer.modify(o - i, p - k, q - m, true, true);
 						return VoxelShapes.empty();
 					} else {
-						return voxelShape2x.method_1096((double)o, (double)p, (double)q);
+						return voxelShape2x.offset((double)o, (double)p, (double)q);
 					}
 				} else {
 					return VoxelShapes.empty();
@@ -194,7 +194,7 @@ public interface ViewableWorld extends ExtendedBlockView {
 		double g = 1.0E-7;
 		VoxelShape voxelShape = VoxelShapes.cube(boundingBox);
 		VoxelShape voxelShape2 = VoxelShapes.cube(boundingBox.offset(d > 0.0 ? -1.0E-7 : 1.0E-7, e > 0.0 ? -1.0E-7 : 1.0E-7, f > 0.0 ? -1.0E-7 : 1.0E-7));
-		VoxelShape voxelShape3 = VoxelShapes.method_1082(VoxelShapes.cube(boundingBox.stretch(d, e, f).expand(1.0E-7)), voxelShape2, BooleanBiFunction.ONLY_FIRST);
+		VoxelShape voxelShape3 = VoxelShapes.combine(VoxelShapes.cube(boundingBox.stretch(d, e, f).expand(1.0E-7)), voxelShape2, BooleanBiFunction.ONLY_FIRST);
 		return this.method_8600(entity, voxelShape3, voxelShape, set);
 	}
 
@@ -241,7 +241,7 @@ public interface ViewableWorld extends ExtendedBlockView {
 		return this.method_8590(entity, boundingBox, Collections.emptySet());
 	}
 
-	default boolean method_8585(BlockPos blockPos) {
+	default boolean isWaterAt(BlockPos blockPos) {
 		return this.getFluidState(blockPos).matches(FluidTags.field_15517);
 	}
 

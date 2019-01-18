@@ -9,7 +9,7 @@ import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.util.Identifier;
 
-public class CampfireCookingRecipe extends AbstractCookingRecipe {
+public class CampfireCookingRecipe extends CookingRecipe {
 	public CampfireCookingRecipe(Identifier identifier, String string, Ingredient ingredient, ItemStack itemStack, float f, int i) {
 		super(RecipeType.CAMPFIRE_COOKING, identifier, string, ingredient, itemStack, f, i);
 	}
