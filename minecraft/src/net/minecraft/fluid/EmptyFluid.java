@@ -38,7 +38,7 @@ public class EmptyFluid extends Fluid {
 	}
 
 	@Override
-	public int method_15789(ViewableWorld viewableWorld) {
+	public int getTickRate(ViewableWorld viewableWorld) {
 		return 0;
 	}
 
@@ -68,7 +68,7 @@ public class EmptyFluid extends Fluid {
 	}
 
 	@Override
-	public int method_15779(FluidState fluidState) {
+	public int getLevel(FluidState fluidState) {
 		return 0;
 	}
 

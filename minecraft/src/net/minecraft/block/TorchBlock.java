@@ -15,7 +15,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class TorchBlock extends Block {
-	protected static final VoxelShape BOUNDING_SHAPE = Block.createCubeShape(6.0, 0.0, 6.0, 10.0, 10.0, 10.0);
+	protected static final VoxelShape BOUNDING_SHAPE = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 10.0, 10.0);
 
 	protected TorchBlock(Block.Settings settings) {
 		super(settings);

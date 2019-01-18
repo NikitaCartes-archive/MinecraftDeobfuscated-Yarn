@@ -21,8 +21,8 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 
 public class TallSeagrassBlock extends class_2475 implements FluidFillable {
-	public static final EnumProperty<DoubleBlockHalf> PROPERTY_HALF = class_2475.field_11484;
-	protected static final VoxelShape SHAPE = Block.createCubeShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0);
+	public static final EnumProperty<DoubleBlockHalf> HALF = class_2475.field_11484;
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0);
 
 	public TallSeagrassBlock(Block.Settings settings) {
 		super(settings);
@@ -35,7 +35,7 @@ public class TallSeagrassBlock extends class_2475 implements FluidFillable {
 
 	@Override
 	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return Block.isFaceFullCube(blockState.getCollisionShape(blockView, blockPos), Direction.UP) && blockState.getBlock() != Blocks.field_10092;
+		return Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos), Direction.UP) && blockState.getBlock() != Blocks.field_10092;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -49,8 +49,8 @@ public class TallSeagrassBlock extends class_2475 implements FluidFillable {
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockState blockState = super.getPlacementState(itemPlacementContext);
 		if (blockState != null) {
-			FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getPos().up());
-			if (fluidState.matches(FluidTags.field_15517) && fluidState.method_15761() == 8) {
+			FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos().up());
+			if (fluidState.matches(FluidTags.field_15517) && fluidState.getLevel() == 8) {
 				return blockState;
 			}
 		}
@@ -60,12 +60,12 @@ public class TallSeagrassBlock extends class_2475 implements FluidFillable {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		if (blockState.get(PROPERTY_HALF) == DoubleBlockHalf.field_12609) {
+		if (blockState.get(HALF) == DoubleBlockHalf.field_12609) {
 			BlockState blockState2 = viewableWorld.getBlockState(blockPos.down());
-			return blockState2.getBlock() == this && blockState2.get(PROPERTY_HALF) == DoubleBlockHalf.field_12607;
+			return blockState2.getBlock() == this && blockState2.get(HALF) == DoubleBlockHalf.field_12607;
 		} else {
 			FluidState fluidState = viewableWorld.getFluidState(blockPos);
-			return super.canPlaceAt(blockState, viewableWorld, blockPos) && fluidState.matches(FluidTags.field_15517) && fluidState.method_15761() == 8;
+			return super.canPlaceAt(blockState, viewableWorld, blockPos) && fluidState.matches(FluidTags.field_15517) && fluidState.getLevel() == 8;
 		}
 	}
 

@@ -5,9 +5,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ServerPlayPacketListener;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.PacketByteBuf;
+import net.minecraft.util.hit.BlockHitResult;
 
 public class PlayerInteractBlockServerPacket implements Packet<ServerPlayPacketListener> {
 	private BlockHitResult field_17602;

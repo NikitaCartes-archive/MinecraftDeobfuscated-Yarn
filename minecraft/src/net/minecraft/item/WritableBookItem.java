@@ -22,10 +22,10 @@ public class WritableBookItem extends Item {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		World world = itemUsageContext.getWorld();
-		BlockPos blockPos = itemUsageContext.getPos();
+		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.getBlock() == Blocks.field_16330) {
-			return LecternBlock.method_17472(world, blockPos, blockState, itemUsageContext.getItemStack()) ? ActionResult.SUCCESS : ActionResult.PASS;
+			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, itemUsageContext.getItemStack()) ? ActionResult.SUCCESS : ActionResult.PASS;
 		} else {
 			return ActionResult.PASS;
 		}
@@ -35,7 +35,7 @@ public class WritableBookItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		playerEntity.openBookEditorGui(itemStack, hand);
-		playerEntity.incrementStat(Stats.field_15372.method_14956(this));
+		playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 	}
 

@@ -15,11 +15,11 @@ public class ChorusPlantFeature extends Feature<DefaultFeatureConfig> {
 		super(function);
 	}
 
-	public boolean method_12843(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		if (iWorld.isAir(blockPos.up()) && iWorld.getBlockState(blockPos).getBlock() == Blocks.field_10471) {
-			ChorusFlowerBlock.method_9744(iWorld, blockPos.up(), random, 8);
+			ChorusFlowerBlock.generate(iWorld, blockPos.up(), random, 8);
 			return true;
 		} else {
 			return false;

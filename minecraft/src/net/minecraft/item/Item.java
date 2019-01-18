@@ -26,12 +26,12 @@ import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
-import net.minecraft.util.HitResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -259,7 +259,7 @@ public class Item implements ItemProvider {
 		return this.getMaxAmount() == 1 && this.canDamage();
 	}
 
-	protected static HitResult getHitResult(World world, PlayerEntity playerEntity, RayTraceContext.FluidHandling fluidHandling) {
+	protected static HitResult method_7872(World world, PlayerEntity playerEntity, RayTraceContext.FluidHandling fluidHandling) {
 		float f = playerEntity.pitch;
 		float g = playerEntity.yaw;
 		Vec3d vec3d = playerEntity.getCameraPosVec(1.0F);
@@ -271,7 +271,7 @@ public class Item implements ItemProvider {
 		float n = h * j;
 		double d = 5.0;
 		Vec3d vec3d2 = vec3d.add((double)l * 5.0, (double)k * 5.0, (double)n * 5.0);
-		return world.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17559, fluidHandling, playerEntity));
+		return world.method_17742(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17559, fluidHandling, playerEntity));
 	}
 
 	public int getEnchantability() {

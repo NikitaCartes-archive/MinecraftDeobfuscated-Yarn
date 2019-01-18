@@ -45,7 +45,7 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 		BlockState blockState = blockEntity.hasWorld()
 			? blockEntity.getCachedState()
 			: Blocks.field_10034.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
-		ChestType chestType = blockState.contains(ChestBlock.field_10770) ? blockState.get(ChestBlock.field_10770) : ChestType.field_12569;
+		ChestType chestType = blockState.contains(ChestBlock.CHEST_TYPE) ? blockState.get(ChestBlock.CHEST_TYPE) : ChestType.field_12569;
 		if (chestType != ChestType.field_12574) {
 			boolean bl = chestType != ChestType.field_12569;
 			ChestEntityModel chestEntityModel = this.method_3562(blockEntity, i, bl);

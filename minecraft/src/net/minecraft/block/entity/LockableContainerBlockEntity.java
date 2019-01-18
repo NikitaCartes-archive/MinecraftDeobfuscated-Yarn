@@ -2,7 +2,7 @@ package net.minecraft.block.entity;
 
 import javax.annotation.Nullable;
 import net.minecraft.container.Container;
-import net.minecraft.container.LockContainer;
+import net.minecraft.container.ContainerLock;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -15,7 +15,7 @@ import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Nameable;
 
 public abstract class LockableContainerBlockEntity extends BlockEntity implements Inventory, NameableContainerProvider, Nameable {
-	private LockContainer lock = LockContainer.EMPTY;
+	private ContainerLock lock = ContainerLock.NONE;
 	private TextComponent customName;
 
 	protected LockableContainerBlockEntity(BlockEntityType<?> blockEntityType) {
@@ -25,7 +25,7 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 	@Override
 	public void fromTag(CompoundTag compoundTag) {
 		super.fromTag(compoundTag);
-		this.lock = LockContainer.deserialize(compoundTag);
+		this.lock = ContainerLock.deserialize(compoundTag);
 		if (compoundTag.containsKey("CustomName", 8)) {
 			this.customName = TextComponent.Serializer.fromJsonString(compoundTag.getString("CustomName"));
 		}
@@ -48,7 +48,7 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 
 	@Override
 	public TextComponent getName() {
-		return this.customName != null ? this.customName : this.method_17823();
+		return this.customName != null ? this.customName : this.getContainerName();
 	}
 
 	@Override
@@ -62,16 +62,16 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 		return this.customName;
 	}
 
-	protected abstract TextComponent method_17823();
+	protected abstract TextComponent getContainerName();
 
-	public boolean method_17489(PlayerEntity playerEntity) {
-		return method_17487(playerEntity, this.lock, this.getDisplayName());
+	public boolean checkUnlocked(PlayerEntity playerEntity) {
+		return checkUnlocked(playerEntity, this.lock, this.getDisplayName());
 	}
 
-	public static boolean method_17487(PlayerEntity playerEntity, LockContainer lockContainer, TextComponent textComponent) {
-		if (!playerEntity.isSpectator() && !lockContainer.isEmpty(playerEntity.getMainHandStack())) {
+	public static boolean checkUnlocked(PlayerEntity playerEntity, ContainerLock containerLock, TextComponent textComponent) {
+		if (!playerEntity.isSpectator() && !containerLock.isEmpty(playerEntity.getMainHandStack())) {
 			playerEntity.addChatMessage(new TranslatableTextComponent("container.isLocked", textComponent), true);
-			playerEntity.method_17356(SoundEvents.field_14731, SoundCategory.field_15245, 1.0F, 1.0F);
+			playerEntity.playSound(SoundEvents.field_14731, SoundCategory.field_15245, 1.0F, 1.0F);
 			return false;
 		} else {
 			return true;
@@ -81,7 +81,7 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 	@Nullable
 	@Override
 	public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-		return this.method_17489(playerEntity) ? this.createContainer(i, playerInventory) : null;
+		return this.checkUnlocked(playerEntity) ? this.createContainer(i, playerInventory) : null;
 	}
 
 	protected abstract Container createContainer(int i, PlayerInventory playerInventory);

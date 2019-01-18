@@ -15,8 +15,8 @@ import net.minecraft.entity.sortme.Projectile;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.util.EntityHitResult;
-import net.minecraft.util.HitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -66,7 +66,7 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 		Vec3d vec3d = new Vec3d(this.x, this.y, this.z);
 		Vec3d vec3d2 = new Vec3d(this.x + this.velocityX, this.y + this.velocityY, this.z + this.velocityZ);
 		HitResult hitResult = this.world
-			.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17559, RayTraceContext.FluidHandling.NONE, this));
+			.method_17742(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17559, RayTraceContext.FluidHandling.NONE, this));
 		if (hitResult.getType() != HitResult.Type.NONE) {
 			vec3d2 = hitResult.getPos();
 		}

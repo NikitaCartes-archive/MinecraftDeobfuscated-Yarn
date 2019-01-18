@@ -52,10 +52,10 @@ public abstract class Fluid {
 	public abstract Item getBucketItem();
 
 	@Environment(EnvType.CLIENT)
-	protected void method_15776(World world, BlockPos blockPos, FluidState fluidState, Random random) {
+	protected void randomDisplayTick(World world, BlockPos blockPos, FluidState fluidState, Random random) {
 	}
 
-	protected void method_15778(World world, BlockPos blockPos, FluidState fluidState) {
+	protected void onScheduledTick(World world, BlockPos blockPos, FluidState fluidState) {
 	}
 
 	protected void onRandomTick(World world, BlockPos blockPos, FluidState fluidState, Random random) {
@@ -71,7 +71,7 @@ public abstract class Fluid {
 
 	protected abstract Vec3d method_15782(BlockView blockView, BlockPos blockPos, FluidState fluidState);
 
-	public abstract int method_15789(ViewableWorld viewableWorld);
+	public abstract int getTickRate(ViewableWorld viewableWorld);
 
 	protected boolean hasRandomTicks() {
 		return false;
@@ -89,7 +89,7 @@ public abstract class Fluid {
 
 	public abstract boolean isStill(FluidState fluidState);
 
-	public abstract int method_15779(FluidState fluidState);
+	public abstract int getLevel(FluidState fluidState);
 
 	public boolean matchesType(Fluid fluid) {
 		return fluid == this;

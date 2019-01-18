@@ -9,7 +9,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 
 public class StructureVoidBlock extends Block {
-	private static final VoxelShape field_11589 = Block.createCubeShape(5.0, 5.0, 5.0, 11.0, 11.0, 11.0);
+	private static final VoxelShape SHAPE = Block.createCuboidShape(5.0, 5.0, 5.0, 11.0, 11.0, 11.0);
 
 	protected StructureVoidBlock(Block.Settings settings) {
 		super(settings);
@@ -22,7 +22,7 @@ public class StructureVoidBlock extends Block {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_11589;
+		return SHAPE;
 	}
 
 	@Environment(EnvType.CLIENT)

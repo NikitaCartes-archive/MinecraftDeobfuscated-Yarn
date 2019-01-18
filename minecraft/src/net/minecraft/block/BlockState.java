@@ -26,11 +26,11 @@ import net.minecraft.state.PropertyContainer;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.Tag;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
@@ -106,16 +106,16 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		return this.getBlock().usesNeighborLightValues(this, blockView, blockPos);
 	}
 
-	public MaterialColor getMaterialColor(BlockView blockView, BlockPos blockPos) {
-		return this.getBlock().getMaterialColor(this, blockView, blockPos);
+	public MaterialColor getTopMaterialColor(BlockView blockView, BlockPos blockPos) {
+		return this.getBlock().getMapColor(this, blockView, blockPos);
 	}
 
-	public BlockState applyRotation(Rotation rotation) {
-		return this.getBlock().applyRotation(this, rotation);
+	public BlockState rotate(Rotation rotation) {
+		return this.getBlock().rotate(this, rotation);
 	}
 
-	public BlockState applyMirror(Mirror mirror) {
-		return this.getBlock().applyMirror(this, mirror);
+	public BlockState mirror(Mirror mirror) {
+		return this.getBlock().mirror(this, mirror);
 	}
 
 	public boolean method_11604(BlockView blockView, BlockPos blockPos) {
@@ -251,11 +251,11 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 	}
 
 	public void scheduledTick(World world, BlockPos blockPos, Random random) {
-		this.getBlock().scheduledTick(this, world, blockPos, random);
+		this.getBlock().onScheduledTick(this, world, blockPos, random);
 	}
 
-	public void randomTick(World world, BlockPos blockPos, Random random) {
-		this.getBlock().randomTick(this, world, blockPos, random);
+	public void onRandomTick(World world, BlockPos blockPos, Random random) {
+		this.getBlock().onRandomTick(this, world, blockPos, random);
 	}
 
 	public void onEntityCollision(World world, BlockPos blockPos, Entity entity) {
@@ -270,8 +270,8 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		return this.getBlock().getDroppedStacks(this, builder);
 	}
 
-	public boolean activate(World world, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		return this.getBlock().activate(this, world, blockHitResult.getBlockPos(), playerEntity, hand, blockHitResult);
+	public boolean method_11629(World world, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		return this.getBlock().method_9534(this, world, blockHitResult.getBlockPos(), playerEntity, hand, blockHitResult);
 	}
 
 	public void onBlockBreakStart(World world, BlockPos blockPos, PlayerEntity playerEntity) {
@@ -291,7 +291,7 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 	}
 
 	public boolean method_11587(ItemPlacementContext itemPlacementContext) {
-		return this.getBlock().method_9616(this, itemPlacementContext);
+		return this.getBlock().canReplace(this, itemPlacementContext);
 	}
 
 	public boolean canPlaceAt(ViewableWorld viewableWorld, BlockPos blockPos) {
@@ -303,8 +303,8 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 	}
 
 	@Nullable
-	public NameableContainerProvider method_17526(World world, BlockPos blockPos) {
-		return this.getBlock().method_17454(this, world, blockPos);
+	public NameableContainerProvider createContainerProvider(World world, BlockPos blockPos) {
+		return this.getBlock().createContainerProvider(this, world, blockPos);
 	}
 
 	public boolean matches(Tag<Block> tag) {

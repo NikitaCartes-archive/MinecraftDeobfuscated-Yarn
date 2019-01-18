@@ -13,7 +13,7 @@ public class TallFlowerBlock extends TallPlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public boolean method_9616(BlockState blockState, ItemPlacementContext itemPlacementContext) {
+	public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
 		return false;
 	}
 

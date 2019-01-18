@@ -26,7 +26,7 @@ public class ConcretePowderBlock extends FallingBlock {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockView blockView = itemPlacementContext.getWorld();
-		BlockPos blockPos = itemPlacementContext.getPos();
+		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		return !hardensIn(blockView.getBlockState(blockPos)) && !hardensOnAnySide(blockView, blockPos)
 			? super.getPlacementState(itemPlacementContext)
 			: this.hardenedState;
@@ -41,7 +41,7 @@ public class ConcretePowderBlock extends FallingBlock {
 			if (direction != Direction.DOWN || hardensIn(blockState)) {
 				mutable.set(blockPos).setOffset(direction);
 				blockState = blockView.getBlockState(mutable);
-				if (hardensIn(blockState) && !Block.isFaceFullCube(blockState.getCollisionShape(blockView, blockPos), direction.getOpposite())) {
+				if (hardensIn(blockState) && !Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos), direction.getOpposite())) {
 					bl = true;
 					break;
 				}

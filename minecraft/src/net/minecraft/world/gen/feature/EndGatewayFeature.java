@@ -37,7 +37,7 @@ public class EndGatewayFeature extends Feature<EndGatewayFeatureConfig> {
 					BlockEntity blockEntity = iWorld.getBlockEntity(blockPos3);
 					if (blockEntity instanceof EndGatewayBlockEntity) {
 						EndGatewayBlockEntity endGatewayBlockEntity = (EndGatewayBlockEntity)blockEntity;
-						endGatewayBlockEntity.method_11418(TheEndDimension.field_13103);
+						endGatewayBlockEntity.setExitPortalPos(TheEndDimension.SPAWN_POINT);
 					}
 				}
 			} else if (bl2) {
@@ -54,7 +54,7 @@ public class EndGatewayFeature extends Feature<EndGatewayFeatureConfig> {
 		BlockEntity blockEntity2 = iWorld.getBlockEntity(blockPos);
 		if (blockEntity2 instanceof EndGatewayBlockEntity) {
 			EndGatewayBlockEntity endGatewayBlockEntity2 = (EndGatewayBlockEntity)blockEntity2;
-			endGatewayBlockEntity2.method_11418(((FloatingIslandsChunkGenerator)chunkGenerator).getCenter());
+			endGatewayBlockEntity2.setExitPortalPos(((FloatingIslandsChunkGenerator)chunkGenerator).getCenter());
 		}
 
 		return true;

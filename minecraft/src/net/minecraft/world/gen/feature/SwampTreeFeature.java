@@ -103,19 +103,19 @@ public class SwampTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> 
 								BlockPos blockPos5 = mutable2.north();
 								BlockPos blockPos6 = mutable2.south();
 								if (random.nextInt(4) == 0 && isAir(modifiableTestableWorld, blockPos4)) {
-									this.method_14030(modifiableTestableWorld, blockPos4, VineBlock.field_11702);
+									this.method_14030(modifiableTestableWorld, blockPos4, VineBlock.EAST);
 								}
 
 								if (random.nextInt(4) == 0 && isAir(modifiableTestableWorld, blockPos2)) {
-									this.method_14030(modifiableTestableWorld, blockPos2, VineBlock.field_11696);
+									this.method_14030(modifiableTestableWorld, blockPos2, VineBlock.WEST);
 								}
 
 								if (random.nextInt(4) == 0 && isAir(modifiableTestableWorld, blockPos5)) {
-									this.method_14030(modifiableTestableWorld, blockPos5, VineBlock.field_11699);
+									this.method_14030(modifiableTestableWorld, blockPos5, VineBlock.SOUTH);
 								}
 
 								if (random.nextInt(4) == 0 && isAir(modifiableTestableWorld, blockPos6)) {
-									this.method_14030(modifiableTestableWorld, blockPos6, VineBlock.field_11706);
+									this.method_14030(modifiableTestableWorld, blockPos6, VineBlock.NORTH);
 								}
 							}
 						}

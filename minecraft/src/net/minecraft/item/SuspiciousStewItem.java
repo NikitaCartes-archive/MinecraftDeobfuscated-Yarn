@@ -12,7 +12,7 @@ public class SuspiciousStewItem extends FoodItem {
 		super(i, 0.6F, false, settings);
 	}
 
-	public static void method_8021(ItemStack itemStack, StatusEffect statusEffect, int i) {
+	public static void addEffectToStew(ItemStack itemStack, StatusEffect statusEffect, int i) {
 		CompoundTag compoundTag = itemStack.getOrCreateTag();
 		ListTag listTag = compoundTag.getList("Effects", 9);
 		CompoundTag compoundTag2 = new CompoundTag();

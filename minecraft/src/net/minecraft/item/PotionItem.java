@@ -56,7 +56,7 @@ public class PotionItem extends Item {
 		}
 
 		if (playerEntity != null) {
-			playerEntity.incrementStat(Stats.field_15372.method_14956(this));
+			playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 		}
 
 		if (playerEntity == null || !playerEntity.abilities.creativeMode) {
@@ -96,7 +96,7 @@ public class PotionItem extends Item {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
-		PotionUtil.addInformation(itemStack, list, 1.0F);
+		PotionUtil.buildTooltip(itemStack, list, 1.0F);
 	}
 
 	@Environment(EnvType.CLIENT)

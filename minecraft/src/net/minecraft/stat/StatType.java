@@ -8,37 +8,37 @@ import net.fabricmc.api.Environment;
 import net.minecraft.util.registry.Registry;
 
 public class StatType<T> implements Iterable<Stat<T>> {
-	private final Registry<T> field_15323;
-	private final Map<T, Stat<T>> field_15324 = new IdentityHashMap();
+	private final Registry<T> registry;
+	private final Map<T, Stat<T>> stats = new IdentityHashMap();
 
 	public StatType(Registry<T> registry) {
-		this.field_15323 = registry;
+		this.registry = registry;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_14958(T object) {
-		return this.field_15324.containsKey(object);
+	public boolean hasStat(T object) {
+		return this.stats.containsKey(object);
 	}
 
-	public Stat<T> method_14955(T object, StatFormatter statFormatter) {
-		return (Stat<T>)this.field_15324.computeIfAbsent(object, objectx -> new Stat<>(this, (T)objectx, statFormatter));
+	public Stat<T> getOrCreateStat(T object, StatFormatter statFormatter) {
+		return (Stat<T>)this.stats.computeIfAbsent(object, objectx -> new Stat<>(this, (T)objectx, statFormatter));
 	}
 
-	public Registry<T> method_14959() {
-		return this.field_15323;
+	public Registry<T> getRegistry() {
+		return this.registry;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_14960() {
-		return this.field_15324.size();
+	public int getStatCount() {
+		return this.stats.size();
 	}
 
 	public Iterator<Stat<T>> iterator() {
-		return this.field_15324.values().iterator();
+		return this.stats.values().iterator();
 	}
 
-	public Stat<T> method_14956(T object) {
-		return this.method_14955(object, StatFormatter.DEFAULT);
+	public Stat<T> getOrCreateStat(T object) {
+		return this.getOrCreateStat(object, StatFormatter.DEFAULT);
 	}
 
 	@Environment(EnvType.CLIENT)

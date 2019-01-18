@@ -9,7 +9,7 @@ import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.util.Identifier;
 
-public class BlastingRecipe extends AbstractCookingRecipe {
+public class BlastingRecipe extends CookingRecipe {
 	public BlastingRecipe(Identifier identifier, String string, Ingredient ingredient, ItemStack itemStack, float f, int i) {
 		super(RecipeType.BLASTING, identifier, string, ingredient, itemStack, f, i);
 	}

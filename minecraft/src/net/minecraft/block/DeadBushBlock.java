@@ -6,7 +6,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 
 public class DeadBushBlock extends PlantBlock {
-	protected static final VoxelShape field_10910 = Block.createCubeShape(2.0, 0.0, 2.0, 14.0, 13.0, 14.0);
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 13.0, 14.0);
 
 	protected DeadBushBlock(Block.Settings settings) {
 		super(settings);
@@ -14,7 +14,7 @@ public class DeadBushBlock extends PlantBlock {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_10910;
+		return SHAPE;
 	}
 
 	@Override

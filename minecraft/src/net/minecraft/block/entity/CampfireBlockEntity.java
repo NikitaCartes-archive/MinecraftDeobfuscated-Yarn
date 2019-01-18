@@ -130,13 +130,13 @@ public class CampfireBlockEntity extends BlockEntity implements class_3829, Tick
 
 	@Override
 	public CompoundTag toTag(CompoundTag compoundTag) {
-		this.method_17507(compoundTag);
+		this.saveInitialChunkData(compoundTag);
 		compoundTag.putIntArray("CookingTimes", this.cookingTimes);
 		compoundTag.putIntArray("CookingTotalTimes", this.cookingTotalTimes);
 		return compoundTag;
 	}
 
-	private CompoundTag method_17507(CompoundTag compoundTag) {
+	private CompoundTag saveInitialChunkData(CompoundTag compoundTag) {
 		super.toTag(compoundTag);
 		InventoryUtil.serialize(compoundTag, this.itemsBeingCooked, true);
 		return compoundTag;
@@ -150,7 +150,7 @@ public class CampfireBlockEntity extends BlockEntity implements class_3829, Tick
 
 	@Override
 	public CompoundTag toInitialChunkDataTag() {
-		return this.method_17507(new CompoundTag());
+		return this.saveInitialChunkData(new CompoundTag());
 	}
 
 	public Optional<CampfireCookingRecipe> getRecipeFor(ItemStack itemStack) {

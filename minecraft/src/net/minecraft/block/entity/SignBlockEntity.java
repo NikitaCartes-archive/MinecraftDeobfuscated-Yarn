@@ -63,7 +63,7 @@ public class SignBlockEntity extends BlockEntity {
 			TextComponent textComponent = TextComponent.Serializer.fromJsonString(string);
 			if (this.world instanceof ServerWorld) {
 				try {
-					this.text[i] = TextFormatter.method_10881(this.method_11304(null), textComponent, null);
+					this.text[i] = TextFormatter.method_10881(this.getCommandSource(null), textComponent, null);
 				} catch (CommandSyntaxException var6) {
 					this.text[i] = textComponent;
 				}
@@ -87,7 +87,7 @@ public class SignBlockEntity extends BlockEntity {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public String method_11300(int i, Function<TextComponent, String> function) {
+	public String getTextBeingEditedOnRow(int i, Function<TextComponent, String> function) {
 		if (this.textBeingEdited[i] == null && this.text[i] != null) {
 			this.textBeingEdited[i] = (String)function.apply(this.text[i]);
 		}
@@ -107,7 +107,7 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public boolean method_11011() {
+	public boolean shouldNotCopyTagFromItem() {
 		return true;
 	}
 
@@ -137,7 +137,7 @@ public class SignBlockEntity extends BlockEntity {
 			if (style != null && style.getClickEvent() != null) {
 				ClickEvent clickEvent = style.getClickEvent();
 				if (clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
-					playerEntity.getServer().getCommandManager().execute(this.method_11304((ServerPlayerEntity)playerEntity), clickEvent.getValue());
+					playerEntity.getServer().getCommandManager().execute(this.getCommandSource((ServerPlayerEntity)playerEntity), clickEvent.getValue());
 				}
 			}
 		}
@@ -145,7 +145,7 @@ public class SignBlockEntity extends BlockEntity {
 		return true;
 	}
 
-	public ServerCommandSource method_11304(@Nullable ServerPlayerEntity serverPlayerEntity) {
+	public ServerCommandSource getCommandSource(@Nullable ServerPlayerEntity serverPlayerEntity) {
 		String string = serverPlayerEntity == null ? "Sign" : serverPlayerEntity.getName().getString();
 		TextComponent textComponent = (TextComponent)(serverPlayerEntity == null ? new StringTextComponent("Sign") : serverPlayerEntity.getDisplayName());
 		return new ServerCommandSource(

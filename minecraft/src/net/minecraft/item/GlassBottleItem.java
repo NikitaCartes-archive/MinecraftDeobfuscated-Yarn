@@ -11,10 +11,10 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.HitResult;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
@@ -38,7 +38,7 @@ public class GlassBottleItem extends Item {
 			world.playSound(null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_15029, SoundCategory.field_15254, 1.0F, 1.0F);
 			return new TypedActionResult<>(ActionResult.SUCCESS, this.method_7725(itemStack, playerEntity, new ItemStack(Items.field_8613)));
 		} else {
-			HitResult hitResult = getHitResult(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
+			HitResult hitResult = method_7872(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
 			if (hitResult.getType() == HitResult.Type.NONE) {
 				return new TypedActionResult<>(ActionResult.PASS, itemStack);
 			} else {
@@ -63,7 +63,7 @@ public class GlassBottleItem extends Item {
 
 	protected ItemStack method_7725(ItemStack itemStack, PlayerEntity playerEntity, ItemStack itemStack2) {
 		itemStack.subtractAmount(1);
-		playerEntity.incrementStat(Stats.field_15372.method_14956(this));
+		playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 		if (itemStack.isEmpty()) {
 			return itemStack2;
 		} else {

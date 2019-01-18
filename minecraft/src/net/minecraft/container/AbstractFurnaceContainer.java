@@ -12,24 +12,22 @@ import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeInputProvider;
 import net.minecraft.recipe.RecipeType;
-import net.minecraft.recipe.cooking.AbstractCookingRecipe;
+import net.minecraft.recipe.cooking.CookingRecipe;
 import net.minecraft.world.World;
 
 public abstract class AbstractFurnaceContainer extends CraftingContainer<Inventory> {
 	private final Inventory inventory;
 	private final PropertyDelegate propertyDelegate;
 	protected final World world;
-	private final RecipeType<? extends AbstractCookingRecipe> field_17494;
+	private final RecipeType<? extends CookingRecipe> field_17494;
 
-	protected AbstractFurnaceContainer(
-		ContainerType<?> containerType, RecipeType<? extends AbstractCookingRecipe> recipeType, int i, PlayerInventory playerInventory
-	) {
+	protected AbstractFurnaceContainer(ContainerType<?> containerType, RecipeType<? extends CookingRecipe> recipeType, int i, PlayerInventory playerInventory) {
 		this(containerType, recipeType, i, playerInventory, new BasicInventory(3), new ArrayPropertyDelegate(4));
 	}
 
 	protected AbstractFurnaceContainer(
 		ContainerType<?> containerType,
-		RecipeType<? extends AbstractCookingRecipe> recipeType,
+		RecipeType<? extends CookingRecipe> recipeType,
 		int i,
 		PlayerInventory playerInventory,
 		Inventory inventory,

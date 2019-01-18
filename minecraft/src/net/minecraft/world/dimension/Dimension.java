@@ -17,7 +17,7 @@ public abstract class Dimension {
 	public static final float[] field_13059 = new float[]{1.0F, 0.75F, 0.5F, 0.25F, 0.0F, 0.25F, 0.5F, 0.75F};
 	protected final World world;
 	private final DimensionType type;
-	protected boolean field_13057;
+	protected boolean waterVaporizes;
 	protected boolean isNether;
 	protected final float[] field_13053 = new float[16];
 	private final float[] field_13054 = new float[4];
@@ -81,8 +81,8 @@ public abstract class Dimension {
 		return this.world.getLevelProperties().getGeneratorType() == LevelGeneratorType.FLAT ? 1.0 : 0.03125;
 	}
 
-	public boolean method_12465() {
-		return this.field_13057;
+	public boolean doesWaterVaporize() {
+		return this.waterVaporizes;
 	}
 
 	public boolean hasSkyLight() {

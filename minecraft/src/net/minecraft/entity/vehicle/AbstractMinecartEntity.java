@@ -278,7 +278,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 			if (blockState.matches(BlockTags.field_15463)) {
 				this.method_7513(blockPos, blockState);
 				if (blockState.getBlock() == Blocks.field_10546) {
-					this.onActivatorRail(j, i, k, blockState.get(PoweredRailBlock.field_11364));
+					this.onActivatorRail(j, i, k, blockState.get(PoweredRailBlock.POWERED));
 				}
 			} else {
 				this.method_7512();
@@ -363,7 +363,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 		boolean bl2 = false;
 		AbstractRailBlock abstractRailBlock = (AbstractRailBlock)blockState.getBlock();
 		if (abstractRailBlock == Blocks.field_10425) {
-			bl = blockState.get(PoweredRailBlock.field_11364);
+			bl = blockState.get(PoweredRailBlock.POWERED);
 			bl2 = !bl;
 		}
 

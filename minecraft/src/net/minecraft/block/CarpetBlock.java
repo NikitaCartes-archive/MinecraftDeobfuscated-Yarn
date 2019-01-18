@@ -10,7 +10,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 
 public class CarpetBlock extends Block {
-	protected static final VoxelShape field_11783 = Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
 	private final DyeColor color;
 
 	protected CarpetBlock(DyeColor dyeColor, Block.Settings settings) {
@@ -24,7 +24,7 @@ public class CarpetBlock extends Block {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_11783;
+		return SHAPE;
 	}
 
 	@Override

@@ -17,7 +17,7 @@ public class ScaffoldingItem extends BlockItem {
 	@Nullable
 	@Override
 	public ItemPlacementContext getPlacementContext(ItemPlacementContext itemPlacementContext) {
-		BlockPos blockPos = itemPlacementContext.getPos();
+		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		World world = itemPlacementContext.getWorld();
 		BlockState blockState = world.getBlockState(blockPos);
 		Block block = this.getBlock();
@@ -42,7 +42,7 @@ public class ScaffoldingItem extends BlockItem {
 					}
 
 					return ItemPlacementContext.create(
-						itemPlacementContext, itemPlacementContext.getPos().offset(itemPlacementContext.getFacing()), itemPlacementContext.getFacing()
+						itemPlacementContext, itemPlacementContext.getBlockPos().offset(itemPlacementContext.getFacing()), itemPlacementContext.getFacing()
 					);
 				}
 

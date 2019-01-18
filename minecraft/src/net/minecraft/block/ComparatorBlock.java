@@ -13,9 +13,9 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TaskPriority;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
@@ -28,11 +28,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	public ComparatorBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory
-				.getDefaultState()
-				.with(field_11177, Direction.NORTH)
-				.with(field_10911, Boolean.valueOf(false))
-				.with(field_10789, ComparatorMode.field_12576)
+			this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(field_10789, ComparatorMode.field_12576)
 		);
 	}
 
@@ -73,7 +69,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	@Override
 	protected int method_9991(World world, BlockPos blockPos, BlockState blockState) {
 		int i = super.method_9991(world, blockPos, blockState);
-		Direction direction = blockState.get(field_11177);
+		Direction direction = blockState.get(FACING);
 		BlockPos blockPos2 = blockPos.offset(direction);
 		BlockState blockState2 = world.getBlockState(blockPos2);
 		if (blockState2.hasComparatorOutput()) {
@@ -112,7 +108,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (!playerEntity.abilities.allowModifyWorld) {
 			return false;
 		} else {
@@ -131,7 +127,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 			int i = this.method_9773(world, blockPos, blockState);
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			int j = blockEntity instanceof ComparatorBlockEntity ? ((ComparatorBlockEntity)blockEntity).getOutputSignal() : 0;
-			if (i != j || blockState.get(field_10911) != this.method_9990(world, blockPos, blockState)) {
+			if (i != j || blockState.get(POWERED) != this.method_9990(world, blockPos, blockState)) {
 				TaskPriority taskPriority = this.method_9988(world, blockPos, blockState) ? TaskPriority.field_9310 : TaskPriority.field_9314;
 				world.getBlockTickScheduler().schedule(blockPos, this, 2, taskPriority);
 			}
@@ -150,11 +146,11 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 
 		if (j != i || blockState.get(field_10789) == ComparatorMode.field_12576) {
 			boolean bl = this.method_9990(world, blockPos, blockState);
-			boolean bl2 = blockState.get(field_10911);
+			boolean bl2 = blockState.get(POWERED);
 			if (bl2 && !bl) {
-				world.setBlockState(blockPos, blockState.with(field_10911, Boolean.valueOf(false)), 2);
+				world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(false)), 2);
 			} else if (!bl2 && bl) {
-				world.setBlockState(blockPos, blockState.with(field_10911, Boolean.valueOf(true)), 2);
+				world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(true)), 2);
 			}
 
 			this.method_9997(world, blockPos, blockState);
@@ -162,7 +158,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		this.method_9775(world, blockPos, blockState);
 	}
 
@@ -180,6 +176,6 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_11177, field_10789, field_10911);
+		builder.with(FACING, field_10789, POWERED);
 	}
 }

@@ -81,7 +81,7 @@ public class TridentItem extends Item {
 						}
 					}
 
-					playerEntity.incrementStat(Stats.field_15372.method_14956(this));
+					playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 					if (k > 0) {
 						float f = playerEntity.yaw;
 						float g = playerEntity.pitch;

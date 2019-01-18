@@ -27,7 +27,7 @@ public class BannerItem extends WallStandingBlockItem {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void addBannerInformation(ItemStack itemStack, List<TextComponent> list) {
+	public static void buildBannerTooltip(ItemStack itemStack, List<TextComponent> list) {
 		CompoundTag compoundTag = itemStack.getSubCompoundTag("BlockEntityTag");
 		if (compoundTag != null && compoundTag.containsKey("Patterns")) {
 			ListTag listTag = compoundTag.getList("Patterns", 10);
@@ -50,6 +50,6 @@ public class BannerItem extends WallStandingBlockItem {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
-		addBannerInformation(itemStack, list);
+		buildBannerTooltip(itemStack, list);
 	}
 }

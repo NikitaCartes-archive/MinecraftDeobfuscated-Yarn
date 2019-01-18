@@ -13,7 +13,7 @@ public class OreBlock extends Block {
 		super(settings);
 	}
 
-	protected int method_10398(Random random) {
+	protected int getExperienceWhenMined(Random random) {
 		if (this == Blocks.field_10418) {
 			return MathHelper.nextInt(random, 0, 2);
 		} else if (this == Blocks.field_10442) {
@@ -31,7 +31,7 @@ public class OreBlock extends Block {
 	public void onStacksDropped(BlockState blockState, World world, BlockPos blockPos, ItemStack itemStack) {
 		super.onStacksDropped(blockState, world, blockPos, itemStack);
 		if (EnchantmentHelper.getLevel(Enchantments.field_9099, itemStack) == 0) {
-			int i = this.method_10398(world.random);
+			int i = this.getExperienceWhenMined(world.random);
 			if (i > 0) {
 				this.dropExperience(world, blockPos, i);
 			}

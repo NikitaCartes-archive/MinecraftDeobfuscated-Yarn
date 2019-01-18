@@ -18,7 +18,7 @@ public class LeashItem extends Item {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		World world = itemUsageContext.getWorld();
-		BlockPos blockPos = itemUsageContext.getPos();
+		BlockPos blockPos = itemUsageContext.getBlockPos();
 		Block block = world.getBlockState(blockPos).getBlock();
 		if (block.matches(BlockTags.field_16584)) {
 			PlayerEntity playerEntity = itemUsageContext.getPlayer();

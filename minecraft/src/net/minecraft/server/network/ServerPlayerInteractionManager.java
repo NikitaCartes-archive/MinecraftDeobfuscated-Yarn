@@ -15,9 +15,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.GameMode;
@@ -273,7 +273,7 @@ public class ServerPlayerInteractionManager {
 		BlockPos blockPos = blockHitResult.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (this.gameMode == GameMode.field_9219) {
-			NameableContainerProvider nameableContainerProvider = blockState.method_17526(world, blockPos);
+			NameableContainerProvider nameableContainerProvider = blockState.createContainerProvider(world, blockPos);
 			if (nameableContainerProvider != null) {
 				playerEntity.openContainer(nameableContainerProvider);
 				return ActionResult.SUCCESS;
@@ -283,7 +283,7 @@ public class ServerPlayerInteractionManager {
 		} else {
 			boolean bl = !playerEntity.getMainHandStack().isEmpty() || !playerEntity.getOffHandStack().isEmpty();
 			boolean bl2 = playerEntity.isSneaking() && bl;
-			if (!bl2 && blockState.activate(world, playerEntity, hand, blockHitResult)) {
+			if (!bl2 && blockState.method_11629(world, playerEntity, hand, blockHitResult)) {
 				return ActionResult.SUCCESS;
 			} else if (!itemStack.isEmpty() && !playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
 				ItemUsageContext itemUsageContext = new ItemUsageContext(playerEntity, playerEntity.getStackInHand(hand), blockHitResult);

@@ -19,10 +19,10 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
-public class SaplingBambooBlock extends Block implements Fertilizable {
-	protected static final VoxelShape field_9897 = Block.createCubeShape(4.0, 0.0, 4.0, 12.0, 12.0, 12.0);
+public class BambooSaplingBlock extends Block implements Fertilizable {
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 12.0, 12.0);
 
-	public SaplingBambooBlock(Block.Settings settings) {
+	public BambooSaplingBlock(Block.Settings settings) {
 		super(settings);
 	}
 
@@ -34,11 +34,11 @@ public class SaplingBambooBlock extends Block implements Fertilizable {
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		Vec3d vec3d = blockState.getOffsetPos(blockView, blockPos);
-		return field_9897.method_1096(vec3d.x, vec3d.y, vec3d.z);
+		return SHAPE.offset(vec3d.x, vec3d.y, vec3d.z);
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (random.nextInt(3) == 0 && world.isAir(blockPos.up()) && world.getLightLevel(blockPos.up(), 0) >= 9) {
 			this.method_9351(world, blockPos);
 		}

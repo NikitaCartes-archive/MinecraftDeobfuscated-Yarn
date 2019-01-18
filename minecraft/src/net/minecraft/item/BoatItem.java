@@ -9,8 +9,8 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.HitResult;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
@@ -28,7 +28,7 @@ public class BoatItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		HitResult hitResult = getHitResult(world, playerEntity, RayTraceContext.FluidHandling.field_1347);
+		HitResult hitResult = method_7872(world, playerEntity, RayTraceContext.FluidHandling.field_1347);
 		if (hitResult.getType() == HitResult.Type.NONE) {
 			return new TypedActionResult<>(ActionResult.PASS, itemStack);
 		} else {
@@ -63,7 +63,7 @@ public class BoatItem extends Item {
 						itemStack.subtractAmount(1);
 					}
 
-					playerEntity.incrementStat(Stats.field_15372.method_14956(this));
+					playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 					return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 				}
 			} else {

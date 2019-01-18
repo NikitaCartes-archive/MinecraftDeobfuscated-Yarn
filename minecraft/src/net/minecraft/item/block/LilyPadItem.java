@@ -16,10 +16,10 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.HitResult;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.RayTraceContext;
@@ -38,7 +38,7 @@ public class LilyPadItem extends BlockItem {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		HitResult hitResult = getHitResult(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
+		HitResult hitResult = method_7872(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
 		if (hitResult.getType() == HitResult.Type.NONE) {
 			return new TypedActionResult<>(ActionResult.PASS, itemStack);
 		} else {
@@ -64,7 +64,7 @@ public class LilyPadItem extends BlockItem {
 						itemStack.subtractAmount(1);
 					}
 
-					playerEntity.incrementStat(Stats.field_15372.method_14956(this));
+					playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 					world.playSound(playerEntity, blockPos, SoundEvents.field_15173, SoundCategory.field_15245, 1.0F, 1.0F);
 					return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 				}

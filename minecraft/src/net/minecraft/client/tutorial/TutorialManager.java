@@ -11,7 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.KeybindTextComponent;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormat;
-import net.minecraft.util.HitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
 

@@ -24,7 +24,7 @@ public class ShulkerBoxBlockEntityRenderer extends BlockEntityRenderer<ShulkerBo
 		if (shulkerBoxBlockEntity.hasWorld()) {
 			BlockState blockState = this.getWorld().getBlockState(shulkerBoxBlockEntity.getPos());
 			if (blockState.getBlock() instanceof ShulkerBoxBlock) {
-				direction = blockState.get(ShulkerBoxBlock.field_11496);
+				direction = blockState.get(ShulkerBoxBlock.FACING);
 			}
 		}
 

@@ -18,7 +18,7 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorType;
 public class TheNetherDimension extends Dimension {
 	public TheNetherDimension(World world, DimensionType dimensionType) {
 		super(world, dimensionType);
-		this.field_13057 = true;
+		this.waterVaporizes = true;
 		this.isNether = true;
 	}
 

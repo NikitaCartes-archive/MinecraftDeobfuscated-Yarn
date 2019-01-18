@@ -99,7 +99,7 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		private void method_16588(int i, int j) {
 			int k = i * 16 - 29;
 			int l = j * 16 - 29;
-			Direction direction = Direction.class_2353.HORIZONTAL.random(this.field_16715);
+			Direction direction = Direction.Type.HORIZONTAL.random(this.field_16715);
 			this.children.add(new class_3366.class_3374(this.field_16715, k, l, direction));
 			this.method_14969();
 			this.field_13717 = true;

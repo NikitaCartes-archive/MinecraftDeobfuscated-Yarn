@@ -13,11 +13,11 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 
 public class KelpPlantBlock extends Block implements FluidFillable {
-	private final KelpBlock field_11190;
+	private final KelpBlock kelpBlock;
 
 	protected KelpPlantBlock(KelpBlock kelpBlock, Block.Settings settings) {
 		super(settings);
-		this.field_11190 = kelpBlock;
+		this.kelpBlock = kelpBlock;
 	}
 
 	@Override
@@ -39,12 +39,12 @@ public class KelpPlantBlock extends Block implements FluidFillable {
 		} else {
 			if (direction == Direction.UP) {
 				Block block = blockState2.getBlock();
-				if (block != this && block != this.field_11190) {
-					return this.field_11190.method_10292(iWorld);
+				if (block != this && block != this.kelpBlock) {
+					return this.kelpBlock.getPlacementState(iWorld);
 				}
 			}
 
-			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.method_15789(iWorld));
+			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		}
 	}
@@ -54,7 +54,7 @@ public class KelpPlantBlock extends Block implements FluidFillable {
 		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
 		Block block = blockState2.getBlock();
-		return block != Blocks.field_10092 && (block == this || Block.isFaceFullCube(blockState2.getCollisionShape(viewableWorld, blockPos2), Direction.UP));
+		return block != Blocks.field_10092 && (block == this || Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos2), Direction.UP));
 	}
 
 	@Environment(EnvType.CLIENT)

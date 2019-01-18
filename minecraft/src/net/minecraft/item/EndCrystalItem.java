@@ -22,7 +22,7 @@ public class EndCrystalItem extends Item {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		World world = itemUsageContext.getWorld();
-		BlockPos blockPos = itemUsageContext.getPos();
+		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.getBlock() != Blocks.field_10540 && blockState.getBlock() != Blocks.field_9987) {
 			return ActionResult.FAILURE;

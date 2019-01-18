@@ -83,7 +83,7 @@ public class Stats {
 	private static Identifier method_15021(String string, StatFormatter statFormatter) {
 		Identifier identifier = new Identifier(string);
 		Registry.register(Registry.CUSTOM_STAT, string, identifier);
-		field_15419.method_14955(identifier, statFormatter);
+		field_15419.getOrCreateStat(identifier, statFormatter);
 		return identifier;
 	}
 

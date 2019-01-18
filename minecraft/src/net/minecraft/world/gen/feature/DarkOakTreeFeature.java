@@ -36,7 +36,7 @@ public class DarkOakTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig
 				this.setToDirt(modifiableTestableWorld, blockPos2.east());
 				this.setToDirt(modifiableTestableWorld, blockPos2.south());
 				this.setToDirt(modifiableTestableWorld, blockPos2.south().east());
-				Direction direction = Direction.class_2353.HORIZONTAL.random(random);
+				Direction direction = Direction.Type.HORIZONTAL.random(random);
 				int m = i - random.nextInt(4);
 				int n = 2 - random.nextInt(3);
 				int o = j;

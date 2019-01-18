@@ -21,8 +21,8 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class RedstoneTorchWallBlock extends RedstoneTorchBlock {
-	public static final DirectionProperty field_11443 = HorizontalFacingBlock.field_11177;
-	public static final BooleanProperty field_11444 = RedstoneTorchBlock.field_11446;
+	public static final DirectionProperty field_11443 = HorizontalFacingBlock.FACING;
+	public static final BooleanProperty field_11444 = RedstoneTorchBlock.LIT;
 
 	protected RedstoneTorchWallBlock(Block.Settings settings) {
 		super(settings);
@@ -83,13 +83,13 @@ public class RedstoneTorchWallBlock extends RedstoneTorchBlock {
 	}
 
 	@Override
-	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
-		return Blocks.field_10099.applyRotation(blockState, rotation);
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
+		return Blocks.field_10099.rotate(blockState, rotation);
 	}
 
 	@Override
-	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return Blocks.field_10099.applyMirror(blockState, mirror);
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
+		return Blocks.field_10099.mirror(blockState, mirror);
 	}
 
 	@Override

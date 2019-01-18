@@ -91,8 +91,8 @@ public class ScoreboardCriterion {
 
 	@Nullable
 	private static <T> ScoreboardCriterion method_1223(StatType<T> statType, Identifier identifier) {
-		Registry<T> registry = statType.method_14959();
-		return registry.contains(identifier) ? statType.method_14956(registry.get(identifier)) : null;
+		Registry<T> registry = statType.getRegistry();
+		return registry.contains(identifier) ? statType.getOrCreateStat(registry.get(identifier)) : null;
 	}
 
 	public String getName() {

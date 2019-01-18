@@ -14,13 +14,13 @@ public class BlastFurnaceBlockEntity extends AbstractFurnaceBlockEntity {
 	}
 
 	@Override
-	protected TextComponent method_17823() {
+	protected TextComponent getContainerName() {
 		return new TranslatableTextComponent("container.blast_furnace");
 	}
 
 	@Override
-	protected int getItemBurnTime(ItemStack itemStack) {
-		return super.getItemBurnTime(itemStack) / 2;
+	protected int getFuelTime(ItemStack itemStack) {
+		return super.getFuelTime(itemStack) / 2;
 	}
 
 	@Override

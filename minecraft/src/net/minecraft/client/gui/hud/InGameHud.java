@@ -51,12 +51,12 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormat;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.ChatUtil;
-import net.minecraft.util.EntityHitResult;
-import net.minecraft.util.HitResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
@@ -381,7 +381,7 @@ public class InGameHud extends Drawable {
 		} else if (hitResult.getType() == HitResult.Type.BLOCK) {
 			BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 			World world = this.client.world;
-			return world.getBlockState(blockPos).method_17526(world, blockPos) != null;
+			return world.getBlockState(blockPos).createContainerProvider(world, blockPos) != null;
 		} else {
 			return false;
 		}

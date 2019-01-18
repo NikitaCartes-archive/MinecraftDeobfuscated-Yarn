@@ -6,11 +6,11 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.class_3492;
-import net.minecraft.class_3499;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.sortme.Structure;
+import net.minecraft.sortme.StructurePlacementData;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ViewableWorld;
 
@@ -30,8 +30,14 @@ public class BlockIgnoreStructureProcessor extends AbstractStructureProcessor {
 
 	@Nullable
 	@Override
-	public class_3499.class_3501 process(ViewableWorld viewableWorld, BlockPos blockPos, class_3499.class_3501 arg, class_3499.class_3501 arg2, class_3492 arg3) {
-		return this.blocks.contains(arg2.field_15596.getBlock()) ? null : arg2;
+	public Structure.StructureBlockInfo process(
+		ViewableWorld viewableWorld,
+		BlockPos blockPos,
+		Structure.StructureBlockInfo structureBlockInfo,
+		Structure.StructureBlockInfo structureBlockInfo2,
+		StructurePlacementData structurePlacementData
+	) {
+		return this.blocks.contains(structureBlockInfo2.state.getBlock()) ? null : structureBlockInfo2;
 	}
 
 	@Override

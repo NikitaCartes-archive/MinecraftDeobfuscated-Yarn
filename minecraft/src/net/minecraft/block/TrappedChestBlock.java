@@ -22,8 +22,8 @@ public class TrappedChestBlock extends ChestBlock {
 	}
 
 	@Override
-	protected Stat<Identifier> method_9755() {
-		return Stats.field_15419.method_14956(Stats.field_15402);
+	protected Stat<Identifier> getOpenStat() {
+		return Stats.field_15419.getOrCreateStat(Stats.field_15402);
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class TrappedChestBlock extends ChestBlock {
 
 	@Override
 	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		return MathHelper.clamp(ChestBlockEntity.method_11048(blockView, blockPos), 0, 15);
+		return MathHelper.clamp(ChestBlockEntity.getPlayersLookingInChestCount(blockView, blockPos), 0, 15);
 	}
 
 	@Override

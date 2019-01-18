@@ -14,8 +14,8 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.util.EntityHitResult;
-import net.minecraft.util.HitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Difficulty;
@@ -56,7 +56,7 @@ public class ExplodingWitherSkullEntity extends ExplosiveProjectileEntity {
 	}
 
 	@Override
-	protected void onCollision(HitResult hitResult) {
+	protected void method_7469(HitResult hitResult) {
 		if (!this.world.isClient) {
 			if (hitResult.getType() == HitResult.Type.ENTITY) {
 				Entity entity = ((EntityHitResult)hitResult).getEntity();

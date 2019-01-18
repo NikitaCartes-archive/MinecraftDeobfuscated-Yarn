@@ -39,7 +39,7 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 				cuboid.visible = true;
 			} else {
 				GlStateManager.translatef((float)d + 0.5F, (float)e - 0.16666667F, (float)f + 0.5F);
-				GlStateManager.rotatef(-((Direction)blockState.get(WallBannerBlock.field_11722)).asRotation(), 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotatef(-((Direction)blockState.get(WallBannerBlock.FACING)).asRotation(), 0.0F, 1.0F, 0.0F);
 				GlStateManager.translatef(0.0F, -0.3125F, -0.4375F);
 				cuboid.visible = false;
 			}
@@ -64,6 +64,6 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 
 	@Nullable
 	private Identifier getTextureId(BannerBlockEntity bannerBlockEntity) {
-		return TextureCache.BANNER.get(bannerBlockEntity.method_10915(), bannerBlockEntity.getPatternList(), bannerBlockEntity.getPatternColorList());
+		return TextureCache.BANNER.get(bannerBlockEntity.getPatternCacheKey(), bannerBlockEntity.getPatterns(), bannerBlockEntity.getPatternColors());
 	}
 }

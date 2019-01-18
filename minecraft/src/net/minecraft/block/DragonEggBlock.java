@@ -3,8 +3,8 @@ package net.minecraft.block;
 import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
@@ -13,7 +13,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class DragonEggBlock extends FallingBlock {
-	protected static final VoxelShape field_10950 = Block.createCubeShape(1.0, 0.0, 1.0, 15.0, 16.0, 15.0);
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 16.0, 15.0);
 
 	public DragonEggBlock(Block.Settings settings) {
 		super(settings);
@@ -21,11 +21,11 @@ public class DragonEggBlock extends FallingBlock {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_10950;
+		return SHAPE;
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		this.method_10047(blockState, world, blockPos);
 		return true;
 	}

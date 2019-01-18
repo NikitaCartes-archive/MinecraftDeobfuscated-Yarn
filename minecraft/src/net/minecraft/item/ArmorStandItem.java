@@ -28,7 +28,7 @@ public class ArmorStandItem extends Item {
 		} else {
 			World world = itemUsageContext.getWorld();
 			ItemPlacementContext itemPlacementContext = new ItemPlacementContext(itemUsageContext);
-			BlockPos blockPos = itemPlacementContext.getPos();
+			BlockPos blockPos = itemPlacementContext.getBlockPos();
 			BlockPos blockPos2 = blockPos.up();
 			if (itemPlacementContext.canPlace() && world.getBlockState(blockPos2).method_11587(itemPlacementContext)) {
 				double d = (double)blockPos.getX();

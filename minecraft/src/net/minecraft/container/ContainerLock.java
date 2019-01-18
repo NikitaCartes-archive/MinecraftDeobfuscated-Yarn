@@ -5,11 +5,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 
 @Immutable
-public class LockContainer {
-	public static final LockContainer EMPTY = new LockContainer("");
+public class ContainerLock {
+	public static final ContainerLock NONE = new ContainerLock("");
 	private final String key;
 
-	public LockContainer(String string) {
+	public ContainerLock(String string) {
 		this.key = string;
 	}
 
@@ -23,7 +23,7 @@ public class LockContainer {
 		}
 	}
 
-	public static LockContainer deserialize(CompoundTag compoundTag) {
-		return compoundTag.containsKey("Lock", 8) ? new LockContainer(compoundTag.getString("Lock")) : EMPTY;
+	public static ContainerLock deserialize(CompoundTag compoundTag) {
+		return compoundTag.containsKey("Lock", 8) ? new ContainerLock(compoundTag.getString("Lock")) : NONE;
 	}
 }

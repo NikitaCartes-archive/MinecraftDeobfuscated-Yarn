@@ -12,8 +12,8 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class AbstractRailBlock extends Block {
-	protected static final VoxelShape SHAPE = Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
-	protected static final VoxelShape ASCENDING_SHAPE = Block.createCubeShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
+	protected static final VoxelShape ASCENDING_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
 	private final boolean allowCurves;
 
 	public static boolean isRail(World world, BlockPos blockPos) {
@@ -49,7 +49,7 @@ public abstract class AbstractRailBlock extends Block {
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
 		if (blockState2.getBlock() != blockState.getBlock()) {
 			if (!world.isClient) {
-				blockState = this.method_9475(world, blockPos, blockState, true);
+				blockState = this.updateBlockState(world, blockPos, blockState, true);
 				if (this.allowCurves) {
 					blockState.neighborUpdate(world, blockPos, this, blockPos);
 				}
@@ -91,18 +91,18 @@ public abstract class AbstractRailBlock extends Block {
 				dropStacks(blockState, world, blockPos);
 				world.clearBlockState(blockPos);
 			} else {
-				this.method_9477(blockState, world, blockPos, block);
+				this.updateBlockState(blockState, world, blockPos, block);
 			}
 		}
 	}
 
-	protected void method_9477(BlockState blockState, World world, BlockPos blockPos, Block block) {
+	protected void updateBlockState(BlockState blockState, World world, BlockPos blockPos, Block block) {
 	}
 
-	protected BlockState method_9475(World world, BlockPos blockPos, BlockState blockState, boolean bl) {
+	protected BlockState updateBlockState(World world, BlockPos blockPos, BlockState blockState, boolean bl) {
 		return world.isClient
 			? blockState
-			: new RailPlacementHelper(world, blockPos, blockState).method_10459(world.isReceivingRedstonePower(blockPos), bl).getBlockState();
+			: new RailPlacementHelper(world, blockPos, blockState).updateBlockState(world.isReceivingRedstonePower(blockPos), bl).getBlockState();
 	}
 
 	@Override

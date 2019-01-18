@@ -42,8 +42,8 @@ public interface FluidState extends PropertyContainer<FluidState> {
 		return this.getFluid().method_15788(this, blockView, blockPos);
 	}
 
-	default int method_15761() {
-		return this.getFluid().method_15779(this);
+	default int getLevel() {
+		return this.getFluid().getLevel(this);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -61,13 +61,13 @@ public interface FluidState extends PropertyContainer<FluidState> {
 		return false;
 	}
 
-	default void method_15770(World world, BlockPos blockPos) {
-		this.getFluid().method_15778(world, blockPos, this);
+	default void onScheduledTick(World world, BlockPos blockPos) {
+		this.getFluid().onScheduledTick(world, blockPos, this);
 	}
 
 	@Environment(EnvType.CLIENT)
-	default void method_15768(World world, BlockPos blockPos, Random random) {
-		this.getFluid().method_15776(world, blockPos, this, random);
+	default void randomDisplayTick(World world, BlockPos blockPos, Random random) {
+		this.getFluid().randomDisplayTick(world, blockPos, this, random);
 	}
 
 	default boolean hasRandomTicks() {

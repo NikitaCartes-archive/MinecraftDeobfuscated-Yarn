@@ -46,7 +46,7 @@ public class WrittenBookItem extends Item {
 		return itemStack.getTag().getInt("generation");
 	}
 
-	public static int method_17443(ItemStack itemStack) {
+	public static int getPageCount(ItemStack itemStack) {
 		CompoundTag compoundTag = itemStack.getTag();
 		return compoundTag != null ? compoundTag.getList("pages", 8).size() : 0;
 	}
@@ -81,10 +81,10 @@ public class WrittenBookItem extends Item {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		World world = itemUsageContext.getWorld();
-		BlockPos blockPos = itemUsageContext.getPos();
+		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.getBlock() == Blocks.field_16330) {
-			return LecternBlock.method_17472(world, blockPos, blockState, itemUsageContext.getItemStack()) ? ActionResult.SUCCESS : ActionResult.PASS;
+			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, itemUsageContext.getItemStack()) ? ActionResult.SUCCESS : ActionResult.PASS;
 		} else {
 			return ActionResult.PASS;
 		}
@@ -94,11 +94,11 @@ public class WrittenBookItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		playerEntity.openBookEditorGui(itemStack, hand);
-		playerEntity.incrementStat(Stats.field_15372.method_14956(this));
+		playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 	}
 
-	public static boolean method_8054(ItemStack itemStack, @Nullable ServerCommandSource serverCommandSource, @Nullable PlayerEntity playerEntity) {
+	public static boolean resolve(ItemStack itemStack, @Nullable ServerCommandSource serverCommandSource, @Nullable PlayerEntity playerEntity) {
 		CompoundTag compoundTag = itemStack.getTag();
 		if (compoundTag != null && !compoundTag.getBoolean("resolved")) {
 			compoundTag.putBoolean("resolved", true);

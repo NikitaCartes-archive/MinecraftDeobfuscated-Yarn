@@ -8,8 +8,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.EntityHitResult;
-import net.minecraft.util.HitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 
 public class FireballEntity extends class_3855 {
@@ -29,7 +29,7 @@ public class FireballEntity extends class_3855 {
 	}
 
 	@Override
-	protected void onCollision(HitResult hitResult) {
+	protected void method_7469(HitResult hitResult) {
 		if (!this.world.isClient) {
 			if (hitResult.getType() == HitResult.Type.ENTITY) {
 				Entity entity = ((EntityHitResult)hitResult).getEntity();

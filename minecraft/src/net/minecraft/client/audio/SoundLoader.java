@@ -213,8 +213,8 @@ public class SoundLoader implements Tickable, ResourceReloadListener {
 		this.soundManager.play(soundInstance);
 	}
 
-	public void method_4872(SoundInstance soundInstance, int i) {
-		this.soundManager.method_4852(soundInstance, i);
+	public void play(SoundInstance soundInstance, int i) {
+		this.soundManager.play(soundInstance, i);
 	}
 
 	public void updateListenerPosition(PlayerEntity playerEntity, float f) {

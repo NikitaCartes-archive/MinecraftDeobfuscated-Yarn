@@ -38,7 +38,7 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig> {
 				BlockPos blockPos3 = blockPos2.down();
 				if (iWorld.isAir(blockPos2) && iWorld.getBlockState(blockPos3).hasSolidTopSurface(iWorld, blockPos3)) {
 					iWorld.setBlockState(blockPos2, Blocks.field_10034.getDefaultState(), 2);
-					LootableContainerBlockEntity.method_11287(iWorld, random, blockPos2, LootTables.CHEST_SPAWN_BONUS);
+					LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos2, LootTables.CHEST_SPAWN_BONUS);
 					BlockPos blockPos4 = blockPos2.east();
 					BlockPos blockPos5 = blockPos2.west();
 					BlockPos blockPos6 = blockPos2.north();

@@ -38,7 +38,7 @@ public class TeamClientPacket implements Packet<ClientPlayPacketListener> {
 			this.nameTagVisibilityRule = scoreboardTeam.getNameTagVisibilityRule().field_1445;
 			this.collisionRule = scoreboardTeam.getCollisionRule().field_1436;
 			this.field_12598 = scoreboardTeam.getColor();
-			this.field_12601 = scoreboardTeam.method_1144();
+			this.field_12601 = scoreboardTeam.getSuffix();
 			this.field_12597 = scoreboardTeam.method_1136();
 		}
 

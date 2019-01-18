@@ -5,15 +5,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 
-public class CoralDeadBlock extends CoralParentBlock {
-	protected static final VoxelShape shape = Block.createCubeShape(2.0, 0.0, 2.0, 14.0, 15.0, 14.0);
+public class DeadCoralFanBlock extends CoralParentBlock {
+	private static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 4.0, 14.0);
 
-	protected CoralDeadBlock(Block.Settings settings) {
+	protected DeadCoralFanBlock(Block.Settings settings) {
 		super(settings);
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return shape;
+		return SHAPE;
 	}
 }

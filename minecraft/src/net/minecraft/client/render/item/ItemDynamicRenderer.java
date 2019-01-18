@@ -67,7 +67,7 @@ public class ItemDynamicRenderer {
 				this.renderBanner.deserialize(itemStack, ShieldItem.getColor(itemStack));
 				MinecraftClient.getInstance()
 					.getTextureManager()
-					.bindTexture(TextureCache.SHIELD.get(this.renderBanner.method_10915(), this.renderBanner.getPatternList(), this.renderBanner.getPatternColorList()));
+					.bindTexture(TextureCache.SHIELD.get(this.renderBanner.getPatternCacheKey(), this.renderBanner.getPatterns(), this.renderBanner.getPatternColors()));
 			} else {
 				MinecraftClient.getInstance().getTextureManager().bindTexture(TextureCache.DEFAULT_SHIELD);
 			}
@@ -98,7 +98,7 @@ public class ItemDynamicRenderer {
 				GlStateManager.pushMatrix();
 				GlStateManager.disableCull();
 				SkullBlockEntityRenderer.INSTANCE
-					.renderSkull(0.0F, 0.0F, 0.0F, null, 180.0F, ((AbstractSkullBlock)((BlockItem)item).getBlock()).getSkullType(), gameProfile, -1, 0.0F);
+					.render(0.0F, 0.0F, 0.0F, null, 180.0F, ((AbstractSkullBlock)((BlockItem)item).getBlock()).getSkullType(), gameProfile, -1, 0.0F);
 				GlStateManager.enableCull();
 				GlStateManager.popMatrix();
 			}

@@ -167,11 +167,8 @@ import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormat;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.DefaultedList;
-import net.minecraft.util.EntityHitResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.HitResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.Session;
@@ -183,6 +180,9 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.crash.ICrashCallable;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -1236,7 +1236,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 		}
 
 		this.profiler.pop();
-		this.gameRenderer.updateTargettedEntity(1.0F);
+		this.gameRenderer.updateTargetedEntity(1.0F);
 		this.tutorialManager.method_4911(this.world, this.hitResult);
 		this.profiler.push("gameMode");
 		if (!this.isPaused && this.world != null) {

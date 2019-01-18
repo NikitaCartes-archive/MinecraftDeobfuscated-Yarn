@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import javax.annotation.Nullable;
-import net.minecraft.class_3492;
-import net.minecraft.class_3499;
+import net.minecraft.sortme.Structure;
+import net.minecraft.sortme.StructurePlacementData;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.gen.Heightmap;
@@ -25,10 +25,18 @@ public class GravityStructureProcessor extends AbstractStructureProcessor {
 
 	@Nullable
 	@Override
-	public class_3499.class_3501 process(ViewableWorld viewableWorld, BlockPos blockPos, class_3499.class_3501 arg, class_3499.class_3501 arg2, class_3492 arg3) {
-		int i = viewableWorld.getTop(this.heightmap, arg2.field_15597.getX(), arg2.field_15597.getZ()) + this.offset;
-		int j = arg.field_15597.getY();
-		return new class_3499.class_3501(new BlockPos(arg2.field_15597.getX(), i + j, arg2.field_15597.getZ()), arg2.field_15596, arg2.field_15595);
+	public Structure.StructureBlockInfo process(
+		ViewableWorld viewableWorld,
+		BlockPos blockPos,
+		Structure.StructureBlockInfo structureBlockInfo,
+		Structure.StructureBlockInfo structureBlockInfo2,
+		StructurePlacementData structurePlacementData
+	) {
+		int i = viewableWorld.getTop(this.heightmap, structureBlockInfo2.pos.getX(), structureBlockInfo2.pos.getZ()) + this.offset;
+		int j = structureBlockInfo.pos.getY();
+		return new Structure.StructureBlockInfo(
+			new BlockPos(structureBlockInfo2.pos.getX(), i + j, structureBlockInfo2.pos.getZ()), structureBlockInfo2.state, structureBlockInfo2.tag
+		);
 	}
 
 	@Override

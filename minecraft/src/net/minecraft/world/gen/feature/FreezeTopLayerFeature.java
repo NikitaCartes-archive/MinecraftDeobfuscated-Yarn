@@ -40,8 +40,8 @@ public class FreezeTopLayerFeature extends Feature<DefaultFeatureConfig> {
 				if (biome.canSetIce(iWorld, mutable)) {
 					iWorld.setBlockState(mutable, Blocks.field_10477.getDefaultState(), 2);
 					BlockState blockState = iWorld.getBlockState(mutable2);
-					if (blockState.contains(SnowyBlock.snowy)) {
-						iWorld.setBlockState(mutable2, blockState.with(SnowyBlock.snowy, Boolean.valueOf(true)), 2);
+					if (blockState.contains(SnowyBlock.SNOWY)) {
+						iWorld.setBlockState(mutable2, blockState.with(SnowyBlock.SNOWY, Boolean.valueOf(true)), 2);
 					}
 				}
 			}

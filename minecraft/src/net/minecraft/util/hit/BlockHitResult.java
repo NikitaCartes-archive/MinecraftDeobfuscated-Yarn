@@ -1,4 +1,4 @@
-package net.minecraft.util;
+package net.minecraft.util.hit;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;

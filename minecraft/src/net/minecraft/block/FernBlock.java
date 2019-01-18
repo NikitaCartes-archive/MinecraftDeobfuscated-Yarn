@@ -8,7 +8,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class FernBlock extends PlantBlock implements Fertilizable {
-	protected static final VoxelShape field_11617 = Block.createCubeShape(2.0, 0.0, 2.0, 14.0, 13.0, 14.0);
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 13.0, 14.0);
 
 	protected FernBlock(Block.Settings settings) {
 		super(settings);
@@ -16,7 +16,7 @@ public class FernBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_11617;
+		return SHAPE;
 	}
 
 	@Override

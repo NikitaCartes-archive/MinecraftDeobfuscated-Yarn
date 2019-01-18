@@ -6,8 +6,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -18,14 +18,14 @@ public class PumpkinBlock extends GourdBlock {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.getItem() == Items.field_8868) {
 			if (!world.isClient) {
 				Direction direction = blockHitResult.getSide();
 				Direction direction2 = direction.getAxis() == Direction.Axis.Y ? playerEntity.getHorizontalFacing().getOpposite() : direction;
 				world.playSound(null, blockPos, SoundEvents.field_14619, SoundCategory.field_15245, 1.0F, 1.0F);
-				world.setBlockState(blockPos, Blocks.field_10147.getDefaultState().with(PumpkinCarvedBlock.field_10748, direction2), 11);
+				world.setBlockState(blockPos, Blocks.field_10147.getDefaultState().with(CarvedPumpkinBlock.FACING, direction2), 11);
 				ItemEntity itemEntity = new ItemEntity(
 					world,
 					(double)blockPos.getX() + 0.5 + (double)direction2.getOffsetX() * 0.65,
@@ -42,7 +42,7 @@ public class PumpkinBlock extends GourdBlock {
 
 			return true;
 		} else {
-			return super.activate(blockState, world, blockPos, playerEntity, hand, blockHitResult);
+			return super.method_9534(blockState, world, blockPos, playerEntity, hand, blockHitResult);
 		}
 	}
 

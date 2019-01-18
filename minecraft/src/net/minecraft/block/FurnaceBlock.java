@@ -27,7 +27,7 @@ public class FurnaceBlock extends AbstractFurnaceBlock {
 	}
 
 	@Override
-	protected void method_17025(World world, BlockPos blockPos, PlayerEntity playerEntity) {
+	protected void openContainer(World world, BlockPos blockPos, PlayerEntity playerEntity) {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof FurnaceBlockEntity) {
 			playerEntity.openContainer((NameableContainerProvider)blockEntity);
@@ -38,7 +38,7 @@ public class FurnaceBlock extends AbstractFurnaceBlock {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (blockState.get(field_11105)) {
+		if (blockState.get(LIT)) {
 			double d = (double)blockPos.getX() + 0.5;
 			double e = (double)blockPos.getY();
 			double f = (double)blockPos.getZ() + 0.5;

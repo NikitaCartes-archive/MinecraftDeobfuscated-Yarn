@@ -25,7 +25,7 @@ public class LingeringPotionItem extends PotionItem {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
-		PotionUtil.addInformation(itemStack, list, 0.25F);
+		PotionUtil.buildTooltip(itemStack, list, 0.25F);
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class LingeringPotionItem extends PotionItem {
 			world.spawnEntity(thrownPotionEntity);
 		}
 
-		playerEntity.incrementStat(Stats.field_15372.method_14956(this));
+		playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 	}
 }

@@ -86,7 +86,7 @@ public class NetherFortressGenerator {
 
 		protected class_3391(Random random, int i, int j) {
 			super(StructurePiece.field_16926, 0);
-			this.method_14926(Direction.class_2353.HORIZONTAL.random(random));
+			this.method_14926(Direction.Type.HORIZONTAL.random(random));
 			if (this.getFacing().getAxis() == Direction.Axis.Z) {
 				this.structureBounds = new MutableIntBoundingBox(i, 64, j, i + 19 - 1, 73, j + 19 - 1);
 			} else {

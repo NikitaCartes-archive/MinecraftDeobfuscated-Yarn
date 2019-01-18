@@ -55,13 +55,13 @@ public class BlockSoundGroup {
 	public static final BlockSoundGroup SCAFFOLDING = new BlockSoundGroup(
 		1.0F, 1.0F, SoundEvents.field_16509, SoundEvents.field_16508, SoundEvents.field_16507, SoundEvents.field_16506, SoundEvents.field_16510
 	);
-	public static final BlockSoundGroup field_17579 = new BlockSoundGroup(
+	public static final BlockSoundGroup SWEET_BERRY_BUSH = new BlockSoundGroup(
 		1.0F, 1.0F, SoundEvents.field_17615, SoundEvents.field_14573, SoundEvents.field_17616, SoundEvents.field_14720, SoundEvents.field_14965
 	);
-	public static final BlockSoundGroup field_17580 = new BlockSoundGroup(
+	public static final BlockSoundGroup CROP = new BlockSoundGroup(
 		1.0F, 1.0F, SoundEvents.field_17610, SoundEvents.field_14573, SoundEvents.field_17611, SoundEvents.field_14720, SoundEvents.field_14965
 	);
-	public static final BlockSoundGroup field_17581 = new BlockSoundGroup(
+	public static final BlockSoundGroup NETHER_WART = new BlockSoundGroup(
 		1.0F, 1.0F, SoundEvents.field_17612, SoundEvents.field_14921, SoundEvents.field_17613, SoundEvents.field_14658, SoundEvents.field_14723
 	);
 	public final float volume;

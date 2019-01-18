@@ -10,10 +10,10 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.BlockHitResult;
-import net.minecraft.util.HitResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Nameable;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)

@@ -6,7 +6,7 @@ import net.minecraft.util.shape.VoxelShape;
 
 public interface VerticalEntityPosition {
 	static VerticalEntityPosition minValue() {
-		return VerticalEntityPositionImpl.field_17593;
+		return VerticalEntityPositionImpl.MIN_VALUE;
 	}
 
 	static VerticalEntityPosition fromEntity(Entity entity) {

@@ -6,7 +6,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.input.Input;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.HitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)

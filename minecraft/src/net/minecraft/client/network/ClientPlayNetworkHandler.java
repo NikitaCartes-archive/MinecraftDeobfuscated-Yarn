@@ -1028,7 +1028,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				playerRespawnClientPacket.getDifficulty(),
 				this.client.getProfiler()
 			);
-			this.world.method_2944(scoreboard);
+			this.world.setScoreboard(scoreboard);
 			this.client.method_1481(this.world);
 			this.client.player.dimension = dimensionType;
 			this.client.openGui(new DownloadingTerrainGui());
@@ -1935,7 +1935,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		}
 
 		if (teamClientPacket.getMode() == 0 || teamClientPacket.getMode() == 2) {
-			scoreboardTeam.method_1137(teamClientPacket.getDisplayName());
+			scoreboardTeam.setDisplayName(teamClientPacket.getDisplayName());
 			scoreboardTeam.setColor(teamClientPacket.getPlayerPrefix());
 			scoreboardTeam.setFriendlyFlagsBitwise(teamClientPacket.getFlags());
 			AbstractScoreboardTeam.VisibilityRule visibilityRule = AbstractScoreboardTeam.VisibilityRule.method_1213(teamClientPacket.getNameTagVisibilityRule());
@@ -1948,8 +1948,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				scoreboardTeam.setCollisionRule(collisionRule);
 			}
 
-			scoreboardTeam.method_1138(teamClientPacket.method_11856());
-			scoreboardTeam.method_1139(teamClientPacket.method_11854());
+			scoreboardTeam.setPrefix(teamClientPacket.method_11856());
+			scoreboardTeam.setSuffix(teamClientPacket.method_11854());
 		}
 
 		if (teamClientPacket.getMode() == 0 || teamClientPacket.getMode() == 3) {

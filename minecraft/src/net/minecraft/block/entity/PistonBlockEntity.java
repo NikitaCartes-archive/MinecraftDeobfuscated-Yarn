@@ -28,7 +28,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 	private BlockState pushedBlock;
 	private Direction facing;
 	private boolean extending;
-	private boolean field_12202;
+	private boolean source;
 	private static final ThreadLocal<Direction> field_12205 = new ThreadLocal<Direction>() {
 		protected Direction method_11516() {
 			return null;
@@ -47,7 +47,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		this.pushedBlock = blockState;
 		this.facing = direction;
 		this.extending = bl;
-		this.field_12202 = bl2;
+		this.source = bl2;
 	}
 
 	@Override
@@ -63,8 +63,8 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		return this.facing;
 	}
 
-	public boolean method_11515() {
-		return this.field_12202;
+	public boolean isSource() {
+		return this.source;
 	}
 
 	public float getProgress(float f) {
@@ -95,11 +95,11 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	private BlockState method_11496() {
-		return !this.isExtending() && this.method_11515()
+		return !this.isExtending() && this.isSource()
 			? Blocks.field_10379
 				.getDefaultState()
 				.with(PistonHeadBlock.field_12224, this.pushedBlock.getBlock() == Blocks.field_10615 ? PistonType.field_12634 : PistonType.field_12637)
-				.with(PistonHeadBlock.field_10927, this.pushedBlock.get(PistonBlock.field_10927))
+				.with(PistonHeadBlock.FACING, this.pushedBlock.get(PistonBlock.FACING))
 			: this.pushedBlock;
 	}
 
@@ -148,7 +148,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 							field_12205.set(direction);
 							entity.move(MovementType.PISTON, e * (double)direction.getOffsetX(), e * (double)direction.getOffsetY(), e * (double)direction.getOffsetZ());
 							field_12205.set(null);
-							if (!this.extending && this.field_12202) {
+							if (!this.extending && this.source) {
 								this.method_11514(entity, direction, d);
 							}
 						}
@@ -264,7 +264,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 			this.invalidate();
 			if (this.world.getBlockState(this.pos).getBlock() == Blocks.field_10008) {
 				BlockState blockState;
-				if (this.field_12202) {
+				if (this.source) {
 					blockState = Blocks.field_10124.getDefaultState();
 				} else {
 					blockState = Block.getRenderingState(this.pushedBlock, this.world, this.pos);
@@ -315,7 +315,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		this.nextProgress = compoundTag.getFloat("progress");
 		this.progress = this.nextProgress;
 		this.extending = compoundTag.getBoolean("extending");
-		this.field_12202 = compoundTag.getBoolean("source");
+		this.source = compoundTag.getBoolean("source");
 	}
 
 	@Override
@@ -325,13 +325,13 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		compoundTag.putInt("facing", this.facing.getId());
 		compoundTag.putFloat("progress", this.progress);
 		compoundTag.putBoolean("extending", this.extending);
-		compoundTag.putBoolean("source", this.field_12202);
+		compoundTag.putBoolean("source", this.source);
 		return compoundTag;
 	}
 
 	public VoxelShape method_11512(BlockView blockView, BlockPos blockPos) {
 		VoxelShape voxelShape;
-		if (!this.extending && this.field_12202) {
+		if (!this.extending && this.source) {
 			voxelShape = this.pushedBlock.with(PistonBlock.field_12191, Boolean.valueOf(true)).getCollisionShape(blockView, blockPos);
 		} else {
 			voxelShape = VoxelShapes.empty();
@@ -342,10 +342,10 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 			return voxelShape;
 		} else {
 			BlockState blockState;
-			if (this.method_11515()) {
+			if (this.isSource()) {
 				blockState = Blocks.field_10379
 					.getDefaultState()
-					.with(PistonHeadBlock.field_10927, this.facing)
+					.with(PistonHeadBlock.FACING, this.facing)
 					.with(PistonHeadBlock.field_12227, Boolean.valueOf(this.extending != 1.0F - this.nextProgress < 4.0F));
 			} else {
 				blockState = this.pushedBlock;
@@ -355,7 +355,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 			double d = (double)((float)this.facing.getOffsetX() * f);
 			double e = (double)((float)this.facing.getOffsetY() * f);
 			double g = (double)((float)this.facing.getOffsetZ() * f);
-			return VoxelShapes.union(voxelShape, blockState.getCollisionShape(blockView, blockPos).method_1096(d, e, g));
+			return VoxelShapes.union(voxelShape, blockState.getCollisionShape(blockView, blockPos).offset(d, e, g));
 		}
 	}
 

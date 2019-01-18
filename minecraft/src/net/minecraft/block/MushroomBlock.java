@@ -13,39 +13,39 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 
 public class MushroomBlock extends Block {
-	public static final BooleanProperty field_11171 = ConnectedPlantBlock.NORTH;
-	public static final BooleanProperty field_11172 = ConnectedPlantBlock.EAST;
-	public static final BooleanProperty field_11170 = ConnectedPlantBlock.SOUTH;
-	public static final BooleanProperty field_11167 = ConnectedPlantBlock.WEST;
-	public static final BooleanProperty field_11166 = ConnectedPlantBlock.UP;
-	public static final BooleanProperty field_11169 = ConnectedPlantBlock.DOWN;
-	private static final Map<Direction, BooleanProperty> field_11168 = ConnectedPlantBlock.FACING_PROPERTIES;
+	public static final BooleanProperty NORTH = ConnectedPlantBlock.NORTH;
+	public static final BooleanProperty EAST = ConnectedPlantBlock.EAST;
+	public static final BooleanProperty SOUTH = ConnectedPlantBlock.SOUTH;
+	public static final BooleanProperty WEST = ConnectedPlantBlock.WEST;
+	public static final BooleanProperty UP = ConnectedPlantBlock.UP;
+	public static final BooleanProperty DOWN = ConnectedPlantBlock.DOWN;
+	private static final Map<Direction, BooleanProperty> FACING_PROPERTIES = ConnectedPlantBlock.FACING_PROPERTIES;
 
 	public MushroomBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
 			this.stateFactory
 				.getDefaultState()
-				.with(field_11171, Boolean.valueOf(true))
-				.with(field_11172, Boolean.valueOf(true))
-				.with(field_11170, Boolean.valueOf(true))
-				.with(field_11167, Boolean.valueOf(true))
-				.with(field_11166, Boolean.valueOf(true))
-				.with(field_11169, Boolean.valueOf(true))
+				.with(NORTH, Boolean.valueOf(true))
+				.with(EAST, Boolean.valueOf(true))
+				.with(SOUTH, Boolean.valueOf(true))
+				.with(WEST, Boolean.valueOf(true))
+				.with(UP, Boolean.valueOf(true))
+				.with(DOWN, Boolean.valueOf(true))
 		);
 	}
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockView blockView = itemPlacementContext.getWorld();
-		BlockPos blockPos = itemPlacementContext.getPos();
+		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		return this.getDefaultState()
-			.with(field_11169, Boolean.valueOf(this != blockView.getBlockState(blockPos.down()).getBlock()))
-			.with(field_11166, Boolean.valueOf(this != blockView.getBlockState(blockPos.up()).getBlock()))
-			.with(field_11171, Boolean.valueOf(this != blockView.getBlockState(blockPos.north()).getBlock()))
-			.with(field_11172, Boolean.valueOf(this != blockView.getBlockState(blockPos.east()).getBlock()))
-			.with(field_11170, Boolean.valueOf(this != blockView.getBlockState(blockPos.south()).getBlock()))
-			.with(field_11167, Boolean.valueOf(this != blockView.getBlockState(blockPos.west()).getBlock()));
+			.with(DOWN, Boolean.valueOf(this != blockView.getBlockState(blockPos.down()).getBlock()))
+			.with(UP, Boolean.valueOf(this != blockView.getBlockState(blockPos.up()).getBlock()))
+			.with(NORTH, Boolean.valueOf(this != blockView.getBlockState(blockPos.north()).getBlock()))
+			.with(EAST, Boolean.valueOf(this != blockView.getBlockState(blockPos.east()).getBlock()))
+			.with(SOUTH, Boolean.valueOf(this != blockView.getBlockState(blockPos.south()).getBlock()))
+			.with(WEST, Boolean.valueOf(this != blockView.getBlockState(blockPos.west()).getBlock()));
 	}
 
 	@Override
@@ -53,32 +53,32 @@ public class MushroomBlock extends Block {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		return blockState2.getBlock() == this
-			? blockState.with((Property)field_11168.get(direction), Boolean.valueOf(false))
+			? blockState.with((Property)FACING_PROPERTIES.get(direction), Boolean.valueOf(false))
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
-	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
-		return blockState.with((Property)field_11168.get(rotation.method_10503(Direction.NORTH)), blockState.get(field_11171))
-			.with((Property)field_11168.get(rotation.method_10503(Direction.SOUTH)), blockState.get(field_11170))
-			.with((Property)field_11168.get(rotation.method_10503(Direction.EAST)), blockState.get(field_11172))
-			.with((Property)field_11168.get(rotation.method_10503(Direction.WEST)), blockState.get(field_11167))
-			.with((Property)field_11168.get(rotation.method_10503(Direction.UP)), blockState.get(field_11166))
-			.with((Property)field_11168.get(rotation.method_10503(Direction.DOWN)), blockState.get(field_11169));
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
+		return blockState.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.NORTH)), blockState.get(NORTH))
+			.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.SOUTH)), blockState.get(SOUTH))
+			.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.EAST)), blockState.get(EAST))
+			.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.WEST)), blockState.get(WEST))
+			.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.UP)), blockState.get(UP))
+			.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.DOWN)), blockState.get(DOWN));
 	}
 
 	@Override
-	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.with((Property)field_11168.get(mirror.apply(Direction.NORTH)), blockState.get(field_11171))
-			.with((Property)field_11168.get(mirror.apply(Direction.SOUTH)), blockState.get(field_11170))
-			.with((Property)field_11168.get(mirror.apply(Direction.EAST)), blockState.get(field_11172))
-			.with((Property)field_11168.get(mirror.apply(Direction.WEST)), blockState.get(field_11167))
-			.with((Property)field_11168.get(mirror.apply(Direction.UP)), blockState.get(field_11166))
-			.with((Property)field_11168.get(mirror.apply(Direction.DOWN)), blockState.get(field_11169));
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
+		return blockState.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.NORTH)), blockState.get(NORTH))
+			.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.SOUTH)), blockState.get(SOUTH))
+			.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.EAST)), blockState.get(EAST))
+			.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.WEST)), blockState.get(WEST))
+			.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.UP)), blockState.get(UP))
+			.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.DOWN)), blockState.get(DOWN));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_11166, field_11169, field_11171, field_11172, field_11170, field_11167);
+		builder.with(UP, DOWN, NORTH, EAST, SOUTH, WEST);
 	}
 }

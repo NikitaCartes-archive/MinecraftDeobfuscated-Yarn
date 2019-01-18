@@ -2,7 +2,7 @@ package net.minecraft.block.enums;
 
 import net.minecraft.util.StringRepresentable;
 
-public enum StructureMode implements StringRepresentable {
+public enum StructureBlockMode implements StringRepresentable {
 	field_12695("save"),
 	field_12697("load"),
 	field_12699("corner"),
@@ -10,7 +10,7 @@ public enum StructureMode implements StringRepresentable {
 
 	private final String name;
 
-	private StructureMode(String string2) {
+	private StructureBlockMode(String string2) {
 		this.name = string2;
 	}
 

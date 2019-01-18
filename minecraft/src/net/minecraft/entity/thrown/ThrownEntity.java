@@ -14,10 +14,10 @@ import net.minecraft.entity.sortme.Projectile;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.BlockHitResult;
-import net.minecraft.util.EntityHitResult;
-import net.minecraft.util.HitResult;
 import net.minecraft.util.TagHelper;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -131,7 +131,7 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 		Vec3d vec3d = new Vec3d(this.x, this.y, this.z);
 		Vec3d vec3d2 = new Vec3d(this.x + this.velocityX, this.y + this.velocityY, this.z + this.velocityZ);
 		HitResult hitResult = this.world
-			.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17559, RayTraceContext.FluidHandling.NONE, this));
+			.method_17742(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17559, RayTraceContext.FluidHandling.NONE, this));
 		vec3d = new Vec3d(this.x, this.y, this.z);
 		vec3d2 = new Vec3d(this.x + this.velocityX, this.y + this.velocityY, this.z + this.velocityZ);
 		if (hitResult.getType() != HitResult.Type.NONE) {
@@ -182,7 +182,7 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 			if (hitResult.getType() == HitResult.Type.BLOCK && this.world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).getBlock() == Blocks.field_10316) {
 				this.setInPortal(((BlockHitResult)hitResult).getBlockPos());
 			} else {
-				this.onCollision(hitResult);
+				this.method_7492(hitResult);
 			}
 		}
 
@@ -245,7 +245,7 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 		return 0.03F;
 	}
 
-	protected abstract void onCollision(HitResult hitResult);
+	protected abstract void method_7492(HitResult hitResult);
 
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {

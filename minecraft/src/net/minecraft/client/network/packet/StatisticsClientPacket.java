@@ -41,7 +41,7 @@ public class StatisticsClientPacket implements Packet<ClientPlayPacketListener> 
 	private <T> void readStat(StatType<T> statType, PacketByteBuf packetByteBuf) {
 		int i = packetByteBuf.readVarInt();
 		int j = packetByteBuf.readVarInt();
-		this.stats.put(statType.method_14956(statType.method_14959().getInt(i)), j);
+		this.stats.put(statType.getOrCreateStat(statType.getRegistry().getInt(i)), j);
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class StatisticsClientPacket implements Packet<ClientPlayPacketListener> 
 	}
 
 	private <T> int method_11272(Stat<T> stat) {
-		return stat.getType().method_14959().getRawId(stat.getValue());
+		return stat.getType().getRegistry().getRawId(stat.getValue());
 	}
 
 	@Environment(EnvType.CLIENT)

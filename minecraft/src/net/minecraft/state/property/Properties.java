@@ -14,7 +14,7 @@ import net.minecraft.block.enums.PistonType;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.block.enums.StairShape;
-import net.minecraft.block.enums.StructureMode;
+import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.block.enums.WireConnection;
 import net.minecraft.util.math.Direction;
@@ -60,9 +60,9 @@ public class Properties {
 	public static final DirectionProperty FACING = DirectionProperty.create(
 		"facing", Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.UP, Direction.DOWN
 	);
-	public static final DirectionProperty FACING_HOPPER = DirectionProperty.create("facing", (Predicate<Direction>)(direction -> direction != Direction.UP));
-	public static final DirectionProperty FACING_HORIZONTAL = DirectionProperty.create("facing", Direction.class_2353.HORIZONTAL);
-	public static final EnumProperty<WallMountLocation> WALL_MOUNT_LOCAITON = EnumProperty.create("face", WallMountLocation.class);
+	public static final DirectionProperty HOPPER_FACING = DirectionProperty.create("facing", (Predicate<Direction>)(direction -> direction != Direction.UP));
+	public static final DirectionProperty FACING_HORIZONTAL = DirectionProperty.create("facing", Direction.Type.HORIZONTAL);
+	public static final EnumProperty<WallMountLocation> WALL_MOUNT_LOCATION = EnumProperty.create("face", WallMountLocation.class);
 	public static final EnumProperty<Attachment> ATTACHMENT = EnumProperty.create("attachment", Attachment.class);
 	public static final EnumProperty<WireConnection> WIRE_CONNECTION_EAST = EnumProperty.create("east", WireConnection.class);
 	public static final EnumProperty<WireConnection> WIRE_CONNECTION_NORTH = EnumProperty.create("north", WireConnection.class);
@@ -71,7 +71,7 @@ public class Properties {
 	public static final EnumProperty<DoubleBlockHalf> DOUBLE_BLOCK_HALF = EnumProperty.create("half", DoubleBlockHalf.class);
 	public static final EnumProperty<BlockHalf> BLOCK_HALF = EnumProperty.create("half", BlockHalf.class);
 	public static final EnumProperty<RailShape> RAIL_SHAPE = EnumProperty.create("shape", RailShape.class);
-	public static final EnumProperty<RailShape> RAIL_SHAPE_STRAIGHT = EnumProperty.create(
+	public static final EnumProperty<RailShape> STRAIGHT_RAIL_SHAPE = EnumProperty.create(
 		"shape",
 		RailShape.class,
 		(Predicate)(railShape -> railShape != RailShape.field_12663
@@ -94,7 +94,7 @@ public class Properties {
 	public static final IntegerProperty LAYERS = IntegerProperty.create("layers", 1, 8);
 	public static final IntegerProperty CAULDRON_LEVEL = IntegerProperty.create("level", 0, 3);
 	public static final IntegerProperty COMPOSTER_LEVEL = IntegerProperty.create("level", 0, 8);
-	public static final IntegerProperty BLOCK_LEVEL = IntegerProperty.create("level", 1, 8);
+	public static final IntegerProperty FLUID_LEVEL = IntegerProperty.create("level", 1, 8);
 	public static final IntegerProperty FLUID_BLOCK_LEVEL = IntegerProperty.create("level", 0, 15);
 	public static final IntegerProperty MOISTURE = IntegerProperty.create("moisture", 0, 7);
 	public static final IntegerProperty NOTE = IntegerProperty.create("note", 0, 24);
@@ -111,6 +111,6 @@ public class Properties {
 	public static final EnumProperty<PistonType> PISTON_TYPE = EnumProperty.create("type", PistonType.class);
 	public static final EnumProperty<SlabType> SLAB_TYPE = EnumProperty.create("type", SlabType.class);
 	public static final EnumProperty<StairShape> STAIR_SHAPE = EnumProperty.create("shape", StairShape.class);
-	public static final EnumProperty<StructureMode> STRUCTURE_MODE = EnumProperty.create("mode", StructureMode.class);
+	public static final EnumProperty<StructureBlockMode> STRUCTURE_BLOCK_MODE = EnumProperty.create("mode", StructureBlockMode.class);
 	public static final EnumProperty<BambooLeaves> BAMBOO_LEAVES = EnumProperty.create("leaves", BambooLeaves.class);
 }

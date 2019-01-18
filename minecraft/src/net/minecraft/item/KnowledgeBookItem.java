@@ -50,7 +50,7 @@ public class KnowledgeBookItem extends Item {
 				}
 
 				playerEntity.unlockRecipes(list);
-				playerEntity.incrementStat(Stats.field_15372.method_14956(this));
+				playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 			}
 
 			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);

@@ -15,8 +15,8 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class AbstractPressurePlateBlock extends Block {
-	protected static final VoxelShape DEPRESSED_SHAPE = Block.createCubeShape(1.0, 0.0, 1.0, 15.0, 0.5, 15.0);
-	protected static final VoxelShape DEFAULT_SHAPE = Block.createCubeShape(1.0, 0.0, 1.0, 15.0, 1.0, 15.0);
+	protected static final VoxelShape DEPRESSED_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 0.5, 15.0);
+	protected static final VoxelShape DEFAULT_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 1.0, 15.0);
 	protected static final BoundingBox BOX = new BoundingBox(0.125, 0.0, 0.125, 0.875, 0.25, 0.875);
 
 	protected AbstractPressurePlateBlock(Block.Settings settings) {
@@ -55,7 +55,7 @@ public abstract class AbstractPressurePlateBlock extends Block {
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (!world.isClient) {
 			int i = this.getRedstoneOutput(blockState);
 			if (i > 0) {
@@ -81,7 +81,7 @@ public abstract class AbstractPressurePlateBlock extends Block {
 		if (i != j) {
 			blockState = this.setRedstoneOutput(blockState, j);
 			world.setBlockState(blockPos, blockState, 2);
-			this.method_9437(world, blockPos);
+			this.updateNeighbors(world, blockPos);
 			world.scheduleBlockRender(blockPos);
 		}
 
@@ -104,14 +104,14 @@ public abstract class AbstractPressurePlateBlock extends Block {
 	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (!bl && blockState.getBlock() != blockState2.getBlock()) {
 			if (this.getRedstoneOutput(blockState) > 0) {
-				this.method_9437(world, blockPos);
+				this.updateNeighbors(world, blockPos);
 			}
 
 			super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
 		}
 	}
 
-	protected void method_9437(World world, BlockPos blockPos) {
+	protected void updateNeighbors(World world, BlockPos blockPos) {
 		world.updateNeighborsAlways(blockPos, this);
 		world.updateNeighborsAlways(blockPos.down(), this);
 	}

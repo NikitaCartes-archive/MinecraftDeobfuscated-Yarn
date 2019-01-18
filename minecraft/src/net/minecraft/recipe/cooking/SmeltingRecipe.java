@@ -9,7 +9,7 @@ import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.util.Identifier;
 
-public class SmeltingRecipe extends AbstractCookingRecipe {
+public class SmeltingRecipe extends CookingRecipe {
 	public SmeltingRecipe(Identifier identifier, String string, Ingredient ingredient, ItemStack itemStack, float f, int i) {
 		super(RecipeType.SMELTING, identifier, string, ingredient, itemStack, f, i);
 	}

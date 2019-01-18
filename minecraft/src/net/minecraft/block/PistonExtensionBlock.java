@@ -14,10 +14,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -29,7 +29,7 @@ import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.Parameters;
 
 public class PistonExtensionBlock extends BlockWithEntity {
-	public static final DirectionProperty FACING = PistonHeadBlock.field_10927;
+	public static final DirectionProperty FACING = PistonHeadBlock.FACING;
 	public static final EnumProperty<PistonType> TYPE = PistonHeadBlock.field_12224;
 
 	public PistonExtensionBlock(Block.Settings settings) {
@@ -74,7 +74,7 @@ public class PistonExtensionBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (!world.isClient && world.getBlockEntity(blockPos) == null) {
 			world.clearBlockState(blockPos);
 			return true;
@@ -113,13 +113,13 @@ public class PistonExtensionBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockState applyRotation(BlockState blockState, Rotation rotation) {
-		return blockState.with(FACING, rotation.method_10503(blockState.get(FACING)));
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
+		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
-	public BlockState applyMirror(BlockState blockState, Mirror mirror) {
-		return blockState.applyRotation(mirror.getRotation(blockState.get(FACING)));
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
+		return blockState.rotate(mirror.getRotation(blockState.get(FACING)));
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.List;
 import java.util.Random;
+import net.minecraft.sortme.Structure;
 import net.minecraft.sortme.StructurePoolElement;
 import net.minecraft.sortme.structures.StructureManager;
 import net.minecraft.util.Rotation;
@@ -29,7 +30,7 @@ public class class_3782 extends class_3784 {
 	}
 
 	@Override
-	public List<class_3499.class_3501> method_16627(StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random) {
+	public List<Structure.StructureBlockInfo> method_16627(StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random) {
 		return ((class_3784)this.elements.get(0)).method_16627(structureManager, blockPos, rotation, random);
 	}
 
