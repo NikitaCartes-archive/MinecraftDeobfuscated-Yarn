@@ -123,7 +123,7 @@ public class UpdateStructureBlockServerPacket implements Packet<ServerPlayPacket
 		packetByteBuf.writeByte(i);
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12495(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onStructureBlockUpdate(this);
 	}
 

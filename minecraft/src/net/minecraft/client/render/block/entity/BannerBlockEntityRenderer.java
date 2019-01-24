@@ -20,7 +20,7 @@ import net.minecraft.util.math.MathHelper;
 public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEntity> {
 	private final BannerBlockEntityModel model = new BannerBlockEntityModel();
 
-	public void render(BannerBlockEntity bannerBlockEntity, double d, double e, double f, float g, int i) {
+	public void method_3546(BannerBlockEntity bannerBlockEntity, double d, double e, double f, float g, int i) {
 		float h = 0.6666667F;
 		boolean bl = bannerBlockEntity.getWorld() == null;
 		GlStateManager.pushMatrix();

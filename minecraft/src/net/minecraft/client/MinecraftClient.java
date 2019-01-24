@@ -191,14 +191,13 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.util.snooper.SnooperListener;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.WorldSaveHandler;
+import net.minecraft.world.OldWorldSaveHandler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.dimension.TheEndDimension;
 import net.minecraft.world.dimension.TheNetherDimension;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
-import net.minecraft.world.level.storage.AnvilLevelStorage;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -442,7 +441,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 		this.openGui(new SplashGui());
 		this.drawGuiWithoutMouse();
 		this.skinProvider = new PlayerSkinProvider(this.textureManager, new File(this.assetDirectory, "skins"), this.sessionService);
-		this.levelStorage = new AnvilLevelStorage(this.runDirectory.toPath().resolve("saves"), this.runDirectory.toPath().resolve("backups"), this.dataFixer);
+		this.levelStorage = new LevelStorage(this.runDirectory.toPath().resolve("saves"), this.runDirectory.toPath().resolve("backups"), this.dataFixer);
 		this.soundLoader = new SoundLoader(this.resourceManager, this.options);
 		this.resourceManager.addListener(this.soundLoader);
 		this.musicTracker = new MusicTracker(this);
@@ -1458,11 +1457,11 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 	public void startIntegratedServer(String string, String string2, @Nullable LevelInfo levelInfo) {
 		this.method_1481(null);
 		System.gc();
-		WorldSaveHandler worldSaveHandler = this.levelStorage.method_242(string, null);
-		LevelProperties levelProperties = worldSaveHandler.readProperties();
+		OldWorldSaveHandler oldWorldSaveHandler = this.levelStorage.method_242(string, null);
+		LevelProperties levelProperties = oldWorldSaveHandler.readProperties();
 		if (levelProperties == null && levelInfo != null) {
 			levelProperties = new LevelProperties(levelInfo, string);
-			worldSaveHandler.saveWorld(levelProperties);
+			oldWorldSaveHandler.saveWorld(levelProperties);
 		}
 
 		if (levelInfo == null) {

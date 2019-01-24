@@ -33,7 +33,7 @@ public class EntityAttachClientPacket implements Packet<ClientPlayPacketListener
 		packetByteBuf.writeInt(this.holdingId);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11811(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onEntityAttach(this);
 	}
 

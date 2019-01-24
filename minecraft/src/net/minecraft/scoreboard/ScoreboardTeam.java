@@ -41,7 +41,7 @@ public class ScoreboardTeam extends AbstractScoreboardTeam {
 		return this.displayName;
 	}
 
-	public TextComponent getPrefix() {
+	public TextComponent method_1148() {
 		TextComponent textComponent = TextFormatter.bracketed(
 			this.displayName
 				.copy()
@@ -69,7 +69,7 @@ public class ScoreboardTeam extends AbstractScoreboardTeam {
 		this.scoreboard.updateScoreboardTeam(this);
 	}
 
-	public TextComponent getSuffix() {
+	public TextComponent getPrefix() {
 		return this.prefix;
 	}
 
@@ -78,7 +78,7 @@ public class ScoreboardTeam extends AbstractScoreboardTeam {
 		this.scoreboard.updateScoreboardTeam(this);
 	}
 
-	public TextComponent method_1136() {
+	public TextComponent getSuffix() {
 		return this.suffix;
 	}
 

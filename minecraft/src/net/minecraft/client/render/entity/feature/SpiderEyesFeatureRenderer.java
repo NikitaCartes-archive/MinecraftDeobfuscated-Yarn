@@ -23,7 +23,7 @@ public class SpiderEyesFeatureRenderer<T extends Entity, M extends SpiderEntityM
 		this.bindTexture(SKIN);
 		GlStateManager.enableBlend();
 		GlStateManager.disableAlphaTest();
-		GlStateManager.blendFunc(GlStateManager.class_1033.ONE, GlStateManager.class_1027.ONE);
+		GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
 		if (entity.isInvisible()) {
 			GlStateManager.depthMask(false);
 		} else {

@@ -47,7 +47,7 @@ public class BellBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		Direction direction = blockHitResult.getSide();
 		if (blockEntity instanceof BellBlockEntity

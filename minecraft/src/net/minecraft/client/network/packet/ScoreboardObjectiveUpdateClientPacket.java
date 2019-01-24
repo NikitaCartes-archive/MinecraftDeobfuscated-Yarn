@@ -46,7 +46,7 @@ public class ScoreboardObjectiveUpdateClientPacket implements Packet<ClientPlayP
 		}
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11838(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onScoreboardObjectiveUpdate(this);
 	}
 

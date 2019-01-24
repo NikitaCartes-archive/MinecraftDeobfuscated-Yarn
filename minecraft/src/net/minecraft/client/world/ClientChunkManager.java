@@ -14,6 +14,7 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.ChunkManager;
+import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.EmptyChunk;
@@ -37,7 +38,7 @@ public class ClientChunkManager extends ChunkManager {
 
 	public ClientChunkManager(World world) {
 		this.world = world;
-		this.emptyChunk = new EmptyChunk(world, 0, 0);
+		this.emptyChunk = new EmptyChunk(world, new ChunkPos(0, 0));
 		this.lightingProvider = new LightingProvider(this, true, world.getDimension().hasSkyLight());
 	}
 
@@ -77,7 +78,7 @@ public class ClientChunkManager extends ChunkManager {
 			int l = this.field_16246.method_16027(i, j);
 			WorldChunk worldChunk = (WorldChunk)this.field_16246.field_16251.get(l);
 			if (worldChunk == null) {
-				worldChunk = new WorldChunk(world, i, j, new Biome[256]);
+				worldChunk = new WorldChunk(world, new ChunkPos(i, j), new Biome[256]);
 				this.field_16246.field_16251.set(l, worldChunk);
 				this.field_16249++;
 			}

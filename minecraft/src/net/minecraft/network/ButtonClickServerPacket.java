@@ -19,7 +19,7 @@ public class ButtonClickServerPacket implements Packet<ServerPlayPacketListener>
 		this.field_12812 = j;
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12185(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onButtonClick(this);
 	}
 

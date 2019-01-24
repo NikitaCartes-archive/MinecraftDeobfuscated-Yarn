@@ -27,7 +27,7 @@ import net.minecraft.util.math.MathHelper;
 public class EnchantingGui extends ContainerGui<EnchantingTableContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/enchanting_table.png");
 	private static final Identifier BOOK_TEXURE = new Identifier("textures/entity/enchanting_table_book.png");
-	private static final BookModel field_2908 = new BookModel();
+	private static final BookModel bookModel = new BookModel();
 	private final Random random = new Random();
 	public int field_2915;
 	public float nextPageAngle;
@@ -122,7 +122,7 @@ public class EnchantingGui extends ContainerGui<EnchantingTableContainer> {
 		}
 
 		GlStateManager.enableRescaleNormal();
-		field_2908.render(0.0F, o, p, n, 0.0F, 0.0625F);
+		bookModel.render(0.0F, o, p, n, 0.0F, 0.0625F);
 		GlStateManager.disableRescaleNormal();
 		GuiLighting.disable();
 		GlStateManager.matrixMode(5889);

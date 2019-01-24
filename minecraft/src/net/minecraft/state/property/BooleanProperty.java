@@ -25,7 +25,7 @@ public class BooleanProperty extends AbstractProperty<Boolean> {
 		return !"true".equals(string) && !"false".equals(string) ? Optional.empty() : Optional.of(Boolean.valueOf(string));
 	}
 
-	public String getValueAsString(Boolean boolean_) {
+	public String method_11826(Boolean boolean_) {
 		return boolean_.toString();
 	}
 

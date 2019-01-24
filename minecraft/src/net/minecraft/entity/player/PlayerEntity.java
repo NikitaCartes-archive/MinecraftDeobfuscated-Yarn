@@ -570,9 +570,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	private void method_7267(@Nullable CompoundTag compoundTag) {
 		if (compoundTag != null && !compoundTag.containsKey("Silent") || !compoundTag.getBoolean("Silent")) {
 			String string = compoundTag.getString("id");
-			if (EntityType.get(string) == EntityType.PARROT) {
-				ParrotEntity.method_6589(this.world, this);
-			}
+			EntityType.get(string).filter(entityType -> entityType == EntityType.PARROT).ifPresent(entityType -> ParrotEntity.method_6589(this.world, this));
 		}
 	}
 
@@ -1850,13 +1848,14 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	private void method_7296(@Nullable CompoundTag compoundTag) {
 		if (!this.world.isClient && !compoundTag.isEmpty()) {
-			Entity entity = EntityType.fromTag(compoundTag, this.world);
-			if (entity instanceof TameableEntity) {
-				((TameableEntity)entity).setOwnerUuid(this.uuid);
-			}
+			EntityType.fromTag(compoundTag, this.world).ifPresent(entity -> {
+				if (entity instanceof TameableEntity) {
+					((TameableEntity)entity).setOwnerUuid(this.uuid);
+				}
 
-			entity.setPosition(this.x, this.y + 0.7F, this.z);
-			this.world.spawnEntity(entity);
+				entity.setPosition(this.x, this.y + 0.7F, this.z);
+				this.world.spawnEntity(entity);
+			});
 		}
 	}
 

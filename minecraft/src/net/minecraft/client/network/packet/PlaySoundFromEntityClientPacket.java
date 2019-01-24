@@ -74,7 +74,7 @@ public class PlaySoundFromEntityClientPacket implements Packet<ClientPlayPacketL
 		return this.pitch;
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11884(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onPlaySoundFromEntity(this);
 	}
 }

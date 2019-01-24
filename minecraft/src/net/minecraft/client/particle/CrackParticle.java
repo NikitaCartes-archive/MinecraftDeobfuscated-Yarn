@@ -76,23 +76,21 @@ public class CrackParticle extends Particle {
 
 	@Environment(EnvType.CLIENT)
 	public static class ItemFactory implements ParticleFactory<ItemStackParticleParameters> {
-		public Particle createParticle(
-			ItemStackParticleParameters itemStackParticleParameters, World world, double d, double e, double f, double g, double h, double i
-		) {
+		public Particle method_3007(ItemStackParticleParameters itemStackParticleParameters, World world, double d, double e, double f, double g, double h, double i) {
 			return new CrackParticle(world, d, e, f, g, h, i, itemStackParticleParameters.getItemStack());
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class SlimeballFactory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3008(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new CrackParticle(world, d, e, f, new ItemStack(Items.field_8777));
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class SnowballFactory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3009(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new CrackParticle(world, d, e, f, new ItemStack(Items.field_8543));
 		}
 	}

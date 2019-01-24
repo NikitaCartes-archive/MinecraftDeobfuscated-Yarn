@@ -67,7 +67,7 @@ public class EntityScoresLootCondition implements LootCondition {
 			super(new Identifier("entity_scores"), EntityScoresLootCondition.class);
 		}
 
-		public void serialize(JsonObject jsonObject, EntityScoresLootCondition entityScoresLootCondition, JsonSerializationContext jsonSerializationContext) {
+		public void method_868(JsonObject jsonObject, EntityScoresLootCondition entityScoresLootCondition, JsonSerializationContext jsonSerializationContext) {
 			JsonObject jsonObject2 = new JsonObject();
 
 			for (Entry<String, UniformLootTableRange> entry : entityScoresLootCondition.scores.entrySet()) {

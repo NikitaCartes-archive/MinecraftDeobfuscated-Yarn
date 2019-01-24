@@ -12,7 +12,7 @@ public class FletchingTableBlock extends CraftingTableBlock {
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		return false;
 	}
 }

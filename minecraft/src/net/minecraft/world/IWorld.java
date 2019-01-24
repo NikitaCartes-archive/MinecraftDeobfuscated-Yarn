@@ -20,7 +20,7 @@ import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.level.LevelProperties;
 
-public interface IWorld extends ViewableWorld, ModifiableTestableWorld, PersistentStateContainer {
+public interface IWorld extends ViewableWorld, ModifiableTestableWorld {
 	long getSeed();
 
 	default float method_8391() {
@@ -62,8 +62,6 @@ public interface IWorld extends ViewableWorld, ModifiableTestableWorld, Persiste
 	default boolean isChunkLoaded(int i, int j) {
 		return this.getChunkManager().isChunkLoaded(i, j);
 	}
-
-	WorldSaveHandler getSaveHandler();
 
 	Random getRandom();
 

@@ -71,7 +71,7 @@ public class BeaconContainer extends Container {
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return method_17695(this.field_17289, playerEntity, Blocks.field_10327);
+		return canUse(this.field_17289, playerEntity, Blocks.field_10327);
 	}
 
 	@Override

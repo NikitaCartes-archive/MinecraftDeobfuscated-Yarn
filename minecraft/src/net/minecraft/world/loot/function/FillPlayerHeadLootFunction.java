@@ -50,7 +50,7 @@ public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
 		}
 
 		public void method_15957(JsonObject jsonObject, FillPlayerHeadLootFunction fillPlayerHeadLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, fillPlayerHeadLootFunction, jsonSerializationContext);
+			super.method_529(jsonObject, fillPlayerHeadLootFunction, jsonSerializationContext);
 			jsonObject.add("entity", jsonSerializationContext.serialize(fillPlayerHeadLootFunction.entity));
 		}
 

@@ -29,7 +29,7 @@ public class ChatMessageServerPacket implements Packet<ServerPlayPacketListener>
 		packetByteBuf.writeString(this.chatMessage);
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12115(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onChatMessage(this);
 	}
 

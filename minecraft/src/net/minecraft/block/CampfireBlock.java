@@ -59,7 +59,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if ((Boolean)blockState.get(LIT)) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof CampfireBlockEntity) {
@@ -83,12 +83,12 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public void onSteppedOn(World world, BlockPos blockPos, Entity entity) {
-		if (!entity.isFireImmune() && entity instanceof LivingEntity && !EnchantmentHelper.hasFrostWalker((LivingEntity)entity)) {
+	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
+		if (!entity.isFireImmune() && (Boolean)blockState.get(LIT) && entity instanceof LivingEntity && !EnchantmentHelper.hasFrostWalker((LivingEntity)entity)) {
 			entity.damage(DamageSource.IN_FIRE, 1.0F);
 		}
 
-		super.onSteppedOn(world, blockPos, entity);
+		super.onEntityCollision(blockState, world, blockPos, entity);
 	}
 
 	@Override
@@ -108,11 +108,11 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		IWorld iWorld = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
-		FluidState fluidState = iWorld.getFluidState(blockPos);
+		boolean bl = iWorld.getFluidState(blockPos).getFluid() == Fluids.WATER;
 		return this.getDefaultState()
-			.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER))
+			.with(WATERLOGGED, Boolean.valueOf(bl))
 			.with(SIGNAL_FIRE, Boolean.valueOf(this.doesBlockCauseSignalFire(iWorld.getBlockState(blockPos.down()))))
-			.with(LIT, Boolean.valueOf(fluidState.isEmpty()))
+			.with(LIT, Boolean.valueOf(!bl))
 			.with(FACING, itemPlacementContext.getPlayerHorizontalFacing());
 	}
 

@@ -35,7 +35,7 @@ public class BlockUpdateClientPacket implements Packet<ClientPlayPacketListener>
 		packetByteBuf.writeVarInt(Block.getRawIdFromState(this.state));
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11310(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onBlockUpdate(this);
 	}
 

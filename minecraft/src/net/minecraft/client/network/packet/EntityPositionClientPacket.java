@@ -52,7 +52,7 @@ public class EntityPositionClientPacket implements Packet<ClientPlayPacketListen
 		packetByteBuf.writeBoolean(this.onGround);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11922(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onEntityPosition(this);
 	}
 

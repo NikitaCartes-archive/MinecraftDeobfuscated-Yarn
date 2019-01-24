@@ -21,7 +21,7 @@ public class DonkeyEntityRenderer<T extends AbstractDonkeyEntity> extends HorseB
 		super(entityRenderDispatcher, new DonkeyEntityModel<>(), f);
 	}
 
-	protected Identifier getTexture(T abstractDonkeyEntity) {
+	protected Identifier method_3894(T abstractDonkeyEntity) {
 		return (Identifier)TEXTURES.get(abstractDonkeyEntity.getClass());
 	}
 }

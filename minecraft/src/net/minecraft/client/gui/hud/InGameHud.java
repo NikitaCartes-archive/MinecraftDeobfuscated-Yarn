@@ -137,7 +137,7 @@ public class InGameHud extends Drawable {
 		} else {
 			GlStateManager.enableDepthTest();
 			GlStateManager.blendFuncSeparate(
-				GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
 		}
 
@@ -166,7 +166,7 @@ public class InGameHud extends Drawable {
 			GlStateManager.enableAlphaTest();
 			this.method_1736(f);
 			GlStateManager.blendFuncSeparate(
-				GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
 			this.client.getProfiler().push("bossHealth");
 			this.hudBossBar.draw();
@@ -234,7 +234,7 @@ public class InGameHud extends Drawable {
 					GlStateManager.translatef((float)(this.scaledWidth / 2), (float)(this.scaledHeight - 68), 0.0F);
 					GlStateManager.enableBlend();
 					GlStateManager.blendFuncSeparate(
-						GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+						GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 					);
 					int j = 16777215;
 					if (this.overlayTinted) {
@@ -268,7 +268,7 @@ public class InGameHud extends Drawable {
 					GlStateManager.translatef((float)(this.scaledWidth / 2), (float)(this.scaledHeight / 2), 0.0F);
 					GlStateManager.enableBlend();
 					GlStateManager.blendFuncSeparate(
-						GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+						GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 					);
 					GlStateManager.pushMatrix();
 					GlStateManager.scalef(4.0F, 4.0F, 4.0F);
@@ -304,7 +304,7 @@ public class InGameHud extends Drawable {
 
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(
-				GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
 			GlStateManager.disableAlphaTest();
 			GlStateManager.pushMatrix();
@@ -343,10 +343,10 @@ public class InGameHud extends Drawable {
 					GlStateManager.popMatrix();
 				} else {
 					GlStateManager.blendFuncSeparate(
-						GlStateManager.class_1033.ONE_MINUS_DST_COLOR,
-						GlStateManager.class_1027.ONE_MINUS_SRC_COLOR,
-						GlStateManager.class_1033.ONE,
-						GlStateManager.class_1027.ZERO
+						GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR,
+						GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR,
+						GlStateManager.SourceFactor.ONE,
+						GlStateManager.DestFactor.ZERO
 					);
 					int i = 15;
 					this.drawTexturedRect((float)this.scaledWidth / 2.0F - 7.5F, (float)this.scaledHeight / 2.0F - 7.5F, 0, 0, 15, 15);
@@ -462,7 +462,7 @@ public class InGameHud extends Drawable {
 			GlStateManager.enableRescaleNormal();
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(
-				GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
 			GuiLighting.enableForItems();
 
@@ -572,7 +572,7 @@ public class InGameHud extends Drawable {
 				GlStateManager.pushMatrix();
 				GlStateManager.enableBlend();
 				GlStateManager.blendFuncSeparate(
-					GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+					GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 				);
 				this.getFontRenderer().drawWithShadow(string, (float)i, (float)j, 16777215 + (k << 24));
 				GlStateManager.disableBlend();
@@ -900,7 +900,7 @@ public class InGameHud extends Drawable {
 		GlStateManager.disableDepthTest();
 		GlStateManager.depthMask(false);
 		GlStateManager.blendFuncSeparate(
-			GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.disableAlphaTest();
@@ -940,7 +940,7 @@ public class InGameHud extends Drawable {
 		GlStateManager.disableDepthTest();
 		GlStateManager.depthMask(false);
 		GlStateManager.blendFuncSeparate(
-			GlStateManager.class_1033.ZERO, GlStateManager.class_1027.ONE_MINUS_SRC_COLOR, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+			GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		if (f > 0.0F) {
 			GlStateManager.color4f(0.0F, f, f, 1.0F);
@@ -961,7 +961,7 @@ public class InGameHud extends Drawable {
 		GlStateManager.enableDepthTest();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.blendFuncSeparate(
-			GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 	}
 
@@ -976,7 +976,7 @@ public class InGameHud extends Drawable {
 		GlStateManager.disableDepthTest();
 		GlStateManager.depthMask(false);
 		GlStateManager.blendFuncSeparate(
-			GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, f);
 		this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);

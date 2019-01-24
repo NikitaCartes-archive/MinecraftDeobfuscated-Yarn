@@ -5,7 +5,6 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_3914;
-import net.minecraft.class_3915;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -33,7 +32,7 @@ public class EnchantingTableContainer extends Container {
 	};
 	private final class_3914 pos;
 	private final Random random = new Random();
-	private final class_3915 world = class_3915.method_17403();
+	private final Property world = Property.create();
 	public final int[] enchantmentPower = new int[3];
 	public final int[] enchantmentId = new int[]{-1, -1, -1};
 	public final int[] enchantmentLevel = new int[]{-1, -1, -1};
@@ -73,16 +72,16 @@ public class EnchantingTableContainer extends Container {
 			this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 142));
 		}
 
-		this.method_17362(class_3915.method_17406(this.enchantmentPower, 0));
-		this.method_17362(class_3915.method_17406(this.enchantmentPower, 1));
-		this.method_17362(class_3915.method_17406(this.enchantmentPower, 2));
-		this.method_17362(this.world).method_17404(playerInventory.player.getEnchantmentTableSeed());
-		this.method_17362(class_3915.method_17406(this.enchantmentId, 0));
-		this.method_17362(class_3915.method_17406(this.enchantmentId, 1));
-		this.method_17362(class_3915.method_17406(this.enchantmentId, 2));
-		this.method_17362(class_3915.method_17406(this.enchantmentLevel, 0));
-		this.method_17362(class_3915.method_17406(this.enchantmentLevel, 1));
-		this.method_17362(class_3915.method_17406(this.enchantmentLevel, 2));
+		this.method_17362(Property.create(this.enchantmentPower, 0));
+		this.method_17362(Property.create(this.enchantmentPower, 1));
+		this.method_17362(Property.create(this.enchantmentPower, 2));
+		this.method_17362(this.world).set(playerInventory.player.getEnchantmentTableSeed());
+		this.method_17362(Property.create(this.enchantmentId, 0));
+		this.method_17362(Property.create(this.enchantmentId, 1));
+		this.method_17362(Property.create(this.enchantmentId, 2));
+		this.method_17362(Property.create(this.enchantmentLevel, 0));
+		this.method_17362(Property.create(this.enchantmentLevel, 1));
+		this.method_17362(Property.create(this.enchantmentLevel, 2));
 	}
 
 	@Override
@@ -125,7 +124,7 @@ public class EnchantingTableContainer extends Container {
 						}
 					}
 
-					this.random.setSeed((long)this.world.method_17407());
+					this.random.setSeed((long)this.world.get());
 
 					for (int j = 0; j < 3; j++) {
 						this.enchantmentPower[j] = EnchantmentHelper.calculateEnchantmentPower(this.random, j, ix, itemStack);
@@ -204,7 +203,7 @@ public class EnchantingTableContainer extends Container {
 					}
 
 					this.inventory.markDirty();
-					this.world.method_17404(playerEntity.getEnchantmentTableSeed());
+					this.world.set(playerEntity.getEnchantmentTableSeed());
 					this.onContentChanged(this.inventory);
 					world.playSound(null, blockPos, SoundEvents.field_15119, SoundCategory.field_15245, 1.0F, world.random.nextFloat() * 0.1F + 0.9F);
 				}
@@ -214,7 +213,7 @@ public class EnchantingTableContainer extends Container {
 	}
 
 	private List<InfoEnchantment> getRandomEnchantments(ItemStack itemStack, int i, int j) {
-		this.random.setSeed((long)(this.world.method_17407() + i));
+		this.random.setSeed((long)(this.world.get() + i));
 		List<InfoEnchantment> list = EnchantmentHelper.getEnchantments(this.random, itemStack, j, false);
 		if (itemStack.getItem() == Items.field_8529 && list.size() > 1) {
 			list.remove(this.random.nextInt(list.size()));
@@ -231,18 +230,18 @@ public class EnchantingTableContainer extends Container {
 
 	@Environment(EnvType.CLIENT)
 	public int method_17413() {
-		return this.world.method_17407();
+		return this.world.get();
 	}
 
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.pos.method_17393((world, blockPos) -> this.method_7607(playerEntity, playerEntity.world, this.inventory));
+		this.pos.method_17393((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.inventory));
 	}
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return method_17695(this.pos, playerEntity, Blocks.field_10485);
+		return canUse(this.pos, playerEntity, Blocks.field_10485);
 	}
 
 	@Override

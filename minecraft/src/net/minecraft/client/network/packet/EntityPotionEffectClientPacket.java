@@ -66,7 +66,7 @@ public class EntityPotionEffectClientPacket implements Packet<ClientPlayPacketLi
 		return this.field_12726 == 32767;
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11948(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onEntityPotionEffect(this);
 	}
 

@@ -8,10 +8,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -63,6 +65,7 @@ import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.event.HoverEvent;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.LoopingStream;
@@ -85,6 +88,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.PortalForcer;
 import net.minecraft.world.RayTraceContext;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
@@ -127,7 +131,6 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public boolean velocityModified;
 	protected boolean movementMultiplierSet;
 	protected Vec3d field_17046;
-	private boolean field_5997;
 	public boolean invalid;
 	private float width;
 	private float height;
@@ -193,8 +196,6 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.entityId = maxEntityId++;
 		this.passengerList = Lists.<Entity>newArrayList();
 		this.boundingBox = NULL_BOX;
-		this.width = 0.6F;
-		this.height = 1.8F;
 		this.field_6003 = 1.0F;
 		this.field_6022 = 1.0F;
 		this.random = new Random();
@@ -547,11 +548,10 @@ public abstract class Entity implements Nameable, CommandOutput {
 				this.velocityZ = 0.0;
 			}
 
-			double m = d;
-			double n = e;
-			double o = f;
 			if ((movementType == MovementType.SELF || movementType == MovementType.PLAYER) && this.onGround && this.isSneaking() && this instanceof PlayerEntity) {
-				for (double p = 0.05; d != 0.0 && this.world.method_8587(this, this.getBoundingBox().offset(d, (double)(-this.stepHeight), 0.0)); m = d) {
+				double m = 0.05;
+
+				while (d != 0.0 && this.world.method_8587(this, this.getBoundingBox().offset(d, (double)(-this.stepHeight), 0.0))) {
 					if (d < 0.05 && d >= -0.05) {
 						d = 0.0;
 					} else if (d > 0.0) {
@@ -561,7 +561,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 					}
 				}
 
-				for (; f != 0.0 && this.world.method_8587(this, this.getBoundingBox().offset(0.0, (double)(-this.stepHeight), f)); o = f) {
+				while (f != 0.0 && this.world.method_8587(this, this.getBoundingBox().offset(0.0, (double)(-this.stepHeight), f))) {
 					if (f < 0.05 && f >= -0.05) {
 						f = 0.0;
 					} else if (f > 0.0) {
@@ -571,7 +571,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 					}
 				}
 
-				for (; d != 0.0 && f != 0.0 && this.world.method_8587(this, this.getBoundingBox().offset(d, (double)(-this.stepHeight), f)); o = f) {
+				while (d != 0.0 && f != 0.0 && this.world.method_8587(this, this.getBoundingBox().offset(d, (double)(-this.stepHeight), f))) {
 					if (d < 0.05 && d >= -0.05) {
 						d = 0.0;
 					} else if (d > 0.0) {
@@ -580,7 +580,6 @@ public abstract class Entity implements Nameable, CommandOutput {
 						d += 0.05;
 					}
 
-					m = d;
 					if (f < 0.05 && f >= -0.05) {
 						f = 0.0;
 					} else if (f > 0.0) {
@@ -591,113 +590,23 @@ public abstract class Entity implements Nameable, CommandOutput {
 				}
 			}
 
-			BoundingBox boundingBox = this.getBoundingBox();
-			if (d != 0.0 || e != 0.0 || f != 0.0) {
-				LoopingStream<VoxelShape> loopingStream = new LoopingStream<>(this.world.getCollisionVoxelShapes(this, this.getBoundingBox(), d, e, f));
-				if (e != 0.0) {
-					e = VoxelShapes.calculateMaxOffset(Direction.Axis.Y, this.getBoundingBox(), loopingStream.getStream(), e);
-					this.setBoundingBox(this.getBoundingBox().offset(0.0, e, 0.0));
-				}
-
-				if (d != 0.0) {
-					d = VoxelShapes.calculateMaxOffset(Direction.Axis.X, this.getBoundingBox(), loopingStream.getStream(), d);
-					if (d != 0.0) {
-						this.setBoundingBox(this.getBoundingBox().offset(d, 0.0, 0.0));
-					}
-				}
-
-				if (f != 0.0) {
-					f = VoxelShapes.calculateMaxOffset(Direction.Axis.Z, this.getBoundingBox(), loopingStream.getStream(), f);
-					if (f != 0.0) {
-						this.setBoundingBox(this.getBoundingBox().offset(0.0, 0.0, f));
-					}
-				}
-			}
-
-			boolean bl = this.onGround || n != e && n < 0.0;
-			if (this.stepHeight > 0.0F && bl && (m != d || o != f)) {
-				double q = d;
-				double r = e;
-				double s = f;
-				BoundingBox boundingBox2 = this.getBoundingBox();
-				this.setBoundingBox(boundingBox);
-				d = m;
-				e = (double)this.stepHeight;
-				f = o;
-				if (m != 0.0 || e != 0.0 || o != 0.0) {
-					LoopingStream<VoxelShape> loopingStream2 = new LoopingStream<>(this.world.getCollisionVoxelShapes(this, this.getBoundingBox(), m, e, o));
-					BoundingBox boundingBox3 = this.getBoundingBox();
-					BoundingBox boundingBox4 = boundingBox3.stretch(m, 0.0, o);
-					double t = VoxelShapes.calculateMaxOffset(Direction.Axis.Y, boundingBox4, loopingStream2.getStream(), e);
-					if (t != 0.0) {
-						boundingBox3 = boundingBox3.offset(0.0, t, 0.0);
-					}
-
-					double u = VoxelShapes.calculateMaxOffset(Direction.Axis.X, boundingBox3, loopingStream2.getStream(), m);
-					if (u != 0.0) {
-						boundingBox3 = boundingBox3.offset(u, 0.0, 0.0);
-					}
-
-					double v = VoxelShapes.calculateMaxOffset(Direction.Axis.Z, boundingBox3, loopingStream2.getStream(), o);
-					if (v != 0.0) {
-						boundingBox3 = boundingBox3.offset(0.0, 0.0, v);
-					}
-
-					BoundingBox boundingBox5 = this.getBoundingBox();
-					double w = VoxelShapes.calculateMaxOffset(Direction.Axis.Y, boundingBox5, loopingStream2.getStream(), e);
-					if (w != 0.0) {
-						boundingBox5 = boundingBox5.offset(0.0, w, 0.0);
-					}
-
-					double x = VoxelShapes.calculateMaxOffset(Direction.Axis.X, boundingBox5, loopingStream2.getStream(), m);
-					if (x != 0.0) {
-						boundingBox5 = boundingBox5.offset(x, 0.0, 0.0);
-					}
-
-					double y = VoxelShapes.calculateMaxOffset(Direction.Axis.Z, boundingBox5, loopingStream2.getStream(), o);
-					if (y != 0.0) {
-						boundingBox5 = boundingBox5.offset(0.0, 0.0, y);
-					}
-
-					double z = u * u + v * v;
-					double aa = x * x + y * y;
-					if (z > aa) {
-						d = u;
-						f = v;
-						e = -t;
-						this.setBoundingBox(boundingBox3);
-					} else {
-						d = x;
-						f = y;
-						e = -w;
-						this.setBoundingBox(boundingBox5);
-					}
-
-					e = VoxelShapes.calculateMaxOffset(Direction.Axis.Y, this.getBoundingBox(), loopingStream2.getStream(), e);
-					if (e != 0.0) {
-						this.setBoundingBox(this.getBoundingBox().offset(0.0, e, 0.0));
-					}
-				}
-
-				if (q * q + s * s >= d * d + f * f) {
-					d = q;
-					e = r;
-					f = s;
-					this.setBoundingBox(boundingBox2);
-				}
+			Vec3d vec3d = new Vec3d(d, e, f);
+			Vec3d vec3d2 = this.method_17835(vec3d);
+			if (vec3d2.lengthSquared() != 0.0) {
+				this.setBoundingBox(this.getBoundingBox().offset(vec3d2));
 			}
 
 			this.world.getProfiler().pop();
 			this.world.getProfiler().push("rest");
 			this.method_5792();
-			this.horizontalCollision = m != d || o != f;
-			this.verticalCollision = n != e;
-			this.onGround = this.verticalCollision && n < 0.0;
+			this.horizontalCollision = vec3d.x != vec3d2.x || vec3d.z != vec3d2.z;
+			this.verticalCollision = vec3d.y != vec3d2.y;
+			this.onGround = this.verticalCollision && vec3d.y < 0.0;
 			this.collided = this.horizontalCollision || this.verticalCollision;
-			int ab = MathHelper.floor(this.x);
-			int ac = MathHelper.floor(this.y - 0.2F);
-			int ad = MathHelper.floor(this.z);
-			BlockPos blockPos = new BlockPos(ab, ac, ad);
+			int n = MathHelper.floor(this.x);
+			int o = MathHelper.floor(this.y - 0.2F);
+			int p = MathHelper.floor(this.z);
+			BlockPos blockPos = new BlockPos(n, o, p);
 			BlockState blockState = this.world.getBlockState(blockPos);
 			if (blockState.isAir()) {
 				BlockPos blockPos2 = blockPos.down();
@@ -709,46 +618,46 @@ public abstract class Entity implements Nameable, CommandOutput {
 				}
 			}
 
-			this.method_5623(e, this.onGround, blockState, blockPos);
-			if (m != d) {
+			this.method_5623(vec3d2.y, this.onGround, blockState, blockPos);
+			if (vec3d.x != vec3d2.x) {
 				this.velocityX = 0.0;
 			}
 
-			if (o != f) {
+			if (vec3d.z != vec3d2.z) {
 				this.velocityZ = 0.0;
 			}
 
 			Block block2 = blockState.getBlock();
-			if (n != e) {
+			if (vec3d.y != vec3d2.y) {
 				block2.onEntityLand(this.world, this);
 			}
 
 			if (this.method_5658() && (!this.onGround || !this.isSneaking() || !(this instanceof PlayerEntity)) && !this.hasVehicle()) {
-				double ae = this.x - h;
-				double af = this.y - j;
-				double tx = this.z - k;
+				double q = this.x - h;
+				double r = this.y - j;
+				double s = this.z - k;
 				if (block2 != Blocks.field_9983 && block2 != Blocks.field_16492) {
-					af = 0.0;
+					r = 0.0;
 				}
 
 				if (block2 != null && this.onGround) {
 					block2.onSteppedOn(this.world, blockPos, this);
 				}
 
-				this.field_5973 = (float)((double)this.field_5973 + (double)MathHelper.sqrt(ae * ae + tx * tx) * 0.6);
-				this.field_5994 = (float)((double)this.field_5994 + (double)MathHelper.sqrt(ae * ae + af * af + tx * tx) * 0.6);
+				this.field_5973 = (float)((double)this.field_5973 + (double)MathHelper.sqrt(q * q + s * s) * 0.6);
+				this.field_5994 = (float)((double)this.field_5994 + (double)MathHelper.sqrt(q * q + r * r + s * s) * 0.6);
 				if (this.field_5994 > this.field_6003 && !blockState.isAir()) {
 					this.field_6003 = this.method_5867();
 					if (this.isInsideWater()) {
 						Entity entity = this.hasPassengers() && this.getPrimaryPassenger() != null ? this.getPrimaryPassenger() : this;
-						float ag = entity == this ? 0.35F : 0.4F;
-						float ah = MathHelper.sqrt(entity.velocityX * entity.velocityX * 0.2F + entity.velocityY * entity.velocityY + entity.velocityZ * entity.velocityZ * 0.2F)
-							* ag;
-						if (ah > 1.0F) {
-							ah = 1.0F;
+						float t = entity == this ? 0.35F : 0.4F;
+						float u = MathHelper.sqrt(entity.velocityX * entity.velocityX * 0.2F + entity.velocityY * entity.velocityY + entity.velocityZ * entity.velocityZ * 0.2F)
+							* t;
+						if (u > 1.0F) {
+							u = 1.0F;
 						}
 
-						this.method_5734(ah);
+						this.method_5734(u);
 					} else {
 						this.playStepSound(blockPos, blockState);
 					}
@@ -759,16 +668,16 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 			try {
 				this.checkBlockCollision();
-			} catch (Throwable var49) {
-				CrashReport crashReport = CrashReport.create(var49, "Checking entity block collision");
+			} catch (Throwable var31) {
+				CrashReport crashReport = CrashReport.create(var31, "Checking entity block collision");
 				CrashReportSection crashReportSection = crashReport.addElement("Entity being checked for collision");
 				this.populateCrashReport(crashReportSection);
 				throw new CrashException(crashReport);
 			}
 
-			boolean bl2 = this.isTouchingWater();
+			boolean bl = this.isTouchingWater();
 			if (this.world.doesAreaContainFireSource(this.getBoundingBox().contract(0.001))) {
-				if (!bl2) {
+				if (!bl) {
 					this.fireTimer++;
 					if (this.fireTimer == 0) {
 						this.setOnFireFor(8);
@@ -780,13 +689,75 @@ public abstract class Entity implements Nameable, CommandOutput {
 				this.fireTimer = -this.method_5676();
 			}
 
-			if (bl2 && this.isOnFire()) {
+			if (bl && this.isOnFire()) {
 				this.playSound(SoundEvents.field_15222, 0.7F, 1.6F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
 				this.fireTimer = -this.method_5676();
 			}
 
 			this.world.getProfiler().pop();
 		}
+	}
+
+	private Vec3d method_17835(Vec3d vec3d) {
+		BoundingBox boundingBox = this.getBoundingBox();
+		VerticalEntityPosition verticalEntityPosition = VerticalEntityPosition.fromEntity(this);
+		VoxelShape voxelShape = this.world.getWorldBorder().method_17903();
+		Stream<VoxelShape> stream = VoxelShapes.compareShapes(voxelShape, VoxelShapes.cube(boundingBox.contract(1.0E-7)), BooleanBiFunction.AND)
+			? Stream.empty()
+			: Stream.of(voxelShape);
+		Stream<VoxelShape> stream2 = this.world
+			.getVisibleEntities(this, boundingBox.expand(0.25))
+			.stream()
+			.filter(entity -> !this.method_5794(entity))
+			.flatMap(entity -> Stream.of(entity.method_5827(), this.method_5708(entity)))
+			.filter(Objects::nonNull)
+			.filter(boundingBox::intersects)
+			.map(VoxelShapes::cube);
+		LoopingStream<VoxelShape> loopingStream = new LoopingStream<>(Stream.concat(stream2, stream));
+		Vec3d vec3d2 = vec3d.lengthSquared() == 0.0 ? vec3d : method_17833(vec3d, boundingBox, this.world, verticalEntityPosition, loopingStream);
+		boolean bl = this.onGround || vec3d.y != vec3d2.y && vec3d.y < 0.0;
+		if (this.stepHeight > 0.0F && bl && (vec3d.x != vec3d2.x || vec3d.z != vec3d2.z)) {
+			Vec3d vec3d3 = method_17833(
+				new Vec3d(0.0, (double)this.stepHeight, 0.0), boundingBox.stretch(vec3d.x, 0.0, vec3d.z), this.world, verticalEntityPosition, loopingStream
+			);
+			Vec3d vec3d4 = method_17833(new Vec3d(vec3d.x, 0.0, vec3d.z), boundingBox.offset(vec3d3), this.world, verticalEntityPosition, loopingStream).add(vec3d3);
+			Vec3d vec3d5 = method_17833(new Vec3d(vec3d.x, (double)this.stepHeight, vec3d.z), boundingBox, this.world, verticalEntityPosition, loopingStream);
+			double d = vec3d4.x * vec3d4.x + vec3d4.z * vec3d4.z;
+			double e = vec3d5.x * vec3d5.x + vec3d5.z * vec3d5.z;
+			Vec3d vec3d6 = d > e ? vec3d4 : vec3d5;
+			BoundingBox boundingBox2 = boundingBox.offset(vec3d6);
+			Vec3d vec3d7 = method_17833(new Vec3d(0.0, (double)(-this.stepHeight), 0.0), boundingBox2, this.world, verticalEntityPosition, loopingStream);
+			return vec3d6.add(vec3d7);
+		} else {
+			return vec3d2;
+		}
+	}
+
+	public static Vec3d method_17833(
+		Vec3d vec3d, BoundingBox boundingBox, ViewableWorld viewableWorld, VerticalEntityPosition verticalEntityPosition, LoopingStream<VoxelShape> loopingStream
+	) {
+		double d = vec3d.x;
+		double e = vec3d.y;
+		double f = vec3d.z;
+		if (e != 0.0) {
+			e = VoxelShapes.method_17945(Direction.Axis.Y, boundingBox, viewableWorld, e, verticalEntityPosition, loopingStream.getStream());
+			if (e != 0.0) {
+				boundingBox = boundingBox.offset(0.0, e, 0.0);
+			}
+		}
+
+		if (d != 0.0) {
+			d = VoxelShapes.method_17945(Direction.Axis.X, boundingBox, viewableWorld, d, verticalEntityPosition, loopingStream.getStream());
+			if (d != 0.0) {
+				boundingBox = boundingBox.offset(d, 0.0, 0.0);
+			}
+		}
+
+		if (f != 0.0) {
+			f = VoxelShapes.method_17945(Direction.Axis.Z, boundingBox, viewableWorld, f, verticalEntityPosition, loopingStream.getStream());
+		}
+
+		return new Vec3d(d, e, f);
 	}
 
 	protected float method_5867() {
@@ -1301,12 +1272,12 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public HitResult method_5745(double d, float f, boolean bl) {
+	public HitResult rayTrace(double d, float f, boolean bl) {
 		Vec3d vec3d = this.getCameraPosVec(f);
 		Vec3d vec3d2 = this.getRotationVec(f);
 		Vec3d vec3d3 = vec3d.add(vec3d2.x * d, vec3d2.y * d, vec3d2.z * d);
 		return this.world
-			.method_17742(
+			.rayTrace(
 				new RayTraceContext(
 					vec3d, vec3d3, RayTraceContext.ShapeType.field_17559, bl ? RayTraceContext.FluidHandling.field_1347 : RayTraceContext.FluidHandling.NONE, this
 				)
@@ -1569,7 +1540,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			return null;
 		} else {
 			ItemEntity itemEntity = new ItemEntity(this.world, this.x, this.y + (double)f, this.z, itemStack);
-			itemEntity.method_6988();
+			itemEntity.setToDefaultPickupDelay();
 			this.world.spawnEntity(itemEntity);
 			return itemEntity;
 		}
@@ -2319,14 +2290,6 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 	public float getEyeHeight() {
 		return this.height * 0.85F;
-	}
-
-	public boolean method_5686() {
-		return this.field_5997;
-	}
-
-	public void method_5789(boolean bl) {
-		this.field_5997 = bl;
 	}
 
 	public boolean method_5758(int i, ItemStack itemStack) {

@@ -47,7 +47,7 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 		reloadableResourceManager.addListener(this);
 	}
 
-	public void render(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_17151(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (!livingEntity.isInvisible()) {
 			VillagerData villagerData = livingEntity.getVillagerData();
 			VillagerType villagerType = villagerData.getType();

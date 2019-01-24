@@ -21,7 +21,6 @@ import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.server.WorldGenerationProgressListenerFactory;
 import net.minecraft.server.command.ServerCommandManager;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerDemoWorld;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.crash.CrashReport;
@@ -29,8 +28,7 @@ import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
-import net.minecraft.world.PersistentStateManager;
-import net.minecraft.world.WorldSaveHandler;
+import net.minecraft.world.OldWorldSaveHandler;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.LevelInfo;
@@ -68,40 +66,39 @@ public class IntegratedServer extends MinecraftServer {
 			minecraftSessionService,
 			gameProfileRepository,
 			userCache,
-			worldGenerationProgressListenerFactory
+			worldGenerationProgressListenerFactory,
+			string
 		);
 		this.setUserName(minecraftClient.getSession().getUsername());
-		this.setLevelName(string);
 		this.setServerName(string2);
 		this.setDemo(minecraftClient.isDemo());
 		this.setBonusChest(levelInfo.hasBonusChest());
 		this.setWorldHeight(256);
 		this.setPlayerManager(new IntegratedPlayerManager(this));
 		this.client = minecraftClient;
-		this.levelInfo = this.isDemo() ? ServerDemoWorld.INFO : levelInfo;
+		this.levelInfo = this.isDemo() ? MinecraftServer.field_17704 : levelInfo;
 	}
 
 	@Override
 	public void method_3735(String string, String string2, long l, LevelGeneratorType levelGeneratorType, JsonElement jsonElement) {
 		this.method_3755(string);
-		WorldSaveHandler worldSaveHandler = this.getLevelStorage().method_242(string, this);
-		this.method_3861(this.getLevelName(), worldSaveHandler);
-		LevelProperties levelProperties = worldSaveHandler.readProperties();
+		OldWorldSaveHandler oldWorldSaveHandler = this.getLevelStorage().method_242(string, this);
+		this.method_3861(this.getLevelName(), oldWorldSaveHandler);
+		LevelProperties levelProperties = oldWorldSaveHandler.readProperties();
 		if (levelProperties == null) {
 			levelProperties = new LevelProperties(this.levelInfo, string2);
 		} else {
 			levelProperties.setLevelName(string2);
 		}
 
-		this.method_3800(worldSaveHandler.getWorldDir(), levelProperties);
-		PersistentStateManager persistentStateManager = new PersistentStateManager(worldSaveHandler);
+		this.method_3800(oldWorldSaveHandler.getWorldDir(), levelProperties);
 		WorldGenerationProgressListener worldGenerationProgressListener = this.worldGenerationProgressListenerFactory.create(11);
-		this.createWorlds(worldSaveHandler, persistentStateManager, levelProperties, this.levelInfo, worldGenerationProgressListener);
+		this.createWorlds(oldWorldSaveHandler, levelProperties, this.levelInfo, worldGenerationProgressListener);
 		if (this.getWorld(DimensionType.field_13072).getLevelProperties().getDifficulty() == null) {
 			this.setDifficulty(this.client.options.difficulty);
 		}
 
-		this.prepareStartRegion(persistentStateManager, worldGenerationProgressListener);
+		this.prepareStartRegion(worldGenerationProgressListener);
 	}
 
 	@Override
@@ -126,7 +123,7 @@ public class IntegratedServer extends MinecraftServer {
 		if (!bl && this.field_5524) {
 			LOGGER.info("Saving and pausing game...");
 			this.getPlayerManager().saveAllPlayerData();
-			this.save(false, true);
+			this.save(false, true, false);
 		}
 
 		if (!this.field_5524) {

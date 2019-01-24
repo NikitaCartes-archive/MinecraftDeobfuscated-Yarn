@@ -47,7 +47,7 @@ public class class_2913 implements Packet<ServerLoginPacketListener> {
 		}
 	}
 
-	public void apply(ServerLoginPacketListener serverLoginPacketListener) {
+	public void method_12645(ServerLoginPacketListener serverLoginPacketListener) {
 		serverLoginPacketListener.method_12640(this);
 	}
 }

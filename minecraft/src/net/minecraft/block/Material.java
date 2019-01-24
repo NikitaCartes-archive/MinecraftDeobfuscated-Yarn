@@ -76,7 +76,7 @@ public final class Material {
 	public static final Material ANVIL = new Material.Builder(MaterialColor.IRON).requiresTool().blocksPistons().build();
 	public static final Material BARRIER = new Material.Builder(MaterialColor.AIR).requiresTool().blocksPistons().build();
 	public static final Material PISTON = new Material.Builder(MaterialColor.STONE).blocksPistons().build();
-	public static final Material field_15921 = new Material.Builder(MaterialColor.FOLIAGE).destroyedByPiston().build();
+	public static final Material UNUSED_PLANT = new Material.Builder(MaterialColor.FOLIAGE).destroyedByPiston().build();
 	public static final Material PUMPKIN = new Material.Builder(MaterialColor.FOLIAGE).destroyedByPiston().build();
 	public static final Material DRAGON_EGG = new Material.Builder(MaterialColor.FOLIAGE).destroyedByPiston().build();
 	public static final Material CAKE = new Material.Builder(MaterialColor.AIR).destroyedByPiston().build();

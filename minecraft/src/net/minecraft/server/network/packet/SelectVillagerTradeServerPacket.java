@@ -28,7 +28,7 @@ public class SelectVillagerTradeServerPacket implements Packet<ServerPlayPacketL
 		packetByteBuf.writeVarInt(this.tradeId);
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12430(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onVillagerTradeSelect(this);
 	}
 

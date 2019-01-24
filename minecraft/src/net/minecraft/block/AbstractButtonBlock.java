@@ -90,7 +90,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if ((Boolean)blockState.get(POWERED)) {
 			return true;
 		} else {

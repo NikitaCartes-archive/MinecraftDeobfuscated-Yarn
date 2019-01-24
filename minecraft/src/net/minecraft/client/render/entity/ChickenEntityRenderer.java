@@ -15,7 +15,7 @@ public class ChickenEntityRenderer extends MobEntityRenderer<ChickenEntity, Chic
 		super(entityRenderDispatcher, new ChickenEntityModel<>(), 0.3F);
 	}
 
-	protected Identifier getTexture(ChickenEntity chickenEntity) {
+	protected Identifier method_3892(ChickenEntity chickenEntity) {
 		return SKIN;
 	}
 

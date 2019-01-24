@@ -61,36 +61,34 @@ public class ProtoChunk implements Chunk {
 	private final Map<GenerationStep.Carver, BitSet> carvingMasks = Maps.<GenerationStep.Carver, BitSet>newHashMap();
 	private volatile boolean isLightOn;
 
-	public ProtoChunk(
-		int i,
-		int j,
-		UpgradeData upgradeData,
-		ChunkSection[] chunkSections,
-		ChunkTickScheduler<Block> chunkTickScheduler,
-		ChunkTickScheduler<Fluid> chunkTickScheduler2
-	) {
-		this(new ChunkPos(i, j), upgradeData, chunkTickScheduler, chunkTickScheduler2);
-		if (this.sections.length != chunkSections.length) {
-			LOGGER.warn("Could not set level chunk sections, array length is {} instead of {}", chunkSections.length, this.sections.length);
-		} else {
-			System.arraycopy(chunkSections, 0, this.sections, 0, this.sections.length);
-		}
-	}
-
 	public ProtoChunk(ChunkPos chunkPos, UpgradeData upgradeData) {
 		this(
 			chunkPos,
 			upgradeData,
+			null,
 			new ChunkTickScheduler<>(block -> block == null || block.getDefaultState().isAir(), Registry.BLOCK::getId, Registry.BLOCK::get, chunkPos),
 			new ChunkTickScheduler<>(fluid -> fluid == null || fluid == Fluids.EMPTY, Registry.FLUID::getId, Registry.FLUID::get, chunkPos)
 		);
 	}
 
-	public ProtoChunk(ChunkPos chunkPos, UpgradeData upgradeData, ChunkTickScheduler<Block> chunkTickScheduler, ChunkTickScheduler<Fluid> chunkTickScheduler2) {
+	public ProtoChunk(
+		ChunkPos chunkPos,
+		UpgradeData upgradeData,
+		@Nullable ChunkSection[] chunkSections,
+		ChunkTickScheduler<Block> chunkTickScheduler,
+		ChunkTickScheduler<Fluid> chunkTickScheduler2
+	) {
 		this.pos = chunkPos;
 		this.upgradeData = upgradeData;
 		this.blockTickScheduler = chunkTickScheduler;
 		this.fluidTickScheduler = chunkTickScheduler2;
+		if (chunkSections != null) {
+			if (this.sections.length == chunkSections.length) {
+				System.arraycopy(chunkSections, 0, this.sections, 0, this.sections.length);
+			} else {
+				LOGGER.warn("Could not set level chunk sections, array length is {} instead of {}", chunkSections.length, this.sections.length);
+			}
+		}
 	}
 
 	@Override

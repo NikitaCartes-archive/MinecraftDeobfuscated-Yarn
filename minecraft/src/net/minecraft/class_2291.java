@@ -58,12 +58,10 @@ public class class_2291 {
 	public void method_9795() throws CommandSyntaxException {
 		int i = this.field_10802.getCursor();
 		Identifier identifier = Identifier.parse(this.field_10802);
-		if (Registry.ITEM.contains(identifier)) {
-			this.field_10803 = Registry.ITEM.get(identifier);
-		} else {
+		this.field_10803 = (Item)Registry.ITEM.method_17966(identifier).orElseThrow(() -> {
 			this.field_10802.setCursor(i);
-			throw field_10799.createWithContext(this.field_10802, identifier.toString());
-		}
+			return field_10799.createWithContext(this.field_10802, identifier.toString());
+		});
 	}
 
 	public void method_9787() throws CommandSyntaxException {

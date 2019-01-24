@@ -18,7 +18,7 @@ public class CreeperChargeFeatureRenderer extends FeatureRenderer<CreeperEntity,
 		super(featureRendererContext);
 	}
 
-	public void render(CreeperEntity creeperEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4178(CreeperEntity creeperEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (creeperEntity.isCharged()) {
 			boolean bl = creeperEntity.isInvisible();
 			GlStateManager.depthMask(!bl);
@@ -32,7 +32,7 @@ public class CreeperChargeFeatureRenderer extends FeatureRenderer<CreeperEntity,
 			float n = 0.5F;
 			GlStateManager.color4f(0.5F, 0.5F, 0.5F, 1.0F);
 			GlStateManager.disableLighting();
-			GlStateManager.blendFunc(GlStateManager.class_1033.ONE, GlStateManager.class_1027.ONE);
+			GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
 			this.getModel().method_17081(this.field_4844);
 			GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
 			gameRenderer.method_3201(true);

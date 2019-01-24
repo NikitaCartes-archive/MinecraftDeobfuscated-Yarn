@@ -133,6 +133,7 @@ public class DataCommand {
 								)
 								.then(ServerCommandManager.literal("merge").then(arg.create((commandContext, compoundTag, argx, list) -> {
 									Collection<Tag> collection = argx.method_9367(compoundTag, CompoundTag::new);
+									int i = 0;
 
 									for (Tag tag : collection) {
 										if (!(tag instanceof CompoundTag)) {
@@ -140,6 +141,7 @@ public class DataCommand {
 										}
 
 										CompoundTag compoundTag2 = (CompoundTag)tag;
+										CompoundTag compoundTag3 = compoundTag2.copy();
 
 										for (Tag tag2 : list) {
 											if (!(tag2 instanceof CompoundTag)) {
@@ -148,9 +150,11 @@ public class DataCommand {
 
 											compoundTag2.copyFrom((CompoundTag)tag2);
 										}
+
+										i += compoundTag3.equals(compoundTag2) ? 0 : 1;
 									}
 
-									return collection.size();
+									return i;
 								})))
 					)
 				);
@@ -159,7 +163,7 @@ public class DataCommand {
 		commandDispatcher.register(literalArgumentBuilder);
 	}
 
-	public static int method_13910(int i, CompoundTag compoundTag, NbtPathArgumentType.class_2209 arg, List<Tag> list) throws CommandSyntaxException {
+	private static int method_13910(int i, CompoundTag compoundTag, NbtPathArgumentType.class_2209 arg, List<Tag> list) throws CommandSyntaxException {
 		Collection<Tag> collection = arg.method_9367(compoundTag, ListTag::new);
 		int j = 0;
 

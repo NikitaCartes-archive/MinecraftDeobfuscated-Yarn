@@ -562,7 +562,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 			BlockEntity blockEntity = this.player.world.getBlockEntity(blockPos);
 			if (blockEntity instanceof StructureBlockBlockEntity) {
 				StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)blockEntity;
-				structureBlockBlockEntity.method_11381(updateStructureBlockServerPacket.getMode());
+				structureBlockBlockEntity.setMode(updateStructureBlockServerPacket.getMode());
 				structureBlockBlockEntity.setStructureName(updateStructureBlockServerPacket.getStructureName());
 				structureBlockBlockEntity.setOffset(updateStructureBlockServerPacket.getOffset());
 				structureBlockBlockEntity.setSize(updateStructureBlockServerPacket.getSize());

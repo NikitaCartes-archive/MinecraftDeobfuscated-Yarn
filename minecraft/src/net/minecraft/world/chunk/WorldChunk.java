@@ -27,6 +27,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.world.DummyClientTickScheduler;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -44,7 +45,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.ChunkSaveHandlerImpl;
 import net.minecraft.world.ChunkTickScheduler;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.World;
@@ -77,34 +77,21 @@ public class WorldChunk implements Chunk {
 	private long lastSaveTime;
 	private boolean dirty;
 	private long inhabitedTime;
+	@Nullable
 	private Supplier<ChunkHolder.LevelType> field_12856;
+	@Nullable
 	private Consumer<WorldChunk> field_12850;
 	private final ChunkPos pos;
 	private volatile boolean isLightOn;
 
 	@Environment(EnvType.CLIENT)
-	public WorldChunk(World world, int i, int j, Biome[] biomes) {
-		this(world, i, j, biomes, UpgradeData.NO_UPGRADE_DATA, DummyClientTickScheduler.get(), DummyClientTickScheduler.get(), 0L, null);
+	public WorldChunk(World world, ChunkPos chunkPos, Biome[] biomes) {
+		this(world, chunkPos, biomes, UpgradeData.NO_UPGRADE_DATA, DummyClientTickScheduler.get(), DummyClientTickScheduler.get(), 0L, null, null);
 	}
 
 	public WorldChunk(
 		World world,
-		int i,
-		int j,
-		Biome[] biomes,
-		UpgradeData upgradeData,
-		TickScheduler<Block> tickScheduler,
-		TickScheduler<Fluid> tickScheduler2,
-		long l,
-		@Nullable Consumer<WorldChunk> consumer
-	) {
-		this(world, i, j, biomes, upgradeData, tickScheduler, tickScheduler2, l, null, consumer);
-	}
-
-	public WorldChunk(
-		World world,
-		int i,
-		int j,
+		ChunkPos chunkPos,
 		Biome[] biomes,
 		UpgradeData upgradeData,
 		TickScheduler<Block> tickScheduler,
@@ -115,7 +102,7 @@ public class WorldChunk implements Chunk {
 	) {
 		this.entitySections = new TypeFilterableList[16];
 		this.world = world;
-		this.pos = new ChunkPos(i, j);
+		this.pos = chunkPos;
 		this.upgradeData = upgradeData;
 
 		for (Heightmap.Type type : Heightmap.Type.values()) {
@@ -124,8 +111,8 @@ public class WorldChunk implements Chunk {
 			}
 		}
 
-		for (int k = 0; k < this.entitySections.length; k++) {
-			this.entitySections[k] = new TypeFilterableList<>(Entity.class);
+		for (int i = 0; i < this.entitySections.length; i++) {
+			this.entitySections[i] = new TypeFilterableList<>(Entity.class);
 		}
 
 		this.biomeArray = biomes;
@@ -142,25 +129,21 @@ public class WorldChunk implements Chunk {
 		}
 	}
 
-	public WorldChunk(World world, ProtoChunk protoChunk, int i, int j) {
+	public WorldChunk(World world, ProtoChunk protoChunk) {
 		this(
 			world,
-			i,
-			j,
+			protoChunk.getPos(),
 			protoChunk.getBiomeArray(),
 			protoChunk.getUpgradeData(),
 			protoChunk.getBlockTickScheduler(),
 			protoChunk.getFluidTickScheduler(),
 			protoChunk.getInhabitedTime(),
+			protoChunk.getSectionArray(),
 			null
 		);
 
-		for (int k = 0; k < this.sections.length; k++) {
-			this.sections[k] = protoChunk.getSectionArray()[k];
-		}
-
 		for (CompoundTag compoundTag : protoChunk.getEntities()) {
-			ChunkSaveHandlerImpl.readEntityAndAddToChunk(compoundTag, world, this);
+			EntityType.method_17841(compoundTag, world, this);
 		}
 
 		for (BlockEntity blockEntity : protoChunk.getBlockEntities().values()) {
@@ -169,8 +152,8 @@ public class WorldChunk implements Chunk {
 
 		this.pendingBlockEntityTags.putAll(protoChunk.getBlockEntityTags());
 
-		for (int k = 0; k < protoChunk.getPostProcessingLists().length; k++) {
-			this.postProcessingLists[k] = protoChunk.getPostProcessingLists()[k];
+		for (int i = 0; i < protoChunk.getPostProcessingLists().length; i++) {
+			this.postProcessingLists[i] = protoChunk.getPostProcessingLists()[i];
 		}
 
 		this.setStructureStarts(protoChunk.getStructureStarts());

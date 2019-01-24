@@ -39,7 +39,7 @@ public class CustomPayloadServerPacket implements Packet<ServerPlayPacketListene
 		packetByteBuf.writeBytes(this.data);
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12199(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onCustomPayload(this);
 		if (this.data != null) {
 			this.data.release();

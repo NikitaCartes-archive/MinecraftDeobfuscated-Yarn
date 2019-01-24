@@ -69,7 +69,7 @@ public class BarrierParticle extends Particle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3010(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new BarrierParticle(world, d, e, f, Blocks.field_10499.getItem());
 		}
 	}

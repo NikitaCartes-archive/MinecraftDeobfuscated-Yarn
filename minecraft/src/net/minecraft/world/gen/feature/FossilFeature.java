@@ -3,6 +3,7 @@ package net.minecraft.world.gen.feature;
 import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sortme.Structure;
 import net.minecraft.sortme.StructurePlacementData;
 import net.minecraft.sortme.structures.StructureManager;
@@ -52,7 +53,7 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 		Rotation[] rotations = Rotation.values();
 		Rotation rotation = rotations[random2.nextInt(rotations.length)];
 		int i = random2.nextInt(FOSSILS.length);
-		StructureManager structureManager = iWorld.getSaveHandler().getStructureManager();
+		StructureManager structureManager = ((ServerWorld)iWorld.getWorld()).method_17982().getStructureManager();
 		Structure structure = structureManager.getStructureOrBlank(FOSSILS[i]);
 		Structure structure2 = structureManager.getStructureOrBlank(COAL_FOSSILS[i]);
 		ChunkPos chunkPos = new ChunkPos(blockPos);

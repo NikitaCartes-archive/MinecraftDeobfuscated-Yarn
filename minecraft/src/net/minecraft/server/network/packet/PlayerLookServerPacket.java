@@ -49,7 +49,7 @@ public class PlayerLookServerPacket implements Packet<ServerPlayPacketListener> 
 		packetByteBuf.writeByte(b);
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12369(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onPlayerLook(this);
 	}
 

@@ -47,9 +47,11 @@ public class class_3782 extends class_3784 {
 	}
 
 	@Override
-	public boolean method_16626(IWorld iWorld, BlockPos blockPos, Rotation rotation, MutableIntBoundingBox mutableIntBoundingBox, Random random) {
+	public boolean method_16626(
+		StructureManager structureManager, IWorld iWorld, BlockPos blockPos, Rotation rotation, MutableIntBoundingBox mutableIntBoundingBox, Random random
+	) {
 		for (class_3784 lv : this.elements) {
-			if (!lv.method_16626(iWorld, blockPos, rotation, mutableIntBoundingBox, random)) {
+			if (!lv.method_16626(structureManager, iWorld, blockPos, rotation, mutableIntBoundingBox, random)) {
 				return false;
 			}
 		}

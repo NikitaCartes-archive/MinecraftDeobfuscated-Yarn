@@ -9,6 +9,8 @@ import com.google.gson.JsonSyntaxException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -102,6 +104,15 @@ public class RecipeManager implements ResourceReloadListener {
 		return this.method_17717(recipeType).values().stream().flatMap(recipe -> SystemUtil.method_17815(recipeType.get(recipe, world, inventory))).findFirst();
 	}
 
+	public <C extends Inventory, T extends Recipe<C>> List<T> method_17877(RecipeType<T> recipeType, C inventory, World world) {
+		return (List<T>)this.method_17717(recipeType)
+			.values()
+			.stream()
+			.flatMap(recipe -> SystemUtil.method_17815(recipeType.get(recipe, world, inventory)))
+			.sorted(Comparator.comparing(recipe -> recipe.getOutput().getTranslationKey()))
+			.collect(Collectors.toList());
+	}
+
 	private <C extends Inventory, T extends Recipe<C>> Map<Identifier, Recipe<C>> method_17717(RecipeType<T> recipeType) {
 		return (Map<Identifier, Recipe<C>>)this.recipeMap.getOrDefault(recipeType, Maps.newHashMap());
 	}
@@ -140,12 +151,10 @@ public class RecipeManager implements ResourceReloadListener {
 
 	public static Recipe<?> deserialize(Identifier identifier, JsonObject jsonObject) {
 		String string = JsonHelper.getString(jsonObject, "type");
-		RecipeSerializer<?> recipeSerializer = Registry.RECIPE_SERIALIZER.get(new Identifier(string));
-		if (recipeSerializer == null) {
-			throw new JsonSyntaxException("Invalid or unsupported recipe type '" + string + "'");
-		} else {
-			return recipeSerializer.read(identifier, jsonObject);
-		}
+		return ((RecipeSerializer)Registry.RECIPE_SERIALIZER
+				.method_17966(new Identifier(string))
+				.orElseThrow(() -> new JsonSyntaxException("Invalid or unsupported recipe type '" + string + "'")))
+			.read(identifier, jsonObject);
 	}
 
 	private static void method_17719(Map<RecipeType<?>, Map<Identifier, Recipe<?>>> map) {

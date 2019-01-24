@@ -29,7 +29,7 @@ public class BoatPaddleStateServerPacket implements Packet<ServerPlayPacketListe
 		packetByteBuf.writeBoolean(this.rightPaddling);
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12283(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onBoatPaddleState(this);
 	}
 

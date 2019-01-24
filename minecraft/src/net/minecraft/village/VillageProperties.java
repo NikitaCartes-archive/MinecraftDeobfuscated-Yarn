@@ -31,7 +31,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class VillageProperties {
-	private World world;
+	private final World world;
 	private final List<VillageDoor> doors = Lists.<VillageDoor>newArrayList();
 	private BlockPos doorPositionsAggregate = BlockPos.ORIGIN;
 	private BlockPos center = BlockPos.ORIGIN;
@@ -45,14 +45,7 @@ public class VillageProperties {
 	private final List<VillageProperties.AttackerInfo> attackerInfos = Lists.<VillageProperties.AttackerInfo>newArrayList();
 	private int golems;
 
-	public VillageProperties() {
-	}
-
 	public VillageProperties(World world) {
-		this.world = world;
-	}
-
-	public void setWorld(World world) {
 		this.world = world;
 	}
 

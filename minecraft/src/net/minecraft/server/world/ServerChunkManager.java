@@ -1,16 +1,20 @@
 package net.minecraft.server.world;
 
 import com.google.common.collect.Queues;
+import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.ObjectBidirectionalIterator;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -23,10 +27,10 @@ import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.chunk.light.ServerLightingProvider;
 import net.minecraft.sortme.SpawnHelper;
+import net.minecraft.sortme.structures.StructureManager;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ChunkSaveHandler;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -34,6 +38,7 @@ import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.dimension.DimensionalPersistentStateManager;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.LevelProperties;
@@ -50,6 +55,7 @@ public class ServerChunkManager extends ChunkManager implements ChunkHolder.Play
 	private final Queue<Runnable> genQueue = Queues.<Runnable>newConcurrentLinkedQueue();
 	private final PlayerChunkWatchingManager players = new PlayerChunkWatchingManager();
 	private final ChunkHolderManager chunkHolderManager;
+	private final DimensionalPersistentStateManager field_17708;
 	private int maxWatchDistance;
 	private long lastMobSpawningTime;
 	private boolean spawnMonsters = true;
@@ -57,17 +63,23 @@ public class ServerChunkManager extends ChunkManager implements ChunkHolder.Play
 
 	public ServerChunkManager(
 		World world,
-		ChunkSaveHandler chunkSaveHandler,
+		File file,
+		DataFixer dataFixer,
+		StructureManager structureManager,
 		Executor executor,
 		ChunkGenerator<?> chunkGenerator,
 		int i,
-		WorldGenerationProgressListener worldGenerationProgressListener
+		WorldGenerationProgressListener worldGenerationProgressListener,
+		Supplier<DimensionalPersistentStateManager> supplier
 	) {
 		this.world = world;
 		this.chunkGenerator = chunkGenerator;
 		this.serverThread = Thread.currentThread();
+		File file2 = new File(world.getDimension().getType().getFile(file), "data");
+		file2.mkdirs();
+		this.field_17708 = new DimensionalPersistentStateManager(file2, dataFixer);
 		this.chunkHolderManager = new ChunkHolderManager(
-			executor, this, this.genQueue::add, chunkSaveHandler, this, this.getWorld(), this.getChunkGenerator(), worldGenerationProgressListener
+			world, file, dataFixer, structureManager, executor, this, this.genQueue::add, this, this.getChunkGenerator(), worldGenerationProgressListener, supplier
 		);
 		this.lightProvider = this.chunkHolderManager.getLightProvider();
 		this.ticketManager = this.chunkHolderManager.getTicketManager();
@@ -258,7 +270,7 @@ public class ServerChunkManager extends ChunkManager implements ChunkHolder.Play
 	}
 
 	@Override
-	public void close() {
+	public void close() throws IOException {
 		this.lightProvider.close();
 		this.chunkHolderManager.close();
 	}
@@ -274,9 +286,6 @@ public class ServerChunkManager extends ChunkManager implements ChunkHolder.Play
 		this.doMobSpawning();
 		this.world.getProfiler().swap("unload");
 		this.chunkHolderManager.unload(booleanSupplier);
-		this.world.getProfiler().swap("promote_chunks");
-		this.world.getProfiler().swap("storage");
-		this.chunkHolderManager.save(booleanSupplier);
 		this.world.getProfiler().pop();
 	}
 
@@ -501,5 +510,9 @@ public class ServerChunkManager extends ChunkManager implements ChunkHolder.Play
 	@Environment(EnvType.CLIENT)
 	public String getDebugString(ChunkPos chunkPos) {
 		return this.chunkHolderManager.getDebugString(chunkPos);
+	}
+
+	public DimensionalPersistentStateManager method_17981() {
+		return this.field_17708;
 	}
 }

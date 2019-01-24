@@ -61,7 +61,7 @@ public class PlayerSpawnClientPacket implements Packet<ClientPlayPacketListener>
 		this.dataTracker.serializePacket(packetByteBuf);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11235(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onPlayerSpawn(this);
 	}
 

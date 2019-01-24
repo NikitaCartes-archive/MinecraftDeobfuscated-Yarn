@@ -73,7 +73,7 @@ public class EnderCrystalEntityRenderer extends EntityRenderer<EnderCrystalEntit
 		super.render(enderCrystalEntity, d, e, f, g, h);
 	}
 
-	protected Identifier getTexture(EnderCrystalEntity enderCrystalEntity) {
+	protected Identifier method_3909(EnderCrystalEntity enderCrystalEntity) {
 		return field_4663;
 	}
 

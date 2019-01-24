@@ -96,7 +96,7 @@ public class ForceLoadCommand {
 	private static int method_13374(ServerCommandSource serverCommandSource, ColumnPosArgumentType.SimpleColumnPos simpleColumnPos) throws CommandSyntaxException {
 		ChunkPos chunkPos = new ChunkPos(simpleColumnPos.x >> 4, simpleColumnPos.z >> 4);
 		DimensionType dimensionType = serverCommandSource.getWorld().getDimension().getType();
-		boolean bl = serverCommandSource.getMinecraftServer().getWorld(dimensionType).isChunkForced(chunkPos.x, chunkPos.z);
+		boolean bl = serverCommandSource.getMinecraftServer().getWorld(dimensionType).method_17984().contains(chunkPos.toLong());
 		if (bl) {
 			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.forceload.query.success", chunkPos, dimensionType), false);
 			return 1;
@@ -107,7 +107,7 @@ public class ForceLoadCommand {
 
 	private static int method_13373(ServerCommandSource serverCommandSource) {
 		DimensionType dimensionType = serverCommandSource.getWorld().getDimension().getType();
-		LongSet longSet = serverCommandSource.getMinecraftServer().getWorld(dimensionType).getForcedChunks();
+		LongSet longSet = serverCommandSource.getMinecraftServer().getWorld(dimensionType).method_17984();
 		int i = longSet.size();
 		if (i > 0) {
 			String string = Joiner.on(", ").join(longSet.stream().sorted().map(ChunkPos::new).map(ChunkPos::toString).iterator());
@@ -126,8 +126,8 @@ public class ForceLoadCommand {
 	private static int clearAllForceLoaded(ServerCommandSource serverCommandSource) {
 		DimensionType dimensionType = serverCommandSource.getWorld().getDimension().getType();
 		ServerWorld serverWorld = serverCommandSource.getMinecraftServer().getWorld(dimensionType);
-		LongSet longSet = serverWorld.getForcedChunks();
-		longSet.forEach(l -> serverWorld.setChunkForced(ChunkPos.longX(l), ChunkPos.longZ(l), false));
+		LongSet longSet = serverWorld.method_17984();
+		longSet.forEach(l -> serverWorld.method_17988(ChunkPos.longX(l), ChunkPos.longZ(l), false));
 		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.forceload.removed.all", dimensionType), true);
 		return 0;
 	}
@@ -158,7 +158,7 @@ public class ForceLoadCommand {
 
 				for (int s = m; s <= o; s++) {
 					for (int t = n; t <= p; t++) {
-						boolean bl2 = serverWorld.setChunkForced(s, t, bl);
+						boolean bl2 = serverWorld.method_17988(s, t, bl);
 						if (bl2) {
 							r++;
 							if (chunkPos == null) {

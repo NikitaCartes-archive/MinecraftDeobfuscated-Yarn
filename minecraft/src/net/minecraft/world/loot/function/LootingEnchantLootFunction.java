@@ -64,8 +64,8 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 			super(new Identifier("looting_enchant"), LootingEnchantLootFunction.class);
 		}
 
-		public void serialize(JsonObject jsonObject, LootingEnchantLootFunction lootingEnchantLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, lootingEnchantLootFunction, jsonSerializationContext);
+		public void method_553(JsonObject jsonObject, LootingEnchantLootFunction lootingEnchantLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.method_529(jsonObject, lootingEnchantLootFunction, jsonSerializationContext);
 			jsonObject.add("count", jsonSerializationContext.serialize(lootingEnchantLootFunction.range));
 			if (lootingEnchantLootFunction.method_549()) {
 				jsonObject.add("limit", jsonSerializationContext.serialize(lootingEnchantLootFunction.amount));

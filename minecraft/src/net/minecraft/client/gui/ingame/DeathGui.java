@@ -75,9 +75,9 @@ public class DeathGui extends Gui {
 	}
 
 	@Override
-	public void handle(boolean bl, int i) {
+	public void confirmResult(boolean bl, int i) {
 		if (i == 31102009) {
-			super.handle(bl, i);
+			super.confirmResult(bl, i);
 		} else if (bl) {
 			if (this.client.world != null) {
 				this.client.world.method_8525();

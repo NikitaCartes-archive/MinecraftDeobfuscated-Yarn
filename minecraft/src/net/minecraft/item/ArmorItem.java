@@ -30,9 +30,9 @@ public class ArmorItem extends Item {
 	};
 	public static final DispenserBehavior DISPENSER_BEHAVIOR = new ItemDispenserBehavior() {
 		@Override
-		protected ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
+		protected ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
 			ItemStack itemStack2 = ArmorItem.dispenseArmor(blockPointer, itemStack);
-			return itemStack2.isEmpty() ? super.method_10135(blockPointer, itemStack) : itemStack2;
+			return itemStack2.isEmpty() ? super.dispenseStack(blockPointer, itemStack) : itemStack2;
 		}
 	};
 	protected final EquipmentSlot slot;

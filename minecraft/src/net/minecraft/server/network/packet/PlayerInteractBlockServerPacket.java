@@ -34,7 +34,7 @@ public class PlayerInteractBlockServerPacket implements Packet<ServerPlayPacketL
 		packetByteBuf.method_17813(this.field_17602);
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12547(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onPlayerInteractBlock(this);
 	}
 

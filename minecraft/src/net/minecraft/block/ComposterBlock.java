@@ -148,7 +148,14 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+		if ((Integer)blockState.get(LEVEL) == 7) {
+			world.getBlockTickScheduler().schedule(blockPos, blockState.getBlock(), 20);
+		}
+	}
+
+	@Override
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		int i = (Integer)blockState.get(LEVEL);
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (i < 8 && ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(itemStack.getItem())) {
@@ -170,7 +177,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 				ItemEntity itemEntity = new ItemEntity(
 					world, (double)blockPos.getX() + d, (double)blockPos.getY() + e, (double)blockPos.getZ() + g, new ItemStack(Items.field_8324)
 				);
-				itemEntity.method_6988();
+				itemEntity.setToDefaultPickupDelay();
 				world.spawnEntity(itemEntity);
 			}
 

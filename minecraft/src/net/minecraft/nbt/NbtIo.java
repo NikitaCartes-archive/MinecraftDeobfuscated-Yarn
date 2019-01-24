@@ -24,24 +24,52 @@ import net.minecraft.util.crash.CrashReportSection;
 public class NbtIo {
 	public static CompoundTag readCompressed(InputStream inputStream) throws IOException {
 		DataInputStream dataInputStream = new DataInputStream(new BufferedInputStream(new GZIPInputStream(inputStream)));
+		Throwable var2 = null;
 
-		CompoundTag var2;
+		CompoundTag var3;
 		try {
-			var2 = read(dataInputStream, PositionTracker.DEFAULT);
+			var3 = read(dataInputStream, PositionTracker.DEFAULT);
+		} catch (Throwable var12) {
+			var2 = var12;
+			throw var12;
 		} finally {
-			dataInputStream.close();
+			if (dataInputStream != null) {
+				if (var2 != null) {
+					try {
+						dataInputStream.close();
+					} catch (Throwable var11) {
+						var2.addSuppressed(var11);
+					}
+				} else {
+					dataInputStream.close();
+				}
+			}
 		}
 
-		return var2;
+		return var3;
 	}
 
 	public static void writeCompressed(CompoundTag compoundTag, OutputStream outputStream) throws IOException {
 		DataOutputStream dataOutputStream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(outputStream)));
+		Throwable var3 = null;
 
 		try {
 			write(compoundTag, dataOutputStream);
+		} catch (Throwable var12) {
+			var3 = var12;
+			throw var12;
 		} finally {
-			dataOutputStream.close();
+			if (dataOutputStream != null) {
+				if (var3 != null) {
+					try {
+						dataOutputStream.close();
+					} catch (Throwable var11) {
+						var3.addSuppressed(var11);
+					}
+				} else {
+					dataOutputStream.close();
+				}
+			}
 		}
 	}
 

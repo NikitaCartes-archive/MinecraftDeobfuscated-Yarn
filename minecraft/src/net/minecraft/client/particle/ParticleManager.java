@@ -244,7 +244,7 @@ public class ParticleManager {
 		Particle.cameraZ = MathHelper.lerp((double)f, entity.prevRenderZ, entity.z);
 		Particle.cameraRotation = entity.getRotationVec(f);
 		GlStateManager.enableBlend();
-		GlStateManager.blendFunc(GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA);
+		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		GlStateManager.alphaFunc(516, 0.003921569F);
 
 		for (int l = 0; l < 3; l++) {

@@ -117,7 +117,7 @@ public class BossBarClientPacket implements Packet<ClientPlayPacketListener> {
 		return i;
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11330(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onBossBar(this);
 	}
 

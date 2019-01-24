@@ -49,7 +49,7 @@ public class AdvancementTabServerPacket implements Packet<ServerPlayPacketListen
 		}
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12417(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onAdvancementTab(this);
 	}
 

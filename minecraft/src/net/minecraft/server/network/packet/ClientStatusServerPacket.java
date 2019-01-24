@@ -25,7 +25,7 @@ public class ClientStatusServerPacket implements Packet<ServerPlayPacketListener
 		packetByteBuf.writeEnumConstant(this.mode);
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12120(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onClientStatus(this);
 	}
 

@@ -29,7 +29,7 @@ public class SpectatorTeleportServerPacket implements Packet<ServerPlayPacketLis
 		packetByteBuf.writeUuid(this.targetUuid);
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12542(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onSpectatorTeleport(this);
 	}
 

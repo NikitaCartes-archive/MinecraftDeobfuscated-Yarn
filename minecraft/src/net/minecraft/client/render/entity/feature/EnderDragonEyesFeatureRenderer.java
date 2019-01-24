@@ -18,11 +18,11 @@ public class EnderDragonEyesFeatureRenderer extends FeatureRenderer<EnderDragonE
 		super(featureRendererContext);
 	}
 
-	public void render(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4183(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j, float k, float l) {
 		this.bindTexture(SKIN);
 		GlStateManager.enableBlend();
 		GlStateManager.disableAlphaTest();
-		GlStateManager.blendFunc(GlStateManager.class_1033.ONE, GlStateManager.class_1027.ONE);
+		GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
 		GlStateManager.disableLighting();
 		GlStateManager.depthFunc(514);
 		int m = 61680;

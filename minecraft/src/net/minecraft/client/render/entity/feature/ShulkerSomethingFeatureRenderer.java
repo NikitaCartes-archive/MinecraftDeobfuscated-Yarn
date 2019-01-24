@@ -15,7 +15,7 @@ public class ShulkerSomethingFeatureRenderer extends FeatureRenderer<ShulkerEnti
 		super(featureRendererContext);
 	}
 
-	public void render(ShulkerEntity shulkerEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4115(ShulkerEntity shulkerEntity, float f, float g, float h, float i, float j, float k, float l) {
 		GlStateManager.pushMatrix();
 		switch (shulkerEntity.getAttachedFace()) {
 			case DOWN:

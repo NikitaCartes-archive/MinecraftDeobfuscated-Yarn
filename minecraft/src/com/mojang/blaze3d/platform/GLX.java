@@ -284,7 +284,7 @@ public class GLX {
 
 	public static void setupNvFogDistance() {
 		if (GL.getCapabilities().GL_NV_fog_distance) {
-			GlStateManager.fog(34138, 34139);
+			GlStateManager.fogi(34138, 34139);
 		}
 	}
 

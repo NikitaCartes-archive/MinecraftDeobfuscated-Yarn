@@ -66,7 +66,7 @@ public class BackupLevelGui extends Gui {
 			public void onPressed(double d, double e) {
 				LevelStorage levelStorage = BackupLevelGui.this.client.getLevelStorage();
 				BackupLevelGui.backupLevel(levelStorage, BackupLevelGui.this.levelName);
-				BackupLevelGui.this.callback.handle(false, 0);
+				BackupLevelGui.this.callback.confirmResult(false, 0);
 			}
 		});
 		this.addButton(new ButtonWidget(6, this.width / 2 - 100, this.height / 4 + 96 + 5, I18n.translate("selectWorld.edit.backupFolder")) {
@@ -116,12 +116,12 @@ public class BackupLevelGui extends Gui {
 		this.addButton(new ButtonWidget(1, this.width / 2 + 2, this.height / 4 + 144 + 5, 98, 20, I18n.translate("gui.cancel")) {
 			@Override
 			public void onPressed(double d, double e) {
-				BackupLevelGui.this.callback.handle(false, 0);
+				BackupLevelGui.this.callback.confirmResult(false, 0);
 			}
 		});
 		buttonWidget.enabled = this.client.getLevelStorage().resolveFile(this.levelName, "icon.png").isFile();
 		LevelStorage levelStorage = this.client.getLevelStorage();
-		LevelProperties levelProperties = levelStorage.getLevelProperties(this.levelName);
+		LevelProperties levelProperties = levelStorage.requiresConversion(this.levelName);
 		String string = levelProperties == null ? "" : levelProperties.getLevelName();
 		this.field_3170 = new TextFieldWidget(2, this.fontRenderer, this.width / 2 - 100, 53, 200, 20);
 		this.field_3170.setFocused(true);
@@ -144,7 +144,7 @@ public class BackupLevelGui extends Gui {
 	private void commit() {
 		LevelStorage levelStorage = this.client.getLevelStorage();
 		levelStorage.rename(this.levelName, this.field_3170.getText().trim());
-		this.callback.handle(true, 0);
+		this.callback.confirmResult(true, 0);
 	}
 
 	public static void backupLevel(LevelStorage levelStorage, String string) {

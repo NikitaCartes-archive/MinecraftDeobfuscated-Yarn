@@ -193,6 +193,16 @@ public class SystemUtil {
 		return DataFixUtils.orElseGet(optional.map(Stream::of), Stream::empty);
 	}
 
+	public static <T> Optional<T> method_17974(Optional<T> optional, Consumer<T> consumer, Runnable runnable) {
+		if (optional.isPresent()) {
+			consumer.accept(optional.get());
+		} else {
+			runnable.run();
+		}
+
+		return optional;
+	}
+
 	static enum IdentityHashStrategy implements Strategy<Object> {
 		INSTANCE;
 

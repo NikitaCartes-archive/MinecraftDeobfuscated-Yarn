@@ -2,7 +2,6 @@ package net.minecraft;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.function.CommandFunctionManager;
 import net.minecraft.util.Identifier;
 
@@ -15,10 +14,8 @@ public class class_231 implements class_234<MinecraftServer> {
 
 	public void method_967(MinecraftServer minecraftServer, class_236<MinecraftServer> arg, long l) {
 		CommandFunctionManager commandFunctionManager = minecraftServer.getCommandFunctionManager();
-		CommandFunction commandFunction = commandFunctionManager.getFunction(this.field_1304);
-		if (commandFunction != null) {
-			commandFunctionManager.execute(commandFunction, commandFunctionManager.getFunctionCommandSource());
-		}
+		commandFunctionManager.getFunction(this.field_1304)
+			.ifPresent(commandFunction -> commandFunctionManager.execute(commandFunction, commandFunctionManager.getFunctionCommandSource()));
 	}
 
 	public static class class_232 extends class_234.class_235<MinecraftServer, class_231> {

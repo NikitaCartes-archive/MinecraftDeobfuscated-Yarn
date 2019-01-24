@@ -25,7 +25,7 @@ public class DragonEggBlock extends FallingBlock {
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		this.method_10047(blockState, world, blockPos);
 		return true;
 	}

@@ -102,8 +102,7 @@ public final class ItemStack {
 	}
 
 	private ItemStack(CompoundTag compoundTag) {
-		Item item = Registry.ITEM.get(new Identifier(compoundTag.getString("id")));
-		this.item = item == null ? Items.AIR : item;
+		this.item = Registry.ITEM.get(new Identifier(compoundTag.getString("id")));
 		this.amount = compoundTag.getByte("Count");
 		if (compoundTag.containsKey("tag", 10)) {
 			this.tag = compoundTag.getCompound("tag");
@@ -512,32 +511,24 @@ public final class ItemStack {
 
 		if (this.hasTag()) {
 			if ((i & 1) == 0) {
-				ListTag listTag = this.getEnchantmentList();
-
-				for (int j = 0; j < listTag.size(); j++) {
-					CompoundTag compoundTag = listTag.getCompoundTag(j);
-					Enchantment enchantment = Registry.ENCHANTMENT.get(Identifier.create(compoundTag.getString("id")));
-					if (enchantment != null) {
-						list.add(enchantment.getTextComponent(compoundTag.getInt("lvl")));
-					}
-				}
+				method_17870(list, this.getEnchantmentList());
 			}
 
 			if (this.tag.containsKey("display", 10)) {
-				CompoundTag compoundTag2 = this.tag.getCompound("display");
-				if (compoundTag2.containsKey("color", 3)) {
+				CompoundTag compoundTag = this.tag.getCompound("display");
+				if (compoundTag.containsKey("color", 3)) {
 					if (tooltipOptions.isAdvanced()) {
-						list.add(new TranslatableTextComponent("item.color", String.format("#%06X", compoundTag2.getInt("color"))).applyFormat(TextFormat.GRAY));
+						list.add(new TranslatableTextComponent("item.color", String.format("#%06X", compoundTag.getInt("color"))).applyFormat(TextFormat.GRAY));
 					} else {
 						list.add(new TranslatableTextComponent("item.dyed").applyFormat(new TextFormat[]{TextFormat.GRAY, TextFormat.ITALIC}));
 					}
 				}
 
-				if (compoundTag2.getType("Lore") == 9) {
-					ListTag listTag2 = compoundTag2.getList("Lore", 8);
+				if (compoundTag.getType("Lore") == 9) {
+					ListTag listTag = compoundTag.getList("Lore", 8);
 
-					for (int k = 0; k < listTag2.size(); k++) {
-						String string = listTag2.getString(k);
+					for (int j = 0; j < listTag.size(); j++) {
+						String string = listTag.getString(j);
 
 						try {
 							TextComponent textComponent2 = TextComponent.Serializer.fromJsonString(string);
@@ -545,7 +536,7 @@ public final class ItemStack {
 								list.add(TextFormatter.addStyle(textComponent2, new Style().setColor(TextFormat.DARK_PURPLE).setItalic(true)));
 							}
 						} catch (JsonParseException var19) {
-							compoundTag2.remove("Lore");
+							compoundTag.remove("Lore");
 						}
 					}
 				}
@@ -622,25 +613,25 @@ public final class ItemStack {
 		}
 
 		if (this.hasTag() && this.tag.containsKey("CanDestroy", 9) && (i & 8) == 0) {
-			ListTag listTag = this.tag.getList("CanDestroy", 8);
-			if (!listTag.isEmpty()) {
+			ListTag listTag2 = this.tag.getList("CanDestroy", 8);
+			if (!listTag2.isEmpty()) {
 				list.add(new StringTextComponent(""));
 				list.add(new TranslatableTextComponent("item.canBreak").applyFormat(TextFormat.GRAY));
 
-				for (int jx = 0; jx < listTag.size(); jx++) {
-					list.addAll(method_7937(listTag.getString(jx)));
+				for (int k = 0; k < listTag2.size(); k++) {
+					list.addAll(method_7937(listTag2.getString(k)));
 				}
 			}
 		}
 
 		if (this.hasTag() && this.tag.containsKey("CanPlaceOn", 9) && (i & 16) == 0) {
-			ListTag listTag = this.tag.getList("CanPlaceOn", 8);
-			if (!listTag.isEmpty()) {
+			ListTag listTag2 = this.tag.getList("CanPlaceOn", 8);
+			if (!listTag2.isEmpty()) {
 				list.add(new StringTextComponent(""));
 				list.add(new TranslatableTextComponent("item.canPlace").applyFormat(TextFormat.GRAY));
 
-				for (int jx = 0; jx < listTag.size(); jx++) {
-					list.addAll(method_7937(listTag.getString(jx)));
+				for (int k = 0; k < listTag2.size(); k++) {
+					list.addAll(method_7937(listTag2.getString(k)));
 				}
 			}
 		}
@@ -657,6 +648,16 @@ public final class ItemStack {
 		}
 
 		return list;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static void method_17870(List<TextComponent> list, ListTag listTag) {
+		for (int i = 0; i < listTag.size(); i++) {
+			CompoundTag compoundTag = listTag.getCompoundTag(i);
+			Registry.ENCHANTMENT
+				.method_17966(Identifier.create(compoundTag.getString("id")))
+				.ifPresent(enchantment -> list.add(enchantment.getTextComponent(compoundTag.getInt("lvl"))));
+		}
 	}
 
 	@Environment(EnvType.CLIENT)

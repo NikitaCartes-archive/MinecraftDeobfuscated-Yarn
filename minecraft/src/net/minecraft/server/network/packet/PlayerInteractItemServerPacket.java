@@ -26,7 +26,7 @@ public class PlayerInteractItemServerPacket implements Packet<ServerPlayPacketLi
 		packetByteBuf.writeEnumConstant(this.hand);
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12550(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onPlayerInteractItem(this);
 	}
 

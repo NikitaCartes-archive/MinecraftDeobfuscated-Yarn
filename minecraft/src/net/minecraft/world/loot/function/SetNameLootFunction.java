@@ -72,7 +72,7 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 		}
 
 		public void method_630(JsonObject jsonObject, SetNameLootFunction setNameLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, setNameLootFunction, jsonSerializationContext);
+			super.method_529(jsonObject, setNameLootFunction, jsonSerializationContext);
 			if (setNameLootFunction.name != null) {
 				jsonObject.add("name", TextComponent.Serializer.toJson(setNameLootFunction.name));
 			}

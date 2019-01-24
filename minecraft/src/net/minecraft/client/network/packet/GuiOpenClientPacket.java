@@ -21,7 +21,7 @@ public class GuiOpenClientPacket implements Packet<ClientPlayPacketListener> {
 		this.entityHorseId = k;
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11437(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onGuiOpen(this);
 	}
 

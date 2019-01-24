@@ -333,7 +333,7 @@ public class ItemEntity extends Entity {
 		return this.age;
 	}
 
-	public void method_6988() {
+	public void setToDefaultPickupDelay() {
 		this.pickupDelay = 10;
 	}
 

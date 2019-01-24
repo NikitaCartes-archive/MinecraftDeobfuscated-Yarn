@@ -50,7 +50,7 @@ public class CartographyTableGui extends ContainerGui<CartographyTableContainer>
 		boolean bl4 = false;
 		MapState mapState;
 		if (itemStack.getItem() == Items.field_8204) {
-			mapState = FilledMapItem.method_17441(itemStack, this.client.world);
+			mapState = FilledMapItem.method_7997(itemStack, this.client.world);
 			if (mapState != null) {
 				if (mapState.field_17403) {
 					bl4 = true;

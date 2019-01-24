@@ -13,6 +13,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.class_1191;
 import net.minecraft.class_3904;
 import net.minecraft.class_3905;
+import net.minecraft.class_3970;
 import net.minecraft.datafixers.fixes.AddTrappedChestFix;
 import net.minecraft.datafixers.fixes.AdvancementsFix;
 import net.minecraft.datafixers.fixes.BedBlockEntityFix;
@@ -475,5 +476,7 @@ public class Schemas {
 		Schema schema86 = dataFixerBuilder.addSchema(1920, class_3905::new);
 		dataFixerBuilder.addFixer(new class_3904(schema86, false));
 		dataFixerBuilder.addFixer(new FixChoiceTypes(schema86, "Add campfire", TypeReferences.BLOCK_ENTITY));
+		Schema schema87 = dataFixerBuilder.addSchema(1925, identNormalize);
+		dataFixerBuilder.addFixer(new class_3970(schema87, false));
 	}
 }

@@ -66,27 +66,26 @@ public abstract class BlockEntity {
 
 	@Nullable
 	public static BlockEntity createFromTag(CompoundTag compoundTag) {
-		BlockEntity blockEntity = null;
 		String string = compoundTag.getString("id");
-
-		try {
-			blockEntity = BlockEntityType.instantiate(string);
-		} catch (Throwable var5) {
-			LOGGER.error("Failed to create block entity {}", string, var5);
-		}
-
-		if (blockEntity != null) {
+		return (BlockEntity)Registry.BLOCK_ENTITY.method_17966(new Identifier(string)).map(blockEntityType -> {
+			try {
+				return blockEntityType.instantiate();
+			} catch (Throwable var3) {
+				LOGGER.error("Failed to create block entity {}", string, var3);
+				return null;
+			}
+		}).map(blockEntity -> {
 			try {
 				blockEntity.fromTag(compoundTag);
+				return blockEntity;
 			} catch (Throwable var4) {
 				LOGGER.error("Failed to load data for block entity {}", string, var4);
-				blockEntity = null;
+				return null;
 			}
-		} else {
+		}).orElseGet(() -> {
 			LOGGER.warn("Skipping BlockEntity with id {}", string);
-		}
-
-		return blockEntity;
+			return null;
+		});
 	}
 
 	public void markDirty() {

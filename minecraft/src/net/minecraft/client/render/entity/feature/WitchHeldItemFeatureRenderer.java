@@ -19,7 +19,7 @@ public class WitchHeldItemFeatureRenderer<T extends LivingEntity> extends Featur
 		super(featureRendererContext);
 	}
 
-	public void render(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4208(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
 		ItemStack itemStack = livingEntity.getMainHandStack();
 		if (!itemStack.isEmpty()) {
 			GlStateManager.color3f(1.0F, 1.0F, 1.0F);

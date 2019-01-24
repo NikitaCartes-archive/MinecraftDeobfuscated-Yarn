@@ -35,7 +35,7 @@ public class HealthUpdateClientPacket implements Packet<ClientPlayPacketListener
 		packetByteBuf.writeFloat(this.saturation);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11832(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onHealthUpdate(this);
 	}
 

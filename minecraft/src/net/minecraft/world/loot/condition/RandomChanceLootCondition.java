@@ -27,7 +27,7 @@ public class RandomChanceLootCondition implements LootCondition {
 			super(new Identifier("random_chance"), RandomChanceLootCondition.class);
 		}
 
-		public void serialize(JsonObject jsonObject, RandomChanceLootCondition randomChanceLootCondition, JsonSerializationContext jsonSerializationContext) {
+		public void method_936(JsonObject jsonObject, RandomChanceLootCondition randomChanceLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.addProperty("chance", randomChanceLootCondition.chance);
 		}
 

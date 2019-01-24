@@ -24,7 +24,7 @@ public class SynchronizeRecipesClientPacket implements Packet<ClientPlayPacketLi
 		this.recipes = Lists.<Recipe<?>>newArrayList(collection);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11997(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onSynchronizeRecipes(this);
 	}
 
@@ -55,12 +55,10 @@ public class SynchronizeRecipesClientPacket implements Packet<ClientPlayPacketLi
 	public static Recipe<?> method_17817(PacketByteBuf packetByteBuf) {
 		Identifier identifier = packetByteBuf.readIdentifier();
 		Identifier identifier2 = packetByteBuf.readIdentifier();
-		RecipeSerializer<?> recipeSerializer = Registry.RECIPE_SERIALIZER.get(identifier);
-		if (recipeSerializer == null) {
-			throw new IllegalArgumentException("Unknown recipe serializer " + identifier);
-		} else {
-			return recipeSerializer.read(identifier2, packetByteBuf);
-		}
+		return ((RecipeSerializer)Registry.RECIPE_SERIALIZER
+				.method_17966(identifier)
+				.orElseThrow(() -> new IllegalArgumentException("Unknown recipe serializer " + identifier)))
+			.read(identifier2, packetByteBuf);
 	}
 
 	public static <T extends Recipe<?>> void method_17816(T recipe, PacketByteBuf packetByteBuf) {

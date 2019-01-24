@@ -129,7 +129,7 @@ public class ParticleClientPacket implements Packet<ClientPlayPacketListener> {
 		return this.field_12259;
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11553(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onParticle(this);
 	}
 }

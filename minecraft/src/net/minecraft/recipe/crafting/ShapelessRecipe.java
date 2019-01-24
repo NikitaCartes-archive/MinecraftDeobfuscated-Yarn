@@ -120,7 +120,7 @@ public class ShapelessRecipe implements CraftingRecipe {
 			return new ShapelessRecipe(identifier, string, itemStack, defaultedList);
 		}
 
-		public void write(PacketByteBuf packetByteBuf, ShapelessRecipe shapelessRecipe) {
+		public void method_8143(PacketByteBuf packetByteBuf, ShapelessRecipe shapelessRecipe) {
 			packetByteBuf.writeString(shapelessRecipe.group);
 			packetByteBuf.writeVarInt(shapelessRecipe.input.size());
 

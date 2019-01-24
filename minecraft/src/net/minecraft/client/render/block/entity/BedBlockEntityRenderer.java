@@ -22,7 +22,7 @@ public class BedBlockEntityRenderer extends BlockEntityRenderer<BedBlockEntity> 
 		.toArray(Identifier[]::new);
 	private final BedEntityModel model = new BedEntityModel();
 
-	public void render(BedBlockEntity bedBlockEntity, double d, double e, double f, float g, int i) {
+	public void method_3557(BedBlockEntity bedBlockEntity, double d, double e, double f, float g, int i) {
 		if (i >= 0) {
 			this.bindTexture(DESTROY_STAGE_TEXTURES[i]);
 			GlStateManager.matrixMode(5890);

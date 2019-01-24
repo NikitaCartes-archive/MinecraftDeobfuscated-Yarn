@@ -40,7 +40,7 @@ public class WorldEventClientPacket implements Packet<ClientPlayPacketListener> 
 		packetByteBuf.writeBoolean(this.global);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11535(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onWorldEvent(this);
 	}
 

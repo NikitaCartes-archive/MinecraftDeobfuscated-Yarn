@@ -43,7 +43,7 @@ public class UpdateSignServerPacket implements Packet<ServerPlayPacketListener> 
 		}
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12509(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onSignUpdate(this);
 	}
 

@@ -11,6 +11,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.server.world.chunk.light.ServerLightingProvider;
+import net.minecraft.sortme.structures.StructureManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.registry.Registry;
@@ -29,7 +30,7 @@ public class ChunkStatus {
 		0,
 		false,
 		ChunkStatus.ChunkType.PROTOCHUNK,
-		(chunkStatus, world, chunkGenerator, serverLightingProvider, function, list, chunk) -> {
+		(chunkStatus, world, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> {
 			if (!chunk.getStatus().isAfter(getLightStatus()) || !chunk.isLightOn()) {
 				ChunkPos chunkPos = chunk.getPos();
 				int i = chunkPos.x;
@@ -39,7 +40,7 @@ public class ChunkStatus {
 
 			if (!chunk.getStatus().isAfter(chunkStatus)) {
 				if (world.getLevelProperties().hasStructures()) {
-					chunkGenerator.setStructureStarts(chunk, chunkGenerator, world.getSaveHandler().getStructureManager());
+					chunkGenerator.setStructureStarts(chunk, chunkGenerator, structureManager);
 				}
 
 				if (chunk instanceof ProtoChunk) {
@@ -102,7 +103,12 @@ public class ChunkStatus {
 		}
 	);
 	public static final ChunkStatus LIGHT = register(
-		"light", FEATURES, 1, true, ChunkStatus.ChunkType.PROTOCHUNK, (chunkStatus, world, chunkGenerator, serverLightingProvider, function, list, chunk) -> {
+		"light",
+		FEATURES,
+		1,
+		true,
+		ChunkStatus.ChunkType.PROTOCHUNK,
+		(chunkStatus, world, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> {
 			chunk.setLightingProvider(serverLightingProvider);
 			ChunkPos chunkPos = chunk.getPos();
 			int i = chunkPos.x;
@@ -133,7 +139,7 @@ public class ChunkStatus {
 		0,
 		true,
 		ChunkStatus.ChunkType.LEVELCHUNK,
-		(chunkStatus, world, chunkGenerator, serverLightingProvider, function, list, chunk) -> (CompletableFuture<Chunk>)function.apply(chunk)
+		(chunkStatus, world, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> (CompletableFuture<Chunk>)function.apply(chunk)
 	);
 	private static final List<ChunkStatus> DISTANCE_TO_TARGET_GENERATION_STATUS = ImmutableList.of(
 		FULL,
@@ -237,12 +243,12 @@ public class ChunkStatus {
 	public CompletableFuture<Chunk> runTask(
 		World world,
 		ChunkGenerator<?> chunkGenerator,
+		StructureManager structureManager,
 		ServerLightingProvider serverLightingProvider,
 		Function<Chunk, CompletableFuture<Chunk>> function,
 		List<Chunk> list
 	) {
-		Chunk chunk = (Chunk)list.get(list.size() / 2);
-		return this.task.doWork(this, world, chunkGenerator, serverLightingProvider, function, list, chunk);
+		return this.task.doWork(this, world, chunkGenerator, structureManager, serverLightingProvider, function, list, (Chunk)list.get(list.size() / 2));
 	}
 
 	public int getTaskMargin() {
@@ -280,6 +286,7 @@ public class ChunkStatus {
 			ChunkStatus chunkStatus,
 			World world,
 			ChunkGenerator<?> chunkGenerator,
+			StructureManager structureManager,
 			ServerLightingProvider serverLightingProvider,
 			Function<Chunk, CompletableFuture<Chunk>> function,
 			List<Chunk> list,
@@ -303,6 +310,7 @@ public class ChunkStatus {
 			ChunkStatus chunkStatus,
 			World world,
 			ChunkGenerator<?> chunkGenerator,
+			StructureManager structureManager,
 			ServerLightingProvider serverLightingProvider,
 			Function<Chunk, CompletableFuture<Chunk>> function,
 			List<Chunk> list,

@@ -15,11 +15,7 @@ public class ScoreboardState extends PersistentState {
 	private CompoundTag tag;
 
 	public ScoreboardState() {
-		this("scoreboard");
-	}
-
-	public ScoreboardState(String string) {
-		super(string);
+		super("scoreboard");
 	}
 
 	public void setScoreboard(Scoreboard scoreboard) {
@@ -130,8 +126,7 @@ public class ScoreboardState extends PersistentState {
 	protected void deserializeObjectives(ListTag listTag) {
 		for (int i = 0; i < listTag.size(); i++) {
 			CompoundTag compoundTag = listTag.getCompoundTag(i);
-			ScoreboardCriterion scoreboardCriterion = ScoreboardCriterion.method_1224(compoundTag.getString("CriteriaName"));
-			if (scoreboardCriterion != null) {
+			ScoreboardCriterion.method_1224(compoundTag.getString("CriteriaName")).ifPresent(scoreboardCriterion -> {
 				String string = compoundTag.getString("Name");
 				if (string.length() > 16) {
 					string = string.substring(0, 16);
@@ -140,7 +135,7 @@ public class ScoreboardState extends PersistentState {
 				TextComponent textComponent = TextComponent.Serializer.fromJsonString(compoundTag.getString("DisplayName"));
 				ScoreboardCriterion.Type type = ScoreboardCriterion.Type.method_1229(compoundTag.getString("RenderType"));
 				this.scoreboard.method_1168(string, scoreboardCriterion, textComponent, type);
-			}
+			});
 		}
 	}
 
@@ -171,8 +166,8 @@ public class ScoreboardState extends PersistentState {
 
 			compoundTag.putBoolean("AllowFriendlyFire", scoreboardTeam.isFriendlyFireAllowed());
 			compoundTag.putBoolean("SeeFriendlyInvisibles", scoreboardTeam.shouldShowFriendlyInvisibles());
-			compoundTag.putString("MemberNamePrefix", TextComponent.Serializer.toJsonString(scoreboardTeam.getSuffix()));
-			compoundTag.putString("MemberNameSuffix", TextComponent.Serializer.toJsonString(scoreboardTeam.method_1136()));
+			compoundTag.putString("MemberNamePrefix", TextComponent.Serializer.toJsonString(scoreboardTeam.getPrefix()));
+			compoundTag.putString("MemberNameSuffix", TextComponent.Serializer.toJsonString(scoreboardTeam.getSuffix()));
 			compoundTag.putString("NameTagVisibility", scoreboardTeam.getNameTagVisibilityRule().field_1445);
 			compoundTag.putString("DeathMessageVisibility", scoreboardTeam.getDeathMessageVisibilityRule().field_1445);
 			compoundTag.putString("CollisionRule", scoreboardTeam.getCollisionRule().field_1436);

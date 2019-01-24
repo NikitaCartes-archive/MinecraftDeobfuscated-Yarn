@@ -66,7 +66,7 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 		}
 	}
 
-	protected Identifier getTexture(ExperienceOrbEntity experienceOrbEntity) {
+	protected Identifier method_3967(ExperienceOrbEntity experienceOrbEntity) {
 		return TEX;
 	}
 }

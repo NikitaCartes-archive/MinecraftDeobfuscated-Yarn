@@ -18,7 +18,7 @@ public class StrayOverlayFeatureRenderer<T extends LivingEntity & RangedAttacker
 		super(featureRendererContext);
 	}
 
-	public void render(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4206(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
 		this.getModel().method_17081(this.model);
 		this.model.method_17086(livingEntity, f, g, h);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);

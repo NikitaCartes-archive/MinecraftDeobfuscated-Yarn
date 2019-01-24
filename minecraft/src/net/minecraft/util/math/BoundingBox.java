@@ -225,10 +225,22 @@ public class BoundingBox {
 	}
 
 	public double averageDimension() {
-		double d = this.maxX - this.minX;
-		double e = this.maxY - this.minY;
-		double f = this.maxZ - this.minZ;
+		double d = this.method_17939();
+		double e = this.method_17940();
+		double f = this.method_17941();
 		return (d + e + f) / 3.0;
+	}
+
+	public double method_17939() {
+		return this.maxX - this.minX;
+	}
+
+	public double method_17940() {
+		return this.maxY - this.minY;
+	}
+
+	public double method_17941() {
+		return this.maxZ - this.minZ;
 	}
 
 	public BoundingBox contract(double d, double e, double f) {

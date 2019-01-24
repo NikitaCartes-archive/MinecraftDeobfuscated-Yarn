@@ -16,7 +16,7 @@ public class GhastEntityRenderer extends MobEntityRenderer<GhastEntity, GhastEnt
 		super(entityRenderDispatcher, new GhastEntityModel<>(), 0.5F);
 	}
 
-	protected Identifier getTexture(GhastEntity ghastEntity) {
+	protected Identifier method_3972(GhastEntity ghastEntity) {
 		return ghastEntity.isShooting() ? ANGRY_SKIN : SKIN;
 	}
 

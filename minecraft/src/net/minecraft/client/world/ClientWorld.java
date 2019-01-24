@@ -1,6 +1,8 @@
 package net.minecraft.client.world;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
@@ -22,6 +24,7 @@ import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleParameters;
@@ -42,7 +45,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.ClientPersistentStateManager;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.LightType;
@@ -63,19 +65,12 @@ public class ClientWorld extends World {
 	private int field_3731;
 	private int ticksSinceLightingClient = this.random.nextInt(12000);
 	private Scoreboard scoreboard = new Scoreboard();
+	private final Map<String, MapState> field_17675 = Maps.<String, MapState>newHashMap();
 
 	public ClientWorld(
 		ClientPlayNetworkHandler clientPlayNetworkHandler, LevelInfo levelInfo, DimensionType dimensionType, Difficulty difficulty, Profiler profiler
 	) {
-		super(
-			new DummyWorldSaveHandler(),
-			new ClientPersistentStateManager(),
-			new LevelProperties(levelInfo, "MpServer"),
-			dimensionType,
-			(world, dimension) -> new ClientChunkManager(world),
-			profiler,
-			true
-		);
+		super(new LevelProperties(levelInfo, "MpServer"), dimensionType, (world, dimension) -> new ClientChunkManager(world), profiler, true);
 		this.netHandler = clientPlayNetworkHandler;
 		this.getLevelProperties().setDifficulty(difficulty);
 		this.setSpawnPos(new BlockPos(8, 64, 8));
@@ -458,6 +453,22 @@ public class ClientWorld extends World {
 		return (ClientChunkManager)super.getChunkManager();
 	}
 
+	@Nullable
+	@Override
+	public MapState method_17891(String string) {
+		return (MapState)this.field_17675.get(string);
+	}
+
+	@Override
+	public void method_17890(MapState mapState) {
+		this.field_17675.put(mapState.getId(), mapState);
+	}
+
+	@Override
+	public int method_17889() {
+		return 0;
+	}
+
 	@Override
 	public Scoreboard getScoreboard() {
 		return this.scoreboard;
@@ -466,5 +477,9 @@ public class ClientWorld extends World {
 	@Override
 	public TagManager getTagManager() {
 		return this.netHandler.getTagManager();
+	}
+
+	@Override
+	public void checkSessionLock() {
 	}
 }

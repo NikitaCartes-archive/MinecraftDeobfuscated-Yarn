@@ -13,7 +13,7 @@ public class Deadmau5FeatureRenderer extends FeatureRenderer<AbstractClientPlaye
 		super(featureRendererContext);
 	}
 
-	public void render(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4181(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if ("deadmau5".equals(abstractClientPlayerEntity.getName().getString())
 			&& abstractClientPlayerEntity.method_3127()
 			&& !abstractClientPlayerEntity.isInvisible()) {

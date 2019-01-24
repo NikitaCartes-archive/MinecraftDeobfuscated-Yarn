@@ -21,7 +21,7 @@ public class GuiUpdateClientPacket implements Packet<ClientPlayPacketListener> {
 		this.value = k;
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11447(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onGuiUpdate(this);
 	}
 

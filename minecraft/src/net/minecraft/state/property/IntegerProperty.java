@@ -62,7 +62,7 @@ public class IntegerProperty extends AbstractProperty<Integer> {
 		}
 	}
 
-	public String getValueAsString(Integer integer) {
+	public String method_11868(Integer integer) {
 		return integer.toString();
 	}
 }

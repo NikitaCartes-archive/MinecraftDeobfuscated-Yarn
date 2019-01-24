@@ -43,8 +43,8 @@ public class SetDamageLootFunction extends ConditionalLootFunction {
 			super(new Identifier("set_damage"), SetDamageLootFunction.class);
 		}
 
-		public void serialize(JsonObject jsonObject, SetDamageLootFunction setDamageLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, setDamageLootFunction, jsonSerializationContext);
+		public void method_636(JsonObject jsonObject, SetDamageLootFunction setDamageLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.method_529(jsonObject, setDamageLootFunction, jsonSerializationContext);
 			jsonObject.add("damage", jsonSerializationContext.serialize(setDamageLootFunction.durabilityRange));
 		}
 

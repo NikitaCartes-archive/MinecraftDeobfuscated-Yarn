@@ -57,7 +57,7 @@ public class LootTableEntry extends LeafEntry {
 		}
 
 		public void method_431(JsonObject jsonObject, LootTableEntry lootTableEntry, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, lootTableEntry, jsonSerializationContext);
+			super.method_442(jsonObject, lootTableEntry, jsonSerializationContext);
 			jsonObject.addProperty("name", lootTableEntry.id.toString());
 		}
 

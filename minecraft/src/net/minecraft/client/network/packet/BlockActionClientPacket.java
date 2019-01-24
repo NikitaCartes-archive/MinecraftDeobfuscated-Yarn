@@ -42,7 +42,7 @@ public class BlockActionClientPacket implements Packet<ClientPlayPacketListener>
 		packetByteBuf.writeVarInt(Registry.BLOCK.getRawId(this.block));
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11297(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onBlockAction(this);
 	}
 

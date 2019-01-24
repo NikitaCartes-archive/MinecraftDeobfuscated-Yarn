@@ -72,7 +72,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		int i = (Integer)blockState.get(AGE);
 		boolean bl = i == 3;
 		if (!bl && playerEntity.getStackInHand(hand).getItem() == Items.field_8324) {
@@ -84,7 +84,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 			world.setBlockState(blockPos, blockState.with(AGE, Integer.valueOf(1)), 2);
 			return true;
 		} else {
-			return super.method_9534(blockState, world, blockPos, playerEntity, hand, blockHitResult);
+			return super.activate(blockState, world, blockPos, playerEntity, hand, blockHitResult);
 		}
 	}
 

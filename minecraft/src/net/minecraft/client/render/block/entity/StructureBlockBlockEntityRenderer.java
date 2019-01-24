@@ -17,14 +17,13 @@ import net.minecraft.world.BlockView;
 
 @Environment(EnvType.CLIENT)
 public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<StructureBlockBlockEntity> {
-	public void render(StructureBlockBlockEntity structureBlockBlockEntity, double d, double e, double f, float g, int i) {
+	public void method_3587(StructureBlockBlockEntity structureBlockBlockEntity, double d, double e, double f, float g, int i) {
 		if (MinecraftClient.getInstance().player.method_7338() || MinecraftClient.getInstance().player.isSpectator()) {
 			super.render(structureBlockBlockEntity, d, e, f, g, i);
 			BlockPos blockPos = structureBlockBlockEntity.getOffset();
 			BlockPos blockPos2 = structureBlockBlockEntity.getSize();
 			if (blockPos2.getX() >= 1 && blockPos2.getY() >= 1 && blockPos2.getZ() >= 1) {
-				if (structureBlockBlockEntity.method_11374() == StructureBlockMode.field_12695
-					|| structureBlockBlockEntity.method_11374() == StructureBlockMode.field_12697) {
+				if (structureBlockBlockEntity.getMode() == StructureBlockMode.field_12695 || structureBlockBlockEntity.getMode() == StructureBlockMode.field_12697) {
 					double h = 0.01;
 					double j = (double)blockPos.getX();
 					double k = (double)blockPos.getZ();
@@ -86,14 +85,14 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 					GlStateManager.disableTexture();
 					GlStateManager.enableBlend();
 					GlStateManager.blendFuncSeparate(
-						GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+						GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 					);
 					this.method_3570(true);
-					if (structureBlockBlockEntity.method_11374() == StructureBlockMode.field_12695 || structureBlockBlockEntity.shouldShowBoundingBox()) {
+					if (structureBlockBlockEntity.getMode() == StructureBlockMode.field_12695 || structureBlockBlockEntity.shouldShowBoundingBox()) {
 						this.method_3586(tessellator, bufferBuilder, p, l, q, r, m, s, 255, 223, 127);
 					}
 
-					if (structureBlockBlockEntity.method_11374() == StructureBlockMode.field_12695 && structureBlockBlockEntity.shouldShowAir()) {
+					if (structureBlockBlockEntity.getMode() == StructureBlockMode.field_12695 && structureBlockBlockEntity.shouldShowAir()) {
 						this.method_3585(structureBlockBlockEntity, d, e, f, blockPos, tessellator, bufferBuilder, true);
 						this.method_3585(structureBlockBlockEntity, d, e, f, blockPos, tessellator, bufferBuilder, false);
 					}

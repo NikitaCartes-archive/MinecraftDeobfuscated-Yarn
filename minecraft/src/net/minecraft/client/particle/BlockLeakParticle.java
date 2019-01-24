@@ -101,14 +101,14 @@ public class BlockLeakParticle extends Particle {
 
 	@Environment(EnvType.CLIENT)
 	public static class LavaFactory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3017(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new BlockLeakParticle(world, d, e, f, Fluids.LAVA);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class WaterFactory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3018(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new BlockLeakParticle(world, d, e, f, Fluids.WATER);
 		}
 	}

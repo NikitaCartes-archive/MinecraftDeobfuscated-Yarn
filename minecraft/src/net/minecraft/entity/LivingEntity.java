@@ -2146,7 +2146,7 @@ public abstract class LivingEntity extends Entity {
 	public boolean canSee(Entity entity) {
 		Vec3d vec3d = new Vec3d(this.x, this.y + (double)this.getEyeHeight(), this.z);
 		Vec3d vec3d2 = new Vec3d(entity.x, entity.y + (double)entity.getEyeHeight(), entity.z);
-		return this.world.method_17742(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.NONE, this)).getType()
+		return this.world.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.NONE, this)).getType()
 			== HitResult.Type.NONE;
 	}
 

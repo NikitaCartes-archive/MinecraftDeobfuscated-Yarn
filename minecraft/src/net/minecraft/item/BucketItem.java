@@ -38,7 +38,7 @@ public class BucketItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		HitResult hitResult = method_7872(
+		HitResult hitResult = getHitResult(
 			world, playerEntity, this.fluid == Fluids.EMPTY ? RayTraceContext.FluidHandling.field_1345 : RayTraceContext.FluidHandling.NONE
 		);
 		if (hitResult.getType() == HitResult.Type.NONE) {
@@ -68,7 +68,7 @@ public class BucketItem extends Item {
 			} else {
 				BlockState blockState = world.getBlockState(blockPos);
 				BlockPos blockPos2 = blockState.getBlock() instanceof FluidFillable ? blockPos : blockHitResult.getBlockPos().offset(blockHitResult.getSide());
-				if (this.method_7731(playerEntity, world, blockPos2, blockHitResult)) {
+				if (this.placeFluid(playerEntity, world, blockPos2, blockHitResult)) {
 					this.onEmptied(world, itemStack, blockPos2);
 					if (playerEntity instanceof ServerPlayerEntity) {
 						Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
@@ -109,7 +109,7 @@ public class BucketItem extends Item {
 		}
 	}
 
-	public boolean method_7731(@Nullable PlayerEntity playerEntity, World world, BlockPos blockPos, @Nullable BlockHitResult blockHitResult) {
+	public boolean placeFluid(@Nullable PlayerEntity playerEntity, World world, BlockPos blockPos, @Nullable BlockHitResult blockHitResult) {
 		if (!(this.fluid instanceof BaseFluid)) {
 			return false;
 		} else {
@@ -147,7 +147,7 @@ public class BucketItem extends Item {
 
 				return true;
 			} else {
-				return blockHitResult == null ? false : this.method_7731(playerEntity, world, blockHitResult.getBlockPos().offset(blockHitResult.getSide()), null);
+				return blockHitResult == null ? false : this.placeFluid(playerEntity, world, blockHitResult.getBlockPos().offset(blockHitResult.getSide()), null);
 			}
 		}
 	}

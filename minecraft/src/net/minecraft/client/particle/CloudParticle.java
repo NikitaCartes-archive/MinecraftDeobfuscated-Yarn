@@ -76,14 +76,14 @@ public class CloudParticle extends Particle {
 
 	@Environment(EnvType.CLIENT)
 	public static class CloudFactory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3088(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new CloudParticle(world, d, e, f, g, h, i);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class SneezeFactory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3089(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			Particle particle = new CloudParticle(world, d, e, f, g, h, i);
 			particle.setColor(200.0F, 50.0F, 120.0F);
 			particle.setColorAlpha(0.4F);

@@ -19,6 +19,7 @@ import net.minecraft.client.gui.container.HopperGui;
 import net.minecraft.client.gui.container.LoomGui;
 import net.minecraft.client.gui.container.ShulkerBoxGui;
 import net.minecraft.client.gui.container.SmokerGui;
+import net.minecraft.client.gui.container.StonecutterGui;
 import net.minecraft.client.gui.container.VillagerGui;
 import net.minecraft.client.gui.ingame.BrewingStandGui;
 import net.minecraft.container.Container;
@@ -93,6 +94,7 @@ public class ContainerGuiRegistry {
 		registerGui(ContainerType.SHULKER_BOX, ShulkerBoxGui::new);
 		registerGui(ContainerType.SMOKER, SmokerGui::new);
 		registerGui(ContainerType.CARTOGRAPHY, CartographyTableGui::new);
+		registerGui(ContainerType.field_17625, StonecutterGui::new);
 	}
 
 	@Environment(EnvType.CLIENT)

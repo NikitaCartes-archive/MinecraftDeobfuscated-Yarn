@@ -25,7 +25,7 @@ public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalB
 	private static final FloatBuffer field_4404 = GlAllocationUtils.allocateFloatBuffer(16);
 	private final FloatBuffer field_4403 = GlAllocationUtils.allocateFloatBuffer(16);
 
-	public void render(EndPortalBlockEntity endPortalBlockEntity, double d, double e, double f, float g, int i) {
+	public void method_3591(EndPortalBlockEntity endPortalBlockEntity, double d, double e, double f, float g, int i) {
 		GlStateManager.disableLighting();
 		RANDOM.setSeed(31100L);
 		GlStateManager.getMatrix(2982, field_4408);
@@ -43,7 +43,7 @@ public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalB
 				this.bindTexture(SKY_TEX);
 				m = 0.15F;
 				GlStateManager.enableBlend();
-				GlStateManager.blendFunc(GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA);
+				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			}
 
 			if (l >= 1) {
@@ -54,7 +54,7 @@ public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalB
 
 			if (l == 1) {
 				GlStateManager.enableBlend();
-				GlStateManager.blendFunc(GlStateManager.class_1033.ONE, GlStateManager.class_1027.ONE);
+				GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
 			}
 
 			GlStateManager.texGenMode(GlStateManager.TexCoord.field_5154, 9216);

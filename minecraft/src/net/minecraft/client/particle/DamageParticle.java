@@ -71,14 +71,14 @@ public class DamageParticle extends Particle {
 
 	@Environment(EnvType.CLIENT)
 	public static class CritFactory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3015(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new DamageParticle(world, d, e, f, g, h, i);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class DefaultFactory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3013(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			Particle particle = new DamageParticle(world, d, e, f, g, h + 1.0, i, 1.0F);
 			particle.setMaxAge(20);
 			particle.setSpriteIndex(67);
@@ -88,7 +88,7 @@ public class DamageParticle extends Particle {
 
 	@Environment(EnvType.CLIENT)
 	public static class EnchantedHitFactory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3014(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			Particle particle = new DamageParticle(world, d, e, f, g, h, i);
 			particle.setColor(particle.getColorRed() * 0.3F, particle.getColorGreen() * 0.8F, particle.getColorBlue());
 			particle.incSpriteIndex();

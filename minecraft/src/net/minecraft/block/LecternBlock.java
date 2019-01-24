@@ -201,7 +201,7 @@ public class LecternBlock extends BlockWithEntity {
 			ItemEntity itemEntity = new ItemEntity(
 				world, (double)blockPos.getX() + 0.5 + (double)f, (double)(blockPos.getY() + 1), (double)blockPos.getZ() + 0.5 + (double)g, itemStack
 			);
-			itemEntity.method_6988();
+			itemEntity.setToDefaultPickupDelay();
 			world.spawnEntity(itemEntity);
 			lecternBlockEntity.clearInv();
 		}
@@ -240,7 +240,7 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if ((Boolean)blockState.get(HAS_BOOK)) {
 			if (!world.isClient) {
 				this.openContainer(world, blockPos, playerEntity);

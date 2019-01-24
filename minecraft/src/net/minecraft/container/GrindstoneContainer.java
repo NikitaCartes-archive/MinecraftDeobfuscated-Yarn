@@ -192,12 +192,12 @@ public class GrindstoneContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.world.method_17393((world, blockPos) -> this.method_7607(playerEntity, world, this.craftingInventory));
+		this.world.method_17393((world, blockPos) -> this.dropInventory(playerEntity, world, this.craftingInventory));
 	}
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return method_17695(this.world, playerEntity, Blocks.field_16337);
+		return canUse(this.world, playerEntity, Blocks.field_16337);
 	}
 
 	@Override

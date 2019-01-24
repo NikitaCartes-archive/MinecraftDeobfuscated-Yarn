@@ -28,7 +28,7 @@ public class PlayerSpawnPositionClientPacket implements Packet<ClientPlayPacketL
 		packetByteBuf.writeBlockPos(this.pos);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11869(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onPlayerSpawnPosition(this);
 	}
 

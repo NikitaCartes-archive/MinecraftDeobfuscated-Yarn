@@ -20,7 +20,7 @@ public class VillagerEntityRenderer extends MobEntityRenderer<VillagerEntity, Vi
 		this.addFeature(new VillagerClothingFeatureRenderer<>(this, reloadableResourceManager, "villager"));
 	}
 
-	protected Identifier getTexture(VillagerEntity villagerEntity) {
+	protected Identifier method_4151(VillagerEntity villagerEntity) {
 		return VILLAGER_SKIN;
 	}
 

@@ -1,28 +1,33 @@
 package net.minecraft.world.updater;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatMaps;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenCustomHashMap;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ThreadFactory;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1256;
+import net.minecraft.SharedConstants;
+import net.minecraft.class_3977;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.SystemUtil;
-import net.minecraft.world.ChunkSaveHandlerImpl;
-import net.minecraft.world.PersistentStateManager;
-import net.minecraft.world.WorldSaveHandler;
+import net.minecraft.world.OldWorldSaveHandler;
 import net.minecraft.world.chunk.ChunkPos;
+import net.minecraft.world.chunk.storage.RegionFile;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.dimension.DimensionalPersistentStateManager;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
@@ -32,9 +37,9 @@ public class WorldUpdater {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final ThreadFactory UPDATE_THREAD_FACTORY = new ThreadFactoryBuilder().setDaemon(true).build();
 	private final String levelName;
-	private final WorldSaveHandler worldSaveHandler;
-	private final PersistentStateManager persistentStateManager;
+	private final OldWorldSaveHandler worldSaveHandler;
 	private final Thread updateThread;
+	private final File field_17621;
 	private volatile boolean keepUpgradingChunks = true;
 	private volatile boolean isDone;
 	private volatile float progress;
@@ -45,21 +50,23 @@ public class WorldUpdater {
 		new Object2FloatOpenCustomHashMap<>(SystemUtil.identityHashStrategy())
 	);
 	private volatile TextComponent status = new TranslatableTextComponent("optimizeWorld.stage.counting");
+	private static final Pattern field_17622 = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
+	private final DimensionalPersistentStateManager persistentStateManager;
 
 	public WorldUpdater(String string, LevelStorage levelStorage, LevelProperties levelProperties) {
 		this.levelName = levelProperties.getLevelName();
 		this.worldSaveHandler = levelStorage.method_242(string, null);
 		this.worldSaveHandler.saveWorld(levelProperties);
-		this.persistentStateManager = new PersistentStateManager(this.worldSaveHandler);
+		this.persistentStateManager = new DimensionalPersistentStateManager(
+			new File(DimensionType.field_13072.getFile(this.worldSaveHandler.getWorldDir()), "data"), this.worldSaveHandler.getDataFixer()
+		);
+		this.field_17621 = this.worldSaveHandler.getWorldDir();
 		this.updateThread = UPDATE_THREAD_FACTORY.newThread(this::updateWorld);
-		this.updateThread.setUncaughtExceptionHandler(this::method_5398);
+		this.updateThread.setUncaughtExceptionHandler((thread, throwable) -> {
+			LOGGER.error("Error upgrading world", throwable);
+			this.status = new TranslatableTextComponent("optimizeWorld.stage.failed");
+		});
 		this.updateThread.start();
-	}
-
-	private void method_5398(Thread thread, Throwable throwable) {
-		LOGGER.error("Error upgrading world", throwable);
-		this.keepUpgradingChunks = false;
-		this.status = new TranslatableTextComponent("optimizeWorld.stage.failed");
 	}
 
 	public void cancel() {
@@ -73,84 +80,128 @@ public class WorldUpdater {
 
 	private void updateWorld() {
 		File file = this.worldSaveHandler.getWorldDir();
-		class_1256 lv = new class_1256(file);
-		Builder<DimensionType, ChunkSaveHandlerImpl> builder = ImmutableMap.builder();
+		this.totalChunkCount = 0;
+		Builder<DimensionType, ListIterator<ChunkPos>> builder = ImmutableMap.builder();
 
 		for (DimensionType dimensionType : DimensionType.getAll()) {
-			builder.put(dimensionType, new ChunkSaveHandlerImpl(dimensionType.getFile(file), this.worldSaveHandler.getDataFixer()));
-		}
-
-		Map<DimensionType, ChunkSaveHandlerImpl> map = builder.build();
-		long l = SystemUtil.getMeasuringTimeMs();
-		this.totalChunkCount = 0;
-		Builder<DimensionType, ListIterator<ChunkPos>> builder2 = ImmutableMap.builder();
-
-		for (DimensionType dimensionType2 : DimensionType.getAll()) {
-			List<ChunkPos> list = lv.method_5391(dimensionType2);
-			builder2.put(dimensionType2, list.listIterator());
+			List<ChunkPos> list = this.method_17830(dimensionType);
+			builder.put(dimensionType, list.listIterator());
 			this.totalChunkCount = this.totalChunkCount + list.size();
 		}
 
-		ImmutableMap<DimensionType, ListIterator<ChunkPos>> immutableMap = builder2.build();
-		float f = (float)this.totalChunkCount;
-		this.status = new TranslatableTextComponent("optimizeWorld.stage.structures");
+		if (this.totalChunkCount == 0) {
+			this.isDone = true;
+		} else {
+			float f = (float)this.totalChunkCount;
+			ImmutableMap<DimensionType, ListIterator<ChunkPos>> immutableMap = builder.build();
+			Builder<DimensionType, class_3977> builder2 = ImmutableMap.builder();
 
-		for (Entry<DimensionType, ChunkSaveHandlerImpl> entry : map.entrySet()) {
-			((ChunkSaveHandlerImpl)entry.getValue()).getFeatureUpdater((DimensionType)entry.getKey(), this.persistentStateManager);
-		}
-
-		this.persistentStateManager.save();
-		this.status = new TranslatableTextComponent("optimizeWorld.stage.upgrading");
-		if (f <= 0.0F) {
-			for (DimensionType dimensionType3 : DimensionType.getAll()) {
-				this.dimensionProgress.put(dimensionType3, 1.0F / (float)map.size());
+			for (DimensionType dimensionType2 : DimensionType.getAll()) {
+				final File file2 = dimensionType2.getFile(file);
+				builder2.put(dimensionType2, new class_3977(this.worldSaveHandler.getDataFixer()) {
+					@Override
+					protected File method_17912() {
+						return new File(file2, "region");
+					}
+				});
 			}
-		}
 
-		while (this.keepUpgradingChunks) {
-			boolean bl = false;
-			float g = 0.0F;
+			ImmutableMap<DimensionType, class_3977> immutableMap2 = builder2.build();
+			long l = SystemUtil.getMeasuringTimeMs();
+			this.status = new TranslatableTextComponent("optimizeWorld.stage.upgrading");
 
-			for (DimensionType dimensionType4 : DimensionType.getAll()) {
-				ListIterator<ChunkPos> listIterator = immutableMap.get(dimensionType4);
-				bl |= this.upgradeChunks((ChunkSaveHandlerImpl)map.get(dimensionType4), listIterator, dimensionType4);
-				if (f > 0.0F) {
+			while (this.keepUpgradingChunks) {
+				boolean bl = false;
+				float g = 0.0F;
+
+				for (DimensionType dimensionType3 : DimensionType.getAll()) {
+					ListIterator<ChunkPos> listIterator = immutableMap.get(dimensionType3);
+					class_3977 lv = immutableMap2.get(dimensionType3);
+					if (listIterator.hasNext()) {
+						ChunkPos chunkPos = (ChunkPos)listIterator.next();
+						boolean bl2 = false;
+
+						try {
+							CompoundTag compoundTag = lv.method_17911(chunkPos);
+							if (compoundTag != null) {
+								int i = class_3977.method_17908(compoundTag);
+								CompoundTag compoundTag2 = lv.method_17907(dimensionType3, () -> this.persistentStateManager, compoundTag);
+								if (i < SharedConstants.getGameVersion().getWorldVersion()) {
+									lv.method_17910(chunkPos, compoundTag2);
+									bl2 = true;
+								}
+							}
+						} catch (IOException var21) {
+							LOGGER.error("Error upgrading chunk {}", chunkPos, var21);
+						}
+
+						if (bl2) {
+							this.upgradedChunkCount++;
+						} else {
+							this.skippedChunkCount++;
+						}
+
+						bl = true;
+					}
+
 					float h = (float)listIterator.nextIndex() / f;
-					this.dimensionProgress.put(dimensionType4, h);
+					this.dimensionProgress.put(dimensionType3, h);
 					g += h;
+				}
+
+				this.progress = g;
+				if (!bl) {
+					this.keepUpgradingChunks = false;
 				}
 			}
 
-			this.progress = g;
-			if (!bl) {
-				this.keepUpgradingChunks = false;
-			}
-		}
+			this.status = new TranslatableTextComponent("optimizeWorld.stage.finished");
 
-		this.status = new TranslatableTextComponent("optimizeWorld.stage.finished");
-		l = SystemUtil.getMeasuringTimeMs() - l;
-		LOGGER.info("World optimizaton finished after {} ms", l);
-		map.values().forEach(ChunkSaveHandlerImpl::saveAllChunks);
-		this.persistentStateManager.save();
-		this.isDone = true;
+			for (class_3977 lv2 : immutableMap2.values()) {
+				try {
+					lv2.close();
+				} catch (IOException var20) {
+					LOGGER.error("Error upgrading chunk", (Throwable)var20);
+				}
+			}
+
+			this.persistentStateManager.save();
+			l = SystemUtil.getMeasuringTimeMs() - l;
+			LOGGER.info("World optimizaton finished after {} ms", l);
+			this.isDone = true;
+		}
 	}
 
-	private boolean upgradeChunks(ChunkSaveHandlerImpl chunkSaveHandlerImpl, ListIterator<ChunkPos> listIterator, DimensionType dimensionType) {
-		if (listIterator.hasNext()) {
-			boolean bl;
-			synchronized (chunkSaveHandlerImpl) {
-				bl = chunkSaveHandlerImpl.upgradeChunk((ChunkPos)listIterator.next(), dimensionType, this.persistentStateManager);
-			}
-
-			if (bl) {
-				this.upgradedChunkCount++;
-			} else {
-				this.skippedChunkCount++;
-			}
-
-			return true;
+	private List<ChunkPos> method_17830(DimensionType dimensionType) {
+		File file = dimensionType.getFile(this.field_17621);
+		File file2 = new File(file, "region");
+		File[] files = file2.listFiles((filex, string) -> string.endsWith(".mca"));
+		if (files == null) {
+			return ImmutableList.of();
 		} else {
-			return false;
+			List<ChunkPos> list = Lists.<ChunkPos>newArrayList();
+
+			for (File file3 : files) {
+				Matcher matcher = field_17622.matcher(file3.getName());
+				if (matcher.matches()) {
+					int i = Integer.parseInt(matcher.group(1)) << 5;
+					int j = Integer.parseInt(matcher.group(2)) << 5;
+
+					try (RegionFile regionFile = new RegionFile(file3)) {
+						for (int k = 0; k < 32; k++) {
+							for (int l = 0; l < 32; l++) {
+								ChunkPos chunkPos = new ChunkPos(k + i, l + j);
+								if (regionFile.method_12420(chunkPos)) {
+									list.add(chunkPos);
+								}
+							}
+						}
+					} catch (Throwable var28) {
+					}
+				}
+			}
+
+			return list;
 		}
 	}
 

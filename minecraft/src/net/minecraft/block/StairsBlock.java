@@ -166,8 +166,8 @@ public class StairsBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		return this.baseBlockState.method_11629(world, playerEntity, hand, blockHitResult);
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		return this.baseBlockState.activate(world, playerEntity, hand, blockHitResult);
 	}
 
 	@Override

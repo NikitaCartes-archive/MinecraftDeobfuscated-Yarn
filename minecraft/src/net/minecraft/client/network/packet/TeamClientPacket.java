@@ -38,8 +38,8 @@ public class TeamClientPacket implements Packet<ClientPlayPacketListener> {
 			this.nameTagVisibilityRule = scoreboardTeam.getNameTagVisibilityRule().field_1445;
 			this.collisionRule = scoreboardTeam.getCollisionRule().field_1436;
 			this.field_12598 = scoreboardTeam.getColor();
-			this.field_12601 = scoreboardTeam.getSuffix();
-			this.field_12597 = scoreboardTeam.method_1136();
+			this.field_12601 = scoreboardTeam.getPrefix();
+			this.field_12597 = scoreboardTeam.getSuffix();
 		}
 
 		if (i == 0) {
@@ -105,7 +105,7 @@ public class TeamClientPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11860(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onTeam(this);
 	}
 

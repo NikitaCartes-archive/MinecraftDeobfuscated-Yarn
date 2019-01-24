@@ -18,7 +18,7 @@ public final class HorseEntityRenderer extends HorseBaseEntityRenderer<HorseEnti
 		super(entityRenderDispatcher, new HorseEntityModel<>(), 1.1F);
 	}
 
-	protected Identifier getTexture(HorseEntity horseEntity) {
+	protected Identifier method_3983(HorseEntity horseEntity) {
 		String string = horseEntity.getTextureLocation();
 		Identifier identifier = (Identifier)TEXTURES.get(string);
 		if (identifier == null) {

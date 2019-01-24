@@ -212,15 +212,12 @@ public class Bootstrap {
 		);
 		ItemDispenserBehavior itemDispenserBehavior = new ItemDispenserBehavior() {
 			@Override
-			public ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
+			public ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
 				Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
 				EntityType<?> entityType = ((SpawnEggItem)itemStack.getItem()).method_8015(itemStack.getTag());
-				if (entityType != null) {
-					entityType.spawnFromItemStack(
-						blockPointer.getWorld(), itemStack, null, blockPointer.getBlockPos().offset(direction), SpawnType.field_16470, direction != Direction.UP, false
-					);
-				}
-
+				entityType.spawnFromItemStack(
+					blockPointer.getWorld(), itemStack, null, blockPointer.getBlockPos().offset(direction), SpawnType.field_16470, direction != Direction.UP, false
+				);
 				itemStack.subtractAmount(1);
 				return itemStack;
 			}
@@ -232,7 +229,7 @@ public class Bootstrap {
 
 		DispenserBlock.registerBehavior(Items.field_8639, new ItemDispenserBehavior() {
 			@Override
-			public ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
+			public ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
 				Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
 				double d = blockPointer.getX() + (double)direction.getOffsetX();
 				double e = (double)((float)blockPointer.getBlockPos().getY() + 0.2F);
@@ -250,7 +247,7 @@ public class Bootstrap {
 		});
 		DispenserBlock.registerBehavior(Items.field_8814, new ItemDispenserBehavior() {
 			@Override
-			public ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
+			public ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
 				Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
 				Position position = DispenserBlock.getOutputLocation(blockPointer);
 				double d = position.getX() + (double)((float)direction.getOffsetX() * 0.3F);
@@ -281,11 +278,11 @@ public class Bootstrap {
 			private final ItemDispenserBehavior field_13367 = new ItemDispenserBehavior();
 
 			@Override
-			public ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
+			public ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
 				BucketItem bucketItem = (BucketItem)itemStack.getItem();
 				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
 				World world = blockPointer.getWorld();
-				if (bucketItem.method_7731(null, world, blockPos, null)) {
+				if (bucketItem.placeFluid(null, world, blockPos, null)) {
 					bucketItem.onEmptied(world, itemStack, blockPos);
 					return new ItemStack(Items.field_8550);
 				} else {
@@ -303,7 +300,7 @@ public class Bootstrap {
 			private final ItemDispenserBehavior field_13368 = new ItemDispenserBehavior();
 
 			@Override
-			public ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
+			public ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
 				IWorld iWorld = blockPointer.getWorld();
 				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
 				BlockState blockState = iWorld.getBlockState(blockPos);
@@ -311,7 +308,7 @@ public class Bootstrap {
 				if (block instanceof FluidDrainable) {
 					Fluid fluid = ((FluidDrainable)block).tryDrainFluid(iWorld, blockPos, blockState);
 					if (!(fluid instanceof BaseFluid)) {
-						return super.method_10135(blockPointer, itemStack);
+						return super.dispenseStack(blockPointer, itemStack);
 					} else {
 						Item item = fluid.getBucketItem();
 						itemStack.subtractAmount(1);
@@ -326,13 +323,13 @@ public class Bootstrap {
 						}
 					}
 				} else {
-					return super.method_10135(blockPointer, itemStack);
+					return super.dispenseStack(blockPointer, itemStack);
 				}
 			}
 		});
 		DispenserBlock.registerBehavior(Items.field_8884, new Bootstrap.class_2969() {
 			@Override
-			protected ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
+			protected ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
 				World world = blockPointer.getWorld();
 				this.field_13364 = true;
 				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
@@ -357,7 +354,7 @@ public class Bootstrap {
 		});
 		DispenserBlock.registerBehavior(Items.field_8324, new Bootstrap.class_2969() {
 			@Override
-			protected ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
+			protected ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
 				this.field_13364 = true;
 				World world = blockPointer.getWorld();
 				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
@@ -372,7 +369,7 @@ public class Bootstrap {
 		});
 		DispenserBlock.registerBehavior(Blocks.field_10375, new ItemDispenserBehavior() {
 			@Override
-			protected ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
+			protected ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
 				World world = blockPointer.getWorld();
 				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
 				PrimedTNTEntity primedTNTEntity = new PrimedTNTEntity(world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, null);
@@ -384,7 +381,7 @@ public class Bootstrap {
 		});
 		Bootstrap.class_2969 lv = new Bootstrap.class_2969() {
 			@Override
-			protected ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
+			protected ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
 				this.field_13364 = !ArmorItem.dispenseArmor(blockPointer, itemStack).isEmpty();
 				return itemStack;
 			}
@@ -398,7 +395,7 @@ public class Bootstrap {
 			Items.field_8791,
 			new Bootstrap.class_2969() {
 				@Override
-				protected ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
+				protected ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
 					World world = blockPointer.getWorld();
 					Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
 					BlockPos blockPos = blockPointer.getBlockPos().offset(direction);
@@ -427,7 +424,7 @@ public class Bootstrap {
 		);
 		DispenserBlock.registerBehavior(Blocks.field_10147, new Bootstrap.class_2969() {
 			@Override
-			protected ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
+			protected ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
 				World world = blockPointer.getWorld();
 				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
 				CarvedPumpkinBlock carvedPumpkinBlock = (CarvedPumpkinBlock)Blocks.field_10147;
@@ -456,7 +453,7 @@ public class Bootstrap {
 
 		DispenserBlock.registerBehavior(Items.field_8868.getItem(), new Bootstrap.class_2969() {
 			@Override
-			protected ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
+			protected ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
 				World world = blockPointer.getWorld();
 				if (!world.isClient()) {
 					this.field_13364 = false;
@@ -555,7 +552,7 @@ public class Bootstrap {
 		}
 
 		@Override
-		public ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
+		public ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
 			Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
 			World world = blockPointer.getWorld();
 			double d = blockPointer.getX() + (double)((float)direction.getOffsetX() * 1.125F);
@@ -602,12 +599,12 @@ public class Bootstrap {
 
 		@Override
 		public BlockPos getBlockPos() {
-			return this.field_17543.getBlockPos();
+			return this.hitResult.getBlockPos();
 		}
 
 		@Override
 		public boolean canPlace() {
-			return this.world.getBlockState(this.field_17543.getBlockPos()).method_11587(this);
+			return this.world.getBlockState(this.hitResult.getBlockPos()).method_11587(this);
 		}
 
 		@Override
@@ -669,7 +666,7 @@ public class Bootstrap {
 		}
 
 		@Override
-		protected ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
+		protected ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
 			this.field_13364 = false;
 			Item item = itemStack.getItem();
 			if (item instanceof BlockItem) {

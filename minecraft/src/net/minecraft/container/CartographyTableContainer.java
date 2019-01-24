@@ -59,6 +59,7 @@ public class CartographyTableContainer extends Container {
 					if (!CartographyTableContainer.this.field_17295 && CartographyTableContainer.this.field_17293.getInvStack(1).getItem() == Items.field_8141) {
 						ItemStack itemStack2x = FilledMapItem.method_17442(world, CartographyTableContainer.this.field_17296);
 						if (itemStack2x != null) {
+							itemStack2x.setAmount(1);
 							return itemStack2x;
 						}
 					}
@@ -87,7 +88,7 @@ public class CartographyTableContainer extends Container {
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return method_17695(this.field_17294, playerEntity, Blocks.field_16336);
+		return canUse(this.field_17294, playerEntity, Blocks.field_16336);
 	}
 
 	@Override
@@ -113,7 +114,7 @@ public class CartographyTableContainer extends Container {
 	private void method_17381(ItemStack itemStack, ItemStack itemStack2, ItemStack itemStack3) {
 		this.field_17294.method_17393((world, blockPos) -> {
 			Item item = itemStack2.getItem();
-			MapState mapState = FilledMapItem.method_17441(itemStack, world);
+			MapState mapState = FilledMapItem.method_7997(itemStack, world);
 			if (mapState != null) {
 				ItemStack itemStack4;
 				if (item == Items.field_8407 && !mapState.field_17403 && mapState.scale < 4) {
@@ -207,6 +208,6 @@ public class CartographyTableContainer extends Container {
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
 		this.field_17293.removeInvStack(2);
-		this.field_17294.method_17393((world, blockPos) -> this.method_7607(playerEntity, playerEntity.world, this.field_17293));
+		this.field_17294.method_17393((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.field_17293));
 	}
 }

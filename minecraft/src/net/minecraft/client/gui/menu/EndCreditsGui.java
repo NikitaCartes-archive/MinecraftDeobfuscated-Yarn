@@ -199,7 +199,7 @@ public class EndCreditsGui extends Gui {
 		GlStateManager.popMatrix();
 		this.client.getTextureManager().bindTexture(VIGNETTE_TEXTURE);
 		GlStateManager.enableBlend();
-		GlStateManager.blendFunc(GlStateManager.class_1033.ZERO, GlStateManager.class_1027.ONE_MINUS_SRC_COLOR);
+		GlStateManager.blendFunc(GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR);
 		int o = this.width;
 		int p = this.height;
 		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);

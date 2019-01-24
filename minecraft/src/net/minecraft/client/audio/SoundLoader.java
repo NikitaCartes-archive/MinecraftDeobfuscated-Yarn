@@ -95,7 +95,7 @@ public class SoundLoader implements Tickable, ResourceReloadListener {
 		}
 
 		for (Identifier identifierx : this.sounds.keySet()) {
-			if (Registry.SOUND_EVENT.get(identifierx) == null) {
+			if (!Registry.SOUND_EVENT.contains(identifierx)) {
 				LOGGER.debug("Not having sound event for: {}", identifierx);
 			}
 		}

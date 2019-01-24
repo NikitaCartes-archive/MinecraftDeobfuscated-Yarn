@@ -61,14 +61,14 @@ public class SpellParticle extends Particle {
 
 	@Environment(EnvType.CLIENT)
 	public static class DefaultFactory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3099(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new SpellParticle(world, d, e, f, g, h, i);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class EntityAmbientFactory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3096(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			Particle particle = new SpellParticle(world, d, e, f, g, h, i);
 			particle.setColorAlpha(0.15F);
 			particle.setColor((float)g, (float)h, (float)i);
@@ -78,7 +78,7 @@ public class SpellParticle extends Particle {
 
 	@Environment(EnvType.CLIENT)
 	public static class EntityFactory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3098(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			Particle particle = new SpellParticle(world, d, e, f, g, h, i);
 			particle.setColor((float)g, (float)h, (float)i);
 			return particle;
@@ -87,7 +87,7 @@ public class SpellParticle extends Particle {
 
 	@Environment(EnvType.CLIENT)
 	public static class InstantFactory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3097(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			Particle particle = new SpellParticle(world, d, e, f, g, h, i);
 			((SpellParticle)particle).method_3095(144);
 			return particle;
@@ -96,7 +96,7 @@ public class SpellParticle extends Particle {
 
 	@Environment(EnvType.CLIENT)
 	public static class WitchFactory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3100(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			Particle particle = new SpellParticle(world, d, e, f, g, h, i);
 			((SpellParticle)particle).method_3095(144);
 			float j = world.random.nextFloat() * 0.5F + 0.35F;

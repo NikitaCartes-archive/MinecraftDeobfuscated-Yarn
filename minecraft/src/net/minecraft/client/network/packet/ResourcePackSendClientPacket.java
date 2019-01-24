@@ -34,7 +34,7 @@ public class ResourcePackSendClientPacket implements Packet<ClientPlayPacketList
 		packetByteBuf.writeString(this.hash);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11774(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onResourcePackSend(this);
 	}
 

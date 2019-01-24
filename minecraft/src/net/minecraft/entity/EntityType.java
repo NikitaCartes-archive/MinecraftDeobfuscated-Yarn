@@ -2,6 +2,7 @@ package net.minecraft.entity;
 
 import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.types.Type;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -105,6 +106,7 @@ import net.minecraft.entity.vehicle.MobSpawnerMinecartEntity;
 import net.minecraft.entity.vehicle.TNTMinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
@@ -117,8 +119,10 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.WorldChunk;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -437,9 +441,8 @@ public class EntityType<T extends Entity> {
 		return Registry.ENTITY_TYPE.getId(entityType);
 	}
 
-	@Nullable
-	public static EntityType<?> get(String string) {
-		return Registry.ENTITY_TYPE.get(Identifier.create(string));
+	public static Optional<EntityType<?>> get(String string) {
+		return Registry.ENTITY_TYPE.method_17966(Identifier.create(string));
 	}
 
 	public EntityType(Class<? extends T> class_, Function<? super World, ? extends T> function, boolean bl, boolean bl2, @Nullable Type<?> type, float f, float g) {
@@ -608,19 +611,16 @@ public class EntityType<T extends Entity> {
 		return newInstance(world, Registry.ENTITY_TYPE.getInt(i));
 	}
 
-	@Nullable
-	public static Entity fromTag(CompoundTag compoundTag, World world) {
-		Entity entity = newInstance(world, method_17684(compoundTag));
-		if (entity == null) {
-			LOGGER.warn("Skipping Entity with id {}", compoundTag.getString("id"));
-		} else {
-			entity.fromTag(compoundTag);
-		}
-
-		return entity;
+	public static Optional<Entity> fromTag(CompoundTag compoundTag, World world) {
+		return SystemUtil.method_17974(
+			method_17684(compoundTag).map(entityType -> entityType.create(world)),
+			entity -> entity.fromTag(compoundTag),
+			() -> LOGGER.warn("Skipping Entity with id {}", compoundTag.getString("id"))
+		);
 	}
 
 	@Nullable
+	@Environment(EnvType.CLIENT)
 	private static Entity newInstance(World world, @Nullable EntityType<?> entityType) {
 		return entityType == null ? null : entityType.create(world);
 	}
@@ -630,8 +630,64 @@ public class EntityType<T extends Entity> {
 		return new BoundingBox(d - (double)g, e, f - (double)g, d + (double)g, e + (double)this.method_17686(), f + (double)g);
 	}
 
-	public static EntityType<?> method_17684(CompoundTag compoundTag) {
-		return Registry.ENTITY_TYPE.get(new Identifier(compoundTag.getString("id")));
+	public static Optional<EntityType<?>> method_17684(CompoundTag compoundTag) {
+		return Registry.ENTITY_TYPE.method_17966(new Identifier(compoundTag.getString("id")));
+	}
+
+	@Nullable
+	private static Entity method_17842(CompoundTag compoundTag, World world, Function<Entity, Entity> function) {
+		return (Entity)method_17848(compoundTag, world).map(function).map(entity -> {
+			if (compoundTag.containsKey("Passengers", 9)) {
+				ListTag listTag = compoundTag.getList("Passengers", 10);
+
+				for (int i = 0; i < listTag.size(); i++) {
+					Entity entity2 = method_17842(listTag.getCompoundTag(i), world, function);
+					if (entity2 != null) {
+						entity2.startRiding(entity, true);
+					}
+				}
+			}
+
+			return entity;
+		}).orElse(null);
+	}
+
+	@Nullable
+	public static Entity method_17841(CompoundTag compoundTag, World world, WorldChunk worldChunk) {
+		return method_17842(compoundTag, world, entity -> {
+			worldChunk.addEntity(entity);
+			return entity;
+		});
+	}
+
+	@Nullable
+	public static Entity method_17840(CompoundTag compoundTag, World world, double d, double e, double f, boolean bl) {
+		return method_17842(compoundTag, world, entity -> {
+			entity.setPositionAndAngles(d, e, f, entity.yaw, entity.pitch);
+			return bl && !world.spawnEntity(entity) ? null : entity;
+		});
+	}
+
+	@Nullable
+	public static Entity method_17844(CompoundTag compoundTag, World world, boolean bl) {
+		return method_17842(compoundTag, world, entity -> bl && !world.spawnEntity(entity) ? null : entity);
+	}
+
+	private static Optional<Entity> method_17848(CompoundTag compoundTag, World world) {
+		try {
+			return fromTag(compoundTag, world);
+		} catch (RuntimeException var3) {
+			LOGGER.warn("Exception loading entity: ", (Throwable)var3);
+			return Optional.empty();
+		}
+	}
+
+	public static void method_17837(Entity entity, IWorld iWorld) {
+		if (iWorld.spawnEntity(entity) && entity.hasPassengers()) {
+			for (Entity entity2 : entity.getPassengerList()) {
+				method_17837(entity2, iWorld);
+			}
+		}
 	}
 
 	public static class Builder<T extends Entity> {

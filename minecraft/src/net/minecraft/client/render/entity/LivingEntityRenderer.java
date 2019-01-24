@@ -59,7 +59,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		return this.model;
 	}
 
-	public void render(T livingEntity, double d, double e, double f, float g, float h) {
+	public void method_4054(T livingEntity, double d, double e, double f, float g, float h) {
 		GlStateManager.pushMatrix();
 		GlStateManager.disableCull();
 		this.model.swingProgress = this.method_4044(livingEntity, h);

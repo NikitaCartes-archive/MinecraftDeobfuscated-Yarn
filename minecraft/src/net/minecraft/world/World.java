@@ -2,10 +2,9 @@ package net.minecraft.world;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
-import it.unimi.dsi.fastutil.longs.LongSet;
-import it.unimi.dsi.fastutil.longs.LongSets;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -32,6 +31,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.ai.pathing.PathingCoordinator;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
@@ -41,6 +41,7 @@ import net.minecraft.entity.raid.RaidManager;
 import net.minecraft.entity.sortme.Living;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleParameters;
@@ -84,7 +85,6 @@ import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.level.LevelGeneratorType;
-import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -116,10 +116,7 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 	protected final PathingCoordinator pathingCoordinator = new PathingCoordinator();
 	protected final List<WorldListener> listeners = Lists.<WorldListener>newArrayList(this.pathingCoordinator);
 	protected final ChunkManager chunkManager;
-	protected final WorldSaveHandler saveHandler;
 	protected final LevelProperties properties;
-	@Nullable
-	private final PersistentStateManager persistentStateManager;
 	protected WorldVillageManager villageManager;
 	protected RaidManager raidManager;
 	private final Profiler profiler;
@@ -128,16 +125,8 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 	private final WorldBorder border;
 
 	protected World(
-		WorldSaveHandler worldSaveHandler,
-		@Nullable PersistentStateManager persistentStateManager,
-		LevelProperties levelProperties,
-		DimensionType dimensionType,
-		BiFunction<World, Dimension, ChunkManager> biFunction,
-		Profiler profiler,
-		boolean bl
+		LevelProperties levelProperties, DimensionType dimensionType, BiFunction<World, Dimension, ChunkManager> biFunction, Profiler profiler, boolean bl
 	) {
-		this.saveHandler = worldSaveHandler;
-		this.persistentStateManager = persistentStateManager;
 		this.profiler = profiler;
 		this.properties = levelProperties;
 		this.dimension = dimensionType.create(this);
@@ -157,10 +146,6 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 			ChunkGenerator<?> chunkGenerator = this.getChunkManager().getChunkGenerator();
 			return chunkGenerator == null ? Biomes.field_9451 : chunkGenerator.getBiomeSource().getBiome(blockPos);
 		}
-	}
-
-	public void init(LevelInfo levelInfo) {
-		this.properties.setInitialized(true);
 	}
 
 	@Override
@@ -1321,7 +1306,7 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 		}
 	}
 
-	public void close() {
+	public void close() throws IOException {
 		this.chunkManager.close();
 	}
 
@@ -1387,9 +1372,16 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 	}
 
 	@Override
-	public Stream<VoxelShape> method_8600(@Nullable Entity entity, VoxelShape voxelShape, VoxelShape voxelShape2, Set<Entity> set) {
-		Stream<VoxelShape> stream = IWorld.super.method_8600(entity, voxelShape, voxelShape2, set);
-		return entity == null ? stream : Stream.concat(stream, this.method_8334(entity, voxelShape, set));
+	public Stream<VoxelShape> method_8334(@Nullable Entity entity, VoxelShape voxelShape, Set<Entity> set) {
+		return EntityContainer.super.method_8334(entity, voxelShape, set);
+	}
+
+	@Override
+	public Stream<VoxelShape> method_8600(
+		@Nullable Entity entity, VoxelShape voxelShape, VoxelShape voxelShape2, Set<Entity> set, VerticalEntityPosition verticalEntityPosition
+	) {
+		Stream<VoxelShape> stream = IWorld.super.method_8600(entity, voxelShape, voxelShape2, set, verticalEntityPosition);
+		return Stream.concat(stream, entity == null ? Stream.empty() : this.method_8334(entity, voxelShape, set));
 	}
 
 	@Override
@@ -1759,9 +1751,7 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 	public void method_8525() {
 	}
 
-	public void checkSessionLock() throws SessionLockException {
-		this.saveHandler.checkSessionLock();
-	}
+	public abstract void checkSessionLock() throws SessionLockException;
 
 	public void setTime(long l) {
 		this.properties.setTime(l);
@@ -1839,11 +1829,6 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 	}
 
 	@Override
-	public WorldSaveHandler getSaveHandler() {
-		return this.saveHandler;
-	}
-
-	@Override
 	public LevelProperties getLevelProperties() {
 		return this.properties;
 	}
@@ -1901,10 +1886,11 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 	}
 
 	@Nullable
-	@Override
-	public PersistentStateManager getPersistentStateManager() {
-		return this.persistentStateManager;
-	}
+	public abstract MapState method_17891(String string);
+
+	public abstract void method_17890(MapState mapState);
+
+	public abstract int method_17889();
 
 	public void fireGlobalWorldEvent(int i, BlockPos blockPos, int j) {
 		for (int k = 0; k < this.listeners.size(); k++) {
@@ -2028,49 +2014,6 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 	@Override
 	public WorldBorder getWorldBorder() {
 		return this.border;
-	}
-
-	public LongSet getForcedChunks() {
-		ForcedChunkState forcedChunkState = this.getPersistentState(this.dimension.getType(), ForcedChunkState::new, "chunks");
-		return (LongSet)(forcedChunkState != null ? LongSets.unmodifiable(forcedChunkState.getChunks()) : LongSets.EMPTY_SET);
-	}
-
-	public boolean hasForcedChunks() {
-		ForcedChunkState forcedChunkState = this.getPersistentState(this.dimension.getType(), ForcedChunkState::new, "chunks");
-		return forcedChunkState != null && !forcedChunkState.getChunks().isEmpty();
-	}
-
-	public boolean isChunkForced(int i, int j) {
-		ForcedChunkState forcedChunkState = this.getPersistentState(this.dimension.getType(), ForcedChunkState::new, "chunks");
-		return forcedChunkState != null && forcedChunkState.getChunks().contains(ChunkPos.toLong(i, j));
-	}
-
-	public boolean setChunkForced(int i, int j, boolean bl) {
-		String string = "chunks";
-		ForcedChunkState forcedChunkState = this.getPersistentState(this.dimension.getType(), ForcedChunkState::new, "chunks");
-		if (forcedChunkState == null) {
-			forcedChunkState = new ForcedChunkState("chunks");
-			this.setPersistentState(this.dimension.getType(), "chunks", forcedChunkState);
-		}
-
-		ChunkPos chunkPos = new ChunkPos(i, j);
-		long l = chunkPos.toLong();
-		boolean bl2;
-		if (bl) {
-			bl2 = forcedChunkState.getChunks().add(l);
-			if (bl2) {
-				this.getWorldChunk(i, j);
-			}
-		} else {
-			bl2 = forcedChunkState.getChunks().remove(l);
-		}
-
-		forcedChunkState.setDirty(bl2);
-		if (bl2) {
-			this.getChunkManager().setChunkForced(chunkPos, bl);
-		}
-
-		return bl2;
 	}
 
 	public void sendPacket(Packet<?> packet) {

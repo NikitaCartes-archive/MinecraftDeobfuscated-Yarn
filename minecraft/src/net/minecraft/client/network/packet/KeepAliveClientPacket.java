@@ -17,7 +17,7 @@ public class KeepAliveClientPacket implements Packet<ClientPlayPacketListener> {
 		this.field_12211 = l;
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11518(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onKeepAlive(this);
 	}
 

@@ -49,7 +49,7 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 		hashMap.put(SkullBlock.Type.PLAYER, DefaultSkinHelper.getTexture());
 	});
 
-	public void render(SkullBlockEntity skullBlockEntity, double d, double e, double f, float g, int i) {
+	public void method_3577(SkullBlockEntity skullBlockEntity, double d, double e, double f, float g, int i) {
 		float h = skullBlockEntity.getTicksPowered(g);
 		BlockState blockState = skullBlockEntity.getCachedState();
 		boolean bl = blockState.getBlock() instanceof WallSkullBlock;

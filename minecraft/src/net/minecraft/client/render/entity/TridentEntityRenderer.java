@@ -37,7 +37,7 @@ public class TridentEntityRenderer extends EntityRenderer<TridentEntity> {
 		GlStateManager.enableLighting();
 	}
 
-	protected Identifier getTexture(TridentEntity tridentEntity) {
+	protected Identifier method_4134(TridentEntity tridentEntity) {
 		return field_4796;
 	}
 

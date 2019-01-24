@@ -6,6 +6,7 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.ArrayDeque;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Identifier;
@@ -115,8 +116,7 @@ public class CommandFunction {
 		public void execute(
 			CommandFunctionManager commandFunctionManager, ServerCommandSource serverCommandSource, ArrayDeque<CommandFunctionManager.Entry> arrayDeque, int i
 		) {
-			CommandFunction commandFunction = this.function.get(commandFunctionManager);
-			if (commandFunction != null) {
+			this.function.get(commandFunctionManager).ifPresent(commandFunction -> {
 				CommandFunction.Element[] elements = commandFunction.getElements();
 				int j = i - arrayDeque.size();
 				int k = Math.min(elements.length, j);
@@ -124,7 +124,7 @@ public class CommandFunction {
 				for (int l = k - 1; l >= 0; l--) {
 					arrayDeque.addFirst(new CommandFunctionManager.Entry(commandFunctionManager, serverCommandSource, elements[l]));
 				}
-			}
+			});
 		}
 
 		public String toString() {
@@ -137,19 +137,19 @@ public class CommandFunction {
 		@Nullable
 		private final Identifier id;
 		private boolean initialized;
-		private CommandFunction function;
+		private Optional<CommandFunction> function = Optional.empty();
 
 		public LazyContainer(@Nullable Identifier identifier) {
 			this.id = identifier;
 		}
 
 		public LazyContainer(CommandFunction commandFunction) {
+			this.initialized = true;
 			this.id = null;
-			this.function = commandFunction;
+			this.function = Optional.of(commandFunction);
 		}
 
-		@Nullable
-		public CommandFunction get(CommandFunctionManager commandFunctionManager) {
+		public Optional<CommandFunction> get(CommandFunctionManager commandFunctionManager) {
 			if (!this.initialized) {
 				if (this.id != null) {
 					this.function = commandFunctionManager.getFunction(this.id);
@@ -163,7 +163,7 @@ public class CommandFunction {
 
 		@Nullable
 		public Identifier getId() {
-			return this.function != null ? this.function.id : this.id;
+			return (Identifier)this.function.map(commandFunction -> commandFunction.id).orElse(this.id);
 		}
 	}
 }

@@ -102,7 +102,7 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 
 		for (int o = 0; o < 2; o++) {
 			GlStateManager.disableLighting();
-			GlStateManager.blendFunc(GlStateManager.class_1033.SRC_COLOR, GlStateManager.class_1027.ONE);
+			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_COLOR, GlStateManager.DestFactor.ONE);
 			float p = 0.76F;
 			GlStateManager.color4f(0.38F, 0.19F, 0.608F, 1.0F);
 			GlStateManager.matrixMode(5890);
@@ -113,7 +113,7 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 			GlStateManager.translatef(0.0F, m * (0.001F + (float)o * 0.003F) * 20.0F, 0.0F);
 			GlStateManager.matrixMode(5888);
 			entityModel.render(entity, f, g, i, j, k, l);
-			GlStateManager.blendFunc(GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO);
+			GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 		}
 
 		GlStateManager.matrixMode(5890);

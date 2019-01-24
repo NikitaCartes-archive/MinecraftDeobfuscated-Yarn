@@ -40,7 +40,7 @@ public class CreeperEntityRenderer extends MobEntityRenderer<CreeperEntity, Cree
 		}
 	}
 
-	protected Identifier getTexture(CreeperEntity creeperEntity) {
+	protected Identifier method_3899(CreeperEntity creeperEntity) {
 		return SKIN;
 	}
 }

@@ -66,7 +66,7 @@ public class VillagerInteractionGoal extends class_1358 {
 						itemEntity.velocityX = (double)(-MathHelper.sin(g * (float) (Math.PI / 180.0)) * MathHelper.cos(h * (float) (Math.PI / 180.0)) * 0.3F);
 						itemEntity.velocityZ = (double)(MathHelper.cos(g * (float) (Math.PI / 180.0)) * MathHelper.cos(h * (float) (Math.PI / 180.0)) * 0.3F);
 						itemEntity.velocityY = (double)(-MathHelper.sin(h * (float) (Math.PI / 180.0)) * 0.3F + 0.1F);
-						itemEntity.method_6988();
+						itemEntity.setToDefaultPickupDelay();
 						this.villager.world.spawnEntity(itemEntity);
 						break;
 					}

@@ -26,7 +26,7 @@ public class PufferfishEntityRenderer extends MobEntityRenderer<PufferfishEntity
 	}
 
 	@Nullable
-	protected Identifier getTexture(PufferfishEntity pufferfishEntity) {
+	protected Identifier method_4096(PufferfishEntity pufferfishEntity) {
 		return field_4762;
 	}
 
@@ -44,7 +44,7 @@ public class PufferfishEntityRenderer extends MobEntityRenderer<PufferfishEntity
 
 		this.field_4765 = i;
 		this.field_4673 = 0.1F + 0.1F * (float)i;
-		super.render(pufferfishEntity, d, e, f, g, h);
+		super.method_4072(pufferfishEntity, d, e, f, g, h);
 	}
 
 	protected void method_4095(PufferfishEntity pufferfishEntity, float f, float g, float h) {

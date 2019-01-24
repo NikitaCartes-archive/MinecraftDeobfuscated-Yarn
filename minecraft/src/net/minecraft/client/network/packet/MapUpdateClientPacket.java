@@ -102,7 +102,7 @@ public class MapUpdateClientPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11643(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onMapUpdate(this);
 	}
 

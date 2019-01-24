@@ -55,7 +55,7 @@ public class ElderGuardianAppearanceParticle extends Particle {
 			GlStateManager.depthMask(true);
 			GlStateManager.enableBlend();
 			GlStateManager.enableDepthTest();
-			GlStateManager.blendFunc(GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA);
+			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			float n = 240.0F;
 			GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, 240.0F, 240.0F);
 			GlStateManager.pushMatrix();
@@ -78,7 +78,7 @@ public class ElderGuardianAppearanceParticle extends Particle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3042(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new ElderGuardianAppearanceParticle(world, d, e, f);
 		}
 	}

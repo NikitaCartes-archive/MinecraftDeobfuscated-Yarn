@@ -90,35 +90,31 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 
 		public BlockStatePropertyLootCondition method_910(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
-			Block block = Registry.BLOCK.get(identifier);
-			if (block == null) {
-				throw new IllegalArgumentException("Can't find block " + identifier);
-			} else {
-				StateFactory<Block, BlockState> stateFactory = block.getStateFactory();
-				Map<Property<?>, Object> map = Maps.<Property<?>, Object>newHashMap();
-				if (jsonObject.has("properties")) {
-					JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "properties");
-					jsonObject2.entrySet()
-						.forEach(
-							entry -> {
-								String string = (String)entry.getKey();
-								Property<?> property = stateFactory.getProperty(string);
-								if (property == null) {
-									throw new IllegalArgumentException("Block " + Registry.BLOCK.getId(block) + " does not have property '" + string + "'");
-								} else {
-									String string2 = JsonHelper.asString((JsonElement)entry.getValue(), "value");
-									Object object = property.getValue(string2)
-										.orElseThrow(
-											() -> new IllegalArgumentException("Block " + Registry.BLOCK.getId(block) + " property '" + string + "' does not have value '" + string2 + "'")
-										);
-									map.put(property, object);
-								}
+			Block block = (Block)Registry.BLOCK.method_17966(identifier).orElseThrow(() -> new IllegalArgumentException("Can't find block " + identifier));
+			StateFactory<Block, BlockState> stateFactory = block.getStateFactory();
+			Map<Property<?>, Object> map = Maps.<Property<?>, Object>newHashMap();
+			if (jsonObject.has("properties")) {
+				JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "properties");
+				jsonObject2.entrySet()
+					.forEach(
+						entry -> {
+							String string = (String)entry.getKey();
+							Property<?> property = stateFactory.getProperty(string);
+							if (property == null) {
+								throw new IllegalArgumentException("Block " + Registry.BLOCK.getId(block) + " does not have property '" + string + "'");
+							} else {
+								String string2 = JsonHelper.asString((JsonElement)entry.getValue(), "value");
+								Object object = property.getValue(string2)
+									.orElseThrow(
+										() -> new IllegalArgumentException("Block " + Registry.BLOCK.getId(block) + " property '" + string + "' does not have value '" + string2 + "'")
+									);
+								map.put(property, object);
 							}
-						);
-				}
-
-				return new BlockStatePropertyLootCondition(block, map);
+						}
+					);
 			}
+
+			return new BlockStatePropertyLootCondition(block, map);
 		}
 	}
 

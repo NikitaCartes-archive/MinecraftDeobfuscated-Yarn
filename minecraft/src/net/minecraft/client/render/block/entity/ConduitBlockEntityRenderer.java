@@ -25,7 +25,7 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 	private final ConduitBlockEntityRenderer.WindModel windModel = new ConduitBlockEntityRenderer.WindModel();
 	private final ConduitBlockEntityRenderer.EyeModel eyeModel = new ConduitBlockEntityRenderer.EyeModel();
 
-	public void render(ConduitBlockEntity conduitBlockEntity, double d, double e, double f, float g, int i) {
+	public void method_3572(ConduitBlockEntity conduitBlockEntity, double d, double e, double f, float g, int i) {
 		float h = (float)conduitBlockEntity.ticks + g;
 		if (!conduitBlockEntity.isActive()) {
 			float j = conduitBlockEntity.getRotation(0.0F);

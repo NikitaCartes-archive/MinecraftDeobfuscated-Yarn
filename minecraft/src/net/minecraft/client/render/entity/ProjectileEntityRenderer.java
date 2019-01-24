@@ -15,7 +15,7 @@ public abstract class ProjectileEntityRenderer<T extends ProjectileEntity> exten
 		super(entityRenderDispatcher);
 	}
 
-	public void render(T projectileEntity, double d, double e, double f, float g, float h) {
+	public void method_3875(T projectileEntity, double d, double e, double f, float g, float h) {
 		this.bindEntityTexture(projectileEntity);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.pushMatrix();

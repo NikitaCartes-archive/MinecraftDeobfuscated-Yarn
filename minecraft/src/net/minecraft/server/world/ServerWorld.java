@@ -1,7 +1,10 @@
 package net.minecraft.server.world;
 
 import com.google.common.collect.Maps;
+import it.unimi.dsi.fastutil.longs.LongSet;
+import it.unimi.dsi.fastutil.longs.LongSets;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -16,6 +19,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1419;
+import net.minecraft.class_3978;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.network.packet.BlockActionClientPacket;
@@ -30,16 +34,16 @@ import net.minecraft.entity.Npc;
 import net.minecraft.entity.WaterCreatureEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.player.ChunkTicketType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaidManager;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.map.MapState;
 import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleParameters;
 import net.minecraft.recipe.RecipeManager;
-import net.minecraft.scoreboard.ScoreboardState;
-import net.minecraft.scoreboard.ScoreboardSynchronizer;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListener;
@@ -50,6 +54,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.TagManager;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.ProgressListener;
+import net.minecraft.util.Void;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -58,13 +63,12 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.GameMode;
-import net.minecraft.world.PersistentStateManager;
+import net.minecraft.world.ForcedChunkState;
+import net.minecraft.world.OldWorldSaveHandler;
 import net.minecraft.world.PortalForcer;
 import net.minecraft.world.ScheduledTick;
 import net.minecraft.world.SessionLockException;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.WorldVillageManager;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -72,6 +76,7 @@ import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.dimension.DimensionalPersistentStateManager;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -88,6 +93,7 @@ import org.apache.logging.log4j.Logger;
 public class ServerWorld extends World {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final MinecraftServer server;
+	private final OldWorldSaveHandler field_17709;
 	private final EntityTracker entityTracker;
 	private final Map<UUID, Entity> entitiesByUuid = Maps.<UUID, Entity>newHashMap();
 	public boolean savingDisabled;
@@ -107,79 +113,47 @@ public class ServerWorld extends World {
 	public ServerWorld(
 		MinecraftServer minecraftServer,
 		Executor executor,
-		WorldSaveHandler worldSaveHandler,
-		PersistentStateManager persistentStateManager,
+		OldWorldSaveHandler oldWorldSaveHandler,
 		LevelProperties levelProperties,
 		DimensionType dimensionType,
 		Profiler profiler,
 		WorldGenerationProgressListener worldGenerationProgressListener
 	) {
 		super(
-			worldSaveHandler,
-			persistentStateManager,
 			levelProperties,
 			dimensionType,
 			(world, dimension) -> new ServerChunkManager(
 					world,
-					worldSaveHandler.createChunkSaveHandler(dimension),
+					oldWorldSaveHandler.getWorldDir(),
+					oldWorldSaveHandler.getDataFixer(),
+					oldWorldSaveHandler.getStructureManager(),
 					executor,
 					dimension.createChunkGenerator(),
 					minecraftServer.getPlayerManager().getViewDistance(),
-					worldGenerationProgressListener
+					worldGenerationProgressListener,
+					() -> minecraftServer.getWorld(DimensionType.field_13072).method_17983()
 				),
 			profiler,
 			false
 		);
+		this.field_17709 = oldWorldSaveHandler;
 		this.server = minecraftServer;
 		this.entityTracker = new EntityTracker(this);
 		this.portalForcer = new PortalForcer(this);
 		this.updateAmbientDarkness();
 		this.initWeatherGradients();
 		this.getWorldBorder().setMaxWorldBorderRadius(minecraftServer.getMaxWorldBorderRadius());
-	}
-
-	public ServerWorld initialize() {
-		String string = RaidManager.nameFor(this.dimension);
-		RaidManager raidManager = this.getPersistentState(this.dimension.getType(), RaidManager::new, string);
-		if (raidManager == null) {
-			this.raidManager = new RaidManager(this);
-			this.setPersistentState(this.dimension.getType(), string, this.raidManager);
-		} else {
-			this.raidManager = raidManager;
-			this.raidManager.setWorld(this);
-		}
-
-		String string2 = WorldVillageManager.getBaseTag(this.dimension);
-		WorldVillageManager worldVillageManager = this.getPersistentState(DimensionType.field_13072, WorldVillageManager::new, string2);
-		if (worldVillageManager == null) {
-			this.villageManager = new WorldVillageManager(this);
-			this.setPersistentState(DimensionType.field_13072, string2, this.villageManager);
-		} else {
-			this.villageManager = worldVillageManager;
-			this.villageManager.setWorld(this);
-		}
-
+		this.raidManager = this.method_17983().method_17924(() -> new RaidManager(this), RaidManager.nameFor(this.dimension));
+		DimensionalPersistentStateManager dimensionalPersistentStateManager = (this.dimension.getType() == DimensionType.field_13072
+				? this
+				: this.getServer().getWorld(DimensionType.field_13072))
+			.method_17983();
+		this.villageManager = dimensionalPersistentStateManager.method_17924(() -> new WorldVillageManager(this), WorldVillageManager.getBaseTag(this.dimension));
 		this.villageManager.method_16471();
-		ScoreboardState scoreboardState = this.getPersistentState(DimensionType.field_13072, ScoreboardState::new, "scoreboard");
-		if (scoreboardState == null) {
-			scoreboardState = new ScoreboardState();
-			this.setPersistentState(DimensionType.field_13072, "scoreboard", scoreboardState);
+		this.registerListener(new ServerWorldListener(minecraftServer, this));
+		if (!minecraftServer.isSinglePlayer()) {
+			this.getLevelProperties().setGameMode(minecraftServer.getDefaultGameMode());
 		}
-
-		scoreboardState.setScoreboard(this.server.getScoreboard());
-		this.server.getScoreboard().method_12935(new ScoreboardSynchronizer(scoreboardState));
-		this.getWorldBorder().setCenter(this.properties.getBorderCenterX(), this.properties.getBorderCenterZ());
-		this.getWorldBorder().setDamagePerBlock(this.properties.getBorderDamagePerBlock());
-		this.getWorldBorder().setSafeZone(this.properties.getBorderSafeZone());
-		this.getWorldBorder().setWarningBlocks(this.properties.getBorderWarningBlocks());
-		this.getWorldBorder().setWarningTime(this.properties.getBorderWarningTime());
-		if (this.properties.getBorderSizeLerpTime() > 0L) {
-			this.getWorldBorder().method_11957(this.properties.getBorderSize(), this.properties.getBorderSizeLerpTarget(), this.properties.getBorderSizeLerpTime());
-		} else {
-			this.getWorldBorder().setSize(this.properties.getBorderSize());
-		}
-
-		return this;
 	}
 
 	@Override
@@ -306,7 +280,7 @@ public class ServerWorld extends World {
 
 	@Override
 	public void updateEntities() {
-		if (this.players.isEmpty() && !this.hasForcedChunks()) {
+		if (this.players.isEmpty() && this.method_17984().isEmpty()) {
 			if (this.field_13948++ >= 300) {
 				return;
 			}
@@ -414,46 +388,7 @@ public class ServerWorld extends World {
 		return !this.server.isSpawnProtected(this, blockPos, playerEntity) && this.getWorldBorder().contains(blockPos);
 	}
 
-	@Override
 	public void init(LevelInfo levelInfo) {
-		if (!this.properties.isInitialized()) {
-			try {
-				this.method_14184(levelInfo);
-				if (this.properties.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
-					this.setDebugWorldProperties();
-				}
-
-				super.init(levelInfo);
-			} catch (Throwable var6) {
-				CrashReport crashReport = CrashReport.create(var6, "Exception initializing level");
-
-				try {
-					this.addDetailsToCrashReport(crashReport);
-				} catch (Throwable var5) {
-				}
-
-				throw new CrashException(crashReport);
-			}
-
-			this.properties.setInitialized(true);
-		}
-	}
-
-	private void setDebugWorldProperties() {
-		this.properties.setStructures(false);
-		this.properties.setCommandsAllowed(true);
-		this.properties.setRaining(false);
-		this.properties.setThundering(false);
-		this.properties.setClearWeatherTime(1000000000);
-		this.properties.setTimeOfDay(6000L);
-		this.properties.setGameMode(GameMode.field_9219);
-		this.properties.setHardcore(false);
-		this.properties.setDifficulty(Difficulty.PEACEFUL);
-		this.properties.setDifficultyLocked(true);
-		this.getGameRules().put("doDaylightCycle", "false", this.server);
-	}
-
-	private void method_14184(LevelInfo levelInfo) {
 		if (!this.dimension.method_12448()) {
 			this.properties.setSpawnPos(BlockPos.ORIGIN.up(this.chunkManager.getChunkGenerator().getSpawnHeight()));
 		} else if (this.properties.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
@@ -529,9 +464,9 @@ public class ServerWorld extends World {
 		return this.dimension.getForcedSpawnPoint();
 	}
 
-	public void save(@Nullable ProgressListener progressListener, boolean bl) throws SessionLockException {
+	public void save(@Nullable ProgressListener progressListener, boolean bl, boolean bl2) throws SessionLockException {
 		ServerChunkManager serverChunkManager = this.getChunkManager();
-		if (!this.savingDisabled) {
+		if (!bl2) {
 			if (progressListener != null) {
 				progressListener.method_15412(new TranslatableTextComponent("menu.savingLevel"));
 			}
@@ -547,25 +482,8 @@ public class ServerWorld extends World {
 
 	protected void saveLevel() throws SessionLockException {
 		this.checkSessionLock();
-
-		for (ServerWorld serverWorld : this.server.getWorlds()) {
-			if (serverWorld instanceof SecondaryServerWorld) {
-				((SecondaryServerWorld)serverWorld).saveWorldData();
-			}
-		}
-
-		this.properties.setBorderSize(this.getWorldBorder().getSize());
-		this.properties.setBorderCenterX(this.getWorldBorder().getCenterX());
-		this.properties.borderCenterZ(this.getWorldBorder().getCenterZ());
-		this.properties.setBorderSafeZone(this.getWorldBorder().getSafeZone());
-		this.properties.setBorderDamagePerBlock(this.getWorldBorder().getDamagePerBlock());
-		this.properties.setBorderWarningBlocks(this.getWorldBorder().getWarningBlocks());
-		this.properties.setBorderWarningTime(this.getWorldBorder().getWarningTime());
-		this.properties.setBorderSizeLerpTarget(this.getWorldBorder().getTargetSize());
-		this.properties.setBorderSizeLerpTime(this.getWorldBorder().getTargetRemainingTime());
-		this.properties.setCustomBossEvents(this.server.getBossBarManager().toTag());
-		this.saveHandler.saveWorld(this.properties, this.server.getPlayerManager().getUserData());
-		this.getPersistentStateManager().save();
+		this.dimension.saveWorldData();
+		this.getChunkManager().method_17981().save();
 	}
 
 	@Override
@@ -717,7 +635,7 @@ public class ServerWorld extends World {
 	}
 
 	@Override
-	public void close() {
+	public void close() throws IOException {
 		this.chunkManager.close();
 		super.close();
 	}
@@ -769,7 +687,7 @@ public class ServerWorld extends World {
 	}
 
 	public StructureManager getStructureManager() {
-		return this.saveHandler.getStructureManager();
+		return this.field_17709.getStructureManager();
 	}
 
 	public <T extends ParticleParameters> int method_14199(T particleParameters, double d, double e, double f, int i, double g, double h, double j, double k) {
@@ -841,5 +759,69 @@ public class ServerWorld extends World {
 	@Override
 	public boolean isSavingDisabled() {
 		return this.savingDisabled;
+	}
+
+	@Override
+	public void checkSessionLock() throws SessionLockException {
+		this.field_17709.checkSessionLock();
+	}
+
+	public OldWorldSaveHandler method_17982() {
+		return this.field_17709;
+	}
+
+	public DimensionalPersistentStateManager method_17983() {
+		return this.getChunkManager().method_17981();
+	}
+
+	@Nullable
+	@Override
+	public MapState method_17891(String string) {
+		return this.getServer().getWorld(DimensionType.field_13072).method_17983().get(() -> new MapState(string), string);
+	}
+
+	@Override
+	public void method_17890(MapState mapState) {
+		this.getServer().getWorld(DimensionType.field_13072).method_17983().set(mapState);
+	}
+
+	@Override
+	public int method_17889() {
+		return this.getServer().getWorld(DimensionType.field_13072).method_17983().<class_3978>method_17924(class_3978::new, "idcounts").method_17920();
+	}
+
+	@Override
+	public void setSpawnPos(BlockPos blockPos) {
+		ChunkPos chunkPos = new ChunkPos(new BlockPos(this.properties.getSpawnX(), 0, this.properties.getSpawnZ()));
+		super.setSpawnPos(blockPos);
+		this.getChunkManager().removeTicket(ChunkTicketType.START, chunkPos, 11, Void.INSTANCE);
+		this.getChunkManager().addTicket(ChunkTicketType.START, new ChunkPos(blockPos), 11, Void.INSTANCE);
+	}
+
+	public LongSet method_17984() {
+		ForcedChunkState forcedChunkState = this.method_17983().get(ForcedChunkState::new, "chunks");
+		return (LongSet)(forcedChunkState != null ? LongSets.unmodifiable(forcedChunkState.getChunks()) : LongSets.EMPTY_SET);
+	}
+
+	public boolean method_17988(int i, int j, boolean bl) {
+		ForcedChunkState forcedChunkState = this.method_17983().method_17924(ForcedChunkState::new, "chunks");
+		ChunkPos chunkPos = new ChunkPos(i, j);
+		long l = chunkPos.toLong();
+		boolean bl2;
+		if (bl) {
+			bl2 = forcedChunkState.getChunks().add(l);
+			if (bl2) {
+				this.getWorldChunk(i, j);
+			}
+		} else {
+			bl2 = forcedChunkState.getChunks().remove(l);
+		}
+
+		forcedChunkState.setDirty(bl2);
+		if (bl2) {
+			this.getChunkManager().setChunkForced(chunkPos, bl);
+		}
+
+		return bl2;
 	}
 }

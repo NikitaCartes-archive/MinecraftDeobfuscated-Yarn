@@ -21,7 +21,7 @@ public class CatEntityRenderer extends MobEntityRenderer<CatEntity, CatEntityMod
 	}
 
 	@Nullable
-	protected Identifier getTexture(CatEntity catEntity) {
+	protected Identifier method_4078(CatEntity catEntity) {
 		return catEntity.method_16092();
 	}
 
@@ -30,7 +30,7 @@ public class CatEntityRenderer extends MobEntityRenderer<CatEntity, CatEntityMod
 		GlStateManager.scalef(0.8F, 0.8F, 0.8F);
 	}
 
-	protected void setupTransforms(CatEntity catEntity, float f, float g, float h) {
+	protected void method_16045(CatEntity catEntity, float f, float g, float h) {
 		super.setupTransforms(catEntity, f, g, h);
 		float i = catEntity.method_16082(h);
 		if (i > 0.0F) {

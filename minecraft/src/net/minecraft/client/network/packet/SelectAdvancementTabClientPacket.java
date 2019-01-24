@@ -20,7 +20,7 @@ public class SelectAdvancementTabClientPacket implements Packet<ClientPlayPacket
 		this.tabId = identifier;
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11794(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onSelectAdvancementTab(this);
 	}
 

@@ -16,14 +16,12 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.sortme.structures.StructureManager;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.TagHelper;
-import net.minecraft.world.dimension.Dimension;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.LevelProperties;
-import net.minecraft.world.level.storage.OldLevelStorage;
+import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class OldWorldSaveHandler implements WorldSaveHandler, PlayerSaveHandler {
+public class OldWorldSaveHandler implements PlayerSaveHandler {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final File worldDir;
 	private final File playerDataDir;
@@ -48,67 +46,8 @@ public class OldWorldSaveHandler implements WorldSaveHandler, PlayerSaveHandler 
 		this.writeSessionLock();
 	}
 
-	private void writeSessionLock() {
-		try {
-			File file = new File(this.worldDir, "session.lock");
-			DataOutputStream dataOutputStream = new DataOutputStream(new FileOutputStream(file));
-
-			try {
-				dataOutputStream.writeLong(this.saveStartTime);
-			} finally {
-				dataOutputStream.close();
-			}
-		} catch (IOException var7) {
-			var7.printStackTrace();
-			throw new RuntimeException("Failed to check session lock, aborting");
-		}
-	}
-
-	@Override
-	public File getWorldDir() {
-		return this.worldDir;
-	}
-
-	@Override
-	public void checkSessionLock() throws SessionLockException {
-		try {
-			File file = new File(this.worldDir, "session.lock");
-			DataInputStream dataInputStream = new DataInputStream(new FileInputStream(file));
-
-			try {
-				if (dataInputStream.readLong() != this.saveStartTime) {
-					throw new SessionLockException("The save is being accessed from another location, aborting");
-				}
-			} finally {
-				dataInputStream.close();
-			}
-		} catch (IOException var7) {
-			throw new SessionLockException("Failed to check session lock, aborting");
-		}
-	}
-
-	@Override
-	public ChunkSaveHandler createChunkSaveHandler(Dimension dimension) {
-		throw new RuntimeException("Old Chunk Storage is no longer supported.");
-	}
-
-	@Nullable
-	@Override
-	public LevelProperties readProperties() {
-		File file = new File(this.worldDir, "level.dat");
-		if (file.exists()) {
-			LevelProperties levelProperties = OldLevelStorage.method_126(file, this.field_148);
-			if (levelProperties != null) {
-				return levelProperties;
-			}
-		}
-
-		file = new File(this.worldDir, "level.dat_old");
-		return file.exists() ? OldLevelStorage.method_126(file, this.field_148) : null;
-	}
-
-	@Override
 	public void saveWorld(LevelProperties levelProperties, @Nullable CompoundTag compoundTag) {
+		levelProperties.setVersion(19133);
 		CompoundTag compoundTag2 = levelProperties.cloneWorldTag(compoundTag);
 		CompoundTag compoundTag3 = new CompoundTag();
 		compoundTag3.put("Data", compoundTag2);
@@ -136,7 +75,57 @@ public class OldWorldSaveHandler implements WorldSaveHandler, PlayerSaveHandler 
 		}
 	}
 
-	@Override
+	private void writeSessionLock() {
+		try {
+			File file = new File(this.worldDir, "session.lock");
+			DataOutputStream dataOutputStream = new DataOutputStream(new FileOutputStream(file));
+
+			try {
+				dataOutputStream.writeLong(this.saveStartTime);
+			} finally {
+				dataOutputStream.close();
+			}
+		} catch (IOException var7) {
+			var7.printStackTrace();
+			throw new RuntimeException("Failed to check session lock, aborting");
+		}
+	}
+
+	public File getWorldDir() {
+		return this.worldDir;
+	}
+
+	public void checkSessionLock() throws SessionLockException {
+		try {
+			File file = new File(this.worldDir, "session.lock");
+			DataInputStream dataInputStream = new DataInputStream(new FileInputStream(file));
+
+			try {
+				if (dataInputStream.readLong() != this.saveStartTime) {
+					throw new SessionLockException("The save is being accessed from another location, aborting");
+				}
+			} finally {
+				dataInputStream.close();
+			}
+		} catch (IOException var7) {
+			throw new SessionLockException("Failed to check session lock, aborting");
+		}
+	}
+
+	@Nullable
+	public LevelProperties readProperties() {
+		File file = new File(this.worldDir, "level.dat");
+		if (file.exists()) {
+			LevelProperties levelProperties = LevelStorage.method_17926(file, this.field_148);
+			if (levelProperties != null) {
+				return levelProperties;
+			}
+		}
+
+		file = new File(this.worldDir, "level.dat_old");
+		return file.exists() ? LevelStorage.method_17926(file, this.field_148) : null;
+	}
+
 	public void saveWorld(LevelProperties levelProperties) {
 		this.saveWorld(levelProperties, null);
 	}
@@ -180,12 +169,6 @@ public class OldWorldSaveHandler implements WorldSaveHandler, PlayerSaveHandler 
 		return compoundTag;
 	}
 
-	@Override
-	public PlayerSaveHandler getPlayerSaveHandler() {
-		return this;
-	}
-
-	@Override
 	public String[] getSavedPlayerIds() {
 		String[] strings = this.playerDataDir.list();
 		if (strings == null) {
@@ -201,19 +184,10 @@ public class OldWorldSaveHandler implements WorldSaveHandler, PlayerSaveHandler 
 		return strings;
 	}
 
-	@Override
-	public File getDataFile(DimensionType dimensionType, String string) {
-		File file = new File(dimensionType.getFile(this.worldDir), "data");
-		file.mkdirs();
-		return new File(file, string + ".dat");
-	}
-
-	@Override
 	public StructureManager getStructureManager() {
 		return this.field_147;
 	}
 
-	@Override
 	public DataFixer getDataFixer() {
 		return this.field_148;
 	}

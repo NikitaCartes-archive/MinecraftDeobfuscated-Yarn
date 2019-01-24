@@ -252,7 +252,7 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 		if (this.canDrawEntityOutlines()) {
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(
-				GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ZERO, GlStateManager.class_1027.ONE
+				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE
 			);
 			this.entityOutlinesFramebuffer.draw(this.client.window.getFramebufferWidth(), this.client.window.getFramebufferHeight(), false);
 			GlStateManager.disableBlend();
@@ -992,7 +992,7 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 		GlStateManager.disableAlphaTest();
 		GlStateManager.enableBlend();
 		GlStateManager.blendFuncSeparate(
-			GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		GuiLighting.disable();
 		GlStateManager.depthMask(false);
@@ -1066,7 +1066,7 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 			GlStateManager.disableAlphaTest();
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(
-				GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
 			GuiLighting.disable();
 			float[] fs = this.world.dimension.method_12446(this.world.getSkyAngle(f), f);
@@ -1098,7 +1098,7 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 
 			GlStateManager.enableTexture();
 			GlStateManager.blendFuncSeparate(
-				GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
 			GlStateManager.pushMatrix();
 			float j = 1.0F - this.world.getRainGradient(f);
@@ -1247,7 +1247,7 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 			this.textureManager.bindTexture(CLOUDS_TEX);
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(
-				GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
 			GlStateManager.pushMatrix();
 			GlStateManager.scalef(12.0F, 1.0F, 12.0F);
@@ -1551,7 +1551,7 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 			double i = MathHelper.lerp((double)f, entity.prevRenderZ, entity.z);
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(
-				GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
 			this.textureManager.bindTexture(FORCEFIELD_TEX);
 			GlStateManager.depthMask(false);
@@ -1647,7 +1647,7 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 
 	private void method_3263() {
 		GlStateManager.blendFuncSeparate(
-			GlStateManager.class_1033.DST_COLOR, GlStateManager.class_1027.SRC_COLOR, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+			GlStateManager.SourceFactor.DST_COLOR, GlStateManager.DestFactor.SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		GlStateManager.enableBlend();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 0.5F);
@@ -1714,7 +1714,7 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 			if (!blockState.isAir() && this.world.getWorldBorder().contains(blockPos)) {
 				GlStateManager.enableBlend();
 				GlStateManager.blendFuncSeparate(
-					GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+					GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 				);
 				GlStateManager.lineWidth(Math.max(2.5F, (float)this.client.window.getFramebufferWidth() / 1920.0F * 2.5F));
 				GlStateManager.disableTexture();

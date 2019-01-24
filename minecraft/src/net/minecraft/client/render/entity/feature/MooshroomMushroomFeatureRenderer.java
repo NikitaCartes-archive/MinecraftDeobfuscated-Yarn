@@ -16,7 +16,7 @@ public class MooshroomMushroomFeatureRenderer<T extends PassiveEntity> extends F
 		super(featureRendererContext);
 	}
 
-	public void render(T passiveEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4195(T passiveEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (!passiveEntity.isChild() && !passiveEntity.isInvisible()) {
 			this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 			GlStateManager.enableCull();

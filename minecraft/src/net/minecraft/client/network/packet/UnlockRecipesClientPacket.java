@@ -42,7 +42,7 @@ public class UnlockRecipesClientPacket implements Packet<ClientPlayPacketListene
 		this.furnaceFilteringCraftable = bl4;
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11753(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onUnlockRecipes(this);
 	}
 

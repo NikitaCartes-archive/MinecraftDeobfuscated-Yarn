@@ -62,7 +62,7 @@ public class UpdateCommandBlockServerPacket implements Packet<ServerPlayPacketLi
 		packetByteBuf.writeByte(i);
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12469(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onUpdateCommandBlock(this);
 	}
 

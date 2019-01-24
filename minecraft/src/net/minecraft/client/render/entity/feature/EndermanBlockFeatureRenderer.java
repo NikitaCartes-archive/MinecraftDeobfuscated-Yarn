@@ -16,7 +16,7 @@ public class EndermanBlockFeatureRenderer extends FeatureRenderer<EndermanEntity
 		super(featureRendererContext);
 	}
 
-	public void render(EndermanEntity endermanEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4179(EndermanEntity endermanEntity, float f, float g, float h, float i, float j, float k, float l) {
 		BlockState blockState = endermanEntity.getCarriedBlock();
 		if (blockState != null) {
 			GlStateManager.enableRescaleNormal();

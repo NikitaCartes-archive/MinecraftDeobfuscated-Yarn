@@ -17,28 +17,16 @@ import net.minecraft.village.VillageProperties;
 import net.minecraft.world.dimension.Dimension;
 
 public class WorldVillageManager extends PersistentState {
-	private World world;
+	private final World world;
 	private final List<BlockPos> recentVillagerPositions = Lists.<BlockPos>newArrayList();
 	private final List<VillageDoor> recentlySeenDoors = Lists.<VillageDoor>newArrayList();
 	private final List<VillageProperties> villages = Lists.<VillageProperties>newArrayList();
 	private int tick;
 
-	public WorldVillageManager(String string) {
-		super(string);
-	}
-
 	public WorldVillageManager(World world) {
 		super(getBaseTag(world.dimension));
 		this.world = world;
 		this.markDirty();
-	}
-
-	public void setWorld(World world) {
-		this.world = world;
-
-		for (VillageProperties villageProperties : this.villages) {
-			villageProperties.setWorld(world);
-		}
 	}
 
 	public void addRecentVillagerPosition(BlockPos blockPos) {
@@ -210,7 +198,7 @@ public class WorldVillageManager extends PersistentState {
 
 		for (int i = 0; i < listTag.size(); i++) {
 			CompoundTag compoundTag2 = listTag.getCompoundTag(i);
-			VillageProperties villageProperties = new VillageProperties();
+			VillageProperties villageProperties = new VillageProperties(this.world);
 			villageProperties.deserialize(compoundTag2);
 			this.villages.add(villageProperties);
 		}

@@ -32,7 +32,7 @@ public class LlamaDecorFeatureRenderer extends FeatureRenderer<LlamaEntity, Llam
 		super(featureRendererContext);
 	}
 
-	public void render(LlamaEntity llamaEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4191(LlamaEntity llamaEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (llamaEntity.method_6807()) {
 			this.bindTexture(field_4880[llamaEntity.method_6800().getId()]);
 			this.getModel().method_17081(this.field_4881);

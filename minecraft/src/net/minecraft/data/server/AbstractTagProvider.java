@@ -12,6 +12,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Map.Entry;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
@@ -41,7 +42,7 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 	public void run(DataCache dataCache) throws IOException {
 		this.field_11481.clear();
 		this.configure();
-		TagContainer<T> tagContainer = new TagContainer<>(identifierx -> false, identifierx -> null, "", false, "generated");
+		TagContainer<T> tagContainer = new TagContainer<>(identifierx -> Optional.empty(), "", false, "generated");
 
 		for (Entry<Tag<T>, Tag.Builder<T>> entry : this.field_11481.entrySet()) {
 			Identifier identifier = ((Tag)entry.getKey()).getId();

@@ -69,7 +69,7 @@ public class PlayerInteractEntityServerPacket implements Packet<ServerPlayPacket
 		}
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12251(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onPlayerInteractEntity(this);
 	}
 

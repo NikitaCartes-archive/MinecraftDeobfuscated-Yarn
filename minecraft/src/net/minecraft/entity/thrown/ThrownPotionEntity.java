@@ -86,7 +86,7 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 	}
 
 	@Override
-	protected void method_7492(HitResult hitResult) {
+	protected void onCollision(HitResult hitResult) {
 		if (!this.world.isClient) {
 			ItemStack itemStack = this.getItem();
 			Potion potion = PotionUtil.getPotion(itemStack);

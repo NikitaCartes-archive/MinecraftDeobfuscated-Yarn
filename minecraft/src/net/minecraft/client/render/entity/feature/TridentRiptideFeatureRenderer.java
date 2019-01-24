@@ -18,7 +18,7 @@ public class TridentRiptideFeatureRenderer<T extends LivingEntity> extends Featu
 		super(featureRendererContext);
 	}
 
-	public void render(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4203(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (livingEntity.isUsingRiptide()) {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			this.bindTexture(TEXTURE);

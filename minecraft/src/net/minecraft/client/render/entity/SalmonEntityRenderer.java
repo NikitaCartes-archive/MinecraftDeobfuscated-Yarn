@@ -18,7 +18,7 @@ public class SalmonEntityRenderer extends MobEntityRenderer<SalmonEntity, Salmon
 	}
 
 	@Nullable
-	protected Identifier getTexture(SalmonEntity salmonEntity) {
+	protected Identifier method_4101(SalmonEntity salmonEntity) {
 		return field_4767;
 	}
 

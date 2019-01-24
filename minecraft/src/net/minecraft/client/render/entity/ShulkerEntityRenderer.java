@@ -49,9 +49,9 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 			double k = (double)(blockPos.getX() - blockPos2.getX()) * j;
 			double l = (double)(blockPos.getY() - blockPos2.getY()) * j;
 			double m = (double)(blockPos.getZ() - blockPos2.getZ()) * j;
-			super.render(shulkerEntity, d - k, e - l, f - m, g, h);
+			super.method_4072(shulkerEntity, d - k, e - l, f - m, g, h);
 		} else {
-			super.render(shulkerEntity, d, e, f, g, h);
+			super.method_4072(shulkerEntity, d, e, f, g, h);
 		}
 	}
 
@@ -73,7 +73,7 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 		}
 	}
 
-	protected Identifier getTexture(ShulkerEntity shulkerEntity) {
+	protected Identifier method_4111(ShulkerEntity shulkerEntity) {
 		return shulkerEntity.method_7121() == null ? field_4781 : SKIN[shulkerEntity.method_7121().getId()];
 	}
 

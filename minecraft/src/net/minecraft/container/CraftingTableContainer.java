@@ -95,12 +95,12 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.world.method_17393((world, blockPos) -> this.method_7607(playerEntity, world, this.craftingInv));
+		this.world.method_17393((world, blockPos) -> this.dropInventory(playerEntity, world, this.craftingInv));
 	}
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return method_17695(this.world, playerEntity, Blocks.field_9980);
+		return canUse(this.world, playerEntity, Blocks.field_9980);
 	}
 
 	@Override

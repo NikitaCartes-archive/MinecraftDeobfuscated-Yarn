@@ -32,7 +32,7 @@ public class CooldownUpdateClientPacket implements Packet<ClientPlayPacketListen
 		packetByteBuf.writeVarInt(this.cooldown);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11455(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onCooldownUpdate(this);
 	}
 

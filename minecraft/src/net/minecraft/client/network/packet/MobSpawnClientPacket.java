@@ -110,7 +110,7 @@ public class MobSpawnClientPacket implements Packet<ClientPlayPacketListener> {
 		this.dataTracker.serializePacket(packetByteBuf);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11217(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onMobSpawn(this);
 	}
 

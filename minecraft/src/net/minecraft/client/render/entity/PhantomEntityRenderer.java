@@ -17,7 +17,7 @@ public class PhantomEntityRenderer extends MobEntityRenderer<PhantomEntity, Phan
 		this.addFeature(new PhantomEyesFeatureRenderer<>(this));
 	}
 
-	protected Identifier getTexture(PhantomEntity phantomEntity) {
+	protected Identifier method_4090(PhantomEntity phantomEntity) {
 		return field_4756;
 	}
 

@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_3914;
-import net.minecraft.class_3915;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,9 +22,9 @@ import net.minecraft.world.World;
 public abstract class Container {
 	private final DefaultedList<ItemStack> stackList = DefaultedList.create();
 	public final List<Slot> slotList = Lists.<Slot>newArrayList();
-	private final List<class_3915> field_17285 = Lists.<class_3915>newArrayList();
+	private final List<Property> field_17285 = Lists.<Property>newArrayList();
 	@Nullable
-	private final ContainerType<?> field_17493;
+	private final ContainerType<?> type;
 	public final int syncId;
 	@Environment(EnvType.CLIENT)
 	private short actionId;
@@ -36,11 +35,11 @@ public abstract class Container {
 	private final Set<PlayerEntity> field_7760 = Sets.<PlayerEntity>newHashSet();
 
 	protected Container(@Nullable ContainerType<?> containerType, int i) {
-		this.field_17493 = containerType;
+		this.type = containerType;
 		this.syncId = i;
 	}
 
-	protected static boolean method_17695(class_3914 arg, PlayerEntity playerEntity, Block block) {
+	protected static boolean canUse(class_3914 arg, PlayerEntity playerEntity, Block block) {
 		return arg.method_17396(
 			(world, blockPos) -> world.getBlockState(blockPos).getBlock() != block
 					? false
@@ -50,10 +49,10 @@ public abstract class Container {
 	}
 
 	public ContainerType<?> getType() {
-		if (this.field_17493 == null) {
+		if (this.type == null) {
 			throw new UnsupportedOperationException("Unable to construct this menu by type");
 		} else {
-			return this.field_17493;
+			return this.type;
 		}
 	}
 
@@ -78,14 +77,14 @@ public abstract class Container {
 		return slot;
 	}
 
-	protected class_3915 method_17362(class_3915 arg) {
-		this.field_17285.add(arg);
-		return arg;
+	protected Property method_17362(Property property) {
+		this.field_17285.add(property);
+		return property;
 	}
 
 	protected void readData(PropertyDelegate propertyDelegate) {
 		for (int i = 0; i < propertyDelegate.size(); i++) {
-			this.method_17362(class_3915.method_17405(propertyDelegate, i));
+			this.method_17362(Property.create(propertyDelegate, i));
 		}
 	}
 
@@ -127,10 +126,10 @@ public abstract class Container {
 		}
 
 		for (int ix = 0; ix < this.field_17285.size(); ix++) {
-			class_3915 lv = (class_3915)this.field_17285.get(ix);
-			if (lv.method_17408()) {
+			Property property = (Property)this.field_17285.get(ix);
+			if (property.method_17408()) {
 				for (ContainerListener containerListener2 : this.listeners) {
-					containerListener2.onContainerPropertyUpdate(this, ix, lv.method_17407());
+					containerListener2.onContainerPropertyUpdate(this, ix, property.get());
 				}
 			}
 		}
@@ -410,7 +409,7 @@ public abstract class Container {
 		}
 	}
 
-	protected void method_7607(PlayerEntity playerEntity, World world, Inventory inventory) {
+	protected void dropInventory(PlayerEntity playerEntity, World world, Inventory inventory) {
 		if (!playerEntity.isValid() || playerEntity instanceof ServerPlayerEntity && ((ServerPlayerEntity)playerEntity).method_14239()) {
 			for (int i = 0; i < inventory.getInvSize(); i++) {
 				playerEntity.dropItem(inventory.removeInvStack(i), false);
@@ -438,7 +437,7 @@ public abstract class Container {
 	}
 
 	public void setProperty(int i, int j) {
-		((class_3915)this.field_17285.get(i)).method_17404(j);
+		((Property)this.field_17285.get(i)).set(j);
 	}
 
 	@Environment(EnvType.CLIENT)

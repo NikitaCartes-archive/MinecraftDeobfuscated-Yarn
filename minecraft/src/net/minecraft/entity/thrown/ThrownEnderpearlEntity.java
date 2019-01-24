@@ -47,7 +47,7 @@ public class ThrownEnderpearlEntity extends class_3857 {
 	}
 
 	@Override
-	protected void method_7492(HitResult hitResult) {
+	protected void onCollision(HitResult hitResult) {
 		LivingEntity livingEntity = this.getOwner();
 		if (hitResult.getType() == HitResult.Type.ENTITY) {
 			Entity entity = ((EntityHitResult)hitResult).getEntity();

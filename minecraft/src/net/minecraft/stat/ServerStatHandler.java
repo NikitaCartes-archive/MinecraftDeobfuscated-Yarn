@@ -16,9 +16,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Map.Entry;
-import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.network.packet.StatisticsClientPacket;
 import net.minecraft.entity.player.PlayerEntity;
@@ -26,6 +26,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.io.FileUtils;
@@ -93,25 +94,25 @@ public class ServerStatHandler extends StatHandler {
 
 						for (String string2 : compoundTag2.getKeys()) {
 							if (compoundTag2.containsKey(string2, 10)) {
-								StatType<?> statType = Registry.STAT_TYPE.get(new Identifier(string2));
-								if (statType == null) {
-									LOGGER.warn("Invalid statistic type in {}: Don't know what {} is", this.file, string2);
-								} else {
-									CompoundTag compoundTag3 = compoundTag2.getCompound(string2);
+								SystemUtil.method_17974(
+									Registry.STAT_TYPE.method_17966(new Identifier(string2)),
+									statType -> {
+										CompoundTag compoundTag2x = compoundTag2.getCompound(string2);
 
-									for (String string3 : compoundTag3.getKeys()) {
-										if (compoundTag3.containsKey(string3, 99)) {
-											Stat<?> stat = this.method_14905(statType, string3);
-											if (stat == null) {
-												LOGGER.warn("Invalid statistic in {}: Don't know what {} is", this.file, string3);
+										for (String string2x : compoundTag2x.getKeys()) {
+											if (compoundTag2x.containsKey(string2x, 99)) {
+												SystemUtil.method_17974(
+													this.method_14905(statType, string2x),
+													stat -> this.statMap.put(stat, compoundTag2x.getInt(string2x)),
+													() -> LOGGER.warn("Invalid statistic in {}: Don't know what {} is", this.file, string2x)
+												);
 											} else {
-												this.statMap.put(stat, compoundTag3.getInt(string3));
+												LOGGER.warn("Invalid statistic value in {}: Don't know what {} is for key {}", this.file, compoundTag2x.getTag(string2x), string2x);
 											}
-										} else {
-											LOGGER.warn("Invalid statistic value in {}: Don't know what {} is for key {}", this.file, compoundTag3.getTag(string3), string3);
 										}
-									}
-								}
+									},
+									() -> LOGGER.warn("Invalid statistic type in {}: Don't know what {} is", this.file, string2)
+								);
 							}
 						}
 					}
@@ -120,36 +121,29 @@ public class ServerStatHandler extends StatHandler {
 				}
 
 				LOGGER.error("Unable to parse Stat data from {}", this.file);
-			} catch (Throwable var24) {
-				var4 = var24;
-				throw var24;
+			} catch (Throwable var19) {
+				var4 = var19;
+				throw var19;
 			} finally {
 				if (jsonReader != null) {
 					if (var4 != null) {
 						try {
 							jsonReader.close();
-						} catch (Throwable var23) {
-							var4.addSuppressed(var23);
+						} catch (Throwable var18) {
+							var4.addSuppressed(var18);
 						}
 					} else {
 						jsonReader.close();
 					}
 				}
 			}
-		} catch (IOException | JsonParseException var26) {
-			LOGGER.error("Unable to parse Stat data from {}", this.file, var26);
+		} catch (IOException | JsonParseException var21) {
+			LOGGER.error("Unable to parse Stat data from {}", this.file, var21);
 		}
 	}
 
-	@Nullable
-	private <T> Stat<T> method_14905(StatType<T> statType, String string) {
-		Identifier identifier = Identifier.create(string);
-		if (identifier == null) {
-			return null;
-		} else {
-			T object = statType.getRegistry().get(identifier);
-			return object == null ? null : statType.getOrCreateStat(object);
-		}
+	private <T> Optional<Stat<T>> method_14905(StatType<T> statType, String string) {
+		return Optional.ofNullable(Identifier.create(string)).flatMap(statType.getRegistry()::method_17966).map(statType::getOrCreateStat);
 	}
 
 	private static CompoundTag jsonToCompound(JsonObject jsonObject) {

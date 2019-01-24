@@ -148,14 +148,11 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 	public static Block parseBlock(String string) {
 		try {
 			Identifier identifier = new Identifier(string);
-			if (Registry.BLOCK.contains(identifier)) {
-				return Registry.BLOCK.get(identifier);
-			}
+			return (Block)Registry.BLOCK.method_17966(identifier).orElse(null);
 		} catch (IllegalArgumentException var2) {
 			LOGGER.warn("Invalid blockstate: {}", string, var2);
+			return null;
 		}
-
-		return null;
 	}
 
 	public Biome getBiome() {

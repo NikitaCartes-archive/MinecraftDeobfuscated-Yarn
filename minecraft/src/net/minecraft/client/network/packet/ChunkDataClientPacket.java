@@ -100,7 +100,7 @@ public class ChunkDataClientPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11528(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onChunkData(this);
 	}
 

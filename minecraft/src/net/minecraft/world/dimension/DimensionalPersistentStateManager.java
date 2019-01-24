@@ -2,171 +2,150 @@ package net.minecraft.world.dimension;
 
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.DataFixTypes;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
+import com.mojang.datafixers.DataFixer;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PushbackInputStream;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.util.TagHelper;
 import net.minecraft.world.PersistentState;
-import net.minecraft.world.WorldSaveHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class DimensionalPersistentStateManager {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final DimensionType type;
 	private final Map<String, PersistentState> keyToState = Maps.<String, PersistentState>newHashMap();
-	private final Object2IntMap<String> keyToAvailableId = new Object2IntOpenHashMap<>();
-	@Nullable
-	private final WorldSaveHandler saveHandler;
+	private final DataFixer field_17663;
+	private final File field_17664;
 
-	public DimensionalPersistentStateManager(DimensionType dimensionType, @Nullable WorldSaveHandler worldSaveHandler) {
-		this.type = dimensionType;
-		this.saveHandler = worldSaveHandler;
-		this.keyToAvailableId.defaultReturnValue(-1);
+	public DimensionalPersistentStateManager(File file, DataFixer dataFixer) {
+		this.field_17663 = dataFixer;
+		this.field_17664 = file;
+	}
+
+	private File method_17922(String string) {
+		return new File(this.field_17664, string + ".dat");
+	}
+
+	public <T extends PersistentState> T method_17924(Supplier<T> supplier, String string) {
+		T persistentState = this.get(supplier, string);
+		if (persistentState != null) {
+			return persistentState;
+		} else {
+			T persistentState2 = (T)supplier.get();
+			this.set(persistentState2);
+			return persistentState2;
+		}
 	}
 
 	@Nullable
-	public <T extends PersistentState> T get(Function<String, T> function, String string) {
+	public <T extends PersistentState> T get(Supplier<T> supplier, String string) {
 		PersistentState persistentState = (PersistentState)this.keyToState.get(string);
-		if (persistentState == null && this.saveHandler != null) {
+		if (persistentState == null) {
 			try {
-				File file = this.saveHandler.getDataFile(this.type, string);
-				if (file != null && file.exists()) {
-					persistentState = (PersistentState)function.apply(string);
-					persistentState.fromTag(update(this.saveHandler, this.type, string, SharedConstants.getGameVersion().getWorldVersion()).getCompound("data"));
+				File file = this.method_17922(string);
+				if (file.exists()) {
+					persistentState = (PersistentState)supplier.get();
+					CompoundTag compoundTag = this.method_17923(string, SharedConstants.getGameVersion().getWorldVersion());
+					persistentState.fromTag(compoundTag.getCompound("data"));
 					this.keyToState.put(string, persistentState);
 				}
-			} catch (Exception var5) {
-				LOGGER.error("Error loading saved data: {}", string, var5);
+			} catch (Exception var6) {
+				LOGGER.error("Error loading saved data: {}", string, var6);
 			}
 		}
 
 		return (T)persistentState;
 	}
 
-	public void set(String string, PersistentState persistentState) {
-		this.keyToState.put(string, persistentState);
+	public void set(PersistentState persistentState) {
+		this.keyToState.put(persistentState.getId(), persistentState);
 	}
 
-	public void readIdCounts() {
+	public CompoundTag method_17923(String string, int i) throws IOException {
+		File file = this.method_17922(string);
+		PushbackInputStream pushbackInputStream = new PushbackInputStream(new FileInputStream(file), 2);
+		Throwable var5 = null;
+
+		CompoundTag var36;
 		try {
-			this.keyToAvailableId.clear();
-			if (this.saveHandler == null) {
-				return;
-			}
+			CompoundTag compoundTag;
+			if (this.method_17921(pushbackInputStream)) {
+				compoundTag = NbtIo.readCompressed(pushbackInputStream);
+			} else {
+				DataInputStream dataInputStream = new DataInputStream(pushbackInputStream);
+				Throwable var8 = null;
 
-			File file = this.saveHandler.getDataFile(this.type, "idcounts");
-			if (file != null && file.exists()) {
-				DataInputStream dataInputStream = new DataInputStream(new FileInputStream(file));
-				CompoundTag compoundTag = NbtIo.read(dataInputStream);
-				dataInputStream.close();
-
-				for (String string : compoundTag.getKeys()) {
-					if (compoundTag.containsKey(string, 99)) {
-						this.keyToAvailableId.put(string, compoundTag.getInt(string));
+				try {
+					compoundTag = NbtIo.read(dataInputStream);
+				} catch (Throwable var31) {
+					var8 = var31;
+					throw var31;
+				} finally {
+					if (dataInputStream != null) {
+						if (var8 != null) {
+							try {
+								dataInputStream.close();
+							} catch (Throwable var30) {
+								var8.addSuppressed(var30);
+							}
+						} else {
+							dataInputStream.close();
+						}
 					}
 				}
 			}
-		} catch (Exception var6) {
-			LOGGER.error("Could not load aux values", (Throwable)var6);
-		}
-	}
 
-	public int getNextAvailableId(String string) {
-		int i = this.keyToAvailableId.getInt(string) + 1;
-		this.keyToAvailableId.put(string, i);
-		if (this.saveHandler == null) {
-			return i;
-		} else {
-			try {
-				File file = this.saveHandler.getDataFile(this.type, "idcounts");
-				if (file != null) {
-					CompoundTag compoundTag = new CompoundTag();
-
-					for (Entry<String> entry : this.keyToAvailableId.object2IntEntrySet()) {
-						compoundTag.putInt((String)entry.getKey(), entry.getIntValue());
-					}
-
-					DataOutputStream dataOutputStream = new DataOutputStream(new FileOutputStream(file));
-					NbtIo.write(compoundTag, dataOutputStream);
-					dataOutputStream.close();
-				}
-			} catch (Exception var7) {
-				LOGGER.error("Could not get free aux value {}", string, var7);
-			}
-
-			return i;
-		}
-	}
-
-	public static CompoundTag update(WorldSaveHandler worldSaveHandler, DimensionType dimensionType, String string, int i) throws IOException {
-		File file = worldSaveHandler.getDataFile(dimensionType, string);
-		FileInputStream fileInputStream = new FileInputStream(file);
-		Throwable var6 = null;
-
-		CompoundTag var9;
-		try {
-			CompoundTag compoundTag = NbtIo.readCompressed(fileInputStream);
 			int j = compoundTag.containsKey("DataVersion", 99) ? compoundTag.getInt("DataVersion") : 1343;
-			var9 = TagHelper.update(worldSaveHandler.getDataFixer(), DataFixTypes.SAVED_DATA, compoundTag, j, i);
-		} catch (Throwable var18) {
-			var6 = var18;
-			throw var18;
+			var36 = TagHelper.update(this.field_17663, DataFixTypes.SAVED_DATA, compoundTag, j, i);
+		} catch (Throwable var33) {
+			var5 = var33;
+			throw var33;
 		} finally {
-			if (fileInputStream != null) {
-				if (var6 != null) {
+			if (pushbackInputStream != null) {
+				if (var5 != null) {
 					try {
-						fileInputStream.close();
-					} catch (Throwable var17) {
-						var6.addSuppressed(var17);
+						pushbackInputStream.close();
+					} catch (Throwable var29) {
+						var5.addSuppressed(var29);
 					}
 				} else {
-					fileInputStream.close();
+					pushbackInputStream.close();
 				}
 			}
 		}
 
-		return var9;
+		return var36;
+	}
+
+	private boolean method_17921(PushbackInputStream pushbackInputStream) throws IOException {
+		byte[] bs = new byte[2];
+		boolean bl = false;
+		int i = pushbackInputStream.read(bs, 0, 2);
+		if (i == 2) {
+			int j = (bs[1] & 255) << 8 | bs[0] & 255;
+			if (j == 35615) {
+				bl = true;
+			}
+		}
+
+		if (i != 0) {
+			pushbackInputStream.unread(bs, 0, i);
+		}
+
+		return bl;
 	}
 
 	public void save() {
-		if (this.saveHandler != null) {
-			for (PersistentState persistentState : this.keyToState.values()) {
-				if (persistentState.isDirty()) {
-					this.save(persistentState);
-					persistentState.setDirty(false);
-				}
-			}
-		}
-	}
-
-	private void save(PersistentState persistentState) {
-		if (this.saveHandler != null) {
-			try {
-				File file = this.saveHandler.getDataFile(this.type, persistentState.getId());
-				if (file != null) {
-					CompoundTag compoundTag = new CompoundTag();
-					compoundTag.put("data", persistentState.toTag(new CompoundTag()));
-					compoundTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
-					FileOutputStream fileOutputStream = new FileOutputStream(file);
-					NbtIo.writeCompressed(compoundTag, fileOutputStream);
-					fileOutputStream.close();
-				}
-			} catch (Exception var5) {
-				LOGGER.error("Could not save data {}", persistentState, var5);
-			}
+		for (PersistentState persistentState : this.keyToState.values()) {
+			persistentState.method_17919(this.method_17922(persistentState.getId()));
 		}
 	}
 }

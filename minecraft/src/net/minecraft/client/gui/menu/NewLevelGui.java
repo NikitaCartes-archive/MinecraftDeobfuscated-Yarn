@@ -269,7 +269,7 @@ public class NewLevelGui extends Gui {
 			}
 		}
 
-		while (levelStorage.getLevelProperties(string) != null) {
+		while (levelStorage.requiresConversion(string) != null) {
 			string = string + "-";
 		}
 

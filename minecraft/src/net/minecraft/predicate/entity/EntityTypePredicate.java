@@ -40,12 +40,10 @@ public abstract class EntityTypePredicate {
 				return new EntityTypePredicate.Tagged(tag);
 			} else {
 				Identifier identifier = new Identifier(string);
-				EntityType<?> entityType = Registry.ENTITY_TYPE.get(identifier);
-				if (entityType == null) {
-					throw new JsonSyntaxException("Unknown entity type '" + identifier + "', valid types are: " + COMMA_JOINER.join(Registry.ENTITY_TYPE.keys()));
-				} else {
-					return new EntityTypePredicate.Single(entityType);
-				}
+				EntityType<?> entityType = (EntityType<?>)Registry.ENTITY_TYPE
+					.method_17966(identifier)
+					.orElseThrow(() -> new JsonSyntaxException("Unknown entity type '" + identifier + "', valid types are: " + COMMA_JOINER.join(Registry.ENTITY_TYPE.keys())));
+				return new EntityTypePredicate.Single(entityType);
 			}
 		} else {
 			return ANY;

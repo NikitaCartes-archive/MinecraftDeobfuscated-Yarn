@@ -64,7 +64,7 @@ public class CombatEventClientPacket implements Packet<ClientPlayPacketListener>
 		}
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11706(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onCombatEvent(this);
 	}
 

@@ -19,11 +19,11 @@ public class TurtleEntityRenderer extends MobEntityRenderer<TurtleEntity, Entity
 			this.field_4673 *= 0.5F;
 		}
 
-		super.render(turtleEntity, d, e, f, g, h);
+		super.method_4072(turtleEntity, d, e, f, g, h);
 	}
 
 	@Nullable
-	protected Identifier getTexture(TurtleEntity turtleEntity) {
+	protected Identifier method_4139(TurtleEntity turtleEntity) {
 		return field_4798;
 	}
 }

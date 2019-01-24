@@ -13,7 +13,7 @@ public class ItemPlacementContext extends ItemUsageContext {
 	protected boolean field_7904 = true;
 
 	public ItemPlacementContext(ItemUsageContext itemUsageContext) {
-		this(itemUsageContext.getWorld(), itemUsageContext.getPlayer(), itemUsageContext.getItemStack(), itemUsageContext.field_17543);
+		this(itemUsageContext.getWorld(), itemUsageContext.getPlayer(), itemUsageContext.getItemStack(), itemUsageContext.hitResult);
 	}
 
 	protected ItemPlacementContext(World world, @Nullable PlayerEntity playerEntity, ItemStack itemStack, BlockHitResult blockHitResult) {

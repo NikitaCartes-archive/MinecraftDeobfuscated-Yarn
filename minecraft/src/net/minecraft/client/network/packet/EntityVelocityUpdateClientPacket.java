@@ -69,7 +69,7 @@ public class EntityVelocityUpdateClientPacket implements Packet<ClientPlayPacket
 		packetByteBuf.writeShort(this.velocityZ);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11817(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onVelocityUpdate(this);
 	}
 

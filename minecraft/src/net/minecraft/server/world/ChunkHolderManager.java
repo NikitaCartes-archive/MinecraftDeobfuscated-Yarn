@@ -2,6 +2,7 @@ package net.minecraft.server.world;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
@@ -9,6 +10,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry;
 import it.unimi.dsi.fastutil.objects.ObjectBidirectionalIterator;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -19,22 +21,27 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
 import java.util.function.IntFunction;
 import java.util.function.IntSupplier;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_3977;
 import net.minecraft.client.network.packet.ChunkDataClientPacket;
 import net.minecraft.client.network.packet.LightUpdateClientPacket;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.chunk.light.ServerLightingProvider;
+import net.minecraft.sortme.structures.StructureManager;
+import net.minecraft.sortme.structures.StructureStart;
 import net.minecraft.util.Actor;
 import net.minecraft.util.MailboxProcessor;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.world.ChunkSaveHandler;
+import net.minecraft.world.ChunkSaveHandlerImpl;
 import net.minecraft.world.SessionLockException;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -45,11 +52,12 @@ import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.chunk.ReadOnlyChunk;
 import net.minecraft.world.chunk.UpgradeData;
 import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.dimension.DimensionalPersistentStateManager;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ChunkHolderManager implements AutoCloseable {
+public class ChunkHolderManager extends class_3977 {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Long2ObjectLinkedOpenHashMap<ChunkHolder> posToHolder = new Long2ObjectLinkedOpenHashMap<>();
 	private final World world;
@@ -57,6 +65,7 @@ public class ChunkHolderManager implements AutoCloseable {
 	private final Executor genQueueAdder;
 	private final ChunkHolder.PlayersWatchingChunkProvider playersWatchingChunkProvider;
 	private final ChunkGenerator<?> chunkGenerator;
+	private final Supplier<DimensionalPersistentStateManager> field_17705;
 	private volatile Long2ObjectLinkedOpenHashMap<ChunkHolder> posToHolderCopy = this.posToHolder.clone();
 	private final LongSet field_17221 = new LongOpenHashSet();
 	private boolean posToHolderCopyOutdated;
@@ -64,25 +73,31 @@ public class ChunkHolderManager implements AutoCloseable {
 	private final Actor<ChunkTaskPrioritySystem.RunnableMessage<Runnable>> worldgenActor;
 	private final Actor<ChunkTaskPrioritySystem.RunnableMessage<Runnable>> mainActor;
 	private final WorldGenerationProgressListener field_17442;
-	private final ChunkSaveHandler chunkSaveHandler;
 	private final ChunkHolderManager.TicketManager ticketManager;
 	private final AtomicInteger totalChunksLoadedCount = new AtomicInteger();
+	private final StructureManager field_17706;
+	private final File field_17707;
 
 	public ChunkHolderManager(
+		World world,
+		File file,
+		DataFixer dataFixer,
+		StructureManager structureManager,
 		Executor executor,
 		ChunkHolder.PlayersWatchingChunkProvider playersWatchingChunkProvider,
 		Executor executor2,
-		ChunkSaveHandler chunkSaveHandler,
 		ChunkProvider chunkProvider,
-		World world,
 		ChunkGenerator<?> chunkGenerator,
-		WorldGenerationProgressListener worldGenerationProgressListener
+		WorldGenerationProgressListener worldGenerationProgressListener,
+		Supplier<DimensionalPersistentStateManager> supplier
 	) {
+		super(dataFixer);
+		this.field_17706 = structureManager;
+		this.field_17707 = world.getDimension().getType().getFile(file);
 		this.world = world;
 		this.playersWatchingChunkProvider = playersWatchingChunkProvider;
 		this.chunkGenerator = chunkGenerator;
 		this.genQueueAdder = executor2;
-		this.chunkSaveHandler = chunkSaveHandler;
 		MailboxProcessor<Runnable> mailboxProcessor = MailboxProcessor.create(executor, "worldgen");
 		MailboxProcessor<Runnable> mailboxProcessor2 = MailboxProcessor.create(executor2, "main");
 		this.field_17442 = worldGenerationProgressListener;
@@ -96,6 +111,7 @@ public class ChunkHolderManager implements AutoCloseable {
 			chunkProvider, this, this.world.getDimension().hasSkyLight(), mailboxProcessor3, this.chunkTaskPrioritySystem.getExecutingActor(mailboxProcessor3, false)
 		);
 		this.ticketManager = new ChunkHolderManager.TicketManager(executor, executor2);
+		this.field_17705 = supplier;
 	}
 
 	protected ServerLightingProvider getLightProvider() {
@@ -223,27 +239,17 @@ public class ChunkHolderManager implements AutoCloseable {
 		}
 	}
 
-	public void close() {
+	@Override
+	public void close() throws IOException {
 		this.chunkTaskPrioritySystem.close();
-		this.posToHolderCopy.values().forEach(chunkHolder -> {
-			Chunk chunk = chunkHolder.getChunk();
-			if (chunk != null) {
-				this.save(chunk, false);
-			}
-		});
-		this.chunkSaveHandler.close();
+		this.save(true);
+		super.close();
 	}
 
 	protected void save(boolean bl) {
-		for (ChunkHolder chunkHolder : this.posToHolderCopy.values()) {
-			WorldChunk worldChunk = chunkHolder.getWorldChunk();
-			if (worldChunk != null) {
-				this.save(worldChunk, false);
-			}
-		}
-
+		this.posToHolderCopy.values().stream().map(ChunkHolder::getChunk).filter(Objects::nonNull).forEach(chunk -> this.save(chunk, false));
 		if (bl) {
-			this.chunkSaveHandler.saveAllChunks();
+			LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", this.field_17707.getName());
 		}
 	}
 
@@ -286,13 +292,25 @@ public class ChunkHolderManager implements AutoCloseable {
 		ChunkPos chunkPos = chunkHolder.getPos();
 		if (chunkStatus == ChunkStatus.EMPTY) {
 			return CompletableFuture.supplyAsync(() -> {
-				Chunk chunk = this.chunkSaveHandler.readChunk(this.world, chunkPos.x, chunkPos.z);
-				if (chunk != null) {
-					chunk.setLastSaveTime(this.world.getTime());
-					return Either.left(chunk);
-				} else {
-					return Either.left(new ProtoChunk(chunkPos, UpgradeData.NO_UPGRADE_DATA));
+				try {
+					CompoundTag compoundTag = this.method_17979(chunkPos);
+					if (compoundTag != null) {
+						boolean bl = compoundTag.containsKey("Level", 10) && compoundTag.getCompound("Level").containsKey("Status", 8);
+						if (bl) {
+							Chunk chunk = ChunkSaveHandlerImpl.writeSectionsTag(this.world, this.field_17706, chunkPos, compoundTag);
+							chunk.setLastSaveTime(this.world.getTime());
+							return Either.left(chunk);
+						}
+
+						LOGGER.error("Chunk file at {} is missing level data, skipping", chunkPos);
+					}
+				} catch (CrashException var5) {
+					throw var5;
+				} catch (Exception var6) {
+					LOGGER.error("Couldn't load chunk", (Throwable)var6);
 				}
+
+				return Either.left(new ProtoChunk(chunkPos, UpgradeData.NO_UPGRADE_DATA));
 			}, this.genQueueAdder);
 		} else {
 			CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.getChunkRegion(
@@ -303,7 +321,7 @@ public class ChunkHolderManager implements AutoCloseable {
 						list -> {
 							try {
 								CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuturex = chunkStatus.runTask(
-										this.world, this.chunkGenerator, this.serverLightingProvider, this::convertToFullChunk, list
+										this.world, this.chunkGenerator, this.field_17706, this.serverLightingProvider, this::convertToFullChunk, list
 									)
 									.thenApply(Either::left);
 								this.field_17442.setChunkStatus(chunkPos, chunkStatus);
@@ -346,7 +364,7 @@ public class ChunkHolderManager implements AutoCloseable {
 				if (chunk instanceof ReadOnlyChunk) {
 					worldChunk = ((ReadOnlyChunk)chunk).getWrappedChunk();
 				} else {
-					worldChunk = new WorldChunk(this.world, (ProtoChunk)chunk, chunkPos.x, chunkPos.z);
+					worldChunk = new WorldChunk(this.world, (ProtoChunk)chunk);
 				}
 
 				worldChunk.method_12207(() -> ChunkHolder.getLevelType(chunkHolder.getLevel()));
@@ -391,22 +409,45 @@ public class ChunkHolderManager implements AutoCloseable {
 	}
 
 	private void save(Chunk chunk, boolean bl) {
-		try {
-			if (bl && chunk instanceof WorldChunk) {
-				((WorldChunk)chunk).unloadFromWorld();
-			}
+		if (bl && chunk instanceof WorldChunk) {
+			((WorldChunk)chunk).unloadFromWorld();
+		}
 
-			if (!chunk.needsSaving()) {
+		if (chunk.needsSaving()) {
+			try {
+				this.world.checkSessionLock();
+			} catch (SessionLockException var9) {
+				LOGGER.error("Couldn't save chunk; already in use by another instance of Minecraft?", (Throwable)var9);
 				return;
 			}
 
 			chunk.setLastSaveTime(this.world.getTime());
-			this.chunkSaveHandler.saveChunk(this.world, chunk);
 			chunk.setShouldSave(false);
-		} catch (IOException var4) {
-			LOGGER.error("Couldn't save chunk", (Throwable)var4);
-		} catch (SessionLockException var5) {
-			LOGGER.error("Couldn't save chunk; already in use by another instance of Minecraft?", (Throwable)var5);
+
+			try {
+				ChunkPos chunkPos = chunk.getPos();
+				ChunkStatus chunkStatus = chunk.getStatus();
+				if (chunkStatus.getChunkType() != ChunkStatus.ChunkType.LEVELCHUNK) {
+					CompoundTag compoundTag = this.method_17979(chunkPos);
+					if (compoundTag != null && ChunkSaveHandlerImpl.getEntityStorageMode(compoundTag) == ChunkStatus.ChunkType.LEVELCHUNK) {
+						return;
+					}
+
+					if (chunkStatus == ChunkStatus.EMPTY && chunk.getStructureStarts().values().stream().noneMatch(StructureStart::hasChildren)) {
+						return;
+					}
+				}
+
+				CompoundTag compoundTagx = ChunkSaveHandlerImpl.saveChunk(this.world, chunk);
+
+				try {
+					this.method_17910(chunkPos, compoundTagx);
+				} catch (Exception var7) {
+					LOGGER.error("Failed to save chunk", (Throwable)var7);
+				}
+			} catch (Exception var8) {
+				LOGGER.error("Failed to save chunk", (Throwable)var8);
+			}
 		}
 	}
 
@@ -458,11 +499,15 @@ public class ChunkHolderManager implements AutoCloseable {
 		return this.posToHolderCopy.long2ObjectEntrySet().fastIterator();
 	}
 
-	public void save(BooleanSupplier booleanSupplier) {
-		boolean bl;
-		do {
-			bl = this.chunkSaveHandler.saveNextChunk();
-		} while (bl && booleanSupplier.getAsBoolean());
+	@Nullable
+	private CompoundTag method_17979(ChunkPos chunkPos) throws IOException {
+		CompoundTag compoundTag = this.method_17911(chunkPos);
+		return compoundTag == null ? null : this.method_17907(this.world.getDimension().getType(), this.field_17705, compoundTag);
+	}
+
+	@Override
+	protected File method_17912() {
+		return new File(this.field_17707, "region");
 	}
 
 	class TicketManager extends ChunkTicketManager {

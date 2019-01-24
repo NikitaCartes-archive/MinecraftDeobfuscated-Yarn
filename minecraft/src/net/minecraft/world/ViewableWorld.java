@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -122,33 +121,51 @@ public interface ViewableWorld extends ExtendedBlockView {
 		return this.method_8611(entity, VoxelShapes.cube(boundingBox));
 	}
 
-	default Stream<VoxelShape> method_8601(@Nullable Entity entity, VoxelShape voxelShape, VoxelShape voxelShape2, boolean bl) {
+	default Stream<VoxelShape> method_8607(@Nullable Entity entity, BoundingBox boundingBox) {
+		VerticalEntityPosition verticalEntityPosition = entity == null ? VerticalEntityPosition.minValue() : VerticalEntityPosition.fromEntity(entity);
+		return this.method_8600(entity, VoxelShapes.cube(boundingBox), VoxelShapes.empty(), Collections.emptySet(), verticalEntityPosition);
+	}
+
+	default Stream<VoxelShape> method_8334(@Nullable Entity entity, VoxelShape voxelShape, Set<Entity> set) {
+		return Stream.empty();
+	}
+
+	default Stream<VoxelShape> method_8600(
+		@Nullable Entity entity, VoxelShape voxelShape, VoxelShape voxelShape2, Set<Entity> set, VerticalEntityPosition verticalEntityPosition
+	) {
+		Stream<VoxelShape> stream;
+		if (entity != null) {
+			VoxelShape voxelShape3 = this.getWorldBorder().method_17903();
+			if (VoxelShapes.compareShapes(voxelShape3, VoxelShapes.cube(entity.getBoundingBox().contract(1.0E-7)), BooleanBiFunction.AND)) {
+				stream = Stream.empty();
+			} else {
+				stream = Stream.of(voxelShape3)
+					.filter(voxelShapex -> VoxelShapes.compareShapes(voxelShapex, VoxelShapes.cube(entity.getBoundingBox().expand(1.0E-7)), BooleanBiFunction.AND));
+			}
+		} else {
+			stream = Stream.empty();
+		}
+
 		int i = MathHelper.floor(voxelShape.getMinimum(Direction.Axis.X)) - 1;
 		int j = MathHelper.ceil(voxelShape.getMaximum(Direction.Axis.X)) + 1;
 		int k = MathHelper.floor(voxelShape.getMinimum(Direction.Axis.Y)) - 1;
 		int l = MathHelper.ceil(voxelShape.getMaximum(Direction.Axis.Y)) + 1;
 		int m = MathHelper.floor(voxelShape.getMinimum(Direction.Axis.Z)) - 1;
 		int n = MathHelper.ceil(voxelShape.getMaximum(Direction.Axis.Z)) + 1;
-		WorldBorder worldBorder = this.getWorldBorder();
-		boolean bl2 = worldBorder.getBoundWest() < (double)i
-			&& (double)j < worldBorder.getBoundEast()
-			&& worldBorder.getBoundNorth() < (double)m
-			&& (double)n < worldBorder.getBoundSouth();
 		AbstractVoxelShapeContainer abstractVoxelShapeContainer = new BitSetVoxelShapeContainer(j - i, l - k, n - m);
 		Predicate<VoxelShape> predicate = voxelShape2x -> !voxelShape2x.isEmpty() && VoxelShapes.compareShapes(voxelShape, voxelShape2x, BooleanBiFunction.AND);
-		VerticalEntityPosition verticalEntityPosition = entity == null ? VerticalEntityPosition.minValue() : VerticalEntityPosition.fromEntity(entity);
 		AtomicReference<ChunkPos> atomicReference = new AtomicReference(new ChunkPos(i >> 4, m >> 4));
 		AtomicReference<Chunk> atomicReference2 = new AtomicReference(this.getChunk(i >> 4, m >> 4, ChunkStatus.EMPTY, false));
-		Stream<VoxelShape> stream = StreamSupport.stream(BlockPos.iterateBoxPositions(i, k, m, j - 1, l - 1, n - 1).spliterator(), false).map(blockPos -> {
+		Stream<VoxelShape> stream2 = BlockPos.method_17962(i, k, m, j - 1, l - 1, n - 1).map(blockPos -> {
 			int o = blockPos.getX();
 			int p = blockPos.getY();
 			int q = blockPos.getZ();
 			if (World.isHeightInvalid(p)) {
 				return VoxelShapes.empty();
 			} else {
-				boolean bl3 = o == i || o == j - 1;
-				boolean bl4 = p == k || p == l - 1;
-				boolean bl5 = q == m || q == n - 1;
+				boolean bl = o == i || o == j - 1;
+				boolean bl2 = p == k || p == l - 1;
+				boolean bl3 = q == m || q == n - 1;
 				ChunkPos chunkPos = (ChunkPos)atomicReference.get();
 				int r = o >> 4;
 				int s = q >> 4;
@@ -161,14 +178,8 @@ public interface ViewableWorld extends ExtendedBlockView {
 					atomicReference2.set(chunk);
 				}
 
-				if ((!bl3 || !bl4) && (!bl4 || !bl5) && (!bl5 || !bl3) && chunk != null) {
-					VoxelShape voxelShape2x;
-					if (bl && !bl2 && !worldBorder.contains(blockPos)) {
-						voxelShape2x = VoxelShapes.fullCube();
-					} else {
-						voxelShape2x = chunk.getBlockState(blockPos).getCollisionShape(this, blockPos, verticalEntityPosition);
-					}
-
+				if ((!bl || !bl2) && (!bl2 || !bl3) && (!bl3 || !bl) && chunk != null) {
+					VoxelShape voxelShape2x = chunk.getBlockState(blockPos).getCollisionShape(this, blockPos, verticalEntityPosition);
 					VoxelShape voxelShape3 = voxelShape2.offset((double)(-o), (double)(-p), (double)(-q));
 					if (VoxelShapes.compareShapes(voxelShape3, voxelShape2x, BooleanBiFunction.AND)) {
 						return VoxelShapes.empty();
@@ -183,58 +194,15 @@ public interface ViewableWorld extends ExtendedBlockView {
 				}
 			}
 		}).filter(predicate);
-		return Stream.concat(stream, Stream.generate(() -> new OffsetVoxelShape(abstractVoxelShapeContainer, i, k, m)).limit(1L).filter(predicate));
-	}
-
-	default Stream<VoxelShape> getCollisionVoxelShapes(@Nullable Entity entity, BoundingBox boundingBox, double d, double e, double f) {
-		return this.getCollisionVoxelShapes(entity, boundingBox, Collections.emptySet(), d, e, f);
-	}
-
-	default Stream<VoxelShape> getCollisionVoxelShapes(@Nullable Entity entity, BoundingBox boundingBox, Set<Entity> set, double d, double e, double f) {
-		double g = 1.0E-7;
-		VoxelShape voxelShape = VoxelShapes.cube(boundingBox);
-		VoxelShape voxelShape2 = VoxelShapes.cube(boundingBox.offset(d > 0.0 ? -1.0E-7 : 1.0E-7, e > 0.0 ? -1.0E-7 : 1.0E-7, f > 0.0 ? -1.0E-7 : 1.0E-7));
-		VoxelShape voxelShape3 = VoxelShapes.combine(VoxelShapes.cube(boundingBox.stretch(d, e, f).expand(1.0E-7)), voxelShape2, BooleanBiFunction.ONLY_FIRST);
-		return this.method_8600(entity, voxelShape3, voxelShape, set);
-	}
-
-	default Stream<VoxelShape> method_8607(@Nullable Entity entity, BoundingBox boundingBox) {
-		return this.method_8600(entity, VoxelShapes.cube(boundingBox), VoxelShapes.empty(), Collections.emptySet());
-	}
-
-	default Stream<VoxelShape> method_8600(@Nullable Entity entity, VoxelShape voxelShape, VoxelShape voxelShape2, Set<Entity> set) {
-		boolean bl = entity != null && entity.method_5686();
-		boolean bl2 = entity != null && this.method_8625(entity);
-		if (entity != null && bl == bl2) {
-			entity.method_5789(!bl2);
-		}
-
-		return this.method_8601(entity, voxelShape, voxelShape2, bl2);
-	}
-
-	default boolean method_8625(Entity entity) {
-		WorldBorder worldBorder = this.getWorldBorder();
-		double d = worldBorder.getBoundWest();
-		double e = worldBorder.getBoundNorth();
-		double f = worldBorder.getBoundEast();
-		double g = worldBorder.getBoundSouth();
-		if (entity.method_5686()) {
-			d++;
-			e++;
-			f--;
-			g--;
-		} else {
-			d--;
-			e--;
-			f++;
-			g++;
-		}
-
-		return entity.x > d && entity.x < f && entity.z > e && entity.z < g;
+		return Stream.concat(
+			Stream.concat(stream, entity == null ? Stream.empty() : this.method_8334(entity, voxelShape, set)),
+			Stream.concat(stream2, Stream.generate(() -> new OffsetVoxelShape(abstractVoxelShapeContainer, i, k, m)).limit(1L).filter(predicate))
+		);
 	}
 
 	default boolean method_8590(@Nullable Entity entity, BoundingBox boundingBox, Set<Entity> set) {
-		return this.method_8600(entity, VoxelShapes.cube(boundingBox), VoxelShapes.empty(), set).allMatch(VoxelShape::isEmpty);
+		VerticalEntityPosition verticalEntityPosition = entity == null ? VerticalEntityPosition.minValue() : VerticalEntityPosition.fromEntity(entity);
+		return this.method_8600(entity, VoxelShapes.cube(boundingBox), VoxelShapes.empty(), set, verticalEntityPosition).allMatch(VoxelShape::isEmpty);
 	}
 
 	default boolean method_8587(@Nullable Entity entity, BoundingBox boundingBox) {

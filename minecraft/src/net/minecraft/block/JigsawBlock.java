@@ -43,7 +43,7 @@ public class JigsawBlock extends FacingBlock implements BlockEntityProvider {
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof JigsawBlockEntity && playerEntity.method_7338()) {
 			playerEntity.openJigsawGui((JigsawBlockEntity)blockEntity);

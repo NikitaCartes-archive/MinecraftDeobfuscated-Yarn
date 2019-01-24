@@ -52,10 +52,9 @@ public class EnchantmentHelper {
 
 		for (int i = 0; i < listTag.size(); i++) {
 			CompoundTag compoundTag = listTag.getCompoundTag(i);
-			Enchantment enchantment = Registry.ENCHANTMENT.get(Identifier.create(compoundTag.getString("id")));
-			if (enchantment != null) {
-				map.put(enchantment, compoundTag.getInt("lvl"));
-			}
+			Registry.ENCHANTMENT.method_17966(Identifier.create(compoundTag.getString("id"))).ifPresent(enchantment -> {
+				Integer var10000 = (Integer)map.put(enchantment, compoundTag.getInt("lvl"));
+			});
 		}
 
 		return map;
@@ -92,10 +91,7 @@ public class EnchantmentHelper {
 			for (int i = 0; i < listTag.size(); i++) {
 				String string = listTag.getCompoundTag(i).getString("id");
 				int j = listTag.getCompoundTag(i).getInt("lvl");
-				Enchantment enchantment = Registry.ENCHANTMENT.get(Identifier.create(string));
-				if (enchantment != null) {
-					consumer.handle(enchantment, j);
-				}
+				Registry.ENCHANTMENT.method_17966(Identifier.create(string)).ifPresent(enchantment -> consumer.accept(enchantment, j));
 			}
 		}
 	}
@@ -353,6 +349,6 @@ public class EnchantmentHelper {
 
 	@FunctionalInterface
 	interface Consumer {
-		void handle(Enchantment enchantment, int i);
+		void accept(Enchantment enchantment, int i);
 	}
 }

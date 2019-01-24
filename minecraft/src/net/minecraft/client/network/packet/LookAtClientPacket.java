@@ -68,7 +68,7 @@ public class LookAtClientPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11731(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onLookAt(this);
 	}
 

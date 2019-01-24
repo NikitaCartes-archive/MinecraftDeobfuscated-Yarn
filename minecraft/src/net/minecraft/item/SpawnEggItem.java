@@ -59,12 +59,9 @@ public class SpawnEggItem extends Item {
 				if (blockEntity instanceof MobSpawnerBlockEntity) {
 					MobSpawnerLogic mobSpawnerLogic = ((MobSpawnerBlockEntity)blockEntity).getLogic();
 					EntityType<?> entityType = this.method_8015(itemStack.getTag());
-					if (entityType != null) {
-						mobSpawnerLogic.method_8274(entityType);
-						blockEntity.markDirty();
-						world.updateListeners(blockPos, blockState, blockState, 3);
-					}
-
+					mobSpawnerLogic.method_8274(entityType);
+					blockEntity.markDirty();
+					world.updateListeners(blockPos, blockState, blockState, 3);
 					itemStack.subtractAmount(1);
 					return ActionResult.SUCCESS;
 				}
@@ -78,11 +75,10 @@ public class SpawnEggItem extends Item {
 			}
 
 			EntityType<?> entityType2 = this.method_8015(itemStack.getTag());
-			if (entityType2 == null
-				|| entityType2.spawnFromItemStack(
-						world, itemStack, itemUsageContext.getPlayer(), blockPos2, SpawnType.field_16465, true, !Objects.equals(blockPos, blockPos2) && direction == Direction.UP
-					)
-					!= null) {
+			if (entityType2.spawnFromItemStack(
+					world, itemStack, itemUsageContext.getPlayer(), blockPos2, SpawnType.field_16465, true, !Objects.equals(blockPos, blockPos2) && direction == Direction.UP
+				)
+				!= null) {
 				itemStack.subtractAmount(1);
 			}
 
@@ -96,7 +92,7 @@ public class SpawnEggItem extends Item {
 		if (world.isClient) {
 			return new TypedActionResult<>(ActionResult.PASS, itemStack);
 		} else {
-			HitResult hitResult = method_7872(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
+			HitResult hitResult = getHitResult(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
 			if (hitResult.getType() != HitResult.Type.BLOCK) {
 				return new TypedActionResult<>(ActionResult.PASS, itemStack);
 			} else {
@@ -106,15 +102,15 @@ public class SpawnEggItem extends Item {
 					return new TypedActionResult<>(ActionResult.PASS, itemStack);
 				} else if (world.canPlayerModifyAt(playerEntity, blockPos) && playerEntity.canPlaceBlock(blockPos, blockHitResult.getSide(), itemStack)) {
 					EntityType<?> entityType = this.method_8015(itemStack.getTag());
-					if (entityType != null && entityType.spawnFromItemStack(world, itemStack, playerEntity, blockPos, SpawnType.field_16465, false, false) != null) {
+					if (entityType.spawnFromItemStack(world, itemStack, playerEntity, blockPos, SpawnType.field_16465, false, false) == null) {
+						return new TypedActionResult<>(ActionResult.PASS, itemStack);
+					} else {
 						if (!playerEntity.abilities.creativeMode) {
 							itemStack.subtractAmount(1);
 						}
 
 						playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 						return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
-					} else {
-						return new TypedActionResult<>(ActionResult.PASS, itemStack);
 					}
 				} else {
 					return new TypedActionResult<>(ActionResult.FAILURE, itemStack);
@@ -141,12 +137,11 @@ public class SpawnEggItem extends Item {
 		return Iterables.unmodifiableIterable(field_8914.values());
 	}
 
-	@Nullable
 	public EntityType<?> method_8015(@Nullable CompoundTag compoundTag) {
 		if (compoundTag != null && compoundTag.containsKey("EntityTag", 10)) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("EntityTag");
 			if (compoundTag2.containsKey("id", 8)) {
-				return EntityType.get(compoundTag2.getString("id"));
+				return (EntityType<?>)EntityType.get(compoundTag2.getString("id")).orElse(this.field_8917);
 			}
 		}
 

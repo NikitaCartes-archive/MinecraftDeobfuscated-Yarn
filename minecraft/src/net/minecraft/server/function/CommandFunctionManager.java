@@ -9,6 +9,7 @@ import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import javax.annotation.Nullable;
@@ -35,9 +36,7 @@ public class CommandFunctionManager implements Tickable, ResourceReloadListener 
 	private final Map<Identifier, CommandFunction> idMap = Maps.<Identifier, CommandFunction>newHashMap();
 	private final ArrayDeque<CommandFunctionManager.Entry> chain = new ArrayDeque();
 	private boolean field_13411;
-	private final TagContainer<CommandFunction> tags = new TagContainer<>(
-		identifier -> this.getFunction(identifier) != null, this::getFunction, "tags/functions", true, "function"
-	);
+	private final TagContainer<CommandFunction> tags = new TagContainer<>(this::getFunction, "tags/functions", true, "function");
 	private final List<CommandFunction> tickFunctions = Lists.<CommandFunction>newArrayList();
 	private boolean justLoaded;
 
@@ -45,9 +44,8 @@ public class CommandFunctionManager implements Tickable, ResourceReloadListener 
 		this.server = minecraftServer;
 	}
 
-	@Nullable
-	public CommandFunction getFunction(Identifier identifier) {
-		return (CommandFunction)this.idMap.get(identifier);
+	public Optional<CommandFunction> getFunction(Identifier identifier) {
+		return Optional.ofNullable(this.idMap.get(identifier));
 	}
 
 	public MinecraftServer getServer() {

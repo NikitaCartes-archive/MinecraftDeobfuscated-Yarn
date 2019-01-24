@@ -17,7 +17,6 @@ import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.ChunkSaveHandlerImpl;
 
 public class SummonCommand {
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableTextComponent("commands.summon.failed"));
@@ -75,7 +74,7 @@ public class SummonCommand {
 			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.summon.success", entity.getDisplayName()), true);
 			return 1;
 		} else {
-			Entity entity = ChunkSaveHandlerImpl.readEntity(compoundTag2, serverCommandSource.getWorld(), vec3d.x, vec3d.y, vec3d.z, true);
+			Entity entity = EntityType.method_17840(compoundTag2, serverCommandSource.getWorld(), vec3d.x, vec3d.y, vec3d.z, true);
 			if (entity == null) {
 				throw FAILED_EXCEPTION.create();
 			} else {

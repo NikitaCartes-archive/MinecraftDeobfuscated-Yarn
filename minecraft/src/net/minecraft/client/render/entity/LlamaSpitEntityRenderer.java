@@ -38,7 +38,7 @@ public class LlamaSpitEntityRenderer extends EntityRenderer<LlamaSpitEntity> {
 		super.render(llamaSpitEntity, d, e, f, g, h);
 	}
 
-	protected Identifier getTexture(LlamaSpitEntity llamaSpitEntity) {
+	protected Identifier method_4062(LlamaSpitEntity llamaSpitEntity) {
 		return field_4745;
 	}
 }

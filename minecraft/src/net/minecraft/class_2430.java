@@ -15,6 +15,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CarrotsBlock;
 import net.minecraft.block.CocoaBlock;
+import net.minecraft.block.ComposterBlock;
 import net.minecraft.block.CropBlock;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FlowerPotBlock;
@@ -729,7 +730,6 @@ public class class_2430 implements Consumer<BiConsumer<Identifier, LootSupplier.
 		this.method_16329(Blocks.field_10517);
 		this.method_16329(Blocks.field_10083);
 		this.method_16329(Blocks.field_16492);
-		this.method_16329(Blocks.field_17563);
 		this.method_16256(Blocks.field_10362, Blocks.field_10566);
 		this.method_16256(Blocks.field_10589, Items.field_8276);
 		this.method_16256(Blocks.field_10194, Blocks.field_10566);
@@ -877,6 +877,16 @@ public class class_2430 implements Consumer<BiConsumer<Identifier, LootSupplier.
 										)
 								)
 							)
+					)
+		);
+		this.method_16293(
+			Blocks.field_17563,
+			blockx -> LootSupplier.create()
+					.withPool(LootPool.create().withEntry((LootEntry.Builder<?>)method_10393(blockx, ItemEntry.builder(Items.field_17530))))
+					.withPool(
+						LootPool.create()
+							.withEntry(ItemEntry.builder(Items.field_8324))
+							.withCondition(BlockStatePropertyLootCondition.method_900(blockx).method_907(ComposterBlock.LEVEL, 8))
 					)
 		);
 		this.method_16293(Blocks.field_10327, class_2430::method_10396);

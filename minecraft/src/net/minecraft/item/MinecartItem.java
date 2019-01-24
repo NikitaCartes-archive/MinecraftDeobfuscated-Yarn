@@ -19,7 +19,7 @@ public class MinecartItem extends Item {
 		private final ItemDispenserBehavior field_8898 = new ItemDispenserBehavior();
 
 		@Override
-		public ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
+		public ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
 			Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
 			World world = blockPointer.getWorld();
 			double d = blockPointer.getX() + (double)direction.getOffsetX() * 1.125;

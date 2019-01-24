@@ -83,7 +83,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 			this.field_7602++;
 			HitResult hitResult = class_1675.method_7482(this, true, this.field_7602 >= 25, this.owner);
 			if (hitResult.getType() != HitResult.Type.NONE) {
-				this.method_7469(hitResult);
+				this.onCollision(hitResult);
 			}
 
 			this.x = this.x + this.velocityX;
@@ -134,7 +134,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 		return 0.95F;
 	}
 
-	protected abstract void method_7469(HitResult hitResult);
+	protected abstract void onCollision(HitResult hitResult);
 
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {

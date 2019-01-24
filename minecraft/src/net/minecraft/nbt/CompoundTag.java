@@ -73,8 +73,9 @@ public class CompoundTag implements Tag {
 		return this.tags.size();
 	}
 
-	public void put(String string, Tag tag) {
-		this.tags.put(string, tag);
+	@Nullable
+	public Tag put(String string, Tag tag) {
+		return (Tag)this.tags.put(string, tag);
 	}
 
 	public void putByte(String string, byte b) {

@@ -40,7 +40,7 @@ public class LeashKnotEntityRenderer extends EntityRenderer<LeadKnotEntity> {
 		super.render(leadKnotEntity, d, e, f, g, h);
 	}
 
-	protected Identifier getTexture(LeadKnotEntity leadKnotEntity) {
+	protected Identifier method_4036(LeadKnotEntity leadKnotEntity) {
 		return SKIN;
 	}
 }

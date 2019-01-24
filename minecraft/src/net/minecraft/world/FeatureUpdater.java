@@ -1,11 +1,13 @@
 package net.minecraft.world;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -14,13 +16,11 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.dimension.DimensionalPersistentStateManager;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
-public abstract class FeatureUpdater {
-	private static final Logger LOGGER = LogManager.getLogger();
+public class FeatureUpdater {
 	private static final Map<String, String> OLD_TO_NEW = SystemUtil.consume(Maps.<String, String>newHashMap(), hashMap -> {
 		hashMap.put("Village", "Village");
 		hashMap.put("Mineshaft", "Mineshaft");
@@ -43,12 +43,16 @@ public abstract class FeatureUpdater {
 	private final boolean needsUpdate;
 	private final Map<String, Long2ObjectMap<CompoundTag>> featureIdToChunkTag = Maps.<String, Long2ObjectMap<CompoundTag>>newHashMap();
 	private final Map<String, ChunkUpdateState> updateStates = Maps.<String, ChunkUpdateState>newHashMap();
+	private final List<String> field_17658;
+	private final List<String> field_17659;
 
-	public FeatureUpdater(@Nullable PersistentStateManager persistentStateManager) {
-		this.init(persistentStateManager);
+	public FeatureUpdater(@Nullable DimensionalPersistentStateManager dimensionalPersistentStateManager, List<String> list, List<String> list2) {
+		this.field_17658 = list;
+		this.field_17659 = list2;
+		this.init(dimensionalPersistentStateManager);
 		boolean bl = false;
 
-		for (String string : this.getOldNames()) {
+		for (String string : this.field_17659) {
 			bl |= this.featureIdToChunkTag.get(string) != null;
 		}
 
@@ -56,7 +60,7 @@ public abstract class FeatureUpdater {
 	}
 
 	public void markResolved(long l) {
-		for (String string : this.getNewNames()) {
+		for (String string : this.field_17658) {
 			ChunkUpdateState chunkUpdateState = (ChunkUpdateState)this.updateStates.get(string);
 			if (chunkUpdateState != null && chunkUpdateState.isRemaing(l)) {
 				chunkUpdateState.markResolved(l);
@@ -75,7 +79,7 @@ public abstract class FeatureUpdater {
 		CompoundTag compoundTag3 = compoundTag2.getCompound("Structures");
 		CompoundTag compoundTag4 = compoundTag3.getCompound("References");
 
-		for (String string : this.getOldNames()) {
+		for (String string : this.field_17659) {
 			StructureFeature<?> structureFeature = (StructureFeature<?>)Feature.STRUCTURES.get(string.toLowerCase(Locale.ROOT));
 			if (!compoundTag4.containsKey(string, 12) && structureFeature != null) {
 				int i = structureFeature.method_14021();
@@ -99,10 +103,6 @@ public abstract class FeatureUpdater {
 		return compoundTag;
 	}
 
-	protected abstract String[] getNewNames();
-
-	protected abstract String[] getOldNames();
-
 	private boolean needsUpdate(int i, int j, String string) {
 		return !this.needsUpdate
 			? false
@@ -113,7 +113,7 @@ public abstract class FeatureUpdater {
 		if (!this.needsUpdate) {
 			return false;
 		} else {
-			for (String string : this.getOldNames()) {
+			for (String string : this.field_17659) {
 				if (this.featureIdToChunkTag.get(string) != null && ((ChunkUpdateState)this.updateStates.get(OLD_TO_NEW.get(string))).isRemaing(ChunkPos.toLong(i, j))) {
 					return true;
 				}
@@ -128,7 +128,7 @@ public abstract class FeatureUpdater {
 		CompoundTag compoundTag3 = compoundTag2.getCompound("Structures");
 		CompoundTag compoundTag4 = compoundTag3.getCompound("Starts");
 
-		for (String string : this.getOldNames()) {
+		for (String string : this.field_17659) {
 			Long2ObjectMap<CompoundTag> long2ObjectMap = (Long2ObjectMap<CompoundTag>)this.featureIdToChunkTag.get(string);
 			if (long2ObjectMap != null) {
 				long l = chunkPos.toLong();
@@ -147,17 +147,17 @@ public abstract class FeatureUpdater {
 		return compoundTag;
 	}
 
-	private void init(@Nullable PersistentStateManager persistentStateManager) {
-		if (persistentStateManager != null) {
-			for (String string : this.getNewNames()) {
+	private void init(@Nullable DimensionalPersistentStateManager dimensionalPersistentStateManager) {
+		if (dimensionalPersistentStateManager != null) {
+			for (String string : this.field_17658) {
 				CompoundTag compoundTag = new CompoundTag();
 
 				try {
-					compoundTag = persistentStateManager.update(string, 1493).getCompound("data").getCompound("Features");
+					compoundTag = dimensionalPersistentStateManager.method_17923(string, 1493).getCompound("data").getCompound("Features");
 					if (compoundTag.isEmpty()) {
 						continue;
 					}
-				} catch (IOException var15) {
+				} catch (IOException var13) {
 				}
 
 				for (String string2 : compoundTag.getKeys()) {
@@ -177,8 +177,8 @@ public abstract class FeatureUpdater {
 				}
 
 				String string5 = string + "_index";
-				ChunkUpdateState chunkUpdateState = persistentStateManager.get(DimensionType.field_13072, ChunkUpdateState::new, string5);
-				if (chunkUpdateState != null && !chunkUpdateState.getAll().isEmpty()) {
+				ChunkUpdateState chunkUpdateState = dimensionalPersistentStateManager.method_17924(() -> new ChunkUpdateState(string5), string5);
+				if (!chunkUpdateState.getAll().isEmpty()) {
 					this.updateStates.put(string, chunkUpdateState);
 				} else {
 					ChunkUpdateState chunkUpdateState2 = new ChunkUpdateState(string5);
@@ -189,79 +189,27 @@ public abstract class FeatureUpdater {
 						chunkUpdateState2.add(ChunkPos.toLong(compoundTag3.getInt("ChunkX"), compoundTag3.getInt("ChunkZ")));
 					}
 
-					persistentStateManager.set(DimensionType.field_13072, string5, chunkUpdateState2);
 					chunkUpdateState2.markDirty();
 				}
 			}
 		}
 	}
 
-	public static FeatureUpdater create(DimensionType dimensionType, @Nullable PersistentStateManager persistentStateManager) {
+	public static FeatureUpdater create(DimensionType dimensionType, @Nullable DimensionalPersistentStateManager dimensionalPersistentStateManager) {
 		if (dimensionType == DimensionType.field_13072) {
-			return new FeatureUpdater.Overworld(persistentStateManager);
+			return new FeatureUpdater(
+				dimensionalPersistentStateManager,
+				ImmutableList.of("Monument", "Stronghold", "Village", "Mineshaft", "Temple", "Mansion"),
+				ImmutableList.of("Village", "Mineshaft", "Mansion", "Igloo", "Desert_Pyramid", "Jungle_Pyramid", "Swamp_Hut", "Stronghold", "Monument")
+			);
 		} else if (dimensionType == DimensionType.field_13076) {
-			return new FeatureUpdater.TheNether(persistentStateManager);
+			List<String> list = ImmutableList.of("Fortress");
+			return new FeatureUpdater(dimensionalPersistentStateManager, list, list);
 		} else if (dimensionType == DimensionType.field_13078) {
-			return new FeatureUpdater.TheEnd(persistentStateManager);
+			List<String> list = ImmutableList.of("EndCity");
+			return new FeatureUpdater(dimensionalPersistentStateManager, list, list);
 		} else {
 			throw new RuntimeException(String.format("Unknown dimension type : %s", dimensionType));
-		}
-	}
-
-	public static class Overworld extends FeatureUpdater {
-		private static final String[] NEW_NAMES = new String[]{"Monument", "Stronghold", "Village", "Mineshaft", "Temple", "Mansion"};
-		private static final String[] OLD_NAMES = new String[]{
-			"Village", "Mineshaft", "Mansion", "Igloo", "Desert_Pyramid", "Jungle_Pyramid", "Swamp_Hut", "Stronghold", "Monument"
-		};
-
-		public Overworld(@Nullable PersistentStateManager persistentStateManager) {
-			super(persistentStateManager);
-		}
-
-		@Override
-		protected String[] getNewNames() {
-			return NEW_NAMES;
-		}
-
-		@Override
-		protected String[] getOldNames() {
-			return OLD_NAMES;
-		}
-	}
-
-	public static class TheEnd extends FeatureUpdater {
-		private static final String[] NAMES = new String[]{"EndCity"};
-
-		public TheEnd(@Nullable PersistentStateManager persistentStateManager) {
-			super(persistentStateManager);
-		}
-
-		@Override
-		protected String[] getNewNames() {
-			return NAMES;
-		}
-
-		@Override
-		protected String[] getOldNames() {
-			return NAMES;
-		}
-	}
-
-	public static class TheNether extends FeatureUpdater {
-		private static final String[] NAMES = new String[]{"Fortress"};
-
-		public TheNether(@Nullable PersistentStateManager persistentStateManager) {
-			super(persistentStateManager);
-		}
-
-		@Override
-		protected String[] getNewNames() {
-			return NAMES;
-		}
-
-		@Override
-		protected String[] getOldNames() {
-			return NAMES;
 		}
 	}
 }

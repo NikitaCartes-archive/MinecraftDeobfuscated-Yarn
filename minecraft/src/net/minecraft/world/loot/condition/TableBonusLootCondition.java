@@ -53,13 +53,11 @@ public class TableBonusLootCondition implements LootCondition {
 
 		public TableBonusLootCondition method_804(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "enchantment"));
-			Enchantment enchantment = Registry.ENCHANTMENT.get(identifier);
-			if (enchantment == null) {
-				throw new JsonParseException("Invalid enchantment id: " + identifier);
-			} else {
-				float[] fs = JsonHelper.deserialize(jsonObject, "chances", jsonDeserializationContext, float[].class);
-				return new TableBonusLootCondition(enchantment, fs);
-			}
+			Enchantment enchantment = (Enchantment)Registry.ENCHANTMENT
+				.method_17966(identifier)
+				.orElseThrow(() -> new JsonParseException("Invalid enchantment id: " + identifier));
+			float[] fs = JsonHelper.deserialize(jsonObject, "chances", jsonDeserializationContext, float[].class);
+			return new TableBonusLootCondition(enchantment, fs);
 		}
 	}
 }

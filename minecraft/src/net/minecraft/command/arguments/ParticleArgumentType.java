@@ -43,12 +43,10 @@ public class ParticleArgumentType implements ArgumentType<ParticleParameters> {
 
 	public static ParticleParameters readParameters(StringReader stringReader) throws CommandSyntaxException {
 		Identifier identifier = Identifier.parse(stringReader);
-		ParticleType<?> particleType = Registry.PARTICLE_TYPE.get(identifier);
-		if (particleType == null) {
-			throw UNKNOWN_PARTICLE_EXCEPTION.create(identifier);
-		} else {
-			return readParameters(stringReader, (ParticleType<ParticleParameters>)particleType);
-		}
+		ParticleType<?> particleType = (ParticleType<?>)Registry.PARTICLE_TYPE
+			.method_17966(identifier)
+			.orElseThrow(() -> UNKNOWN_PARTICLE_EXCEPTION.create(identifier));
+		return readParameters(stringReader, (ParticleType<ParticleParameters>)particleType);
 	}
 
 	private static <T extends ParticleParameters> T readParameters(StringReader stringReader, ParticleType<T> particleType) throws CommandSyntaxException {

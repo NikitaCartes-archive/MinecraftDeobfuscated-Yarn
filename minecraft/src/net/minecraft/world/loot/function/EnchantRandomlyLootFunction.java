@@ -78,8 +78,8 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 			super(new Identifier("enchant_randomly"), EnchantRandomlyLootFunction.class);
 		}
 
-		public void serialize(JsonObject jsonObject, EnchantRandomlyLootFunction enchantRandomlyLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, enchantRandomlyLootFunction, jsonSerializationContext);
+		public void method_491(JsonObject jsonObject, EnchantRandomlyLootFunction enchantRandomlyLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.method_529(jsonObject, enchantRandomlyLootFunction, jsonSerializationContext);
 			if (!enchantRandomlyLootFunction.enchantments.isEmpty()) {
 				JsonArray jsonArray = new JsonArray();
 
@@ -101,11 +101,9 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 			if (jsonObject.has("enchantments")) {
 				for (JsonElement jsonElement : JsonHelper.getArray(jsonObject, "enchantments")) {
 					String string = JsonHelper.asString(jsonElement, "enchantment");
-					Enchantment enchantment = Registry.ENCHANTMENT.get(new Identifier(string));
-					if (enchantment == null) {
-						throw new JsonSyntaxException("Unknown enchantment '" + string + "'");
-					}
-
+					Enchantment enchantment = (Enchantment)Registry.ENCHANTMENT
+						.method_17966(new Identifier(string))
+						.orElseThrow(() -> new JsonSyntaxException("Unknown enchantment '" + string + "'"));
 					list.add(enchantment);
 				}
 			}

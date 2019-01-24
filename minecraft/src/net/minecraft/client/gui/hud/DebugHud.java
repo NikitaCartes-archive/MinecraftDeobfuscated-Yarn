@@ -5,6 +5,8 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.datafixers.DataFixUtils;
+import it.unimi.dsi.fastutil.longs.LongSet;
+import it.unimi.dsi.fastutil.longs.LongSets;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -36,7 +38,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.ForcedChunkState;
 import net.minecraft.world.LightType;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -72,8 +73,8 @@ public class DebugHud extends Drawable {
 		this.client.getProfiler().push("debug");
 		GlStateManager.pushMatrix();
 		Entity entity = this.client.getCameraEntity();
-		this.blockHit = entity.method_5745(20.0, 0.0F, false);
-		this.fluidHit = entity.method_5745(20.0, 0.0F, true);
+		this.blockHit = entity.rayTrace(20.0, 0.0F, false);
+		this.fluidHit = entity.rayTrace(20.0, 0.0F, true);
 		this.drawLeftText();
 		this.drawRightText();
 		GlStateManager.popMatrix();
@@ -175,7 +176,6 @@ public class DebugHud extends Drawable {
 					string2 = "Invalid";
 			}
 
-			DimensionType dimensionType = this.client.world.dimension.getType();
 			ChunkPos chunkPos = new ChunkPos(blockPos);
 			if (!Objects.equals(this.pos, chunkPos)) {
 				this.pos = chunkPos;
@@ -183,7 +183,7 @@ public class DebugHud extends Drawable {
 			}
 
 			World world = this.getWorld();
-			ForcedChunkState forcedChunkState = world.getPersistentState(dimensionType, ForcedChunkState::new, "chunks");
+			LongSet longSet = (LongSet)(world instanceof ServerWorld ? ((ServerWorld)world).method_17984() : LongSets.EMPTY_SET);
 			List<String> list = Lists.<String>newArrayList(
 				"Minecraft "
 					+ SharedConstants.getGameVersion().getName()
@@ -199,7 +199,7 @@ public class DebugHud extends Drawable {
 				this.client.worldRenderer.getEntitiesDebugString(),
 				"P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getEntityCountAsString(),
 				this.client.world.getChunkProviderStatus(),
-				DimensionType.getId(dimensionType).toString() + " FC: " + (forcedChunkState == null ? "n/a" : Integer.toString(forcedChunkState.getChunks().size())),
+				DimensionType.getId(this.client.world.dimension.getType()).toString() + " FC: " + Integer.toString(longSet.size()),
 				"",
 				String.format(
 					Locale.ROOT,

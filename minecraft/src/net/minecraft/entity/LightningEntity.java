@@ -2,6 +2,8 @@ package net.minecraft.entity;
 
 import java.util.List;
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -99,6 +101,13 @@ public class LightningEntity extends AbstractLightningEntity {
 				}
 			}
 		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public boolean shouldRenderAtDistance(double d) {
+		double e = 64.0 * getRenderDistanceMultiplier();
+		return d < e * e;
 	}
 
 	@Override

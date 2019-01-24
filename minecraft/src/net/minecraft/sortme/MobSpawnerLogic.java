@@ -2,6 +2,7 @@ package net.minecraft.sortme;
 
 import com.google.common.collect.Lists;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -19,7 +20,6 @@ import net.minecraft.util.WeightedPicker;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.ChunkSaveHandlerImpl;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -95,6 +95,12 @@ public abstract class MobSpawnerLogic {
 
 				for (int i = 0; i < this.spawnCount; i++) {
 					CompoundTag compoundTag = this.spawnEntry.getEntityTag();
+					Optional<EntityType<?>> optional = EntityType.method_17684(compoundTag);
+					if (!optional.isPresent()) {
+						this.method_8282();
+						return;
+					}
+
 					ListTag listTag = compoundTag.getList("Pos", 6);
 					World world = this.getWorld();
 					int j = listTag.size();
@@ -105,8 +111,8 @@ public abstract class MobSpawnerLogic {
 					double k = j >= 3
 						? listTag.getDouble(2)
 						: (double)blockPos.getZ() + (world.random.nextDouble() - world.random.nextDouble()) * (double)this.spawnRange + 0.5;
-					if (world.method_8587(null, EntityType.method_17684(compoundTag).method_17683(g, h, k))) {
-						Entity entity = ChunkSaveHandlerImpl.readEntity(compoundTag, world, g, h, k, false);
+					if (world.method_8587(null, ((EntityType)optional.get()).method_17683(g, h, k))) {
+						Entity entity = EntityType.method_17840(compoundTag, world, g, h, k, false);
 						if (entity == null) {
 							this.method_8282();
 							return;
@@ -137,7 +143,7 @@ public abstract class MobSpawnerLogic {
 								((MobEntity)entity).prepareEntityData(world, world.getLocalDifficulty(new BlockPos(entity)), SpawnType.field_16469, null, null);
 							}
 
-							ChunkSaveHandlerImpl.spawnEntityAndPassengers(entity, world);
+							EntityType.method_17837(entity, world);
 							world.fireWorldEvent(2004, blockPos, 0);
 							if (mobEntity != null) {
 								mobEntity.method_5990();
@@ -236,7 +242,7 @@ public abstract class MobSpawnerLogic {
 	@Environment(EnvType.CLIENT)
 	public Entity getRenderedEntity() {
 		if (this.field_9153 == null) {
-			this.field_9153 = ChunkSaveHandlerImpl.readEntity(this.spawnEntry.getEntityTag(), this.getWorld(), false);
+			this.field_9153 = EntityType.method_17844(this.spawnEntry.getEntityTag(), this.getWorld(), false);
 			if (this.spawnEntry.getEntityTag().getSize() == 1 && this.spawnEntry.getEntityTag().containsKey("id", 8) && this.field_9153 instanceof MobEntity) {
 				((MobEntity)this.field_9153)
 					.prepareEntityData(this.getWorld(), this.getWorld().getLocalDifficulty(new BlockPos(this.field_9153)), SpawnType.field_16469, null, null);

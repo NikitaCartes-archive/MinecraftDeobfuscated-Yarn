@@ -18,7 +18,7 @@ public class WitherEntityRenderer extends MobEntityRenderer<EntityWither, Wither
 		this.addFeature(new WitherArmorFeatureRenderer(this));
 	}
 
-	protected Identifier getTexture(EntityWither entityWither) {
+	protected Identifier method_4153(EntityWither entityWither) {
 		int i = entityWither.getInvulTimer();
 		return i > 0 && (i > 80 || i / 5 % 2 != 1) ? INVINCIBLE_SKIN : SKIN;
 	}

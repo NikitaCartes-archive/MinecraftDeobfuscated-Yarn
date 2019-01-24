@@ -96,8 +96,7 @@ public class OverworldDimension extends Dimension {
 					biomes = jsonArray.size() > 0 ? new Biome[jsonArray.size()] : new Biome[]{Biomes.field_9423};
 
 					for (int i = 0; i < jsonArray.size(); i++) {
-						Biome biome = Registry.BIOME.get(new Identifier(jsonArray.get(i).getAsString()));
-						biomes[i] = biome != null ? biome : Biomes.field_9423;
+						biomes[i] = (Biome)Registry.BIOME.method_17966(new Identifier(jsonArray.get(i).getAsString())).orElse(Biomes.field_9423);
 					}
 				}
 

@@ -28,7 +28,7 @@ public class UpdateSelectedSlotServerPacket implements Packet<ServerPlayPacketLi
 		packetByteBuf.writeShort(this.selectedSlot);
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12441(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onUpdateSelectedSlot(this);
 	}
 

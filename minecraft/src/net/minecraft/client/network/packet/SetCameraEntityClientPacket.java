@@ -30,7 +30,7 @@ public class SetCameraEntityClientPacket implements Packet<ClientPlayPacketListe
 		packetByteBuf.writeVarInt(this.id);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11801(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onSetCameraEntity(this);
 	}
 

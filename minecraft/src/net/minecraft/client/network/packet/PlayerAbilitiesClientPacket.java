@@ -63,7 +63,7 @@ public class PlayerAbilitiesClientPacket implements Packet<ClientPlayPacketListe
 		packetByteBuf.writeFloat(this.fovModifier);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11697(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onPlayerAbilities(this);
 	}
 

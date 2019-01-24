@@ -38,7 +38,7 @@ public class PlayerActionServerPacket implements Packet<ServerPlayPacketListener
 		packetByteBuf.writeByte(this.direction.getId());
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12361(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onPlayerAction(this);
 	}
 

@@ -31,7 +31,7 @@ import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.realms.RealmsBridge;
 import net.minecraft.resource.Resource;
-import net.minecraft.server.world.ServerDemoWorld;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.TextFormat;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
@@ -212,7 +212,7 @@ public class MainMenuGui extends Gui {
 		this.addButton(new ButtonWidget(11, this.width / 2 - 100, i, I18n.translate("menu.playdemo")) {
 			@Override
 			public void onPressed(double d, double e) {
-				MainMenuGui.this.client.startIntegratedServer("Demo_World", "Demo_World", ServerDemoWorld.INFO);
+				MainMenuGui.this.client.startIntegratedServer("Demo_World", "Demo_World", MinecraftServer.field_17704);
 			}
 		});
 		this.buttonResetDemo = this.addButton(
@@ -220,7 +220,7 @@ public class MainMenuGui extends Gui {
 				@Override
 				public void onPressed(double d, double e) {
 					LevelStorage levelStorage = MainMenuGui.this.client.getLevelStorage();
-					LevelProperties levelProperties = levelStorage.getLevelProperties("Demo_World");
+					LevelProperties levelProperties = levelStorage.requiresConversion("Demo_World");
 					if (levelProperties != null) {
 						MainMenuGui.this.client
 							.openGui(
@@ -238,7 +238,7 @@ public class MainMenuGui extends Gui {
 			}
 		);
 		LevelStorage levelStorage = this.client.getLevelStorage();
-		LevelProperties levelProperties = levelStorage.getLevelProperties("Demo_World");
+		LevelProperties levelProperties = levelStorage.requiresConversion("Demo_World");
 		if (levelProperties == null) {
 			this.buttonResetDemo.enabled = false;
 		}
@@ -250,10 +250,9 @@ public class MainMenuGui extends Gui {
 	}
 
 	@Override
-	public void handle(boolean bl, int i) {
+	public void confirmResult(boolean bl, int i) {
 		if (bl && i == 12) {
 			LevelStorage levelStorage = this.client.getLevelStorage();
-			levelStorage.clearAll();
 			levelStorage.delete("Demo_World");
 			this.client.openGui(this);
 		} else if (i == 12) {

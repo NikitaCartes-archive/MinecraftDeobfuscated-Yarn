@@ -56,7 +56,10 @@ public class LecternContainer extends Container {
 
 					ItemStack itemStack = this.inventory.removeInvStack(0);
 					this.inventory.markDirty();
-					playerEntity.inventory.insertStack(itemStack);
+					if (!playerEntity.inventory.insertStack(itemStack)) {
+						playerEntity.dropItem(itemStack, false);
+					}
+
 					return true;
 				default:
 					return false;

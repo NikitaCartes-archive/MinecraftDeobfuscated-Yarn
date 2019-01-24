@@ -16,7 +16,7 @@ public class SquidEntityRenderer extends MobEntityRenderer<SquidEntity, SquidEnt
 		super(entityRenderDispatcher, new SquidEntityModel<>(), 0.7F);
 	}
 
-	protected Identifier getTexture(SquidEntity squidEntity) {
+	protected Identifier method_4127(SquidEntity squidEntity) {
 		return SKIN;
 	}
 

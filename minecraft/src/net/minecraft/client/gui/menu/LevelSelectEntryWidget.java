@@ -27,8 +27,7 @@ import net.minecraft.text.TextFormat;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
-import net.minecraft.world.WorldSaveHandler;
-import net.minecraft.world.chunk.storage.RegionFileCache;
+import net.minecraft.world.OldWorldSaveHandler;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelSummary;
@@ -229,7 +228,6 @@ public final class LevelSelectEntryWidget extends EntryListWidget.Entry<LevelSel
 						if (bl) {
 							this.client.openGui(new WorkingGui());
 							LevelStorage levelStorage = this.client.getLevelStorage();
-							levelStorage.clearAll();
 							levelStorage.delete(this.levelSummary.getName());
 							this.field_3241.filter(() -> this.guiLevelSelect.searchBox.getText(), true);
 						}
@@ -259,9 +257,8 @@ public final class LevelSelectEntryWidget extends EntryListWidget.Entry<LevelSel
 		try {
 			this.client.openGui(new WorkingGui());
 			NewLevelGui newLevelGui = new NewLevelGui(this.guiLevelSelect);
-			WorldSaveHandler worldSaveHandler = this.client.getLevelStorage().method_242(this.levelSummary.getName(), null);
-			LevelProperties levelProperties = worldSaveHandler.readProperties();
-			RegionFileCache.clear();
+			OldWorldSaveHandler oldWorldSaveHandler = this.client.getLevelStorage().method_242(this.levelSummary.getName(), null);
+			LevelProperties levelProperties = oldWorldSaveHandler.readProperties();
 			if (levelProperties != null) {
 				newLevelGui.method_2737(levelProperties);
 				if (this.levelSummary.isLegacyCustomizedWorld()) {

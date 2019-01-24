@@ -14,7 +14,7 @@ public class QueryRequestServerPacket implements Packet<ServerQueryPacketListene
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 	}
 
-	public void apply(ServerQueryPacketListener serverQueryPacketListener) {
+	public void method_12701(ServerQueryPacketListener serverQueryPacketListener) {
 		serverQueryPacketListener.onRequest(this);
 	}
 }

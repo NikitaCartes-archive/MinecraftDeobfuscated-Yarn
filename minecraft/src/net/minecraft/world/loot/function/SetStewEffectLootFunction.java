@@ -75,7 +75,7 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 		}
 
 		public void method_642(JsonObject jsonObject, SetStewEffectLootFunction setStewEffectLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, setStewEffectLootFunction, jsonSerializationContext);
+			super.method_529(jsonObject, setStewEffectLootFunction, jsonSerializationContext);
 			if (!setStewEffectLootFunction.effects.isEmpty()) {
 				JsonArray jsonArray = new JsonArray();
 
@@ -100,11 +100,9 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 			if (jsonObject.has("effects")) {
 				for (JsonElement jsonElement : JsonHelper.getArray(jsonObject, "effects")) {
 					String string = JsonHelper.getString(jsonElement.getAsJsonObject(), "type");
-					StatusEffect statusEffect = Registry.STATUS_EFFECT.get(new Identifier(string));
-					if (statusEffect == null) {
-						throw new JsonSyntaxException("Unknown mob effect '" + string + "'");
-					}
-
+					StatusEffect statusEffect = (StatusEffect)Registry.STATUS_EFFECT
+						.method_17966(new Identifier(string))
+						.orElseThrow(() -> new JsonSyntaxException("Unknown mob effect '" + string + "'"));
 					UniformLootTableRange uniformLootTableRange = JsonHelper.deserialize(
 						jsonElement.getAsJsonObject(), "duration", jsonDeserializationContext, UniformLootTableRange.class
 					);

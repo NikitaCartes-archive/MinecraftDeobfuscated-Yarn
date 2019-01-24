@@ -151,8 +151,8 @@ public class GlStateManager {
 		BLEND.capState.enable();
 	}
 
-	public static void blendFunc(GlStateManager.class_1033 arg, GlStateManager.class_1027 arg2) {
-		blendFunc(arg.value, arg2.value);
+	public static void blendFunc(GlStateManager.SourceFactor sourceFactor, GlStateManager.DestFactor destFactor) {
+		blendFunc(sourceFactor.value, destFactor.value);
 	}
 
 	public static void blendFunc(int i, int j) {
@@ -164,9 +164,12 @@ public class GlStateManager {
 	}
 
 	public static void blendFuncSeparate(
-		GlStateManager.class_1033 arg, GlStateManager.class_1027 arg2, GlStateManager.class_1033 arg3, GlStateManager.class_1027 arg4
+		GlStateManager.SourceFactor sourceFactor,
+		GlStateManager.DestFactor destFactor,
+		GlStateManager.SourceFactor sourceFactor2,
+		GlStateManager.DestFactor destFactor2
 	) {
-		blendFuncSeparate(arg.value, arg2.value, arg3.value, arg4.value);
+		blendFuncSeparate(sourceFactor.value, destFactor.value, sourceFactor2.value, destFactor2.value);
 	}
 
 	public static void blendFuncSeparate(int i, int j, int k, int l) {
@@ -252,7 +255,7 @@ public class GlStateManager {
 		GL11.glFogfv(i, floatBuffer);
 	}
 
-	public static void fog(int i, int j) {
+	public static void fogi(int i, int j) {
 		GL11.glFogi(i, j);
 	}
 
@@ -863,6 +866,30 @@ public class GlStateManager {
 	}
 
 	@Environment(EnvType.CLIENT)
+	public static enum DestFactor {
+		CONSTANT_ALPHA(32771),
+		CONSTANT_COLOR(32769),
+		DST_ALPHA(772),
+		DST_COLOR(774),
+		ONE(1),
+		ONE_MINUS_CONSTANT_ALPHA(32772),
+		ONE_MINUS_CONSTANT_COLOR(32770),
+		ONE_MINUS_DST_ALPHA(773),
+		ONE_MINUS_DST_COLOR(775),
+		ONE_MINUS_SRC_ALPHA(771),
+		ONE_MINUS_SRC_COLOR(769),
+		SRC_ALPHA(770),
+		SRC_COLOR(768),
+		ZERO(0);
+
+		public final int value;
+
+		private DestFactor(int j) {
+			this.value = j;
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
 	public static enum FaceSides {
 		field_5068(1028),
 		field_5070(1029),
@@ -975,19 +1002,19 @@ public class GlStateManager {
 				GlStateManager.depthFunc(513);
 				GlStateManager.depthMask(true);
 				GlStateManager.disableBlend();
-				GlStateManager.blendFunc(GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO);
+				GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 				GlStateManager.blendFuncSeparate(
-					GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+					GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 				);
 				GlStateManager.blendEquation(32774);
 				GlStateManager.disableFog();
-				GlStateManager.fog(2917, 2048);
+				GlStateManager.fogi(2917, 2048);
 				GlStateManager.fogDensity(1.0F);
 				GlStateManager.fogStart(0.0F);
 				GlStateManager.fogEnd(1.0F);
 				GlStateManager.fog(2918, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
 				if (GL.getCapabilities().GL_NV_fog_distance) {
-					GlStateManager.fog(2917, 34140);
+					GlStateManager.fogi(2917, 34140);
 				}
 
 				GlStateManager.polygonOffset(0.0F, 0.0F);
@@ -1069,7 +1096,7 @@ public class GlStateManager {
 				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 0.15F);
 				GlStateManager.depthMask(false);
 				GlStateManager.enableBlend();
-				GlStateManager.blendFunc(GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA);
+				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 				GlStateManager.alphaFunc(516, 0.003921569F);
 			}
 
@@ -1087,6 +1114,31 @@ public class GlStateManager {
 		public abstract void begin();
 
 		public abstract void end();
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static enum SourceFactor {
+		CONSTANT_ALPHA(32771),
+		CONSTANT_COLOR(32769),
+		DST_ALPHA(772),
+		DST_COLOR(774),
+		ONE(1),
+		ONE_MINUS_CONSTANT_ALPHA(32772),
+		ONE_MINUS_CONSTANT_COLOR(32770),
+		ONE_MINUS_DST_ALPHA(773),
+		ONE_MINUS_DST_COLOR(775),
+		ONE_MINUS_SRC_ALPHA(771),
+		ONE_MINUS_SRC_COLOR(769),
+		SRC_ALPHA(770),
+		SRC_ALPHA_SATURATE(776),
+		SRC_COLOR(768),
+		ZERO(0);
+
+		public final int value;
+
+		private SourceFactor(int j) {
+			this.value = j;
+		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -1159,54 +1211,5 @@ public class GlStateManager {
 		protected int y;
 		protected int width;
 		protected int height;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static enum class_1027 {
-		CONSTANT_ALPHA(32771),
-		CONSTANT_COLOR(32769),
-		DST_ALPHA(772),
-		DST_COLOR(774),
-		ONE(1),
-		ONE_MINUS_CONSTANT_ALPHA(32772),
-		ONE_MINUS_CONSTANT_COLOR(32770),
-		ONE_MINUS_DST_ALPHA(773),
-		ONE_MINUS_DST_COLOR(775),
-		ONE_MINUS_SRC_ALPHA(771),
-		ONE_MINUS_SRC_COLOR(769),
-		SRC_ALPHA(770),
-		SRC_COLOR(768),
-		ZERO(0);
-
-		public final int value;
-
-		private class_1027(int j) {
-			this.value = j;
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static enum class_1033 {
-		CONSTANT_ALPHA(32771),
-		CONSTANT_COLOR(32769),
-		DST_ALPHA(772),
-		DST_COLOR(774),
-		ONE(1),
-		ONE_MINUS_CONSTANT_ALPHA(32772),
-		ONE_MINUS_CONSTANT_COLOR(32770),
-		ONE_MINUS_DST_ALPHA(773),
-		ONE_MINUS_DST_COLOR(775),
-		ONE_MINUS_SRC_ALPHA(771),
-		ONE_MINUS_SRC_COLOR(769),
-		SRC_ALPHA(770),
-		SRC_ALPHA_SATURATE(776),
-		SRC_COLOR(768),
-		ZERO(0);
-
-		public final int value;
-
-		private class_1033(int j) {
-			this.value = j;
-		}
 	}
 }

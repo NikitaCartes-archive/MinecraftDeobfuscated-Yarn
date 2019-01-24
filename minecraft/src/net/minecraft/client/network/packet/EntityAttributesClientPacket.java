@@ -75,7 +75,7 @@ public class EntityAttributesClientPacket implements Packet<ClientPlayPacketList
 		}
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11936(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onEntityAttributes(this);
 	}
 

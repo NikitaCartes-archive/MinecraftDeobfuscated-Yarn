@@ -14,7 +14,7 @@ public class IllagerBeastEntityRenderer extends MobEntityRenderer<IllagerBeastEn
 		super(entityRenderDispatcher, new IllagerBeastEntityModel(), 0.7F);
 	}
 
-	protected Identifier getTexture(IllagerBeastEntity illagerBeastEntity) {
+	protected Identifier method_3984(IllagerBeastEntity illagerBeastEntity) {
 		return TEXTURE;
 	}
 }

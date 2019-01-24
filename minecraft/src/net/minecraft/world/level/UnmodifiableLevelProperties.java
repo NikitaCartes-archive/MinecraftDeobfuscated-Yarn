@@ -54,12 +54,6 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 		return this.properties.getTimeOfDay();
 	}
 
-	@Environment(EnvType.CLIENT)
-	@Override
-	public long getSizeOnDisk() {
-		return this.properties.getSizeOnDisk();
-	}
-
 	@Override
 	public CompoundTag getPlayerData() {
 		return this.properties.getPlayerData();

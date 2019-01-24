@@ -23,9 +23,11 @@ public abstract class class_3790 extends class_3443 {
 	private final int field_16692;
 	protected final Rotation field_16694;
 	private final List<JigsawJunction> field_16696 = Lists.<JigsawJunction>newArrayList();
+	private final StructureManager field_17660;
 
 	public class_3790(StructurePiece structurePiece, StructureManager structureManager, class_3784 arg, BlockPos blockPos, int i, Rotation rotation) {
 		super(structurePiece, 0);
+		this.field_17660 = structureManager;
 		this.field_16693 = arg;
 		this.field_16695 = blockPos;
 		this.field_16692 = i;
@@ -35,6 +37,7 @@ public abstract class class_3790 extends class_3443 {
 
 	public class_3790(StructureManager structureManager, CompoundTag compoundTag, StructurePiece structurePiece) {
 		super(structurePiece, compoundTag);
+		this.field_17660 = structureManager;
 		this.field_16695 = new BlockPos(compoundTag.getInt("PosX"), compoundTag.getInt("PosY"), compoundTag.getInt("PosZ"));
 		this.field_16692 = compoundTag.getInt("ground_level_delta");
 		this.field_16693 = class_3817.deserialize(
@@ -66,7 +69,7 @@ public abstract class class_3790 extends class_3443 {
 
 	@Override
 	public boolean method_14931(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
-		return this.field_16693.method_16626(iWorld, this.field_16695, this.field_16694, mutableIntBoundingBox, random);
+		return this.field_16693.method_16626(this.field_17660, iWorld, this.field_16695, this.field_16694, mutableIntBoundingBox, random);
 	}
 
 	@Override

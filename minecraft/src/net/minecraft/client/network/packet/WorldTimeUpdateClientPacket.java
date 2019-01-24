@@ -37,7 +37,7 @@ public class WorldTimeUpdateClientPacket implements Packet<ClientPlayPacketListe
 		packetByteBuf.writeLong(this.timeOfDay);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11872(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onWorldTimeUpdate(this);
 	}
 

@@ -119,7 +119,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if ((Boolean)blockState.get(OPEN)) {
 			blockState = blockState.with(OPEN, Boolean.valueOf(false));
 			world.setBlockState(blockPos, blockState, 10);

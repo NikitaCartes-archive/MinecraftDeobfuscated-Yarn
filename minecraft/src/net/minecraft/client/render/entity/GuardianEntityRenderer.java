@@ -52,7 +52,7 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 	}
 
 	public void method_3977(GuardianEntity guardianEntity, double d, double e, double f, float g, float h) {
-		super.render(guardianEntity, d, e, f, g, h);
+		super.method_4072(guardianEntity, d, e, f, g, h);
 		LivingEntity livingEntity = guardianEntity.method_7052();
 		if (livingEntity != null) {
 			float i = guardianEntity.method_7061(h);
@@ -68,7 +68,7 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 			float j = 240.0F;
 			GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, 240.0F, 240.0F);
 			GlStateManager.blendFuncSeparate(
-				GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
 			float k = (float)guardianEntity.world.getTime() + h;
 			float l = k * 0.5F % 1.0F;
@@ -135,7 +135,7 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 		}
 	}
 
-	protected Identifier getTexture(GuardianEntity guardianEntity) {
+	protected Identifier method_3976(GuardianEntity guardianEntity) {
 		return SKIN;
 	}
 }

@@ -23,8 +23,8 @@ import net.minecraft.world.chunk.light.LightingProvider;
 public class EmptyChunk extends WorldChunk {
 	private static final Biome[] BIOMES = SystemUtil.consume(new Biome[256], biomes -> Arrays.fill(biomes, Biomes.field_9451));
 
-	public EmptyChunk(World world, int i, int j) {
-		super(world, i, j, BIOMES);
+	public EmptyChunk(World world, ChunkPos chunkPos) {
+		super(world, chunkPos, BIOMES);
 	}
 
 	@Override

@@ -8,11 +8,13 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.FurnaceInputSlotFiller;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeInputProvider;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.cooking.CookingRecipe;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 
 public abstract class AbstractFurnaceContainer extends CraftingContainer<Inventory> {
@@ -67,6 +69,11 @@ public abstract class AbstractFurnaceContainer extends CraftingContainer<Invento
 	@Override
 	public void clearCraftingSlots() {
 		this.inventory.clearInv();
+	}
+
+	@Override
+	public void method_17697(boolean bl, Recipe<?> recipe, ServerPlayerEntity serverPlayerEntity) {
+		new FurnaceInputSlotFiller<>(this).fillInputSlots(serverPlayerEntity, (Recipe<Inventory>)recipe, bl);
 	}
 
 	@Override

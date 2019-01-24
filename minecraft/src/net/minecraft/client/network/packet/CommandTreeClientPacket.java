@@ -175,7 +175,7 @@ public class CommandTreeClientPacket implements Packet<ClientPlayPacketListener>
 		}
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11404(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onCommandTree(this);
 	}
 

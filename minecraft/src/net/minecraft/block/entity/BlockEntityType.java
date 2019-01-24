@@ -96,12 +96,6 @@ public class BlockEntityType<T extends BlockEntity> {
 		return (T)this.supplier.get();
 	}
 
-	@Nullable
-	static BlockEntity instantiate(String string) {
-		BlockEntityType<?> blockEntityType = Registry.BLOCK_ENTITY.get(new Identifier(string));
-		return blockEntityType == null ? null : blockEntityType.instantiate();
-	}
-
 	public static final class Builder<T extends BlockEntity> {
 		private final Supplier<? extends T> supplier;
 

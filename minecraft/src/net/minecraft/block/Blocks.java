@@ -1749,7 +1749,7 @@ public class Blocks {
 	public static final Block field_10001 = register("end_stone_brick_wall", new WallBlock(Block.Settings.copy(field_10462)));
 	public static final Block field_10517 = register("diorite_wall", new WallBlock(Block.Settings.copy(field_10508)));
 	public static final Block field_16492 = register(
-		"scaffolding", new ScaffoldingBlock(Block.Settings.of(Material.PART).noCollision().sounds(BlockSoundGroup.SCAFFOLDING))
+		"scaffolding", new ScaffoldingBlock(Block.Settings.of(Material.PART, MaterialColor.SAND).noCollision().sounds(BlockSoundGroup.SCAFFOLDING))
 	);
 	public static final Block field_10083 = register("loom", new LoomBlock(Block.Settings.of(Material.WOOD).strength(2.5F).sounds(BlockSoundGroup.WOOD)));
 	public static final Block field_16328 = register("barrel", new BarrelBlock(Block.Settings.of(Material.WOOD).strength(2.5F).sounds(BlockSoundGroup.WOOD)));

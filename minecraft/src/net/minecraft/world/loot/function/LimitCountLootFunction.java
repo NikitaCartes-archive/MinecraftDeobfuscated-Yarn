@@ -35,7 +35,7 @@ public class LimitCountLootFunction extends ConditionalLootFunction {
 		}
 
 		public void method_510(JsonObject jsonObject, LimitCountLootFunction limitCountLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, limitCountLootFunction, jsonSerializationContext);
+			super.method_529(jsonObject, limitCountLootFunction, jsonSerializationContext);
 			jsonObject.add("limit", jsonSerializationContext.serialize(limitCountLootFunction.limit));
 		}
 

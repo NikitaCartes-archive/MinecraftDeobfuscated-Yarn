@@ -30,7 +30,7 @@ public class StructureBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		return blockEntity instanceof StructureBlockBlockEntity ? ((StructureBlockBlockEntity)blockEntity).openGui(playerEntity) : false;
 	}
@@ -81,7 +81,7 @@ public class StructureBlock extends BlockWithEntity {
 	}
 
 	private void method_10703(StructureBlockBlockEntity structureBlockBlockEntity) {
-		switch (structureBlockBlockEntity.method_11374()) {
+		switch (structureBlockBlockEntity.getMode()) {
 			case field_12695:
 				structureBlockBlockEntity.saveStructure(false);
 				break;

@@ -37,7 +37,7 @@ public class AdvancementUpdateClientPacket implements Packet<ClientPlayPacketLis
 		this.toSetProgress = Maps.<Identifier, AdvancementProgress>newHashMap(map);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11925(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onAdvancements(this);
 	}
 

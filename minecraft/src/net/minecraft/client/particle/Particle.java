@@ -1,19 +1,18 @@
 package net.minecraft.client.particle;
 
 import java.util.Random;
+import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.util.LoopingStream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
@@ -290,24 +289,20 @@ public class Particle {
 		double g = d;
 		double h = e;
 		double i = f;
-		if (this.collidesWithWorld && (d != 0.0 || e != 0.0 || f != 0.0)) {
-			LoopingStream<VoxelShape> loopingStream = new LoopingStream<>(this.world.getCollisionVoxelShapes(null, this.getBoundingBox(), d, e, f));
-			e = VoxelShapes.calculateMaxOffset(Direction.Axis.Y, this.getBoundingBox(), loopingStream.getStream(), e);
-			this.setBoundingBox(this.getBoundingBox().offset(0.0, e, 0.0));
-			d = VoxelShapes.calculateMaxOffset(Direction.Axis.X, this.getBoundingBox(), loopingStream.getStream(), d);
-			if (d != 0.0) {
-				this.setBoundingBox(this.getBoundingBox().offset(d, 0.0, 0.0));
-			}
-
-			f = VoxelShapes.calculateMaxOffset(Direction.Axis.Z, this.getBoundingBox(), loopingStream.getStream(), f);
-			if (f != 0.0) {
-				this.setBoundingBox(this.getBoundingBox().offset(0.0, 0.0, f));
-			}
-		} else {
-			this.setBoundingBox(this.getBoundingBox().offset(d, e, f));
+		if (this.collidesWithWorld && d != 0.0 || e != 0.0 || f != 0.0) {
+			Vec3d vec3d = Entity.method_17833(
+				new Vec3d(d, e, f), this.getBoundingBox(), this.world, VerticalEntityPosition.minValue(), new LoopingStream<>(Stream.empty())
+			);
+			d = vec3d.x;
+			e = vec3d.y;
+			f = vec3d.z;
 		}
 
-		this.repositionFromBoundingBox();
+		if (d != 0.0 || e != 0.0 || f != 0.0) {
+			this.setBoundingBox(this.getBoundingBox().offset(d, e, f));
+			this.repositionFromBoundingBox();
+		}
+
 		this.onGround = h != e && h < 0.0;
 		if (g != d) {
 			this.velocityX = 0.0;

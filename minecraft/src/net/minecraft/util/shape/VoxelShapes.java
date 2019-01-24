@@ -17,24 +17,34 @@ import net.minecraft.class_254;
 import net.minecraft.class_255;
 import net.minecraft.class_257;
 import net.minecraft.class_263;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.AxisCycle;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.chunk.Chunk;
 
 public final class VoxelShapes {
+	private static final VoxelShape FULL_CUBE = SystemUtil.get(() -> {
+		AbstractVoxelShapeContainer abstractVoxelShapeContainer = new BitSetVoxelShapeContainer(1, 1, 1);
+		abstractVoxelShapeContainer.modify(0, 0, 0, true, true);
+		return new SimpleVoxelShape(abstractVoxelShapeContainer);
+	});
+	public static final VoxelShape field_17669 = cube(
+		Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY
+	);
 	private static final VoxelShape EMPTY = new ArrayVoxelShape(
 		new BitSetVoxelShapeContainer(0, 0, 0),
 		new DoubleArrayList(new double[]{0.0}),
 		new DoubleArrayList(new double[]{0.0}),
 		new DoubleArrayList(new double[]{0.0})
 	);
-	private static final VoxelShape FULL_CUBE = SystemUtil.get(() -> {
-		AbstractVoxelShapeContainer abstractVoxelShapeContainer = new BitSetVoxelShapeContainer(1, 1, 1);
-		abstractVoxelShapeContainer.modify(0, 0, 0, true, true);
-		return new SimpleVoxelShape(abstractVoxelShapeContainer);
-	});
 
 	public static VoxelShape empty() {
 		return EMPTY;
@@ -222,6 +232,90 @@ public final class VoxelShapes {
 		}
 
 		return d;
+	}
+
+	public static double method_17945(
+		Direction.Axis axis, BoundingBox boundingBox, ViewableWorld viewableWorld, double d, VerticalEntityPosition verticalEntityPosition, Stream<VoxelShape> stream
+	) {
+		return method_17944(boundingBox, viewableWorld, d, verticalEntityPosition, AxisCycle.between(axis, Direction.Axis.Z), stream);
+	}
+
+	private static double method_17944(
+		BoundingBox boundingBox, ViewableWorld viewableWorld, double d, VerticalEntityPosition verticalEntityPosition, AxisCycle axisCycle, Stream<VoxelShape> stream
+	) {
+		if (boundingBox.method_17939() < 1.0E-6 || boundingBox.method_17940() < 1.0E-6 || boundingBox.method_17941() < 1.0E-6) {
+			return d;
+		} else if (Math.abs(d) < 1.0E-7) {
+			return 0.0;
+		} else {
+			AxisCycle axisCycle2 = axisCycle.opposite();
+			Direction.Axis axis = axisCycle2.cycle(Direction.Axis.X);
+			Direction.Axis axis2 = axisCycle2.cycle(Direction.Axis.Y);
+			Direction.Axis axis3 = axisCycle2.cycle(Direction.Axis.Z);
+			BlockPos.Mutable mutable = new BlockPos.Mutable();
+			int i = MathHelper.floor(boundingBox.method_1001(axis) - 1.0E-7) - 1;
+			int j = MathHelper.floor(boundingBox.method_990(axis) + 1.0E-7) + 1;
+			int k = MathHelper.floor(boundingBox.method_1001(axis2) - 1.0E-7) - 1;
+			int l = MathHelper.floor(boundingBox.method_990(axis2) + 1.0E-7) + 1;
+			double e = boundingBox.method_1001(axis3) - 1.0E-7;
+			double f = boundingBox.method_990(axis3) + 1.0E-7;
+			boolean bl = d > 0.0;
+			int m = bl ? MathHelper.floor(boundingBox.method_990(axis3) - 1.0E-7) - 1 : MathHelper.floor(boundingBox.method_1001(axis3) + 1.0E-7) + 1;
+			int n = method_17943(d, e, f);
+			int o = bl ? 1 : -1;
+			int p = Integer.MAX_VALUE;
+			int q = Integer.MAX_VALUE;
+			Chunk chunk = null;
+
+			for (int r = m; bl ? r <= n : r >= n; r += o) {
+				for (int s = i; s <= j; s++) {
+					for (int t = k; t <= l; t++) {
+						int u = 0;
+						if (s == i || s == j) {
+							u++;
+						}
+
+						if (t == k || t == l) {
+							u++;
+						}
+
+						if (r == m || r == n) {
+							u++;
+						}
+
+						if (u < 3) {
+							mutable.method_17965(axisCycle2, s, t, r);
+							int v = mutable.getX() >> 4;
+							int w = mutable.getZ() >> 4;
+							if (v != p || w != q) {
+								chunk = viewableWorld.getChunk(v, w);
+								p = v;
+								q = w;
+							}
+
+							BlockState blockState = chunk.getBlockState(mutable);
+							if ((u != 1 || blockState.method_17900()) && (u != 2 || blockState.getBlock() == Blocks.field_10008)) {
+								d = blockState.getCollisionShape(viewableWorld, mutable, verticalEntityPosition)
+									.method_1108(axis3, boundingBox.offset((double)(-mutable.getX()), (double)(-mutable.getY()), (double)(-mutable.getZ())), d);
+								if (Math.abs(d) < 1.0E-7) {
+									return 0.0;
+								}
+
+								n = method_17943(d, e, f);
+							}
+						}
+					}
+				}
+			}
+
+			double[] ds = new double[]{d};
+			stream.forEach(voxelShape -> ds[0] = voxelShape.method_1108(axis3, boundingBox, ds[0]));
+			return ds[0];
+		}
+	}
+
+	private static int method_17943(double d, double e, double f) {
+		return d > 0.0 ? MathHelper.floor(f + d) + 1 : MathHelper.floor(e + d) - 1;
 	}
 
 	@Environment(EnvType.CLIENT)

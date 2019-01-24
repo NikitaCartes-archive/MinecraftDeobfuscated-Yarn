@@ -21,14 +21,9 @@ import net.minecraft.world.dimension.Dimension;
 public class RaidManager extends PersistentState {
 	private final Map<Integer, Raid> raids = Maps.<Integer, Raid>newHashMap();
 	private final Map<PlayerEntity, Integer> playerTimestamp = Maps.<PlayerEntity, Integer>newHashMap();
-	private World world;
+	private final World world;
 	private int nextAvailableId;
 	private int currentTime;
-
-	public RaidManager(String string) {
-		super(string);
-		this.nextAvailableId = 1;
-	}
 
 	public RaidManager(World world) {
 		super(nameFor(world.dimension));
@@ -39,14 +34,6 @@ public class RaidManager extends PersistentState {
 
 	public Raid getRaid(int i) {
 		return (Raid)this.raids.get(i);
-	}
-
-	public void setWorld(World world) {
-		this.world = world;
-
-		for (Raid raid : this.raids.values()) {
-			raid.setWorld(world);
-		}
 	}
 
 	public void tick() {
@@ -100,7 +87,7 @@ public class RaidManager extends PersistentState {
 	}
 
 	private boolean isPeaceful() {
-		return this.world != null && this.world.getDifficulty() == Difficulty.PEACEFUL;
+		return this.world.getDifficulty() == Difficulty.PEACEFUL;
 	}
 
 	public static boolean isLivingAroundVillage(VillageProperties villageProperties, LivingEntity livingEntity) {

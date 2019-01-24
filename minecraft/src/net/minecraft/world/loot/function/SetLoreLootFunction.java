@@ -98,7 +98,7 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 		}
 
 		public void method_15969(JsonObject jsonObject, SetLoreLootFunction setLoreLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, setLoreLootFunction, jsonSerializationContext);
+			super.method_529(jsonObject, setLoreLootFunction, jsonSerializationContext);
 			jsonObject.addProperty("replace", setLoreLootFunction.replace);
 			JsonArray jsonArray = new JsonArray();
 

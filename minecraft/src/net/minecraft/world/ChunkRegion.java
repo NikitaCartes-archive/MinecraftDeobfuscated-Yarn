@@ -298,20 +298,9 @@ public class ChunkRegion implements IWorld {
 		}
 	}
 
-	@Nullable
-	@Override
-	public PersistentStateManager getPersistentStateManager() {
-		return this.world.getPersistentStateManager();
-	}
-
 	@Override
 	public ChunkManager getChunkManager() {
 		return this.world.getChunkManager();
-	}
-
-	@Override
-	public WorldSaveHandler getSaveHandler() {
-		return this.world.getSaveHandler();
 	}
 
 	@Override

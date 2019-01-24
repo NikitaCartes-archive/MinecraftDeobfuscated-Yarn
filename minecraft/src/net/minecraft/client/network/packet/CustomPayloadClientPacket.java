@@ -46,7 +46,7 @@ public class CustomPayloadClientPacket implements Packet<ClientPlayPacketListene
 		packetByteBuf.writeBytes(this.data.copy());
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11457(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onCustomPayload(this);
 	}
 

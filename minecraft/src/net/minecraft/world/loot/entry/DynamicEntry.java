@@ -35,7 +35,7 @@ public class DynamicEntry extends LeafEntry {
 		}
 
 		public void method_393(JsonObject jsonObject, DynamicEntry dynamicEntry, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, dynamicEntry, jsonSerializationContext);
+			super.method_442(jsonObject, dynamicEntry, jsonSerializationContext);
 			jsonObject.addProperty("name", dynamicEntry.name.toString());
 		}
 

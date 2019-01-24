@@ -40,7 +40,7 @@ public class WaterSuspendParticle extends Particle {
 
 	@Environment(EnvType.CLIENT)
 	public static class UnderwaterFactory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3104(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new WaterSuspendParticle(world, d, e, f, g, h, i);
 		}
 	}

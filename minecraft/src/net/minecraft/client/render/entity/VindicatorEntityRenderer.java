@@ -23,7 +23,7 @@ public class VindicatorEntityRenderer extends IllagerEntityRenderer<VindicatorEn
 		});
 	}
 
-	protected Identifier getTexture(VindicatorEntity vindicatorEntity) {
+	protected Identifier method_4147(VindicatorEntity vindicatorEntity) {
 		return field_4804;
 	}
 }

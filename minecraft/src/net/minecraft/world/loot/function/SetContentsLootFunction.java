@@ -65,7 +65,7 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 		}
 
 		public void method_604(JsonObject jsonObject, SetContentsLootFunction setContentsLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, setContentsLootFunction, jsonSerializationContext);
+			super.method_529(jsonObject, setContentsLootFunction, jsonSerializationContext);
 			jsonObject.add("entries", jsonSerializationContext.serialize(setContentsLootFunction.field_1103));
 		}
 

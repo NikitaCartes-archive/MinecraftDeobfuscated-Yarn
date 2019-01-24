@@ -21,7 +21,7 @@ public class HuskEntityRenderer extends ZombieEntityRenderer {
 	}
 
 	@Override
-	protected Identifier getTexture(ZombieEntity zombieEntity) {
+	protected Identifier method_4163(ZombieEntity zombieEntity) {
 		return SKIN;
 	}
 }

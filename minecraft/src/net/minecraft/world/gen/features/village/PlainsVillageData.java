@@ -115,6 +115,15 @@ public class PlainsVillageData {
 					class_3785.Projection.TERRAIN_MATCHING
 				)
 			);
+		ImmutableList<AbstractStructureProcessor> immutableList3 = ImmutableList.of(
+			new RuleStructureProcessor(
+				ImmutableList.of(
+					new class_3821(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.3F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10609.getDefaultState()),
+					new class_3821(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10247.getDefaultState()),
+					new class_3821(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10341.getDefaultState())
+				)
+			)
+		);
 		class_3778.field_16666
 			.method_16640(
 				new class_3785(
@@ -149,8 +158,8 @@ public class PlainsVillageData {
 						new Pair<>(new class_3781("village/plains/houses/plains_temple_4", immutableList), 2),
 						new Pair<>(new class_3781("village/plains/houses/plains_stable_1", immutableList), 2),
 						new Pair<>(new class_3781("village/plains/houses/plains_stable_2"), 2),
-						new Pair<>(new class_3781("village/plains/houses/plains_large_farm_1"), 4),
-						new Pair<>(new class_3781("village/plains/houses/plains_small_farm_1"), 4),
+						new Pair<>(new class_3781("village/plains/houses/plains_large_farm_1", immutableList3), 4),
+						new Pair<>(new class_3781("village/plains/houses/plains_small_farm_1", immutableList3), 4),
 						new Pair<>(new class_3781("village/plains/houses/plains_animal_pen_1"), 1),
 						new Pair<>(new class_3781("village/plains/houses/plains_animal_pen_2"), 1),
 						new Pair<>(new class_3781("village/plains/houses/plains_animal_pen_3"), 5),

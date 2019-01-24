@@ -30,7 +30,7 @@ public class BambooFeature extends Feature<ProbabilityConfig> {
 		super(function);
 	}
 
-	public boolean generate(
+	public boolean method_12718(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, ProbabilityConfig probabilityConfig
 	) {
 		int i = 0;

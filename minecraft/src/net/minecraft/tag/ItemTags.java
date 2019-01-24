@@ -1,11 +1,12 @@
 package net.minecraft.tag;
 
 import java.util.Collection;
+import java.util.Optional;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 
 public class ItemTags {
-	private static TagContainer<Item> container = new TagContainer<>(identifier -> false, identifier -> null, "", false, "");
+	private static TagContainer<Item> container = new TagContainer<>(identifier -> Optional.empty(), "", false, "");
 	private static int containerChanges;
 	public static final Tag<Item> field_15544 = register("wool");
 	public static final Tag<Item> field_15537 = register("planks");

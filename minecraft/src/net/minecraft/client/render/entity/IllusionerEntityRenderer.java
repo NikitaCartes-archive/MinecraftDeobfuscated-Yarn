@@ -26,7 +26,7 @@ public class IllusionerEntityRenderer extends IllagerEntityRenderer<IllusionerEn
 		this.model.method_2812().visible = true;
 	}
 
-	protected Identifier getTexture(IllusionerEntity illusionerEntity) {
+	protected Identifier method_3990(IllusionerEntity illusionerEntity) {
 		return field_4718;
 	}
 
@@ -36,7 +36,7 @@ public class IllusionerEntityRenderer extends IllagerEntityRenderer<IllusionerEn
 			float i = this.method_4045(illusionerEntity, h);
 
 			for (int j = 0; j < vec3ds.length; j++) {
-				super.render(
+				super.method_4072(
 					illusionerEntity,
 					d + vec3ds[j].x + (double)MathHelper.cos((float)j + i * 0.5F) * 0.025,
 					e + vec3ds[j].y + (double)MathHelper.cos((float)j + i * 0.75F) * 0.0125,
@@ -46,7 +46,7 @@ public class IllusionerEntityRenderer extends IllagerEntityRenderer<IllusionerEn
 				);
 			}
 		} else {
-			super.render(illusionerEntity, d, e, f, g, h);
+			super.method_4072(illusionerEntity, d, e, f, g, h);
 		}
 	}
 

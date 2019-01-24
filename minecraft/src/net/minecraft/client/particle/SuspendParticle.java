@@ -44,7 +44,7 @@ public class SuspendParticle extends Particle {
 
 	@Environment(EnvType.CLIENT)
 	public static class DolphinFactory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3110(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			Particle particle = new SuspendParticle(world, d, e, f, g, h, i);
 			particle.setColor(0.3F, 0.5F, 1.0F);
 			particle.setColorAlpha(1.0F - world.random.nextFloat() * 0.7F);
@@ -55,7 +55,7 @@ public class SuspendParticle extends Particle {
 
 	@Environment(EnvType.CLIENT)
 	public static class HappyVillagerFactory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3111(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			Particle particle = new SuspendParticle(world, d, e, f, g, h, i);
 			particle.setSpriteIndex(82);
 			particle.setColor(1.0F, 1.0F, 1.0F);
@@ -65,7 +65,7 @@ public class SuspendParticle extends Particle {
 
 	@Environment(EnvType.CLIENT)
 	public static class MyceliumFactory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3112(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new SuspendParticle(world, d, e, f, g, h, i);
 		}
 	}

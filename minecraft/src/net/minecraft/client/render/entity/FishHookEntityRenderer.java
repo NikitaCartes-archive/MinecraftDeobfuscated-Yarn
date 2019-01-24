@@ -122,7 +122,7 @@ public class FishHookEntityRenderer extends EntityRenderer<FishHookEntity> {
 		}
 	}
 
-	protected Identifier getTexture(FishHookEntity fishHookEntity) {
+	protected Identifier method_3975(FishHookEntity fishHookEntity) {
 		return TEX;
 	}
 }

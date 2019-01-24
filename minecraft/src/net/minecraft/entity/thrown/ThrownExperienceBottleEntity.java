@@ -36,7 +36,7 @@ public class ThrownExperienceBottleEntity extends class_3857 {
 	}
 
 	@Override
-	protected void method_7492(HitResult hitResult) {
+	protected void onCollision(HitResult hitResult) {
 		if (!this.world.isClient) {
 			this.world.fireWorldEvent(2002, new BlockPos(this), PotionUtil.getColor(Potions.field_8991));
 			int i = 3 + this.world.random.nextInt(5) + this.world.random.nextInt(5);

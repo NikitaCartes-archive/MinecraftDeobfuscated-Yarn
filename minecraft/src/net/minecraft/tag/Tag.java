@@ -9,10 +9,10 @@ import com.google.gson.JsonParseException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -130,7 +130,7 @@ public class Tag<T> {
 			return new Tag<>(identifier, this.entries, this.ordered);
 		}
 
-		public Tag.Builder<T> fromJson(Predicate<Identifier> predicate, Function<Identifier, T> function, JsonObject jsonObject) {
+		public Tag.Builder<T> fromJson(Function<Identifier, Optional<T>> function, JsonObject jsonObject) {
 			JsonArray jsonArray = JsonHelper.getArray(jsonObject, "values");
 			if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
 				this.entries.clear();
@@ -138,16 +138,11 @@ public class Tag<T> {
 
 			for (JsonElement jsonElement : jsonArray) {
 				String string = JsonHelper.asString(jsonElement, "value");
-				if (!string.startsWith("#")) {
-					Identifier identifier = new Identifier(string);
-					T object = (T)function.apply(identifier);
-					if (object == null || !predicate.test(identifier)) {
-						throw new JsonParseException("Unknown value '" + identifier + "'");
-					}
-
-					this.add(object);
-				} else {
+				if (string.startsWith("#")) {
 					this.add(new Identifier(string.substring(1)));
+				} else {
+					Identifier identifier = new Identifier(string);
+					this.add((T)((Optional)function.apply(identifier)).orElseThrow(() -> new JsonParseException("Unknown value '" + identifier + "'")));
 				}
 			}
 

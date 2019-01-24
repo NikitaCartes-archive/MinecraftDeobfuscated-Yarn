@@ -38,7 +38,7 @@ public class BookUpdateServerPacket implements Packet<ServerPlayPacketListener> 
 		packetByteBuf.writeEnumConstant(this.hand);
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12236(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onBookUpdate(this);
 	}
 

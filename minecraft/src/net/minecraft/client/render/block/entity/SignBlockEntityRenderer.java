@@ -32,7 +32,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 	private static final Identifier DARK_OAK_TEX = new Identifier("textures/entity/signs/dark_oak.png");
 	private final SignBlockEntityModel model = new SignBlockEntityModel();
 
-	public void render(SignBlockEntity signBlockEntity, double d, double e, double f, float g, int i) {
+	public void method_3582(SignBlockEntity signBlockEntity, double d, double e, double f, float g, int i) {
 		BlockState blockState = signBlockEntity.getCachedState();
 		GlStateManager.pushMatrix();
 		float h = 0.6666667F;

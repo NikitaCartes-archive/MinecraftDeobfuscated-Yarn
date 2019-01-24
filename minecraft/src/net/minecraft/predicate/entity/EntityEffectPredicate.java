@@ -69,11 +69,9 @@ public class EntityEffectPredicate {
 
 			for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
 				Identifier identifier = new Identifier((String)entry.getKey());
-				StatusEffect statusEffect = Registry.STATUS_EFFECT.get(identifier);
-				if (statusEffect == null) {
-					throw new JsonSyntaxException("Unknown effect '" + identifier + "'");
-				}
-
+				StatusEffect statusEffect = (StatusEffect)Registry.STATUS_EFFECT
+					.method_17966(identifier)
+					.orElseThrow(() -> new JsonSyntaxException("Unknown effect '" + identifier + "'"));
 				EntityEffectPredicate.EffectData effectData = EntityEffectPredicate.EffectData.deserialize(
 					JsonHelper.asObject((JsonElement)entry.getValue(), (String)entry.getKey())
 				);

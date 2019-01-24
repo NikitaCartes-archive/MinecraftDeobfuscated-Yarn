@@ -32,10 +32,10 @@ public class EndermanEntityRenderer extends MobEntityRenderer<EndermanEntity, En
 			f += this.field_4667.nextGaussian() * 0.02;
 		}
 
-		super.render(endermanEntity, d, e, f, g, h);
+		super.method_4072(endermanEntity, d, e, f, g, h);
 	}
 
-	protected Identifier getTexture(EndermanEntity endermanEntity) {
+	protected Identifier method_3912(EndermanEntity endermanEntity) {
 		return SKIN;
 	}
 }

@@ -1,11 +1,12 @@
 package net.minecraft.tag;
 
 import java.util.Collection;
+import java.util.Optional;
 import net.minecraft.block.Block;
 import net.minecraft.util.Identifier;
 
 public class BlockTags {
-	private static TagContainer<Block> container = new TagContainer<>(identifier -> false, identifier -> null, "", false, "");
+	private static TagContainer<Block> container = new TagContainer<>(identifier -> Optional.empty(), "", false, "");
 	private static int containerChanges;
 	public static final Tag<Block> field_15481 = register("wool");
 	public static final Tag<Block> field_15471 = register("planks");

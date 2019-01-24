@@ -31,7 +31,7 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 	}
 
 	@Nullable
-	protected Identifier getTexture(PandaEntity pandaEntity) {
+	protected Identifier method_4083(PandaEntity pandaEntity) {
 		return (Identifier)field_17595.getOrDefault(pandaEntity.method_6554(), field_17595.get(PandaEntity.class_1443.field_6788));
 	}
 

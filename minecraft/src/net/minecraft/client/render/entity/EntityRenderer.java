@@ -148,7 +148,7 @@ public abstract class EntityRenderer<T extends Entity> {
 
 	private void renderShadow(Entity entity, double d, double e, double f, float g, float h) {
 		GlStateManager.enableBlend();
-		GlStateManager.blendFunc(GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA);
+		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		this.renderManager.textureManager.bindTexture(SHADOW_TEX);
 		ViewableWorld viewableWorld = this.method_3935();
 		GlStateManager.depthMask(false);

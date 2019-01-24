@@ -4,7 +4,6 @@ import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_3914;
-import net.minecraft.class_3915;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantment;
@@ -33,7 +32,7 @@ public class AnvilContainer extends Container {
 			AnvilContainer.this.onContentChanged(this);
 		}
 	};
-	private final class_3915 pos = class_3915.method_17403();
+	private final Property pos = Property.create();
 	private final class_3914 world;
 	private int field_7776;
 	private String newItemName;
@@ -59,15 +58,15 @@ public class AnvilContainer extends Container {
 
 				@Override
 				public boolean canTakeItems(PlayerEntity playerEntity) {
-					return (playerEntity.abilities.creativeMode || playerEntity.experience >= AnvilContainer.this.pos.method_17407())
-						&& AnvilContainer.this.pos.method_17407() > 0
+					return (playerEntity.abilities.creativeMode || playerEntity.experience >= AnvilContainer.this.pos.get())
+						&& AnvilContainer.this.pos.get() > 0
 						&& this.hasStack();
 				}
 
 				@Override
 				public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
 					if (!playerEntity.abilities.creativeMode) {
-						playerEntity.method_7316(-AnvilContainer.this.pos.method_17407());
+						playerEntity.method_7316(-AnvilContainer.this.pos.get());
 					}
 
 					AnvilContainer.this.inventory.setInvStack(0, ItemStack.EMPTY);
@@ -83,7 +82,7 @@ public class AnvilContainer extends Container {
 						AnvilContainer.this.inventory.setInvStack(1, ItemStack.EMPTY);
 					}
 
-					AnvilContainer.this.pos.method_17404(0);
+					AnvilContainer.this.pos.set(0);
 					arg.method_17393((world, blockPos) -> {
 						BlockState blockState = world.getBlockState(blockPos);
 						if (!playerEntity.abilities.creativeMode && blockState.matches(BlockTags.field_15486) && playerEntity.getRand().nextFloat() < 0.12F) {
@@ -125,13 +124,13 @@ public class AnvilContainer extends Container {
 
 	public void method_7628() {
 		ItemStack itemStack = this.inventory.getInvStack(0);
-		this.pos.method_17404(1);
+		this.pos.set(1);
 		int i = 0;
 		int j = 0;
 		int k = 0;
 		if (itemStack.isEmpty()) {
 			this.result.setInvStack(0, ItemStack.EMPTY);
-			this.pos.method_17404(0);
+			this.pos.set(0);
 		} else {
 			ItemStack itemStack2 = itemStack.copy();
 			ItemStack itemStack3 = this.inventory.getInvStack(1);
@@ -144,7 +143,7 @@ public class AnvilContainer extends Container {
 					int l = Math.min(itemStack2.getDamage(), itemStack2.getDurability() / 4);
 					if (l <= 0) {
 						this.result.setInvStack(0, ItemStack.EMPTY);
-						this.pos.method_17404(0);
+						this.pos.set(0);
 						return;
 					}
 
@@ -160,7 +159,7 @@ public class AnvilContainer extends Container {
 				} else {
 					if (!bl && (itemStack2.getItem() != itemStack3.getItem() || !itemStack2.hasDurability())) {
 						this.result.setInvStack(0, ItemStack.EMPTY);
-						this.pos.method_17404(0);
+						this.pos.set(0);
 						return;
 					}
 
@@ -239,7 +238,7 @@ public class AnvilContainer extends Container {
 
 					if (bl3 && !bl2) {
 						this.result.setInvStack(0, ItemStack.EMPTY);
-						this.pos.method_17404(0);
+						this.pos.set(0);
 						return;
 					}
 				}
@@ -257,16 +256,16 @@ public class AnvilContainer extends Container {
 				itemStack2.setDisplayName(new StringTextComponent(this.newItemName));
 			}
 
-			this.pos.method_17404(j + i);
+			this.pos.set(j + i);
 			if (i <= 0) {
 				itemStack2 = ItemStack.EMPTY;
 			}
 
-			if (k == i && k > 0 && this.pos.method_17407() >= 40) {
-				this.pos.method_17404(39);
+			if (k == i && k > 0 && this.pos.get() >= 40) {
+				this.pos.set(39);
 			}
 
-			if (this.pos.method_17407() >= 40 && !this.player.abilities.creativeMode) {
+			if (this.pos.get() >= 40 && !this.player.abilities.creativeMode) {
 				itemStack2 = ItemStack.EMPTY;
 			}
 
@@ -292,7 +291,7 @@ public class AnvilContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.world.method_17393((world, blockPos) -> this.method_7607(playerEntity, world, this.inventory));
+		this.world.method_17393((world, blockPos) -> this.dropInventory(playerEntity, world, this.inventory));
 	}
 
 	@Override
@@ -359,6 +358,6 @@ public class AnvilContainer extends Container {
 
 	@Environment(EnvType.CLIENT)
 	public int method_17369() {
-		return this.pos.method_17407();
+		return this.pos.get();
 	}
 }

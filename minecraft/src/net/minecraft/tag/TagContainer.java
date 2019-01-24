@@ -10,9 +10,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -29,14 +29,12 @@ public class TagContainer<T> {
 	private static final Gson GSON = new Gson();
 	private static final int JSON_EXTENSION_LENGTH = ".json".length();
 	private final Map<Identifier, Tag<T>> idMap = Maps.<Identifier, Tag<T>>newHashMap();
-	private final Function<Identifier, T> getter;
-	private final Predicate<Identifier> predicate;
+	private final Function<Identifier, Optional<T>> getter;
 	private final String path;
 	private final boolean ordered;
 	private final String type;
 
-	public TagContainer(Predicate<Identifier> predicate, Function<Identifier, T> function, String string, boolean bl, String string2) {
-		this.predicate = predicate;
+	public TagContainer(Function<Identifier, Optional<T>> function, String string, boolean bl, String string2) {
 		this.getter = function;
 		this.path = string;
 		this.ordered = bl;
@@ -97,7 +95,7 @@ public class TagContainer<T> {
 							LOGGER.error("Couldn't load {} tag list {} from {} in data pack {} as it's empty or null", this.type, identifier2, identifier, resource.getPackName());
 						} else {
 							Tag.Builder<T> builder = (Tag.Builder<T>)map.getOrDefault(identifier2, Tag.Builder.create());
-							builder.fromJson(this.predicate, this.getter, jsonObject);
+							builder.fromJson(this.getter, jsonObject);
 							map.put(identifier2, builder);
 						}
 					} catch (RuntimeException | IOException var15) {

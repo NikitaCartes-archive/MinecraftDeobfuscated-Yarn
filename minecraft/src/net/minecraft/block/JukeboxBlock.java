@@ -26,7 +26,7 @@ public class JukeboxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if ((Boolean)blockState.get(HAS_RECORD)) {
 			this.removeRecord(world, blockPos);
 			blockState = blockState.with(HAS_RECORD, Boolean.valueOf(false));
@@ -61,7 +61,7 @@ public class JukeboxBlock extends BlockWithEntity {
 					double g = (double)(world.random.nextFloat() * 0.7F) + 0.15F;
 					ItemStack itemStack2 = itemStack.copy();
 					ItemEntity itemEntity = new ItemEntity(world, (double)blockPos.getX() + d, (double)blockPos.getY() + e, (double)blockPos.getZ() + g, itemStack2);
-					itemEntity.method_6988();
+					itemEntity.setToDefaultPickupDelay();
 					world.spawnEntity(itemEntity);
 				}
 			}

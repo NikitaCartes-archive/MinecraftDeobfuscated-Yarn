@@ -26,7 +26,7 @@ public class HandSwingServerPacket implements Packet<ServerPlayPacketListener> {
 		packetByteBuf.writeEnumConstant(this.hand);
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12511(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onHandSwing(this);
 	}
 

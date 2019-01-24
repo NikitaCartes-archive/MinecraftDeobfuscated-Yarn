@@ -62,7 +62,9 @@ public class class_3776 extends class_3784 {
 	}
 
 	@Override
-	public boolean method_16626(IWorld iWorld, BlockPos blockPos, Rotation rotation, MutableIntBoundingBox mutableIntBoundingBox, Random random) {
+	public boolean method_16626(
+		StructureManager structureManager, IWorld iWorld, BlockPos blockPos, Rotation rotation, MutableIntBoundingBox mutableIntBoundingBox, Random random
+	) {
 		ChunkGenerator<?> chunkGenerator = iWorld.getChunkManager().getChunkGenerator();
 		return this.field_16661.generate(iWorld, (ChunkGenerator<? extends ChunkGeneratorConfig>)chunkGenerator, random, blockPos);
 	}

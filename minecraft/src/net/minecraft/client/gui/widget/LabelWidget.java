@@ -29,7 +29,7 @@ public class LabelWidget extends Drawable implements GuiEventListener {
 		if (this.field_2117) {
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(
-				GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
 			this.method_1891(i, j, f);
 			int k = this.field_2110 + this.field_2112 / 2 + this.field_2118 / 2;

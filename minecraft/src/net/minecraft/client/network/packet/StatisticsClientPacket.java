@@ -24,7 +24,7 @@ public class StatisticsClientPacket implements Packet<ClientPlayPacketListener> 
 		this.stats = object2IntMap;
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11270(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onStatistics(this);
 	}
 

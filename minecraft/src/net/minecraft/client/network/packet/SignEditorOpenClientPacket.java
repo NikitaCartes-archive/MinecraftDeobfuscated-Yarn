@@ -18,7 +18,7 @@ public class SignEditorOpenClientPacket implements Packet<ClientPlayPacketListen
 		this.pos = blockPos;
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11676(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onSignEditorOpen(this);
 	}
 

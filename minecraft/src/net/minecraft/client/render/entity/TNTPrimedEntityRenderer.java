@@ -47,7 +47,7 @@ public class TNTPrimedEntityRenderer extends EntityRenderer<PrimedTNTEntity> {
 			GlStateManager.disableTexture();
 			GlStateManager.disableLighting();
 			GlStateManager.enableBlend();
-			GlStateManager.blendFunc(GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.DST_ALPHA);
+			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.DST_ALPHA);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, i);
 			GlStateManager.polygonOffset(-3.0F, -3.0F);
 			GlStateManager.enablePolygonOffset();
@@ -64,7 +64,7 @@ public class TNTPrimedEntityRenderer extends EntityRenderer<PrimedTNTEntity> {
 		super.render(primedTNTEntity, d, e, f, g, h);
 	}
 
-	protected Identifier getTexture(PrimedTNTEntity primedTNTEntity) {
+	protected Identifier method_4136(PrimedTNTEntity primedTNTEntity) {
 		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
 	}
 }

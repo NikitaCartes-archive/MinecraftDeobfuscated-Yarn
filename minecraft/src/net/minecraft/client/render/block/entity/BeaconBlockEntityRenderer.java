@@ -15,7 +15,7 @@ import net.minecraft.util.math.MathHelper;
 public class BeaconBlockEntityRenderer extends BlockEntityRenderer<BeaconBlockEntity> {
 	private static final Identifier BEAM_TEX = new Identifier("textures/entity/beacon_beam.png");
 
-	public void render(BeaconBlockEntity beaconBlockEntity, double d, double e, double f, float g, int i) {
+	public void method_3541(BeaconBlockEntity beaconBlockEntity, double d, double e, double f, float g, int i) {
 		this.render(d, e, f, (double)g, (double)beaconBlockEntity.getBeamTextureOffset(), beaconBlockEntity.getBeamSegments(), beaconBlockEntity.getWorld().getTime());
 	}
 
@@ -49,7 +49,7 @@ public class BeaconBlockEntityRenderer extends BlockEntityRenderer<BeaconBlockEn
 		GlStateManager.disableBlend();
 		GlStateManager.depthMask(true);
 		GlStateManager.blendFuncSeparate(
-			GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		GlStateManager.pushMatrix();
 		GlStateManager.translated(d + 0.5, e, f + 0.5);
@@ -94,7 +94,7 @@ public class BeaconBlockEntityRenderer extends BlockEntityRenderer<BeaconBlockEn
 		GlStateManager.popMatrix();
 		GlStateManager.enableBlend();
 		GlStateManager.blendFuncSeparate(
-			GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		GlStateManager.depthMask(false);
 		u = -m;

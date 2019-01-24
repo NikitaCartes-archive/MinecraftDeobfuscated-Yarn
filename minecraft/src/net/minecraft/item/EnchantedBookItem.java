@@ -40,15 +40,7 @@ public class EnchantedBookItem extends Item {
 	@Override
 	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
 		super.buildTooltip(itemStack, world, list, tooltipOptions);
-		ListTag listTag = getEnchantmentTag(itemStack);
-
-		for (int i = 0; i < listTag.size(); i++) {
-			CompoundTag compoundTag = listTag.getCompoundTag(i);
-			Enchantment enchantment = Registry.ENCHANTMENT.get(Identifier.create(compoundTag.getString("id")));
-			if (enchantment != null) {
-				list.add(enchantment.getTextComponent(compoundTag.getInt("lvl")));
-			}
-		}
+		ItemStack.method_17870(list, getEnchantmentTag(itemStack));
 	}
 
 	public static void addEnchantment(ItemStack itemStack, InfoEnchantment infoEnchantment) {

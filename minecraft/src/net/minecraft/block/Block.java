@@ -565,7 +565,7 @@ public class Block implements ItemProvider {
 			double e = (double)(world.random.nextFloat() * 0.5F) + 0.25;
 			double g = (double)(world.random.nextFloat() * 0.5F) + 0.25;
 			ItemEntity itemEntity = new ItemEntity(world, (double)blockPos.getX() + d, (double)blockPos.getY() + e, (double)blockPos.getZ() + g, itemStack);
-			itemEntity.method_6988();
+			itemEntity.setToDefaultPickupDelay();
 			world.spawnEntity(itemEntity);
 		}
 	}
@@ -597,7 +597,7 @@ public class Block implements ItemProvider {
 	}
 
 	@Deprecated
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		return false;
 	}
 

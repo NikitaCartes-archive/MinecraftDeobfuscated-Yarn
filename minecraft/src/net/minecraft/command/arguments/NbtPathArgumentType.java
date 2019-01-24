@@ -176,21 +176,32 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 
 		@Override
 		public int method_9376(Tag tag, Supplier<Tag> supplier) {
-			if (tag instanceof AbstractListTag) {
+			if (!(tag instanceof AbstractListTag)) {
+				return 0;
+			} else {
 				AbstractListTag<?> abstractListTag = (AbstractListTag<?>)tag;
-				int i = Math.max(1, abstractListTag.size());
-				abstractListTag.clear();
-				int j = 0;
+				int i = abstractListTag.size();
+				if (i == 0) {
+					abstractListTag.addTag(0, (Tag)supplier.get());
+					return 1;
+				} else {
+					Tag tag2 = (Tag)supplier.get();
+					int j = i - (int)abstractListTag.stream().filter(tag2::equals).count();
+					if (j == 0) {
+						return 0;
+					} else {
+						abstractListTag.clear();
+						if (!abstractListTag.addTag(0, tag2)) {
+							return 0;
+						} else {
+							for (int k = 1; k < i; k++) {
+								abstractListTag.addTag(k, (Tag)supplier.get());
+							}
 
-				for (int k = 0; k < i; k++) {
-					if (abstractListTag.addTag(k, (Tag)supplier.get())) {
-						j++;
+							return j;
+						}
 					}
 				}
-
-				return j;
-			} else {
-				return 0;
 			}
 		}
 
@@ -251,11 +262,14 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 		public int method_9376(Tag tag, Supplier<Tag> supplier) {
 			if (tag instanceof CompoundTag) {
 				CompoundTag compoundTag = (CompoundTag)tag;
-				compoundTag.put(this.field_9902, (Tag)supplier.get());
-				return 1;
-			} else {
-				return 0;
+				Tag tag2 = (Tag)supplier.get();
+				Tag tag3 = compoundTag.put(this.field_9902, tag2);
+				if (!tag2.equals(tag3)) {
+					return 1;
+				}
 			}
+
+			return 0;
 		}
 
 		@Override
@@ -307,8 +321,12 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 				AbstractListTag<?> abstractListTag = (AbstractListTag<?>)tag;
 				int i = abstractListTag.size();
 				int j = this.field_9903 < 0 ? i + this.field_9903 : this.field_9903;
-				if (0 <= j && j < i && abstractListTag.setTag(j, (Tag)supplier.get())) {
-					return 1;
+				if (0 <= j && j < i) {
+					Tag tag2 = (Tag)abstractListTag.get(j);
+					Tag tag3 = (Tag)supplier.get();
+					if (!tag3.equals(tag2) && abstractListTag.setTag(j, tag3)) {
+						return 1;
+					}
 				}
 			}
 
@@ -376,7 +394,8 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 				ListTag listTag = (ListTag)tag;
 
 				for (int j = listTag.size() - 1; j >= 0; j--) {
-					if (this.field_9905.test(listTag.get(j)) && arg.apply(listTag, j)) {
+					Tag tag2 = listTag.get(j);
+					if (this.field_9905.test(tag2) && arg.apply(listTag, j, tag2)) {
 						i++;
 					}
 				}
@@ -387,12 +406,15 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 
 		@Override
 		public int method_9376(Tag tag, Supplier<Tag> supplier) {
-			return this.method_9364(tag, (listTag, i) -> listTag.setTag(i, (Tag)supplier.get()));
+			return this.method_9364(tag, (listTag, i, tagx) -> {
+				Tag tag2 = (Tag)supplier.get();
+				return !tag2.equals(tagx) && listTag.setTag(i, tag2);
+			});
 		}
 
 		@Override
 		public int method_9383(Tag tag) {
-			return this.method_9364(tag, (listTag, i) -> {
+			return this.method_9364(tag, (listTag, i, tagx) -> {
 				listTag.getTag(i);
 				return true;
 			});
@@ -446,8 +468,11 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 				CompoundTag compoundTag = (CompoundTag)tag;
 				Tag tag2 = compoundTag.getTag(this.field_9906);
 				if (this.field_9908.test(tag2)) {
-					compoundTag.put(this.field_9906, (Tag)supplier.get());
-					return 1;
+					Tag tag3 = (Tag)supplier.get();
+					if (!tag3.equals(tag2)) {
+						compoundTag.put(this.field_9906, tag3);
+						return 1;
+					}
 				}
 			}
 
@@ -624,6 +649,6 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 	}
 
 	interface class_3967 {
-		boolean apply(ListTag listTag, int i);
+		boolean apply(ListTag listTag, int i, Tag tag);
 	}
 }

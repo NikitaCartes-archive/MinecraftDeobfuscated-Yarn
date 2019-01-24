@@ -3,7 +3,6 @@ package net.minecraft.container;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_3914;
-import net.minecraft.class_3915;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,7 +21,7 @@ import net.minecraft.util.DyeColor;
 
 public class LoomContainer extends Container {
 	private final class_3914 field_17316;
-	private final class_3915 field_17317 = class_3915.method_17403();
+	private final Property field_17317 = Property.create();
 	private Runnable field_17318 = () -> {
 	};
 	private final Slot field_17319;
@@ -80,7 +79,7 @@ public class LoomContainer extends Container {
 			public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
 				LoomContainer.this.field_17319.takeStack(1);
 				LoomContainer.this.field_17320.takeStack(1);
-				LoomContainer.this.field_17317.method_17404(0);
+				LoomContainer.this.field_17317.set(0);
 				arg.method_17393((world, blockPos) -> world.playSound(null, blockPos, SoundEvents.field_15096, SoundCategory.field_15245, 1.0F, 1.0F));
 				return super.onTakeItem(playerEntity, itemStack);
 			}
@@ -101,17 +100,17 @@ public class LoomContainer extends Container {
 
 	@Environment(EnvType.CLIENT)
 	public int method_7647() {
-		return this.field_17317.method_17407();
+		return this.field_17317.get();
 	}
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return method_17695(this.field_17316, playerEntity, Blocks.field_10083);
+		return canUse(this.field_17316, playerEntity, Blocks.field_10083);
 	}
 
 	@Override
 	public boolean onButtonClick(PlayerEntity playerEntity, int i) {
-		this.field_17317.method_17404(i);
+		this.field_17317.set(i);
 		this.method_7648();
 		return true;
 	}
@@ -125,20 +124,20 @@ public class LoomContainer extends Container {
 		if (itemStack4.isEmpty()
 			|| !itemStack.isEmpty()
 				&& !itemStack2.isEmpty()
-				&& this.field_17317.method_17407() > 0
-				&& (this.field_17317.method_17407() < BannerPattern.COUNT - 4 || !itemStack3.isEmpty())) {
+				&& this.field_17317.get() > 0
+				&& (this.field_17317.get() < BannerPattern.COUNT - 4 || !itemStack3.isEmpty())) {
 			if (!itemStack3.isEmpty() && itemStack3.getItem() instanceof BannerPatternItem) {
 				CompoundTag compoundTag = itemStack.getOrCreateSubCompoundTag("BlockEntityTag");
 				boolean bl = compoundTag.containsKey("Patterns", 9) && !itemStack.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;
 				if (bl) {
-					this.field_17317.method_17404(0);
+					this.field_17317.set(0);
 				} else {
-					this.field_17317.method_17404(((BannerPatternItem)itemStack3.getItem()).getPattern().ordinal());
+					this.field_17317.set(((BannerPatternItem)itemStack3.getItem()).getPattern().ordinal());
 				}
 			}
 		} else {
 			this.field_17322.setStack(ItemStack.EMPTY);
-			this.field_17317.method_17404(0);
+			this.field_17317.set(0);
 		}
 
 		this.method_7648();
@@ -206,19 +205,19 @@ public class LoomContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.field_17316.method_17393((world, blockPos) -> this.method_7607(playerEntity, playerEntity.world, this.inv));
+		this.field_17316.method_17393((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.inv));
 	}
 
 	private void method_7648() {
 		this.field_17316.method_17393((world, blockPos) -> {
-			if (this.field_17317.method_17407() > 0) {
+			if (this.field_17317.get() > 0) {
 				ItemStack itemStack = this.field_17319.getStack();
 				ItemStack itemStack2 = this.field_17320.getStack();
 				ItemStack itemStack3 = ItemStack.EMPTY;
 				if (!itemStack.isEmpty() && !itemStack2.isEmpty()) {
 					itemStack3 = itemStack.copy();
 					itemStack3.setAmount(1);
-					BannerPattern bannerPattern = BannerPattern.values()[this.field_17317.method_17407()];
+					BannerPattern bannerPattern = BannerPattern.values()[this.field_17317.get()];
 					DyeColor dyeColor = ((DyeItem)itemStack2.getItem()).getColor();
 					CompoundTag compoundTag = itemStack3.getOrCreateSubCompoundTag("BlockEntityTag");
 					ListTag listTag;

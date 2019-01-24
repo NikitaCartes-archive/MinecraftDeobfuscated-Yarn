@@ -386,7 +386,7 @@ public class LootCommand {
 		ServerWorld serverWorld = serverCommandSource.getWorld();
 		list.forEach(itemStack -> {
 			ItemEntity itemEntity = new ItemEntity(serverWorld, vec3d.x, vec3d.y, vec3d.z, itemStack.copy());
-			itemEntity.method_6988();
+			itemEntity.setToDefaultPickupDelay();
 			serverWorld.spawnEntity(itemEntity);
 		});
 		arg.accept(list);

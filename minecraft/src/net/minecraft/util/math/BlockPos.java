@@ -3,6 +3,10 @@ package net.minecraft.util.math;
 import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Lists;
 import java.util.List;
+import java.util.Spliterators.AbstractSpliterator;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import javax.annotation.concurrent.Immutable;
 import net.minecraft.entity.Entity;
 import org.apache.logging.log4j.LogManager;
@@ -205,30 +209,27 @@ public class BlockPos extends Vec3i {
 		);
 	}
 
+	public static Stream<BlockPos> method_17962(int i, int j, int k, int l, int m, int n) {
+		return StreamSupport.stream(new AbstractSpliterator<BlockPos>((long)((l - i + 1) * (m - j + 1) * (n - k + 1)), 64) {
+			final BlockPos.class_3980 field_17676 = new BlockPos.class_3980(i, j, k, l, m, n);
+
+			public boolean tryAdvance(Consumer<? super BlockPos> consumer) {
+				if (this.field_17676.method_17963()) {
+					consumer.accept(this.field_17676.field_17689);
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}, false);
+	}
+
 	public static Iterable<BlockPos> iterateBoxPositions(int i, int j, int k, int l, int m, int n) {
 		return () -> new AbstractIterator<BlockPos>() {
-				private BlockPos.Mutable field_17596;
+				final BlockPos.class_3980 field_17596 = new BlockPos.class_3980(i, j, k, l, m, n);
 
 				protected BlockPos method_10106() {
-					if (this.field_17596 == null) {
-						this.field_17596 = new BlockPos.Mutable(i, j, k);
-						return this.field_17596;
-					} else if (this.field_17596.xMut == l && this.field_17596.yMut == m && this.field_17596.zMut == n) {
-						return this.endOfData();
-					} else {
-						if (this.field_17596.xMut < l) {
-							this.field_17596.xMut++;
-						} else if (this.field_17596.yMut < m) {
-							this.field_17596.xMut = i;
-							this.field_17596.yMut++;
-						} else if (this.field_17596.zMut < n) {
-							this.field_17596.xMut = i;
-							this.field_17596.yMut = j;
-							this.field_17596.zMut++;
-						}
-
-						return this.field_17596;
-					}
+					return (BlockPos)(this.field_17596.method_17963() ? this.field_17596.field_17689 : this.endOfData());
 				}
 			};
 	}
@@ -309,6 +310,12 @@ public class BlockPos extends Vec3i {
 
 		public BlockPos.Mutable setFromLong(long l) {
 			return this.set(unpackLongX(l), unpackLongY(l), unpackLongZ(l));
+		}
+
+		public BlockPos.Mutable method_17965(AxisCycle axisCycle, int i, int j, int k) {
+			return this.set(
+				axisCycle.method_10056(i, j, k, Direction.Axis.X), axisCycle.method_10056(i, j, k, Direction.Axis.Y), axisCycle.method_10056(i, j, k, Direction.Axis.Z)
+			);
 		}
 
 		public BlockPos.Mutable setOffset(Direction direction) {
@@ -403,6 +410,47 @@ public class BlockPos extends Vec3i {
 				}
 
 				this.field_11004 = true;
+			}
+		}
+	}
+
+	static class class_3980 {
+		private final int field_17683;
+		private final int field_17684;
+		private final int field_17685;
+		private final int field_17686;
+		private final int field_17687;
+		private final int field_17688;
+		private BlockPos.Mutable field_17689;
+
+		public class_3980(int i, int j, int k, int l, int m, int n) {
+			this.field_17683 = i;
+			this.field_17684 = j;
+			this.field_17685 = k;
+			this.field_17686 = l;
+			this.field_17687 = m;
+			this.field_17688 = n;
+		}
+
+		public boolean method_17963() {
+			if (this.field_17689 == null) {
+				this.field_17689 = new BlockPos.Mutable(this.field_17683, this.field_17684, this.field_17685);
+				return true;
+			} else if (this.field_17689.xMut == this.field_17686 && this.field_17689.yMut == this.field_17687 && this.field_17689.zMut == this.field_17688) {
+				return false;
+			} else {
+				if (this.field_17689.xMut < this.field_17686) {
+					this.field_17689.xMut++;
+				} else if (this.field_17689.yMut < this.field_17687) {
+					this.field_17689.xMut = this.field_17683;
+					this.field_17689.yMut++;
+				} else if (this.field_17689.zMut < this.field_17688) {
+					this.field_17689.xMut = this.field_17683;
+					this.field_17689.yMut = this.field_17684;
+					this.field_17689.zMut++;
+				}
+
+				return true;
 			}
 		}
 	}

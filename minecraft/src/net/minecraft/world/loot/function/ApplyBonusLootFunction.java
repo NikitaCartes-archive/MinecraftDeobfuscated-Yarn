@@ -115,7 +115,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 		}
 
 		public void method_469(JsonObject jsonObject, ApplyBonusLootFunction applyBonusLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, applyBonusLootFunction, jsonSerializationContext);
+			super.method_529(jsonObject, applyBonusLootFunction, jsonSerializationContext);
 			jsonObject.addProperty("enchantment", Registry.ENCHANTMENT.getId(applyBonusLootFunction.enchantment).toString());
 			jsonObject.addProperty("formula", applyBonusLootFunction.formula.getId().toString());
 			JsonObject jsonObject2 = new JsonObject();
@@ -127,24 +127,22 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 
 		public ApplyBonusLootFunction method_470(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "enchantment"));
-			Enchantment enchantment = Registry.ENCHANTMENT.get(identifier);
-			if (enchantment == null) {
-				throw new JsonParseException("Invalid enchantment id: " + identifier);
+			Enchantment enchantment = (Enchantment)Registry.ENCHANTMENT
+				.method_17966(identifier)
+				.orElseThrow(() -> new JsonParseException("Invalid enchantment id: " + identifier));
+			Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "formula"));
+			ApplyBonusLootFunction.FormulaFactory formulaFactory = (ApplyBonusLootFunction.FormulaFactory)ApplyBonusLootFunction.FACTORIES.get(identifier2);
+			if (formulaFactory == null) {
+				throw new JsonParseException("Invalid formula id: " + identifier2);
 			} else {
-				Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "formula"));
-				ApplyBonusLootFunction.FormulaFactory formulaFactory = (ApplyBonusLootFunction.FormulaFactory)ApplyBonusLootFunction.FACTORIES.get(identifier2);
-				if (formulaFactory == null) {
-					throw new JsonParseException("Invalid formula id: " + identifier2);
+				ApplyBonusLootFunction.Formula formula;
+				if (jsonObject.has("parameters")) {
+					formula = formulaFactory.deserialize(JsonHelper.getObject(jsonObject, "parameters"), jsonDeserializationContext);
 				} else {
-					ApplyBonusLootFunction.Formula formula;
-					if (jsonObject.has("parameters")) {
-						formula = formulaFactory.deserialize(JsonHelper.getObject(jsonObject, "parameters"), jsonDeserializationContext);
-					} else {
-						formula = formulaFactory.deserialize(new JsonObject(), jsonDeserializationContext);
-					}
-
-					return new ApplyBonusLootFunction(lootConditions, enchantment, formula);
+					formula = formulaFactory.deserialize(new JsonObject(), jsonDeserializationContext);
 				}
+
+				return new ApplyBonusLootFunction(lootConditions, enchantment, formula);
 			}
 		}
 	}

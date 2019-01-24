@@ -102,7 +102,7 @@ public class WorldBorderClientPacket implements Packet<ClientPlayPacketListener>
 		}
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11796(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onWorldBorder(this);
 	}
 

@@ -37,7 +37,7 @@ public class EntityEquipmentUpdateClientPacket implements Packet<ClientPlayPacke
 		packetByteBuf.writeItemStack(this.stack);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11823(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onEquipmentUpdate(this);
 	}
 

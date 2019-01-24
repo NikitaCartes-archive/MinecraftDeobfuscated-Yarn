@@ -206,7 +206,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 			this.z + (double)((float)this.facing.getOffsetZ() * 0.15F),
 			itemStack
 		);
-		itemEntity.method_6988();
+		itemEntity.setToDefaultPickupDelay();
 		this.world.spawnEntity(itemEntity);
 		return itemEntity;
 	}

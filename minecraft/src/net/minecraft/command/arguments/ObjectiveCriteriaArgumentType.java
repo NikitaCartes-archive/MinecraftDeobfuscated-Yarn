@@ -45,13 +45,10 @@ public class ObjectiveCriteriaArgumentType implements ArgumentType<ScoreboardCri
 		}
 
 		String string = stringReader.getString().substring(i, stringReader.getCursor());
-		ScoreboardCriterion scoreboardCriterion = ScoreboardCriterion.method_1224(string);
-		if (scoreboardCriterion == null) {
+		return (ScoreboardCriterion)ScoreboardCriterion.method_1224(string).orElseThrow(() -> {
 			stringReader.setCursor(i);
-			throw INVALID_CRITERIA_EXCEPTION.create(string);
-		} else {
-			return scoreboardCriterion;
-		}
+			return INVALID_CRITERIA_EXCEPTION.create(string);
+		});
 	}
 
 	@Override

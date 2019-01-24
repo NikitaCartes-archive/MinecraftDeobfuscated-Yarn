@@ -60,9 +60,9 @@ public abstract class ButtonWidget extends Drawable implements GuiEventListener 
 			int k = this.getTextureId(this.hovered);
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(
-				GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
-			GlStateManager.blendFunc(GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA);
+			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			this.drawTexturedRect(this.x, this.y, 0, 46 + k * 20, this.width / 2, this.height);
 			this.drawTexturedRect(this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + k * 20, this.width / 2, this.height);
 			this.drawBackground(minecraftClient, i, j);

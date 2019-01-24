@@ -309,12 +309,10 @@ public class EntitySelectorOptions {
 						entitySelectorReader.setPredicate(entity -> tag.contains(entity.getType()) != bl);
 					} else {
 						Identifier identifier = Identifier.parse(entitySelectorReader.getReader());
-						EntityType<? extends Entity> entityType = (EntityType<? extends Entity>)Registry.ENTITY_TYPE.get(identifier);
-						if (entityType == null) {
+						EntityType<? extends Entity> entityType = (EntityType<? extends Entity>)Registry.ENTITY_TYPE.method_17966(identifier).orElseThrow(() -> {
 							entitySelectorReader.getReader().setCursor(i);
-							throw INVALID_TYPE_EXCEPTION.createWithContext(entitySelectorReader.getReader(), identifier.toString());
-						}
-
+							return INVALID_TYPE_EXCEPTION.createWithContext(entitySelectorReader.getReader(), identifier.toString());
+						});
 						if (Objects.equals(EntityType.PLAYER, entityType) && !bl) {
 							entitySelectorReader.method_9841(false);
 						}

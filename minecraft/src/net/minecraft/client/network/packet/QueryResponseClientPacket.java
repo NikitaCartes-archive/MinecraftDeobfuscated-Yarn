@@ -42,7 +42,7 @@ public class QueryResponseClientPacket implements Packet<ClientQueryPacketListen
 		packetByteBuf.writeString(GSON.toJson(this.metadata));
 	}
 
-	public void apply(ClientQueryPacketListener clientQueryPacketListener) {
+	public void method_12671(ClientQueryPacketListener clientQueryPacketListener) {
 		clientQueryPacketListener.onResponse(this);
 	}
 
