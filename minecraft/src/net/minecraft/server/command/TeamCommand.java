@@ -356,10 +356,12 @@ public class TeamCommand {
 
 		if (collection.size() == 1) {
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.team.join.success.single", collection.iterator().next(), scoreboardTeam.getPrefix()), true
+				new TranslatableTextComponent("commands.team.join.success.single", collection.iterator().next(), scoreboardTeam.method_1148()), true
 			);
 		} else {
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.team.join.success.multiple", collection.size(), scoreboardTeam.getPrefix()), true);
+			serverCommandSource.sendFeedback(
+				new TranslatableTextComponent("commands.team.join.success.multiple", collection.size(), scoreboardTeam.method_1148()), true
+			);
 		}
 
 		return collection.size();
@@ -371,7 +373,7 @@ public class TeamCommand {
 		} else {
 			scoreboardTeam.setNameTagVisibilityRule(visibilityRule);
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.team.option.nametagVisibility.success", scoreboardTeam.getPrefix(), visibilityRule.method_1214()), true
+				new TranslatableTextComponent("commands.team.option.nametagVisibility.success", scoreboardTeam.method_1148(), visibilityRule.method_1214()), true
 			);
 			return 0;
 		}
@@ -383,7 +385,7 @@ public class TeamCommand {
 		} else {
 			scoreboardTeam.setDeathMessageVisibilityRule(visibilityRule);
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.team.option.deathMessageVisibility.success", scoreboardTeam.getPrefix(), visibilityRule.method_1214()), true
+				new TranslatableTextComponent("commands.team.option.deathMessageVisibility.success", scoreboardTeam.method_1148(), visibilityRule.method_1214()), true
 			);
 			return 0;
 		}
@@ -395,7 +397,7 @@ public class TeamCommand {
 		} else {
 			scoreboardTeam.setCollisionRule(collisionRule);
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.team.option.collisionRule.success", scoreboardTeam.getPrefix(), collisionRule.method_1209()), true
+				new TranslatableTextComponent("commands.team.option.collisionRule.success", scoreboardTeam.method_1148(), collisionRule.method_1209()), true
 			);
 			return 0;
 		}
@@ -411,7 +413,7 @@ public class TeamCommand {
 		} else {
 			scoreboardTeam.setShowFriendlyInvisibles(bl);
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.team.option.seeFriendlyInvisibles." + (bl ? "enabled" : "disabled"), scoreboardTeam.getPrefix()), true
+				new TranslatableTextComponent("commands.team.option.seeFriendlyInvisibles." + (bl ? "enabled" : "disabled"), scoreboardTeam.method_1148()), true
 			);
 			return 0;
 		}
@@ -427,7 +429,7 @@ public class TeamCommand {
 		} else {
 			scoreboardTeam.setFriendlyFireAllowed(bl);
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.team.option.friendlyfire." + (bl ? "enabled" : "disabled"), scoreboardTeam.getPrefix()), true
+				new TranslatableTextComponent("commands.team.option.friendlyfire." + (bl ? "enabled" : "disabled"), scoreboardTeam.method_1148()), true
 			);
 			return 0;
 		}
@@ -438,7 +440,7 @@ public class TeamCommand {
 			throw OPTION_NAME_UNCHANGED_EXCEPTION.create();
 		} else {
 			scoreboardTeam.setDisplayName(textComponent);
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.team.option.name.success", scoreboardTeam.getPrefix()), true);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.team.option.name.success", scoreboardTeam.method_1148()), true);
 			return 0;
 		}
 	}
@@ -449,7 +451,7 @@ public class TeamCommand {
 		} else {
 			scoreboardTeam.setColor(textFormat);
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.team.option.color.success", scoreboardTeam.getPrefix(), textFormat.getFormatName()), true
+				new TranslatableTextComponent("commands.team.option.color.success", scoreboardTeam.method_1148(), textFormat.getFormatName()), true
 			);
 			return 0;
 		}
@@ -465,7 +467,7 @@ public class TeamCommand {
 				scoreboard.removePlayerFromTeam(string, scoreboardTeam);
 			}
 
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.team.empty.success", collection.size(), scoreboardTeam.getPrefix()), true);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.team.empty.success", collection.size(), scoreboardTeam.method_1148()), true);
 			return collection.size();
 		}
 	}
@@ -473,7 +475,7 @@ public class TeamCommand {
 	private static int method_13747(ServerCommandSource serverCommandSource, ScoreboardTeam scoreboardTeam) {
 		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
 		scoreboard.removeTeam(scoreboardTeam);
-		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.team.remove.success", scoreboardTeam.getPrefix()), true);
+		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.team.remove.success", scoreboardTeam.method_1148()), true);
 		return scoreboard.getTeams().size();
 	}
 
@@ -490,7 +492,7 @@ public class TeamCommand {
 		} else {
 			ScoreboardTeam scoreboardTeam = scoreboard.addTeam(string);
 			scoreboardTeam.setDisplayName(textComponent);
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.team.add.success", scoreboardTeam.getPrefix()), true);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.team.add.success", scoreboardTeam.method_1148()), true);
 			return scoreboard.getTeams().size();
 		}
 	}
@@ -498,10 +500,10 @@ public class TeamCommand {
 	private static int method_13748(ServerCommandSource serverCommandSource, ScoreboardTeam scoreboardTeam) {
 		Collection<String> collection = scoreboardTeam.getPlayerList();
 		if (collection.isEmpty()) {
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.team.list.members.empty", scoreboardTeam.getPrefix()), false);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.team.list.members.empty", scoreboardTeam.method_1148()), false);
 		} else {
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.team.list.members.success", scoreboardTeam.getPrefix(), collection.size(), TextFormatter.sortedJoin(collection)),
+				new TranslatableTextComponent("commands.team.list.members.success", scoreboardTeam.method_1148(), collection.size(), TextFormatter.sortedJoin(collection)),
 				false
 			);
 		}
@@ -515,7 +517,7 @@ public class TeamCommand {
 			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.team.list.teams.empty"), false);
 		} else {
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.team.list.teams.success", collection.size(), TextFormatter.join(collection, ScoreboardTeam::getPrefix)), false
+				new TranslatableTextComponent("commands.team.list.teams.success", collection.size(), TextFormatter.join(collection, ScoreboardTeam::method_1148)), false
 			);
 		}
 

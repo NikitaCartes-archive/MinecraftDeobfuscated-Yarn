@@ -21,7 +21,7 @@ public class GuiActionConfirmClientPacket implements Packet<ClientPlayPacketList
 		this.accepted = bl;
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11424(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onGuiActionConfirm(this);
 	}
 

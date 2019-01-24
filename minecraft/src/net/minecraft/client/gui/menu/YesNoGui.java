@@ -45,13 +45,13 @@ public class YesNoGui extends Gui {
 		this.addButton(new OptionButtonWidget(0, this.width / 2 - 155, this.height / 6 + 96, this.yesTranslated) {
 			@Override
 			public void onPressed(double d, double e) {
-				YesNoGui.this.callback.handle(true, YesNoGui.this.callbackId);
+				YesNoGui.this.callback.confirmResult(true, YesNoGui.this.callbackId);
 			}
 		});
 		this.addButton(new OptionButtonWidget(1, this.width / 2 - 155 + 160, this.height / 6 + 96, this.noTranslated) {
 			@Override
 			public void onPressed(double d, double e) {
-				YesNoGui.this.callback.handle(false, YesNoGui.this.callbackId);
+				YesNoGui.this.callback.confirmResult(false, YesNoGui.this.callbackId);
 			}
 		});
 		this.messageSplit.clear();
@@ -98,7 +98,7 @@ public class YesNoGui extends Gui {
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
 		if (i == 256) {
-			this.callback.handle(false, this.callbackId);
+			this.callback.confirmResult(false, this.callbackId);
 			return true;
 		} else {
 			return super.keyPressed(i, j, k);

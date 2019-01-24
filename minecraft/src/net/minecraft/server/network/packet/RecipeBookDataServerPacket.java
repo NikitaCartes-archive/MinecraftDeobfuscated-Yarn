@@ -76,7 +76,7 @@ public class RecipeBookDataServerPacket implements Packet<ServerPlayPacketListen
 		}
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12400(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onRecipeBookData(this);
 	}
 

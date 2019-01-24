@@ -131,7 +131,7 @@ public abstract class LeafEntry extends LootEntry {
 			super(identifier, class_);
 		}
 
-		public void toJson(JsonObject jsonObject, T leafEntry, JsonSerializationContext jsonSerializationContext) {
+		public void method_442(JsonObject jsonObject, T leafEntry, JsonSerializationContext jsonSerializationContext) {
 			if (leafEntry.weight != 1) {
 				jsonObject.addProperty("weight", leafEntry.weight);
 			}

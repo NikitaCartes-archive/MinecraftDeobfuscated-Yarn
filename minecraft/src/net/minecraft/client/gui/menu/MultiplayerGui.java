@@ -179,7 +179,7 @@ public class MultiplayerGui extends Gui {
 	}
 
 	@Override
-	public void handle(boolean bl, int i) {
+	public void confirmResult(boolean bl, int i) {
 		EntryListWidget.Entry<?> entry = this.field_3043.getIndex() < 0 ? null : (EntryListWidget.Entry)this.field_3043.getEntries().get(this.field_3043.getIndex());
 		if (this.field_3039) {
 			this.field_3039 = false;

@@ -22,7 +22,7 @@ public class GuiActionConfirmServerPacket implements Packet<ServerPlayPacketList
 		this.accepted = bl;
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12177(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onConfirmTransaction(this);
 	}
 

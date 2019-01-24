@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.ImmutableMap.Builder;
 import java.util.Map;
-import javax.annotation.Nullable;
+import java.util.Optional;
 import net.minecraft.stat.StatType;
 import net.minecraft.text.TextFormat;
 import net.minecraft.util.Identifier;
@@ -74,25 +74,21 @@ public class ScoreboardCriterion {
 		OBJECTIVES.put(string, this);
 	}
 
-	@Nullable
-	public static ScoreboardCriterion method_1224(String string) {
+	public static Optional<ScoreboardCriterion> method_1224(String string) {
 		if (OBJECTIVES.containsKey(string)) {
-			return (ScoreboardCriterion)OBJECTIVES.get(string);
+			return Optional.of(OBJECTIVES.get(string));
 		} else {
 			int i = string.indexOf(58);
-			if (i < 0) {
-				return null;
-			} else {
-				StatType<?> statType = Registry.STAT_TYPE.get(Identifier.createSplit(string.substring(0, i), '.'));
-				return statType == null ? null : method_1223(statType, Identifier.createSplit(string.substring(i + 1), '.'));
-			}
+			return i < 0
+				? Optional.empty()
+				: Registry.STAT_TYPE
+					.method_17966(Identifier.createSplit(string.substring(0, i), '.'))
+					.flatMap(statType -> method_1223(statType, Identifier.createSplit(string.substring(i + 1), '.')));
 		}
 	}
 
-	@Nullable
-	private static <T> ScoreboardCriterion method_1223(StatType<T> statType, Identifier identifier) {
-		Registry<T> registry = statType.getRegistry();
-		return registry.contains(identifier) ? statType.getOrCreateStat(registry.get(identifier)) : null;
+	private static <T> Optional<ScoreboardCriterion> method_1223(StatType<T> statType, Identifier identifier) {
+		return statType.getRegistry().method_17966(identifier).map(statType::getOrCreateStat);
 	}
 
 	public String getName() {

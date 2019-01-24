@@ -36,7 +36,7 @@ public class BlockBreakingProgressClientPacket implements Packet<ClientPlayPacke
 		packetByteBuf.writeByte(this.progress);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11279(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onBlockDestroyProgress(this);
 	}
 

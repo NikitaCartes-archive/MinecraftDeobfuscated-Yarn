@@ -17,7 +17,7 @@ public class IronGolemEntityRenderer extends MobEntityRenderer<IronGolemEntity, 
 		this.addFeature(new IronGolemFlowerFeatureRenderer(this));
 	}
 
-	protected Identifier getTexture(IronGolemEntity ironGolemEntity) {
+	protected Identifier method_3987(IronGolemEntity ironGolemEntity) {
 		return SKIN;
 	}
 

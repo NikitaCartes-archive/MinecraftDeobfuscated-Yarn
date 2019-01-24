@@ -29,10 +29,10 @@ public class WolfEntityRenderer extends MobEntityRenderer<WolfEntity, WolfEntity
 			GlStateManager.color3f(i, i, i);
 		}
 
-		super.render(wolfEntity, d, e, f, g, h);
+		super.method_4072(wolfEntity, d, e, f, g, h);
 	}
 
-	protected Identifier getTexture(WolfEntity wolfEntity) {
+	protected Identifier method_4165(WolfEntity wolfEntity) {
 		if (wolfEntity.isTamed()) {
 			return TAMED_SKIN;
 		} else {

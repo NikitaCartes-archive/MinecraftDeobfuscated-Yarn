@@ -137,7 +137,7 @@ public class ScoreboardHud extends Drawable {
 			GlStateManager.enableAlphaTest();
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(
-				GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
 			if (u < list.size()) {
 				ScoreboardEntry scoreboardEntry2 = (ScoreboardEntry)list.get(u);

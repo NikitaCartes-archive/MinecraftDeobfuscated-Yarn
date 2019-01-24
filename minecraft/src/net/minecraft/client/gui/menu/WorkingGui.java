@@ -56,12 +56,8 @@ public class WorkingGui extends Gui implements ProgressListener {
 		} else {
 			this.drawBackground();
 			this.drawStringCentered(this.fontRenderer, this.title, this.width / 2, 70, 16777215);
-			if (!Objects.equals(this.task, "")) {
-				if (this.progress == 0) {
-					this.drawStringCentered(this.fontRenderer, this.task, this.width / 2, 90, 16777215);
-				} else {
-					this.drawStringCentered(this.fontRenderer, this.task + " " + this.progress + "%", this.width / 2, 90, 16777215);
-				}
+			if (!Objects.equals(this.task, "") && this.progress != 0) {
+				this.drawStringCentered(this.fontRenderer, this.task + " " + this.progress + "%", this.width / 2, 90, 16777215);
 			}
 
 			super.draw(i, j, f);

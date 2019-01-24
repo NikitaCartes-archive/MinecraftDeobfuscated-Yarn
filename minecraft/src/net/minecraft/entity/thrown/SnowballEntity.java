@@ -55,7 +55,7 @@ public class SnowballEntity extends class_3857 {
 	}
 
 	@Override
-	protected void method_7492(HitResult hitResult) {
+	protected void onCollision(HitResult hitResult) {
 		if (hitResult.getType() == HitResult.Type.ENTITY) {
 			Entity entity = ((EntityHitResult)hitResult).getEntity();
 			int i = entity instanceof BlazeEntity ? 3 : 0;

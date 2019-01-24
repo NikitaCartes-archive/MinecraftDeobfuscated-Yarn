@@ -48,7 +48,8 @@ public class CommandSyntaxProvider implements DataProvider {
 			minecraftSessionService,
 			gameProfileRepository,
 			userCache,
-			WorldGenerationProgressLogger::new
+			WorldGenerationProgressLogger::new,
+			serverPropertiesLoader.getPropertiesHandler().levelName
 		);
 		Path path = this.root.getOutput().resolve("reports/commands.json");
 		CommandDispatcher<ServerCommandSource> commandDispatcher = minecraftServer.getCommandManager().getDispatcher();

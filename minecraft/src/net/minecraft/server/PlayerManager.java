@@ -36,6 +36,7 @@ import net.minecraft.client.network.packet.TeamClientPacket;
 import net.minecraft.client.network.packet.WorldBorderClientPacket;
 import net.minecraft.client.network.packet.WorldTimeUpdateClientPacket;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -67,7 +68,6 @@ import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.ChunkSaveHandlerImpl;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.PlayerSaveHandler;
@@ -182,7 +182,7 @@ public abstract class PlayerManager {
 
 		if (compoundTag != null && compoundTag.containsKey("RootVehicle", 10)) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("RootVehicle");
-			Entity entity = ChunkSaveHandlerImpl.readEntity(compoundTag2.getCompound("Entity"), serverWorld, true);
+			Entity entity = EntityType.method_17844(compoundTag2.getCompound("Entity"), serverWorld, true);
 			if (entity != null) {
 				UUID uUID = compoundTag2.getUuid("Attach");
 				if (entity.getUuid().equals(uUID)) {
@@ -230,7 +230,7 @@ public abstract class PlayerManager {
 	}
 
 	public void method_14591(ServerWorld serverWorld) {
-		this.field_14358 = serverWorld.getSaveHandler().getPlayerSaveHandler();
+		this.field_14358 = serverWorld.method_17982();
 		serverWorld.getWorldBorder().addListener(new WorldBorderListener() {
 			@Override
 			public void onSizeChange(WorldBorder worldBorder, double d) {
@@ -778,10 +778,6 @@ public abstract class PlayerManager {
 		return this.maxPlayers;
 	}
 
-	public String[] getSavedPlayerIds() {
-		return this.server.getWorld(DimensionType.field_13072).getSaveHandler().getPlayerSaveHandler().getSavedPlayerIds();
-	}
-
 	public boolean isWhitelistEnabled() {
 		return this.whitelistEnabled;
 	}
@@ -854,7 +850,7 @@ public abstract class PlayerManager {
 		UUID uUID = playerEntity.getUuid();
 		ServerStatHandler serverStatHandler = uUID == null ? null : (ServerStatHandler)this.statisticsMap.get(uUID);
 		if (serverStatHandler == null) {
-			File file = new File(this.server.getWorld(DimensionType.field_13072).getSaveHandler().getWorldDir(), "stats");
+			File file = new File(this.server.getWorld(DimensionType.field_13072).method_17982().getWorldDir(), "stats");
 			File file2 = new File(file, uUID + ".json");
 			if (!file2.exists()) {
 				File file3 = new File(file, playerEntity.getName().getString() + ".json");
@@ -874,7 +870,7 @@ public abstract class PlayerManager {
 		UUID uUID = serverPlayerEntity.getUuid();
 		PlayerAdvancementTracker playerAdvancementTracker = (PlayerAdvancementTracker)this.advancementManagerMap.get(uUID);
 		if (playerAdvancementTracker == null) {
-			File file = new File(this.server.getWorld(DimensionType.field_13072).getSaveHandler().getWorldDir(), "advancements");
+			File file = new File(this.server.getWorld(DimensionType.field_13072).method_17982().getWorldDir(), "advancements");
 			File file2 = new File(file, uUID + ".json");
 			playerAdvancementTracker = new PlayerAdvancementTracker(this.server, file2, serverPlayerEntity);
 			this.advancementManagerMap.put(uUID, playerAdvancementTracker);

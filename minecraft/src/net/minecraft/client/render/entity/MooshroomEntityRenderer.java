@@ -16,7 +16,7 @@ public class MooshroomEntityRenderer extends MobEntityRenderer<MooshroomEntity, 
 		this.addFeature(new MooshroomMushroomFeatureRenderer<>(this));
 	}
 
-	protected Identifier getTexture(MooshroomEntity mooshroomEntity) {
+	protected Identifier method_4066(MooshroomEntity mooshroomEntity) {
 		return SKIN;
 	}
 }

@@ -43,9 +43,9 @@ public class RedstoneOreBlock extends Block {
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		light(blockState, world, blockPos);
-		return super.method_9534(blockState, world, blockPos, playerEntity, hand, blockHitResult);
+		return super.activate(blockState, world, blockPos, playerEntity, hand, blockHitResult);
 	}
 
 	private static void light(BlockState blockState, World world, BlockPos blockPos) {

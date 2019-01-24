@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import com.mojang.datafixers.util.Pair;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -88,6 +89,10 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		return this.shapeCache != null && this.shapeCache.shapes != null
 			? this.shapeCache.shapes[direction.ordinal()]
 			: VoxelShapes.method_16344(this.method_11615(blockView, blockPos), direction);
+	}
+
+	public boolean method_17900() {
+		return this.shapeCache == null || this.shapeCache.field_17651;
 	}
 
 	public boolean method_16386() {
@@ -270,8 +275,8 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		return this.getBlock().getDroppedStacks(this, builder);
 	}
 
-	public boolean method_11629(World world, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		return this.getBlock().method_9534(this, world, blockHitResult.getBlockPos(), playerEntity, hand, blockHitResult);
+	public boolean activate(World world, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		return this.getBlock().activate(this, world, blockHitResult.getBlockPos(), playerEntity, hand, blockHitResult);
 	}
 
 	public void onBlockBreakStart(World world, BlockPos blockPos, PlayerEntity playerEntity) {
@@ -383,6 +388,7 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		private final boolean field_16556;
 		private final int field_16555;
 		private final VoxelShape[] shapes;
+		private final boolean field_17651;
 
 		private ShapeCache(BlockState blockState) {
 			Block block = blockState.getBlock();
@@ -400,6 +406,9 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 					this.shapes[direction.ordinal()] = VoxelShapes.method_16344(voxelShape, direction);
 				}
 			}
+
+			VoxelShape voxelShape = block.getCollisionShape(blockState, EmptyBlockView.field_12294, BlockPos.ORIGIN, VerticalEntityPosition.minValue());
+			this.field_17651 = Arrays.stream(Direction.Axis.values()).anyMatch(axis -> voxelShape.getMinimum(axis) < 0.0 || voxelShape.getMaximum(axis) > 1.0);
 		}
 	}
 }

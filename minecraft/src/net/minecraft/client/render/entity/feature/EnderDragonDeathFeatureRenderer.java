@@ -17,7 +17,7 @@ public class EnderDragonDeathFeatureRenderer extends FeatureRenderer<EnderDragon
 		super(featureRendererContext);
 	}
 
-	public void render(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4184(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (enderDragonEntity.field_7031 > 0) {
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
@@ -32,7 +32,7 @@ public class EnderDragonDeathFeatureRenderer extends FeatureRenderer<EnderDragon
 			GlStateManager.disableTexture();
 			GlStateManager.shadeModel(7425);
 			GlStateManager.enableBlend();
-			GlStateManager.blendFunc(GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE);
+			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
 			GlStateManager.disableAlphaTest();
 			GlStateManager.enableCull();
 			GlStateManager.depthMask(false);

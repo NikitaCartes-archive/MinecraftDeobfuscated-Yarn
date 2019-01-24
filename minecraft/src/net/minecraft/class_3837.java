@@ -228,7 +228,7 @@ public class class_3837 extends ConditionalLootFunction {
 		}
 
 		public void method_16870(JsonObject jsonObject, class_3837 arg, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, arg, jsonSerializationContext);
+			super.method_529(jsonObject, arg, jsonSerializationContext);
 			jsonObject.addProperty("source", arg.field_17013.field_17028);
 			JsonArray jsonArray = new JsonArray();
 			arg.field_17014.stream().map(class_3837.class_3839::method_16858).forEach(jsonArray::add);

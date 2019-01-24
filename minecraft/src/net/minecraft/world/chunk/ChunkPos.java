@@ -71,6 +71,22 @@ public class ChunkPos {
 		return (this.z << 4) + 15;
 	}
 
+	public int method_17885() {
+		return this.x >> 5;
+	}
+
+	public int method_17886() {
+		return this.z >> 5;
+	}
+
+	public int method_17887() {
+		return this.x & 31;
+	}
+
+	public int method_17888() {
+		return this.z & 31;
+	}
+
 	public BlockPos toBlockPos(int i, int j, int k) {
 		return new BlockPos((this.x << 4) + i, j, (this.z << 4) + k);
 	}

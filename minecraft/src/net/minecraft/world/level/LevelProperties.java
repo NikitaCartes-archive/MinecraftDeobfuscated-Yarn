@@ -387,11 +387,6 @@ public class LevelProperties {
 		return this.timeOfDay;
 	}
 
-	@Environment(EnvType.CLIENT)
-	public long getSizeOnDisk() {
-		return this.sizeOnDisk;
-	}
-
 	private void loadPlayerData() {
 		if (!this.playerDataLoaded && this.playerData != null) {
 			if (this.playerWorldId < SharedConstants.getGameVersion().getWorldVersion()) {

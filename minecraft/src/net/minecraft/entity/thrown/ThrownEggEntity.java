@@ -50,7 +50,7 @@ public class ThrownEggEntity extends class_3857 {
 	}
 
 	@Override
-	protected void method_7492(HitResult hitResult) {
+	protected void onCollision(HitResult hitResult) {
 		if (hitResult.getType() == HitResult.Type.ENTITY) {
 			((EntityHitResult)hitResult).getEntity().damage(DamageSource.thrownProjectile(this, this.getOwner()), 0.0F);
 		}

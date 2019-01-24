@@ -82,7 +82,7 @@ public class JigsawBlockGui extends Gui {
 		this.textFields.add(this.attachmentTypeField);
 		this.finalStateField = new TextFieldWidget(2, this.fontRenderer, this.width / 2 - 152, 120, 300, 20);
 		this.finalStateField.setMaxLength(256);
-		this.finalStateField.setText(this.jigsaw.method_16380());
+		this.finalStateField.setText(this.jigsaw.getFinalState());
 		this.textFields.add(this.finalStateField);
 		this.listeners.addAll(this.textFields);
 		this.attachmentTypeField.setFocused(true);

@@ -19,10 +19,10 @@ public class WitchEntityRenderer extends MobEntityRenderer<WitchEntity, WitchEnt
 
 	public void method_4155(WitchEntity witchEntity, double d, double e, double f, float g, float h) {
 		this.model.method_2840(!witchEntity.getMainHandStack().isEmpty());
-		super.render(witchEntity, d, e, f, g, h);
+		super.method_4072(witchEntity, d, e, f, g, h);
 	}
 
-	protected Identifier getTexture(WitchEntity witchEntity) {
+	protected Identifier method_4154(WitchEntity witchEntity) {
 		return SKIN;
 	}
 

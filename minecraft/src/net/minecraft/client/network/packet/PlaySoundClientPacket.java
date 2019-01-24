@@ -91,7 +91,7 @@ public class PlaySoundClientPacket implements Packet<ClientPlayPacketListener> {
 		return this.pitch;
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11895(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onPlaySound(this);
 	}
 }

@@ -16,7 +16,7 @@ public class PigZombieEntityRenderer extends BipedEntityRenderer<PigZombieEntity
 		this.addFeature(new ArmorBipedFeatureRenderer<>(this, new ZombieEntityModel(0.5F, true), new ZombieEntityModel(1.0F, true)));
 	}
 
-	protected Identifier getTexture(PigZombieEntity pigZombieEntity) {
+	protected Identifier method_4093(PigZombieEntity pigZombieEntity) {
 		return SKIN;
 	}
 }

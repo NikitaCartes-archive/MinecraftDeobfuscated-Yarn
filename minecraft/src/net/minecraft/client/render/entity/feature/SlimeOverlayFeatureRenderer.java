@@ -21,7 +21,7 @@ public class SlimeOverlayFeatureRenderer<T extends Entity> extends FeatureRender
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.enableNormalize();
 			GlStateManager.enableBlend();
-			GlStateManager.blendFunc(GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA);
+			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			this.getModel().method_17081(this.model);
 			this.model.render(entity, f, g, i, j, k, l);
 			GlStateManager.disableBlend();

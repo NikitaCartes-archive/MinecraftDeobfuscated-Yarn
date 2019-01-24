@@ -73,6 +73,14 @@ public class SnowyVillageData {
 					class_3785.Projection.TERRAIN_MATCHING
 				)
 			);
+		ImmutableList<AbstractStructureProcessor> immutableList2 = ImmutableList.of(
+			new RuleStructureProcessor(
+				ImmutableList.of(
+					new class_3821(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10609.getDefaultState()),
+					new class_3821(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.8F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10247.getDefaultState())
+				)
+			)
+		);
 		class_3778.field_16666
 			.method_16640(
 				new class_3785(
@@ -105,8 +113,8 @@ public class SnowyVillageData {
 						new Pair<>(new class_3781("village/snowy/houses/snowy_masons_house_2"), 2),
 						new Pair<>(new class_3781("village/snowy/houses/snowy_weapon_smith_1"), 2),
 						new Pair<>(new class_3781("village/snowy/houses/snowy_temple_1"), 2),
-						new Pair<>(new class_3781("village/snowy/houses/snowy_farm_1"), 3),
-						new Pair<>(new class_3781("village/snowy/houses/snowy_farm_2"), 3),
+						new Pair<>(new class_3781("village/snowy/houses/snowy_farm_1", immutableList2), 3),
+						new Pair<>(new class_3781("village/snowy/houses/snowy_farm_2", immutableList2), 3),
 						new Pair<>(new class_3781("village/snowy/houses/snowy_animal_pen_1"), 2),
 						new Pair<>(new class_3781("village/snowy/houses/snowy_animal_pen_2"), 2),
 						Pair.of(class_3777.field_16663, 6)

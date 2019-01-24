@@ -28,7 +28,7 @@ public class SynchronizeTagsClientPacket implements Packet<ClientPlayPacketListe
 		this.tagManager.toPacket(packetByteBuf);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_12001(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onSynchronizeTags(this);
 	}
 

@@ -20,7 +20,9 @@ public abstract class class_3784 {
 
 	public abstract MutableIntBoundingBox method_16628(StructureManager structureManager, BlockPos blockPos, Rotation rotation);
 
-	public abstract boolean method_16626(IWorld iWorld, BlockPos blockPos, Rotation rotation, MutableIntBoundingBox mutableIntBoundingBox, Random random);
+	public abstract boolean method_16626(
+		StructureManager structureManager, IWorld iWorld, BlockPos blockPos, Rotation rotation, MutableIntBoundingBox mutableIntBoundingBox, Random random
+	);
 
 	public abstract StructurePoolElement method_16757();
 

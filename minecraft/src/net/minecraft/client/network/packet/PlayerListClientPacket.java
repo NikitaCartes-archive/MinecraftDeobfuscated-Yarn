@@ -164,7 +164,7 @@ public class PlayerListClientPacket implements Packet<ClientPlayPacketListener> 
 		}
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11721(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onPlayerList(this);
 	}
 

@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 
 public class ItemUsageContext {
 	protected final PlayerEntity player;
-	protected final BlockHitResult field_17543;
+	protected final BlockHitResult hitResult;
 	protected final World world;
 	protected final ItemStack stack;
 
@@ -20,25 +20,25 @@ public class ItemUsageContext {
 
 	protected ItemUsageContext(World world, @Nullable PlayerEntity playerEntity, ItemStack itemStack, BlockHitResult blockHitResult) {
 		this.player = playerEntity;
-		this.field_17543 = blockHitResult;
+		this.hitResult = blockHitResult;
 		this.stack = itemStack;
 		this.world = world;
 	}
 
 	public BlockPos getBlockPos() {
-		return this.field_17543.getBlockPos();
+		return this.hitResult.getBlockPos();
 	}
 
 	public Direction getFacing() {
-		return this.field_17543.getSide();
+		return this.hitResult.getSide();
 	}
 
 	public Vec3d getPos() {
-		return this.field_17543.getPos();
+		return this.hitResult.getPos();
 	}
 
 	public boolean method_17699() {
-		return this.field_17543.method_17781();
+		return this.hitResult.method_17781();
 	}
 
 	public ItemStack getItemStack() {

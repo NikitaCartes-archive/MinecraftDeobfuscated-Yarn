@@ -292,7 +292,7 @@ public class GameRenderer implements AutoCloseable, ResourceReloadListener {
 				this.client.getProfiler().push("pick");
 				this.client.targetedEntity = null;
 				double d = (double)this.client.interactionManager.getReachDistance();
-				this.client.hitResult = entity.method_5745(d, f, false);
+				this.client.hitResult = entity.rayTrace(d, f, false);
 				net.minecraft.util.math.Vec3d vec3d = entity.getCameraPosVec(f);
 				boolean bl = false;
 				int i = 3;
@@ -496,7 +496,7 @@ public class GameRenderer implements AutoCloseable, ResourceReloadListener {
 					r *= 0.1F;
 					HitResult hitResult = this.client
 						.world
-						.method_17742(
+						.rayTrace(
 							new RayTraceContext(
 								new net.minecraft.util.math.Vec3d(d + (double)p, e + (double)q, h + (double)r),
 								new net.minecraft.util.math.Vec3d(d - l + (double)p + (double)r, e - n + (double)q, h - m + (double)r),
@@ -899,7 +899,7 @@ public class GameRenderer implements AutoCloseable, ResourceReloadListener {
 		this.client.getProfiler().swap("destroyProgress");
 		GlStateManager.enableBlend();
 		GlStateManager.blendFuncSeparate(
-			GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		this.client.getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).pushFilter(false, false);
 		worldRenderer.renderPartiallyBrokenBlocks(Tessellator.getInstance(), Tessellator.getInstance().getBufferBuilder(), entity, f);
@@ -922,7 +922,7 @@ public class GameRenderer implements AutoCloseable, ResourceReloadListener {
 		GlStateManager.disableBlend();
 		GlStateManager.enableCull();
 		GlStateManager.blendFuncSeparate(
-			GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		GlStateManager.alphaFunc(516, 0.1F);
 		this.backgroundRenderer.method_3211(0, f);
@@ -1085,7 +1085,7 @@ public class GameRenderer implements AutoCloseable, ResourceReloadListener {
 			GlStateManager.normal3f(0.0F, 1.0F, 0.0F);
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(
-				GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
 			GlStateManager.alphaFunc(516, 0.1F);
 			double d = MathHelper.lerp((double)f, entity.prevRenderX, entity.x);
@@ -1261,7 +1261,7 @@ public class GameRenderer implements AutoCloseable, ResourceReloadListener {
 
 		GlStateManager.enableBlend();
 		GlStateManager.blendFuncSeparate(
-			GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		int l = fontRenderer.getStringWidth(string) / 2;
 		GlStateManager.disableTexture();

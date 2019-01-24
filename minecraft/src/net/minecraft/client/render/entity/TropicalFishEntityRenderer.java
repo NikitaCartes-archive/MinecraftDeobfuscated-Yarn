@@ -23,7 +23,7 @@ public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEn
 	}
 
 	@Nullable
-	protected Identifier getTexture(TropicalFishEntity tropicalFishEntity) {
+	protected Identifier method_4141(TropicalFishEntity tropicalFishEntity) {
 		return tropicalFishEntity.getShapeId();
 	}
 
@@ -31,7 +31,7 @@ public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEn
 		this.model = (EntityModel<TropicalFishEntity>)(tropicalFishEntity.getShape() == 0 ? this.field_4800 : this.field_4799);
 		float[] fs = tropicalFishEntity.getBaseColorComponents();
 		GlStateManager.color3f(fs[0], fs[1], fs[2]);
-		super.render(tropicalFishEntity, d, e, f, g, h);
+		super.method_4072(tropicalFishEntity, d, e, f, g, h);
 	}
 
 	protected void method_4142(TropicalFishEntity tropicalFishEntity, float f, float g, float h) {

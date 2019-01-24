@@ -71,7 +71,7 @@ public class GameJoinClientPacket implements Packet<ClientPlayPacketListener> {
 		packetByteBuf.writeBoolean(this.reducedDebugInfo);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11567(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onGameJoin(this);
 	}
 

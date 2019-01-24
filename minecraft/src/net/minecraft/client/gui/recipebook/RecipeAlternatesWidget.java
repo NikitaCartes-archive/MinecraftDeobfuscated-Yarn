@@ -13,8 +13,8 @@ import net.minecraft.client.gui.GuiEventListener;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.recipe.book.RecipeResultCollection;
 import net.minecraft.client.render.GuiLighting;
+import net.minecraft.container.AbstractFurnaceContainer;
 import net.minecraft.container.CraftingContainer;
-import net.minecraft.container.FurnaceContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
@@ -38,7 +38,7 @@ public class RecipeAlternatesWidget extends Drawable implements GuiEventListener
 	public void showAlternatesForResult(MinecraftClient minecraftClient, RecipeResultCollection recipeResultCollection, int i, int j, int k, int l, float f) {
 		this.client = minecraftClient;
 		this.resultCollection = recipeResultCollection;
-		if (minecraftClient.player.container instanceof FurnaceContainer) {
+		if (minecraftClient.player.container instanceof AbstractFurnaceContainer) {
 			this.furnace = true;
 		}
 

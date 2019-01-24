@@ -5,11 +5,15 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.chunk.ChunkPos;
+import net.minecraft.world.level.LevelProperties;
 
 public class WorldBorder {
 	private final List<WorldBorderListener> listeners = Lists.<WorldBorderListener>newArrayList();
@@ -45,6 +49,10 @@ public class WorldBorder {
 
 	public double contains(Entity entity) {
 		return this.contains(entity.x, entity.z);
+	}
+
+	public VoxelShape method_17903() {
+		return this.area.method_17906();
 	}
 
 	public double contains(double d, double e) {
@@ -198,6 +206,31 @@ public class WorldBorder {
 		this.area = this.area.getAreaInstance();
 	}
 
+	public void method_17904(LevelProperties levelProperties) {
+		levelProperties.setBorderSize(this.getSize());
+		levelProperties.setBorderCenterX(this.getCenterX());
+		levelProperties.borderCenterZ(this.getCenterZ());
+		levelProperties.setBorderSafeZone(this.getSafeZone());
+		levelProperties.setBorderDamagePerBlock(this.getDamagePerBlock());
+		levelProperties.setBorderWarningBlocks(this.getWarningBlocks());
+		levelProperties.setBorderWarningTime(this.getWarningTime());
+		levelProperties.setBorderSizeLerpTarget(this.getTargetSize());
+		levelProperties.setBorderSizeLerpTime(this.getTargetRemainingTime());
+	}
+
+	public void method_17905(LevelProperties levelProperties) {
+		this.setCenter(levelProperties.getBorderCenterX(), levelProperties.getBorderCenterZ());
+		this.setDamagePerBlock(levelProperties.getBorderDamagePerBlock());
+		this.setSafeZone(levelProperties.getBorderSafeZone());
+		this.setWarningBlocks(levelProperties.getBorderWarningBlocks());
+		this.setWarningTime(levelProperties.getBorderWarningTime());
+		if (levelProperties.getBorderSizeLerpTime() > 0L) {
+			this.method_11957(levelProperties.getBorderSize(), levelProperties.getBorderSizeLerpTarget(), levelProperties.getBorderSizeLerpTime());
+		} else {
+			this.setSize(levelProperties.getBorderSize());
+		}
+	}
+
 	interface Area {
 		double getBoundWest();
 
@@ -224,6 +257,8 @@ public class WorldBorder {
 		void onCenterChanged();
 
 		WorldBorder.Area getAreaInstance();
+
+		VoxelShape method_17906();
 	}
 
 	class MovingArea implements WorldBorder.Area {
@@ -301,6 +336,22 @@ public class WorldBorder {
 		public WorldBorder.Area getAreaInstance() {
 			return (WorldBorder.Area)(this.getTargetRemainingTime() <= 0L ? WorldBorder.this.new StaticArea(this.newSize) : this);
 		}
+
+		@Override
+		public VoxelShape method_17906() {
+			return VoxelShapes.combineAndSimplify(
+				VoxelShapes.field_17669,
+				VoxelShapes.cube(
+					Math.floor(this.getBoundWest()),
+					Double.NEGATIVE_INFINITY,
+					Math.floor(this.getBoundNorth()),
+					Math.ceil(this.getBoundEast()),
+					Double.POSITIVE_INFINITY,
+					Math.ceil(this.getBoundSouth())
+				),
+				BooleanBiFunction.ONLY_FIRST
+			);
+		}
 	}
 
 	class StaticArea implements WorldBorder.Area {
@@ -309,6 +360,7 @@ public class WorldBorder {
 		private double boundNorth;
 		private double boundEast;
 		private double boundSouth;
+		private VoxelShape field_17653;
 
 		public StaticArea(double d) {
 			this.size = d;
@@ -367,6 +419,18 @@ public class WorldBorder {
 			this.boundNorth = Math.max(WorldBorder.this.getCenterZ() - this.size / 2.0, (double)(-WorldBorder.this.maxWorldBorderRadius));
 			this.boundEast = Math.min(WorldBorder.this.getCenterX() + this.size / 2.0, (double)WorldBorder.this.maxWorldBorderRadius);
 			this.boundSouth = Math.min(WorldBorder.this.getCenterZ() + this.size / 2.0, (double)WorldBorder.this.maxWorldBorderRadius);
+			this.field_17653 = VoxelShapes.combineAndSimplify(
+				VoxelShapes.field_17669,
+				VoxelShapes.cube(
+					Math.floor(this.getBoundWest()),
+					Double.NEGATIVE_INFINITY,
+					Math.floor(this.getBoundNorth()),
+					Math.ceil(this.getBoundEast()),
+					Double.POSITIVE_INFINITY,
+					Math.ceil(this.getBoundSouth())
+				),
+				BooleanBiFunction.ONLY_FIRST
+			);
 		}
 
 		@Override
@@ -382,6 +446,11 @@ public class WorldBorder {
 		@Override
 		public WorldBorder.Area getAreaInstance() {
 			return this;
+		}
+
+		@Override
+		public VoxelShape method_17906() {
+			return this.field_17653;
 		}
 	}
 }

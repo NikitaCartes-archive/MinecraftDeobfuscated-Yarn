@@ -68,11 +68,7 @@ public class EnterBlockCriterion implements Criterion<EnterBlockCriterion.Condit
 		Block block = null;
 		if (jsonObject.has("block")) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
-			if (!Registry.BLOCK.contains(identifier)) {
-				throw new JsonSyntaxException("Unknown block type '" + identifier + "'");
-			}
-
-			block = Registry.BLOCK.get(identifier);
+			block = (Block)Registry.BLOCK.method_17966(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown block type '" + identifier + "'"));
 		}
 
 		Map<Property<?>, Object> map = null;

@@ -19,7 +19,7 @@ public class WitherArmorFeatureRenderer extends FeatureRenderer<EntityWither, Wi
 		super(featureRendererContext);
 	}
 
-	public void render(EntityWither entityWither, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4207(EntityWither entityWither, float f, float g, float h, float i, float j, float k, float l) {
 		if (entityWither.isAtHalfHealth()) {
 			GlStateManager.depthMask(!entityWither.isInvisible());
 			this.bindTexture(SKIN);
@@ -34,7 +34,7 @@ public class WitherArmorFeatureRenderer extends FeatureRenderer<EntityWither, Wi
 			float p = 0.5F;
 			GlStateManager.color4f(0.5F, 0.5F, 0.5F, 1.0F);
 			GlStateManager.disableLighting();
-			GlStateManager.blendFunc(GlStateManager.class_1033.ONE, GlStateManager.class_1027.ONE);
+			GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
 			this.field_4909.method_17128(entityWither, f, g, h);
 			this.getModel().method_17081(this.field_4909);
 			GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;

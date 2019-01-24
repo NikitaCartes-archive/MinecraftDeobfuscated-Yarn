@@ -38,7 +38,7 @@ public class DirectConnectServerGui extends Gui {
 		this.addButton(new ButtonWidget(1, this.width / 2 - 100, this.height / 4 + 120 + 12, I18n.translate("gui.cancel")) {
 			@Override
 			public void onPressed(double d, double e) {
-				DirectConnectServerGui.this.field_2461.handle(false, 0);
+				DirectConnectServerGui.this.field_2461.confirmResult(false, 0);
 			}
 		});
 		this.field_2463 = new TextFieldWidget(2, this.fontRenderer, this.width / 2 - 100, 116, 200, 20);
@@ -59,7 +59,7 @@ public class DirectConnectServerGui extends Gui {
 
 	private void method_2167() {
 		this.field_2460.address = this.field_2463.getText();
-		this.field_2461.handle(true, 0);
+		this.field_2461.confirmResult(true, 0);
 	}
 
 	@Override

@@ -251,10 +251,8 @@ public class ShapedRecipe implements CraftingRecipe {
 
 	public static ItemStack deserializeItemStack(JsonObject jsonObject) {
 		String string = JsonHelper.getString(jsonObject, "item");
-		Item item = Registry.ITEM.get(new Identifier(string));
-		if (item == null) {
-			throw new JsonSyntaxException("Unknown item '" + string + "'");
-		} else if (jsonObject.has("data")) {
+		Item item = (Item)Registry.ITEM.method_17966(new Identifier(string)).orElseThrow(() -> new JsonSyntaxException("Unknown item '" + string + "'"));
+		if (jsonObject.has("data")) {
 			throw new JsonParseException("Disallowed data tag found");
 		} else {
 			int i = JsonHelper.getInt(jsonObject, "count", 1);
@@ -288,7 +286,7 @@ public class ShapedRecipe implements CraftingRecipe {
 			return new ShapedRecipe(identifier, string, i, j, defaultedList, itemStack);
 		}
 
-		public void write(PacketByteBuf packetByteBuf, ShapedRecipe shapedRecipe) {
+		public void method_8165(PacketByteBuf packetByteBuf, ShapedRecipe shapedRecipe) {
 			packetByteBuf.writeVarInt(shapedRecipe.width);
 			packetByteBuf.writeVarInt(shapedRecipe.height);
 			packetByteBuf.writeString(shapedRecipe.group);

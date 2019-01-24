@@ -305,7 +305,7 @@ public class ClientPlayerInteractionManager {
 			} else {
 				boolean bl = !clientPlayerEntity.getMainHandStack().isEmpty() || !clientPlayerEntity.getOffHandStack().isEmpty();
 				boolean bl2 = clientPlayerEntity.isSneaking() && bl;
-				if (!bl2 && clientWorld.getBlockState(blockPos).method_11629(clientWorld, clientPlayerEntity, hand, blockHitResult)) {
+				if (!bl2 && clientWorld.getBlockState(blockPos).activate(clientWorld, clientPlayerEntity, hand, blockHitResult)) {
 					this.networkHandler.sendPacket(new PlayerInteractBlockServerPacket(hand, blockHitResult));
 					return ActionResult.SUCCESS;
 				} else {

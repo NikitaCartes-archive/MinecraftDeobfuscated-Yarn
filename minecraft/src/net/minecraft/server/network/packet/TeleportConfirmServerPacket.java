@@ -28,7 +28,7 @@ public class TeleportConfirmServerPacket implements Packet<ServerPlayPacketListe
 		packetByteBuf.writeVarInt(this.teleportId);
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12085(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onTeleportConfirm(this);
 	}
 

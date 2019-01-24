@@ -27,13 +27,9 @@ public class EntitySummonArgumentType implements ArgumentType<Identifier> {
 		return validate(commandContext.getArgument(string, Identifier.class));
 	}
 
-	private static final Identifier validate(Identifier identifier) throws CommandSyntaxException {
-		EntityType<?> entityType = Registry.ENTITY_TYPE.get(identifier);
-		if (entityType != null && entityType.isSummonable()) {
-			return identifier;
-		} else {
-			throw NOTFOUND_EXCEPTION.create(identifier);
-		}
+	private static Identifier validate(Identifier identifier) throws CommandSyntaxException {
+		Registry.ENTITY_TYPE.method_17966(identifier).filter(EntityType::isSummonable).orElseThrow(() -> NOTFOUND_EXCEPTION.create(identifier));
+		return identifier;
 	}
 
 	public Identifier method_9325(StringReader stringReader) throws CommandSyntaxException {

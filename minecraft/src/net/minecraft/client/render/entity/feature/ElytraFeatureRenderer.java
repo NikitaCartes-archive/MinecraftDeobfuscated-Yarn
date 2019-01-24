@@ -27,7 +27,7 @@ public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel
 		if (itemStack.getItem() == Items.field_8833) {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.enableBlend();
-			GlStateManager.blendFunc(GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO);
+			GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 			if (livingEntity instanceof AbstractClientPlayerEntity) {
 				AbstractClientPlayerEntity abstractClientPlayerEntity = (AbstractClientPlayerEntity)livingEntity;
 				if (abstractClientPlayerEntity.method_3126() && abstractClientPlayerEntity.method_3122() != null) {

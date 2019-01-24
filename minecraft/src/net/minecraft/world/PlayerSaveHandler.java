@@ -9,6 +9,4 @@ public interface PlayerSaveHandler {
 
 	@Nullable
 	CompoundTag loadPlayerData(PlayerEntity playerEntity);
-
-	String[] getSavedPlayerIds();
 }

@@ -83,10 +83,11 @@ public class AdvancementRewards {
 		}
 
 		MinecraftServer minecraftServer = serverPlayerEntity.server;
-		CommandFunction commandFunction = this.function.get(minecraftServer.getCommandFunctionManager());
-		if (commandFunction != null) {
-			minecraftServer.getCommandFunctionManager().execute(commandFunction, serverPlayerEntity.getCommandSource().withSilent().withLevel(2));
-		}
+		this.function
+			.get(minecraftServer.getCommandFunctionManager())
+			.ifPresent(
+				commandFunction -> minecraftServer.getCommandFunctionManager().execute(commandFunction, serverPlayerEntity.getCommandSource().withSilent().withLevel(2))
+			);
 	}
 
 	public String toString() {

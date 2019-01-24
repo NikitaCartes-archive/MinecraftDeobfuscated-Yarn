@@ -38,7 +38,7 @@ public class SubtitlesHud extends Drawable implements ListenerSoundInstance {
 			GlStateManager.pushMatrix();
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(
-				GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
 			Vec3d vec3d = new Vec3d(this.client.player.x, this.client.player.y + (double)this.client.player.getEyeHeight(), this.client.player.z);
 			Vec3d vec3d2 = new Vec3d(0.0, 0.0, -1.0)

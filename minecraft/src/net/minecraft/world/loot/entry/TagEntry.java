@@ -63,7 +63,7 @@ public class TagEntry extends LeafEntry {
 		}
 
 		public void method_451(JsonObject jsonObject, TagEntry tagEntry, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, tagEntry, jsonSerializationContext);
+			super.method_442(jsonObject, tagEntry, jsonSerializationContext);
 			jsonObject.addProperty("name", tagEntry.name.getId().toString());
 			jsonObject.addProperty("expand", tagEntry.expand);
 		}

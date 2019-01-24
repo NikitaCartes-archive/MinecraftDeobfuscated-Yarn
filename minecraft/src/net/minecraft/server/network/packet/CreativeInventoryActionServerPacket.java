@@ -21,7 +21,7 @@ public class CreativeInventoryActionServerPacket implements Packet<ServerPlayPac
 		this.stack = itemStack.copy();
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12480(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onCreativeInventoryAction(this);
 	}
 

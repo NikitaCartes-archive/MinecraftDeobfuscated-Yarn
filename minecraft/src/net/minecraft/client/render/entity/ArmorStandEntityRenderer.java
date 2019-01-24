@@ -25,7 +25,7 @@ public class ArmorStandEntityRenderer extends LivingEntityRenderer<ArmorStandEnt
 		this.addFeature(new HeadFeatureRenderer<>(this));
 	}
 
-	protected Identifier getTexture(ArmorStandEntity armorStandEntity) {
+	protected Identifier method_3880(ArmorStandEntity armorStandEntity) {
 		return TEX;
 	}
 
@@ -37,16 +37,16 @@ public class ArmorStandEntityRenderer extends LivingEntityRenderer<ArmorStandEnt
 		}
 	}
 
-	protected boolean shouldRenderName(ArmorStandEntity armorStandEntity) {
+	protected boolean method_3878(ArmorStandEntity armorStandEntity) {
 		return armorStandEntity.isCustomNameVisible();
 	}
 
-	public void render(ArmorStandEntity armorStandEntity, double d, double e, double f, float g, float h) {
+	public void method_3876(ArmorStandEntity armorStandEntity, double d, double e, double f, float g, float h) {
 		if (armorStandEntity.isMarker()) {
 			this.disableOutlineRender = true;
 		}
 
-		super.render(armorStandEntity, d, e, f, g, h);
+		super.method_4054(armorStandEntity, d, e, f, g, h);
 		if (armorStandEntity.isMarker()) {
 			this.disableOutlineRender = false;
 		}

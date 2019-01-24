@@ -82,7 +82,7 @@ public class SimpleScrolledSelectionList extends AbstractListWidget {
 			this.method_1954(this.y2, this.height, 255, 255);
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(
-				GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ZERO, GlStateManager.class_1027.ONE
+				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE
 			);
 			GlStateManager.disableAlphaTest();
 			GlStateManager.shadeModel(7425);

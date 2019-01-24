@@ -26,11 +26,11 @@ public class RealmsAnvilLevelStorageSource {
 	}
 
 	public boolean convertLevel(String string, ProgressListener progressListener) {
-		return this.levelStorageSource.convertLevel(string, progressListener);
+		return this.levelStorageSource.method_17927(string, progressListener);
 	}
 
 	public boolean requiresConversion(String string) {
-		return this.levelStorageSource.requiresConversion(string);
+		return this.levelStorageSource.isConvertible(string);
 	}
 
 	public boolean isNewLevelIdAcceptable(String string) {
@@ -41,16 +41,8 @@ public class RealmsAnvilLevelStorageSource {
 		return this.levelStorageSource.delete(string);
 	}
 
-	public boolean isConvertible(String string) {
-		return this.levelStorageSource.isConvertible(string);
-	}
-
 	public void renameLevel(String string, String string2) {
 		this.levelStorageSource.rename(string, string2);
-	}
-
-	public void clearAll() {
-		this.levelStorageSource.clearAll();
 	}
 
 	public List<RealmsLevelSummary> getLevelList() throws LevelStorageException {

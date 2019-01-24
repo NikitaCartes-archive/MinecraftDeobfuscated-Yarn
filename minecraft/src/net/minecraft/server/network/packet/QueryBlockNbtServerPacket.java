@@ -33,7 +33,7 @@ public class QueryBlockNbtServerPacket implements Packet<ServerPlayPacketListene
 		packetByteBuf.writeBlockPos(this.pos);
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12095(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onQueryBlockNbt(this);
 	}
 

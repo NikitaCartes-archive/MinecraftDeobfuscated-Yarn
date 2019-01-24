@@ -20,7 +20,7 @@ public class DifficultyClientPacket implements Packet<ClientPlayPacketListener> 
 		this.field_12091 = bl;
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11341(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onDifficulty(this);
 	}
 

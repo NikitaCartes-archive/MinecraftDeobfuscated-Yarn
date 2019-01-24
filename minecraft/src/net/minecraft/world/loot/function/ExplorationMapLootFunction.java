@@ -116,7 +116,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 		}
 
 		public void method_505(JsonObject jsonObject, ExplorationMapLootFunction explorationMapLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, explorationMapLootFunction, jsonSerializationContext);
+			super.method_529(jsonObject, explorationMapLootFunction, jsonSerializationContext);
 			if (!explorationMapLootFunction.destination.equals("Buried_Treasure")) {
 				jsonObject.add("destination", jsonSerializationContext.serialize(explorationMapLootFunction.destination));
 			}

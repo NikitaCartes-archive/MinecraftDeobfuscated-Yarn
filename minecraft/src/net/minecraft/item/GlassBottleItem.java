@@ -38,7 +38,7 @@ public class GlassBottleItem extends Item {
 			world.playSound(null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_15029, SoundCategory.field_15254, 1.0F, 1.0F);
 			return new TypedActionResult<>(ActionResult.SUCCESS, this.method_7725(itemStack, playerEntity, new ItemStack(Items.field_8613)));
 		} else {
-			HitResult hitResult = method_7872(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
+			HitResult hitResult = getHitResult(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
 			if (hitResult.getType() == HitResult.Type.NONE) {
 				return new TypedActionResult<>(ActionResult.PASS, itemStack);
 			} else {

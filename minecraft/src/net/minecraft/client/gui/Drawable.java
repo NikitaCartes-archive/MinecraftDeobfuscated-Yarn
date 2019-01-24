@@ -59,7 +59,7 @@ public abstract class Drawable {
 		GlStateManager.enableBlend();
 		GlStateManager.disableTexture();
 		GlStateManager.blendFuncSeparate(
-			GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		GlStateManager.color4f(g, h, o, f);
 		bufferBuilder.begin(7, VertexFormats.POSITION);
@@ -85,7 +85,7 @@ public abstract class Drawable {
 		GlStateManager.enableBlend();
 		GlStateManager.disableAlphaTest();
 		GlStateManager.blendFuncSeparate(
-			GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		GlStateManager.shadeModel(7425);
 		Tessellator tessellator = Tessellator.getInstance();

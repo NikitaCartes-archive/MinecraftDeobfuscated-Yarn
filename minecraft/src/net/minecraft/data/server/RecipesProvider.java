@@ -18,6 +18,7 @@ import net.minecraft.class_2447;
 import net.minecraft.class_2450;
 import net.minecraft.class_2454;
 import net.minecraft.class_2456;
+import net.minecraft.class_3981;
 import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.advancement.criterion.EnterBlockCriterion;
 import net.minecraft.advancement.criterion.ImpossibleCriterion;
@@ -4168,6 +4169,13 @@ public class RecipesProvider implements DataProvider {
 			.method_10439("##")
 			.method_10429("has_string", this.method_10426(Items.field_8276))
 			.method_10431(consumer);
+		class_2447.method_10437(Blocks.field_16335)
+			.method_10434('I', Items.field_8620)
+			.method_10434('#', Blocks.field_10340)
+			.method_10439(" I ")
+			.method_10439("###")
+			.method_10429("has_stone", this.method_10426(Blocks.field_10340))
+			.method_10431(consumer);
 		class_2456.method_10476(RecipeSerializer.ARMOR_DYE).method_10475(consumer, "armor_dye");
 		class_2456.method_10476(RecipeSerializer.BANNER_DUPLICATE).method_10475(consumer, "banner_duplicate");
 		class_2456.method_10476(RecipeSerializer.BOOK_CLONING).method_10475(consumer, "book_cloning");
@@ -4478,6 +4486,255 @@ public class RecipesProvider implements DataProvider {
 			.method_10472(consumer, "iron_nugget_from_blasting");
 		this.method_17585(consumer, "smoking", RecipeSerializer.SMOKING, 100);
 		this.method_17585(consumer, "campfire_cooking", RecipeSerializer.CAMPFIRE_COOKING, 600);
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10340), Blocks.field_10454, 2)
+			.method_17970("has_stone", this.method_10426(Blocks.field_10340))
+			.method_17971(consumer, "stone_slab_from_stone_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10340), Blocks.field_10440)
+			.method_17970("has_stone", this.method_10426(Blocks.field_10340))
+			.method_17971(consumer, "stone_stairs_from_stone_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10340), Blocks.field_10056)
+			.method_17970("has_stone", this.method_10426(Blocks.field_10340))
+			.method_17971(consumer, "stone_bricks_from_stone_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10340), Blocks.field_10131, 2)
+			.method_17970("has_stone", this.method_10426(Blocks.field_10340))
+			.method_17971(consumer, "stone_brick_slab_from_stone_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10340), Blocks.field_10392)
+			.method_17970("has_stone", this.method_10426(Blocks.field_10340))
+			.method_17971(consumer, "stone_brick_stairs_from_stone_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10340), Blocks.field_10552)
+			.method_17970("has_stone", this.method_10426(Blocks.field_10340))
+			.method_17971(consumer, "chiseled_stone_bricks_stone_from_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10340), Blocks.field_10252)
+			.method_17970("has_stone", this.method_10426(Blocks.field_10340))
+			.method_17971(consumer, "stone_brick_walls_from_stone_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_9979), Blocks.field_10361)
+			.method_17970("has_sandstone", this.method_10426(Blocks.field_9979))
+			.method_17971(consumer, "cut_sandstone_from_sandstone_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_9979), Blocks.field_10007, 2)
+			.method_17970("has_sandstone", this.method_10426(Blocks.field_9979))
+			.method_17971(consumer, "sandstone_slab_from_sandstone_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_9979), Blocks.field_10142)
+			.method_17970("has_sandstone", this.method_10426(Blocks.field_9979))
+			.method_17971(consumer, "sandstone_stairs_from_sandstone_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_9979), Blocks.field_10630)
+			.method_17970("has_sandstone", this.method_10426(Blocks.field_9979))
+			.method_17971(consumer, "sandstone_wall_from_sandstone_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_9979), Blocks.field_10292)
+			.method_17970("has_sandstone", this.method_10426(Blocks.field_9979))
+			.method_17971(consumer, "chiseled_sandstone_from_sandstone_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10344), Blocks.field_10518)
+			.method_17970("has_red_sandstone", this.method_10426(Blocks.field_10344))
+			.method_17971(consumer, "cut_red_sandstone_from_red_sandstone_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10344), Blocks.field_10624, 2)
+			.method_17970("has_red_sandstone", this.method_10426(Blocks.field_10344))
+			.method_17971(consumer, "red_sandstone_slab_from_red_sandstone_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10344), Blocks.field_10420)
+			.method_17970("has_red_sandstone", this.method_10426(Blocks.field_10344))
+			.method_17971(consumer, "red_sandstone_stairs_from_red_sandstone_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10344), Blocks.field_10413)
+			.method_17970("has_red_sandstone", this.method_10426(Blocks.field_10344))
+			.method_17971(consumer, "red_sandstone_wall_from_red_sandstone_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10344), Blocks.field_10117)
+			.method_17970("has_red_sandstone", this.method_10426(Blocks.field_10344))
+			.method_17971(consumer, "chiseled_red_sandstone_from_red_sandstone_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10153), Blocks.field_10237, 2)
+			.method_17970("has_quartz_block", this.method_10426(Blocks.field_10153))
+			.method_17971(consumer, "quartz_slab_from_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10153), Blocks.field_10451)
+			.method_17970("has_quartz_block", this.method_10426(Blocks.field_10153))
+			.method_17971(consumer, "quartz_stairs_from_quartz_block_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10153), Blocks.field_10437)
+			.method_17970("has_quartz_block", this.method_10426(Blocks.field_10153))
+			.method_17971(consumer, "quartz_pillar_from_quartz_block_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10153), Blocks.field_10044)
+			.method_17970("has_quartz_block", this.method_10426(Blocks.field_10153))
+			.method_17971(consumer, "chiseled_quartz_block_from_quartz_block_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10445), Blocks.field_10596)
+			.method_17970("has_cobblestone", this.method_10426(Blocks.field_10445))
+			.method_17971(consumer, "cobblestone_stairs_from_cobblestone_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10445), Blocks.field_10351, 2)
+			.method_17970("has_cobblestone", this.method_10426(Blocks.field_10445))
+			.method_17971(consumer, "cobblestone_slab_from_cobblestone_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10445), Blocks.field_10625)
+			.method_17970("has_cobblestone", this.method_10426(Blocks.field_10445))
+			.method_17971(consumer, "cobblestone_wall_from_cobblestone_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10056), Blocks.field_10131, 2)
+			.method_17970("has_stone_bricks", this.method_10426(Blocks.field_10056))
+			.method_17971(consumer, "stone_brick_slab_from_stone_bricks_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10056), Blocks.field_10392)
+			.method_17970("has_stone_bricks", this.method_10426(Blocks.field_10056))
+			.method_17971(consumer, "stone_brick_stairs_from_stone_bricks_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10056), Blocks.field_10252)
+			.method_17970("has_stone_bricks", this.method_10426(Blocks.field_10056))
+			.method_17971(consumer, "stone_brick_wall_from_stone_bricks_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10104), Blocks.field_10191, 2)
+			.method_17970("has_bricks", this.method_10426(Blocks.field_10104))
+			.method_17971(consumer, "brick_slab_from_bricks_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10104), Blocks.field_10089)
+			.method_17970("has_bricks", this.method_10426(Blocks.field_10104))
+			.method_17971(consumer, "brick_stairs_from_bricks_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10104), Blocks.field_10269)
+			.method_17970("has_bricks", this.method_10426(Blocks.field_10104))
+			.method_17971(consumer, "brick_wall_from_bricks_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10266), Blocks.field_10390, 2)
+			.method_17970("has_nether_bricks", this.method_10426(Blocks.field_10266))
+			.method_17971(consumer, "nether_brick_slab_from_nether_bricks_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10266), Blocks.field_10159)
+			.method_17970("has_nether_bricks", this.method_10426(Blocks.field_10266))
+			.method_17971(consumer, "nether_brick_stairs_from_nether_bricks_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10266), Blocks.field_10127)
+			.method_17970("has_nether_bricks", this.method_10426(Blocks.field_10266))
+			.method_17971(consumer, "nether_brick_wall_from_nether_bricks_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_9986), Blocks.field_10478, 2)
+			.method_17970("has_nether_bricks", this.method_10426(Blocks.field_9986))
+			.method_17971(consumer, "red_nether_brick_slab_from_red_nether_bricks_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_9986), Blocks.field_10497)
+			.method_17970("has_nether_bricks", this.method_10426(Blocks.field_9986))
+			.method_17971(consumer, "red_nether_brick_stairs_from_red_nether_bricks_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_9986), Blocks.field_10311)
+			.method_17970("has_nether_bricks", this.method_10426(Blocks.field_9986))
+			.method_17971(consumer, "red_nether_brick_wall_from_red_nether_bricks_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10286), Blocks.field_10175, 2)
+			.method_17970("has_purpur_block", this.method_10426(Blocks.field_10286))
+			.method_17971(consumer, "purpur_slab_from_purpur_block_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10286), Blocks.field_9992)
+			.method_17970("has_purpur_block", this.method_10426(Blocks.field_10286))
+			.method_17971(consumer, "purpur_stairs_from_purpur_block_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10286), Blocks.field_10505)
+			.method_17970("has_purpur_block", this.method_10426(Blocks.field_10286))
+			.method_17971(consumer, "purpur_pillar_from_purpur_block_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10135), Blocks.field_10389, 2)
+			.method_17970("has_prismarine", this.method_10426(Blocks.field_10135))
+			.method_17971(consumer, "prismarine_slab_from_prismarine_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10135), Blocks.field_10350)
+			.method_17970("has_prismarine", this.method_10426(Blocks.field_10135))
+			.method_17971(consumer, "prismarine_stairs_from_prismarine_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10135), Blocks.field_10530)
+			.method_17970("has_prismarine", this.method_10426(Blocks.field_10135))
+			.method_17971(consumer, "prismarine_wall_from_prismarine_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10006), Blocks.field_10236, 2)
+			.method_17970("has_prismarine_brick", this.method_10426(Blocks.field_10006))
+			.method_17971(consumer, "prismarine_brick_slab_from_prismarine_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10006), Blocks.field_10190)
+			.method_17970("has_prismarine_brick", this.method_10426(Blocks.field_10006))
+			.method_17971(consumer, "prismarine_brick_stairs_from_prismarine_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10297), Blocks.field_10623, 2)
+			.method_17970("has_dark_prismarine", this.method_10426(Blocks.field_10297))
+			.method_17971(consumer, "dark_prismarine_slab_from_dark_prismarine_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10297), Blocks.field_10130)
+			.method_17970("has_dark_prismarine", this.method_10426(Blocks.field_10297))
+			.method_17971(consumer, "dark_prismarine_stairs_from_dark_prismarine_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10115), Blocks.field_10016, 2)
+			.method_17970("has_andesite", this.method_10426(Blocks.field_10115))
+			.method_17971(consumer, "andesite_slab_from_andesite_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10115), Blocks.field_10386)
+			.method_17970("has_andesite", this.method_10426(Blocks.field_10115))
+			.method_17971(consumer, "andesite_stairs_from_andesite_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10115), Blocks.field_10489)
+			.method_17970("has_andesite", this.method_10426(Blocks.field_10115))
+			.method_17971(consumer, "andesite_wall_from_andesite_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10115), Blocks.field_10093)
+			.method_17970("has_andesite", this.method_10426(Blocks.field_10115))
+			.method_17971(consumer, "polished_andesite_from_andesite_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10093), Blocks.field_10322, 2)
+			.method_17970("has_polished_andesite", this.method_10426(Blocks.field_10115))
+			.method_17971(consumer, "polished_andesite_slab_from_polished_andesite_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10093), Blocks.field_9994)
+			.method_17970("has_polished_andesite", this.method_10426(Blocks.field_10115))
+			.method_17971(consumer, "polished_andesite_stairs_from_polished_andesite_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10474), Blocks.field_10189, 2)
+			.method_17970("has_granite", this.method_10426(Blocks.field_10474))
+			.method_17971(consumer, "granite_slab_from_granite_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10474), Blocks.field_10607)
+			.method_17970("has_granite", this.method_10426(Blocks.field_10474))
+			.method_17971(consumer, "granite_stairs_from_granite_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10474), Blocks.field_10072)
+			.method_17970("has_granite", this.method_10426(Blocks.field_10474))
+			.method_17971(consumer, "granite_wall_from_granite_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10474), Blocks.field_10289)
+			.method_17970("has_granite", this.method_10426(Blocks.field_10474))
+			.method_17971(consumer, "polished_granite_from_granite_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10289), Blocks.field_10329, 2)
+			.method_17970("has_polished_granite", this.method_10426(Blocks.field_10289))
+			.method_17971(consumer, "polished_granite_slab_from_polished_granite_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10289), Blocks.field_10435)
+			.method_17970("has_polished_granite", this.method_10426(Blocks.field_10289))
+			.method_17971(consumer, "polished_granite_stairs_from_polished_granite_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10508), Blocks.field_10507, 2)
+			.method_17970("has_diorite", this.method_10426(Blocks.field_10508))
+			.method_17971(consumer, "diorite_slab_from_diorite_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10508), Blocks.field_10216)
+			.method_17970("has_diorite", this.method_10426(Blocks.field_10508))
+			.method_17971(consumer, "diorite_stairs_from_diorite_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10508), Blocks.field_10517)
+			.method_17970("has_diorite", this.method_10426(Blocks.field_10508))
+			.method_17971(consumer, "diorite_wall_from_diorite_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10508), Blocks.field_10346)
+			.method_17970("has_diorite", this.method_10426(Blocks.field_10508))
+			.method_17971(consumer, "polished_diorite_from_diorite_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10346), Blocks.field_10412, 2)
+			.method_17970("has_polished_diorite", this.method_10426(Blocks.field_10346))
+			.method_17971(consumer, "polished_diorite_slab_from_polished_diorite_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10346), Blocks.field_10310)
+			.method_17970("has_polished_diorite", this.method_10426(Blocks.field_10346))
+			.method_17971(consumer, "polished_diorite_stairs_from_polished_diorite_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10065), Blocks.field_10024, 2)
+			.method_17970("has_mossy_stone_bricks", this.method_10426(Blocks.field_10065))
+			.method_17971(consumer, "mossy_stone_brick_slab_from_mossy_stone_brick_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10065), Blocks.field_10173)
+			.method_17970("has_mossy_stone_bricks", this.method_10426(Blocks.field_10065))
+			.method_17971(consumer, "mossy_stone_brick_stairs_from_mossy_stone_brick_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10065), Blocks.field_10059)
+			.method_17970("has_mossy_stone_bricks", this.method_10426(Blocks.field_10065))
+			.method_17971(consumer, "mossy_stone_brick_wall_from_mossy_stone_brick_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_9989), Blocks.field_10405, 2)
+			.method_17970("has_mossy_cobblestone", this.method_10426(Blocks.field_9989))
+			.method_17971(consumer, "mossy_cobblestone_slab_from_mossy_cobblestone_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_9989), Blocks.field_10207)
+			.method_17970("has_mossy_cobblestone", this.method_10426(Blocks.field_9989))
+			.method_17971(consumer, "mossy_cobblestone_stairs_from_mossy_cobblestone_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_9989), Blocks.field_9990)
+			.method_17970("has_mossy_cobblestone", this.method_10426(Blocks.field_9989))
+			.method_17971(consumer, "mossy_cobblestone_wall_from_mossy_cobblestone_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10467), Blocks.field_10262, 2)
+			.method_17970("has_smooth_sandstone", this.method_10426(Blocks.field_10467))
+			.method_17971(consumer, "smooth_sandstone_slab_from_smooth_sandstone_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10467), Blocks.field_10549)
+			.method_17970("has_mossy_cobblestone", this.method_10426(Blocks.field_10467))
+			.method_17971(consumer, "smooth_sandstone_stairs_from_smooth_sandstone_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10483), Blocks.field_10283, 2)
+			.method_17970("has_smooth_red_sandstone", this.method_10426(Blocks.field_10483))
+			.method_17971(consumer, "smooth_red_sandstone_slab_from_smooth_red_sandstone_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10483), Blocks.field_10039)
+			.method_17970("has_smooth_red_sandstone", this.method_10426(Blocks.field_10483))
+			.method_17971(consumer, "smooth_red_sandstone_stairs_from_smooth_red_sandstone_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_9978), Blocks.field_10601, 2)
+			.method_17970("has_smooth_quartz", this.method_10426(Blocks.field_9978))
+			.method_17971(consumer, "smooth_quartz_slab_from_smooth_quartz_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_9978), Blocks.field_10245)
+			.method_17970("has_smooth_quartz", this.method_10426(Blocks.field_9978))
+			.method_17971(consumer, "smooth_quartz_stairs_from_smooth_quartz_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10462), Blocks.field_10064, 2)
+			.method_17970("has_end_stone_brick", this.method_10426(Blocks.field_10462))
+			.method_17971(consumer, "end_stone_brick_slab_from_end_stone_brick_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10462), Blocks.field_10012)
+			.method_17970("has_end_stone_brick", this.method_10426(Blocks.field_10462))
+			.method_17971(consumer, "end_stone_brick_stairs_from_end_stone_brick_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10462), Blocks.field_10001)
+			.method_17970("has_end_stone_brick", this.method_10426(Blocks.field_10462))
+			.method_17971(consumer, "end_stone_brick_wall_from_end_stone_brick_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10471), Blocks.field_10462)
+			.method_17970("has_end_stone", this.method_10426(Blocks.field_10471))
+			.method_17971(consumer, "end_stone_bricks_from_end_stone_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10471), Blocks.field_10064, 2)
+			.method_17970("has_end_stone", this.method_10426(Blocks.field_10471))
+			.method_17971(consumer, "end_stone_brick_slab_from_end_stone_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10471), Blocks.field_10012)
+			.method_17970("has_end_stone", this.method_10426(Blocks.field_10471))
+			.method_17971(consumer, "end_stone_brick_stairs_from_end_stone_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10471), Blocks.field_10001)
+			.method_17970("has_end_stone", this.method_10426(Blocks.field_10471))
+			.method_17971(consumer, "end_stone_brick_wall_from_end_stone_stonecutting");
 	}
 
 	private void method_17585(Consumer<class_2444> consumer, String string, CookingRecipeSerializer<?> cookingRecipeSerializer, int i) {

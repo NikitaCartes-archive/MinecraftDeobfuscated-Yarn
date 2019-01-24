@@ -34,7 +34,7 @@ public final class class_254 implements class_255 {
 			boolean bl5 = bl3 && (!bl4 || doubleList.getDouble(i) < doubleList2.getDouble(j) + 1.0E-7);
 			double e = bl5 ? doubleList.getDouble(i++) : doubleList2.getDouble(j++);
 			if ((i != 0 && bl3 || bl5 || bl2) && (j != 0 && bl4 || !bl5 || bl)) {
-				if (!(d > e - 1.0E-7)) {
+				if (!(d >= e - 1.0E-7)) {
 					this.field_1376.add(i - 1);
 					this.field_1378.add(j - 1);
 					this.field_1377.add(e);

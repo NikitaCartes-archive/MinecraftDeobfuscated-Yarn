@@ -7,8 +7,8 @@ import net.minecraft.nbt.CompoundTag;
 public class ForcedChunkState extends PersistentState {
 	private LongSet chunks = new LongOpenHashSet();
 
-	public ForcedChunkState(String string) {
-		super(string);
+	public ForcedChunkState() {
+		super("chunks");
 	}
 
 	@Override

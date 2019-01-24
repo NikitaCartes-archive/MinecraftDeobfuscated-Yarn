@@ -67,7 +67,7 @@ public class AddServerGui extends Gui {
 		this.addButton(new ButtonWidget(1, this.width / 2 - 100, this.height / 4 + 120 + 18, I18n.translate("gui.cancel")) {
 			@Override
 			public void onPressed(double d, double e) {
-				AddServerGui.this.parent.handle(false, 0);
+				AddServerGui.this.parent.confirmResult(false, 0);
 			}
 		});
 		this.field_2473 = this.addButton(
@@ -140,7 +140,7 @@ public class AddServerGui extends Gui {
 	private void method_2172() {
 		this.field_2469.name = this.field_2471.getText();
 		this.field_2469.address = this.field_2474.getText();
-		this.parent.handle(true, 0);
+		this.parent.confirmResult(true, 0);
 	}
 
 	@Override

@@ -17,7 +17,7 @@ public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEnt
 		super(featureRendererContext);
 	}
 
-	public void render(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4177(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (abstractClientPlayerEntity.method_3125()
 			&& !abstractClientPlayerEntity.isInvisible()
 			&& abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.CAPE)

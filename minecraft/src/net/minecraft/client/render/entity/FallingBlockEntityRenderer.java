@@ -67,7 +67,7 @@ public class FallingBlockEntityRenderer extends EntityRenderer<FallingBlockEntit
 		}
 	}
 
-	protected Identifier getTexture(FallingBlockEntity fallingBlockEntity) {
+	protected Identifier method_3964(FallingBlockEntity fallingBlockEntity) {
 		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
 	}
 }

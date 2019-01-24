@@ -72,7 +72,7 @@ public abstract class ConditionalLootFunction implements LootFunction {
 			super(identifier, class_);
 		}
 
-		public void toJson(JsonObject jsonObject, T conditionalLootFunction, JsonSerializationContext jsonSerializationContext) {
+		public void method_529(JsonObject jsonObject, T conditionalLootFunction, JsonSerializationContext jsonSerializationContext) {
 			if (!ArrayUtils.isEmpty((Object[])conditionalLootFunction.conditions)) {
 				jsonObject.add("conditions", jsonSerializationContext.serialize(conditionalLootFunction.conditions));
 			}

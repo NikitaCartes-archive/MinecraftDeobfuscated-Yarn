@@ -17,9 +17,9 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.MathHelper;
 
-public class PalettedContainer<T> implements PaletteResizeHandler<T> {
+public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	private final Palette<T> fallbackPalette;
-	private final PaletteResizeHandler<T> noOpPaletteResizeHandler = (i, objectx) -> 0;
+	private final PaletteResizeListener<T> noOpPaletteResizeHandler = (i, objectx) -> 0;
 	private final IdList<T> idList;
 	private final Function<CompoundTag, T> elementDeserializer;
 	private final Function<T, CompoundTag> elementSerializer;
@@ -82,7 +82,7 @@ public class PalettedContainer<T> implements PaletteResizeHandler<T> {
 	}
 
 	@Override
-	public int resizePaletteAndGetIndex(int i, T object) {
+	public int onResize(int i, T object) {
 		this.lock();
 		PackedIntegerArray packedIntegerArray = this.data;
 		Palette<T> palette = this.palette;

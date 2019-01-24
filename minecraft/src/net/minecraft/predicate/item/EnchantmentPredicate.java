@@ -71,10 +71,9 @@ public class EnchantmentPredicate {
 			Enchantment enchantment = null;
 			if (jsonObject.has("enchantment")) {
 				Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "enchantment"));
-				enchantment = Registry.ENCHANTMENT.get(identifier);
-				if (enchantment == null) {
-					throw new JsonSyntaxException("Unknown enchantment '" + identifier + "'");
-				}
+				enchantment = (Enchantment)Registry.ENCHANTMENT
+					.method_17966(identifier)
+					.orElseThrow(() -> new JsonSyntaxException("Unknown enchantment '" + identifier + "'"));
 			}
 
 			NumberRange.Integer integer = NumberRange.Integer.fromJson(jsonObject.get("levels"));

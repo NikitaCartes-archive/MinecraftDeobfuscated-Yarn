@@ -41,7 +41,7 @@ public class UpdateCommandBlockMinecartServerPacket implements Packet<ServerPlay
 		packetByteBuf.writeBoolean(this.trackOutput);
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12477(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onUpdateCommandBlockMinecart(this);
 	}
 

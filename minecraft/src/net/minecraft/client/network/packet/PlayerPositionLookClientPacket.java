@@ -53,7 +53,7 @@ public class PlayerPositionLookClientPacket implements Packet<ClientPlayPacketLi
 		packetByteBuf.writeVarInt(this.teleportId);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11740(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onPlayerPositionLook(this);
 	}
 

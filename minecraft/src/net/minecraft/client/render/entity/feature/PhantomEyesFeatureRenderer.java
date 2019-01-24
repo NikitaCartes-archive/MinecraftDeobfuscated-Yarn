@@ -23,7 +23,7 @@ public class PhantomEyesFeatureRenderer<T extends Entity> extends FeatureRendere
 		this.bindTexture(field_4890);
 		GlStateManager.enableBlend();
 		GlStateManager.disableAlphaTest();
-		GlStateManager.blendFunc(GlStateManager.class_1033.ONE, GlStateManager.class_1027.ONE);
+		GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
 		GlStateManager.disableLighting();
 		GlStateManager.depthMask(!entity.isInvisible());
 		int m = 61680;

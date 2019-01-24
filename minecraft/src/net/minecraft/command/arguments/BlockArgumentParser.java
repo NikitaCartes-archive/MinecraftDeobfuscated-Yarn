@@ -309,14 +309,12 @@ public class BlockArgumentParser {
 	public void parseBlockId() throws CommandSyntaxException {
 		int i = this.reader.getCursor();
 		this.blockId = Identifier.parse(this.reader);
-		if (Registry.BLOCK.contains(this.blockId)) {
-			Block block = Registry.BLOCK.get(this.blockId);
-			this.stateFactory = block.getStateFactory();
-			this.blockState = block.getDefaultState();
-		} else {
+		Block block = (Block)Registry.BLOCK.method_17966(this.blockId).orElseThrow(() -> {
 			this.reader.setCursor(i);
-			throw INVALID_BLOCK_ID_EXCEPTION.createWithContext(this.reader, this.blockId.toString());
-		}
+			return INVALID_BLOCK_ID_EXCEPTION.createWithContext(this.reader, this.blockId.toString());
+		});
+		this.stateFactory = block.getStateFactory();
+		this.blockState = block.getDefaultState();
 	}
 
 	public void parseTagId() throws CommandSyntaxException {

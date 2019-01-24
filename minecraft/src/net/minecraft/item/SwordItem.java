@@ -42,7 +42,7 @@ public class SwordItem extends ToolItem {
 			Material material = blockState.getMaterial();
 			return material != Material.PLANT
 					&& material != Material.REPLACEABLE_PLANT
-					&& material != Material.field_15921
+					&& material != Material.UNUSED_PLANT
 					&& !blockState.matches(BlockTags.field_15503)
 					&& material != Material.PUMPKIN
 				? 1.0F

@@ -33,8 +33,8 @@ public class SetCountLootFunction extends ConditionalLootFunction {
 			super(new Identifier("set_count"), SetCountLootFunction.class);
 		}
 
-		public void serialize(JsonObject jsonObject, SetCountLootFunction setCountLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, setCountLootFunction, jsonSerializationContext);
+		public void method_623(JsonObject jsonObject, SetCountLootFunction setCountLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.method_529(jsonObject, setCountLootFunction, jsonSerializationContext);
 			jsonObject.add("count", LootTableRanges.serialize(setCountLootFunction.field_1114, jsonSerializationContext));
 		}
 

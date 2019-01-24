@@ -43,7 +43,7 @@ public class CraftResponseClientPacket implements Packet<ClientPlayPacketListene
 		packetByteBuf.writeIdentifier(this.recipeId);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11686(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onCraftResponse(this);
 	}
 }

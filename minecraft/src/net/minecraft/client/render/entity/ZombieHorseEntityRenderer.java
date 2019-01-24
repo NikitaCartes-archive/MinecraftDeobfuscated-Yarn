@@ -26,7 +26,7 @@ public class ZombieHorseEntityRenderer extends HorseBaseEntityRenderer<HorseBase
 		super(entityRenderDispatcher, new HorseEntityModel<>(), 1.0F);
 	}
 
-	protected Identifier getTexture(HorseBaseEntity horseBaseEntity) {
+	protected Identifier method_4145(HorseBaseEntity horseBaseEntity) {
 		return (Identifier)TEXTURES.get(horseBaseEntity.getClass());
 	}
 }

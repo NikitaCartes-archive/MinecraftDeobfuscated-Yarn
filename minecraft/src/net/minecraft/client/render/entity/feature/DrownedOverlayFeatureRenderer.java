@@ -16,7 +16,7 @@ public class DrownedOverlayFeatureRenderer<T extends ZombieEntity> extends Featu
 		super(featureRendererContext);
 	}
 
-	public void render(T zombieEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4182(T zombieEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (!zombieEntity.isInvisible()) {
 			this.getModel().setAttributes(this.field_4855);
 			this.field_4855.method_17077(zombieEntity, f, g, h);

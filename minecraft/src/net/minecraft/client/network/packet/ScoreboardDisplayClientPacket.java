@@ -38,7 +38,7 @@ public class ScoreboardDisplayClientPacket implements Packet<ClientPlayPacketLis
 		packetByteBuf.writeString(this.name);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11805(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onScoreboardDisplay(this);
 	}
 

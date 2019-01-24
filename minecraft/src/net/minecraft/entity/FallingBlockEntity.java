@@ -121,7 +121,7 @@ public class FallingBlockEntity extends Entity {
 				double d = this.velocityX * this.velocityX + this.velocityY * this.velocityY + this.velocityZ * this.velocityZ;
 				if (bl && d > 1.0) {
 					BlockHitResult blockHitResult = this.world
-						.method_17742(
+						.rayTrace(
 							new RayTraceContext(
 								new Vec3d(this.prevX, this.prevY, this.prevZ),
 								new Vec3d(this.x, this.y, this.z),

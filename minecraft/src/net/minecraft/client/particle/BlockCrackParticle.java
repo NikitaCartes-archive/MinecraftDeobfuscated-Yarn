@@ -111,7 +111,7 @@ public class BlockCrackParticle extends Particle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<BlockStateParticleParameters> {
-		public Particle createParticle(
+		public Particle method_3109(
 			BlockStateParticleParameters blockStateParticleParameters, World world, double d, double e, double f, double g, double h, double i
 		) {
 			BlockState blockState = blockStateParticleParameters.getBlockState();

@@ -106,7 +106,7 @@ public class MapRenderer implements AutoCloseable {
 			MapRenderer.this.textureManager.bindTexture(this.id);
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(
-				GlStateManager.class_1033.ONE, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ZERO, GlStateManager.class_1027.ONE
+				GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE
 			);
 			GlStateManager.disableAlphaTest();
 			bufferBuilder.begin(7, VertexFormats.POSITION_UV);

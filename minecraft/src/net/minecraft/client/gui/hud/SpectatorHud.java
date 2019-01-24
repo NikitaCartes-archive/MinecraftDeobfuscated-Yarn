@@ -61,7 +61,7 @@ public class SpectatorHud extends Drawable implements class_536 {
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.enableBlend();
 		GlStateManager.blendFuncSeparate(
-			GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, f);
 		this.client.getTextureManager().bindTexture(WIDGETS_TEX);
@@ -113,7 +113,7 @@ public class SpectatorHud extends Drawable implements class_536 {
 				GlStateManager.pushMatrix();
 				GlStateManager.enableBlend();
 				GlStateManager.blendFuncSeparate(
-					GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+					GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 				);
 				this.client.fontRenderer.drawWithShadow(string, (float)j, (float)k, 16777215 + (i << 24));
 				GlStateManager.disableBlend();

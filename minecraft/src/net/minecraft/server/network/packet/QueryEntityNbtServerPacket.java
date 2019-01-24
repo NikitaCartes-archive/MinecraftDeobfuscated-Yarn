@@ -32,7 +32,7 @@ public class QueryEntityNbtServerPacket implements Packet<ServerPlayPacketListen
 		packetByteBuf.writeVarInt(this.entityId);
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12243(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onQueryEntityNbt(this);
 	}
 

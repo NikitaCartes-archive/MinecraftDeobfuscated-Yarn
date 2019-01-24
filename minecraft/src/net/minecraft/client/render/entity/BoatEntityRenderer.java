@@ -25,7 +25,7 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 		this.field_4673 = 0.5F;
 	}
 
-	public void render(BoatEntity boatEntity, double d, double e, double f, float g, float h) {
+	public void method_3888(BoatEntity boatEntity, double d, double e, double f, float g, float h) {
 		GlStateManager.pushMatrix();
 		this.method_3890(d, e, f);
 		this.method_3889(boatEntity, g, h);
@@ -69,7 +69,7 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 		GlStateManager.translatef((float)d, (float)e + 0.375F, (float)f);
 	}
 
-	protected Identifier getTexture(BoatEntity boatEntity) {
+	protected Identifier method_3891(BoatEntity boatEntity) {
 		return SKIN[boatEntity.getBoatType().ordinal()];
 	}
 

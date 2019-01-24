@@ -34,7 +34,7 @@ public class class_2901 implements Packet<ClientLoginPacketListener> {
 		packetByteBuf.writeString(this.field_13190.getName());
 	}
 
-	public void apply(ClientLoginPacketListener clientLoginPacketListener) {
+	public void method_12594(ClientLoginPacketListener clientLoginPacketListener) {
 		clientLoginPacketListener.method_12588(this);
 	}
 

@@ -18,11 +18,11 @@ public class EndermanEyesFeatureRenderer<T extends LivingEntity> extends Feature
 		super(featureRendererContext);
 	}
 
-	public void render(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4187(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
 		this.bindTexture(SKIN);
 		GlStateManager.enableBlend();
 		GlStateManager.disableAlphaTest();
-		GlStateManager.blendFunc(GlStateManager.class_1033.ONE, GlStateManager.class_1027.ONE);
+		GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
 		GlStateManager.disableLighting();
 		GlStateManager.depthMask(!livingEntity.isInvisible());
 		int m = 61680;

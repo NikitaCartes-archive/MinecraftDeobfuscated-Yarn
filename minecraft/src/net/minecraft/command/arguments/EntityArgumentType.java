@@ -150,7 +150,7 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 	}
 
 	public static class Serializer implements ArgumentSerializer<EntityArgumentType> {
-		public void toPacket(EntityArgumentType entityArgumentType, PacketByteBuf packetByteBuf) {
+		public void method_9320(EntityArgumentType entityArgumentType, PacketByteBuf packetByteBuf) {
 			byte b = 0;
 			if (entityArgumentType.singleTarget) {
 				b = (byte)(b | 1);
@@ -168,7 +168,7 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 			return new EntityArgumentType((b & 1) != 0, (b & 2) != 0);
 		}
 
-		public void toJson(EntityArgumentType entityArgumentType, JsonObject jsonObject) {
+		public void method_9319(EntityArgumentType entityArgumentType, JsonObject jsonObject) {
 			jsonObject.addProperty("amount", entityArgumentType.singleTarget ? "single" : "multiple");
 			jsonObject.addProperty("type", entityArgumentType.playerOnly ? "players" : "entities");
 		}

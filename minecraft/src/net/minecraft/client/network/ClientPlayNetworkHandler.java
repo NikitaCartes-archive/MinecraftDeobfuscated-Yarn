@@ -1306,7 +1306,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(mapUpdateClientPacket, this, this.client);
 		MapRenderer mapRenderer = this.client.gameRenderer.getMapRenderer();
 		String string = FilledMapItem.method_17440(mapUpdateClientPacket.getId());
-		MapState mapState = FilledMapItem.method_7997(this.client.world, string);
+		MapState mapState = this.client.world.method_17891(string);
 		if (mapState == null) {
 			mapState = new MapState(string);
 			if (mapRenderer.getTexture(string) != null) {
@@ -1316,7 +1316,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				}
 			}
 
-			this.client.world.setPersistentState(DimensionType.field_13072, string, mapState);
+			this.client.world.method_17890(mapState);
 		}
 
 		mapUpdateClientPacket.apply(mapState);

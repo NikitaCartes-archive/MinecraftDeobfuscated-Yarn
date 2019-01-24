@@ -104,7 +104,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 		super.render(abstractMinecartEntity, d, e, f, g, h);
 	}
 
-	protected Identifier getTexture(T abstractMinecartEntity) {
+	protected Identifier method_4065(T abstractMinecartEntity) {
 		return SKIN;
 	}
 

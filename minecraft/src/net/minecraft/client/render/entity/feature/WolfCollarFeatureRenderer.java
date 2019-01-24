@@ -15,7 +15,7 @@ public class WolfCollarFeatureRenderer extends FeatureRenderer<WolfEntity, WolfE
 		super(featureRendererContext);
 	}
 
-	public void render(WolfEntity wolfEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4209(WolfEntity wolfEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (wolfEntity.isTamed() && !wolfEntity.isInvisible()) {
 			this.bindTexture(SKIN);
 			float[] fs = wolfEntity.method_6713().getColorComponents();

@@ -184,7 +184,7 @@ public class SettingsGui extends Gui {
 	}
 
 	@Override
-	public void handle(boolean bl, int i) {
+	public void confirmResult(boolean bl, int i) {
 		this.client.openGui(this);
 		if (i == 109 && bl && this.client.world != null) {
 			this.client.world.getLevelProperties().setDifficultyLocked(true);

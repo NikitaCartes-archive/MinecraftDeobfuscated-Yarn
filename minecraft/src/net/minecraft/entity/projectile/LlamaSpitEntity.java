@@ -66,7 +66,7 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 		Vec3d vec3d = new Vec3d(this.x, this.y, this.z);
 		Vec3d vec3d2 = new Vec3d(this.x + this.velocityX, this.y + this.velocityY, this.z + this.velocityZ);
 		HitResult hitResult = this.world
-			.method_17742(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17559, RayTraceContext.FluidHandling.NONE, this));
+			.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17559, RayTraceContext.FluidHandling.NONE, this));
 		if (hitResult.getType() != HitResult.Type.NONE) {
 			vec3d2 = hitResult.getPos();
 		}

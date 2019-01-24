@@ -113,7 +113,7 @@ public class PlayerContainer extends CraftingContainer<CraftingInventory> {
 		super.close(playerEntity);
 		this.invCraftingResult.clearInv();
 		if (!playerEntity.world.isClient) {
-			this.method_7607(playerEntity, playerEntity.world, this.invCrafting);
+			this.dropInventory(playerEntity, playerEntity.world, this.invCrafting);
 		}
 	}
 

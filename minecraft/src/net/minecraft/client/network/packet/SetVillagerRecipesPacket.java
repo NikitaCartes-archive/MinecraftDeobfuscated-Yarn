@@ -32,7 +32,7 @@ public class SetVillagerRecipesPacket implements Packet<ClientPlayPacketListener
 		this.recipes.writeToBuf(packetByteBuf);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_17588(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onSetVillagerRecipes(this);
 	}
 

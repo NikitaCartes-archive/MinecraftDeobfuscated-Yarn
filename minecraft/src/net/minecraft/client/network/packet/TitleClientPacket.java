@@ -67,7 +67,7 @@ public class TitleClientPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11879(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onTitle(this);
 	}
 

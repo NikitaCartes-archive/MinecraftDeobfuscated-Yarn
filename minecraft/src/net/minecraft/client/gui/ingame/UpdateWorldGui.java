@@ -29,7 +29,7 @@ public class UpdateWorldGui extends Gui {
 
 	public UpdateWorldGui(YesNoCallback yesNoCallback, String string, LevelStorage levelStorage) {
 		this.field_3233 = yesNoCallback;
-		this.updater = new WorldUpdater(string, levelStorage, levelStorage.getLevelProperties(string));
+		this.updater = new WorldUpdater(string, levelStorage, levelStorage.requiresConversion(string));
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class UpdateWorldGui extends Gui {
 			@Override
 			public void onPressed(double d, double e) {
 				UpdateWorldGui.this.updater.cancel();
-				UpdateWorldGui.this.field_3233.handle(false, 0);
+				UpdateWorldGui.this.field_3233.confirmResult(false, 0);
 			}
 		});
 	}
@@ -47,7 +47,7 @@ public class UpdateWorldGui extends Gui {
 	@Override
 	public void update() {
 		if (this.updater.isDone()) {
-			this.field_3233.handle(true, 0);
+			this.field_3233.confirmResult(true, 0);
 		}
 	}
 

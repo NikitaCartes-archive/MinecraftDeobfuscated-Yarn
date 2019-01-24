@@ -22,7 +22,7 @@ public class GuiSlotUpdateClientPacket implements Packet<ClientPlayPacketListene
 		this.itemStack = itemStack.copy();
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11451(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onGuiSlotUpdate(this);
 	}
 

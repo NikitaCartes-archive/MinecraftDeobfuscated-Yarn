@@ -81,7 +81,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 	}
 
 	@Nullable
-	protected Identifier getTexture(ItemFrameEntity itemFrameEntity) {
+	protected Identifier method_3993(ItemFrameEntity itemFrameEntity) {
 		return null;
 	}
 

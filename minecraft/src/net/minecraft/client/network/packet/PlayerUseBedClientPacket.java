@@ -34,7 +34,7 @@ public class PlayerUseBedClientPacket implements Packet<ClientPlayPacketListener
 		packetByteBuf.writeBlockPos(this.bedHeadPos);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11748(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onPlayerUseBed(this);
 	}
 

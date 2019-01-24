@@ -58,7 +58,7 @@ public class ExplodingWitherSkullEntityRenderer extends EntityRenderer<Exploding
 		super.render(explodingWitherSkullEntity, d, e, f, g, h);
 	}
 
-	protected Identifier getTexture(ExplodingWitherSkullEntity explodingWitherSkullEntity) {
+	protected Identifier method_4160(ExplodingWitherSkullEntity explodingWitherSkullEntity) {
 		return explodingWitherSkullEntity.method_7503() ? INVINCIBLE_SKIN : SKIN;
 	}
 }

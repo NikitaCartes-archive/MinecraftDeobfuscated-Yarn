@@ -20,7 +20,7 @@ public class ElderGuardianEntityRenderer extends GuardianEntityRenderer {
 	}
 
 	@Override
-	protected Identifier getTexture(GuardianEntity guardianEntity) {
+	protected Identifier method_3976(GuardianEntity guardianEntity) {
 		return SKIN;
 	}
 }

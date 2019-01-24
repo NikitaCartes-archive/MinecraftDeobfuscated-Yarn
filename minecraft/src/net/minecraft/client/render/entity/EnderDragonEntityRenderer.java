@@ -43,7 +43,7 @@ public class EnderDragonEntityRenderer extends MobEntityRenderer<EnderDragonEnti
 		}
 	}
 
-	protected void render(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j, float k) {
+	protected void method_3916(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j, float k) {
 		if (enderDragonEntity.field_7031 > 0) {
 			float l = (float)enderDragonEntity.field_7031 / 200.0F;
 			GlStateManager.depthFunc(515);
@@ -61,7 +61,7 @@ public class EnderDragonEntityRenderer extends MobEntityRenderer<EnderDragonEnti
 			GlStateManager.depthFunc(514);
 			GlStateManager.disableTexture();
 			GlStateManager.enableBlend();
-			GlStateManager.blendFunc(GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA);
+			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			GlStateManager.color4f(1.0F, 0.0F, 0.0F, 0.5F);
 			this.model.method_17137(enderDragonEntity, f, g, h, i, j, k);
 			GlStateManager.enableTexture();
@@ -71,7 +71,7 @@ public class EnderDragonEntityRenderer extends MobEntityRenderer<EnderDragonEnti
 	}
 
 	public void method_3918(EnderDragonEntity enderDragonEntity, double d, double e, double f, float g, float h) {
-		super.render(enderDragonEntity, d, e, f, g, h);
+		super.method_4072(enderDragonEntity, d, e, f, g, h);
 		if (enderDragonEntity.field_7024 != null) {
 			this.bindTexture(CRYSTAL_BEAM);
 			float i = MathHelper.sin(((float)enderDragonEntity.field_7024.age + h) * 0.2F) / 2.0F + 0.5F;
@@ -127,7 +127,7 @@ public class EnderDragonEntityRenderer extends MobEntityRenderer<EnderDragonEnti
 		GlStateManager.popMatrix();
 	}
 
-	protected Identifier getTexture(EnderDragonEntity enderDragonEntity) {
+	protected Identifier method_3914(EnderDragonEntity enderDragonEntity) {
 		return SKIN;
 	}
 }

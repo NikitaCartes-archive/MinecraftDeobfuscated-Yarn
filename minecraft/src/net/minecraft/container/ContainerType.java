@@ -24,6 +24,7 @@ public class ContainerType<T extends Container> {
 	public static final ContainerType<ShulkerBoxContainer> SHULKER_BOX = register("shulker_box", ShulkerBoxContainer::new);
 	public static final ContainerType<SmokerContainer> SMOKER = register("smoker", SmokerContainer::new);
 	public static final ContainerType<CartographyTableContainer> CARTOGRAPHY = register("cartography", CartographyTableContainer::new);
+	public static final ContainerType<StonecutterContainer> field_17625 = register("stonecutter", StonecutterContainer::new);
 	private final ContainerType.Factory<T> factory;
 
 	private static <T extends Container> ContainerType<T> register(String string, ContainerType.Factory<T> factory) {

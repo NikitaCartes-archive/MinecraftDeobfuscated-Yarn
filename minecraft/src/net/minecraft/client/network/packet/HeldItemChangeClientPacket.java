@@ -27,7 +27,7 @@ public class HeldItemChangeClientPacket implements Packet<ClientPlayPacketListen
 		packetByteBuf.writeByte(this.slot);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11802(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onHeldItemChange(this);
 	}
 

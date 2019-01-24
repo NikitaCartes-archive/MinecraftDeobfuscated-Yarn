@@ -47,7 +47,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		this.addFeature(new TridentRiptideFeatureRenderer<>(this));
 	}
 
-	public void render(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f, float g, float h) {
+	public void method_4215(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f, float g, float h) {
 		if (!abstractClientPlayerEntity.method_7340() || this.renderManager.field_4686 == abstractClientPlayerEntity) {
 			double i = e;
 			if (abstractClientPlayerEntity.isSneaking()) {
@@ -56,7 +56,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 
 			this.setModelPose(abstractClientPlayerEntity);
 			GlStateManager.setProfile(GlStateManager.RenderMode.PLAYER_SKIN);
-			super.render(abstractClientPlayerEntity, d, i, f, g, h);
+			super.method_4054(abstractClientPlayerEntity, d, i, f, g, h);
 			GlStateManager.unsetProfile(GlStateManager.RenderMode.PLAYER_SKIN);
 		}
 	}
@@ -124,7 +124,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		return armPose;
 	}
 
-	public Identifier getTexture(AbstractClientPlayerEntity abstractClientPlayerEntity) {
+	public Identifier method_4216(AbstractClientPlayerEntity abstractClientPlayerEntity) {
 		return abstractClientPlayerEntity.method_3117();
 	}
 

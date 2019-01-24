@@ -64,7 +64,7 @@ public abstract class CombinedEntry extends LootEntry {
 			super(identifier, class_);
 		}
 
-		public void toJson(JsonObject jsonObject, T combinedEntry, JsonSerializationContext jsonSerializationContext) {
+		public void method_397(JsonObject jsonObject, T combinedEntry, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.add("children", jsonSerializationContext.serialize(combinedEntry.children));
 		}
 

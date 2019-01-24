@@ -47,7 +47,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 		super.render(paintingEntity, d, e, f, g, h);
 	}
 
-	protected Identifier getTexture(PaintingEntity paintingEntity) {
+	protected Identifier method_4077(PaintingEntity paintingEntity) {
 		return TEX;
 	}
 

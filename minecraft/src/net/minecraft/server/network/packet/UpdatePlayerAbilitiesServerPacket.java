@@ -61,7 +61,7 @@ public class UpdatePlayerAbilitiesServerPacket implements Packet<ServerPlayPacke
 		packetByteBuf.writeFloat(this.walkSpeed);
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12339(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onPlayerAbilities(this);
 	}
 

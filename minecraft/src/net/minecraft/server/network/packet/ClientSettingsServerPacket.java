@@ -50,7 +50,7 @@ public class ClientSettingsServerPacket implements Packet<ServerPlayPacketListen
 		packetByteBuf.writeEnumConstant(this.mainHand);
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12133(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onClientSettings(this);
 	}
 

@@ -194,7 +194,7 @@ public class RealmsGui extends Gui {
 	}
 
 	@Override
-	public void handle(boolean bl, int i) {
+	public void confirmResult(boolean bl, int i) {
 		this.realmsScreen.confirmResult(bl, i);
 	}
 

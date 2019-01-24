@@ -31,7 +31,7 @@ public class JigsawBlockEntity extends BlockEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public String method_16380() {
+	public String getFinalState() {
 		return this.finalState;
 	}
 

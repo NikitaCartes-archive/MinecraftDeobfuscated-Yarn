@@ -32,7 +32,7 @@ public class GameStateChangeClientPacket implements Packet<ClientPlayPacketListe
 		packetByteBuf.writeFloat(this.value);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11490(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onGameStateChange(this);
 	}
 

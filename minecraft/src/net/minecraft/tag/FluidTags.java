@@ -1,11 +1,12 @@
 package net.minecraft.tag;
 
 import java.util.Collection;
+import java.util.Optional;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.util.Identifier;
 
 public class FluidTags {
-	private static TagContainer<Fluid> container = new TagContainer<>(identifier -> false, identifier -> null, "", false, "");
+	private static TagContainer<Fluid> container = new TagContainer<>(identifier -> Optional.empty(), "", false, "");
 	private static int containerChanges;
 	public static final Tag<Fluid> field_15517 = register("water");
 	public static final Tag<Fluid> field_15518 = register("lava");

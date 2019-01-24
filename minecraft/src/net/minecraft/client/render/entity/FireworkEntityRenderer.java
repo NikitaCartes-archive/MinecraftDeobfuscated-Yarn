@@ -47,7 +47,7 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
 		super.render(fireworkEntity, d, e, f, g, h);
 	}
 
-	protected Identifier getTexture(FireworkEntity fireworkEntity) {
+	protected Identifier method_3969(FireworkEntity fireworkEntity) {
 		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
 	}
 }

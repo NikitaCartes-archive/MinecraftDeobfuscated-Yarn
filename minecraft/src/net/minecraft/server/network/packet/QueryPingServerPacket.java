@@ -28,7 +28,7 @@ public class QueryPingServerPacket implements Packet<ServerQueryPacketListener> 
 		packetByteBuf.writeLong(this.startTime);
 	}
 
-	public void apply(ServerQueryPacketListener serverQueryPacketListener) {
+	public void method_12699(ServerQueryPacketListener serverQueryPacketListener) {
 		serverQueryPacketListener.onPing(this);
 	}
 

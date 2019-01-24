@@ -24,7 +24,7 @@ public class PlayerListHeaderClientPacket implements Packet<ClientPlayPacketList
 		packetByteBuf.writeTextComponent(this.footer);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11907(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onPlayerListHeader(this);
 	}
 

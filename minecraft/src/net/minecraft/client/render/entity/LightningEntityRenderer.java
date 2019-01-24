@@ -23,7 +23,7 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
 		GlStateManager.disableTexture();
 		GlStateManager.disableLighting();
 		GlStateManager.enableBlend();
-		GlStateManager.blendFunc(GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE);
+		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
 		double[] ds = new double[8];
 		double[] es = new double[8];
 		double i = 0.0;
@@ -116,7 +116,7 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
 	}
 
 	@Nullable
-	protected Identifier getTexture(LightningEntity lightningEntity) {
+	protected Identifier method_4033(LightningEntity lightningEntity) {
 		return null;
 	}
 }

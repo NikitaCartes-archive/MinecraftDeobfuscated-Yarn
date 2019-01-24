@@ -77,6 +77,11 @@ public class SavannaVillageData {
 					class_3785.Projection.TERRAIN_MATCHING
 				)
 			);
+		ImmutableList<AbstractStructureProcessor> immutableList2 = ImmutableList.of(
+			new RuleStructureProcessor(
+				ImmutableList.of(new class_3821(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10168.getDefaultState()))
+			)
+		);
 		class_3778.field_16666
 			.method_16640(
 				new class_3785(
@@ -108,9 +113,9 @@ public class SavannaVillageData {
 						new Pair<>(new class_3781("village/savanna/houses/savanna_weaponsmith_2"), 2),
 						new Pair<>(new class_3781("village/savanna/houses/savanna_temple_1"), 1),
 						new Pair<>(new class_3781("village/savanna/houses/savanna_temple_2"), 3),
-						new Pair<>(new class_3781("village/savanna/houses/savanna_large_farm_1"), 4),
-						new Pair<>(new class_3781("village/savanna/houses/savanna_large_farm_2"), 4),
-						new Pair<>(new class_3781("village/savanna/houses/savanna_small_farm"), 4),
+						new Pair<>(new class_3781("village/savanna/houses/savanna_large_farm_1", immutableList2), 4),
+						new Pair<>(new class_3781("village/savanna/houses/savanna_large_farm_2", immutableList2), 4),
+						new Pair<>(new class_3781("village/savanna/houses/savanna_small_farm", immutableList2), 4),
 						new Pair<>(new class_3781("village/savanna/houses/savanna_animal_pen_1"), 2),
 						new Pair<>(new class_3781("village/savanna/houses/savanna_animal_pen_2"), 2),
 						new Pair<>(new class_3781("village/savanna/houses/savanna_animal_pen_3"), 2),

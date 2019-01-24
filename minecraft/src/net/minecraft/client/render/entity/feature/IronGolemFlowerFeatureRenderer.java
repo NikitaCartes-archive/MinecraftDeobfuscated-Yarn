@@ -16,7 +16,7 @@ public class IronGolemFlowerFeatureRenderer extends FeatureRenderer<IronGolemEnt
 		super(featureRendererContext);
 	}
 
-	public void render(IronGolemEntity ironGolemEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4188(IronGolemEntity ironGolemEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (ironGolemEntity.method_6502() != 0) {
 			GlStateManager.enableRescaleNormal();
 			GlStateManager.pushMatrix();

@@ -77,14 +77,14 @@ public class EnchantGlyphParticle extends Particle {
 
 	@Environment(EnvType.CLIENT)
 	public static class EnchantFactory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3021(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new EnchantGlyphParticle(world, d, e, f, g, h, i);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class NautilusFactory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3020(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			EnchantGlyphParticle enchantGlyphParticle = new EnchantGlyphParticle(world, d, e, f, g, h, i);
 			enchantGlyphParticle.setSpriteIndex(208);
 			return enchantGlyphParticle;

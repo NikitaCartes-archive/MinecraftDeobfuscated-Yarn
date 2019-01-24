@@ -283,7 +283,7 @@ public class ServerPlayerInteractionManager {
 		} else {
 			boolean bl = !playerEntity.getMainHandStack().isEmpty() || !playerEntity.getOffHandStack().isEmpty();
 			boolean bl2 = playerEntity.isSneaking() && bl;
-			if (!bl2 && blockState.method_11629(world, playerEntity, hand, blockHitResult)) {
+			if (!bl2 && blockState.activate(world, playerEntity, hand, blockHitResult)) {
 				return ActionResult.SUCCESS;
 			} else if (!itemStack.isEmpty() && !playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
 				ItemUsageContext itemUsageContext = new ItemUsageContext(playerEntity, playerEntity.getStackInHand(hand), blockHitResult);

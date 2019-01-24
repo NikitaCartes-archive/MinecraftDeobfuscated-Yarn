@@ -78,8 +78,9 @@ public class class_3781 extends class_3784 {
 	}
 
 	@Override
-	public boolean method_16626(IWorld iWorld, BlockPos blockPos, Rotation rotation, MutableIntBoundingBox mutableIntBoundingBox, Random random) {
-		StructureManager structureManager = iWorld.getSaveHandler().getStructureManager();
+	public boolean method_16626(
+		StructureManager structureManager, IWorld iWorld, BlockPos blockPos, Rotation rotation, MutableIntBoundingBox mutableIntBoundingBox, Random random
+	) {
 		Structure structure = structureManager.getStructureOrBlank(this.location);
 		StructurePlacementData structurePlacementData = this.method_16616(rotation, mutableIntBoundingBox);
 		if (!structure.method_15172(iWorld, blockPos, structurePlacementData, 18)) {

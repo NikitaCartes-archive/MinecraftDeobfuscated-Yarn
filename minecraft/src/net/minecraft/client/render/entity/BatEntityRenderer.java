@@ -16,7 +16,7 @@ public class BatEntityRenderer extends MobEntityRenderer<BatEntity, BatEntityMod
 		super(entityRenderDispatcher, new BatEntityModel(), 0.25F);
 	}
 
-	protected Identifier getTexture(BatEntity batEntity) {
+	protected Identifier method_3883(BatEntity batEntity) {
 		return SKIN;
 	}
 
@@ -24,7 +24,7 @@ public class BatEntityRenderer extends MobEntityRenderer<BatEntity, BatEntityMod
 		GlStateManager.scalef(0.35F, 0.35F, 0.35F);
 	}
 
-	protected void setupTransforms(BatEntity batEntity, float f, float g, float h) {
+	protected void method_3882(BatEntity batEntity, float f, float g, float h) {
 		if (batEntity.isRoosting()) {
 			GlStateManager.translatef(0.0F, -0.1F, 0.0F);
 		} else {

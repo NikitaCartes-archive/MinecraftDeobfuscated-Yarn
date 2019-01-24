@@ -42,7 +42,7 @@ public class HandshakeServerPacket implements Packet<ServerHandshakePacketListen
 		packetByteBuf.writeVarInt(this.state.getId());
 	}
 
-	public void apply(ServerHandshakePacketListener serverHandshakePacketListener) {
+	public void method_12575(ServerHandshakePacketListener serverHandshakePacketListener) {
 		serverHandshakePacketListener.onHandshake(this);
 	}
 

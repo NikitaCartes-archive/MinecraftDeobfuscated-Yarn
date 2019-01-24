@@ -15,7 +15,7 @@ public class PolarBearEntityRenderer extends MobEntityRenderer<PolarBearEntity, 
 		super(entityRenderDispatcher, new PolarBearEntityModel<>(), 0.7F);
 	}
 
-	protected Identifier getTexture(PolarBearEntity polarBearEntity) {
+	protected Identifier method_4097(PolarBearEntity polarBearEntity) {
 		return SKIN;
 	}
 

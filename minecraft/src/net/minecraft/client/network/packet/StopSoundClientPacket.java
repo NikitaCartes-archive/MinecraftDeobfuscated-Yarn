@@ -65,7 +65,7 @@ public class StopSoundClientPacket implements Packet<ClientPlayPacketListener> {
 		return this.category;
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11905(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onStopSound(this);
 	}
 }

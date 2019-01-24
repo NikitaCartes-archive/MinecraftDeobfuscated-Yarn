@@ -64,7 +64,7 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 		}
 
 		public void method_626(JsonObject jsonObject, SetLootTableLootFunction setLootTableLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, setLootTableLootFunction, jsonSerializationContext);
+			super.method_529(jsonObject, setLootTableLootFunction, jsonSerializationContext);
 			jsonObject.addProperty("name", setLootTableLootFunction.id.toString());
 			if (setLootTableLootFunction.seed != 0L) {
 				jsonObject.addProperty("seed", setLootTableLootFunction.seed);

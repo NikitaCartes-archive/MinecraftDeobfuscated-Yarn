@@ -18,7 +18,7 @@ public class KeepAliveServerPacket implements Packet<ServerPlayPacketListener> {
 		this.id = l;
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12266(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onKeepAlive(this);
 	}
 

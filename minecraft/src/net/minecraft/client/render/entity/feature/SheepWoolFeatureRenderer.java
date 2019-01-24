@@ -18,7 +18,7 @@ public class SheepWoolFeatureRenderer extends FeatureRenderer<SheepEntity, Sheep
 		super(featureRendererContext);
 	}
 
-	public void render(SheepEntity sheepEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4198(SheepEntity sheepEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (!sheepEntity.isSheared() && !sheepEntity.isInvisible()) {
 			this.bindTexture(SKIN);
 			if (sheepEntity.hasCustomName() && "jeb_".equals(sheepEntity.getName().getText())) {

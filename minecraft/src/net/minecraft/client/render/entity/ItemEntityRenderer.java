@@ -70,7 +70,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		this.random.setSeed((long)i);
 		boolean bl = false;
 		if (this.bindEntityTexture(itemEntity)) {
-			this.renderManager.textureManager.getTexture(this.getTexture(itemEntity)).pushFilter(false, false);
+			this.renderManager.textureManager.getTexture(this.method_3999(itemEntity)).pushFilter(false, false);
 			bl = true;
 		}
 
@@ -79,7 +79,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		GlStateManager.enableBlend();
 		GuiLighting.enable();
 		GlStateManager.blendFuncSeparate(
-			GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		GlStateManager.pushMatrix();
 		BakedModel bakedModel = this.itemRenderer.method_4028(itemStack, itemEntity.world, null);
@@ -138,13 +138,13 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		GlStateManager.disableBlend();
 		this.bindEntityTexture(itemEntity);
 		if (bl) {
-			this.renderManager.textureManager.getTexture(this.getTexture(itemEntity)).popFilter();
+			this.renderManager.textureManager.getTexture(this.method_3999(itemEntity)).popFilter();
 		}
 
 		super.render(itemEntity, d, e, f, g, h);
 	}
 
-	protected Identifier getTexture(ItemEntity itemEntity) {
+	protected Identifier method_3999(ItemEntity itemEntity) {
 		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
 	}
 }

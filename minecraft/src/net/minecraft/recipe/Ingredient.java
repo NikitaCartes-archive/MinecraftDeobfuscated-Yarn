@@ -157,12 +157,8 @@ public final class Ingredient implements Predicate<ItemStack> {
 			throw new JsonParseException("An ingredient entry is either a tag or an item, not both");
 		} else if (jsonObject.has("item")) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "item"));
-			Item item = Registry.ITEM.get(identifier);
-			if (item == null) {
-				throw new JsonSyntaxException("Unknown item '" + identifier + "'");
-			} else {
-				return new Ingredient.StackEntry(new ItemStack(item));
-			}
+			Item item = (Item)Registry.ITEM.method_17966(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown item '" + identifier + "'"));
+			return new Ingredient.StackEntry(new ItemStack(item));
 		} else if (jsonObject.has("tag")) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "tag"));
 			Tag<Item> tag = ItemTags.getContainer().get(identifier);

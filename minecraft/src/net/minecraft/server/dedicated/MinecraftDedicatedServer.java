@@ -74,7 +74,8 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		MinecraftSessionService minecraftSessionService,
 		GameProfileRepository gameProfileRepository,
 		UserCache userCache,
-		WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory
+		WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory,
+		String string
 	) {
 		super(
 			file,
@@ -85,7 +86,8 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 			minecraftSessionService,
 			gameProfileRepository,
 			userCache,
-			worldGenerationProgressListenerFactory
+			worldGenerationProgressListenerFactory,
+			string
 		);
 		this.propertiesLoader = serverPropertiesLoader;
 		this.rconCommandOutput = new ServerCommandOutput(this);
@@ -181,10 +183,6 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 				"While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose."
 			);
 			LOGGER_DEDICATED.warn("To change this, set \"online-mode\" to \"true\" in the server.properties file.");
-		}
-
-		if (this.getLevelName() == null) {
-			this.setLevelName(serverPropertiesHandler.levelName);
 		}
 
 		if (this.method_13951()) {

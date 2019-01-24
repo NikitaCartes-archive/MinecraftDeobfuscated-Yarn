@@ -64,7 +64,7 @@ public class EmotionParticle extends Particle {
 
 	@Environment(EnvType.CLIENT)
 	public static class AngryVillagerFactory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3034(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			Particle particle = new EmotionParticle(world, d, e + 0.5, f, g, h, i);
 			particle.setSpriteIndex(81);
 			particle.setColor(1.0F, 1.0F, 1.0F);
@@ -74,7 +74,7 @@ public class EmotionParticle extends Particle {
 
 	@Environment(EnvType.CLIENT)
 	public static class HeartFactory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3035(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new EmotionParticle(world, d, e, f, g, h, i);
 		}
 	}

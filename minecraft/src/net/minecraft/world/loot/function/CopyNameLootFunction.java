@@ -50,7 +50,7 @@ public class CopyNameLootFunction extends ConditionalLootFunction {
 		}
 
 		public void method_476(JsonObject jsonObject, CopyNameLootFunction copyNameLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, copyNameLootFunction, jsonSerializationContext);
+			super.method_529(jsonObject, copyNameLootFunction, jsonSerializationContext);
 			jsonObject.addProperty("source", copyNameLootFunction.source.field_1025);
 		}
 

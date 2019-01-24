@@ -659,6 +659,8 @@ public class SoundEvents {
 	public static final SoundEvent field_14920 = register("ui.loom.select_pattern");
 	public static final SoundEvent field_15096 = register("ui.loom.take_result");
 	public static final SoundEvent field_17484 = register("ui.cartography_table.take_result");
+	public static final SoundEvent field_17710 = register("ui.stonecutter.take_result");
+	public static final SoundEvent field_17711 = register("ui.stonecutter.select_recipe");
 	public static final SoundEvent field_15195 = register("ui.toast.challenge_complete");
 	public static final SoundEvent field_14561 = register("ui.toast.in");
 	public static final SoundEvent field_14641 = register("ui.toast.out");

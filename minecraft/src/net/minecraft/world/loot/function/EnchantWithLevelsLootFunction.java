@@ -38,8 +38,8 @@ public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
 			super(new Identifier("enchant_with_levels"), EnchantWithLevelsLootFunction.class);
 		}
 
-		public void serialize(JsonObject jsonObject, EnchantWithLevelsLootFunction enchantWithLevelsLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, enchantWithLevelsLootFunction, jsonSerializationContext);
+		public void method_485(JsonObject jsonObject, EnchantWithLevelsLootFunction enchantWithLevelsLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.method_529(jsonObject, enchantWithLevelsLootFunction, jsonSerializationContext);
 			jsonObject.add("levels", LootTableRanges.serialize(enchantWithLevelsLootFunction.field_1026, jsonSerializationContext));
 			jsonObject.addProperty("treasure", enchantWithLevelsLootFunction.treasureEnchantmentsAllowed);
 		}

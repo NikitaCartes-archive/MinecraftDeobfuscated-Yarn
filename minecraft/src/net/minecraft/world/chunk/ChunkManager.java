@@ -1,5 +1,6 @@
 package net.minecraft.world.chunk;
 
+import java.io.IOException;
 import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -35,7 +36,7 @@ public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
 
 	public abstract ChunkGenerator<?> getChunkGenerator();
 
-	public void close() {
+	public void close() throws IOException {
 	}
 
 	public abstract LightingProvider getLightingProvider();

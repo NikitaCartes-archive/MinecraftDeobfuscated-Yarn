@@ -29,7 +29,7 @@ public class FireballEntity extends class_3855 {
 	}
 
 	@Override
-	protected void method_7469(HitResult hitResult) {
+	protected void onCollision(HitResult hitResult) {
 		if (!this.world.isClient) {
 			if (hitResult.getType() == HitResult.Type.ENTITY) {
 				Entity entity = ((EntityHitResult)hitResult).getEntity();

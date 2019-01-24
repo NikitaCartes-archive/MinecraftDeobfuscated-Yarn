@@ -54,7 +54,7 @@ public class ShulkerBulletEntityRenderer extends EntityRenderer<ShulkerBulletEnt
 		super.render(shulkerBulletEntity, d, e, f, g, h);
 	}
 
-	protected Identifier getTexture(ShulkerBulletEntity shulkerBulletEntity) {
+	protected Identifier method_4105(ShulkerBulletEntity shulkerBulletEntity) {
 		return SKIN;
 	}
 }

@@ -25,7 +25,7 @@ public class RenameItemServerPacket implements Packet<ServerPlayPacketListener> 
 		packetByteBuf.writeString(this.itemName);
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12408(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onRenameItem(this);
 	}
 

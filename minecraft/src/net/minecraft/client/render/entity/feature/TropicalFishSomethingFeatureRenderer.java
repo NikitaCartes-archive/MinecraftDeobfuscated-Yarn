@@ -17,7 +17,7 @@ public class TropicalFishSomethingFeatureRenderer extends FeatureRenderer<Tropic
 		super(featureRendererContext);
 	}
 
-	public void render(TropicalFishEntity tropicalFishEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4205(TropicalFishEntity tropicalFishEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (!tropicalFishEntity.isInvisible()) {
 			EntityModel<TropicalFishEntity> entityModel = (EntityModel<TropicalFishEntity>)(tropicalFishEntity.getShape() == 0 ? this.field_17157 : this.field_4903);
 			this.bindTexture(tropicalFishEntity.getVarietyId());

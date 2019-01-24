@@ -30,7 +30,7 @@ public class ClickWindowServerPacket implements Packet<ServerPlayPacketListener>
 		this.actionType = slotActionType;
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12191(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onClickWindow(this);
 	}
 

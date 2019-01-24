@@ -44,7 +44,7 @@ public class ExperienceOrbSpawnClientPacket implements Packet<ClientPlayPacketLi
 		packetByteBuf.writeShort(this.experience);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11182(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onExperienceOrbSpawn(this);
 	}
 

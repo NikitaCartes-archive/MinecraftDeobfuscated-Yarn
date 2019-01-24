@@ -13,17 +13,17 @@ import net.minecraft.util.PacketByteBuf;
 public class BiMapPalette<T> implements Palette<T> {
 	private final IdList<T> idList;
 	private final Int2ObjectBiMap<T> map;
-	private final PaletteResizeHandler<T> resizeHandler;
+	private final PaletteResizeListener<T> resizeHandler;
 	private final Function<CompoundTag, T> elementDeserializer;
 	private final Function<T, CompoundTag> elementSerializer;
 	private final int indexBits;
 
 	public BiMapPalette(
-		IdList<T> idList, int i, PaletteResizeHandler<T> paletteResizeHandler, Function<CompoundTag, T> function, Function<T, CompoundTag> function2
+		IdList<T> idList, int i, PaletteResizeListener<T> paletteResizeListener, Function<CompoundTag, T> function, Function<T, CompoundTag> function2
 	) {
 		this.idList = idList;
 		this.indexBits = i;
-		this.resizeHandler = paletteResizeHandler;
+		this.resizeHandler = paletteResizeListener;
 		this.elementDeserializer = function;
 		this.elementSerializer = function2;
 		this.map = new Int2ObjectBiMap<>(1 << i);
@@ -35,7 +35,7 @@ public class BiMapPalette<T> implements Palette<T> {
 		if (i == -1) {
 			i = this.map.add(object);
 			if (i >= 1 << this.indexBits) {
-				i = this.resizeHandler.resizePaletteAndGetIndex(this.indexBits + 1, object);
+				i = this.resizeHandler.onResize(this.indexBits + 1, object);
 			}
 		}
 

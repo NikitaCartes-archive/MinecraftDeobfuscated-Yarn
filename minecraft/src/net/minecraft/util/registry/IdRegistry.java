@@ -5,9 +5,12 @@ import com.google.common.collect.HashBiMap;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Int2ObjectBiMap;
 import org.apache.commons.lang3.Validate;
@@ -72,6 +75,11 @@ public class IdRegistry<T> extends ModifiableRegistry<T> {
 	}
 
 	@Override
+	public Optional<T> method_17966(@Nullable Identifier identifier) {
+		return Optional.ofNullable(this.objectMap.get(identifier));
+	}
+
+	@Override
 	public Set<Identifier> keys() {
 		return Collections.unmodifiableSet(this.objectMap.keySet());
 	}
@@ -96,6 +104,7 @@ public class IdRegistry<T> extends ModifiableRegistry<T> {
 		return (T)this.randomValueArray[random.nextInt(this.randomValueArray.length)];
 	}
 
+	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean contains(Identifier identifier) {
 		return this.objectMap.containsKey(identifier);

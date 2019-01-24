@@ -40,7 +40,7 @@ public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity>
 		}
 	}
 
-	protected Identifier getTexture(EvokerFangsEntity evokerFangsEntity) {
+	protected Identifier method_3963(EvokerFangsEntity evokerFangsEntity) {
 		return field_4699;
 	}
 }

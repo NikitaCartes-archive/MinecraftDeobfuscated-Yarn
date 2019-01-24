@@ -32,7 +32,7 @@ public class RequestCommandCompletionsServerPacket implements Packet<ServerPlayP
 		packetByteBuf.writeString(this.partialCommand, 32500);
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12147(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onRequestCommandCompletions(this);
 	}
 

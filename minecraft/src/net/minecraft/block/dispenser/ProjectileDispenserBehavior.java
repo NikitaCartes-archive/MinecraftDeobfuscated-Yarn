@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 
 public abstract class ProjectileDispenserBehavior extends ItemDispenserBehavior {
 	@Override
-	public ItemStack method_10135(BlockPointer blockPointer, ItemStack itemStack) {
+	public ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
 		World world = blockPointer.getWorld();
 		Position position = DispenserBlock.getOutputLocation(blockPointer);
 		Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);

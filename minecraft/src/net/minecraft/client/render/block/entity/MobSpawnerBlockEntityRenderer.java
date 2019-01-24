@@ -11,7 +11,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class MobSpawnerBlockEntityRenderer extends BlockEntityRenderer<MobSpawnerBlockEntity> {
-	public void render(MobSpawnerBlockEntity mobSpawnerBlockEntity, double d, double e, double f, float g, int i) {
+	public void method_3590(MobSpawnerBlockEntity mobSpawnerBlockEntity, double d, double e, double f, float g, int i) {
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef((float)d + 0.5F, (float)e, (float)f + 0.5F);
 		method_3589(mobSpawnerBlockEntity.getLogic(), d, e, f, g);

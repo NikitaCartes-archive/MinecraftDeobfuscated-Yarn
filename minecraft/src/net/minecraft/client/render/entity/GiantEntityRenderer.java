@@ -26,7 +26,7 @@ public class GiantEntityRenderer extends MobEntityRenderer<GiantEntity, BipedEnt
 		GlStateManager.scalef(this.field_4711, this.field_4711, this.field_4711);
 	}
 
-	protected Identifier getTexture(GiantEntity giantEntity) {
+	protected Identifier method_3981(GiantEntity giantEntity) {
 		return SKIN;
 	}
 }

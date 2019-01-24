@@ -64,7 +64,7 @@ public class RedDustParticle extends Particle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DustParticleParameters> {
-		public Particle createParticle(DustParticleParameters dustParticleParameters, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3022(DustParticleParameters dustParticleParameters, World world, double d, double e, double f, double g, double h, double i) {
 			return new RedDustParticle(world, d, e, f, g, h, i, dustParticleParameters);
 		}
 	}

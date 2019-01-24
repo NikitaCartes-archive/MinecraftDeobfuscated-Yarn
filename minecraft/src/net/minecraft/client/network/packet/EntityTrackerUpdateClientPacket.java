@@ -38,7 +38,7 @@ public class EntityTrackerUpdateClientPacket implements Packet<ClientPlayPacketL
 		DataTracker.serializePacket(this.trackedValues, packetByteBuf);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11808(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onEntityTrackerUpdate(this);
 	}
 

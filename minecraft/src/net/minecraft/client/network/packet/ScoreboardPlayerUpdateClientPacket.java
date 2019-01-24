@@ -52,7 +52,7 @@ public class ScoreboardPlayerUpdateClientPacket implements Packet<ClientPlayPack
 		}
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11866(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onScoreboardPlayerUpdate(this);
 	}
 

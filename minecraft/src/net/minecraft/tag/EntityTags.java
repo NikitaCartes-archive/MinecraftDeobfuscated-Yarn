@@ -1,11 +1,12 @@
 package net.minecraft.tag;
 
 import java.util.Collection;
+import java.util.Optional;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.Identifier;
 
 public class EntityTags {
-	private static TagContainer<EntityType<?>> container = new TagContainer<>(identifier -> false, identifier -> null, "", false, "");
+	private static TagContainer<EntityType<?>> container = new TagContainer<>(identifier -> Optional.empty(), "", false, "");
 	private static int field_15509;
 	public static final Tag<EntityType<?>> field_15507 = register("skeletons");
 

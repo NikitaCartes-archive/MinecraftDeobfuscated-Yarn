@@ -2,6 +2,7 @@ package net.minecraft.util.registry;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -9,6 +10,8 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -72,7 +75,7 @@ public abstract class Registry<T> implements IntIterable<T> {
 		"entity_type", new DefaultMappedRegistry<>("pig"), () -> EntityType.PIG
 	);
 	public static final DefaultMappedRegistry<Item> ITEM = registerRegistry("item", new DefaultMappedRegistry<>("air"), () -> Items.AIR);
-	public static final Registry<Potion> POTION = registerRegistry("potion", new DefaultMappedRegistry<>("empty"), () -> Potions.field_8984);
+	public static final DefaultMappedRegistry<Potion> POTION = registerRegistry("potion", new DefaultMappedRegistry<>("empty"), () -> Potions.field_8984);
 	public static final Registry<Carver<?>> CARVER = registerRegistry("carver", new IdRegistry<>(), () -> Carver.CAVE);
 	public static final Registry<SurfaceBuilder<?>> SURFACE_BUILDER = registerRegistry("surface_builder", new IdRegistry<>(), () -> SurfaceBuilder.DEFAULT);
 	public static final Registry<Feature<?>> FEATURE = registerRegistry("feature", new IdRegistry<>(), () -> Feature.field_13517);
@@ -143,6 +146,8 @@ public abstract class Registry<T> implements IntIterable<T> {
 	@Nullable
 	public abstract T get(@Nullable Identifier identifier);
 
+	public abstract Optional<T> method_17966(@Nullable Identifier identifier);
+
 	public abstract Set<Identifier> keys();
 
 	@Nullable
@@ -152,6 +157,7 @@ public abstract class Registry<T> implements IntIterable<T> {
 		return StreamSupport.stream(this.spliterator(), false);
 	}
 
+	@Environment(EnvType.CLIENT)
 	public abstract boolean contains(Identifier identifier);
 
 	public static <T> T register(Registry<? super T> registry, String string, T object) {

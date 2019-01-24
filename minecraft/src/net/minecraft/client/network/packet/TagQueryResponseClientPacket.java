@@ -34,7 +34,7 @@ public class TagQueryResponseClientPacket implements Packet<ClientPlayPacketList
 		packetByteBuf.writeCompoundTag(this.tag);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11909(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onTagQuery(this);
 	}
 

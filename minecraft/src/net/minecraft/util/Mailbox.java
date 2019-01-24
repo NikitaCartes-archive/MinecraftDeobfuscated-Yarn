@@ -53,7 +53,7 @@ public interface Mailbox<T, F> {
 			return null;
 		}
 
-		public boolean add(Mailbox.PrioritizedMessage prioritizedMessage) {
+		public boolean method_16913(Mailbox.PrioritizedMessage prioritizedMessage) {
 			int i = prioritizedMessage.getPriority();
 			((Queue)this.queues.get(i)).add(prioritizedMessage);
 			return true;

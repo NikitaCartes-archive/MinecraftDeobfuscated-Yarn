@@ -355,7 +355,7 @@ public abstract class Gui extends DrawableContainer implements YesNoCallback {
 	}
 
 	@Override
-	public void handle(boolean bl, int i) {
+	public void confirmResult(boolean bl, int i) {
 		if (i == 31102009) {
 			if (bl) {
 				this.openUri(this.uri);

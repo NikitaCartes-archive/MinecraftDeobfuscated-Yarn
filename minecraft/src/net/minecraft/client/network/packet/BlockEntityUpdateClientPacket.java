@@ -37,7 +37,7 @@ public class BlockEntityUpdateClientPacket implements Packet<ClientPlayPacketLis
 		packetByteBuf.writeCompoundTag(this.tag);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11292(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onBlockEntityUpdate(this);
 	}
 

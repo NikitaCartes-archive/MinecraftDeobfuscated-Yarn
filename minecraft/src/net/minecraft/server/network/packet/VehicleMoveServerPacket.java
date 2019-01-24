@@ -42,7 +42,7 @@ public class VehicleMoveServerPacket implements Packet<ServerPlayPacketListener>
 		packetByteBuf.writeFloat(this.pitch);
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12278(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onVehicleMove(this);
 	}
 

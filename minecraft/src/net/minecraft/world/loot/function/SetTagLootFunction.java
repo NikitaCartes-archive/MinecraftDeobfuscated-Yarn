@@ -36,8 +36,8 @@ public class SetTagLootFunction extends ConditionalLootFunction {
 			super(new Identifier("set_nbt"), SetTagLootFunction.class);
 		}
 
-		public void serialize(JsonObject jsonObject, SetTagLootFunction setTagLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, setTagLootFunction, jsonSerializationContext);
+		public void method_678(JsonObject jsonObject, SetTagLootFunction setTagLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.method_529(jsonObject, setTagLootFunction, jsonSerializationContext);
 			jsonObject.addProperty("tag", setTagLootFunction.tag.toString());
 		}
 

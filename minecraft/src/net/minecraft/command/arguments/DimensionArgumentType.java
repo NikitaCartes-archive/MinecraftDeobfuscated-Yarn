@@ -16,6 +16,7 @@ import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.dimension.DimensionType;
 
 public class DimensionArgumentType implements ArgumentType<DimensionType> {
@@ -28,12 +29,7 @@ public class DimensionArgumentType implements ArgumentType<DimensionType> {
 
 	public <S> DimensionType method_9287(StringReader stringReader) throws CommandSyntaxException {
 		Identifier identifier = Identifier.parse(stringReader);
-		DimensionType dimensionType = DimensionType.byId(identifier);
-		if (dimensionType == null) {
-			throw INVALID_DIMENSION_EXCEPTION.create(identifier);
-		} else {
-			return dimensionType;
-		}
+		return (DimensionType)Registry.DIMENSION.method_17966(identifier).orElseThrow(() -> INVALID_DIMENSION_EXCEPTION.create(identifier));
 	}
 
 	@Override

@@ -20,7 +20,7 @@ public class SlimeEntityRenderer extends MobEntityRenderer<SlimeEntity, SlimeEnt
 
 	public void method_4117(SlimeEntity slimeEntity, double d, double e, double f, float g, float h) {
 		this.field_4673 = 0.25F * (float)slimeEntity.getSize();
-		super.render(slimeEntity, d, e, f, g, h);
+		super.method_4072(slimeEntity, d, e, f, g, h);
 	}
 
 	protected void method_4118(SlimeEntity slimeEntity, float f) {
@@ -32,7 +32,7 @@ public class SlimeEntityRenderer extends MobEntityRenderer<SlimeEntity, SlimeEnt
 		GlStateManager.scalef(j * h, 1.0F / j * h, j * h);
 	}
 
-	protected Identifier getTexture(SlimeEntity slimeEntity) {
+	protected Identifier method_4116(SlimeEntity slimeEntity) {
 		return SKIN;
 	}
 }

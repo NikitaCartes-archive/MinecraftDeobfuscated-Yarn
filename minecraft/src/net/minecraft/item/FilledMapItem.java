@@ -27,7 +27,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.ChunkPos;
@@ -47,13 +46,13 @@ public class FilledMapItem extends MapItem {
 	}
 
 	@Nullable
-	public static MapState method_17441(ItemStack itemStack, IWorld iWorld) {
-		return method_7997(iWorld, method_17440(method_8003(itemStack)));
+	public static MapState method_7997(ItemStack itemStack, World world) {
+		return world.method_17891(method_17440(method_8003(itemStack)));
 	}
 
 	@Nullable
 	public static MapState method_8001(ItemStack itemStack, World world) {
-		MapState mapState = method_17441(itemStack, world);
+		MapState mapState = method_7997(itemStack, world);
 		if (mapState == null && !world.isClient) {
 			mapState = method_8000(
 				itemStack, world, world.getLevelProperties().getSpawnX(), world.getLevelProperties().getSpawnZ(), 3, false, false, world.dimension.getType()
@@ -69,21 +68,16 @@ public class FilledMapItem extends MapItem {
 	}
 
 	private static MapState method_8000(ItemStack itemStack, World world, int i, int j, int k, boolean bl, boolean bl2, DimensionType dimensionType) {
-		int l = world.getNextAvailableId(DimensionType.field_13072, "map");
+		int l = world.method_17889();
 		MapState mapState = new MapState(method_17440(l));
 		mapState.method_105(i, j, k, bl, bl2, dimensionType);
-		world.setPersistentState(DimensionType.field_13072, mapState.getId(), mapState);
+		world.method_17890(mapState);
 		itemStack.getOrCreateTag().putInt("map", l);
 		return mapState;
 	}
 
 	public static String method_17440(int i) {
 		return "map_" + i;
-	}
-
-	@Nullable
-	public static MapState method_7997(IWorld iWorld, String string) {
-		return iWorld.getPersistentState(DimensionType.field_13072, MapState::new, string);
 	}
 
 	public void method_7998(World world, Entity entity, MapState mapState) {

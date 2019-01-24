@@ -19,7 +19,7 @@ public class CaveSpiderEntityRenderer extends SpiderEntityRenderer<CaveSpiderEnt
 		GlStateManager.scalef(0.7F, 0.7F, 0.7F);
 	}
 
-	protected Identifier getTexture(CaveSpiderEntity caveSpiderEntity) {
+	protected Identifier method_3885(CaveSpiderEntity caveSpiderEntity) {
 		return SKIN;
 	}
 }

@@ -27,7 +27,7 @@ public class class_2907 implements Packet<ClientLoginPacketListener> {
 		packetByteBuf.writeVarInt(this.field_13232);
 	}
 
-	public void apply(ClientLoginPacketListener clientLoginPacketListener) {
+	public void method_12633(ClientLoginPacketListener clientLoginPacketListener) {
 		clientLoginPacketListener.method_12585(this);
 	}
 

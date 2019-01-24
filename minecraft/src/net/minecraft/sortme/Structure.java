@@ -5,6 +5,7 @@ import com.mojang.datafixers.util.Pair;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
@@ -358,21 +359,21 @@ public class Structure {
 				listTag.add(new DoubleTag(vec3d2.z));
 				compoundTag.put("Pos", listTag);
 				compoundTag.putUuid("UUID", UUID.randomUUID());
-
-				Entity entity;
-				try {
-					entity = EntityType.fromTag(compoundTag, iWorld.getWorld());
-				} catch (Exception var16) {
-					entity = null;
-				}
-
-				if (entity != null) {
+				method_17916(iWorld, compoundTag).ifPresent(entity -> {
 					float f = entity.applyMirror(mirror);
 					f += entity.yaw - entity.applyRotation(rotation);
 					entity.setPositionAndAngles(vec3d2.x, vec3d2.y, vec3d2.z, f, entity.pitch);
 					iWorld.spawnEntity(entity);
-				}
+				});
 			}
+		}
+	}
+
+	private static Optional<Entity> method_17916(IWorld iWorld, CompoundTag compoundTag) {
+		try {
+			return EntityType.fromTag(compoundTag, iWorld.getWorld());
+		} catch (Exception var3) {
+			return Optional.empty();
 		}
 	}
 

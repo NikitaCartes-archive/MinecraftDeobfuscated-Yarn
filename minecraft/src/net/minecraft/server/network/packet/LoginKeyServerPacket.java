@@ -36,7 +36,7 @@ public class LoginKeyServerPacket implements Packet<ServerLoginPacketListener> {
 		packetByteBuf.writeByteArray(this.field_13273);
 	}
 
-	public void apply(ServerLoginPacketListener serverLoginPacketListener) {
+	public void method_12653(ServerLoginPacketListener serverLoginPacketListener) {
 		serverLoginPacketListener.method_12642(this);
 	}
 

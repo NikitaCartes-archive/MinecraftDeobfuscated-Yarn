@@ -17,7 +17,7 @@ public class DolphinEntityRenderer extends MobEntityRenderer<DolphinEntity, Dolp
 		this.addFeature(new DolphinHeldItemFeatureRenderer(this));
 	}
 
-	protected Identifier getTexture(DolphinEntity dolphinEntity) {
+	protected Identifier method_3903(DolphinEntity dolphinEntity) {
 		return field_4654;
 	}
 
@@ -26,7 +26,7 @@ public class DolphinEntityRenderer extends MobEntityRenderer<DolphinEntity, Dolp
 		GlStateManager.scalef(1.0F, 1.0F, 1.0F);
 	}
 
-	protected void setupTransforms(DolphinEntity dolphinEntity, float f, float g, float h) {
+	protected void method_3902(DolphinEntity dolphinEntity, float f, float g, float h) {
 		super.setupTransforms(dolphinEntity, f, g, h);
 	}
 }

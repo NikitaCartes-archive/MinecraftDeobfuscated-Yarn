@@ -2,6 +2,7 @@ package net.minecraft.recipe.cooking;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.item.ItemProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
@@ -27,14 +28,12 @@ public class CookingRecipeSerializer<T extends CookingRecipe> implements RecipeS
 		Ingredient ingredient = Ingredient.fromJson(jsonElement);
 		String string2 = JsonHelper.getString(jsonObject, "result");
 		Identifier identifier2 = new Identifier(string2);
-		if (!Registry.ITEM.contains(identifier2)) {
-			throw new IllegalStateException("Item: " + string2 + " does not exist");
-		} else {
-			ItemStack itemStack = new ItemStack(Registry.ITEM.get(identifier2));
-			float f = JsonHelper.getFloat(jsonObject, "experience", 0.0F);
-			int i = JsonHelper.getInt(jsonObject, "cookingtime", this.cookingTime);
-			return this.recipeFactory.create(identifier, string, ingredient, itemStack, f, i);
-		}
+		ItemStack itemStack = new ItemStack(
+			(ItemProvider)Registry.ITEM.method_17966(identifier2).orElseThrow(() -> new IllegalStateException("Item: " + string2 + " does not exist"))
+		);
+		float f = JsonHelper.getFloat(jsonObject, "experience", 0.0F);
+		int i = JsonHelper.getInt(jsonObject, "cookingtime", this.cookingTime);
+		return this.recipeFactory.create(identifier, string, ingredient, itemStack, f, i);
 	}
 
 	public T read(Identifier identifier, PacketByteBuf packetByteBuf) {
@@ -46,7 +45,7 @@ public class CookingRecipeSerializer<T extends CookingRecipe> implements RecipeS
 		return this.recipeFactory.create(identifier, string, ingredient, itemStack, f, i);
 	}
 
-	public void write(PacketByteBuf packetByteBuf, T cookingRecipe) {
+	public void method_17735(PacketByteBuf packetByteBuf, T cookingRecipe) {
 		packetByteBuf.writeString(cookingRecipe.group);
 		cookingRecipe.input.write(packetByteBuf);
 		packetByteBuf.writeItemStack(cookingRecipe.output);

@@ -40,7 +40,7 @@ public class EnumProperty<T extends Enum<T> & StringRepresentable> extends Abstr
 		return Optional.ofNullable(this.valuesByName.get(string));
 	}
 
-	public String getValueAsString(T enum_) {
+	public String method_11846(T enum_) {
 		return enum_.asString();
 	}
 

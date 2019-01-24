@@ -59,7 +59,7 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (playerEntity.canModifyWorld()) {
 			if (world.isClient) {
 				return true;
@@ -70,7 +70,7 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 				return true;
 			}
 		} else {
-			return super.method_9534(blockState, world, blockPos, playerEntity, hand, blockHitResult);
+			return super.activate(blockState, world, blockPos, playerEntity, hand, blockHitResult);
 		}
 	}
 

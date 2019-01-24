@@ -52,7 +52,7 @@ public class SquidInkParticle extends AnimatedParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3105(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new SquidInkParticle(world, d, e, f, g, h, i);
 		}
 	}

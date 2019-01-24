@@ -26,6 +26,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormat;
+import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.text.event.ClickEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -343,13 +344,9 @@ public class WrittenBookGui extends Gui {
 
 		private static List<String> method_17565(ItemStack itemStack) {
 			CompoundTag compoundTag = itemStack.getTag();
-			if (compoundTag != null) {
-				return (List<String>)(WrittenBookItem.method_8053(compoundTag)
-					? WrittenBookGui.method_17555(compoundTag)
-					: ImmutableList.of(TextFormat.DARK_RED + "* Invalid book tag *"));
-			} else {
-				return ImmutableList.of();
-			}
+			return (List<String>)(compoundTag != null && WrittenBookItem.method_8053(compoundTag)
+				? WrittenBookGui.method_17555(compoundTag)
+				: ImmutableList.of(new TranslatableTextComponent("book.invalid.tag").applyFormat(TextFormat.DARK_RED).getFormattedText()));
 		}
 
 		@Override

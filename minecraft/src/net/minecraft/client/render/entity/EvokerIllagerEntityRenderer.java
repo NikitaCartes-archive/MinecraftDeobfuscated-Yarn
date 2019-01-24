@@ -23,7 +23,7 @@ public class EvokerIllagerEntityRenderer<T extends SpellcastingIllagerEntity> ex
 		});
 	}
 
-	protected Identifier getTexture(T spellcastingIllagerEntity) {
+	protected Identifier method_3961(T spellcastingIllagerEntity) {
 		return EVOKER_TEXTURE;
 	}
 }

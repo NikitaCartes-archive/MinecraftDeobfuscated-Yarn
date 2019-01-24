@@ -28,7 +28,7 @@ public class PickFromInventoryServerPacket implements Packet<ServerPlayPacketLis
 		packetByteBuf.writeVarInt(this.slot);
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12292(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onPickFromInventory(this);
 	}
 

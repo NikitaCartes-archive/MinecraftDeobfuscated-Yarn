@@ -36,7 +36,7 @@ public class EntityClientPacket implements Packet<ClientPlayPacketListener> {
 		packetByteBuf.writeVarInt(this.id);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11651(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onEntityUpdate(this);
 	}
 

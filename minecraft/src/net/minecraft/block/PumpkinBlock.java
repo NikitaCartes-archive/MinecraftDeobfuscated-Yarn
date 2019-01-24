@@ -18,7 +18,7 @@ public class PumpkinBlock extends GourdBlock {
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.getItem() == Items.field_8868) {
 			if (!world.isClient) {
@@ -42,7 +42,7 @@ public class PumpkinBlock extends GourdBlock {
 
 			return true;
 		} else {
-			return super.method_9534(blockState, world, blockPos, playerEntity, hand, blockHitResult);
+			return super.activate(blockState, world, blockPos, playerEntity, hand, blockHitResult);
 		}
 	}
 

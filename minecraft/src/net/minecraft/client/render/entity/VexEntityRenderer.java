@@ -16,7 +16,7 @@ public class VexEntityRenderer extends BipedEntityRenderer<VexEntity, VexEntityM
 		super(entityRenderDispatcher, new VexEntityModel(), 0.3F);
 	}
 
-	protected Identifier getTexture(VexEntity vexEntity) {
+	protected Identifier method_4144(VexEntity vexEntity) {
 		return vexEntity.method_7176() ? field_4802 : field_4801;
 	}
 

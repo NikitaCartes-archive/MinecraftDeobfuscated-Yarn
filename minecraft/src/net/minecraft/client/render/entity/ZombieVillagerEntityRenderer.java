@@ -19,7 +19,7 @@ public class ZombieVillagerEntityRenderer extends BipedEntityRenderer<ZombieVill
 		this.addFeature(new VillagerClothingFeatureRenderer<>(this, reloadableResourceManager, "zombie_villager"));
 	}
 
-	protected Identifier getTexture(ZombieVillagerEntity zombieVillagerEntity) {
+	protected Identifier method_4175(ZombieVillagerEntity zombieVillagerEntity) {
 		return ZOMBIE_VILLAGER_SKIN;
 	}
 

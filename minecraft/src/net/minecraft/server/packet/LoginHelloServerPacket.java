@@ -26,7 +26,7 @@ public class LoginHelloServerPacket implements Packet<ServerLoginPacketListener>
 		packetByteBuf.writeString(this.field_13271.getName());
 	}
 
-	public void apply(ServerLoginPacketListener serverLoginPacketListener) {
+	public void method_12649(ServerLoginPacketListener serverLoginPacketListener) {
 		serverLoginPacketListener.onHello(this);
 	}
 

@@ -28,7 +28,7 @@ public class DisconnectClientPacket implements Packet<ClientPlayPacketListener> 
 		packetByteBuf.writeTextComponent(this.reason);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11467(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onDisconnect(this);
 	}
 

@@ -114,7 +114,7 @@ public class ItemRenderer implements ResourceReloadListener {
 		GlStateManager.depthMask(false);
 		GlStateManager.depthFunc(514);
 		GlStateManager.disableLighting();
-		GlStateManager.blendFunc(GlStateManager.class_1033.SRC_COLOR, GlStateManager.class_1027.ONE);
+		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_COLOR, GlStateManager.DestFactor.ONE);
 		textureManager.bindTexture(ENCHANTMENT_GLINT_TEX);
 		GlStateManager.matrixMode(5890);
 		GlStateManager.pushMatrix();
@@ -132,7 +132,7 @@ public class ItemRenderer implements ResourceReloadListener {
 		runnable.run();
 		GlStateManager.popMatrix();
 		GlStateManager.matrixMode(5888);
-		GlStateManager.blendFunc(GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA);
+		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		GlStateManager.enableLighting();
 		GlStateManager.depthFunc(515);
 		GlStateManager.depthMask(true);
@@ -221,7 +221,7 @@ public class ItemRenderer implements ResourceReloadListener {
 			GlStateManager.alphaFunc(516, 0.1F);
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(
-				GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA, GlStateManager.class_1033.ONE, GlStateManager.class_1027.ZERO
+				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
 			GlStateManager.pushMatrix();
 			ModelTransformation modelTransformation = bakedModel.getTransformation();
@@ -256,7 +256,7 @@ public class ItemRenderer implements ResourceReloadListener {
 		GlStateManager.enableAlphaTest();
 		GlStateManager.alphaFunc(516, 0.1F);
 		GlStateManager.enableBlend();
-		GlStateManager.blendFunc(GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA);
+		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.renderItemModel(i, j, bakedModel.hasDepthInGui());
 		bakedModel.getTransformation().applyGl(ModelTransformation.Type.GUI);

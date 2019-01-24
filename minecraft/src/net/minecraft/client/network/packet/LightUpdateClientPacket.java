@@ -133,7 +133,7 @@ public class LightUpdateClientPacket implements Packet<ClientPlayPacketListener>
 		}
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11560(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onLightUpdate(this);
 	}
 

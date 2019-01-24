@@ -87,7 +87,7 @@ public class EntitySpawnClientPacket implements Packet<ClientPlayPacketListener>
 		packetByteBuf.writeShort(this.velocityZ);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11178(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onEntitySpawn(this);
 	}
 

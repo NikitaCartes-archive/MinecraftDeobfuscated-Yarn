@@ -60,7 +60,7 @@ public class CommandSuggestionsClientPacket implements Packet<ClientPlayPacketLi
 		}
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11398(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onCommandSuggestions(this);
 	}
 

@@ -61,12 +61,11 @@ public class FunctionArgumentType implements ArgumentType<FunctionArgumentType.c
 	}
 
 	private static CommandFunction method_9761(CommandContext<ServerCommandSource> commandContext, Identifier identifier) throws CommandSyntaxException {
-		CommandFunction commandFunction = commandContext.getSource().getMinecraftServer().getCommandFunctionManager().getFunction(identifier);
-		if (commandFunction == null) {
-			throw field_10784.create(identifier.toString());
-		} else {
-			return commandFunction;
-		}
+		return (CommandFunction)commandContext.getSource()
+			.getMinecraftServer()
+			.getCommandFunctionManager()
+			.getFunction(identifier)
+			.orElseThrow(() -> field_10784.create(identifier.toString()));
 	}
 
 	private static Tag<CommandFunction> method_9767(CommandContext<ServerCommandSource> commandContext, Identifier identifier) throws CommandSyntaxException {

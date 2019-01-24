@@ -24,7 +24,7 @@ import net.minecraft.world.World;
 public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEntity> {
 	private final BlockRenderManager manager = MinecraftClient.getInstance().getBlockRenderManager();
 
-	public void render(PistonBlockEntity pistonBlockEntity, double d, double e, double f, float g, int i) {
+	public void method_3576(PistonBlockEntity pistonBlockEntity, double d, double e, double f, float g, int i) {
 		BlockPos blockPos = pistonBlockEntity.getPos().offset(pistonBlockEntity.method_11506().getOpposite());
 		BlockState blockState = pistonBlockEntity.getPushedBlock();
 		if (!blockState.isAir() && !(pistonBlockEntity.getProgress(g) >= 1.0F)) {
@@ -32,7 +32,7 @@ public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEn
 			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 			this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 			GuiLighting.disable();
-			GlStateManager.blendFunc(GlStateManager.class_1033.SRC_ALPHA, GlStateManager.class_1027.ONE_MINUS_SRC_ALPHA);
+			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			GlStateManager.enableBlend();
 			GlStateManager.disableCull();
 			if (MinecraftClient.isAmbientOcclusionEnabled()) {

@@ -86,7 +86,7 @@ public class ExplosionClientPacket implements Packet<ClientPlayPacketListener> {
 		packetByteBuf.writeFloat(this.playerVelocityZ);
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+	public void method_11480(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onExplosion(this);
 	}
 

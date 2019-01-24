@@ -15,7 +15,7 @@ public class PigSaddleFeatureRenderer extends FeatureRenderer<PigEntity, PigEnti
 		super(featureRendererContext);
 	}
 
-	public void render(PigEntity pigEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4196(PigEntity pigEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (pigEntity.isSaddled()) {
 			this.bindTexture(SKIN);
 			this.getModel().method_17081(this.field_4887);
