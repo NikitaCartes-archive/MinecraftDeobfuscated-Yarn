@@ -10,7 +10,7 @@ import net.minecraft.advancement.AdvancementDisplay;
 import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.menu.AdvancementsGui;
+import net.minecraft.client.gui.menu.AdvancementsScreen;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.item.ItemStack;
@@ -20,7 +20,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class AdvancementTreeWidget extends Drawable {
 	private final MinecraftClient client;
-	private final AdvancementsGui field_2687;
+	private final AdvancementsScreen field_2687;
 	private final AdvancementTabType tabType;
 	private final int field_2681;
 	private final SimpleAdvancement rootAdvancement;
@@ -40,14 +40,14 @@ public class AdvancementTreeWidget extends Drawable {
 
 	public AdvancementTreeWidget(
 		MinecraftClient minecraftClient,
-		AdvancementsGui advancementsGui,
+		AdvancementsScreen advancementsScreen,
 		AdvancementTabType advancementTabType,
 		int i,
 		SimpleAdvancement simpleAdvancement,
 		AdvancementDisplay advancementDisplay
 	) {
 		this.client = minecraftClient;
-		this.field_2687 = advancementsGui;
+		this.field_2687 = advancementsScreen;
 		this.tabType = advancementTabType;
 		this.field_2681 = i;
 		this.rootAdvancement = simpleAdvancement;
@@ -138,13 +138,13 @@ public class AdvancementTreeWidget extends Drawable {
 	}
 
 	@Nullable
-	public static AdvancementTreeWidget create(MinecraftClient minecraftClient, AdvancementsGui advancementsGui, int i, SimpleAdvancement simpleAdvancement) {
+	public static AdvancementTreeWidget create(MinecraftClient minecraftClient, AdvancementsScreen advancementsScreen, int i, SimpleAdvancement simpleAdvancement) {
 		if (simpleAdvancement.getDisplay() == null) {
 			return null;
 		} else {
 			for (AdvancementTabType advancementTabType : AdvancementTabType.values()) {
 				if (i < advancementTabType.method_2304()) {
-					return new AdvancementTreeWidget(minecraftClient, advancementsGui, advancementTabType, i, simpleAdvancement, simpleAdvancement.getDisplay());
+					return new AdvancementTreeWidget(minecraftClient, advancementsScreen, advancementTabType, i, simpleAdvancement, simpleAdvancement.getDisplay());
 				}
 
 				i -= advancementTabType.method_2304();
@@ -192,7 +192,7 @@ public class AdvancementTreeWidget extends Drawable {
 		return (AdvancementWidget)this.widgets.get(simpleAdvancement);
 	}
 
-	public AdvancementsGui method_2312() {
+	public AdvancementsScreen method_2312() {
 		return this.field_2687;
 	}
 }

@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 public class BarrierParticle extends Particle {
 	protected BarrierParticle(World world, double d, double e, double f, ItemProvider itemProvider) {
 		super(world, d, e, f, 0.0, 0.0, 0.0);
-		this.setSprite(MinecraftClient.getInstance().getItemRenderer().getModelMap().getSprite(itemProvider));
+		this.setSprite(MinecraftClient.getInstance().getItemRenderer().getModels().getSprite(itemProvider));
 		this.colorRed = 1.0F;
 		this.colorGreen = 1.0F;
 		this.colorBlue = 1.0F;

@@ -27,7 +27,7 @@ public class BowItem extends BaseBowItem {
 		});
 		this.addProperty(
 			new Identifier("pulling"),
-			(itemStack, world, livingEntity) -> livingEntity != null && livingEntity.method_6115() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
+			(itemStack, world, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
 		);
 	}
 

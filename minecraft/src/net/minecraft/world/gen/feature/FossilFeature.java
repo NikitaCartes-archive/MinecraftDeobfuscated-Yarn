@@ -4,11 +4,11 @@ import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sortme.Structure;
-import net.minecraft.sortme.StructurePlacementData;
-import net.minecraft.sortme.structures.StructureManager;
-import net.minecraft.sortme.structures.processor.BlockIgnoreStructureProcessor;
-import net.minecraft.sortme.structures.processor.BlockRotStructureProcessor;
+import net.minecraft.structure.Structure;
+import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructurePlacementData;
+import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
+import net.minecraft.structure.processor.BlockRotStructureProcessor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
@@ -63,8 +63,8 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 		StructurePlacementData structurePlacementData = new StructurePlacementData()
 			.setRotation(rotation)
 			.setBoundingBox(mutableIntBoundingBox)
-			.method_15112(random2)
-			.addProcessor(BlockIgnoreStructureProcessor.field_16721);
+			.setRandom(random2)
+			.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
 		BlockPos blockPos2 = structure.method_15166(rotation);
 		int j = random2.nextInt(16 - blockPos2.getX());
 		int k = random2.nextInt(16 - blockPos2.getZ());

@@ -18,7 +18,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class CakeBlock extends Block {
-	public static final IntegerProperty field_10739 = Properties.BITES;
+	public static final IntegerProperty BITES = Properties.BITES;
 	protected static final VoxelShape[] field_10738 = new VoxelShape[]{
 		Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 8.0, 15.0),
 		Block.createCuboidShape(3.0, 0.0, 1.0, 15.0, 8.0, 15.0),
@@ -31,12 +31,12 @@ public class CakeBlock extends Block {
 
 	protected CakeBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_10739, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(BITES, Integer.valueOf(0)));
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_10738[blockState.get(field_10739)];
+		return field_10738[blockState.get(BITES)];
 	}
 
 	@Override
@@ -55,9 +55,9 @@ public class CakeBlock extends Block {
 		} else {
 			playerEntity.increaseStat(Stats.field_15369);
 			playerEntity.getHungerManager().add(2, 0.1F);
-			int i = (Integer)blockState.get(field_10739);
+			int i = (Integer)blockState.get(BITES);
 			if (i < 6) {
-				iWorld.setBlockState(blockPos, blockState.with(field_10739, Integer.valueOf(i + 1)), 3);
+				iWorld.setBlockState(blockPos, blockState.with(BITES, Integer.valueOf(i + 1)), 3);
 			} else {
 				iWorld.clearBlockState(blockPos);
 			}
@@ -82,12 +82,12 @@ public class CakeBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_10739);
+		builder.with(BITES);
 	}
 
 	@Override
 	public int getComparatorOutput(BlockState blockState, World world, BlockPos blockPos) {
-		return (7 - (Integer)blockState.get(field_10739)) * 2;
+		return (7 - (Integer)blockState.get(BITES)) * 2;
 	}
 
 	@Override

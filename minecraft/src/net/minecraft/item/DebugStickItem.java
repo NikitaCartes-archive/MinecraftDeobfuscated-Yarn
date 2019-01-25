@@ -29,7 +29,7 @@ public class DebugStickItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean hasEnchantmentGlow(ItemStack itemStack) {
+	public boolean hasEnchantmentGlint(ItemStack itemStack) {
 		return true;
 	}
 

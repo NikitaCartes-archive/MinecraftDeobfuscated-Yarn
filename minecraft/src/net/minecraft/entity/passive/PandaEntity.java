@@ -732,7 +732,7 @@ public class PandaEntity extends AnimalEntity {
 				for (int j = 0; j < 8; j++) {
 					for (int k = 0; k <= j; k = k > 0 ? -k : 1 - k) {
 						for (int l = k < j && k > -j ? j : 0; l <= j; l = l > 0 ? -l : 1 - l) {
-							mutable.set(blockPos).method_10100(k, i, l);
+							mutable.set(blockPos).setOffset(k, i, l);
 							if (this.world.getBlockState(mutable).getBlock() == Blocks.field_10211) {
 								return true;
 							}

@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.WrittenBookGui;
+import net.minecraft.client.gui.WrittenBookScreen;
 
 @Environment(EnvType.CLIENT)
 public abstract class BookPageButtonWidget extends ButtonWidget {
@@ -20,7 +20,7 @@ public abstract class BookPageButtonWidget extends ButtonWidget {
 		if (this.visible) {
 			boolean bl = i >= this.x && j >= this.y && i < this.x + this.width && j < this.y + this.height;
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			MinecraftClient.getInstance().getTextureManager().bindTexture(WrittenBookGui.BOOK_TEXTURE);
+			MinecraftClient.getInstance().getTextureManager().bindTexture(WrittenBookScreen.BOOK_TEXTURE);
 			int k = 0;
 			int l = 192;
 			if (bl) {

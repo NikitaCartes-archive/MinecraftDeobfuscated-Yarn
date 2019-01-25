@@ -25,11 +25,11 @@ public class LootContext {
 	private final ServerWorld world;
 	private final LootManager manager;
 	private final Set<LootSupplier> suppliers = Sets.<LootSupplier>newLinkedHashSet();
-	private final Map<Parameter<?>, Object> parameters;
+	private final Map<LootContextParameter<?>, Object> parameters;
 	private final Map<Identifier, LootContext.Dropper> drops;
 
 	private LootContext(
-		Random random, float f, ServerWorld serverWorld, LootManager lootManager, Map<Parameter<?>, Object> map, Map<Identifier, LootContext.Dropper> map2
+		Random random, float f, ServerWorld serverWorld, LootManager lootManager, Map<LootContextParameter<?>, Object> map, Map<Identifier, LootContext.Dropper> map2
 	) {
 		this.random = random;
 		this.luck = f;
@@ -39,8 +39,8 @@ public class LootContext {
 		this.drops = ImmutableMap.copyOf(map2);
 	}
 
-	public boolean hasParameter(Parameter<?> parameter) {
-		return this.parameters.containsKey(parameter);
+	public boolean method_300(LootContextParameter<?> lootContextParameter) {
+		return this.parameters.containsKey(lootContextParameter);
 	}
 
 	public void drop(Identifier identifier, Consumer<ItemStack> consumer) {
@@ -51,8 +51,8 @@ public class LootContext {
 	}
 
 	@Nullable
-	public <T> T get(Parameter<T> parameter) {
-		return (T)this.parameters.get(parameter);
+	public <T> T method_296(LootContextParameter<T> lootContextParameter) {
+		return (T)this.parameters.get(lootContextParameter);
 	}
 
 	public boolean addDrop(LootSupplier lootSupplier) {
@@ -81,7 +81,7 @@ public class LootContext {
 
 	public static class Builder {
 		private final ServerWorld world;
-		private final Map<Parameter<?>, Object> parameters = Maps.<Parameter<?>, Object>newIdentityHashMap();
+		private final Map<LootContextParameter<?>, Object> parameters = Maps.<LootContextParameter<?>, Object>newIdentityHashMap();
 		private final Map<Identifier, LootContext.Dropper> drops = Maps.<Identifier, LootContext.Dropper>newHashMap();
 		private Random random;
 		private float luck;
@@ -118,16 +118,16 @@ public class LootContext {
 			return this;
 		}
 
-		public <T> LootContext.Builder put(Parameter<T> parameter, T object) {
-			this.parameters.put(parameter, object);
+		public <T> LootContext.Builder method_312(LootContextParameter<T> lootContextParameter, T object) {
+			this.parameters.put(lootContextParameter, object);
 			return this;
 		}
 
-		public <T> LootContext.Builder putNullable(Parameter<T> parameter, @Nullable T object) {
+		public <T> LootContext.Builder method_306(LootContextParameter<T> lootContextParameter, @Nullable T object) {
 			if (object == null) {
-				this.parameters.remove(parameter);
+				this.parameters.remove(lootContextParameter);
 			} else {
-				this.parameters.put(parameter, object);
+				this.parameters.put(lootContextParameter, object);
 			}
 
 			return this;
@@ -146,26 +146,26 @@ public class LootContext {
 			return this.world;
 		}
 
-		public <T> T get(Parameter<T> parameter) {
-			T object = (T)this.parameters.get(parameter);
+		public <T> T method_308(LootContextParameter<T> lootContextParameter) {
+			T object = (T)this.parameters.get(lootContextParameter);
 			if (object == null) {
-				throw new IllegalArgumentException("No parameter " + parameter);
+				throw new IllegalArgumentException("No parameter " + lootContextParameter);
 			} else {
 				return object;
 			}
 		}
 
 		@Nullable
-		public <T> T getNullable(Parameter<T> parameter) {
-			return (T)this.parameters.get(parameter);
+		public <T> T method_305(LootContextParameter<T> lootContextParameter) {
+			return (T)this.parameters.get(lootContextParameter);
 		}
 
 		public LootContext build(LootContextType lootContextType) {
-			Set<Parameter<?>> set = Sets.<Parameter<?>>difference(this.parameters.keySet(), lootContextType.getAllowed());
+			Set<LootContextParameter<?>> set = Sets.<LootContextParameter<?>>difference(this.parameters.keySet(), lootContextType.getAllowed());
 			if (!set.isEmpty()) {
 				throw new IllegalArgumentException("Parameters not allowed in this parameter set: " + set);
 			} else {
-				Set<Parameter<?>> set2 = Sets.<Parameter<?>>difference(lootContextType.getRequired(), this.parameters.keySet());
+				Set<LootContextParameter<?>> set2 = Sets.<LootContextParameter<?>>difference(lootContextType.getRequired(), this.parameters.keySet());
 				if (!set2.isEmpty()) {
 					throw new IllegalArgumentException("Missing required parameters: " + set2);
 				} else {
@@ -186,21 +186,21 @@ public class LootContext {
 	}
 
 	public static enum EntityTarget {
-		THIS("this", Parameters.field_1226),
-		KILLER("killer", Parameters.field_1230),
-		DIRECT_KILLER("direct_killer", Parameters.field_1227),
-		KILLER_PLAYER("killer_player", Parameters.field_1233);
+		THIS("this", LootContextParameters.field_1226),
+		KILLER("killer", LootContextParameters.field_1230),
+		DIRECT_KILLER("direct_killer", LootContextParameters.field_1227),
+		KILLER_PLAYER("killer_player", LootContextParameters.field_1233);
 
 		private final String type;
-		private final Parameter<? extends Entity> identifier;
+		private final LootContextParameter<? extends Entity> field_938;
 
-		private EntityTarget(String string2, Parameter<? extends Entity> parameter) {
+		private EntityTarget(String string2, LootContextParameter<? extends Entity> lootContextParameter) {
 			this.type = string2;
-			this.identifier = parameter;
+			this.field_938 = lootContextParameter;
 		}
 
-		public Parameter<? extends Entity> getIdentifier() {
-			return this.identifier;
+		public LootContextParameter<? extends Entity> method_315() {
+			return this.field_938;
 		}
 
 		public static LootContext.EntityTarget fromString(String string) {

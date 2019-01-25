@@ -106,7 +106,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 				}
 			} else {
 				GlStateManager.scalef(0.5F, 0.5F, 0.5F);
-				this.itemRenderer.renderItemWithTransformation(itemStack, ModelTransformation.Type.FIXED);
+				this.itemRenderer.renderItem(itemStack, ModelTransformation.Type.FIXED);
 			}
 
 			GlStateManager.popMatrix();

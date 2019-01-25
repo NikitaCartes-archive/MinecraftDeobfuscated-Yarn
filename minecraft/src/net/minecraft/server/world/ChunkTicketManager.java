@@ -124,7 +124,7 @@ public abstract class ChunkTicketManager extends ChunkLevelIndexedProcessor {
 		}
 	}
 
-	public boolean update(ChunkHolderManager chunkHolderManager) {
+	public boolean update(ThreadedAnvilChunkStorage threadedAnvilChunkStorage) {
 		this.field_17454.updateLevels();
 		this.field_17455.updateLevels();
 		int i = Integer.MAX_VALUE - this.updateLevels(Integer.MAX_VALUE);
@@ -133,7 +133,7 @@ public abstract class ChunkTicketManager extends ChunkLevelIndexedProcessor {
 		}
 
 		if (!this.chunkHolders.isEmpty()) {
-			this.chunkHolders.forEach(chunkHolderx -> chunkHolderx.update(chunkHolderManager));
+			this.chunkHolders.forEach(chunkHolderx -> chunkHolderx.update(threadedAnvilChunkStorage));
 			this.chunkHolders.clear();
 			return true;
 		} else {
@@ -143,7 +143,7 @@ public abstract class ChunkTicketManager extends ChunkLevelIndexedProcessor {
 				while (longIterator.hasNext()) {
 					long l = longIterator.nextLong();
 					if (this.getTicketSet(l).stream().anyMatch(chunkTicket -> chunkTicket.getType() == ChunkTicketType.PLAYER)) {
-						ChunkHolder chunkHolder = chunkHolderManager.getChunkHolder(l);
+						ChunkHolder chunkHolder = threadedAnvilChunkStorage.getChunkHolder(l);
 						if (chunkHolder == null) {
 							throw new IllegalStateException();
 						}
@@ -221,7 +221,7 @@ public abstract class ChunkTicketManager extends ChunkLevelIndexedProcessor {
 
 	public void method_14048(long l, ServerPlayerEntity serverPlayerEntity) {
 		ChunkPos chunkPos = new ChunkPos(l);
-		serverPlayerEntity.method_17668(chunkPos);
+		serverPlayerEntity.setChunkPos(chunkPos);
 		this.field_17453.computeIfAbsent(l, lx -> new ObjectOpenHashSet()).add(serverPlayerEntity);
 		this.field_17454.scheduleNewLevelUpdate(l, 0, true);
 		this.field_17455.scheduleNewLevelUpdate(l, 0, true);
@@ -243,7 +243,7 @@ public abstract class ChunkTicketManager extends ChunkLevelIndexedProcessor {
 		this.field_17455.method_17658(i);
 	}
 
-	public int method_14052() {
+	public int getLevelCount() {
 		this.field_17454.updateLevels();
 		return this.field_17454.currentLevels.size();
 	}

@@ -28,7 +28,7 @@ public class OpenInventoryTutorialStepHandler implements TutorialStepHandler {
 			this.manager.setStep(TutorialStep.NONE);
 		} else {
 			if (this.ticks >= 600 && this.field_5642 == null) {
-				this.field_5642 = new TutorialToast(TutorialToast.class_373.field_2233, TITLE, DESCRIPTION, false);
+				this.field_5642 = new TutorialToast(TutorialToast.Type.field_2233, TITLE, DESCRIPTION, false);
 				this.manager.getClient().getToastManager().add(this.field_5642);
 			}
 		}
@@ -37,7 +37,7 @@ public class OpenInventoryTutorialStepHandler implements TutorialStepHandler {
 	@Override
 	public void destroy() {
 		if (this.field_5642 != null) {
-			this.field_5642.method_1993();
+			this.field_5642.hide();
 			this.field_5642 = null;
 		}
 	}

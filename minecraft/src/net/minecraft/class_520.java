@@ -6,8 +6,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.menu.YesNoGui;
-import net.minecraft.client.gui.menu.settings.ResourcePackSettingsGui;
+import net.minecraft.client.gui.menu.YesNoScreen;
+import net.minecraft.client.gui.menu.settings.ResourcePackSettingsScreen;
 import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.resource.ClientResourcePackContainer;
 import net.minecraft.resource.ResourcePackCompatibility;
@@ -21,11 +21,11 @@ public class class_520 extends EntryListWidget.Entry<class_520> {
 	private static final TextComponent field_3162 = new TranslatableTextComponent("resourcePack.incompatible");
 	private static final TextComponent field_3163 = new TranslatableTextComponent("resourcePack.incompatible.confirm.title");
 	protected final MinecraftClient field_3165;
-	protected final ResourcePackSettingsGui field_3164;
+	protected final ResourcePackSettingsScreen field_3164;
 	private final ClientResourcePackContainer field_3161;
 
-	public class_520(ResourcePackSettingsGui resourcePackSettingsGui, ClientResourcePackContainer clientResourcePackContainer) {
-		this.field_3164 = resourcePackSettingsGui;
+	public class_520(ResourcePackSettingsScreen resourcePackSettingsScreen, ClientResourcePackContainer clientResourcePackContainer) {
+		this.field_3164 = resourcePackSettingsScreen;
 		this.field_3165 = MinecraftClient.getInstance();
 		this.field_3161 = clientResourcePackContainer;
 	}
@@ -163,8 +163,8 @@ public class class_520 extends EntryListWidget.Entry<class_520> {
 				} else {
 					String string = field_3163.getFormattedText();
 					String string2 = resourcePackCompatibility.getConfirmMessage().getFormattedText();
-					this.field_3165.openGui(new YesNoGui((bl, ix) -> {
-						this.field_3165.openGui(this.method_2680());
+					this.field_3165.openScreen(new YesNoScreen((bl, ix) -> {
+						this.field_3165.openScreen(this.method_2680());
 						if (bl) {
 							this.method_2680().method_2674(this);
 						}
@@ -201,7 +201,7 @@ public class class_520 extends EntryListWidget.Entry<class_520> {
 		return false;
 	}
 
-	public ResourcePackSettingsGui method_2680() {
+	public ResourcePackSettingsScreen method_2680() {
 		return this.field_3164;
 	}
 }

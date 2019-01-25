@@ -12,6 +12,7 @@ import net.minecraft.client.network.packet.ChunkDeltaUpdateClientPacket;
 import net.minecraft.client.network.packet.CombatEventClientPacket;
 import net.minecraft.client.network.packet.CommandSuggestionsClientPacket;
 import net.minecraft.client.network.packet.CommandTreeClientPacket;
+import net.minecraft.client.network.packet.ConfirmGuiActionClientPacket;
 import net.minecraft.client.network.packet.CooldownUpdateClientPacket;
 import net.minecraft.client.network.packet.CraftResponseClientPacket;
 import net.minecraft.client.network.packet.CustomPayloadClientPacket;
@@ -37,7 +38,6 @@ import net.minecraft.client.network.packet.ExperienceOrbSpawnClientPacket;
 import net.minecraft.client.network.packet.ExplosionClientPacket;
 import net.minecraft.client.network.packet.GameJoinClientPacket;
 import net.minecraft.client.network.packet.GameStateChangeClientPacket;
-import net.minecraft.client.network.packet.GuiActionConfirmClientPacket;
 import net.minecraft.client.network.packet.GuiCloseClientPacket;
 import net.minecraft.client.network.packet.GuiOpenClientPacket;
 import net.minecraft.client.network.packet.GuiSlotUpdateClientPacket;
@@ -126,7 +126,7 @@ public interface ClientPlayPacketListener extends PacketListener {
 
 	void onMapUpdate(MapUpdateClientPacket mapUpdateClientPacket);
 
-	void onGuiActionConfirm(GuiActionConfirmClientPacket guiActionConfirmClientPacket);
+	void onGuiActionConfirm(ConfirmGuiActionClientPacket confirmGuiActionClientPacket);
 
 	void onGuiClose(GuiCloseClientPacket guiCloseClientPacket);
 

@@ -39,9 +39,9 @@ public class WallMountedBlock extends HorizontalFacingBlock {
 			if (direction.getAxis() == Direction.Axis.Y) {
 				blockState = this.getDefaultState()
 					.with(FACE, direction == Direction.UP ? WallMountLocation.field_12473 : WallMountLocation.field_12475)
-					.with(FACING, itemPlacementContext.getPlayerHorizontalFacing());
+					.with(field_11177, itemPlacementContext.getPlayerHorizontalFacing());
 			} else {
-				blockState = this.getDefaultState().with(FACE, WallMountLocation.field_12471).with(FACING, direction.getOpposite());
+				blockState = this.getDefaultState().with(FACE, WallMountLocation.field_12471).with(field_11177, direction.getOpposite());
 			}
 
 			if (blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) {
@@ -68,7 +68,7 @@ public class WallMountedBlock extends HorizontalFacingBlock {
 			case field_12475:
 				return Direction.UP;
 			default:
-				return blockState.get(FACING);
+				return blockState.get(field_11177);
 		}
 	}
 }

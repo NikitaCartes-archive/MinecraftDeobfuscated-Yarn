@@ -17,7 +17,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.loot.UniformLootTableRange;
 import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.Parameter;
+import net.minecraft.world.loot.context.LootContextParameter;
 
 public class EntityScoresLootCondition implements LootCondition {
 	private final Map<String, UniformLootTableRange> scores;
@@ -29,12 +29,12 @@ public class EntityScoresLootCondition implements LootCondition {
 	}
 
 	@Override
-	public Set<Parameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(this.target.getIdentifier());
+	public Set<LootContextParameter<?>> getRequiredParameters() {
+		return ImmutableSet.of(this.target.method_315());
 	}
 
 	public boolean method_864(LootContext lootContext) {
-		Entity entity = lootContext.get(this.target.getIdentifier());
+		Entity entity = lootContext.method_296(this.target.method_315());
 		if (entity == null) {
 			return false;
 		} else {

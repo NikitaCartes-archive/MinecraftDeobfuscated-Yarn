@@ -32,7 +32,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class EnderChestBlock extends BlockWithEntity implements Waterloggable {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
 	public static final TranslatableTextComponent CONTAINER_NAME = new TranslatableTextComponent("container.enderchest");

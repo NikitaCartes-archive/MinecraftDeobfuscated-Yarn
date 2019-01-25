@@ -6,10 +6,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import net.minecraft.class_3443;
-import net.minecraft.sortme.structures.MineshaftGenerator;
-import net.minecraft.sortme.structures.StructureManager;
-import net.minecraft.sortme.structures.StructureStart;
+import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructurePiece;
+import net.minecraft.structure.StructureStart;
+import net.minecraft.structure.generator.MineshaftGenerator;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.biome.Biome;
@@ -22,7 +22,7 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 	}
 
 	@Override
-	public boolean method_14026(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
+	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
 		((ChunkRandom)random).setStructureSeed(chunkGenerator.getSeed(), i, j);
 		Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
 		if (chunkGenerator.hasStructure(biome, Feature.MINESHAFT)) {
@@ -35,7 +35,7 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 	}
 
 	@Override
-	public StructureFeature.class_3774 method_14016() {
+	public StructureFeature.StructureStartFactory getStructureStartFactory() {
 		return MineshaftFeature.class_3099::new;
 	}
 
@@ -80,24 +80,24 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
 			MineshaftFeatureConfig mineshaftFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.MINESHAFT);
 			MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(
-				0, this.field_16715, (i << 4) + 2, (j << 4) + 2, mineshaftFeatureConfig.type
+				0, this.random, (i << 4) + 2, (j << 4) + 2, mineshaftFeatureConfig.type
 			);
 			this.children.add(mineshaftRoom);
-			mineshaftRoom.method_14918(mineshaftRoom, this.children, this.field_16715);
-			this.method_14969();
+			mineshaftRoom.method_14918(mineshaftRoom, this.children, this.random);
+			this.setBoundingBoxFromChildren();
 			if (mineshaftFeatureConfig.type == MineshaftFeature.Type.MESA) {
 				int k = -5;
 				int l = chunkGenerator.method_16398() - this.boundingBox.maxY + this.boundingBox.getBlockCountY() / 2 - -5;
 				this.boundingBox.translate(0, l, 0);
 
-				for (class_3443 lv : this.children) {
-					lv.translate(0, l, 0);
+				for (StructurePiece structurePiece : this.children) {
+					structurePiece.translate(0, l, 0);
 				}
 			} else {
-				this.method_14978(chunkGenerator.method_16398(), this.field_16715, 10);
+				this.method_14978(chunkGenerator.method_16398(), this.random, 10);
 			}
 		}
 	}

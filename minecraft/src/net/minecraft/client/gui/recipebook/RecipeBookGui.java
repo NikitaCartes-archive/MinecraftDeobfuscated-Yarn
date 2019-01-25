@@ -12,8 +12,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.RecipeBookGhostSlots;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
@@ -247,8 +247,8 @@ public class RecipeBookGui extends Drawable implements GuiEventListener, RecipeD
 			this.recipesArea.drawTooltip(k, l);
 			if (this.toggleCraftableButton.isHovered()) {
 				String string = this.getCraftableButtonText();
-				if (this.client.currentGui != null) {
-					this.client.currentGui.drawTooltip(string, k, l);
+				if (this.client.currentScreen != null) {
+					this.client.currentScreen.drawTooltip(string, k, l);
 				}
 			}
 
@@ -272,8 +272,8 @@ public class RecipeBookGui extends Drawable implements GuiEventListener, RecipeD
 			}
 		}
 
-		if (itemStack != null && this.client.currentGui != null) {
-			this.client.currentGui.drawTooltip(this.client.currentGui.getStackTooltip(itemStack), k, l);
+		if (itemStack != null && this.client.currentScreen != null) {
+			this.client.currentScreen.drawTooltip(this.client.currentScreen.getStackTooltip(itemStack), k, l);
 		}
 	}
 
@@ -293,7 +293,7 @@ public class RecipeBookGui extends Drawable implements GuiEventListener, RecipeD
 					}
 
 					this.ghostSlots.reset();
-					this.client.interactionManager.clickRecipe(this.client.player.container.syncId, recipe, Gui.isShiftPressed());
+					this.client.interactionManager.clickRecipe(this.client.player.container.syncId, recipe, Screen.isShiftPressed());
 					if (!this.isWide()) {
 						this.setOpen(false);
 					}

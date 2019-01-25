@@ -101,8 +101,8 @@ public class PotionItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean hasEnchantmentGlow(ItemStack itemStack) {
-		return super.hasEnchantmentGlow(itemStack) || !PotionUtil.getPotionEffects(itemStack).isEmpty();
+	public boolean hasEnchantmentGlint(ItemStack itemStack) {
+		return super.hasEnchantmentGlint(itemStack) || !PotionUtil.getPotionEffects(itemStack).isEmpty();
 	}
 
 	@Override

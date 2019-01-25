@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.MainMenuGui;
+import net.minecraft.client.gui.MainMenuScreen;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
@@ -75,7 +75,7 @@ public class Realms {
 	}
 
 	public static void setScreenDirect(RealmsScreen realmsScreen) {
-		MinecraftClient.getInstance().openGui(realmsScreen.getProxy());
+		MinecraftClient.getInstance().openScreen(realmsScreen.getProxy());
 	}
 
 	public static String getGameDirectoryPath() {
@@ -115,7 +115,7 @@ public class Realms {
 	}
 
 	public static boolean inTitleScreen() {
-		return MinecraftClient.getInstance().currentGui != null && MinecraftClient.getInstance().currentGui instanceof MainMenuGui;
+		return MinecraftClient.getInstance().currentScreen != null && MinecraftClient.getInstance().currentScreen instanceof MainMenuScreen;
 	}
 
 	public static void deletePlayerTag(File file) {

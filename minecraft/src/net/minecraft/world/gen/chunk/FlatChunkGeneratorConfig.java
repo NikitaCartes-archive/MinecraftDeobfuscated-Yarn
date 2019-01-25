@@ -87,7 +87,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 		Feature.NETHER_BRIDGE, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT
 	);
 	private static final ConfiguredFeature<?> field_14085 = Biome.configureFeature(
-		Feature.OCEAN_RUIN, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeTemperature.COLD, 0.3F, 0.1F), Decorator.NOPE, DecoratorConfig.DEFAULT
+		Feature.OCEAN_RUIN, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3F, 0.1F), Decorator.NOPE, DecoratorConfig.DEFAULT
 	);
 	public static final Map<ConfiguredFeature<?>, GenerationStep.Feature> field_14069 = SystemUtil.consume(
 		Maps.<ConfiguredFeature<?>, GenerationStep.Feature>newHashMap(), hashMap -> {
@@ -129,7 +129,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 			hashMap.put(field_14061, FeatureConfig.DEFAULT);
 			hashMap.put(field_14078, FeatureConfig.DEFAULT);
 			hashMap.put(field_14070, FeatureConfig.DEFAULT);
-			hashMap.put(field_14085, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeTemperature.COLD, 0.3F, 0.9F));
+			hashMap.put(field_14085, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3F, 0.9F));
 			hashMap.put(field_14062, new ShipwreckFeatureConfig(false));
 			hashMap.put(field_14076, FeatureConfig.DEFAULT);
 			hashMap.put(field_14084, FeatureConfig.DEFAULT);

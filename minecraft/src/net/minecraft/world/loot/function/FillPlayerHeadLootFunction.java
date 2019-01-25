@@ -16,7 +16,7 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.TagHelper;
 import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.Parameter;
+import net.minecraft.world.loot.context.LootContextParameter;
 
 public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
 	private final LootContext.EntityTarget entity;
@@ -27,14 +27,14 @@ public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public Set<Parameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(this.entity.getIdentifier());
+	public Set<LootContextParameter<?>> getRequiredParameters() {
+		return ImmutableSet.of(this.entity.method_315());
 	}
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
 		if (itemStack.getItem() == Items.field_8575) {
-			Entity entity = lootContext.get(this.entity.getIdentifier());
+			Entity entity = lootContext.method_296(this.entity.method_315());
 			if (entity instanceof PlayerEntity) {
 				GameProfile gameProfile = ((PlayerEntity)entity).getGameProfile();
 				itemStack.getOrCreateTag().put("SkullOwner", TagHelper.serializeProfile(new CompoundTag(), gameProfile));

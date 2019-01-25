@@ -9,7 +9,7 @@ import net.minecraft.command.arguments.GameProfileArgumentType;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.config.BannedProfilesList;
+import net.minecraft.server.config.BannedPlayerList;
 import net.minecraft.text.TextFormatter;
 import net.minecraft.text.TranslatableTextComponent;
 
@@ -35,12 +35,12 @@ public class PardonCommand {
 	}
 
 	private static int method_13473(ServerCommandSource serverCommandSource, Collection<GameProfile> collection) throws CommandSyntaxException {
-		BannedProfilesList bannedProfilesList = serverCommandSource.getMinecraftServer().getPlayerManager().getUserBanList();
+		BannedPlayerList bannedPlayerList = serverCommandSource.getMinecraftServer().getPlayerManager().getUserBanList();
 		int i = 0;
 
 		for (GameProfile gameProfile : collection) {
-			if (bannedProfilesList.contains(gameProfile)) {
-				bannedProfilesList.remove(gameProfile);
+			if (bannedPlayerList.contains(gameProfile)) {
+				bannedPlayerList.remove(gameProfile);
 				i++;
 				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.pardon.success", TextFormatter.profile(gameProfile)), true);
 			}

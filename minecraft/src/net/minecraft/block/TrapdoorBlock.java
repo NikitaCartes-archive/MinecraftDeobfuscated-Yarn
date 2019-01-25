@@ -37,7 +37,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 		this.setDefaultState(
 			this.stateFactory
 				.getDefaultState()
-				.with(FACING, Direction.NORTH)
+				.with(field_11177, Direction.NORTH)
 				.with(OPEN, Boolean.valueOf(false))
 				.with(BLOCK_HALF, BlockHalf.BOTTOM)
 				.with(POWERED, Boolean.valueOf(false))
@@ -50,7 +50,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 		if (!(Boolean)blockState.get(OPEN)) {
 			return blockState.get(BLOCK_HALF) == BlockHalf.TOP ? OPEN_TOP_SHAPE : OPEN_BOTTOM_SHAPE;
 		} else {
-			switch ((Direction)blockState.get(FACING)) {
+			switch ((Direction)blockState.get(field_11177)) {
 				case NORTH:
 				default:
 					return NORTH_SHAPE;
@@ -128,10 +128,10 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
 		Direction direction = itemPlacementContext.getFacing();
 		if (!itemPlacementContext.method_7717() && direction.getAxis().isHorizontal()) {
-			blockState = blockState.with(FACING, direction)
+			blockState = blockState.with(field_11177, direction)
 				.with(BLOCK_HALF, itemPlacementContext.getPos().y - (double)itemPlacementContext.getBlockPos().getY() > 0.5 ? BlockHalf.TOP : BlockHalf.BOTTOM);
 		} else {
-			blockState = blockState.with(FACING, itemPlacementContext.getPlayerHorizontalFacing().getOpposite())
+			blockState = blockState.with(field_11177, itemPlacementContext.getPlayerHorizontalFacing().getOpposite())
 				.with(BLOCK_HALF, direction == Direction.UP ? BlockHalf.BOTTOM : BlockHalf.TOP);
 		}
 
@@ -149,7 +149,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, OPEN, BLOCK_HALF, POWERED, WATERLOGGED);
+		builder.with(field_11177, OPEN, BLOCK_HALF, POWERED, WATERLOGGED);
 	}
 
 	@Override

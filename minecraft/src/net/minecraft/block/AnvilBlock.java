@@ -23,7 +23,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class AnvilBlock extends FallingBlock {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
 	private static final VoxelShape field_9882 = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 4.0, 14.0);
 	private static final VoxelShape field_9885 = Block.createCuboidShape(3.0, 4.0, 4.0, 13.0, 5.0, 12.0);
 	private static final VoxelShape field_9888 = Block.createCuboidShape(4.0, 5.0, 6.0, 12.0, 10.0, 10.0);

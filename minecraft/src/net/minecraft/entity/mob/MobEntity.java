@@ -1126,7 +1126,7 @@ public abstract class MobEntity extends LivingEntity {
 			if (entity instanceof PlayerEntity) {
 				PlayerEntity playerEntity = (PlayerEntity)entity;
 				ItemStack itemStack = this.getMainHandStack();
-				ItemStack itemStack2 = playerEntity.method_6115() ? playerEntity.getActiveItem() : ItemStack.EMPTY;
+				ItemStack itemStack2 = playerEntity.isUsingItem() ? playerEntity.getActiveItem() : ItemStack.EMPTY;
 				if (!itemStack.isEmpty() && !itemStack2.isEmpty() && itemStack.getItem() instanceof AxeItem && itemStack2.getItem() == Items.field_8255) {
 					float h = 0.25F + (float)EnchantmentHelper.getEfficiency(this) * 0.05F;
 					if (this.random.nextFloat() < h) {

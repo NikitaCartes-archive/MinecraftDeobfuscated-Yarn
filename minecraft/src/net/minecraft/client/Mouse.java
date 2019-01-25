@@ -2,8 +2,8 @@ package net.minecraft.client;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.Screen;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.GlfwUtil;
 import net.minecraft.client.util.InputUtil;
@@ -67,7 +67,7 @@ public class Mouse {
 			}
 
 			boolean[] bls = new boolean[]{false};
-			if (this.client.currentGui == null) {
+			if (this.client.currentScreen == null) {
 				if (!this.isCursorLocked && bl) {
 					this.lockCursor();
 				}
@@ -75,17 +75,17 @@ public class Mouse {
 				double d = this.x * (double)this.client.window.getScaledWidth() / (double)this.client.window.getWidth();
 				double e = this.y * (double)this.client.window.getScaledHeight() / (double)this.client.window.getHeight();
 				if (bl) {
-					Gui.method_2217(
-						() -> bls[0] = this.client.currentGui.mouseClicked(d, e, m), "mouseClicked event handler", this.client.currentGui.getClass().getCanonicalName()
+					Screen.method_2217(
+						() -> bls[0] = this.client.currentScreen.mouseClicked(d, e, m), "mouseClicked event handler", this.client.currentScreen.getClass().getCanonicalName()
 					);
 				} else {
-					Gui.method_2217(
-						() -> bls[0] = this.client.currentGui.mouseReleased(d, e, m), "mouseReleased event handler", this.client.currentGui.getClass().getCanonicalName()
+					Screen.method_2217(
+						() -> bls[0] = this.client.currentScreen.mouseReleased(d, e, m), "mouseReleased event handler", this.client.currentScreen.getClass().getCanonicalName()
 					);
 				}
 			}
 
-			if (!bls[0] && (this.client.currentGui == null || this.client.currentGui.field_2558)) {
+			if (!bls[0] && (this.client.currentScreen == null || this.client.currentScreen.field_2558)) {
 				if (m == 0) {
 					this.field_1791 = bl;
 				} else if (m == 2) {
@@ -109,8 +109,8 @@ public class Mouse {
 	private void onMouseScroll(long l, double d, double e) {
 		if (l == MinecraftClient.getInstance().window.getHandle()) {
 			double f = e * this.client.options.mouseWheelSensitivity;
-			if (this.client.currentGui != null) {
-				this.client.currentGui.mouseScrolled(f);
+			if (this.client.currentScreen != null) {
+				this.client.currentScreen.mouseScrolled(f);
 			} else if (this.client.player != null) {
 				if (this.eventDeltaWheel != 0.0 && Math.signum(f) != Math.signum(this.eventDeltaWheel)) {
 					this.eventDeltaWheel = 0.0;
@@ -149,15 +149,15 @@ public class Mouse {
 				this.hasResolutionChanged = false;
 			}
 
-			GuiEventListener guiEventListener = this.client.currentGui;
+			GuiEventListener guiEventListener = this.client.currentScreen;
 			if (guiEventListener != null) {
 				double f = d * (double)this.client.window.getScaledWidth() / (double)this.client.window.getWidth();
 				double g = e * (double)this.client.window.getScaledHeight() / (double)this.client.window.getHeight();
-				Gui.method_2217(() -> guiEventListener.mouseMoved(f, g), "mouseMoved event handler", guiEventListener.getClass().getCanonicalName());
+				Screen.method_2217(() -> guiEventListener.mouseMoved(f, g), "mouseMoved event handler", guiEventListener.getClass().getCanonicalName());
 				if (this.activeButton != -1 && this.glfwTime > 0.0) {
 					double h = (d - this.x) * (double)this.client.window.getScaledWidth() / (double)this.client.window.getWidth();
 					double i = (e - this.y) * (double)this.client.window.getScaledHeight() / (double)this.client.window.getHeight();
-					Gui.method_2217(
+					Screen.method_2217(
 						() -> guiEventListener.mouseDragged(f, g, this.activeButton, h, i), "mouseDragged event handler", guiEventListener.getClass().getCanonicalName()
 					);
 				}
@@ -249,7 +249,7 @@ public class Mouse {
 				this.x = (double)(this.client.window.getWidth() / 2);
 				this.y = (double)(this.client.window.getHeight() / 2);
 				InputUtil.setCursorParameters(this.client.window.getHandle(), 212995, this.x, this.y);
-				this.client.openGui(null);
+				this.client.openScreen(null);
 				this.client.attackCooldown = 10000;
 			}
 		}

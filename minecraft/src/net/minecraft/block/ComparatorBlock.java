@@ -28,7 +28,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	public ComparatorBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(field_10789, ComparatorMode.field_12576)
+			this.stateFactory.getDefaultState().with(field_11177, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(field_10789, ComparatorMode.field_12576)
 		);
 	}
 
@@ -67,7 +67,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	@Override
 	protected int method_9991(World world, BlockPos blockPos, BlockState blockState) {
 		int i = super.method_9991(world, blockPos, blockState);
-		Direction direction = blockState.get(FACING);
+		Direction direction = blockState.get(field_11177);
 		BlockPos blockPos2 = blockPos.offset(direction);
 		BlockState blockState2 = world.getBlockState(blockPos2);
 		if (blockState2.hasComparatorOutput()) {
@@ -174,6 +174,6 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, field_10789, POWERED);
+		builder.with(field_11177, field_10789, POWERED);
 	}
 }

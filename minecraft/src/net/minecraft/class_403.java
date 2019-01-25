@@ -4,13 +4,13 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.TextComponent;
 
 @Environment(EnvType.CLIENT)
-public class class_403 extends Gui {
+public class class_403 extends Screen {
 	private final Runnable field_2345;
 	protected final TextComponent field_2350;
 	protected final TextComponent field_2346;

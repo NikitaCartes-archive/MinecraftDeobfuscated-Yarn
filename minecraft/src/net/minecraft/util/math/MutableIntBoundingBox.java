@@ -25,7 +25,7 @@ public class MutableIntBoundingBox {
 		}
 	}
 
-	public static MutableIntBoundingBox maxSize() {
+	public static MutableIntBoundingBox empty() {
 		return new MutableIntBoundingBox(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
 	}
 

@@ -12,7 +12,7 @@ public enum Difficulty {
 	NORMAL(2, "normal"),
 	HARD(3, "hard");
 
-	private static final Difficulty[] field_5800 = (Difficulty[])Arrays.stream(values())
+	private static final Difficulty[] difficultyId = (Difficulty[])Arrays.stream(values())
 		.sorted(Comparator.comparingInt(Difficulty::getId))
 		.toArray(Difficulty[]::new);
 	private final int id;
@@ -32,7 +32,7 @@ public enum Difficulty {
 	}
 
 	public static Difficulty byId(int i) {
-		return field_5800[i % field_5800.length];
+		return difficultyId[i % difficultyId.length];
 	}
 
 	@Nullable

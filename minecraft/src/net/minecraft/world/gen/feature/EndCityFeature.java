@@ -3,9 +3,9 @@ package net.minecraft.world.gen.feature;
 import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.sortme.structures.EndCityGenerator;
-import net.minecraft.sortme.structures.StructureManager;
-import net.minecraft.sortme.structures.StructureStart;
+import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructureStart;
+import net.minecraft.structure.generator.EndCityGenerator;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
@@ -39,7 +39,7 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	public boolean method_14026(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
+	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
 		ChunkPos chunkPos = this.method_14018(chunkGenerator, random, i, j, 0, 0);
 		if (i == chunkPos.x && j == chunkPos.z) {
 			Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
@@ -55,7 +55,7 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	public StructureFeature.class_3774 method_14016() {
+	public StructureFeature.StructureStartFactory getStructureStartFactory() {
 		return EndCityFeature.class_3022::new;
 	}
 
@@ -96,13 +96,13 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
-			Rotation rotation = Rotation.values()[this.field_16715.nextInt(Rotation.values().length)];
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+			Rotation rotation = Rotation.values()[this.random.nextInt(Rotation.values().length)];
 			int k = EndCityFeature.method_13085(i, j, chunkGenerator);
 			if (k >= 60) {
 				BlockPos blockPos = new BlockPos(i * 16 + 8, k, j * 16 + 8);
-				EndCityGenerator.method_14679(structureManager, blockPos, rotation, this.children, this.field_16715);
-				this.method_14969();
+				EndCityGenerator.addPieces(structureManager, blockPos, rotation, this.children, this.random);
+				this.setBoundingBoxFromChildren();
 			}
 		}
 	}

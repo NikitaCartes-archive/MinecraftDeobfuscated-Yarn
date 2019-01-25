@@ -12,8 +12,8 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.Parameter;
-import net.minecraft.world.loot.context.Parameters;
+import net.minecraft.world.loot.context.LootContextParameter;
+import net.minecraft.world.loot.context.LootContextParameters;
 
 public class EntityPropertiesLootCondition implements LootCondition {
 	private final EntityPredicate predicate;
@@ -25,13 +25,13 @@ public class EntityPropertiesLootCondition implements LootCondition {
 	}
 
 	@Override
-	public Set<Parameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(Parameters.field_1232, this.entity.getIdentifier());
+	public Set<LootContextParameter<?>> getRequiredParameters() {
+		return ImmutableSet.of(LootContextParameters.field_1232, this.entity.method_315());
 	}
 
 	public boolean method_914(LootContext lootContext) {
-		Entity entity = lootContext.get(this.entity.getIdentifier());
-		BlockPos blockPos = lootContext.get(Parameters.field_1232);
+		Entity entity = lootContext.method_296(this.entity.method_315());
+		BlockPos blockPos = lootContext.method_296(LootContextParameters.field_1232);
 		return blockPos != null && this.predicate.test(lootContext.getWorld(), new Vec3d(blockPos), entity);
 	}
 

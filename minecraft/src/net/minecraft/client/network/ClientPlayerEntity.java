@@ -18,13 +18,13 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.audio.ElytraSoundInstance;
 import net.minecraft.client.audio.MinecartSoundInstance;
 import net.minecraft.client.audio.PositionedSoundInstance;
-import net.minecraft.client.gui.CommandBlockGui;
-import net.minecraft.client.gui.CommandBlockMinecartGui;
-import net.minecraft.client.gui.ContainerGui;
-import net.minecraft.client.gui.ingame.EditBookGui;
-import net.minecraft.client.gui.ingame.EditSignGui;
-import net.minecraft.client.gui.ingame.JigsawBlockGui;
-import net.minecraft.client.gui.ingame.StructureBlockGui;
+import net.minecraft.client.gui.CommandBlockMinecartScreen;
+import net.minecraft.client.gui.CommandBlockScreen;
+import net.minecraft.client.gui.ContainerScreen;
+import net.minecraft.client.gui.ingame.EditBookScreen;
+import net.minecraft.client.gui.ingame.EditSignScreen;
+import net.minecraft.client.gui.ingame.JigsawBlockScreen;
+import net.minecraft.client.gui.ingame.StructureBlockScreen;
 import net.minecraft.client.input.Input;
 import net.minecraft.client.recipe.book.ClientRecipeBook;
 import net.minecraft.entity.Entity;
@@ -299,7 +299,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	public void method_3137() {
 		this.inventory.setCursorStack(ItemStack.EMPTY);
 		super.closeGui();
-		this.client.openGui(null);
+		this.client.openScreen(null);
 	}
 
 	public void updateHealth(float f) {
@@ -485,7 +485,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	@Override
 	public void setCurrentHand(Hand hand) {
 		ItemStack itemStack = this.getStackInHand(hand);
-		if (!itemStack.isEmpty() && !this.method_6115()) {
+		if (!itemStack.isEmpty() && !this.isUsingItem()) {
 			super.setCurrentHand(hand);
 			this.field_3915 = true;
 			this.activeHand = hand;
@@ -493,7 +493,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public boolean method_6115() {
+	public boolean isUsingItem() {
 		return this.field_3915;
 	}
 
@@ -537,34 +537,34 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public void openSignEditorGui(SignBlockEntity signBlockEntity) {
-		this.client.openGui(new EditSignGui(signBlockEntity));
+		this.client.openScreen(new EditSignScreen(signBlockEntity));
 	}
 
 	@Override
 	public void openCommandBlockMinecartGui(CommandBlockExecutor commandBlockExecutor) {
-		this.client.openGui(new CommandBlockMinecartGui(commandBlockExecutor));
+		this.client.openScreen(new CommandBlockMinecartScreen(commandBlockExecutor));
 	}
 
 	@Override
 	public void openCommandBlockGui(CommandBlockBlockEntity commandBlockBlockEntity) {
-		this.client.openGui(new CommandBlockGui(commandBlockBlockEntity));
+		this.client.openScreen(new CommandBlockScreen(commandBlockBlockEntity));
 	}
 
 	@Override
 	public void openStructureBlockGui(StructureBlockBlockEntity structureBlockBlockEntity) {
-		this.client.openGui(new StructureBlockGui(structureBlockBlockEntity));
+		this.client.openScreen(new StructureBlockScreen(structureBlockBlockEntity));
 	}
 
 	@Override
 	public void openJigsawGui(JigsawBlockEntity jigsawBlockEntity) {
-		this.client.openGui(new JigsawBlockGui(jigsawBlockEntity));
+		this.client.openScreen(new JigsawBlockScreen(jigsawBlockEntity));
 	}
 
 	@Override
 	public void openBookEditorGui(ItemStack itemStack, Hand hand) {
 		Item item = itemStack.getItem();
 		if (item == Items.field_8674) {
-			this.client.openGui(new EditBookGui(this, itemStack, hand));
+			this.client.openScreen(new EditBookScreen(this, itemStack, hand));
 		}
 	}
 
@@ -611,12 +611,12 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 		this.field_3911 = this.field_3929;
 		if (this.inPortal) {
-			if (this.client.currentGui != null && !this.client.currentGui.isPauseScreen()) {
-				if (this.client.currentGui instanceof ContainerGui) {
+			if (this.client.currentScreen != null && !this.client.currentScreen.isPauseScreen()) {
+				if (this.client.currentScreen instanceof ContainerScreen) {
 					this.closeGui();
 				}
 
-				this.client.openGui(null);
+				this.client.openScreen(null);
 			}
 
 			if (this.field_3929 == 0.0F) {
@@ -654,7 +654,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		boolean bl3 = this.input.field_3905 >= 0.8F;
 		this.input.tick();
 		this.client.getTutorialManager().method_4909(this.input);
-		if (this.method_6115() && !this.hasVehicle()) {
+		if (this.isUsingItem() && !this.hasVehicle()) {
 			this.input.field_3907 *= 0.2F;
 			this.input.field_3905 *= 0.2F;
 			this.field_3935 = 0;
@@ -679,7 +679,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			&& this.input.field_3905 >= 0.8F
 			&& !this.isSprinting()
 			&& bl5
-			&& !this.method_6115()
+			&& !this.isUsingItem()
 			&& !this.hasPotionEffect(StatusEffects.field_5919)) {
 			if (this.field_3935 <= 0 && !this.client.options.keySprint.isPressed()) {
 				this.field_3935 = 7;
@@ -692,7 +692,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			&& (!this.isInsideWater() || this.method_5869())
 			&& this.input.field_3905 >= 0.8F
 			&& bl5
-			&& !this.method_6115()
+			&& !this.isUsingItem()
 			&& !this.hasPotionEffect(StatusEffects.field_5919)
 			&& this.client.options.keySprint.isPressed()) {
 			this.setSprinting(true);

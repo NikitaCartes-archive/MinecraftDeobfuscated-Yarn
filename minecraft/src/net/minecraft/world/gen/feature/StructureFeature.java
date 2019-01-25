@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 import javax.annotation.Nullable;
-import net.minecraft.class_3443;
-import net.minecraft.sortme.structures.StructureStart;
+import net.minecraft.structure.StructurePiece;
+import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.BlockViewWithStructures;
@@ -47,8 +47,8 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 				Long long_ = (Long)var11.next();
 				ChunkPos chunkPos = new ChunkPos(long_);
 				StructureStart structureStart = iWorld.getChunk(chunkPos.x, chunkPos.z).getStructureStart(this.getName());
-				if (structureStart != null && structureStart != StructureStart.field_16713) {
-					structureStart.method_14974(iWorld, random, new MutableIntBoundingBox(k, l, k + 15, l + 15), new ChunkPos(i, j));
+				if (structureStart != null && structureStart != StructureStart.DEFAULT) {
+					structureStart.generateStructure(iWorld, random, new MutableIntBoundingBox(k, l, k + 15, l + 15), new ChunkPos(i, j));
 					bl = true;
 				}
 			}
@@ -59,20 +59,20 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 
 	protected StructureStart method_14025(IWorld iWorld, BlockPos blockPos, boolean bl) {
 		for (StructureStart structureStart : this.method_14017(iWorld, blockPos.getX() >> 4, blockPos.getZ() >> 4)) {
-			if (structureStart.hasChildren() && structureStart.method_14968().contains(blockPos)) {
+			if (structureStart.hasChildren() && structureStart.getBoundingBox().contains(blockPos)) {
 				if (!bl) {
 					return structureStart;
 				}
 
-				for (class_3443 lv : structureStart.method_14963()) {
-					if (lv.method_14935().contains(blockPos)) {
+				for (StructurePiece structurePiece : structureStart.getChildren()) {
+					if (structurePiece.getBoundingBox().contains(blockPos)) {
 						return structureStart;
 					}
 				}
 			}
 		}
 
-		return StructureStart.field_16713;
+		return StructureStart.DEFAULT;
 	}
 
 	public boolean method_14023(IWorld iWorld, BlockPos blockPos) {
@@ -102,13 +102,13 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 							ChunkPos chunkPos = this.method_14018(chunkGenerator, chunkRandom, j, k, m, n);
 							StructureStart structureStart = world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS).getStructureStart(this.getName());
 							if (structureStart != null && structureStart.hasChildren()) {
-								if (bl && structureStart.method_14979()) {
+								if (bl && structureStart.isInExistingChunk()) {
 									structureStart.incrementReferences();
-									return structureStart.method_14962();
+									return structureStart.getPos();
 								}
 
 								if (!bl) {
-									return structureStart.method_14962();
+									return structureStart.getPos();
 								}
 							}
 
@@ -135,7 +135,7 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 
 		while (longIterator.hasNext()) {
 			long l = longIterator.nextLong();
-			BlockViewWithStructures blockViewWithStructures = iWorld.getChunk(ChunkPos.longX(l), ChunkPos.longZ(l), ChunkStatus.EMPTY);
+			BlockViewWithStructures blockViewWithStructures = iWorld.getChunk(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), ChunkStatus.EMPTY);
 			StructureStart structureStart = blockViewWithStructures.getStructureStart(this.getName());
 			if (structureStart != null) {
 				list.add(structureStart);
@@ -149,15 +149,15 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 		return new ChunkPos(i + k, j + l);
 	}
 
-	public abstract boolean method_14026(ChunkGenerator<?> chunkGenerator, Random random, int i, int j);
+	public abstract boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j);
 
-	public abstract StructureFeature.class_3774 method_14016();
+	public abstract StructureFeature.StructureStartFactory getStructureStartFactory();
 
 	public abstract String getName();
 
 	public abstract int method_14021();
 
-	public interface class_3774 {
+	public interface StructureStartFactory {
 		StructureStart create(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l);
 	}
 }

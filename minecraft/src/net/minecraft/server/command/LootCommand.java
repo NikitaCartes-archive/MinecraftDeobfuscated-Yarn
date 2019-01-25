@@ -36,8 +36,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.loot.LootManager;
 import net.minecraft.world.loot.LootSupplier;
 import net.minecraft.world.loot.context.LootContext;
+import net.minecraft.world.loot.context.LootContextParameters;
 import net.minecraft.world.loot.context.LootContextTypes;
-import net.minecraft.world.loot.context.Parameters;
 
 public class LootCommand {
 	public static final SuggestionProvider<ServerCommandSource> field_13605 = (commandContext, suggestionsBuilder) -> {
@@ -428,11 +428,11 @@ public class LootCommand {
 		BlockState blockState = serverWorld.getBlockState(blockPos);
 		BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
 		LootContext.Builder builder = new LootContext.Builder(serverWorld)
-			.put(Parameters.field_1232, blockPos)
-			.put(Parameters.field_1224, blockState)
-			.putNullable(Parameters.field_1228, blockEntity)
-			.putNullable(Parameters.field_1226, serverCommandSource.getEntity())
-			.put(Parameters.field_1229, itemStack);
+			.method_312(LootContextParameters.field_1232, blockPos)
+			.method_312(LootContextParameters.field_1224, blockState)
+			.method_306(LootContextParameters.field_1228, blockEntity)
+			.method_306(LootContextParameters.field_1226, serverCommandSource.getEntity())
+			.method_312(LootContextParameters.field_1229, itemStack);
 		List<ItemStack> list = blockState.getDroppedStacks(builder);
 		return arg.accept(commandContext, list, listx -> method_13212(serverCommandSource, listx, blockState.getBlock().getDropTableId()));
 	}
@@ -446,14 +446,14 @@ public class LootCommand {
 			LootContext.Builder builder = new LootContext.Builder(serverCommandSource.getWorld());
 			Entity entity2 = serverCommandSource.getEntity();
 			if (entity2 instanceof PlayerEntity) {
-				builder.put(Parameters.field_1233, (PlayerEntity)entity2);
+				builder.method_312(LootContextParameters.field_1233, (PlayerEntity)entity2);
 			}
 
-			builder.put(Parameters.field_1231, DamageSource.MAGIC);
-			builder.putNullable(Parameters.field_1227, entity2);
-			builder.putNullable(Parameters.field_1230, entity2);
-			builder.put(Parameters.field_1226, entity);
-			builder.put(Parameters.field_1232, new BlockPos(serverCommandSource.getPosition()));
+			builder.method_312(LootContextParameters.field_1231, DamageSource.MAGIC);
+			builder.method_306(LootContextParameters.field_1227, entity2);
+			builder.method_306(LootContextParameters.field_1230, entity2);
+			builder.method_312(LootContextParameters.field_1226, entity);
+			builder.method_312(LootContextParameters.field_1232, new BlockPos(serverCommandSource.getPosition()));
 			LootSupplier lootSupplier = serverCommandSource.getMinecraftServer().getLootManager().getSupplier(identifier);
 			List<ItemStack> list = lootSupplier.getDrops(builder.build(LootContextTypes.ENTITY));
 			return arg.accept(commandContext, list, listx -> method_13212(serverCommandSource, listx, identifier));
@@ -463,8 +463,8 @@ public class LootCommand {
 	private static int method_13197(CommandContext<ServerCommandSource> commandContext, Identifier identifier, LootCommand.class_3041 arg) throws CommandSyntaxException {
 		ServerCommandSource serverCommandSource = commandContext.getSource();
 		LootContext.Builder builder = new LootContext.Builder(serverCommandSource.getWorld())
-			.putNullable(Parameters.field_1226, serverCommandSource.getEntity())
-			.put(Parameters.field_1232, new BlockPos(serverCommandSource.getPosition()));
+			.method_306(LootContextParameters.field_1226, serverCommandSource.getEntity())
+			.method_312(LootContextParameters.field_1232, new BlockPos(serverCommandSource.getPosition()));
 		return method_13180(commandContext, identifier, builder.build(LootContextTypes.CHEST), arg);
 	}
 
@@ -473,8 +473,8 @@ public class LootCommand {
 	) throws CommandSyntaxException {
 		ServerCommandSource serverCommandSource = commandContext.getSource();
 		LootContext lootContext = new LootContext.Builder(serverCommandSource.getWorld())
-			.put(Parameters.field_1232, blockPos)
-			.put(Parameters.field_1229, itemStack)
+			.method_312(LootContextParameters.field_1232, blockPos)
+			.method_312(LootContextParameters.field_1229, itemStack)
 			.build(LootContextTypes.FISHING);
 		return method_13180(commandContext, identifier, lootContext, arg);
 	}

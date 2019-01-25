@@ -282,7 +282,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		BlockState blockState = this.world.method_8475(this.getBoundingBox().expand(0.0, -0.4F, 0.0).contract(0.001), Blocks.field_10422);
 		if (blockState != null) {
 			if (!this.field_7517 && !this.field_5953 && blockState.getBlock() == Blocks.field_10422 && !this.isSpectator()) {
-				boolean bl = (Boolean)blockState.get(BubbleColumnBlock.field_10680);
+				boolean bl = (Boolean)blockState.get(BubbleColumnBlock.DRAG);
 				if (bl) {
 					this.world.playSound(this.x, this.y, this.z, SoundEvents.field_14752, this.getSoundCategory(), 1.0F, 1.0F, false);
 				} else {
@@ -1269,7 +1269,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public PlayerEntity.SleepResult trySleep(BlockPos blockPos) {
-		Direction direction = this.world.getBlockState(blockPos).get(HorizontalFacingBlock.FACING);
+		Direction direction = this.world.getBlockState(blockPos).get(HorizontalFacingBlock.field_11177);
 		if (!this.world.isClient) {
 			if (this.isSleeping() || !this.isValid()) {
 				return PlayerEntity.SleepResult.INVALID_ATTEMPT;
@@ -1403,7 +1403,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Environment(EnvType.CLIENT)
 	public float method_7319() {
 		if (this.sleepingPos != null) {
-			Direction direction = this.world.getBlockState(this.sleepingPos).get(HorizontalFacingBlock.FACING);
+			Direction direction = this.world.getBlockState(this.sleepingPos).get(HorizontalFacingBlock.field_11177);
 			switch (direction) {
 				case SOUTH:
 					return 90.0F;

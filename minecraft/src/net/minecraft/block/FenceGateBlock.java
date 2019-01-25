@@ -50,9 +50,9 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		if ((Boolean)blockState.get(IN_WALL)) {
-			return ((Direction)blockState.get(FACING)).getAxis() == Direction.Axis.X ? field_11016 : field_11025;
+			return ((Direction)blockState.get(field_11177)).getAxis() == Direction.Axis.X ? field_11016 : field_11025;
 		} else {
-			return ((Direction)blockState.get(FACING)).getAxis() == Direction.Axis.X ? field_11017 : field_11022;
+			return ((Direction)blockState.get(field_11177)).getAxis() == Direction.Axis.X ? field_11017 : field_11022;
 		}
 	}
 
@@ -61,7 +61,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		Direction.Axis axis = direction.getAxis();
-		if (((Direction)blockState.get(FACING)).rotateYClockwise().getAxis() != axis) {
+		if (((Direction)blockState.get(field_11177)).rotateYClockwise().getAxis() != axis) {
 			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		} else {
 			boolean bl = this.method_10138(blockState2) || this.method_10138(iWorld.getBlockState(blockPos.offset(direction.getOpposite())));
@@ -74,16 +74,16 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 		if ((Boolean)blockState.get(OPEN)) {
 			return VoxelShapes.empty();
 		} else {
-			return ((Direction)blockState.get(FACING)).getAxis() == Direction.Axis.Z ? field_11028 : field_11019;
+			return ((Direction)blockState.get(field_11177)).getAxis() == Direction.Axis.Z ? field_11028 : field_11019;
 		}
 	}
 
 	@Override
 	public VoxelShape method_9571(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		if ((Boolean)blockState.get(IN_WALL)) {
-			return ((Direction)blockState.get(FACING)).getAxis() == Direction.Axis.X ? field_11027 : field_11020;
+			return ((Direction)blockState.get(field_11177)).getAxis() == Direction.Axis.X ? field_11027 : field_11020;
 		} else {
-			return ((Direction)blockState.get(FACING)).getAxis() == Direction.Axis.X ? field_11023 : field_11018;
+			return ((Direction)blockState.get(field_11177)).getAxis() == Direction.Axis.X ? field_11023 : field_11018;
 		}
 	}
 
@@ -111,7 +111,11 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 		boolean bl2 = axis == Direction.Axis.Z
 				&& (this.method_10138(world.getBlockState(blockPos.west())) || this.method_10138(world.getBlockState(blockPos.east())))
 			|| axis == Direction.Axis.X && (this.method_10138(world.getBlockState(blockPos.north())) || this.method_10138(world.getBlockState(blockPos.south())));
-		return this.getDefaultState().with(FACING, direction).with(OPEN, Boolean.valueOf(bl)).with(POWERED, Boolean.valueOf(bl)).with(IN_WALL, Boolean.valueOf(bl2));
+		return this.getDefaultState()
+			.with(field_11177, direction)
+			.with(OPEN, Boolean.valueOf(bl))
+			.with(POWERED, Boolean.valueOf(bl))
+			.with(IN_WALL, Boolean.valueOf(bl2));
 	}
 
 	private boolean method_10138(BlockState blockState) {
@@ -125,8 +129,8 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 			world.setBlockState(blockPos, blockState, 10);
 		} else {
 			Direction direction = playerEntity.getHorizontalFacing();
-			if (blockState.get(FACING) == direction.getOpposite()) {
-				blockState = blockState.with(FACING, direction);
+			if (blockState.get(field_11177) == direction.getOpposite()) {
+				blockState = blockState.with(field_11177, direction);
 			}
 
 			blockState = blockState.with(OPEN, Boolean.valueOf(true));
@@ -152,10 +156,10 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, OPEN, POWERED, IN_WALL);
+		builder.with(field_11177, OPEN, POWERED, IN_WALL);
 	}
 
 	public static boolean canWallConnect(BlockState blockState, Direction direction) {
-		return ((Direction)blockState.get(FACING)).getAxis() == direction.rotateYClockwise().getAxis();
+		return ((Direction)blockState.get(field_11177)).getAxis() == direction.rotateYClockwise().getAxis();
 	}
 }

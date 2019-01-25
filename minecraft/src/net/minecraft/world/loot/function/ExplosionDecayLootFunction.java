@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.Parameters;
+import net.minecraft.world.loot.context.LootContextParameters;
 
 public class ExplosionDecayLootFunction extends ConditionalLootFunction {
 	private ExplosionDecayLootFunction(LootCondition[] lootConditions) {
@@ -16,7 +16,7 @@ public class ExplosionDecayLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		Float float_ = lootContext.get(Parameters.field_1225);
+		Float float_ = lootContext.method_296(LootContextParameters.field_1225);
 		if (float_ != null) {
 			Random random = lootContext.getRandom();
 			float f = 1.0F / float_;

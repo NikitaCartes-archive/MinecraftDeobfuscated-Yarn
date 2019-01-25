@@ -47,7 +47,8 @@ public class StonecutterContainer extends Container {
 		Items.field_8339,
 		Items.field_8590,
 		Items.field_8518,
-		Items.field_8314
+		Items.field_8314,
+		Items.field_8216
 	);
 	private final class_3914 field_17630;
 	private final Property selectedRecipe = Property.create();

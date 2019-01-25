@@ -11,32 +11,32 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.world.chunk.ChunkPos;
 
 public abstract class RegionFileCache implements AutoCloseable {
-	protected final Long2ObjectLinkedOpenHashMap<RegionFile> field_17657 = new Long2ObjectLinkedOpenHashMap<>();
+	protected final Long2ObjectLinkedOpenHashMap<RegionFile> cachedRegionFiles = new Long2ObjectLinkedOpenHashMap<>();
 
 	private RegionFile getRegionFile(ChunkPos chunkPos) throws IOException {
-		long l = ChunkPos.toLong(chunkPos.method_17885(), chunkPos.method_17886());
-		RegionFile regionFile = this.field_17657.getAndMoveToFirst(l);
+		long l = ChunkPos.toLong(chunkPos.getRegionX(), chunkPos.getRegionZ());
+		RegionFile regionFile = this.cachedRegionFiles.getAndMoveToFirst(l);
 		if (regionFile != null) {
 			return regionFile;
 		} else {
-			if (this.field_17657.size() >= 256) {
-				this.field_17657.removeLast();
+			if (this.cachedRegionFiles.size() >= 256) {
+				this.cachedRegionFiles.removeLast();
 			}
 
-			File file = this.method_17912();
+			File file = this.getRegionDir();
 			if (!file.exists()) {
 				file.mkdirs();
 			}
 
-			File file2 = new File(file, "r." + chunkPos.method_17885() + "." + chunkPos.method_17886() + ".mca");
+			File file2 = new File(file, "r." + chunkPos.getRegionX() + "." + chunkPos.getRegionZ() + ".mca");
 			RegionFile regionFile2 = new RegionFile(file2);
-			this.field_17657.putAndMoveToFirst(l, regionFile2);
+			this.cachedRegionFiles.putAndMoveToFirst(l, regionFile2);
 			return regionFile2;
 		}
 	}
 
 	@Nullable
-	public CompoundTag method_17911(ChunkPos chunkPos) throws IOException {
+	public CompoundTag getChunkTag(ChunkPos chunkPos) throws IOException {
 		RegionFile regionFile = this.getRegionFile(chunkPos);
 		DataInputStream dataInputStream = regionFile.getChunkDataInputStream(chunkPos);
 		Throwable var5 = null;
@@ -68,7 +68,7 @@ public abstract class RegionFileCache implements AutoCloseable {
 		return (CompoundTag)var6;
 	}
 
-	protected void method_17910(ChunkPos chunkPos, CompoundTag compoundTag) throws IOException {
+	protected void setChunkTag(ChunkPos chunkPos, CompoundTag compoundTag) throws IOException {
 		RegionFile regionFile = this.getRegionFile(chunkPos);
 		DataOutputStream dataOutputStream = regionFile.getChunkDataOutputStream(chunkPos);
 		Throwable var5 = null;
@@ -94,10 +94,10 @@ public abstract class RegionFileCache implements AutoCloseable {
 	}
 
 	public void close() throws IOException {
-		for (RegionFile regionFile : this.field_17657.values()) {
+		for (RegionFile regionFile : this.cachedRegionFiles.values()) {
 			regionFile.close();
 		}
 	}
 
-	protected abstract File method_17912();
+	protected abstract File getRegionDir();
 }

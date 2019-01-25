@@ -23,7 +23,7 @@ public class ShieldItem extends Item {
 		super(settings);
 		this.addProperty(
 			new Identifier("blocking"),
-			(itemStack, world, livingEntity) -> livingEntity != null && livingEntity.method_6115() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
+			(itemStack, world, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
 		);
 		DispenserBlock.registerBehavior(this, ArmorItem.DISPENSER_BEHAVIOR);
 	}

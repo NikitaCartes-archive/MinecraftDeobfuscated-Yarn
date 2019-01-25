@@ -11,7 +11,6 @@ import net.minecraft.class_1374;
 import net.minecraft.class_1376;
 import net.minecraft.class_1387;
 import net.minecraft.class_1394;
-import net.minecraft.class_3321;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -45,6 +44,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.config.ServerConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
@@ -780,7 +780,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 			string = compoundTag.getString("OwnerUUID");
 		} else {
 			String string2 = compoundTag.getString("Owner");
-			string = class_3321.method_14546(this.getServer(), string2);
+			string = ServerConfigHandler.getPlayerUuidByName(this.getServer(), string2);
 		}
 
 		if (!string.isEmpty()) {

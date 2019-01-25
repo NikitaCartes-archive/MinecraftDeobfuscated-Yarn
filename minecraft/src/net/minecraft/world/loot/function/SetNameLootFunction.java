@@ -17,7 +17,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.Parameter;
+import net.minecraft.world.loot.context.LootContextParameter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,13 +34,13 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public Set<Parameter<?>> getRequiredParameters() {
-		return this.entityTarget != null ? ImmutableSet.of(this.entityTarget.getIdentifier()) : ImmutableSet.of();
+	public Set<LootContextParameter<?>> getRequiredParameters() {
+		return this.entityTarget != null ? ImmutableSet.of(this.entityTarget.method_315()) : ImmutableSet.of();
 	}
 
 	public static UnaryOperator<TextComponent> method_16190(LootContext lootContext, @Nullable LootContext.EntityTarget entityTarget) {
 		if (entityTarget != null) {
-			Entity entity = lootContext.get(entityTarget.getIdentifier());
+			Entity entity = lootContext.method_296(entityTarget.method_315());
 			if (entity != null) {
 				ServerCommandSource serverCommandSource = entity.getCommandSource().withLevel(2);
 				return textComponent -> {

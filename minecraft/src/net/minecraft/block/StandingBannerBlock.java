@@ -21,13 +21,13 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 
 public class StandingBannerBlock extends AbstractBannerBlock {
-	public static final IntegerProperty field_9924 = Properties.ROTATION_16;
+	public static final IntegerProperty ROTATION = Properties.ROTATION_16;
 	private static final Map<DyeColor, Block> field_9925 = Maps.<DyeColor, Block>newHashMap();
 	private static final VoxelShape field_9923 = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
 
 	public StandingBannerBlock(DyeColor dyeColor, Block.Settings settings) {
 		super(dyeColor, settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_9924, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(ROTATION, Integer.valueOf(0)));
 		field_9925.put(dyeColor, this);
 	}
 
@@ -44,7 +44,7 @@ public class StandingBannerBlock extends AbstractBannerBlock {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		return this.getDefaultState()
-			.with(field_9924, Integer.valueOf(MathHelper.floor((double)((180.0F + itemPlacementContext.getPlayerYaw()) * 16.0F / 360.0F) + 0.5) & 15));
+			.with(ROTATION, Integer.valueOf(MathHelper.floor((double)((180.0F + itemPlacementContext.getPlayerYaw()) * 16.0F / 360.0F) + 0.5) & 15));
 	}
 
 	@Override
@@ -58,17 +58,17 @@ public class StandingBannerBlock extends AbstractBannerBlock {
 
 	@Override
 	public BlockState rotate(BlockState blockState, Rotation rotation) {
-		return blockState.with(field_9924, Integer.valueOf(rotation.method_10502((Integer)blockState.get(field_9924), 16)));
+		return blockState.with(ROTATION, Integer.valueOf(rotation.method_10502((Integer)blockState.get(ROTATION), 16)));
 	}
 
 	@Override
 	public BlockState mirror(BlockState blockState, Mirror mirror) {
-		return blockState.with(field_9924, Integer.valueOf(mirror.method_10344((Integer)blockState.get(field_9924), 16)));
+		return blockState.with(ROTATION, Integer.valueOf(mirror.method_10344((Integer)blockState.get(ROTATION), 16)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_9924);
+		builder.with(ROTATION);
 	}
 
 	@Environment(EnvType.CLIENT)

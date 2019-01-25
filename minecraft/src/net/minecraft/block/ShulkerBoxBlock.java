@@ -40,7 +40,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.Parameters;
+import net.minecraft.world.loot.context.LootContextParameters;
 
 public class ShulkerBoxBlock extends BlockWithEntity {
 	public static final EnumProperty<Direction> FACING = FacingBlock.FACING;
@@ -131,7 +131,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 	@Override
 	public List<ItemStack> getDroppedStacks(BlockState blockState, LootContext.Builder builder) {
-		BlockEntity blockEntity = builder.getNullable(Parameters.field_1228);
+		BlockEntity blockEntity = builder.method_305(LootContextParameters.field_1228);
 		if (blockEntity instanceof ShulkerBoxBlockEntity) {
 			ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
 			builder = builder.putDrop(field_11495, (lootContext, consumer) -> {

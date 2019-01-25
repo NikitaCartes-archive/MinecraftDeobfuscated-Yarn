@@ -705,32 +705,39 @@ public abstract class Entity implements Nameable, CommandOutput {
 		Stream<VoxelShape> stream = VoxelShapes.compareShapes(voxelShape, VoxelShapes.cube(boundingBox.contract(1.0E-7)), BooleanBiFunction.AND)
 			? Stream.empty()
 			: Stream.of(voxelShape);
+		BoundingBox boundingBox2 = boundingBox.stretch(vec3d.x, vec3d.y, vec3d.z).expand(1.0E-7);
 		Stream<VoxelShape> stream2 = this.world
-			.getVisibleEntities(this, boundingBox.expand(0.25))
+			.getVisibleEntities(this, boundingBox2)
 			.stream()
 			.filter(entity -> !this.method_5794(entity))
 			.flatMap(entity -> Stream.of(entity.method_5827(), this.method_5708(entity)))
 			.filter(Objects::nonNull)
-			.filter(boundingBox::intersects)
+			.filter(boundingBox2::intersects)
 			.map(VoxelShapes::cube);
 		LoopingStream<VoxelShape> loopingStream = new LoopingStream<>(Stream.concat(stream2, stream));
 		Vec3d vec3d2 = vec3d.lengthSquared() == 0.0 ? vec3d : method_17833(vec3d, boundingBox, this.world, verticalEntityPosition, loopingStream);
-		boolean bl = this.onGround || vec3d.y != vec3d2.y && vec3d.y < 0.0;
-		if (this.stepHeight > 0.0F && bl && (vec3d.x != vec3d2.x || vec3d.z != vec3d2.z)) {
+		boolean bl = vec3d.x != vec3d2.x;
+		boolean bl2 = vec3d.y != vec3d2.y;
+		boolean bl3 = vec3d.z != vec3d2.z;
+		boolean bl4 = this.onGround || bl2 && vec3d.y < 0.0;
+		if (this.stepHeight > 0.0F && bl4 && (bl || bl3)) {
 			Vec3d vec3d3 = method_17833(
 				new Vec3d(0.0, (double)this.stepHeight, 0.0), boundingBox.stretch(vec3d.x, 0.0, vec3d.z), this.world, verticalEntityPosition, loopingStream
 			);
 			Vec3d vec3d4 = method_17833(new Vec3d(vec3d.x, 0.0, vec3d.z), boundingBox.offset(vec3d3), this.world, verticalEntityPosition, loopingStream).add(vec3d3);
 			Vec3d vec3d5 = method_17833(new Vec3d(vec3d.x, (double)this.stepHeight, vec3d.z), boundingBox, this.world, verticalEntityPosition, loopingStream);
-			double d = vec3d4.x * vec3d4.x + vec3d4.z * vec3d4.z;
-			double e = vec3d5.x * vec3d5.x + vec3d5.z * vec3d5.z;
-			Vec3d vec3d6 = d > e ? vec3d4 : vec3d5;
-			BoundingBox boundingBox2 = boundingBox.offset(vec3d6);
-			Vec3d vec3d7 = method_17833(new Vec3d(0.0, (double)(-this.stepHeight), 0.0), boundingBox2, this.world, verticalEntityPosition, loopingStream);
-			return vec3d6.add(vec3d7);
-		} else {
-			return vec3d2;
+			Vec3d vec3d6 = method_17996(vec3d4) > method_17996(vec3d5) ? vec3d4 : vec3d5;
+			BoundingBox boundingBox3 = boundingBox.offset(vec3d6);
+			if (method_17996(vec3d2) <= method_17996(vec3d6)) {
+				return vec3d6.add(method_17833(new Vec3d(0.0, -vec3d6.y + vec3d.y, 0.0), boundingBox3, this.world, verticalEntityPosition, loopingStream));
+			}
 		}
+
+		return vec3d2;
+	}
+
+	private static double method_17996(Vec3d vec3d) {
+		return vec3d.x * vec3d.x + vec3d.z * vec3d.z;
 	}
 
 	public static Vec3d method_17833(
@@ -746,14 +753,22 @@ public abstract class Entity implements Nameable, CommandOutput {
 			}
 		}
 
+		boolean bl = Math.abs(d) < Math.abs(f);
+		if (bl && f != 0.0) {
+			f = VoxelShapes.method_17945(Direction.Axis.Z, boundingBox, viewableWorld, f, verticalEntityPosition, loopingStream.getStream());
+			if (f != 0.0) {
+				boundingBox = boundingBox.offset(0.0, 0.0, f);
+			}
+		}
+
 		if (d != 0.0) {
 			d = VoxelShapes.method_17945(Direction.Axis.X, boundingBox, viewableWorld, d, verticalEntityPosition, loopingStream.getStream());
-			if (d != 0.0) {
+			if (!bl && d != 0.0) {
 				boundingBox = boundingBox.offset(d, 0.0, 0.0);
 			}
 		}
 
-		if (f != 0.0) {
+		if (!bl && f != 0.0) {
 			f = VoxelShapes.method_17945(Direction.Axis.Z, boundingBox, viewableWorld, f, verticalEntityPosition, loopingStream.getStream());
 		}
 

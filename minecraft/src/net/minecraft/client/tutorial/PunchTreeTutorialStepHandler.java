@@ -49,7 +49,7 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 			}
 
 			if ((this.ticks >= 600 || this.field_5635 > 3) && this.field_5637 == null) {
-				this.field_5637 = new TutorialToast(TutorialToast.class_373.field_2235, TITLE, DESCRIPTION, true);
+				this.field_5637 = new TutorialToast(TutorialToast.Type.field_2235, TITLE, DESCRIPTION, true);
 				this.manager.getClient().getToastManager().add(this.field_5637);
 			}
 		}
@@ -58,7 +58,7 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 	@Override
 	public void destroy() {
 		if (this.field_5637 != null) {
-			this.field_5637.method_1993();
+			this.field_5637.hide();
 			this.field_5637 = null;
 		}
 	}

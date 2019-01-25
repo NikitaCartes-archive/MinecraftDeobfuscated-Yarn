@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.config.BannedIpsList;
+import net.minecraft.server.config.BannedIpList;
 import net.minecraft.text.TranslatableTextComponent;
 
 public class PardonIpCommand {
@@ -38,11 +38,11 @@ public class PardonIpCommand {
 		if (!matcher.matches()) {
 			throw field_13671.create();
 		} else {
-			BannedIpsList bannedIpsList = serverCommandSource.getMinecraftServer().getPlayerManager().getIpBanList();
-			if (!bannedIpsList.method_14529(string)) {
+			BannedIpList bannedIpList = serverCommandSource.getMinecraftServer().getPlayerManager().getIpBanList();
+			if (!bannedIpList.method_14529(string)) {
 				throw field_13672.create();
 			} else {
-				bannedIpsList.remove(string);
+				bannedIpList.remove(string);
 				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.pardonip.success", string), true);
 				return 1;
 			}

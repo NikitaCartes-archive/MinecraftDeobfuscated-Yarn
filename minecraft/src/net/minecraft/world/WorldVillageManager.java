@@ -118,7 +118,7 @@ public class WorldVillageManager extends PersistentState {
 		for (int l = -16; l < 16; l++) {
 			for (int m = -4; m < 4; m++) {
 				for (int n = -16; n < 16; n++) {
-					mutable.set(blockPos).method_10100(l, m, n);
+					mutable.set(blockPos).setOffset(l, m, n);
 					BlockState blockState = this.world.getBlockState(mutable);
 					if (this.method_6442(blockState)) {
 						VillageDoor villageDoor = this.getRecentlySeenDoor(mutable);

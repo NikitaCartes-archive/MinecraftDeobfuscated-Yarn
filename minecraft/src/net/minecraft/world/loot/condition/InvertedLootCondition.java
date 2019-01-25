@@ -10,8 +10,8 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.world.loot.LootSupplier;
 import net.minecraft.world.loot.LootTableReporter;
 import net.minecraft.world.loot.context.LootContext;
+import net.minecraft.world.loot.context.LootContextParameter;
 import net.minecraft.world.loot.context.LootContextType;
-import net.minecraft.world.loot.context.Parameter;
 
 public class InvertedLootCondition implements LootCondition {
 	private final LootCondition term;
@@ -25,7 +25,7 @@ public class InvertedLootCondition implements LootCondition {
 	}
 
 	@Override
-	public Set<Parameter<?>> getRequiredParameters() {
+	public Set<LootContextParameter<?>> getRequiredParameters() {
 		return this.term.getRequiredParameters();
 	}
 

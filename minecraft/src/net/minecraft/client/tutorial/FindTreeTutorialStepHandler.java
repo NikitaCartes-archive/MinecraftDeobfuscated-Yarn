@@ -74,7 +74,7 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 			}
 
 			if (this.ticks >= 6000 && this.field_5633 == null) {
-				this.field_5633 = new TutorialToast(TutorialToast.class_373.field_2235, TITLE, DESCRIPTION, false);
+				this.field_5633 = new TutorialToast(TutorialToast.Type.field_2235, TITLE, DESCRIPTION, false);
 				this.manager.getClient().getToastManager().add(this.field_5633);
 			}
 		}
@@ -83,7 +83,7 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 	@Override
 	public void destroy() {
 		if (this.field_5633 != null) {
-			this.field_5633.method_1993();
+			this.field_5633.hide();
 			this.field_5633 = null;
 		}
 	}

@@ -10,7 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class EatGrassGoal extends Goal {
-	private static final Predicate<BlockState> field_6423 = BlockStatePredicate.forBlock(Blocks.field_10479);
+	private static final Predicate<BlockState> GRASS_PREDICATE = BlockStatePredicate.forBlock(Blocks.field_10479);
 	private final MobEntity owner;
 	private final World world;
 	private int timer;
@@ -27,7 +27,7 @@ public class EatGrassGoal extends Goal {
 			return false;
 		} else {
 			BlockPos blockPos = new BlockPos(this.owner.x, this.owner.y, this.owner.z);
-			return field_6423.test(this.world.getBlockState(blockPos)) ? true : this.world.getBlockState(blockPos.down()).getBlock() == Blocks.field_10219;
+			return GRASS_PREDICATE.test(this.world.getBlockState(blockPos)) ? true : this.world.getBlockState(blockPos.down()).getBlock() == Blocks.field_10219;
 		}
 	}
 
@@ -57,7 +57,7 @@ public class EatGrassGoal extends Goal {
 		this.timer = Math.max(0, this.timer - 1);
 		if (this.timer == 4) {
 			BlockPos blockPos = new BlockPos(this.owner.x, this.owner.y, this.owner.z);
-			if (field_6423.test(this.world.getBlockState(blockPos))) {
+			if (GRASS_PREDICATE.test(this.world.getBlockState(blockPos))) {
 				if (this.world.getGameRules().getBoolean("mobGriefing")) {
 					this.world.breakBlock(blockPos, false);
 				}

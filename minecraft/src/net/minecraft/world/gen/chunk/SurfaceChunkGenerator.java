@@ -5,12 +5,13 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import java.util.Random;
-import net.minecraft.class_3443;
-import net.minecraft.class_3785;
-import net.minecraft.class_3790;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.sortme.structures.StructureStart;
+import net.minecraft.structure.JigsawJunction;
+import net.minecraft.structure.PoolStructurePiece;
+import net.minecraft.structure.StructurePiece;
+import net.minecraft.structure.StructureStart;
+import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -29,7 +30,6 @@ import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
-import net.minecraft.world.gen.feature.structure.JigsawJunction;
 
 public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> extends ChunkGenerator<T> {
 	private static final float[] field_16649 = SystemUtil.consume(new float[13824], fs -> {
@@ -249,7 +249,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 	@Override
 	public void populateNoise(IWorld iWorld, Chunk chunk) {
 		int i = this.method_16398();
-		ObjectList<class_3790> objectList = new ObjectArrayList<>(10);
+		ObjectList<PoolStructurePiece> objectList = new ObjectArrayList<>(10);
 		ObjectList<JigsawJunction> objectList2 = new ObjectArrayList<>(32);
 		ChunkPos chunkPos = chunk.getPos();
 		int j = chunkPos.x;
@@ -267,15 +267,15 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 				Chunk chunk2 = iWorld.getChunk(chunkPos2.x, chunkPos2.z);
 				StructureStart structureStart = chunk2.getStructureStart(string);
 				if (structureStart != null && structureStart.hasChildren()) {
-					for (class_3443 lv : structureStart.method_14963()) {
-						if (lv.method_16654(chunkPos, 12) && lv instanceof class_3790) {
-							class_3790 lv2 = (class_3790)lv;
-							class_3785.Projection projection = lv2.method_16644().method_16624();
-							if (projection == class_3785.Projection.RIGID) {
-								objectList.add(lv2);
+					for (StructurePiece structurePiece : structureStart.getChildren()) {
+						if (structurePiece.method_16654(chunkPos, 12) && structurePiece instanceof PoolStructurePiece) {
+							PoolStructurePiece poolStructurePiece = (PoolStructurePiece)structurePiece;
+							StructurePool.Projection projection = poolStructurePiece.getPoolElement().getProjection();
+							if (projection == StructurePool.Projection.RIGID) {
+								objectList.add(poolStructurePiece);
 							}
 
-							for (JigsawJunction jigsawJunction : lv2.method_16645()) {
+							for (JigsawJunction jigsawJunction : poolStructurePiece.getJunctions()) {
 								int o = jigsawJunction.getSourceX();
 								int p = jigsawJunction.getSourceZ();
 								if (o > l - 12 && p > m - 12 && o < l + 15 + 12 && p < m + 15 + 12) {
@@ -300,7 +300,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 		Heightmap heightmap = protoChunk.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
 		Heightmap heightmap2 = protoChunk.getHeightmap(Heightmap.Type.WORLD_SURFACE_WG);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		ObjectListIterator<class_3790> objectListIterator = objectList.iterator();
+		ObjectListIterator<PoolStructurePiece> objectListIterator = objectList.iterator();
 		ObjectListIterator<JigsawJunction> objectListIterator2 = objectList2.iterator();
 
 		for (int r = 0; r < this.noiseSizeX; r++) {
@@ -354,10 +354,10 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 								ar = ar / 2.0 - ar * ar * ar / 24.0;
 
 								while (objectListIterator.hasNext()) {
-									class_3790 lv3 = (class_3790)objectListIterator.next();
-									MutableIntBoundingBox mutableIntBoundingBox = lv3.method_14935();
+									PoolStructurePiece poolStructurePiece2 = (PoolStructurePiece)objectListIterator.next();
+									MutableIntBoundingBox mutableIntBoundingBox = poolStructurePiece2.getBoundingBox();
 									int as = Math.max(0, Math.max(mutableIntBoundingBox.minX - ah, ah - mutableIntBoundingBox.maxX));
-									int at = y - (mutableIntBoundingBox.minY + lv3.method_16646());
+									int at = y - (mutableIntBoundingBox.minY + poolStructurePiece2.getGroundLevelDelta());
 									int au = Math.max(0, Math.max(mutableIntBoundingBox.minZ - an, an - mutableIntBoundingBox.maxZ));
 									ar += method_16572(as, at, au) * 0.8;
 								}

@@ -145,7 +145,7 @@ public class AdvancementWidget extends Drawable {
 			GlStateManager.enableBlend();
 			this.drawTexturedRect(i + this.xPos + 3, j + this.yPos, this.display.getFrame().texV(), 128 + lv.method_2320() * 26, 26, 26);
 			GuiLighting.enableForItems();
-			this.client.getItemRenderer().renderItemInGui(null, this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
+			this.client.getItemRenderer().renderGuiItem(null, this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
 		}
 
 		for (AdvancementWidget advancementWidget : this.children) {
@@ -239,7 +239,7 @@ public class AdvancementWidget extends Drawable {
 		}
 
 		GuiLighting.enableForItems();
-		this.client.getItemRenderer().renderItemInGui(null, this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
+		this.client.getItemRenderer().renderGuiItem(null, this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
 	}
 
 	protected void method_2324(int i, int j, int k, int l, int m, int n, int o, int p, int q) {

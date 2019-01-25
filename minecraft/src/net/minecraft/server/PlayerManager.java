@@ -47,11 +47,11 @@ import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardTeam;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.config.BannedIpEntry;
-import net.minecraft.server.config.BannedIpsList;
+import net.minecraft.server.config.BannedIpList;
 import net.minecraft.server.config.BannedPlayerEntry;
-import net.minecraft.server.config.BannedProfilesList;
+import net.minecraft.server.config.BannedPlayerList;
 import net.minecraft.server.config.OperatorEntry;
-import net.minecraft.server.config.OpsList;
+import net.minecraft.server.config.OperatorList;
 import net.minecraft.server.config.WhitelistList;
 import net.minecraft.server.network.DemoServerPlayerInteractionManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -81,16 +81,16 @@ import org.apache.logging.log4j.Logger;
 public abstract class PlayerManager {
 	public static final File BANNED_PLAYERS_FILE = new File("banned-players.json");
 	public static final File BANNED_IPS_FILE = new File("banned-ips.json");
-	public static final File OPS_FILE = new File("ops.json");
+	public static final File OPERATORS_FILE = new File("ops.json");
 	public static final File WHITELIST_FILE = new File("whitelist.json");
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
 	private final MinecraftServer server;
 	private final List<ServerPlayerEntity> players = Lists.<ServerPlayerEntity>newArrayList();
 	private final Map<UUID, ServerPlayerEntity> playerMap = Maps.<UUID, ServerPlayerEntity>newHashMap();
-	private final BannedProfilesList bannedProfiles = new BannedProfilesList(BANNED_PLAYERS_FILE);
-	private final BannedIpsList bannedIps = new BannedIpsList(BANNED_IPS_FILE);
-	private final OpsList ops = new OpsList(OPS_FILE);
+	private final BannedPlayerList bannedProfiles = new BannedPlayerList(BANNED_PLAYERS_FILE);
+	private final BannedIpList bannedIps = new BannedIpList(BANNED_IPS_FILE);
+	private final OperatorList ops = new OperatorList(OPERATORS_FILE);
 	private final WhitelistList whitelist = new WhitelistList(WHITELIST_FILE);
 	private final Map<UUID, ServerStatHandler> statisticsMap = Maps.<UUID, ServerStatHandler>newHashMap();
 	private final Map<UUID, PlayerAdvancementTracker> advancementManagerMap = Maps.<UUID, PlayerAdvancementTracker>newHashMap();
@@ -647,11 +647,11 @@ public abstract class PlayerManager {
 		return strings;
 	}
 
-	public BannedProfilesList getUserBanList() {
+	public BannedPlayerList getUserBanList() {
 		return this.bannedProfiles;
 	}
 
-	public BannedIpsList getIpBanList() {
+	public BannedIpList getIpBanList() {
 		return this.bannedIps;
 	}
 
@@ -739,7 +739,7 @@ public abstract class PlayerManager {
 		return this.whitelist.getNames();
 	}
 
-	public OpsList getOpList() {
+	public OperatorList getOpList() {
 		return this.ops;
 	}
 

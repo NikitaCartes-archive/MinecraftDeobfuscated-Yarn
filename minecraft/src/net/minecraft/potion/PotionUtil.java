@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3545;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffect;
@@ -22,6 +21,7 @@ import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormat;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
 
 public class PotionUtil {
@@ -150,7 +150,7 @@ public class PotionUtil {
 	@Environment(EnvType.CLIENT)
 	public static void buildTooltip(ItemStack itemStack, List<TextComponent> list, float f) {
 		List<StatusEffectInstance> list2 = getPotionEffects(itemStack);
-		List<class_3545<String, EntityAttributeModifier>> list3 = Lists.<class_3545<String, EntityAttributeModifier>>newArrayList();
+		List<Pair<String, EntityAttributeModifier>> list3 = Lists.<Pair<String, EntityAttributeModifier>>newArrayList();
 		if (list2.isEmpty()) {
 			list.add(new TranslatableTextComponent("effect.none").applyFormat(TextFormat.GRAY));
 		} else {
@@ -166,7 +166,7 @@ public class PotionUtil {
 							statusEffect.method_5563(statusEffectInstance.getAmplifier(), entityAttributeModifier),
 							entityAttributeModifier.getOperation()
 						);
-						list3.add(new class_3545<>(((EntityAttribute)entry.getKey()).getId(), entityAttributeModifier2));
+						list3.add(new Pair<>(((EntityAttribute)entry.getKey()).getId(), entityAttributeModifier2));
 					}
 				}
 
@@ -186,8 +186,8 @@ public class PotionUtil {
 			list.add(new StringTextComponent(""));
 			list.add(new TranslatableTextComponent("potion.whenDrank").applyFormat(TextFormat.DARK_PURPLE));
 
-			for (class_3545<String, EntityAttributeModifier> lv : list3) {
-				EntityAttributeModifier entityAttributeModifier3 = lv.method_15441();
+			for (Pair<String, EntityAttributeModifier> pair : list3) {
+				EntityAttributeModifier entityAttributeModifier3 = pair.getRight();
 				double d = entityAttributeModifier3.getAmount();
 				double e;
 				if (entityAttributeModifier3.getOperation() != EntityAttributeModifier.Operation.field_6330
@@ -202,7 +202,7 @@ public class PotionUtil {
 						new TranslatableTextComponent(
 								"attribute.modifier.plus." + entityAttributeModifier3.getOperation().getId(),
 								ItemStack.MODIFIER_FORMAT.format(e),
-								new TranslatableTextComponent("attribute.name." + lv.method_15442())
+								new TranslatableTextComponent("attribute.name." + pair.getLeft())
 							)
 							.applyFormat(TextFormat.BLUE)
 					);
@@ -212,7 +212,7 @@ public class PotionUtil {
 						new TranslatableTextComponent(
 								"attribute.modifier.take." + entityAttributeModifier3.getOperation().getId(),
 								ItemStack.MODIFIER_FORMAT.format(e),
-								new TranslatableTextComponent("attribute.name." + lv.method_15442())
+								new TranslatableTextComponent("attribute.name." + pair.getLeft())
 							)
 							.applyFormat(TextFormat.RED)
 					);

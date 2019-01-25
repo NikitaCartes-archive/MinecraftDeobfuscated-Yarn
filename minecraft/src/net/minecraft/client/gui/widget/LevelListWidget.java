@@ -8,9 +8,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.menu.ErrorGui;
-import net.minecraft.client.gui.menu.LevelSelectEntryWidget;
-import net.minecraft.client.gui.menu.LevelSelectGui;
+import net.minecraft.client.gui.menu.ErrorScreen;
+import net.minecraft.client.gui.menu.LevelSelectScreen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelStorageException;
@@ -21,13 +20,13 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class LevelListWidget extends EntryListWidget<LevelSelectEntryWidget> {
 	private static final Logger field_3238 = LogManager.getLogger();
-	private final LevelSelectGui field_3237;
+	private final LevelSelectScreen field_3237;
 	private int field_3236 = -1;
 	@Nullable
 	private List<LevelSummary> levels;
 
 	public LevelListWidget(
-		LevelSelectGui levelSelectGui,
+		LevelSelectScreen levelSelectScreen,
 		MinecraftClient minecraftClient,
 		int i,
 		int j,
@@ -38,7 +37,7 @@ public class LevelListWidget extends EntryListWidget<LevelSelectEntryWidget> {
 		@Nullable LevelListWidget levelListWidget
 	) {
 		super(minecraftClient, i, j, k, l, m);
-		this.field_3237 = levelSelectGui;
+		this.field_3237 = levelSelectScreen;
 		if (levelListWidget != null) {
 			this.levels = levelListWidget.levels;
 		}
@@ -54,7 +53,7 @@ public class LevelListWidget extends EntryListWidget<LevelSelectEntryWidget> {
 				this.levels = levelStorage.getAvailableLevels();
 			} catch (LevelStorageException var7) {
 				field_3238.error("Couldn't load level list", (Throwable)var7);
-				this.client.openGui(new ErrorGui(I18n.translate("selectWorld.unable_to_load"), var7.getMessage()));
+				this.client.openScreen(new ErrorScreen(I18n.translate("selectWorld.unable_to_load"), var7.getMessage()));
 				return;
 			}
 
@@ -95,7 +94,7 @@ public class LevelListWidget extends EntryListWidget<LevelSelectEntryWidget> {
 		return this.field_3236 >= 0 && this.field_3236 < this.getEntryCount() ? (LevelSelectEntryWidget)this.getEntries().get(this.field_3236) : null;
 	}
 
-	public LevelSelectGui method_2752() {
+	public LevelSelectScreen method_2752() {
 		return this.field_3237;
 	}
 }

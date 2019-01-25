@@ -8,7 +8,7 @@ import net.minecraft.world.loot.LootSupplier;
 import net.minecraft.world.loot.LootTableReporter;
 
 public interface ParameterConsumer {
-	default Set<Parameter<?>> getRequiredParameters() {
+	default Set<LootContextParameter<?>> getRequiredParameters() {
 		return ImmutableSet.of();
 	}
 

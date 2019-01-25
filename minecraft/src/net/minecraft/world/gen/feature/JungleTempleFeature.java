@@ -2,9 +2,9 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.datafixers.Dynamic;
 import java.util.function.Function;
-import net.minecraft.sortme.structures.JungleTempleGenerator;
-import net.minecraft.sortme.structures.StructureManager;
-import net.minecraft.sortme.structures.StructureStart;
+import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructureStart;
+import net.minecraft.structure.generator.JungleTempleGenerator;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -25,7 +25,7 @@ public class JungleTempleFeature extends AbstractTempleFeature<DefaultFeatureCon
 	}
 
 	@Override
-	public StructureFeature.class_3774 method_14016() {
+	public StructureFeature.StructureStartFactory getStructureStartFactory() {
 		return JungleTempleFeature.class_3077::new;
 	}
 
@@ -40,10 +40,10 @@ public class JungleTempleFeature extends AbstractTempleFeature<DefaultFeatureCon
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
-			JungleTempleGenerator jungleTempleGenerator = new JungleTempleGenerator(this.field_16715, i * 16, j * 16);
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+			JungleTempleGenerator jungleTempleGenerator = new JungleTempleGenerator(this.random, i * 16, j * 16);
 			this.children.add(jungleTempleGenerator);
-			this.method_14969();
+			this.setBoundingBoxFromChildren();
 		}
 	}
 }

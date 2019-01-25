@@ -50,7 +50,7 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 
 		if (this.field_5626 == -1 && this.field_5615 > 40) {
 			if (this.field_5622 != null) {
-				this.field_5622.method_1993();
+				this.field_5622.hide();
 				this.field_5622 = null;
 			}
 
@@ -59,7 +59,7 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 
 		if (this.field_5625 == -1 && this.field_5627 > 40) {
 			if (this.field_5623 != null) {
-				this.field_5623.method_1993();
+				this.field_5623.hide();
 				this.field_5623 = null;
 			}
 
@@ -84,10 +84,10 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 
 		if (this.ticks >= 100) {
 			if (this.field_5626 == -1 && this.field_5622 == null) {
-				this.field_5622 = new TutorialToast(TutorialToast.class_373.field_2230, MOVE_TITLE, MOVE_DESCRIPTION, true);
+				this.field_5622 = new TutorialToast(TutorialToast.Type.field_2230, MOVE_TITLE, MOVE_DESCRIPTION, true);
 				this.manager.getClient().getToastManager().add(this.field_5622);
 			} else if (this.field_5626 != -1 && this.ticks - this.field_5626 >= 20 && this.field_5625 == -1 && this.field_5623 == null) {
-				this.field_5623 = new TutorialToast(TutorialToast.class_373.field_2237, LOOK_TITLE, LOOK_DESCRIPTION, true);
+				this.field_5623 = new TutorialToast(TutorialToast.Type.field_2237, LOOK_TITLE, LOOK_DESCRIPTION, true);
 				this.manager.getClient().getToastManager().add(this.field_5623);
 			}
 		}
@@ -96,12 +96,12 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 	@Override
 	public void destroy() {
 		if (this.field_5622 != null) {
-			this.field_5622.method_1993();
+			this.field_5622.hide();
 			this.field_5622 = null;
 		}
 
 		if (this.field_5623 != null) {
-			this.field_5623.method_1993();
+			this.field_5623.hide();
 			this.field_5623 = null;
 		}
 	}

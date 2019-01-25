@@ -22,8 +22,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.loot.LootSupplier;
 import net.minecraft.world.loot.context.LootContext;
+import net.minecraft.world.loot.context.LootContextParameters;
 import net.minecraft.world.loot.context.LootContextTypes;
-import net.minecraft.world.loot.context.Parameters;
 
 public abstract class StorageMinecartEntity extends AbstractMinecartEntity implements Inventory, NameableContainerProvider {
 	private DefaultedList<ItemStack> inventory = DefaultedList.create(36, ItemStack.EMPTY);
@@ -180,9 +180,11 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 		if (this.lootTableId != null && this.world.getServer() != null) {
 			LootSupplier lootSupplier = this.world.getServer().getLootManager().getSupplier(this.lootTableId);
 			this.lootTableId = null;
-			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).put(Parameters.field_1232, new BlockPos(this)).setRandom(this.lootSeed);
+			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
+				.method_312(LootContextParameters.field_1232, new BlockPos(this))
+				.setRandom(this.lootSeed);
 			if (playerEntity != null) {
-				builder.setLuck(playerEntity.getLuck()).put(Parameters.field_1226, playerEntity);
+				builder.setLuck(playerEntity.getLuck()).method_312(LootContextParameters.field_1226, playerEntity);
 			}
 
 			lootSupplier.supplyInventory(this, builder.build(LootContextTypes.CHEST));

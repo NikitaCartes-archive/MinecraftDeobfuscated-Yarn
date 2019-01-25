@@ -127,7 +127,7 @@ public class ForceLoadCommand {
 		DimensionType dimensionType = serverCommandSource.getWorld().getDimension().getType();
 		ServerWorld serverWorld = serverCommandSource.getMinecraftServer().getWorld(dimensionType);
 		LongSet longSet = serverWorld.method_17984();
-		longSet.forEach(l -> serverWorld.method_17988(ChunkPos.longX(l), ChunkPos.longZ(l), false));
+		longSet.forEach(l -> serverWorld.method_17988(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), false));
 		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.forceload.removed.all", dimensionType), true);
 		return 0;
 	}

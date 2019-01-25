@@ -17,7 +17,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.menu.WorkingGui;
+import net.minecraft.client.gui.menu.WorkingScreen;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.resource.DefaultResourcePack;
@@ -111,22 +111,23 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 			}
 
 			this.deleteOldServerPack();
-			WorkingGui workingGui = new WorkingGui();
+			WorkingScreen workingScreen = new WorkingScreen();
 			Map<String, String> map = getDownloadHeaders();
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
-			minecraftClient.executeFuture(() -> minecraftClient.openGui(workingGui)).join();
-			this.downloadTask = NetworkUtils.download(file, string, map, 52428800, workingGui, minecraftClient.getNetworkProxy()).whenComplete((object, throwable) -> {
-				if (throwable == null) {
-					if (this.verifyFile(string4, file)) {
-						this.loadServerPack(file);
+			minecraftClient.executeFuture(() -> minecraftClient.openScreen(workingScreen)).join();
+			this.downloadTask = NetworkUtils.download(file, string, map, 52428800, workingScreen, minecraftClient.getNetworkProxy())
+				.whenComplete((object, throwable) -> {
+					if (throwable == null) {
+						if (this.verifyFile(string4, file)) {
+							this.loadServerPack(file);
+						} else {
+							LOGGER.warn("Deleting file {}", file);
+							FileUtils.deleteQuietly(file);
+						}
 					} else {
-						LOGGER.warn("Deleting file {}", file);
 						FileUtils.deleteQuietly(file);
 					}
-				} else {
-					FileUtils.deleteQuietly(file);
-				}
-			});
+				});
 			return this.downloadTask;
 		} finally {
 			this.lock.unlock();

@@ -21,14 +21,14 @@ public class RecipeToast implements Toast {
 	}
 
 	@Override
-	public Toast.class_369 draw(ToastManager toastManager, long l) {
+	public Toast.Visibility draw(ToastManager toastManager, long l) {
 		if (this.field_2203) {
 			this.field_2204 = l;
 			this.field_2203 = false;
 		}
 
 		if (this.recipes.isEmpty()) {
-			return Toast.class_369.field_2209;
+			return Toast.Visibility.field_2209;
 		} else {
 			toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
 			GlStateManager.color3f(1.0F, 1.0F, 1.0F);
@@ -40,10 +40,10 @@ public class RecipeToast implements Toast {
 			ItemStack itemStack = recipe.getRecipeKindIcon();
 			GlStateManager.pushMatrix();
 			GlStateManager.scalef(0.6F, 0.6F, 1.0F);
-			toastManager.getGame().getItemRenderer().renderItemInGui(null, itemStack, 3, 3);
+			toastManager.getGame().getItemRenderer().renderGuiItem(null, itemStack, 3, 3);
 			GlStateManager.popMatrix();
-			toastManager.getGame().getItemRenderer().renderItemInGui(null, recipe.getOutput(), 8, 8);
-			return l - this.field_2204 >= 5000L ? Toast.class_369.field_2209 : Toast.class_369.field_2210;
+			toastManager.getGame().getItemRenderer().renderGuiItem(null, recipe.getOutput(), 8, 8);
+			return l - this.field_2204 >= 5000L ? Toast.Visibility.field_2209 : Toast.Visibility.field_2210;
 		}
 	}
 

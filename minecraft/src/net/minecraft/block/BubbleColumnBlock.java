@@ -25,18 +25,18 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class BubbleColumnBlock extends Block implements FluidDrainable {
-	public static final BooleanProperty field_10680 = Properties.DRAG;
+	public static final BooleanProperty DRAG = Properties.DRAG;
 
 	public BubbleColumnBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_10680, Boolean.valueOf(true)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(DRAG, Boolean.valueOf(true)));
 	}
 
 	@Override
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
 		BlockState blockState2 = world.getBlockState(blockPos.up());
 		if (blockState2.isAir()) {
-			entity.method_5700((Boolean)blockState.get(field_10680));
+			entity.method_5700((Boolean)blockState.get(DRAG));
 			if (!world.isClient) {
 				ServerWorld serverWorld = (ServerWorld)world;
 
@@ -66,7 +66,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 				}
 			}
 		} else {
-			entity.method_5764((Boolean)blockState.get(field_10680));
+			entity.method_5764((Boolean)blockState.get(DRAG));
 		}
 	}
 
@@ -87,7 +87,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 
 	public static void method_9657(IWorld iWorld, BlockPos blockPos, boolean bl) {
 		if (method_9658(iWorld, blockPos)) {
-			iWorld.setBlockState(blockPos, Blocks.field_10422.getDefaultState().with(field_10680, Boolean.valueOf(bl)), 2);
+			iWorld.setBlockState(blockPos, Blocks.field_10422.getDefaultState().with(DRAG, Boolean.valueOf(bl)), 2);
 		}
 	}
 
@@ -99,7 +99,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 	private static boolean method_9656(BlockView blockView, BlockPos blockPos) {
 		BlockState blockState = blockView.getBlockState(blockPos);
 		Block block = blockState.getBlock();
-		return block == Blocks.field_10422 ? (Boolean)blockState.get(field_10680) : block != Blocks.field_10114;
+		return block == Blocks.field_10422 ? (Boolean)blockState.get(DRAG) : block != Blocks.field_10114;
 	}
 
 	@Override
@@ -113,7 +113,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 		double d = (double)blockPos.getX();
 		double e = (double)blockPos.getY();
 		double f = (double)blockPos.getZ();
-		if ((Boolean)blockState.get(field_10680)) {
+		if ((Boolean)blockState.get(DRAG)) {
 			world.addImportantParticle(ParticleTypes.field_11243, d + 0.5, e + 0.8, f, 0.0, 0.0, 0.0);
 			if (random.nextInt(200) == 0) {
 				world.playSound(d, e, f, SoundEvents.field_14650, SoundCategory.field_15245, 0.2F + random.nextFloat() * 0.2F, 0.9F + random.nextFloat() * 0.15F, false);
@@ -137,7 +137,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 			return Blocks.field_10382.getDefaultState();
 		} else {
 			if (direction == Direction.DOWN) {
-				iWorld.setBlockState(blockPos, Blocks.field_10422.getDefaultState().with(field_10680, Boolean.valueOf(method_9656(iWorld, blockPos2))), 2);
+				iWorld.setBlockState(blockPos, Blocks.field_10422.getDefaultState().with(DRAG, Boolean.valueOf(method_9656(iWorld, blockPos2))), 2);
 			} else if (direction == Direction.UP && blockState2.getBlock() != Blocks.field_10422 && method_9658(iWorld, blockPos2)) {
 				iWorld.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(iWorld));
 			}
@@ -170,7 +170,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_10680);
+		builder.with(DRAG);
 	}
 
 	@Override

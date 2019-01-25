@@ -90,10 +90,10 @@ public class GroupButtonWidget extends ToggleButtonWidget {
 		List<ItemStack> list = this.category.getIcons();
 		int i = this.toggled ? -2 : 0;
 		if (list.size() == 1) {
-			itemRenderer.renderItemAndGlowInGui((ItemStack)list.get(0), this.x + 9 + i, this.y + 5);
+			itemRenderer.renderGuiItem((ItemStack)list.get(0), this.x + 9 + i, this.y + 5);
 		} else if (list.size() == 2) {
-			itemRenderer.renderItemAndGlowInGui((ItemStack)list.get(0), this.x + 3 + i, this.y + 5);
-			itemRenderer.renderItemAndGlowInGui((ItemStack)list.get(1), this.x + 14 + i, this.y + 5);
+			itemRenderer.renderGuiItem((ItemStack)list.get(0), this.x + 3 + i, this.y + 5);
+			itemRenderer.renderGuiItem((ItemStack)list.get(1), this.x + 14 + i, this.y + 5);
 		}
 	}
 

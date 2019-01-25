@@ -45,36 +45,36 @@ public class ItemRenderer implements ResourceReloadListener {
 	public static final Identifier ENCHANTMENT_GLINT_TEX = new Identifier("textures/misc/enchanted_item_glint.png");
 	private static final Set<Item> WITHOUT_MODELS = Sets.<Item>newHashSet(Items.AIR);
 	public float zOffset;
-	private final ItemModels modelMap;
+	private final ItemModels models;
 	private final TextureManager textureManager;
 	private final ItemColorMap colorMap;
 
 	public ItemRenderer(TextureManager textureManager, BakedModelManager bakedModelManager, ItemColorMap itemColorMap) {
 		this.textureManager = textureManager;
-		this.modelMap = new ItemModels(bakedModelManager);
+		this.models = new ItemModels(bakedModelManager);
 
 		for (Item item : Registry.ITEM) {
 			if (!WITHOUT_MODELS.contains(item)) {
-				this.modelMap.putModel(item, new ModelIdentifier(Registry.ITEM.getId(item), "inventory"));
+				this.models.putModel(item, new ModelIdentifier(Registry.ITEM.getId(item), "inventory"));
 			}
 		}
 
 		this.colorMap = itemColorMap;
 	}
 
-	public ItemModels getModelMap() {
-		return this.modelMap;
+	public ItemModels getModels() {
+		return this.models;
 	}
 
 	private void renderItemModel(BakedModel bakedModel, ItemStack itemStack) {
-		this.renderItemModelColored(bakedModel, -1, itemStack);
+		this.renderModel(bakedModel, -1, itemStack);
 	}
 
-	private void renderModelColored(BakedModel bakedModel, int i) {
-		this.renderItemModelColored(bakedModel, i, ItemStack.EMPTY);
+	private void renderModelWithTint(BakedModel bakedModel, int i) {
+		this.renderModel(bakedModel, i, ItemStack.EMPTY);
 	}
 
-	private void renderItemModelColored(BakedModel bakedModel, int i, ItemStack itemStack) {
+	private void renderModel(BakedModel bakedModel, int i, ItemStack itemStack) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_UV_NORMAL);
@@ -83,11 +83,11 @@ public class ItemRenderer implements ResourceReloadListener {
 
 		for (Direction direction : Direction.values()) {
 			random.setSeed(42L);
-			this.renderModelColored(bufferBuilder, bakedModel.getQuads(null, direction, random), i, itemStack);
+			this.renderQuads(bufferBuilder, bakedModel.getQuads(null, direction, random), i, itemStack);
 		}
 
 		random.setSeed(42L);
-		this.renderModelColored(bufferBuilder, bakedModel.getQuads(null, null, random), i, itemStack);
+		this.renderQuads(bufferBuilder, bakedModel.getQuads(null, null, random), i, itemStack);
 		tessellator.draw();
 	}
 
@@ -101,8 +101,8 @@ public class ItemRenderer implements ResourceReloadListener {
 				ItemDynamicRenderer.INSTANCE.render(itemStack);
 			} else {
 				this.renderItemModel(bakedModel, itemStack);
-				if (itemStack.hasEnchantmentGlow()) {
-					method_4011(this.textureManager, () -> this.renderModelColored(bakedModel, -8372020), 8);
+				if (itemStack.hasEnchantmentGlint()) {
+					renderGlint(this.textureManager, () -> this.renderModelWithTint(bakedModel, -8372020), 8);
 				}
 			}
 
@@ -110,7 +110,7 @@ public class ItemRenderer implements ResourceReloadListener {
 		}
 	}
 
-	public static void method_4011(TextureManager textureManager, Runnable runnable, int i) {
+	public static void renderGlint(TextureManager textureManager, Runnable runnable, int i) {
 		GlStateManager.depthMask(false);
 		GlStateManager.depthFunc(514);
 		GlStateManager.disableLighting();
@@ -139,18 +139,18 @@ public class ItemRenderer implements ResourceReloadListener {
 		textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 	}
 
-	private void renderQuad(BufferBuilder bufferBuilder, BakedQuad bakedQuad) {
+	private void postNormalQuad(BufferBuilder bufferBuilder, BakedQuad bakedQuad) {
 		Vec3i vec3i = bakedQuad.getFace().getVector();
 		bufferBuilder.postNormal((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ());
 	}
 
-	private void renderQuadColored(BufferBuilder bufferBuilder, BakedQuad bakedQuad, int i) {
+	private void renderQuad(BufferBuilder bufferBuilder, BakedQuad bakedQuad, int i) {
 		bufferBuilder.putVertexData(bakedQuad.getVertexData());
 		bufferBuilder.setQuadColor(i);
-		this.renderQuad(bufferBuilder, bakedQuad);
+		this.postNormalQuad(bufferBuilder, bakedQuad);
 	}
 
-	private void renderModelColored(BufferBuilder bufferBuilder, List<BakedQuad> list, int i, ItemStack itemStack) {
+	private void renderQuads(BufferBuilder bufferBuilder, List<BakedQuad> list, int i, ItemStack itemStack) {
 		boolean bl = i == -1 && !itemStack.isEmpty();
 		int j = 0;
 
@@ -162,57 +162,57 @@ public class ItemRenderer implements ResourceReloadListener {
 				l |= -16777216;
 			}
 
-			this.renderQuadColored(bufferBuilder, bakedQuad, l);
+			this.renderQuad(bufferBuilder, bakedQuad, l);
 		}
 	}
 
 	public boolean hasDepthInGui(ItemStack itemStack) {
-		BakedModel bakedModel = this.modelMap.getModel(itemStack);
+		BakedModel bakedModel = this.models.getModel(itemStack);
 		return bakedModel == null ? false : bakedModel.hasDepthInGui();
 	}
 
-	public void renderItemWithTransformation(ItemStack itemStack, ModelTransformation.Type type) {
+	public void renderItem(ItemStack itemStack, ModelTransformation.Type type) {
 		if (!itemStack.isEmpty()) {
-			BakedModel bakedModel = this.method_4007(itemStack);
-			this.renderItemModel(itemStack, bakedModel, type, false);
+			BakedModel bakedModel = this.getModel(itemStack);
+			this.renderItem(itemStack, bakedModel, type, false);
 		}
 	}
 
-	public BakedModel method_4028(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
-		BakedModel bakedModel = this.modelMap.getModel(itemStack);
+	public BakedModel getModel(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
+		BakedModel bakedModel = this.models.getModel(itemStack);
 		Item item = itemStack.getItem();
-		return !item.hasProperties() ? bakedModel : this.method_4020(bakedModel, itemStack, world, livingEntity);
+		return !item.hasProperties() ? bakedModel : this.getOverriddenModel(bakedModel, itemStack, world, livingEntity);
 	}
 
-	public BakedModel method_4019(ItemStack itemStack, World world, LivingEntity livingEntity) {
+	public BakedModel getHeldItemModel(ItemStack itemStack, World world, LivingEntity livingEntity) {
 		Item item = itemStack.getItem();
 		BakedModel bakedModel;
 		if (item == Items.field_8547) {
-			bakedModel = this.modelMap.getModelManager().getModel(new ModelIdentifier("minecraft:trident_in_hand#inventory"));
+			bakedModel = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident_in_hand#inventory"));
 		} else {
-			bakedModel = this.modelMap.getModel(itemStack);
+			bakedModel = this.models.getModel(itemStack);
 		}
 
-		return !item.hasProperties() ? bakedModel : this.method_4020(bakedModel, itemStack, world, livingEntity);
+		return !item.hasProperties() ? bakedModel : this.getOverriddenModel(bakedModel, itemStack, world, livingEntity);
 	}
 
-	public BakedModel method_4007(ItemStack itemStack) {
-		return this.method_4028(itemStack, null, null);
+	public BakedModel getModel(ItemStack itemStack) {
+		return this.getModel(itemStack, null, null);
 	}
 
-	private BakedModel method_4020(BakedModel bakedModel, ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
+	private BakedModel getOverriddenModel(BakedModel bakedModel, ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
 		BakedModel bakedModel2 = bakedModel.getItemPropertyOverrides().apply(bakedModel, itemStack, world, livingEntity);
-		return bakedModel2 == null ? this.modelMap.getModelManager().getMissingModel() : bakedModel2;
+		return bakedModel2 == null ? this.models.getModelManager().getMissingModel() : bakedModel2;
 	}
 
-	public void renderItemAmountAndDamageInGUI(ItemStack itemStack, LivingEntity livingEntity, ModelTransformation.Type type, boolean bl) {
+	public void renderHeldItem(ItemStack itemStack, LivingEntity livingEntity, ModelTransformation.Type type, boolean bl) {
 		if (!itemStack.isEmpty() && livingEntity != null) {
-			BakedModel bakedModel = this.method_4019(itemStack, livingEntity.world, livingEntity);
-			this.renderItemModel(itemStack, bakedModel, type, bl);
+			BakedModel bakedModel = this.getHeldItemModel(itemStack, livingEntity.world, livingEntity);
+			this.renderItem(itemStack, bakedModel, type, bl);
 		}
 	}
 
-	protected void renderItemModel(ItemStack itemStack, BakedModel bakedModel, ModelTransformation.Type type, boolean bl) {
+	protected void renderItem(ItemStack itemStack, BakedModel bakedModel, ModelTransformation.Type type, boolean bl) {
 		if (!itemStack.isEmpty()) {
 			this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 			this.textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).pushFilter(false, false);
@@ -226,7 +226,7 @@ public class ItemRenderer implements ResourceReloadListener {
 			GlStateManager.pushMatrix();
 			ModelTransformation modelTransformation = bakedModel.getTransformation();
 			ModelTransformation.applyGl(modelTransformation.getTransformation(type), bl);
-			if (this.method_4030(modelTransformation.getTransformation(type))) {
+			if (this.areFacesFlippedBy(modelTransformation.getTransformation(type))) {
 				GlStateManager.cullFace(GlStateManager.FaceSides.field_5068);
 			}
 
@@ -240,15 +240,15 @@ public class ItemRenderer implements ResourceReloadListener {
 		}
 	}
 
-	private boolean method_4030(Transformation transformation) {
+	private boolean areFacesFlippedBy(Transformation transformation) {
 		return transformation.scale.x() < 0.0F ^ transformation.scale.y() < 0.0F ^ transformation.scale.z() < 0.0F;
 	}
 
-	public void renderItemWithPropertyOverrides(ItemStack itemStack, int i, int j) {
-		this.renderItem(itemStack, i, j, this.method_4007(itemStack));
+	public void renderGuiItemIcon(ItemStack itemStack, int i, int j) {
+		this.renderGuiItemModel(itemStack, i, j, this.getModel(itemStack));
 	}
 
-	protected void renderItem(ItemStack itemStack, int i, int j, BakedModel bakedModel) {
+	protected void renderGuiItemModel(ItemStack itemStack, int i, int j, BakedModel bakedModel) {
 		GlStateManager.pushMatrix();
 		this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 		this.textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).pushFilter(false, false);
@@ -258,7 +258,7 @@ public class ItemRenderer implements ResourceReloadListener {
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.renderItemModel(i, j, bakedModel.hasDepthInGui());
+		this.prepareGuiItemRender(i, j, bakedModel.hasDepthInGui());
 		bakedModel.getTransformation().applyGl(ModelTransformation.Type.GUI);
 		this.renderItemAndGlow(itemStack, bakedModel);
 		GlStateManager.disableAlphaTest();
@@ -269,7 +269,7 @@ public class ItemRenderer implements ResourceReloadListener {
 		this.textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).popFilter();
 	}
 
-	private void renderItemModel(int i, int j, boolean bl) {
+	private void prepareGuiItemRender(int i, int j, boolean bl) {
 		GlStateManager.translatef((float)i, (float)j, 100.0F + this.zOffset);
 		GlStateManager.translatef(8.0F, 8.0F, 0.0F);
 		GlStateManager.scalef(1.0F, -1.0F, 1.0F);
@@ -281,23 +281,23 @@ public class ItemRenderer implements ResourceReloadListener {
 		}
 	}
 
-	public void renderItemAndGlowInGui(ItemStack itemStack, int i, int j) {
-		this.renderItemInGui(MinecraftClient.getInstance().player, itemStack, i, j);
+	public void renderGuiItem(ItemStack itemStack, int i, int j) {
+		this.renderGuiItem(MinecraftClient.getInstance().player, itemStack, i, j);
 	}
 
-	public void renderItemInGui(@Nullable LivingEntity livingEntity, ItemStack itemStack, int i, int j) {
+	public void renderGuiItem(@Nullable LivingEntity livingEntity, ItemStack itemStack, int i, int j) {
 		if (!itemStack.isEmpty()) {
 			this.zOffset += 50.0F;
 
 			try {
-				this.renderItem(itemStack, i, j, this.method_4028(itemStack, null, livingEntity));
+				this.renderGuiItemModel(itemStack, i, j, this.getModel(itemStack, null, livingEntity));
 			} catch (Throwable var8) {
 				CrashReport crashReport = CrashReport.create(var8, "Rendering item");
 				CrashReportSection crashReportSection = crashReport.addElement("Item being rendered");
 				crashReportSection.add("Item Type", (ICrashCallable<String>)(() -> String.valueOf(itemStack.getItem())));
 				crashReportSection.add("Item Damage", (ICrashCallable<String>)(() -> String.valueOf(itemStack.getDamage())));
 				crashReportSection.add("Item NBT", (ICrashCallable<String>)(() -> String.valueOf(itemStack.getTag())));
-				crashReportSection.add("Item Foil", (ICrashCallable<String>)(() -> String.valueOf(itemStack.hasEnchantmentGlow())));
+				crashReportSection.add("Item Foil", (ICrashCallable<String>)(() -> String.valueOf(itemStack.hasEnchantmentGlint())));
 				throw new CrashException(crashReport);
 			}
 
@@ -305,11 +305,11 @@ public class ItemRenderer implements ResourceReloadListener {
 		}
 	}
 
-	public void renderItemOverlaysInGUI(FontRenderer fontRenderer, ItemStack itemStack, int i, int j) {
-		this.renderItemOverlaysInGUIWithText(fontRenderer, itemStack, i, j, null);
+	public void renderGuiItemOverlay(FontRenderer fontRenderer, ItemStack itemStack, int i, int j) {
+		this.renderGuiItemOverlay(fontRenderer, itemStack, i, j, null);
 	}
 
-	public void renderItemOverlaysInGUIWithText(FontRenderer fontRenderer, ItemStack itemStack, int i, int j, @Nullable String string) {
+	public void renderGuiItemOverlay(FontRenderer fontRenderer, ItemStack itemStack, int i, int j, @Nullable String string) {
 		if (!itemStack.isEmpty()) {
 			if (itemStack.getAmount() != 1 || string != null) {
 				String string2 = string == null ? String.valueOf(itemStack.getAmount()) : string;
@@ -335,8 +335,8 @@ public class ItemRenderer implements ResourceReloadListener {
 				float h = Math.max(0.0F, (g - f) / g);
 				int k = Math.round(13.0F - f * 13.0F / g);
 				int l = MathHelper.hsvToRgb(h / 3.0F, 1.0F, 1.0F);
-				this.renderQuad(bufferBuilder, i + 2, j + 13, 13, 2, 0, 0, 0, 255);
-				this.renderQuad(bufferBuilder, i + 2, j + 13, k, 1, l >> 16 & 0xFF, l >> 8 & 0xFF, l & 0xFF, 255);
+				this.renderGuiQuad(bufferBuilder, i + 2, j + 13, 13, 2, 0, 0, 0, 255);
+				this.renderGuiQuad(bufferBuilder, i + 2, j + 13, k, 1, l >> 16 & 0xFF, l >> 8 & 0xFF, l & 0xFF, 255);
 				GlStateManager.enableBlend();
 				GlStateManager.enableAlphaTest();
 				GlStateManager.enableTexture();
@@ -347,14 +347,14 @@ public class ItemRenderer implements ResourceReloadListener {
 			ClientPlayerEntity clientPlayerEntity = MinecraftClient.getInstance().player;
 			float m = clientPlayerEntity == null
 				? 0.0F
-				: clientPlayerEntity.getItemCooldownManager().method_7905(itemStack.getItem(), MinecraftClient.getInstance().getTickDelta());
+				: clientPlayerEntity.getItemCooldownManager().getCooldownProgress(itemStack.getItem(), MinecraftClient.getInstance().getTickDelta());
 			if (m > 0.0F) {
 				GlStateManager.disableLighting();
 				GlStateManager.disableDepthTest();
 				GlStateManager.disableTexture();
 				Tessellator tessellator2 = Tessellator.getInstance();
 				BufferBuilder bufferBuilder2 = tessellator2.getBufferBuilder();
-				this.renderQuad(bufferBuilder2, i, j + MathHelper.floor(16.0F * (1.0F - m)), 16, MathHelper.ceil(16.0F * m), 255, 255, 255, 127);
+				this.renderGuiQuad(bufferBuilder2, i, j + MathHelper.floor(16.0F * (1.0F - m)), 16, MathHelper.ceil(16.0F * m), 255, 255, 255, 127);
 				GlStateManager.enableTexture();
 				GlStateManager.enableLighting();
 				GlStateManager.enableDepthTest();
@@ -362,7 +362,7 @@ public class ItemRenderer implements ResourceReloadListener {
 		}
 	}
 
-	private void renderQuad(BufferBuilder bufferBuilder, int i, int j, int k, int l, int m, int n, int o, int p) {
+	private void renderGuiQuad(BufferBuilder bufferBuilder, int i, int j, int k, int l, int m, int n, int o, int p) {
 		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
 		bufferBuilder.vertex((double)(i + 0), (double)(j + 0), 0.0).color(m, n, o, p).next();
 		bufferBuilder.vertex((double)(i + 0), (double)(j + l), 0.0).color(m, n, o, p).next();
@@ -373,6 +373,6 @@ public class ItemRenderer implements ResourceReloadListener {
 
 	@Override
 	public void onResourceReload(ResourceManager resourceManager) {
-		this.modelMap.reloadModels();
+		this.models.reloadModels();
 	}
 }

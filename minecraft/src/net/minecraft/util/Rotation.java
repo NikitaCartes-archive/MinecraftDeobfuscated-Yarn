@@ -82,7 +82,7 @@ public enum Rotation {
 		}
 	}
 
-	public static Rotation method_16548(Random random) {
+	public static Rotation random(Random random) {
 		Rotation[] rotations = values();
 		return rotations[random.nextInt(rotations.length)];
 	}

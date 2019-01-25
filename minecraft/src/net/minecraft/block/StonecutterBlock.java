@@ -23,7 +23,7 @@ import net.minecraft.world.World;
 
 public class StonecutterBlock extends Block {
 	private static final TranslatableTextComponent field_17650 = new TranslatableTextComponent("container.stonecutter");
-	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 9.0, 16.0);
 
 	public StonecutterBlock(Block.Settings settings) {

@@ -50,7 +50,7 @@ public class Item implements ItemProvider {
 			? 1.0F
 			: 0.0F;
 	private static final ItemPropertyGetter GETTER_COOLDOWN = (itemStack, world, livingEntity) -> livingEntity instanceof PlayerEntity
-			? ((PlayerEntity)livingEntity).getItemCooldownManager().method_7905(itemStack.getItem(), 0.0F)
+			? ((PlayerEntity)livingEntity).getItemCooldownManager().getCooldownProgress(itemStack.getItem(), 0.0F)
 			: 0.0F;
 	private static final ItemPropertyGetter GETTER_CUSTOM_MODEL_DATA = (itemStack, world, livingEntity) -> itemStack.hasTag()
 			? (float)itemStack.getTag().getInt("CustomModelData")
@@ -204,7 +204,7 @@ public class Item implements ItemProvider {
 		return this.recipeRemainder != null;
 	}
 
-	public void onUpdate(ItemStack itemStack, World world, Entity entity, int i, boolean bl) {
+	public void onEntityTick(ItemStack itemStack, World world, Entity entity, int i, boolean bl) {
 	}
 
 	public void onCrafted(ItemStack itemStack, World world, PlayerEntity playerEntity) {
@@ -234,7 +234,7 @@ public class Item implements ItemProvider {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean hasEnchantmentGlow(ItemStack itemStack) {
+	public boolean hasEnchantmentGlint(ItemStack itemStack) {
 		return itemStack.hasEnchantments();
 	}
 

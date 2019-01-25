@@ -2,9 +2,9 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.datafixers.Dynamic;
 import java.util.function.Function;
-import net.minecraft.sortme.structures.ShipwreckGenerator;
-import net.minecraft.sortme.structures.StructureManager;
-import net.minecraft.sortme.structures.StructureStart;
+import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructureStart;
+import net.minecraft.structure.generator.ShipwreckGenerator;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
@@ -27,7 +27,7 @@ public class ShipwreckFeature extends AbstractTempleFeature<ShipwreckFeatureConf
 	}
 
 	@Override
-	public StructureFeature.class_3774 method_14016() {
+	public StructureFeature.StructureStartFactory getStructureStartFactory() {
 		return ShipwreckFeature.class_3171::new;
 	}
 
@@ -52,12 +52,12 @@ public class ShipwreckFeature extends AbstractTempleFeature<ShipwreckFeatureConf
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
 			ShipwreckFeatureConfig shipwreckFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.SHIPWRECK);
-			Rotation rotation = Rotation.values()[this.field_16715.nextInt(Rotation.values().length)];
+			Rotation rotation = Rotation.values()[this.random.nextInt(Rotation.values().length)];
 			BlockPos blockPos = new BlockPos(i * 16, 90, j * 16);
-			ShipwreckGenerator.method_14834(structureManager, blockPos, rotation, this.children, this.field_16715, shipwreckFeatureConfig);
-			this.method_14969();
+			ShipwreckGenerator.addParts(structureManager, blockPos, rotation, this.children, this.random, shipwreckFeatureConfig);
+			this.setBoundingBoxFromChildren();
 		}
 	}
 }

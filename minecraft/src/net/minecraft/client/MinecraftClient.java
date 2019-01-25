@@ -47,28 +47,28 @@ import net.minecraft.client.font.FontRenderer;
 import net.minecraft.client.font.FontRendererManager;
 import net.minecraft.client.gl.GlDebug;
 import net.minecraft.client.gl.GlFramebuffer;
-import net.minecraft.client.gui.CloseWorldGui;
-import net.minecraft.client.gui.ContainerGuiRegistry;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.CloseWorldScreen;
+import net.minecraft.client.gui.ContainerScreenRegistry;
 import net.minecraft.client.gui.GuiEventListener;
 import net.minecraft.client.gui.InputListener;
-import net.minecraft.client.gui.MainMenuGui;
-import net.minecraft.client.gui.SplashGui;
-import net.minecraft.client.gui.WorldGenerationProgressGui;
+import net.minecraft.client.gui.MainMenuScreen;
+import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.SplashScreen;
+import net.minecraft.client.gui.WorldGenerationProgressScreen;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.gui.ingame.ChatGui;
-import net.minecraft.client.gui.ingame.ChatSleepingGui;
-import net.minecraft.client.gui.ingame.CreativePlayerInventoryGui;
-import net.minecraft.client.gui.ingame.DeathGui;
-import net.minecraft.client.gui.ingame.PlayerInventoryGui;
-import net.minecraft.client.gui.menu.AdvancementsGui;
-import net.minecraft.client.gui.menu.EndCreditsGui;
-import net.minecraft.client.gui.menu.MultiplayerGui;
-import net.minecraft.client.gui.menu.OutOfMemoryGui;
-import net.minecraft.client.gui.menu.PauseMenuGui;
-import net.minecraft.client.gui.menu.ServerConnectingGui;
-import net.minecraft.client.gui.menu.WorkingGui;
+import net.minecraft.client.gui.ingame.ChatScreen;
+import net.minecraft.client.gui.ingame.CreativePlayerInventoryScreen;
+import net.minecraft.client.gui.ingame.DeathScreen;
+import net.minecraft.client.gui.ingame.PlayerInventoryScreen;
+import net.minecraft.client.gui.ingame.SleepingChatScreen;
+import net.minecraft.client.gui.menu.AdvancementsScreen;
+import net.minecraft.client.gui.menu.EndCreditsScreen;
+import net.minecraft.client.gui.menu.MultiplayerScreen;
+import net.minecraft.client.gui.menu.OutOfMemoryScreen;
+import net.minecraft.client.gui.menu.PauseMenuScreen;
+import net.minecraft.client.gui.menu.ServerConnectingScreen;
+import net.minecraft.client.gui.menu.WorkingScreen;
 import net.minecraft.client.input.KeyboardInput;
 import net.minecraft.client.item.TooltipOptions;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
@@ -242,7 +242,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 	private float pausedTickDelta;
 	public FontRenderer fontRenderer;
 	@Nullable
-	public Gui currentGui;
+	public Screen currentScreen;
 	public GameRenderer gameRenderer;
 	public DebugRenderer debugRenderer;
 	protected int attackCooldown;
@@ -369,7 +369,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 							this.render(true);
 						} catch (OutOfMemoryError var9) {
 							this.cleanUpAfterCrash();
-							this.openGui(new OutOfMemoryGui());
+							this.openScreen(new OutOfMemoryScreen());
 							System.gc();
 						}
 					}
@@ -438,7 +438,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 		this.textureManager = new TextureManager(this.resourceManager);
 		this.resourceManager.addListener(this.textureManager);
 		this.onResolutionChanged();
-		this.openGui(new SplashGui());
+		this.openScreen(new SplashScreen());
 		this.drawGuiWithoutMouse();
 		this.skinProvider = new PlayerSkinProvider(this.textureManager, new File(this.assetDirectory, "skins"), this.sessionService);
 		this.levelStorage = new LevelStorage(this.runDirectory.toPath().resolve("saves"), this.runDirectory.toPath().resolve("backups"), this.dataFixer);
@@ -492,9 +492,9 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 		this.particleManager = new ParticleManager(this.world, this.textureManager);
 		this.inGameHud = new InGameHud(this);
 		if (this.autoConnectServerIp != null) {
-			this.openGui(new ServerConnectingGui(new MainMenuGui(), this, this.autoConnectServerIp, this.autoConnectServerPort));
+			this.openScreen(new ServerConnectingScreen(new MainMenuScreen(), this, this.autoConnectServerIp, this.autoConnectServerPort));
 		} else {
-			this.openGui(new MainMenuGui());
+			this.openScreen(new MainMenuScreen());
 		}
 
 		this.debugRenderer = new DebugRenderer(this);
@@ -694,7 +694,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 			}
 		}
 
-		bl |= ContainerGuiRegistry.checkData();
+		bl |= ContainerScreenRegistry.checkData();
 		if (bl) {
 			throw new IllegalStateException("Your game data is foobar, fix the errors above!");
 		}
@@ -702,7 +702,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 
 	private void drawGuiWithoutMouse() {
 		this.window.method_4493(isSystemMac);
-		this.currentGui.draw(0, 0, 0.0F);
+		this.currentScreen.draw(0, 0, 0.0F);
 		this.updateDisplay(false);
 	}
 
@@ -734,30 +734,30 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 	@Nullable
 	@Override
 	public GuiEventListener getFocused() {
-		return this.currentGui;
+		return this.currentScreen;
 	}
 
-	public void openGui(@Nullable Gui gui) {
-		if (this.currentGui != null) {
-			this.currentGui.onClosed();
+	public void openScreen(@Nullable Screen screen) {
+		if (this.currentScreen != null) {
+			this.currentScreen.onClosed();
 		}
 
-		if (gui == null && this.world == null) {
-			gui = new MainMenuGui();
-		} else if (gui == null && this.player.getHealth() <= 0.0F) {
-			gui = new DeathGui(null);
+		if (screen == null && this.world == null) {
+			screen = new MainMenuScreen();
+		} else if (screen == null && this.player.getHealth() <= 0.0F) {
+			screen = new DeathScreen(null);
 		}
 
-		if (gui instanceof MainMenuGui || gui instanceof MultiplayerGui) {
+		if (screen instanceof MainMenuScreen || screen instanceof MultiplayerScreen) {
 			this.options.debugEnabled = false;
 			this.inGameHud.getHudChat().clear(true);
 		}
 
-		this.currentGui = gui;
-		if (gui != null) {
+		this.currentScreen = screen;
+		if (screen != null) {
 			this.mouse.unlockCursor();
 			KeyBinding.unpressAll();
-			gui.initialize(this, this.window.getScaledWidth(), this.window.getScaledHeight());
+			screen.initialize(this, this.window.getScaledWidth(), this.window.getScaledHeight());
 			this.skipGameRender = false;
 		} else {
 			this.soundLoader.resume();
@@ -778,8 +778,8 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 			} catch (Throwable var5) {
 			}
 
-			if (this.currentGui != null) {
-				this.currentGui.onClosed();
+			if (this.currentScreen != null) {
+				this.currentScreen.onClosed();
 			}
 
 			this.spriteAtlas.clear();
@@ -870,7 +870,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 		Thread.yield();
 		this.window.setPhase("Post render");
 		this.fpsCounter++;
-		boolean bl2 = this.isIntegratedServerRunning() && this.currentGui != null && this.currentGui.isPauseScreen() && !this.server.isRemote();
+		boolean bl2 = this.isIntegratedServerRunning() && this.currentScreen != null && this.currentScreen.isPauseScreen() && !this.server.isRemote();
 		if (this.isPaused != bl2) {
 			if (this.isPaused) {
 				this.pausedTickDelta = this.renderTickCounter.tickDelta;
@@ -926,8 +926,8 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 	public void onResolutionChanged() {
 		int i = this.window.calculateScaleFactor(this.options.guiScale, this.forcesUnicodeFont());
 		this.window.setScaleFactor((double)i);
-		if (this.currentGui != null) {
-			this.currentGui.onScaleChanged(this, this.window.getScaledWidth(), this.window.getScaledHeight());
+		if (this.currentScreen != null) {
+			this.currentScreen.onScaleChanged(this, this.window.getScaledWidth(), this.window.getScaledHeight());
 		}
 
 		GlFramebuffer glFramebuffer = this.getFramebuffer();
@@ -945,7 +945,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 	}
 
 	private int getFramerateLimit() {
-		return this.world == null && this.currentGui != null ? 60 : this.window.getFramerateLimit();
+		return this.world == null && this.currentScreen != null ? 60 : this.window.getFramerateLimit();
 	}
 
 	private boolean isFramerateLimited() {
@@ -965,7 +965,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 				this.server.stop(true);
 			}
 
-			this.method_1550(null, new CloseWorldGui(I18n.translate("menu.savingLevel")));
+			this.method_1550(null, new CloseWorldScreen(I18n.translate("menu.savingLevel")));
 		} catch (Throwable var2) {
 		}
 
@@ -1104,8 +1104,8 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 	}
 
 	public void openPauseMenu() {
-		if (this.currentGui == null) {
-			this.openGui(new PauseMenuGui());
+		if (this.currentScreen == null) {
+			this.openScreen(new PauseMenuScreen());
 			if (this.isIntegratedServerRunning() && !this.server.isRemote()) {
 				this.soundLoader.pause();
 			}
@@ -1117,7 +1117,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 			this.attackCooldown = 0;
 		}
 
-		if (this.attackCooldown <= 0 && !this.player.method_6115()) {
+		if (this.attackCooldown <= 0 && !this.player.isUsingItem()) {
 			if (bl && this.hitResult != null && this.hitResult.getType() == HitResult.Type.BLOCK) {
 				BlockHitResult blockHitResult = (BlockHitResult)this.hitResult;
 				BlockPos blockPos = blockHitResult.getBlockPos();
@@ -1244,29 +1244,29 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 			this.textureManager.tick();
 		}
 
-		if (this.currentGui == null && this.player != null) {
-			if (this.player.getHealth() <= 0.0F && !(this.currentGui instanceof DeathGui)) {
-				this.openGui(null);
+		if (this.currentScreen == null && this.player != null) {
+			if (this.player.getHealth() <= 0.0F && !(this.currentScreen instanceof DeathScreen)) {
+				this.openScreen(null);
 			} else if (this.player.isSleeping() && this.world != null) {
-				this.openGui(new ChatSleepingGui());
+				this.openScreen(new SleepingChatScreen());
 			}
-		} else if (this.currentGui != null && this.currentGui instanceof ChatSleepingGui && !this.player.isSleeping()) {
-			this.openGui(null);
+		} else if (this.currentScreen != null && this.currentScreen instanceof SleepingChatScreen && !this.player.isSleeping()) {
+			this.openScreen(null);
 		}
 
-		if (this.currentGui != null) {
+		if (this.currentScreen != null) {
 			this.attackCooldown = 10000;
 		}
 
-		if (this.currentGui != null) {
-			Gui.method_2217(() -> this.currentGui.update(), "Ticking screen", this.currentGui.getClass().getCanonicalName());
+		if (this.currentScreen != null) {
+			Screen.method_2217(() -> this.currentScreen.update(), "Ticking screen", this.currentScreen.getClass().getCanonicalName());
 		}
 
 		if (!this.options.debugEnabled) {
 			this.inGameHud.method_1745();
 		}
 
-		if (this.currentGui == null || this.currentGui.field_2558) {
+		if (this.currentScreen == null || this.currentScreen.field_2558) {
 			this.profiler.swap("GLFW events");
 			GLX.pollEvents();
 			this.method_1508();
@@ -1376,10 +1376,10 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 			if (this.options.keysHotbar[i].wasPressed()) {
 				if (this.player.isSpectator()) {
 					this.inGameHud.getSpectatorWidget().method_1977(i);
-				} else if (!this.player.isCreative() || this.currentGui != null || !bl2 && !bl) {
+				} else if (!this.player.isCreative() || this.currentScreen != null || !bl2 && !bl) {
 					this.player.inventory.selectedSlot = i;
 				} else {
-					CreativePlayerInventoryGui.method_2462(this, i, bl2, bl);
+					CreativePlayerInventoryScreen.method_2462(this, i, bl2, bl);
 				}
 			}
 		}
@@ -1389,12 +1389,12 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 				this.player.method_3132();
 			} else {
 				this.tutorialManager.onInventoryOpened();
-				this.openGui(new PlayerInventoryGui(this.player));
+				this.openScreen(new PlayerInventoryScreen(this.player));
 			}
 		}
 
 		while (this.options.keyAdvancements.wasPressed()) {
-			this.openGui(new AdvancementsGui(this.player.networkHandler.getAdvancementHandler()));
+			this.openScreen(new AdvancementsScreen(this.player.networkHandler.getAdvancementHandler()));
 		}
 
 		while (this.options.keySwapHands.wasPressed()) {
@@ -1405,22 +1405,22 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 
 		while (this.options.keyDrop.wasPressed()) {
 			if (!this.player.isSpectator()) {
-				this.player.dropSelectedItem(Gui.isControlPressed());
+				this.player.dropSelectedItem(Screen.isControlPressed());
 			}
 		}
 
 		boolean bl3 = this.options.chatVisibility != PlayerEntity.ChatVisibility.HIDDEN;
 		if (bl3) {
 			while (this.options.keyChat.wasPressed()) {
-				this.openGui(new ChatGui());
+				this.openScreen(new ChatScreen());
 			}
 
-			if (this.currentGui == null && this.options.keyCommand.wasPressed()) {
-				this.openGui(new ChatGui("/"));
+			if (this.currentScreen == null && this.options.keyCommand.wasPressed()) {
+				this.openScreen(new ChatScreen("/"));
 			}
 		}
 
-		if (this.player.method_6115()) {
+		if (this.player.isUsingItem()) {
 			if (!this.options.keyUse.isPressed()) {
 				this.interactionManager.method_2897(this.player);
 			}
@@ -1447,11 +1447,11 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 			}
 		}
 
-		if (this.options.keyUse.isPressed() && this.itemUseCooldown == 0 && !this.player.method_6115()) {
+		if (this.options.keyUse.isPressed() && this.itemUseCooldown == 0 && !this.player.isUsingItem()) {
 			this.doItemUse();
 		}
 
-		this.method_1590(this.currentGui == null && this.options.keyAttack.isPressed() && this.mouse.isCursorLocked());
+		this.method_1590(this.currentScreen == null && this.options.keyAttack.isPressed() && this.mouse.isCursorLocked());
 	}
 
 	public void startIntegratedServer(String string, String string2, @Nullable LevelInfo levelInfo) {
@@ -1500,11 +1500,11 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 			Thread.yield();
 		}
 
-		WorldGenerationProgressGui worldGenerationProgressGui = new WorldGenerationProgressGui((WorldGenerationProgressTracker)this.field_17405.get());
-		this.openGui(worldGenerationProgressGui);
+		WorldGenerationProgressScreen worldGenerationProgressScreen = new WorldGenerationProgressScreen((WorldGenerationProgressTracker)this.field_17405.get());
+		this.openScreen(worldGenerationProgressScreen);
 
 		while (!this.server.method_3820()) {
-			worldGenerationProgressGui.update();
+			worldGenerationProgressScreen.update();
 			this.render(false);
 
 			try {
@@ -1528,15 +1528,15 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 	}
 
 	public void method_1481(@Nullable ClientWorld clientWorld) {
-		WorkingGui workingGui = new WorkingGui();
+		WorkingScreen workingScreen = new WorkingScreen();
 		if (clientWorld != null) {
-			workingGui.method_15412(new TranslatableTextComponent("connect.joining"));
+			workingScreen.method_15412(new TranslatableTextComponent("connect.joining"));
 		}
 
-		this.method_1550(clientWorld, workingGui);
+		this.method_1550(clientWorld, workingScreen);
 	}
 
-	public void method_1550(@Nullable ClientWorld clientWorld, Gui gui) {
+	public void method_1550(@Nullable ClientWorld clientWorld, Screen screen) {
 		IntegratedServer integratedServer = this.server;
 		if (clientWorld == null) {
 			ClientPlayNetworkHandler clientPlayNetworkHandler = this.getNetworkHandler();
@@ -1555,7 +1555,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 		this.soundLoader.stopAll();
 		this.cameraEntity = null;
 		this.clientConnection = null;
-		this.openGui(gui);
+		this.openScreen(screen);
 		this.render(false);
 		if (clientWorld == null && this.world != null) {
 			if (integratedServer != null) {
@@ -1642,8 +1642,8 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 		this.player.setEntityId(i);
 		this.interactionManager.copyAbilities(this.player);
 		this.player.setReducedDebugInfo(clientPlayerEntity.getReducedDebugInfo());
-		if (this.currentGui instanceof DeathGui) {
-			this.openGui(null);
+		if (this.currentScreen instanceof DeathScreen) {
+			this.openScreen(null);
 		}
 	}
 
@@ -1687,7 +1687,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 					return;
 				}
 
-				if (bl && Gui.isControlPressed() && block.hasBlockEntity()) {
+				if (bl && Screen.isControlPressed() && block.hasBlockEntity()) {
 					blockEntity = this.world.getBlockEntity(blockPos);
 				}
 			} else {
@@ -1986,7 +1986,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 	}
 
 	public MusicTracker.MusicType getMusicType() {
-		if (this.currentGui instanceof EndCreditsGui) {
+		if (this.currentScreen instanceof EndCreditsScreen) {
 			return MusicTracker.MusicType.CREDITS;
 		} else if (this.player == null) {
 			return MusicTracker.MusicType.MENU;

@@ -44,23 +44,23 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.audio.GuardianAttackSoundInstance;
 import net.minecraft.client.audio.PositionedSoundInstance;
 import net.minecraft.client.audio.SoundInstance;
-import net.minecraft.client.gui.CommandBlockGui;
-import net.minecraft.client.gui.ContainerGuiRegistry;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.MainMenuGui;
+import net.minecraft.client.gui.CommandBlockScreen;
+import net.minecraft.client.gui.ContainerScreenRegistry;
+import net.minecraft.client.gui.MainMenuScreen;
 import net.minecraft.client.gui.MapRenderer;
-import net.minecraft.client.gui.WrittenBookGui;
-import net.minecraft.client.gui.container.HorseGui;
-import net.minecraft.client.gui.ingame.CreativePlayerInventoryGui;
-import net.minecraft.client.gui.ingame.DeathGui;
+import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.WrittenBookScreen;
+import net.minecraft.client.gui.container.HorseScreen;
+import net.minecraft.client.gui.ingame.CreativePlayerInventoryScreen;
+import net.minecraft.client.gui.ingame.DeathScreen;
 import net.minecraft.client.gui.ingame.RecipeBookProvider;
-import net.minecraft.client.gui.menu.DemoGui;
-import net.minecraft.client.gui.menu.DisconnectedGui;
-import net.minecraft.client.gui.menu.DownloadingTerrainGui;
-import net.minecraft.client.gui.menu.EndCreditsGui;
-import net.minecraft.client.gui.menu.MultiplayerGui;
-import net.minecraft.client.gui.menu.RealmsGui;
-import net.minecraft.client.gui.menu.YesNoGui;
+import net.minecraft.client.gui.menu.DemoScreen;
+import net.minecraft.client.gui.menu.DisconnectedScreen;
+import net.minecraft.client.gui.menu.DownloadingTerrainScreen;
+import net.minecraft.client.gui.menu.EndCreditsScreen;
+import net.minecraft.client.gui.menu.MultiplayerScreen;
+import net.minecraft.client.gui.menu.RealmsScreen;
+import net.minecraft.client.gui.menu.YesNoScreen;
 import net.minecraft.client.gui.recipebook.RecipeBookGui;
 import net.minecraft.client.network.packet.AdvancementUpdateClientPacket;
 import net.minecraft.client.network.packet.BlockActionClientPacket;
@@ -74,6 +74,7 @@ import net.minecraft.client.network.packet.ChunkDeltaUpdateClientPacket;
 import net.minecraft.client.network.packet.CombatEventClientPacket;
 import net.minecraft.client.network.packet.CommandSuggestionsClientPacket;
 import net.minecraft.client.network.packet.CommandTreeClientPacket;
+import net.minecraft.client.network.packet.ConfirmGuiActionClientPacket;
 import net.minecraft.client.network.packet.CooldownUpdateClientPacket;
 import net.minecraft.client.network.packet.CraftResponseClientPacket;
 import net.minecraft.client.network.packet.CustomPayloadClientPacket;
@@ -99,7 +100,6 @@ import net.minecraft.client.network.packet.ExperienceOrbSpawnClientPacket;
 import net.minecraft.client.network.packet.ExplosionClientPacket;
 import net.minecraft.client.network.packet.GameJoinClientPacket;
 import net.minecraft.client.network.packet.GameStateChangeClientPacket;
-import net.minecraft.client.network.packet.GuiActionConfirmClientPacket;
 import net.minecraft.client.network.packet.GuiCloseClientPacket;
 import net.minecraft.client.network.packet.GuiOpenClientPacket;
 import net.minecraft.client.network.packet.GuiSlotUpdateClientPacket;
@@ -278,7 +278,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final ClientConnection connection;
 	private final GameProfile profile;
-	private final Gui field_3701;
+	private final Screen field_3701;
 	private MinecraftClient client;
 	private ClientWorld world;
 	private boolean field_3698;
@@ -292,9 +292,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	private final RecipeManager recipeManager = new RecipeManager();
 	private final UUID field_16771 = UUID.randomUUID();
 
-	public ClientPlayNetworkHandler(MinecraftClient minecraftClient, Gui gui, ClientConnection clientConnection, GameProfile gameProfile) {
+	public ClientPlayNetworkHandler(MinecraftClient minecraftClient, Screen screen, ClientConnection clientConnection, GameProfile gameProfile) {
 		this.client = minecraftClient;
-		this.field_3701 = gui;
+		this.field_3701 = screen;
 		this.connection = clientConnection;
 		this.profile = gameProfile;
 		this.advancementHandler = new ClientAdvancementManager(minecraftClient);
@@ -327,7 +327,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.client.options.difficulty = gameJoinClientPacket.getDifficulty();
 		this.client.method_1481(this.world);
 		this.client.player.dimension = gameJoinClientPacket.getDimension();
-		this.client.openGui(new DownloadingTerrainGui());
+		this.client.openScreen(new DownloadingTerrainScreen());
 		this.client.player.setEntityId(gameJoinClientPacket.getEntityId());
 		this.client.player.setReducedDebugInfo(gameJoinClientPacket.hasReducedDebugInfo());
 		this.client.interactionManager.setGameMode(gameJoinClientPacket.getGameMode());
@@ -721,7 +721,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			this.client.player.prevY = this.client.player.y;
 			this.client.player.prevZ = this.client.player.z;
 			this.field_3698 = true;
-			this.client.openGui(null);
+			this.client.openScreen(null);
 		}
 	}
 
@@ -791,13 +791,13 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onConnectionLost(TextComponent textComponent) {
 		this.client.method_1481(null);
 		if (this.field_3701 != null) {
-			if (this.field_3701 instanceof RealmsGui) {
-				this.client.openGui(new DisconnectedRealmsScreen(((RealmsGui)this.field_3701).getRealmsScreen(), "disconnect.lost", textComponent).getProxy());
+			if (this.field_3701 instanceof RealmsScreen) {
+				this.client.openScreen(new DisconnectedRealmsScreen(((RealmsScreen)this.field_3701).getRealmsScreen(), "disconnect.lost", textComponent).getProxy());
 			} else {
-				this.client.openGui(new DisconnectedGui(this.field_3701, "disconnect.lost", textComponent));
+				this.client.openScreen(new DisconnectedScreen(this.field_3701, "disconnect.lost", textComponent));
 			}
 		} else {
-			this.client.openGui(new DisconnectedGui(new MultiplayerGui(new MainMenuGui()), "disconnect.lost", textComponent));
+			this.client.openScreen(new DisconnectedScreen(new MultiplayerScreen(new MainMenuScreen()), "disconnect.lost", textComponent));
 		}
 	}
 
@@ -1031,7 +1031,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			this.world.setScoreboard(scoreboard);
 			this.client.method_1481(this.world);
 			this.client.player.dimension = dimensionType;
-			this.client.openGui(new DownloadingTerrainGui());
+			this.client.openScreen(new DownloadingTerrainScreen());
 		}
 
 		this.client.method_1585(playerRespawnClientPacket.getDimension());
@@ -1066,14 +1066,14 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			BasicInventory basicInventory = new BasicInventory(guiOpenClientPacket.getSlotCount());
 			HorseContainer horseContainer = new HorseContainer(guiOpenClientPacket.getId(), clientPlayerEntity.inventory, basicInventory, horseBaseEntity);
 			clientPlayerEntity.container = horseContainer;
-			this.client.openGui(new HorseGui(horseContainer, clientPlayerEntity.inventory, horseBaseEntity));
+			this.client.openScreen(new HorseScreen(horseContainer, clientPlayerEntity.inventory, horseBaseEntity));
 		}
 	}
 
 	@Override
 	public void onOpenContainer(OpenContainerPacket openContainerPacket) {
 		NetworkThreadUtils.forceMainThread(openContainerPacket, this, this.client);
-		ContainerGuiRegistry.openGui(openContainerPacket.getContainerType(), this.client, openContainerPacket.getSyncId(), openContainerPacket.getName());
+		ContainerScreenRegistry.openScreen(openContainerPacket.getContainerType(), this.client, openContainerPacket.getSyncId(), openContainerPacket.getName());
 	}
 
 	@Override
@@ -1089,9 +1089,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			playerEntity.inventory.setInvStack(i, itemStack);
 		} else {
 			boolean bl = false;
-			if (this.client.currentGui instanceof CreativePlayerInventoryGui) {
-				CreativePlayerInventoryGui creativePlayerInventoryGui = (CreativePlayerInventoryGui)this.client.currentGui;
-				bl = creativePlayerInventoryGui.method_2469() != ItemGroup.INVENTORY.getId();
+			if (this.client.currentScreen instanceof CreativePlayerInventoryScreen) {
+				CreativePlayerInventoryScreen creativePlayerInventoryScreen = (CreativePlayerInventoryScreen)this.client.currentScreen;
+				bl = creativePlayerInventoryScreen.method_2469() != ItemGroup.INVENTORY.getId();
 			}
 
 			if (guiSlotUpdateClientPacket.getId() == 0 && guiSlotUpdateClientPacket.getSlot() >= 36 && i < 45) {
@@ -1110,18 +1110,18 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void onGuiActionConfirm(GuiActionConfirmClientPacket guiActionConfirmClientPacket) {
-		NetworkThreadUtils.forceMainThread(guiActionConfirmClientPacket, this, this.client);
+	public void onGuiActionConfirm(ConfirmGuiActionClientPacket confirmGuiActionClientPacket) {
+		NetworkThreadUtils.forceMainThread(confirmGuiActionClientPacket, this, this.client);
 		Container container = null;
 		PlayerEntity playerEntity = this.client.player;
-		if (guiActionConfirmClientPacket.getId() == 0) {
+		if (confirmGuiActionClientPacket.getId() == 0) {
 			container = playerEntity.containerPlayer;
-		} else if (guiActionConfirmClientPacket.getId() == playerEntity.container.syncId) {
+		} else if (confirmGuiActionClientPacket.getId() == playerEntity.container.syncId) {
 			container = playerEntity.container;
 		}
 
-		if (container != null && !guiActionConfirmClientPacket.wasAccepted()) {
-			this.sendPacket(new GuiActionConfirmServerPacket(guiActionConfirmClientPacket.getId(), guiActionConfirmClientPacket.getActionId(), true));
+		if (container != null && !confirmGuiActionClientPacket.wasAccepted()) {
+			this.sendPacket(new GuiActionConfirmServerPacket(confirmGuiActionClientPacket.getId(), confirmGuiActionClientPacket.getActionId(), true));
 		}
 	}
 
@@ -1171,8 +1171,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				blockEntity.fromTag(blockEntityUpdateClientPacket.getCompoundTag());
 			}
 
-			if (bl && this.client.currentGui instanceof CommandBlockGui) {
-				((CommandBlockGui)this.client.currentGui).method_2457();
+			if (bl && this.client.currentScreen instanceof CommandBlockScreen) {
+				((CommandBlockScreen)this.client.currentScreen).method_2457();
 			}
 		}
 	}
@@ -1246,17 +1246,17 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		} else if (i == 4) {
 			if (j == 0) {
 				this.client.player.networkHandler.sendPacket(new ClientStatusServerPacket(ClientStatusServerPacket.Mode.field_12774));
-				this.client.openGui(new DownloadingTerrainGui());
+				this.client.openScreen(new DownloadingTerrainScreen());
 			} else if (j == 1) {
 				this.client
-					.openGui(
-						new EndCreditsGui(true, () -> this.client.player.networkHandler.sendPacket(new ClientStatusServerPacket(ClientStatusServerPacket.Mode.field_12774)))
+					.openScreen(
+						new EndCreditsScreen(true, () -> this.client.player.networkHandler.sendPacket(new ClientStatusServerPacket(ClientStatusServerPacket.Mode.field_12774)))
 					);
 			}
 		} else if (i == 5) {
 			GameOptions gameOptions = this.client.options;
 			if (f == 0.0F) {
-				this.client.openGui(new DemoGui());
+				this.client.openScreen(new DemoScreen());
 			} else if (f == 101.0F) {
 				this.client
 					.inGameHud
@@ -1413,8 +1413,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			this.client.player.getStats().setStat(this.client.player, stat, i);
 		}
 
-		if (this.client.currentGui instanceof class_452) {
-			((class_452)this.client.currentGui).method_2300();
+		if (this.client.currentScreen instanceof class_452) {
+			((class_452)this.client.currentScreen).method_2300();
 		}
 	}
 
@@ -1453,8 +1453,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		}
 
 		clientRecipeBook.getOrderedResults().forEach(recipeResultCollection -> recipeResultCollection.initialize(clientRecipeBook));
-		if (this.client.currentGui instanceof RecipeBookProvider) {
-			((RecipeBookProvider)this.client.currentGui).refreshRecipeBook();
+		if (this.client.currentScreen instanceof RecipeBookProvider) {
+			((RecipeBookProvider)this.client.currentScreen).refreshRecipeBook();
 		}
 	}
 
@@ -1499,7 +1499,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		if (combatEventClientPacket.type == CombatEventClientPacket.Type.DEATH) {
 			Entity entity = this.world.getEntityById(combatEventClientPacket.entityId);
 			if (entity == this.client.player) {
-				this.client.openGui(new DeathGui(combatEventClientPacket.deathMessage));
+				this.client.openScreen(new DeathScreen(combatEventClientPacket.deathMessage));
 			}
 		}
 	}
@@ -1711,7 +1711,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				} else if (serverEntry != null && serverEntry.getResourcePack() != ServerEntry.ResourcePackState.PROMPT) {
 					this.sendResourcePackStatus(ResourcePackStatusServerPacket.Status.field_13018);
 				} else {
-					this.client.execute(() -> this.client.openGui(new YesNoGui((bl, i) -> {
+					this.client.execute(() -> this.client.openScreen(new YesNoScreen((bl, i) -> {
 							this.client = MinecraftClient.getInstance();
 							ServerEntry serverEntryx = this.client.getCurrentServerEntry();
 							if (bl) {
@@ -1730,7 +1730,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 							}
 
 							ServerList.updateServerListEntry(serverEntryx);
-							this.client.openGui(null);
+							this.client.openScreen(null);
 						}, I18n.translate("multiplayer.texturePrompt.line1"), I18n.translate("multiplayer.texturePrompt.line2"), 0)));
 				}
 			}
@@ -1803,7 +1803,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(openWrittenBookClientPacket, this, this.client);
 		ItemStack itemStack = this.client.player.getStackInHand(openWrittenBookClientPacket.getHand());
 		if (itemStack.getItem() == Items.field_8360) {
-			this.client.openGui(new WrittenBookGui(new WrittenBookGui.class_3933(itemStack)));
+			this.client.openScreen(new WrittenBookScreen(new WrittenBookScreen.class_3933(itemStack)));
 		}
 	}
 
@@ -2056,8 +2056,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		Container container = this.client.player.container;
 		if (container.syncId == craftResponseClientPacket.getSyncId() && container.method_7622(this.client.player)) {
 			this.recipeManager.get(craftResponseClientPacket.getRecipeId()).ifPresent(recipe -> {
-				if (this.client.currentGui instanceof RecipeBookProvider) {
-					RecipeBookGui recipeBookGui = ((RecipeBookProvider)this.client.currentGui).getRecipeBookGui();
+				if (this.client.currentScreen instanceof RecipeBookProvider) {
+					RecipeBookGui recipeBookGui = ((RecipeBookProvider)this.client.currentScreen).getRecipeBookGui();
 					recipeBookGui.showGhostRecipe(recipe, container.slotList);
 				}
 			});

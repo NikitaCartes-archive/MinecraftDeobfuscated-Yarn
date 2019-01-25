@@ -49,7 +49,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.server.network.EntityTracker;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sortme.structures.StructureManager;
+import net.minecraft.structure.StructureManager;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.TagManager;
 import net.minecraft.text.TranslatableTextComponent;
@@ -131,7 +131,7 @@ public class ServerWorld extends World {
 					dimension.createChunkGenerator(),
 					minecraftServer.getPlayerManager().getViewDistance(),
 					worldGenerationProgressListener,
-					() -> minecraftServer.getWorld(DimensionType.field_13072).method_17983()
+					() -> minecraftServer.getWorld(DimensionType.field_13072).getDimensionalPersistentStateManager()
 				),
 			profiler,
 			false
@@ -143,11 +143,11 @@ public class ServerWorld extends World {
 		this.updateAmbientDarkness();
 		this.initWeatherGradients();
 		this.getWorldBorder().setMaxWorldBorderRadius(minecraftServer.getMaxWorldBorderRadius());
-		this.raidManager = this.method_17983().method_17924(() -> new RaidManager(this), RaidManager.nameFor(this.dimension));
+		this.raidManager = this.getDimensionalPersistentStateManager().method_17924(() -> new RaidManager(this), RaidManager.nameFor(this.dimension));
 		DimensionalPersistentStateManager dimensionalPersistentStateManager = (this.dimension.getType() == DimensionType.field_13072
 				? this
 				: this.getServer().getWorld(DimensionType.field_13072))
-			.method_17983();
+			.getDimensionalPersistentStateManager();
 		this.villageManager = dimensionalPersistentStateManager.method_17924(() -> new WorldVillageManager(this), WorldVillageManager.getBaseTag(this.dimension));
 		this.villageManager.method_16471();
 		this.registerListener(new ServerWorldListener(minecraftServer, this));
@@ -412,7 +412,7 @@ public class ServerWorld extends World {
 				}
 			}
 
-			this.properties.setSpawnPos(chunkPos.method_8323().add(8, this.chunkManager.getChunkGenerator().getSpawnHeight(), 8));
+			this.properties.setSpawnPos(chunkPos.getCenterBlockPos().add(8, this.chunkManager.getChunkGenerator().getSpawnHeight(), 8));
 			int i = 0;
 			int j = 0;
 			int k = 0;
@@ -483,7 +483,7 @@ public class ServerWorld extends World {
 	protected void saveLevel() throws SessionLockException {
 		this.checkSessionLock();
 		this.dimension.saveWorldData();
-		this.getChunkManager().method_17981().save();
+		this.getChunkManager().getDimensionalPersistentStateManager().save();
 	}
 
 	@Override
@@ -770,24 +770,28 @@ public class ServerWorld extends World {
 		return this.field_17709;
 	}
 
-	public DimensionalPersistentStateManager method_17983() {
-		return this.getChunkManager().method_17981();
+	public DimensionalPersistentStateManager getDimensionalPersistentStateManager() {
+		return this.getChunkManager().getDimensionalPersistentStateManager();
 	}
 
 	@Nullable
 	@Override
 	public MapState method_17891(String string) {
-		return this.getServer().getWorld(DimensionType.field_13072).method_17983().get(() -> new MapState(string), string);
+		return this.getServer().getWorld(DimensionType.field_13072).getDimensionalPersistentStateManager().get(() -> new MapState(string), string);
 	}
 
 	@Override
 	public void method_17890(MapState mapState) {
-		this.getServer().getWorld(DimensionType.field_13072).method_17983().set(mapState);
+		this.getServer().getWorld(DimensionType.field_13072).getDimensionalPersistentStateManager().set(mapState);
 	}
 
 	@Override
 	public int method_17889() {
-		return this.getServer().getWorld(DimensionType.field_13072).method_17983().<class_3978>method_17924(class_3978::new, "idcounts").method_17920();
+		return this.getServer()
+			.getWorld(DimensionType.field_13072)
+			.getDimensionalPersistentStateManager()
+			.<class_3978>method_17924(class_3978::new, "idcounts")
+			.method_17920();
 	}
 
 	@Override
@@ -799,12 +803,12 @@ public class ServerWorld extends World {
 	}
 
 	public LongSet method_17984() {
-		ForcedChunkState forcedChunkState = this.method_17983().get(ForcedChunkState::new, "chunks");
+		ForcedChunkState forcedChunkState = this.getDimensionalPersistentStateManager().get(ForcedChunkState::new, "chunks");
 		return (LongSet)(forcedChunkState != null ? LongSets.unmodifiable(forcedChunkState.getChunks()) : LongSets.EMPTY_SET);
 	}
 
 	public boolean method_17988(int i, int j, boolean bl) {
-		ForcedChunkState forcedChunkState = this.method_17983().method_17924(ForcedChunkState::new, "chunks");
+		ForcedChunkState forcedChunkState = this.getDimensionalPersistentStateManager().method_17924(ForcedChunkState::new, "chunks");
 		ChunkPos chunkPos = new ChunkPos(i, j);
 		long l = chunkPos.toLong();
 		boolean bl2;

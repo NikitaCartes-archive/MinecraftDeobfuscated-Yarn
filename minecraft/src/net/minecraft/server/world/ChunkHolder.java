@@ -223,7 +223,7 @@ public class ChunkHolder {
 		this.playersWatchingChunkProvider.getPlayersWatchingChunk(this.pos, bl).forEach(serverPlayerEntity -> serverPlayerEntity.networkHandler.sendPacket(packet));
 	}
 
-	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getChunk(ChunkStatus chunkStatus, ChunkHolderManager chunkHolderManager) {
+	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getChunk(ChunkStatus chunkStatus, ThreadedAnvilChunkStorage threadedAnvilChunkStorage) {
 		int i = chunkStatus.getIndex();
 		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = (CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>)this.statusToChunk.get(i);
 		if (completableFuture != null) {
@@ -234,7 +234,7 @@ public class ChunkHolder {
 		}
 
 		if (getTargetGenerationStatus(this.level).isAfter(chunkStatus)) {
-			CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture2 = chunkHolderManager.generateChunk(this, chunkStatus);
+			CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture2 = threadedAnvilChunkStorage.getChunk(this, chunkStatus);
 			this.updateChunk(completableFuture2);
 			this.statusToChunk.set(i, completableFuture2);
 			return completableFuture2;
@@ -272,14 +272,14 @@ public class ChunkHolder {
 		this.level = i;
 	}
 
-	protected void update(ChunkHolderManager chunkHolderManager) {
+	protected void update(ThreadedAnvilChunkStorage threadedAnvilChunkStorage) {
 		ChunkStatus chunkStatus = getTargetGenerationStatus(this.field_16432);
 		ChunkStatus chunkStatus2 = getTargetGenerationStatus(this.level);
 		boolean bl = this.field_16432 <= ServerChunkManager.LEVEL_COUNT;
 		boolean bl2 = this.level <= ServerChunkManager.LEVEL_COUNT;
 		if (bl2) {
 			for (int i = bl ? chunkStatus.getIndex() + 1 : 0; i <= chunkStatus2.getIndex(); i++) {
-				this.getChunk((ChunkStatus)CHUNK_STATUSES.get(i), chunkHolderManager);
+				this.getChunk((ChunkStatus)CHUNK_STATUSES.get(i), threadedAnvilChunkStorage);
 			}
 		}
 
@@ -306,7 +306,7 @@ public class ChunkHolder {
 		boolean bl3 = levelType.isAfter(ChunkHolder.LevelType.TICKING);
 		boolean bl4 = levelType2.isAfter(ChunkHolder.LevelType.TICKING);
 		if (!bl3 && bl4) {
-			this.field_16431 = chunkHolderManager.method_17235(this);
+			this.field_16431 = threadedAnvilChunkStorage.method_17235(this);
 			this.updateChunk(this.field_16431);
 		}
 
@@ -322,7 +322,7 @@ public class ChunkHolder {
 				throw new IllegalStateException();
 			}
 
-			this.field_13865 = chunkHolderManager.method_17247(this.pos);
+			this.field_13865 = threadedAnvilChunkStorage.method_17247(this.pos);
 			this.updateChunk(this.field_13865);
 		}
 

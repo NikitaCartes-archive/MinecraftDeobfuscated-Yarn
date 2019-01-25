@@ -204,7 +204,7 @@ public class RegionFile implements AutoCloseable {
 	}
 
 	private int getOffset(ChunkPos chunkPos) {
-		return this.offsets[this.method_17909(chunkPos)];
+		return this.offsets[this.getPackedRegionRelativePosition(chunkPos)];
 	}
 
 	public boolean hasChunk(ChunkPos chunkPos) {
@@ -212,18 +212,18 @@ public class RegionFile implements AutoCloseable {
 	}
 
 	private void setOffset(ChunkPos chunkPos, int i) throws IOException {
-		int j = this.method_17909(chunkPos);
+		int j = this.getPackedRegionRelativePosition(chunkPos);
 		this.offsets[j] = i;
 		this.file.seek((long)(j * 4));
 		this.file.writeInt(i);
 	}
 
-	private int method_17909(ChunkPos chunkPos) {
-		return chunkPos.method_17887() + chunkPos.method_17888() * 32;
+	private int getPackedRegionRelativePosition(ChunkPos chunkPos) {
+		return chunkPos.getRegionRelativeX() + chunkPos.getRegionRelativeZ() * 32;
 	}
 
 	private void setTimestamp(ChunkPos chunkPos, int i) throws IOException {
-		int j = this.method_17909(chunkPos);
+		int j = this.getPackedRegionRelativePosition(chunkPos);
 		this.chunkTimestamps[j] = i;
 		this.file.seek((long)(4096 + j * 4));
 		this.file.writeInt(i);
@@ -234,15 +234,15 @@ public class RegionFile implements AutoCloseable {
 	}
 
 	class ChunkBuffer extends ByteArrayOutputStream {
-		private final ChunkPos field_17656;
+		private final ChunkPos pos;
 
 		public ChunkBuffer(ChunkPos chunkPos) {
 			super(8096);
-			this.field_17656 = chunkPos;
+			this.pos = chunkPos;
 		}
 
 		public void close() {
-			RegionFile.this.write(this.field_17656, this.buf, this.count);
+			RegionFile.this.write(this.pos, this.buf, this.count);
 		}
 	}
 }

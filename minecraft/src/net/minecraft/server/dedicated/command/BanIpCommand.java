@@ -13,7 +13,7 @@ import net.minecraft.command.arguments.MessageArgumentType;
 import net.minecraft.server.command.ServerCommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.config.BannedIpEntry;
-import net.minecraft.server.config.BannedIpsList;
+import net.minecraft.server.config.BannedIpList;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
@@ -61,13 +61,13 @@ public class BanIpCommand {
 	}
 
 	private static int method_13007(ServerCommandSource serverCommandSource, String string, @Nullable TextComponent textComponent) throws CommandSyntaxException {
-		BannedIpsList bannedIpsList = serverCommandSource.getMinecraftServer().getPlayerManager().getIpBanList();
-		if (bannedIpsList.method_14529(string)) {
+		BannedIpList bannedIpList = serverCommandSource.getMinecraftServer().getPlayerManager().getIpBanList();
+		if (bannedIpList.method_14529(string)) {
 			throw field_13467.create();
 		} else {
 			List<ServerPlayerEntity> list = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayersByIp(string);
 			BannedIpEntry bannedIpEntry = new BannedIpEntry(string, null, serverCommandSource.getName(), null, textComponent == null ? null : textComponent.getString());
-			bannedIpsList.add(bannedIpEntry);
+			bannedIpList.add(bannedIpEntry);
 			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.banip.success", string, bannedIpEntry.getReason()), true);
 			if (!list.isEmpty()) {
 				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.banip.info", list.size(), EntitySelector.getNames(list)), true);

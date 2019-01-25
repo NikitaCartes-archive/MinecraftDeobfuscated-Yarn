@@ -304,7 +304,7 @@ public class PortalForcer {
 			}
 		}
 
-		BlockState blockState = PORTAL_BLOCK.getDefaultState().with(PortalBlock.field_11310, af == 0 ? Direction.Axis.Z : Direction.Axis.X);
+		BlockState blockState = PORTAL_BLOCK.getDefaultState().with(PortalBlock.AXIS, af == 0 ? Direction.Axis.Z : Direction.Axis.X);
 
 		for (int ux = 0; ux < 2; ux++) {
 			for (int vx = 0; vx < 3; vx++) {

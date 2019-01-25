@@ -33,14 +33,14 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
-import net.minecraft.sortme.StructurePiece;
-import net.minecraft.sortme.StructurePoolElement;
 import net.minecraft.sortme.rule.RuleTest;
-import net.minecraft.sortme.structures.processor.StructureProcessor;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.StatType;
 import net.minecraft.stat.Stats;
+import net.minecraft.structure.StructurePieceType;
+import net.minecraft.structure.pool.StructurePoolElementType;
+import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.IntIterable;
 import net.minecraft.village.VillagerProfession;
@@ -99,15 +99,17 @@ public abstract class Registry<T> implements IntIterable<T> {
 		"chunk_status", new DefaultMappedRegistry<>("empty"), () -> ChunkStatus.EMPTY
 	);
 	public static final Registry<StructureFeature<?>> STRUCTURE_FEATURE = registerRegistry(
-		"structure_feature", new IdRegistry<>(), () -> StructureFeatures.field_16709
+		"structure_feature", new IdRegistry<>(), () -> StructureFeatures.MINESHAFT
 	);
-	public static final Registry<StructurePiece> STRUCTURE_PIECE = registerRegistry("structure_piece", new IdRegistry<>(), () -> StructurePiece.field_16915);
+	public static final Registry<StructurePieceType> STRUCTURE_PIECE = registerRegistry(
+		"structure_piece", new IdRegistry<>(), () -> StructurePieceType.MINESHAFT_ROOM
+	);
 	public static final Registry<RuleTest> RULE_TEST = registerRegistry("rule_test", new IdRegistry<>(), () -> RuleTest.field_16982);
-	public static final Registry<StructureProcessor> STRUCTURE_PROCESSOR = registerRegistry(
-		"structure_processor", new IdRegistry<>(), () -> StructureProcessor.field_16986
+	public static final Registry<StructureProcessorType> STRUCTURE_PROCESSOR = registerRegistry(
+		"structure_processor", new IdRegistry<>(), () -> StructureProcessorType.field_16986
 	);
-	public static final Registry<StructurePoolElement> STRUCTURE_POOL_ELEMENT = registerRegistry(
-		"structure_pool_element", new IdRegistry<>(), () -> StructurePoolElement.field_16972
+	public static final Registry<StructurePoolElementType> STRUCTURE_POOL_ELEMENT = registerRegistry(
+		"structure_pool_element", new IdRegistry<>(), () -> StructurePoolElementType.EMPTY_POOL_ELEMENT
 	);
 	public static final Registry<ContainerType<?>> CONTAINER = registerRegistry("menu", new IdRegistry<>(), () -> ContainerType.ANVIL);
 	public static final Registry<RecipeType<?>> RECIPE_TYPE = registerRegistry("recipe_type", new IdRegistry<>(), () -> RecipeType.CRAFTING);

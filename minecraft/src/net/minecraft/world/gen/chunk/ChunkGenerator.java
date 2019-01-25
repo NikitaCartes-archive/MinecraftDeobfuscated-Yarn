@@ -7,8 +7,8 @@ import java.util.Locale;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityCategory;
-import net.minecraft.sortme.structures.StructureManager;
-import net.minecraft.sortme.structures.StructureStart;
+import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.ChunkRegion;
@@ -145,13 +145,13 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 			if (chunkGenerator.getBiomeSource().hasStructureFeature(structureFeature)) {
 				ChunkRandom chunkRandom = new ChunkRandom();
 				ChunkPos chunkPos = chunk.getPos();
-				StructureStart structureStart = StructureStart.field_16713;
-				if (structureFeature.method_14026(chunkGenerator, chunkRandom, chunkPos.x, chunkPos.z)) {
+				StructureStart structureStart = StructureStart.DEFAULT;
+				if (structureFeature.shouldStartAt(chunkGenerator, chunkRandom, chunkPos.x, chunkPos.z)) {
 					Biome biome = this.getBiomeSource().getBiome(new BlockPos(chunkPos.getXStart() + 9, 0, chunkPos.getZStart() + 9));
-					StructureStart structureStart2 = structureFeature.method_14016()
-						.create(structureFeature, chunkPos.x, chunkPos.z, biome, MutableIntBoundingBox.maxSize(), 0, chunkGenerator.getSeed());
-					structureStart2.method_16655(this, structureManager, chunkPos.x, chunkPos.z, biome);
-					structureStart = structureStart2.hasChildren() ? structureStart2 : StructureStart.field_16713;
+					StructureStart structureStart2 = structureFeature.getStructureStartFactory()
+						.create(structureFeature, chunkPos.x, chunkPos.z, biome, MutableIntBoundingBox.empty(), 0, chunkGenerator.getSeed());
+					structureStart2.initialize(this, structureManager, chunkPos.x, chunkPos.z, biome);
+					structureStart = structureStart2.hasChildren() ? structureStart2 : StructureStart.DEFAULT;
 				}
 
 				chunk.setStructureStart(structureFeature.getName(), structureStart);
@@ -172,7 +172,7 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 
 				for (Entry<String, StructureStart> entry : iWorld.getChunk(n, o).getStructureStarts().entrySet()) {
 					StructureStart structureStart = (StructureStart)entry.getValue();
-					if (structureStart != StructureStart.field_16713 && structureStart.method_14968().intersectsXZ(l, m, l + 15, m + 15)) {
+					if (structureStart != StructureStart.DEFAULT && structureStart.getBoundingBox().intersectsXZ(l, m, l + 15, m + 15)) {
 						chunk.addStructureReference((String)entry.getKey(), p);
 					}
 				}

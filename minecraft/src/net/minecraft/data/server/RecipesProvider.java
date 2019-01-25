@@ -4636,11 +4636,17 @@ public class RecipesProvider implements DataProvider {
 		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10115), Blocks.field_10093)
 			.method_17970("has_andesite", this.method_10426(Blocks.field_10115))
 			.method_17971(consumer, "polished_andesite_from_andesite_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10115), Blocks.field_10322, 2)
+			.method_17970("has_andesite", this.method_10426(Blocks.field_10115))
+			.method_17971(consumer, "polished_andesite_slab_from_andesite_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10115), Blocks.field_9994)
+			.method_17970("has_andesite", this.method_10426(Blocks.field_10115))
+			.method_17971(consumer, "polished_andesite_stairs_from_andesite_stonecutting");
 		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10093), Blocks.field_10322, 2)
-			.method_17970("has_polished_andesite", this.method_10426(Blocks.field_10115))
+			.method_17970("has_polished_andesite", this.method_10426(Blocks.field_10093))
 			.method_17971(consumer, "polished_andesite_slab_from_polished_andesite_stonecutting");
 		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10093), Blocks.field_9994)
-			.method_17970("has_polished_andesite", this.method_10426(Blocks.field_10115))
+			.method_17970("has_polished_andesite", this.method_10426(Blocks.field_10093))
 			.method_17971(consumer, "polished_andesite_stairs_from_polished_andesite_stonecutting");
 		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10474), Blocks.field_10189, 2)
 			.method_17970("has_granite", this.method_10426(Blocks.field_10474))
@@ -4654,6 +4660,12 @@ public class RecipesProvider implements DataProvider {
 		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10474), Blocks.field_10289)
 			.method_17970("has_granite", this.method_10426(Blocks.field_10474))
 			.method_17971(consumer, "polished_granite_from_granite_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10474), Blocks.field_10329, 2)
+			.method_17970("has_granite", this.method_10426(Blocks.field_10474))
+			.method_17971(consumer, "polished_granite_slab_from_granite_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10474), Blocks.field_10435)
+			.method_17970("has_granite", this.method_10426(Blocks.field_10474))
+			.method_17971(consumer, "polished_granite_stairs_from_granite_stonecutting");
 		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10289), Blocks.field_10329, 2)
 			.method_17970("has_polished_granite", this.method_10426(Blocks.field_10289))
 			.method_17971(consumer, "polished_granite_slab_from_polished_granite_stonecutting");
@@ -4672,6 +4684,12 @@ public class RecipesProvider implements DataProvider {
 		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10508), Blocks.field_10346)
 			.method_17970("has_diorite", this.method_10426(Blocks.field_10508))
 			.method_17971(consumer, "polished_diorite_from_diorite_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10508), Blocks.field_10412, 2)
+			.method_17970("has_diorite", this.method_10426(Blocks.field_10346))
+			.method_17971(consumer, "polished_diorite_slab_from_diorite_stonecutting");
+		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10508), Blocks.field_10310)
+			.method_17970("has_diorite", this.method_10426(Blocks.field_10346))
+			.method_17971(consumer, "polished_diorite_stairs_from_diorite_stonecutting");
 		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10346), Blocks.field_10412, 2)
 			.method_17970("has_polished_diorite", this.method_10426(Blocks.field_10346))
 			.method_17971(consumer, "polished_diorite_slab_from_polished_diorite_stonecutting");
@@ -4735,6 +4753,9 @@ public class RecipesProvider implements DataProvider {
 		class_3981.method_17968(Ingredient.ofItems(Blocks.field_10471), Blocks.field_10001)
 			.method_17970("has_end_stone", this.method_10426(Blocks.field_10471))
 			.method_17971(consumer, "end_stone_brick_wall_from_end_stone_stonecutting");
+		class_3981.method_17969(Ingredient.ofItems(Blocks.field_10360), Blocks.field_10136, 2)
+			.method_17970("has_smooth_stone", this.method_10426(Blocks.field_10360))
+			.method_17971(consumer, "smooth_stone_slab_from_smooth_stone_stonecutting");
 	}
 
 	private void method_17585(Consumer<class_2444> consumer, String string, CookingRecipeSerializer<?> cookingRecipeSerializer, int i) {

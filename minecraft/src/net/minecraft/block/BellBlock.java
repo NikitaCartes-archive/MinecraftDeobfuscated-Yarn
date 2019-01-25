@@ -26,7 +26,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class BellBlock extends BlockWithEntity {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
 	private static final EnumProperty<Attachment> ATTACHMENT = Properties.ATTACHMENT;
 	private static final VoxelShape NORTH_SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 4.0, 16.0, 16.0, 12.0);
 	private static final VoxelShape EAST_WEST_SHAPE = Block.createCuboidShape(4.0, 0.0, 0.0, 12.0, 16.0, 16.0);

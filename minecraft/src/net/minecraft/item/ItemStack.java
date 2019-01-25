@@ -365,7 +365,7 @@ public final class ItemStack {
 		}
 
 		if (this.getItem() != null) {
-			this.getItem().onUpdate(this, world, entity, i, bl);
+			this.getItem().onEntityTick(this, world, entity, i, bl);
 		}
 	}
 
@@ -691,8 +691,8 @@ public final class ItemStack {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean hasEnchantmentGlow() {
-		return this.getItem().hasEnchantmentGlow(this);
+	public boolean hasEnchantmentGlint() {
+		return this.getItem().hasEnchantmentGlint(this);
 	}
 
 	public Rarity getRarity() {

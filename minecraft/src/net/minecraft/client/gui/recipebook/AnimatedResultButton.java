@@ -5,7 +5,7 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.recipe.book.RecipeResultCollection;
 import net.minecraft.client.render.GuiLighting;
@@ -58,7 +58,7 @@ public class AnimatedResultButton extends ButtonWidget {
 	@Override
 	public void draw(int i, int j, float f) {
 		if (this.visible) {
-			if (!Gui.isControlPressed()) {
+			if (!Screen.isControlPressed()) {
 				this.time += f;
 			}
 
@@ -93,11 +93,11 @@ public class AnimatedResultButton extends ButtonWidget {
 			ItemStack itemStack = ((Recipe)list.get(this.currentResultIndex)).getOutput();
 			int m = 4;
 			if (this.results.method_2656() && this.getResults().size() > 1) {
-				minecraftClient.getItemRenderer().renderItemAndGlowInGui(itemStack, this.x + m + 1, this.y + m + 1);
+				minecraftClient.getItemRenderer().renderGuiItem(itemStack, this.x + m + 1, this.y + m + 1);
 				m--;
 			}
 
-			minecraftClient.getItemRenderer().renderItemAndGlowInGui(itemStack, this.x + m, this.y + m);
+			minecraftClient.getItemRenderer().renderGuiItem(itemStack, this.x + m, this.y + m);
 			if (bl) {
 				GlStateManager.popMatrix();
 			}
@@ -125,9 +125,9 @@ public class AnimatedResultButton extends ButtonWidget {
 		return (Recipe<?>)list.get(this.currentResultIndex);
 	}
 
-	public List<String> method_2644(Gui gui) {
+	public List<String> method_2644(Screen screen) {
 		ItemStack itemStack = ((Recipe)this.getResults().get(this.currentResultIndex)).getOutput();
-		List<String> list = gui.getStackTooltip(itemStack);
+		List<String> list = screen.getStackTooltip(itemStack);
 		if (this.results.getResults(this.recipeBook.isFilteringCraftable(this.craftingContainer)).size() > 1) {
 			list.add(I18n.translate("gui.recipebook.moreRecipes"));
 		}

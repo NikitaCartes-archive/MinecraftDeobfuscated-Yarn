@@ -172,7 +172,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 		if (compoundTag != null && compoundTag.containsKey("Patterns", 9)) {
 			ListTag listTag = compoundTag.getList("Patterns", 10);
 			if (!listTag.isEmpty()) {
-				listTag.getTag(listTag.size() - 1);
+				listTag.remove(listTag.size() - 1);
 				if (listTag.isEmpty()) {
 					itemStack.removeSubTag("BlockEntityTag");
 				}

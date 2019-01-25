@@ -17,7 +17,7 @@ import net.minecraft.class_336;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.FontRenderer;
-import net.minecraft.client.gui.ContainerGui;
+import net.minecraft.client.gui.ContainerScreen;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.BufferBuilder;
@@ -390,7 +390,7 @@ public class InGameHud extends Drawable {
 	protected void method_1765() {
 		Collection<StatusEffectInstance> collection = this.client.player.getPotionEffects();
 		if (!collection.isEmpty()) {
-			this.client.getTextureManager().bindTexture(ContainerGui.BACKGROUND_TEXTURE);
+			this.client.getTextureManager().bindTexture(ContainerScreen.BACKGROUND_TEXTURE);
 			GlStateManager.enableBlend();
 			int i = 0;
 			int j = 0;
@@ -1010,12 +1010,12 @@ public class InGameHud extends Drawable {
 				GlStateManager.translatef((float)(-(i + 8)), (float)(-(j + 12)), 0.0F);
 			}
 
-			this.itemRenderer.renderItemInGui(playerEntity, itemStack, i, j);
+			this.itemRenderer.renderGuiItem(playerEntity, itemStack, i, j);
 			if (g > 0.0F) {
 				GlStateManager.popMatrix();
 			}
 
-			this.itemRenderer.renderItemOverlaysInGUI(this.client.fontRenderer, itemStack, i, j);
+			this.itemRenderer.renderGuiItemOverlay(this.client.fontRenderer, itemStack, i, j);
 		}
 	}
 

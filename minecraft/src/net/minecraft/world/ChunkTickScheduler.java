@@ -38,7 +38,7 @@ public class ChunkTickScheduler<T> implements TickScheduler<T> {
 	}
 
 	public ListTag toNbt() {
-		return ChunkSaveHandlerImpl.shortListsToNbt(this.scheduledPositions);
+		return ChunkSerializer.toNbt(this.scheduledPositions);
 	}
 
 	public void tick(TickScheduler<T> tickScheduler, Function<BlockPos, T> function) {

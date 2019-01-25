@@ -75,8 +75,8 @@ public class ItemDynamicRenderer {
 			GlStateManager.pushMatrix();
 			GlStateManager.scalef(1.0F, -1.0F, -1.0F);
 			this.modelShield.renderItem();
-			if (itemStack.hasEnchantmentGlow()) {
-				this.applyEnchantmentGlow(this.modelShield::renderItem);
+			if (itemStack.hasEnchantmentGlint()) {
+				this.renderEnchantmentGlint(this.modelShield::renderItem);
 			}
 
 			GlStateManager.popMatrix();
@@ -107,8 +107,8 @@ public class ItemDynamicRenderer {
 			GlStateManager.pushMatrix();
 			GlStateManager.scalef(1.0F, -1.0F, -1.0F);
 			this.modelTrident.renderItem();
-			if (itemStack.hasEnchantmentGlow()) {
-				this.applyEnchantmentGlow(this.modelTrident::renderItem);
+			if (itemStack.hasEnchantmentGlint()) {
+				this.renderEnchantmentGlint(this.modelTrident::renderItem);
 			}
 
 			GlStateManager.popMatrix();
@@ -130,9 +130,9 @@ public class ItemDynamicRenderer {
 		}
 	}
 
-	private void applyEnchantmentGlow(Runnable runnable) {
+	private void renderEnchantmentGlint(Runnable runnable) {
 		GlStateManager.color3f(0.5019608F, 0.2509804F, 0.8F);
 		MinecraftClient.getInstance().getTextureManager().bindTexture(ItemRenderer.ENCHANTMENT_GLINT_TEX);
-		ItemRenderer.method_4011(MinecraftClient.getInstance().getTextureManager(), runnable, 1);
+		ItemRenderer.renderGlint(MinecraftClient.getInstance().getTextureManager(), runnable, 1);
 	}
 }

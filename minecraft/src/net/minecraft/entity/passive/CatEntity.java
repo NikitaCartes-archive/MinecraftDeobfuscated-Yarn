@@ -61,8 +61,8 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.loot.LootSupplier;
 import net.minecraft.world.loot.LootTables;
 import net.minecraft.world.loot.context.LootContext;
+import net.minecraft.world.loot.context.LootContextParameters;
 import net.minecraft.world.loot.context.LootContextTypes;
-import net.minecraft.world.loot.context.Parameters;
 
 public class CatEntity extends TameableEntity {
 	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.field_8429, Items.field_8209);
@@ -511,7 +511,7 @@ public class CatEntity extends TameableEntity {
 					BlockPos blockPos = new BlockPos(this.owner);
 					BlockState blockState = this.entity.world.getBlockState(blockPos);
 					if (blockState.getBlock().matches(BlockTags.field_16443)) {
-						Direction direction = blockState.get(BedBlock.FACING);
+						Direction direction = blockState.get(BedBlock.field_11177);
 						this.field_16294 = new BlockPos(blockPos.getX() - direction.getOffsetX(), blockPos.getY(), blockPos.getZ() - direction.getOffsetZ());
 						return !this.method_16098();
 					}
@@ -577,8 +577,8 @@ public class CatEntity extends TameableEntity {
 			this.entity.method_6176().method_6311(true);
 			LootSupplier lootSupplier = this.entity.world.getServer().getLootManager().getSupplier(LootTables.field_16216);
 			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.entity.world)
-				.put(Parameters.field_1232, mutable)
-				.put(Parameters.field_1226, this.entity)
+				.method_312(LootContextParameters.field_1232, mutable)
+				.method_312(LootContextParameters.field_1226, this.entity)
 				.setRandom(random);
 
 			for (ItemStack itemStack : lootSupplier.getDrops(builder.build(LootContextTypes.GIFT))) {

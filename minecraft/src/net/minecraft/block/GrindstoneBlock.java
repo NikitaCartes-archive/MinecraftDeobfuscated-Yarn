@@ -90,7 +90,7 @@ public class GrindstoneBlock extends WallMountedBlock {
 
 	protected GrindstoneBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(FACE, WallMountLocation.field_12471));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11177, Direction.NORTH).with(FACE, WallMountLocation.field_12471));
 	}
 
 	@Override
@@ -99,7 +99,7 @@ public class GrindstoneBlock extends WallMountedBlock {
 	}
 
 	private VoxelShape getShape(BlockState blockState) {
-		Direction direction = blockState.get(FACING);
+		Direction direction = blockState.get(field_11177);
 		switch ((WallMountLocation)blockState.get(FACE)) {
 			case field_12475:
 				if (direction != Direction.NORTH && direction != Direction.SOUTH) {
@@ -160,16 +160,16 @@ public class GrindstoneBlock extends WallMountedBlock {
 
 	@Override
 	public BlockState rotate(BlockState blockState, Rotation rotation) {
-		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
+		return blockState.with(field_11177, rotation.rotate(blockState.get(field_11177)));
 	}
 
 	@Override
 	public BlockState mirror(BlockState blockState, Mirror mirror) {
-		return blockState.rotate(mirror.getRotation(blockState.get(FACING)));
+		return blockState.rotate(mirror.getRotation(blockState.get(field_11177)));
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, FACE);
+		builder.with(field_11177, FACE);
 	}
 }

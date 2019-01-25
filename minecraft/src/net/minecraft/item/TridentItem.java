@@ -31,7 +31,7 @@ public class TridentItem extends Item {
 		super(settings);
 		this.addProperty(
 			new Identifier("throwing"),
-			(itemStack, world, livingEntity) -> livingEntity != null && livingEntity.method_6115() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
+			(itemStack, world, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
 		);
 	}
 
@@ -52,7 +52,7 @@ public class TridentItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean hasEnchantmentGlow(ItemStack itemStack) {
+	public boolean hasEnchantmentGlint(ItemStack itemStack) {
 		return false;
 	}
 

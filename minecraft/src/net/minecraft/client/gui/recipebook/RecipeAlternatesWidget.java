@@ -233,7 +233,7 @@ public class RecipeAlternatesWidget extends Drawable implements GuiEventListener
 				GlStateManager.enableLighting();
 				RecipeAlternatesWidget.this.client
 					.getItemRenderer()
-					.renderItemAndGlowInGui(inputSlot.field_3120[MathHelper.floor(RecipeAlternatesWidget.this.time / 30.0F) % inputSlot.field_3120.length], m, n);
+					.renderGuiItem(inputSlot.field_3120[MathHelper.floor(RecipeAlternatesWidget.this.time / 30.0F) % inputSlot.field_3120.length], m, n);
 				GlStateManager.disableLighting();
 				GlStateManager.popMatrix();
 			}

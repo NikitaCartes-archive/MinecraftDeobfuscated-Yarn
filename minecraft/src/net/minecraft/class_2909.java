@@ -20,7 +20,7 @@ public class class_2909 implements Packet<ClientLoginPacketListener> {
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.field_13243 = TextComponent.Serializer.fromLenientJsonString(packetByteBuf.readString(32767));
+		this.field_13243 = TextComponent.Serializer.fromLenientJsonString(packetByteBuf.readString(262144));
 	}
 
 	@Override

@@ -23,7 +23,7 @@ public class AdvancementToast implements Toast {
 	}
 
 	@Override
-	public Toast.class_369 draw(ToastManager toastManager, long l) {
+	public Toast.Visibility draw(ToastManager toastManager, long l) {
 		toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
 		GlStateManager.color3f(1.0F, 1.0F, 1.0F);
 		AdvancementDisplay advancementDisplay = this.field_2205.getDisplay();
@@ -59,10 +59,10 @@ public class AdvancementToast implements Toast {
 			}
 
 			GuiLighting.enableForItems();
-			toastManager.getGame().getItemRenderer().renderItemInGui(null, advancementDisplay.getIcon(), 8, 8);
-			return l >= 5000L ? Toast.class_369.field_2209 : Toast.class_369.field_2210;
+			toastManager.getGame().getItemRenderer().renderGuiItem(null, advancementDisplay.getIcon(), 8, 8);
+			return l >= 5000L ? Toast.Visibility.field_2209 : Toast.Visibility.field_2210;
 		} else {
-			return Toast.class_369.field_2209;
+			return Toast.Visibility.field_2209;
 		}
 	}
 }

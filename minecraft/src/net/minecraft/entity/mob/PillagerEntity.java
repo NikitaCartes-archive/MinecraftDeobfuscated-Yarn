@@ -8,12 +8,12 @@ import net.fabricmc.api.Environment;
 import net.minecraft.class_1361;
 import net.minecraft.class_1379;
 import net.minecraft.class_1399;
-import net.minecraft.class_3745;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.CrossbowUser;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityGroup;
@@ -54,8 +54,8 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
-public class PillagerEntity extends IllagerEntity implements class_3745, RangedAttacker {
-	private static final TrackedData<Boolean> field_7334 = DataTracker.registerData(PillagerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+public class PillagerEntity extends IllagerEntity implements CrossbowUser, RangedAttacker {
+	private static final TrackedData<Boolean> CHARGING = DataTracker.registerData(PillagerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private final BasicInventory inventory = new BasicInventory(5);
 
 	public PillagerEntity(World world) {
@@ -89,17 +89,17 @@ public class PillagerEntity extends IllagerEntity implements class_3745, RangedA
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(field_7334, false);
+		this.dataTracker.startTracking(CHARGING, false);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_7108() {
-		return this.dataTracker.get(field_7334);
+	public boolean isCharging() {
+		return this.dataTracker.get(CHARGING);
 	}
 
 	@Override
-	public void method_7110(boolean bl) {
-		this.dataTracker.set(field_7334, bl);
+	public void setCharging(boolean bl) {
+		this.dataTracker.set(CHARGING, bl);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -132,7 +132,7 @@ public class PillagerEntity extends IllagerEntity implements class_3745, RangedA
 	public IllagerEntity.State method_6990() {
 		if (this.method_7109()) {
 			return IllagerEntity.State.field_7211;
-		} else if (this.method_7108()) {
+		} else if (this.isCharging()) {
 			return IllagerEntity.State.field_7210;
 		} else {
 			return !this.getMainHandStack().isEmpty() && this.getMainHandStack().getItem() == Items.field_8399
@@ -253,7 +253,7 @@ public class PillagerEntity extends IllagerEntity implements class_3745, RangedA
 		return false;
 	}
 
-	public BasicInventory method_16473() {
+	public BasicInventory getInventory() {
 		return this.inventory;
 	}
 
@@ -314,11 +314,11 @@ public class PillagerEntity extends IllagerEntity implements class_3745, RangedA
 
 	@Override
 	public boolean cannotDespawn() {
-		return super.cannotDespawn() && this.method_16473().isInvEmpty();
+		return super.cannotDespawn() && this.getInventory().isInvEmpty();
 	}
 
 	@Override
 	public boolean canImmediatelyDespawn(double d) {
-		return super.canImmediatelyDespawn(d) && this.method_16473().isInvEmpty();
+		return super.canImmediatelyDespawn(d) && this.getInventory().isInvEmpty();
 	}
 }

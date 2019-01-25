@@ -46,7 +46,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 	protected AbstractButtonBlock(boolean bl, Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(FACE, WallMountLocation.field_12471)
+			this.stateFactory.getDefaultState().with(field_11177, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(FACE, WallMountLocation.field_12471)
 		);
 		this.wooden = bl;
 	}
@@ -58,7 +58,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		Direction direction = blockState.get(FACING);
+		Direction direction = blockState.get(field_11177);
 		boolean bl = (Boolean)blockState.get(POWERED);
 		switch ((WallMountLocation)blockState.get(FACE)) {
 			case field_12475:
@@ -176,6 +176,6 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, POWERED, FACE);
+		builder.with(field_11177, POWERED, FACE);
 	}
 }

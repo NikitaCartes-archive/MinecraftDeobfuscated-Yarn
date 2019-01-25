@@ -59,7 +59,7 @@ public class ChunkRandom extends Random {
 		return m;
 	}
 
-	public static Random method_12662(int i, int j, long l, long m) {
+	public static Random create(int i, int j, long l, long m) {
 		return new Random(l + (long)(i * i * 4987142) + (long)(i * 5947611) + (long)(j * j) * 4392871L + (long)(j * 389711) ^ m);
 	}
 }

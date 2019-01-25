@@ -89,8 +89,8 @@ import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 import net.minecraft.world.loot.LootSupplier;
 import net.minecraft.world.loot.context.LootContext;
+import net.minecraft.world.loot.context.LootContextParameters;
 import net.minecraft.world.loot.context.LootContextTypes;
-import net.minecraft.world.loot.context.Parameters;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -1057,13 +1057,13 @@ public abstract class LivingEntity extends Entity {
 	protected LootContext.Builder method_16079(boolean bl, DamageSource damageSource) {
 		LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
 			.setRandom(this.random)
-			.put(Parameters.field_1226, this)
-			.put(Parameters.field_1232, new BlockPos(this))
-			.put(Parameters.field_1231, damageSource)
-			.putNullable(Parameters.field_1230, damageSource.getAttacker())
-			.putNullable(Parameters.field_1227, damageSource.getSource());
+			.method_312(LootContextParameters.field_1226, this)
+			.method_312(LootContextParameters.field_1232, new BlockPos(this))
+			.method_312(LootContextParameters.field_1231, damageSource)
+			.method_306(LootContextParameters.field_1230, damageSource.getAttacker())
+			.method_306(LootContextParameters.field_1227, damageSource.getSource());
 		if (bl && this.field_6258 != null) {
-			builder = builder.put(Parameters.field_1233, this.field_6258).setLuck(this.field_6258.getLuck());
+			builder = builder.method_312(LootContextParameters.field_1233, this.field_6258).setLuck(this.field_6258.getLuck());
 		}
 
 		return builder;
@@ -1120,7 +1120,7 @@ public abstract class LivingEntity extends Entity {
 	private boolean method_6077(BlockPos blockPos, BlockState blockState) {
 		if ((Boolean)blockState.get(TrapdoorBlock.OPEN)) {
 			BlockState blockState2 = this.world.getBlockState(blockPos.down());
-			if (blockState2.getBlock() == Blocks.field_9983 && blockState2.get(LadderBlock.FACING) == blockState.get(TrapdoorBlock.FACING)) {
+			if (blockState2.getBlock() == Blocks.field_9983 && blockState2.get(LadderBlock.FACING) == blockState.get(TrapdoorBlock.field_11177)) {
 				return true;
 			}
 		}
@@ -2223,7 +2223,7 @@ public abstract class LivingEntity extends Entity {
 
 	public abstract OptionMainHand getMainHand();
 
-	public boolean method_6115() {
+	public boolean isUsingItem() {
 		return (this.dataTracker.get(LIVING_FLAGS) & 1) > 0;
 	}
 
@@ -2232,7 +2232,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	protected void method_6076() {
-		if (this.method_6115()) {
+		if (this.isUsingItem()) {
 			if (this.getStackInHand(this.getActiveHand()) == this.activeItemStack) {
 				this.activeItemStack.method_7949(this.world, this, this.method_6014());
 				if (this.method_6014() <= 25 && this.method_6014() % 4 == 0) {
@@ -2270,7 +2270,7 @@ public abstract class LivingEntity extends Entity {
 
 	public void setCurrentHand(Hand hand) {
 		ItemStack itemStack = this.getStackInHand(hand);
-		if (!itemStack.isEmpty() && !this.method_6115()) {
+		if (!itemStack.isEmpty() && !this.isUsingItem()) {
 			this.activeItemStack = itemStack;
 			this.field_6222 = itemStack.getMaxUseTime();
 			if (!this.world.isClient) {
@@ -2284,12 +2284,12 @@ public abstract class LivingEntity extends Entity {
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
 		super.onTrackedDataSet(trackedData);
 		if (LIVING_FLAGS.equals(trackedData) && this.world.isClient) {
-			if (this.method_6115() && this.activeItemStack.isEmpty()) {
+			if (this.isUsingItem() && this.activeItemStack.isEmpty()) {
 				this.activeItemStack = this.getStackInHand(this.getActiveHand());
 				if (!this.activeItemStack.isEmpty()) {
 					this.field_6222 = this.activeItemStack.getMaxUseTime();
 				}
-			} else if (!this.method_6115() && !this.activeItemStack.isEmpty()) {
+			} else if (!this.isUsingItem() && !this.activeItemStack.isEmpty()) {
 				this.activeItemStack = ItemStack.EMPTY;
 				this.field_6222 = 0;
 			}
@@ -2305,7 +2305,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	protected void method_6098(ItemStack itemStack, int i) {
-		if (!itemStack.isEmpty() && this.method_6115()) {
+		if (!itemStack.isEmpty() && this.isUsingItem()) {
 			if (itemStack.getUseAction() == UseAction.field_8946) {
 				this.playSound(SoundEvents.field_14643, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 			}
@@ -2333,7 +2333,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	protected void method_6040() {
-		if (!this.activeItemStack.isEmpty() && this.method_6115()) {
+		if (!this.activeItemStack.isEmpty() && this.isUsingItem()) {
 			this.method_6098(this.activeItemStack, 16);
 			this.setStackInHand(this.getActiveHand(), this.activeItemStack.onItemFinishedUsing(this.world, this));
 			this.method_6021();
@@ -2349,7 +2349,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	public int method_6048() {
-		return this.method_6115() ? this.activeItemStack.getMaxUseTime() - this.method_6014() : 0;
+		return this.isUsingItem() ? this.activeItemStack.getMaxUseTime() - this.method_6014() : 0;
 	}
 
 	public void method_6075() {
@@ -2373,7 +2373,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	public boolean method_6039() {
-		if (this.method_6115() && !this.activeItemStack.isEmpty()) {
+		if (this.isUsingItem() && !this.activeItemStack.isEmpty()) {
 			Item item = this.activeItemStack.getItem();
 			return item.getUseAction(this.activeItemStack) != UseAction.field_8949 ? false : item.getMaxUseTime(this.activeItemStack) - this.field_6222 >= 5;
 		} else {

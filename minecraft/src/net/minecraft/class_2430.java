@@ -67,6 +67,7 @@ import net.minecraft.world.loot.entry.LeafEntry;
 import net.minecraft.world.loot.entry.LootEntry;
 import net.minecraft.world.loot.function.ApplyBonusLootFunction;
 import net.minecraft.world.loot.function.CopyNameLootFunction;
+import net.minecraft.world.loot.function.CopyNbtLootFunction;
 import net.minecraft.world.loot.function.ExplosionDecayLootFunction;
 import net.minecraft.world.loot.function.LimitCountLootFunction;
 import net.minecraft.world.loot.function.SetContentsLootFunction;
@@ -231,7 +232,7 @@ public class class_2430 implements Consumer<BiConsumer<Identifier, LootSupplier.
 							ItemEntry.builder(block)
 								.withFunction(CopyNameLootFunction.create(CopyNameLootFunction.Source.BLOCK_ENTITY))
 								.withFunction(
-									class_3837.method_16848(class_3837.class_3840.field_17027)
+									CopyNbtLootFunction.method_16848(CopyNbtLootFunction.Source.field_17027)
 										.method_16856("Lock", "BlockEntityTag.Lock")
 										.method_16856("LootTable", "BlockEntityTag.LootTable")
 										.method_16856("LootTableSeed", "BlockEntityTag.LootTableSeed")
@@ -252,7 +253,7 @@ public class class_2430 implements Consumer<BiConsumer<Identifier, LootSupplier.
 						.withEntry(
 							ItemEntry.builder(block)
 								.withFunction(CopyNameLootFunction.create(CopyNameLootFunction.Source.BLOCK_ENTITY))
-								.withFunction(class_3837.method_16848(class_3837.class_3840.field_17027).method_16856("Patterns", "BlockEntityTag.Patterns"))
+								.withFunction(CopyNbtLootFunction.method_16848(CopyNbtLootFunction.Source.field_17027).method_16856("Patterns", "BlockEntityTag.Patterns"))
 						)
 				)
 			);
@@ -950,7 +951,9 @@ public class class_2430 implements Consumer<BiConsumer<Identifier, LootSupplier.
 							blockx,
 							LootPool.create()
 								.withRolls(ConstantLootTableRange.create(1))
-								.withEntry(ItemEntry.builder(blockx).withFunction(class_3837.method_16848(class_3837.class_3840.field_17027).method_16856("Owner", "SkullOwner")))
+								.withEntry(
+									ItemEntry.builder(blockx).withFunction(CopyNbtLootFunction.method_16848(CopyNbtLootFunction.Source.field_17027).method_16856("Owner", "SkullOwner"))
+								)
 						)
 					)
 		);

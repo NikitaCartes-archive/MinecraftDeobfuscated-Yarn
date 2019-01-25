@@ -70,7 +70,7 @@ public class FirstPersonRenderer {
 				GlStateManager.depthMask(false);
 			}
 
-			this.itemRenderer.renderItemAmountAndDamageInGUI(itemStack, livingEntity, type, bl);
+			this.itemRenderer.renderHeldItem(itemStack, livingEntity, type, bl);
 			if (bl2) {
 				GlStateManager.depthMask(true);
 			}
@@ -278,7 +278,7 @@ public class FirstPersonRenderer {
 		float i = MathHelper.lerp(f, abstractClientPlayerEntity.prevYaw, abstractClientPlayerEntity.yaw);
 		boolean bl = true;
 		boolean bl2 = true;
-		if (abstractClientPlayerEntity.method_6115()) {
+		if (abstractClientPlayerEntity.isUsingItem()) {
 			ItemStack itemStack = abstractClientPlayerEntity.getActiveItem();
 			if (itemStack.getItem() == Items.field_8102 || itemStack.getItem() == Items.field_8399) {
 				bl = abstractClientPlayerEntity.getActiveHand() == Hand.MAIN;
@@ -336,14 +336,14 @@ public class FirstPersonRenderer {
 				boolean bl2 = CrossbowItem.isCharged(itemStack);
 				boolean bl3 = optionMainHand == OptionMainHand.field_6183;
 				int j = bl3 ? 1 : -1;
-				if (abstractClientPlayerEntity.method_6115() && abstractClientPlayerEntity.method_6014() > 0 && abstractClientPlayerEntity.getActiveHand() == hand) {
+				if (abstractClientPlayerEntity.isUsingItem() && abstractClientPlayerEntity.method_6014() > 0 && abstractClientPlayerEntity.getActiveHand() == hand) {
 					this.method_3224(optionMainHand, i);
 					GlStateManager.translatef((float)j * -0.4785682F, -0.094387F, 0.05731531F);
 					GlStateManager.rotatef(-11.935F, 1.0F, 0.0F, 0.0F);
 					GlStateManager.rotatef((float)j * 65.3F, 0.0F, 1.0F, 0.0F);
 					GlStateManager.rotatef((float)j * -9.785F, 0.0F, 0.0F, 1.0F);
 					float k = (float)itemStack.getMaxUseTime() - ((float)this.client.player.method_6014() - f + 1.0F);
-					float l = k / (float)CrossbowItem.method_7775(itemStack);
+					float l = k / (float)CrossbowItem.getPullTime(itemStack);
 					if (l > 1.0F) {
 						l = 1.0F;
 					}
@@ -377,7 +377,7 @@ public class FirstPersonRenderer {
 			}
 		} else {
 			boolean bl2 = optionMainHand == OptionMainHand.field_6183;
-			if (abstractClientPlayerEntity.method_6115() && abstractClientPlayerEntity.method_6014() > 0 && abstractClientPlayerEntity.getActiveHand() == hand) {
+			if (abstractClientPlayerEntity.isUsingItem() && abstractClientPlayerEntity.method_6014() > 0 && abstractClientPlayerEntity.getActiveHand() == hand) {
 				int p = bl2 ? 1 : -1;
 				switch (itemStack.getUseAction()) {
 					case field_8952:

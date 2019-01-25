@@ -2,9 +2,9 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.datafixers.Dynamic;
 import java.util.function.Function;
-import net.minecraft.sortme.structures.DesertTempleGenerator;
-import net.minecraft.sortme.structures.StructureManager;
-import net.minecraft.sortme.structures.StructureStart;
+import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructureStart;
+import net.minecraft.structure.generator.DesertTempleGenerator;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -25,7 +25,7 @@ public class DesertPyramidFeature extends AbstractTempleFeature<DefaultFeatureCo
 	}
 
 	@Override
-	public StructureFeature.class_3774 method_14016() {
+	public StructureFeature.StructureStartFactory getStructureStartFactory() {
 		return DesertPyramidFeature.class_3007::new;
 	}
 
@@ -40,10 +40,10 @@ public class DesertPyramidFeature extends AbstractTempleFeature<DefaultFeatureCo
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
-			DesertTempleGenerator desertTempleGenerator = new DesertTempleGenerator(this.field_16715, i * 16, j * 16);
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+			DesertTempleGenerator desertTempleGenerator = new DesertTempleGenerator(this.random, i * 16, j * 16);
 			this.children.add(desertTempleGenerator);
-			this.method_14969();
+			this.setBoundingBoxFromChildren();
 		}
 	}
 }

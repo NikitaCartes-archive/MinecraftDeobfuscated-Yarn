@@ -96,6 +96,6 @@ public class BambooSaplingBlock extends Block implements Fertilizable {
 	}
 
 	protected void method_9351(World world, BlockPos blockPos) {
-		world.setBlockState(blockPos.up(), Blocks.field_10211.getDefaultState().with(BambooBlock.field_9917, BambooLeaves.field_12466), 3);
+		world.setBlockState(blockPos.up(), Blocks.field_10211.getDefaultState().with(BambooBlock.LEAVES, BambooLeaves.field_12466), 3);
 	}
 }

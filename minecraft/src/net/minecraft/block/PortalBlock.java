@@ -27,23 +27,23 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class PortalBlock extends Block {
-	public static final EnumProperty<Direction.Axis> field_11310 = Properties.AXIS_XZ;
-	protected static final VoxelShape field_11309 = Block.createCuboidShape(0.0, 0.0, 6.0, 16.0, 16.0, 10.0);
-	protected static final VoxelShape field_11308 = Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 16.0, 16.0);
+	public static final EnumProperty<Direction.Axis> AXIS = Properties.AXIS_XZ;
+	protected static final VoxelShape X_SHAPE = Block.createCuboidShape(0.0, 0.0, 6.0, 16.0, 16.0, 10.0);
+	protected static final VoxelShape Z_SHAPE = Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 16.0, 16.0);
 
 	public PortalBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11310, Direction.Axis.X));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(AXIS, Direction.Axis.X));
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		switch ((Direction.Axis)blockState.get(field_11310)) {
+		switch ((Direction.Axis)blockState.get(AXIS)) {
 			case Z:
-				return field_11308;
+				return Z_SHAPE;
 			case X:
 			default:
-				return field_11309;
+				return X_SHAPE;
 		}
 	}
 
@@ -93,7 +93,7 @@ public class PortalBlock extends Block {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		Direction.Axis axis = direction.getAxis();
-		Direction.Axis axis2 = blockState.get(field_11310);
+		Direction.Axis axis2 = blockState.get(AXIS);
 		boolean bl = axis2 != axis && axis.isHorizontal();
 		return !bl && blockState2.getBlock() != this && !new PortalBlock.class_2424(iWorld, blockPos, axis2).method_10362()
 			? Blocks.field_10124.getDefaultState()
@@ -159,11 +159,11 @@ public class PortalBlock extends Block {
 		switch (rotation) {
 			case ROT_270:
 			case ROT_90:
-				switch ((Direction.Axis)blockState.get(field_11310)) {
+				switch ((Direction.Axis)blockState.get(AXIS)) {
 					case Z:
-						return blockState.with(field_11310, Direction.Axis.X);
+						return blockState.with(AXIS, Direction.Axis.X);
 					case X:
-						return blockState.with(field_11310, Direction.Axis.Z);
+						return blockState.with(AXIS, Direction.Axis.Z);
 					default:
 						return blockState;
 				}
@@ -174,7 +174,7 @@ public class PortalBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_11310);
+		builder.with(AXIS);
 	}
 
 	public BlockPattern.Result method_10350(IWorld iWorld, BlockPos blockPos) {
@@ -358,7 +358,7 @@ public class PortalBlock extends Block {
 				BlockPos blockPos = this.field_11316.offset(this.field_11314, i);
 
 				for (int j = 0; j < this.field_11312; j++) {
-					this.field_11318.setBlockState(blockPos.up(j), Blocks.field_10316.getDefaultState().with(PortalBlock.field_11310, this.field_11317), 18);
+					this.field_11318.setBlockState(blockPos.up(j), Blocks.field_10316.getDefaultState().with(PortalBlock.AXIS, this.field_11317), 18);
 				}
 			}
 		}

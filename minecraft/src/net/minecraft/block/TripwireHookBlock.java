@@ -24,7 +24,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class TripwireHookBlock extends Block {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
 	public static final BooleanProperty field_11671 = Properties.POWERED;
 	public static final BooleanProperty field_11669 = Properties.ATTACHED;
 	protected static final VoxelShape field_11665 = Block.createCuboidShape(5.0, 0.0, 10.0, 11.0, 10.0, 16.0);

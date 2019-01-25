@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.FontRenderer;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.Screen;
 import net.minecraft.text.TextFormat;
 import net.minecraft.util.math.MathHelper;
 
@@ -54,18 +54,18 @@ public class SelectionManager {
 
 	public boolean handleSpecialKey(int i) {
 		String string = (String)this.stringSupplier.get();
-		if (Gui.isSelectAllShortcutPressed(i)) {
+		if (Screen.isSelectAllShortcutPressed(i)) {
 			this.selectionEnd = 0;
 			this.selectionStart = string.length();
 			return true;
-		} else if (Gui.isCopyShortcutPressed(i)) {
+		} else if (Screen.isCopyShortcutPressed(i)) {
 			this.client.keyboard.setClipboard(this.getSelectedText());
 			return true;
-		} else if (Gui.isPasteShortcutPressed(i)) {
+		} else if (Screen.isPasteShortcutPressed(i)) {
 			this.insert(SharedConstants.stripInvalidChars(TextFormat.stripFormatting(this.client.keyboard.getClipboard().replaceAll("\\r", ""))));
 			this.selectionEnd = this.selectionStart;
 			return true;
-		} else if (Gui.isCutShortcutPressed(i)) {
+		} else if (Screen.isCutShortcutPressed(i)) {
 			this.client.keyboard.setClipboard(this.getSelectedText());
 			this.deleteSelectedText();
 			return true;
@@ -94,40 +94,40 @@ public class SelectionManager {
 			return true;
 		} else if (i == 263) {
 			int j = this.fontRenderer.isRightToLeft() ? 1 : -1;
-			if (Gui.isControlPressed()) {
+			if (Screen.isControlPressed()) {
 				this.selectionStart = this.fontRenderer.findWordEdge(string, j, this.selectionStart, true);
 			} else {
 				this.selectionStart = Math.max(0, Math.min(string.length(), this.selectionStart + j));
 			}
 
-			if (!Gui.isShiftPressed()) {
+			if (!Screen.isShiftPressed()) {
 				this.selectionEnd = this.selectionStart;
 			}
 
 			return true;
 		} else if (i == 262) {
 			int jx = this.fontRenderer.isRightToLeft() ? -1 : 1;
-			if (Gui.isControlPressed()) {
+			if (Screen.isControlPressed()) {
 				this.selectionStart = this.fontRenderer.findWordEdge(string, jx, this.selectionStart, true);
 			} else {
 				this.selectionStart = Math.max(0, Math.min(string.length(), this.selectionStart + jx));
 			}
 
-			if (!Gui.isShiftPressed()) {
+			if (!Screen.isShiftPressed()) {
 				this.selectionEnd = this.selectionStart;
 			}
 
 			return true;
 		} else if (i == 268) {
 			this.selectionStart = 0;
-			if (!Gui.isShiftPressed()) {
+			if (!Screen.isShiftPressed()) {
 				this.selectionEnd = this.selectionStart;
 			}
 
 			return true;
 		} else if (i == 269) {
 			this.selectionStart = ((String)this.stringSupplier.get()).length();
-			if (!Gui.isShiftPressed()) {
+			if (!Screen.isShiftPressed()) {
 				this.selectionEnd = this.selectionStart;
 			}
 

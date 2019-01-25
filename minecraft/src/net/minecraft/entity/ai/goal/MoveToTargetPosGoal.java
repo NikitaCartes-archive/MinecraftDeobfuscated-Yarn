@@ -100,7 +100,7 @@ public abstract class MoveToTargetPosGoal extends Goal {
 			for (int l = 0; l < i; l++) {
 				for (int m = 0; m <= l; m = m > 0 ? -m : 1 - m) {
 					for (int n = m < l && m > -l ? l : 0; n <= l; n = n > 0 ? -n : 1 - n) {
-						mutable.set(blockPos).method_10100(m, k - 1, n);
+						mutable.set(blockPos).setOffset(m, k - 1, n);
 						if (this.owner.isInAiRange(mutable) && this.isTargetPos(this.owner.world, mutable)) {
 							this.targetPos = mutable;
 							return true;

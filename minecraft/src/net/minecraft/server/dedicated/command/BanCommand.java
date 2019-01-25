@@ -11,7 +11,7 @@ import net.minecraft.command.arguments.MessageArgumentType;
 import net.minecraft.server.command.ServerCommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.config.BannedPlayerEntry;
-import net.minecraft.server.config.BannedProfilesList;
+import net.minecraft.server.config.BannedPlayerList;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormatter;
@@ -45,15 +45,15 @@ public class BanCommand {
 	}
 
 	private static int method_13022(ServerCommandSource serverCommandSource, Collection<GameProfile> collection, @Nullable TextComponent textComponent) throws CommandSyntaxException {
-		BannedProfilesList bannedProfilesList = serverCommandSource.getMinecraftServer().getPlayerManager().getUserBanList();
+		BannedPlayerList bannedPlayerList = serverCommandSource.getMinecraftServer().getPlayerManager().getUserBanList();
 		int i = 0;
 
 		for (GameProfile gameProfile : collection) {
-			if (!bannedProfilesList.contains(gameProfile)) {
+			if (!bannedPlayerList.contains(gameProfile)) {
 				BannedPlayerEntry bannedPlayerEntry = new BannedPlayerEntry(
 					gameProfile, null, serverCommandSource.getName(), null, textComponent == null ? null : textComponent.getString()
 				);
-				bannedProfilesList.add(bannedPlayerEntry);
+				bannedPlayerList.add(bannedPlayerEntry);
 				i++;
 				serverCommandSource.sendFeedback(
 					new TranslatableTextComponent("commands.ban.success", TextFormatter.profile(gameProfile), bannedPlayerEntry.getReason()), true

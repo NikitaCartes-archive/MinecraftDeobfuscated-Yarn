@@ -5,11 +5,11 @@ import com.mojang.datafixers.Dynamic;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.class_3443;
 import net.minecraft.block.Blocks;
-import net.minecraft.sortme.structures.MansionGenerator;
-import net.minecraft.sortme.structures.StructureManager;
-import net.minecraft.sortme.structures.StructureStart;
+import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructurePiece;
+import net.minecraft.structure.StructureStart;
+import net.minecraft.structure.generator.WoodlandMansionGenerator;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
@@ -44,7 +44,7 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 	}
 
 	@Override
-	public boolean method_14026(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
+	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
 		ChunkPos chunkPos = this.method_14018(chunkGenerator, random, i, j, 0, 0);
 		if (i == chunkPos.x && j == chunkPos.z) {
 			for (Biome biome : chunkGenerator.getBiomeSource().getBiomesInArea(i * 16 + 9, j * 16 + 9, 32)) {
@@ -60,7 +60,7 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 	}
 
 	@Override
-	public StructureFeature.class_3774 method_14016() {
+	public StructureFeature.StructureStartFactory getStructureStartFactory() {
 		return WoodlandMansionFeature.class_3224::new;
 	}
 
@@ -80,8 +80,8 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
-			Rotation rotation = Rotation.values()[this.field_16715.nextInt(Rotation.values().length)];
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+			Rotation rotation = Rotation.values()[this.random.nextInt(Rotation.values().length)];
 			int k = 5;
 			int l = 5;
 			if (rotation == Rotation.ROT_90) {
@@ -100,16 +100,16 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 			int q = Math.min(Math.min(m, n), Math.min(o, p));
 			if (q >= 60) {
 				BlockPos blockPos = new BlockPos(i * 16 + 8, q + 1, j * 16 + 8);
-				List<MansionGenerator.class_3480> list = Lists.<MansionGenerator.class_3480>newLinkedList();
-				MansionGenerator.method_15029(structureManager, blockPos, rotation, list, this.field_16715);
+				List<WoodlandMansionGenerator.Piece> list = Lists.<WoodlandMansionGenerator.Piece>newLinkedList();
+				WoodlandMansionGenerator.method_15029(structureManager, blockPos, rotation, list, this.random);
 				this.children.addAll(list);
-				this.method_14969();
+				this.setBoundingBoxFromChildren();
 			}
 		}
 
 		@Override
-		public void method_14974(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
-			super.method_14974(iWorld, random, mutableIntBoundingBox, chunkPos);
+		public void generateStructure(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+			super.generateStructure(iWorld, random, mutableIntBoundingBox, chunkPos);
 			int i = this.boundingBox.minY;
 
 			for (int j = mutableIntBoundingBox.minX; j <= mutableIntBoundingBox.maxX; j++) {
@@ -118,8 +118,8 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 					if (!iWorld.isAir(blockPos) && this.boundingBox.contains(blockPos)) {
 						boolean bl = false;
 
-						for (class_3443 lv : this.children) {
-							if (lv.method_14935().contains(blockPos)) {
+						for (StructurePiece structurePiece : this.children) {
+							if (structurePiece.getBoundingBox().contains(blockPos)) {
 								bl = true;
 								break;
 							}

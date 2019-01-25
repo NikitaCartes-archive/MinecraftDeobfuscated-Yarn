@@ -13,20 +13,20 @@ public interface Toast {
 	Identifier TOASTS_TEX = new Identifier("textures/gui/toasts.png");
 	Object field_2208 = new Object();
 
-	Toast.class_369 draw(ToastManager toastManager, long l);
+	Toast.Visibility draw(ToastManager toastManager, long l);
 
 	default Object method_1987() {
 		return field_2208;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static enum class_369 {
+	public static enum Visibility {
 		field_2210(SoundEvents.field_14561),
 		field_2209(SoundEvents.field_14641);
 
 		private final SoundEvent sound;
 
-		private class_369(SoundEvent soundEvent) {
+		private Visibility(SoundEvent soundEvent) {
 			this.sound = soundEvent;
 		}
 

@@ -326,7 +326,7 @@ public class BlockPos extends Vec3i {
 			return this.set(this.xMut + direction.getOffsetX() * i, this.yMut + direction.getOffsetY() * i, this.zMut + direction.getOffsetZ() * i);
 		}
 
-		public BlockPos.Mutable method_10100(int i, int j, int k) {
+		public BlockPos.Mutable setOffset(int i, int j, int k) {
 			return this.set(this.xMut + i, this.yMut + j, this.zMut + k);
 		}
 
@@ -399,8 +399,8 @@ public class BlockPos extends Vec3i {
 			return (BlockPos.PooledMutable)super.setOffset(direction, i);
 		}
 
-		public BlockPos.PooledMutable method_10108(int i, int j, int k) {
-			return (BlockPos.PooledMutable)super.method_10100(i, j, k);
+		public BlockPos.PooledMutable setOffset(int i, int j, int k) {
+			return (BlockPos.PooledMutable)super.setOffset(i, j, k);
 		}
 
 		public void close() {

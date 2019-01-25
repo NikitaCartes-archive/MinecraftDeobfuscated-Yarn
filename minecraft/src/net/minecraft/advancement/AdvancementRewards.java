@@ -23,8 +23,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.loot.context.LootContext;
+import net.minecraft.world.loot.context.LootContextParameters;
 import net.minecraft.world.loot.context.LootContextTypes;
-import net.minecraft.world.loot.context.Parameters;
 
 public class AdvancementRewards {
 	public static final AdvancementRewards NONE = new AdvancementRewards(0, new Identifier[0], new Identifier[0], CommandFunction.LazyContainer.EMPTY);
@@ -43,8 +43,8 @@ public class AdvancementRewards {
 	public void apply(ServerPlayerEntity serverPlayerEntity) {
 		serverPlayerEntity.addExperience(this.experience);
 		LootContext lootContext = new LootContext.Builder(serverPlayerEntity.getServerWorld())
-			.put(Parameters.field_1226, serverPlayerEntity)
-			.put(Parameters.field_1232, new BlockPos(serverPlayerEntity))
+			.method_312(LootContextParameters.field_1226, serverPlayerEntity)
+			.method_312(LootContextParameters.field_1232, new BlockPos(serverPlayerEntity))
 			.setRandom(serverPlayerEntity.getRand())
 			.build(LootContextTypes.ADVANCEMENT_REWARD);
 		boolean bl = false;

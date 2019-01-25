@@ -7,8 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.class_403;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.menu.RealmsGui;
+import net.minecraft.client.gui.Screen;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.SystemUtil;
@@ -18,17 +17,17 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class RealmsBridge extends RealmsScreen {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private Gui previousScreen;
+	private Screen previousScreen;
 
-	public void switchToRealms(Gui gui) {
-		this.previousScreen = gui;
+	public void switchToRealms(Screen screen) {
+		this.previousScreen = screen;
 
 		try {
 			Class<?> class_ = Class.forName("com.mojang.realmsclient.RealmsMainScreen");
 			Constructor<?> constructor = class_.getDeclaredConstructor(RealmsScreen.class);
 			constructor.setAccessible(true);
 			Object object = constructor.newInstance(this);
-			MinecraftClient.getInstance().openGui(((RealmsScreen)object).getProxy());
+			MinecraftClient.getInstance().openScreen(((RealmsScreen)object).getProxy());
 		} catch (ClassNotFoundException var5) {
 			LOGGER.error("Realms module missing");
 			this.showMissingRealmsErrorScreen();
@@ -38,9 +37,9 @@ public class RealmsBridge extends RealmsScreen {
 		}
 	}
 
-	public RealmsGui getNotificationScreen(Gui gui) {
+	public net.minecraft.client.gui.menu.RealmsScreen getNotificationScreen(Screen screen) {
 		try {
-			this.previousScreen = gui;
+			this.previousScreen = screen;
 			Class<?> class_ = Class.forName("com.mojang.realmsclient.gui.screens.RealmsNotificationsScreen");
 			Constructor<?> constructor = class_.getDeclaredConstructor(RealmsScreen.class);
 			constructor.setAccessible(true);
@@ -57,7 +56,7 @@ public class RealmsBridge extends RealmsScreen {
 
 	@Override
 	public void init() {
-		MinecraftClient.getInstance().openGui(this.previousScreen);
+		MinecraftClient.getInstance().openScreen(this.previousScreen);
 	}
 
 	public static void openUri(String string) {
@@ -70,9 +69,9 @@ public class RealmsBridge extends RealmsScreen {
 
 	private void showMissingRealmsErrorScreen() {
 		MinecraftClient.getInstance()
-			.openGui(
+			.openScreen(
 				new class_403(
-					() -> MinecraftClient.getInstance().openGui(this.previousScreen),
+					() -> MinecraftClient.getInstance().openScreen(this.previousScreen),
 					new StringTextComponent(""),
 					new TranslatableTextComponent(SharedConstants.getGameVersion().isStable() ? "realms.missing.module.error.text" : "realms.missing.snapshot.error.text")
 				)

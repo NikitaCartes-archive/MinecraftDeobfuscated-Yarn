@@ -19,8 +19,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.Parameter;
-import net.minecraft.world.loot.context.Parameters;
+import net.minecraft.world.loot.context.LootContextParameter;
+import net.minecraft.world.loot.context.LootContextParameters;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -43,8 +43,8 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public Set<Parameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(Parameters.field_1232);
+	public Set<LootContextParameter<?>> getRequiredParameters() {
+		return ImmutableSet.of(LootContextParameters.field_1232);
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 		if (itemStack.getItem() != Items.field_8895) {
 			return itemStack;
 		} else {
-			BlockPos blockPos = lootContext.get(Parameters.field_1232);
+			BlockPos blockPos = lootContext.method_296(LootContextParameters.field_1232);
 			if (blockPos != null) {
 				ServerWorld serverWorld = lootContext.getWorld();
 				BlockPos blockPos2 = serverWorld.locateStructure(this.destination, blockPos, this.searchRadius, this.skipExistingChunks);

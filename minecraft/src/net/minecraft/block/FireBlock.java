@@ -162,7 +162,7 @@ public class FireBlock extends Block {
 									o += (n - 1) * 100;
 								}
 
-								mutable.set(blockPos).method_10100(l, n, m);
+								mutable.set(blockPos).setOffset(l, n, m);
 								int p = this.getBurnChance(world, mutable);
 								if (p > 0) {
 									int q = (p + 40 + world.getDifficulty().getId() * 7) / (i + 30);

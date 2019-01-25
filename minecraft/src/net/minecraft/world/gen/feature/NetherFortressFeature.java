@@ -5,11 +5,11 @@ import com.mojang.datafixers.Dynamic;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.class_3443;
 import net.minecraft.entity.EntityType;
-import net.minecraft.sortme.structures.NetherFortressGenerator;
-import net.minecraft.sortme.structures.StructureManager;
-import net.minecraft.sortme.structures.StructureStart;
+import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructurePiece;
+import net.minecraft.structure.StructureStart;
+import net.minecraft.structure.generator.NetherFortressGenerator;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.biome.Biome;
@@ -29,7 +29,7 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 	}
 
 	@Override
-	public boolean method_14026(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
+	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
 		int k = i >> 4;
 		int l = j >> 4;
 		random.setSeed((long)(k ^ l << 4) ^ chunkGenerator.getSeed());
@@ -47,7 +47,7 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 	}
 
 	@Override
-	public StructureFeature.class_3774 method_14016() {
+	public StructureFeature.StructureStartFactory getStructureStartFactory() {
 		return NetherFortressFeature.class_3109::new;
 	}
 
@@ -72,20 +72,20 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
-			NetherFortressGenerator.class_3407 lv = new NetherFortressGenerator.class_3407(this.field_16715, (i << 4) + 2, (j << 4) + 2);
-			this.children.add(lv);
-			lv.method_14918(lv, this.children, this.field_16715);
-			List<class_3443> list = lv.field_14505;
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+			NetherFortressGenerator.Start start = new NetherFortressGenerator.Start(this.random, (i << 4) + 2, (j << 4) + 2);
+			this.children.add(start);
+			start.method_14918(start, this.children, this.random);
+			List<StructurePiece> list = start.field_14505;
 
 			while (!list.isEmpty()) {
-				int k = this.field_16715.nextInt(list.size());
-				class_3443 lv2 = (class_3443)list.remove(k);
-				lv2.method_14918(lv, this.children, this.field_16715);
+				int k = this.random.nextInt(list.size());
+				StructurePiece structurePiece = (StructurePiece)list.remove(k);
+				structurePiece.method_14918(start, this.children, this.random);
 			}
 
-			this.method_14969();
-			this.method_14976(this.field_16715, 48, 70);
+			this.setBoundingBoxFromChildren();
+			this.method_14976(this.random, 48, 70);
 		}
 	}
 }

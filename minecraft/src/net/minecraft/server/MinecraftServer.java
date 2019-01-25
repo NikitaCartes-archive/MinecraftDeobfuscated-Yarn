@@ -383,7 +383,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 			this, this.field_17200, oldWorldSaveHandler, levelProperties, DimensionType.field_13072, this.profiler, worldGenerationProgressListener
 		);
 		this.worlds.put(DimensionType.field_13072, serverWorld);
-		this.method_17976(serverWorld.method_17983());
+		this.method_17976(serverWorld.getDimensionalPersistentStateManager());
 		serverWorld.getWorldBorder().method_17905(levelProperties);
 		ServerWorld serverWorld2 = this.getWorld(DimensionType.field_13072);
 		if (!levelProperties.isInitialized()) {
@@ -480,7 +480,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 		this.method_16208();
 
 		for (DimensionType dimensionType : DimensionType.getAll()) {
-			ForcedChunkState forcedChunkState = this.getWorld(dimensionType).method_17983().get(ForcedChunkState::new, "chunks");
+			ForcedChunkState forcedChunkState = this.getWorld(dimensionType).getDimensionalPersistentStateManager().get(ForcedChunkState::new, "chunks");
 			if (forcedChunkState != null) {
 				ServerWorld serverWorld2 = this.getWorld(dimensionType);
 				LongIterator longIterator = forcedChunkState.getChunks().iterator();

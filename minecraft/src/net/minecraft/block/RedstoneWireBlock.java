@@ -372,7 +372,7 @@ public class RedstoneWireBlock extends Block {
 		} else {
 			return blockState.getBlock() == Blocks.field_10450
 					&& blockState.get(AbstractRedstoneGateBlock.POWERED)
-					&& blockState.get(AbstractRedstoneGateBlock.FACING) == direction
+					&& blockState.get(AbstractRedstoneGateBlock.field_11177) == direction
 				? true
 				: !bl && method_10483(blockView, blockPos2.down());
 		}
@@ -391,7 +391,7 @@ public class RedstoneWireBlock extends Block {
 		if (block == Blocks.field_10091) {
 			return true;
 		} else if (blockState.getBlock() == Blocks.field_10450) {
-			Direction direction2 = blockState.get(RepeaterBlock.FACING);
+			Direction direction2 = blockState.get(RepeaterBlock.field_11177);
 			return direction2 == direction || direction2.getOpposite() == direction;
 		} else {
 			return Blocks.field_10282 == blockState.getBlock()

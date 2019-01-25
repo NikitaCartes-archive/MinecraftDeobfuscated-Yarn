@@ -14,8 +14,8 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.world.loot.UniformLootTableRange;
 import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.Parameter;
-import net.minecraft.world.loot.context.Parameters;
+import net.minecraft.world.loot.context.LootContextParameter;
+import net.minecraft.world.loot.context.LootContextParameters;
 
 public class LootingEnchantLootFunction extends ConditionalLootFunction {
 	private final UniformLootTableRange range;
@@ -28,8 +28,8 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public Set<Parameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(Parameters.field_1230);
+	public Set<LootContextParameter<?>> getRequiredParameters() {
+		return ImmutableSet.of(LootContextParameters.field_1230);
 	}
 
 	private boolean method_549() {
@@ -38,7 +38,7 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		Entity entity = lootContext.get(Parameters.field_1230);
+		Entity entity = lootContext.method_296(LootContextParameters.field_1230);
 		if (entity instanceof LivingEntity) {
 			int i = EnchantmentHelper.getLooting((LivingEntity)entity);
 			if (i == 0) {

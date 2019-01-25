@@ -174,7 +174,7 @@ public class OakTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
 
 	private void method_14063(ModifiableWorld modifiableWorld, int i, BlockPos blockPos, Direction direction) {
 		this.setBlockState(
-			modifiableWorld, blockPos, Blocks.field_10302.getDefaultState().with(CocoaBlock.AGE, Integer.valueOf(i)).with(CocoaBlock.FACING, direction)
+			modifiableWorld, blockPos, Blocks.field_10302.getDefaultState().with(CocoaBlock.AGE, Integer.valueOf(i)).with(CocoaBlock.field_11177, direction)
 		);
 	}
 

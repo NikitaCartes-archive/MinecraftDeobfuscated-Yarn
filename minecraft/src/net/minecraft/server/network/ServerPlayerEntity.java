@@ -110,7 +110,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ServerPlayerEntity extends PlayerEntity implements ContainerListener {
-	private static final Logger LOGGER_PLAYER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private String clientLanguage = "en_US";
 	public ServerPlayNetworkHandler networkHandler;
 	public final MinecraftServer server;
@@ -893,7 +893,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	protected void method_6040() {
-		if (!this.activeItemStack.isEmpty() && this.method_6115()) {
+		if (!this.activeItemStack.isEmpty() && this.isUsingItem()) {
 			this.networkHandler.sendPacket(new EntityStatusClientPacket(this, (byte)9));
 			super.method_6040();
 		}
@@ -1224,7 +1224,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		this.getServerWorld().getEntityTracker().sendEntitiesInChunk(this, chunkPos.x, chunkPos.z);
 	}
 
-	public void sendRemoveChunkPacket(ChunkPos chunkPos) {
+	public void sendUnloadChunkPacket(ChunkPos chunkPos) {
 		this.networkHandler.sendPacket(new UnloadChunkClientPacket(chunkPos.x, chunkPos.z));
 	}
 
@@ -1232,7 +1232,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		return this.chunkPos;
 	}
 
-	public void method_17668(ChunkPos chunkPos) {
+	public void setChunkPos(ChunkPos chunkPos) {
 		this.chunkPos = chunkPos;
 	}
 

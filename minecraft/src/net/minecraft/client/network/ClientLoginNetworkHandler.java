@@ -19,9 +19,9 @@ import net.minecraft.class_2907;
 import net.minecraft.class_2909;
 import net.minecraft.class_2913;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.menu.DisconnectedGui;
-import net.minecraft.client.gui.menu.RealmsGui;
+import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.menu.DisconnectedScreen;
+import net.minecraft.client.gui.menu.RealmsScreen;
 import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkEncryptionUtils;
@@ -39,15 +39,15 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final MinecraftClient client;
 	@Nullable
-	private final Gui parentGui;
+	private final Screen parentGui;
 	private final Consumer<TextComponent> field_3711;
 	private final ClientConnection connection;
 	private GameProfile playerProfile;
 
-	public ClientLoginNetworkHandler(ClientConnection clientConnection, MinecraftClient minecraftClient, @Nullable Gui gui, Consumer<TextComponent> consumer) {
+	public ClientLoginNetworkHandler(ClientConnection clientConnection, MinecraftClient minecraftClient, @Nullable Screen screen, Consumer<TextComponent> consumer) {
 		this.connection = clientConnection;
 		this.client = minecraftClient;
-		this.parentGui = gui;
+		this.parentGui = screen;
 		this.field_3711 = consumer;
 	}
 
@@ -102,10 +102,10 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 
 	@Override
 	public void onConnectionLost(TextComponent textComponent) {
-		if (this.parentGui != null && this.parentGui instanceof RealmsGui) {
-			this.client.openGui(new DisconnectedRealmsScreen(((RealmsGui)this.parentGui).getRealmsScreen(), "connect.failed", textComponent).getProxy());
+		if (this.parentGui != null && this.parentGui instanceof RealmsScreen) {
+			this.client.openScreen(new DisconnectedRealmsScreen(((RealmsScreen)this.parentGui).getRealmsScreen(), "connect.failed", textComponent).getProxy());
 		} else {
-			this.client.openGui(new DisconnectedGui(this.parentGui, "connect.failed", textComponent));
+			this.client.openScreen(new DisconnectedScreen(this.parentGui, "connect.failed", textComponent));
 		}
 	}
 

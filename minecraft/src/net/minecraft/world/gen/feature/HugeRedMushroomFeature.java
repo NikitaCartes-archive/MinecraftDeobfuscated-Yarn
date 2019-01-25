@@ -45,7 +45,7 @@ public class HugeRedMushroomFeature extends Feature<DefaultFeatureConfig> {
 
 					for (int m = -l; m <= l; m++) {
 						for (int n = -l; n <= l; n++) {
-							BlockState blockState = iWorld.getBlockState(mutable.set(blockPos).method_10100(m, k, n));
+							BlockState blockState = iWorld.getBlockState(mutable.set(blockPos).setOffset(m, k, n));
 							if (!blockState.isAir() && !blockState.matches(BlockTags.field_15503)) {
 								return false;
 							}
@@ -68,7 +68,7 @@ public class HugeRedMushroomFeature extends Feature<DefaultFeatureConfig> {
 							boolean bl5 = bl || bl2;
 							boolean bl6 = bl3 || bl4;
 							if (l >= i || bl5 != bl6) {
-								mutable.set(blockPos).method_10100(o, l, p);
+								mutable.set(blockPos).setOffset(o, l, p);
 								if (!iWorld.getBlockState(mutable).isFullOpaque(iWorld, mutable)) {
 									this.setBlockState(
 										iWorld,
