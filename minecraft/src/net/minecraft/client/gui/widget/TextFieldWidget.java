@@ -12,8 +12,8 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.FontRenderer;
 import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.Screen;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
@@ -140,7 +140,7 @@ public class TextFieldWidget extends Drawable implements GuiEventListener {
 	}
 
 	private void method_16873(int i) {
-		if (Gui.isControlPressed()) {
+		if (Screen.isControlPressed()) {
 			this.method_1877(i);
 		} else {
 			this.method_1878(i);
@@ -252,21 +252,21 @@ public class TextFieldWidget extends Drawable implements GuiEventListener {
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
 		if (this.isVisible() && this.isFocused()) {
-			this.field_17037 = Gui.isShiftPressed();
-			if (Gui.isSelectAllShortcutPressed(i)) {
+			this.field_17037 = Screen.isShiftPressed();
+			if (Screen.isSelectAllShortcutPressed(i)) {
 				this.method_1872();
 				this.method_1884(0);
 				return true;
-			} else if (Gui.isCopyShortcutPressed(i)) {
+			} else if (Screen.isCopyShortcutPressed(i)) {
 				MinecraftClient.getInstance().keyboard.setClipboard(this.getSelectedText());
 				return true;
-			} else if (Gui.isPasteShortcutPressed(i)) {
+			} else if (Screen.isPasteShortcutPressed(i)) {
 				if (this.editable) {
 					this.addText(MinecraftClient.getInstance().keyboard.getClipboard());
 				}
 
 				return true;
-			} else if (Gui.isCutShortcutPressed(i)) {
+			} else if (Screen.isCutShortcutPressed(i)) {
 				MinecraftClient.getInstance().keyboard.setClipboard(this.getSelectedText());
 				if (this.editable) {
 					this.addText("");
@@ -295,7 +295,7 @@ public class TextFieldWidget extends Drawable implements GuiEventListener {
 
 						return true;
 					case 262:
-						if (Gui.isControlPressed()) {
+						if (Screen.isControlPressed()) {
 							this.method_1883(this.method_1853(1));
 						} else {
 							this.moveCursor(1);
@@ -303,7 +303,7 @@ public class TextFieldWidget extends Drawable implements GuiEventListener {
 
 						return true;
 					case 263:
-						if (Gui.isControlPressed()) {
+						if (Screen.isControlPressed()) {
 							this.method_1883(this.method_1853(-1));
 						} else {
 							this.moveCursor(-1);

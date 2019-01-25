@@ -40,7 +40,7 @@ public class SwampSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 					if (p == 62 && chunk.getBlockState(mutable).getBlock() != blockState2.getBlock()) {
 						chunk.setBlockState(mutable, blockState2, false);
 						if (e < 0.12) {
-							chunk.setBlockState(mutable.method_10100(0, 1, 0), Blocks.field_10588.getDefaultState(), false);
+							chunk.setBlockState(mutable.setOffset(0, 1, 0), Blocks.field_10588.getDefaultState(), false);
 						}
 					}
 					break;

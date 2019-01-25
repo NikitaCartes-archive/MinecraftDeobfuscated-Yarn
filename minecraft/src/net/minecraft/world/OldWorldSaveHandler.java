@@ -13,7 +13,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.sortme.structures.StructureManager;
+import net.minecraft.structure.StructureManager;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.TagHelper;
 import net.minecraft.world.level.LevelProperties;

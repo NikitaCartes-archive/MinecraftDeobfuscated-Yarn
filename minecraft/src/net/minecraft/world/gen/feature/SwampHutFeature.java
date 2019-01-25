@@ -4,11 +4,11 @@ import com.google.common.collect.Lists;
 import com.mojang.datafixers.Dynamic;
 import java.util.List;
 import java.util.function.Function;
-import net.minecraft.class_3443;
 import net.minecraft.entity.EntityType;
-import net.minecraft.sortme.structures.StructureManager;
-import net.minecraft.sortme.structures.StructureStart;
-import net.minecraft.sortme.structures.SwampHutGenerator;
+import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructurePiece;
+import net.minecraft.structure.StructureStart;
+import net.minecraft.structure.generator.SwampHutGenerator;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
@@ -34,7 +34,7 @@ public class SwampHutFeature extends AbstractTempleFeature<DefaultFeatureConfig>
 	}
 
 	@Override
-	public StructureFeature.class_3774 method_14016() {
+	public StructureFeature.StructureStartFactory getStructureStartFactory() {
 		return SwampHutFeature.class_3198::new;
 	}
 
@@ -55,9 +55,9 @@ public class SwampHutFeature extends AbstractTempleFeature<DefaultFeatureConfig>
 
 	public boolean method_14029(IWorld iWorld, BlockPos blockPos) {
 		StructureStart structureStart = this.method_14025(iWorld, blockPos, true);
-		if (structureStart != StructureStart.field_16713 && structureStart instanceof SwampHutFeature.class_3198 && !structureStart.method_14963().isEmpty()) {
-			class_3443 lv = (class_3443)structureStart.method_14963().get(0);
-			return lv instanceof SwampHutGenerator;
+		if (structureStart != StructureStart.DEFAULT && structureStart instanceof SwampHutFeature.class_3198 && !structureStart.getChildren().isEmpty()) {
+			StructurePiece structurePiece = (StructurePiece)structureStart.getChildren().get(0);
+			return structurePiece instanceof SwampHutGenerator;
 		} else {
 			return false;
 		}
@@ -69,10 +69,10 @@ public class SwampHutFeature extends AbstractTempleFeature<DefaultFeatureConfig>
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
-			SwampHutGenerator swampHutGenerator = new SwampHutGenerator(this.field_16715, i * 16, j * 16);
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+			SwampHutGenerator swampHutGenerator = new SwampHutGenerator(this.random, i * 16, j * 16);
 			this.children.add(swampHutGenerator);
-			this.method_14969();
+			this.setBoundingBoxFromChildren();
 		}
 	}
 }

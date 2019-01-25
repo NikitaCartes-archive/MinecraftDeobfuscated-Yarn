@@ -22,7 +22,6 @@ import java.util.function.BooleanSupplier;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_3321;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
@@ -32,6 +31,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListenerFactory;
 import net.minecraft.server.command.ServerCommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.config.ServerConfigHandler;
 import net.minecraft.server.dedicated.gui.DedicatedServerGui;
 import net.minecraft.server.rcon.QueryResponseHandler;
 import net.minecraft.server.rcon.RconServer;
@@ -189,7 +189,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 			this.getUserCache().save();
 		}
 
-		if (!class_3321.method_14540(this)) {
+		if (!ServerConfigHandler.checkSuccess(this)) {
 			return false;
 		} else {
 			this.setPlayerManager(new DedicatedPlayerManager(this));
@@ -484,7 +484,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 				this.sleepFiveSeconds();
 			}
 
-			bl = class_3321.method_14547(this);
+			bl = ServerConfigHandler.convertBannedPlayers(this);
 		}
 
 		boolean bl2 = false;
@@ -495,7 +495,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 				this.sleepFiveSeconds();
 			}
 
-			bl2 = class_3321.method_14545(this);
+			bl2 = ServerConfigHandler.convertBannedIps(this);
 		}
 
 		boolean bl3 = false;
@@ -506,7 +506,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 				this.sleepFiveSeconds();
 			}
 
-			bl3 = class_3321.method_14539(this);
+			bl3 = ServerConfigHandler.convertOperators(this);
 		}
 
 		boolean bl4 = false;
@@ -517,7 +517,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 				this.sleepFiveSeconds();
 			}
 
-			bl4 = class_3321.method_14533(this);
+			bl4 = ServerConfigHandler.convertWhitelist(this);
 		}
 
 		boolean bl5 = false;
@@ -528,7 +528,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 				this.sleepFiveSeconds();
 			}
 
-			bl5 = class_3321.method_14550(this);
+			bl5 = ServerConfigHandler.convertPlayerFiles(this);
 		}
 
 		return bl || bl2 || bl3 || bl4 || bl5;

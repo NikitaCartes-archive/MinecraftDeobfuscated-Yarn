@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.entity.EntityType;
-import net.minecraft.sortme.structures.StructureManager;
-import net.minecraft.sortme.structures.StructureStart;
+import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructureStart;
+import net.minecraft.structure.generator.PillagerOutpostGenerator;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.features.village.PillagerVillageData;
 
 public class PillagerOutpostFeature extends AbstractTempleFeature<PillagerOutpostFeatureConfig> {
 	private static final List<Biome.SpawnEntry> field_16656 = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.PILLAGER, 1, 1, 1));
@@ -38,7 +38,7 @@ public class PillagerOutpostFeature extends AbstractTempleFeature<PillagerOutpos
 	}
 
 	@Override
-	public boolean method_14026(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
+	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
 		ChunkPos chunkPos = this.method_14018(chunkGenerator, random, i, j, 0, 0);
 		if (i == chunkPos.x && j == chunkPos.z) {
 			int k = i >> 4;
@@ -57,7 +57,7 @@ public class PillagerOutpostFeature extends AbstractTempleFeature<PillagerOutpos
 	}
 
 	@Override
-	public StructureFeature.class_3774 method_14016() {
+	public StructureFeature.StructureStartFactory getStructureStartFactory() {
 		return PillagerOutpostFeature.class_3771::new;
 	}
 
@@ -72,10 +72,10 @@ public class PillagerOutpostFeature extends AbstractTempleFeature<PillagerOutpos
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
 			BlockPos blockPos = new BlockPos(i * 16, 90, j * 16);
-			PillagerVillageData.method_16650(chunkGenerator, structureManager, blockPos, this.children, this.field_16715);
-			this.method_14969();
+			PillagerOutpostGenerator.addPieces(chunkGenerator, structureManager, blockPos, this.children, this.random);
+			this.setBoundingBoxFromChildren();
 		}
 	}
 }

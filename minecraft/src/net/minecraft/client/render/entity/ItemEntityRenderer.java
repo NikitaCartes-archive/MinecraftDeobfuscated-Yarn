@@ -82,7 +82,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		GlStateManager.pushMatrix();
-		BakedModel bakedModel = this.itemRenderer.method_4028(itemStack, itemEntity.world, null);
+		BakedModel bakedModel = this.itemRenderer.getModel(itemStack, itemEntity.world, null);
 		int j = this.method_3997(itemEntity, d, e, f, h, bakedModel);
 		float k = bakedModel.getTransformation().ground.scale.x();
 		float l = bakedModel.getTransformation().ground.scale.y();

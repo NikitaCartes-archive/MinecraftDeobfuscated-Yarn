@@ -13,8 +13,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.Parameter;
-import net.minecraft.world.loot.context.Parameters;
+import net.minecraft.world.loot.context.LootContextParameter;
+import net.minecraft.world.loot.context.LootContextParameters;
 
 public class TableBonusLootCondition implements LootCondition {
 	private final Enchantment enchantment;
@@ -26,12 +26,12 @@ public class TableBonusLootCondition implements LootCondition {
 	}
 
 	@Override
-	public Set<Parameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(Parameters.field_1229);
+	public Set<LootContextParameter<?>> getRequiredParameters() {
+		return ImmutableSet.of(LootContextParameters.field_1229);
 	}
 
 	public boolean method_799(LootContext lootContext) {
-		ItemStack itemStack = lootContext.get(Parameters.field_1229);
+		ItemStack itemStack = lootContext.method_296(LootContextParameters.field_1229);
 		int i = itemStack != null ? EnchantmentHelper.getLevel(this.enchantment, itemStack) : 0;
 		float f = this.chances[Math.min(i, this.chances.length - 1)];
 		return lootContext.getRandom().nextFloat() < f;

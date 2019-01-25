@@ -20,7 +20,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.Parameter;
+import net.minecraft.world.loot.context.LootContextParameter;
 
 public class SetLoreLootFunction extends ConditionalLootFunction {
 	private final boolean replace;
@@ -36,8 +36,8 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public Set<Parameter<?>> getRequiredParameters() {
-		return this.entity != null ? ImmutableSet.of(this.entity.getIdentifier()) : ImmutableSet.of();
+	public Set<LootContextParameter<?>> getRequiredParameters() {
+		return this.entity != null ? ImmutableSet.of(this.entity.method_315()) : ImmutableSet.of();
 	}
 
 	@Override

@@ -4,7 +4,7 @@ import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.menu.settings.ControlsSettingsGui;
+import net.minecraft.client.gui.menu.settings.ControlsSettingsScreen;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.TextFormat;
@@ -12,13 +12,13 @@ import org.apache.commons.lang3.ArrayUtils;
 
 @Environment(EnvType.CLIENT)
 public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.Entry> {
-	private final ControlsSettingsGui gui;
+	private final ControlsSettingsScreen gui;
 	private final MinecraftClient client;
 	private int field_2733;
 
-	public KeyBindingListWidget(ControlsSettingsGui controlsSettingsGui, MinecraftClient minecraftClient) {
-		super(minecraftClient, controlsSettingsGui.width + 45, controlsSettingsGui.height, 63, controlsSettingsGui.height - 32, 20);
-		this.gui = controlsSettingsGui;
+	public KeyBindingListWidget(ControlsSettingsScreen controlsSettingsScreen, MinecraftClient minecraftClient) {
+		super(minecraftClient, controlsSettingsScreen.width + 45, controlsSettingsScreen.height, 63, controlsSettingsScreen.height - 32, 20);
+		this.gui = controlsSettingsScreen;
 		this.client = minecraftClient;
 		KeyBinding[] keyBindings = ArrayUtils.clone(minecraftClient.options.keysAll);
 		Arrays.sort(keyBindings);
@@ -68,7 +68,7 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 		public void draw(int i, int j, int k, int l, boolean bl, float f) {
 			KeyBindingListWidget.this.client
 				.fontRenderer
-				.draw(this.field_2736, (float)(KeyBindingListWidget.this.client.currentGui.width / 2 - this.field_2737 / 2), (float)(this.getY() + j - 9 - 1), 16777215);
+				.draw(this.field_2736, (float)(KeyBindingListWidget.this.client.currentScreen.width / 2 - this.field_2737 / 2), (float)(this.getY() + j - 9 - 1), 16777215);
 		}
 	}
 

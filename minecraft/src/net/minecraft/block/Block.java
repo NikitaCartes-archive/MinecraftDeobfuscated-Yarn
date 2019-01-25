@@ -62,8 +62,8 @@ import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.loot.LootSupplier;
 import net.minecraft.world.loot.LootTables;
 import net.minecraft.world.loot.context.LootContext;
+import net.minecraft.world.loot.context.LootContextParameters;
 import net.minecraft.world.loot.context.LootContextTypes;
-import net.minecraft.world.loot.context.Parameters;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -499,7 +499,7 @@ public class Block implements ItemProvider {
 		if (identifier == LootTables.EMPTY) {
 			return Collections.emptyList();
 		} else {
-			LootContext lootContext = builder.put(Parameters.field_1224, blockState).build(LootContextTypes.BLOCK);
+			LootContext lootContext = builder.method_312(LootContextParameters.field_1224, blockState).build(LootContextTypes.BLOCK);
 			ServerWorld serverWorld = lootContext.getWorld();
 			LootSupplier lootSupplier = serverWorld.getServer().getLootManager().getSupplier(identifier);
 			return lootSupplier.getDrops(lootContext);
@@ -509,9 +509,9 @@ public class Block implements ItemProvider {
 	public static List<ItemStack> getDroppedStacks(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, @Nullable BlockEntity blockEntity) {
 		LootContext.Builder builder = new LootContext.Builder(serverWorld)
 			.setRandom(serverWorld.random)
-			.put(Parameters.field_1232, blockPos)
-			.put(Parameters.field_1229, ItemStack.EMPTY)
-			.putNullable(Parameters.field_1228, blockEntity);
+			.method_312(LootContextParameters.field_1232, blockPos)
+			.method_312(LootContextParameters.field_1229, ItemStack.EMPTY)
+			.method_306(LootContextParameters.field_1228, blockEntity);
 		return blockState.getDroppedStacks(builder);
 	}
 
@@ -520,16 +520,16 @@ public class Block implements ItemProvider {
 	) {
 		LootContext.Builder builder = new LootContext.Builder(serverWorld)
 			.setRandom(serverWorld.random)
-			.put(Parameters.field_1232, blockPos)
-			.put(Parameters.field_1229, itemStack)
-			.put(Parameters.field_1226, entity)
-			.putNullable(Parameters.field_1228, blockEntity);
+			.method_312(LootContextParameters.field_1232, blockPos)
+			.method_312(LootContextParameters.field_1229, itemStack)
+			.method_312(LootContextParameters.field_1226, entity)
+			.method_306(LootContextParameters.field_1228, blockEntity);
 		return blockState.getDroppedStacks(builder);
 	}
 
 	public static void dropStacks(BlockState blockState, LootContext.Builder builder) {
 		ServerWorld serverWorld = builder.getWorld();
-		BlockPos blockPos = builder.get(Parameters.field_1232);
+		BlockPos blockPos = builder.method_308(LootContextParameters.field_1232);
 		blockState.getDroppedStacks(builder).forEach(itemStack -> dropStack(serverWorld, blockPos, itemStack));
 		blockState.onStacksDropped(serverWorld, blockPos, ItemStack.EMPTY);
 	}

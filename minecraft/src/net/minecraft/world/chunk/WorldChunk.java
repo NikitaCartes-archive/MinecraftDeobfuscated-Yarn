@@ -34,7 +34,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ChunkHolder;
-import net.minecraft.sortme.structures.StructureStart;
+import net.minecraft.structure.StructureStart;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.TypeFilterableList;
 import net.minecraft.util.crash.CrashException;

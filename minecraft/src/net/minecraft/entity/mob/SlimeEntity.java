@@ -277,7 +277,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 				}
 
 				ChunkPos chunkPos = new ChunkPos(blockPos);
-				boolean bl = ChunkRandom.method_12662(chunkPos.x, chunkPos.z, iWorld.getSeed(), 987234911L).nextInt(10) == 0;
+				boolean bl = ChunkRandom.create(chunkPos.x, chunkPos.z, iWorld.getSeed(), 987234911L).nextInt(10) == 0;
 				if (this.random.nextInt(10) == 0 && bl && this.y < 40.0) {
 					return super.canSpawn(iWorld, spawnType);
 				}

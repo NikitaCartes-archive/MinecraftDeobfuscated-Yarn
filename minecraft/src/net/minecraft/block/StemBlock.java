@@ -67,7 +67,7 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 							block == Blocks.field_10362 || block == Blocks.field_10566 || block == Blocks.field_10253 || block == Blocks.field_10520 || block == Blocks.field_10219
 						)) {
 						world.setBlockState(blockPos2, this.gourdBlock.getDefaultState());
-						world.setBlockState(blockPos, this.gourdBlock.getAttachedStem().getDefaultState().with(HorizontalFacingBlock.FACING, direction));
+						world.setBlockState(blockPos, this.gourdBlock.getAttachedStem().getDefaultState().with(HorizontalFacingBlock.field_11177, direction));
 					}
 				}
 			}

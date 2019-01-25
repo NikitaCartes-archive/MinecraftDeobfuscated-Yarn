@@ -466,7 +466,7 @@ public class GameRenderer implements AutoCloseable, ResourceReloadListener {
 				BlockState blockState = this.client.world.getBlockState(blockPos);
 				Block block = blockState.getBlock();
 				if (block instanceof BedBlock) {
-					GlStateManager.rotatef(((Direction)blockState.get(BedBlock.FACING)).asRotation(), 0.0F, 1.0F, 0.0F);
+					GlStateManager.rotatef(((Direction)blockState.get(BedBlock.field_11177)).asRotation(), 0.0F, 1.0F, 0.0F);
 				}
 
 				GlStateManager.rotatef(MathHelper.lerp(f, entity.prevYaw, entity.yaw) + 180.0F, 0.0F, -1.0F, 0.0F);
@@ -672,7 +672,7 @@ public class GameRenderer implements AutoCloseable, ResourceReloadListener {
 				}
 
 				this.client.getProfiler().swap("gui");
-				if (!this.client.options.hudHidden || this.client.currentGui != null) {
+				if (!this.client.options.hudHidden || this.client.currentScreen != null) {
 					GlStateManager.alphaFunc(516, 0.1F);
 					this.client.window.method_4493(MinecraftClient.isSystemMac);
 					this.renderFloatingItem(this.client.window.getScaledWidth(), this.client.window.getScaledHeight(), f);
@@ -689,15 +689,15 @@ public class GameRenderer implements AutoCloseable, ResourceReloadListener {
 				this.client.window.method_4493(MinecraftClient.isSystemMac);
 			}
 
-			if (this.client.currentGui != null) {
+			if (this.client.currentScreen != null) {
 				GlStateManager.clear(256, MinecraftClient.isSystemMac);
 
 				try {
-					this.client.currentGui.draw(i, j, this.client.method_1534());
+					this.client.currentScreen.draw(i, j, this.client.method_1534());
 				} catch (Throwable var13) {
 					CrashReport crashReport = CrashReport.create(var13, "Rendering screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen render details");
-					crashReportSection.add("Screen name", (ICrashCallable<String>)(() -> this.client.currentGui.getClass().getCanonicalName()));
+					crashReportSection.add("Screen name", (ICrashCallable<String>)(() -> this.client.currentScreen.getClass().getCanonicalName()));
 					crashReportSection.add(
 						"Mouse location",
 						(ICrashCallable<String>)(() -> String.format(
@@ -1318,7 +1318,7 @@ public class GameRenderer implements AutoCloseable, ResourceReloadListener {
 			GlStateManager.rotatef(900.0F * MathHelper.abs(MathHelper.sin(n)), 0.0F, 1.0F, 0.0F);
 			GlStateManager.rotatef(6.0F * MathHelper.cos(g * 8.0F), 1.0F, 0.0F, 0.0F);
 			GlStateManager.rotatef(6.0F * MathHelper.cos(g * 8.0F), 0.0F, 0.0F, 1.0F);
-			this.client.getItemRenderer().renderItemWithTransformation(this.floatingItem, ModelTransformation.Type.FIXED);
+			this.client.getItemRenderer().renderItem(this.floatingItem, ModelTransformation.Type.FIXED);
 			GlStateManager.popAttributes();
 			GlStateManager.popMatrix();
 			GuiLighting.disable();

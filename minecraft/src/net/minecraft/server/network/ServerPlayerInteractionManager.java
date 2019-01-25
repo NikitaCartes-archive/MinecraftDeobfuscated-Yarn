@@ -236,7 +236,7 @@ public class ServerPlayerInteractionManager {
 	public ActionResult interactItem(PlayerEntity playerEntity, World world, ItemStack itemStack, Hand hand) {
 		if (this.gameMode == GameMode.field_9219) {
 			return ActionResult.PASS;
-		} else if (playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
+		} else if (playerEntity.getItemCooldownManager().isCooldown(itemStack.getItem())) {
 			return ActionResult.PASS;
 		} else {
 			int i = itemStack.getAmount();
@@ -245,7 +245,7 @@ public class ServerPlayerInteractionManager {
 			ItemStack itemStack2 = typedActionResult.getValue();
 			if (itemStack2 == itemStack && itemStack2.getAmount() == i && itemStack2.getMaxUseTime() <= 0 && itemStack2.getDamage() == j) {
 				return typedActionResult.getResult();
-			} else if (typedActionResult.getResult() == ActionResult.FAILURE && itemStack2.getMaxUseTime() > 0 && !playerEntity.method_6115()) {
+			} else if (typedActionResult.getResult() == ActionResult.FAILURE && itemStack2.getMaxUseTime() > 0 && !playerEntity.isUsingItem()) {
 				return typedActionResult.getResult();
 			} else {
 				playerEntity.setStackInHand(hand, itemStack2);
@@ -260,7 +260,7 @@ public class ServerPlayerInteractionManager {
 					playerEntity.setStackInHand(hand, ItemStack.EMPTY);
 				}
 
-				if (!playerEntity.method_6115()) {
+				if (!playerEntity.isUsingItem()) {
 					((ServerPlayerEntity)playerEntity).method_14204(playerEntity.containerPlayer);
 				}
 
@@ -285,7 +285,7 @@ public class ServerPlayerInteractionManager {
 			boolean bl2 = playerEntity.isSneaking() && bl;
 			if (!bl2 && blockState.activate(world, playerEntity, hand, blockHitResult)) {
 				return ActionResult.SUCCESS;
-			} else if (!itemStack.isEmpty() && !playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
+			} else if (!itemStack.isEmpty() && !playerEntity.getItemCooldownManager().isCooldown(itemStack.getItem())) {
 				ItemUsageContext itemUsageContext = new ItemUsageContext(playerEntity, playerEntity.getStackInHand(hand), blockHitResult);
 				if (this.isCreative()) {
 					int i = itemStack.getAmount();

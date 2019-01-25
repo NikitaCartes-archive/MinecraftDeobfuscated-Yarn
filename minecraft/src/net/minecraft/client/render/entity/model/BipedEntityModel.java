@@ -262,7 +262,7 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 			this.armLeft.pitch = (float) (-Math.PI / 2) + this.head.pitch;
 		}
 
-		float p = (float)CrossbowItem.method_7775(livingEntity.getActiveItem());
+		float p = (float)CrossbowItem.getPullTime(livingEntity.getActiveItem());
 		if (this.armPoseRight == BipedEntityModel.ArmPose.field_3405) {
 			this.armRight.yaw = -0.8F;
 			this.armRight.pitch = -0.97079635F;

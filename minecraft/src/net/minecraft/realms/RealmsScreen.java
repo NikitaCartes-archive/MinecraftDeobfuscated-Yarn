@@ -6,7 +6,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.menu.RealmsGui;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.DefaultSkinHelper;
@@ -29,9 +28,9 @@ public abstract class RealmsScreen extends RealmsGuiEventListener {
 	private MinecraftClient minecraft;
 	public int width;
 	public int height;
-	private final RealmsGui proxy = new RealmsGui(this);
+	private final net.minecraft.client.gui.menu.RealmsScreen proxy = new net.minecraft.client.gui.menu.RealmsScreen(this);
 
-	public RealmsGui getProxy() {
+	public net.minecraft.client.gui.menu.RealmsScreen getProxy() {
 		return this.proxy;
 	}
 

@@ -9,8 +9,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.Parameter;
-import net.minecraft.world.loot.context.Parameters;
+import net.minecraft.world.loot.context.LootContextParameter;
+import net.minecraft.world.loot.context.LootContextParameters;
 
 public class MatchToolLootCondition implements LootCondition {
 	private final ItemPredicate predicate;
@@ -20,12 +20,12 @@ public class MatchToolLootCondition implements LootCondition {
 	}
 
 	@Override
-	public Set<Parameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(Parameters.field_1229);
+	public Set<LootContextParameter<?>> getRequiredParameters() {
+		return ImmutableSet.of(LootContextParameters.field_1229);
 	}
 
 	public boolean method_946(LootContext lootContext) {
-		ItemStack itemStack = lootContext.get(Parameters.field_1229);
+		ItemStack itemStack = lootContext.method_296(LootContextParameters.field_1229);
 		return itemStack != null && this.predicate.test(itemStack);
 	}
 

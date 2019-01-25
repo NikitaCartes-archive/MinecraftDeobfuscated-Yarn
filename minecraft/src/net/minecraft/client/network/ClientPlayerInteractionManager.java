@@ -310,7 +310,7 @@ public class ClientPlayerInteractionManager {
 					return ActionResult.SUCCESS;
 				} else {
 					this.networkHandler.sendPacket(new PlayerInteractBlockServerPacket(hand, blockHitResult));
-					if (!itemStack.isEmpty() && !clientPlayerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
+					if (!itemStack.isEmpty() && !clientPlayerEntity.getItemCooldownManager().isCooldown(itemStack.getItem())) {
 						ItemUsageContext itemUsageContext = new ItemUsageContext(clientPlayerEntity, clientPlayerEntity.getStackInHand(hand), blockHitResult);
 						ActionResult actionResult;
 						if (this.gameMode.isCreative()) {
@@ -337,7 +337,7 @@ public class ClientPlayerInteractionManager {
 			this.syncSelectedSlot();
 			this.networkHandler.sendPacket(new PlayerInteractItemServerPacket(hand));
 			ItemStack itemStack = playerEntity.getStackInHand(hand);
-			if (playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
+			if (playerEntity.getItemCooldownManager().isCooldown(itemStack.getItem())) {
 				return ActionResult.PASS;
 			} else {
 				int i = itemStack.getAmount();

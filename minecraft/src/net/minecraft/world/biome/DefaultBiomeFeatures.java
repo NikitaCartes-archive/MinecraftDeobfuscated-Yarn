@@ -96,9 +96,7 @@ public class DefaultBiomeFeatures {
 		);
 		biome.addFeature(
 			GenerationStep.Feature.SURFACE_STRUCTURES,
-			Biome.configureFeature(
-				Feature.OCEAN_RUIN, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeTemperature.COLD, 0.3F, 0.9F), Decorator.NOPE, DecoratorConfig.DEFAULT
-			)
+			Biome.configureFeature(Feature.OCEAN_RUIN, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3F, 0.9F), Decorator.NOPE, DecoratorConfig.DEFAULT)
 		);
 		biome.addFeature(
 			GenerationStep.Feature.UNDERGROUND_STRUCTURES,

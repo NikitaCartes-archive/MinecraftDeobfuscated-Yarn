@@ -6,7 +6,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1386;
-import net.minecraft.class_3321;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -20,6 +19,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.scoreboard.AbstractScoreboardTeam;
+import net.minecraft.server.config.ServerConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 
@@ -60,7 +60,7 @@ public abstract class TameableEntity extends AnimalEntity implements OwnableEnti
 			string = compoundTag.getString("OwnerUUID");
 		} else {
 			String string2 = compoundTag.getString("Owner");
-			string = class_3321.method_14546(this.getServer(), string2);
+			string = ServerConfigHandler.getPlayerUuidByName(this.getServer(), string2);
 		}
 
 		if (!string.isEmpty()) {

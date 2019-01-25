@@ -5,9 +5,9 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import net.minecraft.sortme.structures.OceanTempleGenerator;
-import net.minecraft.sortme.structures.StructureManager;
-import net.minecraft.sortme.structures.StructureStart;
+import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructureStart;
+import net.minecraft.structure.generator.OceanTempleGenerator;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
@@ -40,7 +40,7 @@ public class OceanRuinFeature extends AbstractTempleFeature<OceanRuinFeatureConf
 	}
 
 	@Override
-	public StructureFeature.class_3774 method_14016() {
+	public StructureFeature.StructureStartFactory getStructureStartFactory() {
 		return OceanRuinFeature.class_3412::new;
 	}
 
@@ -49,15 +49,15 @@ public class OceanRuinFeature extends AbstractTempleFeature<OceanRuinFeatureConf
 		return 14357621;
 	}
 
-	public static enum BiomeTemperature {
+	public static enum BiomeType {
 		WARM("warm"),
 		COLD("cold");
 
-		private static final Map<String, OceanRuinFeature.BiomeTemperature> nameMap = (Map<String, OceanRuinFeature.BiomeTemperature>)Arrays.stream(values())
-			.collect(Collectors.toMap(OceanRuinFeature.BiomeTemperature::getName, biomeTemperature -> biomeTemperature));
+		private static final Map<String, OceanRuinFeature.BiomeType> nameMap = (Map<String, OceanRuinFeature.BiomeType>)Arrays.stream(values())
+			.collect(Collectors.toMap(OceanRuinFeature.BiomeType::getName, biomeType -> biomeType));
 		private final String name;
 
-		private BiomeTemperature(String string2) {
+		private BiomeType(String string2) {
 			this.name = string2;
 		}
 
@@ -65,8 +65,8 @@ public class OceanRuinFeature extends AbstractTempleFeature<OceanRuinFeatureConf
 			return this.name;
 		}
 
-		public static OceanRuinFeature.BiomeTemperature byName(String string) {
-			return (OceanRuinFeature.BiomeTemperature)nameMap.get(string);
+		public static OceanRuinFeature.BiomeType byName(String string) {
+			return (OceanRuinFeature.BiomeType)nameMap.get(string);
 		}
 	}
 
@@ -76,14 +76,14 @@ public class OceanRuinFeature extends AbstractTempleFeature<OceanRuinFeatureConf
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
 			OceanRuinFeatureConfig oceanRuinFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.OCEAN_RUIN);
 			int k = i * 16;
 			int l = j * 16;
 			BlockPos blockPos = new BlockPos(k, 90, l);
-			Rotation rotation = Rotation.values()[this.field_16715.nextInt(Rotation.values().length)];
-			OceanTempleGenerator.method_14827(structureManager, blockPos, rotation, this.children, this.field_16715, oceanRuinFeatureConfig);
-			this.method_14969();
+			Rotation rotation = Rotation.values()[this.random.nextInt(Rotation.values().length)];
+			OceanTempleGenerator.method_14827(structureManager, blockPos, rotation, this.children, this.random, oceanRuinFeatureConfig);
+			this.setBoundingBoxFromChildren();
 		}
 	}
 }

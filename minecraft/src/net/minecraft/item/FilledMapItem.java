@@ -304,7 +304,7 @@ public class FilledMapItem extends MapItem {
 	}
 
 	@Override
-	public void onUpdate(ItemStack itemStack, World world, Entity entity, int i, boolean bl) {
+	public void onEntityTick(ItemStack itemStack, World world, Entity entity, int i, boolean bl) {
 		if (!world.isClient) {
 			MapState mapState = method_8001(itemStack, world);
 			if (mapState != null) {

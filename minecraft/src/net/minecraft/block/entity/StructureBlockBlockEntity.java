@@ -17,10 +17,10 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sortme.Structure;
-import net.minecraft.sortme.StructurePlacementData;
-import net.minecraft.sortme.structures.StructureManager;
-import net.minecraft.sortme.structures.processor.BlockRotStructureProcessor;
+import net.minecraft.structure.Structure;
+import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructurePlacementData;
+import net.minecraft.structure.processor.BlockRotStructureProcessor;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
@@ -142,7 +142,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		return this.toTag(new CompoundTag());
 	}
 
-	public boolean openGui(PlayerEntity playerEntity) {
+	public boolean openScreen(PlayerEntity playerEntity) {
 		if (!playerEntity.method_7338()) {
 			return false;
 		} else {
@@ -442,9 +442,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 						.setIgnoreEntities(this.ignoreEntities)
 						.setChunkPosition(null);
 					if (this.integrity < 1.0F) {
-						structurePlacementData.clearProcessors()
-							.addProcessor(new BlockRotStructureProcessor(MathHelper.clamp(this.integrity, 0.0F, 1.0F)))
-							.method_15118(this.seed);
+						structurePlacementData.clearProcessors().addProcessor(new BlockRotStructureProcessor(MathHelper.clamp(this.integrity, 0.0F, 1.0F))).setSeed(this.seed);
 					}
 
 					structure.place(this.world, blockPos2, structurePlacementData);

@@ -5,12 +5,12 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 
 public class OceanRuinFeatureConfig implements FeatureConfig {
-	public final OceanRuinFeature.BiomeTemperature biomeTemperature;
+	public final OceanRuinFeature.BiomeType biomeType;
 	public final float largeProbability;
 	public final float clusterProbability;
 
-	public OceanRuinFeatureConfig(OceanRuinFeature.BiomeTemperature biomeTemperature, float f, float g) {
-		this.biomeTemperature = biomeTemperature;
+	public OceanRuinFeatureConfig(OceanRuinFeature.BiomeType biomeType, float f, float g) {
+		this.biomeType = biomeType;
 		this.largeProbability = f;
 		this.clusterProbability = g;
 	}
@@ -22,7 +22,7 @@ public class OceanRuinFeatureConfig implements FeatureConfig {
 			dynamicOps.createMap(
 				ImmutableMap.of(
 					dynamicOps.createString("biome_temp"),
-					dynamicOps.createString(this.biomeTemperature.getName()),
+					dynamicOps.createString(this.biomeType.getName()),
 					dynamicOps.createString("large_probability"),
 					dynamicOps.createFloat(this.largeProbability),
 					dynamicOps.createString("cluster_probability"),
@@ -33,9 +33,9 @@ public class OceanRuinFeatureConfig implements FeatureConfig {
 	}
 
 	public static <T> OceanRuinFeatureConfig deserialize(Dynamic<T> dynamic) {
-		OceanRuinFeature.BiomeTemperature biomeTemperature = OceanRuinFeature.BiomeTemperature.byName(dynamic.get("biome_temp").asString(""));
+		OceanRuinFeature.BiomeType biomeType = OceanRuinFeature.BiomeType.byName(dynamic.get("biome_temp").asString(""));
 		float f = dynamic.get("large_probability").asFloat(0.0F);
 		float g = dynamic.get("cluster_probability").asFloat(0.0F);
-		return new OceanRuinFeatureConfig(biomeTemperature, f, g);
+		return new OceanRuinFeatureConfig(biomeType, f, g);
 	}
 }

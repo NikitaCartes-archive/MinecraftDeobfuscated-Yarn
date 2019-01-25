@@ -340,7 +340,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 				int i = abstractListTag.size();
 				int j = this.field_9903 < 0 ? i + this.field_9903 : this.field_9903;
 				if (0 <= j && j < i) {
-					abstractListTag.getTag(j);
+					abstractListTag.remove(j);
 					return 1;
 				}
 			}
@@ -415,7 +415,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 		@Override
 		public int method_9383(Tag tag) {
 			return this.method_9364(tag, (listTag, i, tagx) -> {
-				listTag.getTag(i);
+				listTag.remove(i);
 				return true;
 			});
 		}

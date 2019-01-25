@@ -100,7 +100,7 @@ public class WorldUpdater {
 				final File file2 = dimensionType2.getFile(file);
 				builder2.put(dimensionType2, new class_3977(this.worldSaveHandler.getDataFixer()) {
 					@Override
-					protected File method_17912() {
+					protected File getRegionDir() {
 						return new File(file2, "region");
 					}
 				});
@@ -122,12 +122,12 @@ public class WorldUpdater {
 						boolean bl2 = false;
 
 						try {
-							CompoundTag compoundTag = lv.method_17911(chunkPos);
+							CompoundTag compoundTag = lv.getChunkTag(chunkPos);
 							if (compoundTag != null) {
-								int i = class_3977.method_17908(compoundTag);
-								CompoundTag compoundTag2 = lv.method_17907(dimensionType3, () -> this.persistentStateManager, compoundTag);
+								int i = class_3977.getDataVersion(compoundTag);
+								CompoundTag compoundTag2 = lv.updateChunkTag(dimensionType3, () -> this.persistentStateManager, compoundTag);
 								if (i < SharedConstants.getGameVersion().getWorldVersion()) {
-									lv.method_17910(chunkPos, compoundTag2);
+									lv.setChunkTag(chunkPos, compoundTag2);
 									bl2 = true;
 								}
 							}

@@ -34,7 +34,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.Parameters;
+import net.minecraft.world.loot.context.LootContextParameters;
 
 public class Explosion {
 	private final boolean createFire;
@@ -249,10 +249,10 @@ public class Explosion {
 						BlockEntity blockEntity = block.hasBlockEntity() ? this.world.getBlockEntity(blockPos) : null;
 						LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
 							.setRandom(this.world.random)
-							.put(Parameters.field_1232, blockPos)
-							.put(Parameters.field_1229, ItemStack.EMPTY)
-							.put(Parameters.field_1225, this.power)
-							.putNullable(Parameters.field_1228, blockEntity);
+							.method_312(LootContextParameters.field_1232, blockPos)
+							.method_312(LootContextParameters.field_1229, ItemStack.EMPTY)
+							.method_312(LootContextParameters.field_1225, this.power)
+							.method_306(LootContextParameters.field_1228, blockEntity);
 						Block.dropStacks(blockState, builder);
 					}
 

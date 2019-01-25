@@ -75,7 +75,7 @@ public class ToastManager extends Drawable {
 		private final T instance;
 		private long field_2243 = -1L;
 		private long field_2242 = -1L;
-		private Toast.class_369 field_2244 = Toast.class_369.field_2210;
+		private Toast.Visibility field_2244 = Toast.Visibility.field_2210;
 
 		private Entry(T toast) {
 			this.instance = toast;
@@ -88,7 +88,7 @@ public class ToastManager extends Drawable {
 		private float method_2003(long l) {
 			float f = MathHelper.clamp((float)(l - this.field_2243) / 600.0F, 0.0F, 1.0F);
 			f *= f;
-			return this.field_2244 == Toast.class_369.field_2209 ? 1.0F - f : f;
+			return this.field_2244 == Toast.Visibility.field_2209 ? 1.0F - f : f;
 		}
 
 		public boolean draw(int i, int j) {
@@ -98,21 +98,21 @@ public class ToastManager extends Drawable {
 				this.field_2244.play(ToastManager.this.client.getSoundLoader());
 			}
 
-			if (this.field_2244 == Toast.class_369.field_2210 && l - this.field_2243 <= 600L) {
+			if (this.field_2244 == Toast.Visibility.field_2210 && l - this.field_2243 <= 600L) {
 				this.field_2242 = l;
 			}
 
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef((float)i - 160.0F * this.method_2003(l), (float)(j * 32), (float)(500 + j));
-			Toast.class_369 lv = this.instance.draw(ToastManager.this, l - this.field_2242);
+			Toast.Visibility visibility = this.instance.draw(ToastManager.this, l - this.field_2242);
 			GlStateManager.popMatrix();
-			if (lv != this.field_2244) {
+			if (visibility != this.field_2244) {
 				this.field_2243 = l - (long)((int)((1.0F - this.method_2003(l)) * 600.0F));
-				this.field_2244 = lv;
+				this.field_2244 = visibility;
 				this.field_2244.play(ToastManager.this.client.getSoundLoader());
 			}
 
-			return this.field_2244 == Toast.class_369.field_2209 && l - this.field_2243 > 600L;
+			return this.field_2244 == Toast.Visibility.field_2209 && l - this.field_2243 > 600L;
 		}
 	}
 }

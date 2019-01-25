@@ -16,7 +16,7 @@ import net.minecraft.datafixers.Schemas;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.sortme.JsonLikeTagParser;
-import net.minecraft.sortme.Structure;
+import net.minecraft.structure.Structure;
 import net.minecraft.util.TagHelper;
 import org.apache.commons.io.IOUtils;
 

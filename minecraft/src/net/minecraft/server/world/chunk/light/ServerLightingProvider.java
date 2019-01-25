@@ -6,8 +6,8 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.IntSupplier;
-import net.minecraft.server.world.ChunkHolderManager;
 import net.minecraft.server.world.ChunkTaskPrioritySystem;
+import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.util.Actor;
 import net.minecraft.util.MailboxProcessor;
 import net.minecraft.util.math.BlockPos;
@@ -26,19 +26,19 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final MailboxProcessor<Runnable> field_17255;
 	private final ObjectList<Pair<ServerLightingProvider.class_3901, Runnable>> field_17256 = new ObjectArrayList<>();
-	private final ChunkHolderManager field_17257;
+	private final ThreadedAnvilChunkStorage field_17257;
 	private final Actor<ChunkTaskPrioritySystem.RunnableMessage<Runnable>> field_17259;
 	private volatile int field_17260 = 5;
 
 	public ServerLightingProvider(
 		ChunkProvider chunkProvider,
-		ChunkHolderManager chunkHolderManager,
+		ThreadedAnvilChunkStorage threadedAnvilChunkStorage,
 		boolean bl,
 		MailboxProcessor<Runnable> mailboxProcessor,
 		Actor<ChunkTaskPrioritySystem.RunnableMessage<Runnable>> actor
 	) {
 		super(chunkProvider, true, bl);
-		this.field_17257 = chunkHolderManager;
+		this.field_17257 = threadedAnvilChunkStorage;
 		this.field_17259 = actor;
 		this.field_17255 = mailboxProcessor;
 	}

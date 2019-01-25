@@ -8,7 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.Screen;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.item.ItemStack;
@@ -50,7 +50,7 @@ public class RecipeBookGhostSlots {
 	}
 
 	public void draw(MinecraftClient minecraftClient, int i, int j, boolean bl, float f) {
-		if (!Gui.isControlPressed()) {
+		if (!Screen.isControlPressed()) {
 			this.time += f;
 		}
 
@@ -69,12 +69,12 @@ public class RecipeBookGhostSlots {
 
 			ItemStack itemStack = ghostInputSlot.getCurrentItemStack();
 			ItemRenderer itemRenderer = minecraftClient.getItemRenderer();
-			itemRenderer.renderItemInGui(minecraftClient.player, itemStack, l, m);
+			itemRenderer.renderGuiItem(minecraftClient.player, itemStack, l, m);
 			GlStateManager.depthFunc(516);
 			Drawable.drawRect(l, m, l + 16, m + 16, 822083583);
 			GlStateManager.depthFunc(515);
 			if (k == 0) {
-				itemRenderer.renderItemOverlaysInGUI(minecraftClient.fontRenderer, itemStack, l, m);
+				itemRenderer.renderGuiItemOverlay(minecraftClient.fontRenderer, itemStack, l, m);
 			}
 
 			GlStateManager.enableLighting();

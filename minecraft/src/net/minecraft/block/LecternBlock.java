@@ -29,7 +29,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class LecternBlock extends BlockWithEntity {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	public static final BooleanProperty HAS_BOOK = Properties.HAS_BOOK;
 	public static final VoxelShape BOTTOM_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);

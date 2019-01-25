@@ -5,16 +5,16 @@ import net.minecraft.util.math.MathHelper;
 
 @Immutable
 public class LocalDifficulty {
-	private final Difficulty field_5798;
+	private final Difficulty globalDifficulty;
 	private final float localDifficulty;
 
 	public LocalDifficulty(Difficulty difficulty, long l, long m, float f) {
-		this.field_5798 = difficulty;
+		this.globalDifficulty = difficulty;
 		this.localDifficulty = this.method_5456(difficulty, l, m, f);
 	}
 
 	public Difficulty method_5454() {
-		return this.field_5798;
+		return this.globalDifficulty;
 	}
 
 	public float getLocalDifficulty() {

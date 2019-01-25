@@ -8,8 +8,8 @@ import java.util.Random;
 import java.util.Set;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.Parameter;
-import net.minecraft.world.loot.context.Parameters;
+import net.minecraft.world.loot.context.LootContextParameter;
+import net.minecraft.world.loot.context.LootContextParameters;
 
 public class SurvivesExplosionLootCondition implements LootCondition {
 	private static final SurvivesExplosionLootCondition INSTANCE = new SurvivesExplosionLootCondition();
@@ -18,12 +18,12 @@ public class SurvivesExplosionLootCondition implements LootCondition {
 	}
 
 	@Override
-	public Set<Parameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(Parameters.field_1225);
+	public Set<LootContextParameter<?>> getRequiredParameters() {
+		return ImmutableSet.of(LootContextParameters.field_1225);
 	}
 
 	public boolean method_869(LootContext lootContext) {
-		Float float_ = lootContext.get(Parameters.field_1225);
+		Float float_ = lootContext.method_296(LootContextParameters.field_1225);
 		if (float_ != null) {
 			Random random = lootContext.getRandom();
 			float f = 1.0F / float_;

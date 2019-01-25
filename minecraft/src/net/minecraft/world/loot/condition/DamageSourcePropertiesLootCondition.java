@@ -11,8 +11,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.Parameter;
-import net.minecraft.world.loot.context.Parameters;
+import net.minecraft.world.loot.context.LootContextParameter;
+import net.minecraft.world.loot.context.LootContextParameters;
 
 public class DamageSourcePropertiesLootCondition implements LootCondition {
 	private final DamageSourcePredicate predicate;
@@ -22,13 +22,13 @@ public class DamageSourcePropertiesLootCondition implements LootCondition {
 	}
 
 	@Override
-	public Set<Parameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(Parameters.field_1232, Parameters.field_1231);
+	public Set<LootContextParameter<?>> getRequiredParameters() {
+		return ImmutableSet.of(LootContextParameters.field_1232, LootContextParameters.field_1231);
 	}
 
 	public boolean method_834(LootContext lootContext) {
-		DamageSource damageSource = lootContext.get(Parameters.field_1231);
-		BlockPos blockPos = lootContext.get(Parameters.field_1232);
+		DamageSource damageSource = lootContext.method_296(LootContextParameters.field_1231);
+		BlockPos blockPos = lootContext.method_296(LootContextParameters.field_1232);
 		return blockPos != null && damageSource != null && this.predicate.test(lootContext.getWorld(), new Vec3d(blockPos), damageSource);
 	}
 

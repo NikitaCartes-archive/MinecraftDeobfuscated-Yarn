@@ -23,7 +23,7 @@ public class class_370 implements Toast {
 	}
 
 	@Override
-	public Toast.class_369 draw(ToastManager toastManager, long l) {
+	public Toast.Visibility draw(ToastManager toastManager, long l) {
 		if (this.field_2214) {
 			this.field_2216 = l;
 			this.field_2214 = false;
@@ -39,7 +39,7 @@ public class class_370 implements Toast {
 			toastManager.getGame().fontRenderer.draw(this.field_2217, 18.0F, 18.0F, -1);
 		}
 
-		return l - this.field_2216 < 5000L ? Toast.class_369.field_2210 : Toast.class_369.field_2209;
+		return l - this.field_2216 < 5000L ? Toast.Visibility.field_2210 : Toast.Visibility.field_2209;
 	}
 
 	public void method_1991(TextComponent textComponent, @Nullable TextComponent textComponent2) {

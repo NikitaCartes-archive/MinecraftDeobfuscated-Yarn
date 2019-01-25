@@ -18,7 +18,7 @@ public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
 	private static final TextComponent TITLE = new TranslatableTextComponent("tutorial.craft_planks.title");
 	private static final TextComponent DESCRIPTION = new TranslatableTextComponent("tutorial.craft_planks.description");
 	private final TutorialManager manager;
-	private TutorialToast field_5610;
+	private TutorialToast toast;
 	private int ticks;
 
 	public CraftPlanksTutorialStepHandler(TutorialManager tutorialManager) {
@@ -46,18 +46,18 @@ public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
 				}
 			}
 
-			if (this.ticks >= 1200 && this.field_5610 == null) {
-				this.field_5610 = new TutorialToast(TutorialToast.class_373.field_2236, TITLE, DESCRIPTION, false);
-				this.manager.getClient().getToastManager().add(this.field_5610);
+			if (this.ticks >= 1200 && this.toast == null) {
+				this.toast = new TutorialToast(TutorialToast.Type.field_2236, TITLE, DESCRIPTION, false);
+				this.manager.getClient().getToastManager().add(this.toast);
 			}
 		}
 	}
 
 	@Override
 	public void destroy() {
-		if (this.field_5610 != null) {
-			this.field_5610.method_1993();
-			this.field_5610 = null;
+		if (this.toast != null) {
+			this.toast.hide();
+			this.toast = null;
 		}
 	}
 

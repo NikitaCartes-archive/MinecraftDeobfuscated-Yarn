@@ -30,11 +30,11 @@ public class ChunkPos {
 		return (long)i & 4294967295L | ((long)j & 4294967295L) << 32;
 	}
 
-	public static int longX(long l) {
+	public static int getPackedX(long l) {
 		return (int)(l & 4294967295L);
 	}
 
-	public static int longZ(long l) {
+	public static int getPackedZ(long l) {
 		return (int)(l >>> 32 & 4294967295L);
 	}
 
@@ -71,19 +71,19 @@ public class ChunkPos {
 		return (this.z << 4) + 15;
 	}
 
-	public int method_17885() {
+	public int getRegionX() {
 		return this.x >> 5;
 	}
 
-	public int method_17886() {
+	public int getRegionZ() {
 		return this.z >> 5;
 	}
 
-	public int method_17887() {
+	public int getRegionRelativeX() {
 		return this.x & 31;
 	}
 
-	public int method_17888() {
+	public int getRegionRelativeZ() {
 		return this.z & 31;
 	}
 
@@ -95,7 +95,7 @@ public class ChunkPos {
 		return "[" + this.x + ", " + this.z + "]";
 	}
 
-	public BlockPos method_8323() {
+	public BlockPos getCenterBlockPos() {
 		return new BlockPos(this.x << 4, 0, this.z << 4);
 	}
 }

@@ -66,7 +66,7 @@ enum AdvancementTabType {
 				m += 5;
 		}
 
-		itemRenderer.renderItemInGui(null, itemStack, l, m);
+		itemRenderer.renderGuiItem(null, itemStack, l, m);
 	}
 
 	public int method_2302(int i) {

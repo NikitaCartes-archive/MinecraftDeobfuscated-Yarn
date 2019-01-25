@@ -26,8 +26,8 @@ import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.client.network.packet.BlockUpdateClientPacket;
 import net.minecraft.client.network.packet.ChatMessageClientPacket;
 import net.minecraft.client.network.packet.CommandSuggestionsClientPacket;
+import net.minecraft.client.network.packet.ConfirmGuiActionClientPacket;
 import net.minecraft.client.network.packet.DisconnectClientPacket;
-import net.minecraft.client.network.packet.GuiActionConfirmClientPacket;
 import net.minecraft.client.network.packet.GuiSlotUpdateClientPacket;
 import net.minecraft.client.network.packet.HeldItemChangeClientPacket;
 import net.minecraft.client.network.packet.KeepAliveClientPacket;
@@ -59,6 +59,7 @@ import net.minecraft.item.WritableBookItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.ButtonClickServerPacket;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
@@ -617,14 +618,14 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	public void onJigsawUpdate(UpdateJigsawServerPacket updateJigsawServerPacket) {
 		NetworkThreadUtils.forceMainThread(updateJigsawServerPacket, this, this.player.getServerWorld());
 		if (this.player.method_7338()) {
-			BlockPos blockPos = updateJigsawServerPacket.method_16396();
+			BlockPos blockPos = updateJigsawServerPacket.getPos();
 			BlockState blockState = this.player.world.getBlockState(blockPos);
 			BlockEntity blockEntity = this.player.world.getBlockEntity(blockPos);
 			if (blockEntity instanceof JigsawBlockEntity) {
 				JigsawBlockEntity jigsawBlockEntity = (JigsawBlockEntity)blockEntity;
-				jigsawBlockEntity.setAttachmentType(updateJigsawServerPacket.method_16395());
-				jigsawBlockEntity.setTargetPool(updateJigsawServerPacket.method_16394());
-				jigsawBlockEntity.setFinalState(updateJigsawServerPacket.method_16393());
+				jigsawBlockEntity.setAttachmentType(updateJigsawServerPacket.getAttachmentType());
+				jigsawBlockEntity.setTargetPool(updateJigsawServerPacket.getTargetPool());
+				jigsawBlockEntity.setFinalState(updateJigsawServerPacket.getFinalState());
 				jigsawBlockEntity.markDirty();
 				this.player.world.updateListeners(blockPos, blockState, blockState, 3);
 			}
@@ -663,7 +664,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 							String string = listTag.getString(i);
 							TextComponent textComponent = new StringTextComponent(string);
 							string = TextComponent.Serializer.toJsonString(textComponent);
-							listTag.getOrDefault(i, new StringTag(string));
+							listTag.set(i, (Tag)(new StringTag(string)));
 						}
 
 						itemStack3.setChildTag("pages", listTag);
@@ -1217,7 +1218,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 				if (ItemStack.areEqual(clickWindowServerPacket.getStack(), itemStack)) {
 					this.player
 						.networkHandler
-						.sendPacket(new GuiActionConfirmClientPacket(clickWindowServerPacket.getSyncId(), clickWindowServerPacket.getTransactionId(), true));
+						.sendPacket(new ConfirmGuiActionClientPacket(clickWindowServerPacket.getSyncId(), clickWindowServerPacket.getTransactionId(), true));
 					this.player.field_13991 = true;
 					this.player.container.sendContentUpdates();
 					this.player.method_14241();
@@ -1226,7 +1227,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 					this.transactions.put(this.player.container.syncId, clickWindowServerPacket.getTransactionId());
 					this.player
 						.networkHandler
-						.sendPacket(new GuiActionConfirmClientPacket(clickWindowServerPacket.getSyncId(), clickWindowServerPacket.getTransactionId(), false));
+						.sendPacket(new ConfirmGuiActionClientPacket(clickWindowServerPacket.getSyncId(), clickWindowServerPacket.getTransactionId(), false));
 					this.player.container.method_7590(this.player, false);
 					DefaultedList<ItemStack> defaultedList2 = DefaultedList.create();
 

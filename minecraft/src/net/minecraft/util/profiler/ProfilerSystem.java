@@ -14,11 +14,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ProfilerSystem implements ReadableProfiler {
-	private static final long field_16267 = Duration.ofMillis(100L).toNanos();
+	private static final long TIMEOUT_NANOSECONDS = Duration.ofMillis(100L).toNanos();
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final List<String> nameList = Lists.newArrayList();
 	private final List<Long> timeList = Lists.newArrayList();
-	private final Map<String, Long> field_15731 = Maps.newHashMap();
+	private final Map<String, Long> nameDurationMap = Maps.newHashMap();
 	private final IntSupplier field_16266;
 	private final long field_15732;
 	private final int field_15729;
@@ -87,13 +87,13 @@ public class ProfilerSystem implements ReadableProfiler {
 			long m = this.timeList.remove(this.timeList.size() - 1);
 			this.nameList.remove(this.nameList.size() - 1);
 			long n = l - m;
-			if (this.field_15731.containsKey(this.location)) {
-				this.field_15731.put(this.location, this.field_15731.get(this.location) + n);
+			if (this.nameDurationMap.containsKey(this.location)) {
+				this.nameDurationMap.put(this.location, this.nameDurationMap.get(this.location) + n);
 			} else {
-				this.field_15731.put(this.location, n);
+				this.nameDurationMap.put(this.location, n);
 			}
 
-			if (n > field_16267) {
+			if (n > TIMEOUT_NANOSECONDS) {
 				LOGGER.warn("Something's taking too long! '{}' took aprox {} ms", this.location, (double)n / 1000000.0);
 			}
 
@@ -116,6 +116,6 @@ public class ProfilerSystem implements ReadableProfiler {
 
 	@Override
 	public ProfileResult getResults() {
-		return new ProfileResultImpl(this.field_15731, this.field_15732, this.field_15729, SystemUtil.getMeasuringTimeNano(), this.field_16266.getAsInt());
+		return new ProfileResultImpl(this.nameDurationMap, this.field_15732, this.field_15729, SystemUtil.getMeasuringTimeNano(), this.field_16266.getAsInt());
 	}
 }

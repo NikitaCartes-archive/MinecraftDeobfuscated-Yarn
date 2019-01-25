@@ -11,8 +11,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.Parameter;
-import net.minecraft.world.loot.context.Parameters;
+import net.minecraft.world.loot.context.LootContextParameter;
+import net.minecraft.world.loot.context.LootContextParameters;
 
 public class RandomChanceWithLootingLootCondition implements LootCondition {
 	private final float chance;
@@ -24,12 +24,12 @@ public class RandomChanceWithLootingLootCondition implements LootCondition {
 	}
 
 	@Override
-	public Set<Parameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(Parameters.field_1230);
+	public Set<LootContextParameter<?>> getRequiredParameters() {
+		return ImmutableSet.of(LootContextParameters.field_1230);
 	}
 
 	public boolean method_950(LootContext lootContext) {
-		Entity entity = lootContext.get(Parameters.field_1230);
+		Entity entity = lootContext.method_296(LootContextParameters.field_1230);
 		int i = 0;
 		if (entity instanceof LivingEntity) {
 			i = EnchantmentHelper.getLooting((LivingEntity)entity);

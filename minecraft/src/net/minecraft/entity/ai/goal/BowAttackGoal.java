@@ -109,7 +109,7 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttacker> extends Goa
 				this.field_6576.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
 			}
 
-			if (this.field_6576.method_6115()) {
+			if (this.field_6576.isUsingItem()) {
 				if (!bl && this.field_6572 < -60) {
 					this.field_6576.method_6021();
 				} else if (bl) {

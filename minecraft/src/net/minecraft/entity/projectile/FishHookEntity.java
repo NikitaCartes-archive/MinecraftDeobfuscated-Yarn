@@ -39,8 +39,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.loot.LootSupplier;
 import net.minecraft.world.loot.LootTables;
 import net.minecraft.world.loot.context.LootContext;
+import net.minecraft.world.loot.context.LootContextParameters;
 import net.minecraft.world.loot.context.LootContextTypes;
-import net.minecraft.world.loot.context.Parameters;
 
 public class FishHookEntity extends Entity {
 	private static final TrackedData<Integer> HOOK_ENTITY_ID = DataTracker.registerData(FishHookEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -432,8 +432,8 @@ public class FishHookEntity extends Entity {
 				i = this.hookedEntity instanceof ItemEntity ? 3 : 5;
 			} else if (this.field_7173 > 0) {
 				LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
-					.put(Parameters.field_1232, new BlockPos(this))
-					.put(Parameters.field_1229, itemStack)
+					.method_312(LootContextParameters.field_1232, new BlockPos(this))
+					.method_312(LootContextParameters.field_1229, itemStack)
 					.setRandom(this.random)
 					.setLuck((float)this.field_7171 + this.owner.getLuck());
 				LootSupplier lootSupplier = this.world.getServer().getLootManager().getSupplier(LootTables.GAMEPLAY_FISHING);

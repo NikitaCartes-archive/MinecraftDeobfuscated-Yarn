@@ -20,8 +20,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.Parameter;
-import net.minecraft.world.loot.context.Parameters;
+import net.minecraft.world.loot.context.LootContextParameter;
+import net.minecraft.world.loot.context.LootContextParameters;
 
 public class BlockStatePropertyLootCondition implements LootCondition {
 	private final Block block;
@@ -57,12 +57,12 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 	}
 
 	@Override
-	public Set<Parameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(Parameters.field_1224);
+	public Set<LootContextParameter<?>> getRequiredParameters() {
+		return ImmutableSet.of(LootContextParameters.field_1224);
 	}
 
 	public boolean method_899(LootContext lootContext) {
-		BlockState blockState = lootContext.get(Parameters.field_1224);
+		BlockState blockState = lootContext.method_296(LootContextParameters.field_1224);
 		return blockState != null && this.predicate.test(blockState);
 	}
 

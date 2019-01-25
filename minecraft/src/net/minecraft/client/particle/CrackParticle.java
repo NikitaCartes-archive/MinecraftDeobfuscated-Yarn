@@ -26,7 +26,7 @@ public class CrackParticle extends Particle {
 
 	protected CrackParticle(World world, double d, double e, double f, ItemStack itemStack) {
 		super(world, d, e, f, 0.0, 0.0, 0.0);
-		this.setSprite(MinecraftClient.getInstance().getItemRenderer().method_4019(itemStack, world, null).getSprite());
+		this.setSprite(MinecraftClient.getInstance().getItemRenderer().getHeldItemModel(itemStack, world, null).getSprite());
 		this.colorRed = 1.0F;
 		this.colorGreen = 1.0F;
 		this.colorBlue = 1.0F;

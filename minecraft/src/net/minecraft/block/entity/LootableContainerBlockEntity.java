@@ -15,8 +15,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.loot.LootSupplier;
 import net.minecraft.world.loot.context.LootContext;
+import net.minecraft.world.loot.context.LootContextParameters;
 import net.minecraft.world.loot.context.LootContextTypes;
-import net.minecraft.world.loot.context.Parameters;
 
 public abstract class LootableContainerBlockEntity extends LockableContainerBlockEntity {
 	@Nullable
@@ -62,10 +62,10 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 			LootSupplier lootSupplier = this.world.getServer().getLootManager().getSupplier(this.lootTableId);
 			this.lootTableId = null;
 			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
-				.put(Parameters.field_1232, new BlockPos(this.pos))
+				.method_312(LootContextParameters.field_1232, new BlockPos(this.pos))
 				.setRandom(this.lootTableSeed);
 			if (playerEntity != null) {
-				builder.setLuck(playerEntity.getLuck()).put(Parameters.field_1226, playerEntity);
+				builder.setLuck(playerEntity.getLuck()).method_312(LootContextParameters.field_1226, playerEntity);
 			}
 
 			lootSupplier.supplyInventory(this, builder.build(LootContextTypes.CHEST));

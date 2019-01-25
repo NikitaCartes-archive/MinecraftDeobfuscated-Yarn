@@ -12,6 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.StringTextComponent;
@@ -118,7 +119,7 @@ public class WrittenBookItem extends Item {
 						textComponent = new StringTextComponent(string);
 					}
 
-					listTag.getOrDefault(i, new StringTag(TextComponent.Serializer.toJsonString(textComponent)));
+					listTag.set(i, (Tag)(new StringTag(TextComponent.Serializer.toJsonString(textComponent))));
 				}
 
 				compoundTag.put("pages", listTag);
@@ -131,7 +132,7 @@ public class WrittenBookItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean hasEnchantmentGlow(ItemStack itemStack) {
+	public boolean hasEnchantmentGlint(ItemStack itemStack) {
 		return true;
 	}
 }

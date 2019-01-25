@@ -10,7 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public abstract class PersistentState {
-	private static final Logger field_17661 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private final String key;
 	private boolean dirty;
 
@@ -67,7 +67,7 @@ public abstract class PersistentState {
 					}
 				}
 			} catch (IOException var16) {
-				field_17661.error("Could not save data {}", this, var16);
+				LOGGER.error("Could not save data {}", this, var16);
 			}
 
 			this.setDirty(false);
