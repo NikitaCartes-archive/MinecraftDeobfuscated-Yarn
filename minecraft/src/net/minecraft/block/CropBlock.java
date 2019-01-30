@@ -5,7 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.VerticalEntityPosition;
-import net.minecraft.entity.mob.IllagerBeastEntity;
+import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.item.ItemProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -146,7 +146,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-		if (entity instanceof IllagerBeastEntity && world.getGameRules().getBoolean("mobGriefing")) {
+		if (entity instanceof RavagerEntity && world.getGameRules().getBoolean("mobGriefing")) {
 			world.breakBlock(blockPos, true);
 		}
 

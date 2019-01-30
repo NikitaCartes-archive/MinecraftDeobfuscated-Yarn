@@ -77,7 +77,7 @@ public class FleeEntityGoal<T extends Entity> extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return !this.field_6394.method_6357();
+		return !this.field_6394.isIdle();
 	}
 
 	@Override
@@ -93,9 +93,9 @@ public class FleeEntityGoal<T extends Entity> extends Goal {
 	@Override
 	public void tick() {
 		if (this.field_6391.squaredDistanceTo(this.field_6390) < 49.0) {
-			this.field_6391.getNavigation().method_6344(this.field_6395);
+			this.field_6391.getNavigation().setSpeed(this.field_6395);
 		} else {
-			this.field_6391.getNavigation().method_6344(this.field_6385);
+			this.field_6391.getNavigation().setSpeed(this.field_6385);
 		}
 	}
 }

@@ -56,7 +56,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	protected void method_5959() {
+	protected void initGoals() {
 		this.goalSelector.add(1, new PhantomEntity.class_1596());
 		this.goalSelector.add(2, new PhantomEntity.class_1602());
 		this.goalSelector.add(3, new PhantomEntity.class_1598());
@@ -83,9 +83,9 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	public void method_7097() {
 		int i = this.dataTracker.get(SIZE);
 		EntityType<?> entityType = this.getType();
-		float f = entityType.method_17685();
+		float f = entityType.getWidth();
 		float g = f + 0.2F * (float)i;
-		this.setSize(g, g / f * entityType.method_17686());
+		this.setSize(g, g / f * entityType.getHeight());
 		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue((double)(6 + i));
 	}
 

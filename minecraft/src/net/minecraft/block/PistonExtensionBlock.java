@@ -85,7 +85,7 @@ public class PistonExtensionBlock extends BlockWithEntity {
 
 	@Override
 	public List<ItemStack> getDroppedStacks(BlockState blockState, LootContext.Builder builder) {
-		PistonBlockEntity pistonBlockEntity = this.getBlockEntityPiston(builder.getWorld(), builder.method_308(LootContextParameters.field_1232));
+		PistonBlockEntity pistonBlockEntity = this.getBlockEntityPiston(builder.getWorld(), builder.get(LootContextParameters.field_1232));
 		return pistonBlockEntity == null ? Collections.emptyList() : pistonBlockEntity.getPushedBlock().getDroppedStacks(builder);
 	}
 

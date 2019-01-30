@@ -17,13 +17,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class ElderGuardianEntity extends GuardianEntity {
-	public static final float field_17492 = EntityType.ELDER_GUARDIAN.method_17685() / EntityType.GUARDIAN.method_17685();
+	public static final float field_17492 = EntityType.ELDER_GUARDIAN.getWidth() / EntityType.GUARDIAN.getWidth();
 
 	public ElderGuardianEntity(World world) {
 		super(EntityType.ELDER_GUARDIAN, world);
 		this.setPersistent();
 		if (this.field_7289 != null) {
-			this.field_7289.method_6303(400);
+			this.field_7289.setChance(400);
 		}
 	}
 
@@ -36,14 +36,14 @@ public class ElderGuardianEntity extends GuardianEntity {
 	}
 
 	@Override
-	public int method_7055() {
+	public int getWarmupTime() {
 		return 60;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public void method_7010() {
-		this.field_7285 = 1.0F;
-		this.field_7287 = this.field_7285;
+		this.tailAngle = 1.0F;
+		this.prevTailAngle = this.tailAngle;
 	}
 
 	@Override

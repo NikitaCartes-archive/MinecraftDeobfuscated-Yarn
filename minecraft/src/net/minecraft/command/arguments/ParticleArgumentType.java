@@ -43,9 +43,7 @@ public class ParticleArgumentType implements ArgumentType<ParticleParameters> {
 
 	public static ParticleParameters readParameters(StringReader stringReader) throws CommandSyntaxException {
 		Identifier identifier = Identifier.parse(stringReader);
-		ParticleType<?> particleType = (ParticleType)Registry.PARTICLE_TYPE
-			.method_17966(identifier)
-			.orElseThrow(() -> UNKNOWN_PARTICLE_EXCEPTION.create(identifier));
+		ParticleType<?> particleType = (ParticleType)Registry.PARTICLE_TYPE.getOptional(identifier).orElseThrow(() -> UNKNOWN_PARTICLE_EXCEPTION.create(identifier));
 		return readParameters(stringReader, particleType);
 	}
 

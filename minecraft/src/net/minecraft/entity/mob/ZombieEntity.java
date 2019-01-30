@@ -7,9 +7,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1361;
 import net.minecraft.class_1370;
-import net.minecraft.class_1376;
 import net.minecraft.class_1394;
 import net.minecraft.class_1396;
 import net.minecraft.class_1399;
@@ -25,6 +23,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.BreakDoorGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.LookAroundGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MoveThroughVillageGoal;
 import net.minecraft.entity.ai.goal.StepAndDestroyBlockGoal;
 import net.minecraft.entity.ai.pathing.EntityMobNavigation;
@@ -37,6 +37,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.passive.AbstractVillagerEntity;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.TurtleEntity;
@@ -82,11 +83,11 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void method_5959() {
+	protected void initGoals() {
 		this.goalSelector.add(4, new ZombieEntity.DestroyEggGoal(Blocks.field_10195, this, 1.0, 3));
 		this.goalSelector.add(5, new class_1370(this, 1.0));
-		this.goalSelector.add(8, new class_1361(this, PlayerEntity.class, 8.0F));
-		this.goalSelector.add(8, new class_1376(this));
+		this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
+		this.goalSelector.add(8, new LookAroundGoal(this));
 		this.method_7208();
 	}
 
@@ -96,7 +97,7 @@ public class ZombieEntity extends HostileEntity {
 		this.goalSelector.add(7, new class_1394(this, 1.0));
 		this.targetSelector.add(1, new class_1399(this).method_6318(PigZombieEntity.class));
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
-		this.targetSelector.add(3, new FollowTargetGoal(this, VillagerEntity.class, false));
+		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractVillagerEntity.class, false));
 		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, true));
 		this.targetSelector.add(5, new FollowTargetGoal(this, TurtleEntity.class, 10, true, false, TurtleEntity.field_6921));
 	}
@@ -182,13 +183,13 @@ public class ZombieEntity extends HostileEntity {
 			}
 		}
 
-		this.method_7214(bl);
+		this.setChildSize(bl);
 	}
 
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
 		if (BABY.equals(trackedData)) {
-			this.method_7214(this.isChild());
+			this.setChildSize(this.isChild());
 		}
 
 		super.onTrackedDataSet(trackedData);
@@ -308,9 +309,9 @@ public class ZombieEntity extends HostileEntity {
 					if (this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos) && this.world.method_8602(new BlockPos(m, n, o)) < 10) {
 						zombieEntity.setPosition((double)m, (double)n, (double)o);
 						if (!this.world.containsVisiblePlayer((double)m, (double)n, (double)o, 7.0)
-							&& this.world.method_8606(zombieEntity, zombieEntity.getBoundingBox())
-							&& this.world.method_8587(zombieEntity, zombieEntity.getBoundingBox())
-							&& !this.world.method_8599(zombieEntity.getBoundingBox())) {
+							&& this.world.method_8606(zombieEntity)
+							&& this.world.method_17892(zombieEntity)
+							&& !this.world.isInFluid(zombieEntity.getBoundingBox())) {
 							this.world.spawnEntity(zombieEntity);
 							zombieEntity.setTarget(livingEntity);
 							zombieEntity.prepareEntityData(this.world, this.world.getLocalDifficulty(new BlockPos(zombieEntity)), SpawnType.field_16463, null, null);
@@ -533,10 +534,10 @@ public class ZombieEntity extends HostileEntity {
 		}
 	}
 
-	public void method_7214(boolean bl) {
+	public void setChildSize(boolean bl) {
 		float f = bl ? 0.5F : 1.0F;
 		EntityType<?> entityType = this.getType();
-		this.setSize(entityType.method_17685() * f, entityType.method_17686() * f);
+		this.setSize(entityType.getWidth() * f, entityType.getHeight() * f);
 	}
 
 	@Override

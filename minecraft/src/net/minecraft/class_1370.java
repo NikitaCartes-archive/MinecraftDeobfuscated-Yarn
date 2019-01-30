@@ -38,7 +38,7 @@ public class class_1370 extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return !this.field_6536.getNavigation().method_6357();
+		return !this.field_6536.getNavigation().isIdle();
 	}
 
 	@Override

@@ -20,7 +20,7 @@ public class ContainerScreen54 extends ContainerScreen<GenericContainer> impleme
 		this.field_2558 = false;
 		int i = 222;
 		int j = 114;
-		this.rows = genericContainer.method_17388();
+		this.rows = genericContainer.getRows();
 		this.containerHeight = 114 + this.rows * 18;
 	}
 

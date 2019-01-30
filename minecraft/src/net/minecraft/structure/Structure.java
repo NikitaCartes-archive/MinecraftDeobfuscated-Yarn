@@ -370,7 +370,7 @@ public class Structure {
 
 	private static Optional<Entity> method_17916(IWorld iWorld, CompoundTag compoundTag) {
 		try {
-			return EntityType.fromTag(compoundTag, iWorld.getWorld());
+			return EntityType.getEntityFromTag(compoundTag, iWorld.getWorld());
 		} catch (Exception var3) {
 			return Optional.empty();
 		}

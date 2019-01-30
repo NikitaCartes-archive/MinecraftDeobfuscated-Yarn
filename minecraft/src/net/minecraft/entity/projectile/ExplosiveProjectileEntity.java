@@ -3,12 +3,14 @@ package net.minecraft.entity.projectile;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1675;
+import net.minecraft.client.network.packet.EntitySpawnClientPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.hit.HitResult;
@@ -212,5 +214,13 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 	@Override
 	public int getLightmapCoordinates() {
 		return 15728880;
+	}
+
+	@Override
+	public Packet<?> createSpawnPacket() {
+		int i = this.owner == null ? 0 : this.owner.getEntityId();
+		return new EntitySpawnClientPacket(
+			this.getEntityId(), this.getUuid(), this.x, this.y, this.z, this.pitch, this.yaw, this.getType(), i, this.field_7601, this.field_7600, this.field_7599
+		);
 	}
 }

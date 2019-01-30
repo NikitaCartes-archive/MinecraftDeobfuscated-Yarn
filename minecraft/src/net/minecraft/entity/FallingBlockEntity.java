@@ -12,6 +12,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ConcretePowderBlock;
 import net.minecraft.block.FallingBlock;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.network.packet.EntitySpawnClientPacket;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -19,6 +20,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.Packet;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
@@ -113,7 +115,7 @@ public class FallingBlockEntity extends Entity {
 				this.velocityY -= 0.04F;
 			}
 
-			this.move(MovementType.SELF, this.velocityX, this.velocityY, this.velocityZ);
+			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 			if (!this.world.isClient) {
 				BlockPos blockPos = new BlockPos(this);
 				boolean bl = this.block.getBlock() instanceof ConcretePowderBlock;
@@ -293,5 +295,10 @@ public class FallingBlockEntity extends Entity {
 	@Override
 	public boolean method_5833() {
 		return true;
+	}
+
+	@Override
+	public Packet<?> createSpawnPacket() {
+		return new EntitySpawnClientPacket(this, Block.getRawIdFromState(this.getBlockState()));
 	}
 }

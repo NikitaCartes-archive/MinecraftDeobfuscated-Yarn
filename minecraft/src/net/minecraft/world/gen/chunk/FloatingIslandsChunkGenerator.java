@@ -43,10 +43,6 @@ public class FloatingIslandsChunkGenerator extends SurfaceChunkGenerator<Floatin
 		return 8.0;
 	}
 
-	public BlockPos getCenter() {
-		return this.center;
-	}
-
 	@Override
 	public int getSpawnHeight() {
 		return 50;

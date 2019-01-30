@@ -3,17 +3,16 @@ package net.minecraft.entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.sortme.Living;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
-public abstract class WaterCreatureEntity extends MobEntityWithAi implements Living {
+public abstract class WaterCreatureEntity extends MobEntityWithAi {
 	protected WaterCreatureEntity(EntityType<?> entityType, World world) {
 		super(entityType, world);
 	}
 
 	@Override
-	public boolean method_6094() {
+	public boolean canBreatheInWater() {
 		return true;
 	}
 
@@ -24,11 +23,11 @@ public abstract class WaterCreatureEntity extends MobEntityWithAi implements Liv
 
 	@Override
 	public boolean method_5957(ViewableWorld viewableWorld) {
-		return viewableWorld.method_8606(this, this.getBoundingBox());
+		return viewableWorld.method_8606(this);
 	}
 
 	@Override
-	public int method_5970() {
+	public int getMinAmbientSoundDelay() {
 		return 120;
 	}
 

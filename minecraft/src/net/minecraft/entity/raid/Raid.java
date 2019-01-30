@@ -553,7 +553,7 @@ public class Raid {
 					return MathHelper.floor(0.667F * (float)i + 1.334F);
 				case EVOKER:
 					return i == 10 ? 1 : 0;
-				case ILLAGER_BEAST:
+				case RAVAGER:
 					if (i == 1) {
 						return 1;
 					}
@@ -578,7 +578,7 @@ public class Raid {
 					j = 2;
 					break;
 				case EVOKER:
-				case ILLAGER_BEAST:
+				case RAVAGER:
 				default:
 					return 0;
 				case WITCH:
@@ -636,7 +636,7 @@ public class Raid {
 		EVOKER(EntityType.EVOKER, 10),
 		PILLAGER(EntityType.PILLAGER, 1),
 		WITCH(EntityType.WITCH, 4),
-		ILLAGER_BEAST(EntityType.ILLAGER_BEAST, 2);
+		RAVAGER(EntityType.ILLAGER_BEAST, 2);
 
 		private static final Raid.Member[] field_16636 = values();
 		private final EntityType<? extends RaiderEntity> type;

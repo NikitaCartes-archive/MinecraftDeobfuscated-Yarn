@@ -29,8 +29,8 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 		if (super.method_4068(guardianEntity, visibleRegion, d, e, f)) {
 			return true;
 		} else {
-			if (guardianEntity.method_7063()) {
-				LivingEntity livingEntity = guardianEntity.method_7052();
+			if (guardianEntity.hasBeamTarget()) {
+				LivingEntity livingEntity = guardianEntity.getBeamTarget();
 				if (livingEntity != null) {
 					Vec3d vec3d = this.method_3979(livingEntity, (double)livingEntity.getHeight() * 0.5, 1.0F);
 					Vec3d vec3d2 = this.method_3979(guardianEntity, (double)guardianEntity.getEyeHeight(), 1.0F);
@@ -53,9 +53,9 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 
 	public void method_3977(GuardianEntity guardianEntity, double d, double e, double f, float g, float h) {
 		super.method_4072(guardianEntity, d, e, f, g, h);
-		LivingEntity livingEntity = guardianEntity.method_7052();
+		LivingEntity livingEntity = guardianEntity.getBeamTarget();
 		if (livingEntity != null) {
-			float i = guardianEntity.method_7061(h);
+			float i = guardianEntity.getBeamProgress(h);
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 			this.bindTexture(EXPLOSION_BEAM_TEX);

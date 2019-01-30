@@ -310,7 +310,7 @@ public class EntitySelectorOptions {
 						entitySelectorReader.setPredicate(entity -> tag.contains(entity.getType()) != bl);
 					} else {
 						Identifier identifier = Identifier.parse(entitySelectorReader.getReader());
-						EntityType<? extends Entity> entityType = (EntityType)Registry.ENTITY_TYPE.method_17966(identifier).orElseThrow(() -> {
+						EntityType<?> entityType = (EntityType)Registry.ENTITY_TYPE.getOptional(identifier).orElseThrow(() -> {
 							entitySelectorReader.getReader().setCursor(i);
 							return INVALID_TYPE_EXCEPTION.createWithContext(entitySelectorReader.getReader(), identifier.toString());
 						});
@@ -320,7 +320,7 @@ public class EntitySelectorOptions {
 
 						entitySelectorReader.setPredicate(entity -> Objects.equals(entityType, entity.getType()) != bl);
 						if (!bl) {
-							entitySelectorReader.setEntityType(entityType.getEntityClass());
+							entitySelectorReader.setEntityType(entityType);
 						}
 					}
 				}

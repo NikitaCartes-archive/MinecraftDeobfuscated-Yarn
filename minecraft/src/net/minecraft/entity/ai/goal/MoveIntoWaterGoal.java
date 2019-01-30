@@ -36,7 +36,7 @@ public class MoveIntoWaterGoal extends Goal {
 		}
 
 		if (blockPos != null) {
-			this.owner.getMoveControl().method_6239((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0);
+			this.owner.getMoveControl().moveTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0);
 		}
 	}
 }

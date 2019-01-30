@@ -4,11 +4,13 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.network.packet.EntitySpawnClientPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
@@ -142,5 +144,10 @@ public class EvokerFangsEntity extends Entity {
 			int i = this.field_7607 - 2;
 			return i <= 0 ? 1.0F : 1.0F - ((float)i - f) / 20.0F;
 		}
+	}
+
+	@Override
+	public Packet<?> createSpawnPacket() {
+		return new EntitySpawnClientPacket(this);
 	}
 }

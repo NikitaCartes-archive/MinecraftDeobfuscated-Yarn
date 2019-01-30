@@ -31,7 +31,7 @@ public class Slot {
 	protected void onCrafted(ItemStack itemStack, int i) {
 	}
 
-	protected void method_7672(int i) {
+	protected void onTake(int i) {
 	}
 
 	protected void onCrafted(ItemStack itemStack) {

@@ -597,7 +597,7 @@ public class ArmorStandEntity extends LivingEntity {
 		if (bl) {
 			this.setSize(0.0F, 0.0F);
 		} else {
-			this.setSize(this.getType().method_17685(), this.getType().method_17686());
+			this.setSize(this.getType().getWidth(), this.getType().getHeight());
 		}
 	}
 
@@ -634,7 +634,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	private void setSmall(boolean bl) {
 		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), 1, bl));
-		this.setSize(this.getType().method_17685(), this.getType().method_17686());
+		this.setSize(this.getType().getWidth(), this.getType().getHeight());
 	}
 
 	public boolean isSmall() {
@@ -659,7 +659,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	private void setMarker(boolean bl) {
 		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), 16, bl));
-		this.setSize(this.getType().method_17685(), this.getType().method_17686());
+		this.setSize(this.getType().getWidth(), this.getType().getHeight());
 	}
 
 	public boolean isMarker() {
@@ -773,7 +773,7 @@ public class ArmorStandEntity extends LivingEntity {
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
 		if (ARMOR_STAND_FLAGS.equals(trackedData)) {
-			this.setSize(this.getType().method_17685(), this.getType().method_17686());
+			this.setSize(this.getType().getWidth(), this.getType().getHeight());
 		}
 
 		super.onTrackedDataSet(trackedData);

@@ -58,7 +58,7 @@ public class LookControl {
 		}
 
 		float j = MathHelper.wrapDegrees(this.entity.headYaw - this.entity.field_6283);
-		if (!this.entity.getNavigation().method_6357()) {
+		if (!this.entity.getNavigation().isIdle()) {
 			if (j < -75.0F) {
 				this.entity.headYaw = this.entity.field_6283 - 75.0F;
 			}

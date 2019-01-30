@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1675;
+import net.minecraft.client.network.packet.EntitySpawnClientPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -15,6 +16,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -346,5 +348,10 @@ public class ShulkerBulletEntity extends Entity {
 		}
 
 		return true;
+	}
+
+	@Override
+	public Packet<?> createSpawnPacket() {
+		return new EntitySpawnClientPacket(this);
 	}
 }

@@ -3,10 +3,6 @@ package net.minecraft.entity.passive;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1361;
-import net.minecraft.class_1374;
-import net.minecraft.class_1376;
-import net.minecraft.class_1387;
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
 import net.minecraft.block.Block;
@@ -20,9 +16,13 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.RangedAttacker;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
+import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.FormCaravanGoal;
+import net.minecraft.entity.ai.goal.HorseBondWithPlayerGoal;
+import net.minecraft.entity.ai.goal.LookAroundGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.ProjectileAttackGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -63,6 +63,15 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 		super(EntityType.LLAMA, world);
 	}
 
+	protected LlamaEntity(EntityType<?> entityType, World world) {
+		super(entityType, world);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public boolean method_6807() {
+		return false;
+	}
+
 	private void setStrength(int i) {
 		this.dataTracker.set(ATTR_STRENGTH, Math.max(1, Math.min(5, i)));
 	}
@@ -81,8 +90,8 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 		super.writeCustomDataToTag(compoundTag);
 		compoundTag.putInt("Variant", this.getVariant());
 		compoundTag.putInt("Strength", this.getStrength());
-		if (!this.field_6962.getInvStack(1).isEmpty()) {
-			compoundTag.put("DecorItem", this.field_6962.getInvStack(1).toTag(new CompoundTag()));
+		if (!this.decorationItem.getInvStack(1).isEmpty()) {
+			compoundTag.put("DecorItem", this.decorationItem.getInvStack(1).toTag(new CompoundTag()));
 		}
 	}
 
@@ -92,24 +101,24 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 		super.readCustomDataFromTag(compoundTag);
 		this.setVariant(compoundTag.getInt("Variant"));
 		if (compoundTag.containsKey("DecorItem", 10)) {
-			this.field_6962.setInvStack(1, ItemStack.fromTag(compoundTag.getCompound("DecorItem")));
+			this.decorationItem.setInvStack(1, ItemStack.fromTag(compoundTag.getCompound("DecorItem")));
 		}
 
 		this.method_6731();
 	}
 
 	@Override
-	protected void method_5959() {
+	protected void initGoals() {
 		this.goalSelector.add(0, new SwimGoal(this));
-		this.goalSelector.add(1, new class_1387(this, 1.2));
+		this.goalSelector.add(1, new HorseBondWithPlayerGoal(this, 1.2));
 		this.goalSelector.add(2, new FormCaravanGoal(this, 2.1F));
 		this.goalSelector.add(3, new ProjectileAttackGoal(this, 1.25, 40, 20.0F));
-		this.goalSelector.add(3, new class_1374(this, 1.2));
+		this.goalSelector.add(3, new EscapeDangerGoal(this, 1.2));
 		this.goalSelector.add(4, new AnimalMateGoal(this, 1.0));
 		this.goalSelector.add(5, new FollowParentGoal(this, 1.0));
 		this.goalSelector.add(6, new class_1394(this, 0.7));
-		this.goalSelector.add(7, new class_1361(this, PlayerEntity.class, 6.0F));
-		this.goalSelector.add(8, new class_1376(this));
+		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
+		this.goalSelector.add(8, new LookAroundGoal(this));
 		this.targetSelector.add(1, new LlamaEntity.class_1504(this));
 		this.targetSelector.add(2, new LlamaEntity.class_1502(this));
 	}
@@ -246,11 +255,6 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 		return entityData;
 	}
 
-	@Environment(EnvType.CLIENT)
-	public boolean method_6807() {
-		return this.method_6800() != null;
-	}
-
 	@Override
 	protected SoundEvent method_6747() {
 		return SoundEvents.field_14586;
@@ -324,7 +328,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 	protected void method_6731() {
 		if (!this.world.isClient) {
 			super.method_6731();
-			this.method_6799(method_6794(this.field_6962.getInvStack(1)));
+			this.method_6799(method_6794(this.decorationItem.getInvStack(1)));
 		}
 	}
 
@@ -355,7 +359,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 	}
 
 	public LlamaEntity createChild(PassiveEntity passiveEntity) {
-		LlamaEntity llamaEntity = new LlamaEntity(this.world);
+		LlamaEntity llamaEntity = this.method_18004();
 		this.method_6743(passiveEntity, llamaEntity);
 		LlamaEntity llamaEntity2 = (LlamaEntity)passiveEntity;
 		int i = this.random.nextInt(Math.max(this.getStrength(), llamaEntity2.getStrength())) + 1;
@@ -366,6 +370,10 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 		llamaEntity.setStrength(i);
 		llamaEntity.setVariant(this.random.nextBoolean() ? this.getVariant() : llamaEntity2.getVariant());
 		return llamaEntity;
+	}
+
+	protected LlamaEntity method_18004() {
+		return new LlamaEntity(this.world);
 	}
 
 	private void method_6792(LivingEntity livingEntity) {

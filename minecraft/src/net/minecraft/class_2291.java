@@ -58,7 +58,7 @@ public class class_2291 {
 	public void method_9795() throws CommandSyntaxException {
 		int i = this.field_10802.getCursor();
 		Identifier identifier = Identifier.parse(this.field_10802);
-		this.field_10803 = (Item)Registry.ITEM.method_17966(identifier).orElseThrow(() -> {
+		this.field_10803 = (Item)Registry.ITEM.getOptional(identifier).orElseThrow(() -> {
 			this.field_10802.setCursor(i);
 			return field_10799.createWithContext(this.field_10802, identifier.toString());
 		});

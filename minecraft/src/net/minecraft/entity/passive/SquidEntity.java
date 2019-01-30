@@ -42,12 +42,12 @@ public class SquidEntity extends WaterCreatureEntity {
 
 	public SquidEntity(World world) {
 		super(EntityType.SQUID, world);
-		this.random.setSeed((long)(1 + this.getEntityId()));
+		this.random.setSeed((long)this.getEntityId());
 		this.field_6912 = 1.0F / (this.random.nextFloat() + 1.0F) * 0.2F;
 	}
 
 	@Override
-	protected void method_5959() {
+	protected void initGoals() {
 		this.goalSelector.add(0, new SquidEntity.class_1479(this));
 		this.goalSelector.add(1, new SquidEntity.class_1478());
 	}
@@ -182,7 +182,7 @@ public class SquidEntity extends WaterCreatureEntity {
 
 	@Override
 	public void method_6091(float f, float g, float h) {
-		this.move(MovementType.SELF, this.velocityX, this.velocityY, this.velocityZ);
+		this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 	}
 
 	@Override

@@ -109,7 +109,7 @@ public class VillagerInventory implements Inventory {
 
 				if (villagerRecipe != null && !villagerRecipe.isDisabled()) {
 					this.villagerRecipe = villagerRecipe;
-					this.setInvStack(2, villagerRecipe.getSellItem().copy());
+					this.setInvStack(2, villagerRecipe.method_18019());
 				} else {
 					this.setInvStack(2, ItemStack.EMPTY);
 				}

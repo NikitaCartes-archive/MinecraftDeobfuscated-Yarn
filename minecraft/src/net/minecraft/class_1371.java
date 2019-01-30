@@ -35,14 +35,14 @@ public class class_1371 extends Goal {
 		} else if (this.field_6541.squaredDistanceTo(this.field_6539) > 225.0) {
 			return false;
 		} else {
-			return !this.field_6541.getNavigation().method_6357() || this.canStart();
+			return !this.field_6541.getNavigation().isIdle() || this.canStart();
 		}
 	}
 
 	@Override
 	public void onRemove() {
 		this.field_6539 = null;
-		this.field_6541.getNavigation().method_6340();
+		this.field_6541.getNavigation().stop();
 	}
 
 	@Override

@@ -5,11 +5,11 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import net.minecraft.util.Identifier;
 
-public class NewVillageFeatureConfig implements FeatureConfig {
+public class VillageFeatureConfig implements FeatureConfig {
 	public final Identifier startPool;
 	public final int size;
 
-	public NewVillageFeatureConfig(String string, int i) {
+	public VillageFeatureConfig(String string, int i) {
 		this.startPool = new Identifier(string);
 		this.size = i;
 	}
@@ -29,9 +29,9 @@ public class NewVillageFeatureConfig implements FeatureConfig {
 		);
 	}
 
-	public static <T> NewVillageFeatureConfig method_16752(Dynamic<T> dynamic) {
+	public static <T> VillageFeatureConfig method_16752(Dynamic<T> dynamic) {
 		String string = dynamic.get("start_pool").asString("");
 		int i = dynamic.get("size").asInt(6);
-		return new NewVillageFeatureConfig(string, i);
+		return new VillageFeatureConfig(string, i);
 	}
 }

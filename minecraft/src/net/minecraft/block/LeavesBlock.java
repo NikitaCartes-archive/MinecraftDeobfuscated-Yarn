@@ -41,7 +41,7 @@ public class LeavesBlock extends Block {
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		world.setBlockState(blockPos, updateDistamceFromLogs(blockState, world, blockPos), 3);
+		world.setBlockState(blockPos, updateDistanceFromLogs(blockState, world, blockPos), 3);
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class LeavesBlock extends Block {
 		return blockState;
 	}
 
-	private static BlockState updateDistamceFromLogs(BlockState blockState, IWorld iWorld, BlockPos blockPos) {
+	private static BlockState updateDistanceFromLogs(BlockState blockState, IWorld iWorld, BlockPos blockPos) {
 		int i = 7;
 
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
@@ -124,7 +124,7 @@ public class LeavesBlock extends Block {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return updateDistamceFromLogs(
+		return updateDistanceFromLogs(
 			this.getDefaultState().with(PERSISTENT, Boolean.valueOf(true)), itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos()
 		);
 	}

@@ -11,6 +11,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -35,7 +36,8 @@ public class EntitySelector {
 	private final String playerName;
 	@Nullable
 	private final UUID entityId;
-	private final Class<? extends Entity> type;
+	@Nullable
+	private final EntityType<?> type;
 	private final boolean checkPermissions;
 
 	public EntitySelector(
@@ -50,7 +52,7 @@ public class EntitySelector {
 		boolean bl3,
 		@Nullable String string,
 		@Nullable UUID uUID,
-		Class<? extends Entity> class_,
+		@Nullable EntityType<?> entityType,
 		boolean bl4
 	) {
 		this.count = i;
@@ -64,7 +66,7 @@ public class EntitySelector {
 		this.field_10828 = bl3;
 		this.playerName = string;
 		this.entityId = uUID;
-		this.type = class_;
+		this.type = entityType;
 		this.checkPermissions = bl4;
 	}
 
@@ -142,9 +144,9 @@ public class EntitySelector {
 
 	private void method_9823(List<Entity> list, ServerWorld serverWorld, Vec3d vec3d, Predicate<Entity> predicate) {
 		if (this.box != null) {
-			list.addAll(serverWorld.getEntities(this.type, this.box.offset(vec3d), predicate::test));
+			list.addAll(serverWorld.method_18023(this.type, this.box.offset(vec3d), predicate));
 		} else {
-			list.addAll(serverWorld.getEntities(this.type, predicate::test));
+			list.addAll(serverWorld.method_18024(this.type, predicate));
 		}
 	}
 

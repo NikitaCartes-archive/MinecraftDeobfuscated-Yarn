@@ -1,14 +1,13 @@
-package net.minecraft.container;
+package net.minecraft.inventory;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 
-public class DoubleLockableContainer implements Inventory {
+public class DoubleInventory implements Inventory {
 	private final Inventory first;
 	private final Inventory second;
 
-	public DoubleLockableContainer(Inventory inventory, Inventory inventory2) {
+	public DoubleInventory(Inventory inventory, Inventory inventory2) {
 		if (inventory == null) {
 			inventory = inventory2;
 		}

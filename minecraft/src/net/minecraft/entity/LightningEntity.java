@@ -7,7 +7,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.network.packet.EntitySpawnGlobalClientPacket;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Packet;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -16,7 +18,7 @@ import net.minecraft.util.math.BoundingBox;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 
-public class LightningEntity extends AbstractLightningEntity {
+public class LightningEntity extends Entity {
 	private int field_7185;
 	public long field_7186;
 	private int field_7183;
@@ -120,5 +122,10 @@ public class LightningEntity extends AbstractLightningEntity {
 
 	@Override
 	protected void writeCustomDataToTag(CompoundTag compoundTag) {
+	}
+
+	@Override
+	public Packet<?> createSpawnPacket() {
+		return new EntitySpawnGlobalClientPacket(this);
 	}
 }

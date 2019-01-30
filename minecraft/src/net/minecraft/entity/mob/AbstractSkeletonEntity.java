@@ -5,10 +5,6 @@ import java.time.temporal.ChronoField;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1344;
-import net.minecraft.class_1361;
-import net.minecraft.class_1376;
-import net.minecraft.class_1384;
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
 import net.minecraft.block.BlockState;
@@ -20,9 +16,13 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.RangedAttacker;
+import net.minecraft.entity.ai.goal.AvoidSunlightGoal;
 import net.minecraft.entity.ai.goal.BowAttackGoal;
+import net.minecraft.entity.ai.goal.EscapeSunlightGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.LookAroundGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.data.DataTracker;
@@ -69,13 +69,13 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	}
 
 	@Override
-	protected void method_5959() {
-		this.goalSelector.add(2, new class_1384(this));
-		this.goalSelector.add(3, new class_1344(this, 1.0));
+	protected void initGoals() {
+		this.goalSelector.add(2, new AvoidSunlightGoal(this));
+		this.goalSelector.add(3, new EscapeSunlightGoal(this, 1.0));
 		this.goalSelector.add(3, new FleeEntityGoal(this, WolfEntity.class, 6.0F, 1.0, 1.2));
 		this.goalSelector.add(5, new class_1394(this, 1.0));
-		this.goalSelector.add(6, new class_1361(this, PlayerEntity.class, 8.0F));
-		this.goalSelector.add(6, new class_1376(this));
+		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
+		this.goalSelector.add(6, new LookAroundGoal(this));
 		this.targetSelector.add(1, new class_1399(this));
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
 		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, true));

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import net.minecraft.advancement.PlayerAdvancementTracker;
-import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.entity.passive.AbstractVillagerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
@@ -65,10 +65,10 @@ public class VillagerTradeCriterion implements Criterion<VillagerTradeCriterion.
 		return new VillagerTradeCriterion.Conditions(entityPredicate, itemPredicate);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, VillagerEntity villagerEntity, ItemStack itemStack) {
+	public void handle(ServerPlayerEntity serverPlayerEntity, AbstractVillagerEntity abstractVillagerEntity, ItemStack itemStack) {
 		VillagerTradeCriterion.Handler handler = (VillagerTradeCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.handle(serverPlayerEntity, villagerEntity, itemStack);
+			handler.handle(serverPlayerEntity, abstractVillagerEntity, itemStack);
 		}
 	}
 
@@ -86,8 +86,8 @@ public class VillagerTradeCriterion implements Criterion<VillagerTradeCriterion.
 			return new VillagerTradeCriterion.Conditions(EntityPredicate.ANY, ItemPredicate.ANY);
 		}
 
-		public boolean matches(ServerPlayerEntity serverPlayerEntity, VillagerEntity villagerEntity, ItemStack itemStack) {
-			if (!this.item.test(serverPlayerEntity, villagerEntity)) {
+		public boolean matches(ServerPlayerEntity serverPlayerEntity, AbstractVillagerEntity abstractVillagerEntity, ItemStack itemStack) {
+			if (!this.item.test(serverPlayerEntity, abstractVillagerEntity)) {
 				return false;
 			} else {
 				return this.villager.test(itemStack);
@@ -125,11 +125,11 @@ public class VillagerTradeCriterion implements Criterion<VillagerTradeCriterion.
 			this.conditions.remove(conditionsContainer);
 		}
 
-		public void handle(ServerPlayerEntity serverPlayerEntity, VillagerEntity villagerEntity, ItemStack itemStack) {
+		public void handle(ServerPlayerEntity serverPlayerEntity, AbstractVillagerEntity abstractVillagerEntity, ItemStack itemStack) {
 			List<Criterion.ConditionsContainer<VillagerTradeCriterion.Conditions>> list = null;
 
 			for(Criterion.ConditionsContainer<VillagerTradeCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.getConditions().matches(serverPlayerEntity, villagerEntity, itemStack)) {
+				if (conditionsContainer.getConditions().matches(serverPlayerEntity, abstractVillagerEntity, itemStack)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<VillagerTradeCriterion.Conditions>>newArrayList();
 					}

@@ -4,7 +4,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1361;
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
 import net.minecraft.block.Block;
@@ -14,6 +13,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.pathing.EntityMobNavigation;
@@ -23,8 +23,8 @@ import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.passive.AbstractVillagerEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
-import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -39,29 +39,29 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
-public class IllagerBeastEntity extends RaiderEntity {
-	private static final Predicate<Entity> field_7301 = entity -> entity.isValid() && !(entity instanceof IllagerBeastEntity);
+public class RavagerEntity extends RaiderEntity {
+	private static final Predicate<Entity> field_7301 = entity -> entity.isValid() && !(entity instanceof RavagerEntity);
 	private int attackTick;
 	private int stunTick;
 	private int roarTick;
 
-	public IllagerBeastEntity(World world) {
+	public RavagerEntity(World world) {
 		super(EntityType.ILLAGER_BEAST, world);
 		this.stepHeight = 1.0F;
 		this.experiencePoints = 20;
 	}
 
 	@Override
-	protected void method_5959() {
-		super.method_5959();
+	protected void initGoals() {
+		super.initGoals();
 		this.goalSelector.add(0, new SwimGoal(this));
-		this.goalSelector.add(4, new IllagerBeastEntity.class_1585());
+		this.goalSelector.add(4, new RavagerEntity.class_1585());
 		this.goalSelector.add(5, new class_1394(this, 0.4));
-		this.goalSelector.add(6, new class_1361(this, PlayerEntity.class, 6.0F));
-		this.goalSelector.add(10, new class_1361(this, MobEntity.class, 8.0F));
+		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
+		this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
 		this.targetSelector.add(2, new class_1399(this, IllagerEntity.class).method_6318());
 		this.targetSelector.add(3, new FollowTargetGoal(this, PlayerEntity.class, true));
-		this.targetSelector.add(4, new FollowTargetGoal(this, VillagerEntity.class, true));
+		this.targetSelector.add(4, new FollowTargetGoal(this, AbstractVillagerEntity.class, true));
 		this.targetSelector.add(4, new FollowTargetGoal(this, IronGolemEntity.class, true));
 	}
 
@@ -94,7 +94,7 @@ public class IllagerBeastEntity extends RaiderEntity {
 
 	@Override
 	protected EntityNavigation createNavigation(World world) {
-		return new IllagerBeastEntity.class_1586(this, world);
+		return new RavagerEntity.class_1586(this, world);
 	}
 
 	@Override
@@ -296,7 +296,7 @@ public class IllagerBeastEntity extends RaiderEntity {
 
 	@Override
 	public boolean method_5957(ViewableWorld viewableWorld) {
-		return !viewableWorld.method_8599(this.getBoundingBox());
+		return !viewableWorld.isInFluid(this.getBoundingBox());
 	}
 
 	@Override
@@ -310,12 +310,12 @@ public class IllagerBeastEntity extends RaiderEntity {
 
 	class class_1585 extends MeleeAttackGoal {
 		public class_1585() {
-			super(IllagerBeastEntity.this, 1.0, true);
+			super(RavagerEntity.this, 1.0, true);
 		}
 
 		@Override
 		protected double method_6289(LivingEntity livingEntity) {
-			float f = IllagerBeastEntity.this.getWidth() - 0.1F;
+			float f = RavagerEntity.this.getWidth() - 0.1F;
 			return (double)(f * 2.0F * f * 2.0F + livingEntity.getWidth());
 		}
 	}
@@ -327,8 +327,8 @@ public class IllagerBeastEntity extends RaiderEntity {
 
 		@Override
 		protected PathNodeNavigator createPathNodeNavigator() {
-			this.field_6678 = new IllagerBeastEntity.class_1587();
-			return new PathNodeNavigator(this.field_6678);
+			this.nodeMaker = new RavagerEntity.class_1587();
+			return new PathNodeNavigator(this.nodeMaker);
 		}
 	}
 

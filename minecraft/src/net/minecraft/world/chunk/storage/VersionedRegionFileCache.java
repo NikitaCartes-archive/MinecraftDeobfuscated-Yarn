@@ -1,35 +1,35 @@
-package net.minecraft;
+package net.minecraft.world.chunk.storage;
 
 import com.mojang.datafixers.DataFixTypes;
 import com.mojang.datafixers.DataFixer;
 import java.io.IOException;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
+import net.minecraft.SharedConstants;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.TagHelper;
 import net.minecraft.world.FeatureUpdater;
+import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.chunk.ChunkPos;
-import net.minecraft.world.chunk.storage.RegionFileCache;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.dimension.DimensionalPersistentStateManager;
 
-public abstract class class_3977 extends RegionFileCache {
+public abstract class VersionedRegionFileCache extends RegionFileCache {
 	protected final DataFixer dataFixer;
 	@Nullable
 	private FeatureUpdater featureUpdater;
 
-	public class_3977(DataFixer dataFixer) {
+	public VersionedRegionFileCache(DataFixer dataFixer) {
 		this.dataFixer = dataFixer;
 	}
 
-	public CompoundTag updateChunkTag(DimensionType dimensionType, Supplier<DimensionalPersistentStateManager> supplier, CompoundTag compoundTag) {
+	public CompoundTag updateChunkTag(DimensionType dimensionType, Supplier<PersistentStateManager> supplier, CompoundTag compoundTag) {
 		int i = getDataVersion(compoundTag);
 		int j = 1493;
 		if (i < 1493) {
 			compoundTag = TagHelper.update(this.dataFixer, DataFixTypes.CHUNK, compoundTag, i, 1493);
 			if (compoundTag.getCompound("Level").getBoolean("hasLegacyStructureData")) {
 				if (this.featureUpdater == null) {
-					this.featureUpdater = FeatureUpdater.create(dimensionType, (DimensionalPersistentStateManager)supplier.get());
+					this.featureUpdater = FeatureUpdater.create(dimensionType, (PersistentStateManager)supplier.get());
 				}
 
 				compoundTag = this.featureUpdater.getUpdatedReferences(compoundTag);
@@ -49,8 +49,8 @@ public abstract class class_3977 extends RegionFileCache {
 	}
 
 	@Override
-	public void setChunkTag(ChunkPos chunkPos, CompoundTag compoundTag) throws IOException {
-		super.setChunkTag(chunkPos, compoundTag);
+	public void writeChunkTag(ChunkPos chunkPos, CompoundTag compoundTag) throws IOException {
+		super.writeChunkTag(chunkPos, compoundTag);
 		if (this.featureUpdater != null) {
 			this.featureUpdater.markResolved(chunkPos.toLong());
 		}

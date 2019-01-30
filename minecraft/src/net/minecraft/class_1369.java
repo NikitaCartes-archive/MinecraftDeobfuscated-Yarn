@@ -43,7 +43,7 @@ public class class_1369 extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return !this.field_6528.getNavigation().method_6357()
+		return !this.field_6528.getNavigation().isIdle()
 			&& this.field_6529.isValid()
 			&& this.field_6529.squaredDistanceTo(this.field_6528) < (double)(this.field_6532 * this.field_6532);
 	}

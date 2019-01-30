@@ -39,7 +39,7 @@ public class MagmaCubeEntity extends SlimeEntity {
 
 	@Override
 	public boolean method_5957(ViewableWorld viewableWorld) {
-		return viewableWorld.method_8606(this, this.getBoundingBox()) && !viewableWorld.method_8599(this.getBoundingBox());
+		return viewableWorld.method_8606(this) && !viewableWorld.isInFluid(this.getBoundingBox());
 	}
 
 	@Override

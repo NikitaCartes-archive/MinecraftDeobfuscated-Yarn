@@ -248,15 +248,8 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	}
 
 	private void createPortal(BlockPos blockPos) {
-		Feature.field_13564.generate(this.world, this.world.getChunkManager().getChunkGenerator(), new Random(), blockPos, new EndGatewayFeatureConfig(false));
-		BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
-		if (blockEntity instanceof EndGatewayBlockEntity) {
-			EndGatewayBlockEntity endGatewayBlockEntity = (EndGatewayBlockEntity)blockEntity;
-			endGatewayBlockEntity.exitPortalPos = new BlockPos(this.getPos());
-			endGatewayBlockEntity.markDirty();
-		} else {
-			LOGGER.warn("Couldn't save exit portal at {}", blockPos);
-		}
+		Feature.field_13564
+			.generate(this.world, this.world.getChunkManager().getChunkGenerator(), new Random(), blockPos, EndGatewayFeatureConfig.method_18034(this.getPos(), false));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -276,8 +269,8 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 		return i;
 	}
 
-	public void setExitPortalPos(BlockPos blockPos) {
-		this.exactTeleport = true;
+	public void setExitPortalPos(BlockPos blockPos, boolean bl) {
+		this.exactTeleport = bl;
 		this.exitPortalPos = blockPos;
 	}
 }

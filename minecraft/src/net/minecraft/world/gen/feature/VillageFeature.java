@@ -13,8 +13,8 @@ import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
-public class VillageFeature extends StructureFeature<NewVillageFeatureConfig> {
-	public VillageFeature(Function<Dynamic<?>, ? extends NewVillageFeatureConfig> function) {
+public class VillageFeature extends StructureFeature<VillageFeatureConfig> {
+	public VillageFeature(Function<Dynamic<?>, ? extends VillageFeatureConfig> function) {
 		super(function);
 	}
 
@@ -69,9 +69,9 @@ public class VillageFeature extends StructureFeature<NewVillageFeatureConfig> {
 
 		@Override
 		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
-			NewVillageFeatureConfig newVillageFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.VILLAGE);
+			VillageFeatureConfig villageFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.VILLAGE);
 			BlockPos blockPos = new BlockPos(i * 16, 0, j * 16);
-			VillageGenerator.addPieces(chunkGenerator, structureManager, blockPos, this.children, this.random, newVillageFeatureConfig);
+			VillageGenerator.addPieces(chunkGenerator, structureManager, blockPos, this.children, this.random, villageFeatureConfig);
 			this.setBoundingBoxFromChildren();
 		}
 	}

@@ -10,7 +10,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.sortme.Living;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -23,7 +22,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
-public abstract class AnimalEntity extends PassiveEntity implements Living {
+public abstract class AnimalEntity extends PassiveEntity {
 	protected Block spawningGround = Blocks.field_10219;
 	private int loveTicks;
 	private UUID lovingPlayer;
@@ -114,7 +113,7 @@ public abstract class AnimalEntity extends PassiveEntity implements Living {
 	}
 
 	@Override
-	public int method_5970() {
+	public int getMinAmbientSoundDelay() {
 		return 120;
 	}
 

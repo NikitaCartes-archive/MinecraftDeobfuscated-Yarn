@@ -30,11 +30,11 @@ public class EntityScoresLootCondition implements LootCondition {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(this.target.method_315());
+		return ImmutableSet.of(this.target.getIdentifier());
 	}
 
 	public boolean method_864(LootContext lootContext) {
-		Entity entity = lootContext.method_296(this.target.method_315());
+		Entity entity = lootContext.get(this.target.getIdentifier());
 		if (entity == null) {
 			return false;
 		} else {

@@ -168,7 +168,7 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 		@Override
 		public void start() {
 			super.start();
-			SpellcastingIllagerEntity.this.navigation.method_6340();
+			SpellcastingIllagerEntity.this.navigation.stop();
 		}
 
 		@Override

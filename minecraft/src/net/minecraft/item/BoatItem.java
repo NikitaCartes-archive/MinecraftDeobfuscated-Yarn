@@ -52,7 +52,7 @@ public class BoatItem extends Item {
 				BoatEntity boatEntity = new BoatEntity(world, hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
 				boatEntity.setBoatType(this.type);
 				boatEntity.yaw = playerEntity.yaw;
-				if (!world.method_8587(boatEntity, boatEntity.getBoundingBox().expand(-0.1))) {
+				if (!world.isEntityColliding(boatEntity, boatEntity.getBoundingBox().expand(-0.1))) {
 					return new TypedActionResult<>(ActionResult.FAILURE, itemStack);
 				} else {
 					if (!world.isClient) {

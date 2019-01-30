@@ -38,7 +38,7 @@ public class ServerWorldListener implements WorldListener {
 	public void onEntityAdded(Entity entity) {
 		this.world.getEntityTracker().add(entity);
 		if (entity instanceof ServerPlayerEntity) {
-			this.world.dimension.method_12457((ServerPlayerEntity)entity);
+			this.world.dimension.onEntityAdded((ServerPlayerEntity)entity);
 		}
 	}
 
@@ -47,7 +47,7 @@ public class ServerWorldListener implements WorldListener {
 		this.world.getEntityTracker().remove(entity);
 		this.world.getScoreboard().resetEntityScore(entity);
 		if (entity instanceof ServerPlayerEntity) {
-			this.world.dimension.method_12458((ServerPlayerEntity)entity);
+			this.world.dimension.onEntityRemoved((ServerPlayerEntity)entity);
 		}
 	}
 

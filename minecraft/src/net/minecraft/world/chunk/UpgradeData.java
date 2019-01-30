@@ -133,7 +133,7 @@ public class UpgradeData {
 						int k = j & 15;
 						int l = j >> 8 & 15;
 						int m = j >> 4 & 15;
-						pooledMutable.method_10113(chunkPos.getXStart() + k, (i << 4) + l, chunkPos.getZStart() + m);
+						pooledMutable.set(chunkPos.getXStart() + k, (i << 4) + l, chunkPos.getZStart() + m);
 						BlockState blockState = palettedContainer.get(j);
 						BlockState blockState2 = blockState;
 

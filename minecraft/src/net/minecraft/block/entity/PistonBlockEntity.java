@@ -146,7 +146,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 						if (!(e <= 0.0)) {
 							e = Math.min(e, d) + 0.01;
 							field_12205.set(direction);
-							entity.move(MovementType.PISTON, e * (double)direction.getOffsetX(), e * (double)direction.getOffsetY(), e * (double)direction.getOffsetZ());
+							entity.move(MovementType.field_6310, e * (double)direction.getOffsetX(), e * (double)direction.getOffsetY(), e * (double)direction.getOffsetZ());
 							field_12205.set(null);
 							if (!this.extending && this.source) {
 								this.method_11514(entity, direction, d);
@@ -230,11 +230,11 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		if (boundingBox.intersects(boundingBox2)) {
 			Direction direction2 = direction.getOpposite();
 			double e = this.method_11497(boundingBox2, direction2, boundingBox) + 0.01;
-			double f = this.method_11497(boundingBox2, direction2, boundingBox.method_999(boundingBox2)) + 0.01;
+			double f = this.method_11497(boundingBox2, direction2, boundingBox.intersection(boundingBox2)) + 0.01;
 			if (Math.abs(e - f) < 0.01) {
 				e = Math.min(e, d) + 0.01;
 				field_12205.set(direction);
-				entity.move(MovementType.PISTON, e * (double)direction2.getOffsetX(), e * (double)direction2.getOffsetY(), e * (double)direction2.getOffsetZ());
+				entity.move(MovementType.field_6310, e * (double)direction2.getOffsetX(), e * (double)direction2.getOffsetY(), e * (double)direction2.getOffsetZ());
 				field_12205.set(null);
 			}
 		}

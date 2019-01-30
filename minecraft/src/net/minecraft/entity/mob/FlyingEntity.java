@@ -24,38 +24,30 @@ public abstract class FlyingEntity extends MobEntity {
 	public void method_6091(float f, float g, float h) {
 		if (this.isInsideWater()) {
 			this.method_5724(f, g, h, 0.02F);
-			this.move(MovementType.SELF, this.velocityX, this.velocityY, this.velocityZ);
+			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 			this.velocityX *= 0.8F;
 			this.velocityY *= 0.8F;
 			this.velocityZ *= 0.8F;
 		} else if (this.isTouchingLava()) {
 			this.method_5724(f, g, h, 0.02F);
-			this.move(MovementType.SELF, this.velocityX, this.velocityY, this.velocityZ);
+			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 			this.velocityX *= 0.5;
 			this.velocityY *= 0.5;
 			this.velocityZ *= 0.5;
 		} else {
 			float i = 0.91F;
 			if (this.onGround) {
-				i = this.world
-						.getBlockState(new BlockPos(MathHelper.floor(this.x), MathHelper.floor(this.getBoundingBox().minY) - 1, MathHelper.floor(this.z)))
-						.getBlock()
-						.getFrictionCoefficient()
-					* 0.91F;
+				i = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getFrictionCoefficient() * 0.91F;
 			}
 
 			float j = 0.16277137F / (i * i * i);
 			this.method_5724(f, g, h, this.onGround ? 0.1F * j : 0.02F);
 			i = 0.91F;
 			if (this.onGround) {
-				i = this.world
-						.getBlockState(new BlockPos(MathHelper.floor(this.x), MathHelper.floor(this.getBoundingBox().minY) - 1, MathHelper.floor(this.z)))
-						.getBlock()
-						.getFrictionCoefficient()
-					* 0.91F;
+				i = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getFrictionCoefficient() * 0.91F;
 			}
 
-			this.move(MovementType.SELF, this.velocityX, this.velocityY, this.velocityZ);
+			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 			this.velocityX *= (double)i;
 			this.velocityY *= (double)i;
 			this.velocityZ *= (double)i;

@@ -114,7 +114,7 @@ public class StonecutterContainer extends Container {
 			this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 142));
 		}
 
-		this.method_17362(this.selectedRecipe);
+		this.addProperty(this.selectedRecipe);
 	}
 
 	@Environment(EnvType.CLIENT)

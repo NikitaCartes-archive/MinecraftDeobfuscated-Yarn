@@ -13,11 +13,11 @@ public class Path {
 	private PathNode[] field_55 = new PathNode[0];
 	private PathNode field_56;
 	private int currentNodeIndex;
-	private int pathLength;
+	private int length;
 
 	public Path(PathNode[] pathNodes) {
 		this.nodes = pathNodes;
-		this.pathLength = pathNodes.length;
+		this.length = pathNodes.length;
 	}
 
 	public void next() {
@@ -25,12 +25,12 @@ public class Path {
 	}
 
 	public boolean isFinished() {
-		return this.currentNodeIndex >= this.pathLength;
+		return this.currentNodeIndex >= this.length;
 	}
 
 	@Nullable
 	public PathNode getEnd() {
-		return this.pathLength > 0 ? this.nodes[this.pathLength - 1] : null;
+		return this.length > 0 ? this.nodes[this.length - 1] : null;
 	}
 
 	public PathNode getNode(int i) {
@@ -41,19 +41,19 @@ public class Path {
 		this.nodes[i] = pathNode;
 	}
 
-	public int getPathLength() {
-		return this.pathLength;
+	public int getLength() {
+		return this.length;
 	}
 
-	public void setPathLength(int i) {
-		this.pathLength = i;
+	public void setLength(int i) {
+		this.length = i;
 	}
 
 	public int getCurrentNodeIndex() {
 		return this.currentNodeIndex;
 	}
 
-	public void setCurrentPosition(int i) {
+	public void setCurrentNodeIndex(int i) {
 		this.currentNodeIndex = i;
 	}
 

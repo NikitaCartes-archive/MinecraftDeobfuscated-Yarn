@@ -3,11 +3,9 @@ package net.minecraft.entity.passive;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1361;
 import net.minecraft.class_1369;
 import net.minecraft.class_1370;
 import net.minecraft.class_1372;
-import net.minecraft.class_1376;
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
 import net.minecraft.block.BlockState;
@@ -15,6 +13,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.LookAroundGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.MoveThroughVillageGoal;
 import net.minecraft.entity.ai.goal.TrackIronGolemTargetGoal;
@@ -53,15 +53,15 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	protected void method_5959() {
+	protected void initGoals() {
 		this.goalSelector.add(1, new MeleeAttackGoal(this, 1.0, true));
 		this.goalSelector.add(2, new class_1369(this, 0.9, 32.0F));
 		this.goalSelector.add(3, new MoveThroughVillageGoal(this, 0.6, true));
 		this.goalSelector.add(4, new class_1370(this, 1.0));
 		this.goalSelector.add(5, new class_1372(this));
 		this.goalSelector.add(6, new class_1394(this, 0.6));
-		this.goalSelector.add(7, new class_1361(this, PlayerEntity.class, 6.0F));
-		this.goalSelector.add(8, new class_1376(this));
+		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
+		this.goalSelector.add(8, new LookAroundGoal(this));
 		this.targetSelector.add(1, new TrackIronGolemTargetGoal(this));
 		this.targetSelector.add(2, new class_1399(this));
 		this.targetSelector
@@ -270,7 +270,7 @@ public class IronGolemEntity extends GolemEntity {
 			BlockState blockState2 = viewableWorld.getBlockState(blockPos3);
 			return SpawnHelper.isClearForSpawn(viewableWorld, blockPos3, blockState2, blockState2.getFluidState())
 				&& SpawnHelper.isClearForSpawn(viewableWorld, blockPos, viewableWorld.getBlockState(blockPos), Fluids.EMPTY.getDefaultState())
-				&& viewableWorld.method_8606(this, this.getBoundingBox());
+				&& viewableWorld.method_8606(this);
 		}
 	}
 }

@@ -1,32 +1,32 @@
 package net.minecraft;
 
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.entity.passive.AbstractVillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
 public class class_1390 extends Goal {
-	private final VillagerEntity field_6610;
+	private final AbstractVillagerEntity owner;
 
-	public class_1390(VillagerEntity villagerEntity) {
-		this.field_6610 = villagerEntity;
+	public class_1390(AbstractVillagerEntity abstractVillagerEntity) {
+		this.owner = abstractVillagerEntity;
 		this.setControlBits(5);
 	}
 
 	@Override
 	public boolean canStart() {
-		if (!this.field_6610.isValid()) {
+		if (!this.owner.isValid()) {
 			return false;
-		} else if (this.field_6610.isInsideWater()) {
+		} else if (this.owner.isInsideWater()) {
 			return false;
-		} else if (!this.field_6610.onGround) {
+		} else if (!this.owner.onGround) {
 			return false;
-		} else if (this.field_6610.velocityModified) {
+		} else if (this.owner.velocityModified) {
 			return false;
 		} else {
-			PlayerEntity playerEntity = this.field_6610.getCurrentCustomer();
+			PlayerEntity playerEntity = this.owner.getCurrentCustomer();
 			if (playerEntity == null) {
 				return false;
-			} else if (this.field_6610.squaredDistanceTo(playerEntity) > 16.0) {
+			} else if (this.owner.squaredDistanceTo(playerEntity) > 16.0) {
 				return false;
 			} else {
 				return playerEntity.container != null;
@@ -36,11 +36,11 @@ public class class_1390 extends Goal {
 
 	@Override
 	public void start() {
-		this.field_6610.getNavigation().method_6340();
+		this.owner.getNavigation().stop();
 	}
 
 	@Override
 	public void onRemove() {
-		this.field_6610.setCurrentCustomer(null);
+		this.owner.setCurrentCustomer(null);
 	}
 }

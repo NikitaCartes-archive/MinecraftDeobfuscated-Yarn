@@ -6,7 +6,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -37,6 +36,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
@@ -231,9 +231,9 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 						float q = 0.06F;
 						this.method_5724(0.0F, 0.0F, -1.0F, 0.06F * (o * p + (1.0F - p)));
 						if (this.field_7027) {
-							this.move(MovementType.SELF, this.velocityX * 0.8F, this.velocityY * 0.8F, this.velocityZ * 0.8F);
+							this.move(MovementType.field_6308, this.velocityX * 0.8F, this.velocityY * 0.8F, this.velocityZ * 0.8F);
 						} else {
-							this.move(MovementType.SELF, this.velocityX, this.velocityY, this.velocityZ);
+							this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 						}
 
 						Vec3d vec3d4 = new Vec3d(this.velocityX, this.velocityY, this.velocityZ).normalize();
@@ -416,20 +416,7 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 					BlockState blockState = this.world.getBlockState(blockPos);
 					Block block = blockState.getBlock();
 					if (!blockState.isAir() && blockState.getMaterial() != Material.FIRE) {
-						if (!this.world.getGameRules().getBoolean("mobGriefing")) {
-							bl = true;
-						} else if (block == Blocks.field_10499
-							|| block == Blocks.field_10540
-							|| block == Blocks.field_10471
-							|| block == Blocks.field_9987
-							|| block == Blocks.field_10027
-							|| block == Blocks.field_10398) {
-							bl = true;
-						} else if (block != Blocks.field_10525
-							&& block != Blocks.field_10263
-							&& block != Blocks.field_10395
-							&& block != Blocks.field_10576
-							&& block != Blocks.field_10613) {
+						if (this.world.getGameRules().getBoolean("mobGriefing") && !BlockTags.field_17753.contains(block)) {
 							bl2 = this.world.clearBlockState(blockPos) || bl2;
 						} else {
 							bl = true;
@@ -532,7 +519,7 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 			}
 		}
 
-		this.move(MovementType.SELF, 0.0, 0.1F, 0.0);
+		this.move(MovementType.field_6308, 0.0, 0.1F, 0.0);
 		this.yaw += 20.0F;
 		this.field_6283 = this.yaw;
 		if (this.field_7031 == 200 && !this.world.isClient) {
@@ -753,7 +740,7 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 	}
 
 	@Override
-	public Entity[] getParts() {
+	public EntityPart[] getParts() {
 		return this.parts;
 	}
 

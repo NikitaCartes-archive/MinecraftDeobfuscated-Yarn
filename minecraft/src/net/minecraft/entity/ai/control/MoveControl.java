@@ -9,47 +9,47 @@ import net.minecraft.util.math.MathHelper;
 
 public class MoveControl {
 	protected final MobEntity entity;
-	protected double field_6370;
-	protected double field_6369;
-	protected double field_6367;
-	protected double field_6372;
+	protected double targetX;
+	protected double targetY;
+	protected double targetZ;
+	protected double speed;
 	protected float field_6368;
 	protected float field_6373;
-	protected MoveControl.class_1336 field_6374 = MoveControl.class_1336.field_6377;
+	protected MoveControl.State state = MoveControl.State.field_6377;
 
 	public MoveControl(MobEntity mobEntity) {
 		this.entity = mobEntity;
 	}
 
-	public boolean method_6241() {
-		return this.field_6374 == MoveControl.class_1336.field_6378;
+	public boolean isMoving() {
+		return this.state == MoveControl.State.field_6378;
 	}
 
-	public double method_6242() {
-		return this.field_6372;
+	public double getSpeed() {
+		return this.speed;
 	}
 
-	public void method_6239(double d, double e, double f, double g) {
-		this.field_6370 = d;
-		this.field_6369 = e;
-		this.field_6367 = f;
-		this.field_6372 = g;
-		if (this.field_6374 != MoveControl.class_1336.field_6379) {
-			this.field_6374 = MoveControl.class_1336.field_6378;
+	public void moveTo(double d, double e, double f, double g) {
+		this.targetX = d;
+		this.targetY = e;
+		this.targetZ = f;
+		this.speed = g;
+		if (this.state != MoveControl.State.field_6379) {
+			this.state = MoveControl.State.field_6378;
 		}
 	}
 
 	public void method_6243(float f, float g) {
-		this.field_6374 = MoveControl.class_1336.field_6376;
+		this.state = MoveControl.State.field_6376;
 		this.field_6368 = f;
 		this.field_6373 = g;
-		this.field_6372 = 0.25;
+		this.speed = 0.25;
 	}
 
 	public void tick() {
-		if (this.field_6374 == MoveControl.class_1336.field_6376) {
+		if (this.state == MoveControl.State.field_6376) {
 			float f = (float)this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue();
-			float g = (float)this.field_6372 * f;
+			float g = (float)this.speed * f;
 			float h = this.field_6368;
 			float i = this.field_6373;
 			float j = MathHelper.sqrt(h * h + i * i);
@@ -66,7 +66,7 @@ public class MoveControl {
 			float n = i * l + h * k;
 			EntityNavigation entityNavigation = this.entity.getNavigation();
 			if (entityNavigation != null) {
-				PathNodeMaker pathNodeMaker = entityNavigation.method_6342();
+				PathNodeMaker pathNodeMaker = entityNavigation.getNodeMaker();
 				if (pathNodeMaker != null
 					&& pathNodeMaker.getPathNodeType(
 							this.entity.world, MathHelper.floor(this.entity.x + (double)m), MathHelper.floor(this.entity.y), MathHelper.floor(this.entity.z + (double)n)
@@ -81,12 +81,12 @@ public class MoveControl {
 			this.entity.method_6125(g);
 			this.entity.method_5930(this.field_6368);
 			this.entity.method_5938(this.field_6373);
-			this.field_6374 = MoveControl.class_1336.field_6377;
-		} else if (this.field_6374 == MoveControl.class_1336.field_6378) {
-			this.field_6374 = MoveControl.class_1336.field_6377;
-			double d = this.field_6370 - this.entity.x;
-			double e = this.field_6367 - this.entity.z;
-			double o = this.field_6369 - this.entity.y;
+			this.state = MoveControl.State.field_6377;
+		} else if (this.state == MoveControl.State.field_6378) {
+			this.state = MoveControl.State.field_6377;
+			double d = this.targetX - this.entity.x;
+			double e = this.targetZ - this.entity.z;
+			double o = this.targetY - this.entity.y;
 			double p = d * d + o * o + e * e;
 			if (p < 2.5000003E-7F) {
 				this.entity.method_5930(0.0F);
@@ -95,15 +95,15 @@ public class MoveControl {
 
 			float n = (float)(MathHelper.atan2(e, d) * 180.0F / (float)Math.PI) - 90.0F;
 			this.entity.yaw = this.method_6238(this.entity.yaw, n, 90.0F);
-			this.entity.method_6125((float)(this.field_6372 * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()));
+			this.entity.method_6125((float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()));
 			if (o > (double)this.entity.stepHeight && d * d + e * e < (double)Math.max(1.0F, this.entity.getWidth())) {
 				this.entity.getJumpControl().setActive();
-				this.field_6374 = MoveControl.class_1336.field_6379;
+				this.state = MoveControl.State.field_6379;
 			}
-		} else if (this.field_6374 == MoveControl.class_1336.field_6379) {
-			this.entity.method_6125((float)(this.field_6372 * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()));
+		} else if (this.state == MoveControl.State.field_6379) {
+			this.entity.method_6125((float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()));
 			if (this.entity.onGround) {
-				this.field_6374 = MoveControl.class_1336.field_6377;
+				this.state = MoveControl.State.field_6377;
 			}
 		} else {
 			this.entity.method_5930(0.0F);
@@ -130,19 +130,19 @@ public class MoveControl {
 		return j;
 	}
 
-	public double method_6236() {
-		return this.field_6370;
+	public double getTargetX() {
+		return this.targetX;
 	}
 
-	public double method_6235() {
-		return this.field_6369;
+	public double getTargetY() {
+		return this.targetY;
 	}
 
-	public double method_6237() {
-		return this.field_6367;
+	public double getTargetZ() {
+		return this.targetZ;
 	}
 
-	public static enum class_1336 {
+	public static enum State {
 		field_6377,
 		field_6378,
 		field_6376,

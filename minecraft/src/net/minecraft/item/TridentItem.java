@@ -97,7 +97,7 @@ public class TridentItem extends Item {
 						playerEntity.method_6018(20);
 						if (playerEntity.onGround) {
 							float p = 1.1999999F;
-							playerEntity.move(MovementType.SELF, 0.0, 1.1999999F, 0.0);
+							playerEntity.move(MovementType.field_6308, 0.0, 1.1999999F, 0.0);
 						}
 
 						SoundEvent soundEvent;

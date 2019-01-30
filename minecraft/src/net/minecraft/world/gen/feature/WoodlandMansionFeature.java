@@ -93,13 +93,15 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 				l = -5;
 			}
 
-			int m = chunkGenerator.produceHeight(i + 7, j + 7, Heightmap.Type.WORLD_SURFACE_WG);
-			int n = chunkGenerator.produceHeight(i + 7, j + 7 + l, Heightmap.Type.WORLD_SURFACE_WG);
-			int o = chunkGenerator.produceHeight(i + 7 + k, j + 7, Heightmap.Type.WORLD_SURFACE_WG);
-			int p = chunkGenerator.produceHeight(i + 7 + k, j + 7 + l, Heightmap.Type.WORLD_SURFACE_WG);
-			int q = Math.min(Math.min(m, n), Math.min(o, p));
-			if (q >= 60) {
-				BlockPos blockPos = new BlockPos(i * 16 + 8, q + 1, j * 16 + 8);
+			int m = (i << 4) + 7;
+			int n = (j << 4) + 7;
+			int o = chunkGenerator.method_18028(m, n, Heightmap.Type.WORLD_SURFACE_WG);
+			int p = chunkGenerator.method_18028(m, n + l, Heightmap.Type.WORLD_SURFACE_WG);
+			int q = chunkGenerator.method_18028(m + k, n, Heightmap.Type.WORLD_SURFACE_WG);
+			int r = chunkGenerator.method_18028(m + k, n + l, Heightmap.Type.WORLD_SURFACE_WG);
+			int s = Math.min(Math.min(o, p), Math.min(q, r));
+			if (s >= 60) {
+				BlockPos blockPos = new BlockPos(i * 16 + 8, s + 1, j * 16 + 8);
 				List<WoodlandMansionGenerator.Piece> list = Lists.<WoodlandMansionGenerator.Piece>newLinkedList();
 				WoodlandMansionGenerator.method_15029(structureManager, blockPos, rotation, list, this.random);
 				this.children.addAll(list);

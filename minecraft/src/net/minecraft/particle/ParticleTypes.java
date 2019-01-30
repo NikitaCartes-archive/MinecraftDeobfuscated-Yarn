@@ -28,6 +28,7 @@ public class ParticleTypes {
 	public static final DefaultParticleType field_11244 = register("fishing", false);
 	public static final DefaultParticleType field_11240 = register("flame", false);
 	public static final DefaultParticleType field_11211 = register("happy_villager", false);
+	public static final DefaultParticleType field_17741 = register("composter", false);
 	public static final DefaultParticleType field_11201 = register("heart", false);
 	public static final DefaultParticleType field_11213 = register("instant_effect", false);
 	public static final ParticleType<ItemStackParticleParameters> field_11218 = register("item", ItemStackParticleParameters.PARAMETERS_FACTORY);

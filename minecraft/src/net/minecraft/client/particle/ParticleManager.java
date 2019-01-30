@@ -76,6 +76,7 @@ public class ParticleManager {
 		this.registerFactory(ParticleTypes.field_17430, new class_3937.class_3938());
 		this.registerFactory(ParticleTypes.field_17431, new class_3937.class_3939());
 		this.registerFactory(ParticleTypes.field_11204, new CloudParticle.CloudFactory());
+		this.registerFactory(ParticleTypes.field_17741, new SuspendParticle.class_3991());
 		this.registerFactory(ParticleTypes.field_11205, new DamageParticle.CritFactory());
 		this.registerFactory(ParticleTypes.field_11243, new CurrentDownParticle.Factory());
 		this.registerFactory(ParticleTypes.field_11209, new DamageParticle.DefaultFactory());

@@ -369,7 +369,7 @@ public class EnderDragonFight {
 
 	private void generateEndGateway(BlockPos blockPos) {
 		this.world.fireWorldEvent(3000, blockPos, 0);
-		Feature.field_13564.generate(this.world, this.world.getChunkManager().getChunkGenerator(), new Random(), blockPos, new EndGatewayFeatureConfig(false));
+		Feature.field_13564.generate(this.world, this.world.getChunkManager().getChunkGenerator(), new Random(), blockPos, EndGatewayFeatureConfig.method_18030());
 	}
 
 	private void generateEndPortal(boolean bl) {

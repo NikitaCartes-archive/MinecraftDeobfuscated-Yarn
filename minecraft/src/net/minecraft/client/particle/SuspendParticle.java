@@ -69,4 +69,15 @@ public class SuspendParticle extends Particle {
 			return new SuspendParticle(world, d, e, f, g, h, i);
 		}
 	}
+
+	@Environment(EnvType.CLIENT)
+	public static class class_3991 implements ParticleFactory<DefaultParticleType> {
+		public Particle method_18044(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+			Particle particle = new SuspendParticle(world, d, e, f, g, h, i);
+			particle.setSpriteIndex(82);
+			particle.setColor(1.0F, 1.0F, 1.0F);
+			particle.setMaxAge(3 + world.getRandom().nextInt(5));
+			return particle;
+		}
+	}
 }

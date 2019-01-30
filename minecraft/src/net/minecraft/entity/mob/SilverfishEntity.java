@@ -1,7 +1,6 @@
 package net.minecraft.entity.mob;
 
 import java.util.Random;
-import net.minecraft.class_1379;
 import net.minecraft.class_1399;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -13,6 +12,7 @@ import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.EntityDamageSource;
@@ -33,7 +33,7 @@ public class SilverfishEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void method_5959() {
+	protected void initGoals() {
 		this.field_7366 = new SilverfishEntity.class_1616(this);
 		this.goalSelector.add(1, new SwimGoal(this));
 		this.goalSelector.add(3, this.field_7366);
@@ -136,7 +136,7 @@ public class SilverfishEntity extends HostileEntity {
 		return EntityGroup.ARTHROPOD;
 	}
 
-	static class class_1615 extends class_1379 {
+	static class class_1615 extends WanderAroundGoal {
 		private Direction field_7368;
 		private boolean field_7367;
 
@@ -147,16 +147,16 @@ public class SilverfishEntity extends HostileEntity {
 
 		@Override
 		public boolean canStart() {
-			if (this.field_6566.getTarget() != null) {
+			if (this.owner.getTarget() != null) {
 				return false;
-			} else if (!this.field_6566.getNavigation().method_6357()) {
+			} else if (!this.owner.getNavigation().isIdle()) {
 				return false;
 			} else {
-				Random random = this.field_6566.getRand();
-				if (this.field_6566.world.getGameRules().getBoolean("mobGriefing") && random.nextInt(10) == 0) {
+				Random random = this.owner.getRand();
+				if (this.owner.world.getGameRules().getBoolean("mobGriefing") && random.nextInt(10) == 0) {
 					this.field_7368 = Direction.random(random);
-					BlockPos blockPos = new BlockPos(this.field_6566.x, this.field_6566.y + 0.5, this.field_6566.z).offset(this.field_7368);
-					BlockState blockState = this.field_6566.world.getBlockState(blockPos);
+					BlockPos blockPos = new BlockPos(this.owner.x, this.owner.y + 0.5, this.owner.z).offset(this.field_7368);
+					BlockState blockState = this.owner.world.getBlockState(blockPos);
 					if (InfestedBlock.hasRegularBlock(blockState)) {
 						this.field_7367 = true;
 						return true;
@@ -178,13 +178,13 @@ public class SilverfishEntity extends HostileEntity {
 			if (!this.field_7367) {
 				super.start();
 			} else {
-				IWorld iWorld = this.field_6566.world;
-				BlockPos blockPos = new BlockPos(this.field_6566.x, this.field_6566.y + 0.5, this.field_6566.z).offset(this.field_7368);
+				IWorld iWorld = this.owner.world;
+				BlockPos blockPos = new BlockPos(this.owner.x, this.owner.y + 0.5, this.owner.z).offset(this.field_7368);
 				BlockState blockState = iWorld.getBlockState(blockPos);
 				if (InfestedBlock.hasRegularBlock(blockState)) {
 					iWorld.setBlockState(blockPos, InfestedBlock.getRegularBlock(blockState.getBlock()), 3);
-					this.field_6566.method_5990();
-					this.field_6566.invalidate();
+					this.owner.method_5990();
+					this.owner.invalidate();
 				}
 			}
 		}

@@ -49,7 +49,7 @@ public class ProjectileAttackGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return this.canStart() || !this.mobEntity.getNavigation().method_6357();
+		return this.canStart() || !this.mobEntity.getNavigation().isIdle();
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class ProjectileAttackGoal extends Goal {
 		}
 
 		if (!(d > (double)this.field_6584) && this.field_6579 >= 5) {
-			this.mobEntity.getNavigation().method_6340();
+			this.mobEntity.getNavigation().stop();
 		} else {
 			this.mobEntity.getNavigation().startMovingTo(this.target, this.field_6586);
 		}

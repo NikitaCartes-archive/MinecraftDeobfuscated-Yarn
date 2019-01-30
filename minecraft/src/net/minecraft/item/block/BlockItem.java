@@ -10,6 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.item.TooltipOptions;
+import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -101,8 +102,10 @@ public class BlockItem extends Item {
 	}
 
 	protected boolean canPlace(ItemPlacementContext itemPlacementContext, BlockState blockState) {
+		PlayerEntity playerEntity = itemPlacementContext.getPlayer();
+		VerticalEntityPosition verticalEntityPosition = playerEntity == null ? VerticalEntityPosition.minValue() : VerticalEntityPosition.fromEntity(playerEntity);
 		return blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())
-			&& itemPlacementContext.getWorld().method_8628(blockState, itemPlacementContext.getBlockPos());
+			&& itemPlacementContext.getWorld().method_8628(blockState, itemPlacementContext.getBlockPos(), verticalEntityPosition);
 	}
 
 	protected boolean setBlockState(ItemPlacementContext itemPlacementContext, BlockState blockState) {

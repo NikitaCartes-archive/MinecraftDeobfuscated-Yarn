@@ -326,11 +326,11 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 					return;
 				}
 
-				boolean bl = serverWorld.method_8587(entity, entity.getBoundingBox().contract(0.0625));
+				boolean bl = serverWorld.isEntityColliding(entity, entity.getBoundingBox().contract(0.0625));
 				l = g - this.updatedRiddenX;
 				m = h - this.updatedRiddenY - 1.0E-6;
 				n = i - this.updatedRiddenZ;
-				entity.move(MovementType.PLAYER, l, m, n);
+				entity.move(MovementType.field_6305, l, m, n);
 				l = g - entity.x;
 				m = h - entity.y;
 				if (m > -0.5 || m < 0.5) {
@@ -346,7 +346,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 				}
 
 				entity.setPositionAnglesAndUpdate(g, h, i, j, k);
-				boolean bl3 = serverWorld.method_8587(entity, entity.getBoundingBox().contract(0.0625));
+				boolean bl3 = serverWorld.isEntityColliding(entity, entity.getBoundingBox().contract(0.0625));
 				if (bl && (bl2 || !bl3)) {
 					entity.setPositionAnglesAndUpdate(d, e, f, j, k);
 					this.client.sendPacket(new VehicleMoveClientPacket(entity));
@@ -763,7 +763,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 								}
 							}
 
-							boolean bl = serverWorld.method_8587(this.player, this.player.getBoundingBox().contract(0.0625));
+							boolean bl = serverWorld.isEntityColliding(this.player, this.player.getBoundingBox().contract(0.0625));
 							m = h - this.updatedX;
 							n = i - this.updatedY;
 							o = j - this.updatedZ;
@@ -771,7 +771,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 								this.player.method_6043();
 							}
 
-							this.player.move(MovementType.PLAYER, m, n, o);
+							this.player.move(MovementType.field_6305, m, n, o);
 							this.player.onGround = playerMoveServerMessage.isOnGround();
 							m = h - this.player.x;
 							n = i - this.player.y;
@@ -794,7 +794,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 							this.player.setPositionAnglesAndUpdate(h, i, j, k, l);
 							this.player.method_7282(this.player.x - d, this.player.y - e, this.player.z - f);
 							if (!this.player.noClip && !this.player.isSleeping()) {
-								boolean bl3 = serverWorld.method_8587(this.player, this.player.getBoundingBox().contract(0.0625));
+								boolean bl3 = serverWorld.isEntityColliding(this.player, this.player.getBoundingBox().contract(0.0625));
 								if (bl && (bl2 || !bl3)) {
 									this.teleportRequest(d, e, f, k, l);
 									return;
@@ -1202,7 +1202,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	public void onClickWindow(ClickWindowServerPacket clickWindowServerPacket) {
 		NetworkThreadUtils.forceMainThread(clickWindowServerPacket, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
-		if (this.player.container.syncId == clickWindowServerPacket.getSyncId() && this.player.container.method_7622(this.player)) {
+		if (this.player.container.syncId == clickWindowServerPacket.getSyncId() && this.player.container.isRestricted(this.player)) {
 			if (this.player.isSpectator()) {
 				DefaultedList<ItemStack> defaultedList = DefaultedList.create();
 
@@ -1228,7 +1228,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 					this.player
 						.networkHandler
 						.sendPacket(new ConfirmGuiActionClientPacket(clickWindowServerPacket.getSyncId(), clickWindowServerPacket.getTransactionId(), false));
-					this.player.container.method_7590(this.player, false);
+					this.player.container.setPlayerRestriction(this.player, false);
 					DefaultedList<ItemStack> defaultedList2 = DefaultedList.create();
 
 					for(int j = 0; j < this.player.container.slotList.size(); ++j) {
@@ -1248,12 +1248,12 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 		this.player.updateLastActionTime();
 		if (!this.player.isSpectator()
 			&& this.player.container.syncId == craftRequestServerPacket.getSyncId()
-			&& this.player.container.method_7622(this.player)
+			&& this.player.container.isRestricted(this.player)
 			&& this.player.container instanceof CraftingContainer) {
 			this.server
 				.getRecipeManager()
 				.get(craftRequestServerPacket.getRecipe())
-				.ifPresent(recipe -> ((CraftingContainer)this.player.container).method_17697(craftRequestServerPacket.shouldCraftAll(), recipe, this.player));
+				.ifPresent(recipe -> ((CraftingContainer)this.player.container).fillInputSlots(craftRequestServerPacket.shouldCraftAll(), recipe, this.player));
 		}
 	}
 
@@ -1261,7 +1261,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	public void onButtonClick(ButtonClickServerPacket buttonClickServerPacket) {
 		NetworkThreadUtils.forceMainThread(buttonClickServerPacket, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
-		if (this.player.container.syncId == buttonClickServerPacket.getSyncId() && this.player.container.method_7622(this.player) && !this.player.isSpectator()) {
+		if (this.player.container.syncId == buttonClickServerPacket.getSyncId() && this.player.container.isRestricted(this.player) && !this.player.isSpectator()) {
 			this.player.container.onButtonClick(this.player, buttonClickServerPacket.method_12186());
 			this.player.container.sendContentUpdates();
 		}
@@ -1295,7 +1295,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 					this.player.containerPlayer.setStackInSlot(creativeInventoryActionServerPacket.getSlot(), itemStack);
 				}
 
-				this.player.containerPlayer.method_7590(this.player, true);
+				this.player.containerPlayer.setPlayerRestriction(this.player, true);
 			} else if (bl && bl3 && this.creativeItemDropThreshold < 200) {
 				this.creativeItemDropThreshold += 20;
 				ItemEntity itemEntity = this.player.dropItem(itemStack, true);
@@ -1313,9 +1313,9 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 		if (short_ != null
 			&& guiActionConfirmServerPacket.getSyncId() == short_
 			&& this.player.container.syncId == guiActionConfirmServerPacket.getWindowId()
-			&& !this.player.container.method_7622(this.player)
+			&& !this.player.container.isRestricted(this.player)
 			&& !this.player.isSpectator()) {
-			this.player.container.method_7590(this.player, true);
+			this.player.container.setPlayerRestriction(this.player, true);
 		}
 	}
 

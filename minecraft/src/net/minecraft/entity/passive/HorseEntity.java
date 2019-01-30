@@ -67,8 +67,8 @@ public class HorseEntity extends HorseBaseEntity {
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
 		compoundTag.putInt("Variant", this.getVariant());
-		if (!this.field_6962.getInvStack(1).isEmpty()) {
-			compoundTag.put("ArmorItem", this.field_6962.getInvStack(1).toTag(new CompoundTag()));
+		if (!this.decorationItem.getInvStack(1).isEmpty()) {
+			compoundTag.put("ArmorItem", this.decorationItem.getInvStack(1).toTag(new CompoundTag()));
 		}
 	}
 
@@ -79,7 +79,7 @@ public class HorseEntity extends HorseBaseEntity {
 		if (compoundTag.containsKey("ArmorItem", 10)) {
 			ItemStack itemStack = ItemStack.fromTag(compoundTag.getCompound("ArmorItem"));
 			if (!itemStack.isEmpty() && HorseArmorType.isHorseArmor(itemStack.getItem())) {
-				this.field_6962.setInvStack(1, itemStack);
+				this.decorationItem.setInvStack(1, itemStack);
 			}
 		}
 
@@ -132,7 +132,7 @@ public class HorseEntity extends HorseBaseEntity {
 	@Override
 	protected void method_6731() {
 		super.method_6731();
-		this.setArmorTypeFromStack(this.field_6962.getInvStack(1));
+		this.setArmorTypeFromStack(this.decorationItem.getInvStack(1));
 	}
 
 	public void setArmorTypeFromStack(ItemStack itemStack) {

@@ -62,7 +62,7 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 	}
 
 	public boolean method_899(LootContext lootContext) {
-		BlockState blockState = lootContext.method_296(LootContextParameters.field_1224);
+		BlockState blockState = lootContext.get(LootContextParameters.field_1224);
 		return blockState != null && this.predicate.test(blockState);
 	}
 
@@ -90,7 +90,7 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 
 		public BlockStatePropertyLootCondition method_910(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
-			Block block = (Block)Registry.BLOCK.method_17966(identifier).orElseThrow(() -> new IllegalArgumentException("Can't find block " + identifier));
+			Block block = (Block)Registry.BLOCK.getOptional(identifier).orElseThrow(() -> new IllegalArgumentException("Can't find block " + identifier));
 			StateFactory<Block, BlockState> stateFactory = block.getStateFactory();
 			Map<Property<?>, Object> map = Maps.<Property<?>, Object>newHashMap();
 			if (jsonObject.has("properties")) {

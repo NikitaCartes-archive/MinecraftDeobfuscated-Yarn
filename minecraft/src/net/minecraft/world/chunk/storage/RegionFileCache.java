@@ -36,7 +36,7 @@ public abstract class RegionFileCache implements AutoCloseable {
 	}
 
 	@Nullable
-	public CompoundTag getChunkTag(ChunkPos chunkPos) throws IOException {
+	public CompoundTag readChunkTag(ChunkPos chunkPos) throws IOException {
 		RegionFile regionFile = this.getRegionFile(chunkPos);
 		DataInputStream dataInputStream = regionFile.getChunkDataInputStream(chunkPos);
 		Throwable var5 = null;
@@ -68,7 +68,7 @@ public abstract class RegionFileCache implements AutoCloseable {
 		return (CompoundTag)var6;
 	}
 
-	protected void setChunkTag(ChunkPos chunkPos, CompoundTag compoundTag) throws IOException {
+	protected void writeChunkTag(ChunkPos chunkPos, CompoundTag compoundTag) throws IOException {
 		RegionFile regionFile = this.getRegionFile(chunkPos);
 		DataOutputStream dataOutputStream = regionFile.getChunkDataOutputStream(chunkPos);
 		Throwable var5 = null;

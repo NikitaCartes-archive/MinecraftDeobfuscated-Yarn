@@ -52,7 +52,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 		if (itemStack.getItem() != Items.field_8895) {
 			return itemStack;
 		} else {
-			BlockPos blockPos = lootContext.method_296(LootContextParameters.field_1232);
+			BlockPos blockPos = lootContext.get(LootContextParameters.field_1232);
 			if (blockPos != null) {
 				ServerWorld serverWorld = lootContext.getWorld();
 				BlockPos blockPos2 = serverWorld.locateStructure(this.destination, blockPos, this.searchRadius, this.skipExistingChunks);

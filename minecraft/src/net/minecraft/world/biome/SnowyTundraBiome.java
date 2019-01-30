@@ -6,7 +6,7 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.MineshaftFeature;
 import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
-import net.minecraft.world.gen.feature.NewVillageFeatureConfig;
+import net.minecraft.world.gen.feature.VillageFeatureConfig;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
 public final class SnowyTundraBiome extends Biome {
@@ -24,7 +24,7 @@ public final class SnowyTundraBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.addStructureFeature(Feature.VILLAGE, new NewVillageFeatureConfig("village/snowy/town_centers", 6));
+		this.addStructureFeature(Feature.VILLAGE, new VillageFeatureConfig("village/snowy/town_centers", 6));
 		this.addStructureFeature(Feature.IGLOO, FeatureConfig.DEFAULT);
 		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
 		this.addStructureFeature(Feature.STRONGHOLD, FeatureConfig.DEFAULT);

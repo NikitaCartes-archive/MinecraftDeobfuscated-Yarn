@@ -3,6 +3,7 @@ package net.minecraft.entity.parts;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Packet;
 
 public class EntityPart extends Entity {
 	public final IEntityPartDamageDelegate damageDelegate;
@@ -40,5 +41,10 @@ public class EntityPart extends Entity {
 	@Override
 	public boolean isPartOf(Entity entity) {
 		return this == entity || this.damageDelegate == entity;
+	}
+
+	@Override
+	public Packet<?> createSpawnPacket() {
+		throw new UnsupportedOperationException();
 	}
 }

@@ -187,4 +187,8 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 	}
 
 	public abstract int produceHeight(int i, int j, Heightmap.Type type);
+
+	public int method_18028(int i, int j, Heightmap.Type type) {
+		return this.produceHeight(i, j, type) - 1;
+	}
 }

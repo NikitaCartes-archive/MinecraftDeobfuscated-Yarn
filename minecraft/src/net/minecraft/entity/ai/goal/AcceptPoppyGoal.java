@@ -47,13 +47,13 @@ public class AcceptPoppyGoal extends Goal {
 	public void start() {
 		this.field_6605 = this.owner.getRand().nextInt(320);
 		this.field_6606 = false;
-		this.golem.getNavigation().method_6340();
+		this.golem.getNavigation().stop();
 	}
 
 	@Override
 	public void onRemove() {
 		this.golem = null;
-		this.owner.getNavigation().method_6340();
+		this.owner.getNavigation().stop();
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class AcceptPoppyGoal extends Goal {
 
 		if (this.field_6606 && this.owner.squaredDistanceTo(this.golem) < 4.0) {
 			this.golem.method_6497(false);
-			this.owner.getNavigation().method_6340();
+			this.owner.getNavigation().stop();
 		}
 	}
 }

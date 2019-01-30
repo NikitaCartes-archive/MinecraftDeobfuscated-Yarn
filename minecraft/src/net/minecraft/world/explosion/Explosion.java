@@ -17,7 +17,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.enchantment.ProtectionEnchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.PrimedTNTEntity;
+import net.minecraft.entity.PrimedTntEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -249,10 +249,10 @@ public class Explosion {
 						BlockEntity blockEntity = block.hasBlockEntity() ? this.world.getBlockEntity(blockPos) : null;
 						LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
 							.setRandom(this.world.random)
-							.method_312(LootContextParameters.field_1232, blockPos)
-							.method_312(LootContextParameters.field_1229, ItemStack.EMPTY)
-							.method_312(LootContextParameters.field_1225, this.power)
-							.method_306(LootContextParameters.field_1228, blockEntity);
+							.put(LootContextParameters.field_1232, blockPos)
+							.put(LootContextParameters.field_1229, ItemStack.EMPTY)
+							.put(LootContextParameters.field_1225, this.power)
+							.putNullable(LootContextParameters.field_1228, blockEntity);
 						Block.dropStacks(blockState, builder);
 					}
 
@@ -289,8 +289,8 @@ public class Explosion {
 	public LivingEntity getCausingEntity() {
 		if (this.entity == null) {
 			return null;
-		} else if (this.entity instanceof PrimedTNTEntity) {
-			return ((PrimedTNTEntity)this.entity).getCausingEntity();
+		} else if (this.entity instanceof PrimedTntEntity) {
+			return ((PrimedTntEntity)this.entity).getCausingEntity();
 		} else {
 			return this.entity instanceof LivingEntity ? (LivingEntity)this.entity : null;
 		}
