@@ -141,14 +141,14 @@ public class MapState extends PersistentState {
 			this.field_112.add(lv);
 		}
 
-		if (!playerEntity.inventory.method_7379(itemStack)) {
+		if (!playerEntity.inventory.containsStack(itemStack)) {
 			this.icons.remove(playerEntity.getName().getString());
 		}
 
 		for (int i = 0; i < this.field_112.size(); i++) {
 			MapState.class_23 lv2 = (MapState.class_23)this.field_112.get(i);
 			String string = lv2.field_125.getName().getString();
-			if (!lv2.field_125.invalid && (lv2.field_125.inventory.method_7379(itemStack) || itemStack.isHeldInItemFrame())) {
+			if (!lv2.field_125.invalid && (lv2.field_125.inventory.containsStack(itemStack) || itemStack.isHeldInItemFrame())) {
 				if (!itemStack.isHeldInItemFrame() && lv2.field_125.dimension == this.dimension && this.showIcons) {
 					this.method_107(MapIcon.Direction.field_91, lv2.field_125.world, string, lv2.field_125.x, lv2.field_125.z, (double)lv2.field_125.yaw, null);
 				}

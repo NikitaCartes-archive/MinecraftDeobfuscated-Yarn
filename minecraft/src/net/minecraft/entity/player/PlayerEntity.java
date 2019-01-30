@@ -364,7 +364,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			boundingBox = new BoundingBox(
 				boundingBox.minX, boundingBox.minY, boundingBox.minZ, boundingBox.minX + (double)f, boundingBox.minY + (double)g, boundingBox.minZ + (double)f
 			);
-			if (this.world.method_8587(null, boundingBox)) {
+			if (this.world.isEntityColliding(this, boundingBox)) {
 				this.setSize(f, g);
 			}
 		}
@@ -1848,7 +1848,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	private void method_7296(@Nullable CompoundTag compoundTag) {
 		if (!this.world.isClient && !compoundTag.isEmpty()) {
-			EntityType.fromTag(compoundTag, this.world).ifPresent(entity -> {
+			EntityType.getEntityFromTag(compoundTag, this.world).ifPresent(entity -> {
 				if (entity instanceof TameableEntity) {
 					((TameableEntity)entity).setOwnerUuid(this.uuid);
 				}

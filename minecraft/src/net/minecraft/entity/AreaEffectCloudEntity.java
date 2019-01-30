@@ -11,6 +11,7 @@ import java.util.UUID;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.client.network.packet.EntitySpawnClientPacket;
 import net.minecraft.command.arguments.ParticleArgumentType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -18,6 +19,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
@@ -31,7 +33,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class AreaEffectCloudEntity extends Entity {
-	private static final Logger field_5935 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final TrackedData<Float> RADIUS = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Integer> COLOR = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> WAITING = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -351,7 +353,7 @@ public class AreaEffectCloudEntity extends Entity {
 			try {
 				this.setParticleType(ParticleArgumentType.readParameters(new StringReader(compoundTag.getString("Particle"))));
 			} catch (CommandSyntaxException var5) {
-				field_5935.warn("Couldn't load custom particle {}", compoundTag.getString("Particle"), var5);
+				LOGGER.warn("Couldn't load custom particle {}", compoundTag.getString("Particle"), var5);
 			}
 		}
 
@@ -422,5 +424,10 @@ public class AreaEffectCloudEntity extends Entity {
 	@Override
 	public PistonBehavior getPistonBehavior() {
 		return PistonBehavior.field_15975;
+	}
+
+	@Override
+	public Packet<?> createSpawnPacket() {
+		return new EntitySpawnClientPacket(this);
 	}
 }

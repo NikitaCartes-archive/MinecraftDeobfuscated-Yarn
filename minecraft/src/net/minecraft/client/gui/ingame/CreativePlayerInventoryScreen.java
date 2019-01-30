@@ -193,7 +193,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 			} else if (this.container != null) {
 				ItemStack itemStack = slot == null ? ItemStack.EMPTY : this.container.getSlot(slot.id).getStack();
 				this.container.onSlotClick(slot == null ? i : slot.id, j, slotActionType, this.client.player);
-				if (Container.method_7594(j) == 2) {
+				if (Container.unpackButtonId(j) == 2) {
 					for (int l = 0; l < 9; l++) {
 						this.client.interactionManager.method_2909(this.container.getSlot(45 + l).getStack(), 36 + l);
 					}
@@ -847,7 +847,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		}
 
 		@Override
-		public boolean method_7615(Slot slot) {
+		public boolean canInsertIntoSlot(Slot slot) {
 			return slot.inventory != CreativePlayerInventoryScreen.inventory;
 		}
 	}

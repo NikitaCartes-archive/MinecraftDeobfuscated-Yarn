@@ -16,7 +16,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.dimension.DimensionalPersistentStateManager;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 
@@ -46,10 +45,10 @@ public class FeatureUpdater {
 	private final List<String> field_17658;
 	private final List<String> field_17659;
 
-	public FeatureUpdater(@Nullable DimensionalPersistentStateManager dimensionalPersistentStateManager, List<String> list, List<String> list2) {
+	public FeatureUpdater(@Nullable PersistentStateManager persistentStateManager, List<String> list, List<String> list2) {
 		this.field_17658 = list;
 		this.field_17659 = list2;
-		this.init(dimensionalPersistentStateManager);
+		this.init(persistentStateManager);
 		boolean bl = false;
 
 		for (String string : this.field_17659) {
@@ -147,13 +146,13 @@ public class FeatureUpdater {
 		return compoundTag;
 	}
 
-	private void init(@Nullable DimensionalPersistentStateManager dimensionalPersistentStateManager) {
-		if (dimensionalPersistentStateManager != null) {
+	private void init(@Nullable PersistentStateManager persistentStateManager) {
+		if (persistentStateManager != null) {
 			for (String string : this.field_17658) {
 				CompoundTag compoundTag = new CompoundTag();
 
 				try {
-					compoundTag = dimensionalPersistentStateManager.method_17923(string, 1493).getCompound("data").getCompound("Features");
+					compoundTag = persistentStateManager.method_17923(string, 1493).getCompound("data").getCompound("Features");
 					if (compoundTag.isEmpty()) {
 						continue;
 					}
@@ -177,7 +176,7 @@ public class FeatureUpdater {
 				}
 
 				String string5 = string + "_index";
-				ChunkUpdateState chunkUpdateState = dimensionalPersistentStateManager.method_17924(() -> new ChunkUpdateState(string5), string5);
+				ChunkUpdateState chunkUpdateState = persistentStateManager.method_17924(() -> new ChunkUpdateState(string5), string5);
 				if (!chunkUpdateState.getAll().isEmpty()) {
 					this.updateStates.put(string, chunkUpdateState);
 				} else {
@@ -195,19 +194,19 @@ public class FeatureUpdater {
 		}
 	}
 
-	public static FeatureUpdater create(DimensionType dimensionType, @Nullable DimensionalPersistentStateManager dimensionalPersistentStateManager) {
+	public static FeatureUpdater create(DimensionType dimensionType, @Nullable PersistentStateManager persistentStateManager) {
 		if (dimensionType == DimensionType.field_13072) {
 			return new FeatureUpdater(
-				dimensionalPersistentStateManager,
+				persistentStateManager,
 				ImmutableList.of("Monument", "Stronghold", "Village", "Mineshaft", "Temple", "Mansion"),
 				ImmutableList.of("Village", "Mineshaft", "Mansion", "Igloo", "Desert_Pyramid", "Jungle_Pyramid", "Swamp_Hut", "Stronghold", "Monument")
 			);
 		} else if (dimensionType == DimensionType.field_13076) {
 			List<String> list = ImmutableList.of("Fortress");
-			return new FeatureUpdater(dimensionalPersistentStateManager, list, list);
+			return new FeatureUpdater(persistentStateManager, list, list);
 		} else if (dimensionType == DimensionType.field_13078) {
 			List<String> list = ImmutableList.of("EndCity");
-			return new FeatureUpdater(dimensionalPersistentStateManager, list, list);
+			return new FeatureUpdater(persistentStateManager, list, list);
 		} else {
 			throw new RuntimeException(String.format("Unknown dimension type : %s", dimensionType));
 		}

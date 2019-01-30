@@ -4,8 +4,6 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.minecraft.class_1361;
-import net.minecraft.class_1376;
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
 import net.minecraft.block.Block;
@@ -16,6 +14,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.LookAroundGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.pathing.PathNodeType;
@@ -65,12 +65,12 @@ public class EndermanEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void method_5959() {
+	protected void initGoals() {
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(2, new MeleeAttackGoal(this, 1.0, false));
 		this.goalSelector.add(7, new class_1394(this, 1.0, 0.0F));
-		this.goalSelector.add(8, new class_1361(this, PlayerEntity.class, 8.0F));
-		this.goalSelector.add(8, new class_1376(this));
+		this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
+		this.goalSelector.add(8, new LookAroundGoal(this));
 		this.goalSelector.add(10, new EndermanEntity.PlaceBlockGoal(this));
 		this.goalSelector.add(11, new EndermanEntity.PickUpBlockGoal(this));
 		this.targetSelector.add(1, new EndermanEntity.class_1562(this));

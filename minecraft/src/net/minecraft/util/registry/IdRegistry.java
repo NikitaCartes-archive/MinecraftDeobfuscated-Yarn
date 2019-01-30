@@ -75,7 +75,7 @@ public class IdRegistry<T> extends ModifiableRegistry<T> {
 	}
 
 	@Override
-	public Optional<T> method_17966(@Nullable Identifier identifier) {
+	public Optional<T> getOptional(@Nullable Identifier identifier) {
 		return Optional.ofNullable(this.objectMap.get(identifier));
 	}
 

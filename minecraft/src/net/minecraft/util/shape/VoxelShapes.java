@@ -243,7 +243,7 @@ public final class VoxelShapes {
 	private static double method_17944(
 		BoundingBox boundingBox, ViewableWorld viewableWorld, double d, VerticalEntityPosition verticalEntityPosition, AxisCycle axisCycle, Stream<VoxelShape> stream
 	) {
-		if (boundingBox.method_17939() < 1.0E-6 || boundingBox.method_17940() < 1.0E-6 || boundingBox.method_17941() < 1.0E-6) {
+		if (boundingBox.getXSize() < 1.0E-6 || boundingBox.getYSize() < 1.0E-6 || boundingBox.getZSize() < 1.0E-6) {
 			return d;
 		} else if (Math.abs(d) < 1.0E-7) {
 			return 0.0;

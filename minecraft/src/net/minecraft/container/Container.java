@@ -22,17 +22,17 @@ import net.minecraft.world.World;
 public abstract class Container {
 	private final DefaultedList<ItemStack> stackList = DefaultedList.create();
 	public final List<Slot> slotList = Lists.<Slot>newArrayList();
-	private final List<Property> field_17285 = Lists.<Property>newArrayList();
+	private final List<Property> properties = Lists.<Property>newArrayList();
 	@Nullable
 	private final ContainerType<?> type;
 	public final int syncId;
 	@Environment(EnvType.CLIENT)
 	private short actionId;
-	private int field_7762 = -1;
-	private int field_7759;
-	private final Set<Slot> field_7757 = Sets.<Slot>newHashSet();
+	private int quickCraftStage = -1;
+	private int quickCraftButton;
+	private final Set<Slot> quickCraftSlots = Sets.<Slot>newHashSet();
 	private final List<ContainerListener> listeners = Lists.<ContainerListener>newArrayList();
-	private final Set<PlayerEntity> field_7760 = Sets.<PlayerEntity>newHashSet();
+	private final Set<PlayerEntity> restrictedPlayers = Sets.<PlayerEntity>newHashSet();
 
 	protected Container(@Nullable ContainerType<?> containerType, int i) {
 		this.type = containerType;
@@ -77,14 +77,14 @@ public abstract class Container {
 		return slot;
 	}
 
-	protected Property method_17362(Property property) {
-		this.field_17285.add(property);
+	protected Property addProperty(Property property) {
+		this.properties.add(property);
 		return property;
 	}
 
-	protected void readData(PropertyDelegate propertyDelegate) {
+	protected void addProperties(PropertyDelegate propertyDelegate) {
 		for (int i = 0; i < propertyDelegate.size(); i++) {
-			this.method_17362(Property.create(propertyDelegate, i));
+			this.addProperty(Property.create(propertyDelegate, i));
 		}
 	}
 
@@ -125,9 +125,9 @@ public abstract class Container {
 			}
 		}
 
-		for (int ix = 0; ix < this.field_17285.size(); ix++) {
-			Property property = (Property)this.field_17285.get(ix);
-			if (property.method_17408()) {
+		for (int ix = 0; ix < this.properties.size(); ix++) {
+			Property property = (Property)this.properties.get(ix);
+			if (property.detectChanges()) {
 				for (ContainerListener containerListener2 : this.listeners) {
 					containerListener2.onContainerPropertyUpdate(this, ix, property.get());
 				}
@@ -152,45 +152,45 @@ public abstract class Container {
 		ItemStack itemStack = ItemStack.EMPTY;
 		PlayerInventory playerInventory = playerEntity.inventory;
 		if (slotActionType == SlotActionType.field_7789) {
-			int k = this.field_7759;
-			this.field_7759 = method_7594(j);
-			if ((k != 1 || this.field_7759 != 2) && k != this.field_7759) {
-				this.method_7605();
+			int k = this.quickCraftButton;
+			this.quickCraftButton = unpackButtonId(j);
+			if ((k != 1 || this.quickCraftButton != 2) && k != this.quickCraftButton) {
+				this.quickCraftEnd();
 			} else if (playerInventory.getCursorStack().isEmpty()) {
-				this.method_7605();
-			} else if (this.field_7759 == 0) {
-				this.field_7762 = method_7620(j);
-				if (method_7600(this.field_7762, playerEntity)) {
-					this.field_7759 = 1;
-					this.field_7757.clear();
+				this.quickCraftEnd();
+			} else if (this.quickCraftButton == 0) {
+				this.quickCraftStage = unpackQuickCraftStage(j);
+				if (method_7600(this.quickCraftStage, playerEntity)) {
+					this.quickCraftButton = 1;
+					this.quickCraftSlots.clear();
 				} else {
-					this.method_7605();
+					this.quickCraftEnd();
 				}
-			} else if (this.field_7759 == 1) {
+			} else if (this.quickCraftButton == 1) {
 				Slot slot = (Slot)this.slotList.get(i);
 				ItemStack itemStack2 = playerInventory.getCursorStack();
 				if (slot != null
 					&& canInsertItemIntoSlot(slot, itemStack2, true)
 					&& slot.canInsert(itemStack2)
-					&& (this.field_7762 == 2 || itemStack2.getAmount() > this.field_7757.size())
-					&& this.method_7615(slot)) {
-					this.field_7757.add(slot);
+					&& (this.quickCraftStage == 2 || itemStack2.getAmount() > this.quickCraftSlots.size())
+					&& this.canInsertIntoSlot(slot)) {
+					this.quickCraftSlots.add(slot);
 				}
-			} else if (this.field_7759 == 2) {
-				if (!this.field_7757.isEmpty()) {
+			} else if (this.quickCraftButton == 2) {
+				if (!this.quickCraftSlots.isEmpty()) {
 					ItemStack itemStack3 = playerInventory.getCursorStack().copy();
 					int l = playerInventory.getCursorStack().getAmount();
 
-					for (Slot slot2 : this.field_7757) {
+					for (Slot slot2 : this.quickCraftSlots) {
 						ItemStack itemStack4 = playerInventory.getCursorStack();
 						if (slot2 != null
 							&& canInsertItemIntoSlot(slot2, itemStack4, true)
 							&& slot2.canInsert(itemStack4)
-							&& (this.field_7762 == 2 || itemStack4.getAmount() >= this.field_7757.size())
-							&& this.method_7615(slot2)) {
+							&& (this.quickCraftStage == 2 || itemStack4.getAmount() >= this.quickCraftSlots.size())
+							&& this.canInsertIntoSlot(slot2)) {
 							ItemStack itemStack5 = itemStack3.copy();
 							int m = slot2.hasStack() ? slot2.getStack().getAmount() : 0;
-							calculateStackSize(this.field_7757, this.field_7762, itemStack5, m);
+							calculateStackSize(this.quickCraftSlots, this.quickCraftStage, itemStack5, m);
 							int n = Math.min(itemStack5.getMaxAmount(), slot2.getMaxStackAmount(itemStack5));
 							if (itemStack5.getAmount() > n) {
 								itemStack5.setAmount(n);
@@ -205,12 +205,12 @@ public abstract class Container {
 					playerInventory.setCursorStack(itemStack3);
 				}
 
-				this.method_7605();
+				this.quickCraftEnd();
 			} else {
-				this.method_7605();
+				this.quickCraftEnd();
 			}
-		} else if (this.field_7759 != 0) {
-			this.method_7605();
+		} else if (this.quickCraftButton != 0) {
+			this.quickCraftEnd();
 		} else if ((slotActionType == SlotActionType.field_7790 || slotActionType == SlotActionType.field_7794) && (j == 0 || j == 1)) {
 			if (i == -999) {
 				if (!playerInventory.getCursorStack().isEmpty()) {
@@ -276,7 +276,7 @@ public abstract class Container {
 								slot3.onTakeItem(playerEntity, playerInventory.getCursorStack());
 							}
 						} else if (slot3.canInsert(itemStack2)) {
-							if (method_7612(itemStack3, itemStack2)) {
+							if (canStacksCombine(itemStack3, itemStack2)) {
 								int o = j == 0 ? itemStack2.getAmount() : 1;
 								if (o > slot3.getMaxStackAmount(itemStack2) - itemStack3.getAmount()) {
 									o = slot3.getMaxStackAmount(itemStack2) - itemStack3.getAmount();
@@ -292,7 +292,7 @@ public abstract class Container {
 								slot3.setStack(itemStack2);
 								playerInventory.setCursorStack(itemStack3);
 							}
-						} else if (itemStack2.getMaxAmount() > 1 && method_7612(itemStack3, itemStack2) && !itemStack3.isEmpty()) {
+						} else if (itemStack2.getMaxAmount() > 1 && canStacksCombine(itemStack3, itemStack2) && !itemStack3.isEmpty()) {
 							int ox = itemStack3.getAmount();
 							if (ox + itemStack2.getAmount() <= itemStack2.getMaxAmount()) {
 								itemStack2.addAmount(ox);
@@ -317,7 +317,7 @@ public abstract class Container {
 				if (itemStack3x.isEmpty()) {
 					if (slot3.canTakeItems(playerEntity)) {
 						playerInventory.setInvStack(j, itemStack2x);
-						slot3.method_7672(itemStack2x.getAmount());
+						slot3.onTake(itemStack2x.getAmount());
 						slot3.setStack(ItemStack.EMPTY);
 						slot3.onTakeItem(playerEntity, itemStack2x);
 					}
@@ -393,7 +393,7 @@ public abstract class Container {
 		return itemStack;
 	}
 
-	public static boolean method_7612(ItemStack itemStack, ItemStack itemStack2) {
+	public static boolean canStacksCombine(ItemStack itemStack, ItemStack itemStack2) {
 		return itemStack.getItem() == itemStack2.getItem() && ItemStack.areTagsEqual(itemStack, itemStack2);
 	}
 
@@ -437,7 +437,7 @@ public abstract class Container {
 	}
 
 	public void setProperty(int i, int j) {
-		((Property)this.field_17285.get(i)).set(j);
+		((Property)this.properties.get(i)).set(j);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -446,15 +446,15 @@ public abstract class Container {
 		return this.actionId;
 	}
 
-	public boolean method_7622(PlayerEntity playerEntity) {
-		return !this.field_7760.contains(playerEntity);
+	public boolean isRestricted(PlayerEntity playerEntity) {
+		return !this.restrictedPlayers.contains(playerEntity);
 	}
 
-	public void method_7590(PlayerEntity playerEntity, boolean bl) {
+	public void setPlayerRestriction(PlayerEntity playerEntity, boolean bl) {
 		if (bl) {
-			this.field_7760.remove(playerEntity);
+			this.restrictedPlayers.remove(playerEntity);
 		} else {
-			this.field_7760.add(playerEntity);
+			this.restrictedPlayers.add(playerEntity);
 		}
 	}
 
@@ -471,7 +471,7 @@ public abstract class Container {
 			while (!itemStack.isEmpty() && (bl ? k >= i : k < j)) {
 				Slot slot = (Slot)this.slotList.get(k);
 				ItemStack itemStack2 = slot.getStack();
-				if (!itemStack2.isEmpty() && method_7612(itemStack, itemStack2)) {
+				if (!itemStack2.isEmpty() && canStacksCombine(itemStack, itemStack2)) {
 					int l = itemStack2.getAmount() + itemStack.getAmount();
 					if (l <= itemStack.getMaxAmount()) {
 						itemStack.setAmount(0);
@@ -527,16 +527,16 @@ public abstract class Container {
 		return bl2;
 	}
 
-	public static int method_7620(int i) {
+	public static int unpackQuickCraftStage(int i) {
 		return i >> 2 & 3;
 	}
 
-	public static int method_7594(int i) {
+	public static int unpackButtonId(int i) {
 		return i & 3;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static int method_7591(int i, int j) {
+	public static int packClickData(int i, int j) {
 		return i & 3 | (j & 3) << 2;
 	}
 
@@ -548,9 +548,9 @@ public abstract class Container {
 		}
 	}
 
-	protected void method_7605() {
-		this.field_7759 = 0;
-		this.field_7757.clear();
+	protected void quickCraftEnd() {
+		this.quickCraftButton = 0;
+		this.quickCraftSlots.clear();
 	}
 
 	public static boolean canInsertItemIntoSlot(@Nullable Slot slot, ItemStack itemStack, boolean bl) {
@@ -575,7 +575,7 @@ public abstract class Container {
 		itemStack.addAmount(j);
 	}
 
-	public boolean method_7615(Slot slot) {
+	public boolean canInsertIntoSlot(Slot slot) {
 		return true;
 	}
 

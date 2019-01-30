@@ -43,7 +43,7 @@ public class BeaconContainer extends Container {
 		this.field_17289 = arg;
 		this.field_17288 = new BeaconContainer.SlotPayment(this.field_17287, 0, 136, 110);
 		this.addSlot(this.field_17288);
-		this.readData(propertyDelegate);
+		this.addProperties(propertyDelegate);
 		int j = 36;
 		int k = 137;
 

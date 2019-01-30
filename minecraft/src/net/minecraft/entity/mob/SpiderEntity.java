@@ -2,9 +2,6 @@ package net.minecraft.entity.mob;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_1359;
-import net.minecraft.class_1361;
-import net.minecraft.class_1376;
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
 import net.minecraft.block.BlockState;
@@ -15,7 +12,10 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.LookAroundGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.entity.ai.goal.PounceAtTargetGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.SpiderNavigation;
@@ -51,13 +51,13 @@ public class SpiderEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void method_5959() {
+	protected void initGoals() {
 		this.goalSelector.add(1, new SwimGoal(this));
-		this.goalSelector.add(3, new class_1359(this, 0.4F));
+		this.goalSelector.add(3, new PounceAtTargetGoal(this, 0.4F));
 		this.goalSelector.add(4, new SpiderEntity.class_1629(this));
 		this.goalSelector.add(5, new class_1394(this, 0.8));
-		this.goalSelector.add(6, new class_1361(this, PlayerEntity.class, 8.0F));
-		this.goalSelector.add(6, new class_1376(this));
+		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
+		this.goalSelector.add(6, new LookAroundGoal(this));
 		this.targetSelector.add(1, new class_1399(this));
 		this.targetSelector.add(2, new SpiderEntity.class_1631(this, PlayerEntity.class));
 		this.targetSelector.add(3, new SpiderEntity.class_1631(this, IronGolemEntity.class));

@@ -1,4 +1,4 @@
-package net.minecraft.world.dimension;
+package net.minecraft.world;
 
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.DataFixTypes;
@@ -15,17 +15,16 @@ import net.minecraft.SharedConstants;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.util.TagHelper;
-import net.minecraft.world.PersistentState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class DimensionalPersistentStateManager {
+public class PersistentStateManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Map<String, PersistentState> keyToState = Maps.<String, PersistentState>newHashMap();
 	private final DataFixer field_17663;
 	private final File field_17664;
 
-	public DimensionalPersistentStateManager(File file, DataFixer dataFixer) {
+	public PersistentStateManager(File file, DataFixer dataFixer) {
 		this.field_17663 = dataFixer;
 		this.field_17664 = file;
 	}

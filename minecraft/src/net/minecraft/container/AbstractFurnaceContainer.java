@@ -21,7 +21,7 @@ public abstract class AbstractFurnaceContainer extends CraftingContainer<Invento
 	private final Inventory inventory;
 	private final PropertyDelegate propertyDelegate;
 	protected final World world;
-	private final RecipeType<? extends CookingRecipe> field_17494;
+	private final RecipeType<? extends CookingRecipe> recipeType;
 
 	protected AbstractFurnaceContainer(ContainerType<?> containerType, RecipeType<? extends CookingRecipe> recipeType, int i, PlayerInventory playerInventory) {
 		this(containerType, recipeType, i, playerInventory, new BasicInventory(3), new ArrayPropertyDelegate(4));
@@ -36,7 +36,7 @@ public abstract class AbstractFurnaceContainer extends CraftingContainer<Invento
 		PropertyDelegate propertyDelegate
 	) {
 		super(containerType, i);
-		this.field_17494 = recipeType;
+		this.recipeType = recipeType;
 		checkContainerSize(inventory, 3);
 		checkContainerDataCount(propertyDelegate, 4);
 		this.inventory = inventory;
@@ -56,7 +56,7 @@ public abstract class AbstractFurnaceContainer extends CraftingContainer<Invento
 			this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 142));
 		}
 
-		this.readData(propertyDelegate);
+		this.addProperties(propertyDelegate);
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public abstract class AbstractFurnaceContainer extends CraftingContainer<Invento
 	}
 
 	@Override
-	public void method_17697(boolean bl, Recipe<?> recipe, ServerPlayerEntity serverPlayerEntity) {
+	public void fillInputSlots(boolean bl, Recipe<?> recipe, ServerPlayerEntity serverPlayerEntity) {
 		new FurnaceInputSlotFiller<>(this).fillInputSlots(serverPlayerEntity, (Recipe<Inventory>)recipe, bl);
 	}
 
@@ -157,7 +157,7 @@ public abstract class AbstractFurnaceContainer extends CraftingContainer<Invento
 	}
 
 	protected boolean isSmeltable(ItemStack itemStack) {
-		return this.world.getRecipeManager().get(this.field_17494, new BasicInventory(itemStack), this.world).isPresent();
+		return this.world.getRecipeManager().get(this.recipeType, new BasicInventory(itemStack), this.world).isPresent();
 	}
 
 	protected boolean isFuel(ItemStack itemStack) {
@@ -165,14 +165,14 @@ public abstract class AbstractFurnaceContainer extends CraftingContainer<Invento
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_17363() {
+	public int getCookProgress() {
 		int i = this.propertyDelegate.get(2);
 		int j = this.propertyDelegate.get(3);
 		return j != 0 && i != 0 ? i * 24 / j : 0;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_17364() {
+	public int getFuelProgress() {
 		int i = this.propertyDelegate.get(1);
 		if (i == 0) {
 			i = 200;

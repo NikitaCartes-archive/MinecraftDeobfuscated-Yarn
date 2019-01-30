@@ -69,12 +69,12 @@ public class SummonCommand {
 		CompoundTag compoundTag2 = compoundTag.copy();
 		compoundTag2.putString("id", identifier.toString());
 		if (EntityType.getId(EntityType.LIGHTNING_BOLT).equals(identifier)) {
-			Entity entity = new LightningEntity(serverCommandSource.getWorld(), vec3d.x, vec3d.y, vec3d.z, false);
-			serverCommandSource.getWorld().addGlobalEntity(entity);
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.summon.success", entity.getDisplayName()), true);
+			LightningEntity lightningEntity = new LightningEntity(serverCommandSource.getWorld(), vec3d.x, vec3d.y, vec3d.z, false);
+			serverCommandSource.getWorld().addGlobalEntity(lightningEntity);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.summon.success", lightningEntity.getDisplayName()), true);
 			return 1;
 		} else {
-			Entity entity = EntityType.method_17840(compoundTag2, serverCommandSource.getWorld(), vec3d.x, vec3d.y, vec3d.z, true);
+			Entity entity = EntityType.loadEntityWithPassengersAtPosition(compoundTag2, serverCommandSource.getWorld(), vec3d.x, vec3d.y, vec3d.z, true);
 			if (entity == null) {
 				throw FAILED_EXCEPTION.create();
 			} else {

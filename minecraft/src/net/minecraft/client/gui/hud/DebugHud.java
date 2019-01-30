@@ -93,10 +93,12 @@ public class DebugHud extends Drawable {
 	protected void drawLeftText() {
 		List<String> list = this.getLeftText();
 		list.add("");
+		boolean bl = this.client.getServer() != null;
 		list.add(
 			"Debug: Pie [shift]: "
 				+ (this.client.options.debugProfilerEnabled ? "visible" : "hidden")
-				+ " FPS [alt]: "
+				+ (bl ? " FPS + TPS" : " FPS")
+				+ " [alt]: "
 				+ (this.client.options.debugTpsEnabled ? "visible" : "hidden")
 		);
 		list.add("For help: press F3 + Q");
@@ -183,7 +185,7 @@ public class DebugHud extends Drawable {
 			}
 
 			World world = this.getWorld();
-			LongSet longSet = (LongSet)(world instanceof ServerWorld ? ((ServerWorld)world).method_17984() : LongSets.EMPTY_SET);
+			LongSet longSet = (LongSet)(world instanceof ServerWorld ? ((ServerWorld)world).getForcedChunks() : LongSets.EMPTY_SET);
 			List<String> list = Lists.<String>newArrayList(
 				"Minecraft "
 					+ SharedConstants.getGameVersion().getName()
@@ -459,7 +461,7 @@ public class DebugHud extends Drawable {
 		}
 
 		String string = r + " ms min";
-		String string2 = q / (long)ls.length + " ms avg";
+		String string2 = q / (long)p + " ms avg";
 		String string3 = s + " ms max";
 		this.fontRenderer.drawWithShadow(string, (float)(i + 2), (float)(t - 60 - 9), 14737632);
 		this.fontRenderer.drawWithShadow(string2, (float)(i + p / 2 - this.fontRenderer.getStringWidth(string2) / 2), (float)(t - 60 - 9), 14737632);

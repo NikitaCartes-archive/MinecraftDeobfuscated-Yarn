@@ -152,4 +152,8 @@ public class Vec3d {
 		double f = enumSet.contains(Direction.Axis.Z) ? (double)MathHelper.floor(this.z) : this.z;
 		return new Vec3d(d, e, f);
 	}
+
+	public double method_18043(Direction.Axis axis) {
+		return axis.choose(this.x, this.y, this.z);
+	}
 }

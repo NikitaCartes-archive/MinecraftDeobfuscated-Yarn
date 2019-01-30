@@ -82,8 +82,8 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 		if (this.hasChest()) {
 			ListTag listTag = new ListTag();
 
-			for (int i = 2; i < this.field_6962.getInvSize(); i++) {
-				ItemStack itemStack = this.field_6962.getInvStack(i);
+			for (int i = 2; i < this.decorationItem.getInvSize(); i++) {
+				ItemStack itemStack = this.decorationItem.getInvStack(i);
 				if (!itemStack.isEmpty()) {
 					CompoundTag compoundTag2 = new CompoundTag();
 					compoundTag2.putByte("Slot", (byte)i);
@@ -107,8 +107,8 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 			for (int i = 0; i < listTag.size(); i++) {
 				CompoundTag compoundTag2 = listTag.getCompoundTag(i);
 				int j = compoundTag2.getByte("Slot") & 255;
-				if (j >= 2 && j < this.field_6962.getInvSize()) {
-					this.field_6962.setInvStack(j, ItemStack.fromTag(compoundTag2));
+				if (j >= 2 && j < this.decorationItem.getInvSize()) {
+					this.decorationItem.setInvStack(j, ItemStack.fromTag(compoundTag2));
 				}
 			}
 		}

@@ -7,6 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.PacketByteBuf;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class EntityClientPacket implements Packet<ClientPlayPacketListener> {
@@ -18,6 +19,10 @@ public class EntityClientPacket implements Packet<ClientPlayPacketListener> {
 	protected byte pitch;
 	protected boolean onGround;
 	protected boolean rotate;
+
+	public static long method_18047(double d) {
+		return MathHelper.lfloor(d * 4096.0);
+	}
 
 	public EntityClientPacket() {
 	}

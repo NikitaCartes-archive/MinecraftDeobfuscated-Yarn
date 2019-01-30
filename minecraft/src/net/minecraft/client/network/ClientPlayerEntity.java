@@ -1,6 +1,7 @@
 package net.minecraft.client.network;
 
 import com.google.common.collect.Lists;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -385,55 +386,49 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	protected boolean method_5632(double d, double e, double f) {
-		if (this.noClip) {
-			return false;
-		} else {
-			BlockPos blockPos = new BlockPos(d, e, f);
-			double g = d - (double)blockPos.getX();
-			double h = f - (double)blockPos.getZ();
-			if (this.method_3150(blockPos)) {
-				int i = -1;
-				double j = 9999.0;
-				if (this.method_7352(blockPos.west()) && g < j) {
-					j = g;
-					i = 0;
-				}
-
-				if (this.method_7352(blockPos.east()) && 1.0 - g < j) {
-					j = 1.0 - g;
-					i = 1;
-				}
-
-				if (this.method_7352(blockPos.north()) && h < j) {
-					j = h;
-					i = 4;
-				}
-
-				if (this.method_7352(blockPos.south()) && 1.0 - h < j) {
-					j = 1.0 - h;
-					i = 5;
-				}
-
-				float k = 0.1F;
-				if (i == 0) {
-					this.velocityX = -0.1F;
-				}
-
-				if (i == 1) {
-					this.velocityX = 0.1F;
-				}
-
-				if (i == 4) {
-					this.velocityZ = -0.1F;
-				}
-
-				if (i == 5) {
-					this.velocityZ = 0.1F;
-				}
+	protected void method_5632(double d, double e, double f) {
+		BlockPos blockPos = new BlockPos(d, e, f);
+		double g = d - (double)blockPos.getX();
+		double h = f - (double)blockPos.getZ();
+		if (this.method_3150(blockPos)) {
+			int i = -1;
+			double j = 9999.0;
+			if (this.method_7352(blockPos.west()) && g < j) {
+				j = g;
+				i = 0;
 			}
 
-			return false;
+			if (this.method_7352(blockPos.east()) && 1.0 - g < j) {
+				j = 1.0 - g;
+				i = 1;
+			}
+
+			if (this.method_7352(blockPos.north()) && h < j) {
+				j = h;
+				i = 4;
+			}
+
+			if (this.method_7352(blockPos.south()) && 1.0 - h < j) {
+				j = 1.0 - h;
+				i = 5;
+			}
+
+			float k = 0.1F;
+			if (i == 0) {
+				this.velocityX = -0.1F;
+			}
+
+			if (i == 1) {
+				this.velocityX = 0.1F;
+			}
+
+			if (i == 4) {
+				this.velocityZ = -0.1F;
+			}
+
+			if (i == 5) {
+				this.velocityZ = 0.1F;
+			}
 		}
 	}
 
@@ -667,11 +662,14 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			this.input.jumping = true;
 		}
 
-		BoundingBox boundingBox = this.getBoundingBox();
-		this.method_5632(this.x - (double)this.getWidth() * 0.35, boundingBox.minY + 0.5, this.z + (double)this.getWidth() * 0.35);
-		this.method_5632(this.x - (double)this.getWidth() * 0.35, boundingBox.minY + 0.5, this.z - (double)this.getWidth() * 0.35);
-		this.method_5632(this.x + (double)this.getWidth() * 0.35, boundingBox.minY + 0.5, this.z - (double)this.getWidth() * 0.35);
-		this.method_5632(this.x + (double)this.getWidth() * 0.35, boundingBox.minY + 0.5, this.z + (double)this.getWidth() * 0.35);
+		if (!this.noClip) {
+			BoundingBox boundingBox = this.getBoundingBox();
+			this.method_5632(this.x - (double)this.getWidth() * 0.35, boundingBox.minY + 0.5, this.z + (double)this.getWidth() * 0.35);
+			this.method_5632(this.x - (double)this.getWidth() * 0.35, boundingBox.minY + 0.5, this.z - (double)this.getWidth() * 0.35);
+			this.method_5632(this.x + (double)this.getWidth() * 0.35, boundingBox.minY + 0.5, this.z - (double)this.getWidth() * 0.35);
+			this.method_5632(this.x + (double)this.getWidth() * 0.35, boundingBox.minY + 0.5, this.z + (double)this.getWidth() * 0.35);
+		}
+
 		boolean bl5 = (float)this.getHungerManager().getFoodLevel() > 6.0F || this.abilities.allowFlying;
 		if ((this.onGround || this.method_5869())
 			&& !bl2
@@ -885,7 +883,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 								Vec3d vec3d11 = vec3d7.subtract(vec3d9);
 								Vec3d vec3d12 = vec3d6.add(vec3d9);
 								Vec3d vec3d13 = vec3d7.add(vec3d9);
-								Iterator<BoundingBox> iterator = this.world.method_8607(this, boundingBox).flatMap(voxelShapex -> voxelShapex.getBoundingBoxList().stream()).iterator();
+								Iterator<BoundingBox> iterator = this.world
+									.getCollidingBoundingBoxesForEntity(this, boundingBox, Collections.emptySet())
+									.flatMap(voxelShapex -> voxelShapex.getBoundingBoxList().stream())
+									.iterator();
 								float s = Float.MIN_VALUE;
 
 								while (iterator.hasNext()) {

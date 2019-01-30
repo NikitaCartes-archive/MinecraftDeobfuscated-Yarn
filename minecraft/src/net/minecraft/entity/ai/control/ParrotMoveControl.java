@@ -11,12 +11,12 @@ public class ParrotMoveControl extends MoveControl {
 
 	@Override
 	public void tick() {
-		if (this.field_6374 == MoveControl.class_1336.field_6378) {
-			this.field_6374 = MoveControl.class_1336.field_6377;
+		if (this.state == MoveControl.State.field_6378) {
+			this.state = MoveControl.State.field_6377;
 			this.entity.setUnaffectedByGravity(true);
-			double d = this.field_6370 - this.entity.x;
-			double e = this.field_6369 - this.entity.y;
-			double f = this.field_6367 - this.entity.z;
+			double d = this.targetX - this.entity.x;
+			double e = this.targetY - this.entity.y;
+			double f = this.targetZ - this.entity.z;
 			double g = d * d + e * e + f * f;
 			if (g < 2.5000003E-7F) {
 				this.entity.method_5976(0.0F);
@@ -28,9 +28,9 @@ public class ParrotMoveControl extends MoveControl {
 			this.entity.yaw = this.method_6238(this.entity.yaw, h, 10.0F);
 			float i;
 			if (this.entity.onGround) {
-				i = (float)(this.field_6372 * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
+				i = (float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
 			} else {
-				i = (float)(this.field_6372 * this.entity.getAttributeInstance(EntityAttributes.FLYING_SPEED).getValue());
+				i = (float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.FLYING_SPEED).getValue());
 			}
 
 			this.entity.method_6125(i);

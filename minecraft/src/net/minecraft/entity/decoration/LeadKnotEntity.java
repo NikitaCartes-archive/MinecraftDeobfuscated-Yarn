@@ -4,11 +4,13 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.network.packet.EntitySpawnClientPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Packet;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Hand;
@@ -30,7 +32,7 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 		float g = 0.1875F;
 		float h = 0.25F;
 		this.setBoundingBox(new BoundingBox(this.x - 0.1875, this.y - 0.25 + 0.125, this.z - 0.1875, this.x + 0.1875, this.y + 0.25 + 0.125, this.z + 0.1875));
-		this.field_5983 = true;
+		this.teleporting = true;
 	}
 
 	@Override
@@ -147,5 +149,10 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 	@Override
 	public void method_6894() {
 		this.playSound(SoundEvents.field_15062, 1.0F, 1.0F);
+	}
+
+	@Override
+	public Packet<?> createSpawnPacket() {
+		return new EntitySpawnClientPacket(this, this.getType(), 0, this.getDecorationBlockPos());
 	}
 }

@@ -65,7 +65,7 @@ public class PufferfishEntity extends FishEntity {
 		}
 
 		EntityType<?> entityType = this.getType();
-		this.setSize(entityType.method_17685() * f, entityType.method_17686() * f);
+		this.setSize(entityType.getWidth() * f, entityType.getHeight() * f);
 	}
 
 	@Override
@@ -92,8 +92,8 @@ public class PufferfishEntity extends FishEntity {
 	}
 
 	@Override
-	protected void method_5959() {
-		super.method_5959();
+	protected void initGoals() {
+		super.initGoals();
 		this.goalSelector.add(1, new PufferfishEntity.class_1455(this));
 	}
 

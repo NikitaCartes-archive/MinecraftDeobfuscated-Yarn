@@ -32,13 +32,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
+import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
-import net.minecraft.world.dimension.DimensionalPersistentStateManager;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.LevelProperties;
@@ -55,7 +55,7 @@ public class ServerChunkManager extends ChunkManager implements ChunkHolder.Play
 	private final Queue<Runnable> genQueue = Queues.<Runnable>newConcurrentLinkedQueue();
 	private final PlayerChunkWatchingManager players = new PlayerChunkWatchingManager();
 	private final ThreadedAnvilChunkStorage threadedAnvilChunkStorage;
-	private final DimensionalPersistentStateManager dimensionalPersistentStateManager;
+	private final PersistentStateManager persistentStateManager;
 	private int maxWatchDistance;
 	private long lastMobSpawningTime;
 	private boolean spawnMonsters = true;
@@ -70,14 +70,14 @@ public class ServerChunkManager extends ChunkManager implements ChunkHolder.Play
 		ChunkGenerator<?> chunkGenerator,
 		int i,
 		WorldGenerationProgressListener worldGenerationProgressListener,
-		Supplier<DimensionalPersistentStateManager> supplier
+		Supplier<PersistentStateManager> supplier
 	) {
 		this.world = world;
 		this.chunkGenerator = chunkGenerator;
 		this.serverThread = Thread.currentThread();
 		File file2 = new File(world.getDimension().getType().getFile(file), "data");
 		file2.mkdirs();
-		this.dimensionalPersistentStateManager = new DimensionalPersistentStateManager(file2, dataFixer);
+		this.persistentStateManager = new PersistentStateManager(file2, dataFixer);
 		this.threadedAnvilChunkStorage = new ThreadedAnvilChunkStorage(
 			world, file, dataFixer, structureManager, executor, this, this.genQueue::add, this, this.getChunkGenerator(), worldGenerationProgressListener, supplier
 		);
@@ -319,10 +319,13 @@ public class ServerChunkManager extends ChunkManager implements ChunkHolder.Play
 							this.world.getProfiler().push("spawner");
 
 							for (EntityCategory entityCategory : entityCategorys) {
-								if ((!entityCategory.isPeaceful() || this.spawnAnimals) && (entityCategory.isPeaceful() || this.spawnMonsters) && (!entityCategory.isAnimal() || bl3)) {
+								if (entityCategory != EntityCategory.field_17715
+									&& (!entityCategory.isPeaceful() || this.spawnAnimals)
+									&& (entityCategory.isPeaceful() || this.spawnMonsters)
+									&& (!entityCategory.isAnimal() || bl3)) {
 									int k = entityCategory.getSpawnCap() * i / CHUNKS_ELIGIBLE_FOR_SPAWNING;
 									if (object2IntMap.getInt(entityCategory) <= k) {
-										SpawnHelper.method_8663(entityCategory, this.world, worldChunk, blockPos);
+										SpawnHelper.spawnEntitiesInChunk(entityCategory, this.world, worldChunk, blockPos);
 									}
 								}
 							}
@@ -512,7 +515,7 @@ public class ServerChunkManager extends ChunkManager implements ChunkHolder.Play
 		return this.threadedAnvilChunkStorage.getDebugString(chunkPos);
 	}
 
-	public DimensionalPersistentStateManager getDimensionalPersistentStateManager() {
-		return this.dimensionalPersistentStateManager;
+	public PersistentStateManager getPersistentStateManager() {
+		return this.persistentStateManager;
 	}
 }

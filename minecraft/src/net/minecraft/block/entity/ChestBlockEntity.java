@@ -10,10 +10,10 @@ import net.minecraft.block.ChestBlock;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.block.ChestAnimationProgress;
 import net.minecraft.container.Container;
-import net.minecraft.container.DoubleLockableContainer;
 import net.minecraft.container.GenericContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.DoubleInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -145,8 +145,9 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 			)) {
 				if (playerEntity.container instanceof GenericContainer) {
 					Inventory inventory = ((GenericContainer)playerEntity.container).getInventory();
-					if (inventory == lockableContainerBlockEntity
-						|| inventory instanceof DoubleLockableContainer && ((DoubleLockableContainer)inventory).isPart(lockableContainerBlockEntity)) {
+					if (inventory == lockableContainerBlockEntity || inventory instanceof DoubleInventory && ((DoubleInventory)inventory).isPart(lockableContainerBlockEntity)
+						)
+					 {
 						m++;
 					}
 				}

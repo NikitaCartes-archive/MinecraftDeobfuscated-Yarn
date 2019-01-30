@@ -78,7 +78,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.DebugRenderer {
 						0.5F
 					);
 
-					for (int i = 0; i < path.getPathLength(); i++) {
+					for (int i = 0; i < path.getLength(); i++) {
 						PathNode pathNode2 = path.getNode(i);
 						if (!(this.method_3867(pathNode2) > 40.0F)) {
 							float h = i == path.getCurrentNodeIndex() ? 1.0F : 0.0F;
@@ -133,7 +133,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.DebugRenderer {
 					}
 				}
 
-				for (int k = 0; k < path.getPathLength(); k++) {
+				for (int k = 0; k < path.getLength(); k++) {
 					PathNode pathNode = path.getNode(k);
 					if (!(this.method_3867(pathNode) > 40.0F)) {
 						DebugRenderer.method_3714(String.format("%s", pathNode.type), (double)pathNode.x + 0.5, (double)pathNode.y + 0.75, (double)pathNode.z + 0.5, f, -1);
@@ -162,10 +162,10 @@ public class PathfindingDebugRenderer implements DebugRenderer.DebugRenderer {
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
 
-		for (int i = 0; i < path.getPathLength(); i++) {
+		for (int i = 0; i < path.getLength(); i++) {
 			PathNode pathNode = path.getNode(i);
 			if (!(this.method_3867(pathNode) > 40.0F)) {
-				float g = (float)i / (float)path.getPathLength() * 0.33F;
+				float g = (float)i / (float)path.getLength() * 0.33F;
 				int j = i == 0 ? 0 : MathHelper.hsvToRgb(g, 0.9F, 0.9F);
 				int k = j >> 16 & 0xFF;
 				int l = j >> 8 & 0xFF;

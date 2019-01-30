@@ -1,38 +1,38 @@
-package net.minecraft;
+package net.minecraft.entity.ai.goal;
 
 import javax.annotation.Nullable;
+import net.minecraft.class_1414;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 
-public class class_1374 extends Goal {
-	protected final MobEntityWithAi field_6549;
-	protected final double field_6548;
-	protected double field_6547;
-	protected double field_6546;
-	protected double field_6550;
+public class EscapeDangerGoal extends Goal {
+	protected final MobEntityWithAi owner;
+	protected final double speed;
+	protected double targetX;
+	protected double targetY;
+	protected double targetZ;
 
-	public class_1374(MobEntityWithAi mobEntityWithAi, double d) {
-		this.field_6549 = mobEntityWithAi;
-		this.field_6548 = d;
+	public EscapeDangerGoal(MobEntityWithAi mobEntityWithAi, double d) {
+		this.owner = mobEntityWithAi;
+		this.speed = d;
 		this.setControlBits(1);
 	}
 
 	@Override
 	public boolean canStart() {
-		if (this.field_6549.getAttacker() == null && !this.field_6549.isOnFire()) {
+		if (this.owner.getAttacker() == null && !this.owner.isOnFire()) {
 			return false;
 		} else {
-			if (this.field_6549.isOnFire()) {
-				BlockPos blockPos = this.method_6300(this.field_6549.world, this.field_6549, 5, 4);
+			if (this.owner.isOnFire()) {
+				BlockPos blockPos = this.locateClosestWater(this.owner.world, this.owner, 5, 4);
 				if (blockPos != null) {
-					this.field_6547 = (double)blockPos.getX();
-					this.field_6546 = (double)blockPos.getY();
-					this.field_6550 = (double)blockPos.getZ();
+					this.targetX = (double)blockPos.getX();
+					this.targetY = (double)blockPos.getY();
+					this.targetZ = (double)blockPos.getZ();
 					return true;
 				}
 			}
@@ -42,29 +42,29 @@ public class class_1374 extends Goal {
 	}
 
 	protected boolean method_6301() {
-		Vec3d vec3d = class_1414.method_6375(this.field_6549, 5, 4);
+		Vec3d vec3d = class_1414.method_6375(this.owner, 5, 4);
 		if (vec3d == null) {
 			return false;
 		} else {
-			this.field_6547 = vec3d.x;
-			this.field_6546 = vec3d.y;
-			this.field_6550 = vec3d.z;
+			this.targetX = vec3d.x;
+			this.targetY = vec3d.y;
+			this.targetZ = vec3d.z;
 			return true;
 		}
 	}
 
 	@Override
 	public void start() {
-		this.field_6549.getNavigation().startMovingTo(this.field_6547, this.field_6546, this.field_6550, this.field_6548);
+		this.owner.getNavigation().startMovingTo(this.targetX, this.targetY, this.targetZ, this.speed);
 	}
 
 	@Override
 	public boolean shouldContinue() {
-		return !this.field_6549.getNavigation().method_6357();
+		return !this.owner.getNavigation().isIdle();
 	}
 
 	@Nullable
-	protected BlockPos method_6300(BlockView blockView, Entity entity, int i, int j) {
+	protected BlockPos locateClosestWater(BlockView blockView, Entity entity, int i, int j) {
 		BlockPos blockPos = new BlockPos(entity);
 		int k = blockPos.getX();
 		int l = blockPos.getY();

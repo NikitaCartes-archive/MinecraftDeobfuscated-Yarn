@@ -38,7 +38,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		ItemStack itemStack2 = lootContext.method_296(LootContextParameters.field_1229);
+		ItemStack itemStack2 = lootContext.get(LootContextParameters.field_1229);
 		if (itemStack2 != null) {
 			int i = EnchantmentHelper.getLevel(this.enchantment, itemStack2);
 			int j = this.formula.getValue(lootContext.getRandom(), itemStack.getAmount(), i);
@@ -128,7 +128,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 		public ApplyBonusLootFunction method_470(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "enchantment"));
 			Enchantment enchantment = (Enchantment)Registry.ENCHANTMENT
-				.method_17966(identifier)
+				.getOptional(identifier)
 				.orElseThrow(() -> new JsonParseException("Invalid enchantment id: " + identifier));
 			Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "formula"));
 			ApplyBonusLootFunction.FormulaFactory formulaFactory = (ApplyBonusLootFunction.FormulaFactory)ApplyBonusLootFunction.FACTORIES.get(identifier2);

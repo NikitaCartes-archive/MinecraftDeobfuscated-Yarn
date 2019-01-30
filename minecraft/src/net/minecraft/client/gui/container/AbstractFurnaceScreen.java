@@ -86,11 +86,11 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 		int l = this.top;
 		this.drawTexturedRect(k, l, 0, 0, this.containerWidth, this.containerHeight);
 		if (this.container.isBurning()) {
-			int m = this.container.method_17364();
+			int m = this.container.getFuelProgress();
 			this.drawTexturedRect(k + 56, l + 36 + 12 - m, 176, 12 - m, 14, m + 1);
 		}
 
-		int m = this.container.method_17363();
+		int m = this.container.getCookProgress();
 		this.drawTexturedRect(k + 79, l + 34, 176, 14, m + 1, 16);
 	}
 

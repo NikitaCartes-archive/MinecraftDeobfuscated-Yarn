@@ -51,7 +51,7 @@ public class WorldBorder {
 		return this.contains(entity.x, entity.z);
 	}
 
-	public VoxelShape method_17903() {
+	public VoxelShape asVoxelShape() {
 		return this.area.method_17906();
 	}
 

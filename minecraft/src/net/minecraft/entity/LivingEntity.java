@@ -23,6 +23,7 @@ import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.client.network.packet.EntityAnimationClientPacket;
 import net.minecraft.client.network.packet.EntityEquipmentUpdateClientPacket;
 import net.minecraft.client.network.packet.ItemPickupAnimationClientPacket;
+import net.minecraft.client.network.packet.MobSpawnClientPacket;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -58,6 +59,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.Packet;
 import net.minecraft.particle.BlockStateParticleParameters;
 import net.minecraft.particle.ItemStackParticleParameters;
 import net.minecraft.particle.ParticleTypes;
@@ -231,7 +233,7 @@ public abstract class LivingEntity extends Entity {
 		super.method_5623(d, bl, blockState, blockPos);
 	}
 
-	public boolean method_6094() {
+	public boolean canBreatheInWater() {
 		return this.getGroup() == EntityGroup.UNDEAD;
 	}
 
@@ -268,7 +270,7 @@ public abstract class LivingEntity extends Entity {
 		if (this.isValid()) {
 			if (this.method_5777(FluidTags.field_15517)
 				&& this.world.getBlockState(new BlockPos(this.x, this.y + (double)this.getEyeHeight(), this.z)).getBlock() != Blocks.field_10422) {
-				if (!this.method_6094() && !StatusEffectUtil.hasWaterBreathing(this) && !bl2) {
+				if (!this.canBreatheInWater() && !StatusEffectUtil.hasWaterBreathing(this) && !bl2) {
 					this.setBreath(this.method_6130(this.getBreath()));
 					if (this.getBreath() == -20) {
 						this.setBreath(0);
@@ -1057,13 +1059,13 @@ public abstract class LivingEntity extends Entity {
 	protected LootContext.Builder method_16079(boolean bl, DamageSource damageSource) {
 		LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
 			.setRandom(this.random)
-			.method_312(LootContextParameters.field_1226, this)
-			.method_312(LootContextParameters.field_1232, new BlockPos(this))
-			.method_312(LootContextParameters.field_1231, damageSource)
-			.method_306(LootContextParameters.field_1230, damageSource.getAttacker())
-			.method_306(LootContextParameters.field_1227, damageSource.getSource());
+			.put(LootContextParameters.field_1226, this)
+			.put(LootContextParameters.field_1232, new BlockPos(this))
+			.put(LootContextParameters.field_1231, damageSource)
+			.putNullable(LootContextParameters.field_1230, damageSource.getAttacker())
+			.putNullable(LootContextParameters.field_1227, damageSource.getSource());
 		if (bl && this.field_6258 != null) {
-			builder = builder.method_312(LootContextParameters.field_1233, this.field_6258).setLuck(this.field_6258.getLuck());
+			builder = builder.put(LootContextParameters.field_1233, this.field_6258).setLuck(this.field_6258.getLuck());
 		}
 
 		return builder;
@@ -1457,7 +1459,7 @@ public abstract class LivingEntity extends Entity {
 					double s = m + q;
 					double t = n + r;
 					BoundingBox boundingBox2 = boundingBox.offset(q, 0.0, r);
-					if (this.world.method_8587(this, boundingBox2)) {
+					if (this.world.isEntityColliding(this, boundingBox2)) {
 						BlockPos blockPos = new BlockPos(s, this.y, t);
 						if (this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos)) {
 							this.method_5859(s, this.y + 1.0, t);
@@ -1472,7 +1474,8 @@ public abstract class LivingEntity extends Entity {
 						}
 					} else {
 						BlockPos blockPosx = new BlockPos(s, this.y + 1.0, t);
-						if (this.world.method_8587(this, boundingBox2.offset(0.0, 1.0, 0.0)) && this.world.getBlockState(blockPosx).hasSolidTopSurface(this.world, blockPosx)) {
+						if (this.world.isEntityColliding(this, boundingBox2.offset(0.0, 1.0, 0.0))
+							&& this.world.getBlockState(blockPosx).hasSolidTopSurface(this.world, blockPosx)) {
 							k = s;
 							l = this.y + 2.0;
 							e = t;
@@ -1497,9 +1500,9 @@ public abstract class LivingEntity extends Entity {
 			double i = this.x + (double)g * e;
 			double j = this.z + (double)h * e;
 			this.setPosition(i, entity.y + (double)entity.getHeight() + 0.001, j);
-			if (!this.world.method_8587(this, this.getBoundingBox().union(entity.getBoundingBox()))) {
+			if (!this.world.isEntityColliding(this, this.getBoundingBox().union(entity.getBoundingBox()))) {
 				this.setPosition(i, entity.y + (double)entity.getHeight() + 1.001, j);
-				if (!this.world.method_8587(this, this.getBoundingBox().union(entity.getBoundingBox()))) {
+				if (!this.world.isEntityColliding(this, this.getBoundingBox().union(entity.getBoundingBox()))) {
 					this.setPosition(entity.x, entity.y + (double)this.getHeight() + 0.001, entity.z);
 				}
 			}
@@ -1589,7 +1592,7 @@ public abstract class LivingEntity extends Entity {
 						this.velocityX *= 0.99F;
 						this.velocityY *= 0.98F;
 						this.velocityZ *= 0.99F;
-						this.move(MovementType.SELF, this.velocityX, this.velocityY, this.velocityZ);
+						this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 						if (this.horizontalCollision && !this.world.isClient) {
 							double q = Math.sqrt(this.velocityX * this.velocityX + this.velocityZ * this.velocityZ);
 							double r = n - q;
@@ -1642,7 +1645,7 @@ public abstract class LivingEntity extends Entity {
 								}
 							}
 
-							this.move(MovementType.SELF, this.velocityX, this.velocityY, this.velocityZ);
+							this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 							if ((this.horizontalCollision || this.field_6282) && this.canClimb()) {
 								this.velocityY = 0.2;
 							}
@@ -1671,7 +1674,7 @@ public abstract class LivingEntity extends Entity {
 				} else {
 					double e = this.y;
 					this.method_5724(f, g, h, 0.02F);
-					this.move(MovementType.SELF, this.velocityX, this.velocityY, this.velocityZ);
+					this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 					this.velocityX *= 0.5;
 					this.velocityY *= 0.5;
 					this.velocityZ *= 0.5;
@@ -1706,7 +1709,7 @@ public abstract class LivingEntity extends Entity {
 				}
 
 				this.method_5724(f, g, h, jx);
-				this.move(MovementType.SELF, this.velocityX, this.velocityY, this.velocityZ);
+				this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 				this.velocityX *= (double)i;
 				this.velocityY *= 0.8F;
 				this.velocityZ *= (double)i;
@@ -2417,7 +2420,7 @@ public abstract class LivingEntity extends Entity {
 
 			if (bl3) {
 				this.method_5859(this.x, this.y, this.z);
-				if (iWorld.method_8587(this, this.getBoundingBox()) && !iWorld.method_8599(this.getBoundingBox())) {
+				if (iWorld.method_17892(this) && !iWorld.isInFluid(this.getBoundingBox())) {
 					bl2 = true;
 				}
 			}
@@ -2443,7 +2446,7 @@ public abstract class LivingEntity extends Entity {
 			}
 
 			if (this instanceof MobEntityWithAi) {
-				((MobEntityWithAi)this).getNavigation().method_6340();
+				((MobEntityWithAi)this).getNavigation().stop();
 			}
 
 			return true;
@@ -2460,5 +2463,10 @@ public abstract class LivingEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	public void method_6006(BlockPos blockPos, boolean bl) {
+	}
+
+	@Override
+	public Packet<?> createSpawnPacket() {
+		return new MobSpawnClientPacket(this);
 	}
 }

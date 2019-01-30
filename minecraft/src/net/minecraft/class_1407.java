@@ -17,14 +17,14 @@ public class class_1407 extends EntityNavigation {
 
 	@Override
 	protected PathNodeNavigator createPathNodeNavigator() {
-		this.field_6678 = new class_6();
-		this.field_6678.setCanEnterOpenDoors(true);
-		return new PathNodeNavigator(this.field_6678);
+		this.nodeMaker = new class_6();
+		this.nodeMaker.setCanEnterOpenDoors(true);
+		return new PathNodeNavigator(this.nodeMaker);
 	}
 
 	@Override
 	protected boolean isAtValidPosition() {
-		return this.method_6350() && this.isInLiquid() || !this.entity.hasVehicle();
+		return this.canSwim() && this.isInLiquid() || !this.entity.hasVehicle();
 	}
 
 	@Override
@@ -40,32 +40,32 @@ public class class_1407 extends EntityNavigation {
 	@Override
 	public void tick() {
 		this.tickCount++;
-		if (this.idle) {
-			this.method_6356();
+		if (this.shouldRecalculate) {
+			this.recalculatePath();
 		}
 
-		if (!this.method_6357()) {
+		if (!this.isIdle()) {
 			if (this.isAtValidPosition()) {
 				this.method_6339();
-			} else if (this.field_6681 != null && this.field_6681.getCurrentNodeIndex() < this.field_6681.getPathLength()) {
-				Vec3d vec3d = this.field_6681.getNodePosition(this.entity, this.field_6681.getCurrentNodeIndex());
+			} else if (this.currentPath != null && this.currentPath.getCurrentNodeIndex() < this.currentPath.getLength()) {
+				Vec3d vec3d = this.currentPath.getNodePosition(this.entity, this.currentPath.getCurrentNodeIndex());
 				if (MathHelper.floor(this.entity.x) == MathHelper.floor(vec3d.x)
 					&& MathHelper.floor(this.entity.y) == MathHelper.floor(vec3d.y)
 					&& MathHelper.floor(this.entity.z) == MathHelper.floor(vec3d.z)) {
-					this.field_6681.setCurrentPosition(this.field_6681.getCurrentNodeIndex() + 1);
+					this.currentPath.setCurrentNodeIndex(this.currentPath.getCurrentNodeIndex() + 1);
 				}
 			}
 
 			this.method_6353();
-			if (!this.method_6357()) {
-				Vec3d vec3d = this.field_6681.getNodePosition(this.entity);
-				this.entity.getMoveControl().method_6239(vec3d.x, vec3d.y, vec3d.z, this.field_6668);
+			if (!this.isIdle()) {
+				Vec3d vec3d = this.currentPath.getNodePosition(this.entity);
+				this.entity.getMoveControl().moveTo(vec3d.x, vec3d.y, vec3d.z, this.speed);
 			}
 		}
 	}
 
 	@Override
-	protected boolean method_6341(Vec3d vec3d, Vec3d vec3d2, int i, int j, int k) {
+	protected boolean canPathDirectlyThrough(Vec3d vec3d, Vec3d vec3d2, int i, int j, int k) {
 		int l = MathHelper.floor(vec3d.x);
 		int m = MathHelper.floor(vec3d.y);
 		int n = MathHelper.floor(vec3d.z);
@@ -132,11 +132,11 @@ public class class_1407 extends EntityNavigation {
 	}
 
 	public void method_6332(boolean bl) {
-		this.field_6678.setCanPathThroughDoors(bl);
+		this.nodeMaker.setCanPathThroughDoors(bl);
 	}
 
 	public void method_6331(boolean bl) {
-		this.field_6678.setCanEnterOpenDoors(bl);
+		this.nodeMaker.setCanEnterOpenDoors(bl);
 	}
 
 	@Override

@@ -13,7 +13,7 @@ public abstract class CraftingContainer<C extends Inventory> extends Container {
 		super(containerType, i);
 	}
 
-	public void method_17697(boolean bl, Recipe<?> recipe, ServerPlayerEntity serverPlayerEntity) {
+	public void fillInputSlots(boolean bl, Recipe<?> recipe, ServerPlayerEntity serverPlayerEntity) {
 		new InputSlotFiller<>(this).fillInputSlots(serverPlayerEntity, (Recipe<C>)recipe, bl);
 	}
 

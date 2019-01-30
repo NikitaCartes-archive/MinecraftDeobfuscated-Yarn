@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -27,6 +28,7 @@ import net.minecraft.block.Material;
 import net.minecraft.block.PortalBlock;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.client.network.packet.EntityClientPacket;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.ProtectionEnchantment;
@@ -34,6 +36,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.parts.EntityPart;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
@@ -45,6 +48,7 @@ import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.FloatTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.network.Packet;
 import net.minecraft.particle.BlockStateParticleParameters;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.scoreboard.AbstractScoreboardTeam;
@@ -98,17 +102,17 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class Entity implements Nameable, CommandOutput {
 	protected static final Logger LOGGER = LogManager.getLogger();
+	private static final AtomicInteger maxEntityId = new AtomicInteger();
 	private static final List<ItemStack> EMPTY_STACK_LIST = Collections.emptyList();
 	private static final BoundingBox NULL_BOX = new BoundingBox(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	private static double renderDistanceMultiplier = 1.0;
-	private static int maxEntityId;
 	private final EntityType<?> type;
-	private int entityId;
+	private int entityId = maxEntityId.incrementAndGet();
 	public boolean field_6033;
-	private final List<Entity> passengerList;
+	private final List<Entity> passengerList = Lists.<Entity>newArrayList();
 	protected int ridingCooldown;
 	private Entity riddenEntity;
-	public boolean field_5983;
+	public boolean teleporting;
 	public World world;
 	public double prevX;
 	public double prevY;
@@ -123,14 +127,14 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public float pitch;
 	public float prevYaw;
 	public float prevPitch;
-	private BoundingBox boundingBox;
+	private BoundingBox boundingBox = NULL_BOX;
 	public boolean onGround;
 	public boolean horizontalCollision;
 	public boolean verticalCollision;
 	public boolean collided;
 	public boolean velocityModified;
-	protected boolean movementMultiplierSet;
-	protected Vec3d field_17046;
+	protected boolean applyMovementMultiplier;
+	protected Vec3d movementMultiplier;
 	public boolean invalid;
 	private float width;
 	private float height;
@@ -138,22 +142,22 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public float field_5973;
 	public float field_5994;
 	public float fallDistance;
-	private float field_6003;
-	private float field_6022;
+	private float field_6003 = 1.0F;
+	private float field_6022 = 1.0F;
 	public double prevRenderX;
 	public double prevRenderY;
 	public double prevRenderZ;
 	public float stepHeight;
 	public boolean noClip;
 	public float pushSpeedReduction;
-	protected final Random random;
+	protected final Random random = new Random();
 	public int age;
-	private int fireTimer;
+	private int fireTimer = -this.method_5676();
 	protected boolean insideWater;
 	protected double field_5964;
 	protected boolean field_6000;
 	public int field_6008;
-	protected boolean field_5953;
+	protected boolean field_5953 = true;
 	protected boolean fireImmune;
 	protected final DataTracker dataTracker;
 	protected static final TrackedData<Byte> ENTITY_FLAGS = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BYTE);
@@ -184,31 +188,19 @@ public abstract class Entity implements Nameable, CommandOutput {
 	protected Vec3d field_6020;
 	protected Direction field_6028;
 	private boolean invulnerable;
-	protected UUID uuid;
-	protected String uuidString;
+	protected UUID uuid = MathHelper.randomUuid(this.random);
+	protected String uuidString = this.uuid.toString();
 	protected boolean glowing;
-	private final Set<String> scoreboardTags;
+	private final Set<String> scoreboardTags = Sets.<String>newHashSet();
 	private boolean field_5966;
-	private final double[] field_5993;
-	private long field_5996;
+	private final double[] pistonMovementDelta = new double[]{0.0, 0.0, 0.0};
+	private long pistonMovementTick;
 
 	public Entity(EntityType<?> entityType, World world) {
-		this.entityId = maxEntityId++;
-		this.passengerList = Lists.<Entity>newArrayList();
-		this.boundingBox = NULL_BOX;
-		this.field_6003 = 1.0F;
-		this.field_6022 = 1.0F;
-		this.random = new Random();
-		this.fireTimer = -this.method_5676();
-		this.field_5953 = true;
-		this.uuid = MathHelper.randomUuid(this.random);
-		this.uuidString = this.uuid.toString();
-		this.scoreboardTags = Sets.<String>newHashSet();
-		this.field_5993 = new double[]{0.0, 0.0, 0.0};
 		this.type = entityType;
 		this.world = world;
-		this.width = entityType.method_17685();
-		this.height = entityType.method_17686();
+		this.width = entityType.getWidth();
+		this.height = entityType.getHeight();
 		this.setPosition(0.0, 0.0, 0.0);
 		if (world != null) {
 			this.dimension = world.dimension.getType();
@@ -222,7 +214,14 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.dataTracker.startTracking(SILENT, false);
 		this.dataTracker.startTracking(NO_GRAVITY, false);
 		this.initDataTracker();
-		this.setSize(entityType.method_17685(), entityType.method_17686());
+		this.setSize(entityType.getWidth(), entityType.getHeight());
+	}
+
+	@Environment(EnvType.CLIENT)
+	public void method_18003(double d, double e, double f) {
+		this.field_6001 = EntityClientPacket.method_18047(d);
+		this.field_6023 = EntityClientPacket.method_18047(e);
+		this.field_5954 = EntityClientPacket.method_18047(f);
 	}
 
 	public EntityType<?> getType() {
@@ -272,7 +271,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		if (this.world != null) {
 			while (this.y > 0.0 && this.y < 256.0) {
 				this.setPosition(this.x, this.y, this.z);
-				if (this.world.method_8587(this, this.getBoundingBox())) {
+				if (this.world.method_17892(this)) {
 					break;
 				}
 
@@ -316,7 +315,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 				)
 			);
 			if (this.width > h && !this.field_5953 && !this.world.isClient) {
-				this.move(MovementType.SELF, (double)(h - this.width), 0.0, (double)(h - this.width));
+				this.move(MovementType.field_6308, (double)(h - this.width), 0.0, (double)(h - this.width));
 			}
 		}
 	}
@@ -488,34 +487,34 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	private boolean method_5629(BoundingBox boundingBox) {
-		return this.world.method_8587(this, boundingBox) && !this.world.method_8599(boundingBox);
+		return this.world.isEntityColliding(this, boundingBox) && !this.world.isInFluid(boundingBox);
 	}
 
 	public void move(MovementType movementType, double d, double e, double f) {
 		if (this.noClip) {
 			this.setBoundingBox(this.getBoundingBox().offset(d, e, f));
-			this.method_5792();
+			this.moveToBoundingBoxCenter();
 		} else {
-			if (movementType == MovementType.PISTON) {
+			if (movementType == MovementType.field_6310) {
 				long l = this.world.getTime();
-				if (l != this.field_5996) {
-					Arrays.fill(this.field_5993, 0.0);
-					this.field_5996 = l;
+				if (l != this.pistonMovementTick) {
+					Arrays.fill(this.pistonMovementDelta, 0.0);
+					this.pistonMovementTick = l;
 				}
 
 				if (d != 0.0) {
 					int i = Direction.Axis.X.ordinal();
-					double g = MathHelper.clamp(d + this.field_5993[i], -0.51, 0.51);
-					d = g - this.field_5993[i];
-					this.field_5993[i] = g;
+					double g = MathHelper.clamp(d + this.pistonMovementDelta[i], -0.51, 0.51);
+					d = g - this.pistonMovementDelta[i];
+					this.pistonMovementDelta[i] = g;
 					if (Math.abs(d) <= 1.0E-5F) {
 						return;
 					}
 				} else if (e != 0.0) {
 					int i = Direction.Axis.Y.ordinal();
-					double g = MathHelper.clamp(e + this.field_5993[i], -0.51, 0.51);
-					e = g - this.field_5993[i];
-					this.field_5993[i] = g;
+					double g = MathHelper.clamp(e + this.pistonMovementDelta[i], -0.51, 0.51);
+					e = g - this.pistonMovementDelta[i];
+					this.pistonMovementDelta[i] = g;
 					if (Math.abs(e) <= 1.0E-5F) {
 						return;
 					}
@@ -525,9 +524,9 @@ public abstract class Entity implements Nameable, CommandOutput {
 					}
 
 					int i = Direction.Axis.Z.ordinal();
-					double g = MathHelper.clamp(f + this.field_5993[i], -0.51, 0.51);
-					f = g - this.field_5993[i];
-					this.field_5993[i] = g;
+					double g = MathHelper.clamp(f + this.pistonMovementDelta[i], -0.51, 0.51);
+					f = g - this.pistonMovementDelta[i];
+					this.pistonMovementDelta[i] = g;
 					if (Math.abs(f) <= 1.0E-5F) {
 						return;
 					}
@@ -538,20 +537,23 @@ public abstract class Entity implements Nameable, CommandOutput {
 			double h = this.x;
 			double j = this.y;
 			double k = this.z;
-			if (this.movementMultiplierSet) {
-				this.movementMultiplierSet = false;
-				d *= this.field_17046.x;
-				e *= this.field_17046.y;
-				f *= this.field_17046.z;
+			if (this.applyMovementMultiplier) {
+				this.applyMovementMultiplier = false;
+				d *= this.movementMultiplier.x;
+				e *= this.movementMultiplier.y;
+				f *= this.movementMultiplier.z;
 				this.velocityX = 0.0;
 				this.velocityY = 0.0;
 				this.velocityZ = 0.0;
 			}
 
-			if ((movementType == MovementType.SELF || movementType == MovementType.PLAYER) && this.onGround && this.isSneaking() && this instanceof PlayerEntity) {
+			if ((movementType == MovementType.field_6308 || movementType == MovementType.field_6305)
+				&& this.onGround
+				&& this.isSneaking()
+				&& this instanceof PlayerEntity) {
 				double m = 0.05;
 
-				while (d != 0.0 && this.world.method_8587(this, this.getBoundingBox().offset(d, (double)(-this.stepHeight), 0.0))) {
+				while (d != 0.0 && this.world.isEntityColliding(this, this.getBoundingBox().offset(d, (double)(-this.stepHeight), 0.0))) {
 					if (d < 0.05 && d >= -0.05) {
 						d = 0.0;
 					} else if (d > 0.0) {
@@ -561,7 +563,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 					}
 				}
 
-				while (f != 0.0 && this.world.method_8587(this, this.getBoundingBox().offset(0.0, (double)(-this.stepHeight), f))) {
+				while (f != 0.0 && this.world.isEntityColliding(this, this.getBoundingBox().offset(0.0, (double)(-this.stepHeight), f))) {
 					if (f < 0.05 && f >= -0.05) {
 						f = 0.0;
 					} else if (f > 0.0) {
@@ -571,7 +573,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 					}
 				}
 
-				while (d != 0.0 && f != 0.0 && this.world.method_8587(this, this.getBoundingBox().offset(d, (double)(-this.stepHeight), f))) {
+				while (d != 0.0 && f != 0.0 && this.world.isEntityColliding(this, this.getBoundingBox().offset(d, (double)(-this.stepHeight), f))) {
 					if (d < 0.05 && d >= -0.05) {
 						d = 0.0;
 					} else if (d > 0.0) {
@@ -598,7 +600,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 			this.world.getProfiler().pop();
 			this.world.getProfiler().push("rest");
-			this.method_5792();
+			this.moveToBoundingBoxCenter();
 			this.horizontalCollision = vec3d.x != vec3d2.x || vec3d.z != vec3d2.z;
 			this.verticalCollision = vec3d.y != vec3d2.y;
 			this.onGround = this.verticalCollision && vec3d.y < 0.0;
@@ -701,7 +703,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	private Vec3d method_17835(Vec3d vec3d) {
 		BoundingBox boundingBox = this.getBoundingBox();
 		VerticalEntityPosition verticalEntityPosition = VerticalEntityPosition.fromEntity(this);
-		VoxelShape voxelShape = this.world.getWorldBorder().method_17903();
+		VoxelShape voxelShape = this.world.getWorldBorder().asVoxelShape();
 		Stream<VoxelShape> stream = VoxelShapes.compareShapes(voxelShape, VoxelShapes.cube(boundingBox.contract(1.0E-7)), BooleanBiFunction.AND)
 			? Stream.empty()
 			: Stream.of(voxelShape);
@@ -721,15 +723,19 @@ public abstract class Entity implements Nameable, CommandOutput {
 		boolean bl3 = vec3d.z != vec3d2.z;
 		boolean bl4 = this.onGround || bl2 && vec3d.y < 0.0;
 		if (this.stepHeight > 0.0F && bl4 && (bl || bl3)) {
-			Vec3d vec3d3 = method_17833(
+			Vec3d vec3d3 = method_17833(new Vec3d(vec3d.x, (double)this.stepHeight, vec3d.z), boundingBox, this.world, verticalEntityPosition, loopingStream);
+			Vec3d vec3d4 = method_17833(
 				new Vec3d(0.0, (double)this.stepHeight, 0.0), boundingBox.stretch(vec3d.x, 0.0, vec3d.z), this.world, verticalEntityPosition, loopingStream
 			);
-			Vec3d vec3d4 = method_17833(new Vec3d(vec3d.x, 0.0, vec3d.z), boundingBox.offset(vec3d3), this.world, verticalEntityPosition, loopingStream).add(vec3d3);
-			Vec3d vec3d5 = method_17833(new Vec3d(vec3d.x, (double)this.stepHeight, vec3d.z), boundingBox, this.world, verticalEntityPosition, loopingStream);
-			Vec3d vec3d6 = method_17996(vec3d4) > method_17996(vec3d5) ? vec3d4 : vec3d5;
-			BoundingBox boundingBox3 = boundingBox.offset(vec3d6);
-			if (method_17996(vec3d2) <= method_17996(vec3d6)) {
-				return vec3d6.add(method_17833(new Vec3d(0.0, -vec3d6.y + vec3d.y, 0.0), boundingBox3, this.world, verticalEntityPosition, loopingStream));
+			if (vec3d4.y < (double)this.stepHeight) {
+				Vec3d vec3d5 = method_17833(new Vec3d(vec3d.x, 0.0, vec3d.z), boundingBox.offset(vec3d4), this.world, verticalEntityPosition, loopingStream).add(vec3d4);
+				if (method_17996(vec3d5) > method_17996(vec3d3)) {
+					vec3d3 = vec3d5;
+				}
+			}
+
+			if (method_17996(vec3d3) > method_17996(vec3d2)) {
+				return vec3d3.add(method_17833(new Vec3d(0.0, -vec3d3.y + vec3d.y, 0.0), boundingBox.offset(vec3d3), this.world, verticalEntityPosition, loopingStream));
 			}
 		}
 
@@ -779,7 +785,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return (float)((int)this.field_5994 + 1);
 	}
 
-	public void method_5792() {
+	public void moveToBoundingBoxCenter() {
 		BoundingBox boundingBox = this.getBoundingBox();
 		this.x = (boundingBox.minX + boundingBox.maxX) / 2.0;
 		this.y = boundingBox.minY;
@@ -810,7 +816,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 				for (int i = pooledMutable.getX(); i <= pooledMutable2.getX(); i++) {
 					for (int j = pooledMutable.getY(); j <= pooledMutable2.getY(); j++) {
 						for (int k = pooledMutable.getZ(); k <= pooledMutable2.getZ(); k++) {
-							pooledMutable3.method_10113(i, j, k);
+							pooledMutable3.set(i, j, k);
 							BlockState blockState = this.world.getBlockState(pooledMutable3);
 
 							try {
@@ -1575,7 +1581,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 					int k = MathHelper.floor(this.x + (double)(((float)((i >> 1) % 2) - 0.5F) * this.width * 0.8F));
 					int l = MathHelper.floor(this.z + (double)(((float)((i >> 2) % 2) - 0.5F) * this.width * 0.8F));
 					if (pooledMutable.getX() != k || pooledMutable.getY() != j || pooledMutable.getZ() != l) {
-						pooledMutable.method_10113(k, j, l);
+						pooledMutable.set(k, j, l);
 						if (this.world.getBlockState(pooledMutable).canSuffocate(this.world, pooledMutable)) {
 							return true;
 						}
@@ -1929,65 +1935,50 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public void method_5874(LivingEntity livingEntity) {
 	}
 
-	protected boolean method_5632(double d, double e, double f) {
+	protected void method_5632(double d, double e, double f) {
 		BlockPos blockPos = new BlockPos(d, e, f);
-		double g = d - (double)blockPos.getX();
-		double h = e - (double)blockPos.getY();
-		double i = f - (double)blockPos.getZ();
-		if (this.world.method_8587(null, this.getBoundingBox())) {
-			return false;
-		} else {
-			Direction direction = Direction.UP;
-			double j = Double.MAX_VALUE;
-			if (!this.world.isBlockFullCube(blockPos.west()) && g < j) {
-				j = g;
-				direction = Direction.WEST;
-			}
+		Vec3d vec3d = new Vec3d(d - (double)blockPos.getX(), e - (double)blockPos.getY(), f - (double)blockPos.getZ());
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
+		Direction direction = Direction.UP;
+		double g = Double.MAX_VALUE;
 
-			if (!this.world.isBlockFullCube(blockPos.east()) && 1.0 - g < j) {
-				j = 1.0 - g;
-				direction = Direction.EAST;
+		for (Direction direction2 : Direction.values()) {
+			if (direction2 != Direction.DOWN) {
+				mutable.set(blockPos).setOffset(direction);
+				if (!Block.isShapeFullCube(this.world.getBlockState(mutable).getCollisionShape(this.world, mutable))) {
+					double h = vec3d.method_18043(direction2.getAxis());
+					double i = direction2.getDirection() == Direction.AxisDirection.POSITIVE ? 1.0 - h : h;
+					if (i < g) {
+						g = i;
+						direction = direction2;
+					}
+				}
 			}
+		}
 
-			if (!this.world.isBlockFullCube(blockPos.north()) && i < j) {
-				j = i;
-				direction = Direction.NORTH;
-			}
-
-			if (!this.world.isBlockFullCube(blockPos.south()) && 1.0 - i < j) {
-				j = 1.0 - i;
-				direction = Direction.SOUTH;
-			}
-
-			if (!this.world.isBlockFullCube(blockPos.up()) && 1.0 - h < j) {
-				j = 1.0 - h;
-				direction = Direction.UP;
-			}
-
-			float k = this.random.nextFloat() * 0.2F + 0.1F;
-			float l = (float)direction.getDirection().offset();
+		if (g != Double.MAX_VALUE) {
+			float j = this.random.nextFloat() * 0.2F + 0.1F;
+			float k = (float)direction.getDirection().offset();
 			if (direction.getAxis() == Direction.Axis.X) {
-				this.velocityX = (double)(l * k);
+				this.velocityX = (double)(k * j);
 				this.velocityY *= 0.75;
 				this.velocityZ *= 0.75;
 			} else if (direction.getAxis() == Direction.Axis.Y) {
 				this.velocityX *= 0.75;
-				this.velocityY = (double)(l * k);
+				this.velocityY = (double)(k * j);
 				this.velocityZ *= 0.75;
 			} else if (direction.getAxis() == Direction.Axis.Z) {
 				this.velocityX *= 0.75;
 				this.velocityY *= 0.75;
-				this.velocityZ = (double)(l * k);
+				this.velocityZ = (double)(k * j);
 			}
-
-			return true;
 		}
 	}
 
 	public void slowMovement(BlockState blockState, Vec3d vec3d) {
-		this.movementMultiplierSet = true;
+		this.applyMovementMultiplier = true;
 		this.fallDistance = 0.0F;
-		this.field_17046 = vec3d;
+		this.movementMultiplier = vec3d;
 	}
 
 	private static void method_5856(TextComponent textComponent) {
@@ -2007,7 +1998,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	@Nullable
-	public Entity[] getParts() {
+	public EntityPart[] getParts() {
 		return null;
 	}
 
@@ -2126,10 +2117,10 @@ public abstract class Entity implements Nameable, CommandOutput {
 					entity.setPositionAndAngles(blockPos, entity.yaw, entity.pitch);
 				}
 
-				boolean bl = entity.field_5983;
-				entity.field_5983 = true;
+				boolean bl = entity.teleporting;
+				entity.teleporting = true;
 				serverWorld2.spawnEntity(entity);
-				entity.field_5983 = bl;
+				entity.teleporting = bl;
 				serverWorld2.method_8553(entity, false);
 			}
 
@@ -2567,7 +2558,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 				for (int p = i; p < j; p++) {
 					for (int q = k; q < l; q++) {
 						for (int r = m; r < n; r++) {
-							pooledMutable.method_10113(p, q, r);
+							pooledMutable.set(p, q, r);
 							FluidState fluidState = this.world.getFluidState(pooledMutable);
 							if (fluidState.matches(tag)) {
 								double e = (double)((float)q + fluidState.method_15763(this.world, pooledMutable));
@@ -2621,4 +2612,6 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public float getHeight() {
 		return this.height;
 	}
+
+	public abstract Packet<?> createSpawnPacket();
 }

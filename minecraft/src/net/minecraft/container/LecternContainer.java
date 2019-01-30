@@ -28,7 +28,7 @@ public class LecternContainer extends Container {
 				LecternContainer.this.onContentChanged(this.inventory);
 			}
 		});
-		this.readData(propertyDelegate);
+		this.addProperties(propertyDelegate);
 	}
 
 	@Override

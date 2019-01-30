@@ -34,7 +34,7 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttacker & Cross
 
 	@Override
 	public boolean shouldContinue() {
-		return (this.canStart() || !this.entity.getNavigation().method_6357()) && this.isEntityHoldingCrossbow();
+		return (this.canStart() || !this.entity.getNavigation().isIdle()) && this.isEntityHoldingCrossbow();
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttacker & Cross
 			if (bl3) {
 				this.entity.getNavigation().startMovingTo(livingEntity, this.isUncharged() ? this.field_6590 : this.field_6590 * 0.5);
 			} else {
-				this.entity.getNavigation().method_6340();
+				this.entity.getNavigation().stop();
 			}
 
 			this.entity.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);

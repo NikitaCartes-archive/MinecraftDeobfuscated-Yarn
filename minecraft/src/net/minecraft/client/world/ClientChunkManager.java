@@ -30,10 +30,10 @@ public class ClientChunkManager extends ChunkManager {
 	private final MinecraftClient client = MinecraftClient.getInstance();
 	private final WorldChunk emptyChunk;
 	private final LightingProvider lightingProvider;
-	private volatile ClientChunkManager.class_3681 field_16246 = new ClientChunkManager.class_3681(3);
-	private int field_16249;
-	private volatile int field_16248;
-	private volatile int field_16247;
+	private volatile ClientChunkManager.ClientChunkMap chunks = new ClientChunkManager.ClientChunkMap(3);
+	private int loadedChunkCount;
+	private volatile int playerChunkX;
+	private volatile int playerChunkZ;
 	private final BlockView world;
 
 	public ClientChunkManager(World world) {
@@ -42,7 +42,7 @@ public class ClientChunkManager extends ChunkManager {
 		this.lightingProvider = new LightingProvider(this, true, world.getDimension().hasSkyLight());
 	}
 
-	private static boolean method_16024(int i, int j, int k, int l, int m) {
+	private static boolean isWithinDistance(int i, int j, int k, int l, int m) {
 		return Math.abs(i - k) <= m && Math.abs(j - l) <= m;
 	}
 
@@ -51,13 +51,13 @@ public class ClientChunkManager extends ChunkManager {
 		return this.lightingProvider;
 	}
 
-	public void method_2859(int i, int j) {
-		this.field_16246.method_16031(i, j);
+	public void unload(int i, int j) {
+		this.chunks.unload(i, j);
 	}
 
 	@Nullable
-	public WorldChunk method_2857(int i, int j, ChunkStatus chunkStatus, boolean bl) {
-		WorldChunk worldChunk = this.field_16246.method_16033(i, j);
+	public WorldChunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl) {
+		WorldChunk worldChunk = this.chunks.getChunk(i, j);
 		if (worldChunk != null) {
 			return worldChunk;
 		} else {
@@ -70,20 +70,20 @@ public class ClientChunkManager extends ChunkManager {
 		return this.world;
 	}
 
-	public void method_16020(World world, int i, int j, PacketByteBuf packetByteBuf, CompoundTag compoundTag, int k, boolean bl) {
-		this.method_16026();
-		if (!this.field_16246.method_16034(i, j)) {
+	public void loadChunkFromPacket(World world, int i, int j, PacketByteBuf packetByteBuf, CompoundTag compoundTag, int k, boolean bl) {
+		this.updateChunkList();
+		if (!this.chunks.hasChunk(i, j)) {
 			LOGGER.warn("Ignoring chunk since it's not in the view range: {}, {}", i, j);
 		} else {
-			int l = this.field_16246.method_16027(i, j);
-			WorldChunk worldChunk = (WorldChunk)this.field_16246.field_16251.get(l);
+			int l = this.chunks.index(i, j);
+			WorldChunk worldChunk = (WorldChunk)this.chunks.chunks.get(l);
 			if (worldChunk == null) {
 				worldChunk = new WorldChunk(world, new ChunkPos(i, j), new Biome[256]);
-				this.field_16246.field_16251.set(l, worldChunk);
-				this.field_16249++;
+				this.chunks.chunks.set(l, worldChunk);
+				this.loadedChunkCount++;
 			}
 
-			worldChunk.method_12224(packetByteBuf, compoundTag, k, bl);
+			worldChunk.loadFromPacket(packetByteBuf, compoundTag, k, bl);
 			worldChunk.setLoadedToWorld(true);
 			ChunkSection[] chunkSections = worldChunk.getSectionArray();
 			LightingProvider lightingProvider = this.getLightingProvider();
@@ -97,50 +97,50 @@ public class ClientChunkManager extends ChunkManager {
 
 	@Override
 	public void tick(BooleanSupplier booleanSupplier) {
-		this.method_16026();
+		this.updateChunkList();
 	}
 
-	private void method_16026() {
-		int i = this.field_16246.field_16253;
+	private void updateChunkList() {
+		int i = this.chunks.loadDistance;
 		int j = Math.max(2, this.client.options.viewDistance + -2) + 2;
 		if (i != j) {
-			ClientChunkManager.class_3681 lv = new ClientChunkManager.class_3681(j);
+			ClientChunkManager.ClientChunkMap clientChunkMap = new ClientChunkManager.ClientChunkMap(j);
 
-			for (int k = this.field_16247 - i; k <= this.field_16247 + i; k++) {
-				for (int l = this.field_16248 - i; l <= this.field_16248 + i; l++) {
-					WorldChunk worldChunk = (WorldChunk)this.field_16246.field_16251.get(this.field_16246.method_16027(l, k));
+			for (int k = this.playerChunkZ - i; k <= this.playerChunkZ + i; k++) {
+				for (int l = this.playerChunkX - i; l <= this.playerChunkX + i; l++) {
+					WorldChunk worldChunk = (WorldChunk)this.chunks.chunks.get(this.chunks.index(l, k));
 					if (worldChunk != null) {
-						if (!method_16024(l, k, this.field_16248, this.field_16247, j)) {
-							this.field_16249--;
+						if (!isWithinDistance(l, k, this.playerChunkX, this.playerChunkZ, j)) {
+							this.loadedChunkCount--;
 						} else {
-							lv.field_16251.set(lv.method_16027(l, k), worldChunk);
+							clientChunkMap.chunks.set(clientChunkMap.index(l, k), worldChunk);
 						}
 					}
 				}
 			}
 
-			this.field_16246 = lv;
+			this.chunks = clientChunkMap;
 		}
 
 		int m = MathHelper.floor(this.client.player.x) >> 4;
 		int k = MathHelper.floor(this.client.player.z) >> 4;
-		if (this.field_16248 != m || this.field_16247 != k) {
-			for (int lx = this.field_16247 - j; lx <= this.field_16247 + j; lx++) {
-				for (int n = this.field_16248 - j; n <= this.field_16248 + j; n++) {
-					if (!method_16024(n, lx, m, k, j)) {
-						this.field_16246.field_16251.set(this.field_16246.method_16027(n, lx), null);
+		if (this.playerChunkX != m || this.playerChunkZ != k) {
+			for (int lx = this.playerChunkZ - j; lx <= this.playerChunkZ + j; lx++) {
+				for (int n = this.playerChunkX - j; n <= this.playerChunkX + j; n++) {
+					if (!isWithinDistance(n, lx, m, k, j)) {
+						this.chunks.chunks.set(this.chunks.index(n, lx), null);
 					}
 				}
 			}
 
-			this.field_16248 = m;
-			this.field_16247 = k;
+			this.playerChunkX = m;
+			this.playerChunkZ = k;
 		}
 	}
 
 	@Override
 	public String getStatus() {
-		return "MultiplayerChunkCache: " + this.field_16246.field_16251.length() + ", " + this.field_16249;
+		return "MultiplayerChunkCache: " + this.chunks.chunks.length() + ", " + this.loadedChunkCount;
 	}
 
 	@Override
@@ -154,39 +154,39 @@ public class ClientChunkManager extends ChunkManager {
 	}
 
 	@Environment(EnvType.CLIENT)
-	final class class_3681 {
-		private final AtomicReferenceArray<WorldChunk> field_16251;
-		private final int field_16253;
-		private final int field_16252;
+	final class ClientChunkMap {
+		private final AtomicReferenceArray<WorldChunk> chunks;
+		private final int loadDistance;
+		private final int loadDiameter;
 
-		private class_3681(int i) {
-			this.field_16253 = i;
-			this.field_16252 = i * 2 + 1;
-			this.field_16251 = new AtomicReferenceArray(this.field_16252 * this.field_16252);
+		private ClientChunkMap(int i) {
+			this.loadDistance = i;
+			this.loadDiameter = i * 2 + 1;
+			this.chunks = new AtomicReferenceArray(this.loadDiameter * this.loadDiameter);
 		}
 
-		private int method_16027(int i, int j) {
-			return Math.floorMod(j, this.field_16252) * this.field_16252 + Math.floorMod(i, this.field_16252);
+		private int index(int i, int j) {
+			return Math.floorMod(j, this.loadDiameter) * this.loadDiameter + Math.floorMod(i, this.loadDiameter);
 		}
 
-		protected void method_16031(int i, int j) {
-			if (this.method_16034(i, j)) {
-				WorldChunk worldChunk = (WorldChunk)this.field_16251.getAndSet(this.method_16027(i, j), null);
+		protected void unload(int i, int j) {
+			if (this.hasChunk(i, j)) {
+				WorldChunk worldChunk = (WorldChunk)this.chunks.getAndSet(this.index(i, j), null);
 				if (worldChunk != null) {
-					ClientChunkManager.this.field_16249--;
+					ClientChunkManager.this.loadedChunkCount--;
 					worldChunk.unloadFromWorld();
 				}
 			}
 		}
 
-		private boolean method_16034(int i, int j) {
-			return ClientChunkManager.method_16024(i, j, ClientChunkManager.this.field_16248, ClientChunkManager.this.field_16247, this.field_16253);
+		private boolean hasChunk(int i, int j) {
+			return ClientChunkManager.isWithinDistance(i, j, ClientChunkManager.this.playerChunkX, ClientChunkManager.this.playerChunkZ, this.loadDistance);
 		}
 
 		@Nullable
-		protected WorldChunk method_16033(int i, int j) {
-			if (this.method_16034(i, j)) {
-				WorldChunk worldChunk = (WorldChunk)this.field_16251.get(this.method_16027(i, j));
+		protected WorldChunk getChunk(int i, int j) {
+			if (this.hasChunk(i, j)) {
+				WorldChunk worldChunk = (WorldChunk)this.chunks.get(this.index(i, j));
 				if (worldChunk != null) {
 					return worldChunk;
 				}

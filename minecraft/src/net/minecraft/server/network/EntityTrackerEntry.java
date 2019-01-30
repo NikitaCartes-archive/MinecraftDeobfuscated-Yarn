@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import net.minecraft.block.Block;
 import net.minecraft.client.network.packet.EntityAttributesClientPacket;
 import net.minecraft.client.network.packet.EntityClientPacket;
 import net.minecraft.client.network.packet.EntityEquipmentUpdateClientPacket;
@@ -13,54 +12,20 @@ import net.minecraft.client.network.packet.EntityPassengersSetClientPacket;
 import net.minecraft.client.network.packet.EntityPositionClientPacket;
 import net.minecraft.client.network.packet.EntityPotionEffectClientPacket;
 import net.minecraft.client.network.packet.EntitySetHeadYawClientPacket;
-import net.minecraft.client.network.packet.EntitySpawnClientPacket;
 import net.minecraft.client.network.packet.EntityTrackerUpdateClientPacket;
 import net.minecraft.client.network.packet.EntityVelocityUpdateClientPacket;
-import net.minecraft.client.network.packet.ExperienceOrbSpawnClientPacket;
 import net.minecraft.client.network.packet.MobSpawnClientPacket;
-import net.minecraft.client.network.packet.PaintingSpawnClientPacket;
-import net.minecraft.client.network.packet.PlayerSpawnClientPacket;
 import net.minecraft.client.network.packet.PlayerUseBedClientPacket;
-import net.minecraft.entity.AreaEffectCloudEntity;
-import net.minecraft.entity.EnderEyeEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.ExperienceOrbEntity;
-import net.minecraft.entity.FallingBlockEntity;
-import net.minecraft.entity.FireworkEntity;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.PrimedTNTEntity;
 import net.minecraft.entity.attribute.EntityAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.decoration.ArmorStandEntity;
-import net.minecraft.entity.decoration.EnderCrystalEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
-import net.minecraft.entity.decoration.LeadKnotEntity;
-import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.mob.EvokerFangsEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ArrowEntity;
-import net.minecraft.entity.projectile.DragonFireballEntity;
-import net.minecraft.entity.projectile.ExplodingWitherSkullEntity;
-import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
-import net.minecraft.entity.projectile.FishHookEntity;
-import net.minecraft.entity.projectile.LlamaSpitEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.entity.projectile.ShulkerBulletEntity;
-import net.minecraft.entity.projectile.SmallFireballEntity;
-import net.minecraft.entity.projectile.SpectralArrowEntity;
-import net.minecraft.entity.projectile.TridentEntity;
-import net.minecraft.entity.sortme.Living;
-import net.minecraft.entity.thrown.SnowballEntity;
-import net.minecraft.entity.thrown.ThrownEggEntity;
-import net.minecraft.entity.thrown.ThrownEnderpearlEntity;
-import net.minecraft.entity.thrown.ThrownExperienceBottleEntity;
-import net.minecraft.entity.thrown.ThrownPotionEntity;
-import net.minecraft.entity.vehicle.AbstractMinecartEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapState;
@@ -104,9 +69,9 @@ public class EntityTrackerEntry {
 		this.field_14052 = j;
 		this.tickInterval = k;
 		this.alwaysUpdateVelocity = bl;
-		this.lastX = EntityTracker.toFixedPoint(entity.x);
-		this.lastY = EntityTracker.toFixedPoint(entity.y);
-		this.lastZ = EntityTracker.toFixedPoint(entity.z);
+		this.lastX = EntityClientPacket.method_18047(entity.x);
+		this.lastY = EntityClientPacket.method_18047(entity.y);
+		this.lastZ = EntityClientPacket.method_18047(entity.z);
 		this.lastYaw = MathHelper.floor(entity.yaw * 256.0F / 360.0F);
 		this.lastPitch = MathHelper.floor(entity.pitch * 256.0F / 360.0F);
 		this.lastHeadPitch = MathHelper.floor(entity.getHeadYaw() * 256.0F / 360.0F);
@@ -168,16 +133,16 @@ public class EntityTrackerEntry {
 					this.lastPitch = j;
 				}
 
-				this.lastX = EntityTracker.toFixedPoint(this.entity.x);
-				this.lastY = EntityTracker.toFixedPoint(this.entity.y);
-				this.lastZ = EntityTracker.toFixedPoint(this.entity.z);
+				this.lastX = EntityClientPacket.method_18047(this.entity.x);
+				this.lastY = EntityClientPacket.method_18047(this.entity.y);
+				this.lastZ = EntityClientPacket.method_18047(this.entity.z);
 				this.method_14306();
 				this.field_14051 = true;
 			} else {
 				this.field_14043++;
-				long l = EntityTracker.toFixedPoint(this.entity.x);
-				long m = EntityTracker.toFixedPoint(this.entity.y);
-				long n = EntityTracker.toFixedPoint(this.entity.z);
+				long l = EntityClientPacket.method_18047(this.entity.x);
+				long m = EntityClientPacket.method_18047(this.entity.y);
+				long n = EntityClientPacket.method_18047(this.entity.z);
 				int k = MathHelper.floor(this.entity.yaw * 256.0F / 360.0F);
 				int o = MathHelper.floor(this.entity.pitch * 256.0F / 360.0F);
 				long p = l - this.lastX;
@@ -315,9 +280,14 @@ public class EntityTrackerEntry {
 	public void method_14303(ServerPlayerEntity serverPlayerEntity) {
 		if (serverPlayerEntity != this.entity) {
 			if (this.method_14294(serverPlayerEntity)) {
-				if (!this.trackingPlayers.contains(serverPlayerEntity) && (this.method_14298(serverPlayerEntity) || this.entity.field_5983)) {
+				if (!this.trackingPlayers.contains(serverPlayerEntity) && (this.method_14298(serverPlayerEntity) || this.entity.teleporting)) {
 					this.trackingPlayers.add(serverPlayerEntity);
-					Packet<?> packet = this.createSpawnPacket();
+					if (this.entity.invalid) {
+						LOGGER.warn("Fetching addPacket for removed entity");
+					}
+
+					Packet<?> packet = this.entity.createSpawnPacket();
+					this.lastHeadPitch = MathHelper.floor(this.entity.getHeadYaw() * 256.0F / 360.0F);
 					serverPlayerEntity.networkHandler.sendPacket(packet);
 					if (!this.entity.getDataTracker().method_12790()) {
 						serverPlayerEntity.networkHandler.sendPacket(new EntityTrackerUpdateClientPacket(this.entity.getEntityId(), this.entity.getDataTracker(), true));
@@ -401,115 +371,6 @@ public class EntityTrackerEntry {
 	public void method_14300(List<PlayerEntity> list) {
 		for (int i = 0; i < list.size(); i++) {
 			this.method_14303((ServerPlayerEntity)list.get(i));
-		}
-	}
-
-	private Packet<?> createSpawnPacket() {
-		if (this.entity.invalid) {
-			LOGGER.warn("Fetching addPacket for removed entity");
-		}
-
-		if (this.entity instanceof ServerPlayerEntity) {
-			return new PlayerSpawnClientPacket((PlayerEntity)this.entity);
-		} else if (this.entity instanceof Living) {
-			this.lastHeadPitch = MathHelper.floor(this.entity.getHeadYaw() * 256.0F / 360.0F);
-			return new MobSpawnClientPacket((LivingEntity)this.entity);
-		} else if (this.entity instanceof PaintingEntity) {
-			return new PaintingSpawnClientPacket((PaintingEntity)this.entity);
-		} else if (this.entity instanceof ItemEntity) {
-			return new EntitySpawnClientPacket(this.entity, 2, 1);
-		} else if (this.entity instanceof AbstractMinecartEntity) {
-			AbstractMinecartEntity abstractMinecartEntity = (AbstractMinecartEntity)this.entity;
-			return new EntitySpawnClientPacket(this.entity, 10, abstractMinecartEntity.getMinecartType().getId());
-		} else if (this.entity instanceof BoatEntity) {
-			return new EntitySpawnClientPacket(this.entity, 1);
-		} else if (this.entity instanceof ExperienceOrbEntity) {
-			return new ExperienceOrbSpawnClientPacket((ExperienceOrbEntity)this.entity);
-		} else if (this.entity instanceof FishHookEntity) {
-			Entity entity = ((FishHookEntity)this.entity).getOwner();
-			return new EntitySpawnClientPacket(this.entity, 90, entity == null ? this.entity.getEntityId() : entity.getEntityId());
-		} else if (this.entity instanceof SpectralArrowEntity) {
-			Entity entity = ((SpectralArrowEntity)this.entity).getOwner();
-			return new EntitySpawnClientPacket(this.entity, 91, 1 + (entity == null ? this.entity.getEntityId() : entity.getEntityId()));
-		} else if (this.entity instanceof ArrowEntity) {
-			Entity entity = ((ProjectileEntity)this.entity).getOwner();
-			return new EntitySpawnClientPacket(this.entity, 60, 1 + (entity == null ? this.entity.getEntityId() : entity.getEntityId()));
-		} else if (this.entity instanceof SnowballEntity) {
-			return new EntitySpawnClientPacket(this.entity, 61);
-		} else if (this.entity instanceof TridentEntity) {
-			Entity entity = ((ProjectileEntity)this.entity).getOwner();
-			return new EntitySpawnClientPacket(this.entity, 94, 1 + (entity == null ? this.entity.getEntityId() : entity.getEntityId()));
-		} else if (this.entity instanceof LlamaSpitEntity) {
-			return new EntitySpawnClientPacket(this.entity, 68);
-		} else if (this.entity instanceof ThrownPotionEntity) {
-			return new EntitySpawnClientPacket(this.entity, 73);
-		} else if (this.entity instanceof ThrownExperienceBottleEntity) {
-			return new EntitySpawnClientPacket(this.entity, 75);
-		} else if (this.entity instanceof ThrownEnderpearlEntity) {
-			return new EntitySpawnClientPacket(this.entity, 65);
-		} else if (this.entity instanceof EnderEyeEntity) {
-			return new EntitySpawnClientPacket(this.entity, 72);
-		} else if (this.entity instanceof FireworkEntity) {
-			return new EntitySpawnClientPacket(this.entity, 76);
-		} else if (this.entity instanceof ExplosiveProjectileEntity) {
-			ExplosiveProjectileEntity explosiveProjectileEntity = (ExplosiveProjectileEntity)this.entity;
-			int i = 63;
-			if (this.entity instanceof SmallFireballEntity) {
-				i = 64;
-			} else if (this.entity instanceof DragonFireballEntity) {
-				i = 93;
-			} else if (this.entity instanceof ExplodingWitherSkullEntity) {
-				i = 66;
-			}
-
-			EntitySpawnClientPacket entitySpawnClientPacket;
-			if (explosiveProjectileEntity.owner == null) {
-				entitySpawnClientPacket = new EntitySpawnClientPacket(this.entity, i, 0);
-			} else {
-				entitySpawnClientPacket = new EntitySpawnClientPacket(this.entity, i, ((ExplosiveProjectileEntity)this.entity).owner.getEntityId());
-			}
-
-			entitySpawnClientPacket.setVelocityX((int)(explosiveProjectileEntity.field_7601 * 8000.0));
-			entitySpawnClientPacket.setVelocityY((int)(explosiveProjectileEntity.field_7600 * 8000.0));
-			entitySpawnClientPacket.setVelocityZ((int)(explosiveProjectileEntity.field_7599 * 8000.0));
-			return entitySpawnClientPacket;
-		} else if (this.entity instanceof ShulkerBulletEntity) {
-			EntitySpawnClientPacket entitySpawnClientPacket2 = new EntitySpawnClientPacket(this.entity, 67, 0);
-			entitySpawnClientPacket2.setVelocityX((int)(this.entity.velocityX * 8000.0));
-			entitySpawnClientPacket2.setVelocityY((int)(this.entity.velocityY * 8000.0));
-			entitySpawnClientPacket2.setVelocityZ((int)(this.entity.velocityZ * 8000.0));
-			return entitySpawnClientPacket2;
-		} else if (this.entity instanceof ThrownEggEntity) {
-			return new EntitySpawnClientPacket(this.entity, 62);
-		} else if (this.entity instanceof EvokerFangsEntity) {
-			return new EntitySpawnClientPacket(this.entity, 79);
-		} else if (this.entity instanceof PrimedTNTEntity) {
-			return new EntitySpawnClientPacket(this.entity, 50);
-		} else if (this.entity instanceof EnderCrystalEntity) {
-			return new EntitySpawnClientPacket(this.entity, 51);
-		} else if (this.entity instanceof FallingBlockEntity) {
-			FallingBlockEntity fallingBlockEntity = (FallingBlockEntity)this.entity;
-			return new EntitySpawnClientPacket(this.entity, 70, Block.getRawIdFromState(fallingBlockEntity.getBlockState()));
-		} else if (this.entity instanceof ArmorStandEntity) {
-			return new EntitySpawnClientPacket(this.entity, 78);
-		} else if (this.entity instanceof ItemFrameEntity) {
-			ItemFrameEntity itemFrameEntity = (ItemFrameEntity)this.entity;
-			return new EntitySpawnClientPacket(this.entity, 71, itemFrameEntity.facing.getId(), itemFrameEntity.getDecorationBlockPos());
-		} else if (this.entity instanceof LeadKnotEntity) {
-			LeadKnotEntity leadKnotEntity = (LeadKnotEntity)this.entity;
-			return new EntitySpawnClientPacket(this.entity, 77, 0, leadKnotEntity.getDecorationBlockPos());
-		} else if (this.entity instanceof AreaEffectCloudEntity) {
-			return new EntitySpawnClientPacket(this.entity, 3);
-		} else {
-			throw new IllegalArgumentException("Don't know how to add " + this.entity.getClass() + "!");
-		}
-	}
-
-	public void method_14301(ServerPlayerEntity serverPlayerEntity) {
-		if (this.trackingPlayers.contains(serverPlayerEntity)) {
-			this.trackingPlayers.remove(serverPlayerEntity);
-			this.entity.onStoppedTrackingBy(serverPlayerEntity);
-			serverPlayerEntity.method_14249(this.entity);
 		}
 	}
 

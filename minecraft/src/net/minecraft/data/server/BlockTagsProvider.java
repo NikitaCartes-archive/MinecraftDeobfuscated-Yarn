@@ -348,6 +348,37 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.field_10356
 			);
 		this.method_10512(BlockTags.field_16584).add(BlockTags.field_17619).add(Blocks.field_10364);
+		this.method_10512(BlockTags.field_17753)
+			.add(
+				Blocks.field_10499,
+				Blocks.field_9987,
+				Blocks.field_10027,
+				Blocks.field_10398,
+				Blocks.field_10613,
+				Blocks.field_10525,
+				Blocks.field_10263,
+				Blocks.field_10395,
+				Blocks.field_10465,
+				Blocks.field_16540,
+				Blocks.field_10008,
+				Blocks.field_10540,
+				Blocks.field_10471,
+				Blocks.field_10576
+			);
+		this.method_10512(BlockTags.field_17754)
+			.add(
+				Blocks.field_10499,
+				Blocks.field_9987,
+				Blocks.field_10027,
+				Blocks.field_10398,
+				Blocks.field_10613,
+				Blocks.field_10525,
+				Blocks.field_10263,
+				Blocks.field_10395,
+				Blocks.field_10465,
+				Blocks.field_16540,
+				Blocks.field_10008
+			);
 	}
 
 	@Override

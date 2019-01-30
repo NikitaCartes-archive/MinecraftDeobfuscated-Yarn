@@ -3,7 +3,6 @@ package net.minecraft.entity.mob;
 import java.util.Random;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.class_1379;
 import net.minecraft.class_1396;
 import net.minecraft.class_1399;
 import net.minecraft.class_1414;
@@ -20,6 +19,7 @@ import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
 import net.minecraft.entity.ai.goal.ProjectileAttackGoal;
+import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.ai.pathing.EntityMobNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.Path;
@@ -28,9 +28,9 @@ import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.ai.pathing.SwimNavigation;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.passive.AbstractVillagerEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.TurtleEntity;
-import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.item.ItemStack;
@@ -69,10 +69,10 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 		this.goalSelector.add(2, new DrownedEntity.class_1552(this, 1.0, false));
 		this.goalSelector.add(5, new DrownedEntity.class_1554(this, 1.0));
 		this.goalSelector.add(6, new DrownedEntity.class_1557(this, 1.0, this.world.getSeaLevel()));
-		this.goalSelector.add(7, new class_1379(this, 1.0));
+		this.goalSelector.add(7, new WanderAroundGoal(this, 1.0));
 		this.targetSelector.add(1, new class_1399(this, DrownedEntity.class).method_6318(PigZombieEntity.class));
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, new DrownedEntity.class_1553(this)));
-		this.targetSelector.add(3, new FollowTargetGoal(this, VillagerEntity.class, false));
+		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractVillagerEntity.class, false));
 		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, true));
 		this.targetSelector.add(5, new FollowTargetGoal(this, TurtleEntity.class, 10, true, false, TurtleEntity.field_6921));
 	}
@@ -172,7 +172,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 
 	@Override
 	public boolean method_5957(ViewableWorld viewableWorld) {
-		return viewableWorld.method_8606(this, this.getBoundingBox());
+		return viewableWorld.method_8606(this);
 	}
 
 	public boolean method_7012(@Nullable LivingEntity livingEntity) {
@@ -197,7 +197,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 	public void method_6091(float f, float g, float h) {
 		if (this.method_6034() && this.isInsideWater() && this.method_7018()) {
 			this.method_5724(f, g, h, 0.01F);
-			this.move(MovementType.SELF, this.velocityX, this.velocityY, this.velocityZ);
+			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 			this.velocityX *= 0.9F;
 			this.velocityY *= 0.9F;
 			this.velocityZ *= 0.9F;
@@ -220,7 +220,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 	}
 
 	protected boolean method_7016() {
-		Path path = this.getNavigation().method_6345();
+		Path path = this.getNavigation().getCurrentPath();
 		if (path != null) {
 			PathNode pathNode = path.method_48();
 			if (pathNode != null) {
@@ -266,20 +266,20 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 					this.drowned.velocityY += 0.002;
 				}
 
-				if (this.field_6374 != MoveControl.class_1336.field_6378 || this.drowned.getNavigation().method_6357()) {
+				if (this.state != MoveControl.State.field_6378 || this.drowned.getNavigation().isIdle()) {
 					this.drowned.method_6125(0.0F);
 					return;
 				}
 
-				double d = this.field_6370 - this.drowned.x;
-				double e = this.field_6369 - this.drowned.y;
-				double f = this.field_6367 - this.drowned.z;
+				double d = this.targetX - this.drowned.x;
+				double e = this.targetY - this.drowned.y;
+				double f = this.targetZ - this.drowned.z;
 				double g = (double)MathHelper.sqrt(d * d + e * e + f * f);
 				e /= g;
 				float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;
 				this.drowned.yaw = this.method_6238(this.drowned.yaw, h, 90.0F);
 				this.drowned.field_6283 = this.drowned.yaw;
-				float i = (float)(this.field_6372 * this.drowned.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
+				float i = (float)(this.speed * this.drowned.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
 				this.drowned.method_6125(MathHelper.lerp(0.125F, this.drowned.method_6029(), i));
 				this.drowned.velocityY = this.drowned.velocityY + (double)this.drowned.method_6029() * e * 0.1;
 				this.drowned.velocityX = this.drowned.velocityX + (double)this.drowned.method_6029() * d * 0.005;
@@ -403,7 +403,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 
 		@Override
 		public boolean shouldContinue() {
-			return !this.field_7242.getNavigation().method_6357();
+			return !this.field_7242.getNavigation().isIdle();
 		}
 
 		@Override
@@ -451,7 +451,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 
 		@Override
 		public void tick() {
-			if (this.field_7246.y < (double)(this.field_7247 - 1) && (this.field_7246.getNavigation().method_6357() || this.field_7246.method_7016())) {
+			if (this.field_7246.y < (double)(this.field_7247 - 1) && (this.field_7246.getNavigation().isIdle() || this.field_7246.method_7016())) {
 				Vec3d vec3d = class_1414.method_6373(this.field_7246, 4, 8, new Vec3d(this.field_7246.x, (double)(this.field_7247 - 1), this.field_7246.z));
 				if (vec3d == null) {
 					this.field_7248 = true;

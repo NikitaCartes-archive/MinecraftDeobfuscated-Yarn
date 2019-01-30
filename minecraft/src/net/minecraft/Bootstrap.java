@@ -30,7 +30,7 @@ import net.minecraft.command.arguments.ArgumentTypes;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FireworkEntity;
-import net.minecraft.entity.PrimedTNTEntity;
+import net.minecraft.entity.PrimedTntEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.passive.SheepEntity;
@@ -372,9 +372,9 @@ public class Bootstrap {
 			protected ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
 				World world = blockPointer.getWorld();
 				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
-				PrimedTNTEntity primedTNTEntity = new PrimedTNTEntity(world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, null);
-				world.spawnEntity(primedTNTEntity);
-				world.playSound(null, primedTNTEntity.x, primedTNTEntity.y, primedTNTEntity.z, SoundEvents.field_15079, SoundCategory.field_15245, 1.0F, 1.0F);
+				PrimedTntEntity primedTntEntity = new PrimedTntEntity(world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, null);
+				world.spawnEntity(primedTntEntity);
+				world.playSound(null, primedTntEntity.x, primedTntEntity.y, primedTntEntity.z, SoundEvents.field_15079, SoundCategory.field_15245, 1.0F, 1.0F);
 				itemStack.subtractAmount(1);
 				return itemStack;
 			}

@@ -170,6 +170,6 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	public final void method_17824() {
 		float f = this.method_17825();
 		EntityType<?> entityType = this.getType();
-		this.setSize(entityType.method_17685() * f, entityType.method_17686() * f);
+		this.setSize(entityType.getWidth() * f, entityType.getHeight() * f);
 	}
 }

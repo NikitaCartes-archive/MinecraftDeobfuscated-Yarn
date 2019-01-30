@@ -280,10 +280,10 @@ public class TeleportCommand {
 				entity.method_5878(entity2);
 				entity.setPositionAndAngles(d, e, f, i, j);
 				entity.setHeadYaw(i);
-				boolean bl = entity.field_5983;
-				entity.field_5983 = true;
+				boolean bl = entity.teleporting;
+				entity.teleporting = true;
 				serverWorld.spawnEntity(entity);
-				entity.field_5983 = bl;
+				entity.teleporting = bl;
 				serverWorld.method_8553(entity, false);
 				entity2.invalid = true;
 			}

@@ -20,8 +20,8 @@ public class SwimNavigation extends EntityNavigation {
 	@Override
 	protected PathNodeNavigator createPathNodeNavigator() {
 		this.field_6689 = this.entity instanceof DolphinEntity;
-		this.field_6678 = new WaterPathNodeMaker(this.field_6689);
-		return new PathNodeNavigator(this.field_6678);
+		this.nodeMaker = new WaterPathNodeMaker(this.field_6689);
+		return new PathNodeNavigator(this.nodeMaker);
 	}
 
 	@Override
@@ -37,33 +37,33 @@ public class SwimNavigation extends EntityNavigation {
 	@Override
 	public void tick() {
 		this.tickCount++;
-		if (this.idle) {
-			this.method_6356();
+		if (this.shouldRecalculate) {
+			this.recalculatePath();
 		}
 
-		if (!this.method_6357()) {
+		if (!this.isIdle()) {
 			if (this.isAtValidPosition()) {
 				this.method_6339();
-			} else if (this.field_6681 != null && this.field_6681.getCurrentNodeIndex() < this.field_6681.getPathLength()) {
-				Vec3d vec3d = this.field_6681.getNodePosition(this.entity, this.field_6681.getCurrentNodeIndex());
+			} else if (this.currentPath != null && this.currentPath.getCurrentNodeIndex() < this.currentPath.getLength()) {
+				Vec3d vec3d = this.currentPath.getNodePosition(this.entity, this.currentPath.getCurrentNodeIndex());
 				if (MathHelper.floor(this.entity.x) == MathHelper.floor(vec3d.x)
 					&& MathHelper.floor(this.entity.y) == MathHelper.floor(vec3d.y)
 					&& MathHelper.floor(this.entity.z) == MathHelper.floor(vec3d.z)) {
-					this.field_6681.setCurrentPosition(this.field_6681.getCurrentNodeIndex() + 1);
+					this.currentPath.setCurrentNodeIndex(this.currentPath.getCurrentNodeIndex() + 1);
 				}
 			}
 
 			this.method_6353();
-			if (!this.method_6357()) {
-				Vec3d vec3d = this.field_6681.getNodePosition(this.entity);
-				this.entity.getMoveControl().method_6239(vec3d.x, vec3d.y, vec3d.z, this.field_6668);
+			if (!this.isIdle()) {
+				Vec3d vec3d = this.currentPath.getNodePosition(this.entity);
+				this.entity.getMoveControl().moveTo(vec3d.x, vec3d.y, vec3d.z, this.speed);
 			}
 		}
 	}
 
 	@Override
 	protected void method_6339() {
-		if (this.field_6681 != null) {
+		if (this.currentPath != null) {
 			Vec3d vec3d = this.method_6347();
 			float f = this.entity.getWidth() > 0.75F ? this.entity.getWidth() / 2.0F : 0.75F - this.entity.getWidth() / 2.0F;
 			if ((double)MathHelper.abs((float)this.entity.velocityX) > 0.2 || (double)MathHelper.abs((float)this.entity.velocityZ) > 0.2) {
@@ -74,17 +74,17 @@ public class SwimNavigation extends EntityNavigation {
 			}
 
 			int i = 6;
-			Vec3d vec3d2 = this.field_6681.getCurrentPosition();
+			Vec3d vec3d2 = this.currentPath.getCurrentPosition();
 			if (MathHelper.abs((float)(this.entity.x - (vec3d2.x + 0.5))) < f
 				&& MathHelper.abs((float)(this.entity.z - (vec3d2.z + 0.5))) < f
 				&& Math.abs(this.entity.y - vec3d2.y) < (double)(f * 2.0F)) {
-				this.field_6681.next();
+				this.currentPath.next();
 			}
 
-			for (int j = Math.min(this.field_6681.getCurrentNodeIndex() + 6, this.field_6681.getPathLength() - 1); j > this.field_6681.getCurrentNodeIndex(); j--) {
-				vec3d2 = this.field_6681.getNodePosition(this.entity, j);
-				if (!(vec3d2.squaredDistanceTo(vec3d) > 36.0) && this.method_6341(vec3d, vec3d2, 0, 0, 0)) {
-					this.field_6681.setCurrentPosition(j);
+			for (int j = Math.min(this.currentPath.getCurrentNodeIndex() + 6, this.currentPath.getLength() - 1); j > this.currentPath.getCurrentNodeIndex(); j--) {
+				vec3d2 = this.currentPath.getNodePosition(this.entity, j);
+				if (!(vec3d2.squaredDistanceTo(vec3d) > 36.0) && this.canPathDirectlyThrough(vec3d, vec3d2, 0, 0, 0)) {
+					this.currentPath.setCurrentNodeIndex(j);
 					break;
 				}
 			}
@@ -97,15 +97,15 @@ public class SwimNavigation extends EntityNavigation {
 	protected void method_6346(Vec3d vec3d) {
 		if (this.tickCount - this.field_6674 > 100) {
 			if (vec3d.squaredDistanceTo(this.field_6672) < 2.25) {
-				this.method_6340();
+				this.stop();
 			}
 
 			this.field_6674 = this.tickCount;
 			this.field_6672 = vec3d;
 		}
 
-		if (this.field_6681 != null && !this.field_6681.isFinished()) {
-			Vec3d vec3d2 = this.field_6681.getCurrentPosition();
+		if (this.currentPath != null && !this.currentPath.isFinished()) {
+			Vec3d vec3d2 = this.currentPath.getCurrentPosition();
 			if (vec3d2.equals(this.field_6680)) {
 				this.field_6670 = this.field_6670 + (SystemUtil.getMeasuringTimeMs() - this.field_6669);
 			} else {
@@ -118,7 +118,7 @@ public class SwimNavigation extends EntityNavigation {
 				this.field_6680 = Vec3d.ZERO;
 				this.field_6670 = 0L;
 				this.field_6682 = 0.0;
-				this.method_6340();
+				this.stop();
 			}
 
 			this.field_6669 = SystemUtil.getMeasuringTimeMs();
@@ -126,7 +126,7 @@ public class SwimNavigation extends EntityNavigation {
 	}
 
 	@Override
-	protected boolean method_6341(Vec3d vec3d, Vec3d vec3d2, int i, int j, int k) {
+	protected boolean canPathDirectlyThrough(Vec3d vec3d, Vec3d vec3d2, int i, int j, int k) {
 		Vec3d vec3d3 = new Vec3d(vec3d2.x, vec3d2.y + (double)this.entity.getHeight() * 0.5, vec3d2.z);
 		return this.world
 				.rayTrace(new RayTraceContext(vec3d, vec3d3, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.NONE, this.entity))
@@ -140,6 +140,6 @@ public class SwimNavigation extends EntityNavigation {
 	}
 
 	@Override
-	public void method_6354(boolean bl) {
+	public void setCanSwim(boolean bl) {
 	}
 }

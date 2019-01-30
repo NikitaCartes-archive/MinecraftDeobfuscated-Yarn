@@ -5,7 +5,7 @@ import net.minecraft.util.math.Direction;
 
 public class VillageDoor {
 	private final BlockPos position;
-	private final BlockPos field_6712;
+	private final BlockPos insidePosition;
 	private final Direction facing;
 	private int lastTimeSeenByVillager;
 	private boolean field_6710;
@@ -28,7 +28,7 @@ public class VillageDoor {
 	public VillageDoor(BlockPos blockPos, Direction direction, int i) {
 		this.position = blockPos.toImmutable();
 		this.facing = direction;
-		this.field_6712 = blockPos.offset(direction, 2);
+		this.insidePosition = blockPos.offset(direction, 2);
 		this.lastTimeSeenByVillager = i;
 	}
 
@@ -41,7 +41,7 @@ public class VillageDoor {
 	}
 
 	public int method_6417(BlockPos blockPos) {
-		return (int)this.field_6712.squaredDistanceTo(blockPos);
+		return (int)this.insidePosition.squaredDistanceTo(blockPos);
 	}
 
 	public boolean method_6425(BlockPos blockPos) {
@@ -66,8 +66,8 @@ public class VillageDoor {
 		return this.position;
 	}
 
-	public BlockPos method_6422() {
-		return this.field_6712;
+	public BlockPos getInsidePosition() {
+		return this.insidePosition;
 	}
 
 	public int insideDirectionX() {

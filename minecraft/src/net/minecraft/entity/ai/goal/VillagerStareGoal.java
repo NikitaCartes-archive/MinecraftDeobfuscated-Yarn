@@ -76,7 +76,7 @@ public class VillagerStareGoal extends Goal {
 			if (this.owner.squaredDistanceTo(this.target) > 4.0) {
 				this.owner.getNavigation().startMovingTo(this.target, this.speed);
 			}
-		} else if (this.owner.getNavigation().method_6357()) {
+		} else if (this.owner.getNavigation().isIdle()) {
 			Vec3d vec3d = class_1414.method_6375(this.owner, 16, 3);
 			if (vec3d == null) {
 				return;

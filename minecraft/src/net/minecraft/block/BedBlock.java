@@ -71,7 +71,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 				}
 			}
 
-			if (world.dimension.method_12448() && world.getBiome(blockPos) != Biomes.field_9461) {
+			if (world.dimension.canPlayersSleep() && world.getBiome(blockPos) != Biomes.field_9461) {
 				if ((Boolean)blockState.get(OCCUPIED)) {
 					PlayerEntity playerEntity2 = this.getPlayerInBed(world, blockPos);
 					if (playerEntity2 != null) {

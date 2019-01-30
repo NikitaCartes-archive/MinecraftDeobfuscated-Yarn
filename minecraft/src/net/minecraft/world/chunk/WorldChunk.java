@@ -28,6 +28,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.world.DummyClientTickScheduler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.parts.EntityPart;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -143,7 +144,7 @@ public class WorldChunk implements Chunk {
 		);
 
 		for (CompoundTag compoundTag : protoChunk.getEntities()) {
-			EntityType.method_17841(compoundTag, world, this);
+			EntityType.spawnEntityInChunk(compoundTag, world, this);
 		}
 
 		for (BlockEntity blockEntity : protoChunk.getBlockEntities().values()) {
@@ -498,15 +499,30 @@ public class WorldChunk implements Chunk {
 							list.add(entity2);
 						}
 
-						Entity[] entitys = entity2.getParts();
-						if (entitys != null) {
-							for (Entity entity3 : entitys) {
-								if (entity3 != entity && entity3.getBoundingBox().intersects(boundingBox) && (predicate == null || predicate.test(entity3))) {
-									list.add(entity3);
+						EntityPart[] entityParts = entity2.getParts();
+						if (entityParts != null) {
+							for (EntityPart entityPart : entityParts) {
+								if (entityPart != entity && entityPart.getBoundingBox().intersects(boundingBox) && (predicate == null || predicate.test(entityPart))) {
+									list.add(entityPart);
 								}
 							}
 						}
 					}
+				}
+			}
+		}
+	}
+
+	public void method_18029(@Nullable EntityType<?> entityType, BoundingBox boundingBox, List<Entity> list, Predicate<? super Entity> predicate) {
+		int i = MathHelper.floor((boundingBox.minY - 2.0) / 16.0);
+		int j = MathHelper.floor((boundingBox.maxY + 2.0) / 16.0);
+		i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
+		j = MathHelper.clamp(j, 0, this.entitySections.length - 1);
+
+		for (int k = i; k <= j; k++) {
+			for (Entity entity : this.entitySections[k].getAllOfType(Entity.class)) {
+				if ((entityType == null || entity.getType() == entityType) && entity.getBoundingBox().intersects(boundingBox) && predicate.test(entity)) {
+					list.add(entity);
 				}
 			}
 		}
@@ -556,7 +572,7 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_12224(PacketByteBuf packetByteBuf, CompoundTag compoundTag, int i, boolean bl) {
+	public void loadFromPacket(PacketByteBuf packetByteBuf, CompoundTag compoundTag, int i, boolean bl) {
 		if (bl) {
 			this.blockEntityMap.clear();
 		} else {

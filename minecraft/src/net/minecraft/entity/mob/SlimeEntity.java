@@ -54,7 +54,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	protected void method_5959() {
+	protected void initGoals() {
 		this.goalSelector.add(1, new SlimeEntity.class_1623(this));
 		this.goalSelector.add(2, new SlimeEntity.class_1622(this));
 		this.goalSelector.add(3, new SlimeEntity.class_1626(this));
@@ -344,8 +344,8 @@ public class SlimeEntity extends MobEntity implements Monster {
 		}
 
 		public void method_7164(double d) {
-			this.field_6372 = d;
-			this.field_6374 = MoveControl.class_1336.field_6378;
+			this.speed = d;
+			this.state = MoveControl.State.field_6378;
 		}
 
 		@Override
@@ -353,12 +353,12 @@ public class SlimeEntity extends MobEntity implements Monster {
 			this.entity.yaw = this.method_6238(this.entity.yaw, this.field_7397, 90.0F);
 			this.entity.headYaw = this.entity.yaw;
 			this.entity.field_6283 = this.entity.yaw;
-			if (this.field_6374 != MoveControl.class_1336.field_6378) {
+			if (this.state != MoveControl.State.field_6378) {
 				this.entity.method_5930(0.0F);
 			} else {
-				this.field_6374 = MoveControl.class_1336.field_6377;
+				this.state = MoveControl.State.field_6377;
 				if (this.entity.onGround) {
-					this.entity.method_6125((float)(this.field_6372 * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()));
+					this.entity.method_6125((float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()));
 					if (this.field_7399-- <= 0) {
 						this.field_7399 = this.slime.method_7154();
 						if (this.field_7398) {
@@ -378,7 +378,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 						this.entity.method_6125(0.0F);
 					}
 				} else {
-					this.entity.method_6125((float)(this.field_6372 * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()));
+					this.entity.method_6125((float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()));
 				}
 			}
 		}
@@ -438,7 +438,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 		public class_1623(SlimeEntity slimeEntity) {
 			this.field_7394 = slimeEntity;
 			this.setControlBits(5);
-			slimeEntity.getNavigation().method_6354(true);
+			slimeEntity.getNavigation().setCanSwim(true);
 		}
 
 		@Override

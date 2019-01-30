@@ -51,24 +51,24 @@ public class EndSpikeFeature extends Feature<EndPillarFeatureConfig> {
 
 		for (EndSpikeFeature.Spike spike : list) {
 			if (spike.method_13962(blockPos)) {
-				this.method_15888(iWorld, random, blockPos, endPillarFeatureConfig, spike);
+				this.method_15888(iWorld, random, endPillarFeatureConfig, spike);
 			}
 		}
 
 		return true;
 	}
 
-	private void method_15888(IWorld iWorld, Random random, BlockPos blockPos, EndPillarFeatureConfig endPillarFeatureConfig, EndSpikeFeature.Spike spike) {
+	private void method_15888(IWorld iWorld, Random random, EndPillarFeatureConfig endPillarFeatureConfig, EndSpikeFeature.Spike spike) {
 		int i = spike.getRadius();
 
-		for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(
-			new BlockPos(blockPos.getX() - i, 0, blockPos.getZ() - i), new BlockPos(blockPos.getX() + i, spike.getHeight() + 10, blockPos.getZ() + i)
+		for (BlockPos blockPos : BlockPos.iterateBoxPositions(
+			new BlockPos(spike.getCenterX() - i, 0, spike.getCenterZ() - i), new BlockPos(spike.getCenterX() + i, spike.getHeight() + 10, spike.getCenterZ() + i)
 		)) {
-			if (blockPos2.squaredDistanceTo((double)blockPos.getX(), (double)blockPos2.getY(), (double)blockPos.getZ()) <= (double)(i * i + 1)
-				&& blockPos2.getY() < spike.getHeight()) {
-				this.setBlockState(iWorld, blockPos2, Blocks.field_10540.getDefaultState());
-			} else if (blockPos2.getY() > 65) {
-				this.setBlockState(iWorld, blockPos2, Blocks.field_10124.getDefaultState());
+			if (blockPos.squaredDistanceTo((double)spike.getCenterX(), (double)blockPos.getY(), (double)spike.getCenterZ()) <= (double)(i * i + 1)
+				&& blockPos.getY() < spike.getHeight()) {
+				this.setBlockState(iWorld, blockPos, Blocks.field_10540.getDefaultState());
+			} else if (blockPos.getY() > 65) {
+				this.setBlockState(iWorld, blockPos, Blocks.field_10124.getDefaultState());
 			}
 		}
 
@@ -93,7 +93,7 @@ public class EndSpikeFeature extends Feature<EndPillarFeatureConfig> {
 								.with(PaneBlock.SOUTH, Boolean.valueOf(bl4 && n != 2))
 								.with(PaneBlock.WEST, Boolean.valueOf(bl5 && m != -2))
 								.with(PaneBlock.EAST, Boolean.valueOf(bl5 && m != 2));
-							this.setBlockState(iWorld, mutable.set(blockPos.getX() + m, spike.getHeight() + o, blockPos.getZ() + n), blockState);
+							this.setBlockState(iWorld, mutable.set(spike.getCenterX() + m, spike.getHeight() + o, spike.getCenterZ() + n), blockState);
 						}
 					}
 				}
@@ -104,10 +104,10 @@ public class EndSpikeFeature extends Feature<EndPillarFeatureConfig> {
 		enderCrystalEntity.setBeamTarget(endPillarFeatureConfig.getPos());
 		enderCrystalEntity.setInvulnerable(endPillarFeatureConfig.isCrystalInvulerable());
 		enderCrystalEntity.setPositionAndAngles(
-			(double)((float)blockPos.getX() + 0.5F), (double)(spike.getHeight() + 1), (double)((float)blockPos.getZ() + 0.5F), random.nextFloat() * 360.0F, 0.0F
+			(double)((float)spike.getCenterX() + 0.5F), (double)(spike.getHeight() + 1), (double)((float)spike.getCenterZ() + 0.5F), random.nextFloat() * 360.0F, 0.0F
 		);
 		iWorld.spawnEntity(enderCrystalEntity);
-		this.setBlockState(iWorld, new BlockPos(blockPos.getX(), spike.getHeight(), blockPos.getZ()), Blocks.field_9987.getDefaultState());
+		this.setBlockState(iWorld, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.field_9987.getDefaultState());
 	}
 
 	public static class Spike {
@@ -128,9 +128,7 @@ public class EndSpikeFeature extends Feature<EndPillarFeatureConfig> {
 		}
 
 		public boolean method_13962(BlockPos blockPos) {
-			int i = this.centerX - this.radius;
-			int j = this.centerZ - this.radius;
-			return blockPos.getX() == (i & -16) && blockPos.getZ() == (j & -16);
+			return blockPos.getX() >> 4 == this.centerX >> 4 && blockPos.getZ() >> 4 == this.centerZ >> 4;
 		}
 
 		public int getCenterX() {
@@ -182,7 +180,7 @@ public class EndSpikeFeature extends Feature<EndPillarFeatureConfig> {
 		private SpikeCache() {
 		}
 
-		public List<EndSpikeFeature.Spike> method_14507(Long long_) throws Exception {
+		public List<EndSpikeFeature.Spike> method_14507(Long long_) {
 			List<Integer> list = (List<Integer>)IntStream.range(0, 10).boxed().collect(Collectors.toList());
 			Collections.shuffle(list, new Random(long_));
 			List<EndSpikeFeature.Spike> list2 = Lists.<EndSpikeFeature.Spike>newArrayList();

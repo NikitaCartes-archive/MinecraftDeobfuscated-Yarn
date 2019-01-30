@@ -52,7 +52,7 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(this.source.field_17029);
+		return ImmutableSet.of(this.source.parameter);
 	}
 
 	@Override
@@ -155,14 +155,14 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 		field_17027("block_entity", LootContextParameters.field_1228, CopyNbtLootFunction.BLOCK_ENTITY_TAG_GETTER);
 
 		public final String name;
-		public final LootContextParameter<?> field_17029;
+		public final LootContextParameter<?> parameter;
 		public final Function<LootContext, Tag> getter;
 
 		private <T> Source(String string2, LootContextParameter<T> lootContextParameter, Function<? super T, Tag> function) {
 			this.name = string2;
-			this.field_17029 = lootContextParameter;
+			this.parameter = lootContextParameter;
 			this.getter = lootContext -> {
-				T object = lootContext.method_296(lootContextParameter);
+				T object = lootContext.get(lootContextParameter);
 				return object != null ? (Tag)function.apply(object) : null;
 			};
 		}

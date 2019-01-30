@@ -60,7 +60,7 @@ public class BackgroundRenderer {
 			this.lastWaterFogColorUpdateTime = -1L;
 		}
 
-		double d = MathHelper.lerp((double)f, entity.prevRenderY, entity.y) * world.dimension.method_12459();
+		double d = MathHelper.lerp((double)f, entity.prevRenderY, entity.y) * world.dimension.getHorizonShadingRatio();
 		if (entity instanceof LivingEntity && ((LivingEntity)entity).hasPotionEffect(StatusEffects.field_5919)) {
 			int i = ((LivingEntity)entity).getPotionEffect(StatusEffects.field_5919).getDuration();
 			if (i < 20) {
@@ -146,7 +146,7 @@ public class BackgroundRenderer {
 			}
 
 			if (k > 0.0F) {
-				float[] fs = world.dimension.method_12446(world.getSkyAngle(f), f);
+				float[] fs = world.dimension.getBackgroundColor(world.getSkyAngle(f), f);
 				if (fs != null) {
 					k *= fs[3];
 					this.red = this.red * (1.0F - k) + fs[0] * k;
@@ -206,7 +206,7 @@ public class BackgroundRenderer {
 		}
 	}
 
-	public void method_3211(int i, float f) {
+	public void applyFog(int i, float f) {
 		Entity entity = this.client.getCameraEntity();
 		this.updateFogColor(false);
 		GlStateManager.normal3f(0.0F, -1.0F, 0.0F);
@@ -262,7 +262,7 @@ public class BackgroundRenderer {
 			}
 
 			GLX.setupNvFogDistance();
-			if (this.client.world.dimension.method_12453((int)entity.x, (int)entity.z) || this.client.inGameHud.getHudBossBar().shouldThickenFog()) {
+			if (this.client.world.dimension.shouldRenderFog((int)entity.x, (int)entity.z) || this.client.inGameHud.getHudBossBar().shouldThickenFog()) {
 				GlStateManager.fogStart(gx * 0.05F);
 				GlStateManager.fogEnd(Math.min(gx, 192.0F) * 0.5F);
 			}

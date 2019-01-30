@@ -40,7 +40,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	protected void method_5959() {
+	protected void initGoals() {
 		this.goalSelector.add(5, new GhastEntity.FlyRandomlyGoal(this));
 		this.goalSelector.add(7, new GhastEntity.class_1572(this));
 		this.goalSelector.add(7, new GhastEntity.ShootFireballGoal(this));
@@ -158,12 +158,12 @@ public class GhastEntity extends FlyingEntity implements Monster {
 		@Override
 		public boolean canStart() {
 			MoveControl moveControl = this.field_7279.getMoveControl();
-			if (!moveControl.method_6241()) {
+			if (!moveControl.isMoving()) {
 				return true;
 			} else {
-				double d = moveControl.method_6236() - this.field_7279.x;
-				double e = moveControl.method_6235() - this.field_7279.y;
-				double f = moveControl.method_6237() - this.field_7279.z;
+				double d = moveControl.getTargetX() - this.field_7279.x;
+				double e = moveControl.getTargetY() - this.field_7279.y;
+				double f = moveControl.getTargetZ() - this.field_7279.z;
 				double g = d * d + e * e + f * f;
 				return g < 1.0 || g > 3600.0;
 			}
@@ -180,7 +180,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 			double d = this.field_7279.x + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
 			double e = this.field_7279.y + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
 			double f = this.field_7279.z + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
-			this.field_7279.getMoveControl().method_6239(d, e, f, 1.0);
+			this.field_7279.getMoveControl().moveTo(d, e, f, 1.0);
 		}
 	}
 
@@ -195,20 +195,20 @@ public class GhastEntity extends FlyingEntity implements Monster {
 
 		@Override
 		public void tick() {
-			if (this.field_6374 == MoveControl.class_1336.field_6378) {
-				double d = this.field_6370 - this.ghast.x;
-				double e = this.field_6369 - this.ghast.y;
-				double f = this.field_6367 - this.ghast.z;
+			if (this.state == MoveControl.State.field_6378) {
+				double d = this.targetX - this.ghast.x;
+				double e = this.targetY - this.ghast.y;
+				double f = this.targetZ - this.ghast.z;
 				double g = d * d + e * e + f * f;
 				if (this.field_7276-- <= 0) {
 					this.field_7276 = this.field_7276 + this.ghast.getRand().nextInt(5) + 2;
 					g = (double)MathHelper.sqrt(g);
-					if (this.method_7051(this.field_6370, this.field_6369, this.field_6367, g)) {
+					if (this.method_7051(this.targetX, this.targetY, this.targetZ, g)) {
 						this.ghast.velocityX += d / g * 0.1;
 						this.ghast.velocityY += e / g * 0.1;
 						this.ghast.velocityZ += f / g * 0.1;
 					} else {
-						this.field_6374 = MoveControl.class_1336.field_6377;
+						this.state = MoveControl.State.field_6377;
 					}
 				}
 			}
@@ -222,7 +222,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 
 			for (int k = 1; (double)k < g; k++) {
 				boundingBox = boundingBox.offset(h, i, j);
-				if (!this.ghast.world.method_8587(this.ghast, boundingBox)) {
+				if (!this.ghast.world.isEntityColliding(this.ghast, boundingBox)) {
 					return false;
 				}
 			}

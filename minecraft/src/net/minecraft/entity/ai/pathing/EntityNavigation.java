@@ -20,8 +20,8 @@ public abstract class EntityNavigation {
 	protected final MobEntity entity;
 	protected final World world;
 	@Nullable
-	protected Path field_6681;
-	protected double field_6668;
+	protected Path currentPath;
+	protected double speed;
 	private final EntityAttributeInstance followRange;
 	protected int tickCount;
 	protected int field_6674;
@@ -31,10 +31,10 @@ public abstract class EntityNavigation {
 	protected long field_6669;
 	protected double field_6682;
 	protected float field_6683 = 0.5F;
-	protected boolean idle;
-	protected long field_6685;
-	protected PathNodeMaker field_6678;
-	private BlockPos field_6676;
+	protected boolean shouldRecalculate;
+	protected long lastRecalculateTime;
+	protected PathNodeMaker nodeMaker;
+	private BlockPos targetPos;
 	private PathNodeNavigator pathNodeNavigator;
 
 	public EntityNavigation(MobEntity mobEntity, World world) {
@@ -44,34 +44,34 @@ public abstract class EntityNavigation {
 		this.pathNodeNavigator = this.createPathNodeNavigator();
 	}
 
-	public BlockPos method_6355() {
-		return this.field_6676;
+	public BlockPos getTargetPos() {
+		return this.targetPos;
 	}
 
 	protected abstract PathNodeNavigator createPathNodeNavigator();
 
-	public void method_6344(double d) {
-		this.field_6668 = d;
+	public void setSpeed(double d) {
+		this.speed = d;
 	}
 
 	public float getFollowRange() {
 		return (float)this.followRange.getValue();
 	}
 
-	public boolean isIdle() {
-		return this.idle;
+	public boolean shouldRecalculatePath() {
+		return this.shouldRecalculate;
 	}
 
-	public void method_6356() {
-		if (this.world.getTime() - this.field_6685 > 20L) {
-			if (this.field_6676 != null) {
-				this.field_6681 = null;
-				this.field_6681 = this.findPathTo(this.field_6676);
-				this.field_6685 = this.world.getTime();
-				this.idle = false;
+	public void recalculatePath() {
+		if (this.world.getTime() - this.lastRecalculateTime > 20L) {
+			if (this.targetPos != null) {
+				this.currentPath = null;
+				this.currentPath = this.findPathTo(this.targetPos);
+				this.lastRecalculateTime = this.world.getTime();
+				this.shouldRecalculate = false;
 			}
 		} else {
-			this.idle = true;
+			this.shouldRecalculate = true;
 		}
 	}
 
@@ -84,16 +84,16 @@ public abstract class EntityNavigation {
 	public Path findPathTo(BlockPos blockPos) {
 		if (!this.isAtValidPosition()) {
 			return null;
-		} else if (this.field_6681 != null && !this.field_6681.isFinished() && blockPos.equals(this.field_6676)) {
-			return this.field_6681;
+		} else if (this.currentPath != null && !this.currentPath.isFinished() && blockPos.equals(this.targetPos)) {
+			return this.currentPath;
 		} else {
-			this.field_6676 = blockPos;
+			this.targetPos = blockPos;
 			float f = this.getFollowRange();
 			this.world.getProfiler().push("pathfind");
 			BlockPos blockPos2 = new BlockPos(this.entity);
 			int i = (int)(f + 8.0F);
 			BlockView blockView = new ChunkCache(this.world, blockPos2.add(-i, -i, -i), blockPos2.add(i, i, i), 0);
-			Path path = this.pathNodeNavigator.pathfind(blockView, this.entity, this.field_6676, f);
+			Path path = this.pathNodeNavigator.pathfind(blockView, this.entity, this.targetPos, f);
 			this.world.getProfiler().pop();
 			return path;
 		}
@@ -105,10 +105,10 @@ public abstract class EntityNavigation {
 			return null;
 		} else {
 			BlockPos blockPos = new BlockPos(entity);
-			if (this.field_6681 != null && !this.field_6681.isFinished() && blockPos.equals(this.field_6676)) {
-				return this.field_6681;
+			if (this.currentPath != null && !this.currentPath.isFinished() && blockPos.equals(this.targetPos)) {
+				return this.currentPath;
 			} else {
-				this.field_6676 = blockPos;
+				this.targetPos = blockPos;
 				float f = this.getFollowRange();
 				this.world.getProfiler().push("pathfind");
 				BlockPos blockPos2 = new BlockPos(this.entity).up();
@@ -132,18 +132,18 @@ public abstract class EntityNavigation {
 
 	public boolean startMovingAlong(@Nullable Path path, double d) {
 		if (path == null) {
-			this.field_6681 = null;
+			this.currentPath = null;
 			return false;
 		} else {
-			if (!path.equalsPath(this.field_6681)) {
-				this.field_6681 = path;
+			if (!path.equalsPath(this.currentPath)) {
+				this.currentPath = path;
 			}
 
 			this.method_6359();
-			if (this.field_6681.getPathLength() <= 0) {
+			if (this.currentPath.getLength() <= 0) {
 				return false;
 			} else {
-				this.field_6668 = d;
+				this.speed = d;
 				Vec3d vec3d = this.method_6347();
 				this.field_6674 = this.tickCount;
 				this.field_6672 = vec3d;
@@ -153,39 +153,37 @@ public abstract class EntityNavigation {
 	}
 
 	@Nullable
-	public Path method_6345() {
-		return this.field_6681;
+	public Path getCurrentPath() {
+		return this.currentPath;
 	}
 
 	public void tick() {
 		this.tickCount++;
-		if (this.idle) {
-			this.method_6356();
+		if (this.shouldRecalculate) {
+			this.recalculatePath();
 		}
 
-		if (!this.method_6357()) {
+		if (!this.isIdle()) {
 			if (this.isAtValidPosition()) {
 				this.method_6339();
-			} else if (this.field_6681 != null && this.field_6681.getCurrentNodeIndex() < this.field_6681.getPathLength()) {
+			} else if (this.currentPath != null && this.currentPath.getCurrentNodeIndex() < this.currentPath.getLength()) {
 				Vec3d vec3d = this.method_6347();
-				Vec3d vec3d2 = this.field_6681.getNodePosition(this.entity, this.field_6681.getCurrentNodeIndex());
+				Vec3d vec3d2 = this.currentPath.getNodePosition(this.entity, this.currentPath.getCurrentNodeIndex());
 				if (vec3d.y > vec3d2.y
 					&& !this.entity.onGround
 					&& MathHelper.floor(vec3d.x) == MathHelper.floor(vec3d2.x)
 					&& MathHelper.floor(vec3d.z) == MathHelper.floor(vec3d2.z)) {
-					this.field_6681.setCurrentPosition(this.field_6681.getCurrentNodeIndex() + 1);
+					this.currentPath.setCurrentNodeIndex(this.currentPath.getCurrentNodeIndex() + 1);
 				}
 			}
 
 			this.method_6353();
-			if (!this.method_6357()) {
-				Vec3d vec3d = this.field_6681.getNodePosition(this.entity);
+			if (!this.isIdle()) {
+				Vec3d vec3d = this.currentPath.getNodePosition(this.entity);
 				BlockPos blockPos = new BlockPos(vec3d);
 				this.entity
 					.getMoveControl()
-					.method_6239(
-						vec3d.x, this.world.getBlockState(blockPos.down()).isAir() ? vec3d.y : LandPathNodeMaker.method_60(this.world, blockPos), vec3d.z, this.field_6668
-					);
+					.moveTo(vec3d.x, this.world.getBlockState(blockPos.down()).isAir() ? vec3d.y : LandPathNodeMaker.method_60(this.world, blockPos), vec3d.z, this.speed);
 			}
 		}
 	}
@@ -195,30 +193,30 @@ public abstract class EntityNavigation {
 
 	protected void method_6339() {
 		Vec3d vec3d = this.method_6347();
-		int i = this.field_6681.getPathLength();
+		int i = this.currentPath.getLength();
 
-		for (int j = this.field_6681.getCurrentNodeIndex(); j < this.field_6681.getPathLength(); j++) {
-			if ((double)this.field_6681.getNode(j).y != Math.floor(vec3d.y)) {
+		for (int j = this.currentPath.getCurrentNodeIndex(); j < this.currentPath.getLength(); j++) {
+			if ((double)this.currentPath.getNode(j).y != Math.floor(vec3d.y)) {
 				i = j;
 				break;
 			}
 		}
 
 		this.field_6683 = this.entity.getWidth() > 0.75F ? this.entity.getWidth() / 2.0F : 0.75F - this.entity.getWidth() / 2.0F;
-		Vec3d vec3d2 = this.field_6681.getCurrentPosition();
+		Vec3d vec3d2 = this.currentPath.getCurrentPosition();
 		if (MathHelper.abs((float)(this.entity.x - (vec3d2.x + 0.5))) < this.field_6683
 			&& MathHelper.abs((float)(this.entity.z - (vec3d2.z + 0.5))) < this.field_6683
 			&& Math.abs(this.entity.y - vec3d2.y) < 1.0) {
-			this.field_6681.setCurrentPosition(this.field_6681.getCurrentNodeIndex() + 1);
+			this.currentPath.setCurrentNodeIndex(this.currentPath.getCurrentNodeIndex() + 1);
 		}
 
 		int k = MathHelper.ceil(this.entity.getWidth());
 		int l = MathHelper.ceil(this.entity.getHeight());
 		int m = k;
 
-		for (int n = i - 1; n >= this.field_6681.getCurrentNodeIndex(); n--) {
-			if (this.method_6341(vec3d, this.field_6681.getNodePosition(this.entity, n), k, l, m)) {
-				this.field_6681.setCurrentPosition(n);
+		for (int n = i - 1; n >= this.currentPath.getCurrentNodeIndex(); n--) {
+			if (this.canPathDirectlyThrough(vec3d, this.currentPath.getNodePosition(this.entity, n), k, l, m)) {
+				this.currentPath.setCurrentNodeIndex(n);
 				break;
 			}
 		}
@@ -229,15 +227,15 @@ public abstract class EntityNavigation {
 	protected void method_6346(Vec3d vec3d) {
 		if (this.tickCount - this.field_6674 > 100) {
 			if (vec3d.squaredDistanceTo(this.field_6672) < 2.25) {
-				this.method_6340();
+				this.stop();
 			}
 
 			this.field_6674 = this.tickCount;
 			this.field_6672 = vec3d;
 		}
 
-		if (this.field_6681 != null && !this.field_6681.isFinished()) {
-			Vec3d vec3d2 = this.field_6681.getCurrentPosition();
+		if (this.currentPath != null && !this.currentPath.isFinished()) {
+			Vec3d vec3d2 = this.currentPath.getCurrentPosition();
 			if (vec3d2.equals(this.field_6680)) {
 				this.field_6670 = this.field_6670 + (SystemUtil.getMeasuringTimeMs() - this.field_6669);
 			} else {
@@ -250,19 +248,19 @@ public abstract class EntityNavigation {
 				this.field_6680 = Vec3d.ZERO;
 				this.field_6670 = 0L;
 				this.field_6682 = 0.0;
-				this.method_6340();
+				this.stop();
 			}
 
 			this.field_6669 = SystemUtil.getMeasuringTimeMs();
 		}
 	}
 
-	public boolean method_6357() {
-		return this.field_6681 == null || this.field_6681.isFinished();
+	public boolean isIdle() {
+		return this.currentPath == null || this.currentPath.isFinished();
 	}
 
-	public void method_6340() {
-		this.field_6681 = null;
+	public void stop() {
+		this.currentPath = null;
 	}
 
 	protected abstract Vec3d method_6347();
@@ -274,38 +272,38 @@ public abstract class EntityNavigation {
 	}
 
 	protected void method_6359() {
-		if (this.field_6681 != null) {
-			for (int i = 0; i < this.field_6681.getPathLength(); i++) {
-				PathNode pathNode = this.field_6681.getNode(i);
-				PathNode pathNode2 = i + 1 < this.field_6681.getPathLength() ? this.field_6681.getNode(i + 1) : null;
+		if (this.currentPath != null) {
+			for (int i = 0; i < this.currentPath.getLength(); i++) {
+				PathNode pathNode = this.currentPath.getNode(i);
+				PathNode pathNode2 = i + 1 < this.currentPath.getLength() ? this.currentPath.getNode(i + 1) : null;
 				BlockState blockState = this.world.getBlockState(new BlockPos(pathNode.x, pathNode.y, pathNode.z));
 				Block block = blockState.getBlock();
 				if (block == Blocks.field_10593) {
-					this.field_6681.setNode(i, pathNode.copyWithNewPosition(pathNode.x, pathNode.y + 1, pathNode.z));
+					this.currentPath.setNode(i, pathNode.copyWithNewPosition(pathNode.x, pathNode.y + 1, pathNode.z));
 					if (pathNode2 != null && pathNode.y >= pathNode2.y) {
-						this.field_6681.setNode(i + 1, pathNode2.copyWithNewPosition(pathNode2.x, pathNode.y + 1, pathNode2.z));
+						this.currentPath.setNode(i + 1, pathNode2.copyWithNewPosition(pathNode2.x, pathNode.y + 1, pathNode2.z));
 					}
 				}
 			}
 		}
 	}
 
-	protected abstract boolean method_6341(Vec3d vec3d, Vec3d vec3d2, int i, int j, int k);
+	protected abstract boolean canPathDirectlyThrough(Vec3d vec3d, Vec3d vec3d2, int i, int j, int k);
 
 	public boolean isValidPosition(BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
 		return this.world.getBlockState(blockPos2).isFullOpaque(this.world, blockPos2);
 	}
 
-	public PathNodeMaker method_6342() {
-		return this.field_6678;
+	public PathNodeMaker getNodeMaker() {
+		return this.nodeMaker;
 	}
 
-	public void method_6354(boolean bl) {
-		this.field_6678.setCanSwim(bl);
+	public void setCanSwim(boolean bl) {
+		this.nodeMaker.setCanSwim(bl);
 	}
 
-	public boolean method_6350() {
-		return this.field_6678.canSwim();
+	public boolean canSwim() {
+		return this.nodeMaker.canSwim();
 	}
 }

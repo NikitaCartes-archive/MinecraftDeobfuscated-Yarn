@@ -49,7 +49,7 @@ public class MeleeAttackGoal extends Goal {
 		} else if (!livingEntity.isValid()) {
 			return false;
 		} else if (!this.field_6502) {
-			return !this.entity.getNavigation().method_6357();
+			return !this.entity.getNavigation().isIdle();
 		} else {
 			return !this.entity.isInAiRange(new BlockPos(livingEntity))
 				? false
@@ -70,7 +70,7 @@ public class MeleeAttackGoal extends Goal {
 			this.entity.setTarget(null);
 		}
 
-		this.entity.getNavigation().method_6340();
+		this.entity.getNavigation().stop();
 	}
 
 	@Override

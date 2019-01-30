@@ -8,7 +8,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.container.Container;
-import net.minecraft.container.DoubleLockableContainer;
 import net.minecraft.container.GenericContainer;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.LivingEntity;
@@ -18,6 +17,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.inventory.DoubleInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -55,7 +55,7 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 	protected static final VoxelShape SINGLE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
 	private static final ChestBlock.class_3923<Inventory> field_17356 = new ChestBlock.class_3923<Inventory>() {
 		public Inventory method_17461(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
-			return new DoubleLockableContainer(chestBlockEntity, chestBlockEntity2);
+			return new DoubleInventory(chestBlockEntity, chestBlockEntity2);
 		}
 
 		public Inventory method_17460(ChestBlockEntity chestBlockEntity) {
@@ -64,7 +64,7 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 	};
 	private static final ChestBlock.class_3923<NameableContainerProvider> field_17357 = new ChestBlock.class_3923<NameableContainerProvider>() {
 		public NameableContainerProvider method_17463(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
-			final Inventory inventory = new DoubleLockableContainer(chestBlockEntity, chestBlockEntity2);
+			final Inventory inventory = new DoubleInventory(chestBlockEntity, chestBlockEntity2);
 			return new NameableContainerProvider() {
 				@Nullable
 				@Override

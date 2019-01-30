@@ -8,10 +8,8 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EndGatewayBlockEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.dimension.TheEndDimension;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
-import net.minecraft.world.gen.chunk.FloatingIslandsChunkGenerator;
 
 public class EndGatewayFeature extends Feature<EndGatewayFeatureConfig> {
 	public EndGatewayFeature(Function<Dynamic<?>, ? extends EndGatewayFeatureConfig> function) {
@@ -33,13 +31,14 @@ public class EndGatewayFeature extends Feature<EndGatewayFeatureConfig> {
 			if (bl && bl2 && bl3) {
 				BlockPos blockPos3 = blockPos2.toImmutable();
 				this.setBlockState(iWorld, blockPos3, Blocks.field_10613.getDefaultState());
-				if (endGatewayFeatureConfig.exitsAtSpawn()) {
+				endGatewayFeatureConfig.method_18036().ifPresent(blockPos2x -> {
 					BlockEntity blockEntity = iWorld.getBlockEntity(blockPos3);
 					if (blockEntity instanceof EndGatewayBlockEntity) {
 						EndGatewayBlockEntity endGatewayBlockEntity = (EndGatewayBlockEntity)blockEntity;
-						endGatewayBlockEntity.setExitPortalPos(TheEndDimension.SPAWN_POINT);
+						endGatewayBlockEntity.setExitPortalPos(blockPos2x, endGatewayFeatureConfig.exitsAtSpawn());
+						blockEntity.markDirty();
 					}
-				}
+				});
 			} else if (bl2) {
 				this.setBlockState(iWorld, blockPos2, Blocks.field_10124.getDefaultState());
 			} else if (bl4 && bl && bl3) {
@@ -49,12 +48,6 @@ public class EndGatewayFeature extends Feature<EndGatewayFeatureConfig> {
 			} else {
 				this.setBlockState(iWorld, blockPos2, Blocks.field_10124.getDefaultState());
 			}
-		}
-
-		BlockEntity blockEntity2 = iWorld.getBlockEntity(blockPos);
-		if (blockEntity2 instanceof EndGatewayBlockEntity) {
-			EndGatewayBlockEntity endGatewayBlockEntity2 = (EndGatewayBlockEntity)blockEntity2;
-			endGatewayBlockEntity2.setExitPortalPos(((FloatingIslandsChunkGenerator)chunkGenerator).getCenter());
 		}
 
 		return true;

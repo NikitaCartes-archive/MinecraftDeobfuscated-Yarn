@@ -105,7 +105,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 
 	private BoundingBox method_11315(Direction direction) {
 		Direction direction2 = direction.getOpposite();
-		return this.getBoundingBox(direction).method_1002((double)direction2.getOffsetX(), (double)direction2.getOffsetY(), (double)direction2.getOffsetZ());
+		return this.getBoundingBox(direction).shrink((double)direction2.getOffsetX(), (double)direction2.getOffsetY(), (double)direction2.getOffsetZ());
 	}
 
 	private void method_11316() {
@@ -151,7 +151,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 								f += 0.01;
 						}
 
-						entity.move(MovementType.SHULKER_BOX, d * (double)direction.getOffsetX(), e * (double)direction.getOffsetY(), f * (double)direction.getOffsetZ());
+						entity.move(MovementType.field_6306, d * (double)direction.getOffsetX(), e * (double)direction.getOffsetY(), f * (double)direction.getOffsetZ());
 					}
 				}
 			}

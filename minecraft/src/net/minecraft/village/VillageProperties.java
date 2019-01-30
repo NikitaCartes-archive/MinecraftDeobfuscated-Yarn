@@ -76,7 +76,7 @@ public class VillageProperties {
 			BlockPos blockPos2 = blockPos.add(this.world.random.nextInt(16) - 8, this.world.random.nextInt(6) - 3, this.world.random.nextInt(16) - 8);
 			if (this.isInRadius(blockPos2)) {
 				EntityType<IronGolemEntity> entityType = EntityType.IRON_GOLEM;
-				if (!this.world.method_8587(null, entityType.method_17683((double)blockPos2.getX() + 0.5, (double)blockPos2.getY(), (double)blockPos2.getZ() + 0.5))) {
+				if (!this.world.method_18026(entityType.createSimpleBoundingBox((double)blockPos2.getX() + 0.5, (double)blockPos2.getY(), (double)blockPos2.getZ() + 0.5))) {
 					return null;
 				}
 

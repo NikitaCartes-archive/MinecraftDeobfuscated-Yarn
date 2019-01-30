@@ -6,8 +6,6 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1359;
-import net.minecraft.class_1361;
 import net.minecraft.class_1371;
 import net.minecraft.class_1373;
 import net.minecraft.class_1386;
@@ -26,6 +24,8 @@ import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.FollowOwnerGoal;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
+import net.minecraft.entity.ai.goal.PounceAtTargetGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -101,7 +101,7 @@ public class CatEntity extends TameableEntity {
 	}
 
 	@Override
-	protected void method_5959() {
+	protected void initGoals() {
 		this.field_6321 = new class_1386(this);
 		this.field_6810 = new CatEntity.CatTemptGoal(this, 0.6, TAMING_INGREDIENT, true);
 		this.goalSelector.add(1, new SwimGoal(this));
@@ -111,11 +111,11 @@ public class CatEntity extends TameableEntity {
 		this.goalSelector.add(5, new class_3697(this, 1.1, 8));
 		this.goalSelector.add(6, new FollowOwnerGoal(this, 1.0, 10.0F, 5.0F));
 		this.goalSelector.add(7, new class_1373(this, 0.8));
-		this.goalSelector.add(8, new class_1359(this, 0.3F));
+		this.goalSelector.add(8, new PounceAtTargetGoal(this, 0.3F));
 		this.goalSelector.add(9, new class_1371(this));
 		this.goalSelector.add(10, new AnimalMateGoal(this, 0.8));
 		this.goalSelector.add(11, new class_1394(this, 0.8, 1.0000001E-5F));
-		this.goalSelector.add(12, new class_1361(this, PlayerEntity.class, 10.0F));
+		this.goalSelector.add(12, new LookAtEntityGoal(this, PlayerEntity.class, 10.0F));
 		this.targetSelector.add(1, new class_1404(this, RabbitEntity.class, false, null));
 		this.targetSelector.add(1, new class_1404(this, TurtleEntity.class, false, TurtleEntity.field_6921));
 	}
@@ -179,8 +179,8 @@ public class CatEntity extends TameableEntity {
 
 	@Override
 	public void mobTick() {
-		if (this.getMoveControl().method_6241()) {
-			double d = this.getMoveControl().method_6242();
+		if (this.getMoveControl().isMoving()) {
+			double d = this.getMoveControl().getSpeed();
 			if (d == 0.6) {
 				this.setSneaking(true);
 				this.setSprinting(false);
@@ -212,7 +212,7 @@ public class CatEntity extends TameableEntity {
 	}
 
 	@Override
-	public int method_5970() {
+	public int getMinAmbientSoundDelay() {
 		return 120;
 	}
 
@@ -559,7 +559,7 @@ public class CatEntity extends TameableEntity {
 
 			this.field_16296 = 0;
 			this.entity.method_16087(false);
-			this.entity.getNavigation().method_6340();
+			this.entity.getNavigation().stop();
 		}
 
 		private void method_16097() {
@@ -577,8 +577,8 @@ public class CatEntity extends TameableEntity {
 			this.entity.method_6176().method_6311(true);
 			LootSupplier lootSupplier = this.entity.world.getServer().getLootManager().getSupplier(LootTables.field_16216);
 			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.entity.world)
-				.method_312(LootContextParameters.field_1232, mutable)
-				.method_312(LootContextParameters.field_1226, this.entity)
+				.put(LootContextParameters.field_1232, mutable)
+				.put(LootContextParameters.field_1226, this.entity)
 				.setRandom(random);
 
 			for (ItemStack itemStack : lootSupplier.getDrops(builder.build(LootContextTypes.GIFT))) {

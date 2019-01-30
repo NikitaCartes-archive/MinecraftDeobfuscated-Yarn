@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -19,7 +20,16 @@ public interface EntityContainer {
 		return this.getEntities(entity, boundingBox, EntityPredicates.EXCEPT_SPECTATOR);
 	}
 
-	default Stream<VoxelShape> method_8334(@Nullable Entity entity, VoxelShape voxelShape, Set<Entity> set) {
+	default boolean method_8611(@Nullable Entity entity, VoxelShape voxelShape) {
+		return voxelShape.isEmpty()
+			? true
+			: this.getVisibleEntities(entity, voxelShape.getBoundingBox())
+				.stream()
+				.filter(entity2 -> !entity2.invalid && entity2.field_6033 && (entity == null || !entity2.method_5794(entity)))
+				.noneMatch(entityx -> VoxelShapes.compareShapes(voxelShape, VoxelShapes.cube(entityx.getBoundingBox()), BooleanBiFunction.AND));
+	}
+
+	default Stream<VoxelShape> getCollidingEntityBoundingBoxesForEntity(@Nullable Entity entity, VoxelShape voxelShape, Set<Entity> set) {
 		if (voxelShape.isEmpty()) {
 			return Stream.empty();
 		} else {

@@ -4,6 +4,8 @@ import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.player.PlayerEntity;
@@ -12,6 +14,7 @@ import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateFactory;
@@ -48,77 +51,77 @@ public class ComposterBlock extends Block implements InventoryProvider {
 
 	public static void registerDefaultCompostableItems() {
 		ITEM_TO_LEVEL_INCREASE_CHANCE.defaultReturnValue(-1.0F);
-		float f = 0.1F;
-		float g = 0.2F;
-		float h = 0.5F;
-		float i = 0.8F;
+		float f = 0.3F;
+		float g = 0.5F;
+		float h = 0.65F;
+		float i = 0.85F;
 		float j = 1.0F;
-		registerCompostableItem(0.1F, Items.field_17506);
-		registerCompostableItem(0.1F, Items.field_17503);
-		registerCompostableItem(0.1F, Items.field_17504);
-		registerCompostableItem(0.1F, Items.field_17508);
-		registerCompostableItem(0.1F, Items.field_17507);
-		registerCompostableItem(0.1F, Items.field_17505);
-		registerCompostableItem(0.1F, Items.field_17535);
-		registerCompostableItem(0.1F, Items.field_17536);
-		registerCompostableItem(0.1F, Items.field_17537);
-		registerCompostableItem(0.1F, Items.field_17538);
-		registerCompostableItem(0.1F, Items.field_17539);
-		registerCompostableItem(0.1F, Items.field_17540);
-		registerCompostableItem(0.1F, Items.field_8309);
-		registerCompostableItem(0.1F, Items.field_8551);
-		registerCompostableItem(0.1F, Items.field_8602);
-		registerCompostableItem(0.1F, Items.field_17532);
-		registerCompostableItem(0.1F, Items.field_8188);
-		registerCompostableItem(0.1F, Items.field_8706);
-		registerCompostableItem(0.1F, Items.field_8158);
-		registerCompostableItem(0.1F, Items.field_16998);
-		registerCompostableItem(0.1F, Items.field_8317);
-		registerCompostableItem(0.2F, Items.field_17533);
-		registerCompostableItem(0.2F, Items.field_8256);
-		registerCompostableItem(0.2F, Items.field_17520);
-		registerCompostableItem(0.2F, Items.field_17531);
-		registerCompostableItem(0.2F, Items.field_17523);
-		registerCompostableItem(0.2F, Items.field_8497);
-		registerCompostableItem(0.5F, Items.field_17498);
-		registerCompostableItem(0.5F, Items.field_17524);
-		registerCompostableItem(0.5F, Items.field_17518);
-		registerCompostableItem(0.5F, Items.field_17519);
-		registerCompostableItem(0.5F, Items.field_17522);
-		registerCompostableItem(0.5F, Items.field_8279);
-		registerCompostableItem(0.5F, Items.field_8186);
-		registerCompostableItem(0.5F, Items.field_8179);
-		registerCompostableItem(0.5F, Items.field_8116);
-		registerCompostableItem(0.5F, Items.field_8567);
-		registerCompostableItem(0.5F, Items.field_8861);
-		registerCompostableItem(0.5F, Items.field_17516);
-		registerCompostableItem(0.5F, Items.field_17517);
-		registerCompostableItem(0.5F, Items.field_17521);
-		registerCompostableItem(0.5F, Items.field_8491);
-		registerCompostableItem(0.5F, Items.field_8880);
-		registerCompostableItem(0.5F, Items.field_17499);
-		registerCompostableItem(0.5F, Items.field_17500);
-		registerCompostableItem(0.5F, Items.field_17501);
-		registerCompostableItem(0.5F, Items.field_17502);
-		registerCompostableItem(0.5F, Items.field_17509);
-		registerCompostableItem(0.5F, Items.field_17510);
-		registerCompostableItem(0.5F, Items.field_17511);
-		registerCompostableItem(0.5F, Items.field_17512);
-		registerCompostableItem(0.5F, Items.field_17513);
-		registerCompostableItem(0.5F, Items.field_17514);
-		registerCompostableItem(0.5F, Items.field_17515);
-		registerCompostableItem(0.5F, Items.field_8471);
-		registerCompostableItem(0.5F, Items.field_17525);
-		registerCompostableItem(0.5F, Items.field_17526);
-		registerCompostableItem(0.5F, Items.field_17527);
-		registerCompostableItem(0.5F, Items.field_17529);
-		registerCompostableItem(0.5F, Items.field_8561);
-		registerCompostableItem(0.8F, Items.field_17528);
-		registerCompostableItem(0.8F, Items.field_8506);
-		registerCompostableItem(0.8F, Items.field_8682);
-		registerCompostableItem(0.8F, Items.field_8229);
-		registerCompostableItem(0.8F, Items.field_8512);
-		registerCompostableItem(0.8F, Items.field_8423);
+		registerCompostableItem(0.3F, Items.field_17506);
+		registerCompostableItem(0.3F, Items.field_17503);
+		registerCompostableItem(0.3F, Items.field_17504);
+		registerCompostableItem(0.3F, Items.field_17508);
+		registerCompostableItem(0.3F, Items.field_17507);
+		registerCompostableItem(0.3F, Items.field_17505);
+		registerCompostableItem(0.3F, Items.field_17535);
+		registerCompostableItem(0.3F, Items.field_17536);
+		registerCompostableItem(0.3F, Items.field_17537);
+		registerCompostableItem(0.3F, Items.field_17538);
+		registerCompostableItem(0.3F, Items.field_17539);
+		registerCompostableItem(0.3F, Items.field_17540);
+		registerCompostableItem(0.3F, Items.field_8309);
+		registerCompostableItem(0.3F, Items.field_8551);
+		registerCompostableItem(0.3F, Items.field_8602);
+		registerCompostableItem(0.3F, Items.field_17532);
+		registerCompostableItem(0.3F, Items.field_8188);
+		registerCompostableItem(0.3F, Items.field_8706);
+		registerCompostableItem(0.3F, Items.field_8158);
+		registerCompostableItem(0.3F, Items.field_16998);
+		registerCompostableItem(0.3F, Items.field_8317);
+		registerCompostableItem(0.5F, Items.field_17533);
+		registerCompostableItem(0.5F, Items.field_8256);
+		registerCompostableItem(0.5F, Items.field_17520);
+		registerCompostableItem(0.5F, Items.field_17531);
+		registerCompostableItem(0.5F, Items.field_17523);
+		registerCompostableItem(0.5F, Items.field_8497);
+		registerCompostableItem(0.65F, Items.field_17498);
+		registerCompostableItem(0.65F, Items.field_17524);
+		registerCompostableItem(0.65F, Items.field_17518);
+		registerCompostableItem(0.65F, Items.field_17519);
+		registerCompostableItem(0.65F, Items.field_17522);
+		registerCompostableItem(0.65F, Items.field_8279);
+		registerCompostableItem(0.65F, Items.field_8186);
+		registerCompostableItem(0.65F, Items.field_8179);
+		registerCompostableItem(0.65F, Items.field_8116);
+		registerCompostableItem(0.65F, Items.field_8567);
+		registerCompostableItem(0.65F, Items.field_8861);
+		registerCompostableItem(0.65F, Items.field_17516);
+		registerCompostableItem(0.65F, Items.field_17517);
+		registerCompostableItem(0.65F, Items.field_17521);
+		registerCompostableItem(0.65F, Items.field_8491);
+		registerCompostableItem(0.65F, Items.field_8880);
+		registerCompostableItem(0.65F, Items.field_17499);
+		registerCompostableItem(0.65F, Items.field_17500);
+		registerCompostableItem(0.65F, Items.field_17501);
+		registerCompostableItem(0.65F, Items.field_17502);
+		registerCompostableItem(0.65F, Items.field_17509);
+		registerCompostableItem(0.65F, Items.field_17510);
+		registerCompostableItem(0.65F, Items.field_17511);
+		registerCompostableItem(0.65F, Items.field_17512);
+		registerCompostableItem(0.65F, Items.field_17513);
+		registerCompostableItem(0.65F, Items.field_17514);
+		registerCompostableItem(0.65F, Items.field_17515);
+		registerCompostableItem(0.65F, Items.field_8471);
+		registerCompostableItem(0.65F, Items.field_17525);
+		registerCompostableItem(0.65F, Items.field_17526);
+		registerCompostableItem(0.65F, Items.field_17527);
+		registerCompostableItem(0.65F, Items.field_17529);
+		registerCompostableItem(0.65F, Items.field_8561);
+		registerCompostableItem(0.85F, Items.field_17528);
+		registerCompostableItem(0.85F, Items.field_8506);
+		registerCompostableItem(0.85F, Items.field_8682);
+		registerCompostableItem(0.85F, Items.field_8229);
+		registerCompostableItem(0.85F, Items.field_8512);
+		registerCompostableItem(0.85F, Items.field_8423);
 		registerCompostableItem(1.0F, Items.field_17534);
 		registerCompostableItem(1.0F, Items.field_8741);
 	}
@@ -130,6 +133,31 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	public ComposterBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateFactory.getDefaultState().with(LEVEL, Integer.valueOf(0)));
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static void method_18027(IWorld iWorld, BlockPos blockPos, boolean bl) {
+		BlockState blockState = iWorld.getBlockState(blockPos);
+		iWorld.playSound(null, blockPos, bl ? SoundEvents.field_17608 : SoundEvents.field_17607, SoundCategory.field_15245, 1.0F, 1.0F);
+		double d = blockState.getOutlineShape(iWorld, blockPos).method_1102(Direction.Axis.Y, 0.5, 0.5) + 0.03125;
+		double e = 0.13125F;
+		double f = 0.7375F;
+		Random random = iWorld.getRandom();
+
+		for (int i = 0; i < 10; i++) {
+			double g = random.nextGaussian() * 0.02;
+			double h = random.nextGaussian() * 0.02;
+			double j = random.nextGaussian() * 0.02;
+			iWorld.addParticle(
+				ParticleTypes.field_17741,
+				(double)blockPos.getX() + 0.13125F + 0.7375F * (double)random.nextFloat(),
+				(double)blockPos.getY() + d + (double)random.nextFloat() * (1.0 - d),
+				(double)blockPos.getZ() + 0.13125F + 0.7375F * (double)random.nextFloat(),
+				g,
+				h,
+				j
+			);
+		}
 	}
 
 	@Override
@@ -161,7 +189,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		if (i < 8 && ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(itemStack.getItem())) {
 			if (i < 7 && !world.isClient) {
 				boolean bl = addToComposter(blockState, world, blockPos, itemStack);
-				world.playSound(null, blockPos, bl ? SoundEvents.field_17608 : SoundEvents.field_17607, SoundCategory.field_15245, 1.0F, 1.0F);
+				world.fireWorldEvent(1500, blockPos, bl ? 0 : 1);
 				if (!playerEntity.abilities.creativeMode) {
 					itemStack.subtractAmount(1);
 				}

@@ -56,6 +56,8 @@ public class BlockTags {
 	public static final Tag<Block> field_15472 = register("standing_signs");
 	public static final Tag<Block> field_15492 = register("wall_signs");
 	public static final Tag<Block> field_15500 = register("signs");
+	public static final Tag<Block> field_17753 = register("dragon_immune");
+	public static final Tag<Block> field_17754 = register("wither_immune");
 
 	public static void setContainer(TagContainer<Block> tagContainer) {
 		container = tagContainer;

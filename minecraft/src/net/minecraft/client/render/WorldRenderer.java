@@ -25,6 +25,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
+import net.minecraft.block.ComposterBlock;
 import net.minecraft.block.EnderChestBlock;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.SignBlock;
@@ -1069,7 +1070,7 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
 			GuiLighting.disable();
-			float[] fs = this.world.dimension.method_12446(this.world.getSkyAngle(f), f);
+			float[] fs = this.world.dimension.getBackgroundColor(this.world.getSkyAngle(f), f);
 			if (fs != null) {
 				GlStateManager.disableTexture();
 				GlStateManager.shadeModel(7425);
@@ -2142,6 +2143,9 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 				break;
 			case 1043:
 				this.world.playSound(blockPos, SoundEvents.field_17481, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				break;
+			case 1500:
+				ComposterBlock.method_18027(this.world, blockPos, j > 0);
 				break;
 			case 2000:
 				Direction direction = Direction.byId(j);

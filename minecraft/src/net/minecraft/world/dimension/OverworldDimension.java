@@ -96,7 +96,7 @@ public class OverworldDimension extends Dimension {
 					biomes = jsonArray.size() > 0 ? new Biome[jsonArray.size()] : new Biome[]{Biomes.field_9423};
 
 					for (int i = 0; i < jsonArray.size(); i++) {
-						biomes[i] = (Biome)Registry.BIOME.method_17966(new Identifier(jsonArray.get(i).getAsString())).orElse(Biomes.field_9423);
+						biomes[i] = (Biome)Registry.BIOME.getOptional(new Identifier(jsonArray.get(i).getAsString())).orElse(Biomes.field_9423);
 					}
 				}
 
@@ -165,10 +165,10 @@ public class OverworldDimension extends Dimension {
 
 	@Nullable
 	@Override
-	public BlockPos method_12452(ChunkPos chunkPos, boolean bl) {
+	public BlockPos getSpawningBlockInChunk(ChunkPos chunkPos, boolean bl) {
 		for (int i = chunkPos.getXStart(); i <= chunkPos.getXEnd(); i++) {
 			for (int j = chunkPos.getZStart(); j <= chunkPos.getZEnd(); j++) {
-				BlockPos blockPos = this.method_12444(i, j, bl);
+				BlockPos blockPos = this.getTopSpawningBlockPosition(i, j, bl);
 				if (blockPos != null) {
 					return blockPos;
 				}
@@ -180,7 +180,7 @@ public class OverworldDimension extends Dimension {
 
 	@Nullable
 	@Override
-	public BlockPos method_12444(int i, int j, boolean bl) {
+	public BlockPos getTopSpawningBlockPosition(int i, int j, boolean bl) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(i, 0, j);
 		Biome biome = this.world.getBiome(mutable);
 		BlockState blockState = biome.getSurfaceConfig().getTopMaterial();
@@ -236,7 +236,7 @@ public class OverworldDimension extends Dimension {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public Vec3d method_12445(float f, float g) {
+	public Vec3d getFogColor(float f, float g) {
 		float h = MathHelper.cos(f * (float) (Math.PI * 2)) * 2.0F + 0.5F;
 		h = MathHelper.clamp(h, 0.0F, 1.0F);
 		float i = 0.7529412F;
@@ -249,13 +249,13 @@ public class OverworldDimension extends Dimension {
 	}
 
 	@Override
-	public boolean method_12448() {
+	public boolean canPlayersSleep() {
 		return true;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean method_12453(int i, int j) {
+	public boolean shouldRenderFog(int i, int j) {
 		return false;
 	}
 }

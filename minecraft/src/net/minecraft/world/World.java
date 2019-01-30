@@ -21,6 +21,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_2710;
+import net.minecraft.class_3990;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -29,16 +30,15 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCategory;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.ai.pathing.PathingCoordinator;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.SkeletonHorseEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaidManager;
-import net.minecraft.entity.sortme.Living;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.map.MapState;
@@ -54,7 +54,6 @@ import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.tag.TagManager;
-import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.IntHashMap;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.crash.CrashException;
@@ -69,7 +68,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.border.WorldBorder;
@@ -123,6 +121,7 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 	public final boolean isClient;
 	private boolean iteratingTickingBlockEntities;
 	private final WorldBorder border;
+	private final class_3990 field_17733;
 
 	protected World(
 		LevelProperties levelProperties, DimensionType dimensionType, BiFunction<World, Dimension, ChunkManager> biFunction, Profiler profiler, boolean bl
@@ -134,6 +133,7 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 		this.isClient = bl;
 		this.border = this.dimension.createWorldBorder();
 		this.thread = Thread.currentThread();
+		this.field_17733 = dimensionType == DimensionType.field_13072 ? new class_3990(this) : null;
 	}
 
 	@Override
@@ -482,8 +482,8 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 		}
 	}
 
-	public boolean addGlobalEntity(Entity entity) {
-		this.globalEntities.add(entity);
+	public boolean addGlobalEntity(LightningEntity lightningEntity) {
+		this.globalEntities.add(lightningEntity);
 		return true;
 	}
 
@@ -491,7 +491,7 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 	public boolean spawnEntity(Entity entity) {
 		int i = MathHelper.floor(entity.x / 16.0);
 		int j = MathHelper.floor(entity.z / 16.0);
-		boolean bl = entity.field_5983;
+		boolean bl = entity.teleporting;
 		if (entity instanceof PlayerEntity) {
 			bl = true;
 		}
@@ -681,7 +681,7 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 	@Environment(EnvType.CLIENT)
 	public Vec3d getFogColor(float f) {
 		float g = this.getSkyAngle(f);
-		return this.dimension.method_12445(g, f);
+		return this.dimension.getFogColor(g, f);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -942,24 +942,7 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 
 	@Override
 	public boolean method_8611(@Nullable Entity entity, VoxelShape voxelShape) {
-		if (voxelShape.isEmpty()) {
-			return true;
-		} else {
-			List<Entity> list = this.getVisibleEntities(null, voxelShape.getBoundingBox());
-
-			for (int i = 0; i < list.size(); i++) {
-				Entity entity2 = (Entity)list.get(i);
-				if (!entity2.invalid
-					&& entity2.field_6033
-					&& entity2 != entity
-					&& (entity == null || !entity2.method_5794(entity))
-					&& VoxelShapes.compareShapes(voxelShape, VoxelShapes.cube(entity2.getBoundingBox()), BooleanBiFunction.AND)) {
-					return false;
-				}
-			}
-
-			return true;
-		}
+		return EntityContainer.super.method_8611(entity, voxelShape);
 	}
 
 	public boolean isAreaNotEmpty(BoundingBox boundingBox) {
@@ -974,7 +957,7 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 			for (int o = i; o < j; o++) {
 				for (int p = k; p < l; p++) {
 					for (int q = m; q < n; q++) {
-						BlockState blockState = this.getBlockState(pooledMutable.method_10113(o, p, q));
+						BlockState blockState = this.getBlockState(pooledMutable.set(o, p, q));
 						if (!blockState.isAir()) {
 							return true;
 						}
@@ -998,7 +981,7 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 				for (int o = i; o < j; o++) {
 					for (int p = k; p < l; p++) {
 						for (int q = m; q < n; q++) {
-							Block block = this.getBlockState(pooledMutable.method_10113(o, p, q)).getBlock();
+							Block block = this.getBlockState(pooledMutable.set(o, p, q)).getBlock();
 							if (block == Blocks.field_10036 || block == Blocks.field_10164) {
 								return true;
 							}
@@ -1024,7 +1007,7 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 				for (int o = i; o < j; o++) {
 					for (int p = k; p < l; p++) {
 						for (int q = m; q < n; q++) {
-							BlockState blockState = this.getBlockState(pooledMutable.method_10113(o, p, q));
+							BlockState blockState = this.getBlockState(pooledMutable.set(o, p, q));
 							if (blockState.getBlock() == block) {
 								return blockState;
 							}
@@ -1183,10 +1166,6 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 		this.unloadedBlockEntities.add(blockEntity);
 	}
 
-	public boolean isBlockFullCube(BlockPos blockPos) {
-		return Block.isShapeFullCube(this.getBlockState(blockPos).getCollisionShape(this, blockPos));
-	}
-
 	public boolean isHeightValidAndBlockLoaded(BlockPos blockPos) {
 		return isHeightInvalid(blockPos) ? false : this.chunkManager.isChunkLoaded(blockPos.getX() >> 4, blockPos.getZ() >> 4);
 	}
@@ -1208,6 +1187,10 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 
 	public void tick(BooleanSupplier booleanSupplier) {
 		this.border.update();
+		if (!this.isClient() && this.field_17733 != null) {
+			this.field_17733.method_18015();
+		}
+
 		this.updateWeather();
 	}
 
@@ -1372,16 +1355,8 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 	}
 
 	@Override
-	public Stream<VoxelShape> method_8334(@Nullable Entity entity, VoxelShape voxelShape, Set<Entity> set) {
-		return EntityContainer.super.method_8334(entity, voxelShape, set);
-	}
-
-	@Override
-	public Stream<VoxelShape> method_8600(
-		@Nullable Entity entity, VoxelShape voxelShape, VoxelShape voxelShape2, Set<Entity> set, VerticalEntityPosition verticalEntityPosition
-	) {
-		Stream<VoxelShape> stream = IWorld.super.method_8600(entity, voxelShape, voxelShape2, set, verticalEntityPosition);
-		return Stream.concat(stream, entity == null ? Stream.empty() : this.method_8334(entity, voxelShape, set));
+	public Stream<VoxelShape> getCollidingEntityBoundingBoxesForEntity(@Nullable Entity entity, VoxelShape voxelShape, Set<Entity> set) {
+		return EntityContainer.super.getCollidingEntityBoundingBoxesForEntity(entity, voxelShape, set);
 	}
 
 	@Override
@@ -1396,6 +1371,37 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 			for (int n = k; n <= l; n++) {
 				if (this.isChunkLoaded(m, n)) {
 					this.getWorldChunk(m, n).appendEntities(entity, boundingBox, list, predicate);
+				}
+			}
+		}
+
+		return list;
+	}
+
+	public List<Entity> method_18024(@Nullable EntityType<?> entityType, Predicate<? super Entity> predicate) {
+		List<Entity> list = Lists.<Entity>newArrayList();
+
+		for (Entity entity : this.entities) {
+			if ((entityType == null || entity.getType() == entityType) && predicate.test(entity)) {
+				list.add(entity);
+			}
+		}
+
+		return list;
+	}
+
+	public List<Entity> method_18023(@Nullable EntityType<?> entityType, BoundingBox boundingBox, Predicate<? super Entity> predicate) {
+		int i = MathHelper.floor((boundingBox.minX - 2.0) / 16.0);
+		int j = MathHelper.ceil((boundingBox.maxX + 2.0) / 16.0);
+		int k = MathHelper.floor((boundingBox.minZ - 2.0) / 16.0);
+		int l = MathHelper.ceil((boundingBox.maxZ + 2.0) / 16.0);
+		List<Entity> list = Lists.<Entity>newArrayList();
+
+		for (int m = i; m < j; m++) {
+			for (int n = k; n < l; n++) {
+				WorldChunk worldChunk = this.getChunkManager().getWorldChunk(m, n, false);
+				if (worldChunk != null) {
+					worldChunk.method_18029(entityType, boundingBox, list, predicate);
 				}
 			}
 		}
@@ -1492,9 +1498,11 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 		Object2IntMap<EntityCategory> object2IntMap = new Object2IntOpenHashMap<>();
 
 		for (Entity entity : this.entities) {
-			if ((!(entity instanceof MobEntity) || !((MobEntity)entity).isPersistent()) && entity instanceof Living) {
-				EntityCategory entityCategory = EntityCategory.method_17350(entity);
-				object2IntMap.computeInt(entityCategory, (entityCategoryx, integer) -> 1 + (integer == null ? 0 : integer));
+			if (!(entity instanceof MobEntity) || !((MobEntity)entity).isPersistent()) {
+				EntityCategory entityCategory = entity.getType().getEntityClass();
+				if (entityCategory != EntityCategory.field_17715) {
+					object2IntMap.computeInt(entityCategory, (entityCategoryx, integer) -> 1 + (integer == null ? 0 : integer));
+				}
 			}
 		}
 
@@ -1745,6 +1753,12 @@ public abstract class World implements ExtendedBlockView, EntityContainer, IWorl
 		}
 
 		return null;
+	}
+
+	@Nullable
+	public PlayerEntity method_18022() {
+		List<PlayerEntity> list = this.getPlayers(PlayerEntity.class, playerEntity -> playerEntity.isValid());
+		return list.isEmpty() ? null : (PlayerEntity)list.get(this.random.nextInt(list.size()));
 	}
 
 	@Environment(EnvType.CLIENT)

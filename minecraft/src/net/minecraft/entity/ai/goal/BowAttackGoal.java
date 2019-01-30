@@ -41,7 +41,7 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttacker> extends Goa
 
 	@Override
 	public boolean shouldContinue() {
-		return (this.canStart() || !this.field_6576.getNavigation().method_6357()) && this.method_6306();
+		return (this.canStart() || !this.field_6576.getNavigation().isIdle()) && this.method_6306();
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttacker> extends Goa
 			}
 
 			if (!(d > (double)this.field_6570) && this.field_6572 >= 20) {
-				this.field_6576.getNavigation().method_6340();
+				this.field_6576.getNavigation().stop();
 				this.field_6568++;
 			} else {
 				this.field_6576.getNavigation().startMovingTo(livingEntity, this.field_6569);

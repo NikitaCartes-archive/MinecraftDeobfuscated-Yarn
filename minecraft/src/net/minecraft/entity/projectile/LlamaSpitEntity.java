@@ -7,12 +7,14 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Material;
+import net.minecraft.client.network.packet.EntitySpawnClientPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.sortme.Projectile;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.hit.EntityHitResult;
@@ -188,11 +190,10 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 	}
 
 	public void method_7481(HitResult hitResult) {
-		if (hitResult.getType() == HitResult.Type.ENTITY && this.owner != null) {
+		HitResult.Type type = hitResult.getType();
+		if (type == HitResult.Type.ENTITY && this.owner != null) {
 			((EntityHitResult)hitResult).getEntity().damage(DamageSource.mobProjectile(this, this.owner).setProjectile(), 1.0F);
-		}
-
-		if (!this.world.isClient) {
+		} else if (type == HitResult.Type.BLOCK && !this.world.isClient) {
 			this.invalidate();
 		}
 	}
@@ -231,5 +232,10 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 		}
 
 		this.field_7623 = null;
+	}
+
+	@Override
+	public Packet<?> createSpawnPacket() {
+		return new EntitySpawnClientPacket(this);
 	}
 }

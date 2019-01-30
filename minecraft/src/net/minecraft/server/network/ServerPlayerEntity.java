@@ -38,6 +38,7 @@ import net.minecraft.client.network.packet.OpenWrittenBookClientPacket;
 import net.minecraft.client.network.packet.PlaySoundClientPacket;
 import net.minecraft.client.network.packet.PlayerAbilitiesClientPacket;
 import net.minecraft.client.network.packet.PlayerRespawnClientPacket;
+import net.minecraft.client.network.packet.PlayerSpawnClientPacket;
 import net.minecraft.client.network.packet.PlayerUseBedClientPacket;
 import net.minecraft.client.network.packet.RemoveEntityEffectClientPacket;
 import net.minecraft.client.network.packet.ResourcePackSendClientPacket;
@@ -181,10 +182,10 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 				int o = (m + l * n) % k;
 				int p = o % (i * 2 + 1);
 				int q = o / (i * 2 + 1);
-				BlockPos blockPos2 = serverWorld.getDimension().method_12444(blockPos.getX() + p - i, blockPos.getZ() + q - i, false);
+				BlockPos blockPos2 = serverWorld.getDimension().getTopSpawningBlockPosition(blockPos.getX() + p - i, blockPos.getZ() + q - i, false);
 				if (blockPos2 != null) {
 					this.setPositionAndAngles(blockPos2, 0.0F, 0.0F);
-					if (serverWorld.method_8587(this, this.getBoundingBox())) {
+					if (serverWorld.method_17892(this)) {
 						break;
 					}
 				}
@@ -192,7 +193,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		} else {
 			this.setPositionAndAngles(blockPos, 0.0F, 0.0F);
 
-			while (!serverWorld.method_8587(this, this.getBoundingBox()) && this.y < 255.0) {
+			while (!serverWorld.method_17892(this) && this.y < 255.0) {
 				this.setPosition(this.x, this.y + 1.0, this.z);
 			}
 		}
@@ -1239,5 +1240,10 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	@Override
 	public void playSound(SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
 		this.networkHandler.sendPacket(new PlaySoundClientPacket(soundEvent, soundCategory, this.x, this.y, this.z, f, g));
+	}
+
+	@Override
+	public Packet<?> createSpawnPacket() {
+		return new PlayerSpawnClientPacket(this);
 	}
 }

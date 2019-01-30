@@ -147,7 +147,7 @@ public abstract class Registry<T> implements IntIterable<T> {
 	@Nullable
 	public abstract T get(@Nullable Identifier identifier);
 
-	public abstract Optional<T> method_17966(@Nullable Identifier identifier);
+	public abstract Optional<T> getOptional(@Nullable Identifier identifier);
 
 	public abstract Set<Identifier> keys();
 

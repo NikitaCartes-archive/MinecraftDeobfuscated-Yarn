@@ -26,12 +26,12 @@ public class EntityPropertiesLootCondition implements LootCondition {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.field_1232, this.entity.method_315());
+		return ImmutableSet.of(LootContextParameters.field_1232, this.entity.getIdentifier());
 	}
 
 	public boolean method_914(LootContext lootContext) {
-		Entity entity = lootContext.method_296(this.entity.method_315());
-		BlockPos blockPos = lootContext.method_296(LootContextParameters.field_1232);
+		Entity entity = lootContext.get(this.entity.getIdentifier());
+		BlockPos blockPos = lootContext.get(LootContextParameters.field_1232);
 		return blockPos != null && this.predicate.test(lootContext.getWorld(), new Vec3d(blockPos), entity);
 	}
 

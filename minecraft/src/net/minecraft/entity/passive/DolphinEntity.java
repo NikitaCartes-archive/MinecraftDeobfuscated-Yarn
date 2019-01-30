@@ -5,9 +5,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1346;
-import net.minecraft.class_1361;
-import net.minecraft.class_1376;
 import net.minecraft.class_1378;
 import net.minecraft.class_1399;
 import net.minecraft.class_1414;
@@ -23,9 +20,12 @@ import net.minecraft.entity.WaterCreatureEntity;
 import net.minecraft.entity.ai.control.DolphinLookControl;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.BreatheAirGoal;
+import net.minecraft.entity.ai.goal.ChaseBoatGoal;
 import net.minecraft.entity.ai.goal.DolphinJumpGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.LookAroundGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.MoveIntoWaterGoal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
@@ -80,7 +80,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public boolean method_6094() {
+	public boolean canBreatheInWater() {
 		return false;
 	}
 
@@ -142,18 +142,18 @@ public class DolphinEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	protected void method_5959() {
+	protected void initGoals() {
 		this.goalSelector.add(0, new BreatheAirGoal(this));
 		this.goalSelector.add(0, new MoveIntoWaterGoal(this));
 		this.goalSelector.add(1, new DolphinEntity.class_1435(this));
 		this.goalSelector.add(2, new DolphinEntity.class_1436(this, 4.0));
 		this.goalSelector.add(4, new class_1378(this, 1.0, 10));
-		this.goalSelector.add(4, new class_1376(this));
-		this.goalSelector.add(5, new class_1361(this, PlayerEntity.class, 6.0F));
+		this.goalSelector.add(4, new LookAroundGoal(this));
+		this.goalSelector.add(5, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
 		this.goalSelector.add(5, new DolphinJumpGoal(this, 10));
 		this.goalSelector.add(6, new MeleeAttackGoal(this, 1.2F, true));
 		this.goalSelector.add(8, new DolphinEntity.class_1437());
-		this.goalSelector.add(8, new class_1346(this));
+		this.goalSelector.add(8, new ChaseBoatGoal(this));
 		this.goalSelector.add(9, new FleeEntityGoal(this, GuardianEntity.class, 8.0F, 1.0, 1.0));
 		this.targetSelector.add(1, new class_1399(this, GuardianEntity.class).method_6318());
 	}
@@ -374,7 +374,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 	}
 
 	protected boolean method_6484() {
-		BlockPos blockPos = this.getNavigation().method_6355();
+		BlockPos blockPos = this.getNavigation().getTargetPos();
 		return blockPos != null ? this.squaredDistanceTo(blockPos) < 144.0 : false;
 	}
 
@@ -382,7 +382,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 	public void method_6091(float f, float g, float h) {
 		if (this.method_6034() && this.isInsideWater()) {
 			this.method_5724(f, g, h, this.method_6029());
-			this.move(MovementType.SELF, this.velocityX, this.velocityY, this.velocityZ);
+			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 			this.velocityX *= 0.9F;
 			this.velocityY *= 0.9F;
 			this.velocityZ *= 0.9F;
@@ -413,10 +413,10 @@ public class DolphinEntity extends WaterCreatureEntity {
 				this.dolphin.velocityY += 0.005;
 			}
 
-			if (this.field_6374 == MoveControl.class_1336.field_6378 && !this.dolphin.getNavigation().method_6357()) {
-				double d = this.field_6370 - this.dolphin.x;
-				double e = this.field_6369 - this.dolphin.y;
-				double f = this.field_6367 - this.dolphin.z;
+			if (this.state == MoveControl.State.field_6378 && !this.dolphin.getNavigation().isIdle()) {
+				double d = this.targetX - this.dolphin.x;
+				double e = this.targetY - this.dolphin.y;
+				double f = this.targetZ - this.dolphin.z;
 				double g = d * d + e * e + f * f;
 				if (g < 2.5000003E-7F) {
 					this.entity.method_5930(0.0F);
@@ -425,7 +425,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 					this.dolphin.yaw = this.method_6238(this.dolphin.yaw, h, 10.0F);
 					this.dolphin.field_6283 = this.dolphin.yaw;
 					this.dolphin.headYaw = this.dolphin.yaw;
-					float i = (float)(this.field_6372 * this.dolphin.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
+					float i = (float)(this.speed * this.dolphin.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
 					if (this.dolphin.isInsideWater()) {
 						this.dolphin.method_6125(i * 0.02F);
 						float j = -((float)(MathHelper.atan2(e, (double)MathHelper.sqrt(d * d + f * f)) * 180.0F / (float)Math.PI));
@@ -478,7 +478,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 		@Override
 		public void start() {
 			this.field_6753 = false;
-			this.field_6752.getNavigation().method_6340();
+			this.field_6752.getNavigation().stop();
 			World world = this.field_6752.world;
 			BlockPos blockPos = new BlockPos(this.field_6752);
 			String string = (double)world.random.nextFloat() >= 0.5 ? "Ocean_Ruin" : "Shipwreck";
@@ -510,7 +510,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 		public void tick() {
 			BlockPos blockPos = this.field_6752.method_6494();
 			World world = this.field_6752.world;
-			if (this.field_6752.method_6484() || this.field_6752.getNavigation().method_6357()) {
+			if (this.field_6752.method_6484() || this.field_6752.getNavigation().isIdle()) {
 				Vec3d vec3d = class_1414.method_6377(
 					this.field_6752, 16, 1, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()), (float) (Math.PI / 8)
 				);
@@ -570,14 +570,14 @@ public class DolphinEntity extends WaterCreatureEntity {
 		@Override
 		public void onRemove() {
 			this.field_6756 = null;
-			this.field_6755.getNavigation().method_6340();
+			this.field_6755.getNavigation().stop();
 		}
 
 		@Override
 		public void tick() {
 			this.field_6755.getLookControl().lookAt(this.field_6756, (float)(this.field_6755.method_5986() + 20), (float)this.field_6755.method_5978());
 			if (this.field_6755.squaredDistanceTo(this.field_6756) < 6.25) {
-				this.field_6755.getNavigation().method_6340();
+				this.field_6755.getNavigation().stop();
 			} else {
 				this.field_6755.getNavigation().startMovingTo(this.field_6756, this.field_6754);
 			}

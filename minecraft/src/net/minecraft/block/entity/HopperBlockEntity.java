@@ -359,7 +359,9 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		}
 
 		if (inventory == null) {
-			List<Entity> list = world.getEntities(null, new BoundingBox(d - 0.5, e - 0.5, f - 0.5, d + 0.5, e + 0.5, f + 0.5), EntityPredicates.VALID_INVENTORIES);
+			List<Entity> list = world.getEntities(
+				(Entity)null, new BoundingBox(d - 0.5, e - 0.5, f - 0.5, d + 0.5, e + 0.5, f + 0.5), EntityPredicates.VALID_INVENTORIES
+			);
 			if (!list.isEmpty()) {
 				inventory = (Inventory)list.get(world.random.nextInt(list.size()));
 			}

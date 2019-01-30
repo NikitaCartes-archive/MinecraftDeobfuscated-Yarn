@@ -28,8 +28,8 @@ public abstract class PatrolEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void method_5959() {
-		super.method_5959();
+	protected void initGoals() {
+		super.initGoals();
 		this.goalSelector.add(4, new PatrolEntity.PatrolGoal<>(this, 0.7, 0.595));
 	}
 
@@ -154,7 +154,7 @@ public abstract class PatrolEntity extends HostileEntity {
 		public void tick() {
 			boolean bl = this.field_16481.isPatrolLeader();
 			EntityNavigation entityNavigation = this.field_16481.getNavigation();
-			if (entityNavigation.method_6357()) {
+			if (entityNavigation.isIdle()) {
 				double d = this.field_16481.squaredDistanceTo(this.field_16481.getPatrolTarget());
 				if (bl && !(d >= 100.0)) {
 					this.field_16481.setRandomRaidCenter();

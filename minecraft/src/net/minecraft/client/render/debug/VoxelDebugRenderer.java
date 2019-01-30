@@ -29,7 +29,9 @@ public class VoxelDebugRenderer implements DebugRenderer.DebugRenderer {
 		double d = (double)SystemUtil.getMeasuringTimeNano();
 		if (d - this.field_4541 > 1.0E8) {
 			this.field_4541 = d;
-			this.field_4542 = (List<VoxelShape>)playerEntity.world.method_8607(playerEntity, playerEntity.getBoundingBox().expand(6.0)).collect(Collectors.toList());
+			this.field_4542 = (List<VoxelShape>)playerEntity.world
+				.getCollidingBoundingBoxesForEntity(playerEntity, playerEntity.getBoundingBox().expand(6.0), Collections.emptySet())
+				.collect(Collectors.toList());
 		}
 
 		double e = MathHelper.lerp((double)f, playerEntity.prevRenderX, playerEntity.x);

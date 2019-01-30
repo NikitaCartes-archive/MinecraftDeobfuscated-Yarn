@@ -16,10 +16,10 @@ import net.minecraft.world.chunk.light.LightingProvider;
 public class LightUpdateClientPacket implements Packet<ClientPlayPacketListener> {
 	private int chunkX;
 	private int chunkZ;
-	private int field_12263;
-	private int field_12262;
-	private int field_16418;
-	private int field_16417;
+	private int blockLightUpdateBits;
+	private int skyLightUpdateBits;
+	private int filledBlockLightBits;
+	private int filledSkyLightBits;
 	private List<byte[]> skyUpdates;
 	private List<byte[]> blockUpdates;
 
@@ -37,18 +37,18 @@ public class LightUpdateClientPacket implements Packet<ClientPlayPacketListener>
 			ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.BLOCK_LIGHT).getChunkLightArray(this.chunkX, -1 + i, this.chunkZ);
 			if (chunkNibbleArray != null) {
 				if (chunkNibbleArray.isUninitialized()) {
-					this.field_16418 |= 1 << i;
+					this.filledBlockLightBits |= 1 << i;
 				} else {
-					this.field_12263 |= 1 << i;
+					this.blockLightUpdateBits |= 1 << i;
 					this.skyUpdates.add(chunkNibbleArray.asByteArray().clone());
 				}
 			}
 
 			if (chunkNibbleArray2 != null) {
 				if (chunkNibbleArray2.isUninitialized()) {
-					this.field_16417 |= 1 << i;
+					this.filledSkyLightBits |= 1 << i;
 				} else {
-					this.field_12262 |= 1 << i;
+					this.skyLightUpdateBits |= 1 << i;
 					this.blockUpdates.add(chunkNibbleArray2.asByteArray().clone());
 				}
 			}
@@ -58,32 +58,32 @@ public class LightUpdateClientPacket implements Packet<ClientPlayPacketListener>
 	public LightUpdateClientPacket(ChunkPos chunkPos, LightingProvider lightingProvider, int i, int j) {
 		this.chunkX = chunkPos.x;
 		this.chunkZ = chunkPos.z;
-		this.field_12263 = i;
-		this.field_12262 = j;
+		this.blockLightUpdateBits = i;
+		this.skyLightUpdateBits = j;
 		this.skyUpdates = Lists.<byte[]>newArrayList();
 		this.blockUpdates = Lists.<byte[]>newArrayList();
 
 		for (int k = 0; k < 18; k++) {
-			if ((this.field_12263 & 1 << k) != 0) {
+			if ((this.blockLightUpdateBits & 1 << k) != 0) {
 				ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.SKY_LIGHT).getChunkLightArray(this.chunkX, -1 + k, this.chunkZ);
 				if (chunkNibbleArray != null && !chunkNibbleArray.isUninitialized()) {
 					this.skyUpdates.add(chunkNibbleArray.asByteArray().clone());
 				} else {
-					this.field_12263 &= ~(1 << k);
+					this.blockLightUpdateBits &= ~(1 << k);
 					if (chunkNibbleArray != null) {
-						this.field_16418 |= 1 << k;
+						this.filledBlockLightBits |= 1 << k;
 					}
 				}
 			}
 
-			if ((this.field_12262 & 1 << k) != 0) {
+			if ((this.skyLightUpdateBits & 1 << k) != 0) {
 				ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.BLOCK_LIGHT).getChunkLightArray(this.chunkX, -1 + k, this.chunkZ);
 				if (chunkNibbleArray != null && !chunkNibbleArray.isUninitialized()) {
 					this.blockUpdates.add(chunkNibbleArray.asByteArray().clone());
 				} else {
-					this.field_12262 &= ~(1 << k);
+					this.skyLightUpdateBits &= ~(1 << k);
 					if (chunkNibbleArray != null) {
-						this.field_16417 |= 1 << k;
+						this.filledSkyLightBits |= 1 << k;
 					}
 				}
 			}
@@ -94,14 +94,14 @@ public class LightUpdateClientPacket implements Packet<ClientPlayPacketListener>
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.chunkX = packetByteBuf.readVarInt();
 		this.chunkZ = packetByteBuf.readVarInt();
-		this.field_12263 = packetByteBuf.readVarInt();
-		this.field_12262 = packetByteBuf.readVarInt();
-		this.field_16418 = packetByteBuf.readVarInt();
-		this.field_16417 = packetByteBuf.readVarInt();
+		this.blockLightUpdateBits = packetByteBuf.readVarInt();
+		this.skyLightUpdateBits = packetByteBuf.readVarInt();
+		this.filledBlockLightBits = packetByteBuf.readVarInt();
+		this.filledSkyLightBits = packetByteBuf.readVarInt();
 		this.skyUpdates = Lists.<byte[]>newArrayList();
 
 		for (int i = 0; i < 18; i++) {
-			if ((this.field_12263 & 1 << i) != 0) {
+			if ((this.blockLightUpdateBits & 1 << i) != 0) {
 				this.skyUpdates.add(packetByteBuf.readByteArray(2048));
 			}
 		}
@@ -109,7 +109,7 @@ public class LightUpdateClientPacket implements Packet<ClientPlayPacketListener>
 		this.blockUpdates = Lists.<byte[]>newArrayList();
 
 		for (int ix = 0; ix < 18; ix++) {
-			if ((this.field_12262 & 1 << ix) != 0) {
+			if ((this.skyLightUpdateBits & 1 << ix) != 0) {
 				this.blockUpdates.add(packetByteBuf.readByteArray(2048));
 			}
 		}
@@ -119,10 +119,10 @@ public class LightUpdateClientPacket implements Packet<ClientPlayPacketListener>
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeVarInt(this.chunkX);
 		packetByteBuf.writeVarInt(this.chunkZ);
-		packetByteBuf.writeVarInt(this.field_12263);
-		packetByteBuf.writeVarInt(this.field_12262);
-		packetByteBuf.writeVarInt(this.field_16418);
-		packetByteBuf.writeVarInt(this.field_16417);
+		packetByteBuf.writeVarInt(this.blockLightUpdateBits);
+		packetByteBuf.writeVarInt(this.skyLightUpdateBits);
+		packetByteBuf.writeVarInt(this.filledBlockLightBits);
+		packetByteBuf.writeVarInt(this.filledSkyLightBits);
 
 		for (byte[] bs : this.skyUpdates) {
 			packetByteBuf.writeByteArray(bs);
@@ -149,12 +149,12 @@ public class LightUpdateClientPacket implements Packet<ClientPlayPacketListener>
 
 	@Environment(EnvType.CLIENT)
 	public int method_11556() {
-		return this.field_12263;
+		return this.blockLightUpdateBits;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public int method_16124() {
-		return this.field_16418;
+		return this.filledBlockLightBits;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -164,12 +164,12 @@ public class LightUpdateClientPacket implements Packet<ClientPlayPacketListener>
 
 	@Environment(EnvType.CLIENT)
 	public int method_11559() {
-		return this.field_12262;
+		return this.skyLightUpdateBits;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public int method_16125() {
-		return this.field_16417;
+		return this.filledSkyLightBits;
 	}
 
 	@Environment(EnvType.CLIENT)

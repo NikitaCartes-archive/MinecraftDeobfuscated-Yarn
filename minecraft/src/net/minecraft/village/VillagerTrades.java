@@ -314,6 +314,80 @@ public class VillagerTrades {
 			);
 		}
 	);
+	public static final Int2ObjectMap<VillagerTrades.Factory[]> field_17724 = copyToFastUtilMap(
+		ImmutableMap.of(
+			1,
+			new VillagerTrades.Factory[]{
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_17498, new VillagerTrades.PriceRange(2, 2)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8777, new VillagerTrades.PriceRange(4, 4)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8801, new VillagerTrades.PriceRange(2, 2)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8864, new VillagerTrades.PriceRange(5, 5)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8471, new VillagerTrades.PriceRange(1, 1)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_17531, new VillagerTrades.PriceRange(1, 1)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_17518, new VillagerTrades.PriceRange(1, 1)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_17532, new VillagerTrades.PriceRange(3, 3)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_17520, new VillagerTrades.PriceRange(3, 3)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8491, new VillagerTrades.PriceRange(1, 1)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8880, new VillagerTrades.PriceRange(1, 1)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_17499, new VillagerTrades.PriceRange(1, 1)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_17500, new VillagerTrades.PriceRange(1, 1)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_17501, new VillagerTrades.PriceRange(1, 1)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_17502, new VillagerTrades.PriceRange(1, 1)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_17509, new VillagerTrades.PriceRange(1, 1)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_17510, new VillagerTrades.PriceRange(1, 1)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_17511, new VillagerTrades.PriceRange(1, 1)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_17512, new VillagerTrades.PriceRange(1, 1)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_17513, new VillagerTrades.PriceRange(1, 1)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_17514, new VillagerTrades.PriceRange(1, 1)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8317, new VillagerTrades.PriceRange(1, 1)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8309, new VillagerTrades.PriceRange(1, 1)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8706, new VillagerTrades.PriceRange(1, 1)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8188, new VillagerTrades.PriceRange(1, 1)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_17539, new VillagerTrades.PriceRange(5, 5)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_17537, new VillagerTrades.PriceRange(5, 5)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_17540, new VillagerTrades.PriceRange(5, 5)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_17538, new VillagerTrades.PriceRange(5, 5)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_17535, new VillagerTrades.PriceRange(5, 5)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_17536, new VillagerTrades.PriceRange(5, 5)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8264, new VillagerTrades.PriceRange(-3, -3)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8446, new VillagerTrades.PriceRange(-3, -3)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8345, new VillagerTrades.PriceRange(-3, -3)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8330, new VillagerTrades.PriceRange(-3, -3)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8226, new VillagerTrades.PriceRange(-3, -3)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8408, new VillagerTrades.PriceRange(-3, -3)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8851, new VillagerTrades.PriceRange(-3, -3)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8669, new VillagerTrades.PriceRange(-3, -3)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8192, new VillagerTrades.PriceRange(-3, -3)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8298, new VillagerTrades.PriceRange(-3, -3)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8296, new VillagerTrades.PriceRange(-3, -3)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8273, new VillagerTrades.PriceRange(-3, -3)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8131, new VillagerTrades.PriceRange(-3, -3)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8492, new VillagerTrades.PriceRange(-3, -3)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8099, new VillagerTrades.PriceRange(-3, -3)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8632, new VillagerTrades.PriceRange(-3, -3)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8474, new VillagerTrades.PriceRange(3, 3)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8883, new VillagerTrades.PriceRange(3, 3)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8278, new VillagerTrades.PriceRange(3, 3)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8104, new VillagerTrades.PriceRange(3, 3)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8402, new VillagerTrades.PriceRange(3, 3)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_17523, new VillagerTrades.PriceRange(1, 1)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_17516, new VillagerTrades.PriceRange(1, 1)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_17517, new VillagerTrades.PriceRange(1, 1)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_17524, new VillagerTrades.PriceRange(-2, -2)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8858, new VillagerTrades.PriceRange(-8, -8)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8200, new VillagerTrades.PriceRange(-4, -4))
+			},
+			2,
+			new VillagerTrades.Factory[]{
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8478, new VillagerTrades.PriceRange(5, 5)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8108, new VillagerTrades.PriceRange(5, 5)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8081, new VillagerTrades.PriceRange(3, 3)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8178, new VillagerTrades.PriceRange(6, 6)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8054, new VillagerTrades.PriceRange(1, 1)),
+				new VillagerTrades.BuyOrSellOnPriceFactory(Items.field_8382, new VillagerTrades.PriceRange(3, 3))
+			}
+		)
+	);
 
 	private static Int2ObjectMap<VillagerTrades.Factory[]> copyToFastUtilMap(ImmutableMap<Integer, VillagerTrades.Factory[]> immutableMap) {
 		return new Int2ObjectOpenHashMap<>(immutableMap);

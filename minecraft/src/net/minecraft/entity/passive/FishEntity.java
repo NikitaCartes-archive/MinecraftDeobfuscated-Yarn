@@ -1,6 +1,5 @@
 package net.minecraft.entity.passive;
 
-import net.minecraft.class_1374;
 import net.minecraft.class_1378;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Blocks;
@@ -9,6 +8,7 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.WaterCreatureEntity;
 import net.minecraft.entity.ai.control.MoveControl;
+import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.SwimNavigation;
@@ -17,7 +17,6 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.sortme.Living;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -32,7 +31,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
-public abstract class FishEntity extends WaterCreatureEntity implements Living {
+public abstract class FishEntity extends WaterCreatureEntity {
 	private static final TrackedData<Boolean> FROM_BUCKET = DataTracker.registerData(FishEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
 	public FishEntity(EntityType<?> entityType, World world) {
@@ -101,9 +100,9 @@ public abstract class FishEntity extends WaterCreatureEntity implements Living {
 	}
 
 	@Override
-	protected void method_5959() {
-		super.method_5959();
-		this.goalSelector.add(0, new class_1374(this, 1.25));
+	protected void initGoals() {
+		super.initGoals();
+		this.goalSelector.add(0, new EscapeDangerGoal(this, 1.25));
 		this.goalSelector.add(2, new FleeEntityGoal(this, PlayerEntity.class, 8.0F, 1.6, 1.4, EntityPredicates.EXCEPT_SPECTATOR));
 		this.goalSelector.add(4, new FishEntity.SwimToRandomPlaceGoal(this));
 	}
@@ -117,7 +116,7 @@ public abstract class FishEntity extends WaterCreatureEntity implements Living {
 	public void method_6091(float f, float g, float h) {
 		if (this.method_6034() && this.isInsideWater()) {
 			this.method_5724(f, g, h, 0.01F);
-			this.move(MovementType.SELF, this.velocityX, this.velocityY, this.velocityZ);
+			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 			this.velocityX *= 0.9F;
 			this.velocityY *= 0.9F;
 			this.velocityZ *= 0.9F;
@@ -201,16 +200,16 @@ public abstract class FishEntity extends WaterCreatureEntity implements Living {
 				this.fish.velocityY += 0.005;
 			}
 
-			if (this.field_6374 == MoveControl.class_1336.field_6378 && !this.fish.getNavigation().method_6357()) {
-				double d = this.field_6370 - this.fish.x;
-				double e = this.field_6369 - this.fish.y;
-				double f = this.field_6367 - this.fish.z;
+			if (this.state == MoveControl.State.field_6378 && !this.fish.getNavigation().isIdle()) {
+				double d = this.targetX - this.fish.x;
+				double e = this.targetY - this.fish.y;
+				double f = this.targetZ - this.fish.z;
 				double g = (double)MathHelper.sqrt(d * d + e * e + f * f);
 				e /= g;
 				float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;
 				this.fish.yaw = this.method_6238(this.fish.yaw, h, 90.0F);
 				this.fish.field_6283 = this.fish.yaw;
-				float i = (float)(this.field_6372 * this.fish.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
+				float i = (float)(this.speed * this.fish.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
 				this.fish.method_6125(MathHelper.lerp(0.125F, this.fish.method_6029(), i));
 				this.fish.velocityY = this.fish.velocityY + (double)this.fish.method_6029() * e * 0.1;
 			} else {

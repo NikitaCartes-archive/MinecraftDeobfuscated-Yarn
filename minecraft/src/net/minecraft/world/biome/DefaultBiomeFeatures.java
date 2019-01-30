@@ -34,7 +34,6 @@ import net.minecraft.world.gen.feature.IcebergFeatureConfig;
 import net.minecraft.world.gen.feature.LakeFeatureConfig;
 import net.minecraft.world.gen.feature.MineshaftFeature;
 import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
-import net.minecraft.world.gen.feature.NewVillageFeatureConfig;
 import net.minecraft.world.gen.feature.OceanRuinFeature;
 import net.minecraft.world.gen.feature.OceanRuinFeatureConfig;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
@@ -46,6 +45,7 @@ import net.minecraft.world.gen.feature.SeagrassFeatureConfig;
 import net.minecraft.world.gen.feature.ShipwreckFeatureConfig;
 import net.minecraft.world.gen.feature.SimpleBlockFeatureConfig;
 import net.minecraft.world.gen.feature.SpringFeatureConfig;
+import net.minecraft.world.gen.feature.VillageFeatureConfig;
 
 public class DefaultBiomeFeatures {
 	public static void addLandCarvers(Biome biome) {
@@ -104,7 +104,7 @@ public class DefaultBiomeFeatures {
 		);
 		biome.addFeature(
 			GenerationStep.Feature.SURFACE_STRUCTURES,
-			Biome.configureFeature(Feature.VILLAGE, new NewVillageFeatureConfig("village/plains/town_centers", 6), Decorator.NOPE, DecoratorConfig.DEFAULT)
+			Biome.configureFeature(Feature.VILLAGE, new VillageFeatureConfig("village/plains/town_centers", 6), Decorator.NOPE, DecoratorConfig.DEFAULT)
 		);
 	}
 

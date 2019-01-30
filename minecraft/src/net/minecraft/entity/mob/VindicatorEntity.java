@@ -4,8 +4,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1361;
-import net.minecraft.class_1379;
 import net.minecraft.class_1399;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -16,14 +14,16 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.BreakDoorGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.MoveThroughVillageGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.ai.pathing.EntityMobNavigation;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.passive.AbstractVillagerEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
-import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
@@ -46,20 +46,20 @@ public class VindicatorEntity extends IllagerEntity {
 	}
 
 	@Override
-	protected void method_5959() {
-		super.method_5959();
+	protected void initGoals() {
+		super.initGoals();
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new VindicatorEntity.VindicatorBreakDoorGoal(this));
 		this.goalSelector.add(2, new VindicatorEntity.class_3762(this));
 		this.goalSelector.add(4, new MeleeAttackGoal(this, 1.0, false));
 		this.targetSelector.add(1, new class_1399(this, RaiderEntity.class).method_6318());
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
-		this.targetSelector.add(3, new FollowTargetGoal(this, VillagerEntity.class, true));
+		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractVillagerEntity.class, true));
 		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, true));
 		this.targetSelector.add(4, new VindicatorEntity.class_1633(this));
-		this.goalSelector.add(8, new class_1379(this, 0.6));
-		this.goalSelector.add(9, new class_1361(this, PlayerEntity.class, 3.0F, 1.0F));
-		this.goalSelector.add(10, new class_1361(this, MobEntity.class, 8.0F));
+		this.goalSelector.add(8, new WanderAroundGoal(this, 0.6));
+		this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 3.0F, 1.0F));
+		this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
 	}
 
 	@Override
@@ -218,14 +218,14 @@ public class VindicatorEntity extends IllagerEntity {
 
 		@Override
 		public void onRemove() {
-			if (this.field_6525.getNavigation().method_6357() || this.field_6525.squaredDistanceTo(this.field_6522.getPosition()) < 4.0) {
+			if (this.field_6525.getNavigation().isIdle() || this.field_6525.squaredDistanceTo(this.field_6522.getPosition()) < 4.0) {
 				this.field_6521.add(this.field_6522);
 			}
 		}
 
 		@Override
 		public boolean shouldContinue() {
-			if (this.field_6525.getNavigation().method_6357()) {
+			if (this.field_6525.getNavigation().isIdle()) {
 				return false;
 			} else {
 				float f = this.field_6525.getWidth() + 2.0F;

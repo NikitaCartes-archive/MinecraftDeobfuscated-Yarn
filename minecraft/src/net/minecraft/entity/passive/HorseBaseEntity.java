@@ -6,10 +6,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1361;
-import net.minecraft.class_1374;
-import net.minecraft.class_1376;
-import net.minecraft.class_1387;
 import net.minecraft.class_1394;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
@@ -22,7 +18,11 @@ import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
+import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
+import net.minecraft.entity.ai.goal.HorseBondWithPlayerGoal;
+import net.minecraft.entity.ai.goal.LookAroundGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -68,7 +68,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	public int field_6957;
 	public int field_6958;
 	protected boolean field_6968;
-	protected BasicInventory field_6962;
+	protected BasicInventory decorationItem;
 	protected int temper;
 	protected float field_6976;
 	private boolean field_6960;
@@ -88,14 +88,14 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	}
 
 	@Override
-	protected void method_5959() {
-		this.goalSelector.add(1, new class_1374(this, 1.2));
-		this.goalSelector.add(1, new class_1387(this, 1.2));
+	protected void initGoals() {
+		this.goalSelector.add(1, new EscapeDangerGoal(this, 1.2));
+		this.goalSelector.add(1, new HorseBondWithPlayerGoal(this, 1.2));
 		this.goalSelector.add(2, new AnimalMateGoal(this, 1.0, HorseBaseEntity.class));
 		this.goalSelector.add(4, new FollowParentGoal(this, 1.0));
 		this.goalSelector.add(6, new class_1394(this, 0.7));
-		this.goalSelector.add(7, new class_1361(this, PlayerEntity.class, 6.0F));
-		this.goalSelector.add(8, new class_1376(this));
+		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
+		this.goalSelector.add(8, new LookAroundGoal(this));
 		this.method_6764();
 	}
 
@@ -253,27 +253,27 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	}
 
 	protected void method_6721() {
-		BasicInventory basicInventory = this.field_6962;
-		this.field_6962 = new BasicInventory(this.getInventorySize());
+		BasicInventory basicInventory = this.decorationItem;
+		this.decorationItem = new BasicInventory(this.getInventorySize());
 		if (basicInventory != null) {
 			basicInventory.removeListener(this);
-			int i = Math.min(basicInventory.getInvSize(), this.field_6962.getInvSize());
+			int i = Math.min(basicInventory.getInvSize(), this.decorationItem.getInvSize());
 
 			for (int j = 0; j < i; j++) {
 				ItemStack itemStack = basicInventory.getInvStack(j);
 				if (!itemStack.isEmpty()) {
-					this.field_6962.setInvStack(j, itemStack.copy());
+					this.decorationItem.setInvStack(j, itemStack.copy());
 				}
 			}
 		}
 
-		this.field_6962.addListener(this);
+		this.decorationItem.addListener(this);
 		this.method_6731();
 	}
 
 	protected void method_6731() {
 		if (!this.world.isClient) {
-			this.setSaddled(!this.field_6962.getInvStack(0).isEmpty() && this.method_6765());
+			this.setSaddled(!this.decorationItem.getInvStack(0).isEmpty() && this.method_6765());
 		}
 	}
 
@@ -397,13 +397,13 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	}
 
 	@Override
-	public int method_5970() {
+	public int getMinAmbientSoundDelay() {
 		return 400;
 	}
 
 	public void method_6722(PlayerEntity playerEntity) {
 		if (!this.world.isClient && (!this.hasPassengers() || this.hasPassenger(playerEntity)) && this.isTame()) {
-			playerEntity.openHorseInventory(this, this.field_6962);
+			playerEntity.openHorseInventory(this, this.decorationItem);
 		}
 	}
 
@@ -510,9 +510,9 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	@Override
 	protected void dropInventory() {
 		super.dropInventory();
-		if (this.field_6962 != null) {
-			for (int i = 0; i < this.field_6962.getInvSize(); i++) {
-				ItemStack itemStack = this.field_6962.getInvStack(i);
+		if (this.decorationItem != null) {
+			for (int i = 0; i < this.decorationItem.getInvSize(); i++) {
+				ItemStack itemStack = this.decorationItem.getInvStack(i);
 				if (!itemStack.isEmpty()) {
 					this.dropStack(itemStack);
 				}
@@ -536,8 +536,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 				if (!this.isEating()
 					&& !this.hasPassengers()
 					&& this.random.nextInt(300) == 0
-					&& this.world.getBlockState(new BlockPos(MathHelper.floor(this.x), MathHelper.floor(this.y) - 1, MathHelper.floor(this.z))).getBlock()
-						== Blocks.field_10219) {
+					&& this.world.getBlockState(new BlockPos(this).down()).getBlock() == Blocks.field_10219) {
 					this.setEating(true);
 				}
 
@@ -763,8 +762,8 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 			compoundTag.putString("OwnerUUID", this.getOwnerUuid().toString());
 		}
 
-		if (!this.field_6962.getInvStack(0).isEmpty()) {
-			compoundTag.put("SaddleItem", this.field_6962.getInvStack(0).toTag(new CompoundTag()));
+		if (!this.decorationItem.getInvStack(0).isEmpty()) {
+			compoundTag.put("SaddleItem", this.decorationItem.getInvStack(0).toTag(new CompoundTag()));
 		}
 	}
 
@@ -795,7 +794,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 		if (compoundTag.containsKey("SaddleItem", 10)) {
 			ItemStack itemStack = ItemStack.fromTag(compoundTag.getCompound("SaddleItem"));
 			if (itemStack.getItem() == Items.field_8175) {
-				this.field_6962.setInvStack(0, itemStack);
+				this.decorationItem.setInvStack(0, itemStack);
 			}
 		}
 
@@ -972,11 +971,11 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	@Override
 	public boolean method_5758(int i, ItemStack itemStack) {
 		int j = i - 400;
-		if (j >= 0 && j < 2 && j < this.field_6962.getInvSize()) {
+		if (j >= 0 && j < 2 && j < this.decorationItem.getInvSize()) {
 			if (j == 0 && itemStack.getItem() != Items.field_8175) {
 				return false;
 			} else if (j != 1 || this.method_6735() && this.method_6773(itemStack)) {
-				this.field_6962.setInvStack(j, itemStack);
+				this.decorationItem.setInvStack(j, itemStack);
 				this.method_6731();
 				return true;
 			} else {
@@ -984,8 +983,8 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 			}
 		} else {
 			int k = i - 500 + 2;
-			if (k >= 2 && k < this.field_6962.getInvSize()) {
-				this.field_6962.setInvStack(k, itemStack);
+			if (k >= 2 && k < this.decorationItem.getInvSize()) {
+				this.decorationItem.setInvStack(k, itemStack);
 				return true;
 			} else {
 				return false;

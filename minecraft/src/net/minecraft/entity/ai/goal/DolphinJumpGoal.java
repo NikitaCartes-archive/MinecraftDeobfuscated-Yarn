@@ -70,7 +70,7 @@ public class DolphinJumpGoal extends Goal {
 		this.dolphin.velocityX = this.dolphin.velocityX + (double)direction.getOffsetX() * 0.6;
 		this.dolphin.velocityY += 0.7;
 		this.dolphin.velocityZ = this.dolphin.velocityZ + (double)direction.getOffsetZ() * 0.6;
-		this.dolphin.getNavigation().method_6340();
+		this.dolphin.getNavigation().stop();
 	}
 
 	@Override

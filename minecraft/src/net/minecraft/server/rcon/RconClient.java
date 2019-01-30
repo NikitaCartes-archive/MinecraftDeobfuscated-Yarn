@@ -123,6 +123,12 @@ public class RconClient extends RconBase {
 		} while (0 != j);
 	}
 
+	@Override
+	public void method_18050() {
+		super.method_18050();
+		this.close();
+	}
+
 	private void close() {
 		if (null != this.socket) {
 			try {

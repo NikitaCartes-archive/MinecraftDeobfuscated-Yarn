@@ -2,12 +2,14 @@ package net.minecraft.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.network.packet.ExperienceOrbSpawnClientPacket;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Packet;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -85,7 +87,10 @@ public class ExperienceOrbEntity extends Entity {
 			this.playSound(SoundEvents.field_14821, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
 		}
 
-		this.method_5632(this.x, (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.z);
+		if (!this.world.method_18026(this.getBoundingBox())) {
+			this.method_5632(this.x, (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.z);
+		}
+
 		double d = 8.0;
 		if (this.field_6160 < this.field_6165 - 20 + this.getEntityId() % 100) {
 			if (this.field_6162 == null || this.field_6162.squaredDistanceTo(this) > 64.0) {
@@ -113,14 +118,10 @@ public class ExperienceOrbEntity extends Entity {
 			}
 		}
 
-		this.move(MovementType.SELF, this.velocityX, this.velocityY, this.velocityZ);
+		this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 		float j = 0.98F;
 		if (this.onGround) {
-			j = this.world
-					.getBlockState(new BlockPos(MathHelper.floor(this.x), MathHelper.floor(this.getBoundingBox().minY) - 1, MathHelper.floor(this.z)))
-					.getBlock()
-					.getFrictionCoefficient()
-				* 0.98F;
+			j = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getFrictionCoefficient() * 0.98F;
 		}
 
 		this.velocityX *= (double)j;
@@ -268,5 +269,10 @@ public class ExperienceOrbEntity extends Entity {
 	@Override
 	public boolean method_5732() {
 		return false;
+	}
+
+	@Override
+	public Packet<?> createSpawnPacket() {
+		return new ExperienceOrbSpawnClientPacket(this);
 	}
 }

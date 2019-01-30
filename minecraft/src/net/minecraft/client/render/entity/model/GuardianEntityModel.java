@@ -64,7 +64,7 @@ public class GuardianEntityModel extends EntityModel<GuardianEntity> {
 		float l = h - (float)guardianEntity.age;
 		this.field_3379.yaw = i * (float) (Math.PI / 180.0);
 		this.field_3379.pitch = j * (float) (Math.PI / 180.0);
-		float m = (1.0F - guardianEntity.method_7053(l)) * 0.55F;
+		float m = (1.0F - guardianEntity.getTailAngle(l)) * 0.55F;
 
 		for (int n = 0; n < 12; n++) {
 			this.field_3380[n].pitch = (float) Math.PI * field_17131[n];
@@ -77,8 +77,8 @@ public class GuardianEntityModel extends EntityModel<GuardianEntity> {
 
 		this.field_3381.rotationPointZ = -8.25F;
 		Entity entity = MinecraftClient.getInstance().getCameraEntity();
-		if (guardianEntity.method_7063()) {
-			entity = guardianEntity.method_7052();
+		if (guardianEntity.hasBeamTarget()) {
+			entity = guardianEntity.getBeamTarget();
 		}
 
 		if (entity != null) {
@@ -99,7 +99,7 @@ public class GuardianEntityModel extends EntityModel<GuardianEntity> {
 		}
 
 		this.field_3381.visible = true;
-		float o = guardianEntity.method_7057(l);
+		float o = guardianEntity.getSpikesExtension(l);
 		this.field_3378[0].yaw = MathHelper.sin(o) * (float) Math.PI * 0.05F;
 		this.field_3378[1].yaw = MathHelper.sin(o) * (float) Math.PI * 0.1F;
 		this.field_3378[1].rotationPointX = -1.5F;

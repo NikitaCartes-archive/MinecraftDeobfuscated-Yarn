@@ -8,7 +8,7 @@ public class SwimGoal extends Goal {
 	public SwimGoal(MobEntity mobEntity) {
 		this.entityMob = mobEntity;
 		this.setControlBits(4);
-		mobEntity.getNavigation().method_6354(true);
+		mobEntity.getNavigation().setCanSwim(true);
 	}
 
 	@Override

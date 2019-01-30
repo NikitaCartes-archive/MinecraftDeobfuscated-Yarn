@@ -87,13 +87,15 @@ public class VillagerBreedGoal extends Goal {
 
 	private void spawnBabyVillager() {
 		VillagerEntity villagerEntity = this.owner.createChild(this.mate);
-		this.mate.setBreedingAge(6000);
-		this.owner.setBreedingAge(6000);
-		this.mate.setWillingToMate(false);
-		this.owner.setWillingToMate(false);
-		villagerEntity.setBreedingAge(-24000);
-		villagerEntity.setPositionAndAngles(this.owner.x, this.owner.y, this.owner.z, 0.0F, 0.0F);
-		this.world.spawnEntity(villagerEntity);
-		this.world.summonParticle(villagerEntity, (byte)12);
+		if (villagerEntity != null) {
+			this.mate.setBreedingAge(6000);
+			this.owner.setBreedingAge(6000);
+			this.mate.setWillingToMate(false);
+			this.owner.setWillingToMate(false);
+			villagerEntity.setBreedingAge(-24000);
+			villagerEntity.setPositionAndAngles(this.owner.x, this.owner.y, this.owner.z, 0.0F, 0.0F);
+			this.world.spawnEntity(villagerEntity);
+			this.world.summonParticle(villagerEntity, (byte)12);
+		}
 	}
 }

@@ -12,7 +12,7 @@ import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.feature.NewVillageFeatureConfig;
+import net.minecraft.world.gen.feature.VillageFeatureConfig;
 
 public class VillageGenerator {
 	public static void addPieces(
@@ -21,7 +21,7 @@ public class VillageGenerator {
 		BlockPos blockPos,
 		List<StructurePiece> list,
 		ChunkRandom chunkRandom,
-		NewVillageFeatureConfig newVillageFeatureConfig
+		VillageFeatureConfig villageFeatureConfig
 	) {
 		PlainsVillageData.initialize();
 		SnowyVillageData.initialize();
@@ -29,7 +29,7 @@ public class VillageGenerator {
 		DesertVillageData.initialize();
 		TaigaVillageData.initialize();
 		StructurePoolBasedGenerator.addPieces(
-			newVillageFeatureConfig.startPool, newVillageFeatureConfig.size, VillageGenerator.Piece::new, chunkGenerator, structureManager, blockPos, list, chunkRandom
+			villageFeatureConfig.startPool, villageFeatureConfig.size, VillageGenerator.Piece::new, chunkGenerator, structureManager, blockPos, list, chunkRandom
 		);
 	}
 

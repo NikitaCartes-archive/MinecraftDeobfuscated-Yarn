@@ -130,7 +130,7 @@ public class ProfileResultImpl implements ProfileResult {
 		stringBuilder.append("Time span: ").append(l / 1000000L).append(" ms\n");
 		stringBuilder.append("Tick span: ").append(i).append(" ticks\n");
 		stringBuilder.append("// This is approximately ")
-			.append(String.format(Locale.ROOT, "%.2f", (float)i / ((float)l / 1000000.0F)))
+			.append(String.format(Locale.ROOT, "%.2f", (float)i / ((float)l / 1.0E9F)))
 			.append(" ticks per second. It should be ")
 			.append(20)
 			.append(" ticks per second\n\n");

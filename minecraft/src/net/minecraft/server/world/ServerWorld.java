@@ -30,9 +30,11 @@ import net.minecraft.client.network.packet.GameStateChangeClientPacket;
 import net.minecraft.client.network.packet.ParticleClientPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.Npc;
 import net.minecraft.entity.WaterCreatureEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.parts.EntityPart;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.ChunkTicketType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -65,6 +67,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.ForcedChunkState;
 import net.minecraft.world.OldWorldSaveHandler;
+import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.PortalForcer;
 import net.minecraft.world.ScheduledTick;
 import net.minecraft.world.SessionLockException;
@@ -76,7 +79,6 @@ import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.dimension.DimensionalPersistentStateManager;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -98,7 +100,7 @@ public class ServerWorld extends World {
 	private final Map<UUID, Entity> entitiesByUuid = Maps.<UUID, Entity>newHashMap();
 	public boolean savingDisabled;
 	private boolean field_13955;
-	private int field_13948;
+	private int idleTimeout;
 	private final PortalForcer portalForcer;
 	private final ServerTickScheduler<Block> blockTickScheduler = new ServerTickScheduler<>(
 		this, block -> block == null || block.getDefaultState().isAir(), Registry.BLOCK::getId, Registry.BLOCK::get, this::method_14189
@@ -131,7 +133,7 @@ public class ServerWorld extends World {
 					dimension.createChunkGenerator(),
 					minecraftServer.getPlayerManager().getViewDistance(),
 					worldGenerationProgressListener,
-					() -> minecraftServer.getWorld(DimensionType.field_13072).getDimensionalPersistentStateManager()
+					() -> minecraftServer.getWorld(DimensionType.field_13072).getPersistentStateManager()
 				),
 			profiler,
 			false
@@ -143,12 +145,12 @@ public class ServerWorld extends World {
 		this.updateAmbientDarkness();
 		this.initWeatherGradients();
 		this.getWorldBorder().setMaxWorldBorderRadius(minecraftServer.getMaxWorldBorderRadius());
-		this.raidManager = this.getDimensionalPersistentStateManager().method_17924(() -> new RaidManager(this), RaidManager.nameFor(this.dimension));
-		DimensionalPersistentStateManager dimensionalPersistentStateManager = (this.dimension.getType() == DimensionType.field_13072
+		this.raidManager = this.getPersistentStateManager().method_17924(() -> new RaidManager(this), RaidManager.nameFor(this.dimension));
+		PersistentStateManager persistentStateManager = (this.dimension.getType() == DimensionType.field_13072
 				? this
 				: this.getServer().getWorld(DimensionType.field_13072))
-			.getDimensionalPersistentStateManager();
-		this.villageManager = dimensionalPersistentStateManager.method_17924(() -> new WorldVillageManager(this), WorldVillageManager.getBaseTag(this.dimension));
+			.getPersistentStateManager();
+		this.villageManager = persistentStateManager.method_17924(() -> new WorldVillageManager(this), WorldVillageManager.getBaseTag(this.dimension));
 		this.villageManager.method_16471();
 		this.registerListener(new ServerWorldListener(minecraftServer, this));
 		if (!minecraftServer.isSinglePlayer()) {
@@ -280,15 +282,15 @@ public class ServerWorld extends World {
 
 	@Override
 	public void updateEntities() {
-		if (this.players.isEmpty() && this.method_17984().isEmpty()) {
-			if (this.field_13948++ >= 300) {
+		if (this.players.isEmpty() && this.getForcedChunks().isEmpty()) {
+			if (this.idleTimeout++ >= 300) {
 				return;
 			}
 		} else {
 			this.method_14197();
 		}
 
-		this.dimension.method_12461();
+		this.dimension.update();
 		super.updateEntities();
 	}
 
@@ -338,7 +340,7 @@ public class ServerWorld extends World {
 	}
 
 	public void method_14197() {
-		this.field_13948 = 0;
+		this.idleTimeout = 0;
 	}
 
 	public void tickScheduledTicks() {
@@ -389,7 +391,7 @@ public class ServerWorld extends World {
 	}
 
 	public void init(LevelInfo levelInfo) {
-		if (!this.dimension.method_12448()) {
+		if (!this.dimension.canPlayersSleep()) {
 			this.properties.setSpawnPos(BlockPos.ORIGIN.up(this.chunkManager.getChunkGenerator().getSpawnHeight()));
 		} else if (this.properties.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
 			this.properties.setSpawnPos(BlockPos.ORIGIN.up());
@@ -421,7 +423,7 @@ public class ServerWorld extends World {
 
 			for (int n = 0; n < 1024; n++) {
 				if (i > -16 && i <= 16 && j > -16 && j <= 16) {
-					BlockPos blockPos2 = this.dimension.method_12452(new ChunkPos(chunkPos.x + i, chunkPos.z + j), bl);
+					BlockPos blockPos2 = this.dimension.getSpawningBlockInChunk(new ChunkPos(chunkPos.x + i, chunkPos.z + j), bl);
 					if (blockPos2 != null) {
 						this.properties.setSpawnPos(blockPos2);
 						break;
@@ -483,7 +485,7 @@ public class ServerWorld extends World {
 	protected void saveLevel() throws SessionLockException {
 		this.checkSessionLock();
 		this.dimension.saveWorldData();
-		this.getChunkManager().getDimensionalPersistentStateManager().save();
+		this.getChunkManager().getPersistentStateManager().save();
 	}
 
 	@Override
@@ -532,9 +534,9 @@ public class ServerWorld extends World {
 		super.onEntityAdded(entity);
 		this.entitiesById.put(entity.getEntityId(), entity);
 		this.entitiesByUuid.put(entity.getUuid(), entity);
-		Entity[] entitys = entity.getParts();
-		if (entitys != null) {
-			for (Entity entity2 : entitys) {
+		EntityPart[] entityParts = entity.getParts();
+		if (entityParts != null) {
+			for (Entity entity2 : entityParts) {
 				this.entitiesById.put(entity2.getEntityId(), entity2);
 			}
 		}
@@ -545,18 +547,22 @@ public class ServerWorld extends World {
 		super.onEntityRemoved(entity);
 		this.entitiesById.method_15312(entity.getEntityId());
 		this.entitiesByUuid.remove(entity.getUuid());
-		Entity[] entitys = entity.getParts();
-		if (entitys != null) {
-			for (Entity entity2 : entitys) {
+		EntityPart[] entityParts = entity.getParts();
+		if (entityParts != null) {
+			for (Entity entity2 : entityParts) {
 				this.entitiesById.method_15312(entity2.getEntityId());
 			}
 		}
 	}
 
 	@Override
-	public boolean addGlobalEntity(Entity entity) {
-		if (super.addGlobalEntity(entity)) {
-			this.server.getPlayerManager().sendToAround(null, entity.x, entity.y, entity.z, 512.0, this.dimension.getType(), new EntitySpawnGlobalClientPacket(entity));
+	public boolean addGlobalEntity(LightningEntity lightningEntity) {
+		if (super.addGlobalEntity(lightningEntity)) {
+			this.server
+				.getPlayerManager()
+				.sendToAround(
+					null, lightningEntity.x, lightningEntity.y, lightningEntity.z, 512.0, this.dimension.getType(), new EntitySpawnGlobalClientPacket(lightningEntity)
+				);
 			return true;
 		} else {
 			return false;
@@ -770,28 +776,24 @@ public class ServerWorld extends World {
 		return this.field_17709;
 	}
 
-	public DimensionalPersistentStateManager getDimensionalPersistentStateManager() {
-		return this.getChunkManager().getDimensionalPersistentStateManager();
+	public PersistentStateManager getPersistentStateManager() {
+		return this.getChunkManager().getPersistentStateManager();
 	}
 
 	@Nullable
 	@Override
 	public MapState method_17891(String string) {
-		return this.getServer().getWorld(DimensionType.field_13072).getDimensionalPersistentStateManager().get(() -> new MapState(string), string);
+		return this.getServer().getWorld(DimensionType.field_13072).getPersistentStateManager().get(() -> new MapState(string), string);
 	}
 
 	@Override
 	public void method_17890(MapState mapState) {
-		this.getServer().getWorld(DimensionType.field_13072).getDimensionalPersistentStateManager().set(mapState);
+		this.getServer().getWorld(DimensionType.field_13072).getPersistentStateManager().set(mapState);
 	}
 
 	@Override
 	public int method_17889() {
-		return this.getServer()
-			.getWorld(DimensionType.field_13072)
-			.getDimensionalPersistentStateManager()
-			.<class_3978>method_17924(class_3978::new, "idcounts")
-			.method_17920();
+		return this.getServer().getWorld(DimensionType.field_13072).getPersistentStateManager().<class_3978>method_17924(class_3978::new, "idcounts").method_17920();
 	}
 
 	@Override
@@ -802,13 +804,13 @@ public class ServerWorld extends World {
 		this.getChunkManager().addTicket(ChunkTicketType.START, new ChunkPos(blockPos), 11, Void.INSTANCE);
 	}
 
-	public LongSet method_17984() {
-		ForcedChunkState forcedChunkState = this.getDimensionalPersistentStateManager().get(ForcedChunkState::new, "chunks");
+	public LongSet getForcedChunks() {
+		ForcedChunkState forcedChunkState = this.getPersistentStateManager().get(ForcedChunkState::new, "chunks");
 		return (LongSet)(forcedChunkState != null ? LongSets.unmodifiable(forcedChunkState.getChunks()) : LongSets.EMPTY_SET);
 	}
 
-	public boolean method_17988(int i, int j, boolean bl) {
-		ForcedChunkState forcedChunkState = this.getDimensionalPersistentStateManager().method_17924(ForcedChunkState::new, "chunks");
+	public boolean setChunkForced(int i, int j, boolean bl) {
+		ForcedChunkState forcedChunkState = this.getPersistentStateManager().method_17924(ForcedChunkState::new, "chunks");
 		ChunkPos chunkPos = new ChunkPos(i, j);
 		long l = chunkPos.toLong();
 		boolean bl2;

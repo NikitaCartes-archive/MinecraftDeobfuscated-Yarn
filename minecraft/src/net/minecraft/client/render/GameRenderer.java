@@ -821,7 +821,7 @@ public class GameRenderer implements AutoCloseable, ResourceReloadListener {
 		double g = MathHelper.lerp((double)f, entity.prevRenderZ, entity.z);
 		visibleRegion.setOrigin(d, e, g);
 		if (this.client.options.viewDistance >= 4) {
-			this.backgroundRenderer.method_3211(-1, f);
+			this.backgroundRenderer.applyFog(-1, f);
 			this.client.getProfiler().swap("sky");
 			GlStateManager.matrixMode(5889);
 			GlStateManager.loadIdentity();
@@ -848,14 +848,14 @@ public class GameRenderer implements AutoCloseable, ResourceReloadListener {
 			GlStateManager.matrixMode(5888);
 		}
 
-		this.backgroundRenderer.method_3211(0, f);
+		this.backgroundRenderer.applyFog(0, f);
 		GlStateManager.shadeModel(7425);
 		if (entity.y + (double)entity.getEyeHeight() < 128.0) {
 			this.method_3206(worldRenderer, f, d, e, g);
 		}
 
 		this.client.getProfiler().swap("prepareterrain");
-		this.backgroundRenderer.method_3211(0, f);
+		this.backgroundRenderer.applyFog(0, f);
 		this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 		GuiLighting.disable();
 		this.client.getProfiler().swap("terrain_setup");
@@ -909,7 +909,7 @@ public class GameRenderer implements AutoCloseable, ResourceReloadListener {
 		this.client.getProfiler().swap("litParticles");
 		particleManager.renderLitParticles(entity, f);
 		GuiLighting.disable();
-		this.backgroundRenderer.method_3211(0, f);
+		this.backgroundRenderer.applyFog(0, f);
 		this.client.getProfiler().swap("particles");
 		particleManager.renderUnlitParticles(entity, f);
 		this.disableLightmap();
@@ -925,7 +925,7 @@ public class GameRenderer implements AutoCloseable, ResourceReloadListener {
 			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		GlStateManager.alphaFunc(516, 0.1F);
-		this.backgroundRenderer.method_3211(0, f);
+		this.backgroundRenderer.applyFog(0, f);
 		GlStateManager.enableBlend();
 		GlStateManager.depthMask(false);
 		this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
@@ -964,7 +964,7 @@ public class GameRenderer implements AutoCloseable, ResourceReloadListener {
 			);
 			GlStateManager.matrixMode(5888);
 			GlStateManager.pushMatrix();
-			this.backgroundRenderer.method_3211(0, f);
+			this.backgroundRenderer.applyFog(0, f);
 			worldRenderer.renderClouds(f, d, e, g);
 			GlStateManager.disableFog();
 			GlStateManager.popMatrix();

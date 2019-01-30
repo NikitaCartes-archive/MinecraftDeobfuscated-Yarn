@@ -5,9 +5,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.class_1361;
-import net.minecraft.class_1374;
-import net.minecraft.class_1379;
 import net.minecraft.class_1414;
 import net.minecraft.class_15;
 import net.minecraft.advancement.criterion.Criterions;
@@ -26,8 +23,11 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
+import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
+import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.ai.pathing.SwimNavigation;
@@ -177,7 +177,7 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void method_5959() {
+	protected void initGoals() {
 		this.goalSelector.add(0, new TurtleEntity.class_1487(this, 1.2));
 		this.goalSelector.add(1, new TurtleEntity.TurtleMateGoal(this, 1.0));
 		this.goalSelector.add(1, new TurtleEntity.class_1485(this, 1.0));
@@ -185,7 +185,7 @@ public class TurtleEntity extends AnimalEntity {
 		this.goalSelector.add(3, new TurtleEntity.class_1484(this, 1.0));
 		this.goalSelector.add(4, new TurtleEntity.class_1483(this, 1.0));
 		this.goalSelector.add(7, new TurtleEntity.class_1491(this, 1.0));
-		this.goalSelector.add(8, new class_1361(this, PlayerEntity.class, 8.0F));
+		this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(9, new TurtleEntity.class_1489(this, 1.0, 100));
 	}
 
@@ -202,7 +202,7 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean method_6094() {
+	public boolean canBreatheInWater() {
 		return true;
 	}
 
@@ -212,7 +212,7 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	public int method_5970() {
+	public int getMinAmbientSoundDelay() {
 		return 200;
 	}
 
@@ -309,7 +309,7 @@ public class TurtleEntity extends AnimalEntity {
 	public void method_6091(float f, float g, float h) {
 		if (this.method_6034() && this.isInsideWater()) {
 			this.method_5724(f, g, h, 0.1F);
-			this.move(MovementType.SELF, this.velocityX, this.velocityY, this.velocityZ);
+			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 			this.velocityX *= 0.9F;
 			this.velocityY *= 0.9F;
 			this.velocityZ *= 0.9F;
@@ -392,16 +392,16 @@ public class TurtleEntity extends AnimalEntity {
 		@Override
 		public void tick() {
 			this.method_6700();
-			if (this.field_6374 == MoveControl.class_1336.field_6378 && !this.turtle.getNavigation().method_6357()) {
-				double d = this.field_6370 - this.turtle.x;
-				double e = this.field_6369 - this.turtle.y;
-				double f = this.field_6367 - this.turtle.z;
+			if (this.state == MoveControl.State.field_6378 && !this.turtle.getNavigation().isIdle()) {
+				double d = this.targetX - this.turtle.x;
+				double e = this.targetY - this.turtle.y;
+				double f = this.targetZ - this.turtle.z;
 				double g = (double)MathHelper.sqrt(d * d + e * e + f * f);
 				e /= g;
 				float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;
 				this.turtle.yaw = this.method_6238(this.turtle.yaw, h, 90.0F);
 				this.turtle.field_6283 = this.turtle.yaw;
-				float i = (float)(this.field_6372 * this.turtle.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
+				float i = (float)(this.speed * this.turtle.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
 				this.turtle.method_6125(MathHelper.lerp(0.125F, this.turtle.method_6029(), i));
 				this.turtle.velocityY = this.turtle.velocityY + (double)this.turtle.method_6029() * e * 0.1;
 			} else {
@@ -485,7 +485,7 @@ public class TurtleEntity extends AnimalEntity {
 				this.field_6928++;
 			}
 
-			if (this.field_6930.getNavigation().method_6357()) {
+			if (this.field_6930.getNavigation().isIdle()) {
 				Vec3d vec3d = class_1414.method_6377(
 					this.field_6930, 16, 3, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()), (float) (Math.PI / 10)
 				);
@@ -595,21 +595,21 @@ public class TurtleEntity extends AnimalEntity {
 		}
 	}
 
-	static class class_1487 extends class_1374 {
+	static class class_1487 extends EscapeDangerGoal {
 		class_1487(TurtleEntity turtleEntity, double d) {
 			super(turtleEntity, d);
 		}
 
 		@Override
 		public boolean canStart() {
-			if (this.field_6549.getAttacker() == null && !this.field_6549.isOnFire()) {
+			if (this.owner.getAttacker() == null && !this.owner.isOnFire()) {
 				return false;
 			} else {
-				BlockPos blockPos = this.method_6300(this.field_6549.world, this.field_6549, 7, 4);
+				BlockPos blockPos = this.locateClosestWater(this.owner.world, this.owner, 7, 4);
 				if (blockPos != null) {
-					this.field_6547 = (double)blockPos.getX();
-					this.field_6546 = (double)blockPos.getY();
-					this.field_6550 = (double)blockPos.getZ();
+					this.targetX = (double)blockPos.getX();
+					this.targetY = (double)blockPos.getY();
+					this.targetZ = (double)blockPos.getZ();
 					return true;
 				} else {
 					return this.method_6301();
@@ -618,7 +618,7 @@ public class TurtleEntity extends AnimalEntity {
 		}
 	}
 
-	static class class_1489 extends class_1379 {
+	static class class_1489 extends WanderAroundGoal {
 		private final TurtleEntity field_6934;
 
 		private class_1489(TurtleEntity turtleEntity, double d, int i) {
@@ -628,7 +628,7 @@ public class TurtleEntity extends AnimalEntity {
 
 		@Override
 		public boolean canStart() {
-			return !this.field_6566.isInsideWater() && !this.field_6934.method_6684() && !this.field_6934.getHasEgg() ? super.canStart() : false;
+			return !this.owner.isInsideWater() && !this.field_6934.method_6684() && !this.field_6934.getHasEgg() ? super.canStart() : false;
 		}
 	}
 
@@ -669,7 +669,7 @@ public class TurtleEntity extends AnimalEntity {
 		@Override
 		public void onRemove() {
 			this.field_6939 = null;
-			this.field_6938.getNavigation().method_6340();
+			this.field_6938.getNavigation().stop();
 			this.field_6936 = 100;
 		}
 
@@ -677,7 +677,7 @@ public class TurtleEntity extends AnimalEntity {
 		public void tick() {
 			this.field_6938.getLookControl().lookAt(this.field_6939, (float)(this.field_6938.method_5986() + 20), (float)this.field_6938.method_5978());
 			if (this.field_6938.squaredDistanceTo(this.field_6939) < 6.25) {
-				this.field_6938.getNavigation().method_6340();
+				this.field_6938.getNavigation().stop();
 			} else {
 				this.field_6938.getNavigation().startMovingTo(this.field_6939, this.field_6935);
 			}
@@ -719,7 +719,7 @@ public class TurtleEntity extends AnimalEntity {
 
 		@Override
 		public void tick() {
-			if (this.field_6942.getNavigation().method_6357()) {
+			if (this.field_6942.getNavigation().isIdle()) {
 				BlockPos blockPos = this.field_6942.getTravelPos();
 				Vec3d vec3d = class_1414.method_6377(
 					this.field_6942, 16, 3, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()), (float) (Math.PI / 10)
@@ -748,7 +748,7 @@ public class TurtleEntity extends AnimalEntity {
 
 		@Override
 		public boolean shouldContinue() {
-			return !this.field_6942.getNavigation().method_6357()
+			return !this.field_6942.getNavigation().isIdle()
 				&& !this.field_6941
 				&& !this.field_6942.method_6684()
 				&& !this.field_6942.isInLove()

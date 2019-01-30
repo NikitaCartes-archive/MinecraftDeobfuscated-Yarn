@@ -25,7 +25,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3977;
 import net.minecraft.client.network.packet.ChunkDataClientPacket;
 import net.minecraft.client.network.packet.LightUpdateClientPacket;
 import net.minecraft.nbt.CompoundTag;
@@ -42,6 +41,7 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.world.ChunkSerializer;
+import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.SessionLockException;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -52,12 +52,12 @@ import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.chunk.ReadOnlyChunk;
 import net.minecraft.world.chunk.UpgradeData;
 import net.minecraft.world.chunk.WorldChunk;
-import net.minecraft.world.dimension.DimensionalPersistentStateManager;
+import net.minecraft.world.chunk.storage.VersionedRegionFileCache;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ThreadedAnvilChunkStorage extends class_3977 {
+public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Long2ObjectLinkedOpenHashMap<ChunkHolder> posToHolder = new Long2ObjectLinkedOpenHashMap<>();
 	private final World world;
@@ -65,7 +65,7 @@ public class ThreadedAnvilChunkStorage extends class_3977 {
 	private final Executor genQueueAdder;
 	private final ChunkHolder.PlayersWatchingChunkProvider playersWatchingChunkProvider;
 	private final ChunkGenerator<?> chunkGenerator;
-	private final Supplier<DimensionalPersistentStateManager> dimensionalPersistentStateManagerFactory;
+	private final Supplier<PersistentStateManager> persistentStateManagerFactory;
 	private volatile Long2ObjectLinkedOpenHashMap<ChunkHolder> posToHolderCopy = this.posToHolder.clone();
 	private final LongSet field_17221 = new LongOpenHashSet();
 	private boolean posToHolderCopyOutdated;
@@ -89,7 +89,7 @@ public class ThreadedAnvilChunkStorage extends class_3977 {
 		ChunkProvider chunkProvider,
 		ChunkGenerator<?> chunkGenerator,
 		WorldGenerationProgressListener worldGenerationProgressListener,
-		Supplier<DimensionalPersistentStateManager> supplier
+		Supplier<PersistentStateManager> supplier
 	) {
 		super(dataFixer);
 		this.structureManager = structureManager;
@@ -111,7 +111,7 @@ public class ThreadedAnvilChunkStorage extends class_3977 {
 			chunkProvider, this, this.world.getDimension().hasSkyLight(), mailboxProcessor3, this.chunkTaskPrioritySystem.getExecutingActor(mailboxProcessor3, false)
 		);
 		this.ticketManager = new ThreadedAnvilChunkStorage.TicketManager(executor, executor2);
-		this.dimensionalPersistentStateManagerFactory = supplier;
+		this.persistentStateManagerFactory = supplier;
 	}
 
 	protected ServerLightingProvider getLightProvider() {
@@ -441,7 +441,7 @@ public class ThreadedAnvilChunkStorage extends class_3977 {
 				CompoundTag compoundTagx = ChunkSerializer.serialize(this.world, chunk);
 
 				try {
-					this.setChunkTag(chunkPos, compoundTagx);
+					this.writeChunkTag(chunkPos, compoundTagx);
 				} catch (Exception var7) {
 					LOGGER.error("Failed to save chunk", (Throwable)var7);
 				}
@@ -501,8 +501,8 @@ public class ThreadedAnvilChunkStorage extends class_3977 {
 
 	@Nullable
 	private CompoundTag getUpdatedChunkTag(ChunkPos chunkPos) throws IOException {
-		CompoundTag compoundTag = this.getChunkTag(chunkPos);
-		return compoundTag == null ? null : this.updateChunkTag(this.world.getDimension().getType(), this.dimensionalPersistentStateManagerFactory, compoundTag);
+		CompoundTag compoundTag = this.readChunkTag(chunkPos);
+		return compoundTag == null ? null : this.updateChunkTag(this.world.getDimension().getType(), this.persistentStateManagerFactory, compoundTag);
 	}
 
 	@Override

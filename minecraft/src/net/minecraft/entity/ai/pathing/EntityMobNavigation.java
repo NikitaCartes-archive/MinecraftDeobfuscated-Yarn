@@ -11,7 +11,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class EntityMobNavigation extends EntityNavigation {
-	private boolean field_6686;
+	private boolean avoidSunlight;
 
 	public EntityMobNavigation(MobEntity mobEntity, World world) {
 		super(mobEntity, world);
@@ -19,9 +19,9 @@ public class EntityMobNavigation extends EntityNavigation {
 
 	@Override
 	protected PathNodeNavigator createPathNodeNavigator() {
-		this.field_6678 = new LandPathNodeMaker();
-		this.field_6678.setCanEnterOpenDoors(true);
-		return new PathNodeNavigator(this.field_6678);
+		this.nodeMaker = new LandPathNodeMaker();
+		this.nodeMaker.setCanEnterOpenDoors(true);
+		return new PathNodeNavigator(this.nodeMaker);
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class EntityMobNavigation extends EntityNavigation {
 	}
 
 	private int method_6362() {
-		if (this.entity.isInsideWater() && this.method_6350()) {
+		if (this.entity.isInsideWater() && this.canSwim()) {
 			int i = (int)this.entity.getBoundingBox().minY;
 			Block block = this.world.getBlockState(new BlockPos(MathHelper.floor(this.entity.x), i, MathHelper.floor(this.entity.z))).getBlock();
 			int j = 0;
@@ -94,15 +94,15 @@ public class EntityMobNavigation extends EntityNavigation {
 	@Override
 	protected void method_6359() {
 		super.method_6359();
-		if (this.field_6686) {
+		if (this.avoidSunlight) {
 			if (this.world.isSkyVisible(new BlockPos(MathHelper.floor(this.entity.x), (int)(this.entity.getBoundingBox().minY + 0.5), MathHelper.floor(this.entity.z)))) {
 				return;
 			}
 
-			for (int i = 0; i < this.field_6681.getPathLength(); i++) {
-				PathNode pathNode = this.field_6681.getNode(i);
+			for (int i = 0; i < this.currentPath.getLength(); i++) {
+				PathNode pathNode = this.currentPath.getNode(i);
 				if (this.world.isSkyVisible(new BlockPos(pathNode.x, pathNode.y, pathNode.z))) {
-					this.field_6681.setPathLength(i - 1);
+					this.currentPath.setLength(i - 1);
 					return;
 				}
 			}
@@ -110,7 +110,7 @@ public class EntityMobNavigation extends EntityNavigation {
 	}
 
 	@Override
-	protected boolean method_6341(Vec3d vec3d, Vec3d vec3d2, int i, int j, int k) {
+	protected boolean canPathDirectlyThrough(Vec3d vec3d, Vec3d vec3d2, int i, int j, int k) {
 		int l = MathHelper.floor(vec3d.x);
 		int m = MathHelper.floor(vec3d.z);
 		double d = vec3d2.x - vec3d.x;
@@ -182,7 +182,7 @@ public class EntityMobNavigation extends EntityNavigation {
 					double f = (double)q + 0.5 - vec3d.x;
 					double g = (double)r + 0.5 - vec3d.z;
 					if (!(f * d + g * e < 0.0)) {
-						PathNodeType pathNodeType = this.field_6678.getPathNodeType(this.world, q, j - 1, r, this.entity, l, m, n, true, true);
+						PathNodeType pathNodeType = this.nodeMaker.getPathNodeType(this.world, q, j - 1, r, this.entity, l, m, n, true, true);
 						if (pathNodeType == PathNodeType.WATER) {
 							return false;
 						}
@@ -195,7 +195,7 @@ public class EntityMobNavigation extends EntityNavigation {
 							return false;
 						}
 
-						pathNodeType = this.field_6678.getPathNodeType(this.world, q, j, r, this.entity, l, m, n, true, true);
+						pathNodeType = this.nodeMaker.getPathNodeType(this.world, q, j, r, this.entity, l, m, n, true, true);
 						float h = this.entity.getPathNodeTypeWeight(pathNodeType);
 						if (h < 0.0F || h >= 8.0F) {
 							return false;
@@ -225,18 +225,18 @@ public class EntityMobNavigation extends EntityNavigation {
 	}
 
 	public void setCanPathThroughDoors(boolean bl) {
-		this.field_6678.setCanPathThroughDoors(bl);
+		this.nodeMaker.setCanPathThroughDoors(bl);
 	}
 
 	public void setCanEnterOpenDoors(boolean bl) {
-		this.field_6678.setCanEnterOpenDoors(bl);
+		this.nodeMaker.setCanEnterOpenDoors(bl);
 	}
 
 	public boolean canEnterOpenDoors() {
-		return this.field_6678.canEnterOpenDoors();
+		return this.nodeMaker.canEnterOpenDoors();
 	}
 
-	public void method_6361(boolean bl) {
-		this.field_6686 = bl;
+	public void setAvoidSunlight(boolean bl) {
+		this.avoidSunlight = bl;
 	}
 }

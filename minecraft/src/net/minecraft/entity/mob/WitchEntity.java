@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1361;
-import net.minecraft.class_1376;
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
 import net.minecraft.class_3760;
@@ -14,6 +12,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.RangedAttacker;
+import net.minecraft.entity.ai.goal.LookAroundGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.ProjectileAttackGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -56,15 +56,15 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 	}
 
 	@Override
-	protected void method_5959() {
-		super.method_5959();
+	protected void initGoals() {
+		super.initGoals();
 		this.field_17283 = new class_3909<>(this, RaiderEntity.class, true, raiderEntity -> raiderEntity != null && this.hasActiveRaid());
 		this.field_17284 = new class_3760<>(this, PlayerEntity.class, 10, true, false, null);
 		this.goalSelector.add(1, new SwimGoal(this));
 		this.goalSelector.add(2, new ProjectileAttackGoal(this, 1.0, 60, 10.0F));
 		this.goalSelector.add(2, new class_1394(this, 1.0));
-		this.goalSelector.add(3, new class_1361(this, PlayerEntity.class, 8.0F));
-		this.goalSelector.add(3, new class_1376(this));
+		this.goalSelector.add(3, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
+		this.goalSelector.add(3, new LookAroundGoal(this));
 		this.targetSelector.add(1, new class_1399(this, RaiderEntity.class));
 		this.targetSelector.add(2, this.field_17283);
 		this.targetSelector.add(3, this.field_17284);

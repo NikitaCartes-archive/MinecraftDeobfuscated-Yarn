@@ -91,8 +91,8 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 					BoundingBox boundingBox = VoxelShapes.fullCube()
 						.getBoundingBox()
 						.stretch((double)(0.5F * (float)direction.getOffsetX()), (double)(0.5F * (float)direction.getOffsetY()), (double)(0.5F * (float)direction.getOffsetZ()))
-						.method_1002((double)direction.getOffsetX(), (double)direction.getOffsetY(), (double)direction.getOffsetZ());
-					bl = world.method_8587(null, boundingBox.offset(blockPos.offset(direction)));
+						.shrink((double)direction.getOffsetX(), (double)direction.getOffsetY(), (double)direction.getOffsetZ());
+					bl = world.method_18026(boundingBox.offset(blockPos.offset(direction)));
 				} else {
 					bl = true;
 				}
@@ -131,7 +131,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 	@Override
 	public List<ItemStack> getDroppedStacks(BlockState blockState, LootContext.Builder builder) {
-		BlockEntity blockEntity = builder.method_305(LootContextParameters.field_1228);
+		BlockEntity blockEntity = builder.getNullable(LootContextParameters.field_1228);
 		if (blockEntity instanceof ShulkerBoxBlockEntity) {
 			ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
 			builder = builder.putDrop(field_11495, (lootContext, consumer) -> {

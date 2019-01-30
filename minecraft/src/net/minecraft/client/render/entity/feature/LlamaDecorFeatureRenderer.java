@@ -4,6 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.model.LlamaEntityModel;
 import net.minecraft.entity.passive.LlamaEntity;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -26,6 +27,7 @@ public class LlamaDecorFeatureRenderer extends FeatureRenderer<LlamaEntity, Llam
 		new Identifier("textures/entity/llama/decor/red.png"),
 		new Identifier("textures/entity/llama/decor/black.png")
 	};
+	private static final Identifier field_17740 = new Identifier("textures/entity/llama/decor/trader_llama.png");
 	private final LlamaEntityModel<LlamaEntity> field_4881 = new LlamaEntityModel<>(0.5F);
 
 	public LlamaDecorFeatureRenderer(FeatureRendererContext<LlamaEntity, LlamaEntityModel<LlamaEntity>> featureRendererContext) {
@@ -33,11 +35,19 @@ public class LlamaDecorFeatureRenderer extends FeatureRenderer<LlamaEntity, Llam
 	}
 
 	public void method_4191(LlamaEntity llamaEntity, float f, float g, float h, float i, float j, float k, float l) {
-		if (llamaEntity.method_6807()) {
-			this.bindTexture(field_4880[llamaEntity.method_6800().getId()]);
-			this.getModel().method_17081(this.field_4881);
-			this.field_4881.method_17100(llamaEntity, f, g, i, j, k, l);
+		DyeColor dyeColor = llamaEntity.method_6800();
+		if (dyeColor != null) {
+			this.bindTexture(field_4880[dyeColor.getId()]);
+		} else {
+			if (!llamaEntity.method_6807()) {
+				return;
+			}
+
+			this.bindTexture(field_17740);
 		}
+
+		this.getModel().method_17081(this.field_4881);
+		this.field_4881.method_17100(llamaEntity, f, g, i, j, k, l);
 	}
 
 	@Override

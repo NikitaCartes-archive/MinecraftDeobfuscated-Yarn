@@ -1,26 +1,28 @@
 package net.minecraft.entity;
 
 import javax.annotation.Nullable;
+import net.minecraft.client.network.packet.EntitySpawnClientPacket;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.world.World;
 
-public class PrimedTNTEntity extends Entity {
-	private static final TrackedData<Integer> FUSE = DataTracker.registerData(PrimedTNTEntity.class, TrackedDataHandlerRegistry.INTEGER);
+public class PrimedTntEntity extends Entity {
+	private static final TrackedData<Integer> FUSE = DataTracker.registerData(PrimedTntEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	@Nullable
 	private LivingEntity causingEntity;
 	private int fuseTimer = 80;
 
-	public PrimedTNTEntity(World world) {
+	public PrimedTntEntity(World world) {
 		super(EntityType.TNT, world);
 		this.field_6033 = true;
 		this.fireImmune = true;
 	}
 
-	public PrimedTNTEntity(World world, double d, double e, double f, @Nullable LivingEntity livingEntity) {
+	public PrimedTntEntity(World world, double d, double e, double f, @Nullable LivingEntity livingEntity) {
 		this(world);
 		this.setPosition(d, e, f);
 		float g = (float)(Math.random() * (float) (Math.PI * 2));
@@ -58,7 +60,7 @@ public class PrimedTNTEntity extends Entity {
 			this.velocityY -= 0.04F;
 		}
 
-		this.move(MovementType.SELF, this.velocityX, this.velocityY, this.velocityZ);
+		this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 		this.velocityX *= 0.98F;
 		this.velocityY *= 0.98F;
 		this.velocityZ *= 0.98F;
@@ -123,5 +125,10 @@ public class PrimedTNTEntity extends Entity {
 
 	public int getFuseTimer() {
 		return this.fuseTimer;
+	}
+
+	@Override
+	public Packet<?> createSpawnPacket() {
+		return new EntitySpawnClientPacket(this);
 	}
 }

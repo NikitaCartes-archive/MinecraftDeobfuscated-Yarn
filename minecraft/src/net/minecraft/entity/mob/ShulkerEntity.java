@@ -6,8 +6,6 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1361;
-import net.minecraft.class_1376;
 import net.minecraft.class_1399;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -22,6 +20,8 @@ import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.control.BodyControl;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.LookAroundGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -87,11 +87,11 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	@Override
-	protected void method_5959() {
-		this.goalSelector.add(1, new class_1361(this, PlayerEntity.class, 8.0F));
+	protected void initGoals() {
+		this.goalSelector.add(1, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(4, new ShulkerEntity.ShootBulletGoal());
 		this.goalSelector.add(7, new ShulkerEntity.PeekGoal());
-		this.goalSelector.add(8, new class_1376(this));
+		this.goalSelector.add(8, new LookAroundGoal(this));
 		this.targetSelector.add(1, new class_1399(this).method_6318());
 		this.targetSelector.add(2, new ShulkerEntity.SearchForPlayerGoal(this));
 		this.targetSelector.add(3, new ShulkerEntity.SearchForTargetGoal(this));
@@ -307,7 +307,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 				if (!list.isEmpty()) {
 					for (Entity entity : list) {
 						if (!(entity instanceof ShulkerEntity) && !entity.noClip) {
-							entity.move(MovementType.SHULKER_ENTITY, h, i, j);
+							entity.move(MovementType.field_6309, h, i, j);
 						}
 					}
 				}
@@ -317,7 +317,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 	@Override
 	public void move(MovementType movementType, double d, double e, double f) {
-		if (movementType == MovementType.SHULKER_BOX) {
+		if (movementType == MovementType.field_6306) {
 			this.method_7127();
 		} else {
 			super.move(movementType, d, e, f);
@@ -347,7 +347,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 				if (blockPos2.getY() > 0
 					&& this.world.isAir(blockPos2)
 					&& this.world.getWorldBorder().contains(blockPos2)
-					&& this.world.method_8587(this, new BoundingBox(blockPos2))) {
+					&& this.world.isEntityColliding(this, new BoundingBox(blockPos2))) {
 					boolean bl = false;
 
 					for (Direction direction : Direction.values()) {

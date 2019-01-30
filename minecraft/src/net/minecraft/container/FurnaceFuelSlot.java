@@ -5,16 +5,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 
 public class FurnaceFuelSlot extends Slot {
-	private final AbstractFurnaceContainer field_17083;
+	private final AbstractFurnaceContainer container;
 
 	public FurnaceFuelSlot(AbstractFurnaceContainer abstractFurnaceContainer, Inventory inventory, int i, int j, int k) {
 		super(inventory, i, j, k);
-		this.field_17083 = abstractFurnaceContainer;
+		this.container = abstractFurnaceContainer;
 	}
 
 	@Override
 	public boolean canInsert(ItemStack itemStack) {
-		return this.field_17083.isFuel(itemStack) || isBucket(itemStack);
+		return this.container.isFuel(itemStack) || isBucket(itemStack);
 	}
 
 	@Override

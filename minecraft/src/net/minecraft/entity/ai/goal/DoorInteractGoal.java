@@ -53,9 +53,9 @@ public abstract class DoorInteractGoal extends Goal {
 			return false;
 		} else {
 			EntityMobNavigation entityMobNavigation = (EntityMobNavigation)this.owner.getNavigation();
-			Path path = entityMobNavigation.method_6345();
+			Path path = entityMobNavigation.getCurrentPath();
 			if (path != null && !path.isFinished() && entityMobNavigation.canEnterOpenDoors()) {
-				for (int i = 0; i < Math.min(path.getCurrentNodeIndex() + 2, path.getPathLength()); i++) {
+				for (int i = 0; i < Math.min(path.getCurrentNodeIndex() + 2, path.getLength()); i++) {
 					PathNode pathNode = path.getNode(i);
 					this.doorPos = new BlockPos(pathNode.x, pathNode.y + 1, pathNode.z);
 					if (!(this.owner.squaredDistanceTo((double)this.doorPos.getX(), this.owner.y, (double)this.doorPos.getZ()) > 2.25)) {

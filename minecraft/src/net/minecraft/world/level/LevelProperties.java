@@ -8,6 +8,7 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.JsonOps;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -81,6 +82,9 @@ public class LevelProperties {
 	private final Set<String> enabledDataPacks = Sets.<String>newLinkedHashSet();
 	private final Map<DimensionType, CompoundTag> worldData = Maps.<DimensionType, CompoundTag>newIdentityHashMap();
 	private CompoundTag customBossEvents;
+	private int field_17736;
+	private int field_17737;
+	private UUID field_17738;
 	private final GameRules gameRules = new GameRules();
 	private final class_236<MinecraftServer> field_191 = new class_236<>(class_233.field_1306);
 
@@ -245,6 +249,18 @@ public class LevelProperties {
 		if (compoundTag.containsKey("ScheduledEvents", 9)) {
 			this.field_191.method_979(compoundTag.getList("ScheduledEvents", 10));
 		}
+
+		if (compoundTag.containsKey("WanderingTraderSpawnDelay", 99)) {
+			this.field_17736 = compoundTag.getInt("WanderingTraderSpawnDelay");
+		}
+
+		if (compoundTag.containsKey("WanderingTraderSpawnChance", 99)) {
+			this.field_17737 = compoundTag.getInt("WanderingTraderSpawnChance");
+		}
+
+		if (compoundTag.containsKey("WanderingTraderId", 8)) {
+			this.field_17738 = UUID.fromString(compoundTag.getString("WanderingTraderId"));
+		}
 	}
 
 	public LevelProperties(LevelInfo levelInfo, String string) {
@@ -361,6 +377,11 @@ public class LevelProperties {
 		}
 
 		compoundTag.put("ScheduledEvents", this.field_191.method_982());
+		compoundTag.putInt("WanderingTraderSpawnDelay", this.field_17736);
+		compoundTag.putInt("WanderingTraderSpawnChance", this.field_17737);
+		if (this.field_17738 != null) {
+			compoundTag.putString("WanderingTraderId", this.field_17738.toString());
+		}
 	}
 
 	public long getSeed() {
@@ -736,5 +757,25 @@ public class LevelProperties {
 
 	public void setCustomBossEvents(@Nullable CompoundTag compoundTag) {
 		this.customBossEvents = compoundTag;
+	}
+
+	public int method_18038() {
+		return this.field_17736;
+	}
+
+	public void method_18041(int i) {
+		this.field_17736 = i;
+	}
+
+	public int method_18039() {
+		return this.field_17737;
+	}
+
+	public void method_18042(int i) {
+		this.field_17737 = i;
+	}
+
+	public void method_18040(UUID uUID) {
+		this.field_17738 = uUID;
 	}
 }

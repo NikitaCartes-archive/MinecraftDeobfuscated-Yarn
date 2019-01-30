@@ -12,9 +12,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1351;
-import net.minecraft.class_1360;
-import net.minecraft.class_1361;
-import net.minecraft.class_1374;
 import net.minecraft.class_1386;
 import net.minecraft.class_1395;
 import net.minecraft.class_1407;
@@ -28,7 +25,10 @@ import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.control.ParrotMoveControl;
+import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FollowMobGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
+import net.minecraft.entity.ai.goal.ParrotClimbOntoPlayerGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -120,15 +120,15 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 	}
 
 	@Override
-	protected void method_5959() {
+	protected void initGoals() {
 		this.field_6321 = new class_1386(this);
-		this.goalSelector.add(0, new class_1374(this, 1.25));
+		this.goalSelector.add(0, new EscapeDangerGoal(this, 1.25));
 		this.goalSelector.add(0, new SwimGoal(this));
-		this.goalSelector.add(1, new class_1361(this, PlayerEntity.class, 8.0F));
+		this.goalSelector.add(1, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(2, this.field_6321);
 		this.goalSelector.add(2, new class_1351(this, 1.0, 5.0F, 1.0F));
 		this.goalSelector.add(2, new class_1395(this, 1.0));
-		this.goalSelector.add(3, new class_1360(this));
+		this.goalSelector.add(3, new ParrotClimbOntoPlayerGoal(this));
 		this.goalSelector.add(3, new FollowMobGoal(this, 1.0, 3.0F, 7.0F));
 	}
 
@@ -145,7 +145,7 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 	protected EntityNavigation createNavigation(World world) {
 		class_1407 lv = new class_1407(this, world);
 		lv.method_6332(false);
-		lv.method_6354(true);
+		lv.setCanSwim(true);
 		lv.method_6331(true);
 		return lv;
 	}

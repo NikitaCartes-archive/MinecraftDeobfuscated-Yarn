@@ -112,38 +112,52 @@ public interface ViewableWorld extends ExtendedBlockView {
 		return this.getChunk(i, j, chunkStatus, true);
 	}
 
-	default boolean method_8628(BlockState blockState, BlockPos blockPos) {
-		VoxelShape voxelShape = blockState.getCollisionShape(this, blockPos);
+	default boolean method_8628(BlockState blockState, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+		VoxelShape voxelShape = blockState.getCollisionShape(this, blockPos, verticalEntityPosition);
 		return voxelShape.isEmpty() || this.method_8611(null, voxelShape.offset((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
 	}
 
-	default boolean method_8606(@Nullable Entity entity, BoundingBox boundingBox) {
-		return this.method_8611(entity, VoxelShapes.cube(boundingBox));
+	default boolean method_8606(Entity entity) {
+		return this.method_8611(entity, VoxelShapes.cube(entity.getBoundingBox()));
 	}
 
-	default Stream<VoxelShape> method_8607(@Nullable Entity entity, BoundingBox boundingBox) {
-		VerticalEntityPosition verticalEntityPosition = entity == null ? VerticalEntityPosition.minValue() : VerticalEntityPosition.fromEntity(entity);
-		return this.method_8600(entity, VoxelShapes.cube(boundingBox), VoxelShapes.empty(), Collections.emptySet(), verticalEntityPosition);
+	default boolean method_18026(BoundingBox boundingBox) {
+		return this.getCollidingBoundingBoxesForEntity(null, boundingBox, Collections.emptySet()).allMatch(VoxelShape::isEmpty);
 	}
 
-	default Stream<VoxelShape> method_8334(@Nullable Entity entity, VoxelShape voxelShape, Set<Entity> set) {
+	default boolean method_17892(Entity entity) {
+		return this.getCollidingBoundingBoxesForEntity(entity, entity.getBoundingBox(), Collections.emptySet()).allMatch(VoxelShape::isEmpty);
+	}
+
+	default boolean isEntityColliding(Entity entity, BoundingBox boundingBox) {
+		return this.getCollidingBoundingBoxesForEntity(entity, boundingBox, Collections.emptySet()).allMatch(VoxelShape::isEmpty);
+	}
+
+	default boolean isEntityColliding(Entity entity, BoundingBox boundingBox, Set<Entity> set) {
+		return this.getCollidingBoundingBoxesForEntity(entity, boundingBox, set).allMatch(VoxelShape::isEmpty);
+	}
+
+	default Stream<VoxelShape> getCollidingEntityBoundingBoxesForEntity(@Nullable Entity entity, VoxelShape voxelShape, Set<Entity> set) {
 		return Stream.empty();
 	}
 
-	default Stream<VoxelShape> method_8600(
-		@Nullable Entity entity, VoxelShape voxelShape, VoxelShape voxelShape2, Set<Entity> set, VerticalEntityPosition verticalEntityPosition
-	) {
+	default Stream<VoxelShape> getCollidingBoundingBoxesForEntity(@Nullable Entity entity, BoundingBox boundingBox, Set<Entity> set) {
+		VoxelShape voxelShape = VoxelShapes.cube(boundingBox);
 		Stream<VoxelShape> stream;
-		if (entity != null) {
-			VoxelShape voxelShape3 = this.getWorldBorder().method_17903();
-			if (VoxelShapes.compareShapes(voxelShape3, VoxelShapes.cube(entity.getBoundingBox().contract(1.0E-7)), BooleanBiFunction.AND)) {
-				stream = Stream.empty();
-			} else {
-				stream = Stream.of(voxelShape3)
-					.filter(voxelShapex -> VoxelShapes.compareShapes(voxelShapex, VoxelShapes.cube(entity.getBoundingBox().expand(1.0E-7)), BooleanBiFunction.AND));
-			}
-		} else {
+		VerticalEntityPosition verticalEntityPosition;
+		if (entity == null) {
+			verticalEntityPosition = VerticalEntityPosition.minValue();
 			stream = Stream.empty();
+		} else {
+			verticalEntityPosition = VerticalEntityPosition.fromEntity(entity);
+			VoxelShape voxelShape2 = this.getWorldBorder().asVoxelShape();
+			boolean bl = VoxelShapes.compareShapes(voxelShape2, VoxelShapes.cube(entity.getBoundingBox().contract(1.0E-7)), BooleanBiFunction.AND);
+			boolean bl2 = VoxelShapes.compareShapes(voxelShape2, VoxelShapes.cube(entity.getBoundingBox().expand(1.0E-7)), BooleanBiFunction.AND);
+			if (!bl && bl2) {
+				stream = Stream.concat(Stream.of(voxelShape2), this.getCollidingEntityBoundingBoxesForEntity(entity, voxelShape, set));
+			} else {
+				stream = this.getCollidingEntityBoundingBoxesForEntity(entity, voxelShape, set);
+			}
 		}
 
 		int i = MathHelper.floor(voxelShape.getMinimum(Direction.Axis.X)) - 1;
@@ -156,15 +170,15 @@ public interface ViewableWorld extends ExtendedBlockView {
 		Predicate<VoxelShape> predicate = voxelShape2x -> !voxelShape2x.isEmpty() && VoxelShapes.compareShapes(voxelShape, voxelShape2x, BooleanBiFunction.AND);
 		AtomicReference<ChunkPos> atomicReference = new AtomicReference(new ChunkPos(i >> 4, m >> 4));
 		AtomicReference<Chunk> atomicReference2 = new AtomicReference(this.getChunk(i >> 4, m >> 4, ChunkStatus.EMPTY, false));
-		Stream<VoxelShape> stream2 = BlockPos.method_17962(i, k, m, j - 1, l - 1, n - 1).map(blockPos -> {
+		Stream<VoxelShape> stream2 = BlockPos.getBlocksInCuboid(i, k, m, j - 1, l - 1, n - 1).map(blockPos -> {
 			int o = blockPos.getX();
 			int p = blockPos.getY();
 			int q = blockPos.getZ();
 			if (World.isHeightInvalid(p)) {
 				return VoxelShapes.empty();
 			} else {
-				boolean bl = o == i || o == j - 1;
-				boolean bl2 = p == k || p == l - 1;
+				boolean blx = o == i || o == j - 1;
+				boolean bl2x = p == k || p == l - 1;
 				boolean bl3 = q == m || q == n - 1;
 				ChunkPos chunkPos = (ChunkPos)atomicReference.get();
 				int r = o >> 4;
@@ -178,42 +192,32 @@ public interface ViewableWorld extends ExtendedBlockView {
 					atomicReference2.set(chunk);
 				}
 
-				if ((!bl || !bl2) && (!bl2 || !bl3) && (!bl3 || !bl) && chunk != null) {
-					VoxelShape voxelShape2x = chunk.getBlockState(blockPos).getCollisionShape(this, blockPos, verticalEntityPosition);
-					VoxelShape voxelShape3 = voxelShape2.offset((double)(-o), (double)(-p), (double)(-q));
-					if (VoxelShapes.compareShapes(voxelShape3, voxelShape2x, BooleanBiFunction.AND)) {
+				if ((!blx || !bl2x) && (!bl2x || !bl3) && (!bl3 || !blx) && chunk != null) {
+					VoxelShape voxelShapex = chunk.getBlockState(blockPos).getCollisionShape(this, blockPos, verticalEntityPosition);
+					VoxelShape voxelShape2x = VoxelShapes.empty().offset((double)(-o), (double)(-p), (double)(-q));
+					if (VoxelShapes.compareShapes(voxelShape2x, voxelShapex, BooleanBiFunction.AND)) {
 						return VoxelShapes.empty();
-					} else if (voxelShape2x == VoxelShapes.fullCube()) {
+					} else if (voxelShapex == VoxelShapes.fullCube()) {
 						abstractVoxelShapeContainer.modify(o - i, p - k, q - m, true, true);
 						return VoxelShapes.empty();
 					} else {
-						return voxelShape2x.offset((double)o, (double)p, (double)q);
+						return voxelShapex.offset((double)o, (double)p, (double)q);
 					}
 				} else {
 					return VoxelShapes.empty();
 				}
 			}
-		}).filter(predicate);
+		});
 		return Stream.concat(
-			Stream.concat(stream, entity == null ? Stream.empty() : this.method_8334(entity, voxelShape, set)),
-			Stream.concat(stream2, Stream.generate(() -> new OffsetVoxelShape(abstractVoxelShapeContainer, i, k, m)).limit(1L).filter(predicate))
+			stream, Stream.concat(stream2, Stream.generate(() -> new OffsetVoxelShape(abstractVoxelShapeContainer, i, k, m)).limit(1L)).filter(predicate)
 		);
-	}
-
-	default boolean method_8590(@Nullable Entity entity, BoundingBox boundingBox, Set<Entity> set) {
-		VerticalEntityPosition verticalEntityPosition = entity == null ? VerticalEntityPosition.minValue() : VerticalEntityPosition.fromEntity(entity);
-		return this.method_8600(entity, VoxelShapes.cube(boundingBox), VoxelShapes.empty(), set, verticalEntityPosition).allMatch(VoxelShape::isEmpty);
-	}
-
-	default boolean method_8587(@Nullable Entity entity, BoundingBox boundingBox) {
-		return this.method_8590(entity, boundingBox, Collections.emptySet());
 	}
 
 	default boolean isWaterAt(BlockPos blockPos) {
 		return this.getFluidState(blockPos).matches(FluidTags.field_15517);
 	}
 
-	default boolean method_8599(BoundingBox boundingBox) {
+	default boolean isInFluid(BoundingBox boundingBox) {
 		int i = MathHelper.floor(boundingBox.minX);
 		int j = MathHelper.ceil(boundingBox.maxX);
 		int k = MathHelper.floor(boundingBox.minY);
@@ -225,7 +229,7 @@ public interface ViewableWorld extends ExtendedBlockView {
 			for (int o = i; o < j; o++) {
 				for (int p = k; p < l; p++) {
 					for (int q = m; q < n; q++) {
-						BlockState blockState = this.getBlockState(pooledMutable.method_10113(o, p, q));
+						BlockState blockState = this.getBlockState(pooledMutable.set(o, p, q));
 						if (!blockState.getFluidState().isEmpty()) {
 							return true;
 						}

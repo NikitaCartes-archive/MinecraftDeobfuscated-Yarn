@@ -27,18 +27,18 @@ public class PathingCoordinator implements WorldListener {
 
 			for (int k = this.entityPathings.size(); j < k; j++) {
 				EntityNavigation entityNavigation = (EntityNavigation)this.entityPathings.get(j);
-				if (entityNavigation != null && !entityNavigation.isIdle()) {
-					Path path = entityNavigation.method_6345();
-					if (path != null && !path.isFinished() && path.getPathLength() != 0) {
-						PathNode pathNode = entityNavigation.field_6681.getEnd();
+				if (entityNavigation != null && !entityNavigation.shouldRecalculatePath()) {
+					Path path = entityNavigation.getCurrentPath();
+					if (path != null && !path.isFinished() && path.getLength() != 0) {
+						PathNode pathNode = entityNavigation.currentPath.getEnd();
 						double d = blockPos.squaredDistanceTo(
 							((double)pathNode.x + entityNavigation.entity.x) / 2.0,
 							((double)pathNode.y + entityNavigation.entity.y) / 2.0,
 							((double)pathNode.z + entityNavigation.entity.z) / 2.0
 						);
-						int l = (path.getPathLength() - path.getCurrentNodeIndex()) * (path.getPathLength() - path.getCurrentNodeIndex());
+						int l = (path.getLength() - path.getCurrentNodeIndex()) * (path.getLength() - path.getCurrentNodeIndex());
 						if (d < (double)l) {
-							entityNavigation.method_6356();
+							entityNavigation.recalculatePath();
 						}
 					}
 				}

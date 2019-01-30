@@ -329,6 +329,14 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		if (this.gui != null) {
 			this.gui.stop();
 		}
+
+		if (this.rconServer != null) {
+			this.rconServer.method_18050();
+		}
+
+		if (this.field_13816 != null) {
+			this.field_13816.method_18050();
+		}
 	}
 
 	@Override

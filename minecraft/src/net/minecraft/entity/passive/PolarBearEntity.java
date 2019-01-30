@@ -3,10 +3,6 @@ package net.minecraft.entity.passive;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1361;
-import net.minecraft.class_1374;
-import net.minecraft.class_1376;
-import net.minecraft.class_1379;
 import net.minecraft.class_1399;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -15,10 +11,14 @@ import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.LookAroundGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -59,15 +59,15 @@ public class PolarBearEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void method_5959() {
-		super.method_5959();
+	protected void initGoals() {
+		super.initGoals();
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new PolarBearEntity.class_1460());
 		this.goalSelector.add(1, new PolarBearEntity.class_1461());
 		this.goalSelector.add(4, new FollowParentGoal(this, 1.25));
-		this.goalSelector.add(5, new class_1379(this, 1.0));
-		this.goalSelector.add(6, new class_1361(this, PlayerEntity.class, 6.0F));
-		this.goalSelector.add(7, new class_1376(this));
+		this.goalSelector.add(5, new WanderAroundGoal(this, 1.0));
+		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
+		this.goalSelector.add(7, new LookAroundGoal(this));
 		this.targetSelector.add(1, new PolarBearEntity.class_1459());
 		this.targetSelector.add(2, new PolarBearEntity.class_1457());
 	}
@@ -282,7 +282,7 @@ public class PolarBearEntity extends AnimalEntity {
 		}
 	}
 
-	class class_1461 extends class_1374 {
+	class class_1461 extends EscapeDangerGoal {
 		public class_1461() {
 			super(PolarBearEntity.this, 2.0);
 		}

@@ -1749,7 +1749,8 @@ public class Blocks {
 	public static final Block field_10001 = register("end_stone_brick_wall", new WallBlock(Block.Settings.copy(field_10462)));
 	public static final Block field_10517 = register("diorite_wall", new WallBlock(Block.Settings.copy(field_10508)));
 	public static final Block field_16492 = register(
-		"scaffolding", new ScaffoldingBlock(Block.Settings.of(Material.PART, MaterialColor.SAND).noCollision().sounds(BlockSoundGroup.SCAFFOLDING))
+		"scaffolding",
+		new ScaffoldingBlock(Block.Settings.of(Material.PART, MaterialColor.SAND).noCollision().sounds(BlockSoundGroup.SCAFFOLDING).hasDynamicBounds())
 	);
 	public static final Block field_10083 = register("loom", new LoomBlock(Block.Settings.of(Material.WOOD).strength(2.5F).sounds(BlockSoundGroup.WOOD)));
 	public static final Block field_16328 = register("barrel", new BarrelBlock(Block.Settings.of(Material.WOOD).strength(2.5F).sounds(BlockSoundGroup.WOOD)));
@@ -1773,7 +1774,7 @@ public class Blocks {
 		"bell", new BellBlock(Block.Settings.of(Material.METAL, MaterialColor.GOLD).strength(5.0F).sounds(BlockSoundGroup.ANVIL))
 	);
 	public static final Block field_16541 = register(
-		"lantern", new LanternBlock(Block.Settings.of(Material.METAL).strength(3.5F).sounds(BlockSoundGroup.METAL).lightLevel(15))
+		"lantern", new LanternBlock(Block.Settings.of(Material.METAL).strength(3.5F).sounds(BlockSoundGroup.LANTERN).lightLevel(15))
 	);
 	public static final Block field_17350 = register(
 		"campfire",

@@ -40,7 +40,7 @@ public class CraftingResultSlot extends Slot {
 	}
 
 	@Override
-	protected void method_7672(int i) {
+	protected void onTake(int i) {
 		this.field_7869 += i;
 	}
 

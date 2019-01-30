@@ -24,7 +24,7 @@ public class TheNetherDimension extends Dimension {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public Vec3d method_12445(float f, float g) {
+	public Vec3d getFogColor(float f, float g) {
 		return new Vec3d(0.2F, 0.03F, 0.03F);
 	}
 
@@ -54,13 +54,13 @@ public class TheNetherDimension extends Dimension {
 
 	@Nullable
 	@Override
-	public BlockPos method_12452(ChunkPos chunkPos, boolean bl) {
+	public BlockPos getSpawningBlockInChunk(ChunkPos chunkPos, boolean bl) {
 		return null;
 	}
 
 	@Nullable
 	@Override
-	public BlockPos method_12444(int i, int j, boolean bl) {
+	public BlockPos getTopSpawningBlockPosition(int i, int j, boolean bl) {
 		return null;
 	}
 
@@ -70,13 +70,13 @@ public class TheNetherDimension extends Dimension {
 	}
 
 	@Override
-	public boolean method_12448() {
+	public boolean canPlayersSleep() {
 		return false;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean method_12453(int i, int j) {
+	public boolean shouldRenderFog(int i, int j) {
 		return true;
 	}
 

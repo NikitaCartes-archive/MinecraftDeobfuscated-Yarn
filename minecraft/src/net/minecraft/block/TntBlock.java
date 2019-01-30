@@ -3,7 +3,7 @@ package net.minecraft.block;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.PrimedTNTEntity;
+import net.minecraft.entity.PrimedTntEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
@@ -58,11 +58,11 @@ public class TntBlock extends Block {
 	@Override
 	public void onDestroyedByExplosion(World world, BlockPos blockPos, Explosion explosion) {
 		if (!world.isClient) {
-			PrimedTNTEntity primedTNTEntity = new PrimedTNTEntity(
+			PrimedTntEntity primedTntEntity = new PrimedTntEntity(
 				world, (double)((float)blockPos.getX() + 0.5F), (double)blockPos.getY(), (double)((float)blockPos.getZ() + 0.5F), explosion.getCausingEntity()
 			);
-			primedTNTEntity.setFuse((short)(world.random.nextInt(primedTNTEntity.getFuseTimer() / 4) + primedTNTEntity.getFuseTimer() / 8));
-			world.spawnEntity(primedTNTEntity);
+			primedTntEntity.setFuse((short)(world.random.nextInt(primedTntEntity.getFuseTimer() / 4) + primedTntEntity.getFuseTimer() / 8));
+			world.spawnEntity(primedTntEntity);
 		}
 	}
 
@@ -72,11 +72,11 @@ public class TntBlock extends Block {
 
 	private static void primeTnt(World world, BlockPos blockPos, @Nullable LivingEntity livingEntity) {
 		if (!world.isClient) {
-			PrimedTNTEntity primedTNTEntity = new PrimedTNTEntity(
+			PrimedTntEntity primedTntEntity = new PrimedTntEntity(
 				world, (double)((float)blockPos.getX() + 0.5F), (double)blockPos.getY(), (double)((float)blockPos.getZ() + 0.5F), livingEntity
 			);
-			world.spawnEntity(primedTNTEntity);
-			world.playSound(null, primedTNTEntity.x, primedTNTEntity.y, primedTNTEntity.z, SoundEvents.field_15079, SoundCategory.field_15245, 1.0F, 1.0F);
+			world.spawnEntity(primedTntEntity);
+			world.playSound(null, primedTntEntity.x, primedTntEntity.y, primedTntEntity.z, SoundEvents.field_15079, SoundCategory.field_15245, 1.0F, 1.0F);
 		}
 	}
 

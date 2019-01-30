@@ -48,13 +48,13 @@ public class TheEndDimension extends Dimension {
 	@Nullable
 	@Environment(EnvType.CLIENT)
 	@Override
-	public float[] method_12446(float f, float g) {
+	public float[] getBackgroundColor(float f, float g) {
 		return null;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public Vec3d method_12445(float f, float g) {
+	public Vec3d getFogColor(float f, float g) {
 		int i = 10518688;
 		float h = MathHelper.cos(f * (float) (Math.PI * 2)) * 2.0F + 0.5F;
 		h = MathHelper.clamp(h, 0.0F, 1.0F);
@@ -74,7 +74,7 @@ public class TheEndDimension extends Dimension {
 	}
 
 	@Override
-	public boolean method_12448() {
+	public boolean canPlayersSleep() {
 		return false;
 	}
 
@@ -91,7 +91,7 @@ public class TheEndDimension extends Dimension {
 
 	@Nullable
 	@Override
-	public BlockPos method_12452(ChunkPos chunkPos, boolean bl) {
+	public BlockPos getSpawningBlockInChunk(ChunkPos chunkPos, boolean bl) {
 		Random random = new Random(this.world.getSeed());
 		BlockPos blockPos = new BlockPos(chunkPos.getXStart() + random.nextInt(15), 0, chunkPos.getZEnd() + random.nextInt(15));
 		return this.world.getTopNonAirState(blockPos).getMaterial().suffocates() ? blockPos : null;
@@ -104,13 +104,13 @@ public class TheEndDimension extends Dimension {
 
 	@Nullable
 	@Override
-	public BlockPos method_12444(int i, int j, boolean bl) {
-		return this.method_12452(new ChunkPos(i >> 4, j >> 4), bl);
+	public BlockPos getTopSpawningBlockPosition(int i, int j, boolean bl) {
+		return this.getSpawningBlockInChunk(new ChunkPos(i >> 4, j >> 4), bl);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean method_12453(int i, int j) {
+	public boolean shouldRenderFog(int i, int j) {
 		return false;
 	}
 
@@ -130,7 +130,7 @@ public class TheEndDimension extends Dimension {
 	}
 
 	@Override
-	public void method_12461() {
+	public void update() {
 		if (this.enderDragonFight != null) {
 			this.enderDragonFight.tick();
 		}

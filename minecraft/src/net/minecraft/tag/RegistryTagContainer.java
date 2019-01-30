@@ -11,7 +11,7 @@ public class RegistryTagContainer<T> extends TagContainer<T> {
 	private final Registry<T> registry;
 
 	public RegistryTagContainer(Registry<T> registry, String string, String string2) {
-		super(registry::method_17966, string, false, string2);
+		super(registry::getOptional, string, false, string2);
 		this.registry = registry;
 	}
 

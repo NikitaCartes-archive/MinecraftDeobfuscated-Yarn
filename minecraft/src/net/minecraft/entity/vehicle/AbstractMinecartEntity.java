@@ -1,7 +1,5 @@
 package net.minecraft.entity.vehicle;
 
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -12,6 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PoweredRailBlock;
 import net.minecraft.block.enums.RailShape;
+import net.minecraft.client.network.packet.EntitySpawnClientPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
@@ -24,6 +23,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Packet;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
@@ -87,21 +87,20 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	public static AbstractMinecartEntity create(World world, double d, double e, double f, AbstractMinecartEntity.Type type) {
-		switch (type) {
-			case field_7678:
-				return new ChestMinecartEntity(world, d, e, f);
-			case field_7679:
-				return new FurnaceMinecartEntity(world, d, e, f);
-			case field_7675:
-				return new TNTMinecartEntity(world, d, e, f);
-			case field_7680:
-				return new MobSpawnerMinecartEntity(world, d, e, f);
-			case field_7677:
-				return new HopperMinecartEntity(world, d, e, f);
-			case field_7681:
-				return new CommandBlockMinecartEntity(world, d, e, f);
-			default:
-				return new MinecartEntity(world, d, e, f);
+		if (type == AbstractMinecartEntity.Type.field_7678) {
+			return new ChestMinecartEntity(world, d, e, f);
+		} else if (type == AbstractMinecartEntity.Type.field_7679) {
+			return new FurnaceMinecartEntity(world, d, e, f);
+		} else if (type == AbstractMinecartEntity.Type.field_7675) {
+			return new TNTMinecartEntity(world, d, e, f);
+		} else if (type == AbstractMinecartEntity.Type.field_7680) {
+			return new MobSpawnerMinecartEntity(world, d, e, f);
+		} else if (type == AbstractMinecartEntity.Type.field_7677) {
+			return new HopperMinecartEntity(world, d, e, f);
+		} else {
+			return (AbstractMinecartEntity)(type == AbstractMinecartEntity.Type.field_7681
+				? new CommandBlockMinecartEntity(world, d, e, f)
+				: new MinecartEntity(world, d, e, f));
 		}
 	}
 
@@ -347,7 +346,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 			this.velocityZ *= 0.5;
 		}
 
-		this.move(MovementType.SELF, this.velocityX, this.velocityY, this.velocityZ);
+		this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 		if (!this.onGround) {
 			this.velocityX *= 0.95F;
 			this.velocityY *= 0.95F;
@@ -464,7 +463,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 		double q = this.method_7504();
 		o = MathHelper.clamp(o, -q, q);
 		p = MathHelper.clamp(p, -q, q);
-		this.move(MovementType.SELF, o, 0.0, p);
+		this.move(MovementType.field_6308, o, 0.0, p);
 		if (is[0][1] != 0 && MathHelper.floor(this.x) - blockPos.getX() == is[0][0] && MathHelper.floor(this.z) - blockPos.getZ() == is[0][2]) {
 			this.setPosition(this.x, this.y + (double)is[0][1], this.z);
 		} else if (is[1][1] != 0 && MathHelper.floor(this.x) - blockPos.getX() == is[1][0] && MathHelper.floor(this.z) - blockPos.getZ() == is[1][2]) {
@@ -813,31 +812,18 @@ public abstract class AbstractMinecartEntity extends Entity {
 		this.getDataTracker().set(CUSTOM_BLOCK_PRESENT, bl);
 	}
 
+	@Override
+	public Packet<?> createSpawnPacket() {
+		return new EntitySpawnClientPacket(this);
+	}
+
 	public static enum Type {
-		field_7674(0),
-		field_7678(1),
-		field_7679(2),
-		field_7675(3),
-		field_7680(4),
-		field_7677(5),
-		field_7681(6);
-
-		private static final AbstractMinecartEntity.Type[] VALUES = (AbstractMinecartEntity.Type[])Arrays.stream(values())
-			.sorted(Comparator.comparingInt(AbstractMinecartEntity.Type::getId))
-			.toArray(AbstractMinecartEntity.Type[]::new);
-		private final int id;
-
-		private Type(int j) {
-			this.id = j;
-		}
-
-		public int getId() {
-			return this.id;
-		}
-
-		@Environment(EnvType.CLIENT)
-		public static AbstractMinecartEntity.Type byId(int i) {
-			return i >= 0 && i < VALUES.length ? VALUES[i] : field_7674;
-		}
+		field_7674,
+		field_7678,
+		field_7679,
+		field_7675,
+		field_7680,
+		field_7677,
+		field_7681;
 	}
 }

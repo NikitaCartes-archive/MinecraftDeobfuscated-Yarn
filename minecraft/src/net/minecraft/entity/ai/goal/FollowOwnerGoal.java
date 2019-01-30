@@ -57,7 +57,7 @@ public class FollowOwnerGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return !this.field_6446.method_6357() && this.caller.squaredDistanceTo(this.owner) > (double)(this.field_6450 * this.field_6450) && !this.caller.isSitting();
+		return !this.field_6446.isIdle() && this.caller.squaredDistanceTo(this.owner) > (double)(this.field_6450 * this.field_6450) && !this.caller.isSitting();
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class FollowOwnerGoal extends Goal {
 	@Override
 	public void onRemove() {
 		this.owner = null;
-		this.field_6446.method_6340();
+		this.field_6446.stop();
 		this.caller.setPathNodeTypeWeight(PathNodeType.WATER, this.field_6447);
 	}
 
@@ -91,7 +91,7 @@ public class FollowOwnerGoal extends Goal {
 								for (int m = 0; m <= 4; m++) {
 									if ((l < 1 || m < 1 || l > 3 || m > 3) && this.method_6263(i, j, k, l, m)) {
 										this.caller.setPositionAndAngles((double)((float)(i + l) + 0.5F), (double)k, (double)((float)(j + m) + 0.5F), this.caller.yaw, this.caller.pitch);
-										this.field_6446.method_6340();
+										this.field_6446.stop();
 										return;
 									}
 								}

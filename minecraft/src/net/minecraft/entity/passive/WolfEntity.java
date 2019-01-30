@@ -4,9 +4,6 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1359;
-import net.minecraft.class_1361;
-import net.minecraft.class_1376;
 import net.minecraft.class_1386;
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
@@ -21,7 +18,10 @@ import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.FollowOwnerGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.LookAroundGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.entity.ai.goal.PounceAtTargetGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WolfBegGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -66,19 +66,19 @@ public class WolfEntity extends TameableEntity {
 	}
 
 	@Override
-	protected void method_5959() {
+	protected void initGoals() {
 		this.field_6321 = new class_1386(this);
 		this.goalSelector.add(1, new SwimGoal(this));
 		this.goalSelector.add(2, this.field_6321);
 		this.goalSelector.add(3, new WolfEntity.WolfFleeGoal(this, LlamaEntity.class, 24.0F, 1.5, 1.5));
-		this.goalSelector.add(4, new class_1359(this, 0.4F));
+		this.goalSelector.add(4, new PounceAtTargetGoal(this, 0.4F));
 		this.goalSelector.add(5, new MeleeAttackGoal(this, 1.0, true));
 		this.goalSelector.add(6, new FollowOwnerGoal(this, 1.0, 10.0F, 2.0F));
 		this.goalSelector.add(7, new AnimalMateGoal(this, 1.0));
 		this.goalSelector.add(8, new class_1394(this, 1.0));
 		this.goalSelector.add(9, new WolfBegGoal(this, 8.0F));
-		this.goalSelector.add(10, new class_1361(this, PlayerEntity.class, 8.0F));
-		this.goalSelector.add(10, new class_1376(this));
+		this.goalSelector.add(10, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
+		this.goalSelector.add(10, new LookAroundGoal(this));
 		this.targetSelector.add(1, new class_1403(this));
 		this.targetSelector.add(2, new class_1406(this));
 		this.targetSelector.add(3, new class_1399(this).method_6318());
@@ -338,7 +338,7 @@ public class WolfEntity extends TameableEntity {
 			if (this.isOwner(playerEntity) && !this.world.isClient && !this.isBreedingItem(itemStack)) {
 				this.field_6321.method_6311(!this.isSitting());
 				this.field_6282 = false;
-				this.navigation.method_6340();
+				this.navigation.stop();
 				this.setTarget(null);
 			}
 		} else if (item == Items.field_8606 && !this.isAngry()) {
@@ -349,7 +349,7 @@ public class WolfEntity extends TameableEntity {
 			if (!this.world.isClient) {
 				if (this.random.nextInt(3) == 0) {
 					this.method_6170(playerEntity);
-					this.navigation.method_6340();
+					this.navigation.stop();
 					this.setTarget(null);
 					this.field_6321.method_6311(true);
 					this.setHealth(20.0F);

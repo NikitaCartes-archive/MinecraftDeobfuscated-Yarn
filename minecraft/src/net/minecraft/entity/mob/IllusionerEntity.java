@@ -3,8 +3,6 @@ package net.minecraft.entity.mob;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1361;
-import net.minecraft.class_1379;
 import net.minecraft.class_1399;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -16,13 +14,15 @@ import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.RangedAttacker;
 import net.minecraft.entity.ai.goal.BowAttackGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.passive.AbstractVillagerEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
-import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -57,19 +57,19 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 	}
 
 	@Override
-	protected void method_5959() {
-		super.method_5959();
+	protected void initGoals() {
+		super.initGoals();
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new SpellcastingIllagerEntity.LookAtTargetGoal());
 		this.goalSelector.add(4, new IllusionerEntity.GiveInvisibilityGoal());
 		this.goalSelector.add(5, new IllusionerEntity.BlindTargetGoal());
 		this.goalSelector.add(6, new BowAttackGoal<>(this, 0.5, 20, 15.0F));
-		this.goalSelector.add(8, new class_1379(this, 0.6));
-		this.goalSelector.add(9, new class_1361(this, PlayerEntity.class, 3.0F, 1.0F));
-		this.goalSelector.add(10, new class_1361(this, MobEntity.class, 8.0F));
+		this.goalSelector.add(8, new WanderAroundGoal(this, 0.6));
+		this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 3.0F, 1.0F));
+		this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
 		this.targetSelector.add(1, new class_1399(this, IllagerEntity.class).method_6318());
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true).setMaxTimeWithoutVisibility(300));
-		this.targetSelector.add(3, new FollowTargetGoal(this, VillagerEntity.class, false).setMaxTimeWithoutVisibility(300));
+		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractVillagerEntity.class, false).setMaxTimeWithoutVisibility(300));
 		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, false).setMaxTimeWithoutVisibility(300));
 	}
 

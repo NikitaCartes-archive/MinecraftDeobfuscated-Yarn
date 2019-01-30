@@ -21,7 +21,7 @@ public class VillagerInteractionGoal extends class_1358 {
 	@Override
 	public void start() {
 		super.start();
-		if (this.villager.method_7234() && this.field_6484 instanceof VillagerEntity && ((VillagerEntity)this.field_6484).canBreed()) {
+		if (this.villager.method_7234() && this.target instanceof VillagerEntity && ((VillagerEntity)this.target).canBreed()) {
 			this.delay = 10;
 		} else {
 			this.delay = 0;
@@ -34,7 +34,7 @@ public class VillagerInteractionGoal extends class_1358 {
 		if (this.delay > 0) {
 			this.delay--;
 			if (this.delay == 0) {
-				BasicInventory basicInventory = this.villager.getInventory();
+				BasicInventory basicInventory = this.villager.method_18011();
 
 				for (int i = 0; i < basicInventory.getInvSize(); i++) {
 					ItemStack itemStack = basicInventory.getInvStack(i);

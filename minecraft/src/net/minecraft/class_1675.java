@@ -27,7 +27,7 @@ public final class class_1675 {
 		double i = entity.velocityZ;
 		World world = entity.world;
 		Vec3d vec3d = new Vec3d(d, e, f);
-		if (!world.method_8590(entity, entity.getBoundingBox(), (Set<Entity>)(!bl2 && entity2 != null ? method_7483(entity2) : ImmutableSet.of()))) {
+		if (!world.isEntityColliding(entity, entity.getBoundingBox(), (Set<Entity>)(!bl2 && entity2 != null ? method_7483(entity2) : ImmutableSet.of()))) {
 			return new BlockHitResult(vec3d, Direction.getFacing(g, h, i), new BlockPos(entity), false);
 		} else {
 			Vec3d vec3d2 = new Vec3d(d + g, e + h, f + i);

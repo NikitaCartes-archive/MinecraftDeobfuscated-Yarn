@@ -4,8 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.util.List;
 import java.util.Set;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.network.packet.EntityAttachClientPacket;
 import net.minecraft.client.network.packet.EntityPassengersSetClientPacket;
 import net.minecraft.entity.AreaEffectCloudEntity;
@@ -15,7 +13,7 @@ import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.FireworkEntity;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.PrimedTNTEntity;
+import net.minecraft.entity.PrimedTntEntity;
 import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
@@ -31,7 +29,6 @@ import net.minecraft.entity.projectile.LlamaSpitEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;
-import net.minecraft.entity.sortme.Living;
 import net.minecraft.entity.thrown.SnowballEntity;
 import net.minecraft.entity.thrown.ThrownEggEntity;
 import net.minecraft.entity.thrown.ThrownEnderpearlEntity;
@@ -46,13 +43,13 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.crash.ICrashCallable;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class EntityTracker {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final ServerWorld world;
+	private final World world;
 	private final Set<EntityTrackerEntry> trackedEntities = Sets.<EntityTrackerEntry>newHashSet();
 	private final IntHashMap<EntityTrackerEntry> trackedEntitiesById = new IntHashMap<>();
 	private int field_13906;
@@ -60,17 +57,6 @@ public class EntityTracker {
 	public EntityTracker(ServerWorld serverWorld) {
 		this.world = serverWorld;
 		this.setViewDistance(serverWorld.getServer().getPlayerManager().getViewDistance());
-	}
-
-	public static long toFixedPoint(double d) {
-		return MathHelper.lfloor(d * 4096.0);
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static void method_14070(Entity entity, double d, double e, double f) {
-		entity.field_6001 = toFixedPoint(d);
-		entity.field_6023 = toFixedPoint(e);
-		entity.field_5954 = toFixedPoint(f);
 	}
 
 	public void add(Entity entity) {
@@ -86,9 +72,9 @@ public class EntityTracker {
 		} else if (entity instanceof FishHookEntity) {
 			this.add(entity, 64, 5, true);
 		} else if (entity instanceof ProjectileEntity) {
-			this.add(entity, 64, 20, false);
+			this.add(entity, 64, 20, true);
 		} else if (entity instanceof SmallFireballEntity) {
-			this.add(entity, 64, 10, false);
+			this.add(entity, 64, 10, true);
 		} else if (entity instanceof ExplosiveProjectileEntity) {
 			this.add(entity, 64, 10, true);
 		} else if (entity instanceof SnowballEntity) {
@@ -123,9 +109,9 @@ public class EntityTracker {
 			this.add(entity, 80, 3, false);
 		} else if (entity instanceof EnderDragonEntity) {
 			this.add(entity, 160, 3, true);
-		} else if (entity instanceof Living) {
+		} else if (entity instanceof MobEntity) {
 			this.add(entity, 80, 3, true);
-		} else if (entity instanceof PrimedTNTEntity) {
+		} else if (entity instanceof PrimedTntEntity) {
 			this.add(entity, 160, 10, true);
 		} else if (entity instanceof FallingBlockEntity) {
 			this.add(entity, 160, 20, true);
@@ -197,6 +183,14 @@ public class EntityTracker {
 		}
 	}
 
+	public void method_14072(ServerPlayerEntity serverPlayerEntity) {
+		for (EntityTrackerEntry entityTrackerEntry : this.trackedEntities) {
+			entityTrackerEntry.method_14302(serverPlayerEntity);
+		}
+
+		this.remove(serverPlayerEntity);
+	}
+
 	public void method_14078() {
 		List<ServerPlayerEntity> list = Lists.<ServerPlayerEntity>newArrayList();
 
@@ -242,12 +236,6 @@ public class EntityTracker {
 		EntityTrackerEntry entityTrackerEntry = this.trackedEntitiesById.get(entity.getEntityId());
 		if (entityTrackerEntry != null) {
 			entityTrackerEntry.sendToTrackingPlayersAndSelf(packet);
-		}
-	}
-
-	public void method_14072(ServerPlayerEntity serverPlayerEntity) {
-		for (EntityTrackerEntry entityTrackerEntry : this.trackedEntities) {
-			entityTrackerEntry.method_14301(serverPlayerEntity);
 		}
 	}
 

@@ -936,7 +936,7 @@ public class Items {
 		"husk_spawn_egg", new SpawnEggItem(EntityType.HUSK, 7958625, 15125652, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8297 = register(
-		"illager_beast_spawn_egg", new SpawnEggItem(EntityType.ILLAGER_BEAST, 7697520, 5984329, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"ravager_spawn_egg", new SpawnEggItem(EntityType.ILLAGER_BEAST, 7697520, 5984329, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8633 = register(
 		"llama_spawn_egg", new SpawnEggItem(EntityType.LLAMA, 12623485, 10051392, new Item.Settings().itemGroup(ItemGroup.MISC))
@@ -1007,6 +1007,9 @@ public class Items {
 	public static final Item field_8514 = register(
 		"stray_spawn_egg", new SpawnEggItem(EntityType.STRAY, 6387319, 14543594, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
+	public static final Item field_17731 = register(
+		"trader_llama_spawn_egg", new SpawnEggItem(EntityType.field_17714, 15377456, 4547222, new Item.Settings().itemGroup(ItemGroup.MISC))
+	);
 	public static final Item field_8612 = register(
 		"tropical_fish_spawn_egg", new SpawnEggItem(EntityType.TROPICAL_FISH, 15690005, 16775663, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
@@ -1021,6 +1024,9 @@ public class Items {
 	);
 	public static final Item field_8149 = register(
 		"vindicator_spawn_egg", new SpawnEggItem(EntityType.VINDICATOR, 9804699, 2580065, new Item.Settings().itemGroup(ItemGroup.MISC))
+	);
+	public static final Item field_17732 = register(
+		"wandering_trader_spawn_egg", new SpawnEggItem(EntityType.field_17713, 4547222, 15377456, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8254 = register(
 		"witch_spawn_egg", new SpawnEggItem(EntityType.WITCH, 3407872, 5349438, new Item.Settings().itemGroup(ItemGroup.MISC))

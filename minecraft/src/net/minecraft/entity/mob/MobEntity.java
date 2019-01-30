@@ -104,11 +104,11 @@ public abstract class MobEntity extends LivingEntity {
 		Arrays.fill(this.armorDropChances, 0.085F);
 		Arrays.fill(this.handDropChances, 0.085F);
 		if (world != null && !world.isClient) {
-			this.method_5959();
+			this.initGoals();
 		}
 	}
 
-	protected void method_5959() {
+	protected void initGoals() {
 	}
 
 	@Override
@@ -187,7 +187,7 @@ public abstract class MobEntity extends LivingEntity {
 		this.dataTracker.startTracking(MOB_FLAGS, (byte)0);
 	}
 
-	public int method_5970() {
+	public int getMinAmbientSoundDelay() {
 		return 80;
 	}
 
@@ -217,7 +217,7 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	private void method_5975() {
-		this.field_6191 = -this.method_5970();
+		this.field_6191 = -this.getMinAmbientSoundDelay();
 	}
 
 	@Override
@@ -655,7 +655,7 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	public boolean method_5957(ViewableWorld viewableWorld) {
-		return !viewableWorld.method_8599(this.getBoundingBox()) && viewableWorld.method_8606(this, this.getBoundingBox());
+		return !viewableWorld.isInFluid(this.getBoundingBox()) && viewableWorld.method_8606(this);
 	}
 
 	public int getLimitPerChunk() {
@@ -959,6 +959,11 @@ public abstract class MobEntity extends LivingEntity {
 	public void detachLeash(boolean bl, boolean bl2) {
 		if (this.leashed) {
 			this.leashed = false;
+			this.teleporting = false;
+			if (!(this.holdingEntity instanceof PlayerEntity)) {
+				this.holdingEntity.teleporting = false;
+			}
+
 			this.holdingEntity = null;
 			if (!this.world.isClient && bl2) {
 				this.dropItem(Items.field_8719);
@@ -985,6 +990,11 @@ public abstract class MobEntity extends LivingEntity {
 	public void attachLeash(Entity entity, boolean bl) {
 		this.leashed = true;
 		this.holdingEntity = entity;
+		this.teleporting = true;
+		if (!(this.holdingEntity instanceof PlayerEntity)) {
+			this.holdingEntity.teleporting = true;
+		}
+
 		if (!this.world.isClient && bl && this.world instanceof ServerWorld) {
 			((ServerWorld)this.world).getEntityTracker().method_14079(this, new EntityAttachClientPacket(this, this.holdingEntity));
 		}
@@ -1158,7 +1168,7 @@ public abstract class MobEntity extends LivingEntity {
 
 	@Override
 	protected void method_6010(Tag<Fluid> tag) {
-		if (this.getNavigation().method_6350()) {
+		if (this.getNavigation().canSwim()) {
 			super.method_6010(tag);
 		} else {
 			this.velocityY += 0.3F;

@@ -64,6 +64,9 @@ public class BlockSoundGroup {
 	public static final BlockSoundGroup NETHER_WART = new BlockSoundGroup(
 		1.0F, 1.0F, SoundEvents.field_17612, SoundEvents.field_14921, SoundEvents.field_17613, SoundEvents.field_14658, SoundEvents.field_14723
 	);
+	public static final BlockSoundGroup LANTERN = new BlockSoundGroup(
+		1.0F, 1.0F, SoundEvents.field_17745, SoundEvents.field_17744, SoundEvents.field_17743, SoundEvents.field_17742, SoundEvents.field_17746
+	);
 	public final float volume;
 	public final float pitch;
 	private final SoundEvent breakSound;

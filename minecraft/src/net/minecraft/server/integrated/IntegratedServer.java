@@ -25,6 +25,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.ICrashCallable;
+import net.minecraft.util.profiler.DisableableProfiler;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
@@ -120,10 +121,13 @@ public class IntegratedServer extends MinecraftServer {
 	public void method_3748(BooleanSupplier booleanSupplier) {
 		boolean bl = this.field_5524;
 		this.field_5524 = MinecraftClient.getInstance().getNetworkHandler() != null && MinecraftClient.getInstance().method_1493();
+		DisableableProfiler disableableProfiler = this.getProfiler();
 		if (!bl && this.field_5524) {
+			disableableProfiler.push("autoSave");
 			LOGGER.info("Saving and pausing game...");
 			this.getPlayerManager().saveAllPlayerData();
 			this.save(false, true, false);
+			disableableProfiler.pop();
 		}
 
 		if (!this.field_5524) {

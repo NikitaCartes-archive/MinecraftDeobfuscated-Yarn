@@ -32,14 +32,14 @@ public class SpiderNavigation extends EntityMobNavigation {
 			return this.startMovingAlong(path, d);
 		} else {
 			this.field_6687 = new BlockPos(entity);
-			this.field_6668 = d;
+			this.speed = d;
 			return true;
 		}
 	}
 
 	@Override
 	public void tick() {
-		if (!this.method_6357()) {
+		if (!this.isIdle()) {
 			super.tick();
 		} else {
 			if (this.field_6687 != null) {
@@ -49,7 +49,7 @@ public class SpiderNavigation extends EntityMobNavigation {
 						!(this.entity.y > (double)this.field_6687.getY())
 							|| !(this.entity.squaredDistanceToCenter(new BlockPos(this.field_6687.getX(), MathHelper.floor(this.entity.y), this.field_6687.getZ())) < d)
 					)) {
-					this.entity.getMoveControl().method_6239((double)this.field_6687.getX(), (double)this.field_6687.getY(), (double)this.field_6687.getZ(), this.field_6668);
+					this.entity.getMoveControl().moveTo((double)this.field_6687.getX(), (double)this.field_6687.getY(), (double)this.field_6687.getZ(), this.speed);
 				} else {
 					this.field_6687 = null;
 				}

@@ -582,7 +582,7 @@ public class PlayerInventory implements Inventory, Nameable {
 		return this.player.invalid ? false : !(playerEntity.squaredDistanceTo(this.player) > 64.0);
 	}
 
-	public boolean method_7379(ItemStack itemStack) {
+	public boolean containsStack(ItemStack itemStack) {
 		for (List<ItemStack> list : this.field_7543) {
 			for (ItemStack itemStack2 : list) {
 				if (!itemStack2.isEmpty() && itemStack2.isEqualIgnoreTags(itemStack)) {

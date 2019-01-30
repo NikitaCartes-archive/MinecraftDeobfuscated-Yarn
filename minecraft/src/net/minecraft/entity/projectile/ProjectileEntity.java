@@ -11,6 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.network.packet.EntitySpawnClientPacket;
 import net.minecraft.client.network.packet.GameStateChangeClientPacket;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -27,6 +28,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.sortme.Projectile;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -204,7 +206,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 		}
 
 		if (this.inGround && !bl) {
-			if (this.inBlockState != blockState && this.world.method_8587(null, this.getBoundingBox().expand(0.05))) {
+			if (this.inBlockState != blockState && this.world.method_18026(this.getBoundingBox().expand(0.05))) {
 				this.inGround = false;
 				this.velocityX = this.velocityX * (double)(this.random.nextFloat() * 0.2F);
 				this.velocityY = this.velocityY * (double)(this.random.nextFloat() * 0.2F);
@@ -571,7 +573,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 		}
 
 		if (compoundTag.containsKey("SoundEvent", 8)) {
-			this.sound = (SoundEvent)Registry.SOUND_EVENT.method_17966(new Identifier(compoundTag.getString("SoundEvent"))).orElse(null);
+			this.sound = (SoundEvent)Registry.SOUND_EVENT.getOptional(new Identifier(compoundTag.getString("SoundEvent"))).orElse(null);
 		}
 
 		this.setShotFromCrossbow(compoundTag.getBoolean("ShotFromCrossbow"));
@@ -579,6 +581,9 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 
 	public void setOwner(@Nullable Entity entity) {
 		this.ownerUuid = entity == null ? null : entity.getUuid();
+		if (entity instanceof PlayerEntity) {
+			this.pickupType = ((PlayerEntity)entity).abilities.creativeMode ? ProjectileEntity.PickupType.CREATIVE_PICKUP : ProjectileEntity.PickupType.PICKUP;
+		}
 	}
 
 	@Nullable
@@ -695,6 +700,12 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 
 	public void setShotFromCrossbow(boolean bl) {
 		this.setFlag(4, bl);
+	}
+
+	@Override
+	public Packet<?> createSpawnPacket() {
+		Entity entity = this.getOwner();
+		return new EntitySpawnClientPacket(this, entity == null ? 0 : entity.getEntityId());
 	}
 
 	public static enum PickupType {

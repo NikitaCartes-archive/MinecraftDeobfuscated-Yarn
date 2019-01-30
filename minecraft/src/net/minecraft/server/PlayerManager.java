@@ -182,7 +182,7 @@ public abstract class PlayerManager {
 
 		if (compoundTag != null && compoundTag.containsKey("RootVehicle", 10)) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("RootVehicle");
-			Entity entity = EntityType.method_17844(compoundTag2.getCompound("Entity"), serverWorld, true);
+			Entity entity = EntityType.loadEntityWithPassengers(compoundTag2.getCompound("Entity"), serverWorld, true);
 			if (entity != null) {
 				UUID uUID = compoundTag2.getUuid("Attach");
 				if (entity.getUuid().equals(uUID)) {
@@ -465,7 +465,7 @@ public abstract class PlayerManager {
 			}
 		}
 
-		while (!serverWorld.method_8587(serverPlayerEntity2, serverPlayerEntity2.getBoundingBox()) && serverPlayerEntity2.y < 256.0) {
+		while (!serverWorld.method_17892(serverPlayerEntity2) && serverPlayerEntity2.y < 256.0) {
 			serverPlayerEntity2.setPosition(serverPlayerEntity2.x, serverPlayerEntity2.y + 1.0, serverPlayerEntity2.z);
 		}
 

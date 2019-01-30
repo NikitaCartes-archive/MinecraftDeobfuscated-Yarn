@@ -377,7 +377,7 @@ public class EnderDragonFight {
 				(ChunkGenerator<? extends ChunkGeneratorConfig>)this.world.getChunkManager().getChunkGenerator(),
 				new Random(),
 				blockPos,
-				new EndGatewayFeatureConfig(false)
+				EndGatewayFeatureConfig.method_18030()
 			);
 	}
 

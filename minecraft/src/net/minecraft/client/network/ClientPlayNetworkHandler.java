@@ -176,7 +176,7 @@ import net.minecraft.entity.FireworkEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.PrimedTNTEntity;
+import net.minecraft.entity.PrimedTntEntity;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
@@ -212,8 +212,14 @@ import net.minecraft.entity.thrown.ThrownEggEntity;
 import net.minecraft.entity.thrown.ThrownEnderpearlEntity;
 import net.minecraft.entity.thrown.ThrownExperienceBottleEntity;
 import net.minecraft.entity.thrown.ThrownPotionEntity;
-import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.ChestMinecartEntity;
+import net.minecraft.entity.vehicle.CommandBlockMinecartEntity;
+import net.minecraft.entity.vehicle.FurnaceMinecartEntity;
+import net.minecraft.entity.vehicle.HopperMinecartEntity;
+import net.minecraft.entity.vehicle.MinecartEntity;
+import net.minecraft.entity.vehicle.MobSpawnerMinecartEntity;
+import net.minecraft.entity.vehicle.TNTMinecartEntity;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemGroup;
@@ -236,7 +242,6 @@ import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.ScoreboardTeam;
 import net.minecraft.server.command.CommandSource;
-import net.minecraft.server.network.EntityTracker;
 import net.minecraft.server.network.packet.ClientStatusServerPacket;
 import net.minecraft.server.network.packet.CustomPayloadServerPacket;
 import net.minecraft.server.network.packet.GuiActionConfirmServerPacket;
@@ -346,129 +351,106 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		double e = entitySpawnClientPacket.getY();
 		double f = entitySpawnClientPacket.getZ();
 		Entity entity = null;
-		if (entitySpawnClientPacket.getEntityTypeId() == 10) {
-			entity = AbstractMinecartEntity.create(this.world, d, e, f, AbstractMinecartEntity.Type.byId(entitySpawnClientPacket.getEntityData()));
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 90) {
+		EntityType<?> entityType = entitySpawnClientPacket.getEntityTypeId();
+		if (entityType == EntityType.CHEST_MINECART) {
+			entity = new ChestMinecartEntity(this.world, d, e, f);
+		} else if (entityType == EntityType.FURNACE_MINECART) {
+			entity = new FurnaceMinecartEntity(this.world, d, e, f);
+		} else if (entityType == EntityType.TNT_MINECART) {
+			entity = new TNTMinecartEntity(this.world, d, e, f);
+		} else if (entityType == EntityType.SPAWNER_MINECART) {
+			entity = new MobSpawnerMinecartEntity(this.world, d, e, f);
+		} else if (entityType == EntityType.HOPPER_MINECART) {
+			entity = new HopperMinecartEntity(this.world, d, e, f);
+		} else if (entityType == EntityType.COMMAND_BLOCK_MINECART) {
+			entity = new CommandBlockMinecartEntity(this.world, d, e, f);
+		} else if (entityType == EntityType.MINECART) {
+			entity = new MinecartEntity(this.world, d, e, f);
+		} else if (entityType == EntityType.FISHING_BOBBER) {
 			Entity entity2 = this.world.getEntityById(entitySpawnClientPacket.getEntityData());
 			if (entity2 instanceof PlayerEntity) {
 				entity = new FishHookEntity(this.world, (PlayerEntity)entity2, d, e, f);
 			}
-
-			entitySpawnClientPacket.setEntityData(0);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 60) {
+		} else if (entityType == EntityType.ARROW) {
 			entity = new ArrowEntity(this.world, d, e, f);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 91) {
+			Entity entity2 = this.world.getEntityById(entitySpawnClientPacket.getEntityData());
+			if (entity2 != null) {
+				((ProjectileEntity)entity).setOwner(entity2);
+			}
+		} else if (entityType == EntityType.SPECTRAL_ARROW) {
 			entity = new SpectralArrowEntity(this.world, d, e, f);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 94) {
+			Entity entity2 = this.world.getEntityById(entitySpawnClientPacket.getEntityData());
+			if (entity2 != null) {
+				((ProjectileEntity)entity).setOwner(entity2);
+			}
+		} else if (entityType == EntityType.TRIDENT) {
 			entity = new TridentEntity(this.world, d, e, f);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 61) {
+			Entity entity2 = this.world.getEntityById(entitySpawnClientPacket.getEntityData());
+			if (entity2 != null) {
+				((ProjectileEntity)entity).setOwner(entity2);
+			}
+		} else if (entityType == EntityType.SNOWBALL) {
 			entity = new SnowballEntity(this.world, d, e, f);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 68) {
+		} else if (entityType == EntityType.LLAMA_SPIT) {
 			entity = new LlamaSpitEntity(
-				this.world,
-				d,
-				e,
-				f,
-				(double)entitySpawnClientPacket.getVelocityX() / 8000.0,
-				(double)entitySpawnClientPacket.getVelocityY() / 8000.0,
-				(double)entitySpawnClientPacket.getVelocityz() / 8000.0
+				this.world, d, e, f, entitySpawnClientPacket.getVelocityX(), entitySpawnClientPacket.getVelocityY(), entitySpawnClientPacket.getVelocityz()
 			);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 71) {
+		} else if (entityType == EntityType.ITEM_FRAME) {
 			entity = new ItemFrameEntity(this.world, new BlockPos(d, e, f), Direction.byId(entitySpawnClientPacket.getEntityData()));
-			entitySpawnClientPacket.setEntityData(0);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 77) {
-			entity = new LeadKnotEntity(this.world, new BlockPos(MathHelper.floor(d), MathHelper.floor(e), MathHelper.floor(f)));
-			entitySpawnClientPacket.setEntityData(0);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 65) {
+		} else if (entityType == EntityType.LEASH_KNOT) {
+			entity = new LeadKnotEntity(this.world, new BlockPos(d, e, f));
+		} else if (entityType == EntityType.ENDER_PEARL) {
 			entity = new ThrownEnderpearlEntity(this.world, d, e, f);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 72) {
+		} else if (entityType == EntityType.EYE_OF_ENDER) {
 			entity = new EnderEyeEntity(this.world, d, e, f);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 76) {
+		} else if (entityType == EntityType.FIREWORK_ROCKET) {
 			entity = new FireworkEntity(this.world, d, e, f, ItemStack.EMPTY);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 63) {
+		} else if (entityType == EntityType.FIREBALL) {
 			entity = new FireballEntity(
-				this.world,
-				d,
-				e,
-				f,
-				(double)entitySpawnClientPacket.getVelocityX() / 8000.0,
-				(double)entitySpawnClientPacket.getVelocityY() / 8000.0,
-				(double)entitySpawnClientPacket.getVelocityz() / 8000.0
+				this.world, d, e, f, entitySpawnClientPacket.getVelocityX(), entitySpawnClientPacket.getVelocityY(), entitySpawnClientPacket.getVelocityz()
 			);
-			entitySpawnClientPacket.setEntityData(0);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 93) {
+		} else if (entityType == EntityType.DRAGON_FIREBALL) {
 			entity = new DragonFireballEntity(
-				this.world,
-				d,
-				e,
-				f,
-				(double)entitySpawnClientPacket.getVelocityX() / 8000.0,
-				(double)entitySpawnClientPacket.getVelocityY() / 8000.0,
-				(double)entitySpawnClientPacket.getVelocityz() / 8000.0
+				this.world, d, e, f, entitySpawnClientPacket.getVelocityX(), entitySpawnClientPacket.getVelocityY(), entitySpawnClientPacket.getVelocityz()
 			);
-			entitySpawnClientPacket.setEntityData(0);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 64) {
+		} else if (entityType == EntityType.SMALL_FIREBALL) {
 			entity = new SmallFireballEntity(
-				this.world,
-				d,
-				e,
-				f,
-				(double)entitySpawnClientPacket.getVelocityX() / 8000.0,
-				(double)entitySpawnClientPacket.getVelocityY() / 8000.0,
-				(double)entitySpawnClientPacket.getVelocityz() / 8000.0
+				this.world, d, e, f, entitySpawnClientPacket.getVelocityX(), entitySpawnClientPacket.getVelocityY(), entitySpawnClientPacket.getVelocityz()
 			);
-			entitySpawnClientPacket.setEntityData(0);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 66) {
+		} else if (entityType == EntityType.WITHER_SKULL) {
 			entity = new ExplodingWitherSkullEntity(
-				this.world,
-				d,
-				e,
-				f,
-				(double)entitySpawnClientPacket.getVelocityX() / 8000.0,
-				(double)entitySpawnClientPacket.getVelocityY() / 8000.0,
-				(double)entitySpawnClientPacket.getVelocityz() / 8000.0
+				this.world, d, e, f, entitySpawnClientPacket.getVelocityX(), entitySpawnClientPacket.getVelocityY(), entitySpawnClientPacket.getVelocityz()
 			);
-			entitySpawnClientPacket.setEntityData(0);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 67) {
+		} else if (entityType == EntityType.SHULKER_BULLET) {
 			entity = new ShulkerBulletEntity(
-				this.world,
-				d,
-				e,
-				f,
-				(double)entitySpawnClientPacket.getVelocityX() / 8000.0,
-				(double)entitySpawnClientPacket.getVelocityY() / 8000.0,
-				(double)entitySpawnClientPacket.getVelocityz() / 8000.0
+				this.world, d, e, f, entitySpawnClientPacket.getVelocityX(), entitySpawnClientPacket.getVelocityY(), entitySpawnClientPacket.getVelocityz()
 			);
-			entitySpawnClientPacket.setEntityData(0);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 62) {
+		} else if (entityType == EntityType.EGG) {
 			entity = new ThrownEggEntity(this.world, d, e, f);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 79) {
+		} else if (entityType == EntityType.EVOKER_FANGS) {
 			entity = new EvokerFangsEntity(this.world, d, e, f, 0.0F, 0, null);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 73) {
+		} else if (entityType == EntityType.POTION) {
 			entity = new ThrownPotionEntity(this.world, d, e, f);
-			entitySpawnClientPacket.setEntityData(0);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 75) {
+		} else if (entityType == EntityType.EXPERIENCE_BOTTLE) {
 			entity = new ThrownExperienceBottleEntity(this.world, d, e, f);
-			entitySpawnClientPacket.setEntityData(0);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 1) {
+		} else if (entityType == EntityType.BOAT) {
 			entity = new BoatEntity(this.world, d, e, f);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 50) {
-			entity = new PrimedTNTEntity(this.world, d, e, f, null);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 78) {
+		} else if (entityType == EntityType.TNT) {
+			entity = new PrimedTntEntity(this.world, d, e, f, null);
+		} else if (entityType == EntityType.ARMOR_STAND) {
 			entity = new ArmorStandEntity(this.world, d, e, f);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 51) {
+		} else if (entityType == EntityType.END_CRYSTAL) {
 			entity = new EnderCrystalEntity(this.world, d, e, f);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 2) {
+		} else if (entityType == EntityType.ITEM) {
 			entity = new ItemEntity(this.world, d, e, f);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 70) {
+		} else if (entityType == EntityType.FALLING_BLOCK) {
 			entity = new FallingBlockEntity(this.world, d, e, f, Block.getStateFromRawId(entitySpawnClientPacket.getEntityData()));
-			entitySpawnClientPacket.setEntityData(0);
-		} else if (entitySpawnClientPacket.getEntityTypeId() == 3) {
+		} else if (entityType == EntityType.AREA_EFFECT_CLOUD) {
 			entity = new AreaEffectCloudEntity(this.world, d, e, f);
 		}
 
 		if (entity != null) {
-			EntityTracker.method_14070(entity, d, e, f);
+			entity.method_18003(d, e, f);
 			entity.pitch = (float)(entitySpawnClientPacket.getPitch() * 360) / 256.0F;
 			entity.yaw = (float)(entitySpawnClientPacket.getYaw() * 360) / 256.0F;
 			Entity[] entitys = entity.getParts();
@@ -483,27 +465,6 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			entity.setEntityId(entitySpawnClientPacket.getId());
 			entity.setUuid(entitySpawnClientPacket.getUuid());
 			this.world.method_2942(entitySpawnClientPacket.getId(), entity);
-			if (entitySpawnClientPacket.getEntityData() > 0) {
-				if (entitySpawnClientPacket.getEntityTypeId() == 60 || entitySpawnClientPacket.getEntityTypeId() == 91 || entitySpawnClientPacket.getEntityTypeId() == 94) {
-					Entity entity4 = this.world.getEntityById(entitySpawnClientPacket.getEntityData() - 1);
-					if (entity4 instanceof LivingEntity && entity instanceof ProjectileEntity) {
-						ProjectileEntity projectileEntity = (ProjectileEntity)entity;
-						projectileEntity.setOwner(entity4);
-						if (entity4 instanceof PlayerEntity) {
-							projectileEntity.pickupType = ProjectileEntity.PickupType.PICKUP;
-							if (((PlayerEntity)entity4).abilities.creativeMode) {
-								projectileEntity.pickupType = ProjectileEntity.PickupType.CREATIVE_PICKUP;
-							}
-						}
-					}
-				}
-
-				entity.setVelocityClient(
-					(double)entitySpawnClientPacket.getVelocityX() / 8000.0,
-					(double)entitySpawnClientPacket.getVelocityY() / 8000.0,
-					(double)entitySpawnClientPacket.getVelocityz() / 8000.0
-				);
-			}
 		}
 	}
 
@@ -514,7 +475,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		double e = experienceOrbSpawnClientPacket.getY();
 		double f = experienceOrbSpawnClientPacket.getZ();
 		Entity entity = new ExperienceOrbEntity(this.world, d, e, f, experienceOrbSpawnClientPacket.getExperience());
-		EntityTracker.method_14070(entity, d, e, f);
+		entity.method_18003(d, e, f);
 		entity.yaw = 0.0F;
 		entity.pitch = 0.0F;
 		entity.setEntityId(experienceOrbSpawnClientPacket.getId());
@@ -527,17 +488,13 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		double d = entitySpawnGlobalClientPacket.getX();
 		double e = entitySpawnGlobalClientPacket.getY();
 		double f = entitySpawnGlobalClientPacket.getZ();
-		Entity entity = null;
 		if (entitySpawnGlobalClientPacket.getEntityTypeId() == 1) {
-			entity = new LightningEntity(this.world, d, e, f, false);
-		}
-
-		if (entity != null) {
-			EntityTracker.method_14070(entity, d, e, f);
-			entity.yaw = 0.0F;
-			entity.pitch = 0.0F;
-			entity.setEntityId(entitySpawnGlobalClientPacket.getId());
-			this.world.addGlobalEntity(entity);
+			LightningEntity lightningEntity = new LightningEntity(this.world, d, e, f, false);
+			lightningEntity.method_18003(d, e, f);
+			lightningEntity.yaw = 0.0F;
+			lightningEntity.pitch = 0.0F;
+			lightningEntity.setEntityId(entitySpawnGlobalClientPacket.getId());
+			this.world.addGlobalEntity(lightningEntity);
 		}
 	}
 
@@ -590,7 +547,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		otherClientPlayerEntity.prevRenderY = e;
 		otherClientPlayerEntity.prevZ = f;
 		otherClientPlayerEntity.prevRenderZ = f;
-		EntityTracker.method_14070(otherClientPlayerEntity, d, e, f);
+		otherClientPlayerEntity.method_18003(d, e, f);
 		otherClientPlayerEntity.setPositionAnglesAndUpdate(d, e, f, g, h);
 		this.world.method_2942(playerSpawnClientPacket.getId(), otherClientPlayerEntity);
 		List<DataTracker.Entry<?>> list = playerSpawnClientPacket.getTrackedValues();
@@ -607,7 +564,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			double d = entityPositionClientPacket.getX();
 			double e = entityPositionClientPacket.getY();
 			double f = entityPositionClientPacket.getZ();
-			EntityTracker.method_14070(entity, d, e, f);
+			entity.method_18003(d, e, f);
 			if (!entity.method_5787()) {
 				float g = (float)(entityPositionClientPacket.getYaw() * 360) / 256.0F;
 				float h = (float)(entityPositionClientPacket.getPitch() * 360) / 256.0F;
@@ -741,7 +698,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		int j = chunkDataClientPacket.getZ();
 		this.world
 			.getChunkProvider()
-			.method_16020(
+			.loadChunkFromPacket(
 				this.world,
 				i,
 				j,
@@ -769,7 +726,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(unloadChunkClientPacket, this, this.client);
 		int i = unloadChunkClientPacket.getX();
 		int j = unloadChunkClientPacket.getZ();
-		this.world.getChunkProvider().method_2859(i, j);
+		this.world.getChunkProvider().unload(i, j);
 
 		for (int k = 0; k < 16; k++) {
 			this.world.scheduleNeighborChunksRender(i, k, j);
@@ -896,7 +853,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		float h = (float)(mobSpawnClientPacket.getVelocityY() * 360) / 256.0F;
 		LivingEntity livingEntity = (LivingEntity)EntityType.createInstanceFromId(mobSpawnClientPacket.getEntityTypeId(), this.client.world);
 		if (livingEntity != null) {
-			EntityTracker.method_14070(livingEntity, d, e, f);
+			livingEntity.method_18003(d, e, f);
 			livingEntity.field_6283 = (float)(mobSpawnClientPacket.getVelocityZ() * 360) / 256.0F;
 			livingEntity.headYaw = (float)(mobSpawnClientPacket.getVelocityZ() * 360) / 256.0F;
 			Entity[] entitys = livingEntity.getParts();
@@ -2054,7 +2011,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onCraftResponse(CraftResponseClientPacket craftResponseClientPacket) {
 		NetworkThreadUtils.forceMainThread(craftResponseClientPacket, this, this.client);
 		Container container = this.client.player.container;
-		if (container.syncId == craftResponseClientPacket.getSyncId() && container.method_7622(this.client.player)) {
+		if (container.syncId == craftResponseClientPacket.getSyncId() && container.isRestricted(this.client.player)) {
 			this.recipeManager.get(craftResponseClientPacket.getRecipeId()).ifPresent(recipe -> {
 				if (this.client.currentScreen instanceof RecipeBookProvider) {
 					RecipeBookGui recipeBookGui = ((RecipeBookProvider)this.client.currentScreen).getRecipeBookGui();

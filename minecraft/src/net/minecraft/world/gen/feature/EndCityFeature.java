@@ -83,11 +83,13 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 			l = -5;
 		}
 
-		int m = chunkGenerator.produceHeight(i + 7, j + 7, Heightmap.Type.WORLD_SURFACE_WG);
-		int n = chunkGenerator.produceHeight(i + 7, j + 7 + l, Heightmap.Type.WORLD_SURFACE_WG);
-		int o = chunkGenerator.produceHeight(i + 7 + k, j + 7, Heightmap.Type.WORLD_SURFACE_WG);
-		int p = chunkGenerator.produceHeight(i + 7 + k, j + 7 + l, Heightmap.Type.WORLD_SURFACE_WG);
-		return Math.min(Math.min(m, n), Math.min(o, p));
+		int m = (i << 4) + 7;
+		int n = (j << 4) + 7;
+		int o = chunkGenerator.method_18028(m, n, Heightmap.Type.WORLD_SURFACE_WG);
+		int p = chunkGenerator.method_18028(m, n + l, Heightmap.Type.WORLD_SURFACE_WG);
+		int q = chunkGenerator.method_18028(m + k, n, Heightmap.Type.WORLD_SURFACE_WG);
+		int r = chunkGenerator.method_18028(m + k, n + l, Heightmap.Type.WORLD_SURFACE_WG);
+		return Math.min(Math.min(o, p), Math.min(q, r));
 	}
 
 	public static class class_3022 extends StructureStart {

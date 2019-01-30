@@ -95,7 +95,7 @@ public class LoomContainer extends Container {
 			this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 142));
 		}
 
-		this.method_17362(this.field_17317);
+		this.addProperty(this.field_17317);
 	}
 
 	@Environment(EnvType.CLIENT)

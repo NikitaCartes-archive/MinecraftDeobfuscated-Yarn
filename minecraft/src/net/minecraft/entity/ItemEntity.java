@@ -1,9 +1,11 @@
 package net.minecraft.entity;
 
+import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.network.packet.EntitySpawnClientPacket;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -13,6 +15,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Packet;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
@@ -20,7 +23,6 @@ import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -86,10 +88,13 @@ public class ItemEntity extends Entity {
 			if (this.world.isClient) {
 				this.noClip = false;
 			} else {
-				this.noClip = this.method_5632(this.x, (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.z);
+				this.noClip = !this.world.method_17892(this);
+				if (this.noClip) {
+					this.method_5632(this.x, (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.z);
+				}
 			}
 
-			this.move(MovementType.SELF, this.velocityX, this.velocityY, this.velocityZ);
+			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 			boolean bl = (int)this.prevX != (int)this.x || (int)this.prevY != (int)this.y || (int)this.prevZ != (int)this.z;
 			if (bl || this.age % 25 == 0) {
 				if (this.world.getFluidState(new BlockPos(this)).matches(FluidTags.field_15518)) {
@@ -106,11 +111,7 @@ public class ItemEntity extends Entity {
 
 			float g = 0.98F;
 			if (this.onGround) {
-				g = this.world
-						.getBlockState(new BlockPos(MathHelper.floor(this.x), MathHelper.floor(this.getBoundingBox().minY) - 1, MathHelper.floor(this.z)))
-						.getBlock()
-						.getFrictionCoefficient()
-					* 0.98F;
+				g = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getFrictionCoefficient() * 0.98F;
 			}
 
 			this.velocityX *= (double)g;
@@ -151,46 +152,57 @@ public class ItemEntity extends Entity {
 	}
 
 	private void tryMerge() {
-		for (ItemEntity itemEntity : this.world.getVisibleEntities(ItemEntity.class, this.getBoundingBox().expand(0.5, 0.0, 0.5))) {
-			this.tryMerge(itemEntity);
+		List<ItemEntity> list = this.world.getVisibleEntities(ItemEntity.class, this.getBoundingBox().expand(0.5, 0.0, 0.5));
+		if (!list.isEmpty()) {
+			for (ItemEntity itemEntity : list) {
+				this.tryMerge(itemEntity);
+			}
 		}
 	}
 
 	private boolean tryMerge(ItemEntity itemEntity) {
 		if (itemEntity == this) {
 			return false;
-		} else if (itemEntity.isValid() && this.isValid()) {
+		} else if (!itemEntity.isValid() || !this.isValid()) {
+			return false;
+		} else if (this.pickupDelay == 32767 || itemEntity.pickupDelay == 32767) {
+			return false;
+		} else if (this.age != -32768 && itemEntity.age != -32768) {
 			ItemStack itemStack = this.getStack();
-			ItemStack itemStack2 = itemEntity.getStack().copy();
-			if (this.pickupDelay == 32767 || itemEntity.pickupDelay == 32767) {
+			if (itemStack.getAmount() == itemStack.getMaxAmount()) {
 				return false;
-			} else if (this.age != -32768 && itemEntity.age != -32768) {
+			} else {
+				ItemStack itemStack2 = itemEntity.getStack();
 				if (itemStack2.getItem() != itemStack.getItem()) {
+					return false;
+				} else if (itemStack2.getAmount() + itemStack.getAmount() > itemStack2.getMaxAmount()) {
 					return false;
 				} else if (itemStack2.hasTag() ^ itemStack.hasTag()) {
 					return false;
 				} else if (itemStack2.hasTag() && !itemStack2.getTag().equals(itemStack.getTag())) {
 					return false;
-				} else if (itemStack2.getItem() == null) {
-					return false;
-				} else if (itemStack2.getAmount() < itemStack.getAmount()) {
-					return itemEntity.tryMerge(this);
-				} else if (itemStack2.getAmount() + itemStack.getAmount() > itemStack2.getMaxAmount()) {
-					return false;
 				} else {
-					itemStack2.addAmount(itemStack.getAmount());
-					itemEntity.pickupDelay = Math.max(itemEntity.pickupDelay, this.pickupDelay);
-					itemEntity.age = Math.min(itemEntity.age, this.age);
-					itemEntity.setStack(itemStack2);
-					this.invalidate();
+					if (itemStack2.getAmount() < itemStack.getAmount()) {
+						method_18006(this, itemStack, itemEntity, itemStack2);
+					} else {
+						method_18006(itemEntity, itemStack2, this, itemStack);
+					}
+
 					return true;
 				}
-			} else {
-				return false;
 			}
 		} else {
 			return false;
 		}
+	}
+
+	private static void method_18006(ItemEntity itemEntity, ItemStack itemStack, ItemEntity itemEntity2, ItemStack itemStack2) {
+		ItemStack itemStack3 = itemStack.copy();
+		itemStack3.addAmount(itemStack2.getAmount());
+		itemEntity.setStack(itemStack3);
+		itemEntity.pickupDelay = Math.max(itemEntity.pickupDelay, itemEntity2.pickupDelay);
+		itemEntity.age = Math.min(itemEntity.age, itemEntity2.age);
+		itemEntity2.invalidate();
 	}
 
 	public void method_6980() {
@@ -360,5 +372,10 @@ public class ItemEntity extends Entity {
 	public void method_6987() {
 		this.setPickupDelayInfinite();
 		this.age = 5999;
+	}
+
+	@Override
+	public Packet<?> createSpawnPacket() {
+		return new EntitySpawnClientPacket(this);
 	}
 }

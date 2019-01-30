@@ -3,8 +3,6 @@ package net.minecraft.entity.passive;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1361;
-import net.minecraft.class_1374;
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
 import net.minecraft.block.Block;
@@ -19,8 +17,10 @@ import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.control.JumpControl;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
+import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
@@ -66,11 +66,11 @@ public class RabbitEntity extends AnimalEntity {
 		super(EntityType.RABBIT, world);
 		this.jumpControl = new RabbitEntity.RabbitJumpControl(this);
 		this.moveControl = new RabbitEntity.RabbitMoveControl(this);
-		this.method_6606(0.0);
+		this.setSpeed(0.0);
 	}
 
 	@Override
-	protected void method_5959() {
+	protected void initGoals() {
 		this.goalSelector.add(1, new SwimGoal(this));
 		this.goalSelector.add(1, new RabbitEntity.class_1469(this, 2.2));
 		this.goalSelector.add(2, new AnimalMateGoal(this, 0.8));
@@ -80,21 +80,21 @@ public class RabbitEntity extends AnimalEntity {
 		this.goalSelector.add(4, new RabbitEntity.RabbitFleeGoal(this, HostileEntity.class, 4.0F, 2.2, 2.2));
 		this.goalSelector.add(5, new RabbitEntity.class_1470(this));
 		this.goalSelector.add(6, new class_1394(this, 0.6));
-		this.goalSelector.add(11, new class_1361(this, PlayerEntity.class, 10.0F));
+		this.goalSelector.add(11, new LookAtEntityGoal(this, PlayerEntity.class, 10.0F));
 	}
 
 	@Override
 	protected float method_6106() {
-		if (!this.horizontalCollision && (!this.moveControl.method_6241() || !(this.moveControl.method_6235() > this.y + 0.5))) {
-			Path path = this.navigation.method_6345();
-			if (path != null && path.getCurrentNodeIndex() < path.getPathLength()) {
+		if (!this.horizontalCollision && (!this.moveControl.isMoving() || !(this.moveControl.getTargetY() > this.y + 0.5))) {
+			Path path = this.navigation.getCurrentPath();
+			if (path != null && path.getCurrentNodeIndex() < path.getLength()) {
 				Vec3d vec3d = path.getNodePosition(this);
 				if (vec3d.y > this.y + 0.5) {
 					return 0.5F;
 				}
 			}
 
-			return this.moveControl.method_6242() <= 0.6 ? 0.2F : 0.3F;
+			return this.moveControl.getSpeed() <= 0.6 ? 0.2F : 0.3F;
 		} else {
 			return 0.5F;
 		}
@@ -103,7 +103,7 @@ public class RabbitEntity extends AnimalEntity {
 	@Override
 	protected void method_6043() {
 		super.method_6043();
-		double d = this.moveControl.method_6242();
+		double d = this.moveControl.getSpeed();
 		if (d > 0.0) {
 			double e = this.velocityX * this.velocityX + this.velocityZ * this.velocityZ;
 			if (e < 0.010000000000000002) {
@@ -121,9 +121,9 @@ public class RabbitEntity extends AnimalEntity {
 		return this.field_6849 == 0 ? 0.0F : ((float)this.field_6851 + f) / (float)this.field_6849;
 	}
 
-	public void method_6606(double d) {
-		this.getNavigation().method_6344(d);
-		this.moveControl.method_6239(this.moveControl.method_6236(), this.moveControl.method_6235(), this.moveControl.method_6237(), d);
+	public void setSpeed(double d) {
+		this.getNavigation().setSpeed(d);
+		this.moveControl.moveTo(this.moveControl.getTargetX(), this.moveControl.getTargetY(), this.moveControl.getTargetZ(), d);
 	}
 
 	@Override
@@ -169,7 +169,7 @@ public class RabbitEntity extends AnimalEntity {
 				LivingEntity livingEntity = this.getTarget();
 				if (livingEntity != null && this.squaredDistanceTo(livingEntity) < 16.0) {
 					this.method_6616(livingEntity.x, livingEntity.z);
-					this.moveControl.method_6239(livingEntity.x, livingEntity.y, livingEntity.z, this.moveControl.method_6242());
+					this.moveControl.moveTo(livingEntity.x, livingEntity.y, livingEntity.z, this.moveControl.getSpeed());
 					this.method_6618();
 					this.field_6850 = true;
 				}
@@ -177,10 +177,10 @@ public class RabbitEntity extends AnimalEntity {
 
 			RabbitEntity.RabbitJumpControl rabbitJumpControl = (RabbitEntity.RabbitJumpControl)this.jumpControl;
 			if (!rabbitJumpControl.isActive()) {
-				if (this.moveControl.method_6241() && this.field_6848 == 0) {
-					Path path = this.navigation.method_6345();
-					Vec3d vec3d = new Vec3d(this.moveControl.method_6236(), this.moveControl.method_6235(), this.moveControl.method_6237());
-					if (path != null && path.getCurrentNodeIndex() < path.getPathLength()) {
+				if (this.moveControl.isMoving() && this.field_6848 == 0) {
+					Path path = this.navigation.getCurrentPath();
+					Vec3d vec3d = new Vec3d(this.moveControl.getTargetX(), this.moveControl.getTargetY(), this.moveControl.getTargetZ());
+					if (path != null && path.getCurrentNodeIndex() < path.getLength()) {
 						vec3d = path.getNodePosition(this);
 					}
 
@@ -212,7 +212,7 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	private void method_6608() {
-		if (this.moveControl.method_6242() < 2.2) {
+		if (this.moveControl.getSpeed() < 2.2) {
 			this.field_6848 = 10;
 		} else {
 			this.field_6848 = 1;
@@ -456,21 +456,21 @@ public class RabbitEntity extends AnimalEntity {
 		@Override
 		public void tick() {
 			if (this.rabbit.onGround && !this.rabbit.field_6282 && !((RabbitEntity.RabbitJumpControl)this.rabbit.jumpControl).isActive()) {
-				this.rabbit.method_6606(0.0);
-			} else if (this.method_6241()) {
-				this.rabbit.method_6606(this.field_6858);
+				this.rabbit.setSpeed(0.0);
+			} else if (this.isMoving()) {
+				this.rabbit.setSpeed(this.field_6858);
 			}
 
 			super.tick();
 		}
 
 		@Override
-		public void method_6239(double d, double e, double f, double g) {
+		public void moveTo(double d, double e, double f, double g) {
 			if (this.rabbit.isInsideWater()) {
 				g = 1.5;
 			}
 
-			super.method_6239(d, e, f, g);
+			super.moveTo(d, e, f, g);
 			if (g > 0.0) {
 				this.field_6858 = g;
 			}
@@ -496,18 +496,18 @@ public class RabbitEntity extends AnimalEntity {
 		}
 	}
 
-	static class class_1469 extends class_1374 {
-		private final RabbitEntity field_6860;
+	static class class_1469 extends EscapeDangerGoal {
+		private final RabbitEntity owner;
 
 		public class_1469(RabbitEntity rabbitEntity, double d) {
 			super(rabbitEntity, d);
-			this.field_6860 = rabbitEntity;
+			this.owner = rabbitEntity;
 		}
 
 		@Override
 		public void tick() {
 			super.tick();
-			this.field_6860.method_6606(this.field_6548);
+			this.owner.setSpeed(this.speed);
 		}
 	}
 

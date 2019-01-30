@@ -6,13 +6,9 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1361;
-import net.minecraft.class_1376;
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
@@ -21,6 +17,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.RangedAttacker;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.LookAroundGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.ProjectileAttackGoal;
 import net.minecraft.entity.ai.pathing.EntityMobNavigation;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -42,6 +40,7 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.text.TextComponent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -72,17 +71,17 @@ public class EntityWither extends HostileEntity implements RangedAttacker {
 		super(EntityType.WITHER, world);
 		this.setHealth(this.getHealthMaximum());
 		this.fireImmune = true;
-		((EntityMobNavigation)this.getNavigation()).method_6354(true);
+		((EntityMobNavigation)this.getNavigation()).setCanSwim(true);
 		this.experiencePoints = 50;
 	}
 
 	@Override
-	protected void method_5959() {
+	protected void initGoals() {
 		this.goalSelector.add(0, new EntityWither.class_1529());
 		this.goalSelector.add(2, new ProjectileAttackGoal(this, 1.0, 40, 20.0F));
 		this.goalSelector.add(5, new class_1394(this, 1.0));
-		this.goalSelector.add(6, new class_1361(this, PlayerEntity.class, 8.0F));
-		this.goalSelector.add(7, new class_1376(this));
+		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
+		this.goalSelector.add(7, new LookAroundGoal(this));
 		this.targetSelector.add(1, new class_1399(this));
 		this.targetSelector.add(2, new FollowTargetGoal(this, MobEntity.class, 0, false, false, field_7086));
 	}
@@ -324,8 +323,7 @@ public class EntityWither extends HostileEntity implements RangedAttacker {
 								int r = l + n;
 								BlockPos blockPos = new BlockPos(p, q, r);
 								BlockState blockState = this.world.getBlockState(blockPos);
-								Block block = blockState.getBlock();
-								if (!blockState.isAir() && canDestroy(block)) {
+								if (canDestroy(blockState)) {
 									bl = this.world.breakBlock(blockPos, true) || bl;
 								}
 							}
@@ -346,18 +344,8 @@ public class EntityWither extends HostileEntity implements RangedAttacker {
 		}
 	}
 
-	public static boolean canDestroy(Block block) {
-		return block != Blocks.field_9987
-			&& block != Blocks.field_10027
-			&& block != Blocks.field_10398
-			&& block != Blocks.field_10525
-			&& block != Blocks.field_10263
-			&& block != Blocks.field_10395
-			&& block != Blocks.field_10499
-			&& block != Blocks.field_10465
-			&& block != Blocks.field_10369
-			&& block != Blocks.field_10008
-			&& block != Blocks.field_10613;
+	public static boolean canDestroy(BlockState blockState) {
+		return !blockState.isAir() && !BlockTags.field_17754.contains(blockState.getBlock());
 	}
 
 	public void method_6885() {

@@ -32,7 +32,7 @@ public abstract class MobEntityWithAi extends MobEntity {
 	}
 
 	public boolean method_6150() {
-		return !this.getNavigation().method_6357();
+		return !this.getNavigation().isIdle();
 	}
 
 	public boolean isInAiRange() {

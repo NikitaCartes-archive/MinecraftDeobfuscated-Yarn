@@ -5,11 +5,13 @@ import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.Registry;
 
 public class EntitySpawnClientPacket implements Packet<ClientPlayPacketListener> {
 	private int id;
@@ -22,44 +24,70 @@ public class EntitySpawnClientPacket implements Packet<ClientPlayPacketListener>
 	private int velocityZ;
 	private int pitch;
 	private int yaw;
-	private int entityTypeId;
+	private EntityType<?> entityTypeId;
 	private int entityData;
 
 	public EntitySpawnClientPacket() {
 	}
 
-	public EntitySpawnClientPacket(Entity entity, int i) {
-		this(entity, i, 0);
-	}
-
-	public EntitySpawnClientPacket(Entity entity, int i, int j) {
-		this.id = entity.getEntityId();
-		this.uuid = entity.getUuid();
-		this.x = entity.x;
-		this.y = entity.y;
-		this.z = entity.z;
-		this.pitch = MathHelper.floor(entity.pitch * 256.0F / 360.0F);
-		this.yaw = MathHelper.floor(entity.yaw * 256.0F / 360.0F);
-		this.entityTypeId = i;
+	public EntitySpawnClientPacket(int i, UUID uUID, double d, double e, double f, float g, float h, EntityType<?> entityType, int j, double k, double l, double m) {
+		this.id = i;
+		this.uuid = uUID;
+		this.x = d;
+		this.y = e;
+		this.z = f;
+		this.pitch = MathHelper.floor(g * 256.0F / 360.0F);
+		this.yaw = MathHelper.floor(h * 256.0F / 360.0F);
+		this.entityTypeId = entityType;
 		this.entityData = j;
-		double d = 3.9;
-		this.velocityX = (int)(MathHelper.clamp(entity.velocityX, -3.9, 3.9) * 8000.0);
-		this.velocityY = (int)(MathHelper.clamp(entity.velocityY, -3.9, 3.9) * 8000.0);
-		this.velocityZ = (int)(MathHelper.clamp(entity.velocityZ, -3.9, 3.9) * 8000.0);
+		this.velocityX = (int)(MathHelper.clamp(k, -3.9, 3.9) * 8000.0);
+		this.velocityY = (int)(MathHelper.clamp(l, -3.9, 3.9) * 8000.0);
+		this.velocityZ = (int)(MathHelper.clamp(m, -3.9, 3.9) * 8000.0);
 	}
 
-	public EntitySpawnClientPacket(Entity entity, int i, int j, BlockPos blockPos) {
-		this(entity, i, j);
-		this.x = (double)blockPos.getX();
-		this.y = (double)blockPos.getY();
-		this.z = (double)blockPos.getZ();
+	public EntitySpawnClientPacket(Entity entity) {
+		this(entity, 0);
+	}
+
+	public EntitySpawnClientPacket(Entity entity, int i) {
+		this(
+			entity.getEntityId(),
+			entity.getUuid(),
+			entity.x,
+			entity.y,
+			entity.z,
+			entity.pitch,
+			entity.yaw,
+			entity.getType(),
+			i,
+			entity.velocityX,
+			entity.velocityY,
+			entity.velocityZ
+		);
+	}
+
+	public EntitySpawnClientPacket(Entity entity, EntityType<?> entityType, int i, BlockPos blockPos) {
+		this(
+			entity.getEntityId(),
+			entity.getUuid(),
+			(double)blockPos.getY(),
+			(double)blockPos.getY(),
+			(double)blockPos.getZ(),
+			entity.pitch,
+			entity.yaw,
+			entityType,
+			i,
+			entity.velocityX,
+			entity.velocityY,
+			entity.velocityZ
+		);
 	}
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.id = packetByteBuf.readVarInt();
 		this.uuid = packetByteBuf.readUuid();
-		this.entityTypeId = packetByteBuf.readByte();
+		this.entityTypeId = Registry.ENTITY_TYPE.getInt(packetByteBuf.readVarInt());
 		this.x = packetByteBuf.readDouble();
 		this.y = packetByteBuf.readDouble();
 		this.z = packetByteBuf.readDouble();
@@ -75,7 +103,7 @@ public class EntitySpawnClientPacket implements Packet<ClientPlayPacketListener>
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeVarInt(this.id);
 		packetByteBuf.writeUuid(this.uuid);
-		packetByteBuf.writeByte(this.entityTypeId);
+		packetByteBuf.writeVarInt(Registry.ENTITY_TYPE.getRawId(this.entityTypeId));
 		packetByteBuf.writeDouble(this.x);
 		packetByteBuf.writeDouble(this.y);
 		packetByteBuf.writeDouble(this.z);
@@ -117,18 +145,18 @@ public class EntitySpawnClientPacket implements Packet<ClientPlayPacketListener>
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int getVelocityX() {
-		return this.velocityX;
+	public double getVelocityX() {
+		return (double)this.velocityX / 8000.0;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int getVelocityY() {
-		return this.velocityY;
+	public double getVelocityY() {
+		return (double)this.velocityY / 8000.0;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int getVelocityz() {
-		return this.velocityZ;
+	public double getVelocityz() {
+		return (double)this.velocityZ / 8000.0;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -142,29 +170,12 @@ public class EntitySpawnClientPacket implements Packet<ClientPlayPacketListener>
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int getEntityTypeId() {
+	public EntityType<?> getEntityTypeId() {
 		return this.entityTypeId;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public int getEntityData() {
 		return this.entityData;
-	}
-
-	public void setVelocityX(int i) {
-		this.velocityX = i;
-	}
-
-	public void setVelocityY(int i) {
-		this.velocityY = i;
-	}
-
-	public void setVelocityZ(int i) {
-		this.velocityZ = i;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public void setEntityData(int i) {
-		this.entityData = i;
 	}
 }

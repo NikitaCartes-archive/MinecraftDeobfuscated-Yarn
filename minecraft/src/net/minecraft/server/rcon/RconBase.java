@@ -37,6 +37,36 @@ public abstract class RconBase implements Runnable {
 		this.running = true;
 	}
 
+	public synchronized void method_18050() {
+		this.running = false;
+		if (null != this.thread) {
+			int i = 0;
+
+			while (this.thread.isAlive()) {
+				try {
+					this.thread.join(1000L);
+					if (5 <= ++i) {
+						this.warn("Waited " + i + " seconds attempting force stop!");
+						this.forceClose(true);
+					} else if (this.thread.isAlive()) {
+						this.warn("Thread " + this + " (" + this.thread.getState() + ") failed to exit after " + i + " second(s)");
+						this.warn("Stack:");
+
+						for (StackTraceElement stackTraceElement : this.thread.getStackTrace()) {
+							this.warn(stackTraceElement.toString());
+						}
+
+						this.thread.interrupt();
+					}
+				} catch (InterruptedException var6) {
+				}
+			}
+
+			this.forceClose(true);
+			this.thread = null;
+		}
+	}
+
 	public boolean isRunning() {
 		return this.running;
 	}

@@ -3,11 +3,13 @@ package net.minecraft.entity.projectile;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.network.packet.EntitySpawnClientPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -21,6 +23,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -46,6 +49,7 @@ public class FishHookEntity extends Entity {
 	private static final TrackedData<Integer> HOOK_ENTITY_ID = DataTracker.registerData(FishHookEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private boolean field_7176;
 	private int field_7167;
+	@Nullable
 	private PlayerEntity owner;
 	private int field_7166;
 	private int field_7173;
@@ -229,7 +233,7 @@ public class FishHookEntity extends Entity {
 				this.velocityY -= 0.03;
 			}
 
-			this.move(MovementType.SELF, this.velocityX, this.velocityY, this.velocityZ);
+			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 			this.method_6952();
 			double dx = 0.92;
 			this.velocityX *= 0.92;
@@ -432,8 +436,8 @@ public class FishHookEntity extends Entity {
 				i = this.hookedEntity instanceof ItemEntity ? 3 : 5;
 			} else if (this.field_7173 > 0) {
 				LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
-					.method_312(LootContextParameters.field_1232, new BlockPos(this))
-					.method_312(LootContextParameters.field_1229, itemStack)
+					.put(LootContextParameters.field_1232, new BlockPos(this))
+					.put(LootContextParameters.field_1229, itemStack)
 					.setRandom(this.random)
 					.setLuck((float)this.field_7171 + this.owner.getLuck());
 				LootSupplier lootSupplier = this.world.getServer().getLootManager().getSupplier(LootTables.GAMEPLAY_FISHING);
@@ -506,6 +510,7 @@ public class FishHookEntity extends Entity {
 		}
 	}
 
+	@Nullable
 	public PlayerEntity getOwner() {
 		return this.owner;
 	}
@@ -513,6 +518,12 @@ public class FishHookEntity extends Entity {
 	@Override
 	public boolean canUsePortals() {
 		return false;
+	}
+
+	@Override
+	public Packet<?> createSpawnPacket() {
+		Entity entity = this.getOwner();
+		return new EntitySpawnClientPacket(this, entity == null ? this.getEntityId() : entity.getEntityId());
 	}
 
 	static enum State {

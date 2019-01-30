@@ -28,7 +28,7 @@ public class EntitySummonArgumentType implements ArgumentType<Identifier> {
 	}
 
 	private static Identifier validate(Identifier identifier) throws CommandSyntaxException {
-		Registry.ENTITY_TYPE.method_17966(identifier).filter(EntityType::isSummonable).orElseThrow(() -> NOTFOUND_EXCEPTION.create(identifier));
+		Registry.ENTITY_TYPE.getOptional(identifier).filter(EntityType::isSummonable).orElseThrow(() -> NOTFOUND_EXCEPTION.create(identifier));
 		return identifier;
 	}
 

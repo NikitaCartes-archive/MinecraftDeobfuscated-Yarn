@@ -4,6 +4,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.util.math.BlockPos;
@@ -36,7 +37,7 @@ public class WallStandingBlockItem extends BlockItem {
 			}
 		}
 
-		return blockState2 != null && viewableWorld.method_8628(blockState2, blockPos) ? blockState2 : null;
+		return blockState2 != null && viewableWorld.method_8628(blockState2, blockPos, VerticalEntityPosition.minValue()) ? blockState2 : null;
 	}
 
 	@Override

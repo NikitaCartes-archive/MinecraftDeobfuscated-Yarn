@@ -103,7 +103,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	public boolean method_6888() {
-		if (!this.world.method_8587(this, this.getBoundingBox())) {
+		if (!this.world.method_17892(this)) {
 			return false;
 		} else {
 			int i = Math.max(1, this.getWidthPixels() / 16);

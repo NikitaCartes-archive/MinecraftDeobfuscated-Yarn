@@ -67,7 +67,7 @@ public abstract class BlockEntity {
 	@Nullable
 	public static BlockEntity createFromTag(CompoundTag compoundTag) {
 		String string = compoundTag.getString("id");
-		return (BlockEntity)Registry.BLOCK_ENTITY.method_17966(new Identifier(string)).map(blockEntityType -> {
+		return (BlockEntity)Registry.BLOCK_ENTITY.getOptional(new Identifier(string)).map(blockEntityType -> {
 			try {
 				return blockEntityType.instantiate();
 			} catch (Throwable var3) {

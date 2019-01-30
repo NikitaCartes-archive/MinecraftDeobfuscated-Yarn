@@ -66,7 +66,7 @@ public class BreatheAirGoal extends Goal {
 	public void tick() {
 		this.moveToAir();
 		this.owner.method_5724(this.owner.field_6212, this.owner.field_6227, this.owner.field_6250, 0.02F);
-		this.owner.move(MovementType.SELF, this.owner.velocityX, this.owner.velocityY, this.owner.velocityZ);
+		this.owner.move(MovementType.field_6308, this.owner.velocityX, this.owner.velocityY, this.owner.velocityZ);
 	}
 
 	private boolean isAirPos(ViewableWorld viewableWorld, BlockPos blockPos) {

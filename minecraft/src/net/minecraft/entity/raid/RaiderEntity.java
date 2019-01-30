@@ -123,8 +123,8 @@ public abstract class RaiderEntity extends PatrolEntity {
 	}
 
 	@Override
-	protected void method_5959() {
-		super.method_5959();
+	protected void initGoals() {
+		super.initGoals();
 		this.goalSelector.add(2, new RaiderEntity.PickupBannerAsLeaderGoal<>(this));
 		this.goalSelector.add(3, new MoveToRaidCenterGoal<>(this));
 	}
@@ -251,7 +251,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 		@Override
 		public void tick() {
-			if (this.field_16603.squaredDistanceTo(this.field_16603.getNavigation().method_6355()) < 2.0) {
+			if (this.field_16603.squaredDistanceTo(this.field_16603.getNavigation().getTargetPos()) < 2.0) {
 				List<ItemEntity> list = this.field_16603
 					.world
 					.getEntities(ItemEntity.class, this.field_16603.getBoundingBox().expand(4.0, 4.0, 4.0), RaiderEntity.OBTAINABLE_ILLAGER_BANNER_ITEM);

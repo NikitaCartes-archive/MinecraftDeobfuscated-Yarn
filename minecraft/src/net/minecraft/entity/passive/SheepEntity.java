@@ -8,9 +8,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1361;
-import net.minecraft.class_1374;
-import net.minecraft.class_1376;
 import net.minecraft.class_1394;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -22,7 +19,10 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.EatGrassGoal;
+import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
+import net.minecraft.entity.ai.goal.LookAroundGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -76,7 +76,7 @@ public class SheepEntity extends AnimalEntity {
 		(Map)Arrays.stream(DyeColor.values()).collect(Collectors.toMap(dyeColor -> dyeColor, SheepEntity::method_6630))
 	);
 	private int field_6865;
-	private EatGrassGoal field_6869;
+	private EatGrassGoal eatGrassGoal;
 
 	private static float[] method_6630(DyeColor dyeColor) {
 		if (dyeColor == DyeColor.WHITE) {
@@ -98,22 +98,22 @@ public class SheepEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void method_5959() {
-		this.field_6869 = new EatGrassGoal(this);
+	protected void initGoals() {
+		this.eatGrassGoal = new EatGrassGoal(this);
 		this.goalSelector.add(0, new SwimGoal(this));
-		this.goalSelector.add(1, new class_1374(this, 1.25));
+		this.goalSelector.add(1, new EscapeDangerGoal(this, 1.25));
 		this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
 		this.goalSelector.add(3, new TemptGoal(this, 1.1, Ingredient.ofItems(Items.field_8861), false));
 		this.goalSelector.add(4, new FollowParentGoal(this, 1.1));
-		this.goalSelector.add(5, this.field_6869);
+		this.goalSelector.add(5, this.eatGrassGoal);
 		this.goalSelector.add(6, new class_1394(this, 1.0));
-		this.goalSelector.add(7, new class_1361(this, PlayerEntity.class, 6.0F));
-		this.goalSelector.add(8, new class_1376(this));
+		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
+		this.goalSelector.add(8, new LookAroundGoal(this));
 	}
 
 	@Override
 	protected void mobTick() {
-		this.field_6865 = this.field_6869.getTimer();
+		this.field_6865 = this.eatGrassGoal.getTimer();
 		super.mobTick();
 	}
 

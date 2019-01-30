@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.WaterlilyBlock;
+import net.minecraft.client.network.packet.EntitySpawnClientPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -24,6 +25,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.packet.BoatPaddleStateServerPacket;
@@ -267,7 +269,7 @@ public class BoatEntity extends Entity {
 				this.world.sendPacket(new BoatPaddleStateServerPacket(this.getPaddleState(0), this.getPaddleState(1)));
 			}
 
-			this.move(MovementType.SELF, this.velocityX, this.velocityY, this.velocityZ);
+			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 		} else {
 			this.velocityX = 0.0;
 			this.velocityY = 0.0;
@@ -433,7 +435,7 @@ public class BoatEntity extends Entity {
 				while (true) {
 					if (p < j) {
 						for (int q = m; q < n; q++) {
-							pooledMutable.method_10113(p, o, q);
+							pooledMutable.set(p, o, q);
 							FluidState fluidState = this.world.getFluidState(pooledMutable);
 							if (fluidState.matches(FluidTags.field_15517)) {
 								f = Math.max(f, fluidState.method_15763(this.world, pooledMutable));
@@ -478,7 +480,7 @@ public class BoatEntity extends Entity {
 					if (r != 2) {
 						for (int s = k; s < l; s++) {
 							if (r <= 0 || s != k && s != l - 1) {
-								pooledMutable.method_10113(p, s, q);
+								pooledMutable.set(p, s, q);
 								BlockState blockState = this.world.getBlockState(pooledMutable);
 								if (!(blockState.getBlock() instanceof WaterlilyBlock)
 									&& VoxelShapes.compareShapes(
@@ -512,7 +514,7 @@ public class BoatEntity extends Entity {
 			for (int o = i; o < j; o++) {
 				for (int p = k; p < l; p++) {
 					for (int q = m; q < n; q++) {
-						pooledMutable.method_10113(o, p, q);
+						pooledMutable.set(o, p, q);
 						FluidState fluidState = this.world.getFluidState(pooledMutable);
 						if (fluidState.matches(FluidTags.field_15517)) {
 							float f = (float)p + fluidState.method_15763(this.world, pooledMutable);
@@ -543,7 +545,7 @@ public class BoatEntity extends Entity {
 			for (int o = i; o < j; o++) {
 				for (int p = k; p < l; p++) {
 					for (int q = m; q < n; q++) {
-						pooledMutable.method_10113(o, p, q);
+						pooledMutable.set(o, p, q);
 						FluidState fluidState = this.world.getFluidState(pooledMutable);
 						if (fluidState.matches(FluidTags.field_15517) && d < (double)((float)pooledMutable.getY() + fluidState.method_15763(this.world, pooledMutable))) {
 							if (!fluidState.isStill()) {
@@ -806,6 +808,11 @@ public class BoatEntity extends Entity {
 		this.field_7695 = bl2;
 		this.field_7709 = bl3;
 		this.field_7693 = bl4;
+	}
+
+	@Override
+	public Packet<?> createSpawnPacket() {
+		return new EntitySpawnClientPacket(this);
 	}
 
 	public static enum Type {

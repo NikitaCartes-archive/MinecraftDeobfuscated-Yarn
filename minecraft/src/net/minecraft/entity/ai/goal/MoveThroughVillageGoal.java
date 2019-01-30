@@ -74,7 +74,7 @@ public class MoveThroughVillageGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		if (this.field_6525.getNavigation().method_6357()) {
+		if (this.field_6525.getNavigation().isIdle()) {
 			return false;
 		} else {
 			float f = this.field_6525.getWidth() + 4.0F;
@@ -89,7 +89,7 @@ public class MoveThroughVillageGoal extends Goal {
 
 	@Override
 	public void onRemove() {
-		if (this.field_6525.getNavigation().method_6357() || this.field_6525.squaredDistanceTo(this.field_6522.getPosition()) < 16.0) {
+		if (this.field_6525.getNavigation().isIdle() || this.field_6525.squaredDistanceTo(this.field_6522.getPosition()) < 16.0) {
 			this.field_6521.add(this.field_6522);
 		}
 	}

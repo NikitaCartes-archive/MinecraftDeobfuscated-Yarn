@@ -8,13 +8,11 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvironmentInterface;
 import net.fabricmc.api.EnvironmentInterfaces;
 import net.minecraft.class_1358;
-import net.minecraft.class_1361;
 import net.minecraft.class_1364;
 import net.minecraft.class_1365;
 import net.minecraft.class_1370;
 import net.minecraft.class_1390;
 import net.minecraft.class_1394;
-import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.datafixers.NbtOps;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -23,10 +21,10 @@ import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.Npc;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.AcceptPoppyGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.OpenDoorGoal;
 import net.minecraft.entity.ai.goal.StayInsideGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
@@ -54,17 +52,13 @@ import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.Raid;
 import net.minecraft.entity.raid.RaidVictim;
-import net.minecraft.inventory.BasicInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.scoreboard.AbstractScoreboardTeam;
 import net.minecraft.scoreboard.ScoreboardTeam;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -74,7 +68,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.VillageProperties;
-import net.minecraft.village.Villager;
 import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerDataContainer;
 import net.minecraft.village.VillagerProfession;
@@ -90,23 +83,18 @@ import net.minecraft.world.World;
 		value = EnvType.CLIENT,
 		itf = VillagerDataContainer.class
 	)})
-public class VillagerEntity extends PassiveEntity implements RaidVictim, Npc, VillagerDataContainer, Villager {
+public class VillagerEntity extends AbstractVillagerEntity implements RaidVictim, VillagerDataContainer {
 	private static final TrackedData<VillagerData> VILLAGER_DATA = DataTracker.registerData(VillagerEntity.class, TrackedDataHandlerRegistry.VILLAGER_DATA);
 	private int findVillageCountdown;
+	private int unlockTradeCountdown;
+	private boolean unlockTrade;
+	private String customerName;
+	private boolean willingToMate;
 	private boolean inMating;
 	private boolean staring;
 	private VillageProperties village;
-	@Nullable
-	private PlayerEntity currentCustomer;
-	@Nullable
-	private VillagerRecipeList recipeList;
-	private int unlockTradeCountdown;
-	private boolean unlockTrade;
-	private boolean willingToMate;
-	private String customerName;
 	private boolean recentlyRescued;
 	private boolean goalsSet;
-	private final BasicInventory inventory = new BasicInventory(8);
 
 	public VillagerEntity(World world) {
 		this(world, VillagerType.field_17073);
@@ -120,7 +108,7 @@ public class VillagerEntity extends PassiveEntity implements RaidVictim, Npc, Vi
 	}
 
 	@Override
-	protected void method_5959() {
+	protected void initGoals() {
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new FleeEntityGoal(this, ZombieEntity.class, 8.0F, 0.6, 0.6));
 		this.goalSelector.add(1, new FleeEntityGoal(this, EvokerEntity.class, 12.0F, 0.8, 0.8));
@@ -139,7 +127,7 @@ public class VillagerEntity extends PassiveEntity implements RaidVictim, Npc, Vi
 		this.goalSelector.add(9, new class_1358(this, PlayerEntity.class, 3.0F, 1.0F));
 		this.goalSelector.add(9, new VillagerInteractionGoal(this));
 		this.goalSelector.add(9, new class_1394(this, 0.6));
-		this.goalSelector.add(10, new class_1361(this, MobEntity.class, 8.0F));
+		this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
 	}
 
 	private void setSpecificGoals() {
@@ -187,7 +175,7 @@ public class VillagerEntity extends PassiveEntity implements RaidVictim, Npc, Vi
 			}
 		}
 
-		if (!this.isTrading() && this.unlockTradeCountdown > 0) {
+		if (!this.hasCustomer() && this.unlockTradeCountdown > 0) {
 			this.unlockTradeCountdown--;
 			if (this.unlockTradeCountdown <= 0) {
 				if (this.unlockTrade) {
@@ -219,7 +207,7 @@ public class VillagerEntity extends PassiveEntity implements RaidVictim, Npc, Vi
 		if (bl) {
 			itemStack.interactWithEntity(playerEntity, this, hand);
 			return true;
-		} else if (itemStack.getItem() != Items.field_8086 && this.isValid() && !this.isTrading() && !this.isChild()) {
+		} else if (itemStack.getItem() != Items.field_8086 && this.isValid() && !this.hasCustomer() && !this.isChild()) {
 			if (hand == Hand.MAIN) {
 				playerEntity.increaseStat(Stats.field_15384);
 			}
@@ -227,7 +215,7 @@ public class VillagerEntity extends PassiveEntity implements RaidVictim, Npc, Vi
 			if (this.getRecipes().isEmpty()) {
 				return super.interactMob(playerEntity, hand);
 			} else {
-				if (!this.world.isClient && !this.recipeList.isEmpty()) {
+				if (!this.world.isClient && !this.recipes.isEmpty()) {
 					if (this.village != null && this.village.getRaid() != null && this.village.getRaid().isOnGoing()) {
 						this.world.summonParticle(this, (byte)42);
 					} else {
@@ -254,21 +242,6 @@ public class VillagerEntity extends PassiveEntity implements RaidVictim, Npc, Vi
 		super.writeCustomDataToTag(compoundTag);
 		compoundTag.put("VillagerData", this.getVillagerData().serialize(NbtOps.INSTANCE));
 		compoundTag.putBoolean("Willing", this.willingToMate);
-		VillagerRecipeList villagerRecipeList = this.getRecipes();
-		if (!villagerRecipeList.isEmpty()) {
-			compoundTag.put("Offers", villagerRecipeList.deserialize());
-		}
-
-		ListTag listTag = new ListTag();
-
-		for (int i = 0; i < this.inventory.getInvSize(); i++) {
-			ItemStack itemStack = this.inventory.getInvStack(i);
-			if (!itemStack.isEmpty()) {
-				listTag.add(itemStack.toTag(new CompoundTag()));
-			}
-		}
-
-		compoundTag.put("Inventory", listTag);
 	}
 
 	@Override
@@ -279,19 +252,10 @@ public class VillagerEntity extends PassiveEntity implements RaidVictim, Npc, Vi
 		}
 
 		if (compoundTag.containsKey("Offers", 10)) {
-			this.recipeList = new VillagerRecipeList(compoundTag.getCompound("Offers"));
+			this.recipes = new VillagerRecipeList(compoundTag.getCompound("Offers"));
 		}
 
 		this.willingToMate = compoundTag.getBoolean("Willing");
-		ListTag listTag = compoundTag.getList("Inventory", 10);
-
-		for (int i = 0; i < listTag.size(); i++) {
-			ItemStack itemStack = ItemStack.fromTag(listTag.getCompoundTag(i));
-			if (!itemStack.isEmpty()) {
-				this.inventory.add(itemStack);
-			}
-		}
-
 		this.setCanPickUpLoot(true);
 		this.setSpecificGoals();
 	}
@@ -303,7 +267,7 @@ public class VillagerEntity extends PassiveEntity implements RaidVictim, Npc, Vi
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return this.isTrading() ? SoundEvents.field_14933 : SoundEvents.field_15175;
+		return this.hasCustomer() ? SoundEvents.field_14933 : SoundEvents.field_15175;
 	}
 
 	@Override
@@ -319,7 +283,7 @@ public class VillagerEntity extends PassiveEntity implements RaidVictim, Npc, Vi
 	public void setVillagerData(VillagerData villagerData) {
 		VillagerData villagerData2 = this.getVillagerData();
 		if (villagerData2.getProfession() != villagerData.getProfession()) {
-			this.recipeList = null;
+			this.recipes = null;
 		}
 
 		this.dataTracker.set(VILLAGER_DATA, villagerData);
@@ -328,6 +292,22 @@ public class VillagerEntity extends PassiveEntity implements RaidVictim, Npc, Vi
 	@Override
 	public VillagerData getVillagerData() {
 		return this.dataTracker.get(VILLAGER_DATA);
+	}
+
+	@Override
+	protected void method_18008(VillagerRecipe villagerRecipe) {
+		int i = 3 + this.random.nextInt(4);
+		if (villagerRecipe.getUses() == 1 || this.random.nextInt(5) == 0) {
+			this.unlockTradeCountdown = 40;
+			this.unlockTrade = true;
+			this.willingToMate = true;
+			this.customerName = this.getCurrentCustomer() == null ? null : this.getCurrentCustomer().getGameProfile().getName();
+			i += 5;
+		}
+
+		if (villagerRecipe.getRewardExp()) {
+			this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.x, this.y + 0.5, this.z, i));
+		}
 	}
 
 	public boolean isInMating() {
@@ -392,34 +372,19 @@ public class VillagerEntity extends PassiveEntity implements RaidVictim, Npc, Vi
 		super.onDeath(damageSource);
 	}
 
-	@Override
-	public void setCurrentCustomer(@Nullable PlayerEntity playerEntity) {
-		this.currentCustomer = playerEntity;
-	}
-
-	@Nullable
-	@Override
-	public PlayerEntity getCurrentCustomer() {
-		return this.currentCustomer;
-	}
-
-	public boolean isTrading() {
-		return this.currentCustomer != null;
-	}
-
 	public boolean isWillingToMate(boolean bl) {
 		if (!this.willingToMate && bl && this.hasFoodForWilling()) {
 			boolean bl2 = false;
 
-			for (int i = 0; i < this.inventory.getInvSize(); i++) {
-				ItemStack itemStack = this.inventory.getInvStack(i);
+			for (int i = 0; i < this.method_18011().getInvSize(); i++) {
+				ItemStack itemStack = this.method_18011().getInvStack(i);
 				if (!itemStack.isEmpty()) {
 					if (itemStack.getItem() == Items.field_8229 && itemStack.getAmount() >= 3) {
 						bl2 = true;
-						this.inventory.takeInvStack(i, 3);
+						this.method_18011().takeInvStack(i, 3);
 					} else if ((itemStack.getItem() == Items.field_8567 || itemStack.getItem() == Items.field_8179) && itemStack.getAmount() >= 12) {
 						bl2 = true;
-						this.inventory.takeInvStack(i, 12);
+						this.method_18011().takeInvStack(i, 12);
 					}
 				}
 
@@ -438,88 +403,13 @@ public class VillagerEntity extends PassiveEntity implements RaidVictim, Npc, Vi
 		this.willingToMate = bl;
 	}
 
-	@Override
-	public void useRecipe(VillagerRecipe villagerRecipe) {
-		villagerRecipe.use();
-		this.field_6191 = -this.method_5970();
-		this.playSound(SoundEvents.field_14815, this.getSoundVolume(), this.getSoundPitch());
-		int i = 3 + this.random.nextInt(4);
-		if (villagerRecipe.getUses() == 1 || this.random.nextInt(5) == 0) {
-			this.unlockTradeCountdown = 40;
-			this.unlockTrade = true;
-			this.willingToMate = true;
-			this.customerName = this.currentCustomer == null ? null : this.currentCustomer.getGameProfile().getName();
-			i += 5;
-		}
-
-		if (villagerRecipe.getRewardExp()) {
-			this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.x, this.y + 0.5, this.z, i));
-		}
-
-		if (this.currentCustomer instanceof ServerPlayerEntity) {
-			Criterions.VILLAGER_TRADE.handle((ServerPlayerEntity)this.currentCustomer, this, villagerRecipe.getSellItem());
-		}
-	}
-
-	@Override
-	public void onSellingItem(ItemStack itemStack) {
-		if (!this.world.isClient && this.field_6191 > -this.method_5970() + 20) {
-			this.field_6191 = -this.method_5970();
-			this.playSound(itemStack.isEmpty() ? SoundEvents.field_15008 : SoundEvents.field_14815, this.getSoundVolume(), this.getSoundPitch());
-		}
-	}
-
-	@Override
-	public VillagerRecipeList getRecipes() {
-		if (this.recipeList == null) {
-			this.recipeList = new VillagerRecipeList();
-			this.addTrades();
-		}
-
-		return this.recipeList;
-	}
-
 	public void setRecipes(VillagerRecipeList villagerRecipeList) {
-		this.recipeList = villagerRecipeList;
+		this.recipes = villagerRecipeList;
 	}
 
 	private void levelUp() {
 		this.setVillagerData(this.getVillagerData().withLevel(this.getVillagerData().getLevel() + 1));
-		this.addTrades();
-	}
-
-	private void addTrades() {
-		VillagerData villagerData = this.getVillagerData();
-		Int2ObjectMap<VillagerTrades.Factory[]> int2ObjectMap = (Int2ObjectMap<VillagerTrades.Factory[]>)VillagerTrades.PROFESSION_TO_LEVELED_TRADE
-			.get(villagerData.getProfession());
-		if (int2ObjectMap != null && !int2ObjectMap.isEmpty()) {
-			VillagerTrades.Factory[] factorys = int2ObjectMap.get(villagerData.getLevel());
-			if (factorys != null) {
-				VillagerRecipeList villagerRecipeList = this.getRecipes();
-
-				for (VillagerTrades.Factory factory : factorys) {
-					VillagerRecipe villagerRecipe = factory.create(this, this.random);
-					if (villagerRecipe != null) {
-						villagerRecipeList.add(villagerRecipe);
-					}
-				}
-			}
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	@Override
-	public void setServerRecipes(@Nullable VillagerRecipeList villagerRecipeList) {
-	}
-
-	@Override
-	public World getVillagerWorld() {
-		return this.world;
-	}
-
-	@Override
-	public BlockPos getVillagerPos() {
-		return new BlockPos(this);
+		this.method_7237();
 	}
 
 	@Override
@@ -543,11 +433,6 @@ public class VillagerEntity extends PassiveEntity implements RaidVictim, Npc, Vi
 		}
 	}
 
-	@Override
-	public float getEyeHeight() {
-		return this.isChild() ? 0.81F : 1.62F;
-	}
-
 	@Nullable
 	@Override
 	public Raid getRaid() {
@@ -558,34 +443,15 @@ public class VillagerEntity extends PassiveEntity implements RaidVictim, Npc, Vi
 	@Override
 	public void method_5711(byte b) {
 		if (b == 12) {
-			this.method_7233(ParticleTypes.field_11201);
+			this.method_18007(ParticleTypes.field_11201);
 		} else if (b == 13) {
-			this.method_7233(ParticleTypes.field_11231);
+			this.method_18007(ParticleTypes.field_11231);
 		} else if (b == 14) {
-			this.method_7233(ParticleTypes.field_11211);
+			this.method_18007(ParticleTypes.field_11211);
 		} else if (b == 42) {
-			this.method_7233(ParticleTypes.field_11202);
+			this.method_18007(ParticleTypes.field_11202);
 		} else {
 			super.method_5711(b);
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	private void method_7233(ParticleParameters particleParameters) {
-		for (int i = 0; i < 5; i++) {
-			double d = this.random.nextGaussian() * 0.02;
-			double e = this.random.nextGaussian() * 0.02;
-			double f = this.random.nextGaussian() * 0.02;
-			this.world
-				.addParticle(
-					particleParameters,
-					this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
-					this.y + 1.0 + (double)(this.random.nextFloat() * this.getHeight()),
-					this.z + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
-					d,
-					e,
-					f
-				);
 		}
 	}
 
@@ -627,11 +493,6 @@ public class VillagerEntity extends PassiveEntity implements RaidVictim, Npc, Vi
 	}
 
 	@Override
-	public boolean canBeLeashedBy(PlayerEntity playerEntity) {
-		return false;
-	}
-
-	@Override
 	public void onStruckByLightning(LightningEntity lightningEntity) {
 		if (!this.world.isClient && !this.invalid) {
 			WitchEntity witchEntity = new WitchEntity(this.world);
@@ -648,16 +509,12 @@ public class VillagerEntity extends PassiveEntity implements RaidVictim, Npc, Vi
 		}
 	}
 
-	public BasicInventory getInventory() {
-		return this.inventory;
-	}
-
 	@Override
 	protected void pickupItem(ItemEntity itemEntity) {
 		ItemStack itemStack = itemEntity.getStack();
 		Item item = itemStack.getItem();
 		if (this.canPickUp(item)) {
-			ItemStack itemStack2 = this.inventory.add(itemStack);
+			ItemStack itemStack2 = this.method_18011().add(itemStack);
 			if (itemStack2.isEmpty()) {
 				itemEntity.invalidate();
 			} else {
@@ -692,8 +549,8 @@ public class VillagerEntity extends PassiveEntity implements RaidVictim, Npc, Vi
 	private boolean hasEnoughFood(int i) {
 		boolean bl = this.getVillagerData().getProfession() == VillagerProfession.field_17056;
 
-		for (int j = 0; j < this.inventory.getInvSize(); j++) {
-			ItemStack itemStack = this.inventory.getInvStack(j);
+		for (int j = 0; j < this.method_18011().getInvSize(); j++) {
+			ItemStack itemStack = this.method_18011().getInvStack(j);
 			Item item = itemStack.getItem();
 			int k = itemStack.getAmount();
 			if (item == Items.field_8229 && k >= 3 * i
@@ -712,8 +569,8 @@ public class VillagerEntity extends PassiveEntity implements RaidVictim, Npc, Vi
 	}
 
 	public boolean hasSeed() {
-		for (int i = 0; i < this.inventory.getInvSize(); i++) {
-			Item item = this.inventory.getInvStack(i).getItem();
+		for (int i = 0; i < this.method_18011().getInvSize(); i++) {
+			Item item = this.method_18011().getInvStack(i).getItem();
 			if (item == Items.field_8317 || item == Items.field_8567 || item == Items.field_8179 || item == Items.field_8309) {
 				return true;
 			}
@@ -723,16 +580,21 @@ public class VillagerEntity extends PassiveEntity implements RaidVictim, Npc, Vi
 	}
 
 	@Override
-	public boolean method_5758(int i, ItemStack itemStack) {
-		if (super.method_5758(i, itemStack)) {
-			return true;
-		} else {
-			int j = i - 300;
-			if (j >= 0 && j < this.inventory.getInvSize()) {
-				this.inventory.setInvStack(j, itemStack);
-				return true;
-			} else {
-				return false;
+	protected void method_7237() {
+		VillagerData villagerData = this.getVillagerData();
+		Int2ObjectMap<VillagerTrades.Factory[]> int2ObjectMap = (Int2ObjectMap<VillagerTrades.Factory[]>)VillagerTrades.PROFESSION_TO_LEVELED_TRADE
+			.get(villagerData.getProfession());
+		if (int2ObjectMap != null && !int2ObjectMap.isEmpty()) {
+			VillagerTrades.Factory[] factorys = int2ObjectMap.get(villagerData.getLevel());
+			if (factorys != null) {
+				VillagerRecipeList villagerRecipeList = this.getRecipes();
+
+				for (VillagerTrades.Factory factory : factorys) {
+					VillagerRecipe villagerRecipe = factory.create(this, this.random);
+					if (villagerRecipe != null) {
+						villagerRecipeList.add(villagerRecipe);
+					}
+				}
 			}
 		}
 	}

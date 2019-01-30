@@ -89,7 +89,7 @@ public class TemptGoal extends Goal {
 	@Override
 	public void onRemove() {
 		this.field_6617 = null;
-		this.field_6616.getNavigation().method_6340();
+		this.field_6616.getNavigation().stop();
 		this.field_6612 = 100;
 		this.field_6613 = false;
 	}
@@ -98,7 +98,7 @@ public class TemptGoal extends Goal {
 	public void tick() {
 		this.field_6616.getLookControl().lookAt(this.field_6617, (float)(this.field_6616.method_5986() + 20), (float)this.field_6616.method_5978());
 		if (this.field_6616.squaredDistanceTo(this.field_6617) < 6.25) {
-			this.field_6616.getNavigation().method_6340();
+			this.field_6616.getNavigation().stop();
 		} else {
 			this.field_6616.getNavigation().startMovingTo(this.field_6617, this.field_6615);
 		}

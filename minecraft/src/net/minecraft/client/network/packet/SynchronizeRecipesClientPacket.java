@@ -56,7 +56,7 @@ public class SynchronizeRecipesClientPacket implements Packet<ClientPlayPacketLi
 		Identifier identifier = packetByteBuf.readIdentifier();
 		Identifier identifier2 = packetByteBuf.readIdentifier();
 		return ((RecipeSerializer)Registry.RECIPE_SERIALIZER
-				.method_17966(identifier)
+				.getOptional(identifier)
 				.orElseThrow(() -> new IllegalArgumentException("Unknown recipe serializer " + identifier)))
 			.read(identifier2, packetByteBuf);
 	}

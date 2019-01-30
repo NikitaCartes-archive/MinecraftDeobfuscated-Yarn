@@ -3,7 +3,6 @@ package net.minecraft.entity.mob;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1361;
 import net.minecraft.class_1399;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -14,6 +13,7 @@ import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TrackTargetGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -68,13 +68,13 @@ public class VexEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void method_5959() {
-		super.method_5959();
+	protected void initGoals() {
+		super.initGoals();
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(4, new VexEntity.ChargeTargetGoal());
 		this.goalSelector.add(8, new VexEntity.LookAtTargetGoal());
-		this.goalSelector.add(9, new class_1361(this, PlayerEntity.class, 3.0F, 1.0F));
-		this.goalSelector.add(10, new class_1361(this, MobEntity.class, 8.0F));
+		this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 3.0F, 1.0F));
+		this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
 		this.targetSelector.add(1, new class_1399(this, IllagerEntity.class).method_6318());
 		this.targetSelector.add(2, new VexEntity.TrackOwnerTargetGoal(this));
 		this.targetSelector.add(3, new FollowTargetGoal(this, PlayerEntity.class, true));
@@ -214,14 +214,14 @@ public class VexEntity extends HostileEntity {
 
 		@Override
 		public boolean canStart() {
-			return VexEntity.this.getTarget() != null && !VexEntity.this.getMoveControl().method_6241() && VexEntity.this.random.nextInt(7) == 0
+			return VexEntity.this.getTarget() != null && !VexEntity.this.getMoveControl().isMoving() && VexEntity.this.random.nextInt(7) == 0
 				? VexEntity.this.squaredDistanceTo(VexEntity.this.getTarget()) > 4.0
 				: false;
 		}
 
 		@Override
 		public boolean shouldContinue() {
-			return VexEntity.this.getMoveControl().method_6241()
+			return VexEntity.this.getMoveControl().isMoving()
 				&& VexEntity.this.method_7176()
 				&& VexEntity.this.getTarget() != null
 				&& VexEntity.this.getTarget().isValid();
@@ -231,7 +231,7 @@ public class VexEntity extends HostileEntity {
 		public void start() {
 			LivingEntity livingEntity = VexEntity.this.getTarget();
 			Vec3d vec3d = livingEntity.getCameraPosVec(1.0F);
-			VexEntity.this.moveControl.method_6239(vec3d.x, vec3d.y, vec3d.z, 1.0);
+			VexEntity.this.moveControl.moveTo(vec3d.x, vec3d.y, vec3d.z, 1.0);
 			VexEntity.this.method_7177(true);
 			VexEntity.this.playSound(SoundEvents.field_14898, 1.0F, 1.0F);
 		}
@@ -251,7 +251,7 @@ public class VexEntity extends HostileEntity {
 				double d = VexEntity.this.squaredDistanceTo(livingEntity);
 				if (d < 9.0) {
 					Vec3d vec3d = livingEntity.getCameraPosVec(1.0F);
-					VexEntity.this.moveControl.method_6239(vec3d.x, vec3d.y, vec3d.z, 1.0);
+					VexEntity.this.moveControl.moveTo(vec3d.x, vec3d.y, vec3d.z, 1.0);
 				}
 			}
 		}
@@ -264,7 +264,7 @@ public class VexEntity extends HostileEntity {
 
 		@Override
 		public boolean canStart() {
-			return !VexEntity.this.getMoveControl().method_6241() && VexEntity.this.random.nextInt(7) == 0;
+			return !VexEntity.this.getMoveControl().isMoving() && VexEntity.this.random.nextInt(7) == 0;
 		}
 
 		@Override
@@ -282,7 +282,7 @@ public class VexEntity extends HostileEntity {
 			for (int i = 0; i < 3; i++) {
 				BlockPos blockPos2 = blockPos.add(VexEntity.this.random.nextInt(15) - 7, VexEntity.this.random.nextInt(11) - 5, VexEntity.this.random.nextInt(15) - 7);
 				if (VexEntity.this.world.isAir(blockPos2)) {
-					VexEntity.this.moveControl.method_6239((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.5, (double)blockPos2.getZ() + 0.5, 0.25);
+					VexEntity.this.moveControl.moveTo((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.5, (double)blockPos2.getZ() + 0.5, 0.25);
 					if (VexEntity.this.getTarget() == null) {
 						VexEntity.this.getLookControl().lookAt((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.5, (double)blockPos2.getZ() + 0.5, 180.0F, 20.0F);
 					}
@@ -316,21 +316,21 @@ public class VexEntity extends HostileEntity {
 
 		@Override
 		public void tick() {
-			if (this.field_6374 == MoveControl.class_1336.field_6378) {
-				double d = this.field_6370 - VexEntity.this.x;
-				double e = this.field_6369 - VexEntity.this.y;
-				double f = this.field_6367 - VexEntity.this.z;
+			if (this.state == MoveControl.State.field_6378) {
+				double d = this.targetX - VexEntity.this.x;
+				double e = this.targetY - VexEntity.this.y;
+				double f = this.targetZ - VexEntity.this.z;
 				double g = d * d + e * e + f * f;
 				g = (double)MathHelper.sqrt(g);
 				if (g < VexEntity.this.getBoundingBox().averageDimension()) {
-					this.field_6374 = MoveControl.class_1336.field_6377;
+					this.state = MoveControl.State.field_6377;
 					VexEntity.this.velocityX *= 0.5;
 					VexEntity.this.velocityY *= 0.5;
 					VexEntity.this.velocityZ *= 0.5;
 				} else {
-					VexEntity.this.velocityX = VexEntity.this.velocityX + d / g * 0.05 * this.field_6372;
-					VexEntity.this.velocityY = VexEntity.this.velocityY + e / g * 0.05 * this.field_6372;
-					VexEntity.this.velocityZ = VexEntity.this.velocityZ + f / g * 0.05 * this.field_6372;
+					VexEntity.this.velocityX = VexEntity.this.velocityX + d / g * 0.05 * this.speed;
+					VexEntity.this.velocityY = VexEntity.this.velocityY + e / g * 0.05 * this.speed;
+					VexEntity.this.velocityZ = VexEntity.this.velocityZ + f / g * 0.05 * this.speed;
 					if (VexEntity.this.getTarget() == null) {
 						VexEntity.this.yaw = -((float)MathHelper.atan2(VexEntity.this.velocityX, VexEntity.this.velocityZ)) * (180.0F / (float)Math.PI);
 						VexEntity.this.field_6283 = VexEntity.this.yaw;

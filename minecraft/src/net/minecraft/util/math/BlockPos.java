@@ -209,13 +209,13 @@ public class BlockPos extends Vec3i {
 		);
 	}
 
-	public static Stream<BlockPos> method_17962(int i, int j, int k, int l, int m, int n) {
+	public static Stream<BlockPos> getBlocksInCuboid(int i, int j, int k, int l, int m, int n) {
 		return StreamSupport.stream(new AbstractSpliterator<BlockPos>((long)((l - i + 1) * (m - j + 1) * (n - k + 1)), 64) {
-			final BlockPos.class_3980 field_17676 = new BlockPos.class_3980(i, j, k, l, m, n);
+			final BlockPos.CuboidBlockIterator connector = new BlockPos.CuboidBlockIterator(i, j, k, l, m, n);
 
 			public boolean tryAdvance(Consumer<? super BlockPos> consumer) {
-				if (this.field_17676.method_17963()) {
-					consumer.accept(this.field_17676.field_17689);
+				if (this.connector.step()) {
+					consumer.accept(this.connector.position);
 					return true;
 				} else {
 					return false;
@@ -226,12 +226,53 @@ public class BlockPos extends Vec3i {
 
 	public static Iterable<BlockPos> iterateBoxPositions(int i, int j, int k, int l, int m, int n) {
 		return () -> new AbstractIterator<BlockPos>() {
-				final BlockPos.class_3980 field_17596 = new BlockPos.class_3980(i, j, k, l, m, n);
+				final BlockPos.CuboidBlockIterator field_17596 = new BlockPos.CuboidBlockIterator(i, j, k, l, m, n);
 
 				protected BlockPos method_10106() {
-					return (BlockPos)(this.field_17596.method_17963() ? this.field_17596.field_17689 : this.endOfData());
+					return (BlockPos)(this.field_17596.step() ? this.field_17596.position : this.endOfData());
 				}
 			};
+	}
+
+	static class CuboidBlockIterator {
+		private final int startX;
+		private final int startY;
+		private final int startZ;
+		private final int endX;
+		private final int endY;
+		private final int endZ;
+		private BlockPos.Mutable position;
+
+		public CuboidBlockIterator(int i, int j, int k, int l, int m, int n) {
+			this.startX = i;
+			this.startY = j;
+			this.startZ = k;
+			this.endX = l;
+			this.endY = m;
+			this.endZ = n;
+		}
+
+		public boolean step() {
+			if (this.position == null) {
+				this.position = new BlockPos.Mutable(this.startX, this.startY, this.startZ);
+				return true;
+			} else if (this.position.xMut == this.endX && this.position.yMut == this.endY && this.position.zMut == this.endZ) {
+				return false;
+			} else {
+				if (this.position.xMut < this.endX) {
+					this.position.xMut++;
+				} else if (this.position.yMut < this.endY) {
+					this.position.xMut = this.startX;
+					this.position.yMut++;
+				} else if (this.position.zMut < this.endZ) {
+					this.position.xMut = this.startX;
+					this.position.yMut = this.startY;
+					this.position.zMut++;
+				}
+
+				return true;
+			}
+		}
 	}
 
 	public static class Mutable extends BlockPos {
@@ -252,6 +293,10 @@ public class BlockPos extends Vec3i {
 			this.xMut = i;
 			this.yMut = j;
 			this.zMut = k;
+		}
+
+		public Mutable(double d, double e, double f) {
+			this(MathHelper.floor(d), MathHelper.floor(e), MathHelper.floor(f));
 		}
 
 		@Override
@@ -366,7 +411,7 @@ public class BlockPos extends Vec3i {
 					BlockPos.PooledMutable pooledMutable = (BlockPos.PooledMutable)POOL.remove(POOL.size() - 1);
 					if (pooledMutable != null && pooledMutable.field_11004) {
 						pooledMutable.field_11004 = false;
-						pooledMutable.method_10113(i, j, k);
+						pooledMutable.set(i, j, k);
 						return pooledMutable;
 					}
 				}
@@ -375,7 +420,7 @@ public class BlockPos extends Vec3i {
 			return new BlockPos.PooledMutable(i, j, k);
 		}
 
-		public BlockPos.PooledMutable method_10113(int i, int j, int k) {
+		public BlockPos.PooledMutable set(int i, int j, int k) {
 			return (BlockPos.PooledMutable)super.set(i, j, k);
 		}
 
@@ -410,47 +455,6 @@ public class BlockPos extends Vec3i {
 				}
 
 				this.field_11004 = true;
-			}
-		}
-	}
-
-	static class class_3980 {
-		private final int field_17683;
-		private final int field_17684;
-		private final int field_17685;
-		private final int field_17686;
-		private final int field_17687;
-		private final int field_17688;
-		private BlockPos.Mutable field_17689;
-
-		public class_3980(int i, int j, int k, int l, int m, int n) {
-			this.field_17683 = i;
-			this.field_17684 = j;
-			this.field_17685 = k;
-			this.field_17686 = l;
-			this.field_17687 = m;
-			this.field_17688 = n;
-		}
-
-		public boolean method_17963() {
-			if (this.field_17689 == null) {
-				this.field_17689 = new BlockPos.Mutable(this.field_17683, this.field_17684, this.field_17685);
-				return true;
-			} else if (this.field_17689.xMut == this.field_17686 && this.field_17689.yMut == this.field_17687 && this.field_17689.zMut == this.field_17688) {
-				return false;
-			} else {
-				if (this.field_17689.xMut < this.field_17686) {
-					this.field_17689.xMut++;
-				} else if (this.field_17689.yMut < this.field_17687) {
-					this.field_17689.xMut = this.field_17683;
-					this.field_17689.yMut++;
-				} else if (this.field_17689.zMut < this.field_17688) {
-					this.field_17689.xMut = this.field_17683;
-					this.field_17689.yMut = this.field_17684;
-					this.field_17689.zMut++;
-				}
-
-				return true;
 			}
 		}
 	}

@@ -152,7 +152,7 @@ public class RecipeManager implements ResourceReloadListener {
 	public static Recipe<?> deserialize(Identifier identifier, JsonObject jsonObject) {
 		String string = JsonHelper.getString(jsonObject, "type");
 		return ((RecipeSerializer)Registry.RECIPE_SERIALIZER
-				.method_17966(new Identifier(string))
+				.getOptional(new Identifier(string))
 				.orElseThrow(() -> new JsonSyntaxException("Invalid or unsupported recipe type '" + string + "'")))
 			.read(identifier, jsonObject);
 	}

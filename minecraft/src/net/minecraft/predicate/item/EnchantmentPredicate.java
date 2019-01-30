@@ -72,7 +72,7 @@ public class EnchantmentPredicate {
 			if (jsonObject.has("enchantment")) {
 				Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "enchantment"));
 				enchantment = (Enchantment)Registry.ENCHANTMENT
-					.method_17966(identifier)
+					.getOptional(identifier)
 					.orElseThrow(() -> new JsonSyntaxException("Unknown enchantment '" + identifier + "'"));
 			}
 

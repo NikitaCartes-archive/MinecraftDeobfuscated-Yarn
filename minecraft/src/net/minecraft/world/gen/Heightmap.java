@@ -41,7 +41,7 @@ public class Heightmap {
 					}
 
 					for (int m = j - 1; m >= 0; m--) {
-						pooledMutable.method_10113(k, m, l);
+						pooledMutable.set(k, m, l);
 						BlockState blockState = chunk.getBlockState(pooledMutable);
 						if (blockState.getBlock() != Blocks.field_10124) {
 							while (objectListIterator.hasNext()) {

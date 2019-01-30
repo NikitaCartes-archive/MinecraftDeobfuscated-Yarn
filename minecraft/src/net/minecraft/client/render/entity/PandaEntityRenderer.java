@@ -15,14 +15,14 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
-	private static final Map<PandaEntity.class_1443, Identifier> field_17595 = SystemUtil.consume(Maps.newEnumMap(PandaEntity.class_1443.class), enumMap -> {
-		enumMap.put(PandaEntity.class_1443.field_6788, new Identifier("textures/entity/panda/panda.png"));
-		enumMap.put(PandaEntity.class_1443.field_6794, new Identifier("textures/entity/panda/lazy_panda.png"));
-		enumMap.put(PandaEntity.class_1443.field_6795, new Identifier("textures/entity/panda/worried_panda.png"));
-		enumMap.put(PandaEntity.class_1443.field_6791, new Identifier("textures/entity/panda/playful_panda.png"));
-		enumMap.put(PandaEntity.class_1443.field_6792, new Identifier("textures/entity/panda/brown_panda.png"));
-		enumMap.put(PandaEntity.class_1443.field_6793, new Identifier("textures/entity/panda/weak_panda.png"));
-		enumMap.put(PandaEntity.class_1443.field_6789, new Identifier("textures/entity/panda/aggressive_panda.png"));
+	private static final Map<PandaEntity.Gene, Identifier> field_17595 = SystemUtil.consume(Maps.newEnumMap(PandaEntity.Gene.class), enumMap -> {
+		enumMap.put(PandaEntity.Gene.field_6788, new Identifier("textures/entity/panda/panda.png"));
+		enumMap.put(PandaEntity.Gene.field_6794, new Identifier("textures/entity/panda/lazy_panda.png"));
+		enumMap.put(PandaEntity.Gene.field_6795, new Identifier("textures/entity/panda/worried_panda.png"));
+		enumMap.put(PandaEntity.Gene.field_6791, new Identifier("textures/entity/panda/playful_panda.png"));
+		enumMap.put(PandaEntity.Gene.field_6792, new Identifier("textures/entity/panda/brown_panda.png"));
+		enumMap.put(PandaEntity.Gene.field_6793, new Identifier("textures/entity/panda/weak_panda.png"));
+		enumMap.put(PandaEntity.Gene.field_6789, new Identifier("textures/entity/panda/aggressive_panda.png"));
 	});
 
 	public PandaEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
@@ -32,7 +32,7 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 
 	@Nullable
 	protected Identifier method_4083(PandaEntity pandaEntity) {
-		return (Identifier)field_17595.getOrDefault(pandaEntity.method_6554(), field_17595.get(PandaEntity.class_1443.field_6788));
+		return (Identifier)field_17595.getOrDefault(pandaEntity.getProductGene(), field_17595.get(PandaEntity.Gene.field_6788));
 	}
 
 	protected void method_4085(PandaEntity pandaEntity, float f, float g, float h) {

@@ -187,7 +187,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 						BoundingBox boundingBox = new BoundingBox(
 							h - g, (double)j + 0.001, m - g, h + g, (double)this.entity.getHeight() + method_60(this.blockView, blockPos.up()) - 0.002, m + g
 						);
-						if (!this.entity.world.method_8587(null, boundingBox)) {
+						if (!this.entity.world.isEntityColliding(this.entity, boundingBox)) {
 							pathNode = null;
 						}
 					}
@@ -214,7 +214,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 					BoundingBox boundingBox2 = new BoundingBox(
 						(double)i - g + 0.5, (double)j + 0.001, (double)k - g + 0.5, (double)i + g + 0.5, (double)((float)j + this.entity.getHeight()), (double)k + g + 0.5
 					);
-					if (!this.entity.world.method_8587(null, boundingBox2)) {
+					if (!this.entity.world.isEntityColliding(this.entity, boundingBox2)) {
 						return null;
 					}
 
@@ -388,7 +388,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 				for (int l = -1; l <= 1; l++) {
 					for (int m = -1; m <= 1; m++) {
 						if (l != 0 || m != 0) {
-							Block block = blockView.getBlockState(pooledMutable.method_10113(l + i, j, m + k)).getBlock();
+							Block block = blockView.getBlockState(pooledMutable.set(l + i, j, m + k)).getBlock();
 							if (block == Blocks.field_10029) {
 								pathNodeType = PathNodeType.CACTUS_NEAR;
 							} else if (block == Blocks.field_10036) {

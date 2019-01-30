@@ -388,7 +388,7 @@ public class ChunkSerializer {
 
 		for (int i = 0; i < listTag.size(); i++) {
 			CompoundTag compoundTag2 = listTag.getCompoundTag(i);
-			EntityType.method_17841(compoundTag2, world, worldChunk);
+			EntityType.spawnEntityInChunk(compoundTag2, world, worldChunk);
 			worldChunk.method_12232(true);
 		}
 

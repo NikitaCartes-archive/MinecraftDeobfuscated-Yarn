@@ -4,10 +4,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1361;
 import net.minecraft.class_1370;
-import net.minecraft.class_1376;
-import net.minecraft.class_1379;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
@@ -18,6 +15,9 @@ import net.minecraft.entity.ai.control.LookControl;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.LookAroundGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
+import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.SwimNavigation;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -40,24 +40,24 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class GuardianEntity extends HostileEntity {
-	private static final TrackedData<Boolean> field_7280 = DataTracker.registerData(GuardianEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final TrackedData<Integer> field_7290 = DataTracker.registerData(GuardianEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	protected float field_7286;
-	protected float field_7284;
-	protected float field_7281;
-	protected float field_7285;
-	protected float field_7287;
-	private LivingEntity field_7288;
-	private int field_7282;
-	private boolean field_7283;
-	protected class_1379 field_7289;
+	private static final TrackedData<Boolean> SPIKES_RETRACTED = DataTracker.registerData(GuardianEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<Integer> BEAM_TARGET_ID = DataTracker.registerData(GuardianEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	protected float spikesExtension;
+	protected float prevSpikesExtension;
+	protected float spikesExtensionRate;
+	protected float tailAngle;
+	protected float prevTailAngle;
+	private LivingEntity cachedBeamTarget;
+	private int beamTicks;
+	private boolean flopping;
+	protected WanderAroundGoal field_7289;
 
 	protected GuardianEntity(EntityType<?> entityType, World world) {
 		super(entityType, world);
 		this.experiencePoints = 10;
 		this.moveControl = new GuardianEntity.GuardianMoveControl(this);
-		this.field_7286 = this.random.nextFloat();
-		this.field_7284 = this.field_7286;
+		this.spikesExtension = this.random.nextFloat();
+		this.prevSpikesExtension = this.spikesExtension;
 	}
 
 	public GuardianEntity(World world) {
@@ -65,18 +65,18 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void method_5959() {
+	protected void initGoals() {
 		class_1370 lv = new class_1370(this, 1.0);
-		this.field_7289 = new class_1379(this, 1.0, 80);
-		this.goalSelector.add(4, new GuardianEntity.class_1578(this));
+		this.field_7289 = new WanderAroundGoal(this, 1.0, 80);
+		this.goalSelector.add(4, new GuardianEntity.FireBeamGoal(this));
 		this.goalSelector.add(5, lv);
 		this.goalSelector.add(7, this.field_7289);
-		this.goalSelector.add(8, new class_1361(this, PlayerEntity.class, 8.0F));
-		this.goalSelector.add(8, new class_1361(this, GuardianEntity.class, 12.0F, 0.01F));
-		this.goalSelector.add(9, new class_1376(this));
+		this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
+		this.goalSelector.add(8, new LookAtEntityGoal(this, GuardianEntity.class, 12.0F, 0.01F));
+		this.goalSelector.add(9, new LookAroundGoal(this));
 		this.field_7289.setControlBits(3);
 		lv.setControlBits(3);
-		this.targetSelector.add(1, new FollowTargetGoal(this, LivingEntity.class, 10, true, false, new GuardianEntity.class_1579(this)));
+		this.targetSelector.add(1, new FollowTargetGoal(this, LivingEntity.class, 10, true, false, new GuardianEntity.GuardianTargetPredicate(this)));
 	}
 
 	@Override
@@ -96,12 +96,12 @@ public class GuardianEntity extends HostileEntity {
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(field_7280, false);
-		this.dataTracker.startTracking(field_7290, 0);
+		this.dataTracker.startTracking(SPIKES_RETRACTED, false);
+		this.dataTracker.startTracking(BEAM_TARGET_ID, 0);
 	}
 
 	@Override
-	public boolean method_6094() {
+	public boolean canBreatheInWater() {
 		return true;
 	}
 
@@ -110,38 +110,38 @@ public class GuardianEntity extends HostileEntity {
 		return EntityGroup.AQUATIC;
 	}
 
-	public boolean method_7058() {
-		return this.dataTracker.get(field_7280);
+	public boolean areSpikesRetracted() {
+		return this.dataTracker.get(SPIKES_RETRACTED);
 	}
 
-	private void method_7054(boolean bl) {
-		this.dataTracker.set(field_7280, bl);
+	private void setSpikesRetracted(boolean bl) {
+		this.dataTracker.set(SPIKES_RETRACTED, bl);
 	}
 
-	public int method_7055() {
+	public int getWarmupTime() {
 		return 80;
 	}
 
-	private void method_7060(int i) {
-		this.dataTracker.set(field_7290, i);
+	private void setBeamTarget(int i) {
+		this.dataTracker.set(BEAM_TARGET_ID, i);
 	}
 
-	public boolean method_7063() {
-		return this.dataTracker.get(field_7290) != 0;
+	public boolean hasBeamTarget() {
+		return this.dataTracker.get(BEAM_TARGET_ID) != 0;
 	}
 
 	@Nullable
-	public LivingEntity method_7052() {
-		if (!this.method_7063()) {
+	public LivingEntity getBeamTarget() {
+		if (!this.hasBeamTarget()) {
 			return null;
 		} else if (this.world.isClient) {
-			if (this.field_7288 != null) {
-				return this.field_7288;
+			if (this.cachedBeamTarget != null) {
+				return this.cachedBeamTarget;
 			} else {
-				Entity entity = this.world.getEntityById(this.dataTracker.get(field_7290));
+				Entity entity = this.world.getEntityById(this.dataTracker.get(BEAM_TARGET_ID));
 				if (entity instanceof LivingEntity) {
-					this.field_7288 = (LivingEntity)entity;
-					return this.field_7288;
+					this.cachedBeamTarget = (LivingEntity)entity;
+					return this.cachedBeamTarget;
 				} else {
 					return null;
 				}
@@ -154,14 +154,14 @@ public class GuardianEntity extends HostileEntity {
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
 		super.onTrackedDataSet(trackedData);
-		if (field_7290.equals(trackedData)) {
-			this.field_7282 = 0;
-			this.field_7288 = null;
+		if (BEAM_TARGET_ID.equals(trackedData)) {
+			this.beamTicks = 0;
+			this.cachedBeamTarget = null;
 		}
 	}
 
 	@Override
-	public int method_5970() {
+	public int getMinAmbientSoundDelay() {
 		return 160;
 	}
 
@@ -200,35 +200,35 @@ public class GuardianEntity extends HostileEntity {
 	@Override
 	public void updateMovement() {
 		if (this.world.isClient) {
-			this.field_7284 = this.field_7286;
+			this.prevSpikesExtension = this.spikesExtension;
 			if (!this.isInsideWater()) {
-				this.field_7281 = 2.0F;
-				if (this.velocityY > 0.0 && this.field_7283 && !this.isSilent()) {
+				this.spikesExtensionRate = 2.0F;
+				if (this.velocityY > 0.0 && this.flopping && !this.isSilent()) {
 					this.world.playSound(this.x, this.y, this.z, this.method_7062(), this.getSoundCategory(), 1.0F, 1.0F, false);
 				}
 
-				this.field_7283 = this.velocityY < 0.0 && this.world.doesBlockHaveSolidTopSurface(new BlockPos(this).down());
-			} else if (this.method_7058()) {
-				if (this.field_7281 < 0.5F) {
-					this.field_7281 = 4.0F;
+				this.flopping = this.velocityY < 0.0 && this.world.doesBlockHaveSolidTopSurface(new BlockPos(this).down());
+			} else if (this.areSpikesRetracted()) {
+				if (this.spikesExtensionRate < 0.5F) {
+					this.spikesExtensionRate = 4.0F;
 				} else {
-					this.field_7281 = this.field_7281 + (0.5F - this.field_7281) * 0.1F;
+					this.spikesExtensionRate = this.spikesExtensionRate + (0.5F - this.spikesExtensionRate) * 0.1F;
 				}
 			} else {
-				this.field_7281 = this.field_7281 + (0.125F - this.field_7281) * 0.2F;
+				this.spikesExtensionRate = this.spikesExtensionRate + (0.125F - this.spikesExtensionRate) * 0.2F;
 			}
 
-			this.field_7286 = this.field_7286 + this.field_7281;
-			this.field_7287 = this.field_7285;
+			this.spikesExtension = this.spikesExtension + this.spikesExtensionRate;
+			this.prevTailAngle = this.tailAngle;
 			if (!this.isInsideWaterOrBubbleColumn()) {
-				this.field_7285 = this.random.nextFloat();
-			} else if (this.method_7058()) {
-				this.field_7285 = this.field_7285 + (0.0F - this.field_7285) * 0.25F;
+				this.tailAngle = this.random.nextFloat();
+			} else if (this.areSpikesRetracted()) {
+				this.tailAngle = this.tailAngle + (0.0F - this.tailAngle) * 0.25F;
 			} else {
-				this.field_7285 = this.field_7285 + (1.0F - this.field_7285) * 0.06F;
+				this.tailAngle = this.tailAngle + (1.0F - this.tailAngle) * 0.06F;
 			}
 
-			if (this.method_7058() && this.isInsideWater()) {
+			if (this.areSpikesRetracted() && this.isInsideWater()) {
 				Vec3d vec3d = this.getRotationVec(0.0F);
 
 				for (int i = 0; i < 2; i++) {
@@ -245,16 +245,16 @@ public class GuardianEntity extends HostileEntity {
 				}
 			}
 
-			if (this.method_7063()) {
-				if (this.field_7282 < this.method_7055()) {
-					this.field_7282++;
+			if (this.hasBeamTarget()) {
+				if (this.beamTicks < this.getWarmupTime()) {
+					this.beamTicks++;
 				}
 
-				LivingEntity livingEntity = this.method_7052();
+				LivingEntity livingEntity = this.getBeamTarget();
 				if (livingEntity != null) {
 					this.getLookControl().lookAt(livingEntity, 90.0F, 90.0F);
 					this.getLookControl().tick();
-					double d = (double)this.method_7061(0.0F);
+					double d = (double)this.getBeamProgress(0.0F);
 					double e = livingEntity.x - this.x;
 					double f = livingEntity.y + (double)(livingEntity.getHeight() * 0.5F) - (this.y + (double)this.getEyeHeight());
 					double g = livingEntity.z - this.z;
@@ -283,7 +283,7 @@ public class GuardianEntity extends HostileEntity {
 			this.velocityDirty = true;
 		}
 
-		if (this.method_7063()) {
+		if (this.hasBeamTarget()) {
 			this.yaw = this.headYaw;
 		}
 
@@ -295,17 +295,17 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_7057(float f) {
-		return MathHelper.lerp(f, this.field_7284, this.field_7286);
+	public float getSpikesExtension(float f) {
+		return MathHelper.lerp(f, this.prevSpikesExtension, this.spikesExtension);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_7053(float f) {
-		return MathHelper.lerp(f, this.field_7287, this.field_7285);
+	public float getTailAngle(float f) {
+		return MathHelper.lerp(f, this.prevTailAngle, this.tailAngle);
 	}
 
-	public float method_7061(float f) {
-		return ((float)this.field_7282 + f) / (float)this.method_7055();
+	public float getBeamProgress(float f) {
+		return ((float)this.beamTicks + f) / (float)this.getWarmupTime();
 	}
 
 	@Override
@@ -315,7 +315,7 @@ public class GuardianEntity extends HostileEntity {
 
 	@Override
 	public boolean method_5957(ViewableWorld viewableWorld) {
-		return viewableWorld.method_8606(this, this.getBoundingBox());
+		return viewableWorld.method_8606(this);
 	}
 
 	@Override
@@ -325,7 +325,7 @@ public class GuardianEntity extends HostileEntity {
 
 	@Override
 	public boolean damage(DamageSource damageSource, float f) {
-		if (!this.method_7058() && !damageSource.getMagic() && damageSource.getSource() instanceof LivingEntity) {
+		if (!this.areSpikesRetracted() && !damageSource.getMagic() && damageSource.getSource() instanceof LivingEntity) {
 			LivingEntity livingEntity = (LivingEntity)damageSource.getSource();
 			if (!damageSource.isExplosive()) {
 				livingEntity.damage(DamageSource.thorns(this), 2.0F);
@@ -348,15 +348,84 @@ public class GuardianEntity extends HostileEntity {
 	public void method_6091(float f, float g, float h) {
 		if (this.method_6034() && this.isInsideWater()) {
 			this.method_5724(f, g, h, 0.1F);
-			this.move(MovementType.SELF, this.velocityX, this.velocityY, this.velocityZ);
+			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 			this.velocityX *= 0.9F;
 			this.velocityY *= 0.9F;
 			this.velocityZ *= 0.9F;
-			if (!this.method_7058() && this.getTarget() == null) {
+			if (!this.areSpikesRetracted() && this.getTarget() == null) {
 				this.velocityY -= 0.005;
 			}
 		} else {
 			super.method_6091(f, g, h);
+		}
+	}
+
+	static class FireBeamGoal extends Goal {
+		private final GuardianEntity owner;
+		private int beamTicks;
+		private final boolean elderOwner;
+
+		public FireBeamGoal(GuardianEntity guardianEntity) {
+			this.owner = guardianEntity;
+			this.elderOwner = guardianEntity instanceof ElderGuardianEntity;
+			this.setControlBits(3);
+		}
+
+		@Override
+		public boolean canStart() {
+			LivingEntity livingEntity = this.owner.getTarget();
+			return livingEntity != null && livingEntity.isValid();
+		}
+
+		@Override
+		public boolean shouldContinue() {
+			return super.shouldContinue() && (this.elderOwner || this.owner.squaredDistanceTo(this.owner.getTarget()) > 9.0);
+		}
+
+		@Override
+		public void start() {
+			this.beamTicks = -10;
+			this.owner.getNavigation().stop();
+			this.owner.getLookControl().lookAt(this.owner.getTarget(), 90.0F, 90.0F);
+			this.owner.velocityDirty = true;
+		}
+
+		@Override
+		public void onRemove() {
+			this.owner.setBeamTarget(0);
+			this.owner.setTarget(null);
+			this.owner.field_7289.method_6304();
+		}
+
+		@Override
+		public void tick() {
+			LivingEntity livingEntity = this.owner.getTarget();
+			this.owner.getNavigation().stop();
+			this.owner.getLookControl().lookAt(livingEntity, 90.0F, 90.0F);
+			if (!this.owner.canSee(livingEntity)) {
+				this.owner.setTarget(null);
+			} else {
+				this.beamTicks++;
+				if (this.beamTicks == 0) {
+					this.owner.setBeamTarget(this.owner.getTarget().getEntityId());
+					this.owner.world.summonParticle(this.owner, (byte)21);
+				} else if (this.beamTicks >= this.owner.getWarmupTime()) {
+					float f = 1.0F;
+					if (this.owner.world.getDifficulty() == Difficulty.HARD) {
+						f += 2.0F;
+					}
+
+					if (this.elderOwner) {
+						f += 2.0F;
+					}
+
+					livingEntity.damage(DamageSource.magic(this.owner, this.owner), f);
+					livingEntity.damage(DamageSource.mob(this.owner), (float)this.owner.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue());
+					this.owner.setTarget(null);
+				}
+
+				super.tick();
+			}
 		}
 	}
 
@@ -370,16 +439,16 @@ public class GuardianEntity extends HostileEntity {
 
 		@Override
 		public void tick() {
-			if (this.field_6374 == MoveControl.class_1336.field_6378 && !this.guardian.getNavigation().method_6357()) {
-				double d = this.field_6370 - this.guardian.x;
-				double e = this.field_6369 - this.guardian.y;
-				double f = this.field_6367 - this.guardian.z;
+			if (this.state == MoveControl.State.field_6378 && !this.guardian.getNavigation().isIdle()) {
+				double d = this.targetX - this.guardian.x;
+				double e = this.targetY - this.guardian.y;
+				double f = this.targetZ - this.guardian.z;
 				double g = (double)MathHelper.sqrt(d * d + e * e + f * f);
 				e /= g;
 				float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;
 				this.guardian.yaw = this.method_6238(this.guardian.yaw, h, 90.0F);
 				this.guardian.field_6283 = this.guardian.yaw;
-				float i = (float)(this.field_6372 * this.guardian.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
+				float i = (float)(this.speed * this.guardian.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
 				this.guardian.method_6125(MathHelper.lerp(0.125F, this.guardian.method_6029(), i));
 				double j = Math.sin((double)(this.guardian.age + this.guardian.getEntityId()) * 0.5) * 0.05;
 				double k = Math.cos((double)(this.guardian.yaw * (float) (Math.PI / 180.0)));
@@ -403,92 +472,23 @@ public class GuardianEntity extends HostileEntity {
 				}
 
 				this.guardian.getLookControl().lookAt(MathHelper.lerp(0.125, p, m), MathHelper.lerp(0.125, q, n), MathHelper.lerp(0.125, r, o), 10.0F, 40.0F);
-				this.guardian.method_7054(true);
+				this.guardian.setSpikesRetracted(true);
 			} else {
 				this.guardian.method_6125(0.0F);
-				this.guardian.method_7054(false);
+				this.guardian.setSpikesRetracted(false);
 			}
 		}
 	}
 
-	static class class_1578 extends Goal {
-		private final GuardianEntity field_7293;
-		private int field_7291;
-		private final boolean field_7292;
+	static class GuardianTargetPredicate implements Predicate<LivingEntity> {
+		private final GuardianEntity owner;
 
-		public class_1578(GuardianEntity guardianEntity) {
-			this.field_7293 = guardianEntity;
-			this.field_7292 = guardianEntity instanceof ElderGuardianEntity;
-			this.setControlBits(3);
+		public GuardianTargetPredicate(GuardianEntity guardianEntity) {
+			this.owner = guardianEntity;
 		}
 
-		@Override
-		public boolean canStart() {
-			LivingEntity livingEntity = this.field_7293.getTarget();
-			return livingEntity != null && livingEntity.isValid();
-		}
-
-		@Override
-		public boolean shouldContinue() {
-			return super.shouldContinue() && (this.field_7292 || this.field_7293.squaredDistanceTo(this.field_7293.getTarget()) > 9.0);
-		}
-
-		@Override
-		public void start() {
-			this.field_7291 = -10;
-			this.field_7293.getNavigation().method_6340();
-			this.field_7293.getLookControl().lookAt(this.field_7293.getTarget(), 90.0F, 90.0F);
-			this.field_7293.velocityDirty = true;
-		}
-
-		@Override
-		public void onRemove() {
-			this.field_7293.method_7060(0);
-			this.field_7293.setTarget(null);
-			this.field_7293.field_7289.method_6304();
-		}
-
-		@Override
-		public void tick() {
-			LivingEntity livingEntity = this.field_7293.getTarget();
-			this.field_7293.getNavigation().method_6340();
-			this.field_7293.getLookControl().lookAt(livingEntity, 90.0F, 90.0F);
-			if (!this.field_7293.canSee(livingEntity)) {
-				this.field_7293.setTarget(null);
-			} else {
-				this.field_7291++;
-				if (this.field_7291 == 0) {
-					this.field_7293.method_7060(this.field_7293.getTarget().getEntityId());
-					this.field_7293.world.summonParticle(this.field_7293, (byte)21);
-				} else if (this.field_7291 >= this.field_7293.method_7055()) {
-					float f = 1.0F;
-					if (this.field_7293.world.getDifficulty() == Difficulty.HARD) {
-						f += 2.0F;
-					}
-
-					if (this.field_7292) {
-						f += 2.0F;
-					}
-
-					livingEntity.damage(DamageSource.magic(this.field_7293, this.field_7293), f);
-					livingEntity.damage(DamageSource.mob(this.field_7293), (float)this.field_7293.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue());
-					this.field_7293.setTarget(null);
-				}
-
-				super.tick();
-			}
-		}
-	}
-
-	static class class_1579 implements Predicate<LivingEntity> {
-		private final GuardianEntity field_7294;
-
-		public class_1579(GuardianEntity guardianEntity) {
-			this.field_7294 = guardianEntity;
-		}
-
-		public boolean method_7064(@Nullable LivingEntity livingEntity) {
-			return (livingEntity instanceof PlayerEntity || livingEntity instanceof SquidEntity) && livingEntity.squaredDistanceTo(this.field_7294) > 9.0;
+		public boolean test(@Nullable LivingEntity livingEntity) {
+			return (livingEntity instanceof PlayerEntity || livingEntity instanceof SquidEntity) && livingEntity.squaredDistanceTo(this.owner) > 9.0;
 		}
 	}
 }

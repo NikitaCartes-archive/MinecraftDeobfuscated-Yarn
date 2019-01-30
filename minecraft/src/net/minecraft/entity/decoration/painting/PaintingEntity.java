@@ -6,12 +6,14 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.network.packet.PaintingSpawnClientPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Packet;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -118,5 +120,10 @@ public class PaintingEntity extends AbstractDecorationEntity {
 	public void setPositionAndRotations(double d, double e, double f, float g, float h, int i, boolean bl) {
 		BlockPos blockPos = this.blockPos.add(d - this.x, e - this.y, f - this.z);
 		this.setPosition((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
+	}
+
+	@Override
+	public Packet<?> createSpawnPacket() {
+		return new PaintingSpawnClientPacket(this);
 	}
 }

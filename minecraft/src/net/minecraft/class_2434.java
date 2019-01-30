@@ -7,8 +7,8 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemProvider;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -780,6 +780,19 @@ public class class_2434 implements Consumer<BiConsumer<Identifier, LootSupplier.
 				)
 		);
 		this.method_16368(
+			EntityType.field_17714,
+			LootSupplier.create()
+				.withPool(
+					LootPool.create()
+						.withRolls(ConstantLootTableRange.create(1))
+						.withEntry(
+							ItemEntry.builder(Items.field_8745)
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.withFunction(LootingEnchantLootFunction.method_547(UniformLootTableRange.between(0.0F, 1.0F)))
+						)
+				)
+		);
+		this.method_16368(
 			EntityType.TROPICAL_FISH,
 			LootSupplier.create()
 				.withPool(
@@ -816,6 +829,7 @@ public class class_2434 implements Consumer<BiConsumer<Identifier, LootSupplier.
 		);
 		this.method_16368(EntityType.VEX, LootSupplier.create());
 		this.method_16368(EntityType.VILLAGER, LootSupplier.create());
+		this.method_16368(EntityType.field_17713, LootSupplier.create());
 		this.method_16368(
 			EntityType.VINDICATOR,
 			LootSupplier.create()
@@ -995,19 +1009,19 @@ public class class_2434 implements Consumer<BiConsumer<Identifier, LootSupplier.
 
 		for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
 			Identifier identifier = entityType.getLootTableId();
-			if (LivingEntity.class.isAssignableFrom(entityType.getEntityClass())) {
-				if (identifier != LootTables.EMPTY && set.add(identifier)) {
-					LootSupplier.Builder builder = (LootSupplier.Builder)this.field_16543.remove(identifier);
-					if (builder == null) {
-						throw new IllegalStateException(String.format("Missing loottable '%s' for '%s'", identifier, Registry.ENTITY_TYPE.getId(entityType)));
-					}
-
-					biConsumer.accept(identifier, builder);
+			if (entityType != EntityType.PLAYER && entityType != EntityType.ARMOR_STAND && entityType.getEntityClass() == EntityCategory.field_17715) {
+				if (identifier != LootTables.EMPTY && this.field_16543.remove(identifier) != null) {
+					throw new IllegalStateException(
+						String.format("Weird loottable '%s' for '%s', not a LivingEntity so should not have loot", identifier, Registry.ENTITY_TYPE.getId(entityType))
+					);
 				}
-			} else if (identifier != LootTables.EMPTY && this.field_16543.remove(identifier) != null) {
-				throw new IllegalStateException(
-					String.format("Weird loottable '%s' for '%s', not a LivingEntity so should not have loot", identifier, Registry.ENTITY_TYPE.getId(entityType))
-				);
+			} else if (identifier != LootTables.EMPTY && set.add(identifier)) {
+				LootSupplier.Builder builder = (LootSupplier.Builder)this.field_16543.remove(identifier);
+				if (builder == null) {
+					throw new IllegalStateException(String.format("Missing loottable '%s' for '%s'", identifier, Registry.ENTITY_TYPE.getId(entityType)));
+				}
+
+				biConsumer.accept(identifier, builder);
 			}
 		}
 

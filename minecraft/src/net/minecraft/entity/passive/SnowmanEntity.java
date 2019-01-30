@@ -3,8 +3,6 @@ package net.minecraft.entity.passive;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1361;
-import net.minecraft.class_1376;
 import net.minecraft.class_1394;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -12,6 +10,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.RangedAttacker;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.LookAroundGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.ProjectileAttackGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -40,11 +40,11 @@ public class SnowmanEntity extends GolemEntity implements RangedAttacker {
 	}
 
 	@Override
-	protected void method_5959() {
+	protected void initGoals() {
 		this.goalSelector.add(1, new ProjectileAttackGoal(this, 1.25, 20, 10.0F));
 		this.goalSelector.add(2, new class_1394(this, 1.0, 1.0000001E-5F));
-		this.goalSelector.add(3, new class_1361(this, PlayerEntity.class, 6.0F));
-		this.goalSelector.add(4, new class_1376(this));
+		this.goalSelector.add(3, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
+		this.goalSelector.add(4, new LookAroundGoal(this));
 		this.targetSelector.add(1, new FollowTargetGoal(this, MobEntity.class, 10, true, false, Monster.field_7270));
 	}
 

@@ -7,6 +7,8 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_3986;
+import net.minecraft.class_3992;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -30,7 +32,7 @@ import net.minecraft.entity.FireworkEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.PrimedTNTEntity;
+import net.minecraft.entity.PrimedTntEntity;
 import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
@@ -51,12 +53,12 @@ import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.mob.GiantEntity;
 import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.entity.mob.HuskEntity;
-import net.minecraft.entity.mob.IllagerBeastEntity;
 import net.minecraft.entity.mob.IllusionerEntity;
 import net.minecraft.entity.mob.MagmaCubeEntity;
 import net.minecraft.entity.mob.PhantomEntity;
 import net.minecraft.entity.mob.PigZombieEntity;
 import net.minecraft.entity.mob.PillagerEntity;
+import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.mob.SilverfishEntity;
 import net.minecraft.entity.mob.SkeletonEntity;
@@ -71,6 +73,7 @@ import net.minecraft.entity.mob.WitherSkeletonEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.mob.ZombieHorseEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
+import net.minecraft.entity.parts.EntityPart;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.passive.ChickenEntity;
@@ -97,6 +100,7 @@ import net.minecraft.entity.passive.SquidEntity;
 import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.DragonFireballEntity;
@@ -190,6 +194,7 @@ public class EntityRenderDispatcher {
 		this.method_17145(GhastEntity.class, new GhastEntityRenderer(this));
 		this.method_17145(SquidEntity.class, new SquidEntityRenderer(this));
 		this.method_17145(VillagerEntity.class, new VillagerEntityRenderer(this, reloadableResourceManager));
+		this.method_17145(WanderingTraderEntity.class, new class_3992(this));
 		this.method_17145(IronGolemEntity.class, new IronGolemEntityRenderer(this));
 		this.method_17145(BatEntity.class, new BatEntityRenderer(this));
 		this.method_17145(GuardianEntity.class, new GuardianEntityRenderer(this));
@@ -199,7 +204,7 @@ public class EntityRenderDispatcher {
 		this.method_17145(EvokerEntity.class, new EvokerIllagerEntityRenderer(this));
 		this.method_17145(VindicatorEntity.class, new VindicatorEntityRenderer(this));
 		this.method_17145(PillagerEntity.class, new PillagerEntityRenderer(this));
-		this.method_17145(IllagerBeastEntity.class, new IllagerBeastEntityRenderer(this));
+		this.method_17145(RavagerEntity.class, new IllagerBeastEntityRenderer(this));
 		this.method_17145(VexEntity.class, new VexEntityRenderer(this));
 		this.method_17145(IllusionerEntity.class, new IllusionerEntityRenderer(this));
 		this.method_17145(PhantomEntity.class, new PhantomEntityRenderer(this));
@@ -234,7 +239,7 @@ public class EntityRenderDispatcher {
 		this.method_17145(ShulkerBulletEntity.class, new ShulkerBulletEntityRenderer(this));
 		this.method_17145(ItemEntity.class, new ItemEntityRenderer(this, itemRenderer));
 		this.method_17145(ExperienceOrbEntity.class, new ExperienceOrbEntityRenderer(this));
-		this.method_17145(PrimedTNTEntity.class, new TNTPrimedEntityRenderer(this));
+		this.method_17145(PrimedTntEntity.class, new TNTPrimedEntityRenderer(this));
 		this.method_17145(FallingBlockEntity.class, new FallingBlockEntityRenderer(this));
 		this.method_17145(ArmorStandEntity.class, new ArmorStandEntityRenderer(this));
 		this.method_17145(EvokerFangsEntity.class, new EvokerFangsEntityRenderer(this));
@@ -250,6 +255,7 @@ public class EntityRenderDispatcher {
 		this.method_17145(MuleEntity.class, new DonkeyEntityRenderer(this, 0.92F));
 		this.method_17145(DonkeyEntity.class, new DonkeyEntityRenderer(this, 0.87F));
 		this.method_17145(LlamaEntity.class, new LlamaEntityRenderer(this));
+		this.method_17145(class_3986.class, new LlamaEntityRenderer(this));
 		this.method_17145(LlamaSpitEntity.class, new LlamaSpitEntityRenderer(this));
 		this.method_17145(LightningEntity.class, new LightningEntityRenderer(this));
 		this.playerRenderer = new PlayerEntityRenderer(this);
@@ -452,13 +458,13 @@ public class EntityRenderDispatcher {
 			1.0F,
 			1.0F
 		);
-		Entity[] entitys = entity.getParts();
-		if (entitys != null) {
-			for (Entity entity2 : entitys) {
-				double j = (entity2.x - entity2.prevX) * (double)h;
-				double k = (entity2.y - entity2.prevY) * (double)h;
-				double l = (entity2.z - entity2.prevZ) * (double)h;
-				BoundingBox boundingBox2 = entity2.getBoundingBox();
+		EntityPart[] entityParts = entity.getParts();
+		if (entityParts != null) {
+			for (EntityPart entityPart : entityParts) {
+				double j = (entityPart.x - entityPart.prevX) * (double)h;
+				double k = (entityPart.y - entityPart.prevY) * (double)h;
+				double l = (entityPart.z - entityPart.prevZ) * (double)h;
+				BoundingBox boundingBox2 = entityPart.getBoundingBox();
 				WorldRenderer.drawBoxOutline(
 					boundingBox2.minX - this.renderPosX + j,
 					boundingBox2.minY - this.renderPosY + k,

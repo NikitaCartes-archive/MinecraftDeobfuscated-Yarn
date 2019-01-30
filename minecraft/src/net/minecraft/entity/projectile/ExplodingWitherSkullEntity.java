@@ -52,7 +52,7 @@ public class ExplodingWitherSkullEntity extends ExplosiveProjectileEntity {
 	public float getEffectiveExplosionResistance(
 		Explosion explosion, BlockView blockView, BlockPos blockPos, BlockState blockState, FluidState fluidState, float f
 	) {
-		return this.method_7503() && EntityWither.canDestroy(blockState.getBlock()) ? Math.min(0.8F, f) : f;
+		return this.method_7503() && EntityWither.canDestroy(blockState) ? Math.min(0.8F, f) : f;
 	}
 
 	@Override

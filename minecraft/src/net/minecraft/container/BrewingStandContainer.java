@@ -35,7 +35,7 @@ public class BrewingStandContainer extends Container {
 		this.addSlot(new BrewingStandContainer.SlotPotion(inventory, 2, 102, 51));
 		this.slotIngredient = this.addSlot(new BrewingStandContainer.SlotIngredient(inventory, 3, 79, 17));
 		this.addSlot(new BrewingStandContainer.SlotFuel(inventory, 4, 17, 17));
-		this.readData(propertyDelegate);
+		this.addProperties(propertyDelegate);
 
 		for (int j = 0; j < 3; j++) {
 			for (int k = 0; k < 9; k++) {

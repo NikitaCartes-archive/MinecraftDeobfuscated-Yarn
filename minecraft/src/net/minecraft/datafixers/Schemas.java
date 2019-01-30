@@ -14,6 +14,9 @@ import net.minecraft.class_1191;
 import net.minecraft.class_3904;
 import net.minecraft.class_3905;
 import net.minecraft.class_3970;
+import net.minecraft.class_3983;
+import net.minecraft.class_3984;
+import net.minecraft.class_3985;
 import net.minecraft.datafixers.fixes.AddTrappedChestFix;
 import net.minecraft.datafixers.fixes.AdvancementsFix;
 import net.minecraft.datafixers.fixes.BedBlockEntityFix;
@@ -478,5 +481,10 @@ public class Schemas {
 		dataFixerBuilder.addFixer(new FixChoiceTypes(schema86, "Add campfire", TypeReferences.BLOCK_ENTITY));
 		Schema schema87 = dataFixerBuilder.addSchema(1925, identNormalize);
 		dataFixerBuilder.addFixer(new class_3970(schema87, false));
+		Schema schema88 = dataFixerBuilder.addSchema(1928, class_3984::new);
+		dataFixerBuilder.addFixer(new class_3983(schema88, true));
+		dataFixerBuilder.addFixer(FixItemName.create(schema88, "Rename ravager egg item", string -> (String)class_3983.field_17712.getOrDefault(string, string)));
+		Schema schema89 = dataFixerBuilder.addSchema(1929, class_3985::new);
+		dataFixerBuilder.addFixer(new FixChoiceTypes(schema89, "Add Wandering Trader and Trader Llama", TypeReferences.ENTITY));
 	}
 }

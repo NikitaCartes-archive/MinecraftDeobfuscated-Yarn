@@ -24,7 +24,7 @@ public interface IWorld extends ViewableWorld, ModifiableTestableWorld {
 	long getSeed();
 
 	default float method_8391() {
-		return Dimension.field_13059[this.getDimension().method_12454(this.getLevelProperties().getTimeOfDay())];
+		return Dimension.MOON_PHASE_TO_SIZE[this.getDimension().getMoonPhase(this.getLevelProperties().getTimeOfDay())];
 	}
 
 	default float getSkyAngle(float f) {
@@ -33,7 +33,7 @@ public interface IWorld extends ViewableWorld, ModifiableTestableWorld {
 
 	@Environment(EnvType.CLIENT)
 	default int method_8394() {
-		return this.getDimension().method_12454(this.getLevelProperties().getTimeOfDay());
+		return this.getDimension().getMoonPhase(this.getLevelProperties().getTimeOfDay());
 	}
 
 	TickScheduler<Block> getBlockTickScheduler();

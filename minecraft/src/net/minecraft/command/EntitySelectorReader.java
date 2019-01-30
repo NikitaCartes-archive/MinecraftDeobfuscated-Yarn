@@ -19,6 +19,7 @@ import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.NumberRange;
@@ -93,7 +94,8 @@ public class EntitySelectorReader {
 	private boolean field_10871;
 	private boolean field_10845;
 	private boolean field_10868;
-	private Class<? extends Entity> type;
+	@Nullable
+	private EntityType<?> type;
 	private boolean field_10865;
 	private boolean field_10841;
 	private boolean field_10864;
@@ -146,7 +148,7 @@ public class EntitySelectorReader {
 			this.field_10879,
 			this.field_10876,
 			this.field_10878,
-			this.type == null ? Entity.class : this.type,
+			this.type,
 			this.field_10840
 		);
 	}
@@ -200,17 +202,17 @@ public class EntitySelectorReader {
 				this.field_10858 = 1;
 				this.field_10843 = false;
 				this.sorter = NEAREST_FIRST;
-				this.setEntityType(ServerPlayerEntity.class);
+				this.setEntityType(EntityType.PLAYER);
 			} else if (c == 'a') {
 				this.field_10858 = Integer.MAX_VALUE;
 				this.field_10843 = false;
 				this.sorter = UNSORTED;
-				this.setEntityType(ServerPlayerEntity.class);
+				this.setEntityType(EntityType.PLAYER);
 			} else if (c == 'r') {
 				this.field_10858 = 1;
 				this.field_10843 = false;
 				this.sorter = RANDOM;
-				this.setEntityType(ServerPlayerEntity.class);
+				this.setEntityType(EntityType.PLAYER);
 			} else if (c == 's') {
 				this.field_10858 = 1;
 				this.field_10843 = true;
@@ -576,8 +578,8 @@ public class EntitySelectorReader {
 		this.field_10868 = bl;
 	}
 
-	public void setEntityType(Class<? extends Entity> class_) {
-		this.type = class_;
+	public void setEntityType(EntityType<?> entityType) {
+		this.type = entityType;
 	}
 
 	public void method_9860() {

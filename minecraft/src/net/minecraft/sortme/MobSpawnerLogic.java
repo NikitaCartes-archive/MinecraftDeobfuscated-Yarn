@@ -34,7 +34,7 @@ public abstract class MobSpawnerLogic {
 	private int minSpawnDelay = 200;
 	private int maxSpawnDelay = 800;
 	private int spawnCount = 4;
-	private Entity field_9153;
+	private Entity renderedEntity;
 	private int maxNearbyEntities = 6;
 	private int requiredPlayerRange = 16;
 	private int spawnRange = 4;
@@ -95,7 +95,7 @@ public abstract class MobSpawnerLogic {
 
 				for (int i = 0; i < this.spawnCount; i++) {
 					CompoundTag compoundTag = this.spawnEntry.getEntityTag();
-					Optional<EntityType<?>> optional = EntityType.method_17684(compoundTag);
+					Optional<EntityType<?>> optional = EntityType.fromTag(compoundTag);
 					if (!optional.isPresent()) {
 						this.method_8282();
 						return;
@@ -111,8 +111,8 @@ public abstract class MobSpawnerLogic {
 					double k = j >= 3
 						? listTag.getDouble(2)
 						: (double)blockPos.getZ() + (world.random.nextDouble() - world.random.nextDouble()) * (double)this.spawnRange + 0.5;
-					if (world.method_8587(null, ((EntityType)optional.get()).method_17683(g, h, k))) {
-						Entity entity = EntityType.method_17840(compoundTag, world, g, h, k, false);
+					if (world.method_18026(((EntityType)optional.get()).createSimpleBoundingBox(g, h, k))) {
+						Entity entity = EntityType.loadEntityWithPassengersAtPosition(compoundTag, world, g, h, k, false);
 						if (entity == null) {
 							this.method_8282();
 							return;
@@ -143,7 +143,7 @@ public abstract class MobSpawnerLogic {
 								((MobEntity)entity).prepareEntityData(world, world.getLocalDifficulty(new BlockPos(entity)), SpawnType.field_16469, null, null);
 							}
 
-							EntityType.method_17837(entity, world);
+							EntityType.spawnEntityWithPassengers(entity, world);
 							world.fireWorldEvent(2004, blockPos, 0);
 							if (mobEntity != null) {
 								mobEntity.method_5990();
@@ -208,7 +208,7 @@ public abstract class MobSpawnerLogic {
 		}
 
 		if (this.getWorld() != null) {
-			this.field_9153 = null;
+			this.renderedEntity = null;
 		}
 	}
 
@@ -241,15 +241,15 @@ public abstract class MobSpawnerLogic {
 
 	@Environment(EnvType.CLIENT)
 	public Entity getRenderedEntity() {
-		if (this.field_9153 == null) {
-			this.field_9153 = EntityType.method_17844(this.spawnEntry.getEntityTag(), this.getWorld(), false);
-			if (this.spawnEntry.getEntityTag().getSize() == 1 && this.spawnEntry.getEntityTag().containsKey("id", 8) && this.field_9153 instanceof MobEntity) {
-				((MobEntity)this.field_9153)
-					.prepareEntityData(this.getWorld(), this.getWorld().getLocalDifficulty(new BlockPos(this.field_9153)), SpawnType.field_16469, null, null);
+		if (this.renderedEntity == null) {
+			this.renderedEntity = EntityType.loadEntityWithPassengers(this.spawnEntry.getEntityTag(), this.getWorld(), false);
+			if (this.spawnEntry.getEntityTag().getSize() == 1 && this.spawnEntry.getEntityTag().containsKey("id", 8) && this.renderedEntity instanceof MobEntity) {
+				((MobEntity)this.renderedEntity)
+					.prepareEntityData(this.getWorld(), this.getWorld().getLocalDifficulty(new BlockPos(this.renderedEntity)), SpawnType.field_16469, null, null);
 			}
 		}
 
-		return this.field_9153;
+		return this.renderedEntity;
 	}
 
 	public boolean method_8275(int i) {

@@ -9,8 +9,8 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 
 public abstract class GenericContainer extends Container {
-	private final Inventory field_17495;
-	private final int field_17496;
+	private final Inventory inventory;
+	private final int rows;
 
 	public GenericContainer(ContainerType<?> containerType, int i, PlayerInventory playerInventory, int j) {
 		this(containerType, i, playerInventory, new BasicInventory(9 * j), j);
@@ -19,12 +19,12 @@ public abstract class GenericContainer extends Container {
 	public GenericContainer(ContainerType<?> containerType, int i, PlayerInventory playerInventory, Inventory inventory, int j) {
 		super(containerType, i);
 		checkContainerSize(inventory, j * 9);
-		this.field_17495 = inventory;
-		this.field_17496 = j;
+		this.inventory = inventory;
+		this.rows = j;
 		inventory.onInvOpen(playerInventory.player);
-		int k = (this.field_17496 - 4) * 18;
+		int k = (this.rows - 4) * 18;
 
-		for (int l = 0; l < this.field_17496; l++) {
+		for (int l = 0; l < this.rows; l++) {
 			for (int m = 0; m < 9; m++) {
 				this.addSlot(new Slot(inventory, m + l * 9, 8 + m * 18, 18 + l * 18));
 			}
@@ -43,7 +43,7 @@ public abstract class GenericContainer extends Container {
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return this.field_17495.canPlayerUseInv(playerEntity);
+		return this.inventory.canPlayerUseInv(playerEntity);
 	}
 
 	@Override
@@ -53,11 +53,11 @@ public abstract class GenericContainer extends Container {
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
-			if (i < this.field_17496 * 9) {
-				if (!this.insertItem(itemStack2, this.field_17496 * 9, this.slotList.size(), true)) {
+			if (i < this.rows * 9) {
+				if (!this.insertItem(itemStack2, this.rows * 9, this.slotList.size(), true)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (!this.insertItem(itemStack2, 0, this.field_17496 * 9, false)) {
+			} else if (!this.insertItem(itemStack2, 0, this.rows * 9, false)) {
 				return ItemStack.EMPTY;
 			}
 
@@ -74,16 +74,16 @@ public abstract class GenericContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.field_17495.onInvClose(playerEntity);
+		this.inventory.onInvClose(playerEntity);
 	}
 
 	public Inventory getInventory() {
-		return this.field_17495;
+		return this.inventory;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_17388() {
-		return this.field_17496;
+	public int getRows() {
+		return this.rows;
 	}
 
 	public static class Generic9x3 extends GenericContainer {

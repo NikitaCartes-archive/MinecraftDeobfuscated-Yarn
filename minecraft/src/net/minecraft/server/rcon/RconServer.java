@@ -90,4 +90,16 @@ public class RconServer extends RconBase {
 			}
 		}
 	}
+
+	@Override
+	public void method_18050() {
+		super.method_18050();
+
+		for (Entry<SocketAddress, RconClient> entry : this.clients.entrySet()) {
+			((RconClient)entry.getValue()).method_18050();
+		}
+
+		this.closeSocket(this.listener);
+		this.cleanClientList();
+	}
 }

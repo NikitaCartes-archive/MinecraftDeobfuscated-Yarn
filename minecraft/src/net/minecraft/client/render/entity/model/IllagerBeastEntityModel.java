@@ -3,11 +3,11 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.entity.mob.IllagerBeastEntity;
+import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class IllagerBeastEntityModel extends EntityModel<IllagerBeastEntity> {
+public class IllagerBeastEntityModel extends EntityModel<RavagerEntity> {
 	private final Cuboid field_3386;
 	private final Cuboid field_3388;
 	private final Cuboid field_3387;
@@ -65,8 +65,8 @@ public class IllagerBeastEntityModel extends EntityModel<IllagerBeastEntity> {
 		this.field_3382.setRotationPoint(8.0F, -13.0F, -5.0F);
 	}
 
-	public void method_17090(IllagerBeastEntity illagerBeastEntity, float f, float g, float h, float i, float j, float k) {
-		this.method_17091(illagerBeastEntity, f, g, h, i, j, k);
+	public void method_17090(RavagerEntity ravagerEntity, float f, float g, float h, float i, float j, float k) {
+		this.method_17091(ravagerEntity, f, g, h, i, j, k);
 		this.field_3384.render(k);
 		this.field_3387.render(k);
 		this.field_3385.render(k);
@@ -75,7 +75,7 @@ public class IllagerBeastEntityModel extends EntityModel<IllagerBeastEntity> {
 		this.field_3382.render(k);
 	}
 
-	public void method_17091(IllagerBeastEntity illagerBeastEntity, float f, float g, float h, float i, float j, float k) {
+	public void method_17091(RavagerEntity ravagerEntity, float f, float g, float h, float i, float j, float k) {
 		this.field_3386.pitch = j * (float) (Math.PI / 180.0);
 		this.field_3386.yaw = i * (float) (Math.PI / 180.0);
 		this.field_3387.pitch = (float) (Math.PI / 2);
@@ -86,12 +86,12 @@ public class IllagerBeastEntityModel extends EntityModel<IllagerBeastEntity> {
 		this.field_3382.pitch = MathHelper.cos(f * 0.6662F) * l;
 	}
 
-	public void method_17089(IllagerBeastEntity illagerBeastEntity, float f, float g, float h) {
-		super.animateModel(illagerBeastEntity, f, g, h);
-		int i = illagerBeastEntity.method_7074();
-		int j = illagerBeastEntity.method_7072();
+	public void method_17089(RavagerEntity ravagerEntity, float f, float g, float h) {
+		super.animateModel(ravagerEntity, f, g, h);
+		int i = ravagerEntity.method_7074();
+		int j = ravagerEntity.method_7072();
 		int k = 20;
-		int l = illagerBeastEntity.method_7070();
+		int l = ravagerEntity.method_7070();
 		int m = 10;
 		if (l > 0) {
 			float n = this.method_2801((float)l - h, 10.0F);

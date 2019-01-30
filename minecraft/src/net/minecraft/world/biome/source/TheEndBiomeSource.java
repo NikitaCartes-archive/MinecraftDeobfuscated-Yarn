@@ -30,10 +30,12 @@ public class TheEndBiomeSource extends BiomeSource {
 
 	@Override
 	public Biome getBiome(int i, int j) {
-		if ((long)i * (long)i + (long)j * (long)j <= 4096L) {
+		int k = i >> 4;
+		int l = j >> 4;
+		if ((long)k * (long)k + (long)l * (long)l <= 4096L) {
 			return Biomes.field_9411;
 		} else {
-			float f = this.method_8757(i * 2 + 1, j * 2 + 1);
+			float f = this.method_8757(k * 2 + 1, l * 2 + 1);
 			if (f > 40.0F) {
 				return Biomes.field_9442;
 			} else if (f >= 0.0F) {
@@ -51,8 +53,8 @@ public class TheEndBiomeSource extends BiomeSource {
 
 		for (int m = 0; m < k; m++) {
 			for (int n = 0; n < l; n++) {
-				int o = m + i >> 4;
-				int p = n + j >> 4;
+				int o = m + i;
+				int p = n + j;
 				long q = ChunkPos.toLong(o, p);
 				Biome biome = long2ObjectMap.get(q);
 				if (biome == null) {

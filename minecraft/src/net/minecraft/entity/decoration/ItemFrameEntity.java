@@ -6,6 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.network.packet.EntitySpawnClientPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -18,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Packet;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -102,7 +104,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 
 	@Override
 	public boolean method_6888() {
-		if (!this.world.method_8587(this, this.getBoundingBox())) {
+		if (!this.world.method_17892(this)) {
 			return false;
 		} else {
 			BlockState blockState = this.world.getBlockState(this.blockPos.offset(this.facing.getOpposite()));
@@ -309,5 +311,10 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 
 	public int method_6938() {
 		return this.getHeldItemStack().isEmpty() ? 0 : this.getRotation() % 8 + 1;
+	}
+
+	@Override
+	public Packet<?> createSpawnPacket() {
+		return new EntitySpawnClientPacket(this, this.getType(), this.facing.getId(), this.getDecorationBlockPos());
 	}
 }

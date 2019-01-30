@@ -72,16 +72,16 @@ public class EnchantingTableContainer extends Container {
 			this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 142));
 		}
 
-		this.method_17362(Property.create(this.enchantmentPower, 0));
-		this.method_17362(Property.create(this.enchantmentPower, 1));
-		this.method_17362(Property.create(this.enchantmentPower, 2));
-		this.method_17362(this.world).set(playerInventory.player.getEnchantmentTableSeed());
-		this.method_17362(Property.create(this.enchantmentId, 0));
-		this.method_17362(Property.create(this.enchantmentId, 1));
-		this.method_17362(Property.create(this.enchantmentId, 2));
-		this.method_17362(Property.create(this.enchantmentLevel, 0));
-		this.method_17362(Property.create(this.enchantmentLevel, 1));
-		this.method_17362(Property.create(this.enchantmentLevel, 2));
+		this.addProperty(Property.create(this.enchantmentPower, 0));
+		this.addProperty(Property.create(this.enchantmentPower, 1));
+		this.addProperty(Property.create(this.enchantmentPower, 2));
+		this.addProperty(this.world).set(playerInventory.player.getEnchantmentTableSeed());
+		this.addProperty(Property.create(this.enchantmentId, 0));
+		this.addProperty(Property.create(this.enchantmentId, 1));
+		this.addProperty(Property.create(this.enchantmentId, 2));
+		this.addProperty(Property.create(this.enchantmentLevel, 0));
+		this.addProperty(Property.create(this.enchantmentLevel, 1));
+		this.addProperty(Property.create(this.enchantmentLevel, 2));
 	}
 
 	@Override

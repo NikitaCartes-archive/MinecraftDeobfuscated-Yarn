@@ -1,7 +1,5 @@
 package net.minecraft.entity.mob;
 
-import net.minecraft.class_1361;
-import net.minecraft.class_1376;
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
 import net.minecraft.block.BlockState;
@@ -9,6 +7,8 @@ import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.LookAroundGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -32,12 +32,12 @@ public class EndermiteEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void method_5959() {
+	protected void initGoals() {
 		this.goalSelector.add(1, new SwimGoal(this));
 		this.goalSelector.add(2, new MeleeAttackGoal(this, 1.0, false));
 		this.goalSelector.add(3, new class_1394(this, 1.0));
-		this.goalSelector.add(7, new class_1361(this, PlayerEntity.class, 8.0F));
-		this.goalSelector.add(8, new class_1376(this));
+		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
+		this.goalSelector.add(8, new LookAroundGoal(this));
 		this.targetSelector.add(1, new class_1399(this).method_6318());
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
 	}

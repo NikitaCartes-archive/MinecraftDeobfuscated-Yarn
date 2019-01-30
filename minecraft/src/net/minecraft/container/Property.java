@@ -1,7 +1,7 @@
 package net.minecraft.container;
 
 public abstract class Property {
-	private int id;
+	private int oldValue;
 
 	public static Property create(PropertyDelegate propertyDelegate, int i) {
 		return new Property() {
@@ -33,16 +33,16 @@ public abstract class Property {
 
 	public static Property create() {
 		return new Property() {
-			private int field_17312;
+			private int value;
 
 			@Override
 			public int get() {
-				return this.field_17312;
+				return this.value;
 			}
 
 			@Override
 			public void set(int i) {
-				this.field_17312 = i;
+				this.value = i;
 			}
 		};
 	}
@@ -51,10 +51,10 @@ public abstract class Property {
 
 	public abstract void set(int i);
 
-	public boolean method_17408() {
+	public boolean detectChanges() {
 		int i = this.get();
-		boolean bl = i != this.id;
-		this.id = i;
+		boolean bl = i != this.oldValue;
+		this.oldValue = i;
 		return bl;
 	}
 }

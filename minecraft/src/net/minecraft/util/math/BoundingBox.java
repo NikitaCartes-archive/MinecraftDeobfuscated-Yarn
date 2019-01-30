@@ -87,7 +87,7 @@ public class BoundingBox {
 		return 31 * i + (int)(l ^ l >>> 32);
 	}
 
-	public BoundingBox method_1002(double d, double e, double f) {
+	public BoundingBox shrink(double d, double e, double f) {
 		double g = this.minX;
 		double h = this.minY;
 		double i = this.minZ;
@@ -157,7 +157,7 @@ public class BoundingBox {
 		return this.expand(d, d, d);
 	}
 
-	public BoundingBox method_999(BoundingBox boundingBox) {
+	public BoundingBox intersection(BoundingBox boundingBox) {
 		double d = Math.max(this.minX, boundingBox.minX);
 		double e = Math.max(this.minY, boundingBox.minY);
 		double f = Math.max(this.minZ, boundingBox.minZ);
@@ -225,21 +225,21 @@ public class BoundingBox {
 	}
 
 	public double averageDimension() {
-		double d = this.method_17939();
-		double e = this.method_17940();
-		double f = this.method_17941();
+		double d = this.getXSize();
+		double e = this.getYSize();
+		double f = this.getZSize();
 		return (d + e + f) / 3.0;
 	}
 
-	public double method_17939() {
+	public double getXSize() {
 		return this.maxX - this.minX;
 	}
 
-	public double method_17940() {
+	public double getYSize() {
 		return this.maxY - this.minY;
 	}
 
-	public double method_17941() {
+	public double getZSize() {
 		return this.maxZ - this.minZ;
 	}
 

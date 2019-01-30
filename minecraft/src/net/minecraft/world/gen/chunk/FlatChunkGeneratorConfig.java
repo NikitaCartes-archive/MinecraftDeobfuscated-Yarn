@@ -37,10 +37,10 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.LakeFeatureConfig;
 import net.minecraft.world.gen.feature.MineshaftFeature;
 import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
-import net.minecraft.world.gen.feature.NewVillageFeatureConfig;
 import net.minecraft.world.gen.feature.OceanRuinFeature;
 import net.minecraft.world.gen.feature.OceanRuinFeatureConfig;
 import net.minecraft.world.gen.feature.ShipwreckFeatureConfig;
+import net.minecraft.world.gen.feature.VillageFeatureConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -50,7 +50,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 		Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL), Decorator.NOPE, DecoratorConfig.DEFAULT
 	);
 	private static final ConfiguredFeature<?> field_14079 = Biome.configureFeature(
-		Feature.VILLAGE, new NewVillageFeatureConfig("village/plains/town_centers", 6), Decorator.NOPE, DecoratorConfig.DEFAULT
+		Feature.VILLAGE, new VillageFeatureConfig("village/plains/town_centers", 6), Decorator.NOPE, DecoratorConfig.DEFAULT
 	);
 	private static final ConfiguredFeature<?> field_14063 = Biome.configureFeature(
 		Feature.STRONGHOLD, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT
@@ -123,7 +123,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 	public static final Map<ConfiguredFeature<?>, FeatureConfig> field_14080 = SystemUtil.consume(
 		Maps.<ConfiguredFeature<?>, FeatureConfig>newHashMap(), hashMap -> {
 			hashMap.put(field_14075, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
-			hashMap.put(field_14079, new NewVillageFeatureConfig("village/plains/town_centers", 6));
+			hashMap.put(field_14079, new VillageFeatureConfig("village/plains/town_centers", 6));
 			hashMap.put(field_14063, FeatureConfig.DEFAULT);
 			hashMap.put(field_14067, FeatureConfig.DEFAULT);
 			hashMap.put(field_14061, FeatureConfig.DEFAULT);
@@ -148,7 +148,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 	public static Block parseBlock(String string) {
 		try {
 			Identifier identifier = new Identifier(string);
-			return (Block)Registry.BLOCK.method_17966(identifier).orElse(null);
+			return (Block)Registry.BLOCK.getOptional(identifier).orElse(null);
 		} catch (IllegalArgumentException var2) {
 			LOGGER.warn("Invalid blockstate: {}", string, var2);
 			return null;

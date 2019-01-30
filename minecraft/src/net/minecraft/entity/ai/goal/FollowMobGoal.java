@@ -51,7 +51,7 @@ public class FollowMobGoal extends Goal {
 	@Override
 	public boolean shouldContinue() {
 		return this.field_6433 != null
-			&& !this.field_6434.method_6357()
+			&& !this.field_6434.isIdle()
 			&& this.field_6432.squaredDistanceTo(this.field_6433) > (double)(this.field_6438 * this.field_6438);
 	}
 
@@ -65,7 +65,7 @@ public class FollowMobGoal extends Goal {
 	@Override
 	public void onRemove() {
 		this.field_6433 = null;
-		this.field_6434.method_6340();
+		this.field_6434.stop();
 		this.field_6432.setPathNodeTypeWeight(PathNodeType.WATER, this.field_6437);
 	}
 
@@ -82,7 +82,7 @@ public class FollowMobGoal extends Goal {
 				if (!(g <= (double)(this.field_6438 * this.field_6438))) {
 					this.field_6434.startMovingTo(this.field_6433, this.field_6430);
 				} else {
-					this.field_6434.method_6340();
+					this.field_6434.stop();
 					LookControl lookControl = this.field_6433.getLookControl();
 					if (g <= (double)this.field_6438
 						|| lookControl.getLookX() == this.field_6432.x && lookControl.getLookY() == this.field_6432.y && lookControl.getLookZ() == this.field_6432.z) {

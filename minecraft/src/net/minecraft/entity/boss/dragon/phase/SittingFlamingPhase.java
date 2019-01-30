@@ -57,10 +57,10 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 			double d = this.dragon.partHead.x + vec3d.x * 5.0 / 2.0;
 			double e = this.dragon.partHead.z + vec3d.z * 5.0 / 2.0;
 			double g = this.dragon.partHead.y + (double)(this.dragon.partHead.getHeight() / 2.0F);
-			BlockPos.Mutable mutable = new BlockPos.Mutable(MathHelper.floor(d), MathHelper.floor(g), MathHelper.floor(e));
+			BlockPos.Mutable mutable = new BlockPos.Mutable(d, g, e);
 
 			while (this.dragon.world.isAir(mutable)) {
-				mutable.set(MathHelper.floor(d), MathHelper.floor(--g), MathHelper.floor(e));
+				mutable.set(d, --g, e);
 			}
 
 			g = (double)(MathHelper.floor(g) + 1);

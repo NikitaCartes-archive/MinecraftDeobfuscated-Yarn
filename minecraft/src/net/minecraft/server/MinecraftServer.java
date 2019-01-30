@@ -109,11 +109,11 @@ import net.minecraft.world.ForcedChunkState;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.OldWorldSaveHandler;
+import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.SessionLockException;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.dimension.DimensionalPersistentStateManager;
 import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
@@ -242,8 +242,8 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 		this.levelName = string;
 	}
 
-	private void method_17976(DimensionalPersistentStateManager dimensionalPersistentStateManager) {
-		ScoreboardState scoreboardState = dimensionalPersistentStateManager.method_17924(ScoreboardState::new, "scoreboard");
+	private void method_17976(PersistentStateManager persistentStateManager) {
+		ScoreboardState scoreboardState = persistentStateManager.method_17924(ScoreboardState::new, "scoreboard");
 		scoreboardState.setScoreboard(this.getScoreboard());
 		this.getScoreboard().method_12935(new ScoreboardSynchronizer(scoreboardState));
 	}
@@ -383,7 +383,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 			this, this.field_17200, oldWorldSaveHandler, levelProperties, DimensionType.field_13072, this.profiler, worldGenerationProgressListener
 		);
 		this.worlds.put(DimensionType.field_13072, serverWorld);
-		this.method_17976(serverWorld.getDimensionalPersistentStateManager());
+		this.method_17976(serverWorld.getPersistentStateManager());
 		serverWorld.getWorldBorder().method_17905(levelProperties);
 		ServerWorld serverWorld2 = this.getWorld(DimensionType.field_13072);
 		if (!levelProperties.isInitialized()) {
@@ -480,7 +480,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 		this.method_16208();
 
 		for (DimensionType dimensionType : DimensionType.getAll()) {
-			ForcedChunkState forcedChunkState = this.getWorld(dimensionType).getDimensionalPersistentStateManager().get(ForcedChunkState::new, "chunks");
+			ForcedChunkState forcedChunkState = this.getWorld(dimensionType).getPersistentStateManager().get(ForcedChunkState::new, "chunks");
 			if (forcedChunkState != null) {
 				ServerWorld serverWorld2 = this.getWorld(dimensionType);
 				LongIterator longIterator = forcedChunkState.getChunks().iterator();
@@ -647,8 +647,18 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 					}
 
 					this.timeReference += 50L;
+					if (this.field_4597) {
+						this.field_4597 = false;
+						this.profiler.getController().enable();
+					}
+
+					this.profiler.startTick();
+					this.profiler.push("tick");
 					this.method_3748(this::shouldKeepTicking);
+					this.profiler.swap("nextTickWait");
 					this.method_16208();
+					this.profiler.pop();
+					this.profiler.endTick();
 					this.field_4547 = true;
 				}
 			} else {
@@ -690,7 +700,9 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 		do {
 			bl = this.executeQueuedTask();
 			if (!bl) {
+				this.profiler.push("idle");
 				Thread.yield();
+				this.profiler.pop();
 			}
 		} while (bl || this.shouldKeepTicking());
 	}
@@ -773,12 +785,6 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 	protected void method_3748(BooleanSupplier booleanSupplier) {
 		long l = SystemUtil.getMeasuringTimeNano();
 		this.ticks++;
-		if (this.field_4597) {
-			this.field_4597 = false;
-			this.profiler.getController().enable();
-		}
-
-		this.profiler.startTick();
 		this.tick(booleanSupplier);
 		if (l - this.field_4551 >= 5000000000L) {
 			this.field_4551 = l;
@@ -817,7 +823,6 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 		long n = SystemUtil.getMeasuringTimeNano();
 		this.field_16205.pushSample(n - l);
 		this.profiler.pop();
-		this.profiler.endTick();
 	}
 
 	protected void tick(BooleanSupplier booleanSupplier) {

@@ -190,7 +190,7 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 				return;
 			}
 
-			if (Container.canInsertItemIntoSlot(slot, itemStack2, true) && this.container.method_7615(slot)) {
+			if (Container.canInsertItemIntoSlot(slot, itemStack2, true) && this.container.canInsertIntoSlot(slot)) {
 				itemStack = itemStack2.copy();
 				bl = true;
 				Container.calculateStackSize(this.slots, this.field_2790, itemStack, slot.getStack().isEmpty() ? 0 : slot.getStack().getAmount());
@@ -386,7 +386,7 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 			&& (itemStack.getAmount() > this.slots.size() || this.field_2790 == 2)
 			&& Container.canInsertItemIntoSlot(slot, itemStack, true)
 			&& slot.canInsert(itemStack)
-			&& this.container.method_7615(slot)) {
+			&& this.container.canInsertIntoSlot(slot)) {
 			this.slots.add(slot);
 			this.calculateOffset();
 		}
@@ -473,13 +473,13 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 					this.field_2777 = null;
 				}
 			} else if (this.field_2794 && !this.slots.isEmpty()) {
-				this.onMouseClick(null, -999, Container.method_7591(0, this.field_2790), SlotActionType.field_7789);
+				this.onMouseClick(null, -999, Container.packClickData(0, this.field_2790), SlotActionType.field_7789);
 
 				for (Slot slot2x : this.slots) {
-					this.onMouseClick(slot2x, slot2x.id, Container.method_7591(1, this.field_2790), SlotActionType.field_7789);
+					this.onMouseClick(slot2x, slot2x.id, Container.packClickData(1, this.field_2790), SlotActionType.field_7789);
 				}
 
-				this.onMouseClick(null, -999, Container.method_7591(2, this.field_2790), SlotActionType.field_7789);
+				this.onMouseClick(null, -999, Container.packClickData(2, this.field_2790), SlotActionType.field_7789);
 			} else if (!this.client.player.inventory.getCursorStack().isEmpty()) {
 				if (this.client.options.keyPickItem.matchesMouse(i)) {
 					this.onMouseClick(slot, l, i, SlotActionType.field_7796);

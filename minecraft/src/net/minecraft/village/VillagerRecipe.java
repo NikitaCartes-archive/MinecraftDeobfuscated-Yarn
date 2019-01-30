@@ -54,6 +54,10 @@ public class VillagerRecipe {
 		return this.sellItem;
 	}
 
+	public ItemStack method_18019() {
+		return this.sellItem.copy();
+	}
+
 	public int getUses() {
 		return this.uses;
 	}

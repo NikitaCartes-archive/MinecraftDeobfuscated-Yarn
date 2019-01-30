@@ -46,7 +46,7 @@ public class AnvilContainer extends Container {
 		super(ContainerType.ANVIL, i);
 		this.world = arg;
 		this.player = playerInventory.player;
-		this.method_17362(this.pos);
+		this.addProperty(this.pos);
 		this.addSlot(new Slot(this.inventory, 0, 27, 47));
 		this.addSlot(new Slot(this.inventory, 1, 76, 47));
 		this.addSlot(

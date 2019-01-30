@@ -21,8 +21,8 @@ public abstract class SchoolingFishEntity extends FishEntity {
 	}
 
 	@Override
-	protected void method_5959() {
-		super.method_5959();
+	protected void initGoals() {
+		super.initGoals();
 		this.goalSelector.add(5, new FollowGroupLeaderGoal(this));
 	}
 

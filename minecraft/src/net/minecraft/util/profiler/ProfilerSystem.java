@@ -51,7 +51,7 @@ public class ProfilerSystem implements ReadableProfiler {
 			this.pop();
 			this.tickStarted = false;
 			if (!this.location.isEmpty()) {
-				LOGGER.error("Profiler tick ended before path was fully popped. Mismatched push/pop?");
+				LOGGER.error("Profiler tick ended before path was fully popped (remainder: '{}'). Mismatched push/pop?", this.location);
 			}
 		}
 	}
@@ -59,7 +59,7 @@ public class ProfilerSystem implements ReadableProfiler {
 	@Override
 	public void push(String string) {
 		if (!this.tickStarted) {
-			LOGGER.error("Cannot push to profiler if profiler tick hasn't started - missing startTick()?");
+			LOGGER.error("Cannot push '{}' to profiler if profiler tick hasn't started - missing startTick()?", string);
 		} else {
 			if (!this.location.isEmpty()) {
 				this.location = this.location + ".";
@@ -79,7 +79,7 @@ public class ProfilerSystem implements ReadableProfiler {
 	@Override
 	public void pop() {
 		if (!this.tickStarted) {
-			LOGGER.error("Cannot push to profiler if profiler tick hasn't started - missing startTick()?");
+			LOGGER.error("Cannot pop from profiler if profiler tick hasn't started - missing startTick()?");
 		} else if (this.timeList.isEmpty()) {
 			LOGGER.error("Tried to pop one too many times! Mismatched push() and pop()?");
 		} else {

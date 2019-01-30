@@ -181,10 +181,10 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 			LootSupplier lootSupplier = this.world.getServer().getLootManager().getSupplier(this.lootTableId);
 			this.lootTableId = null;
 			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
-				.method_312(LootContextParameters.field_1232, new BlockPos(this))
+				.put(LootContextParameters.field_1232, new BlockPos(this))
 				.setRandom(this.lootSeed);
 			if (playerEntity != null) {
-				builder.setLuck(playerEntity.getLuck()).method_312(LootContextParameters.field_1226, playerEntity);
+				builder.setLuck(playerEntity.getLuck()).put(LootContextParameters.field_1226, playerEntity);
 			}
 
 			lootSupplier.supplyInventory(this, builder.build(LootContextTypes.CHEST));

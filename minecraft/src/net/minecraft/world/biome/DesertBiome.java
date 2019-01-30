@@ -6,8 +6,8 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.MineshaftFeature;
 import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
-import net.minecraft.world.gen.feature.NewVillageFeatureConfig;
 import net.minecraft.world.gen.feature.PillagerOutpostFeatureConfig;
+import net.minecraft.world.gen.feature.VillageFeatureConfig;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
 public final class DesertBiome extends Biome {
@@ -25,7 +25,7 @@ public final class DesertBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.addStructureFeature(Feature.VILLAGE, new NewVillageFeatureConfig("village/desert/town_centers", 6));
+		this.addStructureFeature(Feature.VILLAGE, new VillageFeatureConfig("village/desert/town_centers", 6));
 		this.addStructureFeature(Feature.PILLAGER_OUTPOST, new PillagerOutpostFeatureConfig(0.004));
 		this.addStructureFeature(Feature.DESERT_PYRAMID, FeatureConfig.DEFAULT);
 		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
