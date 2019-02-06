@@ -4,7 +4,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.EntitySpawnClientPacket;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -48,7 +48,7 @@ public class EvokerFangsEntity extends Entity {
 	@Nullable
 	public LivingEntity getOwner() {
 		if (this.owner == null && this.ownerUuid != null && this.world instanceof ServerWorld) {
-			Entity entity = this.world.getEntityByUuid(this.ownerUuid);
+			Entity entity = ((ServerWorld)this.world).method_14190(this.ownerUuid);
 			if (entity instanceof LivingEntity) {
 				this.owner = (LivingEntity)entity;
 			}
@@ -148,6 +148,6 @@ public class EvokerFangsEntity extends Entity {
 
 	@Override
 	public Packet<?> createSpawnPacket() {
-		return new EntitySpawnClientPacket(this);
+		return new EntitySpawnS2CPacket(this);
 	}
 }

@@ -12,7 +12,7 @@ import net.minecraft.client.render.model.BasicBakedModel;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -20,7 +20,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ExtendedBlockView;
 
 @Environment(EnvType.CLIENT)
-public class BlockRenderManager implements ResourceReloadListener {
+public class BlockRenderManager implements SynchronousResourceReloadListener {
 	private final BlockModels models;
 	private final BlockModelRenderer renderer;
 	private final DynamicBlockRenderer dynamicRenderer = new DynamicBlockRenderer();
@@ -104,7 +104,7 @@ public class BlockRenderManager implements ResourceReloadListener {
 	}
 
 	@Override
-	public void onResourceReload(ResourceManager resourceManager) {
+	public void reloadResources(ResourceManager resourceManager) {
 		this.fluidRenderer.onResourceReload();
 	}
 }

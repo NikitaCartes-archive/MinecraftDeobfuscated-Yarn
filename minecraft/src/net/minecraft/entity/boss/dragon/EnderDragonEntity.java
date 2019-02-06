@@ -515,7 +515,7 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 			}
 
 			if (this.field_7031 == 1) {
-				this.world.fireGlobalWorldEvent(1028, new BlockPos(this), 0);
+				this.world.playGlobalEvent(1028, new BlockPos(this), 0);
 			}
 		}
 
@@ -825,7 +825,7 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 		if (damageSource.getAttacker() instanceof PlayerEntity) {
 			playerEntity = (PlayerEntity)damageSource.getAttacker();
 		} else {
-			playerEntity = this.world.method_8483(blockPos, 64.0, 64.0);
+			playerEntity = this.world.findMobAttackTarget(blockPos, 64.0, 64.0);
 		}
 
 		if (enderCrystalEntity == this.field_7024) {

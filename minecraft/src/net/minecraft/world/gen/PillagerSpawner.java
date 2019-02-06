@@ -16,18 +16,18 @@ public class PillagerSpawner {
 	private static final List<PillagerSpawner.SpawnEntry> SPAWN_ENTRIES = Arrays.asList(
 		new PillagerSpawner.SpawnEntry(EntityType.PILLAGER, 80), new PillagerSpawner.SpawnEntry(EntityType.VINDICATOR, 20)
 	);
-	private int field_16652;
+	private int ticksUntilNextSpawn;
 
 	public int spawn(World world, boolean bl, boolean bl2) {
 		if (!bl) {
 			return 0;
 		} else {
 			Random random = world.random;
-			this.field_16652--;
-			if (this.field_16652 > 0) {
+			this.ticksUntilNextSpawn--;
+			if (this.ticksUntilNextSpawn > 0) {
 				return 0;
 			} else {
-				this.field_16652 = this.field_16652 + 6000 + random.nextInt(1200);
+				this.ticksUntilNextSpawn = this.ticksUntilNextSpawn + 6000 + random.nextInt(1200);
 				long l = world.getTimeOfDay() / 24000L;
 				if (l < 5L || !world.isDaylight()) {
 					return 0;
@@ -56,12 +56,12 @@ public class PillagerSpawner {
 									return 0;
 								} else {
 									int m = 1;
-									this.method_16575(world, blockPos, random, true);
+									this.spawnOneEntity(world, blockPos, random, true);
 									int n = (int)Math.ceil((double)world.getLocalDifficulty(blockPos).getLocalDifficulty());
 
 									for (int o = 0; o < n; o++) {
 										m++;
-										this.method_16575(world, blockPos, random, false);
+										this.spawnOneEntity(world, blockPos, random, false);
 									}
 
 									return m;
@@ -74,7 +74,7 @@ public class PillagerSpawner {
 		}
 	}
 
-	private void method_16575(World world, BlockPos blockPos, Random random, boolean bl) {
+	private void spawnOneEntity(World world, BlockPos blockPos, Random random, boolean bl) {
 		PillagerSpawner.SpawnEntry spawnEntry = WeightedPicker.getRandom(random, SPAWN_ENTRIES);
 		PatrolEntity patrolEntity = spawnEntry.entityType.create(world);
 		if (patrolEntity != null) {

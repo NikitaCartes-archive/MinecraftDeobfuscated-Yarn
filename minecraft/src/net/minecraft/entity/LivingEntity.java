@@ -20,10 +20,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LadderBlock;
 import net.minecraft.block.TrapdoorBlock;
-import net.minecraft.client.network.packet.EntityAnimationClientPacket;
-import net.minecraft.client.network.packet.EntityEquipmentUpdateClientPacket;
-import net.minecraft.client.network.packet.ItemPickupAnimationClientPacket;
-import net.minecraft.client.network.packet.MobSpawnClientPacket;
+import net.minecraft.client.network.packet.EntityAnimationS2CPacket;
+import net.minecraft.client.network.packet.EntityEquipmentUpdateS2CPacket;
+import net.minecraft.client.network.packet.ItemPickupAnimationS2CPacket;
+import net.minecraft.client.network.packet.MobSpawnS2CPacket;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -1277,7 +1277,7 @@ public abstract class LivingEntity extends Entity {
 			this.field_6252 = true;
 			this.preferredHand = hand;
 			if (this.world instanceof ServerWorld) {
-				((ServerWorld)this.world).getEntityTracker().method_14079(this, new EntityAnimationClientPacket(this, hand == Hand.MAIN ? 0 : 3));
+				((ServerWorld)this.world).getEntityTracker().method_14079(this, new EntityAnimationS2CPacket(this, hand == Hand.MAIN ? 0 : 3));
 			}
 		}
 	}
@@ -1790,7 +1790,7 @@ public abstract class LivingEntity extends Entity {
 
 				ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
 				if (!ItemStack.areEqual(itemStack2, itemStack)) {
-					((ServerWorld)this.world).getEntityTracker().method_14079(this, new EntityEquipmentUpdateClientPacket(this.getEntityId(), equipmentSlot, itemStack2));
+					((ServerWorld)this.world).getEntityTracker().method_14079(this, new EntityEquipmentUpdateS2CPacket(this.getEntityId(), equipmentSlot, itemStack2));
 					if (!itemStack.isEmpty()) {
 						this.getAttributeContainer().method_6209(itemStack.getAttributeModifiers(equipmentSlot));
 					}
@@ -2141,7 +2141,7 @@ public abstract class LivingEntity extends Entity {
 		if (!entity.invalid && !this.world.isClient) {
 			EntityTracker entityTracker = ((ServerWorld)this.world).getEntityTracker();
 			if (entity instanceof ItemEntity || entity instanceof ProjectileEntity || entity instanceof ExperienceOrbEntity) {
-				entityTracker.method_14079(entity, new ItemPickupAnimationClientPacket(entity.getEntityId(), this.getEntityId(), i));
+				entityTracker.method_14079(entity, new ItemPickupAnimationS2CPacket(entity.getEntityId(), this.getEntityId(), i));
 			}
 		}
 	}
@@ -2467,6 +2467,6 @@ public abstract class LivingEntity extends Entity {
 
 	@Override
 	public Packet<?> createSpawnPacket() {
-		return new MobSpawnClientPacket(this);
+		return new MobSpawnS2CPacket(this);
 	}
 }

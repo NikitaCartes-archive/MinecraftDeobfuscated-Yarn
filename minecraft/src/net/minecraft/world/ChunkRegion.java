@@ -64,7 +64,7 @@ public class ChunkRegion implements IWorld {
 			this.width = i;
 			this.world = world;
 			this.seed = world.getSeed();
-			this.generatorSettings = world.getChunkManager().getChunkGenerator().getSettings();
+			this.generatorSettings = world.getChunkManager().getChunkGenerator().getConfig();
 			this.seaLevel = world.getSeaLevel();
 			this.levelProperties = world.getLevelProperties();
 			this.random = world.getRandom();
@@ -161,7 +161,7 @@ public class ChunkRegion implements IWorld {
 
 	@Override
 	public int getLightLevel(BlockPos blockPos, int i) {
-		return this.getChunk(blockPos).method_12035(blockPos, i, this.getDimension().hasSkyLight());
+		return this.getChunk(blockPos).getLightLevel(blockPos, i, this.getDimension().hasSkyLight());
 	}
 
 	@Override

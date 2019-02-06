@@ -15,7 +15,7 @@ import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.server.network.packet.UpdateStructureBlockServerPacket;
+import net.minecraft.server.network.packet.UpdateStructureBlockC2SPacket;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
@@ -449,7 +449,7 @@ public class StructureBlockScreen extends Screen {
 		this.client
 			.getNetworkHandler()
 			.sendPacket(
-				new UpdateStructureBlockServerPacket(
+				new UpdateStructureBlockC2SPacket(
 					this.structureBlock.getPos(),
 					action,
 					this.structureBlock.getMode(),

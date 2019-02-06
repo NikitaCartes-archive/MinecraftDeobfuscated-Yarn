@@ -21,7 +21,7 @@ import net.minecraft.world.chunk.light.LightingProvider;
 
 @Environment(EnvType.CLIENT)
 public class EmptyChunk extends WorldChunk {
-	private static final Biome[] BIOMES = SystemUtil.consume(new Biome[256], biomes -> Arrays.fill(biomes, Biomes.field_9451));
+	private static final Biome[] BIOMES = SystemUtil.consume(new Biome[256], biomes -> Arrays.fill(biomes, Biomes.biome));
 
 	public EmptyChunk(World world, ChunkPos chunkPos) {
 		super(world, chunkPos, BIOMES);
@@ -78,10 +78,6 @@ public class EmptyChunk extends WorldChunk {
 	}
 
 	@Override
-	public void unloadFromWorld() {
-	}
-
-	@Override
 	public void markDirty() {
 	}
 
@@ -99,12 +95,12 @@ public class EmptyChunk extends WorldChunk {
 	}
 
 	@Override
-	public boolean method_12228(int i, int j) {
+	public boolean areSectionsEmpty(int i, int j) {
 		return true;
 	}
 
 	@Override
-	public ChunkHolder.LevelType method_12225() {
+	public ChunkHolder.LevelType getLevelType() {
 		return ChunkHolder.LevelType.BORDER;
 	}
 }

@@ -106,7 +106,7 @@ public class DoorBlock extends Block {
 		BlockState blockState2 = world.getBlockState(blockPos2);
 		if (blockState2.getBlock() == this && blockState2.get(HALF) != doubleBlockHalf) {
 			world.setBlockState(blockPos2, Blocks.field_10124.getDefaultState(), 35);
-			world.fireWorldEvent(playerEntity, 2001, blockPos2, Block.getRawIdFromState(blockState2));
+			world.playEvent(playerEntity, 2001, blockPos2, Block.getRawIdFromState(blockState2));
 			ItemStack itemStack = playerEntity.getMainHandStack();
 			if (!world.isClient && !playerEntity.isCreative()) {
 				Block.dropStacks(blockState, world, blockPos, null, playerEntity, itemStack);
@@ -206,7 +206,7 @@ public class DoorBlock extends Block {
 		} else {
 			blockState = blockState.method_11572(OPEN);
 			world.setBlockState(blockPos, blockState, 10);
-			world.fireWorldEvent(playerEntity, blockState.get(OPEN) ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), blockPos, 0);
+			world.playEvent(playerEntity, blockState.get(OPEN) ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), blockPos, 0);
 			return true;
 		}
 	}
@@ -240,7 +240,7 @@ public class DoorBlock extends Block {
 	}
 
 	private void playOpenCloseSound(World world, BlockPos blockPos, boolean bl) {
-		world.fireWorldEvent(null, bl ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), blockPos, 0);
+		world.playEvent(null, bl ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), blockPos, 0);
 	}
 
 	@Override

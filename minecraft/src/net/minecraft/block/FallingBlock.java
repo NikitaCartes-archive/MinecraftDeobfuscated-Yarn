@@ -39,22 +39,7 @@ public class FallingBlock extends Block {
 
 	private void tryStartFalling(World world, BlockPos blockPos) {
 		if (canFallThrough(world.getBlockState(blockPos.down())) && blockPos.getY() >= 0) {
-			int i = 32;
-			if (!world.isAreaLoaded(blockPos.add(-32, -32, -32), blockPos.add(32, 32, 32))) {
-				if (world.getBlockState(blockPos).getBlock() == this) {
-					world.clearBlockState(blockPos);
-				}
-
-				BlockPos blockPos2 = blockPos.down();
-
-				while (canFallThrough(world.getBlockState(blockPos2)) && blockPos2.getY() > 0) {
-					blockPos2 = blockPos2.down();
-				}
-
-				if (blockPos2.getY() > 0) {
-					world.setBlockState(blockPos2.up(), this.getDefaultState());
-				}
-			} else if (!world.isClient) {
+			if (!world.isClient) {
 				FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(
 					world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, world.getBlockState(blockPos)
 				);

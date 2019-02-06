@@ -4,8 +4,8 @@ import java.util.Random;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_3999;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.texture.Sprite;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.util.LoopingStream;
@@ -16,7 +16,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class Particle {
+public abstract class Particle {
 	private static final BoundingBox EMPTY_BOUNDING_BOX = new BoundingBox(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	protected final World world;
 	protected double prevPosX;
@@ -30,24 +30,18 @@ public class Particle {
 	protected double velocityZ;
 	private BoundingBox boundingBox = EMPTY_BOUNDING_BOX;
 	protected boolean onGround;
-	protected boolean collidesWithWorld;
+	protected boolean collidesWithWorld = true;
 	protected boolean dead;
 	protected float spacingXZ = 0.6F;
 	protected float spacingY = 1.8F;
 	protected final Random random = new Random();
-	protected int tileU;
-	protected int tileV;
-	protected final float field_3865;
-	protected final float field_3846;
 	protected int age;
 	protected int maxAge;
-	protected float size;
 	protected float gravityStrength;
-	protected float colorRed;
-	protected float colorGreen;
-	protected float colorBlue;
+	protected float colorRed = 1.0F;
+	protected float colorGreen = 1.0F;
+	protected float colorBlue = 1.0F;
 	protected float colorAlpha = 1.0F;
-	protected Sprite sprite;
 	protected float field_3839;
 	protected float field_3857;
 	public static double cameraX;
@@ -62,15 +56,7 @@ public class Particle {
 		this.prevPosX = d;
 		this.prevPosY = e;
 		this.prevPosZ = f;
-		this.colorRed = 1.0F;
-		this.colorGreen = 1.0F;
-		this.colorBlue = 1.0F;
-		this.field_3865 = this.random.nextFloat() * 3.0F;
-		this.field_3846 = this.random.nextFloat() * 3.0F;
-		this.size = (this.random.nextFloat() * 0.5F + 0.5F) * 2.0F;
 		this.maxAge = (int)(4.0F / (this.random.nextFloat() * 0.9F + 0.1F));
-		this.age = 0;
-		this.collidesWithWorld = true;
 	}
 
 	public Particle(World world, double d, double e, double f, double g, double h, double i) {
@@ -94,7 +80,6 @@ public class Particle {
 
 	public Particle method_3087(float f) {
 		this.setBoundingBoxSpacing(0.2F * f, 0.2F * f);
-		this.size *= f;
 		return this;
 	}
 
@@ -106,22 +91,6 @@ public class Particle {
 
 	public void setColorAlpha(float f) {
 		this.colorAlpha = f;
-	}
-
-	public boolean hasAlpha() {
-		return false;
-	}
-
-	public float getColorRed() {
-		return this.colorRed;
-	}
-
-	public float getColorGreen() {
-		return this.colorGreen;
-	}
-
-	public float getColorBlue() {
-		return this.colorBlue;
 	}
 
 	public void setMaxAge(int i) {
@@ -138,106 +107,22 @@ public class Particle {
 		this.prevPosZ = this.posZ;
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
-		}
-
-		this.velocityY = this.velocityY - 0.04 * (double)this.gravityStrength;
-		this.move(this.velocityX, this.velocityY, this.velocityZ);
-		this.velocityX *= 0.98F;
-		this.velocityY *= 0.98F;
-		this.velocityZ *= 0.98F;
-		if (this.onGround) {
-			this.velocityX *= 0.7F;
-			this.velocityZ *= 0.7F;
-		}
-	}
-
-	public void buildGeometry(BufferBuilder bufferBuilder, Entity entity, float f, float g, float h, float i, float j, float k) {
-		float l = (float)this.tileU / 32.0F;
-		float m = l + 0.03121875F;
-		float n = (float)this.tileV / 32.0F;
-		float o = n + 0.03121875F;
-		float p = 0.1F * this.size;
-		if (this.sprite != null) {
-			l = this.sprite.getMinU();
-			m = this.sprite.getMaxU();
-			n = this.sprite.getMinV();
-			o = this.sprite.getMaxV();
-		}
-
-		float q = (float)(MathHelper.lerp((double)f, this.prevPosX, this.posX) - cameraX);
-		float r = (float)(MathHelper.lerp((double)f, this.prevPosY, this.posY) - cameraY);
-		float s = (float)(MathHelper.lerp((double)f, this.prevPosZ, this.posZ) - cameraZ);
-		int t = this.getColorMultiplier(f);
-		int u = t >> 16 & 65535;
-		int v = t & 65535;
-		Vec3d[] vec3ds = new Vec3d[]{
-			new Vec3d((double)(-g * p - j * p), (double)(-h * p), (double)(-i * p - k * p)),
-			new Vec3d((double)(-g * p + j * p), (double)(h * p), (double)(-i * p + k * p)),
-			new Vec3d((double)(g * p + j * p), (double)(h * p), (double)(i * p + k * p)),
-			new Vec3d((double)(g * p - j * p), (double)(-h * p), (double)(i * p - k * p))
-		};
-		if (this.field_3839 != 0.0F) {
-			float w = MathHelper.lerp(f, this.field_3857, this.field_3839);
-			float x = MathHelper.cos(w * 0.5F);
-			float y = MathHelper.sin(w * 0.5F) * (float)cameraRotation.x;
-			float z = MathHelper.sin(w * 0.5F) * (float)cameraRotation.y;
-			float aa = MathHelper.sin(w * 0.5F) * (float)cameraRotation.z;
-			Vec3d vec3d = new Vec3d((double)y, (double)z, (double)aa);
-
-			for (int ab = 0; ab < 4; ab++) {
-				vec3ds[ab] = vec3d.multiply(2.0 * vec3ds[ab].dotProduct(vec3d))
-					.add(vec3ds[ab].multiply((double)(x * x) - vec3d.dotProduct(vec3d)))
-					.add(vec3d.crossProduct(vec3ds[ab]).multiply((double)(2.0F * x)));
+		} else {
+			this.velocityY = this.velocityY - 0.04 * (double)this.gravityStrength;
+			this.move(this.velocityX, this.velocityY, this.velocityZ);
+			this.velocityX *= 0.98F;
+			this.velocityY *= 0.98F;
+			this.velocityZ *= 0.98F;
+			if (this.onGround) {
+				this.velocityX *= 0.7F;
+				this.velocityZ *= 0.7F;
 			}
 		}
-
-		bufferBuilder.vertex((double)q + vec3ds[0].x, (double)r + vec3ds[0].y, (double)s + vec3ds[0].z)
-			.texture((double)m, (double)o)
-			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
-			.texture(u, v)
-			.next();
-		bufferBuilder.vertex((double)q + vec3ds[1].x, (double)r + vec3ds[1].y, (double)s + vec3ds[1].z)
-			.texture((double)m, (double)n)
-			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
-			.texture(u, v)
-			.next();
-		bufferBuilder.vertex((double)q + vec3ds[2].x, (double)r + vec3ds[2].y, (double)s + vec3ds[2].z)
-			.texture((double)l, (double)n)
-			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
-			.texture(u, v)
-			.next();
-		bufferBuilder.vertex((double)q + vec3ds[3].x, (double)r + vec3ds[3].y, (double)s + vec3ds[3].z)
-			.texture((double)l, (double)o)
-			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
-			.texture(u, v)
-			.next();
 	}
 
-	public int getParticleGroup() {
-		return 0;
-	}
+	public abstract void buildGeometry(BufferBuilder bufferBuilder, Entity entity, float f, float g, float h, float i, float j, float k);
 
-	public void setSprite(Sprite sprite) {
-		int i = this.getParticleGroup();
-		if (i == 1) {
-			this.sprite = sprite;
-		} else {
-			throw new RuntimeException("Invalid call to Particle.setTex, use coordinate methods");
-		}
-	}
-
-	public void setSpriteIndex(int i) {
-		if (this.getParticleGroup() != 0) {
-			throw new RuntimeException("Invalid call to Particle.setMiscTex");
-		} else {
-			this.tileU = i % 16;
-			this.tileV = i / 16;
-		}
-	}
-
-	public void incSpriteIndex() {
-		this.tileU++;
-	}
+	public abstract class_3999 method_18122();
 
 	public String toString() {
 		return this.getClass().getSimpleName()
@@ -320,7 +205,7 @@ public class Particle {
 		this.posZ = (boundingBox.minZ + boundingBox.maxZ) / 2.0;
 	}
 
-	public int getColorMultiplier(float f) {
+	protected int getColorMultiplier(float f) {
 		BlockPos blockPos = new BlockPos(this.posX, this.posY, this.posZ);
 		return this.world.isBlockLoaded(blockPos) ? this.world.getLightmapIndex(blockPos, 0) : 0;
 	}

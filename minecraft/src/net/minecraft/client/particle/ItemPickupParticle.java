@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_3999;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -26,6 +27,11 @@ public class ItemPickupParticle extends Particle {
 		this.field_3821 = entity2;
 		this.field_3825 = 3;
 		this.field_3822 = f;
+	}
+
+	@Override
+	public class_3999 method_18122() {
+		return class_3999.field_17831;
 	}
 
 	@Override
@@ -59,10 +65,5 @@ public class ItemPickupParticle extends Particle {
 		if (this.field_3826 == this.field_3825) {
 			this.markDead();
 		}
-	}
-
-	@Override
-	public int getParticleGroup() {
-		return 3;
 	}
 }

@@ -202,8 +202,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 			} while (blockPos.getY() >= MathHelper.floor(f) - 1);
 
 			if (bl) {
-				EvokerFangsEntity evokerFangsEntity = new EvokerFangsEntity(EvokerEntity.this.world, d, (double)blockPos.getY() + j, e, h, i, EvokerEntity.this);
-				EvokerEntity.this.world.spawnEntity(evokerFangsEntity);
+				EvokerEntity.this.world.spawnEntity(new EvokerFangsEntity(EvokerEntity.this.world, d, (double)blockPos.getY() + j, e, h, i, EvokerEntity.this));
 			}
 		}
 

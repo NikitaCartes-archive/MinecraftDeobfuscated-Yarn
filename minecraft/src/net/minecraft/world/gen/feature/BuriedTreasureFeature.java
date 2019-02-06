@@ -40,7 +40,7 @@ public class BuriedTreasureFeature extends StructureFeature<BuriedTreasureFeatur
 	}
 
 	@Override
-	public int method_14021() {
+	public int getRadius() {
 		return 1;
 	}
 

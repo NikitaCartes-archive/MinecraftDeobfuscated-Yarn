@@ -8,8 +8,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.CompletableFuture;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4005;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.MainMenuScreen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloadListener;
 import net.minecraft.util.Identifier;
@@ -17,11 +22,12 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.crash.ICrashCallable;
+import net.minecraft.util.profiler.Profiler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class TextureManager implements TextureTickListener, ResourceReloadListener {
+public class TextureManager implements TextureTickListener, ResourceReloadListener<Void> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final Identifier field_5285 = new Identifier("");
 	private final Map<Identifier, Texture> textures = Maps.<Identifier, Texture>newHashMap();
@@ -62,7 +68,7 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 				LOGGER.warn("Failed to load texture: {}", identifier, var8);
 			}
 
-			texture = MissingSprite.method_4540();
+			texture = MissingSprite.getMissingSpriteTexture();
 			this.textures.put(identifier, texture);
 			bl = false;
 		} catch (Throwable var9) {
@@ -95,6 +101,16 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 		return identifier;
 	}
 
+	public CompletableFuture<Void> method_18168(Identifier identifier) {
+		if (!this.textures.containsKey(identifier)) {
+			class_4005 lv = new class_4005(this.resourceContainer, identifier);
+			this.textures.put(identifier, lv);
+			return lv.method_18148().thenRunAsync(() -> this.registerTexture(identifier, lv), MinecraftClient.getInstance());
+		} else {
+			return CompletableFuture.completedFuture(null);
+		}
+	}
+
 	@Override
 	public void tick() {
 		for (TextureTickListener textureTickListener : this.tickListeners) {
@@ -110,18 +126,22 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 	}
 
 	@Override
-	public void onResourceReload(ResourceManager resourceManager) {
-		MissingSprite.method_4540();
+	public CompletableFuture<Void> prepare(ResourceManager resourceManager, Profiler profiler) {
+		return CompletableFuture.allOf(MainMenuScreen.method_18105(this), this.method_18168(ButtonWidget.WIDGET_TEX));
+	}
+
+	public void method_18167(ResourceManager resourceManager, Void void_, Profiler profiler) {
+		MissingSprite.getMissingSpriteTexture();
 		Iterator<Entry<Identifier, Texture>> iterator = this.textures.entrySet().iterator();
 
 		while (iterator.hasNext()) {
 			Entry<Identifier, Texture> entry = (Entry<Identifier, Texture>)iterator.next();
 			Identifier identifier = (Identifier)entry.getKey();
 			Texture texture = (Texture)entry.getValue();
-			if (texture == MissingSprite.method_4540() && !identifier.equals(MissingSprite.getMissingTextureId())) {
+			if (texture == MissingSprite.getMissingSpriteTexture() && !identifier.equals(MissingSprite.getMissingSpriteId())) {
 				iterator.remove();
 			} else {
-				this.registerTexture((Identifier)entry.getKey(), texture);
+				texture.method_18169(this, resourceManager, identifier);
 			}
 		}
 	}

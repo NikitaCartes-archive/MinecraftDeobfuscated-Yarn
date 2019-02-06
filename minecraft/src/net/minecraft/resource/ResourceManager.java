@@ -15,6 +15,9 @@ public interface ResourceManager {
 
 	Resource getResource(Identifier identifier) throws IOException;
 
+	@Environment(EnvType.CLIENT)
+	boolean method_18234(Identifier identifier);
+
 	List<Resource> getAllResources(Identifier identifier) throws IOException;
 
 	Collection<Identifier> findResources(String string, Predicate<String> predicate);

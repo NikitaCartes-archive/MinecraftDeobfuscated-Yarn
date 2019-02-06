@@ -262,7 +262,7 @@ public class class_2434 implements Consumer<BiConsumer<Identifier, LootSupplier.
 				.withPool(
 					LootPool.create()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(LootTableEntry.method_428(LootTables.field_795))
+						.withEntry(LootTableEntry.method_428(LootTables.GAMEPLAY_FISHING_FISH))
 						.withCondition(KilledByPlayerLootCondition.method_939())
 						.withCondition(RandomChanceWithLootingLootCondition.method_953(0.025F, 0.01F))
 				)
@@ -349,7 +349,7 @@ public class class_2434 implements Consumer<BiConsumer<Identifier, LootSupplier.
 				.withPool(
 					LootPool.create()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(LootTableEntry.method_428(LootTables.field_795))
+						.withEntry(LootTableEntry.method_428(LootTables.GAMEPLAY_FISHING_FISH))
 						.withCondition(KilledByPlayerLootCondition.method_939())
 						.withCondition(RandomChanceWithLootingLootCondition.method_953(0.025F, 0.01F))
 				)
@@ -631,7 +631,7 @@ public class class_2434 implements Consumer<BiConsumer<Identifier, LootSupplier.
 		this.method_16369(LootTables.ENTITY_SHEEP_GRAY, method_10401(Blocks.field_10423));
 		this.method_16369(LootTables.ENTITY_SHEEP_GREEN, method_10401(Blocks.field_10170));
 		this.method_16369(LootTables.ENTITY_SHEEP_LIGHT_BLUE, method_10401(Blocks.field_10294));
-		this.method_16369(LootTables.field_806, method_10401(Blocks.field_10222));
+		this.method_16369(LootTables.ENTITY_SHEEP_LIGHT_GRAY, method_10401(Blocks.field_10222));
 		this.method_16369(LootTables.ENTITY_SHEEP_LIME, method_10401(Blocks.field_10028));
 		this.method_16369(LootTables.ENTITY_SHEEP_MAGENTA, method_10401(Blocks.field_10215));
 		this.method_16369(LootTables.ENTITY_SHEEP_ORANGE, method_10401(Blocks.field_10095));

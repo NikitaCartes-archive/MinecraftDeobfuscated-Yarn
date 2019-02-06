@@ -12,7 +12,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ConcretePowderBlock;
 import net.minecraft.block.FallingBlock;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.network.packet.EntitySpawnClientPacket;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -127,7 +127,7 @@ public class FallingBlockEntity extends Entity {
 							new RayTraceContext(
 								new Vec3d(this.prevX, this.prevY, this.prevZ),
 								new Vec3d(this.x, this.y, this.z),
-								RayTraceContext.ShapeType.field_17559,
+								RayTraceContext.ShapeType.field_17558,
 								RayTraceContext.FluidHandling.field_1345,
 								this
 							)
@@ -148,11 +148,6 @@ public class FallingBlockEntity extends Entity {
 					}
 				} else {
 					BlockState blockState = this.world.getBlockState(blockPos);
-					if (!bl2 && FallingBlock.canFallThrough(this.world.getBlockState(new BlockPos(this.x, this.y - 0.01F, this.z)))) {
-						this.onGround = false;
-						return;
-					}
-
 					this.velocityX *= 0.7F;
 					this.velocityZ *= 0.7F;
 					this.velocityY *= -0.5;
@@ -299,6 +294,6 @@ public class FallingBlockEntity extends Entity {
 
 	@Override
 	public Packet<?> createSpawnPacket() {
-		return new EntitySpawnClientPacket(this, Block.getRawIdFromState(this.getBlockState()));
+		return new EntitySpawnS2CPacket(this, Block.getRawIdFromState(this.getBlockState()));
 	}
 }

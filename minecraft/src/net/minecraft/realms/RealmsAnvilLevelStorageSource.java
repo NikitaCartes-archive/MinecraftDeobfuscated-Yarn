@@ -22,33 +22,33 @@ public class RealmsAnvilLevelStorageSource {
 	}
 
 	public boolean levelExists(String string) {
-		return this.levelStorageSource.exists(string);
+		return this.levelStorageSource.levelExists(string);
 	}
 
 	public boolean convertLevel(String string, ProgressListener progressListener) {
-		return this.levelStorageSource.method_17927(string, progressListener);
+		return this.levelStorageSource.convertLevel(string, progressListener);
 	}
 
 	public boolean requiresConversion(String string) {
-		return this.levelStorageSource.isConvertible(string);
+		return this.levelStorageSource.requiresConversion(string);
 	}
 
 	public boolean isNewLevelIdAcceptable(String string) {
-		return this.levelStorageSource.canCreate(string);
+		return this.levelStorageSource.isLevelNameValid(string);
 	}
 
 	public boolean deleteLevel(String string) {
-		return this.levelStorageSource.delete(string);
+		return this.levelStorageSource.deleteLevel(string);
 	}
 
 	public void renameLevel(String string, String string2) {
-		this.levelStorageSource.rename(string, string2);
+		this.levelStorageSource.renameLevel(string, string2);
 	}
 
 	public List<RealmsLevelSummary> getLevelList() throws LevelStorageException {
 		List<RealmsLevelSummary> list = Lists.<RealmsLevelSummary>newArrayList();
 
-		for (LevelSummary levelSummary : this.levelStorageSource.getAvailableLevels()) {
+		for (LevelSummary levelSummary : this.levelStorageSource.getLevelList()) {
 			list.add(new RealmsLevelSummary(levelSummary));
 		}
 

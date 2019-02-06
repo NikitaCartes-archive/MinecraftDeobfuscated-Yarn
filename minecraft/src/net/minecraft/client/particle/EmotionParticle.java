@@ -2,40 +2,36 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.entity.Entity;
+import net.minecraft.class_3999;
+import net.minecraft.class_4000;
+import net.minecraft.class_4001;
+import net.minecraft.class_4002;
+import net.minecraft.class_4003;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class EmotionParticle extends Particle {
-	private final float field_3811;
-
-	protected EmotionParticle(World world, double d, double e, double f, double g, double h, double i) {
-		this(world, d, e, f, g, h, i, 2.0F);
-	}
-
-	protected EmotionParticle(World world, double d, double e, double f, double g, double h, double i, float j) {
+public class EmotionParticle extends class_4003 {
+	private EmotionParticle(World world, double d, double e, double f) {
 		super(world, d, e, f, 0.0, 0.0, 0.0);
 		this.velocityX *= 0.01F;
 		this.velocityY *= 0.01F;
 		this.velocityZ *= 0.01F;
 		this.velocityY += 0.1;
-		this.size *= 0.75F;
-		this.size *= j;
-		this.field_3811 = this.size;
+		this.field_17867 *= 1.5F;
 		this.maxAge = 16;
-		this.setSpriteIndex(80);
 		this.collidesWithWorld = false;
 	}
 
 	@Override
-	public void buildGeometry(BufferBuilder bufferBuilder, Entity entity, float f, float g, float h, float i, float j, float k) {
-		float l = ((float)this.age + f) / (float)this.maxAge * 32.0F;
-		l = MathHelper.clamp(l, 0.0F, 1.0F);
-		this.size = this.field_3811 * l;
-		super.buildGeometry(bufferBuilder, entity, f, g, h, i, j, k);
+	public class_3999 method_18122() {
+		return class_3999.field_17828;
+	}
+
+	@Override
+	public float method_18132(float f) {
+		return this.field_17867 * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
 	}
 
 	@Override
@@ -45,37 +41,51 @@ public class EmotionParticle extends Particle {
 		this.prevPosZ = this.posZ;
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
-		}
+		} else {
+			this.move(this.velocityX, this.velocityY, this.velocityZ);
+			if (this.posY == this.prevPosY) {
+				this.velocityX *= 1.1;
+				this.velocityZ *= 1.1;
+			}
 
-		this.move(this.velocityX, this.velocityY, this.velocityZ);
-		if (this.posY == this.prevPosY) {
-			this.velocityX *= 1.1;
-			this.velocityZ *= 1.1;
-		}
-
-		this.velocityX *= 0.86F;
-		this.velocityY *= 0.86F;
-		this.velocityZ *= 0.86F;
-		if (this.onGround) {
-			this.velocityX *= 0.7F;
-			this.velocityZ *= 0.7F;
+			this.velocityX *= 0.86F;
+			this.velocityY *= 0.86F;
+			this.velocityZ *= 0.86F;
+			if (this.onGround) {
+				this.velocityX *= 0.7F;
+				this.velocityZ *= 0.7F;
+			}
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class AngryVillagerFactory implements ParticleFactory<DefaultParticleType> {
+		private final class_4002 field_17813;
+
+		public AngryVillagerFactory(class_4001 arg) {
+			this.field_17813 = arg.method_18137(class_4000.field_17836);
+		}
+
 		public Particle method_3034(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			Particle particle = new EmotionParticle(world, d, e + 0.5, f, g, h, i);
-			particle.setSpriteIndex(81);
-			particle.setColor(1.0F, 1.0F, 1.0F);
-			return particle;
+			EmotionParticle emotionParticle = new EmotionParticle(world, d, e + 0.5, f);
+			emotionParticle.method_18140(this.field_17813);
+			emotionParticle.setColor(1.0F, 1.0F, 1.0F);
+			return emotionParticle;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class HeartFactory implements ParticleFactory<DefaultParticleType> {
+		private final class_4002 field_17814;
+
+		public HeartFactory(class_4001 arg) {
+			this.field_17814 = arg.method_18137(class_4000.field_17855);
+		}
+
 		public Particle method_3035(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			return new EmotionParticle(world, d, e, f, g, h, i);
+			EmotionParticle emotionParticle = new EmotionParticle(world, d, e, f);
+			emotionParticle.method_18140(this.field_17814);
+			return emotionParticle;
 		}
 	}
 }

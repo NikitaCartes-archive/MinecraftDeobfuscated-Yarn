@@ -16,14 +16,14 @@ public class JungleGrassFeature extends Feature<DefaultFeatureConfig> {
 		super(function);
 	}
 
-	public BlockState method_13458(Random random) {
+	public BlockState getGrass(Random random) {
 		return random.nextInt(4) == 0 ? Blocks.field_10112.getDefaultState() : Blocks.field_10479.getDefaultState();
 	}
 
 	public boolean method_13459(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
-		BlockState blockState = this.method_13458(random);
+		BlockState blockState = this.getGrass(random);
 
 		for (BlockState blockState2 = iWorld.getBlockState(blockPos);
 			(blockState2.isAir() || blockState2.matches(BlockTags.field_15503)) && blockPos.getY() > 0;

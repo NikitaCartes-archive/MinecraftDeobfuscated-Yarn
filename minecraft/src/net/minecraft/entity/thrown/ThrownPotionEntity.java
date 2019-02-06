@@ -114,7 +114,7 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 			}
 
 			int i = potion.hasInstantEffect() ? 2007 : 2002;
-			this.world.fireWorldEvent(i, new BlockPos(this), PotionUtil.getColor(itemStack));
+			this.world.playEvent(i, new BlockPos(this), PotionUtil.getColor(itemStack));
 			this.invalidate();
 		}
 	}

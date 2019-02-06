@@ -18,7 +18,7 @@ import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class FishHookEntityRenderer extends EntityRenderer<FishHookEntity> {
-	private static final Identifier TEX = new Identifier("textures/particle/particles.png");
+	private static final Identifier TEX = new Identifier("textures/entity/fishing_hook.png");
 
 	public FishHookEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
@@ -34,15 +34,9 @@ public class FishHookEntityRenderer extends EntityRenderer<FishHookEntity> {
 			this.bindEntityTexture(fishHookEntity);
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-			int i = 1;
-			int j = 2;
-			float k = 0.03125F;
-			float l = 0.0625F;
-			float m = 0.0625F;
-			float n = 0.09375F;
-			float o = 1.0F;
-			float p = 0.5F;
-			float q = 0.5F;
+			float i = 1.0F;
+			float j = 0.5F;
+			float k = 0.5F;
 			GlStateManager.rotatef(180.0F - this.renderManager.field_4679, 0.0F, 1.0F, 0.0F);
 			GlStateManager.rotatef((float)(this.renderManager.settings.field_1850 == 2 ? -1 : 1) * -this.renderManager.field_4677, 1.0F, 0.0F, 0.0F);
 			if (this.renderOutlines) {
@@ -51,10 +45,10 @@ public class FishHookEntityRenderer extends EntityRenderer<FishHookEntity> {
 			}
 
 			bufferBuilder.begin(7, VertexFormats.POSITION_UV_NORMAL);
-			bufferBuilder.vertex(-0.5, -0.5, 0.0).texture(0.03125, 0.09375).normal(0.0F, 1.0F, 0.0F).next();
-			bufferBuilder.vertex(0.5, -0.5, 0.0).texture(0.0625, 0.09375).normal(0.0F, 1.0F, 0.0F).next();
-			bufferBuilder.vertex(0.5, 0.5, 0.0).texture(0.0625, 0.0625).normal(0.0F, 1.0F, 0.0F).next();
-			bufferBuilder.vertex(-0.5, 0.5, 0.0).texture(0.03125, 0.0625).normal(0.0F, 1.0F, 0.0F).next();
+			bufferBuilder.vertex(-0.5, -0.5, 0.0).texture(0.0, 1.0).normal(0.0F, 1.0F, 0.0F).next();
+			bufferBuilder.vertex(0.5, -0.5, 0.0).texture(1.0, 1.0).normal(0.0F, 1.0F, 0.0F).next();
+			bufferBuilder.vertex(0.5, 0.5, 0.0).texture(1.0, 0.0).normal(0.0F, 1.0F, 0.0F).next();
+			bufferBuilder.vertex(-0.5, 0.5, 0.0).texture(0.0, 0.0).normal(0.0F, 1.0F, 0.0F).next();
 			tessellator.draw();
 			if (this.renderOutlines) {
 				GlStateManager.tearDownSolidRenderingTextureCombine();
@@ -63,56 +57,56 @@ public class FishHookEntityRenderer extends EntityRenderer<FishHookEntity> {
 
 			GlStateManager.disableRescaleNormal();
 			GlStateManager.popMatrix();
-			int r = playerEntity.getMainHand() == OptionMainHand.field_6183 ? 1 : -1;
+			int l = playerEntity.getMainHand() == OptionMainHand.field_6183 ? 1 : -1;
 			ItemStack itemStack = playerEntity.getMainHandStack();
 			if (itemStack.getItem() != Items.field_8378) {
-				r = -r;
+				l = -l;
 			}
 
-			float s = playerEntity.method_6055(h);
-			float t = MathHelper.sin(MathHelper.sqrt(s) * (float) Math.PI);
-			float u = MathHelper.lerp(h, playerEntity.field_6220, playerEntity.field_6283) * (float) (Math.PI / 180.0);
-			double v = (double)MathHelper.sin(u);
-			double w = (double)MathHelper.cos(u);
-			double x = (double)r * 0.35;
-			double y = 0.8;
-			double z;
-			double aa;
-			double ab;
-			double ac;
+			float m = playerEntity.method_6055(h);
+			float n = MathHelper.sin(MathHelper.sqrt(m) * (float) Math.PI);
+			float o = MathHelper.lerp(h, playerEntity.field_6220, playerEntity.field_6283) * (float) (Math.PI / 180.0);
+			double p = (double)MathHelper.sin(o);
+			double q = (double)MathHelper.cos(o);
+			double r = (double)l * 0.35;
+			double s = 0.8;
+			double t;
+			double u;
+			double v;
+			double w;
 			if ((this.renderManager.settings == null || this.renderManager.settings.field_1850 <= 0) && playerEntity == MinecraftClient.getInstance().player) {
-				double ad = this.renderManager.settings.fov;
-				ad /= 100.0;
-				Vec3d vec3d = new Vec3d((double)r * -0.36 * ad, -0.045 * ad, 0.4);
+				double x = this.renderManager.settings.fov;
+				x /= 100.0;
+				Vec3d vec3d = new Vec3d((double)l * -0.36 * x, -0.045 * x, 0.4);
 				vec3d = vec3d.rotateX(-MathHelper.lerp(h, playerEntity.prevPitch, playerEntity.pitch) * (float) (Math.PI / 180.0));
 				vec3d = vec3d.rotateY(-MathHelper.lerp(h, playerEntity.prevYaw, playerEntity.yaw) * (float) (Math.PI / 180.0));
-				vec3d = vec3d.rotateY(t * 0.5F);
-				vec3d = vec3d.rotateX(-t * 0.7F);
-				z = MathHelper.lerp((double)h, playerEntity.prevX, playerEntity.x) + vec3d.x;
-				aa = MathHelper.lerp((double)h, playerEntity.prevY, playerEntity.y) + vec3d.y;
-				ab = MathHelper.lerp((double)h, playerEntity.prevZ, playerEntity.z) + vec3d.z;
-				ac = (double)playerEntity.getEyeHeight();
+				vec3d = vec3d.rotateY(n * 0.5F);
+				vec3d = vec3d.rotateX(-n * 0.7F);
+				t = MathHelper.lerp((double)h, playerEntity.prevX, playerEntity.x) + vec3d.x;
+				u = MathHelper.lerp((double)h, playerEntity.prevY, playerEntity.y) + vec3d.y;
+				v = MathHelper.lerp((double)h, playerEntity.prevZ, playerEntity.z) + vec3d.z;
+				w = (double)playerEntity.getEyeHeight();
 			} else {
-				z = MathHelper.lerp((double)h, playerEntity.prevX, playerEntity.x) - w * x - v * 0.8;
-				aa = playerEntity.prevY + (double)playerEntity.getEyeHeight() + (playerEntity.y - playerEntity.prevY) * (double)h - 0.45;
-				ab = MathHelper.lerp((double)h, playerEntity.prevZ, playerEntity.z) - v * x + w * 0.8;
-				ac = playerEntity.isSneaking() ? -0.1875 : 0.0;
+				t = MathHelper.lerp((double)h, playerEntity.prevX, playerEntity.x) - q * r - p * 0.8;
+				u = playerEntity.prevY + (double)playerEntity.getEyeHeight() + (playerEntity.y - playerEntity.prevY) * (double)h - 0.45;
+				v = MathHelper.lerp((double)h, playerEntity.prevZ, playerEntity.z) - p * r + q * 0.8;
+				w = playerEntity.isSneaking() ? -0.1875 : 0.0;
 			}
 
-			double ad = MathHelper.lerp((double)h, fishHookEntity.prevX, fishHookEntity.x);
-			double ae = MathHelper.lerp((double)h, fishHookEntity.prevY, fishHookEntity.y) + 0.25;
-			double af = MathHelper.lerp((double)h, fishHookEntity.prevZ, fishHookEntity.z);
-			double ag = (double)((float)(z - ad));
-			double ah = (double)((float)(aa - ae)) + ac;
-			double ai = (double)((float)(ab - af));
+			double x = MathHelper.lerp((double)h, fishHookEntity.prevX, fishHookEntity.x);
+			double y = MathHelper.lerp((double)h, fishHookEntity.prevY, fishHookEntity.y) + 0.25;
+			double z = MathHelper.lerp((double)h, fishHookEntity.prevZ, fishHookEntity.z);
+			double aa = (double)((float)(t - x));
+			double ab = (double)((float)(u - y)) + w;
+			double ac = (double)((float)(v - z));
 			GlStateManager.disableTexture();
 			GlStateManager.disableLighting();
 			bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
-			int aj = 16;
+			int ad = 16;
 
-			for (int ak = 0; ak <= 16; ak++) {
-				float al = (float)ak / 16.0F;
-				bufferBuilder.vertex(d + ag * (double)al, e + ah * (double)(al * al + al) * 0.5 + 0.25, f + ai * (double)al).color(0, 0, 0, 255).next();
+			for (int ae = 0; ae <= 16; ae++) {
+				float af = (float)ae / 16.0F;
+				bufferBuilder.vertex(d + aa * (double)af, e + ab * (double)(af * af + af) * 0.5 + 0.25, f + ac * (double)af).color(0, 0, 0, 255).next();
 			}
 
 			tessellator.draw();

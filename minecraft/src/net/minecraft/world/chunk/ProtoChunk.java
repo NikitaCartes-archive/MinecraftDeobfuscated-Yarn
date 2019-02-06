@@ -93,23 +93,26 @@ public class ProtoChunk implements Chunk {
 
 	@Override
 	public BlockState getBlockState(BlockPos blockPos) {
-		if (World.isHeightInvalid(blockPos)) {
+		int i = blockPos.getY();
+		if (World.isHeightInvalid(i)) {
 			return Blocks.field_10243.getDefaultState();
 		} else {
-			return this.getSectionArray()[blockPos.getY() >> 4] == WorldChunk.EMPTY_SECTION
+			ChunkSection chunkSection = this.getSectionArray()[i >> 4];
+			return ChunkSection.isEmpty(chunkSection)
 				? Blocks.field_10124.getDefaultState()
-				: this.getSectionArray()[blockPos.getY() >> 4].getBlockState(blockPos.getX() & 15, blockPos.getY() & 15, blockPos.getZ() & 15);
+				: chunkSection.getBlockState(blockPos.getX() & 15, i & 15, blockPos.getZ() & 15);
 		}
 	}
 
 	@Override
 	public FluidState getFluidState(BlockPos blockPos) {
-		int i = blockPos.getX();
-		int j = blockPos.getY();
-		int k = blockPos.getZ();
-		return j >= 0 && j < 256 && this.sections[j >> 4] != WorldChunk.EMPTY_SECTION
-			? this.sections[j >> 4].getFluidState(i & 15, j & 15, k & 15)
-			: Fluids.EMPTY.getDefaultState();
+		int i = blockPos.getY();
+		if (World.isHeightInvalid(i)) {
+			return Fluids.EMPTY.getDefaultState();
+		} else {
+			ChunkSection chunkSection = this.getSectionArray()[i >> 4];
+			return ChunkSection.isEmpty(chunkSection) ? Fluids.EMPTY.getDefaultState() : chunkSection.getFluidState(blockPos.getX() & 15, i & 15, blockPos.getZ() & 15);
+		}
 	}
 
 	@Override
@@ -118,15 +121,15 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Override
-	public Stream<BlockPos> method_12018() {
+	public Stream<BlockPos> getLightSourcesStream() {
 		return this.lightSources.stream();
 	}
 
-	public ShortList[] method_12296() {
+	public ShortList[] getLightSourcesBySection() {
 		ShortList[] shortLists = new ShortList[16];
 
 		for (BlockPos blockPos : this.lightSources) {
-			Chunk.getListFromArray(shortLists, blockPos.getY() >> 4).add(getPackedSectionRelative(blockPos));
+			Chunk.getList(shortLists, blockPos.getY() >> 4).add(getPackedSectionRelative(blockPos));
 		}
 
 		return shortLists;
@@ -151,7 +154,7 @@ public class ProtoChunk implements Chunk {
 				return blockState;
 			} else {
 				if (blockState.getLuminance() > 0) {
-					this.lightSources.add(new BlockPos((i & 15) + this.getPos().getXStart(), j, (k & 15) + this.getPos().getZStart()));
+					this.lightSources.add(new BlockPos((i & 15) + this.getPos().getStartX(), j, (k & 15) + this.getPos().getStartZ()));
 				}
 
 				ChunkSection chunkSection = this.getSection(j >> 4);
@@ -408,7 +411,7 @@ public class ProtoChunk implements Chunk {
 	@Override
 	public void markBlockForPostProcessing(BlockPos blockPos) {
 		if (!World.isHeightInvalid(blockPos)) {
-			Chunk.getListFromArray(this.postProcessingLists, blockPos.getY() >> 4).add(getPackedSectionRelative(blockPos));
+			Chunk.getList(this.postProcessingLists, blockPos.getY() >> 4).add(getPackedSectionRelative(blockPos));
 		}
 	}
 
@@ -419,7 +422,7 @@ public class ProtoChunk implements Chunk {
 
 	@Override
 	public void markBlockForPostProcessing(short s, int i) {
-		Chunk.getListFromArray(this.postProcessingLists, i).add(s);
+		Chunk.getList(this.postProcessingLists, i).add(s);
 	}
 
 	public ChunkTickScheduler<Block> getBlockTickScheduler() {

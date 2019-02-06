@@ -30,9 +30,9 @@ public abstract class AbstractPileFeature extends Feature<DefaultFeatureConfig> 
 				int k = blockPos.getX() - blockPos2.getX();
 				int l = blockPos.getZ() - blockPos2.getZ();
 				if ((float)(k * k + l * l) <= random.nextFloat() * 10.0F - random.nextFloat() * 6.0F) {
-					this.method_16708(iWorld, blockPos2);
+					this.addPileBlock(iWorld, blockPos2);
 				} else if ((double)random.nextFloat() < 0.031) {
-					this.method_16708(iWorld, blockPos2);
+					this.addPileBlock(iWorld, blockPos2);
 				}
 			}
 
@@ -40,17 +40,17 @@ public abstract class AbstractPileFeature extends Feature<DefaultFeatureConfig> 
 		}
 	}
 
-	private boolean method_16707(IWorld iWorld, BlockPos blockPos) {
+	private boolean canPlacePileBlock(IWorld iWorld, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState = iWorld.getBlockState(blockPos2);
 		return Block.isFaceFullSquare(blockState.getCollisionShape(iWorld, blockPos2), Direction.UP) || blockState.getBlock() == Blocks.field_10194;
 	}
 
-	private void method_16708(IWorld iWorld, BlockPos blockPos) {
-		if (iWorld.isAir(blockPos) && this.method_16707(iWorld, blockPos)) {
-			iWorld.setBlockState(blockPos, this.method_16843(iWorld), 4);
+	private void addPileBlock(IWorld iWorld, BlockPos blockPos) {
+		if (iWorld.isAir(blockPos) && this.canPlacePileBlock(iWorld, blockPos)) {
+			iWorld.setBlockState(blockPos, this.getPileBlockState(iWorld), 4);
 		}
 	}
 
-	protected abstract BlockState method_16843(IWorld iWorld);
+	protected abstract BlockState getPileBlockState(IWorld iWorld);
 }

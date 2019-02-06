@@ -12,7 +12,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.minecraft.client.network.packet.EntityStatusClientPacket;
+import net.minecraft.client.network.packet.EntityStatusS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandManager;
@@ -40,7 +40,7 @@ public class GameRules {
 			byte b = (byte)(value.getBoolean() ? 22 : 23);
 
 			for (ServerPlayerEntity serverPlayerEntity : minecraftServer.getPlayerManager().getPlayerList()) {
-				serverPlayerEntity.networkHandler.sendPacket(new EntityStatusClientPacket(serverPlayerEntity, b));
+				serverPlayerEntity.networkHandler.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, b));
 			}
 		}));
 		treeMap.put("spectatorsGenerateChunks", new GameRules.Key("true", GameRules.Type.BOOLEAN));

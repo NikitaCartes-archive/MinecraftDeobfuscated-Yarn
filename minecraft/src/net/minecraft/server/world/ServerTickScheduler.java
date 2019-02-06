@@ -72,12 +72,11 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 			while (iterator.hasNext()) {
 				ScheduledTick<T> scheduledTick = (ScheduledTick<T>)iterator.next();
 				iterator.remove();
-				int k = 0;
-				if (this.world.isAreaLoaded(scheduledTick.pos.add(0, 0, 0), scheduledTick.pos.add(0, 0, 0))) {
+				if (this.world.isBlockLoaded(scheduledTick.pos)) {
 					try {
 						this.tickConsumer.accept(scheduledTick);
-					} catch (Throwable var8) {
-						CrashReport crashReport = CrashReport.create(var8, "Exception while ticking");
+					} catch (Throwable var7) {
+						CrashReport crashReport = CrashReport.create(var7, "Exception while ticking");
 						CrashReportSection crashReportSection = crashReport.addElement("Block being ticked");
 						CrashReportSection.addBlockInfo(crashReportSection, scheduledTick.pos, null);
 						throw new CrashException(crashReport);
@@ -194,9 +193,7 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 	@Override
 	public void schedule(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
 		if (!this.invalidObjPredicate.test(object)) {
-			if (this.world.isBlockLoaded(blockPos)) {
-				this.addScheduledTick(blockPos, object, i, taskPriority);
-			}
+			this.addScheduledTick(blockPos, object, i, taskPriority);
 		}
 	}
 

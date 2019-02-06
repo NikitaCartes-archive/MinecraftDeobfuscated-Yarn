@@ -397,7 +397,7 @@ public class EndermanEntity extends HostileEntity {
 			double d = this.getFollowRange();
 			this.field_7259 = this.field_7260
 				.world
-				.method_8439(
+				.findMobAttackTarget(
 					this.field_7260.x, this.field_7260.y, this.field_7260.z, d, d, null, playerEntity -> playerEntity != null && this.field_7260.method_7026(playerEntity)
 				);
 			return this.field_7259 != null;

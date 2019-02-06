@@ -14,9 +14,6 @@ public interface Resource extends Closeable {
 
 	InputStream getInputStream();
 
-	@Environment(EnvType.CLIENT)
-	boolean hasMetadata();
-
 	@Nullable
 	@Environment(EnvType.CLIENT)
 	<T> T getMetadata(ResourceMetadataReader<T> resourceMetadataReader);

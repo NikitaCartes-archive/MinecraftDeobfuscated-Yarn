@@ -17,24 +17,24 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.Criterions;
-import net.minecraft.client.network.packet.ChatMessageClientPacket;
-import net.minecraft.client.network.packet.CustomPayloadClientPacket;
-import net.minecraft.client.network.packet.DifficultyClientPacket;
-import net.minecraft.client.network.packet.EntityPotionEffectClientPacket;
-import net.minecraft.client.network.packet.EntityStatusClientPacket;
-import net.minecraft.client.network.packet.ExperienceBarUpdateClientPacket;
-import net.minecraft.client.network.packet.GameJoinClientPacket;
-import net.minecraft.client.network.packet.GameStateChangeClientPacket;
-import net.minecraft.client.network.packet.HeldItemChangeClientPacket;
-import net.minecraft.client.network.packet.PlayerAbilitiesClientPacket;
-import net.minecraft.client.network.packet.PlayerListClientPacket;
-import net.minecraft.client.network.packet.PlayerRespawnClientPacket;
-import net.minecraft.client.network.packet.PlayerSpawnPositionClientPacket;
-import net.minecraft.client.network.packet.SynchronizeRecipesClientPacket;
-import net.minecraft.client.network.packet.SynchronizeTagsClientPacket;
-import net.minecraft.client.network.packet.TeamClientPacket;
-import net.minecraft.client.network.packet.WorldBorderClientPacket;
-import net.minecraft.client.network.packet.WorldTimeUpdateClientPacket;
+import net.minecraft.client.network.packet.ChatMessageS2CPacket;
+import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
+import net.minecraft.client.network.packet.DifficultyS2CPacket;
+import net.minecraft.client.network.packet.EntityPotionEffectS2CPacket;
+import net.minecraft.client.network.packet.EntityStatusS2CPacket;
+import net.minecraft.client.network.packet.ExperienceBarUpdateS2CPacket;
+import net.minecraft.client.network.packet.GameJoinS2CPacket;
+import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
+import net.minecraft.client.network.packet.HeldItemChangeS2CPacket;
+import net.minecraft.client.network.packet.PlayerAbilitiesS2CPacket;
+import net.minecraft.client.network.packet.PlayerListS2CPacket;
+import net.minecraft.client.network.packet.PlayerRespawnS2CPacket;
+import net.minecraft.client.network.packet.PlayerSpawnPositionS2CPacket;
+import net.minecraft.client.network.packet.SynchronizeRecipesS2CPacket;
+import net.minecraft.client.network.packet.SynchronizeTagsS2CPacket;
+import net.minecraft.client.network.packet.TeamS2CPacket;
+import net.minecraft.client.network.packet.WorldBorderS2CPacket;
+import net.minecraft.client.network.packet.WorldTimeUpdateS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -116,7 +116,8 @@ public abstract class PlayerManager {
 		String string = gameProfile2 == null ? gameProfile.getName() : gameProfile2.getName();
 		userCache.add(gameProfile);
 		CompoundTag compoundTag = this.method_14600(serverPlayerEntity);
-		serverPlayerEntity.setWorld(this.server.getWorld(serverPlayerEntity.dimension));
+		ServerWorld serverWorld = this.server.getWorld(serverPlayerEntity.dimension);
+		serverPlayerEntity.setWorld(serverWorld);
 		serverPlayerEntity.interactionManager.setWorld((ServerWorld)serverPlayerEntity.world);
 		String string2 = "local";
 		if (clientConnection.getAddress() != null) {
@@ -132,12 +133,11 @@ public abstract class PlayerManager {
 			serverPlayerEntity.y,
 			serverPlayerEntity.z
 		);
-		ServerWorld serverWorld = this.server.getWorld(serverPlayerEntity.dimension);
 		LevelProperties levelProperties = serverWorld.getLevelProperties();
 		this.method_14615(serverPlayerEntity, null, serverWorld);
 		ServerPlayNetworkHandler serverPlayNetworkHandler = new ServerPlayNetworkHandler(this.server, clientConnection, serverPlayerEntity);
 		serverPlayNetworkHandler.sendPacket(
-			new GameJoinClientPacket(
+			new GameJoinS2CPacket(
 				serverPlayerEntity.getEntityId(),
 				serverPlayerEntity.interactionManager.getGameMode(),
 				levelProperties.isHardcore(),
@@ -149,13 +149,13 @@ public abstract class PlayerManager {
 			)
 		);
 		serverPlayNetworkHandler.sendPacket(
-			new CustomPayloadClientPacket(CustomPayloadClientPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(this.getServer().getServerModName()))
+			new CustomPayloadS2CPacket(CustomPayloadS2CPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(this.getServer().getServerModName()))
 		);
-		serverPlayNetworkHandler.sendPacket(new DifficultyClientPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
-		serverPlayNetworkHandler.sendPacket(new PlayerAbilitiesClientPacket(serverPlayerEntity.abilities));
-		serverPlayNetworkHandler.sendPacket(new HeldItemChangeClientPacket(serverPlayerEntity.inventory.selectedSlot));
-		serverPlayNetworkHandler.sendPacket(new SynchronizeRecipesClientPacket(this.server.getRecipeManager().values()));
-		serverPlayNetworkHandler.sendPacket(new SynchronizeTagsClientPacket(this.server.getTagManager()));
+		serverPlayNetworkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
+		serverPlayNetworkHandler.sendPacket(new PlayerAbilitiesS2CPacket(serverPlayerEntity.abilities));
+		serverPlayNetworkHandler.sendPacket(new HeldItemChangeS2CPacket(serverPlayerEntity.inventory.selectedSlot));
+		serverPlayNetworkHandler.sendPacket(new SynchronizeRecipesS2CPacket(this.server.getRecipeManager().values()));
+		serverPlayNetworkHandler.sendPacket(new SynchronizeTagsS2CPacket(this.server.getTagManager()));
 		this.method_14576(serverPlayerEntity);
 		serverPlayerEntity.method_14248().method_14914();
 		serverPlayerEntity.getRecipeBook().sendInitRecipesPacket(serverPlayerEntity);
@@ -170,19 +170,31 @@ public abstract class PlayerManager {
 
 		this.sendToAll(textComponent.applyFormat(TextFormat.YELLOW));
 		serverPlayNetworkHandler.teleportRequest(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z, serverPlayerEntity.yaw, serverPlayerEntity.pitch);
-		this.method_14610(serverPlayerEntity);
+		this.players.add(serverPlayerEntity);
+		this.playerMap.put(serverPlayerEntity.getUuid(), serverPlayerEntity);
+		this.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Type.ADD, serverPlayerEntity));
+
+		for (int i = 0; i < this.players.size(); i++) {
+			serverPlayerEntity.networkHandler.sendPacket(new PlayerListS2CPacket(PlayerListS2CPacket.Type.ADD, (ServerPlayerEntity)this.players.get(i)));
+		}
+
+		this.method_14612(serverPlayerEntity, null);
+		serverWorld.method_18213(serverPlayerEntity);
+		this.server.getBossBarManager().method_12975(serverPlayerEntity);
 		this.method_14606(serverPlayerEntity, serverWorld);
 		if (!this.server.getResourcePackUrl().isEmpty()) {
 			serverPlayerEntity.method_14255(this.server.getResourcePackUrl(), this.server.getResourcePackHash());
 		}
 
 		for (StatusEffectInstance statusEffectInstance : serverPlayerEntity.getPotionEffects()) {
-			serverPlayNetworkHandler.sendPacket(new EntityPotionEffectClientPacket(serverPlayerEntity.getEntityId(), statusEffectInstance));
+			serverPlayNetworkHandler.sendPacket(new EntityPotionEffectS2CPacket(serverPlayerEntity.getEntityId(), statusEffectInstance));
 		}
 
 		if (compoundTag != null && compoundTag.containsKey("RootVehicle", 10)) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("RootVehicle");
-			Entity entity = EntityType.loadEntityWithPassengers(compoundTag2.getCompound("Entity"), serverWorld, true);
+			Entity entity = EntityType.loadEntityWithPassengers(
+				compoundTag2.getCompound("Entity"), serverWorld, entityx -> !serverWorld.method_18197(entityx, true) ? null : entityx
+			);
 			if (entity != null) {
 				UUID uUID = compoundTag2.getUuid("Attach");
 				if (entity.getUuid().equals(uUID)) {
@@ -198,10 +210,10 @@ public abstract class PlayerManager {
 
 				if (!serverPlayerEntity.hasVehicle()) {
 					LOGGER.warn("Couldn't reattach entity to player");
-					serverWorld.method_8507(entity);
+					serverWorld.method_18217(entity);
 
 					for (Entity entity2x : entity.method_5736()) {
-						serverWorld.method_8507(entity2x);
+						serverWorld.method_18217(entity2x);
 					}
 				}
 			}
@@ -214,7 +226,7 @@ public abstract class PlayerManager {
 		Set<ScoreboardObjective> set = Sets.<ScoreboardObjective>newHashSet();
 
 		for (ScoreboardTeam scoreboardTeam : serverScoreboard.getTeams()) {
-			serverPlayerEntity.networkHandler.sendPacket(new TeamClientPacket(scoreboardTeam, 0));
+			serverPlayerEntity.networkHandler.sendPacket(new TeamS2CPacket(scoreboardTeam, 0));
 		}
 
 		for (int i = 0; i < 19; i++) {
@@ -230,31 +242,31 @@ public abstract class PlayerManager {
 	}
 
 	public void method_14591(ServerWorld serverWorld) {
-		this.field_14358 = serverWorld.method_17982();
+		this.field_14358 = serverWorld.getSaveHandler();
 		serverWorld.getWorldBorder().addListener(new WorldBorderListener() {
 			@Override
 			public void onSizeChange(WorldBorder worldBorder, double d) {
-				PlayerManager.this.sendToAll(new WorldBorderClientPacket(worldBorder, WorldBorderClientPacket.Type.SET_SIZE));
+				PlayerManager.this.sendToAll(new WorldBorderS2CPacket(worldBorder, WorldBorderS2CPacket.Type.SET_SIZE));
 			}
 
 			@Override
-			public void method_11931(WorldBorder worldBorder, double d, double e, long l) {
-				PlayerManager.this.sendToAll(new WorldBorderClientPacket(worldBorder, WorldBorderClientPacket.Type.INTERPOLATE_SIZE));
+			public void onInterpolateSize(WorldBorder worldBorder, double d, double e, long l) {
+				PlayerManager.this.sendToAll(new WorldBorderS2CPacket(worldBorder, WorldBorderS2CPacket.Type.INTERPOLATE_SIZE));
 			}
 
 			@Override
 			public void onCenterChanged(WorldBorder worldBorder, double d, double e) {
-				PlayerManager.this.sendToAll(new WorldBorderClientPacket(worldBorder, WorldBorderClientPacket.Type.SET_CENTER));
+				PlayerManager.this.sendToAll(new WorldBorderS2CPacket(worldBorder, WorldBorderS2CPacket.Type.SET_CENTER));
 			}
 
 			@Override
 			public void onWarningTimeChanged(WorldBorder worldBorder, int i) {
-				PlayerManager.this.sendToAll(new WorldBorderClientPacket(worldBorder, WorldBorderClientPacket.Type.SET_WARNING_TIME));
+				PlayerManager.this.sendToAll(new WorldBorderS2CPacket(worldBorder, WorldBorderS2CPacket.Type.SET_WARNING_TIME));
 			}
 
 			@Override
 			public void onWarningBlocksChanged(WorldBorder worldBorder, int i) {
-				PlayerManager.this.sendToAll(new WorldBorderClientPacket(worldBorder, WorldBorderClientPacket.Type.SET_WARNING_BLOCKS));
+				PlayerManager.this.sendToAll(new WorldBorderS2CPacket(worldBorder, WorldBorderS2CPacket.Type.SET_WARNING_BLOCKS));
 			}
 
 			@Override
@@ -312,21 +324,6 @@ public abstract class PlayerManager {
 		}
 	}
 
-	public void method_14610(ServerPlayerEntity serverPlayerEntity) {
-		this.players.add(serverPlayerEntity);
-		this.playerMap.put(serverPlayerEntity.getUuid(), serverPlayerEntity);
-		this.sendToAll(new PlayerListClientPacket(PlayerListClientPacket.Type.ADD, serverPlayerEntity));
-		ServerWorld serverWorld = this.server.getWorld(serverPlayerEntity.dimension);
-
-		for (int i = 0; i < this.players.size(); i++) {
-			serverPlayerEntity.networkHandler.sendPacket(new PlayerListClientPacket(PlayerListClientPacket.Type.ADD, (ServerPlayerEntity)this.players.get(i)));
-		}
-
-		this.method_14612(serverPlayerEntity, null);
-		serverWorld.spawnEntity(serverPlayerEntity);
-		this.server.getBossBarManager().method_12975(serverPlayerEntity);
-	}
-
 	public void method_14575(ServerPlayerEntity serverPlayerEntity) {
 		serverPlayerEntity.getServerWorld().getChunkManager().updateChunkWatchingForPlayer(serverPlayerEntity);
 	}
@@ -340,17 +337,17 @@ public abstract class PlayerManager {
 			if (entity.method_5817()) {
 				LOGGER.debug("Removing player mount");
 				serverPlayerEntity.stopRiding();
-				serverWorld.method_8507(entity);
+				serverWorld.method_18217(entity);
 
 				for (Entity entity2 : entity.method_5736()) {
-					serverWorld.method_8507(entity2);
+					serverWorld.method_18217(entity2);
 				}
 
 				serverWorld.getWorldChunk(serverPlayerEntity.chunkX, serverPlayerEntity.chunkZ).markDirty();
 			}
 		}
 
-		serverWorld.removeEntity(serverPlayerEntity);
+		serverWorld.method_18216(serverPlayerEntity);
 		serverWorld.getChunkManager().removePlayer(serverPlayerEntity);
 		serverPlayerEntity.getAdvancementManager().clearCriterions();
 		this.players.remove(serverPlayerEntity);
@@ -363,7 +360,7 @@ public abstract class PlayerManager {
 			this.advancementManagerMap.remove(uUID);
 		}
 
-		this.sendToAll(new PlayerListClientPacket(PlayerListClientPacket.Type.REMOVE, serverPlayerEntity));
+		this.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Type.REMOVE, serverPlayerEntity));
 	}
 
 	@Nullable
@@ -428,7 +425,7 @@ public abstract class PlayerManager {
 		serverPlayerEntity.getServerWorld().getEntityTracker().remove(serverPlayerEntity);
 		serverPlayerEntity.getServerWorld().getChunkManager().removePlayer(serverPlayerEntity);
 		this.players.remove(serverPlayerEntity);
-		this.server.getWorld(serverPlayerEntity.dimension).method_8507(serverPlayerEntity);
+		this.server.getWorld(serverPlayerEntity.dimension).method_18217(serverPlayerEntity);
 		BlockPos blockPos = serverPlayerEntity.getSpawnPosition();
 		boolean bl2 = serverPlayerEntity.isSpawnForced();
 		serverPlayerEntity.dimension = dimensionType;
@@ -461,7 +458,7 @@ public abstract class PlayerManager {
 				);
 				serverPlayerEntity2.setPlayerSpawn(blockPos, bl2);
 			} else {
-				serverPlayerEntity2.networkHandler.sendPacket(new GameStateChangeClientPacket(0, 0.0F));
+				serverPlayerEntity2.networkHandler.sendPacket(new GameStateChangeS2CPacket(0, 0.0F));
 			}
 		}
 
@@ -471,7 +468,7 @@ public abstract class PlayerManager {
 
 		serverPlayerEntity2.networkHandler
 			.sendPacket(
-				new PlayerRespawnClientPacket(
+				new PlayerRespawnS2CPacket(
 					serverPlayerEntity2.dimension,
 					serverPlayerEntity2.world.getDifficulty(),
 					serverPlayerEntity2.world.getLevelProperties().getGeneratorType(),
@@ -481,15 +478,13 @@ public abstract class PlayerManager {
 		BlockPos blockPos2 = serverWorld.getSpawnPos();
 		serverPlayerEntity2.networkHandler
 			.teleportRequest(serverPlayerEntity2.x, serverPlayerEntity2.y, serverPlayerEntity2.z, serverPlayerEntity2.yaw, serverPlayerEntity2.pitch);
-		serverPlayerEntity2.networkHandler.sendPacket(new PlayerSpawnPositionClientPacket(blockPos2));
+		serverPlayerEntity2.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(blockPos2));
 		serverPlayerEntity2.networkHandler
-			.sendPacket(
-				new ExperienceBarUpdateClientPacket(serverPlayerEntity2.experienceBarProgress, serverPlayerEntity2.experienceLevel, serverPlayerEntity2.experience)
-			);
+			.sendPacket(new ExperienceBarUpdateS2CPacket(serverPlayerEntity2.experienceBarProgress, serverPlayerEntity2.experienceLevel, serverPlayerEntity2.experience));
 		this.method_14606(serverPlayerEntity2, serverWorld);
 		this.method_14576(serverPlayerEntity2);
 		serverWorld.getChunkManager().addPlayer(serverPlayerEntity2);
-		serverWorld.spawnEntity(serverPlayerEntity2);
+		serverWorld.method_18215(serverPlayerEntity2);
 		this.players.add(serverPlayerEntity2);
 		this.playerMap.put(serverPlayerEntity2.getUuid(), serverPlayerEntity2);
 		serverPlayerEntity2.method_14235();
@@ -510,7 +505,7 @@ public abstract class PlayerManager {
 		ServerWorld serverWorld2 = this.server.getWorld(serverPlayerEntity.dimension);
 		serverPlayerEntity.networkHandler
 			.sendPacket(
-				new PlayerRespawnClientPacket(
+				new PlayerRespawnS2CPacket(
 					serverPlayerEntity.dimension,
 					serverPlayerEntity.world.getDifficulty(),
 					serverPlayerEntity.world.getLevelProperties().getGeneratorType(),
@@ -518,41 +513,41 @@ public abstract class PlayerManager {
 				)
 			);
 		this.method_14576(serverPlayerEntity);
-		serverWorld.method_8507(serverPlayerEntity);
+		serverWorld.method_18217(serverPlayerEntity);
 		serverPlayerEntity.invalid = false;
-		this.method_14558(serverPlayerEntity, dimensionType2, serverWorld, serverWorld2);
+		method_14558(serverPlayerEntity, dimensionType2, serverWorld, serverWorld2);
 		this.method_14612(serverPlayerEntity, serverWorld);
 		serverPlayerEntity.networkHandler
 			.teleportRequest(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z, serverPlayerEntity.yaw, serverPlayerEntity.pitch);
 		serverPlayerEntity.interactionManager.setWorld(serverWorld2);
-		serverPlayerEntity.networkHandler.sendPacket(new PlayerAbilitiesClientPacket(serverPlayerEntity.abilities));
+		serverPlayerEntity.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(serverPlayerEntity.abilities));
 		this.method_14606(serverPlayerEntity, serverWorld2);
 		this.method_14594(serverPlayerEntity);
 
 		for (StatusEffectInstance statusEffectInstance : serverPlayerEntity.getPotionEffects()) {
-			serverPlayerEntity.networkHandler.sendPacket(new EntityPotionEffectClientPacket(serverPlayerEntity.getEntityId(), statusEffectInstance));
+			serverPlayerEntity.networkHandler.sendPacket(new EntityPotionEffectS2CPacket(serverPlayerEntity.getEntityId(), statusEffectInstance));
 		}
 	}
 
-	public void method_14558(Entity entity, DimensionType dimensionType, ServerWorld serverWorld, ServerWorld serverWorld2) {
-		double d = entity.x;
-		double e = entity.z;
+	private static void method_14558(ServerPlayerEntity serverPlayerEntity, DimensionType dimensionType, ServerWorld serverWorld, ServerWorld serverWorld2) {
+		double d = serverPlayerEntity.x;
+		double e = serverPlayerEntity.z;
 		double f = 8.0;
-		float g = entity.yaw;
+		float g = serverPlayerEntity.yaw;
 		serverWorld.getProfiler().push("moving");
-		if (entity.dimension == DimensionType.field_13076) {
+		if (serverPlayerEntity.dimension == DimensionType.field_13076) {
 			d = MathHelper.clamp(d / 8.0, serverWorld2.getWorldBorder().getBoundWest() + 16.0, serverWorld2.getWorldBorder().getBoundEast() - 16.0);
 			e = MathHelper.clamp(e / 8.0, serverWorld2.getWorldBorder().getBoundNorth() + 16.0, serverWorld2.getWorldBorder().getBoundSouth() - 16.0);
-			entity.setPositionAndAngles(d, entity.y, e, entity.yaw, entity.pitch);
-			if (entity.isValid()) {
-				serverWorld.method_8553(entity, false);
+			serverPlayerEntity.setPositionAndAngles(d, serverPlayerEntity.y, e, serverPlayerEntity.yaw, serverPlayerEntity.pitch);
+			if (serverPlayerEntity.isValid()) {
+				serverWorld.updateChunkEntities(serverPlayerEntity);
 			}
-		} else if (entity.dimension == DimensionType.field_13072) {
+		} else if (serverPlayerEntity.dimension == DimensionType.field_13072) {
 			d = MathHelper.clamp(d * 8.0, serverWorld2.getWorldBorder().getBoundWest() + 16.0, serverWorld2.getWorldBorder().getBoundEast() - 16.0);
 			e = MathHelper.clamp(e * 8.0, serverWorld2.getWorldBorder().getBoundNorth() + 16.0, serverWorld2.getWorldBorder().getBoundSouth() - 16.0);
-			entity.setPositionAndAngles(d, entity.y, e, entity.yaw, entity.pitch);
-			if (entity.isValid()) {
-				serverWorld.method_8553(entity, false);
+			serverPlayerEntity.setPositionAndAngles(d, serverPlayerEntity.y, e, serverPlayerEntity.yaw, serverPlayerEntity.pitch);
+			if (serverPlayerEntity.isValid()) {
+				serverWorld.updateChunkEntities(serverPlayerEntity);
 			}
 		} else {
 			BlockPos blockPos;
@@ -563,11 +558,11 @@ public abstract class PlayerManager {
 			}
 
 			d = (double)blockPos.getX();
-			entity.y = (double)blockPos.getY();
+			serverPlayerEntity.y = (double)blockPos.getY();
 			e = (double)blockPos.getZ();
-			entity.setPositionAndAngles(d, entity.y, e, 90.0F, 0.0F);
-			if (entity.isValid()) {
-				serverWorld.method_8553(entity, false);
+			serverPlayerEntity.setPositionAndAngles(d, serverPlayerEntity.y, e, 90.0F, 0.0F);
+			if (serverPlayerEntity.isValid()) {
+				serverWorld.updateChunkEntities(serverPlayerEntity);
 			}
 		}
 
@@ -576,22 +571,22 @@ public abstract class PlayerManager {
 			serverWorld.getProfiler().push("placing");
 			d = (double)MathHelper.clamp((int)d, -29999872, 29999872);
 			e = (double)MathHelper.clamp((int)e, -29999872, 29999872);
-			if (entity.isValid()) {
-				entity.setPositionAndAngles(d, entity.y, e, entity.yaw, entity.pitch);
-				serverWorld2.getPortalForcer().method_8655(entity, g);
-				serverWorld2.spawnEntity(entity);
-				serverWorld2.method_8553(entity, false);
+			if (serverPlayerEntity.isValid()) {
+				serverPlayerEntity.setPositionAndAngles(d, serverPlayerEntity.y, e, serverPlayerEntity.yaw, serverPlayerEntity.pitch);
+				serverWorld2.getPortalForcer().method_8655(serverPlayerEntity, g);
+				serverWorld2.method_18211(serverPlayerEntity);
+				serverWorld2.updateChunkEntities(serverPlayerEntity);
 			}
 
 			serverWorld.getProfiler().pop();
 		}
 
-		entity.setWorld(serverWorld2);
+		serverPlayerEntity.setWorld(serverWorld2);
 	}
 
 	public void updatePlayerLatency() {
 		if (++this.latencyUpdateTimer > 600) {
-			this.sendToAll(new PlayerListClientPacket(PlayerListClientPacket.Type.UPDATE_LATENCY, this.players));
+			this.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Type.UPDATE_LATENCY, this.players));
 			this.latencyUpdateTimer = 0;
 		}
 	}
@@ -682,7 +677,7 @@ public abstract class PlayerManager {
 				b = (byte)(24 + i);
 			}
 
-			serverPlayerEntity.networkHandler.sendPacket(new EntityStatusClientPacket(serverPlayerEntity, b));
+			serverPlayerEntity.networkHandler.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, b));
 		}
 
 		this.server.getCommandManager().sendCommandTree(serverPlayerEntity);
@@ -752,22 +747,22 @@ public abstract class PlayerManager {
 
 	public void method_14606(ServerPlayerEntity serverPlayerEntity, ServerWorld serverWorld) {
 		WorldBorder worldBorder = this.server.getWorld(DimensionType.field_13072).getWorldBorder();
-		serverPlayerEntity.networkHandler.sendPacket(new WorldBorderClientPacket(worldBorder, WorldBorderClientPacket.Type.INITIALIZE));
+		serverPlayerEntity.networkHandler.sendPacket(new WorldBorderS2CPacket(worldBorder, WorldBorderS2CPacket.Type.INITIALIZE));
 		serverPlayerEntity.networkHandler
-			.sendPacket(new WorldTimeUpdateClientPacket(serverWorld.getTime(), serverWorld.getTimeOfDay(), serverWorld.getGameRules().getBoolean("doDaylightCycle")));
+			.sendPacket(new WorldTimeUpdateS2CPacket(serverWorld.getTime(), serverWorld.getTimeOfDay(), serverWorld.getGameRules().getBoolean("doDaylightCycle")));
 		BlockPos blockPos = serverWorld.getSpawnPos();
-		serverPlayerEntity.networkHandler.sendPacket(new PlayerSpawnPositionClientPacket(blockPos));
+		serverPlayerEntity.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(blockPos));
 		if (serverWorld.isRaining()) {
-			serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeClientPacket(1, 0.0F));
-			serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeClientPacket(7, serverWorld.getRainGradient(1.0F)));
-			serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeClientPacket(8, serverWorld.getThunderGradient(1.0F)));
+			serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(1, 0.0F));
+			serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(7, serverWorld.getRainGradient(1.0F)));
+			serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(8, serverWorld.getThunderGradient(1.0F)));
 		}
 	}
 
 	public void method_14594(ServerPlayerEntity serverPlayerEntity) {
 		serverPlayerEntity.method_14204(serverPlayerEntity.containerPlayer);
 		serverPlayerEntity.method_14217();
-		serverPlayerEntity.networkHandler.sendPacket(new HeldItemChangeClientPacket(serverPlayerEntity.inventory.selectedSlot));
+		serverPlayerEntity.networkHandler.sendPacket(new HeldItemChangeS2CPacket(serverPlayerEntity.inventory.selectedSlot));
 	}
 
 	public int getCurrentPlayerCount() {
@@ -839,7 +834,7 @@ public abstract class PlayerManager {
 	public void broadcastChatMessage(TextComponent textComponent, boolean bl) {
 		this.server.appendCommandFeedback(textComponent);
 		ChatMessageType chatMessageType = bl ? ChatMessageType.field_11735 : ChatMessageType.field_11737;
-		this.sendToAll(new ChatMessageClientPacket(textComponent, chatMessageType));
+		this.sendToAll(new ChatMessageS2CPacket(textComponent, chatMessageType));
 	}
 
 	public void sendToAll(TextComponent textComponent) {
@@ -850,7 +845,7 @@ public abstract class PlayerManager {
 		UUID uUID = playerEntity.getUuid();
 		ServerStatHandler serverStatHandler = uUID == null ? null : (ServerStatHandler)this.statisticsMap.get(uUID);
 		if (serverStatHandler == null) {
-			File file = new File(this.server.getWorld(DimensionType.field_13072).method_17982().getWorldDir(), "stats");
+			File file = new File(this.server.getWorld(DimensionType.field_13072).getSaveHandler().getWorldDir(), "stats");
 			File file2 = new File(file, uUID + ".json");
 			if (!file2.exists()) {
 				File file3 = new File(file, playerEntity.getName().getString() + ".json");
@@ -870,7 +865,7 @@ public abstract class PlayerManager {
 		UUID uUID = serverPlayerEntity.getUuid();
 		PlayerAdvancementTracker playerAdvancementTracker = (PlayerAdvancementTracker)this.advancementManagerMap.get(uUID);
 		if (playerAdvancementTracker == null) {
-			File file = new File(this.server.getWorld(DimensionType.field_13072).method_17982().getWorldDir(), "advancements");
+			File file = new File(this.server.getWorld(DimensionType.field_13072).getSaveHandler().getWorldDir(), "advancements");
 			File file2 = new File(file, uUID + ".json");
 			playerAdvancementTracker = new PlayerAdvancementTracker(this.server, file2, serverPlayerEntity);
 			this.advancementManagerMap.put(uUID, playerAdvancementTracker);
@@ -909,11 +904,11 @@ public abstract class PlayerManager {
 			playerAdvancementTracker.reload();
 		}
 
-		this.sendToAll(new SynchronizeTagsClientPacket(this.server.getTagManager()));
-		SynchronizeRecipesClientPacket synchronizeRecipesClientPacket = new SynchronizeRecipesClientPacket(this.server.getRecipeManager().values());
+		this.sendToAll(new SynchronizeTagsS2CPacket(this.server.getTagManager()));
+		SynchronizeRecipesS2CPacket synchronizeRecipesS2CPacket = new SynchronizeRecipesS2CPacket(this.server.getRecipeManager().values());
 
 		for (ServerPlayerEntity serverPlayerEntity : this.players) {
-			serverPlayerEntity.networkHandler.sendPacket(synchronizeRecipesClientPacket);
+			serverPlayerEntity.networkHandler.sendPacket(synchronizeRecipesS2CPacket);
 			serverPlayerEntity.getRecipeBook().sendInitRecipesPacket(serverPlayerEntity);
 		}
 	}

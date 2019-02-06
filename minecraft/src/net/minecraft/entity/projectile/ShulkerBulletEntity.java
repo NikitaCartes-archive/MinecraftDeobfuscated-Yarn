@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1675;
-import net.minecraft.client.network.packet.EntitySpawnClientPacket;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -29,6 +29,7 @@ import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
 public class ShulkerBulletEntity extends Entity {
@@ -258,7 +259,7 @@ public class ShulkerBulletEntity extends Entity {
 					this.velocityZ = this.velocityZ + (this.field_7625 - this.velocityZ) * 0.2;
 				}
 
-				HitResult hitResult = class_1675.method_7482(this, true, false, this.field_7630);
+				HitResult hitResult = class_1675.method_18076(this, true, false, this.field_7630, RayTraceContext.ShapeType.field_17558);
 				if (hitResult.getType() != HitResult.Type.NONE) {
 					this.method_7488(hitResult);
 				}
@@ -352,6 +353,6 @@ public class ShulkerBulletEntity extends Entity {
 
 	@Override
 	public Packet<?> createSpawnPacket() {
-		return new EntitySpawnClientPacket(this);
+		return new EntitySpawnS2CPacket(this);
 	}
 }

@@ -19,7 +19,6 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.ScoreboardTeam;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -45,12 +44,18 @@ public abstract class EntityRenderer<T extends Entity> {
 	}
 
 	public boolean method_3933(T entity, VisibleRegion visibleRegion, double d, double e, double f) {
-		BoundingBox boundingBox = entity.method_5830().expand(0.5);
-		if (boundingBox.isValid() || boundingBox.averageDimension() == 0.0) {
-			boundingBox = new BoundingBox(entity.x - 2.0, entity.y - 2.0, entity.z - 2.0, entity.x + 2.0, entity.y + 2.0, entity.z + 2.0);
-		}
+		if (!entity.shouldRenderFrom(d, e, f)) {
+			return false;
+		} else if (entity.ignoreCameraFrustum) {
+			return true;
+		} else {
+			BoundingBox boundingBox = entity.method_5830().expand(0.5);
+			if (boundingBox.isValid() || boundingBox.averageDimension() == 0.0) {
+				boundingBox = new BoundingBox(entity.x - 2.0, entity.y - 2.0, entity.z - 2.0, entity.x + 2.0, entity.y + 2.0, entity.z + 2.0);
+			}
 
-		return entity.shouldRenderFrom(d, e, f) && (entity.ignoreCameraFrustum || visibleRegion.intersects(boundingBox));
+			return visibleRegion.intersects(boundingBox);
+		}
 	}
 
 	public void render(T entity, double d, double e, double f, float g, float h) {
@@ -284,7 +289,7 @@ public abstract class EntityRenderer<T extends Entity> {
 				}
 			}
 
-			if (entity.doesRenderOnFire() && (!(entity instanceof PlayerEntity) || !((PlayerEntity)entity).isSpectator())) {
+			if (entity.doesRenderOnFire() && !entity.isSpectator()) {
 				this.renderEntityOnFire(entity, d, e, f, h);
 			}
 		}

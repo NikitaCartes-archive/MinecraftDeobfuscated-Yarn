@@ -104,7 +104,7 @@ public class RegionFile implements AutoCloseable {
 		}
 	}
 
-	public boolean method_12420(ChunkPos chunkPos) {
+	public boolean isChunkPresent(ChunkPos chunkPos) {
 		int i = this.getOffset(chunkPos);
 		if (i == 0) {
 			return false;
@@ -136,7 +136,7 @@ public class RegionFile implements AutoCloseable {
 			int l = j & 0xFF;
 			int m = (i + 5) / 4096 + 1;
 			if (m >= 256) {
-				return;
+				throw new RuntimeException(String.format("Too big to save, %d > 1048576", i));
 			}
 
 			if (k != 0 && l == m) {

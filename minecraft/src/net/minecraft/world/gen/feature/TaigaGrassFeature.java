@@ -16,14 +16,14 @@ public class TaigaGrassFeature extends Feature<DefaultFeatureConfig> {
 		super(function);
 	}
 
-	public BlockState method_14060(Random random) {
+	public BlockState getGrass(Random random) {
 		return random.nextInt(5) > 0 ? Blocks.field_10112.getDefaultState() : Blocks.field_10479.getDefaultState();
 	}
 
 	public boolean method_14061(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
-		BlockState blockState = this.method_14060(random);
+		BlockState blockState = this.getGrass(random);
 
 		for (BlockState blockState2 = iWorld.getBlockState(blockPos);
 			(blockState2.isAir() || blockState2.matches(BlockTags.field_15503)) && blockPos.getY() > 0;

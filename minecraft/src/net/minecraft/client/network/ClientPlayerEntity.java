@@ -28,6 +28,7 @@ import net.minecraft.client.gui.ingame.JigsawBlockScreen;
 import net.minecraft.client.gui.ingame.StructureBlockScreen;
 import net.minecraft.client.input.Input;
 import net.minecraft.client.recipe.book.ClientRecipeBook;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
@@ -47,17 +48,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Recipe;
-import net.minecraft.server.network.packet.ChatMessageServerPacket;
-import net.minecraft.server.network.packet.ClientCommandServerPacket;
-import net.minecraft.server.network.packet.ClientStatusServerPacket;
-import net.minecraft.server.network.packet.GuiCloseServerPacket;
-import net.minecraft.server.network.packet.HandSwingServerPacket;
-import net.minecraft.server.network.packet.PlayerActionServerPacket;
-import net.minecraft.server.network.packet.PlayerLookServerPacket;
+import net.minecraft.server.network.packet.ChatMessageC2SPacket;
+import net.minecraft.server.network.packet.ClientCommandC2SPacket;
+import net.minecraft.server.network.packet.ClientStatusC2SPacket;
+import net.minecraft.server.network.packet.GuiCloseC2SPacket;
+import net.minecraft.server.network.packet.HandSwingC2SPacket;
+import net.minecraft.server.network.packet.PlayerActionC2SPacket;
+import net.minecraft.server.network.packet.PlayerLookC2SPacket;
 import net.minecraft.server.network.packet.PlayerMoveServerMessage;
-import net.minecraft.server.network.packet.RecipeBookDataServerPacket;
-import net.minecraft.server.network.packet.UpdatePlayerAbilitiesServerPacket;
-import net.minecraft.server.network.packet.VehicleMoveServerPacket;
+import net.minecraft.server.network.packet.RecipeBookDataC2SPacket;
+import net.minecraft.server.network.packet.UpdatePlayerAbilitiesC2SPacket;
+import net.minecraft.server.network.packet.VehicleMoveC2SPacket;
 import net.minecraft.sortme.CommandBlockExecutor;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -73,7 +74,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
 @Environment(EnvType.CLIENT)
@@ -115,9 +115,13 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	private int field_3917;
 
 	public ClientPlayerEntity(
-		MinecraftClient minecraftClient, World world, ClientPlayNetworkHandler clientPlayNetworkHandler, StatHandler statHandler, ClientRecipeBook clientRecipeBook
+		MinecraftClient minecraftClient,
+		ClientWorld clientWorld,
+		ClientPlayNetworkHandler clientPlayNetworkHandler,
+		StatHandler statHandler,
+		ClientRecipeBook clientRecipeBook
 	) {
-		super(world, clientPlayNetworkHandler.getProfile());
+		super(clientWorld, clientPlayNetworkHandler.getProfile());
 		this.networkHandler = clientPlayNetworkHandler;
 		this.stats = statHandler;
 		this.recipeBook = clientRecipeBook;
@@ -176,10 +180,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			super.update();
 			if (this.hasVehicle()) {
 				this.networkHandler.sendPacket(new PlayerMoveServerMessage.LookOnly(this.yaw, this.pitch, this.onGround));
-				this.networkHandler.sendPacket(new PlayerLookServerPacket(this.field_6212, this.field_6250, this.input.jumping, this.input.sneaking));
+				this.networkHandler.sendPacket(new PlayerLookC2SPacket(this.field_6212, this.field_6250, this.input.jumping, this.input.sneaking));
 				Entity entity = this.getTopmostRiddenEntity();
 				if (entity != this && entity.method_5787()) {
-					this.networkHandler.sendPacket(new VehicleMoveServerPacket(entity));
+					this.networkHandler.sendPacket(new VehicleMoveC2SPacket(entity));
 				}
 			} else {
 				this.method_3136();
@@ -195,9 +199,9 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		boolean bl = this.isSprinting();
 		if (bl != this.field_3919) {
 			if (bl) {
-				this.networkHandler.sendPacket(new ClientCommandServerPacket(this, ClientCommandServerPacket.Mode.field_12981));
+				this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.field_12981));
 			} else {
-				this.networkHandler.sendPacket(new ClientCommandServerPacket(this, ClientCommandServerPacket.Mode.field_12985));
+				this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.field_12985));
 			}
 
 			this.field_3919 = bl;
@@ -206,9 +210,9 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		boolean bl2 = this.isSneaking();
 		if (bl2 != this.field_3936) {
 			if (bl2) {
-				this.networkHandler.sendPacket(new ClientCommandServerPacket(this, ClientCommandServerPacket.Mode.field_12979));
+				this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.field_12979));
 			} else {
-				this.networkHandler.sendPacket(new ClientCommandServerPacket(this, ClientCommandServerPacket.Mode.field_12984));
+				this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.field_12984));
 			}
 
 			this.field_3936 = bl2;
@@ -257,31 +261,26 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	@Nullable
 	@Override
 	public ItemEntity dropSelectedItem(boolean bl) {
-		PlayerActionServerPacket.Action action = bl ? PlayerActionServerPacket.Action.field_12970 : PlayerActionServerPacket.Action.field_12975;
-		this.networkHandler.sendPacket(new PlayerActionServerPacket(action, BlockPos.ORIGIN, Direction.DOWN));
+		PlayerActionC2SPacket.Action action = bl ? PlayerActionC2SPacket.Action.field_12970 : PlayerActionC2SPacket.Action.field_12975;
+		this.networkHandler.sendPacket(new PlayerActionC2SPacket(action, BlockPos.ORIGIN, Direction.DOWN));
 		this.inventory
 			.takeInvStack(this.inventory.selectedSlot, bl && !this.inventory.getMainHandStack().isEmpty() ? this.inventory.getMainHandStack().getAmount() : 1);
 		return null;
 	}
 
-	@Override
-	protected ItemStack spawnEntityItem(ItemEntity itemEntity) {
-		return ItemStack.EMPTY;
-	}
-
 	public void sendChatMessage(String string) {
-		this.networkHandler.sendPacket(new ChatMessageServerPacket(string));
+		this.networkHandler.sendPacket(new ChatMessageC2SPacket(string));
 	}
 
 	@Override
 	public void swingHand(Hand hand) {
 		super.swingHand(hand);
-		this.networkHandler.sendPacket(new HandSwingServerPacket(hand));
+		this.networkHandler.sendPacket(new HandSwingC2SPacket(hand));
 	}
 
 	@Override
 	public void requestRespawn() {
-		this.networkHandler.sendPacket(new ClientStatusServerPacket(ClientStatusServerPacket.Mode.field_12774));
+		this.networkHandler.sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.field_12774));
 	}
 
 	@Override
@@ -293,7 +292,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public void closeGui() {
-		this.networkHandler.sendPacket(new GuiCloseServerPacket(this.container.syncId));
+		this.networkHandler.sendPacket(new GuiCloseC2SPacket(this.container.syncId));
 		this.method_3137();
 	}
 
@@ -327,7 +326,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public void method_7355() {
-		this.networkHandler.sendPacket(new UpdatePlayerAbilitiesServerPacket(this.abilities));
+		this.networkHandler.sendPacket(new UpdatePlayerAbilitiesC2SPacket(this.abilities));
 	}
 
 	@Override
@@ -336,12 +335,11 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	protected void method_3133() {
-		this.networkHandler
-			.sendPacket(new ClientCommandServerPacket(this, ClientCommandServerPacket.Mode.field_12987, MathHelper.floor(this.method_3151() * 100.0F)));
+		this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.field_12987, MathHelper.floor(this.method_3151() * 100.0F)));
 	}
 
 	public void method_3132() {
-		this.networkHandler.sendPacket(new ClientCommandServerPacket(this, ClientCommandServerPacket.Mode.field_12988));
+		this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.field_12988));
 	}
 
 	public void setServerBrand(String string) {
@@ -363,7 +361,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	public void onRecipeDisplayed(Recipe<?> recipe) {
 		if (this.recipeBook.shouldDisplay(recipe)) {
 			this.recipeBook.onRecipeDisplayed(recipe);
-			this.networkHandler.sendPacket(new RecipeBookDataServerPacket(recipe));
+			this.networkHandler.sendPacket(new RecipeBookDataC2SPacket(recipe));
 		}
 	}
 
@@ -728,7 +726,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		if (this.input.jumping && !bl && !this.onGround && this.velocityY < 0.0 && !this.isFallFlying() && !this.abilities.flying) {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
 			if (itemStack.getItem() == Items.field_8833 && ElytraItem.isUsable(itemStack)) {
-				this.networkHandler.sendPacket(new ClientCommandServerPacket(this, ClientCommandServerPacket.Mode.field_12982));
+				this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.field_12982));
 			}
 		}
 

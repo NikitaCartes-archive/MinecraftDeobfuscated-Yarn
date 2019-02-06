@@ -61,15 +61,36 @@ public class NamespaceResourceManager implements ResourceManager {
 		throw new FileNotFoundException(identifier.toString());
 	}
 
+	@Environment(EnvType.CLIENT)
+	@Override
+	public boolean method_18234(Identifier identifier) {
+		if (!this.method_18221(identifier)) {
+			return false;
+		} else {
+			for (int i = this.packList.size() - 1; i >= 0; i--) {
+				ResourcePack resourcePack = (ResourcePack)this.packList.get(i);
+				if (resourcePack.contains(this.type, identifier)) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+	}
+
 	protected InputStream open(Identifier identifier, ResourcePack resourcePack) throws IOException {
 		InputStream inputStream = resourcePack.open(this.type, identifier);
 		return (InputStream)(LOGGER.isDebugEnabled() ? new NamespaceResourceManager.DebugInputStream(inputStream, identifier, resourcePack.getName()) : inputStream);
 	}
 
 	private void validate(Identifier identifier) throws IOException {
-		if (identifier.getPath().contains("..")) {
+		if (!this.method_18221(identifier)) {
 			throw new IOException("Invalid relative path to resource: " + identifier);
 		}
+	}
+
+	private boolean method_18221(Identifier identifier) {
+		return !identifier.getPath().contains("..");
 	}
 
 	@Override

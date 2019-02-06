@@ -10,9 +10,9 @@ import net.minecraft.advancement.AdvancementManager;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.packet.AdvancementUpdateClientPacket;
+import net.minecraft.client.network.packet.AdvancementUpdateS2CPacket;
 import net.minecraft.client.toast.AdvancementToast;
-import net.minecraft.server.network.packet.AdvancementTabServerPacket;
+import net.minecraft.server.network.packet.AdvancementTabC2SPacket;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,16 +32,16 @@ public class ClientAdvancementManager {
 		this.client = minecraftClient;
 	}
 
-	public void onAdvancements(AdvancementUpdateClientPacket advancementUpdateClientPacket) {
-		if (advancementUpdateClientPacket.shouldClearCurrent()) {
+	public void method_2861(AdvancementUpdateS2CPacket advancementUpdateS2CPacket) {
+		if (advancementUpdateS2CPacket.shouldClearCurrent()) {
 			this.manager.clear();
 			this.field_3681.clear();
 		}
 
-		this.manager.removeAll(advancementUpdateClientPacket.getAdvancementIdsToRemove());
-		this.manager.load(advancementUpdateClientPacket.getAdvancementsToEarn());
+		this.manager.removeAll(advancementUpdateS2CPacket.getAdvancementIdsToRemove());
+		this.manager.load(advancementUpdateS2CPacket.getAdvancementsToEarn());
 
-		for (Entry<Identifier, AdvancementProgress> entry : advancementUpdateClientPacket.getAdvancementsToProgress().entrySet()) {
+		for (Entry<Identifier, AdvancementProgress> entry : advancementUpdateS2CPacket.getAdvancementsToProgress().entrySet()) {
 			SimpleAdvancement simpleAdvancement = this.manager.get((Identifier)entry.getKey());
 			if (simpleAdvancement != null) {
 				AdvancementProgress advancementProgress = (AdvancementProgress)entry.getValue();
@@ -51,7 +51,7 @@ public class ClientAdvancementManager {
 					this.field_3682.method_2865(simpleAdvancement, advancementProgress);
 				}
 
-				if (!advancementUpdateClientPacket.shouldClearCurrent()
+				if (!advancementUpdateS2CPacket.shouldClearCurrent()
 					&& advancementProgress.isDone()
 					&& simpleAdvancement.getDisplay() != null
 					&& simpleAdvancement.getDisplay().shouldShowToast()) {
@@ -70,7 +70,7 @@ public class ClientAdvancementManager {
 	public void selectTab(@Nullable SimpleAdvancement simpleAdvancement, boolean bl) {
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
 		if (clientPlayNetworkHandler != null && simpleAdvancement != null && bl) {
-			clientPlayNetworkHandler.sendPacket(AdvancementTabServerPacket.open(simpleAdvancement));
+			clientPlayNetworkHandler.sendPacket(AdvancementTabC2SPacket.open(simpleAdvancement));
 		}
 
 		if (this.field_3685 != simpleAdvancement) {

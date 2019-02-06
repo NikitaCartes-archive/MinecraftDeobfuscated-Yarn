@@ -1,74 +1,92 @@
 package net.minecraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.GlFramebuffer;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.resource.ResourceType;
+import net.minecraft.class_766;
+import net.minecraft.client.resource.ResourceLoadProgressProvider;
+import net.minecraft.resource.ResourceReloadStatus;
 import net.minecraft.util.Identifier;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.minecraft.util.SystemUtil;
+import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SplashScreen extends Screen {
-	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Identifier LOGO = new Identifier("textures/gui/title/mojang.png");
-	private Identifier logo;
+	private final ResourceLoadProgressProvider field_17767;
+	private final Consumer<SplashScreen> splashScreenConsumer;
+	private final class_766 field_17769 = new class_766(MainMenuScreen.field_17774);
+	private float field_17770;
+	private long field_17771 = -1L;
 
-	@Override
-	protected void onInitialized() {
-		try {
-			InputStream inputStream = this.client.getResourcePackDownloader().getPack().open(ResourceType.ASSETS, LOGO);
-			this.logo = this.client.getTextureManager().registerDynamicTexture("logo", new NativeImageBackedTexture(NativeImage.fromInputStream(inputStream)));
-		} catch (IOException var2) {
-			LOGGER.error("Unable to load logo: {}", LOGO, var2);
-		}
-	}
-
-	@Override
-	public void onClosed() {
-		this.client.getTextureManager().destroyTexture(this.logo);
-		this.logo = null;
+	public SplashScreen(ResourceLoadProgressProvider resourceLoadProgressProvider, Consumer<SplashScreen> consumer) {
+		this.field_17767 = resourceLoadProgressProvider;
+		this.splashScreenConsumer = consumer;
 	}
 
 	@Override
 	public void draw(int i, int j, float f) {
-		GlFramebuffer glFramebuffer = new GlFramebuffer(this.width, this.height, true, MinecraftClient.isSystemMac);
-		glFramebuffer.beginWrite(false);
-		this.client.getTextureManager().bindTexture(this.logo);
-		GlStateManager.disableLighting();
-		GlStateManager.disableFog();
-		GlStateManager.disableDepthTest();
-		GlStateManager.enableTexture();
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-		bufferBuilder.vertex(0.0, (double)this.client.window.getFramebufferHeight(), 0.0).texture(0.0, 0.0).color(255, 255, 255, 255).next();
-		bufferBuilder.vertex((double)this.client.window.getFramebufferWidth(), (double)this.client.window.getFramebufferHeight(), 0.0)
-			.texture(0.0, 0.0)
-			.color(255, 255, 255, 255)
-			.next();
-		bufferBuilder.vertex((double)this.client.window.getFramebufferWidth(), 0.0, 0.0).texture(0.0, 0.0).color(255, 255, 255, 255).next();
-		bufferBuilder.vertex(0.0, 0.0, 0.0).texture(0.0, 0.0).color(255, 255, 255, 255).next();
-		tessellator.draw();
-		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		int k = 256;
-		int l = 256;
-		this.client
-			.method_1501((this.client.window.getScaledWidth() - 256) / 2, (this.client.window.getScaledHeight() - 256) / 2, 0, 0, 256, 256, 255, 255, 255, 255);
-		GlStateManager.disableLighting();
-		GlStateManager.disableFog();
-		glFramebuffer.endWrite();
-		glFramebuffer.draw(this.client.window.getFramebufferWidth(), this.client.window.getFramebufferHeight());
-		GlStateManager.enableAlphaTest();
-		GlStateManager.alphaFunc(516, 0.1F);
+		drawRect(0, 0, this.width, this.height, -1);
+		long l = SystemUtil.getMeasuringTimeMs();
+		float g = this.field_17771 > -1L ? (float)(l - this.field_17771) / 1000.0F : 0.0F;
+		if (g >= 1.0F) {
+			this.field_17769.method_3317(f, MathHelper.clamp(g - 1.0F, 0.0F, 1.0F));
+		}
+
+		int k = (this.client.window.getScaledWidth() - 256) / 2;
+		int m = (this.client.window.getScaledHeight() - 256) / 2;
+		this.client.getTextureManager().bindTexture(LOGO);
+		GlStateManager.enableBlend();
+		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F - MathHelper.clamp(g - 1.0F, 0.0F, 1.0F));
+		this.drawTexturedRect(k, m, 0, 0, 256, 256);
+		if (g >= 1.0F) {
+			this.client.getTextureManager().bindTexture(new Identifier("textures/gui/title/background/panorama_overlay.png"));
+			GlStateManager.color4f(1.0F, 1.0F, 1.0F, (float)MathHelper.ceil(MathHelper.clamp(g - 1.0F, 0.0F, 1.0F)));
+			drawTexturedRect(0, 0, 0.0F, 0.0F, 16, 128, this.width, this.height, 16.0F, 128.0F);
+		}
+
+		float h = (float)this.field_17767.getProgress() / (float)this.field_17767.getTotal();
+		this.field_17770 = this.field_17770 * 0.95F + h * 0.050000012F;
+		if (g < 1.0F) {
+			this.renderProgressBar(
+				this.width / 2 - 150, this.height / 4 * 3, this.width / 2 + 150, this.height / 4 * 3 + 10, this.field_17770, 1.0F - MathHelper.clamp(g, 0.0F, 1.0F)
+			);
+		}
+
+		if (g >= 2.0F) {
+			this.splashScreenConsumer.accept(this);
+		}
+
+		if (this.field_17771 == -1L && this.field_17767.getStatus() == ResourceReloadStatus.field_17925) {
+			this.field_17771 = SystemUtil.getMeasuringTimeMs();
+		}
+	}
+
+	private void renderProgressBar(int i, int j, int k, int l, float f, float g) {
+		int m = MathHelper.ceil((float)(k - i - 2) * f);
+		drawRect(
+			i - 1, j - 1, k + 1, l + 1, 0xFF000000 | Math.round((1.0F - g) * 255.0F) << 16 | Math.round((1.0F - g) * 255.0F) << 8 | Math.round((1.0F - g) * 255.0F)
+		);
+		drawRect(i, j, k, l, -1);
+		drawRect(
+			i + 1,
+			j + 1,
+			i + m,
+			l - 1,
+			0xFF000000
+				| (int)MathHelper.lerp(1.0F - g, 226.0F, 255.0F) << 16
+				| (int)MathHelper.lerp(1.0F - g, 40.0F, 255.0F) << 8
+				| (int)MathHelper.lerp(1.0F - g, 55.0F, 255.0F)
+		);
+	}
+
+	@Override
+	public boolean doesEscapeKeyClose() {
+		return false;
+	}
+
+	public class_766 method_18104() {
+		return this.field_17769;
 	}
 }

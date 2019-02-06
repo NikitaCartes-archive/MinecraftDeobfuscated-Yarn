@@ -6,15 +6,15 @@ public class OverworldChunkGeneratorConfig extends ChunkGeneratorConfig {
 	private final int field_13222 = -1;
 	private final int field_13221 = 63;
 
-	public int method_12614() {
+	public int getBiomeSize() {
 		return 4;
 	}
 
-	public int method_12616() {
+	public int getRiverSize() {
 		return 4;
 	}
 
-	public int method_12615() {
+	public int getForcedBiome() {
 		return -1;
 	}
 

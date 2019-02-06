@@ -31,7 +31,7 @@ public class Heightmap {
 		int i = set.size();
 		ObjectList<Heightmap> objectList = new ObjectArrayList<>(i);
 		ObjectListIterator<Heightmap> objectListIterator = objectList.iterator();
-		int j = chunk.method_12031() + 16;
+		int j = chunk.getHighestNonEmptySectionYOffset() + 16;
 
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 			for (int k = 0; k < 16; k++) {

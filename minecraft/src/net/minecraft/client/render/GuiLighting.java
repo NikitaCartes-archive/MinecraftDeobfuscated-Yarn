@@ -15,7 +15,7 @@ public class GuiLighting {
 
 	private static Vector3f createNormalVector(float f, float g, float h) {
 		Vector3f vector3f = new Vector3f(f, g, h);
-		vector3f.normalize();
+		vector3f.reciprocal();
 		return vector3f;
 	}
 

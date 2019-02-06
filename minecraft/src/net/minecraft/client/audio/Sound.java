@@ -51,6 +51,13 @@ public class Sound implements SoundContainer<Sound> {
 		return this;
 	}
 
+	@Override
+	public void method_18188(SoundManager soundManager) {
+		if (this.field_5465) {
+			soundManager.method_4851(this);
+		}
+	}
+
 	public Sound.RegistrationType getRegistrationType() {
 		return this.registrationType;
 	}

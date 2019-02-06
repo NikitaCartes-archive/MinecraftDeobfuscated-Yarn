@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
-import net.minecraft.client.network.packet.PlaySoundClientPacket;
+import net.minecraft.client.network.packet.PlaySoundS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -324,7 +324,7 @@ public class Raid {
 				if (g <= 64.0F || RaidManager.isLivingAroundVillage(this.villageProperties, playerEntity)) {
 					((ServerPlayerEntity)playerEntity)
 						.networkHandler
-						.sendPacket(new PlaySoundClientPacket(SoundEvents.field_17266, SoundCategory.field_15254, d, playerEntity.y, e, 64.0F, 1.0F));
+						.sendPacket(new PlaySoundS2CPacket(SoundEvents.field_17266, SoundCategory.field_15254, d, playerEntity.y, e, 64.0F, 1.0F));
 				}
 			}
 		}

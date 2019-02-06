@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import java.util.function.Predicate;
-import net.minecraft.class_2710;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.pattern.BlockPatternBuilder;
@@ -14,6 +13,7 @@ import net.minecraft.predicate.block.BlockStatePredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.util.MaterialPredicate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.ViewableWorld;
@@ -62,8 +62,8 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 			}
 
 			int j = Block.getRawIdFromState(Blocks.field_10491.getDefaultState());
-			world.fireWorldEvent(2001, blockPos2, j);
-			world.fireWorldEvent(2001, blockPos2.up(), j);
+			world.playEvent(2001, blockPos2, j);
+			world.playEvent(2001, blockPos2.up(), j);
 
 			for (int k = 0; k < this.method_9729().getHeight(); k++) {
 				CachedBlockPosition cachedBlockPosition2 = result.translate(0, k, 0);
@@ -148,7 +148,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 			this.field_10752 = BlockPatternBuilder.start()
 				.aisle("~ ~", "###", "~#~")
 				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.field_10085)))
-				.where('~', CachedBlockPosition.matchesBlockState(class_2710.method_11746(Material.AIR)))
+				.where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR)))
 				.build();
 		}
 
@@ -161,7 +161,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 				.aisle("~^~", "###", "~#~")
 				.where('^', CachedBlockPosition.matchesBlockState(IS_PUMPKIN_PREDICATE))
 				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.field_10085)))
-				.where('~', CachedBlockPosition.matchesBlockState(class_2710.method_11746(Material.AIR)))
+				.where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR)))
 				.build();
 		}
 

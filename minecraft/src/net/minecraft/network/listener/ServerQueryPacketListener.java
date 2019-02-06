@@ -1,10 +1,10 @@
 package net.minecraft.network.listener;
 
-import net.minecraft.server.network.packet.QueryPingServerPacket;
-import net.minecraft.server.network.packet.QueryRequestServerPacket;
+import net.minecraft.server.network.packet.QueryPingC2SPacket;
+import net.minecraft.server.network.packet.QueryRequestC2SPacket;
 
 public interface ServerQueryPacketListener extends PacketListener {
-	void onPing(QueryPingServerPacket queryPingServerPacket);
+	void method_12697(QueryPingC2SPacket queryPingC2SPacket);
 
-	void onRequest(QueryRequestServerPacket queryRequestServerPacket);
+	void method_12698(QueryRequestC2SPacket queryRequestC2SPacket);
 }

@@ -73,7 +73,7 @@ public class BackupLevelScreen extends Screen {
 			@Override
 			public void onPressed(double d, double e) {
 				LevelStorage levelStorage = BackupLevelScreen.this.client.getLevelStorage();
-				Path path = levelStorage.method_236();
+				Path path = levelStorage.getBackupsDirectory();
 
 				try {
 					Files.createDirectories(Files.exists(path, new LinkOption[0]) ? path.toRealPath() : path);
@@ -121,7 +121,7 @@ public class BackupLevelScreen extends Screen {
 		});
 		buttonWidget.enabled = this.client.getLevelStorage().resolveFile(this.levelName, "icon.png").isFile();
 		LevelStorage levelStorage = this.client.getLevelStorage();
-		LevelProperties levelProperties = levelStorage.requiresConversion(this.levelName);
+		LevelProperties levelProperties = levelStorage.getLevelProperties(this.levelName);
 		String string = levelProperties == null ? "" : levelProperties.getLevelName();
 		this.field_3170 = new TextFieldWidget(2, this.fontRenderer, this.width / 2 - 100, 53, 200, 20);
 		this.field_3170.setFocused(true);
@@ -143,7 +143,7 @@ public class BackupLevelScreen extends Screen {
 
 	private void commit() {
 		LevelStorage levelStorage = this.client.getLevelStorage();
-		levelStorage.rename(this.levelName, this.field_3170.getText().trim());
+		levelStorage.renameLevel(this.levelName, this.field_3170.getText().trim());
 		this.callback.confirmResult(true, 0);
 	}
 
@@ -153,7 +153,7 @@ public class BackupLevelScreen extends Screen {
 		IOException iOException = null;
 
 		try {
-			l = levelStorage.method_237(string);
+			l = levelStorage.backupLevel(string);
 		} catch (IOException var8) {
 			iOException = var8;
 		}

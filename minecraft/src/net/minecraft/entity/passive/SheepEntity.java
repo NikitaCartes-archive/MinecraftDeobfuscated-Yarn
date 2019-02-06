@@ -163,7 +163,7 @@ public class SheepEntity extends AnimalEntity {
 				case GRAY:
 					return LootTables.ENTITY_SHEEP_GRAY;
 				case LIGHT_GRAY:
-					return LootTables.field_806;
+					return LootTables.ENTITY_SHEEP_LIGHT_GRAY;
 				case CYAN:
 					return LootTables.ENTITY_SHEEP_CYAN;
 				case PURPLE:

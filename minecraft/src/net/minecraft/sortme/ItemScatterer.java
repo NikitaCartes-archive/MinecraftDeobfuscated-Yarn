@@ -32,15 +32,15 @@ public class ItemScatterer {
 	}
 
 	public static void spawn(World world, double d, double e, double f, ItemStack itemStack) {
-		float g = EntityType.ITEM.getWidth();
-		float h = 1.0F - g;
-		float i = g / 2.0F;
-		float j = RANDOM.nextFloat() * h + i;
-		float k = RANDOM.nextFloat() * h;
-		float l = RANDOM.nextFloat() * h + i;
+		double g = (double)EntityType.ITEM.getWidth();
+		double h = 1.0 - g;
+		double i = g / 2.0;
+		double j = Math.floor(d) + RANDOM.nextDouble() * h + i;
+		double k = Math.floor(e) + RANDOM.nextDouble() * h;
+		double l = Math.floor(f) + RANDOM.nextDouble() * h + i;
 
 		while (!itemStack.isEmpty()) {
-			ItemEntity itemEntity = new ItemEntity(world, d + (double)j, e + (double)k, f + (double)l, itemStack.split(RANDOM.nextInt(21) + 10));
+			ItemEntity itemEntity = new ItemEntity(world, j, k, l, itemStack.split(RANDOM.nextInt(21) + 10));
 			float m = 0.05F;
 			itemEntity.velocityX = RANDOM.nextGaussian() * 0.05F;
 			itemEntity.velocityY = RANDOM.nextGaussian() * 0.05F + 0.2F;

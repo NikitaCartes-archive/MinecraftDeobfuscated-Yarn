@@ -3,7 +3,7 @@ package net.minecraft.block.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BedBlock;
-import net.minecraft.client.network.packet.BlockEntityUpdateClientPacket;
+import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.DyeColor;
 
 public class BedBlockEntity extends BlockEntity {
@@ -19,8 +19,8 @@ public class BedBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public BlockEntityUpdateClientPacket toUpdatePacket() {
-		return new BlockEntityUpdateClientPacket(this.pos, 11, this.toInitialChunkDataTag());
+	public BlockEntityUpdateS2CPacket method_16886() {
+		return new BlockEntityUpdateS2CPacket(this.pos, 11, this.toInitialChunkDataTag());
 	}
 
 	@Environment(EnvType.CLIENT)

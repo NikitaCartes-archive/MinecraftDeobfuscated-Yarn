@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
-import net.minecraft.client.network.packet.MapUpdateClientPacket;
+import net.minecraft.client.network.packet.MapUpdateS2CPacket;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FilledMapItem;
@@ -377,7 +377,7 @@ public class MapState extends PersistentState {
 		public Packet<?> method_112(ItemStack itemStack) {
 			if (this.field_130) {
 				this.field_130 = false;
-				return new MapUpdateClientPacket(
+				return new MapUpdateS2CPacket(
 					FilledMapItem.method_8003(itemStack),
 					MapState.this.scale,
 					MapState.this.showIcons,
@@ -391,7 +391,7 @@ public class MapState extends PersistentState {
 				);
 			} else {
 				return this.field_124++ % 5 == 0
-					? new MapUpdateClientPacket(
+					? new MapUpdateS2CPacket(
 						FilledMapItem.method_8003(itemStack),
 						MapState.this.scale,
 						MapState.this.showIcons,

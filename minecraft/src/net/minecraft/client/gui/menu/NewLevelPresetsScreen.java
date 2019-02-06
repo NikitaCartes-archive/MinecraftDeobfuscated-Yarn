@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3229;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
@@ -29,6 +28,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.chunk.ChunkGeneratorType;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
+import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
 
 @Environment(EnvType.CLIENT)
 public class NewLevelPresetsScreen extends Screen {
@@ -118,15 +118,15 @@ public class NewLevelPresetsScreen extends Screen {
 		return this.field_2521.field_2531 > -1 && this.field_2521.field_2531 < field_2518.size() || this.field_2523.getText().length() > 1;
 	}
 
-	private static void method_2195(String string, ItemProvider itemProvider, Biome biome, List<String> list, class_3229... args) {
+	private static void method_2195(String string, ItemProvider itemProvider, Biome biome, List<String> list, FlatChunkGeneratorLayer... flatChunkGeneratorLayers) {
 		FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.field_12766.createSettings();
 
-		for (int i = args.length - 1; i >= 0; i--) {
-			flatChunkGeneratorConfig.getLayers().add(args[i]);
+		for (int i = flatChunkGeneratorLayers.length - 1; i >= 0; i--) {
+			flatChunkGeneratorConfig.getLayers().add(flatChunkGeneratorLayers[i]);
 		}
 
 		flatChunkGeneratorConfig.setBiome(biome);
-		flatChunkGeneratorConfig.method_14330();
+		flatChunkGeneratorConfig.updateLayerBlocks();
 
 		for (String string2 : list) {
 			flatChunkGeneratorConfig.getStructures().put(string2, Maps.newHashMap());
@@ -139,88 +139,88 @@ public class NewLevelPresetsScreen extends Screen {
 		method_2195(
 			I18n.translate("createWorld.customize.preset.classic_flat"),
 			Blocks.field_10219,
-			Biomes.field_9451,
+			Biomes.biome,
 			Arrays.asList("village"),
-			new class_3229(1, Blocks.field_10219),
-			new class_3229(2, Blocks.field_10566),
-			new class_3229(1, Blocks.field_9987)
+			new FlatChunkGeneratorLayer(1, Blocks.field_10219),
+			new FlatChunkGeneratorLayer(2, Blocks.field_10566),
+			new FlatChunkGeneratorLayer(1, Blocks.field_9987)
 		);
 		method_2195(
 			I18n.translate("createWorld.customize.preset.tunnelers_dream"),
 			Blocks.field_10340,
 			Biomes.field_9472,
 			Arrays.asList("biome_1", "dungeon", "decoration", "stronghold", "mineshaft"),
-			new class_3229(1, Blocks.field_10219),
-			new class_3229(5, Blocks.field_10566),
-			new class_3229(230, Blocks.field_10340),
-			new class_3229(1, Blocks.field_9987)
+			new FlatChunkGeneratorLayer(1, Blocks.field_10219),
+			new FlatChunkGeneratorLayer(5, Blocks.field_10566),
+			new FlatChunkGeneratorLayer(230, Blocks.field_10340),
+			new FlatChunkGeneratorLayer(1, Blocks.field_9987)
 		);
 		method_2195(
 			I18n.translate("createWorld.customize.preset.water_world"),
 			Items.field_8705,
 			Biomes.field_9446,
 			Arrays.asList("biome_1", "oceanmonument"),
-			new class_3229(90, Blocks.field_10382),
-			new class_3229(5, Blocks.field_10102),
-			new class_3229(5, Blocks.field_10566),
-			new class_3229(5, Blocks.field_10340),
-			new class_3229(1, Blocks.field_9987)
+			new FlatChunkGeneratorLayer(90, Blocks.field_10382),
+			new FlatChunkGeneratorLayer(5, Blocks.field_10102),
+			new FlatChunkGeneratorLayer(5, Blocks.field_10566),
+			new FlatChunkGeneratorLayer(5, Blocks.field_10340),
+			new FlatChunkGeneratorLayer(1, Blocks.field_9987)
 		);
 		method_2195(
 			I18n.translate("createWorld.customize.preset.overworld"),
 			Blocks.field_10479,
-			Biomes.field_9451,
+			Biomes.biome,
 			Arrays.asList("village", "biome_1", "decoration", "stronghold", "mineshaft", "dungeon", "lake", "lava_lake"),
-			new class_3229(1, Blocks.field_10219),
-			new class_3229(3, Blocks.field_10566),
-			new class_3229(59, Blocks.field_10340),
-			new class_3229(1, Blocks.field_9987)
+			new FlatChunkGeneratorLayer(1, Blocks.field_10219),
+			new FlatChunkGeneratorLayer(3, Blocks.field_10566),
+			new FlatChunkGeneratorLayer(59, Blocks.field_10340),
+			new FlatChunkGeneratorLayer(1, Blocks.field_9987)
 		);
 		method_2195(
 			I18n.translate("createWorld.customize.preset.snowy_kingdom"),
 			Blocks.field_10477,
 			Biomes.field_9452,
 			Arrays.asList("village", "biome_1"),
-			new class_3229(1, Blocks.field_10477),
-			new class_3229(1, Blocks.field_10219),
-			new class_3229(3, Blocks.field_10566),
-			new class_3229(59, Blocks.field_10340),
-			new class_3229(1, Blocks.field_9987)
+			new FlatChunkGeneratorLayer(1, Blocks.field_10477),
+			new FlatChunkGeneratorLayer(1, Blocks.field_10219),
+			new FlatChunkGeneratorLayer(3, Blocks.field_10566),
+			new FlatChunkGeneratorLayer(59, Blocks.field_10340),
+			new FlatChunkGeneratorLayer(1, Blocks.field_9987)
 		);
 		method_2195(
 			I18n.translate("createWorld.customize.preset.bottomless_pit"),
 			Items.field_8153,
-			Biomes.field_9451,
+			Biomes.biome,
 			Arrays.asList("village", "biome_1"),
-			new class_3229(1, Blocks.field_10219),
-			new class_3229(3, Blocks.field_10566),
-			new class_3229(2, Blocks.field_10445)
+			new FlatChunkGeneratorLayer(1, Blocks.field_10219),
+			new FlatChunkGeneratorLayer(3, Blocks.field_10566),
+			new FlatChunkGeneratorLayer(2, Blocks.field_10445)
 		);
 		method_2195(
 			I18n.translate("createWorld.customize.preset.desert"),
 			Blocks.field_10102,
 			Biomes.field_9424,
 			Arrays.asList("village", "biome_1", "decoration", "stronghold", "mineshaft", "dungeon"),
-			new class_3229(8, Blocks.field_10102),
-			new class_3229(52, Blocks.field_9979),
-			new class_3229(3, Blocks.field_10340),
-			new class_3229(1, Blocks.field_9987)
+			new FlatChunkGeneratorLayer(8, Blocks.field_10102),
+			new FlatChunkGeneratorLayer(52, Blocks.field_9979),
+			new FlatChunkGeneratorLayer(3, Blocks.field_10340),
+			new FlatChunkGeneratorLayer(1, Blocks.field_9987)
 		);
 		method_2195(
 			I18n.translate("createWorld.customize.preset.redstone_ready"),
 			Items.field_8725,
 			Biomes.field_9424,
 			Collections.emptyList(),
-			new class_3229(52, Blocks.field_9979),
-			new class_3229(3, Blocks.field_10340),
-			new class_3229(1, Blocks.field_9987)
+			new FlatChunkGeneratorLayer(52, Blocks.field_9979),
+			new FlatChunkGeneratorLayer(3, Blocks.field_10340),
+			new FlatChunkGeneratorLayer(1, Blocks.field_9987)
 		);
 		method_2195(
 			I18n.translate("createWorld.customize.preset.the_void"),
 			Blocks.field_10499,
 			Biomes.field_9473,
 			Arrays.asList("decoration"),
-			new class_3229(1, Blocks.field_10124)
+			new FlatChunkGeneratorLayer(1, Blocks.field_10124)
 		);
 	}
 

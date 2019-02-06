@@ -2,7 +2,7 @@ package net.minecraft.client.gui.hud;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.BossBarClientPacket;
+import net.minecraft.client.network.packet.BossBarS2CPacket;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
@@ -12,14 +12,14 @@ public class ClientBossBar extends BossBar {
 	protected float healthLatest;
 	protected long timeHealthSet;
 
-	public ClientBossBar(BossBarClientPacket bossBarClientPacket) {
-		super(bossBarClientPacket.getUuid(), bossBarClientPacket.getName(), bossBarClientPacket.getColor(), bossBarClientPacket.getOverlay());
-		this.healthLatest = bossBarClientPacket.getPercent();
-		this.percent = bossBarClientPacket.getPercent();
+	public ClientBossBar(BossBarS2CPacket bossBarS2CPacket) {
+		super(bossBarS2CPacket.getUuid(), bossBarS2CPacket.getName(), bossBarS2CPacket.getColor(), bossBarS2CPacket.getOverlay());
+		this.healthLatest = bossBarS2CPacket.getPercent();
+		this.percent = bossBarS2CPacket.getPercent();
 		this.timeHealthSet = SystemUtil.getMeasuringTimeMs();
-		this.setDarkenSky(bossBarClientPacket.shouldDarkenSky());
-		this.setDragonMusic(bossBarClientPacket.hasDragonMusic());
-		this.setThickenFog(bossBarClientPacket.shouldThickenFog());
+		this.setDarkenSky(bossBarS2CPacket.shouldDarkenSky());
+		this.setDragonMusic(bossBarS2CPacket.hasDragonMusic());
+		this.setThickenFog(bossBarS2CPacket.shouldThickenFog());
 	}
 
 	@Override
@@ -36,21 +36,21 @@ public class ClientBossBar extends BossBar {
 		return MathHelper.lerp(f, this.percent, this.healthLatest);
 	}
 
-	public void handlePacket(BossBarClientPacket bossBarClientPacket) {
-		switch (bossBarClientPacket.getType()) {
+	public void method_1894(BossBarS2CPacket bossBarS2CPacket) {
+		switch (bossBarS2CPacket.getType()) {
 			case UPDATE_TITLE:
-				this.setName(bossBarClientPacket.getName());
+				this.setName(bossBarS2CPacket.getName());
 				break;
 			case UPDATE_PCT:
-				this.setPercent(bossBarClientPacket.getPercent());
+				this.setPercent(bossBarS2CPacket.getPercent());
 				break;
 			case UPDATE_STYLE:
-				this.setColor(bossBarClientPacket.getColor());
-				this.setOverlay(bossBarClientPacket.getOverlay());
+				this.setColor(bossBarS2CPacket.getColor());
+				this.setOverlay(bossBarS2CPacket.getOverlay());
 				break;
 			case UPDATE_FLAGS:
-				this.setDarkenSky(bossBarClientPacket.shouldDarkenSky());
-				this.setDragonMusic(bossBarClientPacket.hasDragonMusic());
+				this.setDarkenSky(bossBarS2CPacket.shouldDarkenSky());
+				this.setDragonMusic(bossBarS2CPacket.hasDragonMusic());
 		}
 	}
 }

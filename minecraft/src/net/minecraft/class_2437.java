@@ -39,13 +39,13 @@ public class class_2437 implements Consumer<BiConsumer<Identifier, LootSupplier.
 				.withPool(
 					LootPool.create()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(LootTableEntry.method_428(LootTables.field_266).setWeight(10).setQuality(-2))
-						.withEntry(LootTableEntry.method_428(LootTables.field_854).setWeight(5).setQuality(2))
-						.withEntry(LootTableEntry.method_428(LootTables.field_795).setWeight(85).setQuality(-1))
+						.withEntry(LootTableEntry.method_428(LootTables.GAMEPLAY_FISHING_JUNK).setWeight(10).setQuality(-2))
+						.withEntry(LootTableEntry.method_428(LootTables.GAMEPLAY_FISHING_TREASURE).setWeight(5).setQuality(2))
+						.withEntry(LootTableEntry.method_428(LootTables.GAMEPLAY_FISHING_FISH).setWeight(85).setQuality(-1))
 				)
 		);
 		biConsumer.accept(
-			LootTables.field_795,
+			LootTables.GAMEPLAY_FISHING_FISH,
 			LootSupplier.create()
 				.withPool(
 					LootPool.create()
@@ -56,7 +56,7 @@ public class class_2437 implements Consumer<BiConsumer<Identifier, LootSupplier.
 				)
 		);
 		biConsumer.accept(
-			LootTables.field_266,
+			LootTables.GAMEPLAY_FISHING_JUNK,
 			LootSupplier.create()
 				.withPool(
 					LootPool.create()
@@ -83,7 +83,7 @@ public class class_2437 implements Consumer<BiConsumer<Identifier, LootSupplier.
 				)
 		);
 		biConsumer.accept(
-			LootTables.field_854,
+			LootTables.GAMEPLAY_FISHING_TREASURE,
 			LootSupplier.create()
 				.withPool(
 					LootPool.create()

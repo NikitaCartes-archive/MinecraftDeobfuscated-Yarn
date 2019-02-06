@@ -53,7 +53,7 @@ public class BreakDoorGoal extends DoorInteractGoal {
 	public void tick() {
 		super.tick();
 		if (this.owner.getRand().nextInt(20) == 0) {
-			this.owner.world.fireWorldEvent(1019, this.doorPos, 0);
+			this.owner.world.playEvent(1019, this.doorPos, 0);
 			if (!this.owner.field_6252) {
 				this.owner.swingHand(this.owner.getActiveHand());
 			}
@@ -68,8 +68,8 @@ public class BreakDoorGoal extends DoorInteractGoal {
 
 		if (this.breakProgress == this.method_16462() && this.owner.world.getDifficulty() == Difficulty.HARD) {
 			this.owner.world.clearBlockState(this.doorPos);
-			this.owner.world.fireWorldEvent(1021, this.doorPos, 0);
-			this.owner.world.fireWorldEvent(2001, this.doorPos, Block.getRawIdFromState(this.owner.world.getBlockState(this.doorPos)));
+			this.owner.world.playEvent(1021, this.doorPos, 0);
+			this.owner.world.playEvent(2001, this.doorPos, Block.getRawIdFromState(this.owner.world.getBlockState(this.doorPos)));
 		}
 	}
 }

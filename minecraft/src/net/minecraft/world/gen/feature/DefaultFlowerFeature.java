@@ -13,7 +13,7 @@ public class DefaultFlowerFeature extends FlowerFeature {
 	}
 
 	@Override
-	public BlockState method_13175(Random random, BlockPos blockPos) {
+	public BlockState getFlowerToPlace(Random random, BlockPos blockPos) {
 		return random.nextFloat() > 0.6666667F ? Blocks.field_10182.getDefaultState() : Blocks.field_10449.getDefaultState();
 	}
 }

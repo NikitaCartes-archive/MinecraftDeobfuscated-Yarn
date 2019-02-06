@@ -35,7 +35,7 @@ public enum Direction implements StringRepresentable {
 	private static final Direction[] ALL = values();
 	private static final Map<String, Direction> NAME_MAP = (Map<String, Direction>)Arrays.stream(ALL)
 		.collect(Collectors.toMap(Direction::getName, direction -> direction));
-	private static final Direction[] field_11038 = (Direction[])Arrays.stream(ALL)
+	private static final Direction[] ID_TO_DIRECTION = (Direction[])Arrays.stream(ALL)
 		.sorted(Comparator.comparingInt(direction -> direction.id))
 		.toArray(Direction[]::new);
 	private static final Direction[] HORIZONTAL = (Direction[])Arrays.stream(ALL)
@@ -226,7 +226,7 @@ public enum Direction implements StringRepresentable {
 	}
 
 	public static Direction byId(int i) {
-		return field_11038[MathHelper.abs(i % field_11038.length)];
+		return ID_TO_DIRECTION[MathHelper.abs(i % ID_TO_DIRECTION.length)];
 	}
 
 	public static Direction fromHorizontal(int i) {

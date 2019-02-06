@@ -195,7 +195,6 @@ public class TaigaVillageData {
 						new Pair<>(new SinglePoolElement("village/taiga/houses/taiga_fletcher_house_1", immutableList), 2),
 						new Pair<>(new SinglePoolElement("village/taiga/zombie/houses/taiga_shepherds_house_1", immutableList), 2),
 						new Pair<>(new SinglePoolElement("village/taiga/houses/taiga_armorer_house_1", immutableList), 1),
-						new Pair<>(new SinglePoolElement("village/taiga/zombie/houses/taiga_armorer_house_2", immutableList), 1),
 						new Pair<>(new SinglePoolElement("village/taiga/zombie/houses/taiga_fisher_cottage_1", immutableList), 2),
 						new Pair<>(new SinglePoolElement("village/taiga/houses/taiga_tannery_1", immutableList), 2),
 						new Pair<>(new SinglePoolElement("village/taiga/zombie/houses/taiga_cartographer_house_1", immutableList), 2),
@@ -278,7 +277,6 @@ public class TaigaVillageData {
 					ImmutableList.of(
 						new Pair<>(new SinglePoolElement("village/plains/villagers/nitwit"), 1),
 						new Pair<>(new SinglePoolElement("village/plains/villagers/unemployed"), 7),
-						Pair.of(EmptyPoolElement.INSTANCE, 2),
 						new Pair<>(new SinglePoolElement("village/plains/villagers/armorer"), 1),
 						new Pair<>(new SinglePoolElement("village/plains/villagers/butcher"), 2),
 						new Pair<>(new SinglePoolElement("village/plains/villagers/cartographer"), 1),

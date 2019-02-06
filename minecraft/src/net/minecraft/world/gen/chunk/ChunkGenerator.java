@@ -73,7 +73,7 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 					ConfiguredCarver<?> configuredCarver = (ConfiguredCarver<?>)listIterator.next();
 					chunkRandom.setStructureSeed(this.seed + (long)n, l, m);
 					if (configuredCarver.shouldCarve(chunkRandom, l, m)) {
-						configuredCarver.carve(chunk, chunkRandom, this.method_16398(), l, m, j, k, bitSet);
+						configuredCarver.carve(chunk, chunkRandom, this.getSeaLevel(), l, m, j, k, bitSet);
 					}
 				}
 			}
@@ -106,7 +106,7 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 	public void populateEntities(ChunkRegion chunkRegion) {
 	}
 
-	public C getSettings() {
+	public C getConfig() {
 		return this.config;
 	}
 
@@ -147,7 +147,7 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 				ChunkPos chunkPos = chunk.getPos();
 				StructureStart structureStart = StructureStart.DEFAULT;
 				if (structureFeature.shouldStartAt(chunkGenerator, chunkRandom, chunkPos.x, chunkPos.z)) {
-					Biome biome = this.getBiomeSource().getBiome(new BlockPos(chunkPos.getXStart() + 9, 0, chunkPos.getZStart() + 9));
+					Biome biome = this.getBiomeSource().getBiome(new BlockPos(chunkPos.getStartX() + 9, 0, chunkPos.getStartZ() + 9));
 					StructureStart structureStart2 = structureFeature.getStructureStartFactory()
 						.create(structureFeature, chunkPos.x, chunkPos.z, biome, MutableIntBoundingBox.empty(), 0, chunkGenerator.getSeed());
 					structureStart2.initialize(this, structureManager, chunkPos.x, chunkPos.z, biome);
@@ -182,13 +182,13 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 
 	public abstract void populateNoise(IWorld iWorld, Chunk chunk);
 
-	public int method_16398() {
+	public int getSeaLevel() {
 		return 63;
 	}
 
-	public abstract int produceHeight(int i, int j, Heightmap.Type type);
+	public abstract int getHeightOnGround(int i, int j, Heightmap.Type type);
 
-	public int method_18028(int i, int j, Heightmap.Type type) {
-		return this.produceHeight(i, j, type) - 1;
+	public int getHeightInGround(int i, int j, Heightmap.Type type) {
+		return this.getHeightOnGround(i, j, type) - 1;
 	}
 }

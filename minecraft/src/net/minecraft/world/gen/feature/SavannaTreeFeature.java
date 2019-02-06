@@ -68,7 +68,7 @@ public class SavannaTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig
 
 					BlockPos blockPos2 = new BlockPos(l, q, mx);
 					if (isAirOrLeaves(modifiableTestableWorld, blockPos2)) {
-						this.method_13852(set, modifiableTestableWorld, blockPos2);
+						this.addLog(set, modifiableTestableWorld, blockPos2);
 						o = q;
 					}
 				}
@@ -78,7 +78,7 @@ public class SavannaTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig
 				for (int qx = -3; qx <= 3; qx++) {
 					for (int r = -3; r <= 3; r++) {
 						if (Math.abs(qx) != 3 || Math.abs(r) != 3) {
-							this.method_13853(modifiableTestableWorld, blockPos3.add(qx, 0, r));
+							this.addLeaves(modifiableTestableWorld, blockPos3.add(qx, 0, r));
 						}
 					}
 				}
@@ -87,14 +87,14 @@ public class SavannaTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig
 
 				for (int qx = -1; qx <= 1; qx++) {
 					for (int rx = -1; rx <= 1; rx++) {
-						this.method_13853(modifiableTestableWorld, blockPos3.add(qx, 0, rx));
+						this.addLeaves(modifiableTestableWorld, blockPos3.add(qx, 0, rx));
 					}
 				}
 
-				this.method_13853(modifiableTestableWorld, blockPos3.east(2));
-				this.method_13853(modifiableTestableWorld, blockPos3.west(2));
-				this.method_13853(modifiableTestableWorld, blockPos3.south(2));
-				this.method_13853(modifiableTestableWorld, blockPos3.north(2));
+				this.addLeaves(modifiableTestableWorld, blockPos3.east(2));
+				this.addLeaves(modifiableTestableWorld, blockPos3.west(2));
+				this.addLeaves(modifiableTestableWorld, blockPos3.south(2));
+				this.addLeaves(modifiableTestableWorld, blockPos3.north(2));
 				l = blockPos.getX();
 				mx = blockPos.getZ();
 				Direction direction2 = Direction.Type.HORIZONTAL.random(random);
@@ -110,7 +110,7 @@ public class SavannaTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig
 							mx += direction2.getOffsetZ();
 							BlockPos blockPos4 = new BlockPos(l, t, mx);
 							if (isAirOrLeaves(modifiableTestableWorld, blockPos4)) {
-								this.method_13852(set, modifiableTestableWorld, blockPos4);
+								this.addLog(set, modifiableTestableWorld, blockPos4);
 								o = t;
 							}
 						}
@@ -124,7 +124,7 @@ public class SavannaTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig
 						for (int t = -2; t <= 2; t++) {
 							for (int u = -2; u <= 2; u++) {
 								if (Math.abs(t) != 2 || Math.abs(u) != 2) {
-									this.method_13853(modifiableTestableWorld, blockPos5.add(t, 0, u));
+									this.addLeaves(modifiableTestableWorld, blockPos5.add(t, 0, u));
 								}
 							}
 						}
@@ -133,7 +133,7 @@ public class SavannaTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig
 
 						for (int t = -1; t <= 1; t++) {
 							for (int ux = -1; ux <= 1; ux++) {
-								this.method_13853(modifiableTestableWorld, blockPos5.add(t, 0, ux));
+								this.addLeaves(modifiableTestableWorld, blockPos5.add(t, 0, ux));
 							}
 						}
 					}
@@ -148,11 +148,11 @@ public class SavannaTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig
 		}
 	}
 
-	private void method_13852(Set<BlockPos> set, ModifiableWorld modifiableWorld, BlockPos blockPos) {
+	private void addLog(Set<BlockPos> set, ModifiableWorld modifiableWorld, BlockPos blockPos) {
 		this.setBlockState(set, modifiableWorld, blockPos, LOG);
 	}
 
-	private void method_13853(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos) {
+	private void addLeaves(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos) {
 		if (isAirOrLeaves(modifiableTestableWorld, blockPos)) {
 			this.setBlockState(modifiableTestableWorld, blockPos, LEAVES);
 		}

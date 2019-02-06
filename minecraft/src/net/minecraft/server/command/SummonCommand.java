@@ -13,6 +13,7 @@ import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -70,15 +71,18 @@ public class SummonCommand {
 		compoundTag2.putString("id", identifier.toString());
 		if (EntityType.getId(EntityType.LIGHTNING_BOLT).equals(identifier)) {
 			LightningEntity lightningEntity = new LightningEntity(serverCommandSource.getWorld(), vec3d.x, vec3d.y, vec3d.z, false);
-			serverCommandSource.getWorld().addGlobalEntity(lightningEntity);
+			serverCommandSource.getWorld().addLightning(lightningEntity);
 			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.summon.success", lightningEntity.getDisplayName()), true);
 			return 1;
 		} else {
-			Entity entity = EntityType.loadEntityWithPassengersAtPosition(compoundTag2, serverCommandSource.getWorld(), vec3d.x, vec3d.y, vec3d.z, true);
+			ServerWorld serverWorld = serverCommandSource.getWorld();
+			Entity entity = EntityType.loadEntityWithPassengers(compoundTag2, serverWorld, entityx -> {
+				entityx.setPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, entityx.yaw, entityx.pitch);
+				return !serverWorld.method_18197(entityx, true) ? null : entityx;
+			});
 			if (entity == null) {
 				throw FAILED_EXCEPTION.create();
 			} else {
-				entity.setPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, entity.yaw, entity.pitch);
 				if (bl && entity instanceof MobEntity) {
 					((MobEntity)entity)
 						.prepareEntityData(

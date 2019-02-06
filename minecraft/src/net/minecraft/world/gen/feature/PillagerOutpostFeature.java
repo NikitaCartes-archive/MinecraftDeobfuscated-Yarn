@@ -16,7 +16,7 @@ import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class PillagerOutpostFeature extends AbstractTempleFeature<PillagerOutpostFeatureConfig> {
-	private static final List<Biome.SpawnEntry> field_16656 = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.PILLAGER, 1, 1, 1));
+	private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.PILLAGER, 1, 1, 1));
 
 	public PillagerOutpostFeature(Function<Dynamic<?>, ? extends PillagerOutpostFeatureConfig> function) {
 		super(function);
@@ -28,18 +28,18 @@ public class PillagerOutpostFeature extends AbstractTempleFeature<PillagerOutpos
 	}
 
 	@Override
-	public int method_14021() {
+	public int getRadius() {
 		return 3;
 	}
 
 	@Override
 	public List<Biome.SpawnEntry> getMonsterSpawns() {
-		return field_16656;
+		return MONSTER_SPAWNS;
 	}
 
 	@Override
 	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
-		ChunkPos chunkPos = this.method_14018(chunkGenerator, random, i, j, 0, 0);
+		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
 		if (i == chunkPos.x && j == chunkPos.z) {
 			int k = i >> 4;
 			int l = j >> 4;
@@ -58,16 +58,16 @@ public class PillagerOutpostFeature extends AbstractTempleFeature<PillagerOutpos
 
 	@Override
 	public StructureFeature.StructureStartFactory getStructureStartFactory() {
-		return PillagerOutpostFeature.class_3771::new;
+		return PillagerOutpostFeature.Start::new;
 	}
 
 	@Override
-	protected int method_13774() {
+	protected int getSeedModifier() {
 		return 165745296;
 	}
 
-	public static class class_3771 extends StructureStart {
-		public class_3771(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
+	public static class Start extends StructureStart {
+		public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
 			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
 		}
 

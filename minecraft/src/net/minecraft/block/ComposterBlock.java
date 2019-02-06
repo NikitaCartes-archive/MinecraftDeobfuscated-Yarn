@@ -136,19 +136,28 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void method_18027(IWorld iWorld, BlockPos blockPos, boolean bl) {
-		BlockState blockState = iWorld.getBlockState(blockPos);
-		iWorld.playSound(null, blockPos, bl ? SoundEvents.field_17608 : SoundEvents.field_17607, SoundCategory.field_15245, 1.0F, 1.0F);
-		double d = blockState.getOutlineShape(iWorld, blockPos).method_1102(Direction.Axis.Y, 0.5, 0.5) + 0.03125;
+	public static void method_18027(World world, BlockPos blockPos, boolean bl) {
+		BlockState blockState = world.getBlockState(blockPos);
+		world.playSound(
+			(double)blockPos.getX(),
+			(double)blockPos.getY(),
+			(double)blockPos.getZ(),
+			bl ? SoundEvents.field_17608 : SoundEvents.field_17607,
+			SoundCategory.field_15245,
+			1.0F,
+			1.0F,
+			false
+		);
+		double d = blockState.getOutlineShape(world, blockPos).method_1102(Direction.Axis.Y, 0.5, 0.5) + 0.03125;
 		double e = 0.13125F;
 		double f = 0.7375F;
-		Random random = iWorld.getRandom();
+		Random random = world.getRandom();
 
 		for (int i = 0; i < 10; i++) {
 			double g = random.nextGaussian() * 0.02;
 			double h = random.nextGaussian() * 0.02;
 			double j = random.nextGaussian() * 0.02;
-			iWorld.addParticle(
+			world.addParticle(
 				ParticleTypes.field_17741,
 				(double)blockPos.getX() + 0.13125F + 0.7375F * (double)random.nextFloat(),
 				(double)blockPos.getY() + d + (double)random.nextFloat() * (1.0 - d),
@@ -189,7 +198,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		if (i < 8 && ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(itemStack.getItem())) {
 			if (i < 7 && !world.isClient) {
 				boolean bl = addToComposter(blockState, world, blockPos, itemStack);
-				world.fireWorldEvent(1500, blockPos, bl ? 0 : 1);
+				world.playEvent(1500, blockPos, bl ? 0 : 1);
 				if (!playerEntity.abilities.creativeMode) {
 					itemStack.subtractAmount(1);
 				}

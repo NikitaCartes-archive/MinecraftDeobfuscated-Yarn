@@ -18,39 +18,39 @@ public class CaveCarver extends Carver<ProbabilityConfig> {
 	}
 
 	public boolean method_12673(Chunk chunk, Random random, int i, int j, int k, int l, int m, BitSet bitSet, ProbabilityConfig probabilityConfig) {
-		int n = (this.method_12710() * 2 - 1) * 16;
-		int o = random.nextInt(random.nextInt(random.nextInt(this.method_16577()) + 1) + 1);
+		int n = (this.getBranchFactor() * 2 - 1) * 16;
+		int o = random.nextInt(random.nextInt(random.nextInt(this.getMaxCaveCount()) + 1) + 1);
 
 		for (int p = 0; p < o; p++) {
 			double d = (double)(j * 16 + random.nextInt(16));
-			double e = (double)this.method_16579(random);
+			double e = (double)this.getCaveY(random);
 			double f = (double)(k * 16 + random.nextInt(16));
 			int q = 1;
 			if (random.nextInt(4) == 0) {
 				double g = 0.5;
 				float h = 1.0F + random.nextFloat() * 6.0F;
-				this.method_12674(chunk, random.nextLong(), i, l, m, d, e, f, h, 0.5, bitSet);
+				this.carveCave(chunk, random.nextLong(), i, l, m, d, e, f, h, 0.5, bitSet);
 				q += random.nextInt(4);
 			}
 
 			for (int r = 0; r < q; r++) {
 				float s = random.nextFloat() * (float) (Math.PI * 2);
 				float h = (random.nextFloat() - 0.5F) / 4.0F;
-				float t = this.method_16576(random);
+				float t = this.getTunnelSystemWidth(random);
 				int u = n - random.nextInt(n / 4);
 				int v = 0;
-				this.method_12675(chunk, random.nextLong(), i, l, m, d, e, f, t, s, h, 0, u, this.method_16578(), bitSet);
+				this.carveTunnels(chunk, random.nextLong(), i, l, m, d, e, f, t, s, h, 0, u, this.getTunnelSystemHeightWidthRatio(), bitSet);
 			}
 		}
 
 		return true;
 	}
 
-	protected int method_16577() {
+	protected int getMaxCaveCount() {
 		return 15;
 	}
 
-	protected float method_16576(Random random) {
+	protected float getTunnelSystemWidth(Random random) {
 		float f = random.nextFloat() * 2.0F + random.nextFloat();
 		if (random.nextInt(10) == 0) {
 			f *= random.nextFloat() * random.nextFloat() * 3.0F + 1.0F;
@@ -59,21 +59,21 @@ public class CaveCarver extends Carver<ProbabilityConfig> {
 		return f;
 	}
 
-	protected double method_16578() {
+	protected double getTunnelSystemHeightWidthRatio() {
 		return 1.0;
 	}
 
-	protected int method_16579(Random random) {
+	protected int getCaveY(Random random) {
 		return random.nextInt(random.nextInt(120) + 8);
 	}
 
-	protected void method_12674(Chunk chunk, long l, int i, int j, int k, double d, double e, double f, float g, double h, BitSet bitSet) {
+	protected void carveCave(Chunk chunk, long l, int i, int j, int k, double d, double e, double f, float g, double h, BitSet bitSet) {
 		double m = 1.5 + (double)(MathHelper.sin((float) (Math.PI / 2)) * g);
 		double n = m * h;
-		this.method_16580(chunk, l, i, j, k, d + 1.0, e, f, m, n, bitSet);
+		this.carveRegion(chunk, l, i, j, k, d + 1.0, e, f, m, n, bitSet);
 	}
 
-	protected void method_12675(
+	protected void carveTunnels(
 		Chunk chunk, long l, int i, int j, int k, double d, double e, double f, float g, float h, float m, int n, int o, double p, BitSet bitSet
 	) {
 		Random random = new Random(l);
@@ -97,23 +97,23 @@ public class CaveCarver extends Carver<ProbabilityConfig> {
 			s += (random.nextFloat() - random.nextFloat()) * random.nextFloat() * 2.0F;
 			r += (random.nextFloat() - random.nextFloat()) * random.nextFloat() * 4.0F;
 			if (t == q && g > 1.0F) {
-				this.method_12675(chunk, random.nextLong(), i, j, k, d, e, f, random.nextFloat() * 0.5F + 0.5F, h - (float) (Math.PI / 2), m / 3.0F, t, o, 1.0, bitSet);
-				this.method_12675(chunk, random.nextLong(), i, j, k, d, e, f, random.nextFloat() * 0.5F + 0.5F, h + (float) (Math.PI / 2), m / 3.0F, t, o, 1.0, bitSet);
+				this.carveTunnels(chunk, random.nextLong(), i, j, k, d, e, f, random.nextFloat() * 0.5F + 0.5F, h - (float) (Math.PI / 2), m / 3.0F, t, o, 1.0, bitSet);
+				this.carveTunnels(chunk, random.nextLong(), i, j, k, d, e, f, random.nextFloat() * 0.5F + 0.5F, h + (float) (Math.PI / 2), m / 3.0F, t, o, 1.0, bitSet);
 				return;
 			}
 
 			if (random.nextInt(4) != 0) {
-				if (!this.method_12707(j, k, d, f, t, o, g)) {
+				if (!this.canCarveBranch(j, k, d, f, t, o, g)) {
 					return;
 				}
 
-				this.method_16580(chunk, l, i, j, k, d, e, f, u, v, bitSet);
+				this.carveRegion(chunk, l, i, j, k, d, e, f, u, v, bitSet);
 			}
 		}
 	}
 
 	@Override
-	protected boolean method_16582(double d, double e, double f, int i) {
+	protected boolean isPositionExcluded(double d, double e, double f, int i) {
 		return e <= -0.7 || d * d + e * e + f * f >= 1.0;
 	}
 }

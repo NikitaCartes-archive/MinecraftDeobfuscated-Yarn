@@ -159,7 +159,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 	@Override
 	public float method_6144(BlockPos blockPos, ViewableWorld viewableWorld) {
 		Block block = viewableWorld.getBlockState(blockPos.down()).getBlock();
-		return block != Blocks.field_10219 && block != Blocks.field_10102 ? viewableWorld.method_8610(blockPos) - 0.5F : 10.0F;
+		return block != Blocks.field_10219 && block != Blocks.field_10102 ? 0.5F - viewableWorld.method_8610(blockPos) : 10.0F;
 	}
 
 	@Override

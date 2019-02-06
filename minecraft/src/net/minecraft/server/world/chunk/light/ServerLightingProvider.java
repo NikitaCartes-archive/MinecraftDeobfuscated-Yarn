@@ -17,7 +17,6 @@ import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.ChunkSection;
-import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -99,14 +98,13 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 
 			for (int k = 0; k < 16; k++) {
 				ChunkSection chunkSection = chunkSections[k];
-				boolean bl2 = chunkSection == WorldChunk.EMPTY_SECTION || chunkSection.isEmpty();
-				if (!bl2) {
+				if (!ChunkSection.isEmpty(chunkSection)) {
 					super.scheduleChunkLightUpdate(i, k, j, false);
 				}
 			}
 
 			if (!bl) {
-				chunk.method_12018().forEach(blockPos -> super.method_15560(blockPos, chunk.getLuminance(blockPos)));
+				chunk.getLightSourcesStream().forEach(blockPos -> super.method_15560(blockPos, chunk.getLuminance(blockPos)));
 			}
 
 			chunk.setLightOn(true);

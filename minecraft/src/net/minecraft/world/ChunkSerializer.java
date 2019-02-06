@@ -67,12 +67,12 @@ public class ChunkSerializer {
 			for (int i = 0; i < is.length; i++) {
 				biomes[i] = Registry.BIOME.getInt(is[i]);
 				if (biomes[i] == null) {
-					biomes[i] = biomeSource.getBiome(mutable.set((i & 15) + chunkPos.getXStart(), 0, (i >> 4 & 15) + chunkPos.getZStart()));
+					biomes[i] = biomeSource.getBiome(mutable.set((i & 15) + chunkPos.getStartX(), 0, (i >> 4 & 15) + chunkPos.getStartZ()));
 				}
 			}
 		} else {
 			for (int j = 0; j < biomes.length; j++) {
-				biomes[j] = biomeSource.getBiome(mutable.set((j & 15) + chunkPos.getXStart(), 0, (j >> 4 & 15) + chunkPos.getZStart()));
+				biomes[j] = biomeSource.getBiome(mutable.set((j & 15) + chunkPos.getStartX(), 0, (j >> 4 & 15) + chunkPos.getStartZ()));
 			}
 		}
 
@@ -99,7 +99,9 @@ public class ChunkSerializer {
 				ChunkSection chunkSection = new ChunkSection(m << 4);
 				chunkSection.getContainer().read(compoundTag3.getList("Palette", 10), compoundTag3.getLongArray("BlockStates"));
 				chunkSection.calculateCounts();
-				chunkSections[m] = chunkSection;
+				if (!chunkSection.isEmpty()) {
+					chunkSections[m] = chunkSection;
+				}
 			}
 
 			if (bl) {
@@ -136,7 +138,7 @@ public class ChunkSerializer {
 			protoChunk.setInhabitedTime(n);
 			protoChunk.setStatus(ChunkStatus.get(compoundTag2.getString("Status")));
 			if (!bl && protoChunk.getStatus().isAfter(ChunkStatus.LIGHT)) {
-				for (BlockPos blockPos : BlockPos.iterateBoxPositions(chunkPos.getXStart(), 0, chunkPos.getZStart(), chunkPos.getXEnd(), 255, chunkPos.getZEnd())) {
+				for (BlockPos blockPos : BlockPos.iterateBoxPositions(chunkPos.getStartX(), 0, chunkPos.getStartZ(), chunkPos.getEndX(), 255, chunkPos.getEndZ())) {
 					if (chunk.getBlockState(blockPos).getLuminance() != 0) {
 						protoChunk.addLightSource(blockPos);
 					}
@@ -330,7 +332,7 @@ public class ChunkSerializer {
 				}
 			}
 
-			compoundTag2.put("Lights", toNbt(protoChunk.method_12296()));
+			compoundTag2.put("Lights", toNbt(protoChunk.getLightSourcesBySection()));
 			CompoundTag compoundTag3x = new CompoundTag();
 
 			for (GenerationStep.Carver carver : GenerationStep.Carver.values()) {
@@ -388,7 +390,10 @@ public class ChunkSerializer {
 
 		for (int i = 0; i < listTag.size(); i++) {
 			CompoundTag compoundTag2 = listTag.getCompoundTag(i);
-			EntityType.spawnEntityInChunk(compoundTag2, world, worldChunk);
+			EntityType.loadEntityWithPassengers(compoundTag2, world, entity -> {
+				worldChunk.addEntity(entity);
+				return entity;
+			});
 			worldChunk.method_12232(true);
 		}
 
@@ -442,7 +447,7 @@ public class ChunkSerializer {
 		CompoundTag compoundTag2 = compoundTag.getCompound("Starts");
 
 		for (String string : compoundTag2.getKeys()) {
-			map.put(string, StructureFeatures.method_14842(chunkGenerator, structureManager, biomeSource, compoundTag2.getCompound(string)));
+			map.put(string, StructureFeatures.readStructureStart(chunkGenerator, structureManager, biomeSource, compoundTag2.getCompound(string)));
 		}
 
 		return map;

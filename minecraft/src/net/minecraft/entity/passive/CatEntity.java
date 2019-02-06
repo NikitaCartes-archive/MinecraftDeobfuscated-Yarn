@@ -355,7 +355,7 @@ public class CatEntity extends TameableEntity {
 			this.getOcelotType(this.random.nextInt(10));
 		}
 
-		if (Feature.SWAMP_HUT.method_14024(iWorld, new BlockPos(this))) {
+		if (Feature.SWAMP_HUT.isInsideStructure(iWorld, new BlockPos(this))) {
 			this.getOcelotType(10);
 			this.setPersistent();
 		}
@@ -575,21 +575,24 @@ public class CatEntity extends TameableEntity {
 				);
 			mutable.set(this.entity);
 			this.entity.method_6176().method_6311(true);
-			LootSupplier lootSupplier = this.entity.world.getServer().getLootManager().getSupplier(LootTables.field_16216);
+			LootSupplier lootSupplier = this.entity.world.getServer().getLootManager().getSupplier(LootTables.ENTITY_CAT_MORNING_GIFT);
 			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.entity.world)
 				.put(LootContextParameters.field_1232, mutable)
 				.put(LootContextParameters.field_1226, this.entity)
 				.setRandom(random);
 
 			for (ItemStack itemStack : lootSupplier.getDrops(builder.build(LootContextTypes.GIFT))) {
-				ItemEntity itemEntity = new ItemEntity(
-					this.entity.world,
-					(double)((float)mutable.getX() - MathHelper.sin(this.entity.field_6283 * (float) (Math.PI / 180.0))),
-					(double)mutable.getY(),
-					(double)((float)mutable.getZ() + MathHelper.cos(this.entity.field_6283 * (float) (Math.PI / 180.0))),
-					itemStack
-				);
-				this.entity.world.spawnEntity(itemEntity);
+				this.entity
+					.world
+					.spawnEntity(
+						new ItemEntity(
+							this.entity.world,
+							(double)((float)mutable.getX() - MathHelper.sin(this.entity.field_6283 * (float) (Math.PI / 180.0))),
+							(double)mutable.getY(),
+							(double)((float)mutable.getZ() + MathHelper.cos(this.entity.field_6283 * (float) (Math.PI / 180.0))),
+							itemStack
+						)
+					);
 			}
 		}
 

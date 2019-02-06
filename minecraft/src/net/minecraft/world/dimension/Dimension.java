@@ -3,7 +3,6 @@ package net.minecraft.world.dimension;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -19,21 +18,21 @@ public abstract class Dimension {
 	private final DimensionType type;
 	protected boolean waterVaporizes;
 	protected boolean isNether;
-	protected final float[] field_13053 = new float[16];
+	protected final float[] lightLevelToBrightness = new float[16];
 	private final float[] backgroundColor = new float[4];
 
 	public Dimension(World world, DimensionType dimensionType) {
 		this.world = world;
 		this.type = dimensionType;
-		this.method_12447();
+		this.initializeLightLevelToBrightness();
 	}
 
-	protected void method_12447() {
+	protected void initializeLightLevelToBrightness() {
 		float f = 0.0F;
 
 		for (int i = 0; i <= 15; i++) {
 			float g = 1.0F - (float)i / 15.0F;
-			this.field_13053[i] = (1.0F - g) / (g * 3.0F + 1.0F) * 1.0F + 0.0F;
+			this.lightLevelToBrightness[i] = (1.0F - g) / (g * 3.0F + 1.0F) * 1.0F + 0.0F;
 		}
 	}
 
@@ -62,7 +61,7 @@ public abstract class Dimension {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_12455() {
+	public float getCloudHeight() {
 		return 128.0F;
 	}
 
@@ -93,18 +92,12 @@ public abstract class Dimension {
 		return this.isNether;
 	}
 
-	public float[] method_12456() {
-		return this.field_13053;
+	public float[] getLightLevelToBrightness() {
+		return this.lightLevelToBrightness;
 	}
 
 	public WorldBorder createWorldBorder() {
 		return new WorldBorder();
-	}
-
-	public void onEntityAdded(ServerPlayerEntity serverPlayerEntity) {
-	}
-
-	public void onEntityRemoved(ServerPlayerEntity serverPlayerEntity) {
 	}
 
 	public void saveWorldData() {

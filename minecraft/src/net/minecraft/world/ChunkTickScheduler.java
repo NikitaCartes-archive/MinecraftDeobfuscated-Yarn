@@ -32,7 +32,7 @@ public class ChunkTickScheduler<T> implements TickScheduler<T> {
 			ListTag listTag2 = listTag.getListTag(i);
 
 			for (int j = 0; j < listTag2.size(); j++) {
-				Chunk.getListFromArray(this.scheduledPositions, i).add(listTag2.getShort(j));
+				Chunk.getList(this.scheduledPositions, i).add(listTag2.getShort(j));
 			}
 		}
 	}
@@ -61,7 +61,7 @@ public class ChunkTickScheduler<T> implements TickScheduler<T> {
 
 	@Override
 	public void schedule(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
-		Chunk.getListFromArray(this.scheduledPositions, blockPos.getY() >> 4).add(ProtoChunk.getPackedSectionRelative(blockPos));
+		Chunk.getList(this.scheduledPositions, blockPos.getY() >> 4).add(ProtoChunk.getPackedSectionRelative(blockPos));
 	}
 
 	@Override

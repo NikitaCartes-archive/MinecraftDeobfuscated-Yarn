@@ -36,8 +36,8 @@ import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.CriterionProgress;
 import net.minecraft.advancement.criterion.Criterions;
-import net.minecraft.client.network.packet.AdvancementUpdateClientPacket;
-import net.minecraft.client.network.packet.SelectAdvancementTabClientPacket;
+import net.minecraft.client.network.packet.AdvancementUpdateS2CPacket;
+import net.minecraft.client.network.packet.SelectAdvancementTabS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableTextComponent;
@@ -350,7 +350,7 @@ public class PlayerAdvancementTracker {
 			}
 
 			if (this.dirty || !map.isEmpty() || !set.isEmpty() || !set2.isEmpty()) {
-				serverPlayerEntity.networkHandler.sendPacket(new AdvancementUpdateClientPacket(this.dirty, set, set2, map));
+				serverPlayerEntity.networkHandler.sendPacket(new AdvancementUpdateS2CPacket(this.dirty, set, set2, map));
 				this.visibilityUpdates.clear();
 				this.progressUpdates.clear();
 			}
@@ -368,7 +368,7 @@ public class PlayerAdvancementTracker {
 		}
 
 		if (simpleAdvancement2 != this.currentDisplayTab) {
-			this.owner.networkHandler.sendPacket(new SelectAdvancementTabClientPacket(this.currentDisplayTab == null ? null : this.currentDisplayTab.getId()));
+			this.owner.networkHandler.sendPacket(new SelectAdvancementTabS2CPacket(this.currentDisplayTab == null ? null : this.currentDisplayTab.getId()));
 		}
 	}
 

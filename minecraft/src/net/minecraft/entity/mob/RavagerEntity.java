@@ -109,7 +109,7 @@ public class RavagerEntity extends RaiderEntity {
 
 	@Override
 	public boolean method_5956() {
-		return true;
+		return !this.isAiDisabled() && this.getPrimaryPassenger() instanceof LivingEntity;
 	}
 
 	@Nullable

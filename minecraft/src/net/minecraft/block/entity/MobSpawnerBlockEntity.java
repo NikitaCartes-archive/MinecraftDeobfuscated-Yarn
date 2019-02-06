@@ -3,7 +3,7 @@ package net.minecraft.block.entity;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.network.packet.BlockEntityUpdateClientPacket;
+import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sortme.MobSpawnerEntry;
 import net.minecraft.sortme.MobSpawnerLogic;
@@ -62,8 +62,8 @@ public class MobSpawnerBlockEntity extends BlockEntity implements Tickable {
 
 	@Nullable
 	@Override
-	public BlockEntityUpdateClientPacket toUpdatePacket() {
-		return new BlockEntityUpdateClientPacket(this.pos, 1, this.toInitialChunkDataTag());
+	public BlockEntityUpdateS2CPacket method_16886() {
+		return new BlockEntityUpdateS2CPacket(this.pos, 1, this.toInitialChunkDataTag());
 	}
 
 	@Override

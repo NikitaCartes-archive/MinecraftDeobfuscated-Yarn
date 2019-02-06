@@ -17,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.EntityHitResult;
@@ -102,7 +103,7 @@ public class TridentEntity extends ProjectileEntity {
 
 	@Nullable
 	@Override
-	protected Entity method_7434(Vec3d vec3d, Vec3d vec3d2) {
+	protected EntityHitResult method_7434(Vec3d vec3d, Vec3d vec3d2) {
 		return this.dealtDamage ? null : super.method_7434(vec3d, vec3d2);
 	}
 
@@ -133,14 +134,14 @@ public class TridentEntity extends ProjectileEntity {
 		this.velocityY *= -0.1F;
 		this.velocityZ *= -0.01F;
 		float g = 1.0F;
-		if (this.world.isThundering() && EnchantmentHelper.hasChanneling(this.tridentStack)) {
+		if (this.world instanceof ServerWorld && this.world.isThundering() && EnchantmentHelper.hasChanneling(this.tridentStack)) {
 			BlockPos blockPos = entity.getPos();
 			if (this.world.isSkyVisible(blockPos)) {
 				LightningEntity lightningEntity = new LightningEntity(
 					this.world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, false
 				);
 				lightningEntity.method_6961(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity2 : null);
-				this.world.addGlobalEntity(lightningEntity);
+				((ServerWorld)this.world).addLightning(lightningEntity);
 				soundEvent = SoundEvents.field_14896;
 				g = 5.0F;
 			}

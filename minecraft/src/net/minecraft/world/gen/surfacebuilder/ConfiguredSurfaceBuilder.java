@@ -19,7 +19,7 @@ public class ConfiguredSurfaceBuilder<SC extends SurfaceConfig> {
 	}
 
 	public void initSeed(long l) {
-		this.surfaceBuilder.method_15306(l);
+		this.surfaceBuilder.initSeed(l);
 	}
 
 	public SC getConfig() {

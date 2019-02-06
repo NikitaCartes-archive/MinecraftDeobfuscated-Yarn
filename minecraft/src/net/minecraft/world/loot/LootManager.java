@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.function.Function;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.util.BoundedIntUnaryOperator;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -27,7 +27,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class LootManager implements ResourceReloadListener {
+public class LootManager implements SynchronousResourceReloadListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Gson gson = new GsonBuilder()
 		.registerTypeAdapter(UniformLootTableRange.class, new UniformLootTableRange.Serializer())
@@ -51,7 +51,7 @@ public class LootManager implements ResourceReloadListener {
 	}
 
 	@Override
-	public void onResourceReload(ResourceManager resourceManager) {
+	public void reloadResources(ResourceManager resourceManager) {
 		this.suppliers.clear();
 
 		for (Identifier identifier : resourceManager.findResources("loot_tables", stringx -> stringx.endsWith(".json"))) {

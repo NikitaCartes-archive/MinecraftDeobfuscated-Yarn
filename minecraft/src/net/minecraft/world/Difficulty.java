@@ -12,7 +12,7 @@ public enum Difficulty {
 	NORMAL(2, "normal"),
 	HARD(3, "hard");
 
-	private static final Difficulty[] difficultyId = (Difficulty[])Arrays.stream(values())
+	private static final Difficulty[] DIFFICULTIES = (Difficulty[])Arrays.stream(values())
 		.sorted(Comparator.comparingInt(Difficulty::getId))
 		.toArray(Difficulty[]::new);
 	private final int id;
@@ -27,16 +27,16 @@ public enum Difficulty {
 		return this.id;
 	}
 
-	public TextComponent method_5463() {
+	public TextComponent toTextComponent() {
 		return new TranslatableTextComponent("options.difficulty." + this.translationKey);
 	}
 
-	public static Difficulty byId(int i) {
-		return difficultyId[i % difficultyId.length];
+	public static Difficulty getDifficulty(int i) {
+		return DIFFICULTIES[i % DIFFICULTIES.length];
 	}
 
 	@Nullable
-	public static Difficulty method_16691(String string) {
+	public static Difficulty getDifficulty(String string) {
 		for (Difficulty difficulty : values()) {
 			if (difficulty.translationKey.equals(string)) {
 				return difficulty;

@@ -318,28 +318,6 @@ public class DolphinEntity extends WaterCreatureEntity {
 		}
 	}
 
-	@Nullable
-	public ItemEntity method_6490(ItemStack itemStack) {
-		if (itemStack.isEmpty()) {
-			return null;
-		} else {
-			double d = this.y - 0.3F + (double)this.getEyeHeight();
-			ItemEntity itemEntity = new ItemEntity(this.world, this.x, d, this.z, itemStack);
-			itemEntity.setPickupDelay(40);
-			itemEntity.setThrower(this.getUuid());
-			float f = 0.3F;
-			itemEntity.velocityX = (double)(-MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)) * MathHelper.cos(this.pitch * (float) (Math.PI / 180.0)) * f);
-			itemEntity.velocityY = (double)(MathHelper.sin(this.pitch * (float) (Math.PI / 180.0)) * f * 1.5F);
-			itemEntity.velocityZ = (double)(MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)) * MathHelper.cos(this.pitch * (float) (Math.PI / 180.0)) * f);
-			float g = this.random.nextFloat() * (float) (Math.PI * 2);
-			f = 0.02F * this.random.nextFloat();
-			itemEntity.velocityX = itemEntity.velocityX + (double)(MathHelper.cos(g) * f);
-			itemEntity.velocityZ = itemEntity.velocityZ + (double)(MathHelper.sin(g) * f);
-			this.world.spawnEntity(itemEntity);
-			return itemEntity;
-		}
-	}
-
 	@Override
 	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
 		return this.y > 45.0 && this.y < (double)iWorld.getSeaLevel() && iWorld.getBiome(new BlockPos(this)) != Biomes.field_9423
@@ -621,7 +599,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 		public void onRemove() {
 			ItemStack itemStack = DolphinEntity.this.getEquippedStack(EquipmentSlot.HAND_MAIN);
 			if (!itemStack.isEmpty()) {
-				DolphinEntity.this.method_6490(itemStack);
+				this.method_18056(itemStack);
 				DolphinEntity.this.setEquippedStack(EquipmentSlot.HAND_MAIN, ItemStack.EMPTY);
 				this.field_6758 = DolphinEntity.this.age + DolphinEntity.this.random.nextInt(100);
 			}
@@ -633,10 +611,32 @@ public class DolphinEntity extends WaterCreatureEntity {
 				.getEntities(ItemEntity.class, DolphinEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), DolphinEntity.field_6748);
 			ItemStack itemStack = DolphinEntity.this.getEquippedStack(EquipmentSlot.HAND_MAIN);
 			if (!itemStack.isEmpty()) {
-				DolphinEntity.this.method_6490(itemStack);
+				this.method_18056(itemStack);
 				DolphinEntity.this.setEquippedStack(EquipmentSlot.HAND_MAIN, ItemStack.EMPTY);
 			} else if (!list.isEmpty()) {
 				DolphinEntity.this.getNavigation().startMovingTo((Entity)list.get(0), 1.2F);
+			}
+		}
+
+		private void method_18056(ItemStack itemStack) {
+			if (!itemStack.isEmpty()) {
+				double d = DolphinEntity.this.y - 0.3F + (double)DolphinEntity.this.getEyeHeight();
+				ItemEntity itemEntity = new ItemEntity(DolphinEntity.this.world, DolphinEntity.this.x, d, DolphinEntity.this.z, itemStack);
+				itemEntity.setPickupDelay(40);
+				itemEntity.setThrower(DolphinEntity.this.getUuid());
+				float f = 0.3F;
+				itemEntity.velocityX = (double)(
+					-MathHelper.sin(DolphinEntity.this.yaw * (float) (Math.PI / 180.0)) * MathHelper.cos(DolphinEntity.this.pitch * (float) (Math.PI / 180.0)) * f
+				);
+				itemEntity.velocityY = (double)(MathHelper.sin(DolphinEntity.this.pitch * (float) (Math.PI / 180.0)) * f * 1.5F);
+				itemEntity.velocityZ = (double)(
+					MathHelper.cos(DolphinEntity.this.yaw * (float) (Math.PI / 180.0)) * MathHelper.cos(DolphinEntity.this.pitch * (float) (Math.PI / 180.0)) * f
+				);
+				float g = DolphinEntity.this.random.nextFloat() * (float) (Math.PI * 2);
+				f = 0.02F * DolphinEntity.this.random.nextFloat();
+				itemEntity.velocityX = itemEntity.velocityX + (double)(MathHelper.cos(g) * f);
+				itemEntity.velocityZ = itemEntity.velocityZ + (double)(MathHelper.sin(g) * f);
+				DolphinEntity.this.world.spawnEntity(itemEntity);
 			}
 		}
 	}

@@ -12,11 +12,11 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.network.packet.BlockEntityUpdateClientPacket;
-import net.minecraft.client.network.packet.BlockUpdateClientPacket;
-import net.minecraft.client.network.packet.ChunkDataClientPacket;
-import net.minecraft.client.network.packet.ChunkDeltaUpdateClientPacket;
-import net.minecraft.client.network.packet.LightUpdateClientPacket;
+import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
+import net.minecraft.client.network.packet.BlockUpdateS2CPacket;
+import net.minecraft.client.network.packet.ChunkDataS2CPacket;
+import net.minecraft.client.network.packet.ChunkDeltaUpdateS2CPacket;
+import net.minecraft.client.network.packet.LightUpdateS2CPacket;
 import net.minecraft.network.Packet;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
@@ -169,15 +169,15 @@ public class ChunkHolder {
 				int j = this.blockUpdatePositions[0] & 255;
 				int k = (this.blockUpdatePositions[0] >> 8 & 15) + this.pos.z * 16;
 				BlockPos blockPos = new BlockPos(i, j, k);
-				this.sendPacketToPlayersWatching(new BlockUpdateClientPacket(world, blockPos), false);
+				this.sendPacketToPlayersWatching(new BlockUpdateS2CPacket(world, blockPos), false);
 				if (world.getBlockState(blockPos).getBlock().hasBlockEntity()) {
 					this.sendBlockEntityUpdatePacket(world, blockPos);
 				}
 			} else if (this.blockUpdateCount == 64) {
-				this.sendPacketToPlayersWatching(new ChunkDataClientPacket(worldChunk, this.sectionsNeedingUpdateMask), false);
+				this.sendPacketToPlayersWatching(new ChunkDataS2CPacket(worldChunk, this.sectionsNeedingUpdateMask), false);
 				this.lightSentWithBlocksBits = this.sectionsNeedingUpdateMask << 1;
 			} else if (this.blockUpdateCount != 0) {
-				this.sendPacketToPlayersWatching(new ChunkDeltaUpdateClientPacket(this.blockUpdateCount, this.blockUpdatePositions, worldChunk), false);
+				this.sendPacketToPlayersWatching(new ChunkDeltaUpdateS2CPacket(this.blockUpdateCount, this.blockUpdatePositions, worldChunk), false);
 
 				for (int i = 0; i < this.blockUpdateCount; i++) {
 					int j = (this.blockUpdatePositions[i] >> 12 & 15) + this.pos.x * 16;
@@ -194,7 +194,7 @@ public class ChunkHolder {
 			this.sectionsNeedingUpdateMask = 0;
 			if (this.blockLightUpdateBits != 0 || this.skyLightUpdateBits != 0) {
 				this.sendPacketToPlayersWatching(
-					new LightUpdateClientPacket(
+					new LightUpdateS2CPacket(
 						worldChunk.getPos(),
 						this.lightingProvider,
 						this.blockLightUpdateBits & ~this.lightSentWithBlocksBits,
@@ -205,7 +205,7 @@ public class ChunkHolder {
 				int ix = this.blockLightUpdateBits & this.lightSentWithBlocksBits;
 				int j = this.skyLightUpdateBits & this.lightSentWithBlocksBits;
 				if (ix != 0 || j != 0) {
-					this.sendPacketToPlayersWatching(new LightUpdateClientPacket(worldChunk.getPos(), this.lightingProvider, ix, j), false);
+					this.sendPacketToPlayersWatching(new LightUpdateS2CPacket(worldChunk.getPos(), this.lightingProvider, ix, j), false);
 				}
 
 				this.blockLightUpdateBits = 0;
@@ -218,9 +218,9 @@ public class ChunkHolder {
 	private void sendBlockEntityUpdatePacket(World world, BlockPos blockPos) {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity != null) {
-			BlockEntityUpdateClientPacket blockEntityUpdateClientPacket = blockEntity.toUpdatePacket();
-			if (blockEntityUpdateClientPacket != null) {
-				this.sendPacketToPlayersWatching(blockEntityUpdateClientPacket, false);
+			BlockEntityUpdateS2CPacket blockEntityUpdateS2CPacket = blockEntity.method_16886();
+			if (blockEntityUpdateS2CPacket != null) {
+				this.sendPacketToPlayersWatching(blockEntityUpdateS2CPacket, false);
 			}
 		}
 	}

@@ -27,7 +27,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
@@ -41,7 +41,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class ItemRenderer implements ResourceReloadListener {
+public class ItemRenderer implements SynchronousResourceReloadListener {
 	public static final Identifier ENCHANTMENT_GLINT_TEX = new Identifier("textures/misc/enchanted_item_glint.png");
 	private static final Set<Item> WITHOUT_MODELS = Sets.<Item>newHashSet(Items.AIR);
 	public float zOffset;
@@ -372,7 +372,7 @@ public class ItemRenderer implements ResourceReloadListener {
 	}
 
 	@Override
-	public void onResourceReload(ResourceManager resourceManager) {
+	public void reloadResources(ResourceManager resourceManager) {
 		this.models.reloadModels();
 	}
 }

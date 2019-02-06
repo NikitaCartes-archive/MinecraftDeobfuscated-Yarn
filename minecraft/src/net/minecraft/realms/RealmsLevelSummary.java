@@ -21,7 +21,7 @@ public class RealmsLevelSummary implements Comparable<RealmsLevelSummary> {
 	}
 
 	public boolean hasCheats() {
-		return this.levelSummary.areCommandsAllowed();
+		return this.levelSummary.hasCheats();
 	}
 
 	public boolean isHardcore() {
@@ -37,7 +37,7 @@ public class RealmsLevelSummary implements Comparable<RealmsLevelSummary> {
 	}
 
 	public long getLastPlayed() {
-		return this.levelSummary.lastPlayed();
+		return this.levelSummary.getLastPlayed();
 	}
 
 	public int compareTo(LevelSummary levelSummary) {
@@ -49,10 +49,10 @@ public class RealmsLevelSummary implements Comparable<RealmsLevelSummary> {
 	}
 
 	public int compareTo(RealmsLevelSummary realmsLevelSummary) {
-		if (this.levelSummary.lastPlayed() < realmsLevelSummary.getLastPlayed()) {
+		if (this.levelSummary.getLastPlayed() < realmsLevelSummary.getLastPlayed()) {
 			return 1;
 		} else {
-			return this.levelSummary.lastPlayed() > realmsLevelSummary.getLastPlayed() ? -1 : this.levelSummary.getName().compareTo(realmsLevelSummary.getLevelId());
+			return this.levelSummary.getLastPlayed() > realmsLevelSummary.getLastPlayed() ? -1 : this.levelSummary.getName().compareTo(realmsLevelSummary.getLevelId());
 		}
 	}
 }

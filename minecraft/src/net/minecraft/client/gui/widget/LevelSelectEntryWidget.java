@@ -31,7 +31,7 @@ import net.minecraft.text.TextFormat;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
-import net.minecraft.world.OldWorldSaveHandler;
+import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelSummary;
@@ -75,7 +75,7 @@ public final class LevelSelectEntryWidget extends EntryListWidget.Entry<LevelSel
 		int m = this.getY();
 		int n = this.getX();
 		String string = this.levelSummary.getDisplayName();
-		String string2 = this.levelSummary.getName() + " (" + DATE_FORMAT.format(new Date(this.levelSummary.lastPlayed())) + ")";
+		String string2 = this.levelSummary.getName() + " (" + DATE_FORMAT.format(new Date(this.levelSummary.getLastPlayed())) + ")";
 		String string3 = "";
 		if (StringUtils.isEmpty(string)) {
 			string = I18n.translate("selectWorld.world") + " " + (this.method_1908() + 1);
@@ -89,12 +89,12 @@ public final class LevelSelectEntryWidget extends EntryListWidget.Entry<LevelSel
 				string3 = TextFormat.DARK_RED + I18n.translate("gameMode.hardcore") + TextFormat.RESET;
 			}
 
-			if (this.levelSummary.areCommandsAllowed()) {
+			if (this.levelSummary.hasCheats()) {
 				string3 = string3 + ", " + I18n.translate("selectWorld.cheats");
 			}
 
 			String string4 = this.levelSummary.getVersionTextComponent().getFormattedText();
-			if (this.levelSummary.method_256()) {
+			if (this.levelSummary.isDifferentVersion()) {
 				if (this.levelSummary.isFutureLevel()) {
 					string3 = string3 + ", " + I18n.translate("selectWorld.version") + " " + TextFormat.RED + string4 + TextFormat.RESET;
 				} else {
@@ -119,7 +119,7 @@ public final class LevelSelectEntryWidget extends EntryListWidget.Entry<LevelSel
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			int o = k - n;
 			int p = o < 32 ? 32 : 0;
-			if (this.levelSummary.method_256()) {
+			if (this.levelSummary.isDifferentVersion()) {
 				Drawable.drawTexturedRect(n, m, 32.0F, (float)p, 32, 32, 256.0F, 256.0F);
 				if (this.levelSummary.isLegacyCustomizedWorld()) {
 					Drawable.drawTexturedRect(n, m, 96.0F, (float)p, 32, 32, 256.0F, 256.0F);
@@ -232,7 +232,7 @@ public final class LevelSelectEntryWidget extends EntryListWidget.Entry<LevelSel
 						if (bl) {
 							this.client.openScreen(new WorkingScreen());
 							LevelStorage levelStorage = this.client.getLevelStorage();
-							levelStorage.delete(this.levelSummary.getName());
+							levelStorage.deleteLevel(this.levelSummary.getName());
 							this.field_3241.filter(() -> this.guiLevelSelect.searchBox.getText(), true);
 						}
 
@@ -261,10 +261,10 @@ public final class LevelSelectEntryWidget extends EntryListWidget.Entry<LevelSel
 		try {
 			this.client.openScreen(new WorkingScreen());
 			NewLevelScreen newLevelScreen = new NewLevelScreen(this.guiLevelSelect);
-			OldWorldSaveHandler oldWorldSaveHandler = this.client.getLevelStorage().method_242(this.levelSummary.getName(), null);
-			LevelProperties levelProperties = oldWorldSaveHandler.readProperties();
+			WorldSaveHandler worldSaveHandler = this.client.getLevelStorage().method_242(this.levelSummary.getName(), null);
+			LevelProperties levelProperties = worldSaveHandler.readProperties();
 			if (levelProperties != null) {
-				newLevelScreen.method_2737(levelProperties);
+				newLevelScreen.recreateLevel(levelProperties);
 				if (this.levelSummary.isLegacyCustomizedWorld()) {
 					this.client
 						.openScreen(
@@ -302,7 +302,7 @@ public final class LevelSelectEntryWidget extends EntryListWidget.Entry<LevelSel
 
 	private void loadLevelInternal() {
 		this.client.getSoundLoader().play(PositionedSoundInstance.master(SoundEvents.field_15015, 1.0F));
-		if (this.client.getLevelStorage().exists(this.levelSummary.getName())) {
+		if (this.client.getLevelStorage().levelExists(this.levelSummary.getName())) {
 			this.client.startIntegratedServer(this.levelSummary.getName(), this.levelSummary.getDisplayName(), null);
 		}
 	}

@@ -11,10 +11,11 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.GuiEventListener;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public abstract class ButtonWidget extends Drawable implements GuiEventListener {
-	protected static final Identifier WIDGET_TEX = new Identifier("textures/gui/widgets.png");
+	public static final Identifier WIDGET_TEX = new Identifier("textures/gui/widgets.png");
 	protected int width = 200;
 	protected int height = 20;
 	public int x;
@@ -25,6 +26,7 @@ public abstract class ButtonWidget extends Drawable implements GuiEventListener 
 	public boolean visible = true;
 	protected boolean hovered;
 	private boolean pressed;
+	protected float field_17766 = 1.0F;
 
 	public ButtonWidget(int i, int j, int k, String string) {
 		this(i, j, k, 200, 20, string);
@@ -55,7 +57,7 @@ public abstract class ButtonWidget extends Drawable implements GuiEventListener 
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
 			FontRenderer fontRenderer = minecraftClient.fontRenderer;
 			minecraftClient.getTextureManager().bindTexture(WIDGET_TEX);
-			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			GlStateManager.color4f(1.0F, 1.0F, 1.0F, this.field_17766);
 			this.hovered = i >= this.x && j >= this.y && i < this.x + this.width && j < this.y + this.height;
 			int k = this.getTextureId(this.hovered);
 			GlStateManager.enableBlend();
@@ -73,7 +75,9 @@ public abstract class ButtonWidget extends Drawable implements GuiEventListener 
 				l = 16777120;
 			}
 
-			this.drawStringCentered(fontRenderer, this.text, this.x + this.width / 2, this.y + (this.height - 8) / 2, l);
+			this.drawStringCentered(
+				fontRenderer, this.text, this.x + this.width / 2, this.y + (this.height - 8) / 2, l | MathHelper.ceil(this.field_17766 * 255.0F) << 24
+			);
 		}
 	}
 
@@ -146,5 +150,9 @@ public abstract class ButtonWidget extends Drawable implements GuiEventListener 
 
 	public void setWidth(int i) {
 		this.width = i;
+	}
+
+	public void method_18100(float f) {
+		this.field_17766 = f;
 	}
 }

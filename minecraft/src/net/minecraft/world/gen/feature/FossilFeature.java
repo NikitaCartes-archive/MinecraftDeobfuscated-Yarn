@@ -53,12 +53,12 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 		Rotation[] rotations = Rotation.values();
 		Rotation rotation = rotations[random2.nextInt(rotations.length)];
 		int i = random2.nextInt(FOSSILS.length);
-		StructureManager structureManager = ((ServerWorld)iWorld.getWorld()).method_17982().getStructureManager();
+		StructureManager structureManager = ((ServerWorld)iWorld.getWorld()).getSaveHandler().getStructureManager();
 		Structure structure = structureManager.getStructureOrBlank(FOSSILS[i]);
 		Structure structure2 = structureManager.getStructureOrBlank(COAL_FOSSILS[i]);
 		ChunkPos chunkPos = new ChunkPos(blockPos);
 		MutableIntBoundingBox mutableIntBoundingBox = new MutableIntBoundingBox(
-			chunkPos.getXStart(), 0, chunkPos.getZStart(), chunkPos.getXEnd(), 256, chunkPos.getZEnd()
+			chunkPos.getStartX(), 0, chunkPos.getStartZ(), chunkPos.getEndX(), 256, chunkPos.getEndZ()
 		);
 		StructurePlacementData structurePlacementData = new StructurePlacementData()
 			.setRotation(rotation)

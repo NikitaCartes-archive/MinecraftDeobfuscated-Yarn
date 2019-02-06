@@ -50,7 +50,7 @@ public class LevelListWidget extends EntryListWidget<LevelSelectEntryWidget> {
 		LevelStorage levelStorage = this.client.getLevelStorage();
 		if (this.levels == null || bl) {
 			try {
-				this.levels = levelStorage.getAvailableLevels();
+				this.levels = levelStorage.getLevelList();
 			} catch (LevelStorageException var7) {
 				field_3238.error("Couldn't load level list", (Throwable)var7);
 				this.client.openScreen(new ErrorScreen(I18n.translate("selectWorld.unable_to_load"), var7.getMessage()));

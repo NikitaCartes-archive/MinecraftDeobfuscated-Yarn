@@ -1,16 +1,18 @@
 package net.minecraft;
 
 import net.minecraft.world.biome.layer.BiomeLayers;
+import net.minecraft.world.biome.layer.LayerRandomnessSource;
+import net.minecraft.world.biome.layer.SouthEastSamplingLayer;
 
-public enum class_3639 implements class_3664 {
+public enum class_3639 implements SouthEastSamplingLayer {
 	field_16059;
 
 	@Override
-	public int sample(class_3630 arg, int i) {
+	public int sample(LayerRandomnessSource layerRandomnessSource, int i) {
 		if (BiomeLayers.isShallowOcean(i)) {
 			return i;
 		} else {
-			int j = arg.nextInt(6);
+			int j = layerRandomnessSource.nextInt(6);
 			if (j == 0) {
 				return 4;
 			} else {

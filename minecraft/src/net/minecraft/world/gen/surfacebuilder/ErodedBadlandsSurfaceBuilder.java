@@ -11,9 +11,9 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 
 public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
-	private static final BlockState field_15629 = Blocks.field_10611.getDefaultState();
-	private static final BlockState field_15628 = Blocks.field_10184.getDefaultState();
-	private static final BlockState field_15630 = Blocks.field_10415.getDefaultState();
+	private static final BlockState WHITE_TERRACOTTA = Blocks.field_10611.getDefaultState();
+	private static final BlockState ORANGE_TERRACOTTA = Blocks.field_10184.getDefaultState();
+	private static final BlockState TERACOTTA = Blocks.field_10415.getDefaultState();
 
 	public ErodedBadlandsSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
 		super(function);
@@ -50,7 +50,7 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 
 		int o = i & 15;
 		int p = j & 15;
-		BlockState blockState3 = field_15629;
+		BlockState blockState3 = WHITE_TERRACOTTA;
 		BlockState blockState4 = biome.getSurfaceConfig().getUnderMaterial();
 		int q = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
 		boolean bl = Math.cos(d / 3.0 * Math.PI) > 0.0;
@@ -74,7 +74,7 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 						blockState3 = Blocks.field_10124.getDefaultState();
 						blockState4 = blockState;
 					} else if (s >= l - 4 && s <= l + 1) {
-						blockState3 = field_15629;
+						blockState3 = WHITE_TERRACOTTA;
 						blockState4 = biome.getSurfaceConfig().getUnderMaterial();
 					}
 
@@ -87,9 +87,9 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 						if (s > l + 3 + q) {
 							BlockState blockState6;
 							if (s < 64 || s > 127) {
-								blockState6 = field_15628;
+								blockState6 = ORANGE_TERRACOTTA;
 							} else if (bl) {
-								blockState6 = field_15630;
+								blockState6 = TERACOTTA;
 							} else {
 								blockState6 = this.method_15207(i, s, j);
 							}
@@ -118,13 +118,13 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 							|| block == Blocks.field_10526
 							|| block == Blocks.field_10328
 							|| block == Blocks.field_10626) {
-							chunk.setBlockState(mutable, field_15628, false);
+							chunk.setBlockState(mutable, ORANGE_TERRACOTTA, false);
 						}
 					}
 				} else if (r > 0) {
 					r--;
 					if (bl2) {
-						chunk.setBlockState(mutable, field_15628, false);
+						chunk.setBlockState(mutable, ORANGE_TERRACOTTA, false);
 					} else {
 						chunk.setBlockState(mutable, this.method_15207(i, s, j), false);
 					}

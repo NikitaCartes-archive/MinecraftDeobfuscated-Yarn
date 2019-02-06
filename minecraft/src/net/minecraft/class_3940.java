@@ -10,25 +10,24 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class class_3940 extends Particle {
-	public class_3940(World world, double d, double e, double f, double g, double h, double i) {
+public abstract class class_3940 extends Particle {
+	protected float field_17867 = 0.1F * (this.random.nextFloat() * 0.5F + 0.5F) * 2.0F;
+
+	protected class_3940(World world, double d, double e, double f) {
+		super(world, d, e, f);
+	}
+
+	protected class_3940(World world, double d, double e, double f, double g, double h, double i) {
 		super(world, d, e, f, g, h, i);
 	}
 
 	@Override
 	public void buildGeometry(BufferBuilder bufferBuilder, Entity entity, float f, float g, float h, float i, float j, float k) {
-		float l = (float)this.tileU / 32.0F;
-		float m = l + 0.0624375F;
-		float n = (float)this.tileV / 32.0F;
-		float o = n + 0.0624375F;
-		float p = 0.1F * this.size;
-		if (this.sprite != null) {
-			l = this.sprite.getMinU();
-			m = this.sprite.getMaxU();
-			n = this.sprite.getMinV();
-			o = this.sprite.getMaxV();
-		}
-
+		float l = this.method_18132(f);
+		float m = this.method_18133();
+		float n = this.method_18134();
+		float o = this.method_18135();
+		float p = this.method_18136();
 		float q = (float)(MathHelper.lerp((double)f, this.prevPosX, this.posX) - cameraX);
 		float r = (float)(MathHelper.lerp((double)f, this.prevPosY, this.posY) - cameraY);
 		float s = (float)(MathHelper.lerp((double)f, this.prevPosZ, this.posZ) - cameraZ);
@@ -36,40 +35,63 @@ public class class_3940 extends Particle {
 		int u = t >> 16 & 65535;
 		int v = t & 65535;
 		Vec3d[] vec3ds = new Vec3d[]{
-			new Vec3d((double)(-g * p - j * p), (double)(-h * p), (double)(-i * p - k * p)),
-			new Vec3d((double)(-g * p + j * p), (double)(h * p), (double)(-i * p + k * p)),
-			new Vec3d((double)(g * p + j * p), (double)(h * p), (double)(i * p + k * p)),
-			new Vec3d((double)(g * p - j * p), (double)(-h * p), (double)(i * p - k * p))
+			new Vec3d((double)(-g * l - j * l), (double)(-h * l), (double)(-i * l - k * l)),
+			new Vec3d((double)(-g * l + j * l), (double)(h * l), (double)(-i * l + k * l)),
+			new Vec3d((double)(g * l + j * l), (double)(h * l), (double)(i * l + k * l)),
+			new Vec3d((double)(g * l - j * l), (double)(-h * l), (double)(i * l - k * l))
 		};
+		if (this.field_3839 != 0.0F) {
+			float w = MathHelper.lerp(f, this.field_3857, this.field_3839);
+			float x = MathHelper.cos(w * 0.5F);
+			float y = MathHelper.sin(w * 0.5F) * (float)cameraRotation.x;
+			float z = MathHelper.sin(w * 0.5F) * (float)cameraRotation.y;
+			float aa = MathHelper.sin(w * 0.5F) * (float)cameraRotation.z;
+			Vec3d vec3d = new Vec3d((double)y, (double)z, (double)aa);
+
+			for (int ab = 0; ab < 4; ab++) {
+				vec3ds[ab] = vec3d.multiply(2.0 * vec3ds[ab].dotProduct(vec3d))
+					.add(vec3ds[ab].multiply((double)(x * x) - vec3d.dotProduct(vec3d)))
+					.add(vec3d.crossProduct(vec3ds[ab]).multiply((double)(2.0F * x)));
+			}
+		}
+
 		bufferBuilder.vertex((double)q + vec3ds[0].x, (double)r + vec3ds[0].y, (double)s + vec3ds[0].z)
-			.texture((double)m, (double)o)
+			.texture((double)n, (double)p)
 			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
 			.texture(u, v)
 			.next();
 		bufferBuilder.vertex((double)q + vec3ds[1].x, (double)r + vec3ds[1].y, (double)s + vec3ds[1].z)
-			.texture((double)m, (double)n)
+			.texture((double)n, (double)o)
 			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
 			.texture(u, v)
 			.next();
 		bufferBuilder.vertex((double)q + vec3ds[2].x, (double)r + vec3ds[2].y, (double)s + vec3ds[2].z)
-			.texture((double)l, (double)n)
+			.texture((double)m, (double)o)
 			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
 			.texture(u, v)
 			.next();
 		bufferBuilder.vertex((double)q + vec3ds[3].x, (double)r + vec3ds[3].y, (double)s + vec3ds[3].z)
-			.texture((double)l, (double)o)
+			.texture((double)m, (double)p)
 			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
 			.texture(u, v)
 			.next();
 	}
 
-	@Override
-	public void setSpriteIndex(int i) {
-		if (this.getParticleGroup() != 0) {
-			throw new RuntimeException("Invalid call to Particle.setMiscTex");
-		} else {
-			this.tileU = 2 * i % 16;
-			this.tileV = i / 16;
-		}
+	public float method_18132(float f) {
+		return this.field_17867;
 	}
+
+	@Override
+	public Particle method_3087(float f) {
+		this.field_17867 *= f;
+		return super.method_3087(f);
+	}
+
+	protected abstract float method_18133();
+
+	protected abstract float method_18134();
+
+	protected abstract float method_18135();
+
+	protected abstract float method_18136();
 }

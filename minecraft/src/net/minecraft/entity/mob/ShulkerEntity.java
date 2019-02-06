@@ -640,10 +640,8 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 				if (d < 400.0) {
 					if (this.counter <= 0) {
 						this.counter = 20 + ShulkerEntity.this.random.nextInt(10) * 20 / 2;
-						ShulkerBulletEntity shulkerBulletEntity = new ShulkerBulletEntity(
-							ShulkerEntity.this.world, ShulkerEntity.this, livingEntity, ShulkerEntity.this.getAttachedFace().getAxis()
-						);
-						ShulkerEntity.this.world.spawnEntity(shulkerBulletEntity);
+						ShulkerEntity.this.world
+							.spawnEntity(new ShulkerBulletEntity(ShulkerEntity.this.world, ShulkerEntity.this, livingEntity, ShulkerEntity.this.getAttachedFace().getAxis()));
 						ShulkerEntity.this.playSound(SoundEvents.field_15000, 2.0F, (ShulkerEntity.this.random.nextFloat() - ShulkerEntity.this.random.nextFloat()) * 0.2F + 1.0F);
 					}
 				} else {

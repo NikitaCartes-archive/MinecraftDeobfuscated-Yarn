@@ -3,7 +3,6 @@ package net.minecraft.world.level;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_236;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
@@ -11,6 +10,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.timer.Timer;
 
 public class UnmodifiableLevelProperties extends LevelProperties {
 	private final LevelProperties properties;
@@ -218,8 +218,8 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 	}
 
 	@Override
-	public class_236<MinecraftServer> method_143() {
-		return this.properties.method_143();
+	public Timer<MinecraftServer> getScheduledEvents() {
+		return this.properties.getScheduledEvents();
 	}
 
 	@Override

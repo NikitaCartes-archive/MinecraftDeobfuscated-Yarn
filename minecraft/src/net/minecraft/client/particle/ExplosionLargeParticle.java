@@ -1,96 +1,34 @@
 package net.minecraft.client.particle;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GuiLighting;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.texture.TextureManager;
-import net.minecraft.entity.Entity;
+import net.minecraft.class_3999;
+import net.minecraft.class_4000;
+import net.minecraft.class_4001;
+import net.minecraft.class_4002;
+import net.minecraft.class_4003;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class ExplosionLargeParticle extends Particle {
-	private static final Identifier TEX = new Identifier("textures/entity/explosion.png");
-	private static final VertexFormat field_3816 = new VertexFormat()
-		.add(VertexFormats.POSITION_ELEMENT)
-		.add(VertexFormats.UV_ELEMENT)
-		.add(VertexFormats.COLOR_ELEMENT)
-		.add(VertexFormats.LMAP_ELEMENT)
-		.add(VertexFormats.NORMAL_ELEMENT)
-		.add(VertexFormats.PADDING_ELEMENT);
-	private int age_;
-	private final int maxAge_;
-	private final TextureManager textureManager;
-	private final float field_3818;
+public class ExplosionLargeParticle extends class_4003 {
+	private final class_4002 field_17815;
 
-	protected ExplosionLargeParticle(TextureManager textureManager, World world, double d, double e, double f, double g, double h, double i) {
+	private ExplosionLargeParticle(World world, double d, double e, double f, double g, class_4002 arg) {
 		super(world, d, e, f, 0.0, 0.0, 0.0);
-		this.textureManager = textureManager;
-		this.maxAge_ = 6 + this.random.nextInt(4);
-		float j = this.random.nextFloat() * 0.6F + 0.4F;
-		this.colorRed = j;
-		this.colorGreen = j;
-		this.colorBlue = j;
-		this.field_3818 = 1.0F - (float)g * 0.5F;
-	}
-
-	@Override
-	public void buildGeometry(BufferBuilder bufferBuilder, Entity entity, float f, float g, float h, float i, float j, float k) {
-		int l = (int)(((float)this.age_ + f) * 15.0F / (float)this.maxAge_);
-		if (l <= 15) {
-			this.textureManager.bindTexture(TEX);
-			float m = (float)(l % 4) / 4.0F;
-			float n = m + 0.24975F;
-			float o = (float)(l / 4) / 4.0F;
-			float p = o + 0.24975F;
-			float q = 2.0F * this.field_3818;
-			float r = (float)(MathHelper.lerp((double)f, this.prevPosX, this.posX) - cameraX);
-			float s = (float)(MathHelper.lerp((double)f, this.prevPosY, this.posY) - cameraY);
-			float t = (float)(MathHelper.lerp((double)f, this.prevPosZ, this.posZ) - cameraZ);
-			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			GlStateManager.disableLighting();
-			GuiLighting.disable();
-			bufferBuilder.begin(7, field_3816);
-			bufferBuilder.vertex((double)(r - g * q - j * q), (double)(s - h * q), (double)(t - i * q - k * q))
-				.texture((double)n, (double)p)
-				.color(this.colorRed, this.colorGreen, this.colorBlue, 1.0F)
-				.texture(0, 240)
-				.normal(0.0F, 1.0F, 0.0F)
-				.next();
-			bufferBuilder.vertex((double)(r - g * q + j * q), (double)(s + h * q), (double)(t - i * q + k * q))
-				.texture((double)n, (double)o)
-				.color(this.colorRed, this.colorGreen, this.colorBlue, 1.0F)
-				.texture(0, 240)
-				.normal(0.0F, 1.0F, 0.0F)
-				.next();
-			bufferBuilder.vertex((double)(r + g * q + j * q), (double)(s + h * q), (double)(t + i * q + k * q))
-				.texture((double)m, (double)o)
-				.color(this.colorRed, this.colorGreen, this.colorBlue, 1.0F)
-				.texture(0, 240)
-				.normal(0.0F, 1.0F, 0.0F)
-				.next();
-			bufferBuilder.vertex((double)(r + g * q - j * q), (double)(s - h * q), (double)(t + i * q - k * q))
-				.texture((double)m, (double)p)
-				.color(this.colorRed, this.colorGreen, this.colorBlue, 1.0F)
-				.texture(0, 240)
-				.normal(0.0F, 1.0F, 0.0F)
-				.next();
-			Tessellator.getInstance().draw();
-			GlStateManager.enableLighting();
-		}
+		this.maxAge = 6 + this.random.nextInt(4);
+		float h = this.random.nextFloat() * 0.6F + 0.4F;
+		this.colorRed = h;
+		this.colorGreen = h;
+		this.colorBlue = h;
+		this.field_17867 = 2.0F * (1.0F - (float)g * 0.5F);
+		this.field_17815 = arg;
+		this.method_18142(arg);
 	}
 
 	@Override
 	public int getColorMultiplier(float f) {
-		return 61680;
+		return 15728880;
 	}
 
 	@Override
@@ -98,21 +36,28 @@ public class ExplosionLargeParticle extends Particle {
 		this.prevPosX = this.posX;
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;
-		this.age_++;
-		if (this.age_ == this.maxAge_) {
+		if (this.age++ >= this.maxAge) {
 			this.markDead();
+		} else {
+			this.method_18142(this.field_17815);
 		}
 	}
 
 	@Override
-	public int getParticleGroup() {
-		return 3;
+	public class_3999 method_18122() {
+		return class_3999.field_17830;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
+		private final class_4002 field_17816;
+
+		public Factory(class_4001 arg) {
+			this.field_17816 = arg.register(class_4000.field_17849);
+		}
+
 		public Particle method_3038(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			return new ExplosionLargeParticle(MinecraftClient.getInstance().getTextureManager(), world, d, e, f, g, h, i);
+			return new ExplosionLargeParticle(world, d, e, f, g, this.field_17816);
 		}
 	}
 }

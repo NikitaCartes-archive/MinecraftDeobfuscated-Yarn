@@ -20,22 +20,22 @@ public class DesertPyramidFeature extends AbstractTempleFeature<DefaultFeatureCo
 	}
 
 	@Override
-	public int method_14021() {
+	public int getRadius() {
 		return 3;
 	}
 
 	@Override
 	public StructureFeature.StructureStartFactory getStructureStartFactory() {
-		return DesertPyramidFeature.class_3007::new;
+		return DesertPyramidFeature.Start::new;
 	}
 
 	@Override
-	protected int method_13774() {
+	protected int getSeedModifier() {
 		return 14357617;
 	}
 
-	public static class class_3007 extends StructureStart {
-		public class_3007(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
+	public static class Start extends StructureStart {
+		public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
 			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
 		}
 

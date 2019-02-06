@@ -4,7 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import java.util.Collection;
 import javax.annotation.Nullable;
-import net.minecraft.client.network.packet.StopSoundClientPacket;
+import net.minecraft.client.network.packet.StopSoundS2CPacket;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.command.arguments.ResourceLocationArgumentType;
@@ -63,10 +63,10 @@ public class StopSoundCommand {
 	private static int method_13685(
 		ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, @Nullable SoundCategory soundCategory, @Nullable Identifier identifier
 	) {
-		StopSoundClientPacket stopSoundClientPacket = new StopSoundClientPacket(identifier, soundCategory);
+		StopSoundS2CPacket stopSoundS2CPacket = new StopSoundS2CPacket(identifier, soundCategory);
 
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
-			serverPlayerEntity.networkHandler.sendPacket(stopSoundClientPacket);
+			serverPlayerEntity.networkHandler.sendPacket(stopSoundS2CPacket);
 		}
 
 		if (soundCategory != null) {

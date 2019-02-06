@@ -2,7 +2,7 @@ package net.minecraft.entity.passive;
 
 import java.util.List;
 import java.util.function.Predicate;
-import net.minecraft.client.network.packet.GameStateChangeClientPacket;
+import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -31,7 +31,7 @@ public class PufferfishEntity extends FishEntity {
 		if (livingEntity == null) {
 			return false;
 		} else {
-			return !(livingEntity instanceof PlayerEntity) || !((PlayerEntity)livingEntity).isSpectator() && !((PlayerEntity)livingEntity).isCreative()
+			return !(livingEntity instanceof PlayerEntity) || !livingEntity.isSpectator() && !((PlayerEntity)livingEntity).isCreative()
 				? livingEntity.getGroup() != EntityGroup.AQUATIC
 				: false;
 		}
@@ -150,7 +150,7 @@ public class PufferfishEntity extends FishEntity {
 	public void onPlayerCollision(PlayerEntity playerEntity) {
 		int i = this.method_6594();
 		if (playerEntity instanceof ServerPlayerEntity && i > 0 && playerEntity.damage(DamageSource.mob(this), (float)(1 + i))) {
-			((ServerPlayerEntity)playerEntity).networkHandler.sendPacket(new GameStateChangeClientPacket(9, 0.0F));
+			((ServerPlayerEntity)playerEntity).networkHandler.sendPacket(new GameStateChangeS2CPacket(9, 0.0F));
 			playerEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5899, 60 * i, 0));
 		}
 	}

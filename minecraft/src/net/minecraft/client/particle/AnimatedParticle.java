@@ -2,12 +2,14 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_3999;
+import net.minecraft.class_4002;
+import net.minecraft.class_4003;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class AnimatedParticle extends Particle {
-	protected final int textureId;
-	protected final int frameCount;
+public class AnimatedParticle extends class_4003 {
+	protected final class_4002 field_17866;
 	private final float field_3881;
 	private float field_3879 = 0.91F;
 	private float targetColorRed;
@@ -15,10 +17,9 @@ public class AnimatedParticle extends Particle {
 	private float targetColorBlue;
 	private boolean changesColor;
 
-	public AnimatedParticle(World world, double d, double e, double f, int i, int j, float g) {
+	protected AnimatedParticle(World world, double d, double e, double f, class_4002 arg, float g) {
 		super(world, d, e, f);
-		this.textureId = i;
-		this.frameCount = j;
+		this.field_17866 = arg;
 		this.field_3881 = g;
 	}
 
@@ -38,8 +39,8 @@ public class AnimatedParticle extends Particle {
 	}
 
 	@Override
-	public boolean hasAlpha() {
-		return true;
+	public class_3999 method_18122() {
+		return class_3999.field_17829;
 	}
 
 	@Override
@@ -49,26 +50,26 @@ public class AnimatedParticle extends Particle {
 		this.prevPosZ = this.posZ;
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
-		}
-
-		if (this.age > this.maxAge / 2) {
-			this.setColorAlpha(1.0F - ((float)this.age - (float)(this.maxAge / 2)) / (float)this.maxAge);
-			if (this.changesColor) {
-				this.colorRed = this.colorRed + (this.targetColorRed - this.colorRed) * 0.2F;
-				this.colorGreen = this.colorGreen + (this.targetColorGreen - this.colorGreen) * 0.2F;
-				this.colorBlue = this.colorBlue + (this.targetColorBlue - this.colorBlue) * 0.2F;
+		} else {
+			this.method_18142(this.field_17866);
+			if (this.age > this.maxAge / 2) {
+				this.setColorAlpha(1.0F - ((float)this.age - (float)(this.maxAge / 2)) / (float)this.maxAge);
+				if (this.changesColor) {
+					this.colorRed = this.colorRed + (this.targetColorRed - this.colorRed) * 0.2F;
+					this.colorGreen = this.colorGreen + (this.targetColorGreen - this.colorGreen) * 0.2F;
+					this.colorBlue = this.colorBlue + (this.targetColorBlue - this.colorBlue) * 0.2F;
+				}
 			}
-		}
 
-		this.setSpriteIndex(this.textureId + this.frameCount - 1 - this.age * this.frameCount / this.maxAge);
-		this.velocityY = this.velocityY + (double)this.field_3881;
-		this.move(this.velocityX, this.velocityY, this.velocityZ);
-		this.velocityX = this.velocityX * (double)this.field_3879;
-		this.velocityY = this.velocityY * (double)this.field_3879;
-		this.velocityZ = this.velocityZ * (double)this.field_3879;
-		if (this.onGround) {
-			this.velocityX *= 0.7F;
-			this.velocityZ *= 0.7F;
+			this.velocityY = this.velocityY + (double)this.field_3881;
+			this.move(this.velocityX, this.velocityY, this.velocityZ);
+			this.velocityX = this.velocityX * (double)this.field_3879;
+			this.velocityY = this.velocityY * (double)this.field_3879;
+			this.velocityZ = this.velocityZ * (double)this.field_3879;
+			if (this.onGround) {
+				this.velocityX *= 0.7F;
+				this.velocityZ *= 0.7F;
+			}
 		}
 	}
 

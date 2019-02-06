@@ -43,6 +43,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
+import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Triple;
@@ -92,9 +93,9 @@ public class ModelLoader {
 	public static final ModelIdentifier MISSING = new ModelIdentifier("builtin/missing", "missing");
 	@VisibleForTesting
 	public static final String MISSING_DEFINITION = ("{    'textures': {       'particle': '"
-			+ MissingSprite.getMissingSprite().getId().getPath()
+			+ MissingSprite.getMissingSpriteId().getPath()
 			+ "',       'missingno': '"
-			+ MissingSprite.getMissingSprite().getId().getPath()
+			+ MissingSprite.getMissingSpriteId().getPath()
 			+ "'    },    'elements': [         {  'from': [ 0, 0, 0 ],            'to': [ 16, 16, 16 ],            'faces': {                'down':  { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'down',  'texture': '#missingno' },                'up':    { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'up',    'texture': '#missingno' },                'north': { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'north', 'texture': '#missingno' },                'south': { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'south', 'texture': '#missingno' },                'west':  { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'west',  'texture': '#missingno' },                'east':  { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'east',  'texture': '#missingno' }            }        }    ]}")
 		.replace('\'', '"');
 	private static final Map<String, String> BUILTIN_MODEL_DEFINITIONS = Maps.<String, String>newHashMap(ImmutableMap.of("missing", MISSING_DEFINITION));
@@ -121,32 +122,40 @@ public class ModelLoader {
 	private final Map<Triple<Identifier, ModelRotation, Boolean>, BakedModel> modelRotationCache = Maps.<Triple<Identifier, ModelRotation, Boolean>, BakedModel>newHashMap();
 	private final Map<Identifier, UnbakedModel> modelsToBake = Maps.<Identifier, UnbakedModel>newHashMap();
 	private final Map<Identifier, BakedModel> bakedModels = Maps.<Identifier, BakedModel>newHashMap();
+	private final SpriteAtlasTexture.class_4007 field_17907;
 
-	public ModelLoader(ResourceManager resourceManager, SpriteAtlasTexture spriteAtlasTexture) {
+	public ModelLoader(ResourceManager resourceManager, SpriteAtlasTexture spriteAtlasTexture, Profiler profiler) {
 		this.resourceManager = resourceManager;
 		this.spriteAtlas = spriteAtlasTexture;
+		profiler.push("missing_model");
 
 		try {
 			this.unbakedModels.put(MISSING, this.loadModelFromJson(MISSING));
 			this.addModel(MISSING);
-		} catch (IOException var5) {
-			LOGGER.error("Error loading missing model, should never happen :(", (Throwable)var5);
-			throw new RuntimeException(var5);
+		} catch (IOException var6) {
+			LOGGER.error("Error loading missing model, should never happen :(", (Throwable)var6);
+			throw new RuntimeException(var6);
 		}
 
+		profiler.swap("static_definitions");
 		BLOCK_STATE_FACTORY_OVERRIDES.forEach(
 			(identifier, stateFactory) -> stateFactory.getStates().forEach(blockState -> this.addModel(BlockModels.getModelId(identifier, blockState)))
 		);
+		profiler.swap("blocks");
 
 		for (Block block : Registry.BLOCK) {
 			block.getStateFactory().getStates().forEach(blockState -> this.addModel(BlockModels.getModelId(blockState)));
 		}
 
+		profiler.swap("items");
+
 		for (Identifier identifier : Registry.ITEM.keys()) {
 			this.addModel(new ModelIdentifier(identifier, "inventory"));
 		}
 
+		profiler.swap("special");
 		this.addModel(new ModelIdentifier("minecraft:trident_in_hand#inventory"));
+		profiler.swap("textures");
 		Set<String> set = Sets.<String>newLinkedHashSet();
 		Set<Identifier> set2 = (Set<Identifier>)this.modelsToBake
 			.values()
@@ -155,20 +164,29 @@ public class ModelLoader {
 			.collect(Collectors.toSet());
 		set2.addAll(DEFAULT_TEXTURES);
 		set.forEach(string -> LOGGER.warn("Unable to resolve texture reference: {}", string));
-		this.spriteAtlas.build(this.resourceManager, set2);
+		profiler.swap("stitching");
+		this.field_17907 = this.spriteAtlas.method_18163(this.resourceManager, set2, profiler);
+		profiler.pop();
+	}
+
+	public void method_18177(Profiler profiler) {
+		profiler.push("atlas");
+		this.spriteAtlas.method_18159(this.field_17907);
+		profiler.swap("baking");
 		this.modelsToBake.keySet().forEach(identifier -> {
 			BakedModel bakedModel = null;
 
 			try {
 				bakedModel = this.bake(identifier, ModelRotation.X0_Y0);
-			} catch (Exception var4x) {
-				LOGGER.warn("Unable to bake model: '{}': {}", identifier, var4x);
+			} catch (Exception var4) {
+				LOGGER.warn("Unable to bake model: '{}': {}", identifier, var4);
 			}
 
 			if (bakedModel != null) {
 				this.bakedModels.put(identifier, bakedModel);
 			}
 		});
+		profiler.pop();
 	}
 
 	private static Predicate<BlockState> stateKeyToPredicate(StateFactory<Block, BlockState> stateFactory, String string) {

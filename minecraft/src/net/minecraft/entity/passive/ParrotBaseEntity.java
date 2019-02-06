@@ -1,8 +1,8 @@
 package net.minecraft.entity.passive;
 
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 
 public abstract class ParrotBaseEntity extends TameableEntity {
@@ -12,12 +12,12 @@ public abstract class ParrotBaseEntity extends TameableEntity {
 		super(entityType, world);
 	}
 
-	public boolean mountOnto(PlayerEntity playerEntity) {
+	public boolean mountOnto(ServerPlayerEntity serverPlayerEntity) {
 		CompoundTag compoundTag = new CompoundTag();
 		compoundTag.putString("id", this.getSavedEntityId());
 		this.toTag(compoundTag);
-		if (playerEntity.method_7298(compoundTag)) {
-			this.world.removeEntity(this);
+		if (serverPlayerEntity.method_7298(compoundTag)) {
+			serverPlayerEntity.getServerWorld().method_18216(this);
 			return true;
 		} else {
 			return false;

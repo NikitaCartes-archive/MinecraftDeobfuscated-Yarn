@@ -5,17 +5,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import net.minecraft.client.network.packet.EntityAttributesClientPacket;
-import net.minecraft.client.network.packet.EntityClientPacket;
-import net.minecraft.client.network.packet.EntityEquipmentUpdateClientPacket;
-import net.minecraft.client.network.packet.EntityPassengersSetClientPacket;
-import net.minecraft.client.network.packet.EntityPositionClientPacket;
-import net.minecraft.client.network.packet.EntityPotionEffectClientPacket;
-import net.minecraft.client.network.packet.EntitySetHeadYawClientPacket;
-import net.minecraft.client.network.packet.EntityTrackerUpdateClientPacket;
-import net.minecraft.client.network.packet.EntityVelocityUpdateClientPacket;
-import net.minecraft.client.network.packet.MobSpawnClientPacket;
-import net.minecraft.client.network.packet.PlayerUseBedClientPacket;
+import net.minecraft.client.network.packet.EntityAttributesS2CPacket;
+import net.minecraft.client.network.packet.EntityEquipmentUpdateS2CPacket;
+import net.minecraft.client.network.packet.EntityPassengersSetS2CPacket;
+import net.minecraft.client.network.packet.EntityPositionS2CPacket;
+import net.minecraft.client.network.packet.EntityPotionEffectS2CPacket;
+import net.minecraft.client.network.packet.EntityS2CPacket;
+import net.minecraft.client.network.packet.EntitySetHeadYawS2CPacket;
+import net.minecraft.client.network.packet.EntityTrackerUpdateS2CPacket;
+import net.minecraft.client.network.packet.EntityVelocityUpdateS2CPacket;
+import net.minecraft.client.network.packet.MobSpawnS2CPacket;
+import net.minecraft.client.network.packet.PlayerUseBedS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -69,9 +69,9 @@ public class EntityTrackerEntry {
 		this.field_14052 = j;
 		this.tickInterval = k;
 		this.alwaysUpdateVelocity = bl;
-		this.lastX = EntityClientPacket.method_18047(entity.x);
-		this.lastY = EntityClientPacket.method_18047(entity.y);
-		this.lastZ = EntityClientPacket.method_18047(entity.z);
+		this.lastX = EntityS2CPacket.method_18047(entity.x);
+		this.lastY = EntityS2CPacket.method_18047(entity.y);
+		this.lastZ = EntityS2CPacket.method_18047(entity.z);
 		this.lastYaw = MathHelper.floor(entity.yaw * 256.0F / 360.0F);
 		this.lastPitch = MathHelper.floor(entity.pitch * 256.0F / 360.0F);
 		this.lastHeadPitch = MathHelper.floor(entity.getHeadYaw() * 256.0F / 360.0F);
@@ -100,7 +100,7 @@ public class EntityTrackerEntry {
 		List<Entity> list2 = this.entity.getPassengerList();
 		if (!list2.equals(this.lastPassengers)) {
 			this.lastPassengers = list2;
-			this.sendToTrackingPlayers(new EntityPassengersSetClientPacket(this.entity));
+			this.sendToTrackingPlayers(new EntityPassengersSetS2CPacket(this.entity));
 		}
 
 		if (this.entity instanceof ItemFrameEntity && this.field_14040 % 10 == 0) {
@@ -128,21 +128,21 @@ public class EntityTrackerEntry {
 				int j = MathHelper.floor(this.entity.pitch * 256.0F / 360.0F);
 				boolean bl = Math.abs(i - this.lastYaw) >= 1 || Math.abs(j - this.lastPitch) >= 1;
 				if (bl) {
-					this.sendToTrackingPlayers(new EntityClientPacket.Rotate(this.entity.getEntityId(), (byte)i, (byte)j, this.entity.onGround));
+					this.sendToTrackingPlayers(new EntityS2CPacket.Rotate(this.entity.getEntityId(), (byte)i, (byte)j, this.entity.onGround));
 					this.lastYaw = i;
 					this.lastPitch = j;
 				}
 
-				this.lastX = EntityClientPacket.method_18047(this.entity.x);
-				this.lastY = EntityClientPacket.method_18047(this.entity.y);
-				this.lastZ = EntityClientPacket.method_18047(this.entity.z);
+				this.lastX = EntityS2CPacket.method_18047(this.entity.x);
+				this.lastY = EntityS2CPacket.method_18047(this.entity.y);
+				this.lastZ = EntityS2CPacket.method_18047(this.entity.z);
 				this.method_14306();
 				this.field_14051 = true;
 			} else {
 				this.field_14043++;
-				long l = EntityClientPacket.method_18047(this.entity.x);
-				long m = EntityClientPacket.method_18047(this.entity.y);
-				long n = EntityClientPacket.method_18047(this.entity.z);
+				long l = EntityS2CPacket.method_18047(this.entity.x);
+				long m = EntityS2CPacket.method_18047(this.entity.y);
+				long n = EntityS2CPacket.method_18047(this.entity.z);
 				int k = MathHelper.floor(this.entity.yaw * 256.0F / 360.0F);
 				int o = MathHelper.floor(this.entity.pitch * 256.0F / 360.0F);
 				long p = l - this.lastX;
@@ -163,18 +163,18 @@ public class EntityTrackerEntry {
 						&& this.lastOnGround == this.entity.onGround) {
 						if ((!bl2 || !bl3) && !(this.entity instanceof ProjectileEntity)) {
 							if (bl2) {
-								packet2 = new EntityClientPacket.MoveRelative(this.entity.getEntityId(), p, q, r, this.entity.onGround);
+								packet2 = new EntityS2CPacket.MoveRelative(this.entity.getEntityId(), p, q, r, this.entity.onGround);
 							} else if (bl3) {
-								packet2 = new EntityClientPacket.Rotate(this.entity.getEntityId(), (byte)k, (byte)o, this.entity.onGround);
+								packet2 = new EntityS2CPacket.Rotate(this.entity.getEntityId(), (byte)k, (byte)o, this.entity.onGround);
 							}
 						} else {
-							packet2 = new EntityClientPacket.RotateAndMoveRelative(this.entity.getEntityId(), p, q, r, (byte)k, (byte)o, this.entity.onGround);
+							packet2 = new EntityS2CPacket.RotateAndMoveRelative(this.entity.getEntityId(), p, q, r, (byte)k, (byte)o, this.entity.onGround);
 						}
 					} else {
 						this.lastOnGround = this.entity.onGround;
 						this.field_14043 = 0;
 						this.method_14307();
-						packet2 = new EntityPositionClientPacket(this.entity);
+						packet2 = new EntityPositionS2CPacket(this.entity);
 					}
 				}
 
@@ -193,7 +193,7 @@ public class EntityTrackerEntry {
 						this.lastVelocityX = this.entity.velocityX;
 						this.lastVelocityY = this.entity.velocityY;
 						this.lastVelocityZ = this.entity.velocityZ;
-						this.sendToTrackingPlayers(new EntityVelocityUpdateClientPacket(this.entity.getEntityId(), this.lastVelocityX, this.lastVelocityY, this.lastVelocityZ));
+						this.sendToTrackingPlayers(new EntityVelocityUpdateS2CPacket(this.entity.getEntityId(), this.lastVelocityX, this.lastVelocityY, this.lastVelocityZ));
 					}
 				}
 
@@ -218,7 +218,7 @@ public class EntityTrackerEntry {
 
 			int i = MathHelper.floor(this.entity.getHeadYaw() * 256.0F / 360.0F);
 			if (Math.abs(i - this.lastHeadPitch) >= 1) {
-				this.sendToTrackingPlayers(new EntitySetHeadYawClientPacket(this.entity, (byte)i));
+				this.sendToTrackingPlayers(new EntitySetHeadYawS2CPacket(this.entity, (byte)i));
 				this.lastHeadPitch = i;
 			}
 
@@ -227,7 +227,7 @@ public class EntityTrackerEntry {
 
 		this.field_14040++;
 		if (this.entity.velocityModified) {
-			this.sendToTrackingPlayersAndSelf(new EntityVelocityUpdateClientPacket(this.entity));
+			this.sendToTrackingPlayersAndSelf(new EntityVelocityUpdateS2CPacket(this.entity));
 			this.entity.velocityModified = false;
 		}
 	}
@@ -235,14 +235,14 @@ public class EntityTrackerEntry {
 	private void method_14306() {
 		DataTracker dataTracker = this.entity.getDataTracker();
 		if (dataTracker.isDirty()) {
-			this.sendToTrackingPlayersAndSelf(new EntityTrackerUpdateClientPacket(this.entity.getEntityId(), dataTracker, false));
+			this.sendToTrackingPlayersAndSelf(new EntityTrackerUpdateS2CPacket(this.entity.getEntityId(), dataTracker, false));
 		}
 
 		if (this.entity instanceof LivingEntity) {
 			EntityAttributeContainer entityAttributeContainer = (EntityAttributeContainer)((LivingEntity)this.entity).getAttributeContainer();
 			Set<EntityAttributeInstance> set = entityAttributeContainer.method_6215();
 			if (!set.isEmpty()) {
-				this.sendToTrackingPlayersAndSelf(new EntityAttributesClientPacket(this.entity.getEntityId(), set));
+				this.sendToTrackingPlayersAndSelf(new EntityAttributesS2CPacket(this.entity.getEntityId(), set));
 			}
 
 			set.clear();
@@ -290,7 +290,7 @@ public class EntityTrackerEntry {
 					this.lastHeadPitch = MathHelper.floor(this.entity.getHeadYaw() * 256.0F / 360.0F);
 					serverPlayerEntity.networkHandler.sendPacket(packet);
 					if (!this.entity.getDataTracker().method_12790()) {
-						serverPlayerEntity.networkHandler.sendPacket(new EntityTrackerUpdateClientPacket(this.entity.getEntityId(), this.entity.getDataTracker(), true));
+						serverPlayerEntity.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(this.entity.getEntityId(), this.entity.getDataTracker(), true));
 					}
 
 					boolean bl = this.alwaysUpdateVelocity;
@@ -298,7 +298,7 @@ public class EntityTrackerEntry {
 						EntityAttributeContainer entityAttributeContainer = (EntityAttributeContainer)((LivingEntity)this.entity).getAttributeContainer();
 						Collection<EntityAttributeInstance> collection = entityAttributeContainer.method_6213();
 						if (!collection.isEmpty()) {
-							serverPlayerEntity.networkHandler.sendPacket(new EntityAttributesClientPacket(this.entity.getEntityId(), collection));
+							serverPlayerEntity.networkHandler.sendPacket(new EntityAttributesS2CPacket(this.entity.getEntityId(), collection));
 						}
 
 						if (((LivingEntity)this.entity).isFallFlying()) {
@@ -309,16 +309,16 @@ public class EntityTrackerEntry {
 					this.lastVelocityX = this.entity.velocityX;
 					this.lastVelocityY = this.entity.velocityY;
 					this.lastVelocityZ = this.entity.velocityZ;
-					if (bl && !(packet instanceof MobSpawnClientPacket)) {
+					if (bl && !(packet instanceof MobSpawnS2CPacket)) {
 						serverPlayerEntity.networkHandler
-							.sendPacket(new EntityVelocityUpdateClientPacket(this.entity.getEntityId(), this.entity.velocityX, this.entity.velocityY, this.entity.velocityZ));
+							.sendPacket(new EntityVelocityUpdateS2CPacket(this.entity.getEntityId(), this.entity.velocityX, this.entity.velocityY, this.entity.velocityZ));
 					}
 
 					if (this.entity instanceof LivingEntity) {
 						for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
 							ItemStack itemStack = ((LivingEntity)this.entity).getEquippedStack(equipmentSlot);
 							if (!itemStack.isEmpty()) {
-								serverPlayerEntity.networkHandler.sendPacket(new EntityEquipmentUpdateClientPacket(this.entity.getEntityId(), equipmentSlot, itemStack));
+								serverPlayerEntity.networkHandler.sendPacket(new EntityEquipmentUpdateS2CPacket(this.entity.getEntityId(), equipmentSlot, itemStack));
 							}
 						}
 					}
@@ -326,7 +326,7 @@ public class EntityTrackerEntry {
 					if (this.entity instanceof PlayerEntity) {
 						PlayerEntity playerEntity = (PlayerEntity)this.entity;
 						if (playerEntity.isSleeping()) {
-							serverPlayerEntity.networkHandler.sendPacket(new PlayerUseBedClientPacket(playerEntity, new BlockPos(this.entity)));
+							serverPlayerEntity.networkHandler.sendPacket(new PlayerUseBedS2CPacket(playerEntity, new BlockPos(this.entity)));
 						}
 					}
 
@@ -334,16 +334,16 @@ public class EntityTrackerEntry {
 						LivingEntity livingEntity = (LivingEntity)this.entity;
 
 						for (StatusEffectInstance statusEffectInstance : livingEntity.getPotionEffects()) {
-							serverPlayerEntity.networkHandler.sendPacket(new EntityPotionEffectClientPacket(this.entity.getEntityId(), statusEffectInstance));
+							serverPlayerEntity.networkHandler.sendPacket(new EntityPotionEffectS2CPacket(this.entity.getEntityId(), statusEffectInstance));
 						}
 					}
 
 					if (!this.entity.getPassengerList().isEmpty()) {
-						serverPlayerEntity.networkHandler.sendPacket(new EntityPassengersSetClientPacket(this.entity));
+						serverPlayerEntity.networkHandler.sendPacket(new EntityPassengersSetS2CPacket(this.entity));
 					}
 
 					if (this.entity.hasVehicle()) {
-						serverPlayerEntity.networkHandler.sendPacket(new EntityPassengersSetClientPacket(this.entity.getRiddenEntity()));
+						serverPlayerEntity.networkHandler.sendPacket(new EntityPassengersSetS2CPacket(this.entity.getRiddenEntity()));
 					}
 
 					this.entity.onStartedTrackingBy(serverPlayerEntity);

@@ -89,13 +89,13 @@ public class AnvilContainer extends Container {
 							BlockState blockState2 = AnvilBlock.getLandingState(blockState);
 							if (blockState2 == null) {
 								world.clearBlockState(blockPos);
-								world.fireWorldEvent(1029, blockPos, 0);
+								world.playEvent(1029, blockPos, 0);
 							} else {
 								world.setBlockState(blockPos, blockState2, 2);
-								world.fireWorldEvent(1030, blockPos, 0);
+								world.playEvent(1030, blockPos, 0);
 							}
 						} else {
-							world.fireWorldEvent(1030, blockPos, 0);
+							world.playEvent(1030, blockPos, 0);
 						}
 					});
 					return itemStack;

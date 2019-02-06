@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -23,12 +24,14 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.profiler.DummyProfiler;
+import net.minecraft.util.profiler.Profiler;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class FontRendererManager implements ResourceReloadListener {
+public class FontRendererManager implements ResourceReloadListener<Map<Identifier, List<Font>>> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Map<Identifier, FontRenderer> fontRenderers = Maps.<Identifier, FontRenderer>newHashMap();
 	private final TextureManager textureManager;
@@ -40,77 +43,115 @@ public class FontRendererManager implements ResourceReloadListener {
 	}
 
 	@Override
-	public void onResourceReload(ResourceManager resourceManager) {
-		Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
-		Map<Identifier, List<Font>> map = Maps.<Identifier, List<Font>>newHashMap();
+	public CompletableFuture<Map<Identifier, List<Font>>> prepare(ResourceManager resourceManager, Profiler profiler) {
+		return CompletableFuture.supplyAsync(
+			() -> {
+				profiler.startTick();
+				Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+				Map<Identifier, List<Font>> map = Maps.<Identifier, List<Font>>newHashMap();
 
-		for (Identifier identifier : resourceManager.findResources("font", stringx -> stringx.endsWith(".json"))) {
-			String string = identifier.getPath();
-			Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring("font/".length(), string.length() - ".json".length()));
-			List<Font> list = (List<Font>)map.computeIfAbsent(identifier2, identifierx -> Lists.<Font>newArrayList(new BlankFont()));
+				for (Identifier identifier : resourceManager.findResources("font", stringx -> stringx.endsWith(".json"))) {
+					String string = identifier.getPath();
+					Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring("font/".length(), string.length() - ".json".length()));
+					List<Font> list = (List<Font>)map.computeIfAbsent(identifier2, identifierx -> Lists.<Font>newArrayList(new BlankFont()));
+					profiler.push(identifier2::toString);
 
-			try {
-				for (Resource resource : resourceManager.getAllResources(identifier)) {
 					try {
-						InputStream inputStream = resource.getInputStream();
-						Throwable var12 = null;
+						for (Resource resource : resourceManager.getAllResources(identifier)) {
+							profiler.push(resource::getPackName);
 
-						try {
-							JsonArray jsonArray = JsonHelper.getArray(
-								JsonHelper.deserialize(gson, IOUtils.toString(inputStream, StandardCharsets.UTF_8), JsonObject.class), "providers"
-							);
-
-							for (int i = jsonArray.size() - 1; i >= 0; i--) {
-								JsonObject jsonObject = JsonHelper.asObject(jsonArray.get(i), "providers[" + i + "]");
+							try {
+								InputStream inputStream = resource.getInputStream();
+								Throwable var13 = null;
 
 								try {
-									FontType fontType = FontType.byId(JsonHelper.getString(jsonObject, "type"));
-									if (!this.forceUnicodeFont || fontType == FontType.LEGACY_UNICODE || !identifier2.equals(MinecraftClient.defaultFontRendererId)) {
-										Font font = fontType.createLoader(jsonObject).load(resourceManager);
-										if (font != null) {
-											list.add(font);
+									profiler.push("reading");
+									JsonArray jsonArray = JsonHelper.getArray(
+										JsonHelper.deserialize(gson, IOUtils.toString(inputStream, StandardCharsets.UTF_8), JsonObject.class), "providers"
+									);
+									profiler.swap("parsing");
+
+									for (int i = jsonArray.size() - 1; i >= 0; i--) {
+										JsonObject jsonObject = JsonHelper.asObject(jsonArray.get(i), "providers[" + i + "]");
+
+										try {
+											String string2 = JsonHelper.getString(jsonObject, "type");
+											FontType fontType = FontType.byId(string2);
+											if (!this.forceUnicodeFont || fontType == FontType.LEGACY_UNICODE || !identifier2.equals(MinecraftClient.defaultFontRendererId)) {
+												profiler.push(string2);
+												list.add(fontType.createLoader(jsonObject).load(resourceManager));
+												profiler.pop();
+											}
+										} catch (RuntimeException var29) {
+											LOGGER.warn("Unable to read definition '{}' in fonts.json in resourcepack: '{}': {}", identifier2, resource.getPackName(), var29.getMessage());
 										}
 									}
-								} catch (RuntimeException var28) {
-									LOGGER.warn("Unable to read definition '{}' in fonts.json in resourcepack: '{}': {}", identifier2, resource.getPackName(), var28.getMessage());
-								}
-							}
-						} catch (Throwable var29) {
-							var12 = var29;
-							throw var29;
-						} finally {
-							if (inputStream != null) {
-								if (var12 != null) {
-									try {
-										inputStream.close();
-									} catch (Throwable var27) {
-										var12.addSuppressed(var27);
+
+									profiler.pop();
+								} catch (Throwable var30) {
+									var13 = var30;
+									throw var30;
+								} finally {
+									if (inputStream != null) {
+										if (var13 != null) {
+											try {
+												inputStream.close();
+											} catch (Throwable var28) {
+												var13.addSuppressed(var28);
+											}
+										} else {
+											inputStream.close();
+										}
 									}
-								} else {
-									inputStream.close();
+								}
+							} catch (RuntimeException var32) {
+								LOGGER.warn("Unable to load font '{}' in fonts.json in resourcepack: '{}': {}", identifier2, resource.getPackName(), var32.getMessage());
+							}
+
+							profiler.pop();
+						}
+					} catch (IOException var33) {
+						LOGGER.warn("Unable to load font '{}' in fonts.json: {}", identifier2, var33.getMessage());
+					}
+
+					profiler.push("caching");
+
+					for (char c = 0; c < '\uffff'; c++) {
+						if (c != ' ') {
+							for (Font font : Lists.reverse(list)) {
+								if (font.getGlyph(c) != null) {
+									break;
 								}
 							}
 						}
-					} catch (RuntimeException var31) {
-						LOGGER.warn("Unable to load font '{}' in fonts.json in resourcepack: '{}': {}", identifier2, resource.getPackName(), var31.getMessage());
 					}
-				}
-			} catch (IOException var32) {
-				LOGGER.warn("Unable to load font '{}' in fonts.json: {}", identifier2, var32.getMessage());
-			}
-		}
 
+					profiler.pop();
+					profiler.pop();
+				}
+
+				profiler.endTick();
+				return map;
+			}
+		);
+	}
+
+	public void method_18102(ResourceManager resourceManager, Map<Identifier, List<Font>> map, Profiler profiler) {
+		profiler.startTick();
+		profiler.push("reloading");
 		Stream.concat(this.fontRenderers.keySet().stream(), map.keySet().stream())
 			.distinct()
 			.forEach(
-				identifierx -> {
-					List<Font> listx = (List<Font>)map.getOrDefault(identifierx, Collections.emptyList());
-					Collections.reverse(listx);
+				identifier -> {
+					List<Font> list = (List<Font>)map.getOrDefault(identifier, Collections.emptyList());
+					Collections.reverse(list);
 					((FontRenderer)this.fontRenderers
-							.computeIfAbsent(identifierx, identifierxx -> new FontRenderer(this.textureManager, new FontStorage(this.textureManager, identifierxx))))
-						.method_1715(listx);
+							.computeIfAbsent(identifier, identifierx -> new FontRenderer(this.textureManager, new FontStorage(this.textureManager, identifierx))))
+						.method_1715(list);
 				}
 			);
+		profiler.pop();
+		profiler.endTick();
 	}
 
 	@Nullable
@@ -125,7 +166,8 @@ public class FontRendererManager implements ResourceReloadListener {
 	public void setForceUnicodeFont(boolean bl) {
 		if (bl != this.forceUnicodeFont) {
 			this.forceUnicodeFont = bl;
-			this.onResourceReload(MinecraftClient.getInstance().getResourceManager());
+			ResourceManager resourceManager = MinecraftClient.getInstance().getResourceManager();
+			this.method_18102(resourceManager, (Map<Identifier, List<Font>>)this.prepare(resourceManager, DummyProfiler.INSTANCE).join(), DummyProfiler.INSTANCE);
 		}
 	}
 }

@@ -22,7 +22,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -33,7 +33,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class RecipeManager implements ResourceReloadListener {
+public class RecipeManager implements SynchronousResourceReloadListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final int PREFIX_LENGTH = "recipes/".length();
 	public static final int SUFFIX_LENGTH = ".json".length();
@@ -43,7 +43,7 @@ public class RecipeManager implements ResourceReloadListener {
 	private boolean hadErrors;
 
 	@Override
-	public void onResourceReload(ResourceManager resourceManager) {
+	public void reloadResources(ResourceManager resourceManager) {
 		Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 		this.hadErrors = false;
 		method_17719(this.recipeMap);

@@ -443,7 +443,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 		@Override
 		public boolean canStart() {
-			return this.field_7394.isInsideWater() || this.field_7394.isTouchingLava();
+			return (this.field_7394.isInsideWater() || this.field_7394.isTouchingLava()) && this.field_7394.getMoveControl() instanceof SlimeEntity.SlimeMoveControl;
 		}
 
 		@Override
@@ -493,7 +493,8 @@ public class SlimeEntity extends MobEntity implements Monster {
 						|| this.field_7402.isInsideWater()
 						|| this.field_7402.isTouchingLava()
 						|| this.field_7402.hasPotionEffect(StatusEffects.field_5902)
-				);
+				)
+				&& this.field_7402.getMoveControl() instanceof SlimeEntity.SlimeMoveControl;
 		}
 
 		@Override

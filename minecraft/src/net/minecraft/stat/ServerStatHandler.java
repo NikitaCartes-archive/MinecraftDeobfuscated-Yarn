@@ -20,7 +20,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Map.Entry;
 import net.minecraft.SharedConstants;
-import net.minecraft.client.network.packet.StatisticsClientPacket;
+import net.minecraft.client.network.packet.StatisticsS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
@@ -203,6 +203,6 @@ public class ServerStatHandler extends StatHandler {
 			}
 		}
 
-		serverPlayerEntity.networkHandler.sendPacket(new StatisticsClientPacket(object2IntMap));
+		serverPlayerEntity.networkHandler.sendPacket(new StatisticsS2CPacket(object2IntMap));
 	}
 }

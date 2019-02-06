@@ -22,8 +22,8 @@ import org.apache.logging.log4j.Logger;
 
 public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final EntityType<?>[] field_13699 = new EntityType[]{EntityType.SKELETON, EntityType.ZOMBIE, EntityType.ZOMBIE, EntityType.SPIDER};
-	private static final BlockState field_13698 = Blocks.field_10543.getDefaultState();
+	private static final EntityType<?>[] MOB_SPAWNER_ENTITIES = new EntityType[]{EntityType.SKELETON, EntityType.ZOMBIE, EntityType.ZOMBIE, EntityType.SPIDER};
+	private static final BlockState AIR = Blocks.field_10543.getDefaultState();
 
 	public DungeonFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
 		super(function);
@@ -71,10 +71,10 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 						BlockPos blockPos2x = blockPos.add(s, t, u);
 						if (s != k && t != -1 && u != p && s != l && t != 4 && u != q) {
 							if (iWorld.getBlockState(blockPos2x).getBlock() != Blocks.field_10034) {
-								iWorld.setBlockState(blockPos2x, field_13698, 2);
+								iWorld.setBlockState(blockPos2x, AIR, 2);
 							}
 						} else if (blockPos2x.getY() >= 0 && !iWorld.getBlockState(blockPos2x.down()).getMaterial().method_15799()) {
-							iWorld.setBlockState(blockPos2x, field_13698, 2);
+							iWorld.setBlockState(blockPos2x, AIR, 2);
 						} else if (iWorld.getBlockState(blockPos2x).getMaterial().method_15799() && iWorld.getBlockState(blockPos2x).getBlock() != Blocks.field_10034) {
 							if (t == -1 && random.nextInt(4) != 0) {
 								iWorld.setBlockState(blockPos2x, Blocks.field_9989.getDefaultState(), 2);
@@ -113,7 +113,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 			iWorld.setBlockState(blockPos, Blocks.field_10260.getDefaultState(), 2);
 			BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
 			if (blockEntity instanceof MobSpawnerBlockEntity) {
-				((MobSpawnerBlockEntity)blockEntity).getLogic().method_8274(this.method_13547(random));
+				((MobSpawnerBlockEntity)blockEntity).getLogic().method_8274(this.getMobSpawnerEntity(random));
 			} else {
 				LOGGER.error("Failed to fetch mob spawner entity at ({}, {}, {})", blockPos.getX(), blockPos.getY(), blockPos.getZ());
 			}
@@ -124,7 +124,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 		}
 	}
 
-	private EntityType<?> method_13547(Random random) {
-		return field_13699[random.nextInt(field_13699.length)];
+	private EntityType<?> getMobSpawnerEntity(Random random) {
+		return MOB_SPAWNER_ENTITIES[random.nextInt(MOB_SPAWNER_ENTITIES.length)];
 	}
 }

@@ -6,7 +6,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.client.network.packet.CraftResponseClientPacket;
+import net.minecraft.client.network.packet.CraftResponseS2CPacket;
 import net.minecraft.container.CraftingContainer;
 import net.minecraft.container.CraftingTableContainer;
 import net.minecraft.container.PlayerContainer;
@@ -39,7 +39,7 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 					this.fillInputSlots(recipe, bl);
 				} else {
 					this.returnInputs();
-					serverPlayerEntity.networkHandler.sendPacket(new CraftResponseClientPacket(serverPlayerEntity.container.syncId, recipe));
+					serverPlayerEntity.networkHandler.sendPacket(new CraftResponseS2CPacket(serverPlayerEntity.container.syncId, recipe));
 				}
 
 				serverPlayerEntity.inventory.markDirty();

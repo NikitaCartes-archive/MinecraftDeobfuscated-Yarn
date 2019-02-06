@@ -29,7 +29,7 @@ public class DarkOakTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig
 			BlockPos blockPos2 = blockPos.down();
 			if (!isNaturalDirtOrGrass(modifiableTestableWorld, blockPos2)) {
 				return false;
-			} else if (!this.method_13875(modifiableTestableWorld, blockPos, i)) {
+			} else if (!this.doesTreeFit(modifiableTestableWorld, blockPos, i)) {
 				return false;
 			} else {
 				this.setToDirt(modifiableTestableWorld, blockPos2);
@@ -53,41 +53,41 @@ public class DarkOakTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig
 					int s = k + r;
 					BlockPos blockPos3 = new BlockPos(o, s, p);
 					if (isAirOrLeaves(modifiableTestableWorld, blockPos3)) {
-						this.method_13874(set, modifiableTestableWorld, blockPos3);
-						this.method_13874(set, modifiableTestableWorld, blockPos3.east());
-						this.method_13874(set, modifiableTestableWorld, blockPos3.south());
-						this.method_13874(set, modifiableTestableWorld, blockPos3.east().south());
+						this.addLog(set, modifiableTestableWorld, blockPos3);
+						this.addLog(set, modifiableTestableWorld, blockPos3.east());
+						this.addLog(set, modifiableTestableWorld, blockPos3.south());
+						this.addLog(set, modifiableTestableWorld, blockPos3.east().south());
 					}
 				}
 
 				for (int r = -2; r <= 0; r++) {
 					for (int s = -2; s <= 0; s++) {
 						int t = -1;
-						this.method_13873(modifiableTestableWorld, o + r, q + t, p + s);
-						this.method_13873(modifiableTestableWorld, 1 + o - r, q + t, p + s);
-						this.method_13873(modifiableTestableWorld, o + r, q + t, 1 + p - s);
-						this.method_13873(modifiableTestableWorld, 1 + o - r, q + t, 1 + p - s);
+						this.addLeaves(modifiableTestableWorld, o + r, q + t, p + s);
+						this.addLeaves(modifiableTestableWorld, 1 + o - r, q + t, p + s);
+						this.addLeaves(modifiableTestableWorld, o + r, q + t, 1 + p - s);
+						this.addLeaves(modifiableTestableWorld, 1 + o - r, q + t, 1 + p - s);
 						if ((r > -2 || s > -1) && (r != -1 || s != -2)) {
 							int var28 = 1;
-							this.method_13873(modifiableTestableWorld, o + r, q + var28, p + s);
-							this.method_13873(modifiableTestableWorld, 1 + o - r, q + var28, p + s);
-							this.method_13873(modifiableTestableWorld, o + r, q + var28, 1 + p - s);
-							this.method_13873(modifiableTestableWorld, 1 + o - r, q + var28, 1 + p - s);
+							this.addLeaves(modifiableTestableWorld, o + r, q + var28, p + s);
+							this.addLeaves(modifiableTestableWorld, 1 + o - r, q + var28, p + s);
+							this.addLeaves(modifiableTestableWorld, o + r, q + var28, 1 + p - s);
+							this.addLeaves(modifiableTestableWorld, 1 + o - r, q + var28, 1 + p - s);
 						}
 					}
 				}
 
 				if (random.nextBoolean()) {
-					this.method_13873(modifiableTestableWorld, o, q + 2, p);
-					this.method_13873(modifiableTestableWorld, o + 1, q + 2, p);
-					this.method_13873(modifiableTestableWorld, o + 1, q + 2, p + 1);
-					this.method_13873(modifiableTestableWorld, o, q + 2, p + 1);
+					this.addLeaves(modifiableTestableWorld, o, q + 2, p);
+					this.addLeaves(modifiableTestableWorld, o + 1, q + 2, p);
+					this.addLeaves(modifiableTestableWorld, o + 1, q + 2, p + 1);
+					this.addLeaves(modifiableTestableWorld, o, q + 2, p + 1);
 				}
 
 				for (int r = -3; r <= 4; r++) {
 					for (int sx = -3; sx <= 4; sx++) {
 						if ((r != -3 || sx != -3) && (r != -3 || sx != 4) && (r != 4 || sx != -3) && (r != 4 || sx != 4) && (Math.abs(r) < 3 || Math.abs(sx) < 3)) {
-							this.method_13873(modifiableTestableWorld, o + r, q, p + sx);
+							this.addLeaves(modifiableTestableWorld, o + r, q, p + sx);
 						}
 					}
 				}
@@ -98,19 +98,19 @@ public class DarkOakTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig
 							int t = random.nextInt(3) + 2;
 
 							for (int u = 0; u < t; u++) {
-								this.method_13874(set, modifiableTestableWorld, new BlockPos(j + r, q - u - 1, l + sxx));
+								this.addLog(set, modifiableTestableWorld, new BlockPos(j + r, q - u - 1, l + sxx));
 							}
 
 							for (int u = -1; u <= 1; u++) {
 								for (int v = -1; v <= 1; v++) {
-									this.method_13873(modifiableTestableWorld, o + r + u, q, p + sxx + v);
+									this.addLeaves(modifiableTestableWorld, o + r + u, q, p + sxx + v);
 								}
 							}
 
 							for (int u = -2; u <= 2; u++) {
 								for (int v = -2; v <= 2; v++) {
 									if (Math.abs(u) != 2 || Math.abs(v) != 2) {
-										this.method_13873(modifiableTestableWorld, o + r + u, q - 1, p + sxx + v);
+										this.addLeaves(modifiableTestableWorld, o + r + u, q - 1, p + sxx + v);
 									}
 								}
 							}
@@ -125,7 +125,7 @@ public class DarkOakTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig
 		}
 	}
 
-	private boolean method_13875(TestableWorld testableWorld, BlockPos blockPos, int i) {
+	private boolean doesTreeFit(TestableWorld testableWorld, BlockPos blockPos, int i) {
 		int j = blockPos.getX();
 		int k = blockPos.getY();
 		int l = blockPos.getZ();
@@ -153,13 +153,13 @@ public class DarkOakTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig
 		return true;
 	}
 
-	private void method_13874(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos) {
+	private void addLog(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos) {
 		if (canTreeReplace(modifiableTestableWorld, blockPos)) {
 			this.setBlockState(set, modifiableTestableWorld, blockPos, LOG);
 		}
 	}
 
-	private void method_13873(ModifiableTestableWorld modifiableTestableWorld, int i, int j, int k) {
+	private void addLeaves(ModifiableTestableWorld modifiableTestableWorld, int i, int j, int k) {
 		BlockPos blockPos = new BlockPos(i, j, k);
 		if (isAir(modifiableTestableWorld, blockPos)) {
 			this.setBlockState(modifiableTestableWorld, blockPos, LEAVES);

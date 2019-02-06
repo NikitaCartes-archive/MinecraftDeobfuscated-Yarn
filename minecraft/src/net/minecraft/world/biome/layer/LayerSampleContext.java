@@ -1,8 +1,6 @@
 package net.minecraft.world.biome.layer;
 
-import net.minecraft.class_3630;
-
-public interface LayerSampleContext<R extends LayerSampler> extends class_3630 {
+public interface LayerSampleContext<R extends LayerSampler> extends LayerRandomnessSource {
 	void initSeed(long l, long m);
 
 	R createSampler(LayerOperator layerOperator);

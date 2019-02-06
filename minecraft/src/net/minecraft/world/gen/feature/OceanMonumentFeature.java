@@ -18,16 +18,16 @@ import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig> {
-	private static final List<Biome.SpawnEntry> field_13716 = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.GUARDIAN, 1, 2, 4));
+	private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.GUARDIAN, 1, 2, 4));
 
 	public OceanMonumentFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
 		super(function);
 	}
 
 	@Override
-	protected ChunkPos method_14018(ChunkGenerator<?> chunkGenerator, Random random, int i, int j, int k, int l) {
-		int m = chunkGenerator.getSettings().getOceanMonumentSpacing();
-		int n = chunkGenerator.getSettings().getOceanMonumentSeparation();
+	protected ChunkPos getStart(ChunkGenerator<?> chunkGenerator, Random random, int i, int j, int k, int l) {
+		int m = chunkGenerator.getConfig().getOceanMonumentSpacing();
+		int n = chunkGenerator.getConfig().getOceanMonumentSeparation();
 		int o = i + m * k;
 		int p = j + m * l;
 		int q = o < 0 ? o - m + 1 : o;
@@ -44,7 +44,7 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 
 	@Override
 	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
-		ChunkPos chunkPos = this.method_14018(chunkGenerator, random, i, j, 0, 0);
+		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
 		if (i == chunkPos.x && j == chunkPos.z) {
 			for (Biome biome : chunkGenerator.getBiomeSource().getBiomesInArea(i * 16 + 9, j * 16 + 9, 16)) {
 				if (!chunkGenerator.hasStructure(biome, Feature.OCEAN_MONUMENT)) {
@@ -66,7 +66,7 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 
 	@Override
 	public StructureFeature.StructureStartFactory getStructureStartFactory() {
-		return OceanMonumentFeature.class_3117::new;
+		return OceanMonumentFeature.Start::new;
 	}
 
 	@Override
@@ -75,19 +75,19 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 	}
 
 	@Override
-	public int method_14021() {
+	public int getRadius() {
 		return 8;
 	}
 
 	@Override
 	public List<Biome.SpawnEntry> getMonsterSpawns() {
-		return field_13716;
+		return MONSTER_SPAWNS;
 	}
 
-	public static class class_3117 extends StructureStart {
+	public static class Start extends StructureStart {
 		private boolean field_13717;
 
-		public class_3117(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
+		public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
 			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
 		}
 

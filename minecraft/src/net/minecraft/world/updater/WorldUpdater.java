@@ -22,8 +22,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.SystemUtil;
-import net.minecraft.world.OldWorldSaveHandler;
 import net.minecraft.world.PersistentStateManager;
+import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.storage.RegionFile;
 import net.minecraft.world.chunk.storage.VersionedRegionFileCache;
@@ -37,9 +37,9 @@ public class WorldUpdater {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final ThreadFactory UPDATE_THREAD_FACTORY = new ThreadFactoryBuilder().setDaemon(true).build();
 	private final String levelName;
-	private final OldWorldSaveHandler worldSaveHandler;
+	private final WorldSaveHandler field_5761;
 	private final Thread updateThread;
-	private final File field_17621;
+	private final File worldDirectory;
 	private volatile boolean keepUpgradingChunks = true;
 	private volatile boolean isDone;
 	private volatile float progress;
@@ -50,17 +50,17 @@ public class WorldUpdater {
 		new Object2FloatOpenCustomHashMap<>(SystemUtil.identityHashStrategy())
 	);
 	private volatile TextComponent status = new TranslatableTextComponent("optimizeWorld.stage.counting");
-	private static final Pattern field_17622 = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
+	private static final Pattern REGION_FILE_PATTERN = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
 	private final PersistentStateManager persistentStateManager;
 
 	public WorldUpdater(String string, LevelStorage levelStorage, LevelProperties levelProperties) {
 		this.levelName = levelProperties.getLevelName();
-		this.worldSaveHandler = levelStorage.method_242(string, null);
-		this.worldSaveHandler.saveWorld(levelProperties);
+		this.field_5761 = levelStorage.method_242(string, null);
+		this.field_5761.saveWorld(levelProperties);
 		this.persistentStateManager = new PersistentStateManager(
-			new File(DimensionType.field_13072.getFile(this.worldSaveHandler.getWorldDir()), "data"), this.worldSaveHandler.getDataFixer()
+			new File(DimensionType.field_13072.getFile(this.field_5761.getWorldDir()), "data"), this.field_5761.getDataFixer()
 		);
-		this.field_17621 = this.worldSaveHandler.getWorldDir();
+		this.worldDirectory = this.field_5761.getWorldDir();
 		this.updateThread = UPDATE_THREAD_FACTORY.newThread(this::updateWorld);
 		this.updateThread.setUncaughtExceptionHandler((thread, throwable) -> {
 			LOGGER.error("Error upgrading world", throwable);
@@ -79,12 +79,12 @@ public class WorldUpdater {
 	}
 
 	private void updateWorld() {
-		File file = this.worldSaveHandler.getWorldDir();
+		File file = this.field_5761.getWorldDir();
 		this.totalChunkCount = 0;
 		Builder<DimensionType, ListIterator<ChunkPos>> builder = ImmutableMap.builder();
 
 		for (DimensionType dimensionType : DimensionType.getAll()) {
-			List<ChunkPos> list = this.method_17830(dimensionType);
+			List<ChunkPos> list = this.getChunkPositions(dimensionType);
 			builder.put(dimensionType, list.listIterator());
 			this.totalChunkCount = this.totalChunkCount + list.size();
 		}
@@ -98,7 +98,7 @@ public class WorldUpdater {
 
 			for (DimensionType dimensionType2 : DimensionType.getAll()) {
 				final File file2 = dimensionType2.getFile(file);
-				builder2.put(dimensionType2, new VersionedRegionFileCache(this.worldSaveHandler.getDataFixer()) {
+				builder2.put(dimensionType2, new VersionedRegionFileCache(this.field_5761.getDataFixer()) {
 					@Override
 					protected File getRegionDir() {
 						return new File(file2, "region");
@@ -172,8 +172,8 @@ public class WorldUpdater {
 		}
 	}
 
-	private List<ChunkPos> method_17830(DimensionType dimensionType) {
-		File file = dimensionType.getFile(this.field_17621);
+	private List<ChunkPos> getChunkPositions(DimensionType dimensionType) {
+		File file = dimensionType.getFile(this.worldDirectory);
 		File file2 = new File(file, "region");
 		File[] files = file2.listFiles((filex, string) -> string.endsWith(".mca"));
 		if (files == null) {
@@ -182,7 +182,7 @@ public class WorldUpdater {
 			List<ChunkPos> list = Lists.<ChunkPos>newArrayList();
 
 			for (File file3 : files) {
-				Matcher matcher = field_17622.matcher(file3.getName());
+				Matcher matcher = REGION_FILE_PATTERN.matcher(file3.getName());
 				if (matcher.matches()) {
 					int i = Integer.parseInt(matcher.group(1)) << 5;
 					int j = Integer.parseInt(matcher.group(2)) << 5;
@@ -191,7 +191,7 @@ public class WorldUpdater {
 						for (int k = 0; k < 32; k++) {
 							for (int l = 0; l < 32; l++) {
 								ChunkPos chunkPos = new ChunkPos(k + i, l + j);
-								if (regionFile.method_12420(chunkPos)) {
+								if (regionFile.isChunkPresent(chunkPos)) {
 									list.add(chunkPos);
 								}
 							}

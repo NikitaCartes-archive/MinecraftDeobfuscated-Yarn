@@ -1,17 +1,10 @@
 package net.minecraft.client.gui;
 
-import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Runnables;
 import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
@@ -29,8 +22,8 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.LanguageButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.texture.TextureManager;
 import net.minecraft.realms.RealmsBridge;
-import net.minecraft.resource.Resource;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.TextFormat;
 import net.minecraft.util.ChatUtil;
@@ -39,12 +32,12 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
-import org.apache.commons.io.IOUtils;
 
 @Environment(EnvType.CLIENT)
 public class MainMenuScreen extends Screen {
-	private static final Random RANDOM = new Random();
-	private final float field_2605;
+	public static final class_751 field_17774 = new class_751(new Identifier("textures/gui/title/background/panorama"));
+	private static final Identifier field_17775 = new Identifier("textures/gui/title/background/panorama_overlay.png");
+	private final boolean field_17776;
 	private String splashText;
 	private ButtonWidget field_2602;
 	private ButtonWidget buttonResetDemo;
@@ -59,43 +52,25 @@ public class MainMenuScreen extends Screen {
 	private String warningTitle;
 	private String warningText = OUTDATED_GL_TEXT;
 	private String warningLink;
-	private static final Identifier SPLASHES_LOC = new Identifier("texts/splashes.txt");
 	private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
 	private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
 	private boolean field_2599;
 	private Screen realmsNotificationGui;
 	private int field_2584;
 	private int field_2606;
-	private final class_766 field_2585 = new class_766(new class_751(new Identifier("textures/gui/title/background/panorama")));
+	private final class_766 field_2585;
+	private final long field_17772;
+	private final long field_17773;
 
 	public MainMenuScreen() {
-		this.splashText = "missingno";
-		Resource resource = null;
+		this(new class_766(field_17774), 0L);
+	}
 
-		try {
-			List<String> list = Lists.<String>newArrayList();
-			resource = MinecraftClient.getInstance().getResourceManager().getResource(SPLASHES_LOC);
-			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
-
-			String string;
-			while ((string = bufferedReader.readLine()) != null) {
-				string = string.trim();
-				if (!string.isEmpty()) {
-					list.add(string);
-				}
-			}
-
-			if (!list.isEmpty()) {
-				do {
-					this.splashText = (String)list.get(RANDOM.nextInt(list.size()));
-				} while (this.splashText.hashCode() == 125780783);
-			}
-		} catch (IOException var8) {
-		} finally {
-			IOUtils.closeQuietly(resource);
-		}
-
-		this.field_2605 = RANDOM.nextFloat();
+	public MainMenuScreen(class_766 arg, long l) {
+		this.field_2585 = arg;
+		this.field_17772 = SystemUtil.getMeasuringTimeMs();
+		this.field_17773 = this.field_17772 + l;
+		this.field_17776 = (double)new Random().nextFloat() < 1.0E-4;
 		this.warningTitle = "";
 		if (!GLX.supportsOpenGL2() && !GLX.isNextGen()) {
 			this.warningTitle = I18n.translate("title.oldgl1");
@@ -115,6 +90,15 @@ public class MainMenuScreen extends Screen {
 		}
 	}
 
+	public static CompletableFuture<Void> method_18105(TextureManager textureManager) {
+		return CompletableFuture.allOf(
+			textureManager.method_18168(MINECRAFT_TITLE_TEXTURE),
+			textureManager.method_18168(EDITION_TITLE_TEXTURE),
+			textureManager.method_18168(field_17775),
+			field_17774.method_18143(textureManager)
+		);
+	}
+
 	@Override
 	public boolean isPauseScreen() {
 		return false;
@@ -127,18 +111,9 @@ public class MainMenuScreen extends Screen {
 
 	@Override
 	protected void onInitialized() {
+		this.splashText = this.client.getSplashTextLoader().get();
 		this.field_2584 = this.fontRenderer.getStringWidth("Copyright Mojang AB. Do not distribute!");
 		this.field_2606 = this.width - this.field_2584 - 2;
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(new Date());
-		if (calendar.get(2) + 1 == 12 && calendar.get(5) == 24) {
-			this.splashText = "Merry X-mas!";
-		} else if (calendar.get(2) + 1 == 1 && calendar.get(5) == 1) {
-			this.splashText = "Happy new year!";
-		} else if (calendar.get(2) + 1 == 10 && calendar.get(5) == 31) {
-			this.splashText = "OOoooOOOoooo! Spooky!";
-		}
-
 		int i = 24;
 		int j = this.height / 4 + 48;
 		if (this.client.isDemo()) {
@@ -223,7 +198,7 @@ public class MainMenuScreen extends Screen {
 				@Override
 				public void onPressed(double d, double e) {
 					LevelStorage levelStorage = MainMenuScreen.this.client.getLevelStorage();
-					LevelProperties levelProperties = levelStorage.requiresConversion("Demo_World");
+					LevelProperties levelProperties = levelStorage.getLevelProperties("Demo_World");
 					if (levelProperties != null) {
 						MainMenuScreen.this.client
 							.openScreen(
@@ -241,7 +216,7 @@ public class MainMenuScreen extends Screen {
 			}
 		);
 		LevelStorage levelStorage = this.client.getLevelStorage();
-		LevelProperties levelProperties = levelStorage.requiresConversion("Demo_World");
+		LevelProperties levelProperties = levelStorage.getLevelProperties("Demo_World");
 		if (levelProperties == null) {
 			this.buttonResetDemo.enabled = false;
 		}
@@ -256,7 +231,7 @@ public class MainMenuScreen extends Screen {
 	public void confirmResult(boolean bl, int i) {
 		if (bl && i == 12) {
 			LevelStorage levelStorage = this.client.getLevelStorage();
-			levelStorage.delete("Demo_World");
+			levelStorage.deleteLevel("Demo_World");
 			this.client.openScreen(this);
 		} else if (i == 12) {
 			this.client.openScreen(this);
@@ -271,34 +246,36 @@ public class MainMenuScreen extends Screen {
 
 	@Override
 	public void draw(int i, int j, float f) {
-		this.field_2585.method_3317(f);
-		int k = 274;
-		int l = this.width / 2 - 137;
-		int m = 30;
-		this.client.getTextureManager().bindTexture(new Identifier("textures/gui/title/background/panorama_overlay.png"));
+		float g = MathHelper.clamp((float)(SystemUtil.getMeasuringTimeMs() - this.field_17772) / (float)(this.field_17773 - this.field_17772), 0.0F, 1.0F);
+		int k = MathHelper.ceil(g * 255.0F) << 24;
+		this.field_2585.method_3317(f, 1.0F);
+		int l = 274;
+		int m = this.width / 2 - 137;
+		int n = 30;
+		this.client.getTextureManager().bindTexture(field_17775);
 		drawTexturedRect(0, 0, 0.0F, 0.0F, 16, 128, this.width, this.height, 16.0F, 128.0F);
 		this.client.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURE);
-		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		if ((double)this.field_2605 < 1.0E-4) {
-			this.drawTexturedRect(l + 0, 30, 0, 0, 99, 44);
-			this.drawTexturedRect(l + 99, 30, 129, 0, 27, 44);
-			this.drawTexturedRect(l + 99 + 26, 30, 126, 0, 3, 44);
-			this.drawTexturedRect(l + 99 + 26 + 3, 30, 99, 0, 26, 44);
-			this.drawTexturedRect(l + 155, 30, 0, 45, 155, 44);
+		GlStateManager.color4f(1.0F, 1.0F, 1.0F, g);
+		if (this.field_17776) {
+			this.drawTexturedRect(m + 0, 30, 0, 0, 99, 44);
+			this.drawTexturedRect(m + 99, 30, 129, 0, 27, 44);
+			this.drawTexturedRect(m + 99 + 26, 30, 126, 0, 3, 44);
+			this.drawTexturedRect(m + 99 + 26 + 3, 30, 99, 0, 26, 44);
+			this.drawTexturedRect(m + 155, 30, 0, 45, 155, 44);
 		} else {
-			this.drawTexturedRect(l + 0, 30, 0, 0, 155, 44);
-			this.drawTexturedRect(l + 155, 30, 0, 45, 155, 44);
+			this.drawTexturedRect(m + 0, 30, 0, 0, 155, 44);
+			this.drawTexturedRect(m + 155, 30, 0, 45, 155, 44);
 		}
 
 		this.client.getTextureManager().bindTexture(EDITION_TITLE_TEXTURE);
-		drawTexturedRect(l + 88, 67, 0.0F, 0.0F, 98, 14, 128.0F, 16.0F);
+		drawTexturedRect(m + 88, 67, 0.0F, 0.0F, 98, 14, 128.0F, 16.0F);
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef((float)(this.width / 2 + 90), 70.0F, 0.0F);
 		GlStateManager.rotatef(-20.0F, 0.0F, 0.0F, 1.0F);
-		float g = 1.8F - MathHelper.abs(MathHelper.sin((float)(SystemUtil.getMeasuringTimeMs() % 1000L) / 1000.0F * (float) (Math.PI * 2)) * 0.1F);
-		g = g * 100.0F / (float)(this.fontRenderer.getStringWidth(this.splashText) + 32);
-		GlStateManager.scalef(g, g, g);
-		this.drawStringCentered(this.fontRenderer, this.splashText, 0, -8, -256);
+		float h = 1.8F - MathHelper.abs(MathHelper.sin((float)(SystemUtil.getMeasuringTimeMs() % 1000L) / 1000.0F * (float) (Math.PI * 2)) * 0.1F);
+		h = h * 100.0F / (float)(this.fontRenderer.getStringWidth(this.splashText) + 32);
+		GlStateManager.scalef(h, h, h);
+		this.drawStringCentered(this.fontRenderer, this.splashText, 0, -8, 16776960 | k);
 		GlStateManager.popMatrix();
 		String string = "Minecraft " + SharedConstants.getGameVersion().getName();
 		if (this.client.isDemo()) {
@@ -307,20 +284,24 @@ public class MainMenuScreen extends Screen {
 			string = string + ("release".equalsIgnoreCase(this.client.getVersionType()) ? "" : "/" + this.client.getVersionType());
 		}
 
-		this.drawString(this.fontRenderer, string, 2, this.height - 10, -1);
-		this.drawString(this.fontRenderer, "Copyright Mojang AB. Do not distribute!", this.field_2606, this.height - 10, -1);
+		this.drawString(this.fontRenderer, string, 2, this.height - 10, 16777215 | k);
+		this.drawString(this.fontRenderer, "Copyright Mojang AB. Do not distribute!", this.field_2606, this.height - 10, 16777215 | k);
 		if (i > this.field_2606 && i < this.field_2606 + this.field_2584 && j > this.height - 10 && j < this.height) {
-			drawRect(this.field_2606, this.height - 1, this.field_2606 + this.field_2584, this.height, -1);
+			drawRect(this.field_2606, this.height - 1, this.field_2606 + this.field_2584, this.height, 16777215 | k);
 		}
 
 		if (this.warningTitle != null && !this.warningTitle.isEmpty()) {
 			drawRect(this.warningAlignLeft - 2, this.warningAlignTop - 2, this.warningAlignRight + 2, this.warningAlignBottom - 1, 1428160512);
-			this.drawString(this.fontRenderer, this.warningTitle, this.warningAlignLeft, this.warningAlignTop, -1);
-			this.drawString(this.fontRenderer, this.warningText, (this.width - this.warningTextWidth) / 2, this.warningAlignTop + 12, -1);
+			this.drawString(this.fontRenderer, this.warningTitle, this.warningAlignLeft, this.warningAlignTop, 16777215 | k);
+			this.drawString(this.fontRenderer, this.warningText, (this.width - this.warningTextWidth) / 2, this.warningAlignTop + 12, 16777215 | k);
+		}
+
+		for (ButtonWidget buttonWidget : this.buttons) {
+			buttonWidget.method_18100(g);
 		}
 
 		super.draw(i, j, f);
-		if (this.areRealmsNotificationsEnabled()) {
+		if (this.areRealmsNotificationsEnabled() && g >= 1.0F) {
 			this.realmsNotificationGui.draw(i, j, f);
 		}
 	}

@@ -137,7 +137,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 			world.setBlockState(blockPos, blockState, 10);
 		}
 
-		world.fireWorldEvent(playerEntity, blockState.get(OPEN) ? 1008 : 1014, blockPos, 0);
+		world.playEvent(playerEntity, blockState.get(OPEN) ? 1008 : 1014, blockPos, 0);
 		return true;
 	}
 
@@ -148,7 +148,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 			if ((Boolean)blockState.get(POWERED) != bl) {
 				world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(bl)).with(OPEN, Boolean.valueOf(bl)), 2);
 				if ((Boolean)blockState.get(OPEN) != bl) {
-					world.fireWorldEvent(null, bl ? 1008 : 1014, blockPos, 0);
+					world.playEvent(null, bl ? 1008 : 1014, blockPos, 0);
 				}
 			}
 		}

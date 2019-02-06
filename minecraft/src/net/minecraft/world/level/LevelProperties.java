@@ -14,8 +14,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_233;
-import net.minecraft.class_236;
 import net.minecraft.datafixers.NbtOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -31,6 +29,8 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.timer.Timer;
+import net.minecraft.world.timer.TimerCallbackSerializer;
 
 public class LevelProperties {
 	private String versionName;
@@ -82,11 +82,11 @@ public class LevelProperties {
 	private final Set<String> enabledDataPacks = Sets.<String>newLinkedHashSet();
 	private final Map<DimensionType, CompoundTag> worldData = Maps.<DimensionType, CompoundTag>newIdentityHashMap();
 	private CompoundTag customBossEvents;
-	private int field_17736;
-	private int field_17737;
-	private UUID field_17738;
+	private int wanderingTraderSpawnDelay;
+	private int wanderingTraderSpawnChance;
+	private UUID wanderingTraderId;
 	private final GameRules gameRules = new GameRules();
-	private final class_236<MinecraftServer> field_191 = new class_236<>(class_233.field_1306);
+	private final Timer<MinecraftServer> scheduledEvents = new Timer<>(TimerCallbackSerializer.INSTANCE);
 
 	protected LevelProperties() {
 		this.dataFixer = null;
@@ -176,7 +176,7 @@ public class LevelProperties {
 		}
 
 		if (compoundTag.containsKey("Difficulty", 99)) {
-			this.difficulty = Difficulty.byId(compoundTag.getByte("Difficulty"));
+			this.difficulty = Difficulty.getDifficulty(compoundTag.getByte("Difficulty"));
 		}
 
 		if (compoundTag.containsKey("DifficultyLocked", 1)) {
@@ -247,32 +247,32 @@ public class LevelProperties {
 		}
 
 		if (compoundTag.containsKey("ScheduledEvents", 9)) {
-			this.field_191.method_979(compoundTag.getList("ScheduledEvents", 10));
+			this.scheduledEvents.fromTag(compoundTag.getList("ScheduledEvents", 10));
 		}
 
 		if (compoundTag.containsKey("WanderingTraderSpawnDelay", 99)) {
-			this.field_17736 = compoundTag.getInt("WanderingTraderSpawnDelay");
+			this.wanderingTraderSpawnDelay = compoundTag.getInt("WanderingTraderSpawnDelay");
 		}
 
 		if (compoundTag.containsKey("WanderingTraderSpawnChance", 99)) {
-			this.field_17737 = compoundTag.getInt("WanderingTraderSpawnChance");
+			this.wanderingTraderSpawnChance = compoundTag.getInt("WanderingTraderSpawnChance");
 		}
 
 		if (compoundTag.containsKey("WanderingTraderId", 8)) {
-			this.field_17738 = UUID.fromString(compoundTag.getString("WanderingTraderId"));
+			this.wanderingTraderId = UUID.fromString(compoundTag.getString("WanderingTraderId"));
 		}
 	}
 
 	public LevelProperties(LevelInfo levelInfo, String string) {
 		this.dataFixer = null;
 		this.playerWorldId = SharedConstants.getGameVersion().getWorldVersion();
-		this.method_140(levelInfo);
+		this.loadLevelInfo(levelInfo);
 		this.levelName = string;
 		this.difficulty = DEFAULT_DIFFICULTY;
 		this.initialized = false;
 	}
 
-	public void method_140(LevelInfo levelInfo) {
+	public void loadLevelInfo(LevelInfo levelInfo) {
 		this.randomSeed = levelInfo.getSeed();
 		this.gameMode = levelInfo.getGameMode();
 		this.structures = levelInfo.hasStructures();
@@ -376,11 +376,11 @@ public class LevelProperties {
 			compoundTag.put("CustomBossEvents", this.customBossEvents);
 		}
 
-		compoundTag.put("ScheduledEvents", this.field_191.method_982());
-		compoundTag.putInt("WanderingTraderSpawnDelay", this.field_17736);
-		compoundTag.putInt("WanderingTraderSpawnChance", this.field_17737);
-		if (this.field_17738 != null) {
-			compoundTag.putString("WanderingTraderId", this.field_17738.toString());
+		compoundTag.put("ScheduledEvents", this.scheduledEvents.toTag());
+		compoundTag.putInt("WanderingTraderSpawnDelay", this.wanderingTraderSpawnDelay);
+		compoundTag.putInt("WanderingTraderSpawnChance", this.wanderingTraderSpawnChance);
+		if (this.wanderingTraderId != null) {
+			compoundTag.putString("WanderingTraderId", this.wanderingTraderId.toString());
 		}
 	}
 
@@ -672,8 +672,8 @@ public class LevelProperties {
 		this.difficultyLocked = bl;
 	}
 
-	public class_236<MinecraftServer> method_143() {
-		return this.field_191;
+	public Timer<MinecraftServer> getScheduledEvents() {
+		return this.scheduledEvents;
 	}
 
 	public void populateCrashReport(CrashReportSection crashReportSection) {
@@ -759,23 +759,23 @@ public class LevelProperties {
 		this.customBossEvents = compoundTag;
 	}
 
-	public int method_18038() {
-		return this.field_17736;
+	public int getWanderingTraderSpawnDelay() {
+		return this.wanderingTraderSpawnDelay;
 	}
 
-	public void method_18041(int i) {
-		this.field_17736 = i;
+	public void setWanderingTraderSpawnDelay(int i) {
+		this.wanderingTraderSpawnDelay = i;
 	}
 
-	public int method_18039() {
-		return this.field_17737;
+	public int getWanderingTraderSpawnChance() {
+		return this.wanderingTraderSpawnChance;
 	}
 
-	public void method_18042(int i) {
-		this.field_17737 = i;
+	public void setWanderingTraderSpawnChance(int i) {
+		this.wanderingTraderSpawnChance = i;
 	}
 
-	public void method_18040(UUID uUID) {
-		this.field_17738 = uUID;
+	public void setWanderingTraderId(UUID uUID) {
+		this.wanderingTraderId = uUID;
 	}
 }

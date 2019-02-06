@@ -35,20 +35,21 @@ public interface Chunk extends BlockViewWithStructures {
 	void addEntity(Entity entity);
 
 	@Nullable
-	default ChunkSection method_12040() {
+	default ChunkSection getHighestNonEmptySection() {
 		ChunkSection[] chunkSections = this.getSectionArray();
 
 		for (int i = chunkSections.length - 1; i >= 0; i--) {
-			if (chunkSections[i] != WorldChunk.EMPTY_SECTION) {
-				return chunkSections[i];
+			ChunkSection chunkSection = chunkSections[i];
+			if (!ChunkSection.isEmpty(chunkSection)) {
+				return chunkSection;
 			}
 		}
 
 		return null;
 	}
 
-	default int method_12031() {
-		ChunkSection chunkSection = this.method_12040();
+	default int getHighestNonEmptySectionYOffset() {
+		ChunkSection chunkSection = this.getHighestNonEmptySection();
 		return chunkSection == null ? 0 : chunkSection.getYOffset();
 	}
 
@@ -59,7 +60,7 @@ public interface Chunk extends BlockViewWithStructures {
 	@Nullable
 	LightingProvider getLightingProvider();
 
-	default int method_12035(BlockPos blockPos, int i, boolean bl) {
+	default int getLightLevel(BlockPos blockPos, int i, boolean bl) {
 		LightingProvider lightingProvider = this.getLightingProvider();
 		if (lightingProvider == null) {
 			return 0;
@@ -111,7 +112,7 @@ public interface Chunk extends BlockViewWithStructures {
 	ShortList[] getPostProcessingLists();
 
 	default void markBlockForPostProcessing(short s, int i) {
-		getListFromArray(this.getPostProcessingLists(), i).add(s);
+		getList(this.getPostProcessingLists(), i).add(s);
 	}
 
 	default void addPendingBlockEntityTag(CompoundTag compoundTag) {
@@ -127,7 +128,7 @@ public interface Chunk extends BlockViewWithStructures {
 		throw new UnsupportedOperationException();
 	}
 
-	Stream<BlockPos> method_12018();
+	Stream<BlockPos> getLightSourcesStream();
 
 	TickScheduler<Block> getBlockTickScheduler();
 
@@ -143,7 +144,7 @@ public interface Chunk extends BlockViewWithStructures {
 
 	long getInhabitedTime();
 
-	static ShortList getListFromArray(ShortList[] shortLists, int i) {
+	static ShortList getList(ShortList[] shortLists, int i) {
 		if (shortLists[i] == null) {
 			shortLists[i] = new ShortArrayList();
 		}

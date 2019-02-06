@@ -16,45 +16,45 @@ public class ChunkNibbleArray {
 		}
 	}
 
-	public int method_12139(int i, int j, int k) {
-		return this.method_12141(this.getIndex(i, j, k));
+	public int get(int i, int j, int k) {
+		return this.get(this.getIndex(i, j, k));
 	}
 
 	public void set(int i, int j, int k, int l) {
-		this.method_12142(this.getIndex(i, j, k), l);
+		this.set(this.getIndex(i, j, k), l);
 	}
 
 	protected int getIndex(int i, int j, int k) {
 		return j << 8 | k << 4 | i;
 	}
 
-	private int method_12141(int i) {
+	private int get(int i) {
 		if (this.byteArray == null) {
 			return 0;
 		} else {
-			int j = this.method_12138(i);
-			return this.method_12143(i) ? this.byteArray[j] & 15 : this.byteArray[j] >> 4 & 15;
+			int j = this.divideByTwo(i);
+			return this.isEven(i) ? this.byteArray[j] & 15 : this.byteArray[j] >> 4 & 15;
 		}
 	}
 
-	private void method_12142(int i, int j) {
+	private void set(int i, int j) {
 		if (this.byteArray == null) {
 			this.byteArray = new byte[2048];
 		}
 
-		int k = this.method_12138(i);
-		if (this.method_12143(i)) {
+		int k = this.divideByTwo(i);
+		if (this.isEven(i)) {
 			this.byteArray[k] = (byte)(this.byteArray[k] & 240 | j & 15);
 		} else {
 			this.byteArray[k] = (byte)(this.byteArray[k] & 15 | (j & 15) << 4);
 		}
 	}
 
-	private boolean method_12143(int i) {
+	private boolean isEven(int i) {
 		return (i & 1) == 0;
 	}
 
-	private int method_12138(int i) {
+	private int divideByTwo(int i) {
 		return i >> 1;
 	}
 
@@ -66,7 +66,7 @@ public class ChunkNibbleArray {
 		return this.byteArray;
 	}
 
-	public ChunkNibbleArray method_12144() {
+	public ChunkNibbleArray copy() {
 		return this.byteArray == null ? new ChunkNibbleArray() : new ChunkNibbleArray((byte[])this.byteArray.clone());
 	}
 
@@ -74,7 +74,7 @@ public class ChunkNibbleArray {
 		StringBuilder stringBuilder = new StringBuilder();
 
 		for (int i = 0; i < 4096; i++) {
-			stringBuilder.append(Integer.toHexString(this.method_12141(i)));
+			stringBuilder.append(Integer.toHexString(this.get(i)));
 			if ((i & 15) == 15) {
 				stringBuilder.append("\n");
 			}

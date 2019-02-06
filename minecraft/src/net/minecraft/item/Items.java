@@ -5,7 +5,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
@@ -715,7 +714,7 @@ public class Items {
 	public static final Item field_8145 = register("flint", new Item(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8389 = register("porkchop", new FoodItem(3, 0.3F, true, new Item.Settings().itemGroup(ItemGroup.FOOD)));
 	public static final Item field_8261 = register("cooked_porkchop", new FoodItem(8, 0.8F, true, new Item.Settings().itemGroup(ItemGroup.FOOD)));
-	public static final Item field_8892 = register("painting", new DecorationItem(PaintingEntity.class, new Item.Settings().itemGroup(ItemGroup.DECORATIONS)));
+	public static final Item field_8892 = register("painting", new DecorationItem(EntityType.PAINTING, new Item.Settings().itemGroup(ItemGroup.DECORATIONS)));
 	public static final Item field_8463 = register(
 		"golden_apple", new GoldenAppleItem(4, 1.2F, false, new Item.Settings().itemGroup(ItemGroup.FOOD).rarity(Rarity.field_8903)).setAlwaysConsumable()
 	);
@@ -935,9 +934,6 @@ public class Items {
 	public static final Item field_8760 = register(
 		"husk_spawn_egg", new SpawnEggItem(EntityType.HUSK, 7958625, 15125652, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
-	public static final Item field_8297 = register(
-		"ravager_spawn_egg", new SpawnEggItem(EntityType.ILLAGER_BEAST, 7697520, 5984329, new Item.Settings().itemGroup(ItemGroup.MISC))
-	);
 	public static final Item field_8633 = register(
 		"llama_spawn_egg", new SpawnEggItem(EntityType.LLAMA, 12623485, 10051392, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
@@ -976,6 +972,9 @@ public class Items {
 	);
 	public static final Item field_8227 = register(
 		"rabbit_spawn_egg", new SpawnEggItem(EntityType.RABBIT, 10051392, 7555121, new Item.Settings().itemGroup(ItemGroup.MISC))
+	);
+	public static final Item field_8297 = register(
+		"ravager_spawn_egg", new SpawnEggItem(EntityType.ILLAGER_BEAST, 7697520, 5984329, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8447 = register(
 		"salmon_spawn_egg", new SpawnEggItem(EntityType.SALMON, 10489616, 951412, new Item.Settings().itemGroup(ItemGroup.MISC))

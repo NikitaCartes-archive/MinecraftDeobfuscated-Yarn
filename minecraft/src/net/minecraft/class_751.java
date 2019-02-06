@@ -1,12 +1,14 @@
 package net.minecraft;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import java.util.concurrent.CompletableFuture;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.util.Identifier;
 
@@ -20,7 +22,7 @@ public class class_751 {
 		}
 	}
 
-	public void method_3156(MinecraftClient minecraftClient, float f, float g) {
+	public void method_3156(MinecraftClient minecraftClient, float f, float g, float h) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		GlStateManager.matrixMode(5889);
@@ -45,57 +47,57 @@ public class class_751 {
 
 		for (int j = 0; j < 4; j++) {
 			GlStateManager.pushMatrix();
-			float h = ((float)(j % 2) / 2.0F - 0.5F) / 256.0F;
-			float k = ((float)(j / 2) / 2.0F - 0.5F) / 256.0F;
-			float l = 0.0F;
-			GlStateManager.translatef(h, k, 0.0F);
+			float k = ((float)(j % 2) / 2.0F - 0.5F) / 256.0F;
+			float l = ((float)(j / 2) / 2.0F - 0.5F) / 256.0F;
+			float m = 0.0F;
+			GlStateManager.translatef(k, l, 0.0F);
 			GlStateManager.rotatef(f, 1.0F, 0.0F, 0.0F);
 			GlStateManager.rotatef(g, 0.0F, 1.0F, 0.0F);
 
-			for (int m = 0; m < 6; m++) {
-				minecraftClient.getTextureManager().bindTexture(this.field_3952[m]);
+			for (int n = 0; n < 6; n++) {
+				minecraftClient.getTextureManager().bindTexture(this.field_3952[n]);
 				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-				int n = 255 / (j + 1);
-				if (m == 0) {
-					bufferBuilder.vertex(-1.0, -1.0, 1.0).texture(0.0, 0.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(-1.0, 1.0, 1.0).texture(0.0, 1.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(1.0, 1.0, 1.0).texture(1.0, 1.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(1.0, -1.0, 1.0).texture(1.0, 0.0).color(255, 255, 255, n).next();
+				int o = Math.round(255.0F * h) / (j + 1);
+				if (n == 0) {
+					bufferBuilder.vertex(-1.0, -1.0, 1.0).texture(0.0, 0.0).color(255, 255, 255, o).next();
+					bufferBuilder.vertex(-1.0, 1.0, 1.0).texture(0.0, 1.0).color(255, 255, 255, o).next();
+					bufferBuilder.vertex(1.0, 1.0, 1.0).texture(1.0, 1.0).color(255, 255, 255, o).next();
+					bufferBuilder.vertex(1.0, -1.0, 1.0).texture(1.0, 0.0).color(255, 255, 255, o).next();
 				}
 
-				if (m == 1) {
-					bufferBuilder.vertex(1.0, -1.0, 1.0).texture(0.0, 0.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(1.0, 1.0, 1.0).texture(0.0, 1.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(1.0, 1.0, -1.0).texture(1.0, 1.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(1.0, -1.0, -1.0).texture(1.0, 0.0).color(255, 255, 255, n).next();
+				if (n == 1) {
+					bufferBuilder.vertex(1.0, -1.0, 1.0).texture(0.0, 0.0).color(255, 255, 255, o).next();
+					bufferBuilder.vertex(1.0, 1.0, 1.0).texture(0.0, 1.0).color(255, 255, 255, o).next();
+					bufferBuilder.vertex(1.0, 1.0, -1.0).texture(1.0, 1.0).color(255, 255, 255, o).next();
+					bufferBuilder.vertex(1.0, -1.0, -1.0).texture(1.0, 0.0).color(255, 255, 255, o).next();
 				}
 
-				if (m == 2) {
-					bufferBuilder.vertex(1.0, -1.0, -1.0).texture(0.0, 0.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(1.0, 1.0, -1.0).texture(0.0, 1.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(-1.0, 1.0, -1.0).texture(1.0, 1.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(-1.0, -1.0, -1.0).texture(1.0, 0.0).color(255, 255, 255, n).next();
+				if (n == 2) {
+					bufferBuilder.vertex(1.0, -1.0, -1.0).texture(0.0, 0.0).color(255, 255, 255, o).next();
+					bufferBuilder.vertex(1.0, 1.0, -1.0).texture(0.0, 1.0).color(255, 255, 255, o).next();
+					bufferBuilder.vertex(-1.0, 1.0, -1.0).texture(1.0, 1.0).color(255, 255, 255, o).next();
+					bufferBuilder.vertex(-1.0, -1.0, -1.0).texture(1.0, 0.0).color(255, 255, 255, o).next();
 				}
 
-				if (m == 3) {
-					bufferBuilder.vertex(-1.0, -1.0, -1.0).texture(0.0, 0.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(-1.0, 1.0, -1.0).texture(0.0, 1.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(-1.0, 1.0, 1.0).texture(1.0, 1.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(-1.0, -1.0, 1.0).texture(1.0, 0.0).color(255, 255, 255, n).next();
+				if (n == 3) {
+					bufferBuilder.vertex(-1.0, -1.0, -1.0).texture(0.0, 0.0).color(255, 255, 255, o).next();
+					bufferBuilder.vertex(-1.0, 1.0, -1.0).texture(0.0, 1.0).color(255, 255, 255, o).next();
+					bufferBuilder.vertex(-1.0, 1.0, 1.0).texture(1.0, 1.0).color(255, 255, 255, o).next();
+					bufferBuilder.vertex(-1.0, -1.0, 1.0).texture(1.0, 0.0).color(255, 255, 255, o).next();
 				}
 
-				if (m == 4) {
-					bufferBuilder.vertex(-1.0, -1.0, -1.0).texture(0.0, 0.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(-1.0, -1.0, 1.0).texture(0.0, 1.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(1.0, -1.0, 1.0).texture(1.0, 1.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(1.0, -1.0, -1.0).texture(1.0, 0.0).color(255, 255, 255, n).next();
+				if (n == 4) {
+					bufferBuilder.vertex(-1.0, -1.0, -1.0).texture(0.0, 0.0).color(255, 255, 255, o).next();
+					bufferBuilder.vertex(-1.0, -1.0, 1.0).texture(0.0, 1.0).color(255, 255, 255, o).next();
+					bufferBuilder.vertex(1.0, -1.0, 1.0).texture(1.0, 1.0).color(255, 255, 255, o).next();
+					bufferBuilder.vertex(1.0, -1.0, -1.0).texture(1.0, 0.0).color(255, 255, 255, o).next();
 				}
 
-				if (m == 5) {
-					bufferBuilder.vertex(-1.0, 1.0, 1.0).texture(0.0, 0.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(-1.0, 1.0, -1.0).texture(0.0, 1.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(1.0, 1.0, -1.0).texture(1.0, 1.0).color(255, 255, 255, n).next();
-					bufferBuilder.vertex(1.0, 1.0, 1.0).texture(1.0, 0.0).color(255, 255, 255, n).next();
+				if (n == 5) {
+					bufferBuilder.vertex(-1.0, 1.0, 1.0).texture(0.0, 0.0).color(255, 255, 255, o).next();
+					bufferBuilder.vertex(-1.0, 1.0, -1.0).texture(0.0, 1.0).color(255, 255, 255, o).next();
+					bufferBuilder.vertex(1.0, 1.0, -1.0).texture(1.0, 1.0).color(255, 255, 255, o).next();
+					bufferBuilder.vertex(1.0, 1.0, 1.0).texture(1.0, 0.0).color(255, 255, 255, o).next();
 				}
 
 				tessellator.draw();
@@ -114,5 +116,15 @@ public class class_751 {
 		GlStateManager.depthMask(true);
 		GlStateManager.enableCull();
 		GlStateManager.enableDepthTest();
+	}
+
+	public CompletableFuture<Void> method_18143(TextureManager textureManager) {
+		CompletableFuture<?>[] completableFutures = new CompletableFuture[6];
+
+		for (int i = 0; i < completableFutures.length; i++) {
+			completableFutures[i] = textureManager.method_18168(this.field_3952[i]);
+		}
+
+		return CompletableFuture.allOf(completableFutures);
 	}
 }

@@ -21,7 +21,7 @@ public class ConfiguredFeature<FC extends FeatureConfig> {
 	}
 
 	public ConfiguredFeature(Feature<FC> feature, Dynamic<?> dynamic) {
-		this(feature, feature.deserialize(dynamic));
+		this(feature, feature.deserializeConfig(dynamic));
 	}
 
 	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {

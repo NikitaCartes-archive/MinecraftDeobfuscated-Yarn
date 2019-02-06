@@ -133,9 +133,11 @@ public class BucketItem extends Item {
 						world.addParticle(ParticleTypes.field_11237, (double)i + Math.random(), (double)j + Math.random(), (double)k + Math.random(), 0.0, 0.0, 0.0);
 					}
 				} else if (blockState.getBlock() instanceof FluidFillable) {
-					if (((FluidFillable)blockState.getBlock()).tryFillWithFluid(world, blockPos, blockState, ((BaseFluid)this.fluid).getState(false))) {
-						this.playEmptyingSound(playerEntity, world, blockPos);
+					if (!((FluidFillable)blockState.getBlock()).tryFillWithFluid(world, blockPos, blockState, ((BaseFluid)this.fluid).getState(false))) {
+						return false;
 					}
+
+					this.playEmptyingSound(playerEntity, world, blockPos);
 				} else {
 					if (!world.isClient && (bl || bl2) && !material.isLiquid()) {
 						world.breakBlock(blockPos, true);

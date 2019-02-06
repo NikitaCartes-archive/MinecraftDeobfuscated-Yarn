@@ -68,13 +68,13 @@ public class OverworldDimension extends Dimension {
 		BiomeSourceType<VanillaLayeredBiomeSourceConfig, VanillaLayeredBiomeSource> biomeSourceType2 = BiomeSourceType.VANILLA_LAYERED;
 		BiomeSourceType<CheckerboardBiomeSourceConfig, CheckerboardBiomeSource> biomeSourceType3 = BiomeSourceType.CHECKERBOARD;
 		if (levelGeneratorType == LevelGeneratorType.FLAT) {
-			FlatChunkGeneratorConfig flatChunkGeneratorConfig = FlatChunkGeneratorConfig.method_14323(
+			FlatChunkGeneratorConfig flatChunkGeneratorConfig = FlatChunkGeneratorConfig.fromDynamic(
 				new Dynamic<>(NbtOps.INSTANCE, this.world.getLevelProperties().getGeneratorOptions())
 			);
-			FixedBiomeSourceConfig fixedBiomeSourceConfig = biomeSourceType.getConfig().method_8782(flatChunkGeneratorConfig.getBiome());
+			FixedBiomeSourceConfig fixedBiomeSourceConfig = biomeSourceType.getConfig().setBiome(flatChunkGeneratorConfig.getBiome());
 			return chunkGeneratorType.create(this.world, biomeSourceType.applyConfig(fixedBiomeSourceConfig), flatChunkGeneratorConfig);
 		} else if (levelGeneratorType == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
-			FixedBiomeSourceConfig fixedBiomeSourceConfig2 = biomeSourceType.getConfig().method_8782(Biomes.field_9451);
+			FixedBiomeSourceConfig fixedBiomeSourceConfig2 = biomeSourceType.getConfig().setBiome(Biomes.biome);
 			return chunkGeneratorType2.create(this.world, biomeSourceType.applyConfig(fixedBiomeSourceConfig2), chunkGeneratorType2.createSettings());
 		} else if (levelGeneratorType != LevelGeneratorType.BUFFET) {
 			OverworldChunkGeneratorConfig overworldChunkGeneratorConfig2 = chunkGeneratorType5.createSettings();
@@ -101,7 +101,7 @@ public class OverworldDimension extends Dimension {
 				}
 
 				if (BiomeSourceType.FIXED == biomeSourceType4) {
-					FixedBiomeSourceConfig fixedBiomeSourceConfig3 = biomeSourceType.getConfig().method_8782(biomes[0]);
+					FixedBiomeSourceConfig fixedBiomeSourceConfig3 = biomeSourceType.getConfig().setBiome(biomes[0]);
 					biomeSource = biomeSourceType.applyConfig(fixedBiomeSourceConfig3);
 				}
 
@@ -120,7 +120,7 @@ public class OverworldDimension extends Dimension {
 			}
 
 			if (biomeSource == null) {
-				biomeSource = biomeSourceType.applyConfig(biomeSourceType.getConfig().method_8782(Biomes.field_9423));
+				biomeSource = biomeSourceType.applyConfig(biomeSourceType.getConfig().setBiome(Biomes.field_9423));
 			}
 
 			BlockState blockState = Blocks.field_10340.getDefaultState();
@@ -166,8 +166,8 @@ public class OverworldDimension extends Dimension {
 	@Nullable
 	@Override
 	public BlockPos getSpawningBlockInChunk(ChunkPos chunkPos, boolean bl) {
-		for (int i = chunkPos.getXStart(); i <= chunkPos.getXEnd(); i++) {
-			for (int j = chunkPos.getZStart(); j <= chunkPos.getZEnd(); j++) {
+		for (int i = chunkPos.getStartX(); i <= chunkPos.getEndX(); i++) {
+			for (int j = chunkPos.getStartZ(); j <= chunkPos.getEndZ(); j++) {
 				BlockPos blockPos = this.getTopSpawningBlockPosition(i, j, bl);
 				if (blockPos != null) {
 					return blockPos;

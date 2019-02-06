@@ -5,44 +5,42 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Lazy;
 
 @Environment(EnvType.CLIENT)
 public final class MissingSprite extends Sprite {
 	private static final Identifier MISSINGNO = new Identifier("missingno");
 	@Nullable
-	private static NativeImageBackedTexture field_5220;
-	private static final NativeImage IMAGE = new NativeImage(16, 16, false);
-	private static final MissingSprite INSTANCE = SystemUtil.get(() -> {
-		MissingSprite missingSprite = new MissingSprite();
+	private static NativeImageBackedTexture TEXTURE;
+	private static final Lazy<NativeImage> IMAGE = new Lazy<>(() -> {
+		NativeImage nativeImage = new NativeImage(16, 16, false);
 		int i = -16777216;
 		int j = -524040;
 
 		for (int k = 0; k < 16; k++) {
 			for (int l = 0; l < 16; l++) {
 				if (k < 8 ^ l < 8) {
-					IMAGE.setPixelRGBA(l, k, -524040);
+					nativeImage.setPixelRGBA(l, k, -524040);
 				} else {
-					IMAGE.setPixelRGBA(l, k, -16777216);
+					nativeImage.setPixelRGBA(l, k, -16777216);
 				}
 			}
 		}
 
-		IMAGE.method_4302();
-		return missingSprite;
+		nativeImage.method_4302();
+		return nativeImage;
 	});
 
 	private MissingSprite() {
 		super(MISSINGNO, 16, 16);
-		this.images = new NativeImage[1];
-		this.images[0] = IMAGE;
+		this.images = new NativeImage[]{IMAGE.get()};
 	}
 
 	public static MissingSprite getMissingSprite() {
-		return INSTANCE;
+		return new MissingSprite();
 	}
 
-	public static Identifier getMissingTextureId() {
+	public static Identifier getMissingSpriteId() {
 		return MISSINGNO;
 	}
 
@@ -52,16 +50,15 @@ public final class MissingSprite extends Sprite {
 			this.images[i].close();
 		}
 
-		this.images = new NativeImage[1];
-		this.images[0] = IMAGE;
+		this.images = new NativeImage[]{IMAGE.get()};
 	}
 
-	public static NativeImageBackedTexture method_4540() {
-		if (field_5220 == null) {
-			field_5220 = new NativeImageBackedTexture(IMAGE);
-			MinecraftClient.getInstance().getTextureManager().registerTexture(MISSINGNO, field_5220);
+	public static NativeImageBackedTexture getMissingSpriteTexture() {
+		if (TEXTURE == null) {
+			TEXTURE = new NativeImageBackedTexture(IMAGE.get());
+			MinecraftClient.getInstance().getTextureManager().registerTexture(MISSINGNO, TEXTURE);
 		}
 
-		return field_5220;
+		return TEXTURE;
 	}
 }

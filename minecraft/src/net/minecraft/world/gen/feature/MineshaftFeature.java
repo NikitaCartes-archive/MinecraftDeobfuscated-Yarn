@@ -36,7 +36,7 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 
 	@Override
 	public StructureFeature.StructureStartFactory getStructureStartFactory() {
-		return MineshaftFeature.class_3099::new;
+		return MineshaftFeature.Start::new;
 	}
 
 	@Override
@@ -45,8 +45,36 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 	}
 
 	@Override
-	public int method_14021() {
+	public int getRadius() {
 		return 8;
+	}
+
+	public static class Start extends StructureStart {
+		public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
+			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
+		}
+
+		@Override
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+			MineshaftFeatureConfig mineshaftFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.MINESHAFT);
+			MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(
+				0, this.random, (i << 4) + 2, (j << 4) + 2, mineshaftFeatureConfig.type
+			);
+			this.children.add(mineshaftRoom);
+			mineshaftRoom.method_14918(mineshaftRoom, this.children, this.random);
+			this.setBoundingBoxFromChildren();
+			if (mineshaftFeatureConfig.type == MineshaftFeature.Type.MESA) {
+				int k = -5;
+				int l = chunkGenerator.getSeaLevel() - this.boundingBox.maxY + this.boundingBox.getBlockCountY() / 2 - -5;
+				this.boundingBox.translate(0, l, 0);
+
+				for (StructurePiece structurePiece : this.children) {
+					structurePiece.translate(0, l, 0);
+				}
+			} else {
+				this.method_14978(chunkGenerator.getSeaLevel(), this.random, 10);
+			}
+		}
 	}
 
 	public static enum Type {
@@ -71,34 +99,6 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 
 		public static MineshaftFeature.Type byIndex(int i) {
 			return i >= 0 && i < values().length ? values()[i] : NORMAL;
-		}
-	}
-
-	public static class class_3099 extends StructureStart {
-		public class_3099(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
-			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
-		}
-
-		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
-			MineshaftFeatureConfig mineshaftFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.MINESHAFT);
-			MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(
-				0, this.random, (i << 4) + 2, (j << 4) + 2, mineshaftFeatureConfig.type
-			);
-			this.children.add(mineshaftRoom);
-			mineshaftRoom.method_14918(mineshaftRoom, this.children, this.random);
-			this.setBoundingBoxFromChildren();
-			if (mineshaftFeatureConfig.type == MineshaftFeature.Type.MESA) {
-				int k = -5;
-				int l = chunkGenerator.method_16398() - this.boundingBox.maxY + this.boundingBox.getBlockCountY() / 2 - -5;
-				this.boundingBox.translate(0, l, 0);
-
-				for (StructurePiece structurePiece : this.children) {
-					structurePiece.translate(0, l, 0);
-				}
-			} else {
-				this.method_14978(chunkGenerator.method_16398(), this.random, 10);
-			}
 		}
 	}
 }

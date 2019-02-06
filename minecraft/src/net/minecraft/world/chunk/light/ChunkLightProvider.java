@@ -143,7 +143,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 	}
 
 	protected int getCurrentLevelFromArray(ChunkNibbleArray chunkNibbleArray, long l) {
-		return 15 - chunkNibbleArray.method_12139(BlockPos.unpackLongX(l) & 15, BlockPos.unpackLongY(l) & 15, BlockPos.unpackLongZ(l) & 15);
+		return 15 - chunkNibbleArray.get(BlockPos.unpackLongX(l) & 15, BlockPos.unpackLongY(l) & 15, BlockPos.unpackLongZ(l) & 15);
 	}
 
 	@Override

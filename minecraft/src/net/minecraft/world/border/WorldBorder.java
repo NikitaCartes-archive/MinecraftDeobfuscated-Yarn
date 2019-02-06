@@ -34,10 +34,10 @@ public class WorldBorder {
 	}
 
 	public boolean contains(ChunkPos chunkPos) {
-		return (double)chunkPos.getXEnd() > this.getBoundWest()
-			&& (double)chunkPos.getXStart() < this.getBoundEast()
-			&& (double)chunkPos.getZEnd() > this.getBoundNorth()
-			&& (double)chunkPos.getZStart() < this.getBoundSouth();
+		return (double)chunkPos.getEndX() > this.getBoundWest()
+			&& (double)chunkPos.getStartX() < this.getBoundEast()
+			&& (double)chunkPos.getEndZ() > this.getBoundNorth()
+			&& (double)chunkPos.getStartZ() < this.getBoundSouth();
 	}
 
 	public boolean contains(BoundingBox boundingBox) {
@@ -124,11 +124,11 @@ public class WorldBorder {
 		}
 	}
 
-	public void method_11957(double d, double e, long l) {
+	public void interpolateSize(double d, double e, long l) {
 		this.area = (WorldBorder.Area)(d == e ? new WorldBorder.StaticArea(e) : new WorldBorder.MovingArea(d, e, l));
 
 		for (WorldBorderListener worldBorderListener : this.getListeners()) {
-			worldBorderListener.method_11931(this, d, e, l);
+			worldBorderListener.onInterpolateSize(this, d, e, l);
 		}
 	}
 
@@ -174,8 +174,8 @@ public class WorldBorder {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public double method_11974() {
-		return this.area.method_11987();
+	public double getShrinkingSpeed() {
+		return this.area.getShrinkingSpeed();
 	}
 
 	public int getWarningTime() {
@@ -206,7 +206,7 @@ public class WorldBorder {
 		this.area = this.area.getAreaInstance();
 	}
 
-	public void method_17904(LevelProperties levelProperties) {
+	public void save(LevelProperties levelProperties) {
 		levelProperties.setBorderSize(this.getSize());
 		levelProperties.setBorderCenterX(this.getCenterX());
 		levelProperties.borderCenterZ(this.getCenterZ());
@@ -218,14 +218,14 @@ public class WorldBorder {
 		levelProperties.setBorderSizeLerpTime(this.getTargetRemainingTime());
 	}
 
-	public void method_17905(LevelProperties levelProperties) {
+	public void load(LevelProperties levelProperties) {
 		this.setCenter(levelProperties.getBorderCenterX(), levelProperties.getBorderCenterZ());
 		this.setDamagePerBlock(levelProperties.getBorderDamagePerBlock());
 		this.setSafeZone(levelProperties.getBorderSafeZone());
 		this.setWarningBlocks(levelProperties.getBorderWarningBlocks());
 		this.setWarningTime(levelProperties.getBorderWarningTime());
 		if (levelProperties.getBorderSizeLerpTime() > 0L) {
-			this.method_11957(levelProperties.getBorderSize(), levelProperties.getBorderSizeLerpTarget(), levelProperties.getBorderSizeLerpTime());
+			this.interpolateSize(levelProperties.getBorderSize(), levelProperties.getBorderSizeLerpTarget(), levelProperties.getBorderSizeLerpTime());
 		} else {
 			this.setSize(levelProperties.getBorderSize());
 		}
@@ -243,7 +243,7 @@ public class WorldBorder {
 		double getSize();
 
 		@Environment(EnvType.CLIENT)
-		double method_11987();
+		double getShrinkingSpeed();
 
 		long getTargetRemainingTime();
 
@@ -304,7 +304,7 @@ public class WorldBorder {
 
 		@Environment(EnvType.CLIENT)
 		@Override
-		public double method_11987() {
+		public double getShrinkingSpeed() {
 			return Math.abs(this.oldSize - this.newSize) / (double)(this.timeEnd - this.timeStart);
 		}
 
@@ -400,7 +400,7 @@ public class WorldBorder {
 
 		@Environment(EnvType.CLIENT)
 		@Override
-		public double method_11987() {
+		public double getShrinkingSpeed() {
 			return 0.0;
 		}
 

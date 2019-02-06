@@ -1,21 +1,25 @@
 package net.minecraft.resource;
 
-import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4010;
+import net.minecraft.class_4014;
+import net.minecraft.client.resource.ResourceLoadProgressProvider;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,12 +27,15 @@ import org.apache.logging.log4j.Logger;
 public class ReloadableResourceManagerImpl implements ReloadableResourceManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Map<String, NamespaceResourceManager> namespaceManagers = Maps.<String, NamespaceResourceManager>newHashMap();
-	private final List<ResourceReloadListener> listeners = Lists.<ResourceReloadListener>newArrayList();
+	private final List<ResourceReloadListener<?>> field_17935 = Lists.<ResourceReloadListener<?>>newArrayList();
+	private final List<ResourceReloadListener<?>> field_17936 = Lists.<ResourceReloadListener<?>>newArrayList();
 	private final Set<String> namespaces = Sets.<String>newLinkedHashSet();
 	private final ResourceType type;
+	private final Thread field_17937;
 
-	public ReloadableResourceManagerImpl(ResourceType resourceType) {
+	public ReloadableResourceManagerImpl(ResourceType resourceType, Thread thread) {
 		this.type = resourceType;
+		this.field_17937 = thread;
 	}
 
 	public void load(ResourcePack resourcePack) {
@@ -58,6 +65,13 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 		} else {
 			throw new FileNotFoundException(identifier.toString());
 		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public boolean method_18234(Identifier identifier) {
+		ResourceManager resourceManager = (ResourceManager)this.namespaceManagers.get(identifier.getNamespace());
+		return resourceManager != null ? resourceManager.method_18234(identifier) : false;
 	}
 
 	@Override
@@ -97,53 +111,36 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 			this.load(resourcePack);
 		}
 
-		if (LOGGER.isDebugEnabled()) {
-			this.reloadAll();
-		} else {
-			this.emitReloadAll();
-		}
+		ResourceLoadProgressProvider resourceLoadProgressProvider = this.method_18233();
+		resourceLoadProgressProvider.method_18226();
 	}
 
 	@Override
-	public void addListener(ResourceReloadListener resourceReloadListener) {
-		this.listeners.add(resourceReloadListener);
+	public void addListener(ResourceReloadListener<?> resourceReloadListener) {
+		this.field_17935.add(resourceReloadListener);
+		this.field_17936.add(resourceReloadListener);
+	}
+
+	protected ResourceLoadProgressProvider method_18240(List<ResourceReloadListener<?>> list, @Nullable CompletableFuture<Void> completableFuture) {
+		ResourceLoadProgressProvider resourceLoadProgressProvider;
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.info(this.emitReloadTimed(resourceReloadListener));
+			resourceLoadProgressProvider = new class_4010(this, new ArrayList(list), completableFuture);
 		} else {
-			resourceReloadListener.onResourceReload(this);
+			resourceLoadProgressProvider = new class_4014(this, new ArrayList(list), completableFuture);
 		}
+
+		this.field_17936.clear();
+		return resourceLoadProgressProvider;
 	}
 
-	private void emitReloadAll() {
-		for (ResourceReloadListener resourceReloadListener : this.listeners) {
-			resourceReloadListener.onResourceReload(this);
-		}
+	@Environment(EnvType.CLIENT)
+	@Override
+	public ResourceLoadProgressProvider method_18230(@Nullable CompletableFuture<Void> completableFuture) {
+		return this.method_18240(this.field_17936, completableFuture);
 	}
 
-	private void reloadAll() {
-		LOGGER.info("Reloading all resources! {} listeners to update.", this.listeners.size());
-		List<String> list = Lists.<String>newArrayList();
-		Stopwatch stopwatch = Stopwatch.createStarted();
-
-		for (ResourceReloadListener resourceReloadListener : this.listeners) {
-			list.add(this.emitReloadTimed(resourceReloadListener));
-		}
-
-		stopwatch.stop();
-		LOGGER.info("----");
-		LOGGER.info("Complete resource reload took {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
-
-		for (String string : list) {
-			LOGGER.info(string);
-		}
-
-		LOGGER.info("----");
-	}
-
-	private String emitReloadTimed(ResourceReloadListener resourceReloadListener) {
-		Stopwatch stopwatch = Stopwatch.createStarted();
-		resourceReloadListener.onResourceReload(this);
-		stopwatch.stop();
-		return "Resource reload for " + resourceReloadListener.getClass().getSimpleName() + " took " + stopwatch.elapsed(TimeUnit.MILLISECONDS) + " ms";
+	@Override
+	public ResourceLoadProgressProvider method_18232(@Nullable CompletableFuture<Void> completableFuture) {
+		return this.method_18240(this.field_17935, completableFuture);
 	}
 }

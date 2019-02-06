@@ -16,7 +16,7 @@ public class BlockLightStorage extends LightStorage<BlockLightStorage.Data> {
 	protected int getLight(long l) {
 		long m = BlockPos.toChunkSectionOrigin(l);
 		ChunkNibbleArray chunkNibbleArray = this.getDataForChunk(m, false);
-		return chunkNibbleArray == null ? 0 : chunkNibbleArray.method_12139(BlockPos.unpackLongX(l) & 15, BlockPos.unpackLongY(l) & 15, BlockPos.unpackLongZ(l) & 15);
+		return chunkNibbleArray == null ? 0 : chunkNibbleArray.get(BlockPos.unpackLongX(l) & 15, BlockPos.unpackLongY(l) & 15, BlockPos.unpackLongZ(l) & 15);
 	}
 
 	public static final class Data extends WorldNibbleStorage<BlockLightStorage.Data> {

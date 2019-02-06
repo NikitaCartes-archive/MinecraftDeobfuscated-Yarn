@@ -40,7 +40,7 @@ public class FindNearestPlayerGoal extends Goal {
 				}
 
 				if (entity.isInvisible()) {
-					float f = ((PlayerEntity)entity).method_7309();
+					float f = ((PlayerEntity)entity).getWornArmorRatio();
 					if (f < 0.1F) {
 						f = 0.1F;
 					}

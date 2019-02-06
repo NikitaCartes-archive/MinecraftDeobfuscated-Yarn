@@ -47,7 +47,7 @@ public class FilledMapItem extends MapItem {
 
 	@Nullable
 	public static MapState method_7997(ItemStack itemStack, World world) {
-		return world.method_17891(method_17440(method_8003(itemStack)));
+		return world.getMapState(method_17440(method_8003(itemStack)));
 	}
 
 	@Nullable
@@ -68,10 +68,10 @@ public class FilledMapItem extends MapItem {
 	}
 
 	private static MapState method_8000(ItemStack itemStack, World world, int i, int j, int k, boolean bl, boolean bl2, DimensionType dimensionType) {
-		int l = world.method_17889();
+		int l = world.getNextMapId();
 		MapState mapState = new MapState(method_17440(l));
 		mapState.method_105(i, j, k, bl, bl2, dimensionType);
-		world.method_17890(mapState);
+		world.putMapState(mapState);
 		itemStack.getOrCreateTag().putInt("map", l);
 		return mapState;
 	}
@@ -138,7 +138,7 @@ public class FilledMapItem extends MapItem {
 												blockState = Blocks.field_9987.getDefaultState();
 											} else {
 												do {
-													mutable.set(chunkPos.getXStart() + y + u, --aa, chunkPos.getZStart() + z + v);
+													mutable.set(chunkPos.getStartX() + y + u, --aa, chunkPos.getStartZ() + z + v);
 													blockState = worldChunk.getBlockState(mutable);
 												} while (blockState.getTopMaterialColor(world, mutable) == MaterialColor.AIR && aa > 0);
 
@@ -157,7 +157,7 @@ public class FilledMapItem extends MapItem {
 												}
 											}
 
-											mapState.method_109(world, chunkPos.getXStart() + y + u, chunkPos.getZStart() + z + v);
+											mapState.method_109(world, chunkPos.getStartX() + y + u, chunkPos.getStartZ() + z + v);
 											e += (double)aa / (double)(i * i);
 											multiset.add(blockState.getTopMaterialColor(world, mutable));
 										}

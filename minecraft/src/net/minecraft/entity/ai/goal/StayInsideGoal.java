@@ -28,14 +28,14 @@ public class StayInsideGoal extends Goal {
 				return false;
 			} else {
 				this.closestDoor = villageProperties.getClosestDoor(blockPos);
-				return this.closestDoor == null ? false : (double)this.closestDoor.method_6417(blockPos) < 2.25;
+				return this.closestDoor == null ? false : (double)this.closestDoor.squaredDistanceFromInsideTo(blockPos) < 2.25;
 			}
 		}
 	}
 
 	@Override
 	public boolean shouldContinue() {
-		return this.entity.world.isDaylight() ? false : !this.closestDoor.method_6413() && this.closestDoor.method_6425(new BlockPos(this.entity));
+		return this.entity.world.isDaylight() ? false : !this.closestDoor.isInvalid() && this.closestDoor.isInside(new BlockPos(this.entity));
 	}
 
 	@Override

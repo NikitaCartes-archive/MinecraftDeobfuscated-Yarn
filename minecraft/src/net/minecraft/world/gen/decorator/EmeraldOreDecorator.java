@@ -5,10 +5,9 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import net.minecraft.class_3667;
 import net.minecraft.util.math.BlockPos;
 
-public class EmeraldOreDecorator extends class_3667<NopeDecoratorConfig> {
+public class EmeraldOreDecorator extends SimpleDecorator<NopeDecoratorConfig> {
 	public EmeraldOreDecorator(Function<Dynamic<?>, ? extends NopeDecoratorConfig> function) {
 		super(function);
 	}

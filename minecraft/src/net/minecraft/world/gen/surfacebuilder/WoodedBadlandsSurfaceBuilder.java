@@ -10,9 +10,9 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 
 public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
-	private static final BlockState field_15741 = Blocks.field_10611.getDefaultState();
-	private static final BlockState field_15740 = Blocks.field_10184.getDefaultState();
-	private static final BlockState field_15742 = Blocks.field_10415.getDefaultState();
+	private static final BlockState WHITE_TERRACOTTA = Blocks.field_10611.getDefaultState();
+	private static final BlockState ORANGE_TERRACOTTA = Blocks.field_10184.getDefaultState();
+	private static final BlockState TERRACOTTA = Blocks.field_10415.getDefaultState();
 
 	public WoodedBadlandsSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
 		super(function);
@@ -35,7 +35,7 @@ public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 	) {
 		int n = i & 15;
 		int o = j & 15;
-		BlockState blockState3 = field_15741;
+		BlockState blockState3 = WHITE_TERRACOTTA;
 		BlockState blockState4 = biome.getSurfaceConfig().getUnderMaterial();
 		int p = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
 		boolean bl = Math.cos(d / 3.0 * Math.PI) > 0.0;
@@ -57,7 +57,7 @@ public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 							blockState3 = Blocks.field_10124.getDefaultState();
 							blockState4 = blockState;
 						} else if (s >= l - 4 && s <= l + 1) {
-							blockState3 = field_15741;
+							blockState3 = WHITE_TERRACOTTA;
 							blockState4 = biome.getSurfaceConfig().getUnderMaterial();
 						}
 
@@ -68,8 +68,8 @@ public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 						q = p + Math.max(0, s - l);
 						if (s < l - 1) {
 							chunk.setBlockState(mutable, blockState4, false);
-							if (blockState4 == field_15741) {
-								chunk.setBlockState(mutable, field_15740, false);
+							if (blockState4 == WHITE_TERRACOTTA) {
+								chunk.setBlockState(mutable, ORANGE_TERRACOTTA, false);
 							}
 						} else if (s > 86 + p * 2) {
 							if (bl) {
@@ -83,9 +83,9 @@ public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 						} else {
 							BlockState blockState6;
 							if (s < 64 || s > 127) {
-								blockState6 = field_15740;
+								blockState6 = ORANGE_TERRACOTTA;
 							} else if (bl) {
-								blockState6 = field_15742;
+								blockState6 = TERRACOTTA;
 							} else {
 								blockState6 = this.method_15207(i, s, j);
 							}
@@ -95,7 +95,7 @@ public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 					} else if (q > 0) {
 						q--;
 						if (bl2) {
-							chunk.setBlockState(mutable, field_15740, false);
+							chunk.setBlockState(mutable, ORANGE_TERRACOTTA, false);
 						} else {
 							chunk.setBlockState(mutable, this.method_15207(i, s, j), false);
 						}

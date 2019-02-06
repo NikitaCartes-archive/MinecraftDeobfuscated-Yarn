@@ -13,7 +13,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class DeadBushFeature extends Feature<DefaultFeatureConfig> {
-	private static final DeadBushBlock field_13382 = (DeadBushBlock)Blocks.field_10428;
+	private static final DeadBushBlock DEAD_BUSH = (DeadBushBlock)Blocks.field_10428;
 
 	public DeadBushFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
 		super(function);
@@ -29,7 +29,7 @@ public class DeadBushFeature extends Feature<DefaultFeatureConfig> {
 			blockPos = blockPos.down();
 		}
 
-		BlockState blockState2 = field_13382.getDefaultState();
+		BlockState blockState2 = DEAD_BUSH.getDefaultState();
 
 		for (int i = 0; i < 4; i++) {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));

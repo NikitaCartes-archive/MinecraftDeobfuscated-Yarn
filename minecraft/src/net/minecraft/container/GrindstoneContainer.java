@@ -65,7 +65,7 @@ public class GrindstoneContainer extends Container {
 						world.spawnEntity(new ExperienceOrbEntity(world, (double)blockPos.getX(), (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, j));
 					}
 
-					world.fireWorldEvent(1042, blockPos, 0);
+					world.playEvent(1042, blockPos, 0);
 				});
 				GrindstoneContainer.this.craftingInventory.setInvStack(0, ItemStack.EMPTY);
 				GrindstoneContainer.this.craftingInventory.setInvStack(1, ItemStack.EMPTY);

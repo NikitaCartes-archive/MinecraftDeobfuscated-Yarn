@@ -15,7 +15,7 @@ public abstract class LanguageButtonWidget extends ButtonWidget {
 	public void draw(int i, int j, float f) {
 		if (this.visible) {
 			MinecraftClient.getInstance().getTextureManager().bindTexture(ButtonWidget.WIDGET_TEX);
-			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			GlStateManager.color4f(1.0F, 1.0F, 1.0F, this.field_17766);
 			boolean bl = i >= this.x && j >= this.y && i < this.x + this.width && j < this.y + this.height;
 			int k = 106;
 			if (bl) {

@@ -1,13 +1,12 @@
 package net.minecraft.entity.thrown;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_1675;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.network.packet.EntitySpawnClientPacket;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -18,11 +17,9 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
@@ -34,7 +31,7 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 	public int shake;
 	protected LivingEntity owner;
 	private UUID field_7644;
-	public Entity field_7637;
+	private Entity field_7637;
 	private int field_7638;
 
 	protected ThrownEntity(EntityType<?> entityType, World world) {
@@ -130,54 +127,26 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 			this.velocityZ = this.velocityZ * (double)(this.random.nextFloat() * 0.2F);
 		}
 
-		Vec3d vec3d = new Vec3d(this.x, this.y, this.z);
-		Vec3d vec3d2 = new Vec3d(this.x + this.velocityX, this.y + this.velocityY, this.z + this.velocityZ);
-		HitResult hitResult = this.world
-			.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17559, RayTraceContext.FluidHandling.NONE, this));
-		vec3d = new Vec3d(this.x, this.y, this.z);
-		vec3d2 = new Vec3d(this.x + this.velocityX, this.y + this.velocityY, this.z + this.velocityZ);
-		if (hitResult.getType() != HitResult.Type.NONE) {
-			vec3d2 = hitResult.getPos();
-		}
+		BoundingBox boundingBox = this.getBoundingBox().stretch(this.velocityX, this.velocityY, this.velocityZ).expand(1.0);
 
-		Entity entity = null;
-		List<Entity> list = this.world.getVisibleEntities(this, this.getBoundingBox().stretch(this.velocityX, this.velocityY, this.velocityZ).expand(1.0));
-		double d = 0.0;
-		boolean bl = false;
+		for (Entity entity : this.world.getEntities(this, boundingBox, entityx -> !entityx.isSpectator() && entityx.doesCollide())) {
+			if (entity == this.field_7637) {
+				this.field_7638++;
+				break;
+			}
 
-		for (int i = 0; i < list.size(); i++) {
-			Entity entity2 = (Entity)list.get(i);
-			if (entity2.doesCollide()) {
-				if (entity2 == this.field_7637) {
-					bl = true;
-				} else if (this.owner != null && this.age < 2 && this.field_7637 == null) {
-					this.field_7637 = entity2;
-					bl = true;
-				} else {
-					bl = false;
-					BoundingBox boundingBox = entity2.getBoundingBox().expand(0.3F);
-					Optional<Vec3d> optional = boundingBox.rayTrace(vec3d, vec3d2);
-					if (optional.isPresent()) {
-						double e = vec3d.squaredDistanceTo((Vec3d)optional.get());
-						if (e < d || d == 0.0) {
-							entity = entity2;
-							d = e;
-						}
-					}
-				}
+			if (this.owner != null && this.age < 2 && this.field_7637 == null) {
+				this.field_7637 = entity;
+				this.field_7638 = 3;
+				break;
 			}
 		}
 
-		if (this.field_7637 != null) {
-			if (bl) {
-				this.field_7638 = 2;
-			} else if (this.field_7638-- <= 0) {
-				this.field_7637 = null;
-			}
-		}
-
-		if (entity != null) {
-			hitResult = new EntityHitResult(entity);
+		HitResult hitResult = class_1675.method_18074(
+			this, boundingBox, entity -> !entity.isSpectator() && entity.doesCollide() && entity != this.field_7637, RayTraceContext.ShapeType.field_17559, true
+		);
+		if (this.field_7637 != null && this.field_7638-- <= 0) {
+			this.field_7637 = null;
 		}
 
 		if (hitResult.getType() != HitResult.Type.NONE) {
@@ -216,8 +185,8 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 		float g = 0.99F;
 		float h = this.getGravity();
 		if (this.isInsideWater()) {
-			for (int j = 0; j < 4; j++) {
-				float k = 0.25F;
+			for (int i = 0; i < 4; i++) {
+				float j = 0.25F;
 				this.world
 					.addParticle(
 						ParticleTypes.field_11247,
@@ -277,7 +246,7 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 	@Nullable
 	public LivingEntity getOwner() {
 		if (this.owner == null && this.field_7644 != null && this.world instanceof ServerWorld) {
-			Entity entity = this.world.getEntityByUuid(this.field_7644);
+			Entity entity = ((ServerWorld)this.world).method_14190(this.field_7644);
 			if (entity instanceof LivingEntity) {
 				this.owner = (LivingEntity)entity;
 			} else {
@@ -290,6 +259,6 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 
 	@Override
 	public Packet<?> createSpawnPacket() {
-		return new EntitySpawnClientPacket(this);
+		return new EntitySpawnS2CPacket(this);
 	}
 }

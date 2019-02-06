@@ -17,36 +17,36 @@ import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.client.network.packet.BlockEntityUpdateClientPacket;
-import net.minecraft.client.network.packet.ChatMessageClientPacket;
-import net.minecraft.client.network.packet.CombatEventClientPacket;
-import net.minecraft.client.network.packet.EntitiesDestroyClientPacket;
-import net.minecraft.client.network.packet.EntityAnimationClientPacket;
-import net.minecraft.client.network.packet.EntityPotionEffectClientPacket;
-import net.minecraft.client.network.packet.EntityStatusClientPacket;
-import net.minecraft.client.network.packet.ExperienceBarUpdateClientPacket;
-import net.minecraft.client.network.packet.GameStateChangeClientPacket;
-import net.minecraft.client.network.packet.GuiCloseClientPacket;
-import net.minecraft.client.network.packet.GuiOpenClientPacket;
-import net.minecraft.client.network.packet.GuiSlotUpdateClientPacket;
-import net.minecraft.client.network.packet.GuiUpdateClientPacket;
-import net.minecraft.client.network.packet.HealthUpdateClientPacket;
-import net.minecraft.client.network.packet.InventoryClientPacket;
-import net.minecraft.client.network.packet.LookAtClientPacket;
+import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
+import net.minecraft.client.network.packet.ChatMessageS2CPacket;
+import net.minecraft.client.network.packet.CombatEventS2CPacket;
+import net.minecraft.client.network.packet.EntitiesDestroyS2CPacket;
+import net.minecraft.client.network.packet.EntityAnimationS2CPacket;
+import net.minecraft.client.network.packet.EntityPotionEffectS2CPacket;
+import net.minecraft.client.network.packet.EntityStatusS2CPacket;
+import net.minecraft.client.network.packet.ExperienceBarUpdateS2CPacket;
+import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
+import net.minecraft.client.network.packet.GuiCloseS2CPacket;
+import net.minecraft.client.network.packet.GuiOpenS2CPacket;
+import net.minecraft.client.network.packet.GuiSlotUpdateS2CPacket;
+import net.minecraft.client.network.packet.GuiUpdateS2CPacket;
+import net.minecraft.client.network.packet.HealthUpdateS2CPacket;
+import net.minecraft.client.network.packet.InventoryS2CPacket;
+import net.minecraft.client.network.packet.LookAtS2CPacket;
 import net.minecraft.client.network.packet.OpenContainerPacket;
-import net.minecraft.client.network.packet.OpenWrittenBookClientPacket;
-import net.minecraft.client.network.packet.PlaySoundClientPacket;
-import net.minecraft.client.network.packet.PlayerAbilitiesClientPacket;
-import net.minecraft.client.network.packet.PlayerRespawnClientPacket;
-import net.minecraft.client.network.packet.PlayerSpawnClientPacket;
-import net.minecraft.client.network.packet.PlayerUseBedClientPacket;
-import net.minecraft.client.network.packet.RemoveEntityEffectClientPacket;
-import net.minecraft.client.network.packet.ResourcePackSendClientPacket;
-import net.minecraft.client.network.packet.SetCameraEntityClientPacket;
+import net.minecraft.client.network.packet.OpenWrittenBookS2CPacket;
+import net.minecraft.client.network.packet.PlaySoundS2CPacket;
+import net.minecraft.client.network.packet.PlayerAbilitiesS2CPacket;
+import net.minecraft.client.network.packet.PlayerRespawnS2CPacket;
+import net.minecraft.client.network.packet.PlayerSpawnS2CPacket;
+import net.minecraft.client.network.packet.PlayerUseBedS2CPacket;
+import net.minecraft.client.network.packet.RemoveEntityEffectS2CPacket;
+import net.minecraft.client.network.packet.ResourcePackSendS2CPacket;
+import net.minecraft.client.network.packet.SetCameraEntityS2CPacket;
 import net.minecraft.client.network.packet.SetVillagerRecipesPacket;
-import net.minecraft.client.network.packet.SignEditorOpenClientPacket;
-import net.minecraft.client.network.packet.UnloadChunkClientPacket;
-import net.minecraft.client.network.packet.WorldEventClientPacket;
+import net.minecraft.client.network.packet.SignEditorOpenS2CPacket;
+import net.minecraft.client.network.packet.UnloadChunkS2CPacket;
+import net.minecraft.client.network.packet.WorldEventS2CPacket;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
 import net.minecraft.container.Container;
 import net.minecraft.container.ContainerListener;
@@ -54,6 +54,7 @@ import net.minecraft.container.CraftingResultSlot;
 import net.minecraft.container.HorseContainer;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.damage.DamageSource;
@@ -78,7 +79,7 @@ import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.ScoreboardTeam;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.packet.ClientSettingsServerPacket;
+import net.minecraft.server.network.packet.ClientSettingsC2SPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sortme.ChatMessageType;
 import net.minecraft.sortme.OptionMainHand;
@@ -283,13 +284,13 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	@Override
 	public void method_6000() {
 		super.method_6000();
-		this.networkHandler.sendPacket(new CombatEventClientPacket(this.getDamageTracker(), CombatEventClientPacket.Type.BEGIN));
+		this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.BEGIN));
 	}
 
 	@Override
 	public void method_6044() {
 		super.method_6044();
-		this.networkHandler.sendPacket(new CombatEventClientPacket(this.getDamageTracker(), CombatEventClientPacket.Type.END));
+		this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.END));
 	}
 
 	@Override
@@ -327,7 +328,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 				iterator.remove();
 			}
 
-			this.networkHandler.sendPacket(new EntitiesDestroyClientPacket(is));
+			this.networkHandler.sendPacket(new EntitiesDestroyS2CPacket(is));
 		}
 
 		Entity entity = this.method_14242();
@@ -370,7 +371,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			if (this.getHealth() != this.field_13997
 				|| this.field_13979 != this.hungerManager.getFoodLevel()
 				|| this.hungerManager.getSaturationLevel() == 0.0F != this.field_13972) {
-				this.networkHandler.sendPacket(new HealthUpdateClientPacket(this.getHealth(), this.hungerManager.getFoodLevel(), this.hungerManager.getSaturationLevel()));
+				this.networkHandler.sendPacket(new HealthUpdateS2CPacket(this.getHealth(), this.hungerManager.getFoodLevel(), this.hungerManager.getSaturationLevel()));
 				this.field_13997 = this.getHealth();
 				this.field_13979 = this.hungerManager.getFoodLevel();
 				this.field_13972 = this.hungerManager.getSaturationLevel() == 0.0F;
@@ -408,7 +409,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 			if (this.experienceLevel != this.field_13978) {
 				this.field_13978 = this.experienceLevel;
-				this.networkHandler.sendPacket(new ExperienceBarUpdateClientPacket(this.experienceBarProgress, this.experienceLevel, this.experience));
+				this.networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(this.experienceBarProgress, this.experienceLevel, this.experience));
 			}
 
 			if (this.age % 20 == 0) {
@@ -433,7 +434,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			TextComponent textComponent = this.getDamageTracker().getDeathMessage();
 			this.networkHandler
 				.sendPacket(
-					new CombatEventClientPacket(this.getDamageTracker(), CombatEventClientPacket.Type.DEATH, textComponent),
+					new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.DEATH, textComponent),
 					future -> {
 						if (!future.isSuccess()) {
 							int i = 256;
@@ -443,7 +444,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 							);
 							TextComponent textComponent3 = new TranslatableTextComponent("death.attack.even_more_magic", this.getDisplayName())
 								.modifyStyle(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, textComponent2)));
-							this.networkHandler.sendPacket(new CombatEventClientPacket(this.getDamageTracker(), CombatEventClientPacket.Type.DEATH, textComponent3));
+							this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.DEATH, textComponent3));
 						}
 					}
 				);
@@ -456,7 +457,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 				this.server.getPlayerManager().sendToOtherTeams(this, textComponent);
 			}
 		} else {
-			this.networkHandler.sendPacket(new CombatEventClientPacket(this.getDamageTracker(), CombatEventClientPacket.Type.DEATH));
+			this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.DEATH));
 		}
 
 		this.method_7262();
@@ -566,10 +567,10 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		}
 
 		if (this.dimension == DimensionType.field_13078 && dimensionType == DimensionType.field_13078) {
-			this.world.removeEntity(this);
+			this.getServerWorld().method_18216(this);
 			if (!this.notInAnyWorld) {
 				this.notInAnyWorld = true;
-				this.networkHandler.sendPacket(new GameStateChangeClientPacket(4, this.seenCredits ? 0.0F : 1.0F));
+				this.networkHandler.sendPacket(new GameStateChangeS2CPacket(4, this.seenCredits ? 0.0F : 1.0F));
 				this.seenCredits = true;
 			}
 
@@ -580,7 +581,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			}
 
 			this.server.getPlayerManager().method_14598(this, dimensionType);
-			this.networkHandler.sendPacket(new WorldEventClientPacket(1032, BlockPos.ORIGIN, 0, false));
+			this.networkHandler.sendPacket(new WorldEventS2CPacket(1032, BlockPos.ORIGIN, 0, false));
 			this.field_13978 = -1;
 			this.field_13997 = -1.0F;
 			this.field_13979 = -1;
@@ -599,9 +600,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	private void sendBlockEntityUpdate(BlockEntity blockEntity) {
 		if (blockEntity != null) {
-			BlockEntityUpdateClientPacket blockEntityUpdateClientPacket = blockEntity.toUpdatePacket();
-			if (blockEntityUpdateClientPacket != null) {
-				this.networkHandler.sendPacket(blockEntityUpdateClientPacket);
+			BlockEntityUpdateS2CPacket blockEntityUpdateS2CPacket = blockEntity.method_16886();
+			if (blockEntityUpdateS2CPacket != null) {
+				this.networkHandler.sendPacket(blockEntityUpdateS2CPacket);
 			}
 		}
 	}
@@ -617,7 +618,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		PlayerEntity.SleepResult sleepResult = super.trySleep(blockPos);
 		if (sleepResult == PlayerEntity.SleepResult.SUCCESS) {
 			this.increaseStat(Stats.field_15381);
-			Packet<?> packet = new PlayerUseBedClientPacket(this, blockPos);
+			Packet<?> packet = new PlayerUseBedS2CPacket(this, blockPos);
 			this.getServerWorld().getEntityTracker().method_14079(this, packet);
 			this.networkHandler.teleportRequest(this.x, this.y, this.z, this.yaw, this.pitch);
 			this.networkHandler.sendPacket(packet);
@@ -628,12 +629,12 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void method_7358(boolean bl, boolean bl2, boolean bl3) {
+	public void wakeUp(boolean bl, boolean bl2, boolean bl3) {
 		if (this.isSleeping()) {
-			this.getServerWorld().getEntityTracker().method_14073(this, new EntityAnimationClientPacket(this, 2));
+			this.getServerWorld().getEntityTracker().method_14073(this, new EntityAnimationS2CPacket(this, 2));
 		}
 
-		super.method_7358(bl, bl2, bl3);
+		super.wakeUp(bl, bl2, bl3);
 		if (this.networkHandler != null) {
 			this.networkHandler.teleportRequest(this.x, this.y, this.z, this.yaw, this.pitch);
 		}
@@ -704,7 +705,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	@Override
 	public void openSignEditorGui(SignBlockEntity signBlockEntity) {
 		signBlockEntity.setEditor(this);
-		this.networkHandler.sendPacket(new SignEditorOpenClientPacket(signBlockEntity.getPos()));
+		this.networkHandler.sendPacket(new SignEditorOpenS2CPacket(signBlockEntity.getPos()));
 	}
 
 	private void incrementContainerSyncId() {
@@ -749,7 +750,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		}
 
 		this.incrementContainerSyncId();
-		this.networkHandler.sendPacket(new GuiOpenClientPacket(this.containerSyncId, inventory.getInvSize(), horseBaseEntity.getEntityId()));
+		this.networkHandler.sendPacket(new GuiOpenS2CPacket(this.containerSyncId, inventory.getInvSize(), horseBaseEntity.getEntityId()));
 		this.container = new HorseContainer(this.containerSyncId, this.inventory, inventory, horseBaseEntity);
 		this.container.addListener(this);
 	}
@@ -762,7 +763,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 				this.container.sendContentUpdates();
 			}
 
-			this.networkHandler.sendPacket(new OpenWrittenBookClientPacket(hand));
+			this.networkHandler.sendPacket(new OpenWrittenBookS2CPacket(hand));
 		}
 	}
 
@@ -780,7 +781,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			}
 
 			if (!this.field_13991) {
-				this.networkHandler.sendPacket(new GuiSlotUpdateClientPacket(container.syncId, i, itemStack));
+				this.networkHandler.sendPacket(new GuiSlotUpdateS2CPacket(container.syncId, i, itemStack));
 			}
 		}
 	}
@@ -791,24 +792,24 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	public void onContainerRegistered(Container container, DefaultedList<ItemStack> defaultedList) {
-		this.networkHandler.sendPacket(new InventoryClientPacket(container.syncId, defaultedList));
-		this.networkHandler.sendPacket(new GuiSlotUpdateClientPacket(-1, -1, this.inventory.getCursorStack()));
+		this.networkHandler.sendPacket(new InventoryS2CPacket(container.syncId, defaultedList));
+		this.networkHandler.sendPacket(new GuiSlotUpdateS2CPacket(-1, -1, this.inventory.getCursorStack()));
 	}
 
 	@Override
 	public void onContainerPropertyUpdate(Container container, int i, int j) {
-		this.networkHandler.sendPacket(new GuiUpdateClientPacket(container.syncId, i, j));
+		this.networkHandler.sendPacket(new GuiUpdateS2CPacket(container.syncId, i, j));
 	}
 
 	@Override
 	public void closeGui() {
-		this.networkHandler.sendPacket(new GuiCloseClientPacket(this.container.syncId));
+		this.networkHandler.sendPacket(new GuiCloseS2CPacket(this.container.syncId));
 		this.method_14247();
 	}
 
 	public void method_14241() {
 		if (!this.field_13991) {
-			this.networkHandler.sendPacket(new GuiSlotUpdateClientPacket(-1, -1, this.inventory.getCursorStack()));
+			this.networkHandler.sendPacket(new GuiSlotUpdateS2CPacket(-1, -1, this.inventory.getCursorStack()));
 		}
 	}
 
@@ -875,7 +876,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		this.field_13964 = true;
 		this.removeAllPassengers();
 		if (this.sleeping) {
-			this.method_7358(true, false, false);
+			this.wakeUp(true, false, false);
 		}
 	}
 
@@ -889,13 +890,13 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	public void addChatMessage(TextComponent textComponent, boolean bl) {
-		this.networkHandler.sendPacket(new ChatMessageClientPacket(textComponent, bl ? ChatMessageType.field_11733 : ChatMessageType.field_11737));
+		this.networkHandler.sendPacket(new ChatMessageS2CPacket(textComponent, bl ? ChatMessageType.field_11733 : ChatMessageType.field_11737));
 	}
 
 	@Override
 	protected void method_6040() {
 		if (!this.activeItemStack.isEmpty() && this.isUsingItem()) {
-			this.networkHandler.sendPacket(new EntityStatusClientPacket(this, (byte)9));
+			this.networkHandler.sendPacket(new EntityStatusS2CPacket(this, (byte)9));
 			super.method_6040();
 		}
 	}
@@ -903,13 +904,13 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	@Override
 	public void lookAt(EntityAnchorArgumentType.EntityAnchor entityAnchor, Vec3d vec3d) {
 		super.lookAt(entityAnchor, vec3d);
-		this.networkHandler.sendPacket(new LookAtClientPacket(entityAnchor, vec3d.x, vec3d.y, vec3d.z));
+		this.networkHandler.sendPacket(new LookAtS2CPacket(entityAnchor, vec3d.x, vec3d.y, vec3d.z));
 	}
 
 	public void method_14222(EntityAnchorArgumentType.EntityAnchor entityAnchor, Entity entity, EntityAnchorArgumentType.EntityAnchor entityAnchor2) {
 		Vec3d vec3d = entityAnchor2.positionAt(entity);
 		super.lookAt(entityAnchor, vec3d);
-		this.networkHandler.sendPacket(new LookAtClientPacket(entityAnchor, entity, entityAnchor2));
+		this.networkHandler.sendPacket(new LookAtS2CPacket(entityAnchor, entity, entityAnchor2));
 	}
 
 	public void method_14203(ServerPlayerEntity serverPlayerEntity, boolean bl) {
@@ -949,7 +950,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	@Override
 	protected void method_6020(StatusEffectInstance statusEffectInstance) {
 		super.method_6020(statusEffectInstance);
-		this.networkHandler.sendPacket(new EntityPotionEffectClientPacket(this.getEntityId(), statusEffectInstance));
+		this.networkHandler.sendPacket(new EntityPotionEffectS2CPacket(this.getEntityId(), statusEffectInstance));
 		if (statusEffectInstance.getEffectType() == StatusEffects.field_5902) {
 			this.field_13973 = this.age;
 			this.field_13992 = new Vec3d(this.x, this.y, this.z);
@@ -961,14 +962,14 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	@Override
 	protected void method_6009(StatusEffectInstance statusEffectInstance, boolean bl) {
 		super.method_6009(statusEffectInstance, bl);
-		this.networkHandler.sendPacket(new EntityPotionEffectClientPacket(this.getEntityId(), statusEffectInstance));
+		this.networkHandler.sendPacket(new EntityPotionEffectS2CPacket(this.getEntityId(), statusEffectInstance));
 		Criterions.EFFECTS_CHANGED.handle(this);
 	}
 
 	@Override
 	protected void method_6129(StatusEffectInstance statusEffectInstance) {
 		super.method_6129(statusEffectInstance);
-		this.networkHandler.sendPacket(new RemoveEntityEffectClientPacket(this.getEntityId(), statusEffectInstance.getEffectType()));
+		this.networkHandler.sendPacket(new RemoveEntityEffectS2CPacket(this.getEntityId(), statusEffectInstance.getEffectType()));
 		if (statusEffectInstance.getEffectType() == StatusEffects.field_5902) {
 			this.field_13992 = null;
 		}
@@ -983,18 +984,18 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	public void addCritParticles(Entity entity) {
-		this.getServerWorld().getEntityTracker().method_14073(this, new EntityAnimationClientPacket(entity, 4));
+		this.getServerWorld().getEntityTracker().method_14073(this, new EntityAnimationS2CPacket(entity, 4));
 	}
 
 	@Override
 	public void addEnchantedHitParticles(Entity entity) {
-		this.getServerWorld().getEntityTracker().method_14073(this, new EntityAnimationClientPacket(entity, 5));
+		this.getServerWorld().getEntityTracker().method_14073(this, new EntityAnimationS2CPacket(entity, 5));
 	}
 
 	@Override
 	public void method_7355() {
 		if (this.networkHandler != null) {
-			this.networkHandler.sendPacket(new PlayerAbilitiesClientPacket(this.abilities));
+			this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(this.abilities));
 			this.updatePotionVisibility();
 		}
 	}
@@ -1006,7 +1007,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	@Override
 	public void setGameMode(GameMode gameMode) {
 		this.interactionManager.setGameMode(gameMode);
-		this.networkHandler.sendPacket(new GameStateChangeClientPacket(3, (float)gameMode.getId()));
+		this.networkHandler.sendPacket(new GameStateChangeS2CPacket(3, (float)gameMode.getId()));
 		if (gameMode == GameMode.field_9219) {
 			this.method_7262();
 			this.stopRiding();
@@ -1036,7 +1037,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	public void sendChatMessage(TextComponent textComponent, ChatMessageType chatMessageType) {
 		this.networkHandler
 			.sendPacket(
-				new ChatMessageClientPacket(textComponent, chatMessageType),
+				new ChatMessageS2CPacket(textComponent, chatMessageType),
 				future -> {
 					if (!future.isSuccess() && (chatMessageType == ChatMessageType.field_11733 || chatMessageType == ChatMessageType.field_11735)) {
 						int i = 256;
@@ -1044,7 +1045,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 						TextComponent textComponent2 = new StringTextComponent(string).applyFormat(TextFormat.YELLOW);
 						this.networkHandler
 							.sendPacket(
-								new ChatMessageClientPacket(
+								new ChatMessageS2CPacket(
 									new TranslatableTextComponent("multiplayer.message_not_delivered", textComponent2).applyFormat(TextFormat.RED), ChatMessageType.field_11735
 								)
 							);
@@ -1059,12 +1060,12 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		return string.substring(0, string.indexOf(":"));
 	}
 
-	public void setClientSettings(ClientSettingsServerPacket clientSettingsServerPacket) {
-		this.clientLanguage = clientSettingsServerPacket.getLanguage();
-		this.clientChatVisibility = clientSettingsServerPacket.getChatVisibility();
-		this.field_13971 = clientSettingsServerPacket.method_12135();
-		this.getDataTracker().set(PLAYER_MODEL_BIT_MASK, (byte)clientSettingsServerPacket.getPlayerModelBitMask());
-		this.getDataTracker().set(MAIN_HAND, (byte)(clientSettingsServerPacket.getMainHand() == OptionMainHand.field_6182 ? 0 : 1));
+	public void setClientSettings(ClientSettingsC2SPacket clientSettingsC2SPacket) {
+		this.clientLanguage = clientSettingsC2SPacket.getLanguage();
+		this.clientChatVisibility = clientSettingsC2SPacket.getChatVisibility();
+		this.field_13971 = clientSettingsC2SPacket.method_12135();
+		this.getDataTracker().set(PLAYER_MODEL_BIT_MASK, (byte)clientSettingsC2SPacket.getPlayerModelBitMask());
+		this.getDataTracker().set(MAIN_HAND, (byte)(clientSettingsC2SPacket.getMainHand() == OptionMainHand.field_6182 ? 0 : 1));
 	}
 
 	public PlayerEntity.ChatVisibility getClientChatVisibility() {
@@ -1072,7 +1073,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	public void method_14255(String string, String string2) {
-		this.networkHandler.sendPacket(new ResourcePackSendClientPacket(string, string2));
+		this.networkHandler.sendPacket(new ResourcePackSendS2CPacket(string, string2));
 	}
 
 	@Override
@@ -1094,7 +1095,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	public void method_14249(Entity entity) {
 		if (entity instanceof PlayerEntity) {
-			this.networkHandler.sendPacket(new EntitiesDestroyClientPacket(entity.getEntityId()));
+			this.networkHandler.sendPacket(new EntitiesDestroyS2CPacket(entity.getEntityId()));
 		} else {
 			this.field_13988.add(entity.getEntityId());
 		}
@@ -1124,7 +1125,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		Entity entity2 = this.method_14242();
 		this.field_13984 = (Entity)(entity == null ? this : entity);
 		if (entity2 != this.field_13984) {
-			this.networkHandler.sendPacket(new SetCameraEntityClientPacket(this.field_13984));
+			this.networkHandler.sendPacket(new SetCameraEntityS2CPacket(this.field_13984));
 			this.method_5859(this.field_13984.x, this.field_13984.y, this.field_13984.z);
 		}
 	}
@@ -1196,18 +1197,18 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.dimension = serverWorld.dimension.getType();
 			this.networkHandler
 				.sendPacket(
-					new PlayerRespawnClientPacket(
+					new PlayerRespawnS2CPacket(
 						this.dimension, serverWorld2.getDifficulty(), serverWorld2.getLevelProperties().getGeneratorType(), this.interactionManager.getGameMode()
 					)
 				);
 			this.server.getPlayerManager().method_14576(this);
-			serverWorld2.method_8507(this);
+			serverWorld2.method_18217(this);
 			this.invalid = false;
 			this.setPositionAndAngles(d, e, f, g, h);
 			if (this.isValid()) {
-				serverWorld2.method_8553(this, false);
-				serverWorld.spawnEntity(this);
-				serverWorld.method_8553(this, false);
+				serverWorld2.updateChunkEntities(this);
+				serverWorld.method_18207(this);
+				serverWorld.updateChunkEntities(this);
 			}
 
 			this.setWorld(serverWorld);
@@ -1226,7 +1227,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	public void sendUnloadChunkPacket(ChunkPos chunkPos) {
-		this.networkHandler.sendPacket(new UnloadChunkClientPacket(chunkPos.x, chunkPos.z));
+		this.networkHandler.sendPacket(new UnloadChunkS2CPacket(chunkPos.x, chunkPos.z));
 	}
 
 	public ChunkPos getChunkPos() {
@@ -1239,11 +1240,31 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	public void playSound(SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
-		this.networkHandler.sendPacket(new PlaySoundClientPacket(soundEvent, soundCategory, this.x, this.y, this.z, f, g));
+		this.networkHandler.sendPacket(new PlaySoundS2CPacket(soundEvent, soundCategory, this.x, this.y, this.z, f, g));
 	}
 
 	@Override
 	public Packet<?> createSpawnPacket() {
-		return new PlayerSpawnClientPacket(this);
+		return new PlayerSpawnS2CPacket(this);
+	}
+
+	@Override
+	public ItemEntity dropItem(ItemStack itemStack, boolean bl, boolean bl2) {
+		ItemEntity itemEntity = super.dropItem(itemStack, bl, bl2);
+		if (itemEntity == null) {
+			return null;
+		} else {
+			this.world.spawnEntity(itemEntity);
+			ItemStack itemStack2 = itemEntity.getStack();
+			if (bl2) {
+				if (!itemStack2.isEmpty()) {
+					this.incrementStat(Stats.field_15405.getOrCreateStat(itemStack2.getItem()), itemStack.getAmount());
+				}
+
+				this.increaseStat(Stats.field_15406);
+			}
+
+			return itemEntity;
+		}
 	}
 }

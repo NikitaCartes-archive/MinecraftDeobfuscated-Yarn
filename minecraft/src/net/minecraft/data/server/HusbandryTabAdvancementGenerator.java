@@ -158,7 +158,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Simpl
 			.rewards(AdvancementRewards.Builder.experience(100))
 			.criterion(
 				"broke_hoe",
-				ItemDurabilityChangedCriterion.Conditions.method_8967(ItemPredicate.Builder.create().item(Items.field_8527).build(), NumberRange.Integer.exactly(-1))
+				ItemDurabilityChangedCriterion.Conditions.method_8967(ItemPredicate.Builder.create().item(Items.field_8527).build(), NumberRange.Integer.exactly(0))
 			)
 			.build(consumer, "husbandry/break_diamond_hoe");
 		SimpleAdvancement simpleAdvancement6 = SimpleAdvancement.Builder.create()

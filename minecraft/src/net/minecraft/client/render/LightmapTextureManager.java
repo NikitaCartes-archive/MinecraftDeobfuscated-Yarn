@@ -85,10 +85,10 @@ public class LightmapTextureManager implements AutoCloseable {
 
 				for (int k = 0; k < 16; k++) {
 					for (int l = 0; l < 16; l++) {
-						float m = world.dimension.method_12456()[k] * h;
-						float n = world.dimension.method_12456()[l] * (this.prevFlicker * 0.1F + 1.5F);
-						if (world.getTicksSinceLightningClient() > 0) {
-							m = world.dimension.method_12456()[k];
+						float m = world.dimension.getLightLevelToBrightness()[k] * h;
+						float n = world.dimension.getLightLevelToBrightness()[l] * (this.prevFlicker * 0.1F + 1.5F);
+						if (world.getTicksSinceLightning() > 0) {
+							m = world.dimension.getLightLevelToBrightness()[k];
 						}
 
 						float o = m * (g * 0.65F + 0.35F);

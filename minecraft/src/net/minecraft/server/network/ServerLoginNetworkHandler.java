@@ -23,8 +23,8 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.network.listener.ServerLoginPacketListener;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.packet.LoginKeyServerPacket;
-import net.minecraft.server.packet.LoginHelloServerPacket;
+import net.minecraft.server.network.packet.LoginHelloC2SPacket;
+import net.minecraft.server.network.packet.LoginKeyC2SPacket;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Tickable;
@@ -120,9 +120,9 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 	}
 
 	@Override
-	public void onHello(LoginHelloServerPacket loginHelloServerPacket) {
+	public void method_12641(LoginHelloC2SPacket loginHelloC2SPacket) {
 		Validate.validState(this.state == ServerLoginNetworkHandler.State.field_14170, "Unexpected hello packet");
-		this.profile = loginHelloServerPacket.getProfile();
+		this.profile = loginHelloC2SPacket.getProfile();
 		if (this.server.isOnlineMode() && !this.client.isLocal()) {
 			this.state = ServerLoginNetworkHandler.State.field_14175;
 			this.client.sendPacket(new class_2905("", this.server.getKeyPair().getPublic(), this.field_14167));
@@ -132,13 +132,13 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 	}
 
 	@Override
-	public void method_12642(LoginKeyServerPacket loginKeyServerPacket) {
+	public void method_12642(LoginKeyC2SPacket loginKeyC2SPacket) {
 		Validate.validState(this.state == ServerLoginNetworkHandler.State.field_14175, "Unexpected key packet");
 		PrivateKey privateKey = this.server.getKeyPair().getPrivate();
-		if (!Arrays.equals(this.field_14167, loginKeyServerPacket.method_12655(privateKey))) {
+		if (!Arrays.equals(this.field_14167, loginKeyC2SPacket.method_12655(privateKey))) {
 			throw new IllegalStateException("Invalid nonce!");
 		} else {
-			this.field_14159 = loginKeyServerPacket.method_12654(privateKey);
+			this.field_14159 = loginKeyC2SPacket.method_12654(privateKey);
 			this.state = ServerLoginNetworkHandler.State.field_14169;
 			this.client.setupEncryption(this.field_14159);
 			Thread thread = new Thread("User Authenticator #" + field_14157.incrementAndGet()) {

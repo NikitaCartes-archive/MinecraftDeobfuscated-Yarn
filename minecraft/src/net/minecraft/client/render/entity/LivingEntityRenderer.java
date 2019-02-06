@@ -121,7 +121,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 					this.render(livingEntity, p, o, lx, k, m, n);
 				}
 
-				if (!(livingEntity instanceof PlayerEntity) || !((PlayerEntity)livingEntity).isSpectator()) {
+				if (!livingEntity.isSpectator()) {
 					this.renderFeatures(livingEntity, p, o, h, lx, k, m, n);
 				}
 
@@ -138,7 +138,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 				}
 
 				GlStateManager.depthMask(true);
-				if (!(livingEntity instanceof PlayerEntity) || !((PlayerEntity)livingEntity).isSpectator()) {
+				if (!livingEntity.isSpectator()) {
 					this.renderFeatures(livingEntity, p, o, h, lx, k, m, n);
 				}
 			}

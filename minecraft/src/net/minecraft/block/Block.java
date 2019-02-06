@@ -709,7 +709,7 @@ public class Block implements ItemProvider {
 	}
 
 	public void onBreak(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
-		world.fireWorldEvent(playerEntity, 2001, blockPos, getRawIdFromState(blockState));
+		world.playEvent(playerEntity, 2001, blockPos, getRawIdFromState(blockState));
 	}
 
 	public void onRainTick(World world, BlockPos blockPos) {

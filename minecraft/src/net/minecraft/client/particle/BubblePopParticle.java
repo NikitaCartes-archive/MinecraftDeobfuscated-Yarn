@@ -1,25 +1,28 @@
 package net.minecraft.client.particle;
 
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3940;
+import net.minecraft.class_3999;
+import net.minecraft.class_4000;
+import net.minecraft.class_4001;
+import net.minecraft.class_4002;
+import net.minecraft.class_4003;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class BubblePopParticle extends class_3940 {
-	protected BubblePopParticle(World world, double d, double e, double f, double g, double h, double i) {
-		super(world, d, e, f, 0.0, 0.0, 0.0);
-		this.colorRed = 1.0F;
-		this.colorGreen = 1.0F;
-		this.colorBlue = 1.0F;
-		this.setSpriteIndex(256);
+public class BubblePopParticle extends class_4003 {
+	private final class_4002 field_17787;
+
+	private BubblePopParticle(World world, double d, double e, double f, double g, double h, double i, class_4002 arg) {
+		super(world, d, e, f);
+		this.field_17787 = arg;
 		this.maxAge = 4;
 		this.gravityStrength = 0.008F;
 		this.velocityX = g;
 		this.velocityY = h;
 		this.velocityZ = i;
+		this.method_18142(arg);
 	}
 
 	@Override
@@ -27,33 +30,30 @@ public class BubblePopParticle extends class_3940 {
 		this.prevPosX = this.posX;
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;
-		this.velocityY = this.velocityY - (double)this.gravityStrength;
-		this.move(this.velocityX, this.velocityY, this.velocityZ);
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
 		} else {
-			int i = this.age * 5 / this.maxAge;
-			if (i <= 4) {
-				this.setSpriteIndex(256 + i);
-			}
+			this.velocityY = this.velocityY - (double)this.gravityStrength;
+			this.move(this.velocityX, this.velocityY, this.velocityZ);
+			this.method_18142(this.field_17787);
 		}
 	}
 
 	@Override
-	public void setSpriteIndex(int i) {
-		if (this.getParticleGroup() != 0) {
-			throw new RuntimeException("Invalid call to Particle.setMiscTex");
-		} else {
-			this.tileU = 2 * i % 16;
-			this.tileV = i / 16;
-		}
+	public class_3999 method_18122() {
+		return class_3999.field_17828;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		@Nullable
+		private final class_4002 field_17788;
+
+		public Factory(class_4001 arg) {
+			this.field_17788 = arg.register(class_4000.field_17838);
+		}
+
 		public Particle method_3016(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			return new BubblePopParticle(world, d, e, f, g, h, i);
+			return new BubblePopParticle(world, d, e, f, g, h, i, this.field_17788);
 		}
 	}
 }

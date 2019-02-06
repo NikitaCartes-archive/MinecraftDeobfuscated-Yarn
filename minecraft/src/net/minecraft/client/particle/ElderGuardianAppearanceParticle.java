@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_3999;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -18,21 +19,15 @@ import net.minecraft.world.World;
 public class ElderGuardianAppearanceParticle extends Particle {
 	private LivingEntity guardian;
 
-	protected ElderGuardianAppearanceParticle(World world, double d, double e, double f) {
-		super(world, d, e, f, 0.0, 0.0, 0.0);
-		this.colorRed = 1.0F;
-		this.colorGreen = 1.0F;
-		this.colorBlue = 1.0F;
-		this.velocityX = 0.0;
-		this.velocityY = 0.0;
-		this.velocityZ = 0.0;
+	private ElderGuardianAppearanceParticle(World world, double d, double e, double f) {
+		super(world, d, e, f);
 		this.gravityStrength = 0.0F;
 		this.maxAge = 30;
 	}
 
 	@Override
-	public int getParticleGroup() {
-		return 3;
+	public class_3999 method_18122() {
+		return class_3999.field_17831;
 	}
 
 	@Override

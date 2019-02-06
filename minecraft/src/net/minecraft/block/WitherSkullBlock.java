@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.minecraft.class_2710;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
@@ -15,6 +14,7 @@ import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.block.BlockStatePredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.MaterialPredicate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.Difficulty;
@@ -38,52 +38,54 @@ public class WitherSkullBlock extends SkullBlock {
 	}
 
 	public static void onPlaced(World world, BlockPos blockPos, SkullBlockEntity skullBlockEntity) {
-		Block block = skullBlockEntity.getCachedState().getBlock();
-		boolean bl = block == Blocks.field_10177 || block == Blocks.field_10101;
-		if (bl && blockPos.getY() >= 2 && world.getDifficulty() != Difficulty.PEACEFUL && !world.isClient) {
-			BlockPattern blockPattern = getWitherBossPattern();
-			BlockPattern.Result result = blockPattern.searchAround(world, blockPos);
-			if (result != null) {
-				for (int i = 0; i < blockPattern.getWidth(); i++) {
-					for (int j = 0; j < blockPattern.getHeight(); j++) {
-						world.setBlockState(result.translate(i, j, 0).getBlockPos(), Blocks.field_10124.getDefaultState(), 2);
+		if (!world.isClient) {
+			Block block = skullBlockEntity.getCachedState().getBlock();
+			boolean bl = block == Blocks.field_10177 || block == Blocks.field_10101;
+			if (bl && blockPos.getY() >= 2 && world.getDifficulty() != Difficulty.PEACEFUL) {
+				BlockPattern blockPattern = getWitherBossPattern();
+				BlockPattern.Result result = blockPattern.searchAround(world, blockPos);
+				if (result != null) {
+					for (int i = 0; i < blockPattern.getWidth(); i++) {
+						for (int j = 0; j < blockPattern.getHeight(); j++) {
+							world.setBlockState(result.translate(i, j, 0).getBlockPos(), Blocks.field_10124.getDefaultState(), 2);
+						}
 					}
-				}
 
-				BlockPos blockPos2 = result.translate(1, 0, 0).getBlockPos();
-				EntityWither entityWither = new EntityWither(world);
-				BlockPos blockPos3 = result.translate(1, 2, 0).getBlockPos();
-				entityWither.setPositionAndAngles(
-					(double)blockPos3.getX() + 0.5,
-					(double)blockPos3.getY() + 0.55,
-					(double)blockPos3.getZ() + 0.5,
-					result.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F,
-					0.0F
-				);
-				entityWither.field_6283 = result.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F;
-				entityWither.method_6885();
-
-				for (ServerPlayerEntity serverPlayerEntity : world.getVisibleEntities(ServerPlayerEntity.class, entityWither.getBoundingBox().expand(50.0))) {
-					Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, entityWither);
-				}
-
-				world.spawnEntity(entityWither);
-
-				for (int k = 0; k < 120; k++) {
-					world.addParticle(
-						ParticleTypes.field_11230,
-						(double)blockPos2.getX() + world.random.nextDouble(),
-						(double)(blockPos2.getY() - 2) + world.random.nextDouble() * 3.9,
-						(double)blockPos2.getZ() + world.random.nextDouble(),
-						0.0,
-						0.0,
-						0.0
+					BlockPos blockPos2 = result.translate(1, 0, 0).getBlockPos();
+					EntityWither entityWither = new EntityWither(world);
+					BlockPos blockPos3 = result.translate(1, 2, 0).getBlockPos();
+					entityWither.setPositionAndAngles(
+						(double)blockPos3.getX() + 0.5,
+						(double)blockPos3.getY() + 0.55,
+						(double)blockPos3.getZ() + 0.5,
+						result.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F,
+						0.0F
 					);
-				}
+					entityWither.field_6283 = result.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F;
+					entityWither.method_6885();
 
-				for (int k = 0; k < blockPattern.getWidth(); k++) {
-					for (int l = 0; l < blockPattern.getHeight(); l++) {
-						world.updateNeighbors(result.translate(k, l, 0).getBlockPos(), Blocks.field_10124);
+					for (ServerPlayerEntity serverPlayerEntity : world.getVisibleEntities(ServerPlayerEntity.class, entityWither.getBoundingBox().expand(50.0))) {
+						Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, entityWither);
+					}
+
+					world.spawnEntity(entityWither);
+
+					for (int k = 0; k < 120; k++) {
+						world.addParticle(
+							ParticleTypes.field_11230,
+							(double)blockPos2.getX() + world.random.nextDouble(),
+							(double)(blockPos2.getY() - 2) + world.random.nextDouble() * 3.9,
+							(double)blockPos2.getZ() + world.random.nextDouble(),
+							0.0,
+							0.0,
+							0.0
+						);
+					}
+
+					for (int k = 0; k < blockPattern.getWidth(); k++) {
+						for (int l = 0; l < blockPattern.getHeight(); l++) {
+							world.updateNeighbors(result.translate(k, l, 0).getBlockPos(), Blocks.field_10124);
+						}
 					}
 				}
 			}
@@ -102,7 +104,7 @@ public class WitherSkullBlock extends SkullBlock {
 				.aisle("^^^", "###", "~#~")
 				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.field_10114)))
 				.where('^', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.field_10177).or(BlockStatePredicate.forBlock(Blocks.field_10101))))
-				.where('~', CachedBlockPosition.matchesBlockState(class_2710.method_11746(Material.AIR)))
+				.where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR)))
 				.build();
 		}
 
@@ -114,7 +116,7 @@ public class WitherSkullBlock extends SkullBlock {
 			witherDispenserPattern = BlockPatternBuilder.start()
 				.aisle("   ", "###", "~#~")
 				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.field_10114)))
-				.where('~', CachedBlockPosition.matchesBlockState(class_2710.method_11746(Material.AIR)))
+				.where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR)))
 				.build();
 		}
 

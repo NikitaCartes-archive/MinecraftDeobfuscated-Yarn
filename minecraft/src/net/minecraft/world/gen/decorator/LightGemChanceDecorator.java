@@ -5,10 +5,9 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import net.minecraft.class_3667;
 import net.minecraft.util.math.BlockPos;
 
-public class LightGemChanceDecorator extends class_3667<CountDecoratorConfig> {
+public class LightGemChanceDecorator extends SimpleDecorator<CountDecoratorConfig> {
 	public LightGemChanceDecorator(Function<Dynamic<?>, ? extends CountDecoratorConfig> function) {
 		super(function);
 	}

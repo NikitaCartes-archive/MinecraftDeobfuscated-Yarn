@@ -1,8 +1,5 @@
 package net.minecraft.world.biome.layer;
 
-import net.minecraft.class_3630;
-import net.minecraft.util.math.CoordinateTransformer;
-
 public interface MergingLayer extends CoordinateTransformer {
 	default <R extends LayerSampler> LayerFactory<R> create(LayerSampleContext<R> layerSampleContext, LayerFactory<R> layerFactory, LayerFactory<R> layerFactory2) {
 		return () -> {
@@ -15,5 +12,5 @@ public interface MergingLayer extends CoordinateTransformer {
 		};
 	}
 
-	int sample(class_3630 arg, LayerSampler layerSampler, LayerSampler layerSampler2, int i, int j);
+	int sample(LayerRandomnessSource layerRandomnessSource, LayerSampler layerSampler, LayerSampler layerSampler2, int i, int j);
 }

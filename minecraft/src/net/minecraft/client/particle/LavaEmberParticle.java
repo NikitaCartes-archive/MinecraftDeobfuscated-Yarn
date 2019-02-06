@@ -2,29 +2,30 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.entity.Entity;
+import net.minecraft.class_3999;
+import net.minecraft.class_4000;
+import net.minecraft.class_4001;
+import net.minecraft.class_4002;
+import net.minecraft.class_4003;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class LavaEmberParticle extends Particle {
-	private final float field_3827;
-
-	protected LavaEmberParticle(World world, double d, double e, double f) {
+public class LavaEmberParticle extends class_4003 {
+	private LavaEmberParticle(World world, double d, double e, double f) {
 		super(world, d, e, f, 0.0, 0.0, 0.0);
 		this.velocityX *= 0.8F;
 		this.velocityY *= 0.8F;
 		this.velocityZ *= 0.8F;
 		this.velocityY = (double)(this.random.nextFloat() * 0.4F + 0.05F);
-		this.colorRed = 1.0F;
-		this.colorGreen = 1.0F;
-		this.colorBlue = 1.0F;
-		this.size = this.size * (this.random.nextFloat() * 2.0F + 0.2F);
-		this.field_3827 = this.size;
+		this.field_17867 = this.field_17867 * (this.random.nextFloat() * 2.0F + 0.2F);
 		this.maxAge = (int)(16.0 / (Math.random() * 0.8 + 0.2));
-		this.setSpriteIndex(49);
+	}
+
+	@Override
+	public class_3999 method_18122() {
+		return class_3999.field_17828;
 	}
 
 	@Override
@@ -36,10 +37,9 @@ public class LavaEmberParticle extends Particle {
 	}
 
 	@Override
-	public void buildGeometry(BufferBuilder bufferBuilder, Entity entity, float f, float g, float h, float i, float j, float k) {
-		float l = ((float)this.age + f) / (float)this.maxAge;
-		this.size = this.field_3827 * (1.0F - l * l);
-		super.buildGeometry(bufferBuilder, entity, f, g, h, i, j, k);
+	public float method_18132(float f) {
+		float g = ((float)this.age + f) / (float)this.maxAge;
+		return this.field_17867 * (1.0F - g * g);
 	}
 
 	@Override
@@ -47,30 +47,38 @@ public class LavaEmberParticle extends Particle {
 		this.prevPosX = this.posX;
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;
-		if (this.age++ >= this.maxAge) {
-			this.markDead();
-		}
-
 		float f = (float)this.age / (float)this.maxAge;
 		if (this.random.nextFloat() > f) {
 			this.world.addParticle(ParticleTypes.field_11251, this.posX, this.posY, this.posZ, this.velocityX, this.velocityY, this.velocityZ);
 		}
 
-		this.velocityY -= 0.03;
-		this.move(this.velocityX, this.velocityY, this.velocityZ);
-		this.velocityX *= 0.999F;
-		this.velocityY *= 0.999F;
-		this.velocityZ *= 0.999F;
-		if (this.onGround) {
-			this.velocityX *= 0.7F;
-			this.velocityZ *= 0.7F;
+		if (this.age++ >= this.maxAge) {
+			this.markDead();
+		} else {
+			this.velocityY -= 0.03;
+			this.move(this.velocityX, this.velocityY, this.velocityZ);
+			this.velocityX *= 0.999F;
+			this.velocityY *= 0.999F;
+			this.velocityZ *= 0.999F;
+			if (this.onGround) {
+				this.velocityX *= 0.7F;
+				this.velocityZ *= 0.7F;
+			}
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
+		private final class_4002 field_17818;
+
+		public Factory(class_4001 arg) {
+			this.field_17818 = arg.method_18137(class_4000.field_17856);
+		}
+
 		public Particle method_3039(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			return new LavaEmberParticle(world, d, e, f);
+			LavaEmberParticle lavaEmberParticle = new LavaEmberParticle(world, d, e, f);
+			lavaEmberParticle.method_18140(this.field_17818);
+			return lavaEmberParticle;
 		}
 	}
 }

@@ -16,13 +16,13 @@ import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.Heightmap;
 
 public class DebugChunkGenerator extends ChunkGenerator<DebugChunkGeneratorConfig> {
-	private static final List<BlockState> field_13163 = (List<BlockState>)StreamSupport.stream(Registry.BLOCK.spliterator(), false)
+	private static final List<BlockState> BLOCK_STATES = (List<BlockState>)StreamSupport.stream(Registry.BLOCK.spliterator(), false)
 		.flatMap(block -> block.getStateFactory().getStates().stream())
 		.collect(Collectors.toList());
-	private static final int field_13161 = MathHelper.ceil(MathHelper.sqrt((float)field_13163.size()));
-	private static final int field_13160 = MathHelper.ceil((float)field_13163.size() / (float)field_13161);
-	protected static final BlockState field_13162 = Blocks.field_10124.getDefaultState();
-	protected static final BlockState field_13164 = Blocks.field_10499.getDefaultState();
+	private static final int X_SIDE_LENGTH = MathHelper.ceil(MathHelper.sqrt((float)BLOCK_STATES.size()));
+	private static final int Z_SIDE_LENGTH = MathHelper.ceil((float)BLOCK_STATES.size() / (float)X_SIDE_LENGTH);
+	protected static final BlockState AIR = Blocks.field_10124.getDefaultState();
+	protected static final BlockState BARRIER = Blocks.field_10499.getDefaultState();
 
 	public DebugChunkGenerator(IWorld iWorld, BiomeSource biomeSource, DebugChunkGeneratorConfig debugChunkGeneratorConfig) {
 		super(iWorld, biomeSource, debugChunkGeneratorConfig);
@@ -51,8 +51,8 @@ public class DebugChunkGenerator extends ChunkGenerator<DebugChunkGeneratorConfi
 			for (int l = 0; l < 16; l++) {
 				int m = (i << 4) + k;
 				int n = (j << 4) + l;
-				chunkRegion.setBlockState(mutable.set(m, 60, n), field_13164, 2);
-				BlockState blockState = method_12578(m, n);
+				chunkRegion.setBlockState(mutable.set(m, 60, n), BARRIER, 2);
+				BlockState blockState = getBlockState(m, n);
 				if (blockState != null) {
 					chunkRegion.setBlockState(mutable.set(m, 70, n), blockState, 2);
 				}
@@ -65,19 +65,19 @@ public class DebugChunkGenerator extends ChunkGenerator<DebugChunkGeneratorConfi
 	}
 
 	@Override
-	public int produceHeight(int i, int j, Heightmap.Type type) {
+	public int getHeightOnGround(int i, int j, Heightmap.Type type) {
 		return 0;
 	}
 
-	public static BlockState method_12578(int i, int j) {
-		BlockState blockState = field_13162;
+	public static BlockState getBlockState(int i, int j) {
+		BlockState blockState = AIR;
 		if (i > 0 && j > 0 && i % 2 != 0 && j % 2 != 0) {
 			i /= 2;
 			j /= 2;
-			if (i <= field_13161 && j <= field_13160) {
-				int k = MathHelper.abs(i * field_13161 + j);
-				if (k < field_13163.size()) {
-					blockState = (BlockState)field_13163.get(k);
+			if (i <= X_SIDE_LENGTH && j <= Z_SIDE_LENGTH) {
+				int k = MathHelper.abs(i * X_SIDE_LENGTH + j);
+				if (k < BLOCK_STATES.size()) {
+					blockState = (BlockState)BLOCK_STATES.get(k);
 				}
 			}
 		}

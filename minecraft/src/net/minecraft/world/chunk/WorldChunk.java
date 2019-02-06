@@ -35,6 +35,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ChunkHolder;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.TypeFilterableList;
@@ -76,12 +77,12 @@ public class WorldChunk implements Chunk {
 	private final TickScheduler<Fluid> fluidTickScheduler;
 	private boolean field_12837;
 	private long lastSaveTime;
-	private boolean dirty;
+	private boolean shouldSave;
 	private long inhabitedTime;
 	@Nullable
-	private Supplier<ChunkHolder.LevelType> field_12856;
+	private Supplier<ChunkHolder.LevelType> levelTypeProvider;
 	@Nullable
-	private Consumer<WorldChunk> field_12850;
+	private Consumer<WorldChunk> loadToWorldConsumer;
 	private final ChunkPos pos;
 	private volatile boolean isLightOn;
 
@@ -120,7 +121,7 @@ public class WorldChunk implements Chunk {
 		this.blockTickScheduler = tickScheduler;
 		this.fluidTickScheduler = tickScheduler2;
 		this.inhabitedTime = l;
-		this.field_12850 = consumer;
+		this.loadToWorldConsumer = consumer;
 		if (chunkSections != null) {
 			if (this.sections.length == chunkSections.length) {
 				System.arraycopy(chunkSections, 0, this.sections, 0, this.sections.length);
@@ -144,7 +145,10 @@ public class WorldChunk implements Chunk {
 		);
 
 		for (CompoundTag compoundTag : protoChunk.getEntities()) {
-			EntityType.spawnEntityInChunk(compoundTag, world, this);
+			EntityType.loadEntityWithPassengers(compoundTag, world, entity -> {
+				this.addEntity(entity);
+				return entity;
+			});
 		}
 
 		for (BlockEntity blockEntity : protoChunk.getBlockEntities().values()) {
@@ -167,7 +171,7 @@ public class WorldChunk implements Chunk {
 		}
 
 		this.setLightOn(protoChunk.isLightOn());
-		this.dirty = true;
+		this.shouldSave = true;
 	}
 
 	@Override
@@ -199,7 +203,7 @@ public class WorldChunk implements Chunk {
 			}
 
 			if (j == 70) {
-				blockState = DebugChunkGenerator.method_12578(i, k);
+				blockState = DebugChunkGenerator.getBlockState(i, k);
 			}
 
 			return blockState == null ? Blocks.field_10124.getDefaultState() : blockState;
@@ -207,7 +211,7 @@ public class WorldChunk implements Chunk {
 			try {
 				if (j >= 0 && j >> 4 < this.sections.length) {
 					ChunkSection chunkSection = this.sections[j >> 4];
-					if (chunkSection != EMPTY_SECTION) {
+					if (!ChunkSection.isEmpty(chunkSection)) {
 						return chunkSection.getBlockState(i & 15, j & 15, k & 15);
 					}
 				}
@@ -231,7 +235,7 @@ public class WorldChunk implements Chunk {
 		try {
 			if (j >= 0 && j >> 4 < this.sections.length) {
 				ChunkSection chunkSection = this.sections[j >> 4];
-				if (chunkSection != EMPTY_SECTION) {
+				if (!ChunkSection.isEmpty(chunkSection)) {
 					return chunkSection.getFluidState(i & 15, j & 15, k & 15);
 				}
 			}
@@ -307,7 +311,7 @@ public class WorldChunk implements Chunk {
 					}
 				}
 
-				this.dirty = true;
+				this.shouldSave = true;
 				return blockState2;
 			}
 		}
@@ -325,7 +329,7 @@ public class WorldChunk implements Chunk {
 	}
 
 	public int getLightLevel(BlockPos blockPos, int i) {
-		return this.method_12035(blockPos, i, this.world.getDimension().hasSkyLight());
+		return this.getLightLevel(blockPos, i, this.world.getDimension().hasSkyLight());
 	}
 
 	@Override
@@ -456,33 +460,22 @@ public class WorldChunk implements Chunk {
 	}
 
 	public void loadToWorld() {
-		if (this.field_12850 != null) {
-			this.field_12850.accept(this);
-			this.field_12850 = null;
+		if (this.loadToWorldConsumer != null) {
+			this.loadToWorldConsumer.accept(this);
+			this.loadToWorldConsumer = null;
 		}
 
 		this.loadedToWorld = true;
 		this.world.addBlockEntities(this.blockEntityMap.values());
-
-		for (TypeFilterableList<Entity> typeFilterableList : this.entitySections) {
-			this.world.loadEntities(typeFilterableList.stream().filter(entity -> !(entity instanceof PlayerEntity)));
-		}
-	}
-
-	public void unloadFromWorld() {
-		this.loadedToWorld = false;
-
-		for (BlockEntity blockEntity : this.blockEntityMap.values()) {
-			this.world.unloadBlockEntity(blockEntity);
-		}
-
-		for (TypeFilterableList<Entity> typeFilterableList : this.entitySections) {
-			this.world.unloadEntities(typeFilterableList);
+		if (this.world instanceof ServerWorld) {
+			for (TypeFilterableList<Entity> typeFilterableList : this.entitySections) {
+				typeFilterableList.stream().filter(entity -> !(entity instanceof PlayerEntity)).forEach(entity -> ((ServerWorld)this.world).method_18197(entity, false));
+			}
 		}
 	}
 
 	public void markDirty() {
-		this.dirty = true;
+		this.shouldSave = true;
 	}
 
 	public void appendEntities(@Nullable Entity entity, BoundingBox boundingBox, List<Entity> list, Predicate<? super Entity> predicate) {
@@ -552,7 +545,7 @@ public class WorldChunk implements Chunk {
 		return this.pos;
 	}
 
-	public boolean method_12228(int i, int j) {
+	public boolean areSectionsEmpty(int i, int j) {
 		if (i < 0) {
 			i = 0;
 		}
@@ -562,8 +555,7 @@ public class WorldChunk implements Chunk {
 		}
 
 		for (int k = i; k <= j; k += 16) {
-			ChunkSection chunkSection = this.sections[k >> 4];
-			if (chunkSection != EMPTY_SECTION && !chunkSection.isEmpty()) {
+			if (!ChunkSection.isEmpty(this.sections[k >> 4])) {
 				return false;
 			}
 		}
@@ -630,7 +622,6 @@ public class WorldChunk implements Chunk {
 		return this.loadedToWorld;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void setLoadedToWorld(boolean bl) {
 		this.loadedToWorld = bl;
 	}
@@ -658,9 +649,9 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Override
-	public Stream<BlockPos> method_12018() {
+	public Stream<BlockPos> getLightSourcesStream() {
 		return StreamSupport.stream(
-				BlockPos.iterateBoxPositions(this.pos.getXStart(), 0, this.pos.getZStart(), this.pos.getXEnd(), 255, this.pos.getZEnd()).spliterator(), false
+				BlockPos.iterateBoxPositions(this.pos.getStartX(), 0, this.pos.getStartZ(), this.pos.getEndX(), 255, this.pos.getEndZ()).spliterator(), false
 			)
 			.filter(blockPos -> this.getBlockState(blockPos).getLuminance() != 0);
 	}
@@ -677,12 +668,12 @@ public class WorldChunk implements Chunk {
 
 	@Override
 	public void setShouldSave(boolean bl) {
-		this.dirty = bl;
+		this.shouldSave = bl;
 	}
 
 	@Override
 	public boolean needsSaving() {
-		return this.dirty || this.field_12837 && this.world.getTime() != this.lastSaveTime;
+		return this.shouldSave || this.field_12837 && this.world.getTime() != this.lastSaveTime;
 	}
 
 	public void method_12232(boolean bl) {
@@ -819,12 +810,12 @@ public class WorldChunk implements Chunk {
 		return ChunkStatus.FULL;
 	}
 
-	public ChunkHolder.LevelType method_12225() {
-		return this.field_12856 == null ? ChunkHolder.LevelType.BORDER : (ChunkHolder.LevelType)this.field_12856.get();
+	public ChunkHolder.LevelType getLevelType() {
+		return this.levelTypeProvider == null ? ChunkHolder.LevelType.BORDER : (ChunkHolder.LevelType)this.levelTypeProvider.get();
 	}
 
-	public void method_12207(Supplier<ChunkHolder.LevelType> supplier) {
-		this.field_12856 = supplier;
+	public void setLevelTypeProvider(Supplier<ChunkHolder.LevelType> supplier) {
+		this.levelTypeProvider = supplier;
 	}
 
 	@Override

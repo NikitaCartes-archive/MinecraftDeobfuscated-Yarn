@@ -34,13 +34,13 @@ public enum class_3657 implements ParentedLayer {
 		double x = ((double)u - q) * ((double)u - q) + ((double)t - h) * ((double)t - h);
 		double y = ((double)u - s) * ((double)u - s) + ((double)t - r) * ((double)t - r);
 		if (v < w && v < x && v < y) {
-			return layerSampler.sample(this.transformX(o), this.transformY(p));
+			return layerSampler.sample(this.transformX(o), this.transformZ(p));
 		} else if (w < v && w < x && w < y) {
-			return layerSampler.sample(this.transformX(o + 4), this.transformY(p)) & 0xFF;
+			return layerSampler.sample(this.transformX(o + 4), this.transformZ(p)) & 0xFF;
 		} else {
 			return x < v && x < w && x < y
-				? layerSampler.sample(this.transformX(o), this.transformY(p + 4))
-				: layerSampler.sample(this.transformX(o + 4), this.transformY(p + 4)) & 0xFF;
+				? layerSampler.sample(this.transformX(o), this.transformZ(p + 4))
+				: layerSampler.sample(this.transformX(o + 4), this.transformZ(p + 4)) & 0xFF;
 		}
 	}
 
@@ -50,7 +50,7 @@ public enum class_3657 implements ParentedLayer {
 	}
 
 	@Override
-	public int transformY(int i) {
+	public int transformZ(int i) {
 		return i >> 2;
 	}
 }

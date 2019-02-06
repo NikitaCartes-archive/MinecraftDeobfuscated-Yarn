@@ -1,15 +1,12 @@
 package net.minecraft.entity;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Predicate;
-import javax.annotation.Nullable;
+import java.util.OptionalInt;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvironmentInterface;
 import net.fabricmc.api.EnvironmentInterfaces;
-import net.minecraft.client.network.packet.EntitySpawnClientPacket;
+import net.minecraft.class_1675;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -20,14 +17,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
@@ -39,9 +33,8 @@ import net.minecraft.world.World;
 	)})
 public class FireworkEntity extends Entity implements FlyingItemEntity {
 	private static final TrackedData<ItemStack> ITEM_STACK = DataTracker.registerData(FireworkEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
-	private static final TrackedData<Optional<UUID>> field_7611 = DataTracker.registerData(FireworkEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
+	private static final TrackedData<OptionalInt> field_7611 = DataTracker.registerData(FireworkEntity.class, TrackedDataHandlerRegistry.field_17910);
 	private static final TrackedData<Boolean> field_7615 = DataTracker.registerData(FireworkEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final Predicate<Entity> field_16996 = EntityPredicates.EXCEPT_SPECTATOR.and(EntityPredicates.VALID_ENTITY.and(Entity::doesCollide));
 	private int field_7613;
 	private int field_7612;
 	private LivingEntity field_7616;
@@ -53,7 +46,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity {
 	@Override
 	protected void initDataTracker() {
 		this.dataTracker.startTracking(ITEM_STACK, ItemStack.EMPTY);
-		this.dataTracker.startTracking(field_7611, Optional.empty());
+		this.dataTracker.startTracking(field_7611, OptionalInt.empty());
 		this.dataTracker.startTracking(field_7615, false);
 	}
 
@@ -87,7 +80,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity {
 
 	public FireworkEntity(World world, ItemStack itemStack, LivingEntity livingEntity) {
 		this(world, livingEntity.x, livingEntity.y, livingEntity.z, itemStack);
-		this.dataTracker.set(field_7611, Optional.of(livingEntity.getUuid()));
+		this.dataTracker.set(field_7611, OptionalInt.of(livingEntity.getEntityId()));
 		this.field_7616 = livingEntity;
 	}
 
@@ -144,11 +137,12 @@ public class FireworkEntity extends Entity implements FlyingItemEntity {
 		super.update();
 		if (this.method_7476()) {
 			if (this.field_7616 == null) {
-				UUID uUID = (UUID)this.dataTracker.get(field_7611).orElse(null);
-				Entity entity = this.world.getEntityByUuid(uUID);
-				if (entity instanceof LivingEntity) {
-					this.field_7616 = (LivingEntity)entity;
-				}
+				this.dataTracker.get(field_7611).ifPresent(i -> {
+					Entity entity = this.world.getEntityById(i);
+					if (entity instanceof LivingEntity) {
+						this.field_7616 = (LivingEntity)entity;
+					}
+				});
 			}
 
 			if (this.field_7616 != null) {
@@ -176,21 +170,13 @@ public class FireworkEntity extends Entity implements FlyingItemEntity {
 			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 		}
 
-		Vec3d vec3d = new Vec3d(this.x, this.y, this.z);
-		Vec3d vec3d2 = new Vec3d(this.x + this.velocityX, this.y + this.velocityY, this.z + this.velocityZ);
-		HitResult hitResult = this.world
-			.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.NONE, this));
-		vec3d = new Vec3d(this.x, this.y, this.z);
-		vec3d2 = new Vec3d(this.x + this.velocityX, this.y + this.velocityY, this.z + this.velocityZ);
-		if (hitResult.getType() != HitResult.Type.NONE) {
-			vec3d2 = hitResult.getPos();
-		}
-
-		Entity entity2 = this.method_16829(vec3d, vec3d2);
-		if (entity2 != null) {
-			hitResult = new EntityHitResult(entity2);
-		}
-
+		HitResult hitResult = class_1675.method_18074(
+			this,
+			this.getBoundingBox().stretch(this.velocityX, this.velocityY, this.velocityZ).expand(1.0),
+			entity -> !entity.isSpectator() && entity.isValid() && entity.doesCollide(),
+			RayTraceContext.ShapeType.field_17558,
+			true
+		);
 		if (!this.noClip) {
 			this.method_16828(hitResult);
 			this.velocityDirty = true;
@@ -257,27 +243,6 @@ public class FireworkEntity extends Entity implements FlyingItemEntity {
 		}
 	}
 
-	@Nullable
-	protected Entity method_16829(Vec3d vec3d, Vec3d vec3d2) {
-		Entity entity = null;
-		List<Entity> list = this.world.getEntities(this, this.getBoundingBox().stretch(this.velocityX, this.velocityY, this.velocityZ).expand(1.0), field_16996);
-		double d = 0.0;
-
-		for (Entity entity2 : list) {
-			BoundingBox boundingBox = entity2.getBoundingBox().expand(0.3F);
-			Optional<Vec3d> optional = boundingBox.rayTrace(vec3d, vec3d2);
-			if (optional.isPresent()) {
-				double e = vec3d.squaredDistanceTo((Vec3d)optional.get());
-				if (e < d || d == 0.0) {
-					entity = entity2;
-					d = e;
-				}
-			}
-		}
-
-		return entity;
-	}
-
 	private void method_7475() {
 		float f = 0.0F;
 		ItemStack itemStack = this.dataTracker.get(ITEM_STACK);
@@ -319,7 +284,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity {
 	}
 
 	private boolean method_7476() {
-		return this.dataTracker.get(field_7611).orElse(null) != null;
+		return this.dataTracker.get(field_7611).isPresent();
 	}
 
 	public boolean method_7477() {
@@ -378,6 +343,6 @@ public class FireworkEntity extends Entity implements FlyingItemEntity {
 
 	@Override
 	public Packet<?> createSpawnPacket() {
-		return new EntitySpawnClientPacket(this);
+		return new EntitySpawnS2CPacket(this);
 	}
 }

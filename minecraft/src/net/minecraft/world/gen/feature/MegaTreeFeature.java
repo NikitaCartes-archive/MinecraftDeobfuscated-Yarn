@@ -9,29 +9,29 @@ import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.TestableWorld;
 
 public abstract class MegaTreeFeature<T extends FeatureConfig> extends AbstractTreeFeature<T> {
-	protected final int field_13683;
-	protected final BlockState field_13685;
-	protected final BlockState field_13684;
-	protected final int field_13686;
+	protected final int baseHeight;
+	protected final BlockState log;
+	protected final BlockState leaves;
+	protected final int maxExtraHeight;
 
 	public MegaTreeFeature(Function<Dynamic<?>, ? extends T> function, boolean bl, int i, int j, BlockState blockState, BlockState blockState2) {
 		super(function, bl);
-		this.field_13683 = i;
-		this.field_13686 = j;
-		this.field_13685 = blockState;
-		this.field_13684 = blockState2;
+		this.baseHeight = i;
+		this.maxExtraHeight = j;
+		this.log = blockState;
+		this.leaves = blockState2;
 	}
 
-	protected int method_13524(Random random) {
-		int i = random.nextInt(3) + this.field_13683;
-		if (this.field_13686 > 1) {
-			i += random.nextInt(this.field_13686);
+	protected int getHeight(Random random) {
+		int i = random.nextInt(3) + this.baseHeight;
+		if (this.maxExtraHeight > 1) {
+			i += random.nextInt(this.maxExtraHeight);
 		}
 
 		return i;
 	}
 
-	private boolean method_13527(TestableWorld testableWorld, BlockPos blockPos, int i) {
+	private boolean doesTreeFit(TestableWorld testableWorld, BlockPos blockPos, int i) {
 		boolean bl = true;
 		if (blockPos.getY() >= 1 && blockPos.getY() + i + 1 <= 256) {
 			for (int j = 0; j <= 1 + i; j++) {
@@ -57,7 +57,7 @@ public abstract class MegaTreeFeature<T extends FeatureConfig> extends AbstractT
 		}
 	}
 
-	private boolean method_13525(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos) {
+	private boolean replaceGround(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
 		if (isNaturalDirtOrGrass(modifiableTestableWorld, blockPos2) && blockPos.getY() >= 2) {
 			this.setToDirt(modifiableTestableWorld, blockPos2);
@@ -70,11 +70,11 @@ public abstract class MegaTreeFeature<T extends FeatureConfig> extends AbstractT
 		}
 	}
 
-	protected boolean method_13523(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i) {
-		return this.method_13527(modifiableTestableWorld, blockPos, i) && this.method_13525(modifiableTestableWorld, blockPos);
+	protected boolean checkTreeFitsAndReplaceGround(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i) {
+		return this.doesTreeFit(modifiableTestableWorld, blockPos, i) && this.replaceGround(modifiableTestableWorld, blockPos);
 	}
 
-	protected void method_13528(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i) {
+	protected void makeSquaredLeafLayer(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i) {
 		int j = i * i;
 
 		for (int k = -i; k <= i + 1; k++) {
@@ -84,14 +84,14 @@ public abstract class MegaTreeFeature<T extends FeatureConfig> extends AbstractT
 				if (m + n < 7 && m * m + n * n <= j) {
 					BlockPos blockPos2 = blockPos.add(k, 0, l);
 					if (isAirOrLeaves(modifiableTestableWorld, blockPos2)) {
-						this.setBlockState(modifiableTestableWorld, blockPos2, this.field_13684);
+						this.setBlockState(modifiableTestableWorld, blockPos2, this.leaves);
 					}
 				}
 			}
 		}
 	}
 
-	protected void method_13526(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i) {
+	protected void makeRoundLeafLayer(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i) {
 		int j = i * i;
 
 		for (int k = -i; k <= i; k++) {
@@ -99,7 +99,7 @@ public abstract class MegaTreeFeature<T extends FeatureConfig> extends AbstractT
 				if (k * k + l * l <= j) {
 					BlockPos blockPos2 = blockPos.add(k, 0, l);
 					if (isAirOrLeaves(modifiableTestableWorld, blockPos2)) {
-						this.setBlockState(modifiableTestableWorld, blockPos2, this.field_13684);
+						this.setBlockState(modifiableTestableWorld, blockPos2, this.leaves);
 					}
 				}
 			}

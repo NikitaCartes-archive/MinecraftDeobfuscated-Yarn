@@ -51,7 +51,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final StructureFeature<BuriedTreasureFeatureConfig> BURIED_TREASURE = register(
 		"buried_treasure", new BuriedTreasureFeature(BuriedTreasureFeatureConfig::deserialize)
 	);
-	public static final StructureFeature<VillageFeatureConfig> VILLAGE = register("village", new VillageFeature(VillageFeatureConfig::method_16752));
+	public static final StructureFeature<VillageFeatureConfig> VILLAGE = register("village", new VillageFeature(VillageFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> field_13529 = register("fancy_tree", new LargeOakTreeFeature(DefaultFeatureConfig::deserialize, false));
 	public static final Feature<DefaultFeatureConfig> field_13566 = register("birch_tree", new BirchTreeFeature(DefaultFeatureConfig::deserialize, false, false));
 	public static final Feature<DefaultFeatureConfig> field_13578 = register(
@@ -139,7 +139,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	);
 	public static final Feature<EmeraldOreFeatureConfig> field_13594 = register("emerald_ore", new EmeraldOreFeature(EmeraldOreFeatureConfig::deserialize));
 	public static final Feature<SpringFeatureConfig> field_13513 = register("spring_feature", new SpringFeature(SpringFeatureConfig::deserialize));
-	public static final Feature<EndPillarFeatureConfig> field_13522 = register("end_spike", new EndSpikeFeature(EndPillarFeatureConfig::deserialize));
+	public static final Feature<EndSpikeFeatureConfig> field_13522 = register("end_spike", new EndSpikeFeature(EndSpikeFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> field_13574 = register("end_island", new EndIslandFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> field_13552 = register("chorus_plant", new ChorusPlantFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<EndGatewayFeatureConfig> field_13564 = register("end_gateway", new EndGatewayFeature(EndGatewayFeatureConfig::deserialize));
@@ -149,7 +149,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DefaultFeatureConfig> field_13585 = register("coral_mushroom", new CoralMushroomFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> field_13546 = register("coral_claw", new CoralClawFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<SeaPickleFeatureConfig> field_13575 = register("sea_pickle", new SeaPickleFeature(SeaPickleFeatureConfig::deserialize));
-	public static final Feature<SimpleBlockFeatureConfig> field_13518 = register("simple_block", new SimpleBlockFeature(SimpleBlockFeatureConfig::make));
+	public static final Feature<SimpleBlockFeatureConfig> field_13518 = register("simple_block", new SimpleBlockFeature(SimpleBlockFeatureConfig::deserialize));
 	public static final Feature<ProbabilityConfig> field_13540 = register("bamboo", new BambooFeature(ProbabilityConfig::deserialize));
 	public static final Feature<DecoratedFeatureConfig> field_13572 = register("decorated", new DecoratedFeature(DecoratedFeatureConfig::deserialize));
 	public static final Feature<DecoratedFeatureConfig> field_13561 = register("decorated_flower", new DecoratedFlowerFeature(DecoratedFeatureConfig::deserialize));
@@ -176,7 +176,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 		hashBiMap.put("Village".toLowerCase(Locale.ROOT), VILLAGE);
 	});
 	public static final List<StructureFeature<?>> JIGSAW_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE);
-	private final Function<Dynamic<?>, ? extends FC> configFactory;
+	private final Function<Dynamic<?>, ? extends FC> configDeserializer;
 	protected final boolean emitNeighborBlockUpdates;
 
 	private static <C extends FeatureConfig, F extends Feature<C>> F register(String string, F feature) {
@@ -184,17 +184,17 @@ public abstract class Feature<FC extends FeatureConfig> {
 	}
 
 	public Feature(Function<Dynamic<?>, ? extends FC> function) {
-		this.configFactory = function;
+		this.configDeserializer = function;
 		this.emitNeighborBlockUpdates = false;
 	}
 
 	public Feature(Function<Dynamic<?>, ? extends FC> function, boolean bl) {
-		this.configFactory = function;
+		this.configDeserializer = function;
 		this.emitNeighborBlockUpdates = bl;
 	}
 
-	public FC deserialize(Dynamic<?> dynamic) {
-		return (FC)this.configFactory.apply(dynamic);
+	public FC deserializeConfig(Dynamic<?> dynamic) {
+		return (FC)this.configDeserializer.apply(dynamic);
 	}
 
 	protected void setBlockState(ModifiableWorld modifiableWorld, BlockPos blockPos, BlockState blockState) {

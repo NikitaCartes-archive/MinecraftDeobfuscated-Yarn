@@ -8,7 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.WaterlilyBlock;
-import net.minecraft.client.network.packet.EntitySpawnClientPacket;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -28,7 +28,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.server.network.packet.BoatPaddleStateServerPacket;
+import net.minecraft.server.network.packet.BoatPaddleStateC2SPacket;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
@@ -266,7 +266,7 @@ public class BoatEntity extends Entity {
 			this.method_7534();
 			if (this.world.isClient) {
 				this.method_7549();
-				this.world.sendPacket(new BoatPaddleStateServerPacket(this.getPaddleState(0), this.getPaddleState(1)));
+				this.world.sendPacket(new BoatPaddleStateC2SPacket(this.getPaddleState(0), this.getPaddleState(1)));
 			}
 
 			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
@@ -812,7 +812,7 @@ public class BoatEntity extends Entity {
 
 	@Override
 	public Packet<?> createSpawnPacket() {
-		return new EntitySpawnClientPacket(this);
+		return new EntitySpawnS2CPacket(this);
 	}
 
 	public static enum Type {

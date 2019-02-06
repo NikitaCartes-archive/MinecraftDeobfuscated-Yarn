@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.network.packet.GuiSlotUpdateClientPacket;
+import net.minecraft.client.network.packet.GuiSlotUpdateS2CPacket;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
@@ -344,7 +344,7 @@ public class PlayerInventory implements Inventory, Nameable {
 
 				int j = itemStack.getMaxAmount() - this.getInvStack(i).getAmount();
 				if (this.insertStack(i, itemStack.split(j))) {
-					((ServerPlayerEntity)this.player).networkHandler.sendPacket(new GuiSlotUpdateClientPacket(-2, i, this.getInvStack(i)));
+					((ServerPlayerEntity)this.player).networkHandler.sendPacket(new GuiSlotUpdateS2CPacket(-2, i, this.getInvStack(i)));
 				}
 			}
 		}

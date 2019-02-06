@@ -59,4 +59,11 @@ public class WeightedSoundSet implements SoundContainer<Sound> {
 	public TextComponent getSubtitle() {
 		return this.subtitle;
 	}
+
+	@Override
+	public void method_18188(SoundManager soundManager) {
+		for (SoundContainer<Sound> soundContainer : this.sounds) {
+			soundContainer.method_18188(soundManager);
+		}
+	}
 }

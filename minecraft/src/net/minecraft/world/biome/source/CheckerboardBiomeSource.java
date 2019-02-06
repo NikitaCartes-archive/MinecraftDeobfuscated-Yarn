@@ -11,17 +11,17 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class CheckerboardBiomeSource extends BiomeSource {
-	private final Biome[] field_9481;
-	private final int field_9480;
+	private final Biome[] biomes;
+	private final int gridSize;
 
 	public CheckerboardBiomeSource(CheckerboardBiomeSourceConfig checkerboardBiomeSourceConfig) {
-		this.field_9481 = checkerboardBiomeSourceConfig.method_8779();
-		this.field_9480 = checkerboardBiomeSourceConfig.method_8778() + 4;
+		this.biomes = checkerboardBiomeSourceConfig.getBiomes();
+		this.gridSize = checkerboardBiomeSourceConfig.getSize() + 4;
 	}
 
 	@Override
 	public Biome getBiome(int i, int j) {
-		return this.field_9481[Math.abs(((i >> this.field_9480) + (j >> this.field_9480)) % this.field_9481.length)];
+		return this.biomes[Math.abs(((i >> this.gridSize) + (j >> this.gridSize)) % this.biomes.length)];
 	}
 
 	@Override
@@ -30,8 +30,8 @@ public class CheckerboardBiomeSource extends BiomeSource {
 
 		for (int m = 0; m < l; m++) {
 			for (int n = 0; n < k; n++) {
-				int o = Math.abs(((i + m >> this.field_9480) + (j + n >> this.field_9480)) % this.field_9481.length);
-				Biome biome = this.field_9481[o];
+				int o = Math.abs(((i + m >> this.gridSize) + (j + n >> this.gridSize)) % this.biomes.length);
+				Biome biome = this.biomes[o];
 				biomes[m * k + n] = biome;
 			}
 		}
@@ -48,7 +48,7 @@ public class CheckerboardBiomeSource extends BiomeSource {
 	@Override
 	public boolean hasStructureFeature(StructureFeature<?> structureFeature) {
 		return (Boolean)this.structureFeatures.computeIfAbsent(structureFeature, structureFeaturex -> {
-			for (Biome biome : this.field_9481) {
+			for (Biome biome : this.biomes) {
 				if (biome.hasStructureFeature(structureFeaturex)) {
 					return true;
 				}
@@ -61,7 +61,7 @@ public class CheckerboardBiomeSource extends BiomeSource {
 	@Override
 	public Set<BlockState> getTopMaterials() {
 		if (this.topMaterials.isEmpty()) {
-			for (Biome biome : this.field_9481) {
+			for (Biome biome : this.biomes) {
 				this.topMaterials.add(biome.getSurfaceConfig().getTopMaterial());
 			}
 		}
@@ -71,6 +71,6 @@ public class CheckerboardBiomeSource extends BiomeSource {
 
 	@Override
 	public Set<Biome> getBiomesInArea(int i, int j, int k) {
-		return Sets.<Biome>newHashSet(this.field_9481);
+		return Sets.<Biome>newHashSet(this.biomes);
 	}
 }

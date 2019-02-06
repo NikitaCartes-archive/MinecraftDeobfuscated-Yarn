@@ -17,18 +17,18 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
 public class PhantomSpawner {
-	private int field_13244;
+	private int ticksUntilNextSpawn;
 
 	public int spawn(World world, boolean bl, boolean bl2) {
 		if (!bl) {
 			return 0;
 		} else {
 			Random random = world.random;
-			this.field_13244--;
-			if (this.field_13244 > 0) {
+			this.ticksUntilNextSpawn--;
+			if (this.ticksUntilNextSpawn > 0) {
 				return 0;
 			} else {
-				this.field_13244 = this.field_13244 + (60 + random.nextInt(60)) * 20;
+				this.ticksUntilNextSpawn = this.ticksUntilNextSpawn + (60 + random.nextInt(60)) * 20;
 				if (world.getAmbientDarkness() < 5 && world.dimension.hasSkyLight()) {
 					return 0;
 				} else {

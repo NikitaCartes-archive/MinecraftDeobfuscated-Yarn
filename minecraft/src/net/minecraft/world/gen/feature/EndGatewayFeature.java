@@ -31,11 +31,11 @@ public class EndGatewayFeature extends Feature<EndGatewayFeatureConfig> {
 			if (bl && bl2 && bl3) {
 				BlockPos blockPos3 = blockPos2.toImmutable();
 				this.setBlockState(iWorld, blockPos3, Blocks.field_10613.getDefaultState());
-				endGatewayFeatureConfig.method_18036().ifPresent(blockPos2x -> {
+				endGatewayFeatureConfig.getExitPos().ifPresent(blockPos2x -> {
 					BlockEntity blockEntity = iWorld.getBlockEntity(blockPos3);
 					if (blockEntity instanceof EndGatewayBlockEntity) {
 						EndGatewayBlockEntity endGatewayBlockEntity = (EndGatewayBlockEntity)blockEntity;
-						endGatewayBlockEntity.setExitPortalPos(blockPos2x, endGatewayFeatureConfig.exitsAtSpawn());
+						endGatewayBlockEntity.setExitPortalPos(blockPos2x, endGatewayFeatureConfig.isExact());
 						blockEntity.markDirty();
 					}
 				});

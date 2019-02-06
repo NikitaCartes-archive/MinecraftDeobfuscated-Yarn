@@ -11,11 +11,11 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class PumpkinFeature extends Feature<DefaultFeatureConfig> {
-	protected final BlockState field_17003;
+	protected final BlockState pumpkin;
 
 	public PumpkinFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, BlockState blockState) {
 		super(function);
-		this.field_17003 = blockState;
+		this.pumpkin = blockState;
 	}
 
 	public boolean method_13651(
@@ -26,7 +26,7 @@ public class PumpkinFeature extends Feature<DefaultFeatureConfig> {
 		for (int j = 0; j < 64; j++) {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
 			if (iWorld.isAir(blockPos2) && iWorld.getBlockState(blockPos2.down()).getBlock() == Blocks.field_10219) {
-				iWorld.setBlockState(blockPos2, this.field_17003, 2);
+				iWorld.setBlockState(blockPos2, this.pumpkin, 2);
 				i++;
 			}
 		}

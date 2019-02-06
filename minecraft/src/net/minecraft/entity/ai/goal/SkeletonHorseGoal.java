@@ -9,6 +9,7 @@ import net.minecraft.entity.mob.SkeletonHorseEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.LocalDifficulty;
 
@@ -30,7 +31,7 @@ public class SkeletonHorseGoal extends Goal {
 		this.owner.method_6813(false);
 		this.owner.setTame(true);
 		this.owner.setBreedingAge(0);
-		this.owner.world.addGlobalEntity(new LightningEntity(this.owner.world, this.owner.x, this.owner.y, this.owner.z, true));
+		((ServerWorld)this.owner.world).addLightning(new LightningEntity(this.owner.world, this.owner.x, this.owner.y, this.owner.z, true));
 		SkeletonEntity skeletonEntity = this.method_6811(localDifficulty, this.owner);
 		skeletonEntity.startRiding(this.owner);
 

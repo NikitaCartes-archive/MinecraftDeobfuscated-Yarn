@@ -4,8 +4,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.util.List;
 import java.util.Set;
-import net.minecraft.client.network.packet.EntityAttachClientPacket;
-import net.minecraft.client.network.packet.EntityPassengersSetClientPacket;
+import net.minecraft.client.network.packet.EntityAttachS2CPacket;
+import net.minecraft.client.network.packet.EntityPassengersSetS2CPacket;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.EnderEyeEntity;
 import net.minecraft.entity.Entity;
@@ -176,7 +176,7 @@ public class EntityTracker {
 			}
 		}
 
-		EntityTrackerEntry entityTrackerEntry2 = this.trackedEntitiesById.method_15312(entity.getEntityId());
+		EntityTrackerEntry entityTrackerEntry2 = this.trackedEntitiesById.remove(entity.getEntityId());
 		if (entityTrackerEntry2 != null) {
 			this.trackedEntities.remove(entityTrackerEntry2);
 			entityTrackerEntry2.method_14304();
@@ -259,13 +259,13 @@ public class EntityTracker {
 
 		if (!list.isEmpty()) {
 			for (Entity entity2 : list) {
-				serverPlayerEntity.networkHandler.sendPacket(new EntityAttachClientPacket(entity2, ((MobEntity)entity2).getHoldingEntity()));
+				serverPlayerEntity.networkHandler.sendPacket(new EntityAttachS2CPacket(entity2, ((MobEntity)entity2).getHoldingEntity()));
 			}
 		}
 
 		if (!list2.isEmpty()) {
 			for (Entity entity2 : list2) {
-				serverPlayerEntity.networkHandler.sendPacket(new EntityPassengersSetClientPacket(entity2));
+				serverPlayerEntity.networkHandler.sendPacket(new EntityPassengersSetS2CPacket(entity2));
 			}
 		}
 	}

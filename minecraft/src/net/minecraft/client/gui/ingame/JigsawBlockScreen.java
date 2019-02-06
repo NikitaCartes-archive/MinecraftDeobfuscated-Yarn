@@ -10,7 +10,7 @@ import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.server.network.packet.UpdateJigsawServerPacket;
+import net.minecraft.server.network.packet.UpdateJigsawC2SPacket;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -45,7 +45,7 @@ public class JigsawBlockScreen extends Screen {
 		this.client
 			.getNetworkHandler()
 			.sendPacket(
-				new UpdateJigsawServerPacket(
+				new UpdateJigsawC2SPacket(
 					this.jigsaw.getPos(), new Identifier(this.attachmentTypeField.getText()), new Identifier(this.targetPoolField.getText()), this.finalStateField.getText()
 				)
 			);

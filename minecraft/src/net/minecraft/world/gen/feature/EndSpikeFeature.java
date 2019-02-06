@@ -26,12 +26,12 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
-public class EndSpikeFeature extends Feature<EndPillarFeatureConfig> {
+public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 	private static final LoadingCache<Long, List<EndSpikeFeature.Spike>> CACHE = CacheBuilder.newBuilder()
 		.expireAfterWrite(5L, TimeUnit.MINUTES)
 		.build(new EndSpikeFeature.SpikeCache());
 
-	public EndSpikeFeature(Function<Dynamic<?>, ? extends EndPillarFeatureConfig> function) {
+	public EndSpikeFeature(Function<Dynamic<?>, ? extends EndSpikeFeatureConfig> function) {
 		super(function);
 	}
 
@@ -42,23 +42,23 @@ public class EndSpikeFeature extends Feature<EndPillarFeatureConfig> {
 	}
 
 	public boolean method_15887(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, EndPillarFeatureConfig endPillarFeatureConfig
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, EndSpikeFeatureConfig endSpikeFeatureConfig
 	) {
-		List<EndSpikeFeature.Spike> list = endPillarFeatureConfig.getSpikes();
+		List<EndSpikeFeature.Spike> list = endSpikeFeatureConfig.getSpikes();
 		if (list.isEmpty()) {
 			list = getSpikes(iWorld);
 		}
 
 		for (EndSpikeFeature.Spike spike : list) {
-			if (spike.method_13962(blockPos)) {
-				this.method_15888(iWorld, random, endPillarFeatureConfig, spike);
+			if (spike.isInChunk(blockPos)) {
+				this.generateSpike(iWorld, random, endSpikeFeatureConfig, spike);
 			}
 		}
 
 		return true;
 	}
 
-	private void method_15888(IWorld iWorld, Random random, EndPillarFeatureConfig endPillarFeatureConfig, EndSpikeFeature.Spike spike) {
+	private void generateSpike(IWorld iWorld, Random random, EndSpikeFeatureConfig endSpikeFeatureConfig, EndSpikeFeature.Spike spike) {
 		int i = spike.getRadius();
 
 		for (BlockPos blockPos : BlockPos.iterateBoxPositions(
@@ -101,8 +101,8 @@ public class EndSpikeFeature extends Feature<EndPillarFeatureConfig> {
 		}
 
 		EnderCrystalEntity enderCrystalEntity = new EnderCrystalEntity(iWorld.getWorld());
-		enderCrystalEntity.setBeamTarget(endPillarFeatureConfig.getPos());
-		enderCrystalEntity.setInvulnerable(endPillarFeatureConfig.isCrystalInvulerable());
+		enderCrystalEntity.setBeamTarget(endSpikeFeatureConfig.getPos());
+		enderCrystalEntity.setInvulnerable(endSpikeFeatureConfig.isCrystalInvulerable());
 		enderCrystalEntity.setPositionAndAngles(
 			(double)((float)spike.getCenterX() + 0.5F), (double)(spike.getHeight() + 1), (double)((float)spike.getCenterZ() + 0.5F), random.nextFloat() * 360.0F, 0.0F
 		);
@@ -127,7 +127,7 @@ public class EndSpikeFeature extends Feature<EndPillarFeatureConfig> {
 			this.boundingBox = new BoundingBox((double)(i - k), 0.0, (double)(j - k), (double)(i + k), 256.0, (double)(j + k));
 		}
 
-		public boolean method_13962(BlockPos blockPos) {
+		public boolean isInChunk(BlockPos blockPos) {
 			return blockPos.getX() >> 4 == this.centerX >> 4 && blockPos.getZ() >> 4 == this.centerZ >> 4;
 		}
 

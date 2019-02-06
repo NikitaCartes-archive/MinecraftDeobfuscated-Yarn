@@ -24,7 +24,7 @@ public class WorldVillageManager extends PersistentState {
 	private int tick;
 
 	public WorldVillageManager(World world) {
-		super(getBaseTag(world.dimension));
+		super(getPersistentDataKey(world.dimension));
 		this.world = world;
 		this.markDirty();
 	}
@@ -120,10 +120,10 @@ public class WorldVillageManager extends PersistentState {
 				for (int n = -16; n < 16; n++) {
 					mutable.set(blockPos).setOffset(l, m, n);
 					BlockState blockState = this.world.getBlockState(mutable);
-					if (this.method_6442(blockState)) {
+					if (this.isWoodenDoor(blockState)) {
 						VillageDoor villageDoor = this.getRecentlySeenDoor(mutable);
 						if (villageDoor == null) {
-							this.method_6443(blockState, mutable);
+							this.considerDoor(blockState, mutable);
 						} else {
 							villageDoor.setLastTimeSeenByVillager(this.tick);
 						}
@@ -153,7 +153,7 @@ public class WorldVillageManager extends PersistentState {
 		return null;
 	}
 
-	private void method_6443(BlockState blockState, BlockPos blockPos) {
+	private void considerDoor(BlockState blockState, BlockPos blockPos) {
 		Direction direction = blockState.get(DoorBlock.FACING);
 		Direction direction2 = direction.getOpposite();
 		int i = this.isDoorLeadingOutside(blockPos, direction, 5);
@@ -187,7 +187,7 @@ public class WorldVillageManager extends PersistentState {
 		return false;
 	}
 
-	private boolean method_6442(BlockState blockState) {
+	private boolean isWoodenDoor(BlockState blockState) {
 		return blockState.getBlock() instanceof DoorBlock && blockState.getMaterial() == Material.WOOD;
 	}
 
@@ -199,7 +199,7 @@ public class WorldVillageManager extends PersistentState {
 		for (int i = 0; i < listTag.size(); i++) {
 			CompoundTag compoundTag2 = listTag.getCompoundTag(i);
 			VillageProperties villageProperties = new VillageProperties(this.world);
-			villageProperties.deserialize(compoundTag2);
+			villageProperties.fromTag(compoundTag2);
 			this.villages.add(villageProperties);
 		}
 	}
@@ -211,7 +211,7 @@ public class WorldVillageManager extends PersistentState {
 
 		for (VillageProperties villageProperties : this.villages) {
 			CompoundTag compoundTag2 = new CompoundTag();
-			villageProperties.serialize(compoundTag2);
+			villageProperties.toTag(compoundTag2);
 			listTag.add(compoundTag2);
 		}
 
@@ -219,7 +219,7 @@ public class WorldVillageManager extends PersistentState {
 		return compoundTag;
 	}
 
-	public void method_16471() {
+	public void initRaids() {
 		for (VillageProperties villageProperties : this.villages) {
 			int i = villageProperties.getRaidId();
 			if (i > 0) {
@@ -233,7 +233,7 @@ public class WorldVillageManager extends PersistentState {
 		}
 	}
 
-	public static String getBaseTag(Dimension dimension) {
+	public static String getPersistentDataKey(Dimension dimension) {
 		return "villages" + dimension.getType().getSuffix();
 	}
 }

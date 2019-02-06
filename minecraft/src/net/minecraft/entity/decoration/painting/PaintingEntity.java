@@ -6,7 +6,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.PaintingSpawnClientPacket;
+import net.minecraft.client.network.packet.PaintingSpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
@@ -124,6 +124,6 @@ public class PaintingEntity extends AbstractDecorationEntity {
 
 	@Override
 	public Packet<?> createSpawnPacket() {
-		return new PaintingSpawnClientPacket(this);
+		return new PaintingSpawnS2CPacket(this);
 	}
 }

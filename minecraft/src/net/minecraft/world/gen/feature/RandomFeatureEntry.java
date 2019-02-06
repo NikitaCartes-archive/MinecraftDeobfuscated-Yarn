@@ -23,7 +23,7 @@ public class RandomFeatureEntry<FC extends FeatureConfig> {
 	}
 
 	public RandomFeatureEntry(Feature<FC> feature, Dynamic<?> dynamic, float f) {
-		this(feature, feature.deserialize(dynamic), Float.valueOf(f));
+		this(feature, feature.deserializeConfig(dynamic), Float.valueOf(f));
 	}
 
 	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {

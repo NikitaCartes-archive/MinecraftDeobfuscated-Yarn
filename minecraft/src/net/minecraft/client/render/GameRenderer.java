@@ -4,13 +4,12 @@ import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import java.io.IOException;
-import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_1675;
 import net.minecraft.class_295;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
@@ -42,10 +41,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.resource.ResourceImpl;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
@@ -73,7 +71,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class GameRenderer implements AutoCloseable, ResourceReloadListener {
+public class GameRenderer implements AutoCloseable, SynchronousResourceReloadListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Identifier RAIN_LOC = new Identifier("textures/environment/rain.png");
 	private static final Identifier SNOW_LOC = new Identifier("textures/environment/snow.png");
@@ -84,7 +82,6 @@ public class GameRenderer implements AutoCloseable, ResourceReloadListener {
 	public final FirstPersonRenderer firstPersonRenderer;
 	private final MapRenderer mapRenderer;
 	private int field_4027;
-	private Entity targetedEntity;
 	private final float field_4020 = 4.0F;
 	private float field_4000 = 4.0F;
 	private float field_4019;
@@ -223,7 +220,7 @@ public class GameRenderer implements AutoCloseable, ResourceReloadListener {
 	}
 
 	@Override
-	public void onResourceReload(ResourceManager resourceManager) {
+	public void reloadResources(ResourceManager resourceManager) {
 		if (this.shader != null) {
 			this.shader.close();
 		}
@@ -308,63 +305,27 @@ public class GameRenderer implements AutoCloseable, ResourceReloadListener {
 					d = d;
 				}
 
+				e *= e;
 				if (this.client.hitResult != null) {
-					e = this.client.hitResult.getPos().distanceTo(vec3d);
+					e = this.client.hitResult.getPos().squaredDistanceTo(vec3d);
 				}
 
 				net.minecraft.util.math.Vec3d vec3d2 = entity.getRotationVec(1.0F);
 				net.minecraft.util.math.Vec3d vec3d3 = vec3d.add(vec3d2.x * d, vec3d2.y * d, vec3d2.z * d);
-				this.targetedEntity = null;
-				net.minecraft.util.math.Vec3d vec3d4 = null;
 				float g = 1.0F;
-				List<Entity> list = this.client
-					.world
-					.getEntities(
-						entity,
-						entity.getBoundingBox().stretch(vec3d2.x * d, vec3d2.y * d, vec3d2.z * d).expand(1.0, 1.0, 1.0),
-						EntityPredicates.EXCEPT_SPECTATOR.and(Entity::doesCollide)
-					);
-				double h = e;
-
-				for (int j = 0; j < list.size(); j++) {
-					Entity entity2 = (Entity)list.get(j);
-					BoundingBox boundingBox = entity2.getBoundingBox().expand((double)entity2.getBoundingBoxMarginForTargeting());
-					if (boundingBox.contains(vec3d)) {
-						if (h >= 0.0) {
-							this.targetedEntity = entity2;
-							vec3d4 = (net.minecraft.util.math.Vec3d)boundingBox.rayTrace(vec3d, vec3d3).orElse(vec3d);
-							h = 0.0;
+				BoundingBox boundingBox = entity.getBoundingBox().stretch(vec3d2.x * d, vec3d2.y * d, vec3d2.z * d).expand(1.0, 1.0, 1.0);
+				EntityHitResult entityHitResult = class_1675.method_18075(entity, vec3d, vec3d3, boundingBox, entityx -> !entityx.isSpectator() && entityx.doesCollide(), e);
+				if (entityHitResult != null) {
+					Entity entity2 = entityHitResult.getEntity();
+					net.minecraft.util.math.Vec3d vec3d4 = entityHitResult.getPos();
+					double h = vec3d.squaredDistanceTo(vec3d4);
+					if (bl && h > 9.0) {
+						this.client.hitResult = BlockHitResult.createMissed(vec3d4, Direction.getFacing(vec3d2.x, vec3d2.y, vec3d2.z), new BlockPos(vec3d4));
+					} else if (h < e || this.client.hitResult == null) {
+						this.client.hitResult = entityHitResult;
+						if (entity2 instanceof LivingEntity || entity2 instanceof ItemFrameEntity) {
+							this.client.targetedEntity = entity2;
 						}
-					} else {
-						Optional<net.minecraft.util.math.Vec3d> optional = boundingBox.rayTrace(vec3d, vec3d3);
-						if (optional.isPresent()) {
-							net.minecraft.util.math.Vec3d vec3d5 = (net.minecraft.util.math.Vec3d)optional.get();
-							double k = vec3d.distanceTo(vec3d5);
-							if (k < h || h == 0.0) {
-								if (entity2.getTopmostRiddenEntity() == entity.getTopmostRiddenEntity()) {
-									if (h == 0.0) {
-										this.targetedEntity = entity2;
-										vec3d4 = vec3d5;
-									}
-								} else {
-									this.targetedEntity = entity2;
-									vec3d4 = vec3d5;
-									h = k;
-								}
-							}
-						}
-					}
-				}
-
-				if (this.targetedEntity != null && bl && vec3d.distanceTo(vec3d4) > 3.0) {
-					this.targetedEntity = null;
-					this.client.hitResult = BlockHitResult.createMissed(vec3d4, Direction.getFacing(vec3d2.x, vec3d2.y, vec3d2.z), new BlockPos(vec3d4));
-				}
-
-				if (this.targetedEntity != null && (h < e || this.client.hitResult == null)) {
-					this.client.hitResult = new EntityHitResult(this.targetedEntity, vec3d4);
-					if (this.targetedEntity instanceof LivingEntity || this.targetedEntity instanceof ItemFrameEntity) {
-						this.client.targetedEntity = this.targetedEntity;
 					}
 				}
 
@@ -906,9 +867,6 @@ public class GameRenderer implements AutoCloseable, ResourceReloadListener {
 		this.client.getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).popFilter();
 		GlStateManager.disableBlend();
 		this.enableLightmap();
-		this.client.getProfiler().swap("litParticles");
-		particleManager.renderLitParticles(entity, f);
-		GuiLighting.disable();
 		this.backgroundRenderer.applyFog(0, f);
 		this.client.getProfiler().swap("particles");
 		particleManager.renderUnlitParticles(entity, f);

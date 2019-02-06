@@ -65,7 +65,10 @@ public class SettingsScreen extends Screen {
 			) {
 				@Override
 				public void onPressed(double d, double e) {
-					SettingsScreen.this.client.world.getLevelProperties().setDifficulty(Difficulty.byId(SettingsScreen.this.client.world.getDifficulty().getId() + 1));
+					SettingsScreen.this.client
+						.world
+						.getLevelProperties()
+						.setDifficulty(Difficulty.getDifficulty(SettingsScreen.this.client.world.getDifficulty().getId() + 1));
 					SettingsScreen.this.difficultyButton.text = SettingsScreen.this.method_2189(SettingsScreen.this.client.world.getDifficulty());
 				}
 			};
@@ -183,7 +186,7 @@ public class SettingsScreen extends Screen {
 	}
 
 	public String method_2189(Difficulty difficulty) {
-		return new TranslatableTextComponent("options.difficulty").append(": ").append(difficulty.method_5463()).getFormattedText();
+		return new TranslatableTextComponent("options.difficulty").append(": ").append(difficulty.toTextComponent()).getFormattedText();
 	}
 
 	@Override

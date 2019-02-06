@@ -30,12 +30,12 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 
 	public FlatChunkGenerator(IWorld iWorld, BiomeSource biomeSource, FlatChunkGeneratorConfig flatChunkGeneratorConfig) {
 		super(iWorld, biomeSource, flatChunkGeneratorConfig);
-		this.biome = this.method_12589();
+		this.biome = this.getBiome();
 	}
 
-	private Biome method_12589() {
+	private Biome getBiome() {
 		Biome biome = this.config.getBiome();
-		FlatChunkGenerator.class_2898 lv = new FlatChunkGenerator.class_2898(
+		FlatChunkGenerator.FlatChunkGeneratorBiome flatChunkGeneratorBiome = new FlatChunkGenerator.FlatChunkGeneratorBiome(
 			biome.getSurfaceBuilder(),
 			biome.getPrecipitation(),
 			biome.getCategory(),
@@ -50,23 +50,23 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 		Map<String, Map<String, String>> map = this.config.getStructures();
 
 		for (String string : map.keySet()) {
-			ConfiguredFeature<?>[] configuredFeatures = (ConfiguredFeature<?>[])FlatChunkGeneratorConfig.field_14073.get(string);
+			ConfiguredFeature<?>[] configuredFeatures = (ConfiguredFeature<?>[])FlatChunkGeneratorConfig.STRUCTURE_TO_FEATURES.get(string);
 			if (configuredFeatures != null) {
 				for (ConfiguredFeature<?> configuredFeature : configuredFeatures) {
-					lv.addFeature((GenerationStep.Feature)FlatChunkGeneratorConfig.field_14069.get(configuredFeature), configuredFeature);
+					flatChunkGeneratorBiome.addFeature((GenerationStep.Feature)FlatChunkGeneratorConfig.FEATURE_TO_GENERATION_STEP.get(configuredFeature), configuredFeature);
 					ConfiguredFeature<?> configuredFeature2 = ((DecoratedFeatureConfig)configuredFeature.config).feature;
 					if (configuredFeature2.feature instanceof StructureFeature) {
 						StructureFeature<FeatureConfig> structureFeature = (StructureFeature<FeatureConfig>)configuredFeature2.feature;
 						FeatureConfig featureConfig = biome.getStructureFeatureConfig(structureFeature);
-						lv.addStructureFeature(
-							structureFeature, featureConfig != null ? featureConfig : (FeatureConfig)FlatChunkGeneratorConfig.field_14080.get(configuredFeature)
+						flatChunkGeneratorBiome.addStructureFeature(
+							structureFeature, featureConfig != null ? featureConfig : (FeatureConfig)FlatChunkGeneratorConfig.FEATURE_TO_FEATURE_CONFIG.get(configuredFeature)
 						);
 					}
 				}
 			}
 		}
 
-		boolean bl = (!this.config.method_14320() || biome == Biomes.field_9473) && map.containsKey("decoration");
+		boolean bl = (!this.config.hasNoTerrain() || biome == Biomes.field_9473) && map.containsKey("decoration");
 		if (bl) {
 			List<GenerationStep.Feature> list = Lists.<GenerationStep.Feature>newArrayList();
 			list.add(GenerationStep.Feature.UNDERGROUND_STRUCTURES);
@@ -75,13 +75,13 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 			for (GenerationStep.Feature feature : GenerationStep.Feature.values()) {
 				if (!list.contains(feature)) {
 					for (ConfiguredFeature<?> configuredFeature2 : biome.getFeaturesForStep(feature)) {
-						lv.addFeature(feature, configuredFeature2);
+						flatChunkGeneratorBiome.addFeature(feature, configuredFeature2);
 					}
 				}
 			}
 		}
 
-		return lv;
+		return flatChunkGeneratorBiome;
 	}
 
 	@Override
@@ -126,7 +126,7 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 	}
 
 	@Override
-	public int produceHeight(int i, int j, Heightmap.Type type) {
+	public int getHeightOnGround(int i, int j, Heightmap.Type type) {
 		BlockState[] blockStates = this.config.getLayerBlocks();
 
 		for (int k = blockStates.length - 1; k >= 0; k--) {
@@ -161,8 +161,8 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 		return !this.config.getStructures().keySet().contains(string.toLowerCase(Locale.ROOT)) ? null : super.locateStructure(world, string, blockPos, i, bl);
 	}
 
-	class class_2898 extends Biome {
-		protected class_2898(
+	class FlatChunkGeneratorBiome extends Biome {
+		protected FlatChunkGeneratorBiome(
 			ConfiguredSurfaceBuilder<?> configuredSurfaceBuilder,
 			Biome.Precipitation precipitation,
 			Biome.Category category,

@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.minecraft.client.network.packet.PlayerPositionLookClientPacket;
+import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
 import net.minecraft.command.arguments.DefaultPosArgument;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
 import net.minecraft.command.arguments.EntityArgumentType;
@@ -153,7 +153,7 @@ public class TeleportCommand {
 				entity.x,
 				entity.y,
 				entity.z,
-				EnumSet.noneOf(PlayerPositionLookClientPacket.Flag.class),
+				EnumSet.noneOf(PlayerPositionLookS2CPacket.Flag.class),
 				entity.yaw,
 				entity.pitch,
 				null
@@ -184,29 +184,29 @@ public class TeleportCommand {
 	) throws CommandSyntaxException {
 		Vec3d vec3d = posArgument.toAbsolutePos(serverCommandSource);
 		Vec2f vec2f = posArgument2 == null ? null : posArgument2.toAbsoluteRotation(serverCommandSource);
-		Set<PlayerPositionLookClientPacket.Flag> set = EnumSet.noneOf(PlayerPositionLookClientPacket.Flag.class);
+		Set<PlayerPositionLookS2CPacket.Flag> set = EnumSet.noneOf(PlayerPositionLookS2CPacket.Flag.class);
 		if (posArgument.isXRelative()) {
-			set.add(PlayerPositionLookClientPacket.Flag.X);
+			set.add(PlayerPositionLookS2CPacket.Flag.X);
 		}
 
 		if (posArgument.isYRelative()) {
-			set.add(PlayerPositionLookClientPacket.Flag.Y);
+			set.add(PlayerPositionLookS2CPacket.Flag.Y);
 		}
 
 		if (posArgument.isZRelative()) {
-			set.add(PlayerPositionLookClientPacket.Flag.Z);
+			set.add(PlayerPositionLookS2CPacket.Flag.Z);
 		}
 
 		if (posArgument2 == null) {
-			set.add(PlayerPositionLookClientPacket.Flag.X_ROT);
-			set.add(PlayerPositionLookClientPacket.Flag.Y_ROT);
+			set.add(PlayerPositionLookS2CPacket.Flag.X_ROT);
+			set.add(PlayerPositionLookS2CPacket.Flag.Y_ROT);
 		} else {
 			if (posArgument2.isXRelative()) {
-				set.add(PlayerPositionLookClientPacket.Flag.X_ROT);
+				set.add(PlayerPositionLookS2CPacket.Flag.X_ROT);
 			}
 
 			if (posArgument2.isYRelative()) {
-				set.add(PlayerPositionLookClientPacket.Flag.Y_ROT);
+				set.add(PlayerPositionLookS2CPacket.Flag.Y_ROT);
 			}
 		}
 
@@ -241,7 +241,7 @@ public class TeleportCommand {
 		double d,
 		double e,
 		double f,
-		Set<PlayerPositionLookClientPacket.Flag> set,
+		Set<PlayerPositionLookS2CPacket.Flag> set,
 		float g,
 		float h,
 		@Nullable TeleportCommand.class_3144 arg
@@ -249,7 +249,7 @@ public class TeleportCommand {
 		if (entity instanceof ServerPlayerEntity) {
 			entity.stopRiding();
 			if (((ServerPlayerEntity)entity).isSleeping()) {
-				((ServerPlayerEntity)entity).method_7358(true, true, false);
+				((ServerPlayerEntity)entity).wakeUp(true, true, false);
 			}
 
 			if (serverWorld == entity.world) {
@@ -268,7 +268,7 @@ public class TeleportCommand {
 				entity.setHeadYaw(i);
 			} else {
 				ServerWorld serverWorld2 = (ServerWorld)entity.world;
-				serverWorld2.removeEntity(entity);
+				serverWorld2.method_18216(entity);
 				entity.dimension = serverWorld.dimension.getType();
 				entity.invalid = false;
 				Entity entity2 = entity;
@@ -282,9 +282,9 @@ public class TeleportCommand {
 				entity.setHeadYaw(i);
 				boolean bl = entity.teleporting;
 				entity.teleporting = true;
-				serverWorld.spawnEntity(entity);
+				serverWorld.method_18197(entity, true);
 				entity.teleporting = bl;
-				serverWorld.method_8553(entity, false);
+				serverWorld.updateChunkEntities(entity);
 				entity2.invalid = true;
 			}
 		}

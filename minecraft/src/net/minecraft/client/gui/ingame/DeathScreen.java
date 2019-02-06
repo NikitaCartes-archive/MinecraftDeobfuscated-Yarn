@@ -80,10 +80,10 @@ public class DeathScreen extends Screen {
 			super.confirmResult(bl, i);
 		} else if (bl) {
 			if (this.client.world != null) {
-				this.client.world.method_8525();
+				this.client.world.disconnect();
 			}
 
-			this.client.method_1550(null, new CloseWorldScreen(I18n.translate("menu.savingLevel")));
+			this.client.method_18096(new CloseWorldScreen(I18n.translate("menu.savingLevel")));
 			this.client.openScreen(new MainMenuScreen());
 		} else {
 			this.client.player.requestRespawn();

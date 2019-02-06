@@ -4,24 +4,24 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 
 public class CheckerboardBiomeSourceConfig implements BiomeSourceConfig {
-	private Biome[] field_9483 = new Biome[]{Biomes.field_9451};
-	private int field_9482 = 1;
+	private Biome[] biomes = new Biome[]{Biomes.biome};
+	private int size = 1;
 
 	public CheckerboardBiomeSourceConfig method_8777(Biome[] biomes) {
-		this.field_9483 = biomes;
+		this.biomes = biomes;
 		return this;
 	}
 
 	public CheckerboardBiomeSourceConfig method_8780(int i) {
-		this.field_9482 = i;
+		this.size = i;
 		return this;
 	}
 
-	public Biome[] method_8779() {
-		return this.field_9483;
+	public Biome[] getBiomes() {
+		return this.biomes;
 	}
 
-	public int method_8778() {
-		return this.field_9482;
+	public int getSize() {
+		return this.size;
 	}
 }

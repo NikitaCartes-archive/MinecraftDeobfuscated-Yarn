@@ -14,7 +14,7 @@ public class PlainFlowerFeature extends FlowerFeature {
 	}
 
 	@Override
-	public BlockState method_13175(Random random, BlockPos blockPos) {
+	public BlockState getFlowerToPlace(Random random, BlockPos blockPos) {
 		double d = Biome.FOLIAGE_NOISE.sample((double)blockPos.getX() / 200.0, (double)blockPos.getZ() / 200.0);
 		if (d < -0.8) {
 			int i = random.nextInt(4);

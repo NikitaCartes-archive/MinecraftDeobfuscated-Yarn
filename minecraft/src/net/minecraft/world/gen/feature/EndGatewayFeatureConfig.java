@@ -7,35 +7,35 @@ import java.util.Optional;
 import net.minecraft.util.math.BlockPos;
 
 public class EndGatewayFeatureConfig implements FeatureConfig {
-	private final Optional<BlockPos> field_17735;
-	private final boolean exitsAtSpawn;
+	private final Optional<BlockPos> exitPos;
+	private final boolean exact;
 
 	private EndGatewayFeatureConfig(Optional<BlockPos> optional, boolean bl) {
-		this.field_17735 = optional;
-		this.exitsAtSpawn = bl;
+		this.exitPos = optional;
+		this.exact = bl;
 	}
 
-	public static EndGatewayFeatureConfig method_18034(BlockPos blockPos, boolean bl) {
+	public static EndGatewayFeatureConfig createConfig(BlockPos blockPos, boolean bl) {
 		return new EndGatewayFeatureConfig(Optional.of(blockPos), bl);
 	}
 
-	public static EndGatewayFeatureConfig method_18030() {
+	public static EndGatewayFeatureConfig createConfig() {
 		return new EndGatewayFeatureConfig(Optional.empty(), false);
 	}
 
-	public Optional<BlockPos> method_18036() {
-		return this.field_17735;
+	public Optional<BlockPos> getExitPos() {
+		return this.exitPos;
 	}
 
-	public boolean exitsAtSpawn() {
-		return this.exitsAtSpawn;
+	public boolean isExact() {
+		return this.exact;
 	}
 
 	@Override
 	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
 		return new Dynamic<>(
 			dynamicOps,
-			(T)this.field_17735
+			(T)this.exitPos
 				.map(
 					blockPos -> dynamicOps.createMap(
 							ImmutableMap.of(
@@ -46,7 +46,7 @@ public class EndGatewayFeatureConfig implements FeatureConfig {
 								dynamicOps.createString("exit_z"),
 								dynamicOps.createInt(blockPos.getZ()),
 								dynamicOps.createString("exact"),
-								dynamicOps.createBoolean(this.exitsAtSpawn)
+								dynamicOps.createBoolean(this.exact)
 							)
 						)
 				)

@@ -292,7 +292,7 @@ public class TurtleEntity extends AnimalEntity {
 		if (this.method_6695() && this.field_6918 >= 1 && this.field_6918 % 5 == 0) {
 			BlockPos blockPos = new BlockPos(this);
 			if (this.world.getBlockState(blockPos.down()).getBlock() == Blocks.field_10102) {
-				this.world.fireWorldEvent(2001, blockPos, Block.getRawIdFromState(Blocks.field_10102.getDefaultState()));
+				this.world.playEvent(2001, blockPos, Block.getRawIdFromState(Blocks.field_10102.getDefaultState()));
 			}
 		}
 	}

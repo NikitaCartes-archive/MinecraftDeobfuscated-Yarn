@@ -9,7 +9,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ProbabilityConfig;
 
 public class RavineCarver extends Carver<ProbabilityConfig> {
-	private final float[] field_13275 = new float[1024];
+	private final float[] heightToHorizontalStretchFactor = new float[1024];
 
 	public RavineCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> function) {
 		super(function, 256);
@@ -20,7 +20,7 @@ public class RavineCarver extends Carver<ProbabilityConfig> {
 	}
 
 	public boolean method_12656(Chunk chunk, Random random, int i, int j, int k, int l, int m, BitSet bitSet, ProbabilityConfig probabilityConfig) {
-		int n = (this.method_12710() * 2 - 1) * 16;
+		int n = (this.getBranchFactor() * 2 - 1) * 16;
 		double d = (double)(j * 16 + random.nextInt(16));
 		double e = (double)(random.nextInt(random.nextInt(40) + 8) + 20);
 		double f = (double)(k * 16 + random.nextInt(16));
@@ -30,11 +30,11 @@ public class RavineCarver extends Carver<ProbabilityConfig> {
 		float p = (random.nextFloat() * 2.0F + random.nextFloat()) * 2.0F;
 		int q = n - random.nextInt(n / 4);
 		int r = 0;
-		this.method_12657(chunk, random.nextLong(), i, l, m, d, e, f, p, g, h, 0, q, 3.0, bitSet);
+		this.carveRavine(chunk, random.nextLong(), i, l, m, d, e, f, p, g, h, 0, q, 3.0, bitSet);
 		return true;
 	}
 
-	private void method_12657(
+	private void carveRavine(
 		Chunk chunk, long l, int i, int j, int k, double d, double e, double f, float g, float h, float m, int n, int o, double p, BitSet bitSet
 	) {
 		Random random = new Random(l);
@@ -45,7 +45,7 @@ public class RavineCarver extends Carver<ProbabilityConfig> {
 				q = 1.0F + random.nextFloat() * random.nextFloat();
 			}
 
-			this.field_13275[r] = q * q;
+			this.heightToHorizontalStretchFactor[r] = q * q;
 		}
 
 		float s = 0.0F;
@@ -69,17 +69,17 @@ public class RavineCarver extends Carver<ProbabilityConfig> {
 			t += (random.nextFloat() - random.nextFloat()) * random.nextFloat() * 2.0F;
 			s += (random.nextFloat() - random.nextFloat()) * random.nextFloat() * 4.0F;
 			if (random.nextInt(4) != 0) {
-				if (!this.method_12707(j, k, d, f, u, o, g)) {
+				if (!this.canCarveBranch(j, k, d, f, u, o, g)) {
 					return;
 				}
 
-				this.method_16580(chunk, l, i, j, k, d, e, f, v, w, bitSet);
+				this.carveRegion(chunk, l, i, j, k, d, e, f, v, w, bitSet);
 			}
 		}
 	}
 
 	@Override
-	protected boolean method_16582(double d, double e, double f, int i) {
-		return (d * d + f * f) * (double)this.field_13275[i - 1] + e * e / 6.0 >= 1.0;
+	protected boolean isPositionExcluded(double d, double e, double f, int i) {
+		return (d * d + f * f) * (double)this.heightToHorizontalStretchFactor[i - 1] + e * e / 6.0 >= 1.0;
 	}
 }

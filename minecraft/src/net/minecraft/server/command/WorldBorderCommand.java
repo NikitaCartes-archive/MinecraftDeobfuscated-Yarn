@@ -202,7 +202,7 @@ public class WorldBorderCommand {
 			throw SET_FAILED_BIG_EXCEPTION.create();
 		} else {
 			if (l > 0L) {
-				worldBorder.method_11957(e, d, l);
+				worldBorder.interpolateSize(e, d, l);
 				if (d > e) {
 					serverCommandSource.sendFeedback(
 						new TranslatableTextComponent("commands.worldborder.set.grow", String.format(Locale.ROOT, "%.1f", d), Long.toString(l / 1000L)), true

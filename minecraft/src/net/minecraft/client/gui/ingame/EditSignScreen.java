@@ -13,7 +13,7 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.SelectionManager;
-import net.minecraft.server.network.packet.UpdateSignServerPacket;
+import net.minecraft.server.network.packet.UpdateSignC2SPacket;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.util.math.Direction;
@@ -53,7 +53,7 @@ public class EditSignScreen extends Screen {
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
 		if (clientPlayNetworkHandler != null) {
 			clientPlayNetworkHandler.sendPacket(
-				new UpdateSignServerPacket(this.sign.getPos(), this.sign.getTextOnRow(0), this.sign.getTextOnRow(1), this.sign.getTextOnRow(2), this.sign.getTextOnRow(3))
+				new UpdateSignC2SPacket(this.sign.getPos(), this.sign.getTextOnRow(0), this.sign.getTextOnRow(1), this.sign.getTextOnRow(2), this.sign.getTextOnRow(3))
 			);
 		}
 

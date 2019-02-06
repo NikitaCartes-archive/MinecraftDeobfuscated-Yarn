@@ -12,37 +12,37 @@ public class AlphaChunkIo {
 		int i = compoundTag.getInt("xPos");
 		int j = compoundTag.getInt("zPos");
 		AlphaChunkIo.AlphaChunk alphaChunk = new AlphaChunkIo.AlphaChunk(i, j);
-		alphaChunk.field_13048 = compoundTag.getByteArray("Blocks");
-		alphaChunk.field_13044 = new AlphaChunkDataArray(compoundTag.getByteArray("Data"), 7);
-		alphaChunk.field_13039 = new AlphaChunkDataArray(compoundTag.getByteArray("SkyLight"), 7);
-		alphaChunk.field_13038 = new AlphaChunkDataArray(compoundTag.getByteArray("BlockLight"), 7);
-		alphaChunk.field_13045 = compoundTag.getByteArray("HeightMap");
-		alphaChunk.field_13042 = compoundTag.getBoolean("TerrainPopulated");
-		alphaChunk.field_13037 = compoundTag.getList("Entities", 10);
-		alphaChunk.field_13040 = compoundTag.getList("TileEntities", 10);
-		alphaChunk.field_13041 = compoundTag.getList("TileTicks", 10);
+		alphaChunk.blocks = compoundTag.getByteArray("Blocks");
+		alphaChunk.data = new AlphaChunkDataArray(compoundTag.getByteArray("Data"), 7);
+		alphaChunk.skyLight = new AlphaChunkDataArray(compoundTag.getByteArray("SkyLight"), 7);
+		alphaChunk.blockLight = new AlphaChunkDataArray(compoundTag.getByteArray("BlockLight"), 7);
+		alphaChunk.heightMap = compoundTag.getByteArray("HeightMap");
+		alphaChunk.terrainPopulated = compoundTag.getBoolean("TerrainPopulated");
+		alphaChunk.entities = compoundTag.getList("Entities", 10);
+		alphaChunk.blockEntities = compoundTag.getList("TileEntities", 10);
+		alphaChunk.blockTicks = compoundTag.getList("TileTicks", 10);
 
 		try {
-			alphaChunk.field_13043 = compoundTag.getLong("LastUpdate");
+			alphaChunk.lastUpdate = compoundTag.getLong("LastUpdate");
 		} catch (ClassCastException var5) {
-			alphaChunk.field_13043 = (long)compoundTag.getInt("LastUpdate");
+			alphaChunk.lastUpdate = (long)compoundTag.getInt("LastUpdate");
 		}
 
 		return alphaChunk;
 	}
 
 	public static void convertAlphaChunk(AlphaChunkIo.AlphaChunk alphaChunk, CompoundTag compoundTag, BiomeSource biomeSource) {
-		compoundTag.putInt("xPos", alphaChunk.field_13047);
-		compoundTag.putInt("zPos", alphaChunk.field_13046);
-		compoundTag.putLong("LastUpdate", alphaChunk.field_13043);
-		int[] is = new int[alphaChunk.field_13045.length];
+		compoundTag.putInt("xPos", alphaChunk.x);
+		compoundTag.putInt("zPos", alphaChunk.z);
+		compoundTag.putLong("LastUpdate", alphaChunk.lastUpdate);
+		int[] is = new int[alphaChunk.heightMap.length];
 
-		for (int i = 0; i < alphaChunk.field_13045.length; i++) {
-			is[i] = alphaChunk.field_13045[i];
+		for (int i = 0; i < alphaChunk.heightMap.length; i++) {
+			is[i] = alphaChunk.heightMap[i];
 		}
 
 		compoundTag.putIntArray("HeightMap", is);
-		compoundTag.putBoolean("TerrainPopulated", alphaChunk.field_13042);
+		compoundTag.putBoolean("TerrainPopulated", alphaChunk.terrainPopulated);
 		ListTag listTag = new ListTag();
 
 		for (int j = 0; j < 8; j++) {
@@ -52,7 +52,7 @@ public class AlphaChunkIo {
 				for (int l = 0; l < 16 && bl; l++) {
 					for (int m = 0; m < 16; m++) {
 						int n = k << 11 | m << 7 | l + (j << 4);
-						int o = alphaChunk.field_13048[n];
+						int o = alphaChunk.blocks[n];
 						if (o != 0) {
 							bl = false;
 							break;
@@ -71,11 +71,11 @@ public class AlphaChunkIo {
 					for (int p = 0; p < 16; p++) {
 						for (int q = 0; q < 16; q++) {
 							int r = o << 11 | q << 7 | p + (j << 4);
-							int s = alphaChunk.field_13048[r];
+							int s = alphaChunk.blocks[r];
 							bs[p << 8 | q << 4 | o] = (byte)(s & 0xFF);
-							chunkNibbleArray.set(o, p, q, alphaChunk.field_13044.get(o, p + (j << 4), q));
-							chunkNibbleArray2.set(o, p, q, alphaChunk.field_13039.get(o, p + (j << 4), q));
-							chunkNibbleArray3.set(o, p, q, alphaChunk.field_13038.get(o, p + (j << 4), q));
+							chunkNibbleArray.set(o, p, q, alphaChunk.data.get(o, p + (j << 4), q));
+							chunkNibbleArray2.set(o, p, q, alphaChunk.skyLight.get(o, p + (j << 4), q));
+							chunkNibbleArray3.set(o, p, q, alphaChunk.blockLight.get(o, p + (j << 4), q));
 						}
 					}
 				}
@@ -96,38 +96,38 @@ public class AlphaChunkIo {
 
 		for (int k = 0; k < 16; k++) {
 			for (int l = 0; l < 16; l++) {
-				mutable.set(alphaChunk.field_13047 << 4 | k, 0, alphaChunk.field_13046 << 4 | l);
+				mutable.set(alphaChunk.x << 4 | k, 0, alphaChunk.z << 4 | l);
 				cs[l << 4 | k] = (byte)(Registry.BIOME.getRawId(biomeSource.getBiome(mutable)) & 0xFF);
 			}
 		}
 
 		compoundTag.putByteArray("Biomes", cs);
-		compoundTag.put("Entities", alphaChunk.field_13037);
-		compoundTag.put("TileEntities", alphaChunk.field_13040);
-		if (alphaChunk.field_13041 != null) {
-			compoundTag.put("TileTicks", alphaChunk.field_13041);
+		compoundTag.put("Entities", alphaChunk.entities);
+		compoundTag.put("TileEntities", alphaChunk.blockEntities);
+		if (alphaChunk.blockTicks != null) {
+			compoundTag.put("TileTicks", alphaChunk.blockTicks);
 		}
 
 		compoundTag.putBoolean("convertedFromAlphaFormat", true);
 	}
 
 	public static class AlphaChunk {
-		public long field_13043;
-		public boolean field_13042;
-		public byte[] field_13045;
-		public AlphaChunkDataArray field_13038;
-		public AlphaChunkDataArray field_13039;
-		public AlphaChunkDataArray field_13044;
-		public byte[] field_13048;
-		public ListTag field_13037;
-		public ListTag field_13040;
-		public ListTag field_13041;
-		public final int field_13047;
-		public final int field_13046;
+		public long lastUpdate;
+		public boolean terrainPopulated;
+		public byte[] heightMap;
+		public AlphaChunkDataArray blockLight;
+		public AlphaChunkDataArray skyLight;
+		public AlphaChunkDataArray data;
+		public byte[] blocks;
+		public ListTag entities;
+		public ListTag blockEntities;
+		public ListTag blockTicks;
+		public final int x;
+		public final int z;
 
 		public AlphaChunk(int i, int j) {
-			this.field_13047 = i;
-			this.field_13046 = j;
+			this.x = i;
+			this.z = j;
 		}
 	}
 }

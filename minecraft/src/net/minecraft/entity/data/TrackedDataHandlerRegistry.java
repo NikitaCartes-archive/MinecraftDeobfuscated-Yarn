@@ -1,6 +1,7 @@
 package net.minecraft.entity.data;
 
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -353,6 +354,25 @@ public class TrackedDataHandlerRegistry {
 			return villagerData;
 		}
 	};
+	public static final TrackedDataHandler<OptionalInt> field_17910 = new TrackedDataHandler<OptionalInt>() {
+		public void method_18189(PacketByteBuf packetByteBuf, OptionalInt optionalInt) {
+			packetByteBuf.writeVarInt(optionalInt.orElse(-1) + 1);
+		}
+
+		public OptionalInt method_18191(PacketByteBuf packetByteBuf) {
+			int i = packetByteBuf.readVarInt();
+			return i == 0 ? OptionalInt.empty() : OptionalInt.of(i - 1);
+		}
+
+		@Override
+		public TrackedData<OptionalInt> create(int i) {
+			return new TrackedData<>(i, this);
+		}
+
+		public OptionalInt method_18190(OptionalInt optionalInt) {
+			return optionalInt;
+		}
+	};
 
 	public static void register(TrackedDataHandler<?> trackedDataHandler) {
 		field_13328.add(trackedDataHandler);
@@ -385,5 +405,6 @@ public class TrackedDataHandlerRegistry {
 		register(TAG_COMPOUND);
 		register(PARTICLE);
 		register(VILLAGER_DATA);
+		register(field_17910);
 	}
 }

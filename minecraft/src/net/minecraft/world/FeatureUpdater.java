@@ -81,7 +81,7 @@ public class FeatureUpdater {
 		for (String string : this.field_17659) {
 			StructureFeature<?> structureFeature = (StructureFeature<?>)Feature.STRUCTURES.get(string.toLowerCase(Locale.ROOT));
 			if (!compoundTag4.containsKey(string, 12) && structureFeature != null) {
-				int i = structureFeature.method_14021();
+				int i = structureFeature.getRadius();
 				LongList longList = new LongArrayList();
 
 				for (int j = chunkPos.x - i; j <= chunkPos.x + i; j++) {
@@ -176,7 +176,7 @@ public class FeatureUpdater {
 				}
 
 				String string5 = string + "_index";
-				ChunkUpdateState chunkUpdateState = persistentStateManager.method_17924(() -> new ChunkUpdateState(string5), string5);
+				ChunkUpdateState chunkUpdateState = persistentStateManager.getOrCreate(() -> new ChunkUpdateState(string5), string5);
 				if (!chunkUpdateState.getAll().isEmpty()) {
 					this.updateStates.put(string, chunkUpdateState);
 				} else {

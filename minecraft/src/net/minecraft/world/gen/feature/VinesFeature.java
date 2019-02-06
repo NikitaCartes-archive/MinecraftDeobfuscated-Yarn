@@ -12,7 +12,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class VinesFeature extends Feature<DefaultFeatureConfig> {
-	private static final Direction[] field_17396 = Direction.values();
+	private static final Direction[] DIRECTIONS = Direction.values();
 
 	public VinesFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
 		super(function);
@@ -28,7 +28,7 @@ public class VinesFeature extends Feature<DefaultFeatureConfig> {
 			mutable.setOffset(random.nextInt(4) - random.nextInt(4), 0, random.nextInt(4) - random.nextInt(4));
 			mutable.setY(i);
 			if (iWorld.isAir(mutable)) {
-				for (Direction direction : field_17396) {
+				for (Direction direction : DIRECTIONS) {
 					if (direction != Direction.DOWN && VineBlock.shouldConnectTo(iWorld, mutable, direction)) {
 						iWorld.setBlockState(mutable, Blocks.field_10597.getDefaultState().with(VineBlock.getFacingProperty(direction), Boolean.valueOf(true)), 2);
 						break;

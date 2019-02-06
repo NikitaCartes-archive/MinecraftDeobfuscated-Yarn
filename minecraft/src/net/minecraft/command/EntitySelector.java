@@ -113,7 +113,7 @@ public class EntitySelector {
 			return (List<? extends Entity>)(serverPlayerEntity == null ? Collections.emptyList() : Lists.newArrayList(serverPlayerEntity));
 		} else if (this.entityId != null) {
 			for (ServerWorld serverWorld : serverCommandSource.getMinecraftServer().getWorlds()) {
-				Entity entity = serverWorld.getEntityByUuid(this.entityId);
+				Entity entity = serverWorld.method_14190(this.entityId);
 				if (entity != null) {
 					return Lists.newArrayList(entity);
 				}
@@ -146,7 +146,7 @@ public class EntitySelector {
 		if (this.box != null) {
 			list.addAll(serverWorld.method_18023(this.type, this.box.offset(vec3d), predicate));
 		} else {
-			list.addAll(serverWorld.method_18024(this.type, predicate));
+			list.addAll(serverWorld.method_18198(this.type, predicate));
 		}
 	}
 

@@ -16,7 +16,7 @@ public class ChunkCache implements ExtendedBlockView {
 	protected final int minX;
 	protected final int minZ;
 	protected final WorldChunk[][] chunks;
-	protected boolean field_9302;
+	protected boolean empty;
 	protected final World world;
 
 	public ChunkCache(World world, BlockPos blockPos, BlockPos blockPos2, int i) {
@@ -26,7 +26,7 @@ public class ChunkCache implements ExtendedBlockView {
 		int j = blockPos2.getX() + i >> 4;
 		int k = blockPos2.getZ() + i >> 4;
 		this.chunks = new WorldChunk[j - this.minX + 1][k - this.minZ + 1];
-		this.field_9302 = true;
+		this.empty = true;
 
 		for (int l = this.minX; l <= j; l++) {
 			for (int m = this.minZ; m <= k; m++) {
@@ -37,8 +37,8 @@ public class ChunkCache implements ExtendedBlockView {
 		for (int l = blockPos.getX() >> 4; l <= blockPos2.getX() >> 4; l++) {
 			for (int m = blockPos.getZ() >> 4; m <= blockPos2.getZ() >> 4; m++) {
 				WorldChunk worldChunk = this.chunks[l - this.minX][m - this.minZ];
-				if (worldChunk != null && !worldChunk.method_12228(blockPos.getY(), blockPos2.getY())) {
-					this.field_9302 = false;
+				if (worldChunk != null && !worldChunk.areSectionsEmpty(blockPos.getY(), blockPos2.getY())) {
+					this.empty = false;
 				}
 			}
 		}

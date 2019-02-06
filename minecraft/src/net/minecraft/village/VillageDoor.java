@@ -8,7 +8,7 @@ public class VillageDoor {
 	private final BlockPos insidePosition;
 	private final Direction facing;
 	private int lastTimeSeenByVillager;
-	private boolean field_6710;
+	private boolean invalid;
 	private int entityInsideTicks;
 
 	public VillageDoor(BlockPos blockPos, int i, int j, int k) {
@@ -40,11 +40,11 @@ public class VillageDoor {
 		return (int)blockPos.squaredDistanceTo(this.getPosition());
 	}
 
-	public int method_6417(BlockPos blockPos) {
+	public int squaredDistanceFromInsideTo(BlockPos blockPos) {
 		return (int)this.insidePosition.squaredDistanceTo(blockPos);
 	}
 
-	public boolean method_6425(BlockPos blockPos) {
+	public boolean isInside(BlockPos blockPos) {
 		int i = blockPos.getX() - this.position.getX();
 		int j = blockPos.getZ() - this.position.getY();
 		return i * this.facing.getOffsetX() + j * this.facing.getOffsetZ() >= 0;
@@ -86,12 +86,12 @@ public class VillageDoor {
 		this.lastTimeSeenByVillager = i;
 	}
 
-	public boolean method_6413() {
-		return this.field_6710;
+	public boolean isInvalid() {
+		return this.invalid;
 	}
 
-	public void method_6418(boolean bl) {
-		this.field_6710 = bl;
+	public void setInvalid(boolean bl) {
+		this.invalid = bl;
 	}
 
 	public Direction getFacing() {

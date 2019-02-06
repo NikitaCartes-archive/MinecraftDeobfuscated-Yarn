@@ -5,22 +5,22 @@ import net.minecraft.block.Blocks;
 
 public class ChunkGeneratorConfig {
 	protected int villageDistance = 32;
-	protected final int field_13145 = 8;
+	protected final int villageSeparation = 8;
 	protected int oceanMonumentSpacing = 32;
 	protected int oceanMonumentSeparation = 5;
 	protected int strongholdDistance = 32;
 	protected int strongholdCount = 128;
 	protected int strongholdSpread = 3;
 	protected int templeDistance = 32;
-	protected final int field_13137 = 8;
-	protected final int field_13155 = 16;
-	protected final int field_13153 = 8;
+	protected final int templeSeparation = 8;
+	protected final int shipwreckSpacing = 16;
+	protected final int shipwreckSeparation = 8;
 	protected int endCityDistance = 20;
-	protected final int field_13151 = 11;
-	protected final int field_13150 = 16;
-	protected final int field_13149 = 8;
+	protected final int endCitySeparation = 11;
+	protected final int oceanRuinSpacing = 16;
+	protected final int oceanRuinSeparation = 8;
 	protected int mansionDistance = 80;
-	protected final int field_13147 = 20;
+	protected final int mansionSeparation = 20;
 	protected BlockState defaultBlock = Blocks.field_10340.getDefaultState();
 	protected BlockState defaultFluid = Blocks.field_10382.getDefaultState();
 
@@ -28,7 +28,7 @@ public class ChunkGeneratorConfig {
 		return this.villageDistance;
 	}
 
-	public int method_12559() {
+	public int getVillageSeparation() {
 		return 8;
 	}
 
@@ -56,23 +56,23 @@ public class ChunkGeneratorConfig {
 		return this.templeDistance;
 	}
 
-	public int method_12568() {
+	public int getTempleSeparation() {
 		return 8;
 	}
 
-	public int method_12566() {
+	public int getShipwreckSpacing() {
 		return 16;
 	}
 
-	public int method_12562() {
+	public int getShipwreckSeparation() {
 		return 8;
 	}
 
-	public int method_12564() {
+	public int getOceanRuinSpacing() {
 		return 16;
 	}
 
-	public int method_12555() {
+	public int getOceanRuinSeparation() {
 		return 8;
 	}
 
@@ -80,7 +80,7 @@ public class ChunkGeneratorConfig {
 		return this.endCityDistance;
 	}
 
-	public int method_12557() {
+	public int getEndCitySeparation() {
 		return 11;
 	}
 
@@ -88,7 +88,7 @@ public class ChunkGeneratorConfig {
 		return this.mansionDistance;
 	}
 
-	public int method_12552() {
+	public int getMansionSeparation() {
 		return 20;
 	}
 

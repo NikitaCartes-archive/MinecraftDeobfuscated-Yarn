@@ -85,7 +85,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 	public void setHeightmap(Heightmap.Type type, long[] ls) {
 	}
 
-	private Heightmap.Type method_12239(Heightmap.Type type) {
+	private Heightmap.Type transformHeightmapType(Heightmap.Type type) {
 		if (type == Heightmap.Type.WORLD_SURFACE_WG) {
 			return Heightmap.Type.WORLD_SURFACE;
 		} else {
@@ -95,7 +95,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 
 	@Override
 	public int sampleHeightmap(Heightmap.Type type, int i, int j) {
-		return this.wrapped.sampleHeightmap(this.method_12239(type), i, j);
+		return this.wrapped.sampleHeightmap(this.transformHeightmapType(type), i, j);
 	}
 
 	@Override
@@ -186,8 +186,8 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public Stream<BlockPos> method_12018() {
-		return this.wrapped.method_12018();
+	public Stream<BlockPos> getLightSourcesStream() {
+		return this.wrapped.getLightSourcesStream();
 	}
 
 	@Override

@@ -234,15 +234,14 @@ public class Bootstrap {
 				double d = blockPointer.getX() + (double)direction.getOffsetX();
 				double e = (double)((float)blockPointer.getBlockPos().getY() + 0.2F);
 				double f = blockPointer.getZ() + (double)direction.getOffsetZ();
-				FireworkEntity fireworkEntity = new FireworkEntity(blockPointer.getWorld(), d, e, f, itemStack);
-				blockPointer.getWorld().spawnEntity(fireworkEntity);
+				blockPointer.getWorld().spawnEntity(new FireworkEntity(blockPointer.getWorld(), d, e, f, itemStack));
 				itemStack.subtractAmount(1);
 				return itemStack;
 			}
 
 			@Override
 			protected void playSound(BlockPointer blockPointer) {
-				blockPointer.getWorld().fireWorldEvent(1004, blockPointer.getBlockPos(), 0);
+				blockPointer.getWorld().playEvent(1004, blockPointer.getBlockPos(), 0);
 			}
 		});
 		DispenserBlock.registerBehavior(Items.field_8814, new ItemDispenserBehavior() {
@@ -265,7 +264,7 @@ public class Bootstrap {
 
 			@Override
 			protected void playSound(BlockPointer blockPointer) {
-				blockPointer.getWorld().fireWorldEvent(1018, blockPointer.getBlockPos(), 0);
+				blockPointer.getWorld().playEvent(1018, blockPointer.getBlockPos(), 0);
 			}
 		});
 		DispenserBlock.registerBehavior(Items.field_8533, new Bootstrap.DispenseBoat(BoatEntity.Type.OAK));
@@ -361,7 +360,7 @@ public class Bootstrap {
 				if (!BoneMealItem.method_7720(itemStack, world, blockPos) && !BoneMealItem.method_7719(itemStack, world, blockPos, null)) {
 					this.field_13364 = false;
 				} else if (!world.isClient) {
-					world.fireWorldEvent(2005, blockPos, 0);
+					world.playEvent(2005, blockPos, 0);
 				}
 
 				return itemStack;
@@ -580,7 +579,7 @@ public class Bootstrap {
 
 		@Override
 		protected void playSound(BlockPointer blockPointer) {
-			blockPointer.getWorld().fireWorldEvent(1000, blockPointer.getBlockPos(), 0);
+			blockPointer.getWorld().playEvent(1000, blockPointer.getBlockPos(), 0);
 		}
 	}
 
@@ -657,7 +656,7 @@ public class Bootstrap {
 
 		@Override
 		protected void playSound(BlockPointer blockPointer) {
-			blockPointer.getWorld().fireWorldEvent(this.field_13364 ? 1000 : 1001, blockPointer.getBlockPos(), 0);
+			blockPointer.getWorld().playEvent(this.field_13364 ? 1000 : 1001, blockPointer.getBlockPos(), 0);
 		}
 	}
 

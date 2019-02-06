@@ -2,6 +2,7 @@ package net.minecraft.resource;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,6 +12,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystem;
+import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
@@ -23,11 +25,13 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.SystemUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,6 +40,29 @@ public class DefaultResourcePack implements ResourcePack {
 	public static Path RESOURCE_PATH;
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static Class<?> RESOURCE_CLASS;
+	private static final Map<ResourceType, FileSystem> field_17917 = SystemUtil.consume(Maps.<ResourceType, FileSystem>newHashMap(), hashMap -> {
+		synchronized (DefaultResourcePack.class) {
+			for (ResourceType resourceType : ResourceType.values()) {
+				URL uRL = DefaultResourcePack.class.getResource("/" + resourceType.getName() + "/.mcassetsroot");
+
+				try {
+					URI uRI = uRL.toURI();
+					if ("jar".equals(uRI.getScheme())) {
+						FileSystem fileSystem;
+						try {
+							fileSystem = FileSystems.getFileSystem(uRI);
+						} catch (FileSystemNotFoundException var11) {
+							fileSystem = FileSystems.newFileSystem(uRI, Collections.emptyMap());
+						}
+
+						hashMap.put(resourceType, fileSystem);
+					}
+				} catch (IOException | URISyntaxException var12) {
+					LOGGER.error("Couldn't get a list of all vanilla resources", (Throwable)var12);
+				}
+			}
+		}
+	});
 	public final Set<String> namespaces;
 
 	public DefaultResourcePack(String... strings) {
@@ -74,7 +101,7 @@ public class DefaultResourcePack implements ResourcePack {
 		if (RESOURCE_PATH != null) {
 			try {
 				set.addAll(this.method_14418(i, "minecraft", RESOURCE_PATH.resolve(resourceType.getName()).resolve("minecraft"), string, predicate));
-			} catch (IOException var26) {
+			} catch (IOException var14) {
 			}
 
 			if (resourceType == ResourceType.ASSETS) {
@@ -82,7 +109,7 @@ public class DefaultResourcePack implements ResourcePack {
 
 				try {
 					enumeration = RESOURCE_CLASS.getClassLoader().getResources(resourceType.getName() + "/minecraft");
-				} catch (IOException var25) {
+				} catch (IOException var13) {
 				}
 
 				while (enumeration != null && enumeration.hasMoreElements()) {
@@ -91,7 +118,7 @@ public class DefaultResourcePack implements ResourcePack {
 						if ("file".equals(uRI.getScheme())) {
 							set.addAll(this.method_14418(i, "minecraft", Paths.get(uRI), string, predicate));
 						}
-					} catch (IOException | URISyntaxException var24) {
+					} catch (IOException | URISyntaxException var12) {
 					}
 				}
 			}
@@ -114,34 +141,14 @@ public class DefaultResourcePack implements ResourcePack {
 				Path path = Paths.get(uRL2.toURI());
 				set.addAll(this.method_14418(i, "minecraft", path, string, predicate));
 			} else if ("jar".equals(uRI.getScheme())) {
-				FileSystem fileSystem = FileSystems.newFileSystem(uRI, Collections.emptyMap());
-				Throwable var33 = null;
-
-				try {
-					Path path2 = fileSystem.getPath("/" + resourceType.getName() + "/minecraft");
-					set.addAll(this.method_14418(i, "minecraft", path2, string, predicate));
-				} catch (Throwable var23) {
-					var33 = var23;
-					throw var23;
-				} finally {
-					if (fileSystem != null) {
-						if (var33 != null) {
-							try {
-								fileSystem.close();
-							} catch (Throwable var22) {
-								var33.addSuppressed(var22);
-							}
-						} else {
-							fileSystem.close();
-						}
-					}
-				}
+				Path path2 = ((FileSystem)field_17917.get(resourceType)).getPath("/" + resourceType.getName() + "/minecraft");
+				set.addAll(this.method_14418(i, "minecraft", path2, string, predicate));
 			} else {
 				LOGGER.error("Unsupported scheme {} trying to list vanilla resources (NYI?)", uRI);
 			}
-		} catch (NoSuchFileException | FileNotFoundException var28) {
-		} catch (IOException | URISyntaxException var29) {
-			LOGGER.error("Couldn't get a list of all vanilla resources", (Throwable)var29);
+		} catch (NoSuchFileException | FileNotFoundException var10) {
+		} catch (IOException | URISyntaxException var11) {
+			LOGGER.error("Couldn't get a list of all vanilla resources", (Throwable)var11);
 		}
 
 		return set;

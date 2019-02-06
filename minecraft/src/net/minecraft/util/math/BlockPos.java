@@ -256,18 +256,18 @@ public class BlockPos extends Vec3i {
 			if (this.position == null) {
 				this.position = new BlockPos.Mutable(this.startX, this.startY, this.startZ);
 				return true;
-			} else if (this.position.xMut == this.endX && this.position.yMut == this.endY && this.position.zMut == this.endZ) {
+			} else if (this.position.x == this.endX && this.position.y == this.endY && this.position.z == this.endZ) {
 				return false;
 			} else {
-				if (this.position.xMut < this.endX) {
-					this.position.xMut++;
-				} else if (this.position.yMut < this.endY) {
-					this.position.xMut = this.startX;
-					this.position.yMut++;
-				} else if (this.position.zMut < this.endZ) {
-					this.position.xMut = this.startX;
-					this.position.yMut = this.startY;
-					this.position.zMut++;
+				if (this.position.x < this.endX) {
+					this.position.x++;
+				} else if (this.position.y < this.endY) {
+					this.position.x = this.startX;
+					this.position.y++;
+				} else if (this.position.z < this.endZ) {
+					this.position.x = this.startX;
+					this.position.y = this.startY;
+					this.position.z++;
 				}
 
 				return true;
@@ -276,9 +276,9 @@ public class BlockPos extends Vec3i {
 	}
 
 	public static class Mutable extends BlockPos {
-		protected int xMut;
-		protected int yMut;
-		protected int zMut;
+		protected int x;
+		protected int y;
+		protected int z;
 
 		public Mutable() {
 			this(0, 0, 0);
@@ -290,9 +290,9 @@ public class BlockPos extends Vec3i {
 
 		public Mutable(int i, int j, int k) {
 			super(0, 0, 0);
-			this.xMut = i;
-			this.yMut = j;
-			this.zMut = k;
+			this.x = i;
+			this.y = j;
+			this.z = k;
 		}
 
 		public Mutable(double d, double e, double f) {
@@ -321,23 +321,23 @@ public class BlockPos extends Vec3i {
 
 		@Override
 		public int getX() {
-			return this.xMut;
+			return this.x;
 		}
 
 		@Override
 		public int getY() {
-			return this.yMut;
+			return this.y;
 		}
 
 		@Override
 		public int getZ() {
-			return this.zMut;
+			return this.z;
 		}
 
 		public BlockPos.Mutable set(int i, int j, int k) {
-			this.xMut = i;
-			this.yMut = j;
-			this.zMut = k;
+			this.x = i;
+			this.y = j;
+			this.z = k;
 			return this;
 		}
 
@@ -368,15 +368,15 @@ public class BlockPos extends Vec3i {
 		}
 
 		public BlockPos.Mutable setOffset(Direction direction, int i) {
-			return this.set(this.xMut + direction.getOffsetX() * i, this.yMut + direction.getOffsetY() * i, this.zMut + direction.getOffsetZ() * i);
+			return this.set(this.x + direction.getOffsetX() * i, this.y + direction.getOffsetY() * i, this.z + direction.getOffsetZ() * i);
 		}
 
 		public BlockPos.Mutable setOffset(int i, int j, int k) {
-			return this.set(this.xMut + i, this.yMut + j, this.zMut + k);
+			return this.set(this.x + i, this.y + j, this.z + k);
 		}
 
 		public void setY(int i) {
-			this.yMut = i;
+			this.y = i;
 		}
 
 		@Override

@@ -17,15 +17,15 @@ import net.minecraft.world.loot.context.LootContextType;
 
 public class AlternativeLootCondition implements LootCondition {
 	private final LootCondition[] terms;
-	private final Predicate<LootContext> field_1247;
+	private final Predicate<LootContext> predicate;
 
 	private AlternativeLootCondition(LootCondition[] lootConditions) {
 		this.terms = lootConditions;
-		this.field_1247 = LootConditions.joinOr(lootConditions);
+		this.predicate = LootConditions.joinOr(lootConditions);
 	}
 
 	public final boolean method_825(LootContext lootContext) {
-		return this.field_1247.test(lootContext);
+		return this.predicate.test(lootContext);
 	}
 
 	@Override

@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.class_3829;
@@ -357,7 +356,8 @@ public class Structure {
 				listTag.add(new DoubleTag(vec3d2.y));
 				listTag.add(new DoubleTag(vec3d2.z));
 				compoundTag.put("Pos", listTag);
-				compoundTag.putUuid("UUID", UUID.randomUUID());
+				compoundTag.remove("UUIDMost");
+				compoundTag.remove("UUIDLeast");
 				method_17916(iWorld, compoundTag).ifPresent(entity -> {
 					float f = entity.applyMirror(mirror);
 					f += entity.yaw - entity.applyRotation(rotation);

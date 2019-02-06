@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.packet.PlayerListClientPacket;
+import net.minecraft.client.network.packet.PlayerListS2CPacket;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.scoreboard.ScoreboardTeam;
 import net.minecraft.text.TextComponent;
@@ -35,7 +35,7 @@ public class ScoreboardEntry {
 		this.profile = gameProfile;
 	}
 
-	public ScoreboardEntry(PlayerListClientPacket.class_2705 arg) {
+	public ScoreboardEntry(PlayerListS2CPacket.class_2705 arg) {
 		this.profile = arg.method_11726();
 		this.gameMode = arg.method_11725();
 		this.latency = arg.method_11727();

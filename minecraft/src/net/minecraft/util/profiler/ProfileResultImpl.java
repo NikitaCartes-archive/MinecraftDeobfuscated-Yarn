@@ -140,6 +140,13 @@ public class ProfileResultImpl implements ProfileResult {
 		return stringBuilder.toString();
 	}
 
+	@Override
+	public String method_18052() {
+		StringBuilder stringBuilder = new StringBuilder();
+		this.appendTiming(0, "root", stringBuilder);
+		return stringBuilder.toString();
+	}
+
 	private void appendTiming(int i, String string, StringBuilder stringBuilder) {
 		List<ProfilerTiming> list = this.getTimings(string);
 		if (list.size() >= 3) {

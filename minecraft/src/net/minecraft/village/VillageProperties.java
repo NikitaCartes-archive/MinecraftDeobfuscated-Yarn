@@ -51,7 +51,7 @@ public class VillageProperties {
 
 	public void update(int i) {
 		this.tick = i;
-		this.method_6395();
+		this.removeInvalidDoors();
 		this.clearOutdatedAttackerInfo();
 		if (i % 20 == 0) {
 			this.countVillagers();
@@ -63,7 +63,7 @@ public class VillageProperties {
 
 		int j = this.populationSize / 10;
 		if (this.golems < j && this.doors.size() > 20 && this.world.random.nextInt(7000) == 0) {
-			Entity entity = this.method_6394(this.center);
+			Entity entity = this.spawnIronGolemAround(this.center);
 			if (entity != null) {
 				this.golems++;
 			}
@@ -71,7 +71,7 @@ public class VillageProperties {
 	}
 
 	@Nullable
-	private Entity method_6394(BlockPos blockPos) {
+	private Entity spawnIronGolemAround(BlockPos blockPos) {
 		for (int i = 0; i < 10; i++) {
 			BlockPos blockPos2 = blockPos.add(this.world.random.nextInt(16) - 8, this.world.random.nextInt(6) - 3, this.world.random.nextInt(16) - 8);
 			if (this.isInRadius(blockPos2)) {
@@ -298,7 +298,7 @@ public class VillageProperties {
 		}
 	}
 
-	private void method_6395() {
+	private void removeInvalidDoors() {
 		boolean bl = false;
 		boolean bl2 = this.world.random.nextInt(50) == 0;
 		Iterator<VillageDoor> iterator = this.doors.iterator();
@@ -312,7 +312,7 @@ public class VillageProperties {
 			if (!this.isValidDoor(villageDoor.getPosition()) || Math.abs(this.tick - villageDoor.getLastTimeSeenByVillager()) > 1200) {
 				this.doorPositionsAggregate = this.doorPositionsAggregate.subtract(villageDoor.getPosition());
 				bl = true;
-				villageDoor.method_6418(true);
+				villageDoor.setInvalid(true);
 				iterator.remove();
 			}
 		}
@@ -365,7 +365,7 @@ public class VillageProperties {
 		return this.getRating(string) <= -15;
 	}
 
-	public void deserialize(CompoundTag compoundTag) {
+	public void fromTag(CompoundTag compoundTag) {
 		this.populationSize = compoundTag.getInt("PopSize");
 		this.radius = compoundTag.getInt("Radius");
 		this.golems = compoundTag.getInt("Golems");
@@ -405,7 +405,7 @@ public class VillageProperties {
 		this.raidId = compoundTag.getInt("RaidId");
 	}
 
-	public void serialize(CompoundTag compoundTag) {
+	public void toTag(CompoundTag compoundTag) {
 		compoundTag.putInt("PopSize", this.populationSize);
 		compoundTag.putInt("Radius", this.radius);
 		compoundTag.putInt("Golems", this.golems);

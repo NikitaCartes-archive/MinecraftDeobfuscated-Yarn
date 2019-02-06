@@ -146,7 +146,7 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 
 				this.field_5947--;
 			}
-		} else {
+		} else if (this.isValid()) {
 			int i = this.getBreedingAge();
 			if (i < 0) {
 				this.setBreedingAge(++i);

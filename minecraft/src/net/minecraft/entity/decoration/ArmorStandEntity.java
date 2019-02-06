@@ -70,7 +70,6 @@ public class ArmorStandEntity extends LivingEntity {
 
 	public ArmorStandEntity(World world) {
 		super(EntityType.ARMOR_STAND, world);
-		this.noClip = this.isUnaffectedByGravity();
 		this.stepHeight = 0.0F;
 	}
 
@@ -89,9 +88,13 @@ public class ArmorStandEntity extends LivingEntity {
 		this.setPosition(d, e, h);
 	}
 
+	private boolean method_18059() {
+		return !this.isMarker() && !this.isUnaffectedByGravity();
+	}
+
 	@Override
 	public boolean method_6034() {
-		return super.method_6034() && !this.isUnaffectedByGravity();
+		return super.method_6034() && this.method_18059();
 	}
 
 	@Override
@@ -235,7 +238,7 @@ public class ArmorStandEntity extends LivingEntity {
 		this.setHideBasePlate(compoundTag.getBoolean("NoBasePlate"));
 		this.setMarker(compoundTag.getBoolean("Marker"));
 		this.prevIsMarker = !this.isMarker();
-		this.noClip = this.isUnaffectedByGravity();
+		this.noClip = !this.method_18059();
 		CompoundTag compoundTag2 = compoundTag.getCompound("Pose");
 		this.deserializePose(compoundTag2);
 	}
@@ -535,7 +538,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Override
 	public void method_6091(float f, float g, float h) {
-		if (!this.isUnaffectedByGravity()) {
+		if (this.method_18059()) {
 			super.method_6091(f, g, h);
 		}
 	}

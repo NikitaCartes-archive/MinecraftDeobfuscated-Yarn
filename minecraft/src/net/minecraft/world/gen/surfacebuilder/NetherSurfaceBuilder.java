@@ -12,12 +12,12 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkRandom;
 
 public class NetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
-	private static final BlockState field_15660 = Blocks.field_10543.getDefaultState();
-	private static final BlockState field_15658 = Blocks.field_10515.getDefaultState();
-	private static final BlockState field_15659 = Blocks.field_10255.getDefaultState();
-	private static final BlockState field_15662 = Blocks.field_10114.getDefaultState();
-	protected long field_15661;
-	protected OctavePerlinNoiseSampler field_15663;
+	private static final BlockState CAVE_AIR = Blocks.field_10543.getDefaultState();
+	private static final BlockState NETHERRACK = Blocks.field_10515.getDefaultState();
+	private static final BlockState GRAVEL = Blocks.field_10255.getDefaultState();
+	private static final BlockState GLOWSTONE = Blocks.field_10114.getDefaultState();
+	protected long seed;
+	protected OctavePerlinNoiseSampler noise;
 
 	public NetherSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
 		super(function);
@@ -41,13 +41,13 @@ public class NetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 		int o = i & 15;
 		int p = j & 15;
 		double e = 0.03125;
-		boolean bl = this.field_15663.sample((double)i * 0.03125, (double)j * 0.03125, 0.0) + random.nextDouble() * 0.2 > 0.0;
-		boolean bl2 = this.field_15663.sample((double)i * 0.03125, 109.0, (double)j * 0.03125) + random.nextDouble() * 0.2 > 0.0;
+		boolean bl = this.noise.sample((double)i * 0.03125, (double)j * 0.03125, 0.0) + random.nextDouble() * 0.2 > 0.0;
+		boolean bl2 = this.noise.sample((double)i * 0.03125, 109.0, (double)j * 0.03125) + random.nextDouble() * 0.2 > 0.0;
 		int q = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		int r = -1;
-		BlockState blockState3 = field_15658;
-		BlockState blockState4 = field_15658;
+		BlockState blockState3 = NETHERRACK;
+		BlockState blockState4 = NETHERRACK;
 
 		for (int s = 127; s >= 0; s--) {
 			mutable.set(o, s, p);
@@ -56,19 +56,19 @@ public class NetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 				if (blockState5.getBlock() == blockState.getBlock()) {
 					if (r == -1) {
 						if (q <= 0) {
-							blockState3 = field_15660;
-							blockState4 = field_15658;
+							blockState3 = CAVE_AIR;
+							blockState4 = NETHERRACK;
 						} else if (s >= n - 4 && s <= n + 1) {
-							blockState3 = field_15658;
-							blockState4 = field_15658;
+							blockState3 = NETHERRACK;
+							blockState4 = NETHERRACK;
 							if (bl2) {
-								blockState3 = field_15659;
-								blockState4 = field_15658;
+								blockState3 = GRAVEL;
+								blockState4 = NETHERRACK;
 							}
 
 							if (bl) {
-								blockState3 = field_15662;
-								blockState4 = field_15662;
+								blockState3 = GLOWSTONE;
+								blockState4 = GLOWSTONE;
 							}
 						}
 
@@ -94,11 +94,11 @@ public class NetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 	}
 
 	@Override
-	public void method_15306(long l) {
-		if (this.field_15661 != l || this.field_15663 == null) {
-			this.field_15663 = new OctavePerlinNoiseSampler(new ChunkRandom(l), 4);
+	public void initSeed(long l) {
+		if (this.seed != l || this.noise == null) {
+			this.noise = new OctavePerlinNoiseSampler(new ChunkRandom(l), 4);
 		}
 
-		this.field_15661 = l;
+		this.seed = l;
 	}
 }

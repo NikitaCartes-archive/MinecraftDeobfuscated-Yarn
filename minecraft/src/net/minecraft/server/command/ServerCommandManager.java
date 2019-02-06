@@ -12,7 +12,7 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import java.util.Map;
 import java.util.function.Predicate;
-import net.minecraft.client.network.packet.CommandTreeClientPacket;
+import net.minecraft.client.network.packet.CommandTreeS2CPacket;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.server.dedicated.command.BanCommand;
@@ -189,7 +189,7 @@ public class ServerCommandManager {
 		RootCommandNode<CommandSource> rootCommandNode = new RootCommandNode<>();
 		map.put(this.dispatcher.getRoot(), rootCommandNode);
 		this.method_9239(this.dispatcher.getRoot(), rootCommandNode, serverPlayerEntity.getCommandSource(), map);
-		serverPlayerEntity.networkHandler.sendPacket(new CommandTreeClientPacket(rootCommandNode));
+		serverPlayerEntity.networkHandler.sendPacket(new CommandTreeS2CPacket(rootCommandNode));
 	}
 
 	private void method_9239(

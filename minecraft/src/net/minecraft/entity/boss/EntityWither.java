@@ -243,7 +243,7 @@ public class EntityWither extends HostileEntity implements RangedAttacker {
 			int i = this.getInvulTimer() - 1;
 			if (i <= 0) {
 				this.world.createExplosion(this, this.x, this.y + (double)this.getEyeHeight(), this.z, 7.0F, false, this.world.getGameRules().getBoolean("mobGriefing"));
-				this.world.fireGlobalWorldEvent(1023, new BlockPos(this), 0);
+				this.world.playGlobalEvent(1023, new BlockPos(this), 0);
 			}
 
 			this.setInvulTimer(i);
@@ -331,7 +331,7 @@ public class EntityWither extends HostileEntity implements RangedAttacker {
 					}
 
 					if (bl) {
-						this.world.fireWorldEvent(null, 1022, new BlockPos(this), 0);
+						this.world.playEvent(null, 1022, new BlockPos(this), 0);
 					}
 				}
 			}
@@ -411,7 +411,7 @@ public class EntityWither extends HostileEntity implements RangedAttacker {
 	}
 
 	private void method_6877(int i, double d, double e, double f, boolean bl) {
-		this.world.fireWorldEvent(null, 1024, new BlockPos(this), 0);
+		this.world.playEvent(null, 1024, new BlockPos(this), 0);
 		double g = this.method_6874(i);
 		double h = this.method_6880(i);
 		double j = this.method_6881(i);

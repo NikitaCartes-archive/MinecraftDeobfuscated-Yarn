@@ -57,8 +57,8 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 		}
 	}
 
-	protected StructureStart method_14025(IWorld iWorld, BlockPos blockPos, boolean bl) {
-		for (StructureStart structureStart : this.method_14017(iWorld, blockPos.getX() >> 4, blockPos.getZ() >> 4)) {
+	protected StructureStart isInsideStructure(IWorld iWorld, BlockPos blockPos, boolean bl) {
+		for (StructureStart structureStart : this.getStructureStarts(iWorld, blockPos.getX() >> 4, blockPos.getZ() >> 4)) {
 			if (structureStart.hasChildren() && structureStart.getBoundingBox().contains(blockPos)) {
 				if (!bl) {
 					return structureStart;
@@ -75,12 +75,12 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 		return StructureStart.DEFAULT;
 	}
 
-	public boolean method_14023(IWorld iWorld, BlockPos blockPos) {
-		return this.method_14025(iWorld, blockPos, false).hasChildren();
+	public boolean isApproximatelyInsideStructure(IWorld iWorld, BlockPos blockPos) {
+		return this.isInsideStructure(iWorld, blockPos, false).hasChildren();
 	}
 
-	public boolean method_14024(IWorld iWorld, BlockPos blockPos) {
-		return this.method_14025(iWorld, blockPos, true).hasChildren();
+	public boolean isInsideStructure(IWorld iWorld, BlockPos blockPos) {
+		return this.isInsideStructure(iWorld, blockPos, true).hasChildren();
 	}
 
 	@Nullable
@@ -99,7 +99,7 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 					for (int n = -l; n <= l; n++) {
 						boolean bl3 = n == -l || n == l;
 						if (bl2 || bl3) {
-							ChunkPos chunkPos = this.method_14018(chunkGenerator, chunkRandom, j, k, m, n);
+							ChunkPos chunkPos = this.getStart(chunkGenerator, chunkRandom, j, k, m, n);
 							StructureStart structureStart = world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS).getStructureStart(this.getName());
 							if (structureStart != null && structureStart.hasChildren()) {
 								if (bl && structureStart.isInExistingChunk()) {
@@ -128,7 +128,7 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 		}
 	}
 
-	private List<StructureStart> method_14017(IWorld iWorld, int i, int j) {
+	private List<StructureStart> getStructureStarts(IWorld iWorld, int i, int j) {
 		List<StructureStart> list = Lists.<StructureStart>newArrayList();
 		Chunk chunk = iWorld.getChunk(i, j, ChunkStatus.EMPTY);
 		LongIterator longIterator = chunk.getStructureReferences(this.getName()).iterator();
@@ -145,7 +145,7 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 		return list;
 	}
 
-	protected ChunkPos method_14018(ChunkGenerator<?> chunkGenerator, Random random, int i, int j, int k, int l) {
+	protected ChunkPos getStart(ChunkGenerator<?> chunkGenerator, Random random, int i, int j, int k, int l) {
 		return new ChunkPos(i + k, j + l);
 	}
 
@@ -155,7 +155,7 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 
 	public abstract String getName();
 
-	public abstract int method_14021();
+	public abstract int getRadius();
 
 	public interface StructureStartFactory {
 		StructureStart create(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l);

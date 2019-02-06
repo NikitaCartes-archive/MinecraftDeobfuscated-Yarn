@@ -8,8 +8,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
-import net.minecraft.server.network.packet.HandshakeServerPacket;
-import net.minecraft.server.packet.LoginHelloServerPacket;
+import net.minecraft.server.network.packet.HandshakeC2SPacket;
+import net.minecraft.server.network.packet.LoginHelloC2SPacket;
 import net.minecraft.text.TranslatableTextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -53,12 +53,12 @@ public class RealmsConnect {
 							return;
 						}
 
-						RealmsConnect.this.connection.sendPacket(new HandshakeServerPacket(string, i, NetworkState.LOGIN));
+						RealmsConnect.this.connection.sendPacket(new HandshakeC2SPacket(string, i, NetworkState.LOGIN));
 						if (RealmsConnect.this.aborted) {
 							return;
 						}
 
-						RealmsConnect.this.connection.sendPacket(new LoginHelloServerPacket(MinecraftClient.getInstance().getSession().getProfile()));
+						RealmsConnect.this.connection.sendPacket(new LoginHelloC2SPacket(MinecraftClient.getInstance().getSession().getProfile()));
 					} catch (UnknownHostException var5) {
 						Realms.clearResourcePack();
 						if (RealmsConnect.this.aborted) {

@@ -181,13 +181,13 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 			ItemStack itemStack2 = new ItemStack(itemStack.getItem().getRecipeRemainder());
 			if (itemStack.isEmpty()) {
 				itemStack = itemStack2;
-			} else {
+			} else if (!this.world.isClient) {
 				ItemScatterer.spawn(this.world, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), itemStack2);
 			}
 		}
 
 		this.inventory.set(3, itemStack);
-		this.world.fireWorldEvent(1035, blockPos, 0);
+		this.world.playEvent(1035, blockPos, 0);
 	}
 
 	@Override

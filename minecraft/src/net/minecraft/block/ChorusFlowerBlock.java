@@ -97,12 +97,12 @@ public class ChorusFlowerBlock extends Block {
 
 	private void grow(World world, BlockPos blockPos, int i) {
 		world.setBlockState(blockPos, this.getDefaultState().with(AGE, Integer.valueOf(i)), 2);
-		world.fireWorldEvent(1033, blockPos, 0);
+		world.playEvent(1033, blockPos, 0);
 	}
 
 	private void die(World world, BlockPos blockPos) {
 		world.setBlockState(blockPos, this.getDefaultState().with(AGE, Integer.valueOf(5)), 2);
-		world.fireWorldEvent(1034, blockPos, 0);
+		world.playEvent(1034, blockPos, 0);
 	}
 
 	private static boolean isSurroundedByAir(ViewableWorld viewableWorld, BlockPos blockPos, @Nullable Direction direction) {

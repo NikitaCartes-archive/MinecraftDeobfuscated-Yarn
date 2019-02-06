@@ -64,7 +64,7 @@ public class EnderEyeItem extends Item {
 					}
 				}
 
-				world.fireGlobalWorldEvent(1038, blockPos2.add(1, 0, 1), 0);
+				world.playGlobalEvent(1038, blockPos2.add(1, 0, 1), 0);
 			}
 
 			return ActionResult.SUCCESS;
@@ -93,7 +93,7 @@ public class EnderEyeItem extends Item {
 					world.playSound(
 						null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_15155, SoundCategory.field_15254, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F)
 					);
-					world.fireWorldEvent(null, 1003, new BlockPos(playerEntity), 0);
+					world.playEvent(null, 1003, new BlockPos(playerEntity), 0);
 					if (!playerEntity.abilities.creativeMode) {
 						itemStack.subtractAmount(1);
 					}

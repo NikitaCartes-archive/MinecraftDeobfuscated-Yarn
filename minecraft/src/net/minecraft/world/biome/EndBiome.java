@@ -8,7 +8,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
-import net.minecraft.world.gen.feature.EndPillarFeatureConfig;
+import net.minecraft.world.gen.feature.EndSpikeFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
@@ -29,7 +29,7 @@ public final class EndBiome extends Biome {
 		);
 		this.addFeature(
 			GenerationStep.Feature.SURFACE_STRUCTURES,
-			configureFeature(Feature.field_13522, new EndPillarFeatureConfig(false, ImmutableList.of(), null), Decorator.NOPE, DecoratorConfig.DEFAULT)
+			configureFeature(Feature.field_13522, new EndSpikeFeatureConfig(false, ImmutableList.of(), null), Decorator.NOPE, DecoratorConfig.DEFAULT)
 		);
 		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 4, 4));
 	}

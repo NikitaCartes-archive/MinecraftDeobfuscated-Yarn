@@ -17,8 +17,8 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.server.network.packet.GuiCloseServerPacket;
-import net.minecraft.server.network.packet.UpdateBeaconServerPacket;
+import net.minecraft.server.network.packet.GuiCloseC2SPacket;
+import net.minecraft.server.network.packet.UpdateBeaconC2SPacket;
 import net.minecraft.text.TextComponent;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
@@ -216,7 +216,7 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 
 		@Override
 		public void onPressed(double d, double e) {
-			BeaconScreen.this.client.player.networkHandler.sendPacket(new GuiCloseServerPacket(BeaconScreen.this.client.player.container.syncId));
+			BeaconScreen.this.client.player.networkHandler.sendPacket(new GuiCloseC2SPacket(BeaconScreen.this.client.player.container.syncId));
 			BeaconScreen.this.client.openScreen(null);
 		}
 
@@ -236,8 +236,8 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 		public void onPressed(double d, double e) {
 			BeaconScreen.this.client
 				.getNetworkHandler()
-				.sendPacket(new UpdateBeaconServerPacket(StatusEffect.getRawId(BeaconScreen.this.field_17412), StatusEffect.getRawId(BeaconScreen.this.field_17413)));
-			BeaconScreen.this.client.player.networkHandler.sendPacket(new GuiCloseServerPacket(BeaconScreen.this.client.player.container.syncId));
+				.sendPacket(new UpdateBeaconC2SPacket(StatusEffect.getRawId(BeaconScreen.this.field_17412), StatusEffect.getRawId(BeaconScreen.this.field_17413)));
+			BeaconScreen.this.client.player.networkHandler.sendPacket(new GuiCloseC2SPacket(BeaconScreen.this.client.player.container.syncId));
 			BeaconScreen.this.client.openScreen(null);
 		}
 

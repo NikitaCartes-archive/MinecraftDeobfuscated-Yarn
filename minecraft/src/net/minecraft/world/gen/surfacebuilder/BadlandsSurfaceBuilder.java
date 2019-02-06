@@ -14,15 +14,15 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkRandom;
 
 public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
-	private static final BlockState field_15624 = Blocks.field_10611.getDefaultState();
-	private static final BlockState field_15620 = Blocks.field_10184.getDefaultState();
-	private static final BlockState field_15625 = Blocks.field_10415.getDefaultState();
-	private static final BlockState field_15626 = Blocks.field_10143.getDefaultState();
-	private static final BlockState field_15616 = Blocks.field_10123.getDefaultState();
-	private static final BlockState field_15621 = Blocks.field_10328.getDefaultState();
-	private static final BlockState field_15617 = Blocks.field_10590.getDefaultState();
-	protected BlockState[] field_15627;
-	protected long field_15622;
+	private static final BlockState WHITE_TERACOTTA = Blocks.field_10611.getDefaultState();
+	private static final BlockState ORANGE_TERRACOTTA = Blocks.field_10184.getDefaultState();
+	private static final BlockState TERACOTTA = Blocks.field_10415.getDefaultState();
+	private static final BlockState YELLOW_TERACOTTA = Blocks.field_10143.getDefaultState();
+	private static final BlockState BROWN_TERACOTTA = Blocks.field_10123.getDefaultState();
+	private static final BlockState RED_TERACOTTA = Blocks.field_10328.getDefaultState();
+	private static final BlockState LIGHT_GRAY_TERACOTTA = Blocks.field_10590.getDefaultState();
+	protected BlockState[] layerBlocks;
+	protected long seed;
 	protected OctaveSimplexNoiseSampler field_15623;
 	protected OctaveSimplexNoiseSampler field_15618;
 	protected OctaveSimplexNoiseSampler field_15619;
@@ -47,7 +47,7 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 	) {
 		int n = i & 15;
 		int o = j & 15;
-		BlockState blockState3 = field_15624;
+		BlockState blockState3 = WHITE_TERACOTTA;
 		BlockState blockState4 = biome.getSurfaceConfig().getUnderMaterial();
 		int p = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
 		boolean bl = Math.cos(d / 3.0 * Math.PI) > 0.0;
@@ -69,7 +69,7 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 							blockState3 = Blocks.field_10124.getDefaultState();
 							blockState4 = blockState;
 						} else if (s >= l - 4 && s <= l + 1) {
-							blockState3 = field_15624;
+							blockState3 = WHITE_TERACOTTA;
 							blockState4 = biome.getSurfaceConfig().getUnderMaterial();
 						}
 
@@ -85,9 +85,9 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 							} else {
 								BlockState blockState6;
 								if (s < 64 || s > 127) {
-									blockState6 = field_15620;
+									blockState6 = ORANGE_TERRACOTTA;
 								} else if (bl) {
-									blockState6 = field_15625;
+									blockState6 = TERACOTTA;
 								} else {
 									blockState6 = this.method_15207(i, s, j);
 								}
@@ -113,13 +113,13 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 								|| block == Blocks.field_10526
 								|| block == Blocks.field_10328
 								|| block == Blocks.field_10626) {
-								chunk.setBlockState(mutable, field_15620, false);
+								chunk.setBlockState(mutable, ORANGE_TERRACOTTA, false);
 							}
 						}
 					} else if (q > 0) {
 						q--;
 						if (bl2) {
-							chunk.setBlockState(mutable, field_15620, false);
+							chunk.setBlockState(mutable, ORANGE_TERRACOTTA, false);
 						} else {
 							chunk.setBlockState(mutable, this.method_15207(i, s, j), false);
 						}
@@ -132,30 +132,30 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 	}
 
 	@Override
-	public void method_15306(long l) {
-		if (this.field_15622 != l || this.field_15627 == null) {
-			this.method_15209(l);
+	public void initSeed(long l) {
+		if (this.seed != l || this.layerBlocks == null) {
+			this.initLayerBlocks(l);
 		}
 
-		if (this.field_15622 != l || this.field_15623 == null || this.field_15618 == null) {
+		if (this.seed != l || this.field_15623 == null || this.field_15618 == null) {
 			Random random = new ChunkRandom(l);
 			this.field_15623 = new OctaveSimplexNoiseSampler(random, 4);
 			this.field_15618 = new OctaveSimplexNoiseSampler(random, 1);
 		}
 
-		this.field_15622 = l;
+		this.seed = l;
 	}
 
-	protected void method_15209(long l) {
-		this.field_15627 = new BlockState[64];
-		Arrays.fill(this.field_15627, field_15625);
+	protected void initLayerBlocks(long l) {
+		this.layerBlocks = new BlockState[64];
+		Arrays.fill(this.layerBlocks, TERACOTTA);
 		Random random = new ChunkRandom(l);
 		this.field_15619 = new OctaveSimplexNoiseSampler(random, 1);
 
 		for (int i = 0; i < 64; i++) {
 			i += random.nextInt(5) + 1;
 			if (i < 64) {
-				this.field_15627[i] = field_15620;
+				this.layerBlocks[i] = ORANGE_TERRACOTTA;
 			}
 		}
 
@@ -166,7 +166,7 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 			int m = random.nextInt(64);
 
 			for (int n = 0; m + n < 64 && n < k; n++) {
-				this.field_15627[m + n] = field_15626;
+				this.layerBlocks[m + n] = YELLOW_TERACOTTA;
 			}
 		}
 
@@ -177,7 +177,7 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 			int n = random.nextInt(64);
 
 			for (int o = 0; n + o < 64 && o < m; o++) {
-				this.field_15627[n + o] = field_15616;
+				this.layerBlocks[n + o] = BROWN_TERACOTTA;
 			}
 		}
 
@@ -188,7 +188,7 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 			int o = random.nextInt(64);
 
 			for (int p = 0; o + p < 64 && p < n; p++) {
-				this.field_15627[o + p] = field_15621;
+				this.layerBlocks[o + p] = RED_TERACOTTA;
 			}
 		}
 
@@ -200,13 +200,13 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 			n += random.nextInt(16) + 4;
 
 			for (int q = 0; n + q < 64 && q < 1; q++) {
-				this.field_15627[n + q] = field_15624;
+				this.layerBlocks[n + q] = WHITE_TERACOTTA;
 				if (n + q > 1 && random.nextBoolean()) {
-					this.field_15627[n + q - 1] = field_15617;
+					this.layerBlocks[n + q - 1] = LIGHT_GRAY_TERACOTTA;
 				}
 
 				if (n + q < 63 && random.nextBoolean()) {
-					this.field_15627[n + q + 1] = field_15617;
+					this.layerBlocks[n + q + 1] = LIGHT_GRAY_TERACOTTA;
 				}
 			}
 		}
@@ -214,6 +214,6 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 
 	protected BlockState method_15207(int i, int j, int k) {
 		int l = (int)Math.round(this.field_15619.sample((double)i / 512.0, (double)k / 512.0) * 2.0);
-		return this.field_15627[(j + l + 64) % 64];
+		return this.layerBlocks[(j + l + 64) % 64];
 	}
 }

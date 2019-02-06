@@ -3,14 +3,14 @@ package net.minecraft.util;
 import javax.annotation.Nullable;
 
 public class IntHashMap<V> {
-	private transient IntHashMap.Entry<V>[] entries;
-	private transient int field_15709;
-	private int field_15708;
-	private final float field_15707 = 0.75F;
+	private transient IntHashMap.Entry<V>[] buckets;
+	private transient int size;
+	private int threshold;
+	private final float loadFactor = 0.75F;
 
 	public IntHashMap() {
-		this.field_15708 = 12;
-		this.entries = new IntHashMap.Entry[16];
+		this.threshold = 12;
+		this.buckets = new IntHashMap.Entry[16];
 	}
 
 	private static int hash(int i) {
@@ -18,7 +18,7 @@ public class IntHashMap<V> {
 		return i ^ i >>> 7 ^ i >>> 4;
 	}
 
-	private static int modulo2(int i, int j) {
+	private static int getBucketIndex(int i, int j) {
 		return i & j - 1;
 	}
 
@@ -26,7 +26,7 @@ public class IntHashMap<V> {
 	public V get(int i) {
 		int j = hash(i);
 
-		for (IntHashMap.Entry<V> entry = this.entries[modulo2(j, this.entries.length)]; entry != null; entry = entry.next) {
+		for (IntHashMap.Entry<V> entry = this.buckets[getBucketIndex(j, this.buckets.length)]; entry != null; entry = entry.next) {
 			if (entry.key == i) {
 				return entry.value;
 			}
@@ -43,7 +43,7 @@ public class IntHashMap<V> {
 	final IntHashMap.Entry<V> getEntry(int i) {
 		int j = hash(i);
 
-		for (IntHashMap.Entry<V> entry = this.entries[modulo2(j, this.entries.length)]; entry != null; entry = entry.next) {
+		for (IntHashMap.Entry<V> entry = this.buckets[getBucketIndex(j, this.buckets.length)]; entry != null; entry = entry.next) {
 			if (entry.key == i) {
 				return entry;
 			}
@@ -54,33 +54,33 @@ public class IntHashMap<V> {
 
 	public void put(int i, V object) {
 		int j = hash(i);
-		int k = modulo2(j, this.entries.length);
+		int k = getBucketIndex(j, this.buckets.length);
 
-		for (IntHashMap.Entry<V> entry = this.entries[k]; entry != null; entry = entry.next) {
+		for (IntHashMap.Entry<V> entry = this.buckets[k]; entry != null; entry = entry.next) {
 			if (entry.key == i) {
 				entry.value = object;
 				return;
 			}
 		}
 
-		this.method_15317(j, i, object, k);
+		this.addEntry(j, i, object, k);
 	}
 
 	private void resize(int i) {
-		IntHashMap.Entry<V>[] entrys = this.entries;
+		IntHashMap.Entry<V>[] entrys = this.buckets;
 		int j = entrys.length;
 		if (j == 1073741824) {
-			this.field_15708 = Integer.MAX_VALUE;
+			this.threshold = Integer.MAX_VALUE;
 		} else {
 			IntHashMap.Entry<V>[] entrys2 = new IntHashMap.Entry[i];
 			this.copyEntriesTo(entrys2);
-			this.entries = entrys2;
-			this.field_15708 = (int)((float)i * this.field_15707);
+			this.buckets = entrys2;
+			this.threshold = (int)((float)i * this.loadFactor);
 		}
 	}
 
 	private void copyEntriesTo(IntHashMap.Entry<V>[] entrys) {
-		IntHashMap.Entry<V>[] entrys2 = this.entries;
+		IntHashMap.Entry<V>[] entrys2 = this.buckets;
 		int i = entrys.length;
 
 		for (int j = 0; j < entrys2.length; j++) {
@@ -90,7 +90,7 @@ public class IntHashMap<V> {
 
 				while (true) {
 					IntHashMap.Entry<V> entry2 = entry.next;
-					int k = modulo2(entry.field_15712, i);
+					int k = getBucketIndex(entry.field_15712, i);
 					entry.next = entrys[k];
 					entrys[k] = entry;
 					entry = entry2;
@@ -103,24 +103,24 @@ public class IntHashMap<V> {
 	}
 
 	@Nullable
-	public V method_15312(int i) {
-		IntHashMap.Entry<V> entry = this.method_15310(i);
+	public V remove(int i) {
+		IntHashMap.Entry<V> entry = this.removeAndGetEntry(i);
 		return entry == null ? null : entry.value;
 	}
 
 	@Nullable
-	final IntHashMap.Entry<V> method_15310(int i) {
+	final IntHashMap.Entry<V> removeAndGetEntry(int i) {
 		int j = hash(i);
-		int k = modulo2(j, this.entries.length);
-		IntHashMap.Entry<V> entry = this.entries[k];
+		int k = getBucketIndex(j, this.buckets.length);
+		IntHashMap.Entry<V> entry = this.buckets[k];
 		IntHashMap.Entry<V> entry2 = entry;
 
 		while (entry2 != null) {
 			IntHashMap.Entry<V> entry3 = entry2.next;
 			if (entry2.key == i) {
-				this.field_15709--;
+				this.size--;
 				if (entry == entry2) {
-					this.entries[k] = entry3;
+					this.buckets[k] = entry3;
 				} else {
 					entry.next = entry3;
 				}
@@ -136,20 +136,20 @@ public class IntHashMap<V> {
 	}
 
 	public void clear() {
-		IntHashMap.Entry<V>[] entrys = this.entries;
+		IntHashMap.Entry<V>[] entrys = this.buckets;
 
 		for (int i = 0; i < entrys.length; i++) {
 			entrys[i] = null;
 		}
 
-		this.field_15709 = 0;
+		this.size = 0;
 	}
 
-	private void method_15317(int i, int j, V object, int k) {
-		IntHashMap.Entry<V> entry = this.entries[k];
-		this.entries[k] = new IntHashMap.Entry<>(i, j, object, entry);
-		if (this.field_15709++ >= this.field_15708) {
-			this.resize(2 * this.entries.length);
+	private void addEntry(int i, int j, V object, int k) {
+		IntHashMap.Entry<V> entry = this.buckets[k];
+		this.buckets[k] = new IntHashMap.Entry<>(i, j, object, entry);
+		if (this.size++ >= this.threshold) {
+			this.resize(2 * this.buckets.length);
 		}
 	}
 

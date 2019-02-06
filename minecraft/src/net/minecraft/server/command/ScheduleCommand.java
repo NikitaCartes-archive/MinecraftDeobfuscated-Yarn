@@ -5,14 +5,14 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.datafixers.util.Either;
-import net.minecraft.class_229;
-import net.minecraft.class_231;
 import net.minecraft.command.arguments.FunctionArgumentType;
 import net.minecraft.command.arguments.TimeArgumentType;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.timer.FunctionTagTimerCallback;
+import net.minecraft.world.timer.FunctionTimerCallback;
 
 public class ScheduleCommand {
 	private static final SimpleCommandExceptionType SAME_TICK_EXCEPTION = new SimpleCommandExceptionType(
@@ -47,14 +47,20 @@ public class ScheduleCommand {
 		} else {
 			long l = serverCommandSource.getWorld().getTime() + (long)i;
 			either.ifLeft(commandFunction -> {
-				Identifier identifier = commandFunction.getId();
-				serverCommandSource.getWorld().getLevelProperties().method_143().method_984(identifier.toString(), l, new class_231(identifier));
-				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.schedule.created.function", identifier, i, l), true);
-			}).ifRight(tag -> {
-				Identifier identifier = tag.getId();
-				serverCommandSource.getWorld().getLevelProperties().method_143().method_984("#" + identifier.toString(), l, new class_229(identifier));
-				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.schedule.created.tag", identifier, i, l), true);
-			});
+					Identifier identifier = commandFunction.getId();
+					serverCommandSource.getWorld().getLevelProperties().getScheduledEvents().replaceEvent(identifier.toString(), l, new FunctionTimerCallback(identifier));
+					serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.schedule.created.function", identifier, i, l), true);
+				})
+				.ifRight(
+					tag -> {
+						Identifier identifier = tag.getId();
+						serverCommandSource.getWorld()
+							.getLevelProperties()
+							.getScheduledEvents()
+							.replaceEvent("#" + identifier.toString(), l, new FunctionTagTimerCallback(identifier));
+						serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.schedule.created.tag", identifier, i, l), true);
+					}
+				);
 			return (int)Math.floorMod(l, 2147483647L);
 		}
 	}

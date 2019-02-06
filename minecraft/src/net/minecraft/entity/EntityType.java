@@ -122,10 +122,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.WorldChunk;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -655,7 +653,7 @@ public class EntityType<T extends Entity> {
 	}
 
 	@Nullable
-	private static Entity loadEntityWithPassengers(CompoundTag compoundTag, World world, Function<Entity, Entity> function) {
+	public static Entity loadEntityWithPassengers(CompoundTag compoundTag, World world, Function<Entity, Entity> function) {
 		return (Entity)loadEntityFromTag(compoundTag, world).map(function).map(entity -> {
 			if (compoundTag.containsKey("Passengers", 9)) {
 				ListTag listTag = compoundTag.getList("Passengers", 10);
@@ -672,41 +670,12 @@ public class EntityType<T extends Entity> {
 		}).orElse(null);
 	}
 
-	@Nullable
-	public static Entity spawnEntityInChunk(CompoundTag compoundTag, World world, WorldChunk worldChunk) {
-		return loadEntityWithPassengers(compoundTag, world, entity -> {
-			worldChunk.addEntity(entity);
-			return entity;
-		});
-	}
-
-	@Nullable
-	public static Entity loadEntityWithPassengersAtPosition(CompoundTag compoundTag, World world, double d, double e, double f, boolean bl) {
-		return loadEntityWithPassengers(compoundTag, world, entity -> {
-			entity.setPositionAndAngles(d, e, f, entity.yaw, entity.pitch);
-			return bl && !world.spawnEntity(entity) ? null : entity;
-		});
-	}
-
-	@Nullable
-	public static Entity loadEntityWithPassengers(CompoundTag compoundTag, World world, boolean bl) {
-		return loadEntityWithPassengers(compoundTag, world, entity -> bl && !world.spawnEntity(entity) ? null : entity);
-	}
-
 	private static Optional<Entity> loadEntityFromTag(CompoundTag compoundTag, World world) {
 		try {
 			return getEntityFromTag(compoundTag, world);
 		} catch (RuntimeException var3) {
 			LOGGER.warn("Exception loading entity: ", (Throwable)var3);
 			return Optional.empty();
-		}
-	}
-
-	public static void spawnEntityWithPassengers(Entity entity, IWorld iWorld) {
-		if (iWorld.spawnEntity(entity) && entity.hasPassengers()) {
-			for (Entity entity2 : entity.getPassengerList()) {
-				spawnEntityWithPassengers(entity2, iWorld);
-			}
 		}
 	}
 

@@ -5,9 +5,13 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.platform.TextureUtil;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1050;
@@ -21,6 +25,7 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.profiler.Profiler;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,82 +34,77 @@ import org.apache.logging.log4j.Logger;
 public class SpriteAtlasTexture extends AbstractTexture implements TickableTexture {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final Identifier BLOCK_ATLAS_TEX = new Identifier("textures/atlas/blocks.png");
+	public static final Identifier field_17898 = new Identifier("textures/atlas/particles.png");
 	private final List<Sprite> animatedSprites = Lists.<Sprite>newArrayList();
 	private final Set<Identifier> spritesToLoad = Sets.<Identifier>newHashSet();
 	private final Map<Identifier, Sprite> sprites = Maps.<Identifier, Sprite>newHashMap();
 	private final String pathPrefix;
+	private final int field_17899;
 	private int mipLevel;
 	private final Sprite missingSprite = MissingSprite.getMissingSprite();
 
 	public SpriteAtlasTexture(String string) {
 		this.pathPrefix = string;
+		this.field_17899 = MinecraftClient.getMaxTextureSize();
 	}
 
 	@Override
 	public void load(ResourceManager resourceManager) throws IOException {
 	}
 
-	public void build(ResourceManager resourceManager, Iterable<Identifier> iterable) {
+	public void method_18159(SpriteAtlasTexture.class_4007 arg) {
 		this.spritesToLoad.clear();
-		iterable.forEach(identifier -> this.addSpriteToLoad(resourceManager, identifier));
-		this.reload(resourceManager);
+		this.spritesToLoad.addAll(arg.field_17900);
+		LOGGER.info("Created: {}x{} {}-atlas", arg.field_17901, arg.field_17902, this.pathPrefix);
+		TextureUtil.prepareImage(this.getGlId(), this.mipLevel, arg.field_17901, arg.field_17902);
+		this.clear();
+
+		for (Sprite sprite : arg.field_17903) {
+			this.sprites.put(sprite.getId(), sprite);
+
+			try {
+				sprite.method_4584();
+			} catch (Throwable var7) {
+				CrashReport crashReport = CrashReport.create(var7, "Stitching texture atlas");
+				CrashReportSection crashReportSection = crashReport.addElement("Texture being stitched together");
+				crashReportSection.add("Atlas path", this.pathPrefix);
+				crashReportSection.add("Sprite", sprite);
+				throw new CrashException(crashReport);
+			}
+
+			if (sprite.isAnimated()) {
+				this.animatedSprites.add(sprite);
+			}
+		}
 	}
 
-	public void reload(ResourceManager resourceManager) {
-		int i = MinecraftClient.getMaxTextureSize();
+	public SpriteAtlasTexture.class_4007 method_18163(ResourceManager resourceManager, Iterable<Identifier> iterable, Profiler profiler) {
+		Set<Identifier> set = Sets.<Identifier>newHashSet();
+		profiler.push("preparing");
+		iterable.forEach(identifier -> {
+			if (identifier == null) {
+				throw new IllegalArgumentException("Location cannot be null!");
+			} else {
+				set.add(identifier);
+			}
+		});
+		int i = this.field_17899;
 		TextureStitcher textureStitcher = new TextureStitcher(i, i, 0, this.mipLevel);
-		this.clear();
 		int j = Integer.MAX_VALUE;
 		int k = 1 << this.mipLevel;
+		profiler.swap("extracting_frames");
 
-		for (Identifier identifier : this.spritesToLoad) {
-			if (!this.missingSprite.getId().equals(identifier)) {
-				Identifier identifier2 = this.getTexturePath(identifier);
-
-				Sprite sprite;
-				try {
-					Resource resource = resourceManager.getResource(identifier2);
-					Throwable crashReport = null;
-
-					try {
-						class_1050 lv = new class_1050(resource.toString(), resource.getInputStream());
-						AnimationResourceMetadata animationResourceMetadata = resource.getMetadata(AnimationResourceMetadata.READER);
-						sprite = new Sprite(identifier, lv, animationResourceMetadata);
-					} catch (Throwable var27) {
-						crashReport = var27;
-						throw var27;
-					} finally {
-						if (resource != null) {
-							if (crashReport != null) {
-								try {
-									resource.close();
-								} catch (Throwable var26) {
-									crashReport.addSuppressed(var26);
-								}
-							} else {
-								resource.close();
-							}
-						}
-					}
-				} catch (RuntimeException var29) {
-					LOGGER.error("Unable to parse metadata from {} : {}", identifier2, var29);
-					continue;
-				} catch (IOException var30) {
-					LOGGER.error("Using missing texture, unable to load {} : {}", identifier2, var30);
-					continue;
-				}
-
-				j = Math.min(j, Math.min(sprite.getWidth(), sprite.getHeight()));
-				int l = Math.min(Integer.lowestOneBit(sprite.getWidth()), Integer.lowestOneBit(sprite.getHeight()));
-				if (l < k) {
-					LOGGER.warn(
-						"Texture {} with size {}x{} limits mip level from {} to {}", identifier2, sprite.getWidth(), sprite.getHeight(), MathHelper.log2(k), MathHelper.log2(l)
-					);
-					k = l;
-				}
-
-				textureStitcher.add(sprite);
+		for (Sprite sprite : this.method_18164(resourceManager, set)) {
+			j = Math.min(j, Math.min(sprite.getWidth(), sprite.getHeight()));
+			int l = Math.min(Integer.lowestOneBit(sprite.getWidth()), Integer.lowestOneBit(sprite.getHeight()));
+			if (l < k) {
+				LOGGER.warn(
+					"Texture {} with size {}x{} limits mip level from {} to {}", sprite.getId(), sprite.getWidth(), sprite.getHeight(), MathHelper.log2(k), MathHelper.log2(l)
+				);
+				k = l;
 			}
+
+			textureStitcher.add(sprite);
 		}
 
 		int m = Math.min(j, k);
@@ -114,37 +114,93 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 			this.mipLevel = n;
 		}
 
+		profiler.swap("mipmapping");
 		this.missingSprite.generateMipmaps(this.mipLevel);
+		profiler.swap("register");
 		textureStitcher.add(this.missingSprite);
+		profiler.swap("stitching");
 
 		try {
 			textureStitcher.stitch();
-		} catch (TextureStitcherCannotFitException var25) {
-			throw var25;
+		} catch (TextureStitcherCannotFitException var12) {
+			throw var12;
 		}
 
-		LOGGER.info("Created: {}x{} {}-atlas", textureStitcher.getWidth(), textureStitcher.getHeight(), this.pathPrefix);
-		TextureUtil.prepareImage(this.getGlId(), this.mipLevel, textureStitcher.getWidth(), textureStitcher.getHeight());
+		profiler.swap("loading");
+		List<Sprite> list = this.method_18161(resourceManager, textureStitcher);
+		profiler.pop();
+		return new SpriteAtlasTexture.class_4007(set, textureStitcher.getWidth(), textureStitcher.getHeight(), list);
+	}
 
-		for (Sprite spritex : textureStitcher.getStitchedSprites()) {
-			if (spritex == this.missingSprite || this.loadSprite(resourceManager, spritex)) {
-				this.sprites.put(spritex.getId(), spritex);
+	private Collection<Sprite> method_18164(ResourceManager resourceManager, Set<Identifier> set) {
+		List<CompletableFuture<?>> list = new ArrayList();
+		ConcurrentLinkedQueue<Sprite> concurrentLinkedQueue = new ConcurrentLinkedQueue();
 
-				try {
-					spritex.method_4584();
-				} catch (Throwable var24) {
-					CrashReport crashReport = CrashReport.create(var24, "Stitching texture atlas");
-					CrashReportSection crashReportSection = crashReport.addElement("Texture being stitched together");
-					crashReportSection.add("Atlas path", this.pathPrefix);
-					crashReportSection.add("Sprite", spritex);
-					throw new CrashException(crashReport);
-				}
+		for (Identifier identifier : set) {
+			if (!this.missingSprite.getId().equals(identifier)) {
+				list.add(CompletableFuture.runAsync(() -> {
+					Identifier identifier2 = this.getTexturePath(identifier);
 
-				if (spritex.isAnimated()) {
-					this.animatedSprites.add(spritex);
-				}
+					Sprite sprite;
+					try {
+						Resource resource = resourceManager.getResource(identifier2);
+						Throwable var7 = null;
+
+						try {
+							class_1050 lv = new class_1050(resource.toString(), resource.getInputStream());
+							AnimationResourceMetadata animationResourceMetadata = resource.getMetadata(AnimationResourceMetadata.READER);
+							sprite = new Sprite(identifier, lv, animationResourceMetadata);
+						} catch (Throwable var19) {
+							var7 = var19;
+							throw var19;
+						} finally {
+							if (resource != null) {
+								if (var7 != null) {
+									try {
+										resource.close();
+									} catch (Throwable var18) {
+										var7.addSuppressed(var18);
+									}
+								} else {
+									resource.close();
+								}
+							}
+						}
+					} catch (RuntimeException var21) {
+						LOGGER.error("Unable to parse metadata from {} : {}", identifier2, var21);
+						return;
+					} catch (IOException var22) {
+						LOGGER.error("Using missing texture, unable to load {} : {}", identifier2, var22);
+						return;
+					}
+
+					concurrentLinkedQueue.add(sprite);
+				}));
 			}
 		}
+
+		CompletableFuture.allOf((CompletableFuture[])list.toArray(new CompletableFuture[0])).join();
+		return concurrentLinkedQueue;
+	}
+
+	private List<Sprite> method_18161(ResourceManager resourceManager, TextureStitcher textureStitcher) {
+		ConcurrentLinkedQueue<Sprite> concurrentLinkedQueue = new ConcurrentLinkedQueue();
+		List<CompletableFuture<?>> list = new ArrayList();
+
+		for (Sprite sprite : textureStitcher.getStitchedSprites()) {
+			if (sprite == this.missingSprite) {
+				concurrentLinkedQueue.add(sprite);
+			} else {
+				list.add(CompletableFuture.runAsync(() -> {
+					if (this.loadSprite(resourceManager, sprite)) {
+						concurrentLinkedQueue.add(sprite);
+					}
+				}));
+			}
+		}
+
+		CompletableFuture.allOf((CompletableFuture[])list.toArray(new CompletableFuture[0])).join();
+		return new ArrayList(concurrentLinkedQueue);
 	}
 
 	private boolean loadSprite(ResourceManager resourceManager, Sprite sprite) {
@@ -200,14 +256,6 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 		}
 	}
 
-	public void addSpriteToLoad(ResourceManager resourceManager, Identifier identifier) {
-		if (identifier == null) {
-			throw new IllegalArgumentException("Location cannot be null!");
-		} else {
-			this.spritesToLoad.add(identifier);
-		}
-	}
-
 	@Override
 	public void tick() {
 		this.updateAnimatedSprites();
@@ -229,5 +277,20 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 
 		this.sprites.clear();
 		this.animatedSprites.clear();
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class class_4007 {
+		final Set<Identifier> field_17900;
+		final int field_17901;
+		final int field_17902;
+		final List<Sprite> field_17903;
+
+		public class_4007(Set<Identifier> set, int i, int j, List<Sprite> list) {
+			this.field_17900 = set;
+			this.field_17901 = i;
+			this.field_17902 = j;
+			this.field_17903 = list;
+		}
 	}
 }

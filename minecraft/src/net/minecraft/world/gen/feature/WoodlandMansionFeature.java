@@ -26,9 +26,9 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 	}
 
 	@Override
-	protected ChunkPos method_14018(ChunkGenerator<?> chunkGenerator, Random random, int i, int j, int k, int l) {
-		int m = chunkGenerator.getSettings().getMansionDistance();
-		int n = chunkGenerator.getSettings().method_12552();
+	protected ChunkPos getStart(ChunkGenerator<?> chunkGenerator, Random random, int i, int j, int k, int l) {
+		int m = chunkGenerator.getConfig().getMansionDistance();
+		int n = chunkGenerator.getConfig().getMansionSeparation();
 		int o = i + m * k;
 		int p = j + m * l;
 		int q = o < 0 ? o - m + 1 : o;
@@ -45,7 +45,7 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 
 	@Override
 	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
-		ChunkPos chunkPos = this.method_14018(chunkGenerator, random, i, j, 0, 0);
+		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
 		if (i == chunkPos.x && j == chunkPos.z) {
 			for (Biome biome : chunkGenerator.getBiomeSource().getBiomesInArea(i * 16 + 9, j * 16 + 9, 32)) {
 				if (!chunkGenerator.hasStructure(biome, Feature.WOODLAND_MANSION)) {
@@ -61,7 +61,7 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 
 	@Override
 	public StructureFeature.StructureStartFactory getStructureStartFactory() {
-		return WoodlandMansionFeature.class_3224::new;
+		return WoodlandMansionFeature.Start::new;
 	}
 
 	@Override
@@ -70,12 +70,12 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 	}
 
 	@Override
-	public int method_14021() {
+	public int getRadius() {
 		return 8;
 	}
 
-	public static class class_3224 extends StructureStart {
-		public class_3224(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
+	public static class Start extends StructureStart {
+		public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
 			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
 		}
 
@@ -95,10 +95,10 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 
 			int m = (i << 4) + 7;
 			int n = (j << 4) + 7;
-			int o = chunkGenerator.method_18028(m, n, Heightmap.Type.WORLD_SURFACE_WG);
-			int p = chunkGenerator.method_18028(m, n + l, Heightmap.Type.WORLD_SURFACE_WG);
-			int q = chunkGenerator.method_18028(m + k, n, Heightmap.Type.WORLD_SURFACE_WG);
-			int r = chunkGenerator.method_18028(m + k, n + l, Heightmap.Type.WORLD_SURFACE_WG);
+			int o = chunkGenerator.getHeightInGround(m, n, Heightmap.Type.WORLD_SURFACE_WG);
+			int p = chunkGenerator.getHeightInGround(m, n + l, Heightmap.Type.WORLD_SURFACE_WG);
+			int q = chunkGenerator.getHeightInGround(m + k, n, Heightmap.Type.WORLD_SURFACE_WG);
+			int r = chunkGenerator.getHeightInGround(m + k, n + l, Heightmap.Type.WORLD_SURFACE_WG);
 			int s = Math.min(Math.min(o, p), Math.min(q, r));
 			if (s >= 60) {
 				BlockPos blockPos = new BlockPos(i * 16 + 8, s + 1, j * 16 + 8);

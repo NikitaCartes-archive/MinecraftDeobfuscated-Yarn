@@ -3,31 +3,39 @@ package net.minecraft.client.particle;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_3999;
+import net.minecraft.class_4003;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.entity.Entity;
 import net.minecraft.particle.BlockStateParticleParameters;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class BlockCrackParticle extends Particle {
+public class BlockCrackParticle extends class_4003 {
 	private final BlockState block;
 	private BlockPos blockPos;
+	private final float field_17884;
+	private final float field_17885;
 
-	protected BlockCrackParticle(World world, double d, double e, double f, double g, double h, double i, BlockState blockState) {
+	public BlockCrackParticle(World world, double d, double e, double f, double g, double h, double i, BlockState blockState) {
 		super(world, d, e, f, g, h, i);
 		this.block = blockState;
-		this.setSprite(MinecraftClient.getInstance().getBlockRenderManager().getModels().getSprite(blockState));
+		this.method_18141(MinecraftClient.getInstance().getBlockRenderManager().getModels().getSprite(blockState));
 		this.gravityStrength = 1.0F;
 		this.colorRed = 0.6F;
 		this.colorGreen = 0.6F;
 		this.colorBlue = 0.6F;
-		this.size /= 2.0F;
+		this.field_17867 /= 2.0F;
+		this.field_17884 = this.random.nextFloat() * 3.0F;
+		this.field_17885 = this.random.nextFloat() * 3.0F;
+	}
+
+	@Override
+	public class_3999 method_18122() {
+		return class_3999.field_17827;
 	}
 
 	public BlockCrackParticle setBlockPos(BlockPos blockPos) {
@@ -59,43 +67,23 @@ public class BlockCrackParticle extends Particle {
 	}
 
 	@Override
-	public int getParticleGroup() {
-		return 1;
+	protected float method_18133() {
+		return this.field_17886.getU((double)((this.field_17884 + 1.0F) / 4.0F * 16.0F));
 	}
 
 	@Override
-	public void buildGeometry(BufferBuilder bufferBuilder, Entity entity, float f, float g, float h, float i, float j, float k) {
-		float l = 0.1F * this.size;
-		float m = this.sprite.getU((double)(this.field_3865 / 4.0F * 16.0F));
-		float n = this.sprite.getU((double)((this.field_3865 + 1.0F) / 4.0F * 16.0F));
-		float o = this.sprite.getV((double)(this.field_3846 / 4.0F * 16.0F));
-		float p = this.sprite.getV((double)((this.field_3846 + 1.0F) / 4.0F * 16.0F));
-		float q = (float)(MathHelper.lerp((double)f, this.prevPosX, this.posX) - cameraX);
-		float r = (float)(MathHelper.lerp((double)f, this.prevPosY, this.posY) - cameraY);
-		float s = (float)(MathHelper.lerp((double)f, this.prevPosZ, this.posZ) - cameraZ);
-		int t = this.getColorMultiplier(f);
-		int u = t >> 16 & 65535;
-		int v = t & 65535;
-		bufferBuilder.vertex((double)(q - g * l - j * l), (double)(r - h * l), (double)(s - i * l - k * l))
-			.texture((double)m, (double)p)
-			.color(this.colorRed, this.colorGreen, this.colorBlue, 1.0F)
-			.texture(u, v)
-			.next();
-		bufferBuilder.vertex((double)(q - g * l + j * l), (double)(r + h * l), (double)(s - i * l + k * l))
-			.texture((double)m, (double)o)
-			.color(this.colorRed, this.colorGreen, this.colorBlue, 1.0F)
-			.texture(u, v)
-			.next();
-		bufferBuilder.vertex((double)(q + g * l + j * l), (double)(r + h * l), (double)(s + i * l + k * l))
-			.texture((double)n, (double)o)
-			.color(this.colorRed, this.colorGreen, this.colorBlue, 1.0F)
-			.texture(u, v)
-			.next();
-		bufferBuilder.vertex((double)(q + g * l - j * l), (double)(r - h * l), (double)(s + i * l - k * l))
-			.texture((double)n, (double)p)
-			.color(this.colorRed, this.colorGreen, this.colorBlue, 1.0F)
-			.texture(u, v)
-			.next();
+	protected float method_18134() {
+		return this.field_17886.getU((double)(this.field_17884 / 4.0F * 16.0F));
+	}
+
+	@Override
+	protected float method_18135() {
+		return this.field_17886.getV((double)(this.field_17885 / 4.0F * 16.0F));
+	}
+
+	@Override
+	protected float method_18136() {
+		return this.field_17886.getV((double)((this.field_17885 + 1.0F) / 4.0F * 16.0F));
 	}
 
 	@Override

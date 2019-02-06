@@ -8,4 +8,6 @@ public interface SoundContainer<T> {
 	int getWeight();
 
 	T getSound();
+
+	void method_18188(SoundManager soundManager);
 }

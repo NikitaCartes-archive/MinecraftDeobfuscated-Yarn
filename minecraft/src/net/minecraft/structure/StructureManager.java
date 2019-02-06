@@ -20,7 +20,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
@@ -29,7 +29,7 @@ import net.minecraft.util.TagHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class StructureManager implements ResourceReloadListener {
+public class StructureManager implements SynchronousResourceReloadListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Map<Identifier, Structure> structures = Maps.<Identifier, Structure>newHashMap();
 	private final DataFixer dataFixer;
@@ -62,7 +62,7 @@ public class StructureManager implements ResourceReloadListener {
 	}
 
 	@Override
-	public void onResourceReload(ResourceManager resourceManager) {
+	public void reloadResources(ResourceManager resourceManager) {
 		this.structures.clear();
 	}
 

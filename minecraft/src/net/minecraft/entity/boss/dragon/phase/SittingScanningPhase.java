@@ -15,7 +15,7 @@ public class SittingScanningPhase extends AbstractSittingPhase {
 	@Override
 	public void method_6855() {
 		this.field_7050++;
-		LivingEntity livingEntity = this.dragon.world.method_8460(this.dragon, 20.0, 10.0);
+		LivingEntity livingEntity = this.dragon.world.findMobAttackTarget(this.dragon, 20.0, 10.0);
 		if (livingEntity != null) {
 			if (this.field_7050 > 25) {
 				this.dragon.getPhaseManager().setPhase(PhaseType.SITTING_ATTACKING);
@@ -43,7 +43,7 @@ public class SittingScanningPhase extends AbstractSittingPhase {
 				}
 			}
 		} else if (this.field_7050 >= 100) {
-			livingEntity = this.dragon.world.method_8460(this.dragon, 150.0, 150.0);
+			livingEntity = this.dragon.world.findMobAttackTarget(this.dragon, 150.0, 150.0);
 			this.dragon.getPhaseManager().setPhase(PhaseType.TAKEOFF);
 			if (livingEntity != null) {
 				this.dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);

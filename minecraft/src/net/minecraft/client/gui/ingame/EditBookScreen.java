@@ -24,7 +24,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.server.network.packet.BookUpdateServerPacket;
+import net.minecraft.server.network.packet.BookUpdateC2SPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.TextFormat;
 import net.minecraft.util.Hand;
@@ -224,7 +224,7 @@ public class EditBookScreen extends Screen {
 				this.itemStack.setChildTag("title", new StringTag(this.title.trim()));
 			}
 
-			this.client.getNetworkHandler().sendPacket(new BookUpdateServerPacket(this.itemStack, bl, this.hand));
+			this.client.getNetworkHandler().sendPacket(new BookUpdateC2SPacket(this.itemStack, bl, this.hand));
 		}
 	}
 

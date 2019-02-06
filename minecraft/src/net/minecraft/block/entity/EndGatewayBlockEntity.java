@@ -8,7 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.network.packet.BlockEntityUpdateClientPacket;
+import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.TagHelper;
@@ -117,8 +117,8 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 
 	@Nullable
 	@Override
-	public BlockEntityUpdateClientPacket toUpdatePacket() {
-		return new BlockEntityUpdateClientPacket(this.pos, 8, this.toInitialChunkDataTag());
+	public BlockEntityUpdateS2CPacket method_16886() {
+		return new BlockEntityUpdateS2CPacket(this.pos, 8, this.toInitialChunkDataTag());
 	}
 
 	@Override
@@ -170,11 +170,11 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 		Vec3d vec3d = new Vec3d((double)this.getPos().getX(), 0.0, (double)this.getPos().getZ()).normalize();
 		Vec3d vec3d2 = vec3d.multiply(1024.0);
 
-		for (int i = 16; getChunk(this.world, vec3d2).method_12031() > 0 && i-- > 0; vec3d2 = vec3d2.add(vec3d.multiply(-16.0))) {
+		for (int i = 16; getChunk(this.world, vec3d2).getHighestNonEmptySectionYOffset() > 0 && i-- > 0; vec3d2 = vec3d2.add(vec3d.multiply(-16.0))) {
 			LOGGER.debug("Skipping backwards past nonempty chunk at {}", vec3d2);
 		}
 
-		for (int var5 = 16; getChunk(this.world, vec3d2).method_12031() == 0 && var5-- > 0; vec3d2 = vec3d2.add(vec3d.multiply(16.0))) {
+		for (int var5 = 16; getChunk(this.world, vec3d2).getHighestNonEmptySectionYOffset() == 0 && var5-- > 0; vec3d2 = vec3d2.add(vec3d.multiply(16.0))) {
 			LOGGER.debug("Skipping forward past empty chunk at {}", vec3d2);
 		}
 
@@ -231,9 +231,9 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	@Nullable
 	private static BlockPos findPortalPosition(WorldChunk worldChunk) {
 		ChunkPos chunkPos = worldChunk.getPos();
-		BlockPos blockPos = new BlockPos(chunkPos.getXStart(), 30, chunkPos.getZStart());
-		int i = worldChunk.method_12031() + 16 - 1;
-		BlockPos blockPos2 = new BlockPos(chunkPos.getXEnd(), i, chunkPos.getZEnd());
+		BlockPos blockPos = new BlockPos(chunkPos.getStartX(), 30, chunkPos.getStartZ());
+		int i = worldChunk.getHighestNonEmptySectionYOffset() + 16 - 1;
+		BlockPos blockPos2 = new BlockPos(chunkPos.getEndX(), i, chunkPos.getEndZ());
 		BlockPos blockPos3 = null;
 		double d = 0.0;
 
@@ -262,7 +262,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 				(ChunkGenerator<? extends ChunkGeneratorConfig>)this.world.getChunkManager().getChunkGenerator(),
 				new Random(),
 				blockPos,
-				EndGatewayFeatureConfig.method_18034(this.getPos(), false)
+				EndGatewayFeatureConfig.createConfig(this.getPos(), false)
 			);
 	}
 

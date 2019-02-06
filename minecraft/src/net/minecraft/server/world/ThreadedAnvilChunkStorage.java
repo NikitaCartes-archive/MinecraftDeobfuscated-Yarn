@@ -25,8 +25,8 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.ChunkDataClientPacket;
-import net.minecraft.client.network.packet.LightUpdateClientPacket;
+import net.minecraft.client.network.packet.ChunkDataS2CPacket;
+import net.minecraft.client.network.packet.LightUpdateS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.server.WorldGenerationProgressListener;
@@ -43,7 +43,6 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.world.ChunkSerializer;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.SessionLockException;
-import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkProvider;
@@ -60,7 +59,7 @@ import org.apache.logging.log4j.Logger;
 public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Long2ObjectLinkedOpenHashMap<ChunkHolder> posToHolder = new Long2ObjectLinkedOpenHashMap<>();
-	private final World world;
+	private final ServerWorld world;
 	private final ServerLightingProvider serverLightingProvider;
 	private final Executor genQueueAdder;
 	private final ChunkHolder.PlayersWatchingChunkProvider playersWatchingChunkProvider;
@@ -79,7 +78,7 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache {
 	private final File saveDir;
 
 	public ThreadedAnvilChunkStorage(
-		World world,
+		ServerWorld serverWorld,
 		File file,
 		DataFixer dataFixer,
 		StructureManager structureManager,
@@ -93,8 +92,8 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache {
 	) {
 		super(dataFixer);
 		this.structureManager = structureManager;
-		this.saveDir = world.getDimension().getType().getFile(file);
-		this.world = world;
+		this.saveDir = serverWorld.getDimension().getType().getFile(file);
+		this.world = serverWorld;
 		this.playersWatchingChunkProvider = playersWatchingChunkProvider;
 		this.chunkGenerator = chunkGenerator;
 		this.genQueueAdder = executor2;
@@ -247,7 +246,7 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache {
 	}
 
 	protected void save(boolean bl) {
-		this.posToHolderCopy.values().stream().map(ChunkHolder::getChunk).filter(Objects::nonNull).forEach(chunk -> this.save(chunk, false));
+		this.posToHolderCopy.values().stream().map(ChunkHolder::getChunk).filter(Objects::nonNull).forEach(this::save);
 		if (bl) {
 			LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", this.saveDir.getName());
 		}
@@ -266,7 +265,11 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache {
 					CompletableFuture<Chunk> completableFuture = chunkHolder.getChunkFuture();
 					completableFuture.thenAcceptAsync(chunk -> {
 						if (chunk != null) {
-							this.save(chunk, true);
+							if (chunk instanceof WorldChunk) {
+								this.world.method_18202((WorldChunk)chunk);
+							}
+
+							this.save(chunk);
 
 							for (int ix = 0; ix < 16; ix++) {
 								this.serverLightingProvider.scheduleChunkLightUpdate(chunk.getPos().x, ix, chunk.getPos().z, true);
@@ -367,7 +370,7 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache {
 					worldChunk = new WorldChunk(this.world, (ProtoChunk)chunk);
 				}
 
-				worldChunk.method_12207(() -> ChunkHolder.getLevelType(chunkHolder.getLevel()));
+				worldChunk.setLevelTypeProvider(() -> ChunkHolder.getLevelType(chunkHolder.getLevel()));
 				worldChunk.loadToWorld();
 				return worldChunk;
 			}, runnable -> this.mainActor.method_16901(ChunkTaskPrioritySystem.createRunnableMessage(chunkHolder, () -> this.genQueueAdder.execute(runnable))));
@@ -377,7 +380,7 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache {
 	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> method_17235(ChunkHolder chunkHolder) {
 		ChunkPos chunkPos = chunkHolder.getPos();
 		CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.getChunkRegion(chunkPos, 1, i -> ChunkStatus.FULL);
-		return completableFuture.thenApplyAsync(either -> either.flatMap(list -> {
+		CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture2 = completableFuture.thenApplyAsync(either -> either.flatMap(list -> {
 				final WorldChunk worldChunk = (WorldChunk)list.get(list.size() / 2);
 				if (!Objects.equals(chunkPos, worldChunk.getPos())) {
 					throw new IllegalStateException();
@@ -389,43 +392,43 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache {
 					});
 				} else {
 					worldChunk.runPostProcessing();
-					this.totalChunksLoadedCount.getAndIncrement();
-					Packet<?>[] packets = new Packet[2];
-					this.playersWatchingChunkProvider.getPlayersWatchingChunk(chunkPos, false, true).forEach(serverPlayerEntity -> {
-						if (packets[0] == null) {
-							packets[0] = new ChunkDataClientPacket(worldChunk, 65535);
-							packets[1] = new LightUpdateClientPacket(worldChunk.getPos(), this.serverLightingProvider);
-						}
-
-						serverPlayerEntity.sendInitialChunkPackets(chunkPos, packets[0], packets[1]);
-					});
 					return Either.left(worldChunk);
 				}
 			}), runnable -> this.mainActor.method_16901(ChunkTaskPrioritySystem.createRunnableMessage(chunkHolder, () -> this.genQueueAdder.execute(runnable))));
+		completableFuture2.thenAcceptAsync(either -> either.mapLeft(worldChunk -> {
+				this.totalChunksLoadedCount.getAndIncrement();
+				Packet<?>[] packets = new Packet[2];
+				this.playersWatchingChunkProvider.getPlayersWatchingChunk(chunkPos, false, true).forEach(serverPlayerEntity -> {
+					if (packets[0] == null) {
+						packets[0] = new ChunkDataS2CPacket(worldChunk, 65535);
+						packets[1] = new LightUpdateS2CPacket(worldChunk.getPos(), this.serverLightingProvider);
+					}
+
+					serverPlayerEntity.sendInitialChunkPackets(chunkPos, packets[0], packets[1]);
+				});
+				return Either.left(worldChunk);
+			}), runnable -> this.mainActor.method_16901(ChunkTaskPrioritySystem.createRunnableMessage(chunkHolder, () -> this.genQueueAdder.execute(runnable))));
+		return completableFuture2;
 	}
 
 	public int getTotalChunksLoadedCount() {
 		return this.totalChunksLoadedCount.get();
 	}
 
-	private void save(Chunk chunk, boolean bl) {
-		if (bl && chunk instanceof WorldChunk) {
-			((WorldChunk)chunk).unloadFromWorld();
-		}
-
+	private void save(Chunk chunk) {
 		if (chunk.needsSaving()) {
 			try {
 				this.world.checkSessionLock();
-			} catch (SessionLockException var9) {
-				LOGGER.error("Couldn't save chunk; already in use by another instance of Minecraft?", (Throwable)var9);
+			} catch (SessionLockException var6) {
+				LOGGER.error("Couldn't save chunk; already in use by another instance of Minecraft?", (Throwable)var6);
 				return;
 			}
 
 			chunk.setLastSaveTime(this.world.getTime());
 			chunk.setShouldSave(false);
+			ChunkPos chunkPos = chunk.getPos();
 
 			try {
-				ChunkPos chunkPos = chunk.getPos();
 				ChunkStatus chunkStatus = chunk.getStatus();
 				if (chunkStatus.getChunkType() != ChunkStatus.ChunkType.LEVELCHUNK) {
 					CompoundTag compoundTag = this.getUpdatedChunkTag(chunkPos);
@@ -439,14 +442,9 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache {
 				}
 
 				CompoundTag compoundTagx = ChunkSerializer.serialize(this.world, chunk);
-
-				try {
-					this.writeChunkTag(chunkPos, compoundTagx);
-				} catch (Exception var7) {
-					LOGGER.error("Failed to save chunk", (Throwable)var7);
-				}
-			} catch (Exception var8) {
-				LOGGER.error("Failed to save chunk", (Throwable)var8);
+				this.writeChunkTag(chunkPos, compoundTagx);
+			} catch (Exception var5) {
+				LOGGER.error("Failed to save chunk {},{}", chunkPos.x, chunkPos.z, var5);
 			}
 		}
 	}
@@ -472,8 +470,8 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache {
 					WorldChunk worldChunk = chunkHolder.getWorldChunk();
 					if (worldChunk != null) {
 						if (packets[0] == null) {
-							packets[0] = new ChunkDataClientPacket(worldChunk, 65535);
-							packets[1] = new LightUpdateClientPacket(chunkPos, this.serverLightingProvider);
+							packets[0] = new ChunkDataS2CPacket(worldChunk, 65535);
+							packets[1] = new LightUpdateS2CPacket(chunkPos, this.serverLightingProvider);
 						}
 
 						serverPlayerEntity.sendInitialChunkPackets(chunkPos, packets[0], packets[1]);

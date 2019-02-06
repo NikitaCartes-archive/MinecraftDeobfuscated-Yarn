@@ -120,7 +120,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 
 	@Override
 	public void invalidate() {
-		if (this.field_7733) {
+		if (!this.world.isClient && this.field_7733) {
 			ItemScatterer.spawn(this.world, this, this);
 		}
 

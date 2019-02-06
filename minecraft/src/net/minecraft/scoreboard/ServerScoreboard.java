@@ -6,10 +6,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.minecraft.client.network.packet.ScoreboardDisplayClientPacket;
-import net.minecraft.client.network.packet.ScoreboardObjectiveUpdateClientPacket;
-import net.minecraft.client.network.packet.ScoreboardPlayerUpdateClientPacket;
-import net.minecraft.client.network.packet.TeamClientPacket;
+import net.minecraft.client.network.packet.ScoreboardDisplayS2CPacket;
+import net.minecraft.client.network.packet.ScoreboardObjectiveUpdateS2CPacket;
+import net.minecraft.client.network.packet.ScoreboardPlayerUpdateS2CPacket;
+import net.minecraft.client.network.packet.TeamS2CPacket;
 import net.minecraft.network.Packet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -30,7 +30,7 @@ public class ServerScoreboard extends Scoreboard {
 			this.server
 				.getPlayerManager()
 				.sendToAll(
-					new ScoreboardPlayerUpdateClientPacket(
+					new ScoreboardPlayerUpdateS2CPacket(
 						ServerScoreboard.UpdateMode.field_13431,
 						scoreboardPlayerScore.getObjective().getName(),
 						scoreboardPlayerScore.getPlayerName(),
@@ -45,7 +45,7 @@ public class ServerScoreboard extends Scoreboard {
 	@Override
 	public void updatePlayerScore(String string) {
 		super.updatePlayerScore(string);
-		this.server.getPlayerManager().sendToAll(new ScoreboardPlayerUpdateClientPacket(ServerScoreboard.UpdateMode.field_13430, null, string, 0));
+		this.server.getPlayerManager().sendToAll(new ScoreboardPlayerUpdateS2CPacket(ServerScoreboard.UpdateMode.field_13430, null, string, 0));
 		this.method_12941();
 	}
 
@@ -55,7 +55,7 @@ public class ServerScoreboard extends Scoreboard {
 		if (this.field_13427.contains(scoreboardObjective)) {
 			this.server
 				.getPlayerManager()
-				.sendToAll(new ScoreboardPlayerUpdateClientPacket(ServerScoreboard.UpdateMode.field_13430, scoreboardObjective.getName(), string, 0));
+				.sendToAll(new ScoreboardPlayerUpdateS2CPacket(ServerScoreboard.UpdateMode.field_13430, scoreboardObjective.getName(), string, 0));
 		}
 
 		this.method_12941();
@@ -67,7 +67,7 @@ public class ServerScoreboard extends Scoreboard {
 		super.setObjectiveSlot(i, scoreboardObjective);
 		if (scoreboardObjective2 != scoreboardObjective && scoreboardObjective2 != null) {
 			if (this.method_12936(scoreboardObjective2) > 0) {
-				this.server.getPlayerManager().sendToAll(new ScoreboardDisplayClientPacket(i, scoreboardObjective));
+				this.server.getPlayerManager().sendToAll(new ScoreboardDisplayS2CPacket(i, scoreboardObjective));
 			} else {
 				this.method_12938(scoreboardObjective2);
 			}
@@ -75,7 +75,7 @@ public class ServerScoreboard extends Scoreboard {
 
 		if (scoreboardObjective != null) {
 			if (this.field_13427.contains(scoreboardObjective)) {
-				this.server.getPlayerManager().sendToAll(new ScoreboardDisplayClientPacket(i, scoreboardObjective));
+				this.server.getPlayerManager().sendToAll(new ScoreboardDisplayS2CPacket(i, scoreboardObjective));
 			} else {
 				this.method_12939(scoreboardObjective);
 			}
@@ -87,7 +87,7 @@ public class ServerScoreboard extends Scoreboard {
 	@Override
 	public boolean addPlayerToTeam(String string, ScoreboardTeam scoreboardTeam) {
 		if (super.addPlayerToTeam(string, scoreboardTeam)) {
-			this.server.getPlayerManager().sendToAll(new TeamClientPacket(scoreboardTeam, Arrays.asList(string), 3));
+			this.server.getPlayerManager().sendToAll(new TeamS2CPacket(scoreboardTeam, Arrays.asList(string), 3));
 			this.method_12941();
 			return true;
 		} else {
@@ -98,7 +98,7 @@ public class ServerScoreboard extends Scoreboard {
 	@Override
 	public void removePlayerFromTeam(String string, ScoreboardTeam scoreboardTeam) {
 		super.removePlayerFromTeam(string, scoreboardTeam);
-		this.server.getPlayerManager().sendToAll(new TeamClientPacket(scoreboardTeam, Arrays.asList(string), 4));
+		this.server.getPlayerManager().sendToAll(new TeamS2CPacket(scoreboardTeam, Arrays.asList(string), 4));
 		this.method_12941();
 	}
 
@@ -112,7 +112,7 @@ public class ServerScoreboard extends Scoreboard {
 	public void updateExistingObjective(ScoreboardObjective scoreboardObjective) {
 		super.updateExistingObjective(scoreboardObjective);
 		if (this.field_13427.contains(scoreboardObjective)) {
-			this.server.getPlayerManager().sendToAll(new ScoreboardObjectiveUpdateClientPacket(scoreboardObjective, 2));
+			this.server.getPlayerManager().sendToAll(new ScoreboardObjectiveUpdateS2CPacket(scoreboardObjective, 2));
 		}
 
 		this.method_12941();
@@ -131,21 +131,21 @@ public class ServerScoreboard extends Scoreboard {
 	@Override
 	public void updateScoreboardTeamAndPlayers(ScoreboardTeam scoreboardTeam) {
 		super.updateScoreboardTeamAndPlayers(scoreboardTeam);
-		this.server.getPlayerManager().sendToAll(new TeamClientPacket(scoreboardTeam, 0));
+		this.server.getPlayerManager().sendToAll(new TeamS2CPacket(scoreboardTeam, 0));
 		this.method_12941();
 	}
 
 	@Override
 	public void updateScoreboardTeam(ScoreboardTeam scoreboardTeam) {
 		super.updateScoreboardTeam(scoreboardTeam);
-		this.server.getPlayerManager().sendToAll(new TeamClientPacket(scoreboardTeam, 2));
+		this.server.getPlayerManager().sendToAll(new TeamS2CPacket(scoreboardTeam, 2));
 		this.method_12941();
 	}
 
 	@Override
 	public void updateRemovedTeam(ScoreboardTeam scoreboardTeam) {
 		super.updateRemovedTeam(scoreboardTeam);
-		this.server.getPlayerManager().sendToAll(new TeamClientPacket(scoreboardTeam, 1));
+		this.server.getPlayerManager().sendToAll(new TeamS2CPacket(scoreboardTeam, 1));
 		this.method_12941();
 	}
 
@@ -162,17 +162,17 @@ public class ServerScoreboard extends Scoreboard {
 
 	public List<Packet<?>> method_12937(ScoreboardObjective scoreboardObjective) {
 		List<Packet<?>> list = Lists.<Packet<?>>newArrayList();
-		list.add(new ScoreboardObjectiveUpdateClientPacket(scoreboardObjective, 0));
+		list.add(new ScoreboardObjectiveUpdateS2CPacket(scoreboardObjective, 0));
 
 		for (int i = 0; i < 19; i++) {
 			if (this.getObjectiveForSlot(i) == scoreboardObjective) {
-				list.add(new ScoreboardDisplayClientPacket(i, scoreboardObjective));
+				list.add(new ScoreboardDisplayS2CPacket(i, scoreboardObjective));
 			}
 		}
 
 		for (ScoreboardPlayerScore scoreboardPlayerScore : this.getAllPlayerScores(scoreboardObjective)) {
 			list.add(
-				new ScoreboardPlayerUpdateClientPacket(
+				new ScoreboardPlayerUpdateS2CPacket(
 					ServerScoreboard.UpdateMode.field_13431,
 					scoreboardPlayerScore.getObjective().getName(),
 					scoreboardPlayerScore.getPlayerName(),
@@ -198,11 +198,11 @@ public class ServerScoreboard extends Scoreboard {
 
 	public List<Packet<?>> method_12940(ScoreboardObjective scoreboardObjective) {
 		List<Packet<?>> list = Lists.<Packet<?>>newArrayList();
-		list.add(new ScoreboardObjectiveUpdateClientPacket(scoreboardObjective, 1));
+		list.add(new ScoreboardObjectiveUpdateS2CPacket(scoreboardObjective, 1));
 
 		for (int i = 0; i < 19; i++) {
 			if (this.getObjectiveForSlot(i) == scoreboardObjective) {
-				list.add(new ScoreboardDisplayClientPacket(i, scoreboardObjective));
+				list.add(new ScoreboardDisplayS2CPacket(i, scoreboardObjective));
 			}
 		}
 

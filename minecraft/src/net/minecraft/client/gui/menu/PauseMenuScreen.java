@@ -24,11 +24,11 @@ public class PauseMenuScreen extends Screen {
 					boolean bl = PauseMenuScreen.this.client.isInSingleplayer();
 					boolean bl2 = PauseMenuScreen.this.client.isConnectedToRealms();
 					this.enabled = false;
-					PauseMenuScreen.this.client.world.method_8525();
+					PauseMenuScreen.this.client.world.disconnect();
 					if (bl) {
-						PauseMenuScreen.this.client.method_1550(null, new CloseWorldScreen(I18n.translate("menu.savingLevel")));
+						PauseMenuScreen.this.client.method_18096(new CloseWorldScreen(I18n.translate("menu.savingLevel")));
 					} else {
-						PauseMenuScreen.this.client.method_1481(null);
+						PauseMenuScreen.this.client.method_18099();
 					}
 
 					if (bl) {

@@ -1,8 +1,15 @@
 package net.minecraft.client.particle;
 
+import com.google.common.collect.Lists;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_3998;
+import net.minecraft.class_3999;
+import net.minecraft.class_4000;
+import net.minecraft.class_4001;
+import net.minecraft.class_4002;
+import net.minecraft.class_4003;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.entity.Entity;
@@ -10,10 +17,12 @@ import net.minecraft.item.FireworksItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
@@ -21,59 +30,62 @@ import net.minecraft.world.World;
 public class FireworksSparkParticle {
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
+		private final class_4002 field_17811;
+
+		public Factory(class_4001 arg) {
+			this.field_17811 = arg.register(Lists.<Identifier>reverse(class_4000.field_17861));
+		}
+
 		public Particle method_3025(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			FireworksSparkParticle.class_680 lv = new FireworksSparkParticle.class_680(world, d, e, f, g, h, i, MinecraftClient.getInstance().particleManager);
+			FireworksSparkParticle.class_680 lv = new FireworksSparkParticle.class_680(
+				world, d, e, f, g, h, i, MinecraftClient.getInstance().particleManager, this.field_17811
+			);
 			lv.setColorAlpha(0.99F);
 			return lv;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class class_678 extends Particle {
-		protected class_678(World world, double d, double e, double f) {
+	public static class class_3997 implements ParticleFactory<DefaultParticleType> {
+		private final class_4002 field_17810;
+
+		public class_3997(class_4001 arg) {
+			this.field_17810 = arg.method_18137(class_4000.field_17852);
+		}
+
+		public Particle method_18121(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+			FireworksSparkParticle.class_678 lv = new FireworksSparkParticle.class_678(world, d, e, f);
+			lv.method_18140(this.field_17810);
+			return lv;
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class class_678 extends class_4003 {
+		private class_678(World world, double d, double e, double f) {
 			super(world, d, e, f);
 			this.maxAge = 4;
 		}
 
 		@Override
+		public class_3999 method_18122() {
+			return class_3999.field_17829;
+		}
+
+		@Override
 		public void buildGeometry(BufferBuilder bufferBuilder, Entity entity, float f, float g, float h, float i, float j, float k) {
-			float l = 0.25F;
-			float m = 0.5F;
-			float n = 0.125F;
-			float o = 0.375F;
-			float p = 7.1F * MathHelper.sin(((float)this.age + f - 1.0F) * 0.25F * (float) Math.PI);
 			this.setColorAlpha(0.6F - ((float)this.age + f - 1.0F) * 0.25F * 0.5F);
-			float q = (float)(MathHelper.lerp((double)f, this.prevPosX, this.posX) - cameraX);
-			float r = (float)(MathHelper.lerp((double)f, this.prevPosY, this.posY) - cameraY);
-			float s = (float)(MathHelper.lerp((double)f, this.prevPosZ, this.posZ) - cameraZ);
-			int t = this.getColorMultiplier(f);
-			int u = t >> 16 & 65535;
-			int v = t & 65535;
-			bufferBuilder.vertex((double)(q - g * p - j * p), (double)(r - h * p), (double)(s - i * p - k * p))
-				.texture(0.5, 0.375)
-				.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
-				.texture(u, v)
-				.next();
-			bufferBuilder.vertex((double)(q - g * p + j * p), (double)(r + h * p), (double)(s - i * p + k * p))
-				.texture(0.5, 0.125)
-				.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
-				.texture(u, v)
-				.next();
-			bufferBuilder.vertex((double)(q + g * p + j * p), (double)(r + h * p), (double)(s + i * p + k * p))
-				.texture(0.25, 0.125)
-				.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
-				.texture(u, v)
-				.next();
-			bufferBuilder.vertex((double)(q + g * p - j * p), (double)(r - h * p), (double)(s + i * p - k * p))
-				.texture(0.25, 0.375)
-				.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
-				.texture(u, v)
-				.next();
+			super.buildGeometry(bufferBuilder, entity, f, g, h, i, j, k);
+		}
+
+		@Override
+		public float method_18132(float f) {
+			return 7.1F * MathHelper.sin(((float)this.age + f - 1.0F) * 0.25F * (float) Math.PI);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class class_680 extends AnimatedParticle {
+	static class class_680 extends AnimatedParticle {
 		private boolean field_3804;
 		private boolean field_3803;
 		private final ParticleManager field_3798;
@@ -82,14 +94,15 @@ public class FireworksSparkParticle {
 		private float field_3799;
 		private boolean field_3802;
 
-		public class_680(World world, double d, double e, double f, double g, double h, double i, ParticleManager particleManager) {
-			super(world, d, e, f, 160, 8, -0.004F);
+		private class_680(World world, double d, double e, double f, double g, double h, double i, ParticleManager particleManager, class_4002 arg) {
+			super(world, d, e, f, arg, -0.004F);
 			this.velocityX = g;
 			this.velocityY = h;
 			this.velocityZ = i;
 			this.field_3798 = particleManager;
-			this.size *= 0.75F;
+			this.field_17867 *= 0.75F;
 			this.maxAge = 48 + this.random.nextInt(12);
+			this.method_18142(arg);
 		}
 
 		public void method_3027(boolean bl) {
@@ -98,11 +111,6 @@ public class FireworksSparkParticle {
 
 		public void method_3026(boolean bl) {
 			this.field_3803 = bl;
-		}
-
-		@Override
-		public boolean hasAlpha() {
-			return true;
 		}
 
 		@Override
@@ -116,7 +124,9 @@ public class FireworksSparkParticle {
 		public void update() {
 			super.update();
 			if (this.field_3804 && this.age < this.maxAge / 2 && (this.age + this.maxAge) % 2 == 0) {
-				FireworksSparkParticle.class_680 lv = new FireworksSparkParticle.class_680(this.world, this.posX, this.posY, this.posZ, 0.0, 0.0, 0.0, this.field_3798);
+				FireworksSparkParticle.class_680 lv = new FireworksSparkParticle.class_680(
+					this.world, this.posX, this.posY, this.posZ, 0.0, 0.0, 0.0, this.field_3798, this.field_17866
+				);
 				lv.setColorAlpha(0.99F);
 				lv.setColor(this.colorRed, this.colorGreen, this.colorBlue);
 				lv.age = lv.maxAge / 2;
@@ -134,14 +144,14 @@ public class FireworksSparkParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class create extends Particle {
+	public static class create extends class_3998 {
 		private int age;
 		private final ParticleManager particleManager;
 		private ListTag explosions;
 		private boolean flicker;
 
 		public create(World world, double d, double e, double f, double g, double h, double i, ParticleManager particleManager, @Nullable CompoundTag compoundTag) {
-			super(world, d, e, f, 0.0, 0.0, 0.0);
+			super(world, d, e, f);
 			this.velocityX = g;
 			this.velocityY = h;
 			this.velocityZ = i;
@@ -164,10 +174,6 @@ public class FireworksSparkParticle {
 					}
 				}
 			}
-		}
-
-		@Override
-		public void buildGeometry(BufferBuilder bufferBuilder, Entity entity, float f, float g, float h, float i, float j, float k) {
 		}
 
 		@Override
@@ -256,9 +262,8 @@ public class FireworksSparkParticle {
 				float f = (float)((k & 0xFF0000) >> 16) / 255.0F;
 				float g = (float)((k & 0xFF00) >> 8) / 255.0F;
 				float h = (float)((k & 0xFF) >> 0) / 255.0F;
-				FireworksSparkParticle.class_678 lv = new FireworksSparkParticle.class_678(this.world, this.posX, this.posY, this.posZ);
-				lv.setColor(f, g, h);
-				this.particleManager.addParticle(lv);
+				Particle particle = this.particleManager.addParticle(ParticleTypes.field_17909, this.posX, this.posY, this.posZ, 0.0, 0.0, 0.0);
+				particle.setColor(f, g, h);
 			}
 
 			this.age++;
@@ -279,17 +284,15 @@ public class FireworksSparkParticle {
 		}
 
 		private void method_3030(double d, double e, double f, double g, double h, double i, int[] is, int[] js, boolean bl, boolean bl2) {
-			FireworksSparkParticle.class_680 lv = new FireworksSparkParticle.class_680(this.world, d, e, f, g, h, i, this.particleManager);
-			lv.setColorAlpha(0.99F);
+			FireworksSparkParticle.class_680 lv = (FireworksSparkParticle.class_680)this.particleManager.addParticle(ParticleTypes.field_11248, d, e, f, g, h, i);
 			lv.method_3027(bl);
 			lv.method_3026(bl2);
+			lv.setColorAlpha(0.99F);
 			int j = this.random.nextInt(is.length);
 			lv.setColor(is[j]);
 			if (js.length > 0) {
 				lv.setTargetColor(js[this.random.nextInt(js.length)]);
 			}
-
-			this.particleManager.addParticle(lv);
 		}
 
 		private void method_3031(double d, int i, int[] is, int[] js, boolean bl, boolean bl2) {
@@ -356,11 +359,6 @@ public class FireworksSparkParticle {
 				double h = this.velocityY * 0.5 + this.random.nextDouble() * 0.5;
 				this.method_3030(this.posX, this.posY, this.posZ, f, h, g, is, js, bl, bl2);
 			}
-		}
-
-		@Override
-		public int getParticleGroup() {
-			return 0;
 		}
 	}
 }

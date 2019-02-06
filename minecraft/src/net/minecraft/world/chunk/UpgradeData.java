@@ -9,7 +9,6 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.class_2355;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -22,6 +21,7 @@ import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.EightWayDirection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.palette.PalettedContainer;
@@ -33,9 +33,9 @@ import org.apache.logging.log4j.Logger;
 public class UpgradeData {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final UpgradeData NO_UPGRADE_DATA = new UpgradeData();
-	private static final class_2355[] field_12952 = class_2355.values();
-	private final EnumSet<class_2355> field_12951 = EnumSet.noneOf(class_2355.class);
-	private final int[][] field_12955 = new int[16][];
+	private static final EightWayDirection[] field_12952 = EightWayDirection.values();
+	private final EnumSet<EightWayDirection> sides = EnumSet.noneOf(EightWayDirection.class);
+	private final int[][] indices = new int[16][];
 	private static final Map<Block, UpgradeData.class_2844> field_12953 = new IdentityHashMap();
 	private static final Set<UpgradeData.class_2844> field_12954 = Sets.<UpgradeData.class_2844>newHashSet();
 
@@ -47,19 +47,19 @@ public class UpgradeData {
 		if (compoundTag.containsKey("Indices", 10)) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("Indices");
 
-			for (int i = 0; i < this.field_12955.length; i++) {
+			for (int i = 0; i < this.indices.length; i++) {
 				String string = String.valueOf(i);
 				if (compoundTag2.containsKey(string, 11)) {
-					this.field_12955[i] = compoundTag2.getIntArray(string);
+					this.indices[i] = compoundTag2.getIntArray(string);
 				}
 			}
 		}
 
 		int j = compoundTag.getInt("Sides");
 
-		for (class_2355 lv : class_2355.values()) {
-			if ((j & 1 << lv.ordinal()) != 0) {
-				this.field_12951.add(lv);
+		for (EightWayDirection eightWayDirection : EightWayDirection.values()) {
+			if ((j & 1 << eightWayDirection.ordinal()) != 0) {
+				this.sides.add(eightWayDirection);
 			}
 		}
 	}
@@ -67,18 +67,18 @@ public class UpgradeData {
 	public void method_12356(WorldChunk worldChunk) {
 		this.method_12348(worldChunk);
 
-		for (class_2355 lv : field_12952) {
-			method_12352(worldChunk, lv);
+		for (EightWayDirection eightWayDirection : field_12952) {
+			method_12352(worldChunk, eightWayDirection);
 		}
 
 		World world = worldChunk.getWorld();
 		field_12954.forEach(arg -> arg.method_12357(world));
 	}
 
-	private static void method_12352(WorldChunk worldChunk, class_2355 arg) {
+	private static void method_12352(WorldChunk worldChunk, EightWayDirection eightWayDirection) {
 		World world = worldChunk.getWorld();
-		if (worldChunk.getUpgradeData().field_12951.remove(arg)) {
-			Set<Direction> set = arg.getDirections();
+		if (worldChunk.getUpgradeData().sides.remove(eightWayDirection)) {
+			Set<Direction> set = eightWayDirection.getDirections();
 			int i = 0;
 			int j = 15;
 			boolean bl = set.contains(Direction.EAST);
@@ -87,10 +87,10 @@ public class UpgradeData {
 			boolean bl4 = set.contains(Direction.NORTH);
 			boolean bl5 = set.size() == 1;
 			ChunkPos chunkPos = worldChunk.getPos();
-			int k = chunkPos.getXStart() + (!bl5 || !bl4 && !bl3 ? (bl2 ? 0 : 15) : 1);
-			int l = chunkPos.getXStart() + (!bl5 || !bl4 && !bl3 ? (bl2 ? 0 : 15) : 14);
-			int m = chunkPos.getZStart() + (!bl5 || !bl && !bl2 ? (bl4 ? 0 : 15) : 1);
-			int n = chunkPos.getZStart() + (!bl5 || !bl && !bl2 ? (bl4 ? 0 : 15) : 14);
+			int k = chunkPos.getStartX() + (!bl5 || !bl4 && !bl3 ? (bl2 ? 0 : 15) : 1);
+			int l = chunkPos.getStartX() + (!bl5 || !bl4 && !bl3 ? (bl2 ? 0 : 15) : 14);
+			int m = chunkPos.getStartZ() + (!bl5 || !bl && !bl2 ? (bl4 ? 0 : 15) : 1);
+			int n = chunkPos.getStartZ() + (!bl5 || !bl && !bl2 ? (bl4 ? 0 : 15) : 14);
 			Direction[] directions = Direction.values();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
@@ -123,8 +123,8 @@ public class UpgradeData {
 
 			for (int i = 0; i < 16; i++) {
 				ChunkSection chunkSection = worldChunk.getSectionArray()[i];
-				int[] is = this.field_12955[i];
-				this.field_12955[i] = null;
+				int[] is = this.indices[i];
+				this.indices[i] = null;
 				if (chunkSection != null && is != null && is.length > 0) {
 					Direction[] directions = Direction.values();
 					PalettedContainer<BlockState> palettedContainer = chunkSection.getContainer();
@@ -133,7 +133,7 @@ public class UpgradeData {
 						int k = j & 15;
 						int l = j >> 8 & 15;
 						int m = j >> 4 & 15;
-						pooledMutable.set(chunkPos.getXStart() + k, (i << 4) + l, chunkPos.getZStart() + m);
+						pooledMutable.set(chunkPos.getStartX() + k, (i << 4) + l, chunkPos.getStartZ() + m);
 						BlockState blockState = palettedContainer.get(j);
 						BlockState blockState2 = blockState;
 
@@ -149,34 +149,34 @@ public class UpgradeData {
 				}
 			}
 
-			for (int ix = 0; ix < this.field_12955.length; ix++) {
-				if (this.field_12955[ix] != null) {
+			for (int ix = 0; ix < this.indices.length; ix++) {
+				if (this.indices[ix] != null) {
 					LOGGER.warn("Discarding update data for section {} for chunk ({} {})", ix, chunkPos.x, chunkPos.z);
 				}
 
-				this.field_12955[ix] = null;
+				this.indices[ix] = null;
 			}
 		}
 	}
 
 	public boolean method_12349() {
-		for (int[] is : this.field_12955) {
+		for (int[] is : this.indices) {
 			if (is != null) {
 				return false;
 			}
 		}
 
-		return this.field_12951.isEmpty();
+		return this.sides.isEmpty();
 	}
 
 	public CompoundTag toTag() {
 		CompoundTag compoundTag = new CompoundTag();
 		CompoundTag compoundTag2 = new CompoundTag();
 
-		for (int i = 0; i < this.field_12955.length; i++) {
+		for (int i = 0; i < this.indices.length; i++) {
 			String string = String.valueOf(i);
-			if (this.field_12955[i] != null && this.field_12955[i].length != 0) {
-				compoundTag2.putIntArray(string, this.field_12955[i]);
+			if (this.indices[i] != null && this.indices[i].length != 0) {
+				compoundTag2.putIntArray(string, this.indices[i]);
 			}
 		}
 
@@ -186,8 +186,8 @@ public class UpgradeData {
 
 		int ix = 0;
 
-		for (class_2355 lv : this.field_12951) {
-			ix |= 1 << lv.ordinal();
+		for (EightWayDirection eightWayDirection : this.sides) {
+			ix |= 1 << eightWayDirection.ordinal();
 		}
 
 		compoundTag.putByte("Sides", (byte)ix);

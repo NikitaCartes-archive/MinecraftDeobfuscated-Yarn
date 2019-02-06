@@ -22,32 +22,32 @@ public class ShipwreckFeature extends AbstractTempleFeature<ShipwreckFeatureConf
 	}
 
 	@Override
-	public int method_14021() {
+	public int getRadius() {
 		return 3;
 	}
 
 	@Override
 	public StructureFeature.StructureStartFactory getStructureStartFactory() {
-		return ShipwreckFeature.class_3171::new;
+		return ShipwreckFeature.Start::new;
 	}
 
 	@Override
-	protected int method_13774() {
+	protected int getSeedModifier() {
 		return 165745295;
 	}
 
 	@Override
-	protected int method_13773(ChunkGenerator<?> chunkGenerator) {
-		return chunkGenerator.getSettings().method_12566();
+	protected int getSpacing(ChunkGenerator<?> chunkGenerator) {
+		return chunkGenerator.getConfig().getShipwreckSpacing();
 	}
 
 	@Override
-	protected int method_13775(ChunkGenerator<?> chunkGenerator) {
-		return chunkGenerator.getSettings().method_12562();
+	protected int getSeparation(ChunkGenerator<?> chunkGenerator) {
+		return chunkGenerator.getConfig().getShipwreckSeparation();
 	}
 
-	public static class class_3171 extends StructureStart {
-		public class_3171(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
+	public static class Start extends StructureStart {
+		public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
 			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
 		}
 

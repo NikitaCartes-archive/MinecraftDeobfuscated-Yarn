@@ -3,7 +3,7 @@ package net.minecraft.entity.projectile;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1675;
-import net.minecraft.client.network.packet.EntitySpawnClientPacket;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -17,6 +17,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
 public abstract class ExplosiveProjectileEntity extends Entity {
@@ -83,7 +84,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 			}
 
 			this.field_7602++;
-			HitResult hitResult = class_1675.method_7482(this, true, this.field_7602 >= 25, this.owner);
+			HitResult hitResult = class_1675.method_18076(this, true, this.field_7602 >= 25, this.owner, RayTraceContext.ShapeType.field_17558);
 			if (hitResult.getType() != HitResult.Type.NONE) {
 				this.onCollision(hitResult);
 			}
@@ -219,7 +220,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 	@Override
 	public Packet<?> createSpawnPacket() {
 		int i = this.owner == null ? 0 : this.owner.getEntityId();
-		return new EntitySpawnClientPacket(
+		return new EntitySpawnS2CPacket(
 			this.getEntityId(), this.getUuid(), this.x, this.y, this.z, this.pitch, this.yaw, this.getType(), i, this.field_7601, this.field_7600, this.field_7599
 		);
 	}

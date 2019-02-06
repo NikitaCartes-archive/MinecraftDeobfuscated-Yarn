@@ -29,12 +29,12 @@ public class TheNetherDimension extends Dimension {
 	}
 
 	@Override
-	protected void method_12447() {
+	protected void initializeLightLevelToBrightness() {
 		float f = 0.1F;
 
 		for (int i = 0; i <= 15; i++) {
 			float g = 1.0F - (float)i / 15.0F;
-			this.field_13053[i] = (1.0F - g) / (g * 3.0F + 1.0F) * 0.9F + 0.1F;
+			this.lightLevelToBrightness[i] = (1.0F - g) / (g * 3.0F + 1.0F) * 0.9F + 0.1F;
 		}
 	}
 
@@ -44,7 +44,7 @@ public class TheNetherDimension extends Dimension {
 		cavesChunkGeneratorConfig.setDefaultBlock(Blocks.field_10515.getDefaultState());
 		cavesChunkGeneratorConfig.setDefaultFluid(Blocks.field_10164.getDefaultState());
 		return ChunkGeneratorType.field_12765
-			.create(this.world, BiomeSourceType.FIXED.applyConfig(BiomeSourceType.FIXED.getConfig().method_8782(Biomes.field_9461)), cavesChunkGeneratorConfig);
+			.create(this.world, BiomeSourceType.FIXED.applyConfig(BiomeSourceType.FIXED.getConfig().setBiome(Biomes.field_9461)), cavesChunkGeneratorConfig);
 	}
 
 	@Override

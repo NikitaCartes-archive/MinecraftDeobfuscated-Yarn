@@ -173,7 +173,6 @@ public class SavannaVillageData {
 					ImmutableList.of(
 						new Pair<>(new SinglePoolElement("village/plains/villagers/nitwit"), 1),
 						new Pair<>(new SinglePoolElement("village/plains/villagers/unemployed"), 7),
-						Pair.of(EmptyPoolElement.INSTANCE, 1),
 						new Pair<>(new SinglePoolElement("village/plains/villagers/armorer"), 1),
 						new Pair<>(new SinglePoolElement("village/plains/villagers/butcher"), 2),
 						new Pair<>(new SinglePoolElement("village/plains/villagers/cartographer"), 1),

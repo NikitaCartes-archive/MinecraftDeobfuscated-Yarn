@@ -28,7 +28,7 @@ import net.minecraft.block.Material;
 import net.minecraft.block.PortalBlock;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.client.network.packet.EntityClientPacket;
+import net.minecraft.client.network.packet.EntityS2CPacket;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.ProtectionEnchantment;
@@ -217,11 +217,15 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.setSize(entityType.getWidth(), entityType.getHeight());
 	}
 
+	public boolean isSpectator() {
+		return false;
+	}
+
 	@Environment(EnvType.CLIENT)
 	public void method_18003(double d, double e, double f) {
-		this.field_6001 = EntityClientPacket.method_18047(d);
-		this.field_6023 = EntityClientPacket.method_18047(e);
-		this.field_5954 = EntityClientPacket.method_18047(f);
+		this.field_6001 = EntityS2CPacket.method_18047(d);
+		this.field_6023 = EntityS2CPacket.method_18047(e);
+		this.field_5954 = EntityS2CPacket.method_18047(f);
 	}
 
 	public EntityType<?> getType() {
@@ -1073,7 +1077,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public boolean isTouchingLava() {
-		return this.world.method_8422(this.getBoundingBox().contract(0.1F, 0.4F, 0.1F), Material.LAVA);
+		return this.world.containsBlockWithMaterial(this.getBoundingBox().contract(0.1F, 0.4F, 0.1F), Material.LAVA);
 	}
 
 	public void method_5724(float f, float g, float h, float i) {
@@ -1559,6 +1563,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public ItemEntity dropStack(ItemStack itemStack, float f) {
 		if (itemStack.isEmpty()) {
 			return null;
+		} else if (this.world.isClient) {
+			return null;
 		} else {
 			ItemEntity itemEntity = new ItemEntity(this.world, this.x, this.y + (double)f, this.z, itemStack);
 			itemEntity.setToDefaultPickupDelay();
@@ -1942,16 +1948,14 @@ public abstract class Entity implements Nameable, CommandOutput {
 		Direction direction = Direction.UP;
 		double g = Double.MAX_VALUE;
 
-		for (Direction direction2 : Direction.values()) {
-			if (direction2 != Direction.DOWN) {
-				mutable.set(blockPos).setOffset(direction);
-				if (!Block.isShapeFullCube(this.world.getBlockState(mutable).getCollisionShape(this.world, mutable))) {
-					double h = vec3d.method_18043(direction2.getAxis());
-					double i = direction2.getDirection() == Direction.AxisDirection.POSITIVE ? 1.0 - h : h;
-					if (i < g) {
-						g = i;
-						direction = direction2;
-					}
+		for (Direction direction2 : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.UP}) {
+			mutable.set(blockPos).setOffset(direction2);
+			if (!Block.isShapeFullCube(this.world.getBlockState(mutable).getCollisionShape(this.world, mutable))) {
+				double h = vec3d.method_18043(direction2.getAxis());
+				double i = direction2.getDirection() == Direction.AxisDirection.POSITIVE ? 1.0 - h : h;
+				if (i < g) {
+					g = i;
+					direction = direction2;
 				}
 			}
 		}
@@ -2078,7 +2082,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 				this.dimension = DimensionType.field_13072;
 			}
 
-			this.world.removeEntity(this);
+			((ServerWorld)this.world).method_18216(this);
 			this.invalid = false;
 			this.world.getProfiler().push("reposition");
 			BlockPos blockPos;
@@ -2105,7 +2109,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 				blockPos = new BlockPos(this);
 			}
 
-			serverWorld.method_8553(this, false);
+			serverWorld.updateChunkEntities(this);
 			this.world.getProfiler().swap("reloading");
 			Entity entity = this.getType().create(serverWorld2);
 			if (entity != null) {
@@ -2119,15 +2123,15 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 				boolean bl = entity.teleporting;
 				entity.teleporting = true;
-				serverWorld2.spawnEntity(entity);
+				serverWorld2.method_18214(entity);
 				entity.teleporting = bl;
-				serverWorld2.method_8553(entity, false);
+				serverWorld2.updateChunkEntities(entity);
 			}
 
 			this.invalid = true;
 			this.world.getProfiler().pop();
-			serverWorld.method_14197();
-			serverWorld2.method_14197();
+			serverWorld.resetIdleTimeout();
+			serverWorld2.resetIdleTimeout();
 			this.world.getProfiler().pop();
 			return entity;
 		} else {
@@ -2246,7 +2250,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public void method_5859(double d, double e, double f) {
 		this.field_5966 = true;
 		this.setPositionAndAngles(d, e, f, this.yaw, this.pitch);
-		this.world.method_8553(this, false);
+		this.world.updateChunkEntities(this);
 	}
 
 	@Environment(EnvType.CLIENT)

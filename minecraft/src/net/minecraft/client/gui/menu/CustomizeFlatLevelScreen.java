@@ -6,7 +6,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3229;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -25,11 +24,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
+import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
 
 @Environment(EnvType.CLIENT)
 public class CustomizeFlatLevelScreen extends Screen {
 	private final NewLevelScreen parent;
-	private FlatChunkGeneratorConfig field_2419 = FlatChunkGeneratorConfig.method_14309();
+	private FlatChunkGeneratorConfig config = FlatChunkGeneratorConfig.getDefaultConfig();
 	private String titleText;
 	private String tileText;
 	private String heightText;
@@ -44,19 +44,19 @@ public class CustomizeFlatLevelScreen extends Screen {
 	}
 
 	public String method_2138() {
-		return this.field_2419.toString();
+		return this.config.toString();
 	}
 
 	public CompoundTag method_2140() {
-		return (CompoundTag)this.field_2419.method_14313(NbtOps.INSTANCE).getValue();
+		return (CompoundTag)this.config.toDynamic(NbtOps.INSTANCE).getValue();
 	}
 
 	public void method_2139(String string) {
-		this.field_2419 = FlatChunkGeneratorConfig.method_14319(string);
+		this.config = FlatChunkGeneratorConfig.fromString(string);
 	}
 
 	public void method_2144(CompoundTag compoundTag) {
-		this.field_2419 = FlatChunkGeneratorConfig.method_14323(new Dynamic<>(NbtOps.INSTANCE, compoundTag));
+		this.config = FlatChunkGeneratorConfig.fromDynamic(new Dynamic<>(NbtOps.INSTANCE, compoundTag));
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 			new ButtonWidget(2, this.width / 2 - 154, this.height - 52, 100, 20, I18n.translate("createWorld.customize.flat.addLayer") + " (NYI)") {
 				@Override
 				public void onPressed(double d, double e) {
-					CustomizeFlatLevelScreen.this.field_2419.method_14330();
+					CustomizeFlatLevelScreen.this.config.updateLayerBlocks();
 					CustomizeFlatLevelScreen.this.method_2145();
 				}
 			}
@@ -79,7 +79,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 			new ButtonWidget(3, this.width / 2 - 50, this.height - 52, 100, 20, I18n.translate("createWorld.customize.flat.editLayer") + " (NYI)") {
 				@Override
 				public void onPressed(double d, double e) {
-					CustomizeFlatLevelScreen.this.field_2419.method_14330();
+					CustomizeFlatLevelScreen.this.config.updateLayerBlocks();
 					CustomizeFlatLevelScreen.this.method_2145();
 				}
 			}
@@ -89,11 +89,11 @@ public class CustomizeFlatLevelScreen extends Screen {
 				@Override
 				public void onPressed(double d, double e) {
 					if (CustomizeFlatLevelScreen.this.method_2147()) {
-						List<class_3229> list = CustomizeFlatLevelScreen.this.field_2419.getLayers();
+						List<FlatChunkGeneratorLayer> list = CustomizeFlatLevelScreen.this.config.getLayers();
 						int i = list.size() - CustomizeFlatLevelScreen.this.field_2424.field_2428 - 1;
 						list.remove(i);
 						CustomizeFlatLevelScreen.this.field_2424.field_2428 = Math.min(CustomizeFlatLevelScreen.this.field_2424.field_2428, list.size() - 1);
-						CustomizeFlatLevelScreen.this.field_2419.method_14330();
+						CustomizeFlatLevelScreen.this.config.updateLayerBlocks();
 						CustomizeFlatLevelScreen.this.method_2145();
 					}
 				}
@@ -104,7 +104,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 			public void onPressed(double d, double e) {
 				CustomizeFlatLevelScreen.this.parent.field_3200 = CustomizeFlatLevelScreen.this.method_2140();
 				CustomizeFlatLevelScreen.this.client.openScreen(CustomizeFlatLevelScreen.this.parent);
-				CustomizeFlatLevelScreen.this.field_2419.method_14330();
+				CustomizeFlatLevelScreen.this.config.updateLayerBlocks();
 				CustomizeFlatLevelScreen.this.method_2145();
 			}
 		});
@@ -112,7 +112,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 			@Override
 			public void onPressed(double d, double e) {
 				CustomizeFlatLevelScreen.this.client.openScreen(new NewLevelPresetsScreen(CustomizeFlatLevelScreen.this));
-				CustomizeFlatLevelScreen.this.field_2419.method_14330();
+				CustomizeFlatLevelScreen.this.config.updateLayerBlocks();
 				CustomizeFlatLevelScreen.this.method_2145();
 			}
 		});
@@ -120,13 +120,13 @@ public class CustomizeFlatLevelScreen extends Screen {
 			@Override
 			public void onPressed(double d, double e) {
 				CustomizeFlatLevelScreen.this.client.openScreen(CustomizeFlatLevelScreen.this.parent);
-				CustomizeFlatLevelScreen.this.field_2419.method_14330();
+				CustomizeFlatLevelScreen.this.config.updateLayerBlocks();
 				CustomizeFlatLevelScreen.this.method_2145();
 			}
 		});
 		this.widgetButtonAddLayer.visible = false;
 		this.widgetButtonEditLayer.visible = false;
-		this.field_2419.method_14330();
+		this.config.updateLayerBlocks();
 		this.method_2145();
 	}
 
@@ -139,7 +139,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 	}
 
 	private boolean method_2147() {
-		return this.field_2424.field_2428 > -1 && this.field_2424.field_2428 < this.field_2419.getLayers().size();
+		return this.field_2424.field_2428 > -1 && this.field_2424.field_2428 < this.config.getLayers().size();
 	}
 
 	@Nullable
@@ -217,7 +217,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 
 		@Override
 		protected int getEntryCount() {
-			return CustomizeFlatLevelScreen.this.field_2419.getLayers().size();
+			return CustomizeFlatLevelScreen.this.config.getLayers().size();
 		}
 
 		@Override
@@ -238,8 +238,10 @@ public class CustomizeFlatLevelScreen extends Screen {
 
 		@Override
 		protected void drawEntry(int i, int j, int k, int l, int m, int n, float f) {
-			class_3229 lv = (class_3229)CustomizeFlatLevelScreen.this.field_2419.getLayers().get(CustomizeFlatLevelScreen.this.field_2419.getLayers().size() - i - 1);
-			BlockState blockState = lv.method_14286();
+			FlatChunkGeneratorLayer flatChunkGeneratorLayer = (FlatChunkGeneratorLayer)CustomizeFlatLevelScreen.this.config
+				.getLayers()
+				.get(CustomizeFlatLevelScreen.this.config.getLayers().size() - i - 1);
+			BlockState blockState = flatChunkGeneratorLayer.getBlockState();
 			Block block = blockState.getBlock();
 			Item item = block.getItem();
 			if (item == Items.AIR) {
@@ -256,11 +258,11 @@ public class CustomizeFlatLevelScreen extends Screen {
 			CustomizeFlatLevelScreen.this.fontRenderer.draw(string, (float)(j + 18 + 5), (float)(k + 3), 16777215);
 			String string2;
 			if (i == 0) {
-				string2 = I18n.translate("createWorld.customize.flat.layer.top", lv.method_14289());
-			} else if (i == CustomizeFlatLevelScreen.this.field_2419.getLayers().size() - 1) {
-				string2 = I18n.translate("createWorld.customize.flat.layer.bottom", lv.method_14289());
+				string2 = I18n.translate("createWorld.customize.flat.layer.top", flatChunkGeneratorLayer.getThickness());
+			} else if (i == CustomizeFlatLevelScreen.this.config.getLayers().size() - 1) {
+				string2 = I18n.translate("createWorld.customize.flat.layer.bottom", flatChunkGeneratorLayer.getThickness());
 			} else {
-				string2 = I18n.translate("createWorld.customize.flat.layer", lv.method_14289());
+				string2 = I18n.translate("createWorld.customize.flat.layer", flatChunkGeneratorLayer.getThickness());
 			}
 
 			CustomizeFlatLevelScreen.this.fontRenderer

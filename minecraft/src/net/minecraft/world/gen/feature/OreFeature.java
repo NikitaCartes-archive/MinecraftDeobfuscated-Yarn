@@ -38,7 +38,7 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 		for (int s = n; s <= n + q; s++) {
 			for (int t = p; t <= p + q; t++) {
 				if (o <= iWorld.getTop(Heightmap.Type.OCEAN_FLOOR_WG, s, t)) {
-					return this.method_13629(iWorld, random, oreFeatureConfig, d, e, h, j, l, m, n, o, p, q, r);
+					return this.generateVeinPart(iWorld, random, oreFeatureConfig, d, e, h, j, l, m, n, o, p, q, r);
 				}
 			}
 		}
@@ -46,7 +46,7 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 		return false;
 	}
 
-	protected boolean method_13629(
+	protected boolean generateVeinPart(
 		IWorld iWorld,
 		Random random,
 		OreFeatureConfig oreFeatureConfig,

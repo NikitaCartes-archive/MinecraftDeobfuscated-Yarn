@@ -23,8 +23,8 @@ import java.util.Iterator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.QueryPongClientPacket;
-import net.minecraft.client.network.packet.QueryResponseClientPacket;
+import net.minecraft.client.network.packet.QueryPongS2CPacket;
+import net.minecraft.client.network.packet.QueryResponseS2CPacket;
 import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.network.ClientConnection;
@@ -32,9 +32,9 @@ import net.minecraft.network.NetworkState;
 import net.minecraft.network.ServerAddress;
 import net.minecraft.network.listener.ClientQueryPacketListener;
 import net.minecraft.server.ServerMetadata;
-import net.minecraft.server.network.packet.HandshakeServerPacket;
-import net.minecraft.server.network.packet.QueryPingServerPacket;
-import net.minecraft.server.network.packet.QueryRequestServerPacket;
+import net.minecraft.server.network.packet.HandshakeC2SPacket;
+import net.minecraft.server.network.packet.QueryPingC2SPacket;
+import net.minecraft.server.network.packet.QueryRequestC2SPacket;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormat;
 import net.minecraft.text.TranslatableTextComponent;
@@ -64,12 +64,12 @@ public class ServerEntryNetworkPart {
 				private long field_3772;
 
 				@Override
-				public void onResponse(QueryResponseClientPacket queryResponseClientPacket) {
+				public void method_12667(QueryResponseS2CPacket queryResponseS2CPacket) {
 					if (this.field_3773) {
 						clientConnection.disconnect(new TranslatableTextComponent("multiplayer.status.unrequested"));
 					} else {
 						this.field_3773 = true;
-						ServerMetadata serverMetadata = queryResponseClientPacket.getServerMetadata();
+						ServerMetadata serverMetadata = queryResponseS2CPacket.getServerMetadata();
 						if (serverMetadata.getDescription() != null) {
 							serverEntry.label = serverMetadata.getDescription().getFormattedText();
 						} else {
@@ -132,13 +132,13 @@ public class ServerEntryNetworkPart {
 						}
 
 						this.field_3772 = SystemUtil.getMeasuringTimeMs();
-						clientConnection.sendPacket(new QueryPingServerPacket(this.field_3772));
+						clientConnection.sendPacket(new QueryPingC2SPacket(this.field_3772));
 						this.field_3775 = true;
 					}
 				}
 
 				@Override
-				public void onPong(QueryPongClientPacket queryPongClientPacket) {
+				public void method_12666(QueryPongS2CPacket queryPongS2CPacket) {
 					long l = this.field_3772;
 					long m = SystemUtil.getMeasuringTimeMs();
 					serverEntry.ping = m - l;
@@ -158,8 +158,8 @@ public class ServerEntryNetworkPart {
 		);
 
 		try {
-			clientConnection.sendPacket(new HandshakeServerPacket(serverAddress.getAddress(), serverAddress.getPort(), NetworkState.QUERY));
-			clientConnection.sendPacket(new QueryRequestServerPacket());
+			clientConnection.sendPacket(new HandshakeC2SPacket(serverAddress.getAddress(), serverAddress.getPort(), NetworkState.QUERY));
+			clientConnection.sendPacket(new QueryRequestC2SPacket());
 		} catch (Throwable var5) {
 			LOGGER.error(var5);
 		}

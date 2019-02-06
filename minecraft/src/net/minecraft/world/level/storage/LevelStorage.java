@@ -32,15 +32,15 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.TagHelper;
-import net.minecraft.world.OldWorldSaveHandler;
+import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.level.LevelProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class LevelStorage {
-	private static final Logger field_17665 = LogManager.getLogger();
-	private static final DateTimeFormatter field_200 = new DateTimeFormatterBuilder()
+	private static final Logger LOGGER = LogManager.getLogger();
+	private static final DateTimeFormatter TIME_FORMATTER = new DateTimeFormatterBuilder()
 		.appendValue(ChronoField.YEAR, 4, 10, SignStyle.EXCEEDS_PAD)
 		.appendLiteral('-')
 		.appendValue(ChronoField.MONTH_OF_YEAR, 2)
@@ -53,12 +53,12 @@ public class LevelStorage {
 		.appendLiteral('-')
 		.appendValue(ChronoField.SECOND_OF_MINUTE, 2)
 		.toFormatter();
-	private final Path field_17666;
-	private final Path field_17667;
-	private final DataFixer field_17668;
+	private final Path savesDirectory;
+	private final Path backupsDirectory;
+	private final DataFixer dataFixer;
 
 	public LevelStorage(Path path, Path path2, DataFixer dataFixer) {
-		this.field_17668 = dataFixer;
+		this.dataFixer = dataFixer;
 
 		try {
 			Files.createDirectories(Files.exists(path, new LinkOption[0]) ? path.toRealPath() : path);
@@ -66,8 +66,8 @@ public class LevelStorage {
 			throw new RuntimeException(var5);
 		}
 
-		this.field_17666 = path;
-		this.field_17667 = path2;
+		this.savesDirectory = path;
+		this.backupsDirectory = path2;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -76,19 +76,19 @@ public class LevelStorage {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public List<LevelSummary> getAvailableLevels() throws LevelStorageException {
-		if (!Files.isDirectory(this.field_17666, new LinkOption[0])) {
+	public List<LevelSummary> getLevelList() throws LevelStorageException {
+		if (!Files.isDirectory(this.savesDirectory, new LinkOption[0])) {
 			throw new LevelStorageException(new TranslatableTextComponent("selectWorld.load_folder_access").getString());
 		} else {
 			List<LevelSummary> list = Lists.<LevelSummary>newArrayList();
-			File[] files = this.field_17666.toFile().listFiles();
+			File[] files = this.savesDirectory.toFile().listFiles();
 
 			for (File file : files) {
 				if (file.isDirectory()) {
 					String string = file.getName();
-					LevelProperties levelProperties = this.requiresConversion(string);
+					LevelProperties levelProperties = this.getLevelProperties(string);
 					if (levelProperties != null && (levelProperties.getVersion() == 19132 || levelProperties.getVersion() == 19133)) {
-						boolean bl = levelProperties.getVersion() != this.method_17931();
+						boolean bl = levelProperties.getVersion() != this.getCurrentVersion();
 						String string2 = levelProperties.getLevelName();
 						if (StringUtils.isEmpty(string2)) {
 							string2 = string;
@@ -104,53 +104,53 @@ public class LevelStorage {
 		}
 	}
 
-	private int method_17931() {
+	private int getCurrentVersion() {
 		return 19133;
 	}
 
-	public OldWorldSaveHandler method_242(String string, @Nullable MinecraftServer minecraftServer) {
-		return method_17929(this.field_17666, this.field_17668, string, minecraftServer);
+	public WorldSaveHandler method_242(String string, @Nullable MinecraftServer minecraftServer) {
+		return method_17929(this.savesDirectory, this.dataFixer, string, minecraftServer);
 	}
 
-	protected static OldWorldSaveHandler method_17929(Path path, DataFixer dataFixer, String string, @Nullable MinecraftServer minecraftServer) {
-		return new OldWorldSaveHandler(path.toFile(), string, minecraftServer, dataFixer);
+	protected static WorldSaveHandler method_17929(Path path, DataFixer dataFixer, String string, @Nullable MinecraftServer minecraftServer) {
+		return new WorldSaveHandler(path.toFile(), string, minecraftServer, dataFixer);
 	}
 
-	public boolean isConvertible(String string) {
-		LevelProperties levelProperties = this.requiresConversion(string);
-		return levelProperties != null && levelProperties.getVersion() != this.method_17931();
+	public boolean requiresConversion(String string) {
+		LevelProperties levelProperties = this.getLevelProperties(string);
+		return levelProperties != null && levelProperties.getVersion() != this.getCurrentVersion();
 	}
 
-	public boolean method_17927(String string, ProgressListener progressListener) {
-		return AnvilLevelStorage.convertLevel(this.field_17666, this.field_17668, string, progressListener);
-	}
-
-	@Nullable
-	public LevelProperties requiresConversion(String string) {
-		return method_17928(this.field_17666, this.field_17668, string);
+	public boolean convertLevel(String string, ProgressListener progressListener) {
+		return AnvilLevelStorage.convertLevel(this.savesDirectory, this.dataFixer, string, progressListener);
 	}
 
 	@Nullable
-	protected static LevelProperties method_17928(Path path, DataFixer dataFixer, String string) {
+	public LevelProperties getLevelProperties(String string) {
+		return getLevelProperties(this.savesDirectory, this.dataFixer, string);
+	}
+
+	@Nullable
+	protected static LevelProperties getLevelProperties(Path path, DataFixer dataFixer, String string) {
 		File file = new File(path.toFile(), string);
 		if (!file.exists()) {
 			return null;
 		} else {
 			File file2 = new File(file, "level.dat");
 			if (file2.exists()) {
-				LevelProperties levelProperties = method_17926(file2, dataFixer);
+				LevelProperties levelProperties = readLevelProperties(file2, dataFixer);
 				if (levelProperties != null) {
 					return levelProperties;
 				}
 			}
 
 			file2 = new File(file, "level.dat_old");
-			return file2.exists() ? method_17926(file2, dataFixer) : null;
+			return file2.exists() ? readLevelProperties(file2, dataFixer) : null;
 		}
 	}
 
 	@Nullable
-	public static LevelProperties method_17926(File file, DataFixer dataFixer) {
+	public static LevelProperties readLevelProperties(File file, DataFixer dataFixer) {
 		try {
 			CompoundTag compoundTag = NbtIo.readCompressed(new FileInputStream(file));
 			CompoundTag compoundTag2 = compoundTag.getCompound("Data");
@@ -159,14 +159,14 @@ public class LevelStorage {
 			int i = compoundTag2.containsKey("DataVersion", 99) ? compoundTag2.getInt("DataVersion") : -1;
 			return new LevelProperties(TagHelper.update(dataFixer, DataFixTypes.LEVEL, compoundTag2, i), dataFixer, i, compoundTag3);
 		} catch (Exception var6) {
-			field_17665.error("Exception reading {}", file, var6);
+			LOGGER.error("Exception reading {}", file, var6);
 			return null;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void rename(String string, String string2) {
-		File file = new File(this.field_17666.toFile(), string);
+	public void renameLevel(String string, String string2) {
+		File file = new File(this.savesDirectory.toFile(), string);
 		if (file.exists()) {
 			File file2 = new File(file, "level.dat");
 			if (file2.exists()) {
@@ -183,8 +183,8 @@ public class LevelStorage {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean canCreate(String string) {
-		File file = new File(this.field_17666.toFile(), string);
+	public boolean isLevelNameValid(String string) {
+		File file = new File(this.savesDirectory.toFile(), string);
 		if (file.exists()) {
 			return false;
 		} else {
@@ -193,27 +193,27 @@ public class LevelStorage {
 				file.delete();
 				return true;
 			} catch (Throwable var4) {
-				field_17665.warn("Couldn't make new level", var4);
+				LOGGER.warn("Couldn't make new level", var4);
 				return false;
 			}
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean delete(String string) {
-		File file = new File(this.field_17666.toFile(), string);
+	public boolean deleteLevel(String string) {
+		File file = new File(this.savesDirectory.toFile(), string);
 		if (!file.exists()) {
 			return true;
 		} else {
-			field_17665.info("Deleting level {}", string);
+			LOGGER.info("Deleting level {}", string);
 
 			for (int i = 1; i <= 5; i++) {
-				field_17665.info("Attempt {}...", i);
-				if (method_17930(file.listFiles())) {
+				LOGGER.info("Attempt {}...", i);
+				if (deleteFilesRecursively(file.listFiles())) {
 					break;
 				}
 
-				field_17665.warn("Unsuccessful in deleting contents.");
+				LOGGER.warn("Unsuccessful in deleting contents.");
 				if (i < 5) {
 					try {
 						Thread.sleep(500L);
@@ -227,16 +227,16 @@ public class LevelStorage {
 	}
 
 	@Environment(EnvType.CLIENT)
-	private static boolean method_17930(File[] files) {
+	private static boolean deleteFilesRecursively(File[] files) {
 		for (File file : files) {
-			field_17665.debug("Deleting {}", file);
-			if (file.isDirectory() && !method_17930(file.listFiles())) {
-				field_17665.warn("Couldn't delete directory {}", file);
+			LOGGER.debug("Deleting {}", file);
+			if (file.isDirectory() && !deleteFilesRecursively(file.listFiles())) {
+				LOGGER.warn("Couldn't delete directory {}", file);
 				return false;
 			}
 
 			if (!file.delete()) {
-				field_17665.warn("Couldn't delete file {}", file);
+				LOGGER.warn("Couldn't delete file {}", file);
 				return false;
 			}
 		}
@@ -245,30 +245,30 @@ public class LevelStorage {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean exists(String string) {
-		return Files.isDirectory(this.field_17666.resolve(string), new LinkOption[0]);
+	public boolean levelExists(String string) {
+		return Files.isDirectory(this.savesDirectory.resolve(string), new LinkOption[0]);
 	}
 
 	public File resolveFile(String string, String string2) {
-		return this.field_17666.resolve(string).resolve(string2).toFile();
+		return this.savesDirectory.resolve(string).resolve(string2).toFile();
 	}
 
 	@Environment(EnvType.CLIENT)
 	private Path resolvePath(String string) {
-		return this.field_17666.resolve(string);
+		return this.savesDirectory.resolve(string);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Path method_236() {
-		return this.field_17667;
+	public Path getBackupsDirectory() {
+		return this.backupsDirectory;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public long method_237(String string) throws IOException {
+	public long backupLevel(String string) throws IOException {
 		final Path path = this.resolvePath(string);
-		String string2 = LocalDateTime.now().format(field_200) + "_" + string;
+		String string2 = LocalDateTime.now().format(TIME_FORMATTER) + "_" + string;
 		int i = 0;
-		Path path2 = this.method_236();
+		Path path2 = this.getBackupsDirectory();
 
 		try {
 			Files.createDirectories(Files.exists(path2, new LinkOption[0]) ? path2.toRealPath() : path2);

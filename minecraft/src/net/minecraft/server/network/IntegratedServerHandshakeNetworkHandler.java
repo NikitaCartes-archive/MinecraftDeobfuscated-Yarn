@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.listener.ServerHandshakePacketListener;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.packet.HandshakeServerPacket;
+import net.minecraft.server.network.packet.HandshakeC2SPacket;
 import net.minecraft.text.TextComponent;
 
 @Environment(EnvType.CLIENT)
@@ -19,8 +19,8 @@ public class IntegratedServerHandshakeNetworkHandler implements ServerHandshakeP
 	}
 
 	@Override
-	public void onHandshake(HandshakeServerPacket handshakeServerPacket) {
-		this.client.setState(handshakeServerPacket.getRequestedState());
+	public void onHandshake(HandshakeC2SPacket handshakeC2SPacket) {
+		this.client.setState(handshakeC2SPacket.getIntendedState());
 		this.client.setPacketListener(new ServerLoginNetworkHandler(this.server, this.client));
 	}
 

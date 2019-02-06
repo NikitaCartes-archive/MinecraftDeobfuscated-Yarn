@@ -73,14 +73,13 @@ import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
-import net.minecraft.util.TypeFilterableList;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -96,7 +95,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldListener;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
@@ -104,7 +102,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class WorldRenderer implements WorldListener, AutoCloseable, ResourceReloadListener {
+public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Identifier MOON_PHASES_TEX = new Identifier("textures/environment/moon_phases.png");
 	private static final Identifier SUN_TEX = new Identifier("textures/environment/sun.png");
@@ -157,7 +155,6 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 	private ChunkRendererList chunkRendererList;
 	private int renderDistance = -1;
 	private int field_4076 = 2;
-	private int totalEntities;
 	private int renderedEntities;
 	private int field_4110;
 	private boolean field_4066;
@@ -176,11 +173,6 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 		this.client = minecraftClient;
 		this.entityRenderDispatcher = minecraftClient.getEntityRenderManager();
 		this.textureManager = minecraftClient.getTextureManager();
-		this.textureManager.bindTexture(FORCEFIELD_TEX);
-		GlStateManager.texParameter(3553, 10242, 10497);
-		GlStateManager.texParameter(3553, 10243, 10497);
-		GlStateManager.bindTexture(0);
-		this.loadDestroyStageTextures();
 		this.vertexBufferObjectsEnabled = GLX.useVbo();
 		if (this.vertexBufferObjectsEnabled) {
 			this.chunkRendererList = new VboChunkRendererList();
@@ -204,8 +196,13 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 	}
 
 	@Override
-	public void onResourceReload(ResourceManager resourceManager) {
+	public void reloadResources(ResourceManager resourceManager) {
+		this.textureManager.bindTexture(FORCEFIELD_TEX);
+		GlStateManager.texParameter(3553, 10242, 10497);
+		GlStateManager.texParameter(3553, 10243, 10497);
+		GlStateManager.bindTexture(0);
 		this.loadDestroyStageTextures();
+		this.loadEntityOutlineShader();
 	}
 
 	private void loadDestroyStageTextures() {
@@ -415,10 +412,6 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 	}
 
 	public void setWorld(@Nullable ClientWorld clientWorld) {
-		if (this.world != null) {
-			this.world.unregisterListener(this);
-		}
-
 		this.lastCameraChunkUpdateX = Double.MIN_VALUE;
 		this.lastCameraChunkUpdateY = Double.MIN_VALUE;
 		this.lastCameraChunkUpdateZ = Double.MIN_VALUE;
@@ -428,7 +421,6 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 		this.entityRenderDispatcher.method_3944(clientWorld);
 		this.world = clientWorld;
 		if (clientWorld != null) {
-			clientWorld.registerListener(this);
 			this.reload();
 		} else {
 			this.chunkRenderers.clear();
@@ -515,14 +507,11 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 			double e = MathHelper.lerp((double)f, entity.prevY, entity.y);
 			double g = MathHelper.lerp((double)f, entity.prevZ, entity.z);
 			this.world.getProfiler().push("prepare");
-			BlockEntityRenderDispatcher.INSTANCE
-				.configure(this.world, this.client.getTextureManager(), this.client.fontRenderer, this.client.getCameraEntity(), this.client.hitResult, f);
-			this.entityRenderDispatcher
-				.method_3941(this.world, this.client.fontRenderer, this.client.getCameraEntity(), this.client.targetedEntity, this.client.options, f);
-			this.totalEntities = 0;
+			Entity entity2 = this.client.getCameraEntity();
+			BlockEntityRenderDispatcher.INSTANCE.configure(this.world, this.client.getTextureManager(), this.client.fontRenderer, entity2, this.client.hitResult, f);
+			this.entityRenderDispatcher.method_3941(this.world, this.client.fontRenderer, entity2, this.client.targetedEntity, this.client.options, f);
 			this.renderedEntities = 0;
 			this.field_4110 = 0;
-			Entity entity2 = this.client.getCameraEntity();
 			double h = MathHelper.lerp((double)f, entity2.prevRenderX, entity2.x);
 			double i = MathHelper.lerp((double)f, entity2.prevRenderY, entity2.y);
 			double j = MathHelper.lerp((double)f, entity2.prevRenderZ, entity2.z);
@@ -531,51 +520,28 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 			BlockEntityRenderDispatcher.renderOffsetZ = j;
 			this.entityRenderDispatcher.setRenderPosition(h, i, j);
 			this.client.gameRenderer.enableLightmap();
-			this.world.getProfiler().swap("global");
-			this.totalEntities = this.world.getEntityCount();
-
-			for (int k = 0; k < this.world.globalEntities.size(); k++) {
-				Entity entity3 = (Entity)this.world.globalEntities.get(k);
-				this.renderedEntities++;
-				if (entity3.shouldRenderFrom(d, e, g)) {
-					this.entityRenderDispatcher.render(entity3, f, false);
-				}
-			}
-
 			this.world.getProfiler().swap("entities");
 			List<Entity> list = Lists.<Entity>newArrayList();
 			List<Entity> list2 = Lists.<Entity>newArrayList();
 
-			try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-				for (WorldRenderer.class_762 lv : this.field_4086) {
-					WorldChunk worldChunk = this.world.getWorldChunk(lv.field_4124.getOrigin());
-					TypeFilterableList<Entity> typeFilterableList = worldChunk.getEntitySectionArray()[lv.field_4124.getOrigin().getY() / 16];
-					if (!typeFilterableList.isEmpty()) {
-						for (Entity entity4 : typeFilterableList) {
-							boolean bl = this.entityRenderDispatcher.method_3950(entity4, visibleRegion, d, e, g) || entity4.method_5821(this.client.player);
-							if (bl) {
-								boolean bl2 = this.client.getCameraEntity() instanceof LivingEntity && ((LivingEntity)this.client.getCameraEntity()).isSleeping();
-								if ((entity4 != this.client.getCameraEntity() || this.client.options.field_1850 != 0 || bl2)
-									&& (!(entity4.y >= 0.0) || !(entity4.y < 256.0) || this.world.isBlockLoaded(pooledMutable.set(entity4)))) {
-									this.renderedEntities++;
-									this.entityRenderDispatcher.render(entity4, f, false);
-									if (this.doesEntityHaveOutline(entity4, entity2, visibleRegion)) {
-										list.add(entity4);
-									}
+			for (Entity entity3 : this.world.getEntities()) {
+				if ((this.entityRenderDispatcher.method_3950(entity3, visibleRegion, d, e, g) || entity3.method_5821(this.client.player))
+					&& (entity3 != entity2 || this.client.options.field_1850 != 0 || entity2 instanceof LivingEntity && ((LivingEntity)entity2).isSleeping())) {
+					this.renderedEntities++;
+					this.entityRenderDispatcher.render(entity3, f, false);
+					if (entity3.isGlowing() || entity3 instanceof PlayerEntity && this.client.player.isSpectator() && this.client.options.keySpectatorOutlines.isPressed()) {
+						list.add(entity3);
+					}
 
-									if (this.entityRenderDispatcher.hasSecondPass(entity4)) {
-										list2.add(entity4);
-									}
-								}
-							}
-						}
+					if (this.entityRenderDispatcher.hasSecondPass(entity3)) {
+						list2.add(entity3);
 					}
 				}
 			}
 
 			if (!list2.isEmpty()) {
-				for (Entity entity5 : list2) {
-					this.entityRenderDispatcher.renderSecondPass(entity5, f);
+				for (Entity entity3x : list2) {
+					this.entityRenderDispatcher.renderSecondPass(entity3x, f);
 				}
 			}
 
@@ -590,8 +556,8 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 					GuiLighting.disable();
 					this.entityRenderDispatcher.setRenderOutlines(true);
 
-					for (int l = 0; l < list.size(); l++) {
-						this.entityRenderDispatcher.render((Entity)list.get(l), f, false);
+					for (int k = 0; k < list.size(); k++) {
+						this.entityRenderDispatcher.render((Entity)list.get(k), f, false);
 					}
 
 					this.entityRenderDispatcher.setRenderOutlines(false);
@@ -614,8 +580,8 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 			this.world.getProfiler().swap("blockentities");
 			GuiLighting.enable();
 
-			for (WorldRenderer.class_762 lv2 : this.field_4086) {
-				List<BlockEntity> list3 = lv2.field_4124.getChunkRenderData().getBlockEntities();
+			for (WorldRenderer.class_762 lv : this.field_4086) {
+				List<BlockEntity> list3 = lv.field_4124.getChunkRenderData().getBlockEntities();
 				if (!list3.isEmpty()) {
 					for (BlockEntity blockEntity : list3) {
 						BlockEntityRenderDispatcher.INSTANCE.render(blockEntity, f, -1);
@@ -653,19 +619,6 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 		}
 	}
 
-	private boolean doesEntityHaveOutline(Entity entity, Entity entity2, VisibleRegion visibleRegion) {
-		boolean bl = entity2 instanceof LivingEntity && ((LivingEntity)entity2).isSleeping();
-		if (entity == entity2 && this.client.options.field_1850 == 0 && !bl) {
-			return false;
-		} else if (entity.isGlowing()) {
-			return true;
-		} else {
-			return this.client.player.isSpectator() && this.client.options.keySpectatorOutlines.isPressed() && entity instanceof PlayerEntity
-				? entity.ignoreCameraFrustum || visibleRegion.intersects(entity.getBoundingBox()) || entity.method_5821(this.client.player)
-				: false;
-		}
-	}
-
 	public String getChunksDebugString() {
 		int i = this.chunkRenderDispatcher.renderers.length;
 		int j = this.getChunkNumber();
@@ -693,7 +646,7 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 	}
 
 	public String getEntitiesDebugString() {
-		return "E: " + this.renderedEntities + "/" + this.totalEntities + ", B: " + this.field_4110;
+		return "E: " + this.renderedEntities + "/" + this.world.method_18120() + ", B: " + this.field_4110;
 	}
 
 	public void setUpTerrain(Entity entity, float f, VisibleRegion visibleRegion, int i, boolean bl) {
@@ -1152,7 +1105,7 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 			GlStateManager.popMatrix();
 			GlStateManager.disableTexture();
 			GlStateManager.color3f(0.0F, 0.0F, 0.0F);
-			double d = this.client.player.getCameraPosVec(f).y - this.world.method_8540();
+			double d = this.client.player.getCameraPosVec(f).y - this.world.getHorizonHeight();
 			if (d < 0.0) {
 				GlStateManager.pushMatrix();
 				GlStateManager.translatef(0.0F, 12.0F, 0.0F);
@@ -1192,7 +1145,7 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 			double j = 2.0E-4;
 			double k = (double)(((float)this.ticks + f) * 0.03F);
 			double l = (d + k) / 12.0;
-			double m = (double)(this.world.dimension.method_12455() - (float)e + 0.33F);
+			double m = (double)(this.world.dimension.getCloudHeight() - (float)e + 0.33F);
 			double n = g / 12.0 + 0.33F;
 			l -= (double)(MathHelper.floor(l / 2048.0) * 2048);
 			n -= (double)(MathHelper.floor(n / 2048.0) * 2048);
@@ -1849,8 +1802,7 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 		bufferBuilder.vertex(g, h, i).color(j, k, l, m).next();
 	}
 
-	@Override
-	public void onBlockUpdate(BlockView blockView, BlockPos blockPos, BlockState blockState, BlockState blockState2, int i) {
+	public void method_8570(BlockView blockView, BlockPos blockPos, BlockState blockState, BlockState blockState2, int i) {
 		this.method_16037(blockPos, (i & 8) != 0);
 	}
 
@@ -1864,8 +1816,27 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 		}
 	}
 
-	@Override
-	public void scheduleChunkRender(int i, int j, int k) {
+	public void scheduleBlockRender(int i, int j, int k, int l, int m, int n) {
+		for (int o = k - 1; o <= n + 1; o++) {
+			for (int p = i - 1; p <= l + 1; p++) {
+				for (int q = j - 1; q <= m + 1; q++) {
+					this.method_8571(p >> 4, q >> 4, o >> 4);
+				}
+			}
+		}
+	}
+
+	public void method_18145(int i, int j, int k) {
+		for (int l = k - 1; l <= k + 1; l++) {
+			for (int m = i - 1; m <= i + 1; m++) {
+				for (int n = j - 1; n <= j + 1; n++) {
+					this.method_8571(m, n, l);
+				}
+			}
+		}
+	}
+
+	public void method_8571(int i, int j, int k) {
 		this.scheduleChunkRender(i, j, k, false);
 	}
 
@@ -1873,8 +1844,7 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 		this.chunkRenderDispatcher.scheduleChunkRender(i, j, k, bl);
 	}
 
-	@Override
-	public void playRecord(@Nullable SoundEvent soundEvent, BlockPos blockPos) {
+	public void method_8562(@Nullable SoundEvent soundEvent, BlockPos blockPos) {
 		SoundInstance soundInstance = (SoundInstance)this.field_4119.get(blockPos);
 		if (soundInstance != null) {
 			this.client.getSoundLoader().stop(soundInstance);
@@ -1901,20 +1871,10 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 		}
 	}
 
-	@Override
-	public void onSound(@Nullable PlayerEntity playerEntity, SoundEvent soundEvent, SoundCategory soundCategory, double d, double e, double f, float g, float h) {
-	}
-
-	@Override
-	public void onSoundFromEntity(@Nullable PlayerEntity playerEntity, SoundEvent soundEvent, SoundCategory soundCategory, Entity entity, float f, float g) {
-	}
-
-	@Override
 	public void addParticle(ParticleParameters particleParameters, boolean bl, double d, double e, double f, double g, double h, double i) {
 		this.addParticle(particleParameters, bl, false, d, e, f, g, h, i);
 	}
 
-	@Override
 	public void addParticle(ParticleParameters particleParameters, boolean bl, boolean bl2, double d, double e, double f, double g, double h, double i) {
 		try {
 			this.spawnParticle(particleParameters, bl, bl2, d, e, f, g, h, i);
@@ -1970,19 +1930,10 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 		return i;
 	}
 
-	@Override
-	public void onEntityAdded(Entity entity) {
-	}
-
-	@Override
-	public void onEntityRemoved(Entity entity) {
-	}
-
 	public void method_3267() {
 	}
 
-	@Override
-	public void onGlobalWorldEvent(int i, BlockPos blockPos, int j) {
+	public void playGlobalEvent(int i, BlockPos blockPos, int j) {
 		switch (i) {
 			case 1023:
 			case 1028:
@@ -2013,8 +1964,7 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 		}
 	}
 
-	@Override
-	public void onWorldEvent(PlayerEntity playerEntity, int i, BlockPos blockPos, int j) {
+	public void playLevelEvent(PlayerEntity playerEntity, int i, BlockPos blockPos, int j) {
 		Random random = this.world.random;
 		switch (i) {
 			case 1000:
@@ -2049,9 +1999,9 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 				break;
 			case 1010:
 				if (Item.byRawId(j) instanceof RecordItem) {
-					this.world.playRecord(blockPos, ((RecordItem)Item.byRawId(j)).getSound());
+					this.method_8562(((RecordItem)Item.byRawId(j)).getSound(), blockPos);
 				} else {
-					this.world.playRecord(blockPos, null);
+					this.method_8562(null, blockPos);
 				}
 				break;
 			case 1011:
@@ -2292,8 +2242,7 @@ public class WorldRenderer implements WorldListener, AutoCloseable, ResourceRelo
 		}
 	}
 
-	@Override
-	public void onBlockBreakingStage(int i, BlockPos blockPos, int j) {
+	public void setBlockBreakingProgress(int i, BlockPos blockPos, int j) {
 		if (j >= 0 && j < 10) {
 			PartiallyBrokenBlockEntry partiallyBrokenBlockEntry = (PartiallyBrokenBlockEntry)this.partiallyBrokenBlocks.get(i);
 			if (partiallyBrokenBlockEntry == null

@@ -16,9 +16,10 @@ import javax.annotation.Nullable;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceImpl;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagContainer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Tickable;
@@ -26,7 +27,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class CommandFunctionManager implements Tickable, ResourceReloadListener {
+public class CommandFunctionManager implements Tickable, SynchronousResourceReloadListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Identifier TICK_FUNCTION = new Identifier("tick");
 	private static final Identifier LOAD_FUNCTION = new Identifier("load");
@@ -130,7 +131,7 @@ public class CommandFunctionManager implements Tickable, ResourceReloadListener 
 	}
 
 	@Override
-	public void onResourceReload(ResourceManager resourceManager) {
+	public void reloadResources(ResourceManager resourceManager) {
 		this.idMap.clear();
 		this.tickFunctions.clear();
 		this.tags.clear();
@@ -152,7 +153,7 @@ public class CommandFunctionManager implements Tickable, ResourceReloadListener 
 			LOGGER.info("Loaded {} custom command functions", this.idMap.size());
 		}
 
-		this.tags.load(resourceManager);
+		this.tags.applyReload((Map<Identifier, Tag.Builder<CommandFunction>>)this.tags.prepareReload(resourceManager).join());
 		this.tickFunctions.addAll(this.tags.getOrCreate(TICK_FUNCTION).values());
 		this.justLoaded = true;
 	}

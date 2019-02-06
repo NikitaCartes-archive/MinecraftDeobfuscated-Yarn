@@ -172,7 +172,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 		for (ModelElement modelElement : this.getElements()) {
 			for (ModelElementFace modelElementFace : modelElement.faces.values()) {
 				String string = this.resolveTexture(modelElementFace.textureId);
-				if (Objects.equals(string, MissingSprite.getMissingSprite().getId().toString())) {
+				if (Objects.equals(string, MissingSprite.getMissingSpriteId().toString())) {
 					set.add(String.format("%s in %s", modelElementFace.textureId, this.id));
 				}
 
@@ -235,7 +235,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 	}
 
 	public boolean textureExists(String string) {
-		return !MissingSprite.getMissingSprite().getId().toString().equals(this.resolveTexture(string));
+		return !MissingSprite.getMissingSpriteId().toString().equals(this.resolveTexture(string));
 	}
 
 	public String resolveTexture(String string) {
@@ -250,7 +250,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 		if (this.isTextureReference(string)) {
 			if (this == textureResolutionContext.current) {
 				LOGGER.warn("Unable to resolve texture due to upward reference: {} in {}", string, this.id);
-				return MissingSprite.getMissingSprite().getId().toString();
+				return MissingSprite.getMissingSpriteId().toString();
 			} else {
 				String string2 = (String)this.textureMap.get(string.substring(1));
 				if (string2 == null && this.parent != null) {
@@ -262,7 +262,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 					string2 = textureResolutionContext.root.resolveTexture(string2, textureResolutionContext);
 				}
 
-				return string2 != null && !this.isTextureReference(string2) ? string2 : MissingSprite.getMissingSprite().getId().toString();
+				return string2 != null && !this.isTextureReference(string2) ? string2 : MissingSprite.getMissingSpriteId().toString();
 			}
 		} else {
 			return string;

@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
-import net.minecraft.client.network.packet.EntityStatusClientPacket;
+import net.minecraft.client.network.packet.EntityStatusS2CPacket;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -111,10 +111,10 @@ public class RaidManager extends PersistentState {
 			}
 
 			raid.start(playerEntity);
-			((ServerPlayerEntity)playerEntity).networkHandler.sendPacket(new EntityStatusClientPacket(playerEntity, (byte)43));
+			((ServerPlayerEntity)playerEntity).networkHandler.sendPacket(new EntityStatusS2CPacket(playerEntity, (byte)43));
 		} else if (raid.getBadOmenLevel() < raid.getMaxAcceptableBadOmenLevel()) {
 			raid.start(playerEntity);
-			((ServerPlayerEntity)playerEntity).networkHandler.sendPacket(new EntityStatusClientPacket(playerEntity, (byte)43));
+			((ServerPlayerEntity)playerEntity).networkHandler.sendPacket(new EntityStatusS2CPacket(playerEntity, (byte)43));
 		}
 
 		this.removeTimestamp(playerEntity);

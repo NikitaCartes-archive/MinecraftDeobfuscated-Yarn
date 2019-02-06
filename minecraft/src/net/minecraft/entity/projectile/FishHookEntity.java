@@ -2,14 +2,14 @@ package net.minecraft.entity.projectile;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_1675;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.network.packet.EntitySpawnClientPacket;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -34,9 +34,7 @@ import net.minecraft.tag.ItemTags;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 import net.minecraft.world.loot.LootSupplier;
@@ -49,8 +47,7 @@ public class FishHookEntity extends Entity {
 	private static final TrackedData<Integer> HOOK_ENTITY_ID = DataTracker.registerData(FishHookEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private boolean field_7176;
 	private int field_7167;
-	@Nullable
-	private PlayerEntity owner;
+	private final PlayerEntity owner;
 	private int field_7166;
 	private int field_7173;
 	private int field_7174;
@@ -58,64 +55,49 @@ public class FishHookEntity extends Entity {
 	private float field_7169;
 	public Entity hookedEntity;
 	private FishHookEntity.State state = FishHookEntity.State.field_7180;
-	private int field_7171;
-	private int field_7168;
+	private final int field_7171;
+	private final int field_7168;
 
-	private FishHookEntity(World world) {
+	private FishHookEntity(World world, PlayerEntity playerEntity, int i, int j) {
 		super(EntityType.FISHING_BOBBER, world);
+		this.ignoreCameraFrustum = true;
+		this.owner = playerEntity;
+		this.owner.fishHook = this;
+		this.field_7171 = Math.max(0, i);
+		this.field_7168 = Math.max(0, j);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public FishHookEntity(World world, PlayerEntity playerEntity, double d, double e, double f) {
-		this(world);
-		this.method_6950(playerEntity);
+		this(world, playerEntity, 0, 0);
 		this.setPosition(d, e, f);
 		this.prevX = this.x;
 		this.prevY = this.y;
 		this.prevZ = this.z;
 	}
 
-	public FishHookEntity(World world, PlayerEntity playerEntity) {
-		this(world);
-		this.method_6950(playerEntity);
-		this.method_6953();
-	}
-
-	private void method_6950(PlayerEntity playerEntity) {
-		this.ignoreCameraFrustum = true;
-		this.owner = playerEntity;
-		this.owner.fishHook = this;
-	}
-
-	public void method_6955(int i) {
-		this.field_7168 = i;
-	}
-
-	public void method_6956(int i) {
-		this.field_7171 = i;
-	}
-
-	private void method_6953() {
+	public FishHookEntity(PlayerEntity playerEntity, World world, int i, int j) {
+		this(world, playerEntity, i, j);
 		float f = this.owner.pitch;
 		float g = this.owner.yaw;
 		float h = MathHelper.cos(-g * (float) (Math.PI / 180.0) - (float) Math.PI);
-		float i = MathHelper.sin(-g * (float) (Math.PI / 180.0) - (float) Math.PI);
-		float j = -MathHelper.cos(-f * (float) (Math.PI / 180.0));
-		float k = MathHelper.sin(-f * (float) (Math.PI / 180.0));
-		double d = this.owner.x - (double)i * 0.3;
+		float k = MathHelper.sin(-g * (float) (Math.PI / 180.0) - (float) Math.PI);
+		float l = -MathHelper.cos(-f * (float) (Math.PI / 180.0));
+		float m = MathHelper.sin(-f * (float) (Math.PI / 180.0));
+		double d = this.owner.x - (double)k * 0.3;
 		double e = this.owner.y + (double)this.owner.getEyeHeight();
-		double l = this.owner.z - (double)h * 0.3;
-		this.setPositionAndAngles(d, e, l, g, f);
-		this.velocityX = (double)(-i);
-		this.velocityY = (double)MathHelper.clamp(-(k / j), -5.0F, 5.0F);
+		double n = this.owner.z - (double)h * 0.3;
+		this.setPositionAndAngles(d, e, n, g, f);
+		this.velocityX = (double)(-k);
+		this.velocityY = (double)MathHelper.clamp(-(m / l), -5.0F, 5.0F);
 		this.velocityZ = (double)(-h);
-		float m = MathHelper.sqrt(this.velocityX * this.velocityX + this.velocityY * this.velocityY + this.velocityZ * this.velocityZ);
-		this.velocityX = this.velocityX * (0.6 / (double)m + 0.5 + this.random.nextGaussian() * 0.0045);
-		this.velocityY = this.velocityY * (0.6 / (double)m + 0.5 + this.random.nextGaussian() * 0.0045);
-		this.velocityZ = this.velocityZ * (0.6 / (double)m + 0.5 + this.random.nextGaussian() * 0.0045);
-		float n = MathHelper.sqrt(this.velocityX * this.velocityX + this.velocityZ * this.velocityZ);
+		float o = MathHelper.sqrt(this.velocityX * this.velocityX + this.velocityY * this.velocityY + this.velocityZ * this.velocityZ);
+		this.velocityX = this.velocityX * (0.6 / (double)o + 0.5 + this.random.nextGaussian() * 0.0045);
+		this.velocityY = this.velocityY * (0.6 / (double)o + 0.5 + this.random.nextGaussian() * 0.0045);
+		this.velocityZ = this.velocityZ * (0.6 / (double)o + 0.5 + this.random.nextGaussian() * 0.0045);
+		float p = MathHelper.sqrt(this.velocityX * this.velocityX + this.velocityZ * this.velocityZ);
 		this.yaw = (float)(MathHelper.atan2(this.velocityX, this.velocityZ) * 180.0F / (float)Math.PI);
-		this.pitch = (float)(MathHelper.atan2(this.velocityY, (double)n) * 180.0F / (float)Math.PI);
+		this.pitch = (float)(MathHelper.atan2(this.velocityY, (double)p) * 180.0F / (float)Math.PI);
 		this.prevYaw = this.yaw;
 		this.prevPitch = this.pitch;
 	}
@@ -282,38 +264,13 @@ public class FishHookEntity extends Entity {
 	}
 
 	private void method_6958() {
-		Vec3d vec3d = new Vec3d(this.x, this.y, this.z);
-		Vec3d vec3d2 = new Vec3d(this.x + this.velocityX, this.y + this.velocityY, this.z + this.velocityZ);
-		HitResult hitResult = this.world
-			.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.NONE, this));
-		vec3d = new Vec3d(this.x, this.y, this.z);
-		vec3d2 = new Vec3d(this.x + this.velocityX, this.y + this.velocityY, this.z + this.velocityZ);
-		if (hitResult.getType() != HitResult.Type.NONE) {
-			vec3d2 = hitResult.getPos();
-		}
-
-		Entity entity = null;
-		List<Entity> list = this.world.getVisibleEntities(this, this.getBoundingBox().stretch(this.velocityX, this.velocityY, this.velocityZ).expand(1.0));
-		double d = 0.0;
-
-		for (Entity entity2 : list) {
-			if (this.method_6948(entity2) && (entity2 != this.owner || this.field_7166 >= 5)) {
-				BoundingBox boundingBox = entity2.getBoundingBox().expand(0.3F);
-				Optional<Vec3d> optional = boundingBox.rayTrace(vec3d, vec3d2);
-				if (optional.isPresent()) {
-					double e = vec3d.squaredDistanceTo((Vec3d)optional.get());
-					if (e < d || d == 0.0) {
-						entity = entity2;
-						d = e;
-					}
-				}
-			}
-		}
-
-		if (entity != null) {
-			hitResult = new EntityHitResult(entity);
-		}
-
+		HitResult hitResult = class_1675.method_18074(
+			this,
+			this.getBoundingBox().stretch(this.velocityX, this.velocityY, this.velocityZ).expand(1.0),
+			entity -> !entity.isSpectator() && (entity.doesCollide() || entity instanceof ItemEntity) && (entity != this.owner || this.field_7166 >= 5),
+			RayTraceContext.ShapeType.field_17558,
+			true
+		);
 		if (hitResult.getType() != HitResult.Type.NONE) {
 			if (hitResult.getType() == HitResult.Type.ENTITY) {
 				this.hookedEntity = ((EntityHitResult)hitResult).getEntity();
@@ -412,10 +369,6 @@ public class FishHookEntity extends Entity {
 			this.field_7174 = MathHelper.nextInt(this.random, 100, 600);
 			this.field_7174 = this.field_7174 - this.field_7168 * 20 * 5;
 		}
-	}
-
-	protected boolean method_6948(Entity entity) {
-		return entity.doesCollide() || entity instanceof ItemEntity;
 	}
 
 	@Override
@@ -523,7 +476,7 @@ public class FishHookEntity extends Entity {
 	@Override
 	public Packet<?> createSpawnPacket() {
 		Entity entity = this.getOwner();
-		return new EntitySpawnClientPacket(this, entity == null ? this.getEntityId() : entity.getEntityId());
+		return new EntitySpawnS2CPacket(this, entity == null ? this.getEntityId() : entity.getEntityId());
 	}
 
 	static enum State {

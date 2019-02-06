@@ -64,7 +64,7 @@ public class TurtleEggBlock extends Block {
 			world.breakBlock(blockPos, false);
 		} else {
 			world.setBlockState(blockPos, blockState.with(field_11710, Integer.valueOf(i - 1)), 2);
-			world.fireWorldEvent(2001, blockPos, Block.getRawIdFromState(blockState));
+			world.playEvent(2001, blockPos, Block.getRawIdFromState(blockState));
 		}
 	}
 
@@ -80,7 +80,7 @@ public class TurtleEggBlock extends Block {
 				world.clearBlockState(blockPos);
 				if (!world.isClient) {
 					for (int j = 0; j < blockState.get(field_11710); j++) {
-						world.fireWorldEvent(2001, blockPos, Block.getRawIdFromState(blockState));
+						world.playEvent(2001, blockPos, Block.getRawIdFromState(blockState));
 						TurtleEntity turtleEntity = new TurtleEntity(world);
 						turtleEntity.setBreedingAge(-24000);
 						turtleEntity.setHomePos(blockPos);
@@ -99,7 +99,7 @@ public class TurtleEggBlock extends Block {
 	@Override
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
 		if (this.method_10831(world, blockPos) && !world.isClient) {
-			world.fireWorldEvent(2005, blockPos, 0);
+			world.playEvent(2005, blockPos, 0);
 		}
 	}
 

@@ -314,7 +314,7 @@ public class VillagerTrades {
 			);
 		}
 	);
-	public static final Int2ObjectMap<VillagerTrades.Factory[]> field_17724 = copyToFastUtilMap(
+	public static final Int2ObjectMap<VillagerTrades.Factory[]> WANDERING_TRADER_TRADES = copyToFastUtilMap(
 		ImmutableMap.of(
 			1,
 			new VillagerTrades.Factory[]{

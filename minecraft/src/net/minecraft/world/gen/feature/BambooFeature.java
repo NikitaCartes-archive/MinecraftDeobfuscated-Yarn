@@ -16,14 +16,14 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class BambooFeature extends Feature<ProbabilityConfig> {
-	private static final BlockState field_13308 = Blocks.field_10211
+	private static final BlockState BAMBOO = Blocks.field_10211
 		.getDefaultState()
 		.with(BambooBlock.AGE, Integer.valueOf(1))
 		.with(BambooBlock.LEAVES, BambooLeaves.field_12469)
 		.with(BambooBlock.STAGE, Integer.valueOf(0));
-	private static final BlockState field_13311 = field_13308.with(BambooBlock.LEAVES, BambooLeaves.field_12468).with(BambooBlock.STAGE, Integer.valueOf(1));
-	private static final BlockState field_13310 = field_13308.with(BambooBlock.LEAVES, BambooLeaves.field_12468);
-	private static final BlockState field_13309 = field_13308.with(BambooBlock.LEAVES, BambooLeaves.field_12466);
+	private static final BlockState BAMBOO_TOP_1 = BAMBOO.with(BambooBlock.LEAVES, BambooLeaves.field_12468).with(BambooBlock.STAGE, Integer.valueOf(1));
+	private static final BlockState BAMBOO_TOP_2 = BAMBOO.with(BambooBlock.LEAVES, BambooLeaves.field_12468);
+	private static final BlockState BAMBOO_TOP_3 = BAMBOO.with(BambooBlock.LEAVES, BambooLeaves.field_12466);
 
 	public BambooFeature(Function<Dynamic<?>, ? extends ProbabilityConfig> function) {
 		super(function);
@@ -56,14 +56,14 @@ public class BambooFeature extends Feature<ProbabilityConfig> {
 				}
 
 				for (int k = 0; k < j && iWorld.isAir(mutable); k++) {
-					iWorld.setBlockState(mutable, field_13308, 2);
+					iWorld.setBlockState(mutable, BAMBOO, 2);
 					mutable.setOffset(Direction.UP, 1);
 				}
 
 				if (mutable.getY() - blockPos.getY() >= 3) {
-					iWorld.setBlockState(mutable, field_13311, 2);
-					iWorld.setBlockState(mutable.setOffset(Direction.DOWN, 1), field_13310, 2);
-					iWorld.setBlockState(mutable.setOffset(Direction.DOWN, 1), field_13309, 2);
+					iWorld.setBlockState(mutable, BAMBOO_TOP_1, 2);
+					iWorld.setBlockState(mutable.setOffset(Direction.DOWN, 1), BAMBOO_TOP_2, 2);
+					iWorld.setBlockState(mutable.setOffset(Direction.DOWN, 1), BAMBOO_TOP_3, 2);
 				}
 			}
 

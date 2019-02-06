@@ -13,7 +13,7 @@ public class JungleTreeFeature extends OakTreeFeature {
 	}
 
 	@Override
-	protected int getRandomTreeHeight(Random random) {
+	protected int getTreeHeight(Random random) {
 		return this.height + random.nextInt(7);
 	}
 }

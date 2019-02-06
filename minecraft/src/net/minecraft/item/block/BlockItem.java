@@ -22,6 +22,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.state.StateFactory;
+import net.minecraft.state.property.Property;
 import net.minecraft.text.TextComponent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DefaultedList;
@@ -63,6 +65,7 @@ public class BlockItem extends Item {
 					BlockState blockState2 = world.getBlockState(blockPos);
 					Block block = blockState2.getBlock();
 					if (block == blockState.getBlock()) {
+						blockState2 = this.method_18084(blockPos, world, itemStack, blockState2);
 						this.afterBlockPlaced(blockPos, world, playerEntity, itemStack, blockState2);
 						block.onPlaced(world, blockPos, blockState2, playerEntity, itemStack);
 						if (playerEntity instanceof ServerPlayerEntity) {
@@ -99,6 +102,33 @@ public class BlockItem extends Item {
 	protected BlockState getBlockState(ItemPlacementContext itemPlacementContext) {
 		BlockState blockState = this.getBlock().getPlacementState(itemPlacementContext);
 		return blockState != null && this.canPlace(itemPlacementContext, blockState) ? blockState : null;
+	}
+
+	private BlockState method_18084(BlockPos blockPos, World world, ItemStack itemStack, BlockState blockState) {
+		BlockState blockState2 = blockState;
+		CompoundTag compoundTag = itemStack.getTag();
+		if (compoundTag != null) {
+			CompoundTag compoundTag2 = compoundTag.getCompound("BlockStateTag");
+			StateFactory<Block, BlockState> stateFactory = blockState.getBlock().getStateFactory();
+
+			for (String string : compoundTag2.getKeys()) {
+				Property<?> property = stateFactory.getProperty(string);
+				if (property != null) {
+					String string2 = compoundTag2.getTag(string).asString();
+					blockState2 = method_18083(blockState2, property, string2);
+				}
+			}
+		}
+
+		if (blockState2 != blockState) {
+			world.setBlockState(blockPos, blockState2, 2);
+		}
+
+		return blockState2;
+	}
+
+	private static <T extends Comparable<T>> BlockState method_18083(BlockState blockState, Property<T> property, String string) {
+		return (BlockState)property.getValue(string).map(comparable -> blockState.with(property, comparable)).orElse(blockState);
 	}
 
 	protected boolean canPlace(ItemPlacementContext itemPlacementContext, BlockState blockState) {

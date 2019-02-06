@@ -23,11 +23,11 @@ public class VillagerRecipeList extends ArrayList<VillagerRecipe> {
 	public VillagerRecipe getValidRecipe(ItemStack itemStack, ItemStack itemStack2, int i) {
 		if (i > 0 && i < this.size()) {
 			VillagerRecipe villagerRecipe = (VillagerRecipe)this.get(i);
-			return villagerRecipe.method_16952(itemStack, itemStack2) ? villagerRecipe : null;
+			return villagerRecipe.matchesBuyItems(itemStack, itemStack2) ? villagerRecipe : null;
 		} else {
 			for (int j = 0; j < this.size(); j++) {
 				VillagerRecipe villagerRecipe2 = (VillagerRecipe)this.get(j);
-				if (villagerRecipe2.method_16952(itemStack, itemStack2)) {
+				if (villagerRecipe2.matchesBuyItems(itemStack, itemStack2)) {
 					return villagerRecipe2;
 				}
 			}
@@ -36,13 +36,13 @@ public class VillagerRecipeList extends ArrayList<VillagerRecipe> {
 		}
 	}
 
-	public void writeToBuf(PacketByteBuf packetByteBuf) {
+	public void toPacket(PacketByteBuf packetByteBuf) {
 		packetByteBuf.writeByte((byte)(this.size() & 0xFF));
 
 		for (int i = 0; i < this.size(); i++) {
 			VillagerRecipe villagerRecipe = (VillagerRecipe)this.get(i);
-			packetByteBuf.writeItemStack(villagerRecipe.getBuyItem());
-			packetByteBuf.writeItemStack(villagerRecipe.getSellItem());
+			packetByteBuf.writeItemStack(villagerRecipe.getFirstBuyItem());
+			packetByteBuf.writeItemStack(villagerRecipe.getModifiableSellItem());
 			ItemStack itemStack = villagerRecipe.getSecondBuyItem();
 			packetByteBuf.writeBoolean(!itemStack.isEmpty());
 			if (!itemStack.isEmpty()) {
@@ -55,7 +55,7 @@ public class VillagerRecipeList extends ArrayList<VillagerRecipe> {
 		}
 	}
 
-	public static VillagerRecipeList readFromBuf(PacketByteBuf packetByteBuf) {
+	public static VillagerRecipeList fromPacket(PacketByteBuf packetByteBuf) {
 		VillagerRecipeList villagerRecipeList = new VillagerRecipeList();
 		int i = packetByteBuf.readByte() & 255;
 
@@ -81,7 +81,7 @@ public class VillagerRecipeList extends ArrayList<VillagerRecipe> {
 		return villagerRecipeList;
 	}
 
-	public CompoundTag deserialize() {
+	public CompoundTag toTag() {
 		CompoundTag compoundTag = new CompoundTag();
 		ListTag listTag = new ListTag();
 

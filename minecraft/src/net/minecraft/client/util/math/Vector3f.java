@@ -95,7 +95,7 @@ public final class Vector3f {
 		return f;
 	}
 
-	public void normalize() {
+	public void reciprocal() {
 		float f = 0.0F;
 
 		for (int i = 0; i < 3; i++) {

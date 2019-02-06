@@ -14,7 +14,7 @@ import net.minecraft.container.ContainerListener;
 import net.minecraft.container.Slot;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.packet.RenameItemServerPacket;
+import net.minecraft.server.network.packet.RenameItemC2SPacket;
 import net.minecraft.text.TextComponent;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
@@ -102,7 +102,7 @@ public class AnvilScreen extends ContainerScreen<AnvilContainer> implements Cont
 			}
 
 			this.container.setNewItemName(string2);
-			this.client.player.networkHandler.sendPacket(new RenameItemServerPacket(string2));
+			this.client.player.networkHandler.sendPacket(new RenameItemC2SPacket(string2));
 		}
 	}
 

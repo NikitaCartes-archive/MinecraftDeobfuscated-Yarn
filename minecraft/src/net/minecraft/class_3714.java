@@ -13,7 +13,7 @@ import net.minecraft.world.loot.entry.ItemEntry;
 public class class_3714 implements Consumer<BiConsumer<Identifier, LootSupplier.Builder>> {
 	public void method_16120(BiConsumer<Identifier, LootSupplier.Builder> biConsumer) {
 		biConsumer.accept(
-			LootTables.field_16216,
+			LootTables.ENTITY_CAT_MORNING_GIFT,
 			LootSupplier.create()
 				.withPool(
 					LootPool.create()

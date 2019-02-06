@@ -12,13 +12,13 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.resource.metadata.LanguageResourceMetadata;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePack;
-import net.minecraft.resource.ResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.util.Language;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class LanguageManager implements ResourceReloadListener {
+public class LanguageManager implements SynchronousResourceReloadListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	protected static final TranslationStorage STORAGE = new TranslationStorage();
 	private String currentLanguageCode;
@@ -49,7 +49,7 @@ public class LanguageManager implements ResourceReloadListener {
 	}
 
 	@Override
-	public void onResourceReload(ResourceManager resourceManager) {
+	public void reloadResources(ResourceManager resourceManager) {
 		List<String> list = Lists.<String>newArrayList("en_us");
 		if (!"en_us".equals(this.currentLanguageCode)) {
 			list.add(this.currentLanguageCode);

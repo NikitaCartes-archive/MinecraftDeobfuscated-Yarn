@@ -4,14 +4,18 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 
 public class FixedBiomeSourceConfig implements BiomeSourceConfig {
-	private Biome field_9485 = Biomes.field_9451;
+	private Biome biome;
 
-	public FixedBiomeSourceConfig method_8782(Biome biome) {
-		this.field_9485 = biome;
+	public FixedBiomeSourceConfig() {
+		this.biome = Biomes.biome;
+	}
+
+	public FixedBiomeSourceConfig setBiome(Biome biome) {
+		this.biome = biome;
 		return this;
 	}
 
-	public Biome method_8781() {
-		return this.field_9485;
+	public Biome getBiome() {
+		return this.biome;
 	}
 }

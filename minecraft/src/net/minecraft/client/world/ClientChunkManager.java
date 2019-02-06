@@ -34,12 +34,12 @@ public class ClientChunkManager extends ChunkManager {
 	private int loadedChunkCount;
 	private volatile int playerChunkX;
 	private volatile int playerChunkZ;
-	private final BlockView world;
+	private final ClientWorld world;
 
-	public ClientChunkManager(World world) {
-		this.world = world;
-		this.emptyChunk = new EmptyChunk(world, new ChunkPos(0, 0));
-		this.lightingProvider = new LightingProvider(this, true, world.getDimension().hasSkyLight());
+	public ClientChunkManager(ClientWorld clientWorld) {
+		this.world = clientWorld;
+		this.emptyChunk = new EmptyChunk(clientWorld, new ChunkPos(0, 0));
+		this.lightingProvider = new LightingProvider(this, true, clientWorld.getDimension().hasSkyLight());
 	}
 
 	private static boolean isWithinDistance(int i, int j, int k, int l, int m) {
@@ -70,10 +70,12 @@ public class ClientChunkManager extends ChunkManager {
 		return this.world;
 	}
 
-	public void loadChunkFromPacket(World world, int i, int j, PacketByteBuf packetByteBuf, CompoundTag compoundTag, int k, boolean bl) {
+	@Nullable
+	public WorldChunk loadChunkFromPacket(World world, int i, int j, PacketByteBuf packetByteBuf, CompoundTag compoundTag, int k, boolean bl) {
 		this.updateChunkList();
 		if (!this.chunks.hasChunk(i, j)) {
 			LOGGER.warn("Ignoring chunk since it's not in the view range: {}, {}", i, j);
+			return null;
 		} else {
 			int l = this.chunks.index(i, j);
 			WorldChunk worldChunk = (WorldChunk)this.chunks.chunks.get(l);
@@ -90,8 +92,10 @@ public class ClientChunkManager extends ChunkManager {
 
 			for (int m = 0; m < chunkSections.length; m++) {
 				ChunkSection chunkSection = chunkSections[m];
-				lightingProvider.scheduleChunkLightUpdate(i, m, j, chunkSection == WorldChunk.EMPTY_SECTION || chunkSection.isEmpty());
+				lightingProvider.scheduleChunkLightUpdate(i, m, j, ChunkSection.isEmpty(chunkSection));
 			}
+
+			return worldChunk;
 		}
 	}
 
@@ -150,7 +154,7 @@ public class ClientChunkManager extends ChunkManager {
 
 	@Override
 	public void onLightUpdate(LightType lightType, int i, int j, int k) {
-		MinecraftClient.getInstance().worldRenderer.scheduleChunkRender(i, j, k);
+		MinecraftClient.getInstance().worldRenderer.method_8571(i, j, k);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -174,7 +178,7 @@ public class ClientChunkManager extends ChunkManager {
 				WorldChunk worldChunk = (WorldChunk)this.chunks.getAndSet(this.index(i, j), null);
 				if (worldChunk != null) {
 					ClientChunkManager.this.loadedChunkCount--;
-					worldChunk.unloadFromWorld();
+					ClientChunkManager.this.world.method_18110(worldChunk);
 				}
 			}
 		}

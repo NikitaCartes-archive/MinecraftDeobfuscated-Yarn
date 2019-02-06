@@ -300,7 +300,7 @@ public class PandaEntity extends AnimalEntity {
 	public void update() {
 		super.update();
 		if (this.isWorried()) {
-			if (this.world.isThundering()) {
+			if (this.world.isThundering() && !this.isInsideWater()) {
 				this.method_6513(true);
 				this.method_6552(false);
 			} else if (!this.method_6527()) {
@@ -325,7 +325,7 @@ public class PandaEntity extends AnimalEntity {
 			this.method_6517(this.method_6521() - 1);
 		}
 
-		if (this.method_6545()) {
+		if (this.method_6545() && !this.world.isClient()) {
 			this.method_6539(this.method_6532() + 1);
 			if (this.method_6532() > 20) {
 				this.method_6546(false);
@@ -602,6 +602,12 @@ public class PandaEntity extends AnimalEntity {
 		}
 	}
 
+	private void method_18057() {
+		if (!this.isInsideWater()) {
+			this.method_6513(true);
+		}
+	}
+
 	@Override
 	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
@@ -624,7 +630,7 @@ public class PandaEntity extends AnimalEntity {
 				this.method_6475(playerEntity, itemStack);
 				this.method_6480(playerEntity);
 			} else {
-				if (this.world.isClient || this.method_6535()) {
+				if (this.world.isClient || this.method_6535() || this.isInsideWater()) {
 					return false;
 				}
 
@@ -1024,7 +1030,7 @@ public class PandaEntity extends AnimalEntity {
 		@Override
 		public void tick() {
 			if (!PandaEntity.this.method_6535() && !PandaEntity.this.getEquippedStack(EquipmentSlot.HAND_MAIN).isEmpty()) {
-				PandaEntity.this.method_6513(true);
+				PandaEntity.this.method_18057();
 			}
 		}
 
@@ -1035,7 +1041,7 @@ public class PandaEntity extends AnimalEntity {
 			if (!list.isEmpty() && PandaEntity.this.getEquippedStack(EquipmentSlot.HAND_MAIN).isEmpty()) {
 				PandaEntity.this.getNavigation().startMovingTo((Entity)list.get(0), 1.2F);
 			} else if (!PandaEntity.this.getEquippedStack(EquipmentSlot.HAND_MAIN).isEmpty()) {
-				PandaEntity.this.method_6513(true);
+				PandaEntity.this.method_18057();
 			}
 
 			this.field_6804 = 0;

@@ -28,7 +28,7 @@ import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.listener.ClientLoginPacketListener;
 import net.minecraft.realms.DisconnectedRealmsScreen;
-import net.minecraft.server.network.packet.LoginKeyServerPacket;
+import net.minecraft.server.network.packet.LoginKeyC2SPacket;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import org.apache.logging.log4j.LogManager;
@@ -56,7 +56,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 		SecretKey secretKey = NetworkEncryptionUtils.generateKey();
 		PublicKey publicKey = arg.method_12611();
 		String string = new BigInteger(NetworkEncryptionUtils.method_15240(arg.method_12610(), publicKey, secretKey)).toString(16);
-		LoginKeyServerPacket loginKeyServerPacket = new LoginKeyServerPacket(secretKey, publicKey, arg.method_12613());
+		LoginKeyC2SPacket loginKeyC2SPacket = new LoginKeyC2SPacket(secretKey, publicKey, arg.method_12613());
 		this.field_3711.accept(new TranslatableTextComponent("connect.authorizing"));
 		NetworkUtils.downloadExecutor.submit((Runnable)(() -> {
 			TextComponent textComponent = this.method_2892(string);
@@ -70,7 +70,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 			}
 
 			this.field_3711.accept(new TranslatableTextComponent("connect.encrypting"));
-			this.connection.sendPacket(loginKeyServerPacket, future -> this.connection.setupEncryption(secretKey));
+			this.connection.sendPacket(loginKeyC2SPacket, future -> this.connection.setupEncryption(secretKey));
 		}));
 	}
 

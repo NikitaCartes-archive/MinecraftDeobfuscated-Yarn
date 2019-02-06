@@ -5,14 +5,14 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_1675;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.network.packet.EntitySpawnClientPacket;
-import net.minecraft.client.network.packet.GameStateChangeClientPacket;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
+import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
@@ -30,7 +30,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -50,7 +49,6 @@ import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
 public abstract class ProjectileEntity extends Entity implements Projectile {
-	private static final Predicate<Entity> COLLIDABLE_ENTITIES = EntityPredicates.EXCEPT_SPECTATOR.and(EntityPredicates.VALID_ENTITY.and(Entity::doesCollide));
 	private static final TrackedData<Byte> FLAGS = DataTracker.registerData(ProjectileEntity.class, TrackedDataHandlerRegistry.BYTE);
 	protected static final TrackedData<Optional<UUID>> field_7580 = DataTracker.registerData(ProjectileEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 	private static final TrackedData<Byte> PIERCE_LEVEL = DataTracker.registerData(ProjectileEntity.class, TrackedDataHandlerRegistry.BYTE);
@@ -232,15 +230,15 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 			}
 
 			while (!this.invalid) {
-				Entity entity = this.method_7434(vec3d, vec3d2);
-				if (entity != null) {
-					hitResult = new EntityHitResult(entity);
+				EntityHitResult entityHitResult = this.method_7434(vec3d, vec3d2);
+				if (entityHitResult != null) {
+					hitResult = entityHitResult;
 				}
 
 				if (hitResult != null && hitResult.getType() == HitResult.Type.ENTITY) {
-					Entity entity2 = ((EntityHitResult)hitResult).getEntity();
-					Entity entity3 = this.getOwner();
-					if (entity2 instanceof PlayerEntity && entity3 instanceof PlayerEntity && !((PlayerEntity)entity3).shouldDamagePlayer((PlayerEntity)entity2)) {
+					Entity entity = ((EntityHitResult)hitResult).getEntity();
+					Entity entity2 = this.getOwner();
+					if (entity instanceof PlayerEntity && entity2 instanceof PlayerEntity && !((PlayerEntity)entity2).shouldDamagePlayer((PlayerEntity)entity)) {
 						hitResult = null;
 					}
 				}
@@ -250,7 +248,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 					this.velocityDirty = true;
 				}
 
-				if (entity == null || this.getPierceLevel() <= 0) {
+				if (entityHitResult == null || this.getPierceLevel() <= 0) {
 					break;
 				}
 
@@ -443,7 +441,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 
 				this.onHit(livingEntity);
 				if (entity2 != null && livingEntity != entity2 && livingEntity instanceof PlayerEntity && entity2 instanceof ServerPlayerEntity) {
-					((ServerPlayerEntity)entity2).networkHandler.sendPacket(new GameStateChangeClientPacket(6, 0.0F));
+					((ServerPlayerEntity)entity2).networkHandler.sendPacket(new GameStateChangeS2CPacket(6, 0.0F));
 				}
 
 				if (!entity.isValid() && this.field_7579 != null) {
@@ -496,28 +494,19 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	}
 
 	@Nullable
-	protected Entity method_7434(Vec3d vec3d, Vec3d vec3d2) {
-		Entity entity = null;
-		List<Entity> list = this.world
-			.getEntities(this, this.getBoundingBox().stretch(this.velocityX, this.velocityY, this.velocityZ).expand(1.0), COLLIDABLE_ENTITIES);
-		double d = 0.0;
-
-		for (int i = 0; i < list.size(); i++) {
-			Entity entity2 = (Entity)list.get(i);
-			if ((entity2 != this.getOwner() || this.field_7577 >= 5) && (this.field_7590 == null || !this.field_7590.contains(entity2.getEntityId()))) {
-				BoundingBox boundingBox = entity2.getBoundingBox().expand(0.3F);
-				Optional<Vec3d> optional = boundingBox.rayTrace(vec3d, vec3d2);
-				if (optional.isPresent()) {
-					double e = vec3d.squaredDistanceTo((Vec3d)optional.get());
-					if (e < d || d == 0.0) {
-						entity = entity2;
-						d = e;
-					}
-				}
-			}
-		}
-
-		return entity;
+	protected EntityHitResult method_7434(Vec3d vec3d, Vec3d vec3d2) {
+		return class_1675.method_18077(
+			this.world,
+			this,
+			vec3d,
+			vec3d2,
+			this.getBoundingBox().stretch(this.velocityX, this.velocityY, this.velocityZ).expand(1.0),
+			entity -> !entity.isSpectator()
+					&& entity.isValid()
+					&& entity.doesCollide()
+					&& (entity != this.getOwner() || this.field_7577 >= 5)
+					&& (this.field_7590 == null || !this.field_7590.contains(entity.getEntityId()))
+		);
 	}
 
 	@Override
@@ -588,7 +577,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 
 	@Nullable
 	public Entity getOwner() {
-		return this.ownerUuid != null && this.world instanceof ServerWorld ? this.world.getEntityByUuid(this.ownerUuid) : null;
+		return this.ownerUuid != null && this.world instanceof ServerWorld ? ((ServerWorld)this.world).method_14190(this.ownerUuid) : null;
 	}
 
 	@Override
@@ -705,7 +694,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	@Override
 	public Packet<?> createSpawnPacket() {
 		Entity entity = this.getOwner();
-		return new EntitySpawnClientPacket(this, entity == null ? 0 : entity.getEntityId());
+		return new EntitySpawnS2CPacket(this, entity == null ? 0 : entity.getEntityId());
 	}
 
 	public static enum PickupType {

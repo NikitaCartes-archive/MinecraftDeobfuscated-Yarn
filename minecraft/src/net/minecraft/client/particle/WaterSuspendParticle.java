@@ -2,25 +2,31 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_3999;
+import net.minecraft.class_4000;
+import net.minecraft.class_4001;
+import net.minecraft.class_4002;
+import net.minecraft.class_4003;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class WaterSuspendParticle extends Particle {
-	protected WaterSuspendParticle(World world, double d, double e, double f, double g, double h, double i) {
-		super(world, d, e - 0.125, f, g, h, i);
+public class WaterSuspendParticle extends class_4003 {
+	private WaterSuspendParticle(World world, double d, double e, double f) {
+		super(world, d, e - 0.125, f);
 		this.colorRed = 0.4F;
 		this.colorGreen = 0.4F;
 		this.colorBlue = 0.7F;
-		this.setSpriteIndex(0);
 		this.setBoundingBoxSpacing(0.01F, 0.01F);
-		this.size = this.size * (this.random.nextFloat() * 0.6F + 0.2F);
-		this.velocityX = g * 0.0;
-		this.velocityY = h * 0.0;
-		this.velocityZ = i * 0.0;
+		this.field_17867 = this.field_17867 * (this.random.nextFloat() * 0.6F + 0.2F);
 		this.maxAge = (int)(16.0 / (Math.random() * 0.8 + 0.2));
+	}
+
+	@Override
+	public class_3999 method_18122() {
+		return class_3999.field_17828;
 	}
 
 	@Override
@@ -28,20 +34,28 @@ public class WaterSuspendParticle extends Particle {
 		this.prevPosX = this.posX;
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;
-		this.move(this.velocityX, this.velocityY, this.velocityZ);
-		if (!this.world.getFluidState(new BlockPos(this.posX, this.posY, this.posZ)).matches(FluidTags.field_15517)) {
-			this.markDead();
-		}
-
 		if (this.maxAge-- <= 0) {
 			this.markDead();
+		} else {
+			this.move(this.velocityX, this.velocityY, this.velocityZ);
+			if (!this.world.getFluidState(new BlockPos(this.posX, this.posY, this.posZ)).matches(FluidTags.field_15517)) {
+				this.markDead();
+			}
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class UnderwaterFactory implements ParticleFactory<DefaultParticleType> {
+		private final class_4002 field_17879;
+
+		public UnderwaterFactory(class_4001 arg) {
+			this.field_17879 = arg.method_18137(class_4000.field_17844);
+		}
+
 		public Particle method_3104(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			return new WaterSuspendParticle(world, d, e, f, g, h, i);
+			WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(world, d, e, f);
+			waterSuspendParticle.method_18140(this.field_17879);
+			return waterSuspendParticle;
 		}
 	}
 }

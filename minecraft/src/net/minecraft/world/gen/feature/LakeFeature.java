@@ -15,7 +15,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class LakeFeature extends Feature<LakeFeatureConfig> {
-	private static final BlockState field_13668 = Blocks.field_10543.getDefaultState();
+	private static final BlockState CAVE_AIR = Blocks.field_10543.getDefaultState();
 
 	public LakeFeature(Function<Dynamic<?>, ? extends LakeFeatureConfig> function) {
 		super(function);
@@ -88,7 +88,7 @@ public class LakeFeature extends Feature<LakeFeatureConfig> {
 				for (int s = 0; s < 16; s++) {
 					for (int tx = 0; tx < 8; tx++) {
 						if (bls[(j * 16 + s) * 8 + tx]) {
-							iWorld.setBlockState(blockPos.add(j, tx, s), tx >= 4 ? field_13668 : lakeFeatureConfig.state, 2);
+							iWorld.setBlockState(blockPos.add(j, tx, s), tx >= 4 ? CAVE_AIR : lakeFeatureConfig.state, 2);
 						}
 					}
 				}

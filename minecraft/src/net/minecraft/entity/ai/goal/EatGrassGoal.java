@@ -67,7 +67,7 @@ public class EatGrassGoal extends Goal {
 				BlockPos blockPos2 = blockPos.down();
 				if (this.world.getBlockState(blockPos2).getBlock() == Blocks.field_10219) {
 					if (this.world.getGameRules().getBoolean("mobGriefing")) {
-						this.world.fireWorldEvent(2001, blockPos2, Block.getRawIdFromState(Blocks.field_10219.getDefaultState()));
+						this.world.playEvent(2001, blockPos2, Block.getRawIdFromState(Blocks.field_10219.getDefaultState()));
 						this.world.setBlockState(blockPos2, Blocks.field_10566.getDefaultState(), 2);
 					}
 

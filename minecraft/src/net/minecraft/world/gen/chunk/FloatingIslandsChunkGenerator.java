@@ -49,7 +49,7 @@ public class FloatingIslandsChunkGenerator extends SurfaceChunkGenerator<Floatin
 	}
 
 	@Override
-	public int method_16398() {
+	public int getSeaLevel() {
 		return 0;
 	}
 }

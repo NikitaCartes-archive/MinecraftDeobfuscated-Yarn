@@ -81,7 +81,7 @@ public class DispenserBlock extends BlockWithEntity {
 		DispenserBlockEntity dispenserBlockEntity = blockPointerImpl.getBlockEntity();
 		int i = dispenserBlockEntity.chooseNonEmptySlot();
 		if (i < 0) {
-			world.fireWorldEvent(1001, blockPos, 0);
+			world.playEvent(1001, blockPos, 0);
 		} else {
 			ItemStack itemStack = dispenserBlockEntity.getInvStack(i);
 			DispenserBehavior dispenserBehavior = this.getBehaviorForItem(itemStack);

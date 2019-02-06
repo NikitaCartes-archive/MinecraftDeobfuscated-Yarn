@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_3238;
-import net.minecraft.client.network.packet.DisconnectClientPacket;
+import net.minecraft.client.network.packet.DisconnectS2CPacket;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.DecoderHandler;
 import net.minecraft.network.NetworkSide;
@@ -164,7 +164,7 @@ public class ServerNetworkIO {
 
 							LOGGER.warn("Failed to handle packet for {}", clientConnection.getAddress(), var8);
 							TextComponent textComponent = new StringTextComponent("Internal server error");
-							clientConnection.sendPacket(new DisconnectClientPacket(textComponent), future -> clientConnection.disconnect(textComponent));
+							clientConnection.sendPacket(new DisconnectS2CPacket(textComponent), future -> clientConnection.disconnect(textComponent));
 							clientConnection.method_10757();
 						}
 					} else {

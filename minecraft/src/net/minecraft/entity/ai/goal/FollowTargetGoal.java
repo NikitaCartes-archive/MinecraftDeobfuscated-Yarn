@@ -68,7 +68,7 @@ public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 		} else {
 			this.field_6644 = (T)this.entity
 				.world
-				.method_8439(
+				.findMobAttackTarget(
 					this.entity.x,
 					this.entity.y + (double)this.entity.getEyeHeight(),
 					this.entity.z,

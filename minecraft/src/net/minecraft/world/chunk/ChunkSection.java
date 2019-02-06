@@ -1,5 +1,6 @@
 package net.minecraft.world.chunk;
 
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
@@ -91,6 +92,10 @@ public class ChunkSection {
 
 	public boolean isEmpty() {
 		return this.nonEmptyBlockCount == 0;
+	}
+
+	public static boolean isEmpty(@Nullable ChunkSection chunkSection) {
+		return chunkSection == WorldChunk.EMPTY_SECTION || chunkSection.isEmpty();
 	}
 
 	public boolean hasRandomTicks() {

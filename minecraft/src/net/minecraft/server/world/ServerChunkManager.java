@@ -49,10 +49,10 @@ public class ServerChunkManager extends ChunkManager implements ChunkHolder.Play
 	private static final List<ChunkStatus> CHUNK_STATUSES = ChunkStatus.createOrderedList();
 	private final ChunkTicketManager ticketManager;
 	private final ChunkGenerator<?> chunkGenerator;
-	private final World world;
+	private final ServerWorld world;
 	private final Thread serverThread;
 	private final ServerLightingProvider lightProvider;
-	private final Queue<Runnable> genQueue = Queues.<Runnable>newConcurrentLinkedQueue();
+	private final Queue<Runnable> taskQueue = Queues.<Runnable>newConcurrentLinkedQueue();
 	private final PlayerChunkWatchingManager players = new PlayerChunkWatchingManager();
 	private final ThreadedAnvilChunkStorage threadedAnvilChunkStorage;
 	private final PersistentStateManager persistentStateManager;
@@ -62,7 +62,7 @@ public class ServerChunkManager extends ChunkManager implements ChunkHolder.Play
 	private boolean spawnAnimals = true;
 
 	public ServerChunkManager(
-		World world,
+		ServerWorld serverWorld,
 		File file,
 		DataFixer dataFixer,
 		StructureManager structureManager,
@@ -72,14 +72,24 @@ public class ServerChunkManager extends ChunkManager implements ChunkHolder.Play
 		WorldGenerationProgressListener worldGenerationProgressListener,
 		Supplier<PersistentStateManager> supplier
 	) {
-		this.world = world;
+		this.world = serverWorld;
 		this.chunkGenerator = chunkGenerator;
 		this.serverThread = Thread.currentThread();
-		File file2 = new File(world.getDimension().getType().getFile(file), "data");
+		File file2 = new File(serverWorld.getDimension().getType().getFile(file), "data");
 		file2.mkdirs();
 		this.persistentStateManager = new PersistentStateManager(file2, dataFixer);
 		this.threadedAnvilChunkStorage = new ThreadedAnvilChunkStorage(
-			world, file, dataFixer, structureManager, executor, this, this.genQueue::add, this, this.getChunkGenerator(), worldGenerationProgressListener, supplier
+			serverWorld,
+			file,
+			dataFixer,
+			structureManager,
+			executor,
+			this,
+			this.taskQueue::add,
+			this,
+			this.getChunkGenerator(),
+			worldGenerationProgressListener,
+			supplier
 		);
 		this.lightProvider = this.threadedAnvilChunkStorage.getLightProvider();
 		this.ticketManager = this.threadedAnvilChunkStorage.getTicketManager();
@@ -152,12 +162,12 @@ public class ServerChunkManager extends ChunkManager implements ChunkHolder.Play
 			completableFuture = this.getChunkAsync(i, j, chunkStatus, bl);
 
 			while (!completableFuture.isDone()) {
-				if (!this.method_17302()) {
+				if (!this.executeQueuedTask()) {
 					Thread.yield();
 				}
 			}
 		} else {
-			completableFuture = CompletableFuture.supplyAsync(() -> this.getChunkAsync(i, j, chunkStatus, bl), this.genQueue::add)
+			completableFuture = CompletableFuture.supplyAsync(() -> this.getChunkAsync(i, j, chunkStatus, bl), this.taskQueue::add)
 				.thenCompose(completableFuturex -> completableFuturex);
 		}
 
@@ -230,11 +240,11 @@ public class ServerChunkManager extends ChunkManager implements ChunkHolder.Play
 		return this.world;
 	}
 
-	public boolean method_17302() {
+	public boolean executeQueuedTask() {
 		if (this.update()) {
 			return true;
 		} else {
-			Runnable runnable = (Runnable)this.genQueue.poll();
+			Runnable runnable = (Runnable)this.taskQueue.poll();
 			if (runnable != null) {
 				runnable.run();
 				return true;
@@ -303,7 +313,7 @@ public class ServerChunkManager extends ChunkManager implements ChunkHolder.Play
 			BlockPos blockPos = this.world.getSpawnPos();
 			boolean bl3 = levelProperties.getTime() % 400L == 0L;
 			EntityCategory[] entityCategorys = EntityCategory.values();
-			Object2IntMap<EntityCategory> object2IntMap = this.world.method_17450();
+			Object2IntMap<EntityCategory> object2IntMap = this.world.method_18219();
 			ObjectBidirectionalIterator<Entry<ChunkHolder>> objectBidirectionalIterator = this.threadedAnvilChunkStorage.entryIterator();
 
 			while (objectBidirectionalIterator.hasNext()) {
@@ -333,7 +343,7 @@ public class ServerChunkManager extends ChunkManager implements ChunkHolder.Play
 							this.world.getProfiler().pop();
 						}
 
-						this.world.method_8462(worldChunk, j);
+						this.world.method_18203(worldChunk, j);
 					}
 				}
 			}
@@ -370,7 +380,7 @@ public class ServerChunkManager extends ChunkManager implements ChunkHolder.Play
 
 	@Override
 	public void onLightUpdate(LightType lightType, int i, int j, int k) {
-		this.genQueue.add((Runnable)() -> {
+		this.taskQueue.add((Runnable)() -> {
 			ChunkHolder chunkHolder = this.getChunkHolder(ChunkPos.toLong(i, k));
 			if (chunkHolder != null) {
 				chunkHolder.method_14012(lightType, j);

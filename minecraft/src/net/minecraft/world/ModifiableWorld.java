@@ -7,9 +7,11 @@ import net.minecraft.util.math.BlockPos;
 public interface ModifiableWorld {
 	boolean setBlockState(BlockPos blockPos, BlockState blockState, int i);
 
-	boolean spawnEntity(Entity entity);
-
 	boolean clearBlockState(BlockPos blockPos);
 
 	boolean breakBlock(BlockPos blockPos, boolean bl);
+
+	default boolean spawnEntity(Entity entity) {
+		return false;
+	}
 }

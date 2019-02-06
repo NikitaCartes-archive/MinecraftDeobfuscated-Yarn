@@ -23,13 +23,13 @@ public class SetVillagerRecipesPacket implements Packet<ClientPlayPacketListener
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.syncId = packetByteBuf.readVarInt();
-		this.recipes = VillagerRecipeList.readFromBuf(packetByteBuf);
+		this.recipes = VillagerRecipeList.fromPacket(packetByteBuf);
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeVarInt(this.syncId);
-		this.recipes.writeToBuf(packetByteBuf);
+		this.recipes.toPacket(packetByteBuf);
 	}
 
 	public void method_17588(ClientPlayPacketListener clientPlayPacketListener) {

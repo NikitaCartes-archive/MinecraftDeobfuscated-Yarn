@@ -142,7 +142,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 	}
 
 	@Override
-	public int produceHeight(int i, int j, Heightmap.Type type) {
+	public int getHeightOnGround(int i, int j, Heightmap.Type type) {
 		int k = Math.floorDiv(i, this.horizontalNoiseResolution);
 		int l = Math.floorDiv(j, this.horizontalNoiseResolution);
 		int m = Math.floorMod(i, this.horizontalNoiseResolution);
@@ -152,7 +152,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 		double[][] ds = new double[][]{
 			this.sampleNoiseColumn(k, l), this.sampleNoiseColumn(k, l + 1), this.sampleNoiseColumn(k + 1, l), this.sampleNoiseColumn(k + 1, l + 1)
 		};
-		int o = this.method_16398();
+		int o = this.getSeaLevel();
 
 		for (int p = this.noiseSizeY - 1; p >= 0; p--) {
 			double f = ds[0][p];
@@ -200,8 +200,8 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 		ChunkRandom chunkRandom = new ChunkRandom();
 		chunkRandom.setSeed(i, j);
 		ChunkPos chunkPos2 = chunk.getPos();
-		int k = chunkPos2.getXStart();
-		int l = chunkPos2.getZStart();
+		int k = chunkPos2.getStartX();
+		int l = chunkPos2.getStartZ();
 		double d = 0.0625;
 		Biome[] biomes = chunk.getBiomeArray();
 
@@ -212,7 +212,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 				int q = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, m, n) + 1;
 				double e = this.surfaceDepthNoise.sample((double)o * 0.0625, (double)p * 0.0625, 0.0625, (double)m * 0.0625);
 				biomes[n * 16 + m]
-					.buildSurface(chunkRandom, chunk, o, p, q, e, this.getSettings().getDefaultBlock(), this.getSettings().getDefaultFluid(), 63, this.world.getSeed());
+					.buildSurface(chunkRandom, chunk, o, p, q, e, this.getConfig().getDefaultBlock(), this.getConfig().getDefaultFluid(), 63, this.world.getSeed());
 			}
 		}
 
@@ -221,9 +221,9 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 
 	protected void buildBedrock(Chunk chunk, Random random) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		int i = chunk.getPos().getXStart();
-		int j = chunk.getPos().getZStart();
-		T chunkGeneratorConfig = this.getSettings();
+		int i = chunk.getPos().getStartX();
+		int j = chunk.getPos().getStartZ();
+		T chunkGeneratorConfig = this.getConfig();
 		int k = chunkGeneratorConfig.getMinY();
 		int l = chunkGeneratorConfig.getMaxY();
 
@@ -248,7 +248,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 
 	@Override
 	public void populateNoise(IWorld iWorld, Chunk chunk) {
-		int i = this.method_16398();
+		int i = this.getSeaLevel();
 		ObjectList<PoolStructurePiece> objectList = new ObjectArrayList<>(10);
 		ObjectList<JigsawJunction> objectList2 = new ObjectArrayList<>(32);
 		ChunkPos chunkPos = chunk.getPos();

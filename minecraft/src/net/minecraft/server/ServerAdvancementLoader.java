@@ -18,7 +18,7 @@ import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.text.Style;
 import net.minecraft.text.TextComponent;
 import net.minecraft.util.Identifier;
@@ -27,7 +27,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ServerAdvancementLoader implements ResourceReloadListener {
+public class ServerAdvancementLoader implements SynchronousResourceReloadListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Gson GSON = new GsonBuilder()
 		.registerTypeHierarchyAdapter(
@@ -104,7 +104,7 @@ public class ServerAdvancementLoader implements ResourceReloadListener {
 	}
 
 	@Override
-	public void onResourceReload(ResourceManager resourceManager) {
+	public void reloadResources(ResourceManager resourceManager) {
 		this.errored = false;
 		MANAGER.clear();
 		Map<Identifier, SimpleAdvancement.Builder> map = this.scanAdvancements(resourceManager);

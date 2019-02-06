@@ -5,7 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_3914;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.network.packet.GuiSlotUpdateClientPacket;
+import net.minecraft.client.network.packet.GuiSlotUpdateS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.CraftingInventory;
@@ -67,7 +67,7 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 			}
 
 			craftingResultInventory.setInvStack(0, itemStack);
-			serverPlayerEntity.networkHandler.sendPacket(new GuiSlotUpdateClientPacket(i, 0, itemStack));
+			serverPlayerEntity.networkHandler.sendPacket(new GuiSlotUpdateS2CPacket(i, 0, itemStack));
 		}
 	}
 

@@ -115,10 +115,11 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 		BlockState blockState2 = blockState.with(DISTANCE, Integer.valueOf(i)).with(BOTTOM, Boolean.valueOf(this.method_16373(world, blockPos, i)));
 		if ((Integer)blockState2.get(DISTANCE) == 7) {
 			if ((Integer)blockState.get(DISTANCE) == 7) {
-				FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(
-					world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, blockState2.with(WATERLOGGED, Boolean.valueOf(false))
+				world.spawnEntity(
+					new FallingBlockEntity(
+						world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, blockState2.with(WATERLOGGED, Boolean.valueOf(false))
+					)
 				);
-				world.spawnEntity(fallingBlockEntity);
 			} else {
 				world.breakBlock(blockPos, true);
 			}

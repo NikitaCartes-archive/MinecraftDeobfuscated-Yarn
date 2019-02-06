@@ -1,13 +1,11 @@
 package net.minecraft.entity.projectile;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_1675;
 import net.minecraft.block.Material;
-import net.minecraft.client.network.packet.EntitySpawnClientPacket;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -16,12 +14,9 @@ import net.minecraft.entity.sortme.Projectile;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
@@ -65,19 +60,13 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 			this.method_7479();
 		}
 
-		Vec3d vec3d = new Vec3d(this.x, this.y, this.z);
-		Vec3d vec3d2 = new Vec3d(this.x + this.velocityX, this.y + this.velocityY, this.z + this.velocityZ);
-		HitResult hitResult = this.world
-			.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17559, RayTraceContext.FluidHandling.NONE, this));
-		if (hitResult.getType() != HitResult.Type.NONE) {
-			vec3d2 = hitResult.getPos();
-		}
-
-		Entity entity = this.method_7480(vec3d, vec3d2);
-		if (entity != null) {
-			hitResult = new EntityHitResult(entity);
-		}
-
+		HitResult hitResult = class_1675.method_18074(
+			this,
+			this.getBoundingBox().stretch(this.velocityX, this.velocityY, this.velocityZ).expand(1.0),
+			entity -> !entity.isSpectator() && entity != this.owner,
+			RayTraceContext.ShapeType.field_17559,
+			true
+		);
 		if (hitResult != null) {
 			this.method_7481(hitResult);
 		}
@@ -109,7 +98,7 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 		this.yaw = MathHelper.lerp(0.2F, this.prevYaw, this.yaw);
 		float g = 0.99F;
 		float h = 0.06F;
-		if (!this.world.method_8422(this.getBoundingBox(), Material.AIR)) {
+		if (!this.world.containsBlockWithMaterial(this.getBoundingBox(), Material.AIR)) {
 			this.invalidate();
 		} else if (this.isInsideWaterOrBubbleColumn()) {
 			this.invalidate();
@@ -139,32 +128,6 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 			this.prevYaw = this.yaw;
 			this.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
 		}
-	}
-
-	@Nullable
-	private Entity method_7480(Vec3d vec3d, Vec3d vec3d2) {
-		Entity entity = null;
-		List<Entity> list = this.world
-			.getEntities(
-				this,
-				this.getBoundingBox().stretch(this.velocityX, this.velocityY, this.velocityZ).expand(1.0),
-				EntityPredicates.EXCEPT_SPECTATOR.and(entityx -> entityx != this.owner)
-			);
-		double d = 0.0;
-
-		for (Entity entity2 : list) {
-			BoundingBox boundingBox = entity2.getBoundingBox().expand(0.3F);
-			Optional<Vec3d> optional = boundingBox.rayTrace(vec3d, vec3d2);
-			if (optional.isPresent()) {
-				double e = vec3d.squaredDistanceTo((Vec3d)optional.get());
-				if (e < d || d == 0.0) {
-					entity = entity2;
-					d = e;
-				}
-			}
-		}
-
-		return entity;
 	}
 
 	@Override
@@ -236,6 +199,6 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 
 	@Override
 	public Packet<?> createSpawnPacket() {
-		return new EntitySpawnClientPacket(this);
+		return new EntitySpawnS2CPacket(this);
 	}
 }

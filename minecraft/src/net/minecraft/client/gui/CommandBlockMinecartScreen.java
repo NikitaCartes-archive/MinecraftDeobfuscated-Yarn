@@ -3,7 +3,7 @@ package net.minecraft.client.gui;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.vehicle.CommandBlockMinecartEntity;
-import net.minecraft.server.network.packet.UpdateCommandBlockMinecartServerPacket;
+import net.minecraft.server.network.packet.UpdateCommandBlockMinecartC2SPacket;
 import net.minecraft.sortme.CommandBlockExecutor;
 
 @Environment(EnvType.CLIENT)
@@ -39,7 +39,7 @@ public class CommandBlockMinecartScreen extends AbstractCommandBlockScreen {
 			this.client
 				.getNetworkHandler()
 				.sendPacket(
-					new UpdateCommandBlockMinecartServerPacket(lv.method_7569().getEntityId(), this.consoleCommandTextField.getText(), commandBlockExecutor.isTrackingOutput())
+					new UpdateCommandBlockMinecartC2SPacket(lv.method_7569().getEntityId(), this.consoleCommandTextField.getText(), commandBlockExecutor.isTrackingOutput())
 				);
 		}
 	}

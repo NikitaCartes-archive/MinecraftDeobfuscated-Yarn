@@ -2,7 +2,7 @@ package net.minecraft.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.ExperienceOrbSpawnClientPacket;
+import net.minecraft.client.network.packet.ExperienceOrbSpawnS2CPacket;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.damage.DamageSource;
@@ -273,6 +273,6 @@ public class ExperienceOrbEntity extends Entity {
 
 	@Override
 	public Packet<?> createSpawnPacket() {
-		return new ExperienceOrbSpawnClientPacket(this);
+		return new ExperienceOrbSpawnS2CPacket(this);
 	}
 }

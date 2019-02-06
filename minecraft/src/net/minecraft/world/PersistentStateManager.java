@@ -20,20 +20,20 @@ import org.apache.logging.log4j.Logger;
 
 public class PersistentStateManager {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final Map<String, PersistentState> keyToState = Maps.<String, PersistentState>newHashMap();
-	private final DataFixer field_17663;
-	private final File field_17664;
+	private final Map<String, PersistentState> loadedStates = Maps.<String, PersistentState>newHashMap();
+	private final DataFixer dataFixer;
+	private final File directory;
 
 	public PersistentStateManager(File file, DataFixer dataFixer) {
-		this.field_17663 = dataFixer;
-		this.field_17664 = file;
+		this.dataFixer = dataFixer;
+		this.directory = file;
 	}
 
-	private File method_17922(String string) {
-		return new File(this.field_17664, string + ".dat");
+	private File getFile(String string) {
+		return new File(this.directory, string + ".dat");
 	}
 
-	public <T extends PersistentState> T method_17924(Supplier<T> supplier, String string) {
+	public <T extends PersistentState> T getOrCreate(Supplier<T> supplier, String string) {
 		T persistentState = this.get(supplier, string);
 		if (persistentState != null) {
 			return persistentState;
@@ -46,15 +46,15 @@ public class PersistentStateManager {
 
 	@Nullable
 	public <T extends PersistentState> T get(Supplier<T> supplier, String string) {
-		PersistentState persistentState = (PersistentState)this.keyToState.get(string);
+		PersistentState persistentState = (PersistentState)this.loadedStates.get(string);
 		if (persistentState == null) {
 			try {
-				File file = this.method_17922(string);
+				File file = this.getFile(string);
 				if (file.exists()) {
 					persistentState = (PersistentState)supplier.get();
 					CompoundTag compoundTag = this.method_17923(string, SharedConstants.getGameVersion().getWorldVersion());
 					persistentState.fromTag(compoundTag.getCompound("data"));
-					this.keyToState.put(string, persistentState);
+					this.loadedStates.put(string, persistentState);
 				}
 			} catch (Exception var6) {
 				LOGGER.error("Error loading saved data: {}", string, var6);
@@ -65,11 +65,11 @@ public class PersistentStateManager {
 	}
 
 	public void set(PersistentState persistentState) {
-		this.keyToState.put(persistentState.getId(), persistentState);
+		this.loadedStates.put(persistentState.getId(), persistentState);
 	}
 
 	public CompoundTag method_17923(String string, int i) throws IOException {
-		File file = this.method_17922(string);
+		File file = this.getFile(string);
 		PushbackInputStream pushbackInputStream = new PushbackInputStream(new FileInputStream(file), 2);
 		Throwable var5 = null;
 
@@ -103,7 +103,7 @@ public class PersistentStateManager {
 			}
 
 			int j = compoundTag.containsKey("DataVersion", 99) ? compoundTag.getInt("DataVersion") : 1343;
-			var36 = TagHelper.update(this.field_17663, DataFixTypes.SAVED_DATA, compoundTag, j, i);
+			var36 = TagHelper.update(this.dataFixer, DataFixTypes.SAVED_DATA, compoundTag, j, i);
 		} catch (Throwable var33) {
 			var5 = var33;
 			throw var33;
@@ -143,8 +143,8 @@ public class PersistentStateManager {
 	}
 
 	public void save() {
-		for (PersistentState persistentState : this.keyToState.values()) {
-			persistentState.method_17919(this.method_17922(persistentState.getId()));
+		for (PersistentState persistentState : this.loadedStates.values()) {
+			persistentState.method_17919(this.getFile(persistentState.getId()));
 		}
 	}
 }
