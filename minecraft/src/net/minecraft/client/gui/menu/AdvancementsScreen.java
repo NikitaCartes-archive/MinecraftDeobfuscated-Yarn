@@ -15,7 +15,7 @@ import net.minecraft.client.network.ClientAdvancementManager;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.server.network.packet.AdvancementTabServerPacket;
+import net.minecraft.server.network.packet.AdvancementTabC2SPacket;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -48,7 +48,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 		this.advancementHandler.setGui(null);
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
 		if (clientPlayNetworkHandler != null) {
-			clientPlayNetworkHandler.sendPacket(AdvancementTabServerPacket.close());
+			clientPlayNetworkHandler.sendPacket(AdvancementTabC2SPacket.close());
 		}
 	}
 

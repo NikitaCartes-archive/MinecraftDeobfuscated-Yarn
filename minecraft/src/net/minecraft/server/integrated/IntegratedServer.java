@@ -29,7 +29,7 @@ import net.minecraft.util.profiler.DisableableProfiler;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
-import net.minecraft.world.OldWorldSaveHandler;
+import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.LevelInfo;
@@ -83,18 +83,18 @@ public class IntegratedServer extends MinecraftServer {
 	@Override
 	public void method_3735(String string, String string2, long l, LevelGeneratorType levelGeneratorType, JsonElement jsonElement) {
 		this.method_3755(string);
-		OldWorldSaveHandler oldWorldSaveHandler = this.getLevelStorage().method_242(string, this);
-		this.method_3861(this.getLevelName(), oldWorldSaveHandler);
-		LevelProperties levelProperties = oldWorldSaveHandler.readProperties();
+		WorldSaveHandler worldSaveHandler = this.getLevelStorage().method_242(string, this);
+		this.method_3861(this.getLevelName(), worldSaveHandler);
+		LevelProperties levelProperties = worldSaveHandler.readProperties();
 		if (levelProperties == null) {
 			levelProperties = new LevelProperties(this.levelInfo, string2);
 		} else {
 			levelProperties.setLevelName(string2);
 		}
 
-		this.method_3800(oldWorldSaveHandler.getWorldDir(), levelProperties);
+		this.method_3800(worldSaveHandler.getWorldDir(), levelProperties);
 		WorldGenerationProgressListener worldGenerationProgressListener = this.worldGenerationProgressListenerFactory.create(11);
-		this.createWorlds(oldWorldSaveHandler, levelProperties, this.levelInfo, worldGenerationProgressListener);
+		this.createWorlds(worldSaveHandler, levelProperties, this.levelInfo, worldGenerationProgressListener);
 		if (this.getWorld(DimensionType.field_13072).getLevelProperties().getDifficulty() == null) {
 			this.setDifficulty(this.client.options.difficulty);
 		}

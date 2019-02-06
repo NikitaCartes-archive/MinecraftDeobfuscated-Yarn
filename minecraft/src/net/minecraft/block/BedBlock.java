@@ -181,7 +181,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		BlockState blockState2 = world.getBlockState(blockPos2);
 		if (blockState2.getBlock() == this && blockState2.get(PART) != bedPart) {
 			world.setBlockState(blockPos2, Blocks.field_10124.getDefaultState(), 35);
-			world.fireWorldEvent(playerEntity, 2001, blockPos2, Block.getRawIdFromState(blockState2));
+			world.playEvent(playerEntity, 2001, blockPos2, Block.getRawIdFromState(blockState2));
 			if (!world.isClient && !playerEntity.isCreative()) {
 				ItemStack itemStack = playerEntity.getMainHandStack();
 				dropStacks(blockState, world, blockPos, null, playerEntity, itemStack);

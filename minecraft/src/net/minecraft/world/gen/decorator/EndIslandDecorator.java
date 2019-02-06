@@ -4,10 +4,9 @@ import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import net.minecraft.class_3667;
 import net.minecraft.util.math.BlockPos;
 
-public class EndIslandDecorator extends class_3667<NopeDecoratorConfig> {
+public class EndIslandDecorator extends SimpleDecorator<NopeDecoratorConfig> {
 	public EndIslandDecorator(Function<Dynamic<?>, ? extends NopeDecoratorConfig> function) {
 		super(function);
 	}

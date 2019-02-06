@@ -18,30 +18,30 @@ public enum ScaleLayer implements ParentedLayer {
 	}
 
 	@Override
-	public int transformY(int i) {
+	public int transformZ(int i) {
 		return i >> 1;
 	}
 
 	@Override
 	public int sample(LayerSampleContext<?> layerSampleContext, LayerSampler layerSampler, int i, int j) {
-		int k = layerSampler.sample(this.transformX(i), this.transformY(j));
+		int k = layerSampler.sample(this.transformX(i), this.transformZ(j));
 		layerSampleContext.initSeed((long)(i >> 1 << 1), (long)(j >> 1 << 1));
 		int l = i & 1;
 		int m = j & 1;
 		if (l == 0 && m == 0) {
 			return k;
 		} else {
-			int n = layerSampler.sample(this.transformX(i), this.transformY(j + 1));
+			int n = layerSampler.sample(this.transformX(i), this.transformZ(j + 1));
 			int o = layerSampleContext.choose(k, n);
 			if (l == 0 && m == 1) {
 				return o;
 			} else {
-				int p = layerSampler.sample(this.transformX(i + 1), this.transformY(j));
+				int p = layerSampler.sample(this.transformX(i + 1), this.transformZ(j));
 				int q = layerSampleContext.choose(k, p);
 				if (l == 1 && m == 0) {
 					return q;
 				} else {
-					int r = layerSampler.sample(this.transformX(i + 1), this.transformY(j + 1));
+					int r = layerSampler.sample(this.transformX(i + 1), this.transformZ(j + 1));
 					return this.method_15853(layerSampleContext, k, p, n, r);
 				}
 			}

@@ -4,7 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvironmentInterface;
 import net.fabricmc.api.EnvironmentInterfaces;
-import net.minecraft.client.network.packet.EntitySpawnClientPacket;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -197,7 +197,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 				if (this.field_7621) {
 					this.world.spawnEntity(new ItemEntity(this.world, this.x, this.y, this.z, this.getItem()));
 				} else {
-					this.world.fireWorldEvent(2003, new BlockPos(this), 0);
+					this.world.playEvent(2003, new BlockPos(this), 0);
 				}
 			}
 		}
@@ -235,6 +235,6 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 
 	@Override
 	public Packet<?> createSpawnPacket() {
-		return new EntitySpawnClientPacket(this);
+		return new EntitySpawnS2CPacket(this);
 	}
 }

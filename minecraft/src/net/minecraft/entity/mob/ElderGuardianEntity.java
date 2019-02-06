@@ -3,7 +3,7 @@ package net.minecraft.entity.mob;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.GameStateChangeClientPacket;
+import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -85,7 +85,7 @@ public class ElderGuardianEntity extends GuardianEntity {
 				if (!serverPlayerEntity.hasPotionEffect(statusEffect)
 					|| serverPlayerEntity.getPotionEffect(statusEffect).getAmplifier() < 2
 					|| serverPlayerEntity.getPotionEffect(statusEffect).getDuration() < 1200) {
-					serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeClientPacket(10, 0.0F));
+					serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(10, 0.0F));
 					serverPlayerEntity.addPotionEffect(new StatusEffectInstance(statusEffect, 6000, 2));
 				}
 			}

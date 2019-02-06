@@ -4,15 +4,15 @@ import com.mojang.authlib.GameProfile;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.text.TextComponent;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
-	public OtherClientPlayerEntity(World world, GameProfile gameProfile) {
-		super(world, gameProfile);
+	public OtherClientPlayerEntity(ClientWorld clientWorld, GameProfile gameProfile) {
+		super(clientWorld, gameProfile);
 		this.stepHeight = 1.0F;
 		this.noClip = true;
 		this.renderOffsetY = 0.25F;

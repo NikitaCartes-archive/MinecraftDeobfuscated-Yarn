@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.network.packet.EntitySpawnGlobalClientPacket;
+import net.minecraft.client.network.packet.EntitySpawnGlobalS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -28,6 +28,7 @@ public class LightningEntity extends Entity {
 
 	public LightningEntity(World world, double d, double e, double f, boolean bl) {
 		super(EntityType.LIGHTNING_BOLT, world);
+		this.ignoreCameraFrustum = true;
 		this.setPositionAndAngles(d, e, f, 0.0F, 0.0F);
 		this.field_7185 = 2;
 		this.field_7186 = this.random.nextLong();
@@ -70,7 +71,7 @@ public class LightningEntity extends Entity {
 
 		if (this.field_7185 >= 0) {
 			if (this.world.isClient) {
-				this.world.setTicksSinceLightningClient(2);
+				this.world.setTicksSinceLightning(2);
 			} else if (!this.field_7184) {
 				double d = 3.0;
 				List<Entity> list = this.world
@@ -126,6 +127,6 @@ public class LightningEntity extends Entity {
 
 	@Override
 	public Packet<?> createSpawnPacket() {
-		return new EntitySpawnGlobalClientPacket(this);
+		return new EntitySpawnGlobalS2CPacket(this);
 	}
 }

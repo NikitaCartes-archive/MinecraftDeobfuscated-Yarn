@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.server.network.packet.ClientCommandServerPacket;
+import net.minecraft.server.network.packet.ClientCommandC2SPacket;
 
 @Environment(EnvType.CLIENT)
 public class SleepingChatScreen extends ChatScreen {
@@ -45,6 +45,6 @@ public class SleepingChatScreen extends ChatScreen {
 
 	private void method_2180() {
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.player.networkHandler;
-		clientPlayNetworkHandler.sendPacket(new ClientCommandServerPacket(this.client.player, ClientCommandServerPacket.Mode.field_12986));
+		clientPlayNetworkHandler.sendPacket(new ClientCommandC2SPacket(this.client.player, ClientCommandC2SPacket.Mode.field_12986));
 	}
 }

@@ -19,9 +19,9 @@ public class VillageFeature extends StructureFeature<VillageFeatureConfig> {
 	}
 
 	@Override
-	protected ChunkPos method_14018(ChunkGenerator<?> chunkGenerator, Random random, int i, int j, int k, int l) {
-		int m = chunkGenerator.getSettings().getVillageDistance();
-		int n = chunkGenerator.getSettings().method_12559();
+	protected ChunkPos getStart(ChunkGenerator<?> chunkGenerator, Random random, int i, int j, int k, int l) {
+		int m = chunkGenerator.getConfig().getVillageDistance();
+		int n = chunkGenerator.getConfig().getVillageSeparation();
 		int o = i + m * k;
 		int p = j + m * l;
 		int q = o < 0 ? o - m + 1 : o;
@@ -38,7 +38,7 @@ public class VillageFeature extends StructureFeature<VillageFeatureConfig> {
 
 	@Override
 	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
-		ChunkPos chunkPos = this.method_14018(chunkGenerator, random, i, j, 0, 0);
+		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
 		if (i == chunkPos.x && j == chunkPos.z) {
 			Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
 			return chunkGenerator.hasStructure(biome, Feature.VILLAGE);
@@ -49,7 +49,7 @@ public class VillageFeature extends StructureFeature<VillageFeatureConfig> {
 
 	@Override
 	public StructureFeature.StructureStartFactory getStructureStartFactory() {
-		return VillageFeature.class_3212::new;
+		return VillageFeature.Start::new;
 	}
 
 	@Override
@@ -58,12 +58,12 @@ public class VillageFeature extends StructureFeature<VillageFeatureConfig> {
 	}
 
 	@Override
-	public int method_14021() {
+	public int getRadius() {
 		return 8;
 	}
 
-	public static class class_3212 extends StructureStart {
-		public class_3212(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
+	public static class Start extends StructureStart {
+		public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
 			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
 		}
 

@@ -306,4 +306,17 @@ public abstract class EntityNavigation {
 	public boolean canSwim() {
 		return this.nodeMaker.canSwim();
 	}
+
+	public void method_18053(BlockPos blockPos) {
+		if (this.currentPath != null && !this.currentPath.isFinished() && this.currentPath.getLength() != 0) {
+			PathNode pathNode = this.currentPath.getEnd();
+			double d = blockPos.squaredDistanceTo(
+				((double)pathNode.x + this.entity.x) / 2.0, ((double)pathNode.y + this.entity.y) / 2.0, ((double)pathNode.z + this.entity.z) / 2.0
+			);
+			int i = (this.currentPath.getLength() - this.currentPath.getCurrentNodeIndex()) * (this.currentPath.getLength() - this.currentPath.getCurrentNodeIndex());
+			if (d < (double)i) {
+				this.recalculatePath();
+			}
+		}
+	}
 }

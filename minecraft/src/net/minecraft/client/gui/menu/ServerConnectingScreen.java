@@ -14,8 +14,8 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.ServerAddress;
-import net.minecraft.server.network.packet.HandshakeServerPacket;
-import net.minecraft.server.packet.LoginHelloServerPacket;
+import net.minecraft.server.network.packet.HandshakeC2SPacket;
+import net.minecraft.server.network.packet.LoginHelloC2SPacket;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.UncaughtExceptionLogger;
@@ -35,7 +35,7 @@ public class ServerConnectingScreen extends Screen {
 		this.client = minecraftClient;
 		this.parent = screen;
 		ServerAddress serverAddress = ServerAddress.parse(serverEntry.address);
-		minecraftClient.method_1481(null);
+		minecraftClient.method_18099();
 		minecraftClient.setCurrentServerEntry(serverEntry);
 		this.method_2130(serverAddress.getAddress(), serverAddress.getPort());
 	}
@@ -43,7 +43,7 @@ public class ServerConnectingScreen extends Screen {
 	public ServerConnectingScreen(Screen screen, MinecraftClient minecraftClient, String string, int i) {
 		this.client = minecraftClient;
 		this.parent = screen;
-		minecraftClient.method_1481(null);
+		minecraftClient.method_18099();
 		this.method_2130(string, i);
 	}
 
@@ -69,8 +69,8 @@ public class ServerConnectingScreen extends Screen {
 								textComponent -> ServerConnectingScreen.this.method_2131(textComponent)
 							)
 						);
-					ServerConnectingScreen.this.connection.sendPacket(new HandshakeServerPacket(string, i, NetworkState.LOGIN));
-					ServerConnectingScreen.this.connection.sendPacket(new LoginHelloServerPacket(ServerConnectingScreen.this.client.getSession().getProfile()));
+					ServerConnectingScreen.this.connection.sendPacket(new HandshakeC2SPacket(string, i, NetworkState.LOGIN));
+					ServerConnectingScreen.this.connection.sendPacket(new LoginHelloC2SPacket(ServerConnectingScreen.this.client.getSession().getProfile()));
 				} catch (UnknownHostException var4) {
 					if (ServerConnectingScreen.this.field_2409) {
 						return;

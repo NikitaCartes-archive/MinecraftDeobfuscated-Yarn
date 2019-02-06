@@ -5,7 +5,7 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.BlockEntityUpdateClientPacket;
+import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.CommandOutput;
@@ -97,8 +97,8 @@ public class SignBlockEntity extends BlockEntity {
 
 	@Nullable
 	@Override
-	public BlockEntityUpdateClientPacket toUpdatePacket() {
-		return new BlockEntityUpdateClientPacket(this.pos, 9, this.toInitialChunkDataTag());
+	public BlockEntityUpdateS2CPacket method_16886() {
+		return new BlockEntityUpdateS2CPacket(this.pos, 9, this.toInitialChunkDataTag());
 	}
 
 	@Override

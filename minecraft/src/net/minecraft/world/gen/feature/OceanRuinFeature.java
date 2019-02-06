@@ -25,27 +25,27 @@ public class OceanRuinFeature extends AbstractTempleFeature<OceanRuinFeatureConf
 	}
 
 	@Override
-	public int method_14021() {
+	public int getRadius() {
 		return 3;
 	}
 
 	@Override
-	protected int method_13773(ChunkGenerator<?> chunkGenerator) {
-		return chunkGenerator.getSettings().method_12564();
+	protected int getSpacing(ChunkGenerator<?> chunkGenerator) {
+		return chunkGenerator.getConfig().getOceanRuinSpacing();
 	}
 
 	@Override
-	protected int method_13775(ChunkGenerator<?> chunkGenerator) {
-		return chunkGenerator.getSettings().method_12555();
+	protected int getSeparation(ChunkGenerator<?> chunkGenerator) {
+		return chunkGenerator.getConfig().getOceanRuinSeparation();
 	}
 
 	@Override
 	public StructureFeature.StructureStartFactory getStructureStartFactory() {
-		return OceanRuinFeature.class_3412::new;
+		return OceanRuinFeature.Start::new;
 	}
 
 	@Override
-	protected int method_13774() {
+	protected int getSeedModifier() {
 		return 14357621;
 	}
 
@@ -70,8 +70,8 @@ public class OceanRuinFeature extends AbstractTempleFeature<OceanRuinFeatureConf
 		}
 	}
 
-	public static class class_3412 extends StructureStart {
-		public class_3412(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
+	public static class Start extends StructureStart {
+		public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
 			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
 		}
 

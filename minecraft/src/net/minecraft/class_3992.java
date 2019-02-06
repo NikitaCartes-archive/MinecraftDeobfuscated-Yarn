@@ -17,6 +17,7 @@ public class class_3992 extends MobEntityRenderer<WanderingTraderEntity, Village
 	public class_3992(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new VillagerEntityModel<>(0.0F), 0.5F);
 		this.addFeature(new HeadFeatureRenderer<>(this));
+		this.addFeature(new class_4004<>(this));
 	}
 
 	protected Identifier method_18045(WanderingTraderEntity wanderingTraderEntity) {

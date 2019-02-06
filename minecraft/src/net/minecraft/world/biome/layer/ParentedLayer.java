@@ -1,7 +1,5 @@
 package net.minecraft.world.biome.layer;
 
-import net.minecraft.util.math.CoordinateTransformer;
-
 public interface ParentedLayer extends CoordinateTransformer {
 	default <R extends LayerSampler> LayerFactory<R> create(LayerSampleContext<R> layerSampleContext, LayerFactory<R> layerFactory) {
 		return () -> {

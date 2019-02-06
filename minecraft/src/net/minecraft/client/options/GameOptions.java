@@ -36,7 +36,7 @@ import net.minecraft.client.util.VideoMode;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resource.ResourcePackContainerManager;
-import net.minecraft.server.network.packet.ClientSettingsServerPacket;
+import net.minecraft.server.network.packet.ClientSettingsC2SPacket;
 import net.minecraft.sortme.OptionMainHand;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.JsonHelper;
@@ -662,7 +662,7 @@ public class GameOptions {
 					}
 
 					if ("difficulty".equals(string)) {
-						this.difficulty = Difficulty.byId(Integer.parseInt(string2));
+						this.difficulty = Difficulty.getDifficulty(Integer.parseInt(string2));
 					}
 
 					if ("fancyGraphics".equals(string)) {
@@ -1027,7 +1027,7 @@ public class GameOptions {
 			this.client
 				.player
 				.networkHandler
-				.sendPacket(new ClientSettingsServerPacket(this.language, this.viewDistance, this.chatVisibility, this.chatColors, i, this.mainHand));
+				.sendPacket(new ClientSettingsC2SPacket(this.language, this.viewDistance, this.chatVisibility, this.chatColors, i, this.mainHand));
 		}
 	}
 

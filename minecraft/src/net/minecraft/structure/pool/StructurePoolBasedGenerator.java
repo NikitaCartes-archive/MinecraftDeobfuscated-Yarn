@@ -42,7 +42,7 @@ public class StructurePoolBasedGenerator {
 		MutableIntBoundingBox mutableIntBoundingBox = poolStructurePiece.getBoundingBox();
 		int j = (mutableIntBoundingBox.maxX + mutableIntBoundingBox.minX) / 2;
 		int k = (mutableIntBoundingBox.maxZ + mutableIntBoundingBox.minZ) / 2;
-		poolStructurePiece.translate(0, chunkGenerator.produceHeight(j, k, Heightmap.Type.WORLD_SURFACE_WG) - mutableIntBoundingBox.minY, 0);
+		poolStructurePiece.translate(0, chunkGenerator.getHeightOnGround(j, k, Heightmap.Type.WORLD_SURFACE_WG) - mutableIntBoundingBox.minY, 0);
 		addPieces(pieceFactory, poolStructurePiece, chunkGenerator, structureManager, list, random, 0, i);
 	}
 
@@ -159,7 +159,7 @@ public class StructurePoolBasedGenerator {
 						if (projection == StructurePool.Projection.RIGID && projection2 == StructurePool.Projection.RIGID) {
 							q = mutableIntBoundingBox.minY + n;
 						} else {
-							q = chunkGenerator.produceHeight(structureBlockInfo.pos.getX(), structureBlockInfo.pos.getZ(), Heightmap.Type.WORLD_SURFACE_WG) - 1 + n;
+							q = chunkGenerator.getHeightOnGround(structureBlockInfo.pos.getX(), structureBlockInfo.pos.getZ(), Heightmap.Type.WORLD_SURFACE_WG) - 1 + n;
 						}
 
 						int r = q - mutableIntBoundingBox2.minY;
@@ -182,7 +182,7 @@ public class StructurePoolBasedGenerator {
 							} else if (projection2 == StructurePool.Projection.RIGID) {
 								s = q + m;
 							} else {
-								s = chunkGenerator.produceHeight(structureBlockInfo.pos.getX(), structureBlockInfo.pos.getZ(), Heightmap.Type.WORLD_SURFACE_WG) - 1 + n / 2;
+								s = chunkGenerator.getHeightOnGround(structureBlockInfo.pos.getX(), structureBlockInfo.pos.getZ(), Heightmap.Type.WORLD_SURFACE_WG) - 1 + n / 2;
 							}
 
 							poolStructurePiece.addJunction(new JigsawJunction(blockPos.getX(), s - l + o, blockPos.getZ(), n, projection2));

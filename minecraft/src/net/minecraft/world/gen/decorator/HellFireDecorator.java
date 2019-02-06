@@ -6,10 +6,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import net.minecraft.class_3667;
 import net.minecraft.util.math.BlockPos;
 
-public class HellFireDecorator extends class_3667<CountDecoratorConfig> {
+public class HellFireDecorator extends SimpleDecorator<CountDecoratorConfig> {
 	public HellFireDecorator(Function<Dynamic<?>, ? extends CountDecoratorConfig> function) {
 		super(function);
 	}

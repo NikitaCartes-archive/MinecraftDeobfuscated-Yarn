@@ -11,6 +11,7 @@ import net.minecraft.client.texture.SkinRemappingImageFilter;
 import net.minecraft.client.texture.Texture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.DefaultSkinHelper;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,7 +19,6 @@ import net.minecraft.item.Items;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.GameMode;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractClientPlayerEntity extends PlayerEntity {
@@ -26,9 +26,11 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 	public float field_3900;
 	public float field_3899;
 	public float field_3898;
+	public final ClientWorld field_17892;
 
-	public AbstractClientPlayerEntity(World world, GameProfile gameProfile) {
-		super(world, gameProfile);
+	public AbstractClientPlayerEntity(ClientWorld clientWorld, GameProfile gameProfile) {
+		super(clientWorld, gameProfile);
+		this.field_17892 = clientWorld;
 	}
 
 	@Override

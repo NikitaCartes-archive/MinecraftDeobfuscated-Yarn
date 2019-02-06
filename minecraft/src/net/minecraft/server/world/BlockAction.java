@@ -4,32 +4,32 @@ import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
 
 public class BlockAction {
-	private final BlockPos field_9173;
-	private final Block field_9172;
-	private final int field_9171;
-	private final int field_9170;
+	private final BlockPos pos;
+	private final Block block;
+	private final int type;
+	private final int data;
 
 	public BlockAction(BlockPos blockPos, Block block, int i, int j) {
-		this.field_9173 = blockPos;
-		this.field_9172 = block;
-		this.field_9171 = i;
-		this.field_9170 = j;
+		this.pos = blockPos;
+		this.block = block;
+		this.type = i;
+		this.data = j;
 	}
 
 	public BlockPos getPos() {
-		return this.field_9173;
+		return this.pos;
 	}
 
-	public Block method_8309() {
-		return this.field_9172;
+	public Block getBlock() {
+		return this.block;
 	}
 
-	public int method_8307() {
-		return this.field_9171;
+	public int getType() {
+		return this.type;
 	}
 
-	public int method_8308() {
-		return this.field_9170;
+	public int getData() {
+		return this.data;
 	}
 
 	public boolean equals(Object object) {
@@ -37,14 +37,11 @@ public class BlockAction {
 			return false;
 		} else {
 			BlockAction blockAction = (BlockAction)object;
-			return this.field_9173.equals(blockAction.field_9173)
-				&& this.field_9171 == blockAction.field_9171
-				&& this.field_9170 == blockAction.field_9170
-				&& this.field_9172 == blockAction.field_9172;
+			return this.pos.equals(blockAction.pos) && this.type == blockAction.type && this.data == blockAction.data && this.block == blockAction.block;
 		}
 	}
 
 	public String toString() {
-		return "TE(" + this.field_9173 + ")," + this.field_9171 + "," + this.field_9170 + "," + this.field_9172;
+		return "TE(" + this.pos + ")," + this.type + "," + this.data + "," + this.block;
 	}
 }

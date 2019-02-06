@@ -52,7 +52,6 @@ public class ItemModels {
 
 	public void putModel(Item item, ModelIdentifier modelIdentifier) {
 		this.modelIds.put(getModelId(item), modelIdentifier);
-		this.models.put(getModelId(item), this.modelManager.getModel(modelIdentifier));
 	}
 
 	public BakedModelManager getModelManager() {

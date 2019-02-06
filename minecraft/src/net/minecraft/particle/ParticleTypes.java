@@ -27,6 +27,7 @@ public class ParticleTypes {
 	public static final DefaultParticleType field_11248 = register("firework", false);
 	public static final DefaultParticleType field_11244 = register("fishing", false);
 	public static final DefaultParticleType field_11240 = register("flame", false);
+	public static final DefaultParticleType field_17909 = register("flash", false);
 	public static final DefaultParticleType field_11211 = register("happy_villager", false);
 	public static final DefaultParticleType field_17741 = register("composter", false);
 	public static final DefaultParticleType field_11201 = register("heart", false);

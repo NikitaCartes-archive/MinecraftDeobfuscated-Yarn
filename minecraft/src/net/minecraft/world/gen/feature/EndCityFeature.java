@@ -21,9 +21,9 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	protected ChunkPos method_14018(ChunkGenerator<?> chunkGenerator, Random random, int i, int j, int k, int l) {
-		int m = chunkGenerator.getSettings().getEndCityDistance();
-		int n = chunkGenerator.getSettings().method_12557();
+	protected ChunkPos getStart(ChunkGenerator<?> chunkGenerator, Random random, int i, int j, int k, int l) {
+		int m = chunkGenerator.getConfig().getEndCityDistance();
+		int n = chunkGenerator.getConfig().getEndCitySeparation();
 		int o = i + m * k;
 		int p = j + m * l;
 		int q = o < 0 ? o - m + 1 : o;
@@ -40,13 +40,13 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 
 	@Override
 	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
-		ChunkPos chunkPos = this.method_14018(chunkGenerator, random, i, j, 0, 0);
+		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
 		if (i == chunkPos.x && j == chunkPos.z) {
 			Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
 			if (!chunkGenerator.hasStructure(biome, Feature.END_CITY)) {
 				return false;
 			} else {
-				int k = method_13085(i, j, chunkGenerator);
+				int k = getGenerationHeight(i, j, chunkGenerator);
 				return k >= 60;
 			}
 		} else {
@@ -56,7 +56,7 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 
 	@Override
 	public StructureFeature.StructureStartFactory getStructureStartFactory() {
-		return EndCityFeature.class_3022::new;
+		return EndCityFeature.Start::new;
 	}
 
 	@Override
@@ -65,11 +65,11 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	public int method_14021() {
+	public int getRadius() {
 		return 8;
 	}
 
-	private static int method_13085(int i, int j, ChunkGenerator<?> chunkGenerator) {
+	private static int getGenerationHeight(int i, int j, ChunkGenerator<?> chunkGenerator) {
 		Random random = new Random((long)(i + j * 10387313));
 		Rotation rotation = Rotation.values()[random.nextInt(Rotation.values().length)];
 		int k = 5;
@@ -85,22 +85,22 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 
 		int m = (i << 4) + 7;
 		int n = (j << 4) + 7;
-		int o = chunkGenerator.method_18028(m, n, Heightmap.Type.WORLD_SURFACE_WG);
-		int p = chunkGenerator.method_18028(m, n + l, Heightmap.Type.WORLD_SURFACE_WG);
-		int q = chunkGenerator.method_18028(m + k, n, Heightmap.Type.WORLD_SURFACE_WG);
-		int r = chunkGenerator.method_18028(m + k, n + l, Heightmap.Type.WORLD_SURFACE_WG);
+		int o = chunkGenerator.getHeightInGround(m, n, Heightmap.Type.WORLD_SURFACE_WG);
+		int p = chunkGenerator.getHeightInGround(m, n + l, Heightmap.Type.WORLD_SURFACE_WG);
+		int q = chunkGenerator.getHeightInGround(m + k, n, Heightmap.Type.WORLD_SURFACE_WG);
+		int r = chunkGenerator.getHeightInGround(m + k, n + l, Heightmap.Type.WORLD_SURFACE_WG);
 		return Math.min(Math.min(o, p), Math.min(q, r));
 	}
 
-	public static class class_3022 extends StructureStart {
-		public class_3022(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
+	public static class Start extends StructureStart {
+		public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
 			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
 		}
 
 		@Override
 		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
 			Rotation rotation = Rotation.values()[this.random.nextInt(Rotation.values().length)];
-			int k = EndCityFeature.method_13085(i, j, chunkGenerator);
+			int k = EndCityFeature.getGenerationHeight(i, j, chunkGenerator);
 			if (k >= 60) {
 				BlockPos blockPos = new BlockPos(i * 16 + 8, k, j * 16 + 8);
 				EndCityGenerator.addPieces(structureManager, blockPos, rotation, this.children, this.random);

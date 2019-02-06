@@ -46,8 +46,7 @@ public class FireworksItem extends Item {
 		if (playerEntity.isFallFlying()) {
 			ItemStack itemStack = playerEntity.getStackInHand(hand);
 			if (!world.isClient) {
-				FireworkEntity fireworkEntity = new FireworkEntity(world, itemStack, playerEntity);
-				world.spawnEntity(fireworkEntity);
+				world.spawnEntity(new FireworkEntity(world, itemStack, playerEntity));
 				if (!playerEntity.abilities.creativeMode) {
 					itemStack.subtractAmount(1);
 				}

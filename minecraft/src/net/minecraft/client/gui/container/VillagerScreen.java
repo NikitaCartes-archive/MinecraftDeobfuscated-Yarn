@@ -11,7 +11,7 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.container.MerchantContainer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.packet.SelectVillagerTradeServerPacket;
+import net.minecraft.server.network.packet.SelectVillagerTradeC2SPacket;
 import net.minecraft.text.TextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.village.VillagerRecipe;
@@ -30,7 +30,7 @@ public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 
 	private void method_2496() {
 		this.container.setRecipeIndex(this.field_2947);
-		this.client.getNetworkHandler().sendPacket(new SelectVillagerTradeServerPacket(this.field_2947));
+		this.client.getNetworkHandler().sendPacket(new SelectVillagerTradeC2SPacket(this.field_2947));
 	}
 
 	@Override
@@ -115,9 +115,9 @@ public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 			int l = (this.height - this.containerHeight) / 2;
 			int m = this.field_2947;
 			VillagerRecipe villagerRecipe = (VillagerRecipe)villagerRecipeList.get(m);
-			ItemStack itemStack = villagerRecipe.getBuyItem();
+			ItemStack itemStack = villagerRecipe.getFirstBuyItem();
 			ItemStack itemStack2 = villagerRecipe.getSecondBuyItem();
-			ItemStack itemStack3 = villagerRecipe.getSellItem();
+			ItemStack itemStack3 = villagerRecipe.getModifiableSellItem();
 			GlStateManager.pushMatrix();
 			GuiLighting.enableForItems();
 			GlStateManager.disableLighting();

@@ -7,8 +7,8 @@ import net.minecraft.block.JigsawBlock;
 import net.minecraft.block.StructureBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.client.network.packet.BlockUpdateClientPacket;
-import net.minecraft.client.network.packet.PlayerListClientPacket;
+import net.minecraft.client.network.packet.BlockUpdateS2CPacket;
+import net.minecraft.client.network.packet.PlayerListS2CPacket;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -24,7 +24,7 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 
 public class ServerPlayerInteractionManager {
-	public World world;
+	public ServerWorld world;
 	public ServerPlayerEntity player;
 	private GameMode gameMode = GameMode.INVALID;
 	private boolean field_14003;
@@ -36,16 +36,16 @@ public class ServerPlayerInteractionManager {
 	private int field_14010;
 	private int field_14009 = -1;
 
-	public ServerPlayerInteractionManager(World world) {
-		this.world = world;
+	public ServerPlayerInteractionManager(ServerWorld serverWorld) {
+		this.world = serverWorld;
 	}
 
 	public void setGameMode(GameMode gameMode) {
 		this.gameMode = gameMode;
 		gameMode.setAbilitites(this.player.abilities);
 		this.player.method_7355();
-		this.player.server.getPlayerManager().sendToAll(new PlayerListClientPacket(PlayerListClientPacket.Type.UPDATE_GAMEMODE, this.player));
-		this.world.updateSleepingStatus();
+		this.player.server.getPlayerManager().sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Type.UPDATE_GAMEMODE, this.player));
+		this.world.updatePlayersSleeping();
 	}
 
 	public GameMode getGameMode() {
@@ -146,7 +146,7 @@ public class ServerPlayerInteractionManager {
 				this.field_14006 = blockPos;
 				int i = (int)(f * 10.0F);
 				this.world.setBlockBreakingProgress(this.player.getEntityId(), blockPos, i);
-				this.player.networkHandler.sendPacket(new BlockUpdateClientPacket(this.world, blockPos));
+				this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(this.world, blockPos));
 				this.field_14009 = i;
 			}
 		}

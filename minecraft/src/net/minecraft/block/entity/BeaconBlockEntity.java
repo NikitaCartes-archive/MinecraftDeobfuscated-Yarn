@@ -15,7 +15,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.StainedGlassBlock;
 import net.minecraft.block.StainedGlassPaneBlock;
-import net.minecraft.client.network.packet.BlockEntityUpdateClientPacket;
+import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.container.BeaconContainer;
 import net.minecraft.container.Container;
 import net.minecraft.container.ContainerLock;
@@ -279,8 +279,8 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 
 	@Nullable
 	@Override
-	public BlockEntityUpdateClientPacket toUpdatePacket() {
-		return new BlockEntityUpdateClientPacket(this.pos, 3, this.toInitialChunkDataTag());
+	public BlockEntityUpdateS2CPacket method_16886() {
+		return new BlockEntityUpdateS2CPacket(this.pos, 3, this.toInitialChunkDataTag());
 	}
 
 	@Override

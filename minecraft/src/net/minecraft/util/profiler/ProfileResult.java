@@ -26,4 +26,6 @@ public interface ProfileResult {
 	default int getTickSpan() {
 		return this.getEndTick() - this.getStartTick();
 	}
+
+	String method_18052();
 }

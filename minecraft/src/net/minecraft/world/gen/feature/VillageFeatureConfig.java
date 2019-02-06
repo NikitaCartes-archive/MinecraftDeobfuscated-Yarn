@@ -29,7 +29,7 @@ public class VillageFeatureConfig implements FeatureConfig {
 		);
 	}
 
-	public static <T> VillageFeatureConfig method_16752(Dynamic<T> dynamic) {
+	public static <T> VillageFeatureConfig deserialize(Dynamic<T> dynamic) {
 		String string = dynamic.get("start_pool").asString("");
 		int i = dynamic.get("size").asInt(6);
 		return new VillageFeatureConfig(string, i);

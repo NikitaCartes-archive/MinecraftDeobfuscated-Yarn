@@ -53,7 +53,7 @@ public class VillagerOutputSlot extends Slot {
 		if (villagerRecipe != null) {
 			ItemStack itemStack2 = this.villagerInventory.getInvStack(0);
 			ItemStack itemStack3 = this.villagerInventory.getInvStack(1);
-			if (villagerRecipe.method_16953(itemStack2, itemStack3) || villagerRecipe.method_16953(itemStack3, itemStack2)) {
+			if (villagerRecipe.depleteBuyItems(itemStack2, itemStack3) || villagerRecipe.depleteBuyItems(itemStack3, itemStack2)) {
 				this.villager.useRecipe(villagerRecipe);
 				playerEntity.increaseStat(Stats.field_15378);
 				this.villagerInventory.setInvStack(0, itemStack2);

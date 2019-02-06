@@ -16,7 +16,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig> {
-	private static final List<Biome.SpawnEntry> field_13705 = Lists.<Biome.SpawnEntry>newArrayList(
+	private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(
 		new Biome.SpawnEntry(EntityType.BLAZE, 10, 2, 3),
 		new Biome.SpawnEntry(EntityType.ZOMBIE_PIGMAN, 5, 4, 4),
 		new Biome.SpawnEntry(EntityType.WITHER_SKELETON, 8, 5, 5),
@@ -48,7 +48,7 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 
 	@Override
 	public StructureFeature.StructureStartFactory getStructureStartFactory() {
-		return NetherFortressFeature.class_3109::new;
+		return NetherFortressFeature.Start::new;
 	}
 
 	@Override
@@ -57,17 +57,17 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 	}
 
 	@Override
-	public int method_14021() {
+	public int getRadius() {
 		return 8;
 	}
 
 	@Override
 	public List<Biome.SpawnEntry> getMonsterSpawns() {
-		return field_13705;
+		return MONSTER_SPAWNS;
 	}
 
-	public static class class_3109 extends StructureStart {
-		public class_3109(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
+	public static class Start extends StructureStart {
+		public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
 			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
 		}
 

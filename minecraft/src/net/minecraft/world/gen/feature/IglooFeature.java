@@ -22,22 +22,22 @@ public class IglooFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	public int method_14021() {
+	public int getRadius() {
 		return 3;
 	}
 
 	@Override
 	public StructureFeature.StructureStartFactory getStructureStartFactory() {
-		return IglooFeature.class_3072::new;
+		return IglooFeature.Start::new;
 	}
 
 	@Override
-	protected int method_13774() {
+	protected int getSeedModifier() {
 		return 14357618;
 	}
 
-	public static class class_3072 extends StructureStart {
-		public class_3072(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
+	public static class Start extends StructureStart {
+		public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
 			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
 		}
 

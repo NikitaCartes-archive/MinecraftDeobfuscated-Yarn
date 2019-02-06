@@ -11,7 +11,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class IcePatchFeature extends Feature<IcePatchFeatureConfig> {
-	private final Block field_13663 = Blocks.field_10225;
+	private final Block ICE = Blocks.field_10225;
 
 	public IcePatchFeature(Function<Dynamic<?>, ? extends IcePatchFeatureConfig> function) {
 		super(function);
@@ -39,7 +39,7 @@ public class IcePatchFeature extends Feature<IcePatchFeatureConfig> {
 							BlockPos blockPos2 = new BlockPos(k, o, l);
 							Block block = iWorld.getBlockState(blockPos2).getBlock();
 							if (Block.isNaturalDirt(block) || block == Blocks.field_10491 || block == Blocks.field_10295) {
-								iWorld.setBlockState(blockPos2, this.field_13663.getDefaultState(), 2);
+								iWorld.setBlockState(blockPos2, this.ICE.getDefaultState(), 2);
 							}
 						}
 					}

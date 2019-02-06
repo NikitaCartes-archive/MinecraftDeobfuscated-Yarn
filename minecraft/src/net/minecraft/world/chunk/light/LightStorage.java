@@ -60,7 +60,7 @@ public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends Leve
 	protected int get(long l) {
 		long m = BlockPos.toChunkSectionOrigin(l);
 		ChunkNibbleArray chunkNibbleArray = this.getDataForChunk(m, true);
-		return chunkNibbleArray.method_12139(BlockPos.unpackLongX(l) & 15, BlockPos.unpackLongY(l) & 15, BlockPos.unpackLongZ(l) & 15);
+		return chunkNibbleArray.get(BlockPos.unpackLongX(l) & 15, BlockPos.unpackLongY(l) & 15, BlockPos.unpackLongZ(l) & 15);
 	}
 
 	protected void set(long l, int i) {

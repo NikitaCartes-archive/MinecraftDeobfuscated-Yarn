@@ -57,7 +57,7 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		return this.requiresConversion;
 	}
 
-	public long lastPlayed() {
+	public long getLastPlayed() {
 		return this.lastPlayed;
 	}
 
@@ -77,7 +77,7 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		return this.isHardcore;
 	}
 
-	public boolean areCommandsAllowed() {
+	public boolean hasCheats() {
 		return this.commandsAllowed;
 	}
 
@@ -87,7 +87,7 @@ public class LevelSummary implements Comparable<LevelSummary> {
 			: new StringTextComponent(this.versionName));
 	}
 
-	public boolean method_256() {
+	public boolean isDifferentVersion() {
 		return this.isFutureLevel() || !SharedConstants.getGameVersion().isStable() && !this.isSnapshot || this.isOutdatedLevel() || this.isLegacyCustomizedWorld();
 	}
 

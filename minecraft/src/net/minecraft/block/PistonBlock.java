@@ -126,7 +126,7 @@ public class PistonBlock extends FacingBlock {
 				if (blockEntity instanceof PistonBlockEntity) {
 					PistonBlockEntity pistonBlockEntity = (PistonBlockEntity)blockEntity;
 					if (pistonBlockEntity.isExtending()
-						&& (pistonBlockEntity.getProgress(0.0F) < 0.5F || world.getTime() == pistonBlockEntity.getSavedWorldTime() || ((ServerWorld)world).method_14177())) {
+						&& (pistonBlockEntity.getProgress(0.0F) < 0.5F || world.getTime() == pistonBlockEntity.getSavedWorldTime() || ((ServerWorld)world).isInsideTick())) {
 						i = 2;
 					}
 				}

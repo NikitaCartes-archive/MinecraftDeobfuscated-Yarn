@@ -5,7 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.TagHelper;
 
 public class VillagerRecipe {
-	private final ItemStack buyItem;
+	private final ItemStack firstBuyItem;
 	private final ItemStack secondBuyItem;
 	private final ItemStack sellItem;
 	private int uses;
@@ -13,7 +13,7 @@ public class VillagerRecipe {
 	private boolean rewardExp = true;
 
 	public VillagerRecipe(CompoundTag compoundTag) {
-		this.buyItem = ItemStack.fromTag(compoundTag.getCompound("buy"));
+		this.firstBuyItem = ItemStack.fromTag(compoundTag.getCompound("buy"));
 		this.secondBuyItem = ItemStack.fromTag(compoundTag.getCompound("buyB"));
 		this.sellItem = ItemStack.fromTag(compoundTag.getCompound("sell"));
 		this.uses = compoundTag.getInt("uses");
@@ -35,26 +35,26 @@ public class VillagerRecipe {
 	}
 
 	public VillagerRecipe(ItemStack itemStack, ItemStack itemStack2, ItemStack itemStack3, int i, int j) {
-		this.buyItem = itemStack;
+		this.firstBuyItem = itemStack;
 		this.secondBuyItem = itemStack2;
 		this.sellItem = itemStack3;
 		this.uses = i;
 		this.maxUses = j;
 	}
 
-	public ItemStack getBuyItem() {
-		return this.buyItem;
+	public ItemStack getFirstBuyItem() {
+		return this.firstBuyItem;
 	}
 
 	public ItemStack getSecondBuyItem() {
 		return this.secondBuyItem;
 	}
 
-	public ItemStack getSellItem() {
+	public ItemStack getModifiableSellItem() {
 		return this.sellItem;
 	}
 
-	public ItemStack method_18019() {
+	public ItemStack getSellItem() {
 		return this.sellItem.copy();
 	}
 
@@ -88,7 +88,7 @@ public class VillagerRecipe {
 
 	public CompoundTag deserialize() {
 		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.put("buy", this.buyItem.toTag(new CompoundTag()));
+		compoundTag.put("buy", this.firstBuyItem.toTag(new CompoundTag()));
 		compoundTag.put("sell", this.sellItem.toTag(new CompoundTag()));
 		compoundTag.put("buyB", this.secondBuyItem.toTag(new CompoundTag()));
 		compoundTag.putInt("uses", this.uses);
@@ -97,14 +97,14 @@ public class VillagerRecipe {
 		return compoundTag;
 	}
 
-	public boolean method_16952(ItemStack itemStack, ItemStack itemStack2) {
-		return this.method_16954(itemStack, this.buyItem)
-			&& itemStack.getAmount() >= this.buyItem.getAmount()
-			&& this.method_16954(itemStack2, this.secondBuyItem)
+	public boolean matchesBuyItems(ItemStack itemStack, ItemStack itemStack2) {
+		return this.acceptsBuy(itemStack, this.firstBuyItem)
+			&& itemStack.getAmount() >= this.firstBuyItem.getAmount()
+			&& this.acceptsBuy(itemStack2, this.secondBuyItem)
 			&& itemStack2.getAmount() >= this.secondBuyItem.getAmount();
 	}
 
-	private boolean method_16954(ItemStack itemStack, ItemStack itemStack2) {
+	private boolean acceptsBuy(ItemStack itemStack, ItemStack itemStack2) {
 		if (itemStack2.isEmpty() && itemStack.isEmpty()) {
 			return true;
 		} else {
@@ -118,11 +118,11 @@ public class VillagerRecipe {
 		}
 	}
 
-	public boolean method_16953(ItemStack itemStack, ItemStack itemStack2) {
-		if (!this.method_16952(itemStack, itemStack2)) {
+	public boolean depleteBuyItems(ItemStack itemStack, ItemStack itemStack2) {
+		if (!this.matchesBuyItems(itemStack, itemStack2)) {
 			return false;
 		} else {
-			itemStack.subtractAmount(this.getBuyItem().getAmount());
+			itemStack.subtractAmount(this.getFirstBuyItem().getAmount());
 			if (!this.getSecondBuyItem().isEmpty()) {
 				itemStack2.subtractAmount(this.getSecondBuyItem().getAmount());
 			}

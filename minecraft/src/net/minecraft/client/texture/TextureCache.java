@@ -74,7 +74,7 @@ public class TextureCache {
 				entry.lastRequestTimeMillis = SystemUtil.getMeasuringTimeMs();
 				return entry.filename;
 			} else {
-				return MissingSprite.getMissingTextureId();
+				return MissingSprite.getMissingSpriteId();
 			}
 		}
 

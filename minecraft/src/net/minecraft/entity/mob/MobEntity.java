@@ -9,7 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.network.packet.EntityAttachClientPacket;
+import net.minecraft.client.network.packet.EntityAttachS2CPacket;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -970,7 +970,7 @@ public abstract class MobEntity extends LivingEntity {
 			}
 
 			if (!this.world.isClient && bl && this.world instanceof ServerWorld) {
-				((ServerWorld)this.world).getEntityTracker().method_14079(this, new EntityAttachClientPacket(this, null));
+				((ServerWorld)this.world).getEntityTracker().method_14079(this, new EntityAttachS2CPacket(this, null));
 			}
 		}
 	}
@@ -996,7 +996,7 @@ public abstract class MobEntity extends LivingEntity {
 		}
 
 		if (!this.world.isClient && bl && this.world instanceof ServerWorld) {
-			((ServerWorld)this.world).getEntityTracker().method_14079(this, new EntityAttachClientPacket(this, this.holdingEntity));
+			((ServerWorld)this.world).getEntityTracker().method_14079(this, new EntityAttachS2CPacket(this, this.holdingEntity));
 		}
 
 		if (this.hasVehicle()) {
@@ -1027,12 +1027,7 @@ public abstract class MobEntity extends LivingEntity {
 				}
 			} else if (this.leashTag.containsKey("X", 99) && this.leashTag.containsKey("Y", 99) && this.leashTag.containsKey("Z", 99)) {
 				BlockPos blockPos = new BlockPos(this.leashTag.getInt("X"), this.leashTag.getInt("Y"), this.leashTag.getInt("Z"));
-				LeadKnotEntity leadKnotEntity = LeadKnotEntity.method_6932(this.world, blockPos);
-				if (leadKnotEntity == null) {
-					leadKnotEntity = LeadKnotEntity.method_6931(this.world, blockPos);
-				}
-
-				this.attachLeash(leadKnotEntity, true);
+				this.attachLeash(LeadKnotEntity.method_6932(this.world, blockPos), true);
 			} else {
 				this.detachLeash(false, true);
 			}

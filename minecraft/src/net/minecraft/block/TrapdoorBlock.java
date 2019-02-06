@@ -97,10 +97,10 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	protected void method_10740(@Nullable PlayerEntity playerEntity, World world, BlockPos blockPos, boolean bl) {
 		if (bl) {
 			int i = this.material == Material.METAL ? 1037 : 1007;
-			world.fireWorldEvent(playerEntity, i, blockPos, 0);
+			world.playEvent(playerEntity, i, blockPos, 0);
 		} else {
 			int i = this.material == Material.METAL ? 1036 : 1013;
-			world.fireWorldEvent(playerEntity, i, blockPos, 0);
+			world.playEvent(playerEntity, i, blockPos, 0);
 		}
 	}
 

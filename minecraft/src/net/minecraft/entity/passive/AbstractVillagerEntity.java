@@ -74,7 +74,7 @@ public abstract class AbstractVillagerEntity extends PassiveEntity implements Np
 		this.playSound(this.method_18010(), this.getSoundVolume(), this.getSoundPitch());
 		this.method_18008(villagerRecipe);
 		if (this.customer instanceof ServerPlayerEntity) {
-			Criterions.VILLAGER_TRADE.handle((ServerPlayerEntity)this.customer, this, villagerRecipe.getSellItem());
+			Criterions.VILLAGER_TRADE.handle((ServerPlayerEntity)this.customer, this, villagerRecipe.getModifiableSellItem());
 		}
 	}
 
@@ -101,7 +101,7 @@ public abstract class AbstractVillagerEntity extends PassiveEntity implements Np
 		super.writeCustomDataToTag(compoundTag);
 		VillagerRecipeList villagerRecipeList = this.getRecipes();
 		if (!villagerRecipeList.isEmpty()) {
-			compoundTag.put("Offers", villagerRecipeList.deserialize());
+			compoundTag.put("Offers", villagerRecipeList.toTag());
 		}
 
 		ListTag listTag = new ListTag();

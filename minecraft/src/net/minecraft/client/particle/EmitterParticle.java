@@ -2,13 +2,13 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.class_3998;
 import net.minecraft.entity.Entity;
 import net.minecraft.particle.ParticleParameters;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class EmitterParticle extends Particle {
+public class EmitterParticle extends class_3998 {
 	private final Entity entity;
 	private int emitterAge;
 	private final int maxEmitterAge;
@@ -24,10 +24,6 @@ public class EmitterParticle extends Particle {
 		this.maxEmitterAge = i;
 		this.parameters = particleParameters;
 		this.update();
-	}
-
-	@Override
-	public void buildGeometry(BufferBuilder bufferBuilder, Entity entity, float f, float g, float h, float i, float j, float k) {
 	}
 
 	@Override
@@ -48,10 +44,5 @@ public class EmitterParticle extends Particle {
 		if (this.emitterAge >= this.maxEmitterAge) {
 			this.markDead();
 		}
-	}
-
-	@Override
-	public int getParticleGroup() {
-		return 3;
 	}
 }

@@ -6,7 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Collection;
 import java.util.Locale;
-import net.minecraft.client.network.packet.TitleClientPacket;
+import net.minecraft.client.network.packet.TitleS2CPacket;
 import net.minecraft.command.arguments.ComponentArgumentType;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -38,7 +38,7 @@ public class TitleCommand {
 													commandContext.getSource(),
 													EntityArgumentType.method_9312(commandContext, "targets"),
 													ComponentArgumentType.getComponentArgument(commandContext, "title"),
-													TitleClientPacket.Action.field_12630
+													TitleS2CPacket.Action.field_12630
 												)
 										)
 								)
@@ -52,7 +52,7 @@ public class TitleCommand {
 													commandContext.getSource(),
 													EntityArgumentType.method_9312(commandContext, "targets"),
 													ComponentArgumentType.getComponentArgument(commandContext, "title"),
-													TitleClientPacket.Action.field_12632
+													TitleS2CPacket.Action.field_12632
 												)
 										)
 								)
@@ -66,7 +66,7 @@ public class TitleCommand {
 													commandContext.getSource(),
 													EntityArgumentType.method_9312(commandContext, "targets"),
 													ComponentArgumentType.getComponentArgument(commandContext, "title"),
-													TitleClientPacket.Action.field_12627
+													TitleS2CPacket.Action.field_12627
 												)
 										)
 								)
@@ -97,10 +97,10 @@ public class TitleCommand {
 	}
 
 	private static int method_13805(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection) {
-		TitleClientPacket titleClientPacket = new TitleClientPacket(TitleClientPacket.Action.HIDE, null);
+		TitleS2CPacket titleS2CPacket = new TitleS2CPacket(TitleS2CPacket.Action.HIDE, null);
 
 		for(ServerPlayerEntity serverPlayerEntity : collection) {
-			serverPlayerEntity.networkHandler.sendPacket(titleClientPacket);
+			serverPlayerEntity.networkHandler.sendPacket(titleS2CPacket);
 		}
 
 		if (collection.size() == 1) {
@@ -115,10 +115,10 @@ public class TitleCommand {
 	}
 
 	private static int method_13799(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection) {
-		TitleClientPacket titleClientPacket = new TitleClientPacket(TitleClientPacket.Action.RESET, null);
+		TitleS2CPacket titleS2CPacket = new TitleS2CPacket(TitleS2CPacket.Action.RESET, null);
 
 		for(ServerPlayerEntity serverPlayerEntity : collection) {
-			serverPlayerEntity.networkHandler.sendPacket(titleClientPacket);
+			serverPlayerEntity.networkHandler.sendPacket(titleS2CPacket);
 		}
 
 		if (collection.size() == 1) {
@@ -133,11 +133,11 @@ public class TitleCommand {
 	}
 
 	private static int method_13802(
-		ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, TextComponent textComponent, TitleClientPacket.Action action
+		ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, TextComponent textComponent, TitleS2CPacket.Action action
 	) throws CommandSyntaxException {
 		for(ServerPlayerEntity serverPlayerEntity : collection) {
 			serverPlayerEntity.networkHandler
-				.sendPacket(new TitleClientPacket(action, TextFormatter.method_10881(serverCommandSource, textComponent, serverPlayerEntity)));
+				.sendPacket(new TitleS2CPacket(action, TextFormatter.method_10881(serverCommandSource, textComponent, serverPlayerEntity)));
 		}
 
 		if (collection.size() == 1) {
@@ -157,10 +157,10 @@ public class TitleCommand {
 	}
 
 	private static int method_13806(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, int i, int j, int k) {
-		TitleClientPacket titleClientPacket = new TitleClientPacket(i, j, k);
+		TitleS2CPacket titleS2CPacket = new TitleS2CPacket(i, j, k);
 
 		for(ServerPlayerEntity serverPlayerEntity : collection) {
-			serverPlayerEntity.networkHandler.sendPacket(titleClientPacket);
+			serverPlayerEntity.networkHandler.sendPacket(titleS2CPacket);
 		}
 
 		if (collection.size() == 1) {

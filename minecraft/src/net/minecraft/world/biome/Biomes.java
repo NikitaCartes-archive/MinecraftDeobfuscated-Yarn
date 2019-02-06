@@ -7,7 +7,7 @@ import net.minecraft.util.registry.Registry;
 public abstract class Biomes {
 	public static final Biome field_9423 = register(0, "ocean", new OceanBiome());
 	public static final Biome DEFAULT = field_9423;
-	public static final Biome field_9451 = register(1, "plains", new PlainsBiome());
+	public static final Biome biome = register(1, "plains", new PlainsBiome());
 	public static final Biome field_9424 = register(2, "desert", new DesertBiome());
 	public static final Biome field_9472 = register(3, "mountains", new MountainsBiome());
 	public static final Biome field_9409 = register(4, "forest", new ForestBiome());
@@ -96,7 +96,7 @@ public abstract class Biomes {
 			Biome.BIOMES,
 			new Biome[]{
 				field_9423,
-				field_9451,
+				biome,
 				field_9424,
 				field_9472,
 				field_9409,

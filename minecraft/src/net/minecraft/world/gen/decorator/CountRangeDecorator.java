@@ -5,10 +5,9 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import net.minecraft.class_3667;
 import net.minecraft.util.math.BlockPos;
 
-public class CountRangeDecorator extends class_3667<RangeDecoratorConfig> {
+public class CountRangeDecorator extends SimpleDecorator<RangeDecoratorConfig> {
 	public CountRangeDecorator(Function<Dynamic<?>, ? extends RangeDecoratorConfig> function) {
 		super(function);
 	}

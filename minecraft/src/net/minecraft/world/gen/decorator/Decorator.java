@@ -90,18 +90,18 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 	public static final Decorator<NopeDecoratorConfig> field_14251 = register("end_island", new EndIslandDecorator(NopeDecoratorConfig::deserialize));
 	public static final Decorator<NopeDecoratorConfig> field_14257 = register("chorus_plant", new ChorusPlantDecorator(NopeDecoratorConfig::deserialize));
 	public static final Decorator<NopeDecoratorConfig> field_14230 = register("end_gateway", new EndGatewayDecorator(NopeDecoratorConfig::deserialize));
-	private final Function<Dynamic<?>, ? extends DC> factory;
+	private final Function<Dynamic<?>, ? extends DC> configDeserializer;
 
 	private static <T extends DecoratorConfig, G extends Decorator<T>> G register(String string, G decorator) {
 		return Registry.register(Registry.DECORATOR, string, decorator);
 	}
 
 	public Decorator(Function<Dynamic<?>, ? extends DC> function) {
-		this.factory = function;
+		this.configDeserializer = function;
 	}
 
 	public DC deserialize(Dynamic<?> dynamic) {
-		return (DC)this.factory.apply(dynamic);
+		return (DC)this.configDeserializer.apply(dynamic);
 	}
 
 	protected <FC extends FeatureConfig> boolean generate(
@@ -113,14 +113,14 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 		ConfiguredFeature<FC> configuredFeature
 	) {
 		AtomicBoolean atomicBoolean = new AtomicBoolean(false);
-		this.method_14452(iWorld, chunkGenerator, random, decoratorConfig, blockPos).forEach(blockPosx -> {
+		this.getPositions(iWorld, chunkGenerator, random, decoratorConfig, blockPos).forEach(blockPosx -> {
 			boolean bl = configuredFeature.generate(iWorld, chunkGenerator, random, blockPosx);
 			atomicBoolean.set(atomicBoolean.get() || bl);
 		});
 		return atomicBoolean.get();
 	}
 
-	public abstract Stream<BlockPos> method_14452(
+	public abstract Stream<BlockPos> getPositions(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, DC decoratorConfig, BlockPos blockPos
 	);
 

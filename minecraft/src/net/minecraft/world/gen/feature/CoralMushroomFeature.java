@@ -14,7 +14,7 @@ public class CoralMushroomFeature extends CoralFeature {
 	}
 
 	@Override
-	protected boolean method_12863(IWorld iWorld, Random random, BlockPos blockPos, BlockState blockState) {
+	protected boolean spawnCoral(IWorld iWorld, Random random, BlockPos blockPos, BlockState blockState) {
 		int i = random.nextInt(3) + 3;
 		int j = random.nextInt(3) + 3;
 		int k = random.nextInt(3) + 3;
@@ -31,7 +31,7 @@ public class CoralMushroomFeature extends CoralFeature {
 						&& (m != 0 && m != j || o != 0 && o != k)
 						&& (m == 0 || m == j || n == 0 || n == i || o == 0 || o == k)
 						&& !(random.nextFloat() < 0.1F)
-						&& !this.method_12864(iWorld, random, mutable, blockState)) {
+						&& !this.spawnCoralPiece(iWorld, random, mutable, blockState)) {
 					}
 				}
 			}

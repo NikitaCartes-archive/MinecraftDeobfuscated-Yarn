@@ -64,16 +64,24 @@ public class ClientRecipeBook extends RecipeBook {
 		this.orderedResults.add(recipeResultCollection);
 		((List)this.resultsByGroup.computeIfAbsent(recipeBookGroup, recipeBookGroupx -> Lists.newArrayList())).add(recipeResultCollection);
 		if (recipeBookGroup == RecipeBookGroup.field_1811 || recipeBookGroup == RecipeBookGroup.field_1808 || recipeBookGroup == RecipeBookGroup.field_1812) {
-			((List)this.resultsByGroup.computeIfAbsent(RecipeBookGroup.field_1804, recipeBookGroupx -> Lists.newArrayList())).add(recipeResultCollection);
+			this.method_18092(RecipeBookGroup.field_1804, recipeResultCollection);
 		} else if (recipeBookGroup == RecipeBookGroup.field_17111 || recipeBookGroup == RecipeBookGroup.field_17112) {
-			((List)this.resultsByGroup.computeIfAbsent(RecipeBookGroup.field_17110, recipeBookGroupx -> Lists.newArrayList())).add(recipeResultCollection);
+			this.method_18092(RecipeBookGroup.field_17110, recipeResultCollection);
 		} else if (recipeBookGroup == RecipeBookGroup.field_17114) {
-			((List)this.resultsByGroup.computeIfAbsent(RecipeBookGroup.field_17113, recipeBookGroupx -> Lists.newArrayList())).add(recipeResultCollection);
+			this.method_18092(RecipeBookGroup.field_17113, recipeResultCollection);
+		} else if (recipeBookGroup == RecipeBookGroup.field_17764) {
+			this.method_18092(RecipeBookGroup.field_17764, recipeResultCollection);
+		} else if (recipeBookGroup == RecipeBookGroup.field_17765) {
+			this.method_18092(RecipeBookGroup.field_17765, recipeResultCollection);
 		} else {
-			((List)this.resultsByGroup.computeIfAbsent(RecipeBookGroup.field_1809, recipeBookGroupx -> Lists.newArrayList())).add(recipeResultCollection);
+			this.method_18092(RecipeBookGroup.field_1809, recipeResultCollection);
 		}
 
 		return recipeResultCollection;
+	}
+
+	private void method_18092(RecipeBookGroup recipeBookGroup, RecipeResultCollection recipeResultCollection) {
+		((List)this.resultsByGroup.computeIfAbsent(recipeBookGroup, recipeBookGroupx -> Lists.newArrayList())).add(recipeResultCollection);
 	}
 
 	private static RecipeBookGroup getGroupForRecipe(Recipe<?> recipe) {
@@ -88,6 +96,10 @@ public class ClientRecipeBook extends RecipeBook {
 			return recipe.getOutput().getItem() instanceof BlockItem ? RecipeBookGroup.field_17111 : RecipeBookGroup.field_17112;
 		} else if (recipeType == RecipeType.SMOKING) {
 			return RecipeBookGroup.field_17114;
+		} else if (recipeType == RecipeType.field_17641) {
+			return RecipeBookGroup.field_17764;
+		} else if (recipeType == RecipeType.CAMPFIRE_COOKING) {
+			return RecipeBookGroup.field_17765;
 		} else {
 			ItemStack itemStack = recipe.getOutput();
 			ItemGroup itemGroup = itemStack.getItem().getItemGroup();

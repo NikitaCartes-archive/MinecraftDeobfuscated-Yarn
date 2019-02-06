@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.network.packet.BlockEntityUpdateClientPacket;
+import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Mirror;
@@ -124,7 +124,7 @@ public abstract class BlockEntity {
 	}
 
 	@Nullable
-	public BlockEntityUpdateClientPacket toUpdatePacket() {
+	public BlockEntityUpdateS2CPacket method_16886() {
 		return null;
 	}
 

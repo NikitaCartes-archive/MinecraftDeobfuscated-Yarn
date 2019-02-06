@@ -193,7 +193,7 @@ public class EnderDragonFight {
 			this.generateEndPortal(false);
 		}
 
-		List<EnderDragonEntity> list = this.world.getEntities(EnderDragonEntity.class, EntityPredicates.VALID_ENTITY);
+		List<EnderDragonEntity> list = this.world.method_18205(EnderDragonEntity.class, EntityPredicates.VALID_ENTITY);
 		if (list.isEmpty()) {
 			this.dragonKilled = true;
 		} else {
@@ -214,7 +214,7 @@ public class EnderDragonFight {
 	}
 
 	private void checkDragonSeen() {
-		List<EnderDragonEntity> list = this.world.getEntities(EnderDragonEntity.class, EntityPredicates.VALID_ENTITY);
+		List<EnderDragonEntity> list = this.world.method_18205(EnderDragonEntity.class, EntityPredicates.VALID_ENTITY);
 		if (list.isEmpty()) {
 			LOGGER.debug("Haven't seen the dragon, respawning it");
 			this.createDragon();
@@ -306,7 +306,7 @@ public class EnderDragonFight {
 					return false;
 				}
 
-				ChunkHolder.LevelType levelType = ((WorldChunk)chunk).method_12225();
+				ChunkHolder.LevelType levelType = ((WorldChunk)chunk).getLevelType();
 				if (!levelType.isAfter(ChunkHolder.LevelType.TICKING)) {
 					return false;
 				}
@@ -368,8 +368,8 @@ public class EnderDragonFight {
 	}
 
 	private void generateEndGateway(BlockPos blockPos) {
-		this.world.fireWorldEvent(3000, blockPos, 0);
-		Feature.field_13564.generate(this.world, this.world.getChunkManager().getChunkGenerator(), new Random(), blockPos, EndGatewayFeatureConfig.method_18030());
+		this.world.playEvent(3000, blockPos, 0);
+		Feature.field_13564.generate(this.world, this.world.getChunkManager().getChunkGenerator(), new Random(), blockPos, EndGatewayFeatureConfig.createConfig());
 	}
 
 	private void generateEndPortal(boolean bl) {
@@ -418,7 +418,7 @@ public class EnderDragonFight {
 			this.generateEndPortal(true);
 		} else {
 			this.countAliveCrystals();
-			Entity entity = this.world.getEntityByUuid(this.dragonUuid);
+			Entity entity = this.world.method_14190(this.dragonUuid);
 			if (entity instanceof EnderDragonEntity) {
 				((EnderDragonEntity)entity).crystalDestroyed(enderCrystalEntity, new BlockPos(enderCrystalEntity), damageSource);
 			}

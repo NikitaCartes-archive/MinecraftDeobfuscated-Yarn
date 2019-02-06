@@ -5,6 +5,7 @@ import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public interface Texture {
@@ -18,5 +19,9 @@ public interface Texture {
 
 	default void bindTexture() {
 		GlStateManager.bindTexture(this.getGlId());
+	}
+
+	default void method_18169(TextureManager textureManager, ResourceManager resourceManager, Identifier identifier) {
+		textureManager.registerTexture(identifier, this);
 	}
 }

@@ -15,16 +15,16 @@ public abstract class AbstractTempleFeature<C extends FeatureConfig> extends Str
 	}
 
 	@Override
-	protected ChunkPos method_14018(ChunkGenerator<?> chunkGenerator, Random random, int i, int j, int k, int l) {
-		int m = this.method_13773(chunkGenerator);
-		int n = this.method_13775(chunkGenerator);
+	protected ChunkPos getStart(ChunkGenerator<?> chunkGenerator, Random random, int i, int j, int k, int l) {
+		int m = this.getSpacing(chunkGenerator);
+		int n = this.getSeparation(chunkGenerator);
 		int o = i + m * k;
 		int p = j + m * l;
 		int q = o < 0 ? o - m + 1 : o;
 		int r = p < 0 ? p - m + 1 : p;
 		int s = q / m;
 		int t = r / m;
-		((ChunkRandom)random).setStructureSeed(chunkGenerator.getSeed(), s, t, this.method_13774());
+		((ChunkRandom)random).setStructureSeed(chunkGenerator.getSeed(), s, t, this.getSeedModifier());
 		s *= m;
 		t *= m;
 		s += random.nextInt(m - n);
@@ -34,7 +34,7 @@ public abstract class AbstractTempleFeature<C extends FeatureConfig> extends Str
 
 	@Override
 	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
-		ChunkPos chunkPos = this.method_14018(chunkGenerator, random, i, j, 0, 0);
+		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
 		if (i == chunkPos.x && j == chunkPos.z) {
 			Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos(i * 16 + 9, 0, j * 16 + 9));
 			if (chunkGenerator.hasStructure(biome, this)) {
@@ -45,13 +45,13 @@ public abstract class AbstractTempleFeature<C extends FeatureConfig> extends Str
 		return false;
 	}
 
-	protected int method_13773(ChunkGenerator<?> chunkGenerator) {
-		return chunkGenerator.getSettings().getTempleDistance();
+	protected int getSpacing(ChunkGenerator<?> chunkGenerator) {
+		return chunkGenerator.getConfig().getTempleDistance();
 	}
 
-	protected int method_13775(ChunkGenerator<?> chunkGenerator) {
-		return chunkGenerator.getSettings().method_12568();
+	protected int getSeparation(ChunkGenerator<?> chunkGenerator) {
+		return chunkGenerator.getConfig().getTempleSeparation();
 	}
 
-	protected abstract int method_13774();
+	protected abstract int getSeedModifier();
 }

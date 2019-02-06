@@ -15,6 +15,7 @@ import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.passive.WanderingTraderEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
@@ -64,6 +65,14 @@ public class class_3986 extends LlamaEntity {
 
 	public void method_18005(int i) {
 		this.field_17716 = i;
+	}
+
+	@Override
+	protected void method_6726(PlayerEntity playerEntity) {
+		Entity entity = this.getHoldingEntity();
+		if (!this.isLeashed() || !(entity instanceof WanderingTraderEntity)) {
+			super.method_6726(playerEntity);
+		}
 	}
 
 	@Override

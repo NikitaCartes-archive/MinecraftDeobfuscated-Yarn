@@ -52,7 +52,7 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 					}
 				}
 
-				this.world.fireWorldEvent(2006, new BlockPos(this.x, this.y, this.z), 0);
+				this.world.playEvent(2006, new BlockPos(this.x, this.y, this.z), 0);
 				this.world.spawnEntity(areaEffectCloudEntity);
 				this.invalidate();
 			}

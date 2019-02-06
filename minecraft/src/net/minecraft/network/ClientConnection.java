@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
 import javax.crypto.SecretKey;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.DisconnectClientPacket;
+import net.minecraft.client.network.packet.DisconnectS2CPacket;
 import net.minecraft.network.encryption.PacketDecryptor;
 import net.minecraft.network.encryption.PacketEncryptor;
 import net.minecraft.network.listener.PacketListener;
@@ -121,7 +121,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 					TextComponent textComponent = new TranslatableTextComponent("disconnect.genericReason", "Internal Exception: " + throwable);
 					if (bl) {
 						LOGGER.debug("Failed to sent packet", throwable);
-						this.sendPacket(new DisconnectClientPacket(textComponent), future -> this.disconnect(textComponent));
+						this.sendPacket(new DisconnectS2CPacket(textComponent), future -> this.disconnect(textComponent));
 						this.method_10757();
 					} else {
 						LOGGER.debug("Double fault", throwable);

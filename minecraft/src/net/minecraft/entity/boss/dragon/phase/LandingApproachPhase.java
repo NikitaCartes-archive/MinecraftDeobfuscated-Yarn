@@ -47,7 +47,7 @@ public class LandingApproachPhase extends AbstractPhase {
 		if (this.field_7047 == null || this.field_7047.isFinished()) {
 			int i = this.dragon.method_6818();
 			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
-			PlayerEntity playerEntity = this.dragon.world.method_8483(blockPos, 128.0, 128.0);
+			PlayerEntity playerEntity = this.dragon.world.findMobAttackTarget(blockPos, 128.0, 128.0);
 			int j;
 			if (playerEntity != null) {
 				Vec3d vec3d = new Vec3d(playerEntity.x, 0.0, playerEntity.z).normalize();

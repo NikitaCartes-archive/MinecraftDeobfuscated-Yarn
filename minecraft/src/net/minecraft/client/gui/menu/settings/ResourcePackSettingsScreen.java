@@ -31,7 +31,7 @@ public class ResourcePackSettingsScreen extends Screen {
 		this.addButton(new OptionButtonWidget(2, this.width / 2 - 154, this.height - 48, I18n.translate("resourcePack.openFolder")) {
 			@Override
 			public void onPressed(double d, double e) {
-				SystemUtil.getOperatingSystem().open(ResourcePackSettingsScreen.this.client.method_1479());
+				SystemUtil.getOperatingSystem().open(ResourcePackSettingsScreen.this.client.getResourcePackDir());
 			}
 		});
 		this.addButton(new OptionButtonWidget(1, this.width / 2 + 4, this.height - 48, I18n.translate("gui.done")) {

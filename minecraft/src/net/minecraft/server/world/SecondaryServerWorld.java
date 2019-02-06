@@ -4,7 +4,7 @@ import java.util.concurrent.Executor;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.world.OldWorldSaveHandler;
+import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.border.WorldBorderListener;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.UnmodifiableLevelProperties;
@@ -14,7 +14,7 @@ public class SecondaryServerWorld extends ServerWorld {
 		ServerWorld serverWorld,
 		MinecraftServer minecraftServer,
 		Executor executor,
-		OldWorldSaveHandler oldWorldSaveHandler,
+		WorldSaveHandler worldSaveHandler,
 		DimensionType dimensionType,
 		Profiler profiler,
 		WorldGenerationProgressListener worldGenerationProgressListener
@@ -22,13 +22,13 @@ public class SecondaryServerWorld extends ServerWorld {
 		super(
 			minecraftServer,
 			executor,
-			oldWorldSaveHandler,
+			worldSaveHandler,
 			new UnmodifiableLevelProperties(serverWorld.getLevelProperties()),
 			dimensionType,
 			profiler,
 			worldGenerationProgressListener
 		);
-		serverWorld.getWorldBorder().addListener(new WorldBorderListener.class_3976(this.getWorldBorder()));
+		serverWorld.getWorldBorder().addListener(new WorldBorderListener.WorldBorderSyncer(this.getWorldBorder()));
 	}
 
 	@Override

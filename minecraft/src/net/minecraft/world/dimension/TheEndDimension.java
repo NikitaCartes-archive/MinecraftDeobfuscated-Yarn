@@ -87,7 +87,7 @@ public class TheEndDimension extends Dimension {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public float method_12455() {
+	public float getCloudHeight() {
 		return 8.0F;
 	}
 
@@ -95,7 +95,7 @@ public class TheEndDimension extends Dimension {
 	@Override
 	public BlockPos getSpawningBlockInChunk(ChunkPos chunkPos, boolean bl) {
 		Random random = new Random(this.world.getSeed());
-		BlockPos blockPos = new BlockPos(chunkPos.getXStart() + random.nextInt(15), 0, chunkPos.getZEnd() + random.nextInt(15));
+		BlockPos blockPos = new BlockPos(chunkPos.getStartX() + random.nextInt(15), 0, chunkPos.getEndZ() + random.nextInt(15));
 		return this.world.getTopNonAirState(blockPos).getMaterial().suffocates() ? blockPos : null;
 	}
 

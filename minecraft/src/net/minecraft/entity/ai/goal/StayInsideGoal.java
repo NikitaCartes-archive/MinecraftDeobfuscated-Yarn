@@ -31,7 +31,7 @@ public class StayInsideGoal extends Goal {
 				if (this.closestDoor == null) {
 					return false;
 				} else {
-					return (double)this.closestDoor.method_6417(blockPos) < 2.25;
+					return (double)this.closestDoor.squaredDistanceFromInsideTo(blockPos) < 2.25;
 				}
 			}
 		}
@@ -42,7 +42,7 @@ public class StayInsideGoal extends Goal {
 		if (this.entity.world.isDaylight()) {
 			return false;
 		} else {
-			return !this.closestDoor.method_6413() && this.closestDoor.method_6425(new BlockPos(this.entity));
+			return !this.closestDoor.isInvalid() && this.closestDoor.isInside(new BlockPos(this.entity));
 		}
 	}
 

@@ -16,7 +16,7 @@ import net.minecraft.world.gen.ProbabilityConfig;
 public class NetherCaveCarver extends CaveCarver {
 	public NetherCaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> function) {
 		super(function, 128);
-		this.field_13302 = ImmutableSet.of(
+		this.alwaysCarvableBlocks = ImmutableSet.of(
 			Blocks.field_10340,
 			Blocks.field_10474,
 			Blocks.field_10508,
@@ -27,31 +27,31 @@ public class NetherCaveCarver extends CaveCarver {
 			Blocks.field_10219,
 			Blocks.field_10515
 		);
-		this.field_13298 = ImmutableSet.of(Fluids.LAVA, Fluids.WATER);
+		this.carvableFluids = ImmutableSet.of(Fluids.LAVA, Fluids.WATER);
 	}
 
 	@Override
-	protected int method_16577() {
+	protected int getMaxCaveCount() {
 		return 10;
 	}
 
 	@Override
-	protected float method_16576(Random random) {
+	protected float getTunnelSystemWidth(Random random) {
 		return (random.nextFloat() * 2.0F + random.nextFloat()) * 2.0F;
 	}
 
 	@Override
-	protected double method_16578() {
+	protected double getTunnelSystemHeightWidthRatio() {
 		return 5.0;
 	}
 
 	@Override
-	protected int method_16579(Random random) {
-		return random.nextInt(this.field_16653);
+	protected int getCaveY(Random random) {
+		return random.nextInt(this.heightLimit);
 	}
 
 	@Override
-	protected boolean method_16581(
+	protected boolean carveAtPoint(
 		Chunk chunk,
 		BitSet bitSet,
 		Random random,
@@ -74,7 +74,7 @@ public class NetherCaveCarver extends CaveCarver {
 		} else {
 			bitSet.set(q);
 			mutable.set(l, o, m);
-			if (this.method_12709(chunk.getBlockState(mutable))) {
+			if (this.canAlwaysCarveBlock(chunk.getBlockState(mutable))) {
 				BlockState blockState;
 				if (o <= 31) {
 					blockState = LAVA.getBlockState();

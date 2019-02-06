@@ -33,7 +33,7 @@ public class LeashItem extends Item {
 	}
 
 	public static boolean method_7994(PlayerEntity playerEntity, World world, BlockPos blockPos) {
-		LeadKnotEntity leadKnotEntity = LeadKnotEntity.method_6932(world, blockPos);
+		LeadKnotEntity leadKnotEntity = null;
 		boolean bl = false;
 		double d = 7.0;
 		int i = blockPos.getX();
@@ -45,7 +45,7 @@ public class LeashItem extends Item {
 		)) {
 			if (mobEntity.isLeashed() && mobEntity.getHoldingEntity() == playerEntity) {
 				if (leadKnotEntity == null) {
-					leadKnotEntity = LeadKnotEntity.method_6931(world, blockPos);
+					leadKnotEntity = LeadKnotEntity.method_6932(world, blockPos);
 				}
 
 				mobEntity.attachLeash(leadKnotEntity, true);

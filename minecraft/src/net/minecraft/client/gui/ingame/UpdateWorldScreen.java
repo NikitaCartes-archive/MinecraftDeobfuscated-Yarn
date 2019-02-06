@@ -29,7 +29,7 @@ public class UpdateWorldScreen extends Screen {
 
 	public UpdateWorldScreen(YesNoCallback yesNoCallback, String string, LevelStorage levelStorage) {
 		this.field_3233 = yesNoCallback;
-		this.updater = new WorldUpdater(string, levelStorage, levelStorage.requiresConversion(string));
+		this.updater = new WorldUpdater(string, levelStorage, levelStorage.getLevelProperties(string));
 	}
 
 	@Override

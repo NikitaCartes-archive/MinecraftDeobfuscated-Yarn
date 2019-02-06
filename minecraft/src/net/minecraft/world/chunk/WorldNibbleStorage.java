@@ -18,7 +18,7 @@ public abstract class WorldNibbleStorage<M extends WorldNibbleStorage<M>> {
 	public abstract M copy();
 
 	public void cloneChunkData(long l) {
-		this.arraysByChunk.put(l, this.arraysByChunk.get(l).method_12144());
+		this.arraysByChunk.put(l, this.arraysByChunk.get(l).copy());
 		this.clearCache();
 	}
 

@@ -1,20 +1,25 @@
 package net.minecraft.client.particle;
 
+import com.google.common.collect.Lists;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4000;
+import net.minecraft.class_4001;
+import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class SquidInkParticle extends AnimatedParticle {
-	protected SquidInkParticle(World world, double d, double e, double f, double g, double h, double i) {
-		super(world, d, e, f, 0, 8, 0.0F);
-		this.size = 5.0F;
+	private SquidInkParticle(World world, double d, double e, double f, double g, double h, double i, class_4002 arg) {
+		super(world, d, e, f, arg, 0.0F);
+		this.field_17867 = 0.5F;
 		this.setColorAlpha(1.0F);
 		this.setColor(0.0F, 0.0F, 0.0F);
-		this.setSpriteIndex(0);
-		this.maxAge = (int)((double)(this.size * 12.0F) / (Math.random() * 0.8F + 0.2F));
+		this.maxAge = (int)((double)(this.field_17867 * 12.0F) / (Math.random() * 0.8F + 0.2F));
+		this.method_18142(arg);
 		this.collidesWithWorld = false;
 		this.velocityX = g;
 		this.velocityY = h;
@@ -29,31 +34,37 @@ public class SquidInkParticle extends AnimatedParticle {
 		this.prevPosZ = this.posZ;
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
-		}
+		} else {
+			this.method_18142(this.field_17866);
+			if (this.age > this.maxAge / 2) {
+				this.setColorAlpha(1.0F - ((float)this.age - (float)(this.maxAge / 2)) / (float)this.maxAge);
+			}
 
-		if (this.age > this.maxAge / 2) {
-			this.setColorAlpha(1.0F - ((float)this.age - (float)(this.maxAge / 2)) / (float)this.maxAge);
-		}
+			this.move(this.velocityX, this.velocityY, this.velocityZ);
+			if (this.world.getBlockState(new BlockPos(this.posX, this.posY, this.posZ)).isAir()) {
+				this.velocityY -= 0.008F;
+			}
 
-		this.setSpriteIndex(this.textureId + this.frameCount - 1 - this.age * this.frameCount / this.maxAge);
-		this.move(this.velocityX, this.velocityY, this.velocityZ);
-		if (this.world.getBlockState(new BlockPos(this.posX, this.posY, this.posZ)).isAir()) {
-			this.velocityY -= 0.008F;
-		}
-
-		this.velocityX *= 0.92F;
-		this.velocityY *= 0.92F;
-		this.velocityZ *= 0.92F;
-		if (this.onGround) {
-			this.velocityX *= 0.7F;
-			this.velocityZ *= 0.7F;
+			this.velocityX *= 0.92F;
+			this.velocityY *= 0.92F;
+			this.velocityZ *= 0.92F;
+			if (this.onGround) {
+				this.velocityX *= 0.7F;
+				this.velocityZ *= 0.7F;
+			}
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
+		private final class_4002 field_17878;
+
+		public Factory(class_4001 arg) {
+			this.field_17878 = arg.register(Lists.<Identifier>reverse(class_4000.field_17850));
+		}
+
 		public Particle method_3105(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			return new SquidInkParticle(world, d, e, f, g, h, i);
+			return new SquidInkParticle(world, d, e, f, g, h, i, this.field_17878);
 		}
 	}
 }

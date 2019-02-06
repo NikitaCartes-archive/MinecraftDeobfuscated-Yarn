@@ -45,7 +45,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 				}
 			}
 
-			return chunkNibbleArray.method_12139(BlockPos.unpackLongX(l) & 15, BlockPos.unpackLongY(l) & 15, BlockPos.unpackLongZ(l) & 15);
+			return chunkNibbleArray.get(BlockPos.unpackLongX(l) & 15, BlockPos.unpackLongY(l) & 15, BlockPos.unpackLongZ(l) & 15);
 		} else {
 			return 15;
 		}

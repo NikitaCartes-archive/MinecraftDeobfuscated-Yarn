@@ -28,7 +28,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.item.block.BlockItem;
-import net.minecraft.server.network.packet.ClientStatusServerPacket;
+import net.minecraft.server.network.packet.ClientStatusC2SPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.StatHandler;
@@ -66,7 +66,7 @@ public class StatsScreen extends Screen implements class_452 {
 	protected void onInitialized() {
 		this.field_2649 = I18n.translate("gui.stats");
 		this.field_2645 = true;
-		this.client.getNetworkHandler().sendPacket(new ClientStatusServerPacket(ClientStatusServerPacket.Mode.field_12775));
+		this.client.getNetworkHandler().sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.field_12775));
 	}
 
 	public void method_2270() {

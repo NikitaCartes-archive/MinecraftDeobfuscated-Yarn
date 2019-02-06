@@ -7,7 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CommandBlock;
-import net.minecraft.client.network.packet.BlockEntityUpdateClientPacket;
+import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
@@ -95,11 +95,11 @@ public class CommandBlockBlockEntity extends BlockEntity {
 
 	@Nullable
 	@Override
-	public BlockEntityUpdateClientPacket toUpdatePacket() {
+	public BlockEntityUpdateS2CPacket method_16886() {
 		if (this.needsUpdatePacket()) {
 			this.setNeedsUpdatePacket(false);
 			CompoundTag compoundTag = this.toTag(new CompoundTag());
-			return new BlockEntityUpdateClientPacket(this.pos, 2, compoundTag);
+			return new BlockEntityUpdateS2CPacket(this.pos, 2, compoundTag);
 		} else {
 			return null;
 		}

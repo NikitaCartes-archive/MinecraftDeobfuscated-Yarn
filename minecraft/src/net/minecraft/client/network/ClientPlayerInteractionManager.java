@@ -21,15 +21,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.network.ButtonClickServerPacket;
 import net.minecraft.recipe.Recipe;
-import net.minecraft.server.network.packet.ClickWindowServerPacket;
-import net.minecraft.server.network.packet.CraftRequestServerPacket;
-import net.minecraft.server.network.packet.CreativeInventoryActionServerPacket;
-import net.minecraft.server.network.packet.PickFromInventoryServerPacket;
-import net.minecraft.server.network.packet.PlayerActionServerPacket;
-import net.minecraft.server.network.packet.PlayerInteractBlockServerPacket;
-import net.minecraft.server.network.packet.PlayerInteractEntityServerPacket;
-import net.minecraft.server.network.packet.PlayerInteractItemServerPacket;
-import net.minecraft.server.network.packet.UpdateSelectedSlotServerPacket;
+import net.minecraft.server.network.packet.ClickWindowC2SPacket;
+import net.minecraft.server.network.packet.CraftRequestC2SPacket;
+import net.minecraft.server.network.packet.CreativeInventoryActionC2SPacket;
+import net.minecraft.server.network.packet.PickFromInventoryC2SPacket;
+import net.minecraft.server.network.packet.PlayerActionC2SPacket;
+import net.minecraft.server.network.packet.PlayerInteractBlockC2SPacket;
+import net.minecraft.server.network.packet.PlayerInteractEntityC2SPacket;
+import net.minecraft.server.network.packet.PlayerInteractItemC2SPacket;
+import net.minecraft.server.network.packet.UpdateSelectedSlotC2SPacket;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.stat.StatHandler;
@@ -78,10 +78,6 @@ public class ClientPlayerInteractionManager {
 	public void setGameMode(GameMode gameMode) {
 		this.gameMode = gameMode;
 		this.gameMode.setAbilitites(this.client.player.abilities);
-	}
-
-	public void method_2898(PlayerEntity playerEntity) {
-		playerEntity.yaw = -180.0F;
 	}
 
 	public boolean hasStatusBars() {
@@ -165,17 +161,17 @@ public class ClientPlayerInteractionManager {
 		} else {
 			if (this.gameMode.isCreative()) {
 				this.client.getTutorialManager().onBlockAttacked(this.client.world, blockPos, this.client.world.getBlockState(blockPos), 1.0F);
-				this.networkHandler.sendPacket(new PlayerActionServerPacket(PlayerActionServerPacket.Action.field_12968, blockPos, direction));
+				this.networkHandler.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.field_12968, blockPos, direction));
 				method_2921(this.client, this, blockPos, direction);
 				this.field_3716 = 5;
 			} else if (!this.breakingBlock || !this.isCurrentlyBreaking(blockPos)) {
 				if (this.breakingBlock) {
-					this.networkHandler.sendPacket(new PlayerActionServerPacket(PlayerActionServerPacket.Action.field_12971, this.currentBreakingPos, direction));
+					this.networkHandler.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.field_12971, this.currentBreakingPos, direction));
 				}
 
 				BlockState blockState = this.client.world.getBlockState(blockPos);
 				this.client.getTutorialManager().onBlockAttacked(this.client.world, blockPos, blockState, 0.0F);
-				this.networkHandler.sendPacket(new PlayerActionServerPacket(PlayerActionServerPacket.Action.field_12968, blockPos, direction));
+				this.networkHandler.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.field_12968, blockPos, direction));
 				boolean bl = !blockState.isAir();
 				if (bl && this.currentBreakingProgress == 0.0F) {
 					blockState.onBlockBreakStart(this.client.world, blockPos, this.client.player);
@@ -202,7 +198,7 @@ public class ClientPlayerInteractionManager {
 			this.client
 				.getTutorialManager()
 				.onBlockAttacked(this.client.world, this.currentBreakingPos, this.client.world.getBlockState(this.currentBreakingPos), -1.0F);
-			this.networkHandler.sendPacket(new PlayerActionServerPacket(PlayerActionServerPacket.Action.field_12971, this.currentBreakingPos, Direction.DOWN));
+			this.networkHandler.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.field_12971, this.currentBreakingPos, Direction.DOWN));
 			this.breakingBlock = false;
 			this.currentBreakingProgress = 0.0F;
 			this.client.world.setBlockBreakingProgress(this.client.player.getEntityId(), this.currentBreakingPos, -1);
@@ -218,7 +214,7 @@ public class ClientPlayerInteractionManager {
 		} else if (this.gameMode.isCreative() && this.client.world.getWorldBorder().contains(blockPos)) {
 			this.field_3716 = 5;
 			this.client.getTutorialManager().onBlockAttacked(this.client.world, blockPos, this.client.world.getBlockState(blockPos), 1.0F);
-			this.networkHandler.sendPacket(new PlayerActionServerPacket(PlayerActionServerPacket.Action.field_12968, blockPos, direction));
+			this.networkHandler.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.field_12968, blockPos, direction));
 			method_2921(this.client, this, blockPos, direction);
 			return true;
 		} else if (this.isCurrentlyBreaking(blockPos)) {
@@ -243,7 +239,7 @@ public class ClientPlayerInteractionManager {
 				this.client.getTutorialManager().onBlockAttacked(this.client.world, blockPos, blockState, MathHelper.clamp(this.currentBreakingProgress, 0.0F, 1.0F));
 				if (this.currentBreakingProgress >= 1.0F) {
 					this.breakingBlock = false;
-					this.networkHandler.sendPacket(new PlayerActionServerPacket(PlayerActionServerPacket.Action.field_12973, blockPos, direction));
+					this.networkHandler.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.field_12973, blockPos, direction));
 					this.breakBlock(blockPos);
 					this.currentBreakingProgress = 0.0F;
 					this.field_3713 = 0.0F;
@@ -287,7 +283,7 @@ public class ClientPlayerInteractionManager {
 		int i = this.client.player.inventory.selectedSlot;
 		if (i != this.lastSelectedSlot) {
 			this.lastSelectedSlot = i;
-			this.networkHandler.sendPacket(new UpdateSelectedSlotServerPacket(this.lastSelectedSlot));
+			this.networkHandler.sendPacket(new UpdateSelectedSlotC2SPacket(this.lastSelectedSlot));
 		}
 	}
 
@@ -300,16 +296,16 @@ public class ClientPlayerInteractionManager {
 		} else {
 			ItemStack itemStack = clientPlayerEntity.getStackInHand(hand);
 			if (this.gameMode == GameMode.field_9219) {
-				this.networkHandler.sendPacket(new PlayerInteractBlockServerPacket(hand, blockHitResult));
+				this.networkHandler.sendPacket(new PlayerInteractBlockC2SPacket(hand, blockHitResult));
 				return ActionResult.SUCCESS;
 			} else {
 				boolean bl = !clientPlayerEntity.getMainHandStack().isEmpty() || !clientPlayerEntity.getOffHandStack().isEmpty();
 				boolean bl2 = clientPlayerEntity.isSneaking() && bl;
 				if (!bl2 && clientWorld.getBlockState(blockPos).activate(clientWorld, clientPlayerEntity, hand, blockHitResult)) {
-					this.networkHandler.sendPacket(new PlayerInteractBlockServerPacket(hand, blockHitResult));
+					this.networkHandler.sendPacket(new PlayerInteractBlockC2SPacket(hand, blockHitResult));
 					return ActionResult.SUCCESS;
 				} else {
-					this.networkHandler.sendPacket(new PlayerInteractBlockServerPacket(hand, blockHitResult));
+					this.networkHandler.sendPacket(new PlayerInteractBlockC2SPacket(hand, blockHitResult));
 					if (!itemStack.isEmpty() && !clientPlayerEntity.getItemCooldownManager().isCooldown(itemStack.getItem())) {
 						ItemUsageContext itemUsageContext = new ItemUsageContext(clientPlayerEntity, clientPlayerEntity.getStackInHand(hand), blockHitResult);
 						ActionResult actionResult;
@@ -335,7 +331,7 @@ public class ClientPlayerInteractionManager {
 			return ActionResult.PASS;
 		} else {
 			this.syncSelectedSlot();
-			this.networkHandler.sendPacket(new PlayerInteractItemServerPacket(hand));
+			this.networkHandler.sendPacket(new PlayerInteractItemC2SPacket(hand));
 			ItemStack itemStack = playerEntity.getStackInHand(hand);
 			if (playerEntity.getItemCooldownManager().isCooldown(itemStack.getItem())) {
 				return ActionResult.PASS;
@@ -352,13 +348,13 @@ public class ClientPlayerInteractionManager {
 		}
 	}
 
-	public ClientPlayerEntity createPlayer(World world, StatHandler statHandler, ClientRecipeBook clientRecipeBook) {
-		return new ClientPlayerEntity(this.client, world, this.networkHandler, statHandler, clientRecipeBook);
+	public ClientPlayerEntity createPlayer(ClientWorld clientWorld, StatHandler statHandler, ClientRecipeBook clientRecipeBook) {
+		return new ClientPlayerEntity(this.client, clientWorld, this.networkHandler, statHandler, clientRecipeBook);
 	}
 
 	public void attackEntity(PlayerEntity playerEntity, Entity entity) {
 		this.syncSelectedSlot();
-		this.networkHandler.sendPacket(new PlayerInteractEntityServerPacket(entity));
+		this.networkHandler.sendPacket(new PlayerInteractEntityC2SPacket(entity));
 		if (this.gameMode != GameMode.field_9219) {
 			playerEntity.attack(entity);
 			playerEntity.method_7350();
@@ -367,26 +363,26 @@ public class ClientPlayerInteractionManager {
 
 	public ActionResult interactEntity(PlayerEntity playerEntity, Entity entity, Hand hand) {
 		this.syncSelectedSlot();
-		this.networkHandler.sendPacket(new PlayerInteractEntityServerPacket(entity, hand));
+		this.networkHandler.sendPacket(new PlayerInteractEntityC2SPacket(entity, hand));
 		return this.gameMode == GameMode.field_9219 ? ActionResult.PASS : playerEntity.interact(entity, hand);
 	}
 
 	public ActionResult interactEntityAtLocation(PlayerEntity playerEntity, Entity entity, EntityHitResult entityHitResult, Hand hand) {
 		this.syncSelectedSlot();
 		Vec3d vec3d = entityHitResult.getPos().subtract(entity.x, entity.y, entity.z);
-		this.networkHandler.sendPacket(new PlayerInteractEntityServerPacket(entity, hand, vec3d));
+		this.networkHandler.sendPacket(new PlayerInteractEntityC2SPacket(entity, hand, vec3d));
 		return this.gameMode == GameMode.field_9219 ? ActionResult.PASS : entity.interactAt(playerEntity, vec3d, hand);
 	}
 
 	public ItemStack method_2906(int i, int j, int k, SlotActionType slotActionType, PlayerEntity playerEntity) {
 		short s = playerEntity.container.getNextActionId(playerEntity.inventory);
 		ItemStack itemStack = playerEntity.container.onSlotClick(j, k, slotActionType, playerEntity);
-		this.networkHandler.sendPacket(new ClickWindowServerPacket(i, j, k, slotActionType, itemStack, s));
+		this.networkHandler.sendPacket(new ClickWindowC2SPacket(i, j, k, slotActionType, itemStack, s));
 		return itemStack;
 	}
 
 	public void clickRecipe(int i, Recipe<?> recipe, boolean bl) {
-		this.networkHandler.sendPacket(new CraftRequestServerPacket(i, recipe, bl));
+		this.networkHandler.sendPacket(new CraftRequestC2SPacket(i, recipe, bl));
 	}
 
 	public void clickButton(int i, int j) {
@@ -395,19 +391,19 @@ public class ClientPlayerInteractionManager {
 
 	public void method_2909(ItemStack itemStack, int i) {
 		if (this.gameMode.isCreative()) {
-			this.networkHandler.sendPacket(new CreativeInventoryActionServerPacket(i, itemStack));
+			this.networkHandler.sendPacket(new CreativeInventoryActionC2SPacket(i, itemStack));
 		}
 	}
 
 	public void method_2915(ItemStack itemStack) {
 		if (this.gameMode.isCreative() && !itemStack.isEmpty()) {
-			this.networkHandler.sendPacket(new CreativeInventoryActionServerPacket(-1, itemStack));
+			this.networkHandler.sendPacket(new CreativeInventoryActionC2SPacket(-1, itemStack));
 		}
 	}
 
 	public void method_2897(PlayerEntity playerEntity) {
 		this.syncSelectedSlot();
-		this.networkHandler.sendPacket(new PlayerActionServerPacket(PlayerActionServerPacket.Action.field_12974, BlockPos.ORIGIN, Direction.DOWN));
+		this.networkHandler.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.field_12974, BlockPos.ORIGIN, Direction.DOWN));
 		playerEntity.method_6075();
 	}
 
@@ -444,6 +440,6 @@ public class ClientPlayerInteractionManager {
 	}
 
 	public void pickFromInventory(int i) {
-		this.networkHandler.sendPacket(new PickFromInventoryServerPacket(i));
+		this.networkHandler.sendPacket(new PickFromInventoryC2SPacket(i));
 	}
 }

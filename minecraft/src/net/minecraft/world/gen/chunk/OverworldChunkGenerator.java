@@ -27,7 +27,7 @@ public class OverworldChunkGenerator extends SurfaceChunkGenerator<OverworldChun
 			}
 		}
 	});
-	private final OctavePerlinNoiseSampler field_16583;
+	private final OctavePerlinNoiseSampler noiseSampler;
 	private final boolean amplified;
 	private final PhantomSpawner phantomSpawner = new PhantomSpawner();
 	private final PillagerSpawner pillagerSpawner = new PillagerSpawner();
@@ -35,7 +35,7 @@ public class OverworldChunkGenerator extends SurfaceChunkGenerator<OverworldChun
 	public OverworldChunkGenerator(IWorld iWorld, BiomeSource biomeSource, OverworldChunkGeneratorConfig overworldChunkGeneratorConfig) {
 		super(iWorld, biomeSource, 4, 8, 256, overworldChunkGeneratorConfig, true);
 		this.random.consume(2620);
-		this.field_16583 = new OctavePerlinNoiseSampler(this.random, 16);
+		this.noiseSampler = new OctavePerlinNoiseSampler(this.random, 16);
 		this.amplified = iWorld.getLevelProperties().getGeneratorType() == LevelGeneratorType.AMPLIFIED;
 	}
 
@@ -111,7 +111,7 @@ public class OverworldChunkGenerator extends SurfaceChunkGenerator<OverworldChun
 	}
 
 	private double method_16414(int i, int j) {
-		double d = this.field_16583.sample((double)(i * 200), 10.0, (double)(j * 200), 1.0, 0.0, true) / 8000.0;
+		double d = this.noiseSampler.sample((double)(i * 200), 10.0, (double)(j * 200), 1.0, 0.0, true) / 8000.0;
 		if (d < 0.0) {
 			d = -d * 0.3;
 		}
@@ -141,11 +141,11 @@ public class OverworldChunkGenerator extends SurfaceChunkGenerator<OverworldChun
 				return Feature.SWAMP_HUT.getCreatureSpawns();
 			}
 		} else if (entityCategory == EntityCategory.field_6302) {
-			if (Feature.PILLAGER_OUTPOST.method_14023(this.world, blockPos)) {
+			if (Feature.PILLAGER_OUTPOST.isApproximatelyInsideStructure(this.world, blockPos)) {
 				return Feature.PILLAGER_OUTPOST.getMonsterSpawns();
 			}
 
-			if (Feature.OCEAN_MONUMENT.method_14023(this.world, blockPos)) {
+			if (Feature.OCEAN_MONUMENT.isApproximatelyInsideStructure(this.world, blockPos)) {
 				return Feature.OCEAN_MONUMENT.getMonsterSpawns();
 			}
 		}
@@ -165,7 +165,7 @@ public class OverworldChunkGenerator extends SurfaceChunkGenerator<OverworldChun
 	}
 
 	@Override
-	public int method_16398() {
+	public int getSeaLevel() {
 		return 63;
 	}
 }

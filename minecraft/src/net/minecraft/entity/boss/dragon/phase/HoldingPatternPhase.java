@@ -56,7 +56,7 @@ public class HoldingPatternPhase extends AbstractPhase {
 			}
 
 			double d = 64.0;
-			PlayerEntity playerEntity = this.dragon.world.method_8483(blockPos, d, d);
+			PlayerEntity playerEntity = this.dragon.world.findMobAttackTarget(blockPos, d, d);
 			if (playerEntity != null) {
 				d = playerEntity.squaredDistanceToCenter(blockPos) / 512.0;
 			}

@@ -29,10 +29,6 @@ public class FluidRenderer {
 	private final Sprite[] waterSprites = new Sprite[2];
 	private Sprite waterOverlaySprite;
 
-	public FluidRenderer() {
-		this.onResourceReload();
-	}
-
 	protected void onResourceReload() {
 		SpriteAtlasTexture spriteAtlasTexture = MinecraftClient.getInstance().getSpriteAtlas();
 		this.lavaSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockStateMaps().getModel(Blocks.field_10164.getDefaultState()).getSprite();

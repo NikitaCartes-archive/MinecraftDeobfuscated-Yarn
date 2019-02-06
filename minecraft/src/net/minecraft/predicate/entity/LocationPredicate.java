@@ -74,7 +74,7 @@ public class LocationPredicate {
 			if (this.biome != null && this.biome != serverWorld.getBiome(blockPos)) {
 				return false;
 			} else {
-				return this.feature == null || this.feature.method_14024(serverWorld, blockPos);
+				return this.feature == null || this.feature.isInsideStructure(serverWorld, blockPos);
 			}
 		}
 	}

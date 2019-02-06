@@ -11,7 +11,7 @@ import java.util.UUID;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.client.network.packet.EntitySpawnClientPacket;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.command.arguments.ParticleArgumentType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -329,7 +329,7 @@ public class AreaEffectCloudEntity extends Entity {
 	@Nullable
 	public LivingEntity getOwner() {
 		if (this.owner == null && this.ownerUuid != null && this.world instanceof ServerWorld) {
-			Entity entity = this.world.getEntityByUuid(this.ownerUuid);
+			Entity entity = ((ServerWorld)this.world).method_14190(this.ownerUuid);
 			if (entity instanceof LivingEntity) {
 				this.owner = (LivingEntity)entity;
 			}
@@ -428,6 +428,6 @@ public class AreaEffectCloudEntity extends Entity {
 
 	@Override
 	public Packet<?> createSpawnPacket() {
-		return new EntitySpawnClientPacket(this);
+		return new EntitySpawnS2CPacket(this);
 	}
 }

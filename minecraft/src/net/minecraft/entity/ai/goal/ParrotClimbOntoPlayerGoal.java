@@ -1,12 +1,11 @@
 package net.minecraft.entity.ai.goal;
 
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.ParrotBaseEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 public class ParrotClimbOntoPlayerGoal extends Goal {
 	private final ParrotBaseEntity parrot;
-	private PlayerEntity parrotOwner;
+	private ServerPlayerEntity parrotOwner;
 	private boolean mounted;
 
 	public ParrotClimbOntoPlayerGoal(ParrotBaseEntity parrotBaseEntity) {
@@ -15,11 +14,8 @@ public class ParrotClimbOntoPlayerGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		LivingEntity livingEntity = this.parrot.getOwner();
-		boolean bl = livingEntity != null
-			&& !((PlayerEntity)livingEntity).isSpectator()
-			&& !((PlayerEntity)livingEntity).abilities.flying
-			&& !livingEntity.isInsideWater();
+		ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.parrot.getOwner();
+		boolean bl = serverPlayerEntity != null && !serverPlayerEntity.isSpectator() && !serverPlayerEntity.abilities.flying && !serverPlayerEntity.isInsideWater();
 		return !this.parrot.isSitting() && bl && this.parrot.method_6626();
 	}
 
@@ -30,7 +26,7 @@ public class ParrotClimbOntoPlayerGoal extends Goal {
 
 	@Override
 	public void start() {
-		this.parrotOwner = (PlayerEntity)this.parrot.getOwner();
+		this.parrotOwner = (ServerPlayerEntity)this.parrot.getOwner();
 		this.mounted = false;
 	}
 

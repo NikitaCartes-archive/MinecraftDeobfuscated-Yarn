@@ -55,19 +55,19 @@ public class ChunkPos {
 		}
 	}
 
-	public int getXStart() {
+	public int getStartX() {
 		return this.x << 4;
 	}
 
-	public int getZStart() {
+	public int getStartZ() {
 		return this.z << 4;
 	}
 
-	public int getXEnd() {
+	public int getEndX() {
 		return (this.x << 4) + 15;
 	}
 
-	public int getZEnd() {
+	public int getEndZ() {
 		return (this.z << 4) + 15;
 	}
 

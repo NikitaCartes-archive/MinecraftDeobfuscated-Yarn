@@ -16,7 +16,7 @@ import net.minecraft.world.gen.ProbabilityConfig;
 public class UnderwaterCaveCarver extends CaveCarver {
 	public UnderwaterCaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> function) {
 		super(function, 256);
-		this.field_13302 = ImmutableSet.of(
+		this.alwaysCarvableBlocks = ImmutableSet.of(
 			Blocks.field_10340,
 			Blocks.field_10474,
 			Blocks.field_10508,
@@ -58,12 +58,12 @@ public class UnderwaterCaveCarver extends CaveCarver {
 	}
 
 	@Override
-	protected boolean method_12711(Chunk chunk, int i, int j, int k, int l, int m, int n, int o, int p) {
+	protected boolean isRegionUncarvable(Chunk chunk, int i, int j, int k, int l, int m, int n, int o, int p) {
 		return false;
 	}
 
 	@Override
-	protected boolean method_16581(
+	protected boolean carveAtPoint(
 		Chunk chunk,
 		BitSet bitSet,
 		Random random,
@@ -80,10 +80,10 @@ public class UnderwaterCaveCarver extends CaveCarver {
 		int p,
 		AtomicBoolean atomicBoolean
 	) {
-		return method_16138(this, chunk, bitSet, random, mutable, i, j, k, l, m, n, o, p);
+		return carveAtPoint(this, chunk, bitSet, random, mutable, i, j, k, l, m, n, o, p);
 	}
 
-	protected static boolean method_16138(
+	protected static boolean carveAtPoint(
 		Carver<?> carver, Chunk chunk, BitSet bitSet, Random random, BlockPos.Mutable mutable, int i, int j, int k, int l, int m, int n, int o, int p
 	) {
 		if (o >= i) {
@@ -96,7 +96,7 @@ public class UnderwaterCaveCarver extends CaveCarver {
 				bitSet.set(q);
 				mutable.set(l, o, m);
 				BlockState blockState = chunk.getBlockState(mutable);
-				if (!carver.method_12709(blockState)) {
+				if (!carver.canAlwaysCarveBlock(blockState)) {
 					return false;
 				} else if (o == 10) {
 					float f = random.nextFloat();

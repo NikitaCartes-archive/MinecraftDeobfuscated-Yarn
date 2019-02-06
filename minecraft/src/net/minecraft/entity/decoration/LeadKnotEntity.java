@@ -4,7 +4,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.EntitySpawnClientPacket;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
@@ -122,14 +122,6 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 		return this.world.getBlockState(this.blockPos).getBlock().matches(BlockTags.field_16584);
 	}
 
-	public static LeadKnotEntity method_6931(World world, BlockPos blockPos) {
-		LeadKnotEntity leadKnotEntity = new LeadKnotEntity(world, blockPos);
-		world.spawnEntity(leadKnotEntity);
-		leadKnotEntity.method_6894();
-		return leadKnotEntity;
-	}
-
-	@Nullable
 	public static LeadKnotEntity method_6932(World world, BlockPos blockPos) {
 		int i = blockPos.getX();
 		int j = blockPos.getY();
@@ -143,7 +135,10 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 			}
 		}
 
-		return null;
+		LeadKnotEntity leadKnotEntity2 = new LeadKnotEntity(world, blockPos);
+		world.spawnEntity(leadKnotEntity2);
+		leadKnotEntity2.method_6894();
+		return leadKnotEntity2;
 	}
 
 	@Override
@@ -153,6 +148,6 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 
 	@Override
 	public Packet<?> createSpawnPacket() {
-		return new EntitySpawnClientPacket(this, this.getType(), 0, this.getDecorationBlockPos());
+		return new EntitySpawnS2CPacket(this, this.getType(), 0, this.getDecorationBlockPos());
 	}
 }

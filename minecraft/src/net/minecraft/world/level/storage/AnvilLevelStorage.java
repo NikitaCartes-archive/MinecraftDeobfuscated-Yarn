@@ -13,7 +13,7 @@ import java.util.List;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.util.ProgressListener;
-import net.minecraft.world.OldWorldSaveHandler;
+import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.BiomeSourceType;
@@ -53,12 +53,12 @@ public class AnvilLevelStorage {
 
 		int i = list.size() + list2.size() + list3.size();
 		LOGGER.info("Total conversion count is {}", i);
-		LevelProperties levelProperties = LevelStorage.method_17928(path, dataFixer, string);
+		LevelProperties levelProperties = LevelStorage.getLevelProperties(path, dataFixer, string);
 		BiomeSourceType<FixedBiomeSourceConfig, FixedBiomeSource> biomeSourceType = BiomeSourceType.FIXED;
 		BiomeSourceType<VanillaLayeredBiomeSourceConfig, VanillaLayeredBiomeSource> biomeSourceType2 = BiomeSourceType.VANILLA_LAYERED;
 		BiomeSource biomeSource;
 		if (levelProperties != null && levelProperties.getGeneratorType() == LevelGeneratorType.FLAT) {
-			biomeSource = biomeSourceType.applyConfig(biomeSourceType.getConfig().method_8782(Biomes.field_9451));
+			biomeSource = biomeSourceType.applyConfig(biomeSourceType.getConfig().setBiome(Biomes.biome));
 		} else {
 			biomeSource = biomeSourceType2.applyConfig(
 				biomeSourceType2.getConfig().setLevelProperties(levelProperties).setGeneratorSettings(ChunkGeneratorType.field_12769.createSettings())
@@ -67,12 +67,12 @@ public class AnvilLevelStorage {
 
 		convertRegions(new File(file, "region"), list, biomeSource, 0, i, progressListener);
 		convertRegions(
-			new File(file2, "region"), list2, biomeSourceType.applyConfig(biomeSourceType.getConfig().method_8782(Biomes.field_9461)), list.size(), i, progressListener
+			new File(file2, "region"), list2, biomeSourceType.applyConfig(biomeSourceType.getConfig().setBiome(Biomes.field_9461)), list.size(), i, progressListener
 		);
 		convertRegions(
 			new File(file3, "region"),
 			list3,
-			biomeSourceType.applyConfig(biomeSourceType.getConfig().method_8782(Biomes.field_9411)),
+			biomeSourceType.applyConfig(biomeSourceType.getConfig().setBiome(Biomes.field_9411)),
 			list.size() + list2.size(),
 			i,
 			progressListener
@@ -83,8 +83,8 @@ public class AnvilLevelStorage {
 		}
 
 		makeMcrLevelDatBackup(path, string);
-		OldWorldSaveHandler oldWorldSaveHandler = LevelStorage.method_17929(path, dataFixer, string, null);
-		oldWorldSaveHandler.saveWorld(levelProperties);
+		WorldSaveHandler worldSaveHandler = LevelStorage.method_17929(path, dataFixer, string, null);
+		worldSaveHandler.saveWorld(levelProperties);
 		return true;
 	}
 

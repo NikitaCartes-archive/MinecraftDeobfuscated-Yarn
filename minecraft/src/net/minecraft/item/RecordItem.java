@@ -41,7 +41,7 @@ public class RecordItem extends Item {
 			ItemStack itemStack = itemUsageContext.getItemStack();
 			if (!world.isClient) {
 				((JukeboxBlock)Blocks.field_10223).setRecord(world, blockPos, blockState, itemStack);
-				world.fireWorldEvent(null, 1010, blockPos, Item.getRawIdByItem(this));
+				world.playEvent(null, 1010, blockPos, Item.getRawIdByItem(this));
 				itemStack.subtractAmount(1);
 				PlayerEntity playerEntity = itemUsageContext.getPlayer();
 				if (playerEntity != null) {

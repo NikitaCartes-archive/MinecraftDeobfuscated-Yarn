@@ -66,7 +66,7 @@ public interface ViewableWorld extends ExtendedBlockView {
 	int getTop(Heightmap.Type type, int i, int j);
 
 	default float method_8610(BlockPos blockPos) {
-		return this.getDimension().method_12456()[this.method_8602(blockPos)];
+		return this.getDimension().getLightLevelToBrightness()[this.method_8602(blockPos)];
 	}
 
 	@Nullable

@@ -1,266 +1,266 @@
 package net.minecraft.network.listener;
 
-import net.minecraft.client.network.packet.AdvancementUpdateClientPacket;
-import net.minecraft.client.network.packet.BlockActionClientPacket;
-import net.minecraft.client.network.packet.BlockBreakingProgressClientPacket;
-import net.minecraft.client.network.packet.BlockEntityUpdateClientPacket;
-import net.minecraft.client.network.packet.BlockUpdateClientPacket;
-import net.minecraft.client.network.packet.BossBarClientPacket;
-import net.minecraft.client.network.packet.ChatMessageClientPacket;
-import net.minecraft.client.network.packet.ChunkDataClientPacket;
-import net.minecraft.client.network.packet.ChunkDeltaUpdateClientPacket;
-import net.minecraft.client.network.packet.CombatEventClientPacket;
-import net.minecraft.client.network.packet.CommandSuggestionsClientPacket;
-import net.minecraft.client.network.packet.CommandTreeClientPacket;
-import net.minecraft.client.network.packet.ConfirmGuiActionClientPacket;
-import net.minecraft.client.network.packet.CooldownUpdateClientPacket;
-import net.minecraft.client.network.packet.CraftResponseClientPacket;
-import net.minecraft.client.network.packet.CustomPayloadClientPacket;
-import net.minecraft.client.network.packet.DifficultyClientPacket;
-import net.minecraft.client.network.packet.DisconnectClientPacket;
-import net.minecraft.client.network.packet.EntitiesDestroyClientPacket;
-import net.minecraft.client.network.packet.EntityAnimationClientPacket;
-import net.minecraft.client.network.packet.EntityAttachClientPacket;
-import net.minecraft.client.network.packet.EntityAttributesClientPacket;
-import net.minecraft.client.network.packet.EntityClientPacket;
-import net.minecraft.client.network.packet.EntityEquipmentUpdateClientPacket;
-import net.minecraft.client.network.packet.EntityPassengersSetClientPacket;
-import net.minecraft.client.network.packet.EntityPositionClientPacket;
-import net.minecraft.client.network.packet.EntityPotionEffectClientPacket;
-import net.minecraft.client.network.packet.EntitySetHeadYawClientPacket;
-import net.minecraft.client.network.packet.EntitySpawnClientPacket;
-import net.minecraft.client.network.packet.EntitySpawnGlobalClientPacket;
-import net.minecraft.client.network.packet.EntityStatusClientPacket;
-import net.minecraft.client.network.packet.EntityTrackerUpdateClientPacket;
-import net.minecraft.client.network.packet.EntityVelocityUpdateClientPacket;
-import net.minecraft.client.network.packet.ExperienceBarUpdateClientPacket;
-import net.minecraft.client.network.packet.ExperienceOrbSpawnClientPacket;
-import net.minecraft.client.network.packet.ExplosionClientPacket;
-import net.minecraft.client.network.packet.GameJoinClientPacket;
-import net.minecraft.client.network.packet.GameStateChangeClientPacket;
-import net.minecraft.client.network.packet.GuiCloseClientPacket;
-import net.minecraft.client.network.packet.GuiOpenClientPacket;
-import net.minecraft.client.network.packet.GuiSlotUpdateClientPacket;
-import net.minecraft.client.network.packet.GuiUpdateClientPacket;
-import net.minecraft.client.network.packet.HealthUpdateClientPacket;
-import net.minecraft.client.network.packet.HeldItemChangeClientPacket;
-import net.minecraft.client.network.packet.InventoryClientPacket;
-import net.minecraft.client.network.packet.ItemPickupAnimationClientPacket;
-import net.minecraft.client.network.packet.KeepAliveClientPacket;
-import net.minecraft.client.network.packet.LightUpdateClientPacket;
-import net.minecraft.client.network.packet.LookAtClientPacket;
-import net.minecraft.client.network.packet.MapUpdateClientPacket;
-import net.minecraft.client.network.packet.MobSpawnClientPacket;
+import net.minecraft.client.network.packet.AdvancementUpdateS2CPacket;
+import net.minecraft.client.network.packet.BlockActionS2CPacket;
+import net.minecraft.client.network.packet.BlockBreakingProgressS2CPacket;
+import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
+import net.minecraft.client.network.packet.BlockUpdateS2CPacket;
+import net.minecraft.client.network.packet.BossBarS2CPacket;
+import net.minecraft.client.network.packet.ChatMessageS2CPacket;
+import net.minecraft.client.network.packet.ChunkDataS2CPacket;
+import net.minecraft.client.network.packet.ChunkDeltaUpdateS2CPacket;
+import net.minecraft.client.network.packet.CombatEventS2CPacket;
+import net.minecraft.client.network.packet.CommandSuggestionsS2CPacket;
+import net.minecraft.client.network.packet.CommandTreeS2CPacket;
+import net.minecraft.client.network.packet.ConfirmGuiActionS2CPacket;
+import net.minecraft.client.network.packet.CooldownUpdateS2CPacket;
+import net.minecraft.client.network.packet.CraftResponseS2CPacket;
+import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
+import net.minecraft.client.network.packet.DifficultyS2CPacket;
+import net.minecraft.client.network.packet.DisconnectS2CPacket;
+import net.minecraft.client.network.packet.EntitiesDestroyS2CPacket;
+import net.minecraft.client.network.packet.EntityAnimationS2CPacket;
+import net.minecraft.client.network.packet.EntityAttachS2CPacket;
+import net.minecraft.client.network.packet.EntityAttributesS2CPacket;
+import net.minecraft.client.network.packet.EntityEquipmentUpdateS2CPacket;
+import net.minecraft.client.network.packet.EntityPassengersSetS2CPacket;
+import net.minecraft.client.network.packet.EntityPositionS2CPacket;
+import net.minecraft.client.network.packet.EntityPotionEffectS2CPacket;
+import net.minecraft.client.network.packet.EntityS2CPacket;
+import net.minecraft.client.network.packet.EntitySetHeadYawS2CPacket;
+import net.minecraft.client.network.packet.EntitySpawnGlobalS2CPacket;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
+import net.minecraft.client.network.packet.EntityStatusS2CPacket;
+import net.minecraft.client.network.packet.EntityTrackerUpdateS2CPacket;
+import net.minecraft.client.network.packet.EntityVelocityUpdateS2CPacket;
+import net.minecraft.client.network.packet.ExperienceBarUpdateS2CPacket;
+import net.minecraft.client.network.packet.ExperienceOrbSpawnS2CPacket;
+import net.minecraft.client.network.packet.ExplosionS2CPacket;
+import net.minecraft.client.network.packet.GameJoinS2CPacket;
+import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
+import net.minecraft.client.network.packet.GuiCloseS2CPacket;
+import net.minecraft.client.network.packet.GuiOpenS2CPacket;
+import net.minecraft.client.network.packet.GuiSlotUpdateS2CPacket;
+import net.minecraft.client.network.packet.GuiUpdateS2CPacket;
+import net.minecraft.client.network.packet.HealthUpdateS2CPacket;
+import net.minecraft.client.network.packet.HeldItemChangeS2CPacket;
+import net.minecraft.client.network.packet.InventoryS2CPacket;
+import net.minecraft.client.network.packet.ItemPickupAnimationS2CPacket;
+import net.minecraft.client.network.packet.KeepAliveS2CPacket;
+import net.minecraft.client.network.packet.LightUpdateS2CPacket;
+import net.minecraft.client.network.packet.LookAtS2CPacket;
+import net.minecraft.client.network.packet.MapUpdateS2CPacket;
+import net.minecraft.client.network.packet.MobSpawnS2CPacket;
 import net.minecraft.client.network.packet.OpenContainerPacket;
-import net.minecraft.client.network.packet.OpenWrittenBookClientPacket;
-import net.minecraft.client.network.packet.PaintingSpawnClientPacket;
-import net.minecraft.client.network.packet.ParticleClientPacket;
-import net.minecraft.client.network.packet.PlaySoundClientPacket;
-import net.minecraft.client.network.packet.PlaySoundFromEntityClientPacket;
-import net.minecraft.client.network.packet.PlaySoundIdClientPacket;
-import net.minecraft.client.network.packet.PlayerAbilitiesClientPacket;
-import net.minecraft.client.network.packet.PlayerListClientPacket;
-import net.minecraft.client.network.packet.PlayerListHeaderClientPacket;
-import net.minecraft.client.network.packet.PlayerPositionLookClientPacket;
-import net.minecraft.client.network.packet.PlayerRespawnClientPacket;
-import net.minecraft.client.network.packet.PlayerSpawnClientPacket;
-import net.minecraft.client.network.packet.PlayerSpawnPositionClientPacket;
-import net.minecraft.client.network.packet.PlayerUseBedClientPacket;
-import net.minecraft.client.network.packet.RemoveEntityEffectClientPacket;
-import net.minecraft.client.network.packet.ResourcePackSendClientPacket;
-import net.minecraft.client.network.packet.ScoreboardDisplayClientPacket;
-import net.minecraft.client.network.packet.ScoreboardObjectiveUpdateClientPacket;
-import net.minecraft.client.network.packet.ScoreboardPlayerUpdateClientPacket;
-import net.minecraft.client.network.packet.SelectAdvancementTabClientPacket;
-import net.minecraft.client.network.packet.SetCameraEntityClientPacket;
+import net.minecraft.client.network.packet.OpenWrittenBookS2CPacket;
+import net.minecraft.client.network.packet.PaintingSpawnS2CPacket;
+import net.minecraft.client.network.packet.ParticleS2CPacket;
+import net.minecraft.client.network.packet.PlaySoundFromEntityS2CPacket;
+import net.minecraft.client.network.packet.PlaySoundIdS2CPacket;
+import net.minecraft.client.network.packet.PlaySoundS2CPacket;
+import net.minecraft.client.network.packet.PlayerAbilitiesS2CPacket;
+import net.minecraft.client.network.packet.PlayerListHeaderS2CPacket;
+import net.minecraft.client.network.packet.PlayerListS2CPacket;
+import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
+import net.minecraft.client.network.packet.PlayerRespawnS2CPacket;
+import net.minecraft.client.network.packet.PlayerSpawnPositionS2CPacket;
+import net.minecraft.client.network.packet.PlayerSpawnS2CPacket;
+import net.minecraft.client.network.packet.PlayerUseBedS2CPacket;
+import net.minecraft.client.network.packet.RemoveEntityEffectS2CPacket;
+import net.minecraft.client.network.packet.ResourcePackSendS2CPacket;
+import net.minecraft.client.network.packet.ScoreboardDisplayS2CPacket;
+import net.minecraft.client.network.packet.ScoreboardObjectiveUpdateS2CPacket;
+import net.minecraft.client.network.packet.ScoreboardPlayerUpdateS2CPacket;
+import net.minecraft.client.network.packet.SelectAdvancementTabS2CPacket;
+import net.minecraft.client.network.packet.SetCameraEntityS2CPacket;
 import net.minecraft.client.network.packet.SetVillagerRecipesPacket;
-import net.minecraft.client.network.packet.SignEditorOpenClientPacket;
-import net.minecraft.client.network.packet.StatisticsClientPacket;
-import net.minecraft.client.network.packet.StopSoundClientPacket;
-import net.minecraft.client.network.packet.SynchronizeRecipesClientPacket;
-import net.minecraft.client.network.packet.SynchronizeTagsClientPacket;
-import net.minecraft.client.network.packet.TagQueryResponseClientPacket;
-import net.minecraft.client.network.packet.TeamClientPacket;
-import net.minecraft.client.network.packet.TitleClientPacket;
-import net.minecraft.client.network.packet.UnloadChunkClientPacket;
-import net.minecraft.client.network.packet.UnlockRecipesClientPacket;
-import net.minecraft.client.network.packet.VehicleMoveClientPacket;
-import net.minecraft.client.network.packet.WorldBorderClientPacket;
-import net.minecraft.client.network.packet.WorldEventClientPacket;
-import net.minecraft.client.network.packet.WorldTimeUpdateClientPacket;
+import net.minecraft.client.network.packet.SignEditorOpenS2CPacket;
+import net.minecraft.client.network.packet.StatisticsS2CPacket;
+import net.minecraft.client.network.packet.StopSoundS2CPacket;
+import net.minecraft.client.network.packet.SynchronizeRecipesS2CPacket;
+import net.minecraft.client.network.packet.SynchronizeTagsS2CPacket;
+import net.minecraft.client.network.packet.TagQueryResponseS2CPacket;
+import net.minecraft.client.network.packet.TeamS2CPacket;
+import net.minecraft.client.network.packet.TitleS2CPacket;
+import net.minecraft.client.network.packet.UnloadChunkS2CPacket;
+import net.minecraft.client.network.packet.UnlockRecipesS2CPacket;
+import net.minecraft.client.network.packet.VehicleMoveS2CPacket;
+import net.minecraft.client.network.packet.WorldBorderS2CPacket;
+import net.minecraft.client.network.packet.WorldEventS2CPacket;
+import net.minecraft.client.network.packet.WorldTimeUpdateS2CPacket;
 
 public interface ClientPlayPacketListener extends PacketListener {
-	void onEntitySpawn(EntitySpawnClientPacket entitySpawnClientPacket);
+	void method_11112(EntitySpawnS2CPacket entitySpawnS2CPacket);
 
-	void onExperienceOrbSpawn(ExperienceOrbSpawnClientPacket experienceOrbSpawnClientPacket);
+	void method_11091(ExperienceOrbSpawnS2CPacket experienceOrbSpawnS2CPacket);
 
-	void onEntitySpawnGlobal(EntitySpawnGlobalClientPacket entitySpawnGlobalClientPacket);
+	void method_11156(EntitySpawnGlobalS2CPacket entitySpawnGlobalS2CPacket);
 
-	void onMobSpawn(MobSpawnClientPacket mobSpawnClientPacket);
+	void method_11138(MobSpawnS2CPacket mobSpawnS2CPacket);
 
-	void onScoreboardObjectiveUpdate(ScoreboardObjectiveUpdateClientPacket scoreboardObjectiveUpdateClientPacket);
+	void method_11144(ScoreboardObjectiveUpdateS2CPacket scoreboardObjectiveUpdateS2CPacket);
 
-	void onPaintingSpawn(PaintingSpawnClientPacket paintingSpawnClientPacket);
+	void method_11114(PaintingSpawnS2CPacket paintingSpawnS2CPacket);
 
-	void onPlayerSpawn(PlayerSpawnClientPacket playerSpawnClientPacket);
+	void method_11097(PlayerSpawnS2CPacket playerSpawnS2CPacket);
 
-	void onEntityAnimation(EntityAnimationClientPacket entityAnimationClientPacket);
+	void method_11160(EntityAnimationS2CPacket entityAnimationS2CPacket);
 
-	void onStatistics(StatisticsClientPacket statisticsClientPacket);
+	void method_11129(StatisticsS2CPacket statisticsS2CPacket);
 
-	void onUnlockRecipes(UnlockRecipesClientPacket unlockRecipesClientPacket);
+	void method_11115(UnlockRecipesS2CPacket unlockRecipesS2CPacket);
 
-	void onBlockDestroyProgress(BlockBreakingProgressClientPacket blockBreakingProgressClientPacket);
+	void method_11116(BlockBreakingProgressS2CPacket blockBreakingProgressS2CPacket);
 
-	void onSignEditorOpen(SignEditorOpenClientPacket signEditorOpenClientPacket);
+	void method_11108(SignEditorOpenS2CPacket signEditorOpenS2CPacket);
 
-	void onBlockEntityUpdate(BlockEntityUpdateClientPacket blockEntityUpdateClientPacket);
+	void method_11094(BlockEntityUpdateS2CPacket blockEntityUpdateS2CPacket);
 
-	void onBlockAction(BlockActionClientPacket blockActionClientPacket);
+	void method_11158(BlockActionS2CPacket blockActionS2CPacket);
 
-	void onBlockUpdate(BlockUpdateClientPacket blockUpdateClientPacket);
+	void method_11136(BlockUpdateS2CPacket blockUpdateS2CPacket);
 
-	void onChatMessage(ChatMessageClientPacket chatMessageClientPacket);
+	void method_11121(ChatMessageS2CPacket chatMessageS2CPacket);
 
-	void onChunkDeltaUpdate(ChunkDeltaUpdateClientPacket chunkDeltaUpdateClientPacket);
+	void method_11100(ChunkDeltaUpdateS2CPacket chunkDeltaUpdateS2CPacket);
 
-	void onMapUpdate(MapUpdateClientPacket mapUpdateClientPacket);
+	void method_11088(MapUpdateS2CPacket mapUpdateS2CPacket);
 
-	void onGuiActionConfirm(ConfirmGuiActionClientPacket confirmGuiActionClientPacket);
+	void method_11123(ConfirmGuiActionS2CPacket confirmGuiActionS2CPacket);
 
-	void onGuiClose(GuiCloseClientPacket guiCloseClientPacket);
+	void method_11102(GuiCloseS2CPacket guiCloseS2CPacket);
 
-	void onInventory(InventoryClientPacket inventoryClientPacket);
+	void method_11153(InventoryS2CPacket inventoryS2CPacket);
 
-	void onGuiOpen(GuiOpenClientPacket guiOpenClientPacket);
+	void method_11089(GuiOpenS2CPacket guiOpenS2CPacket);
 
-	void onGuiUpdate(GuiUpdateClientPacket guiUpdateClientPacket);
+	void method_11131(GuiUpdateS2CPacket guiUpdateS2CPacket);
 
-	void onGuiSlotUpdate(GuiSlotUpdateClientPacket guiSlotUpdateClientPacket);
+	void method_11109(GuiSlotUpdateS2CPacket guiSlotUpdateS2CPacket);
 
-	void onCustomPayload(CustomPayloadClientPacket customPayloadClientPacket);
+	void method_11152(CustomPayloadS2CPacket customPayloadS2CPacket);
 
-	void onDisconnect(DisconnectClientPacket disconnectClientPacket);
+	void method_11083(DisconnectS2CPacket disconnectS2CPacket);
 
-	void onPlayerUseBed(PlayerUseBedClientPacket playerUseBedClientPacket);
+	void method_11137(PlayerUseBedS2CPacket playerUseBedS2CPacket);
 
-	void onEntityStatus(EntityStatusClientPacket entityStatusClientPacket);
+	void method_11148(EntityStatusS2CPacket entityStatusS2CPacket);
 
-	void onEntityAttach(EntityAttachClientPacket entityAttachClientPacket);
+	void method_11110(EntityAttachS2CPacket entityAttachS2CPacket);
 
-	void onEntityPassengersSet(EntityPassengersSetClientPacket entityPassengersSetClientPacket);
+	void method_11080(EntityPassengersSetS2CPacket entityPassengersSetS2CPacket);
 
-	void onExplosion(ExplosionClientPacket explosionClientPacket);
+	void method_11124(ExplosionS2CPacket explosionS2CPacket);
 
-	void onGameStateChange(GameStateChangeClientPacket gameStateChangeClientPacket);
+	void method_11085(GameStateChangeS2CPacket gameStateChangeS2CPacket);
 
-	void onKeepAlive(KeepAliveClientPacket keepAliveClientPacket);
+	void method_11147(KeepAliveS2CPacket keepAliveS2CPacket);
 
-	void onChunkData(ChunkDataClientPacket chunkDataClientPacket);
+	void method_11128(ChunkDataS2CPacket chunkDataS2CPacket);
 
-	void onUnloadChunk(UnloadChunkClientPacket unloadChunkClientPacket);
+	void method_11107(UnloadChunkS2CPacket unloadChunkS2CPacket);
 
-	void onWorldEvent(WorldEventClientPacket worldEventClientPacket);
+	void method_11098(WorldEventS2CPacket worldEventS2CPacket);
 
-	void onGameJoin(GameJoinClientPacket gameJoinClientPacket);
+	void method_11120(GameJoinS2CPacket gameJoinS2CPacket);
 
-	void onEntityUpdate(EntityClientPacket entityClientPacket);
+	void method_11155(EntityS2CPacket entityS2CPacket);
 
-	void onPlayerPositionLook(PlayerPositionLookClientPacket playerPositionLookClientPacket);
+	void method_11157(PlayerPositionLookS2CPacket playerPositionLookS2CPacket);
 
-	void onParticle(ParticleClientPacket particleClientPacket);
+	void method_11077(ParticleS2CPacket particleS2CPacket);
 
-	void onPlayerAbilities(PlayerAbilitiesClientPacket playerAbilitiesClientPacket);
+	void method_11154(PlayerAbilitiesS2CPacket playerAbilitiesS2CPacket);
 
-	void onPlayerList(PlayerListClientPacket playerListClientPacket);
+	void method_11113(PlayerListS2CPacket playerListS2CPacket);
 
-	void onEntitiesDestroy(EntitiesDestroyClientPacket entitiesDestroyClientPacket);
+	void method_11095(EntitiesDestroyS2CPacket entitiesDestroyS2CPacket);
 
-	void onRemoveEntityEffect(RemoveEntityEffectClientPacket removeEntityEffectClientPacket);
+	void method_11119(RemoveEntityEffectS2CPacket removeEntityEffectS2CPacket);
 
-	void onPlayerRespawn(PlayerRespawnClientPacket playerRespawnClientPacket);
+	void method_11117(PlayerRespawnS2CPacket playerRespawnS2CPacket);
 
-	void onEntitySetHeadYaw(EntitySetHeadYawClientPacket entitySetHeadYawClientPacket);
+	void method_11139(EntitySetHeadYawS2CPacket entitySetHeadYawS2CPacket);
 
-	void onHeldItemChange(HeldItemChangeClientPacket heldItemChangeClientPacket);
+	void method_11135(HeldItemChangeS2CPacket heldItemChangeS2CPacket);
 
-	void onScoreboardDisplay(ScoreboardDisplayClientPacket scoreboardDisplayClientPacket);
+	void method_11159(ScoreboardDisplayS2CPacket scoreboardDisplayS2CPacket);
 
-	void onEntityTrackerUpdate(EntityTrackerUpdateClientPacket entityTrackerUpdateClientPacket);
+	void method_11093(EntityTrackerUpdateS2CPacket entityTrackerUpdateS2CPacket);
 
-	void onVelocityUpdate(EntityVelocityUpdateClientPacket entityVelocityUpdateClientPacket);
+	void method_11132(EntityVelocityUpdateS2CPacket entityVelocityUpdateS2CPacket);
 
-	void onEquipmentUpdate(EntityEquipmentUpdateClientPacket entityEquipmentUpdateClientPacket);
+	void method_11151(EntityEquipmentUpdateS2CPacket entityEquipmentUpdateS2CPacket);
 
-	void onExperienceBarUpdate(ExperienceBarUpdateClientPacket experienceBarUpdateClientPacket);
+	void method_11101(ExperienceBarUpdateS2CPacket experienceBarUpdateS2CPacket);
 
-	void onHealthUpdate(HealthUpdateClientPacket healthUpdateClientPacket);
+	void method_11122(HealthUpdateS2CPacket healthUpdateS2CPacket);
 
-	void onTeam(TeamClientPacket teamClientPacket);
+	void method_11099(TeamS2CPacket teamS2CPacket);
 
-	void onScoreboardPlayerUpdate(ScoreboardPlayerUpdateClientPacket scoreboardPlayerUpdateClientPacket);
+	void method_11118(ScoreboardPlayerUpdateS2CPacket scoreboardPlayerUpdateS2CPacket);
 
-	void onPlayerSpawnPosition(PlayerSpawnPositionClientPacket playerSpawnPositionClientPacket);
+	void method_11142(PlayerSpawnPositionS2CPacket playerSpawnPositionS2CPacket);
 
-	void onWorldTimeUpdate(WorldTimeUpdateClientPacket worldTimeUpdateClientPacket);
+	void method_11079(WorldTimeUpdateS2CPacket worldTimeUpdateS2CPacket);
 
-	void onPlaySound(PlaySoundClientPacket playSoundClientPacket);
+	void method_11146(PlaySoundS2CPacket playSoundS2CPacket);
 
-	void onPlaySoundFromEntity(PlaySoundFromEntityClientPacket playSoundFromEntityClientPacket);
+	void method_11125(PlaySoundFromEntityS2CPacket playSoundFromEntityS2CPacket);
 
-	void onPlaySoundId(PlaySoundIdClientPacket playSoundIdClientPacket);
+	void method_11104(PlaySoundIdS2CPacket playSoundIdS2CPacket);
 
-	void onItemPickupAnimation(ItemPickupAnimationClientPacket itemPickupAnimationClientPacket);
+	void method_11150(ItemPickupAnimationS2CPacket itemPickupAnimationS2CPacket);
 
-	void onEntityPosition(EntityPositionClientPacket entityPositionClientPacket);
+	void method_11086(EntityPositionS2CPacket entityPositionS2CPacket);
 
-	void onEntityAttributes(EntityAttributesClientPacket entityAttributesClientPacket);
+	void method_11149(EntityAttributesS2CPacket entityAttributesS2CPacket);
 
-	void onEntityPotionEffect(EntityPotionEffectClientPacket entityPotionEffectClientPacket);
+	void method_11084(EntityPotionEffectS2CPacket entityPotionEffectS2CPacket);
 
-	void onSynchronizeTags(SynchronizeTagsClientPacket synchronizeTagsClientPacket);
+	void method_11126(SynchronizeTagsS2CPacket synchronizeTagsS2CPacket);
 
-	void onCombatEvent(CombatEventClientPacket combatEventClientPacket);
+	void method_11133(CombatEventS2CPacket combatEventS2CPacket);
 
-	void onDifficulty(DifficultyClientPacket difficultyClientPacket);
+	void method_11140(DifficultyS2CPacket difficultyS2CPacket);
 
-	void onSetCameraEntity(SetCameraEntityClientPacket setCameraEntityClientPacket);
+	void method_11111(SetCameraEntityS2CPacket setCameraEntityS2CPacket);
 
-	void onWorldBorder(WorldBorderClientPacket worldBorderClientPacket);
+	void method_11096(WorldBorderS2CPacket worldBorderS2CPacket);
 
-	void onTitle(TitleClientPacket titleClientPacket);
+	void method_11103(TitleS2CPacket titleS2CPacket);
 
-	void onPlayerListHeader(PlayerListHeaderClientPacket playerListHeaderClientPacket);
+	void method_11105(PlayerListHeaderS2CPacket playerListHeaderS2CPacket);
 
-	void onResourcePackSend(ResourcePackSendClientPacket resourcePackSendClientPacket);
+	void method_11141(ResourcePackSendS2CPacket resourcePackSendS2CPacket);
 
-	void onBossBar(BossBarClientPacket bossBarClientPacket);
+	void method_11078(BossBarS2CPacket bossBarS2CPacket);
 
-	void onCooldownUpdate(CooldownUpdateClientPacket cooldownUpdateClientPacket);
+	void method_11087(CooldownUpdateS2CPacket cooldownUpdateS2CPacket);
 
-	void onVehicleMove(VehicleMoveClientPacket vehicleMoveClientPacket);
+	void method_11134(VehicleMoveS2CPacket vehicleMoveS2CPacket);
 
-	void onAdvancements(AdvancementUpdateClientPacket advancementUpdateClientPacket);
+	void method_11130(AdvancementUpdateS2CPacket advancementUpdateS2CPacket);
 
-	void onSelectAdvancementTab(SelectAdvancementTabClientPacket selectAdvancementTabClientPacket);
+	void method_11161(SelectAdvancementTabS2CPacket selectAdvancementTabS2CPacket);
 
-	void onCraftResponse(CraftResponseClientPacket craftResponseClientPacket);
+	void method_11090(CraftResponseS2CPacket craftResponseS2CPacket);
 
-	void onCommandTree(CommandTreeClientPacket commandTreeClientPacket);
+	void method_11145(CommandTreeS2CPacket commandTreeS2CPacket);
 
-	void onStopSound(StopSoundClientPacket stopSoundClientPacket);
+	void method_11082(StopSoundS2CPacket stopSoundS2CPacket);
 
-	void onCommandSuggestions(CommandSuggestionsClientPacket commandSuggestionsClientPacket);
+	void method_11081(CommandSuggestionsS2CPacket commandSuggestionsS2CPacket);
 
-	void onSynchronizeRecipes(SynchronizeRecipesClientPacket synchronizeRecipesClientPacket);
+	void method_11106(SynchronizeRecipesS2CPacket synchronizeRecipesS2CPacket);
 
-	void onLookAt(LookAtClientPacket lookAtClientPacket);
+	void method_11092(LookAtS2CPacket lookAtS2CPacket);
 
-	void onTagQuery(TagQueryResponseClientPacket tagQueryResponseClientPacket);
+	void method_11127(TagQueryResponseS2CPacket tagQueryResponseS2CPacket);
 
-	void onLightUpdate(LightUpdateClientPacket lightUpdateClientPacket);
+	void method_11143(LightUpdateS2CPacket lightUpdateS2CPacket);
 
-	void onOpenWrittenBook(OpenWrittenBookClientPacket openWrittenBookClientPacket);
+	void method_17186(OpenWrittenBookS2CPacket openWrittenBookS2CPacket);
 
 	void onOpenContainer(OpenContainerPacket openContainerPacket);
 

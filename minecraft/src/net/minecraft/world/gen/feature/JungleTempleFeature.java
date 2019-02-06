@@ -20,22 +20,22 @@ public class JungleTempleFeature extends AbstractTempleFeature<DefaultFeatureCon
 	}
 
 	@Override
-	public int method_14021() {
+	public int getRadius() {
 		return 3;
 	}
 
 	@Override
 	public StructureFeature.StructureStartFactory getStructureStartFactory() {
-		return JungleTempleFeature.class_3077::new;
+		return JungleTempleFeature.Start::new;
 	}
 
 	@Override
-	protected int method_13774() {
+	protected int getSeedModifier() {
 		return 14357619;
 	}
 
-	public static class class_3077 extends StructureStart {
-		public class_3077(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
+	public static class Start extends StructureStart {
+		public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
 			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
 		}
 

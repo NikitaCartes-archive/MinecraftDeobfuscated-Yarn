@@ -75,6 +75,6 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
 		Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, long m, C surfaceConfig
 	);
 
-	public void method_15306(long l) {
+	public void initSeed(long l) {
 	}
 }

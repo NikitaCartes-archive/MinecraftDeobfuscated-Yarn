@@ -2,7 +2,6 @@ package net.minecraft.client.gui;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
-import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.Collections;
 import java.util.List;
@@ -363,7 +362,7 @@ public class WrittenBookScreen extends Screen {
 				if (textComponent != null) {
 					return textComponent;
 				}
-			} catch (JsonParseException var4) {
+			} catch (Exception var4) {
 			}
 
 			return new StringTextComponent(string);

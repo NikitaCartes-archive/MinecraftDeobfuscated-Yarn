@@ -8,7 +8,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
-import net.minecraft.client.network.packet.PlaySoundIdClientPacket;
+import net.minecraft.client.network.packet.PlaySoundIdS2CPacket;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.command.arguments.ResourceLocationArgumentType;
 import net.minecraft.command.arguments.Vec3ArgumentType;
@@ -147,7 +147,7 @@ public class PlaySoundCommand {
 				m = h;
 			}
 
-			serverPlayerEntity.networkHandler.sendPacket(new PlaySoundIdClientPacket(identifier, soundCategory, vec3d2, m, g));
+			serverPlayerEntity.networkHandler.sendPacket(new PlaySoundIdS2CPacket(identifier, soundCategory, vec3d2, m, g));
 			++i;
 		}
 

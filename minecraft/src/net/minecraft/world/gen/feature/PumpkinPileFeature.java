@@ -12,7 +12,7 @@ public class PumpkinPileFeature extends AbstractPileFeature {
 	}
 
 	@Override
-	protected BlockState method_16843(IWorld iWorld) {
+	protected BlockState getPileBlockState(IWorld iWorld) {
 		return iWorld.getRandom().nextFloat() < 0.95F ? Blocks.field_10261.getDefaultState() : Blocks.field_10009.getDefaultState();
 	}
 }

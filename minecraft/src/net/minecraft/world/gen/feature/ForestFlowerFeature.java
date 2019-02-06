@@ -11,7 +11,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.Biome;
 
 public class ForestFlowerFeature extends FlowerFeature {
-	private static final Block[] field_13628 = new Block[]{
+	private static final Block[] FLOWERS = new Block[]{
 		Blocks.field_10182,
 		Blocks.field_10449,
 		Blocks.field_10086,
@@ -31,9 +31,9 @@ public class ForestFlowerFeature extends FlowerFeature {
 	}
 
 	@Override
-	public BlockState method_13175(Random random, BlockPos blockPos) {
+	public BlockState getFlowerToPlace(Random random, BlockPos blockPos) {
 		double d = MathHelper.clamp((1.0 + Biome.FOLIAGE_NOISE.sample((double)blockPos.getX() / 48.0, (double)blockPos.getZ() / 48.0)) / 2.0, 0.0, 0.9999);
-		Block block = field_13628[(int)(d * (double)field_13628.length)];
+		Block block = FLOWERS[(int)(d * (double)FLOWERS.length)];
 		return block == Blocks.field_10086 ? Blocks.field_10449.getDefaultState() : block.getDefaultState();
 	}
 }

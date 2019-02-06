@@ -103,19 +103,19 @@ public class SwampTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> 
 								BlockPos blockPos5 = mutable2.north();
 								BlockPos blockPos6 = mutable2.south();
 								if (random.nextInt(4) == 0 && isAir(modifiableTestableWorld, blockPos4)) {
-									this.method_14030(modifiableTestableWorld, blockPos4, VineBlock.EAST);
+									this.makeVines(modifiableTestableWorld, blockPos4, VineBlock.EAST);
 								}
 
 								if (random.nextInt(4) == 0 && isAir(modifiableTestableWorld, blockPos2)) {
-									this.method_14030(modifiableTestableWorld, blockPos2, VineBlock.WEST);
+									this.makeVines(modifiableTestableWorld, blockPos2, VineBlock.WEST);
 								}
 
 								if (random.nextInt(4) == 0 && isAir(modifiableTestableWorld, blockPos5)) {
-									this.method_14030(modifiableTestableWorld, blockPos5, VineBlock.SOUTH);
+									this.makeVines(modifiableTestableWorld, blockPos5, VineBlock.SOUTH);
 								}
 
 								if (random.nextInt(4) == 0 && isAir(modifiableTestableWorld, blockPos6)) {
-									this.method_14030(modifiableTestableWorld, blockPos6, VineBlock.NORTH);
+									this.makeVines(modifiableTestableWorld, blockPos6, VineBlock.NORTH);
 								}
 							}
 						}
@@ -131,7 +131,7 @@ public class SwampTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> 
 		}
 	}
 
-	private void method_14030(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, BooleanProperty booleanProperty) {
+	private void makeVines(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, BooleanProperty booleanProperty) {
 		BlockState blockState = Blocks.field_10597.getDefaultState().with(booleanProperty, Boolean.valueOf(true));
 		this.setBlockState(modifiableTestableWorld, blockPos, blockState);
 		int i = 4;

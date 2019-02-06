@@ -1,6 +1,6 @@
 package net.minecraft.item;
 
-import javax.annotation.Nullable;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
@@ -11,11 +11,11 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class DecorationItem extends Item {
-	private final Class<? extends AbstractDecorationEntity> entityType;
+	private final EntityType<? extends AbstractDecorationEntity> entityType;
 
-	public DecorationItem(Class<? extends AbstractDecorationEntity> class_, Item.Settings settings) {
+	public DecorationItem(EntityType<? extends AbstractDecorationEntity> entityType, Item.Settings settings) {
 		super(settings);
-		this.entityType = class_;
+		this.entityType = entityType;
 	}
 
 	@Override
@@ -28,8 +28,18 @@ public class DecorationItem extends Item {
 			return ActionResult.FAILURE;
 		} else {
 			World world = itemUsageContext.getWorld();
-			AbstractDecorationEntity abstractDecorationEntity = this.createEntity(world, blockPos2, direction);
-			if (abstractDecorationEntity != null && abstractDecorationEntity.method_6888()) {
+			AbstractDecorationEntity abstractDecorationEntity;
+			if (this.entityType == EntityType.PAINTING) {
+				abstractDecorationEntity = new PaintingEntity(world, blockPos2, direction);
+			} else {
+				if (this.entityType != EntityType.ITEM_FRAME) {
+					return ActionResult.SUCCESS;
+				}
+
+				abstractDecorationEntity = new ItemFrameEntity(world, blockPos2, direction);
+			}
+
+			if (abstractDecorationEntity.method_6888()) {
 				if (!world.isClient) {
 					abstractDecorationEntity.method_6894();
 					world.spawnEntity(abstractDecorationEntity);
@@ -44,14 +54,5 @@ public class DecorationItem extends Item {
 
 	protected boolean method_7834(PlayerEntity playerEntity, Direction direction, ItemStack itemStack, BlockPos blockPos) {
 		return !direction.getAxis().isVertical() && playerEntity.canPlaceBlock(blockPos, direction, itemStack);
-	}
-
-	@Nullable
-	private AbstractDecorationEntity createEntity(World world, BlockPos blockPos, Direction direction) {
-		if (this.entityType == PaintingEntity.class) {
-			return new PaintingEntity(world, blockPos, direction);
-		} else {
-			return this.entityType == ItemFrameEntity.class ? new ItemFrameEntity(world, blockPos, direction) : null;
-		}
 	}
 }

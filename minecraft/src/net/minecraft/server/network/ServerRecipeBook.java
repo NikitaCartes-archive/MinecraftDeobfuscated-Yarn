@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.advancement.criterion.Criterions;
-import net.minecraft.client.network.packet.UnlockRecipesClientPacket;
+import net.minecraft.client.network.packet.UnlockRecipesS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -40,7 +40,7 @@ public class ServerRecipeBook extends RecipeBook {
 			}
 		}
 
-		this.sendUnlockRecipesPacket(UnlockRecipesClientPacket.Action.field_12415, serverPlayerEntity, list);
+		this.sendUnlockRecipesPacket(UnlockRecipesS2CPacket.Action.field_12415, serverPlayerEntity, list);
 		return i;
 	}
 
@@ -57,14 +57,14 @@ public class ServerRecipeBook extends RecipeBook {
 			}
 		}
 
-		this.sendUnlockRecipesPacket(UnlockRecipesClientPacket.Action.field_12417, serverPlayerEntity, list);
+		this.sendUnlockRecipesPacket(UnlockRecipesS2CPacket.Action.field_12417, serverPlayerEntity, list);
 		return i;
 	}
 
-	private void sendUnlockRecipesPacket(UnlockRecipesClientPacket.Action action, ServerPlayerEntity serverPlayerEntity, List<Identifier> list) {
+	private void sendUnlockRecipesPacket(UnlockRecipesS2CPacket.Action action, ServerPlayerEntity serverPlayerEntity, List<Identifier> list) {
 		serverPlayerEntity.networkHandler
 			.sendPacket(
-				new UnlockRecipesClientPacket(
+				new UnlockRecipesS2CPacket(
 					action, list, Collections.emptyList(), this.guiOpen, this.filteringCraftable, this.furnaceGuiOpen, this.furnaceFilteringCraftable
 				)
 			);
@@ -126,8 +126,8 @@ public class ServerRecipeBook extends RecipeBook {
 	public void sendInitRecipesPacket(ServerPlayerEntity serverPlayerEntity) {
 		serverPlayerEntity.networkHandler
 			.sendPacket(
-				new UnlockRecipesClientPacket(
-					UnlockRecipesClientPacket.Action.field_12416,
+				new UnlockRecipesS2CPacket(
+					UnlockRecipesS2CPacket.Action.field_12416,
 					this.recipes,
 					this.toBeDisplayed,
 					this.guiOpen,

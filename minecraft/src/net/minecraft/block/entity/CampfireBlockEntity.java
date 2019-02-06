@@ -5,7 +5,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.class_3829;
 import net.minecraft.block.CampfireBlock;
-import net.minecraft.client.network.packet.BlockEntityUpdateClientPacket;
+import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -144,8 +144,8 @@ public class CampfireBlockEntity extends BlockEntity implements class_3829, Tick
 
 	@Nullable
 	@Override
-	public BlockEntityUpdateClientPacket toUpdatePacket() {
-		return new BlockEntityUpdateClientPacket(this.pos, 13, this.toInitialChunkDataTag());
+	public BlockEntityUpdateS2CPacket method_16886() {
+		return new BlockEntityUpdateS2CPacket(this.pos, 13, this.toInitialChunkDataTag());
 	}
 
 	@Override
@@ -185,7 +185,10 @@ public class CampfireBlockEntity extends BlockEntity implements class_3829, Tick
 	}
 
 	public void spawnItemsBeingCooked() {
-		ItemScatterer.spawn(this.getWorld(), this.getPos(), this.getItemsBeingCooked());
+		if (!this.getWorld().isClient) {
+			ItemScatterer.spawn(this.getWorld(), this.getPos(), this.getItemsBeingCooked());
+		}
+
 		this.updateListeners();
 	}
 }

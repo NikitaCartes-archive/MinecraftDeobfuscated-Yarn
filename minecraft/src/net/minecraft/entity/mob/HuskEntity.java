@@ -67,8 +67,8 @@ public class HuskEntity extends ZombieEntity {
 
 	@Override
 	protected void method_7218() {
-		this.method_7200(new ZombieEntity(this.world));
-		this.world.fireWorldEvent(null, 1041, new BlockPos((int)this.x, (int)this.y, (int)this.z), 0);
+		this.method_7200(ZombieEntity::new);
+		this.world.playEvent(null, 1041, new BlockPos((int)this.x, (int)this.y, (int)this.z), 0);
 	}
 
 	@Override

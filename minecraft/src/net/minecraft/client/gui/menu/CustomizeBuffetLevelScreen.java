@@ -25,7 +25,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	private static final List<Identifier> field_2436 = (List<Identifier>)Registry.CHUNK_GENERATOR_TYPE
 		.keys()
 		.stream()
-		.filter(identifier -> Registry.CHUNK_GENERATOR_TYPE.get(identifier).method_12118())
+		.filter(identifier -> Registry.CHUNK_GENERATOR_TYPE.get(identifier).isBuffetScreenOption())
 		.collect(Collectors.toList());
 	private final NewLevelScreen field_2437;
 	private final List<Identifier> field_2440 = Lists.<Identifier>newArrayList();

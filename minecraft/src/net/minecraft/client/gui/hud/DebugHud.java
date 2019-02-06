@@ -152,7 +152,7 @@ public class DebugHud extends Drawable {
 				string,
 				this.client.worldRenderer.getChunksDebugString(),
 				this.client.worldRenderer.getEntitiesDebugString(),
-				"P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getEntityCountAsString(),
+				"P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.method_18120(),
 				this.client.world.getChunkProviderStatus(),
 				"",
 				String.format("Chunk-relative: %d %d %d", blockPos.getX() & 15, blockPos.getY() & 15, blockPos.getZ() & 15)
@@ -199,7 +199,7 @@ public class DebugHud extends Drawable {
 				string,
 				this.client.worldRenderer.getChunksDebugString(),
 				this.client.worldRenderer.getEntitiesDebugString(),
-				"P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getEntityCountAsString(),
+				"P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.method_18120(),
 				this.client.world.getChunkProviderStatus(),
 				DimensionType.getId(this.client.world.dimension.getType()).toString() + " FC: " + Integer.toString(longSet.size()),
 				"",
@@ -308,7 +308,7 @@ public class DebugHud extends Drawable {
 			if (integratedServer != null) {
 				ServerWorld serverWorld = integratedServer.getWorld(this.client.world.dimension.getType());
 				if (serverWorld != null) {
-					this.chunkFuture = serverWorld.method_16177(this.pos.x, this.pos.z, false);
+					this.chunkFuture = serverWorld.getChunkSyncIfServerThread(this.pos.x, this.pos.z, false);
 				}
 			}
 

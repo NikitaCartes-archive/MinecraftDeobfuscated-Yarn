@@ -32,7 +32,7 @@ public class SpongeBlock extends Block {
 	protected void update(World world, BlockPos blockPos) {
 		if (this.absorbWater(world, blockPos)) {
 			world.setBlockState(blockPos, Blocks.field_10562.getDefaultState(), 2);
-			world.fireWorldEvent(2001, blockPos, Block.getRawIdFromState(Blocks.field_10382.getDefaultState()));
+			world.playEvent(2001, blockPos, Block.getRawIdFromState(Blocks.field_10382.getDefaultState()));
 		}
 	}
 

@@ -44,7 +44,7 @@ public class StructureFeatures {
 	}
 
 	@Nullable
-	public static StructureStart method_14842(
+	public static StructureStart readStructureStart(
 		ChunkGenerator<?> chunkGenerator, StructureManager structureManager, BiomeSource biomeSource, CompoundTag compoundTag
 	) {
 		String string = compoundTag.getString("id");

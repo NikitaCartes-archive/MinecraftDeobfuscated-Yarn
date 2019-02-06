@@ -25,7 +25,7 @@ import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.client.network.packet.EntityVelocityUpdateClientPacket;
+import net.minecraft.client.network.packet.EntityVelocityUpdateS2CPacket;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.container.Container;
 import net.minecraft.container.NameableContainerProvider;
@@ -200,9 +200,9 @@ public abstract class PlayerEntity extends LivingEntity {
 
 			if (!this.world.isClient) {
 				if (!this.method_7275()) {
-					this.method_7358(true, true, false);
+					this.wakeUp(true, true, false);
 				} else if (this.world.isDaylight()) {
-					this.method_7358(false, true, true);
+					this.wakeUp(false, true, true);
 				}
 			}
 		} else if (this.sleepTimer > 0) {
@@ -280,7 +280,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	private void method_7300() {
-		BlockState blockState = this.world.method_8475(this.getBoundingBox().expand(0.0, -0.4F, 0.0).contract(0.001), Blocks.field_10422);
+		BlockState blockState = this.world.getBlockState(this.getBoundingBox().expand(0.0, -0.4F, 0.0).contract(0.001), Blocks.field_10422);
 		if (blockState != null) {
 			if (!this.field_7517 && !this.field_5953 && blockState.getBlock() == Blocks.field_10422 && !this.isSpectator()) {
 				boolean bl = blockState.get(BubbleColumnBlock.DRAG);
@@ -700,22 +700,8 @@ public abstract class PlayerEntity extends LivingEntity {
 				itemEntity.velocityZ += Math.sin((double)g) * (double)f;
 			}
 
-			ItemStack itemStack2 = this.spawnEntityItem(itemEntity);
-			if (bl2) {
-				if (!itemStack2.isEmpty()) {
-					this.incrementStat(Stats.field_15405.getOrCreateStat(itemStack2.getItem()), itemStack.getAmount());
-				}
-
-				this.increaseStat(Stats.field_15406);
-			}
-
 			return itemEntity;
 		}
-	}
-
-	protected ItemStack spawnEntityItem(ItemEntity itemEntity) {
-		this.world.spawnEntity(itemEntity);
-		return itemEntity.getStack();
 	}
 
 	public float getBlockBreakingSpeed(BlockState blockState) {
@@ -787,7 +773,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.setScore(compoundTag.getInt("Score"));
 		if (this.sleeping) {
 			this.sleepingPos = new BlockPos(this);
-			this.method_7358(true, true, false);
+			this.wakeUp(true, true, false);
 		}
 
 		if (compoundTag.containsKey("SpawnX", 99) && compoundTag.containsKey("SpawnY", 99) && compoundTag.containsKey("SpawnZ", 99)) {
@@ -858,7 +844,7 @@ public abstract class PlayerEntity extends LivingEntity {
 				return false;
 			} else {
 				if (this.isSleeping() && !this.world.isClient) {
-					this.method_7358(true, true, false);
+					this.wakeUp(true, true, false);
 				}
 
 				this.method_7262();
@@ -923,7 +909,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 	}
 
-	public float method_7309() {
+	public float getWornArmorRatio() {
 		int i = 0;
 
 		for(ItemStack itemStack : this.inventory.armor) {
@@ -1139,7 +1125,7 @@ public abstract class PlayerEntity extends LivingEntity {
 						}
 
 						if (entity instanceof ServerPlayerEntity && entity.velocityModified) {
-							((ServerPlayerEntity)entity).networkHandler.sendPacket(new EntityVelocityUpdateClientPacket(entity));
+							((ServerPlayerEntity)entity).networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(entity));
 							entity.velocityModified = false;
 							entity.velocityX = e;
 							entity.velocityY = l;
@@ -1332,8 +1318,8 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.velocityX = 0.0;
 		this.velocityY = 0.0;
 		this.velocityZ = 0.0;
-		if (!this.world.isClient) {
-			this.world.updateSleepingStatus();
+		if (this.world instanceof ServerWorld) {
+			((ServerWorld)this.world).updatePlayersSleeping();
 		}
 
 		return PlayerEntity.SleepResult.SUCCESS;
@@ -1357,7 +1343,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.field_7497 = -1.8F * (float)direction.getOffsetZ();
 	}
 
-	public void method_7358(boolean bl, boolean bl2, boolean bl3) {
+	public void wakeUp(boolean bl, boolean bl2, boolean bl3) {
 		this.setSize(0.6F, 1.8F);
 		BlockState blockState = this.world.getBlockState(this.sleepingPos);
 		if (this.sleepingPos != null && blockState.getBlock() instanceof BedBlock) {
@@ -1371,8 +1357,8 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 
 		this.sleeping = false;
-		if (!this.world.isClient && bl2) {
-			this.world.updateSleepingStatus();
+		if (this.world instanceof ServerWorld && bl2) {
+			((ServerWorld)this.world).updatePlayersSleeping();
 		}
 
 		this.sleepTimer = bl ? 0 : 100;
@@ -1425,7 +1411,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		return this.sleeping;
 	}
 
-	public boolean method_7276() {
+	public boolean isSleepingLongEnough() {
 		return this.sleeping && this.sleepTimer >= 100;
 	}
 
@@ -1855,7 +1841,7 @@ public abstract class PlayerEntity extends LivingEntity {
 				}
 
 				entity.setPosition(this.x, this.y + 0.7F, this.z);
-				this.world.spawnEntity(entity);
+				((ServerWorld)this.world).method_18197(entity, true);
 			});
 		}
 	}
@@ -1876,6 +1862,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 	}
 
+	@Override
 	public abstract boolean isSpectator();
 
 	@Override

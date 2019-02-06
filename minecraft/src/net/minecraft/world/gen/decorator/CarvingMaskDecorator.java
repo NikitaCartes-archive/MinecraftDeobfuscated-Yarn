@@ -32,7 +32,7 @@ public class CarvingMaskDecorator extends Decorator<CarvingMaskDecoratorConfig> 
 			int j = i & 15;
 			int k = i >> 4 & 15;
 			int l = i >> 8;
-			return new BlockPos(chunkPos.getXStart() + j, l, chunkPos.getZStart() + k);
+			return new BlockPos(chunkPos.getStartX() + j, l, chunkPos.getStartZ() + k);
 		});
 	}
 }

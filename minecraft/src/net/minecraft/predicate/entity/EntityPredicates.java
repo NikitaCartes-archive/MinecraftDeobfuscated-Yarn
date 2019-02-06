@@ -19,8 +19,8 @@ public final class EntityPredicates {
 	public static final Predicate<Entity> NOT_MOUNTED = entity -> entity.isValid() && !entity.hasPassengers() && !entity.hasVehicle();
 	public static final Predicate<Entity> VALID_INVENTORIES = entity -> entity instanceof Inventory && entity.isValid();
 	public static final Predicate<Entity> EXCEPT_CREATIVE_OR_SPECTATOR = entity -> !(entity instanceof PlayerEntity)
-			|| !((PlayerEntity)entity).isSpectator() && !((PlayerEntity)entity).isCreative();
-	public static final Predicate<Entity> EXCEPT_SPECTATOR = entity -> !(entity instanceof PlayerEntity) || !((PlayerEntity)entity).isSpectator();
+			|| !entity.isSpectator() && !((PlayerEntity)entity).isCreative();
+	public static final Predicate<Entity> EXCEPT_SPECTATOR = entity -> !entity.isSpectator();
 
 	public static Predicate<Entity> maximumDistance(double d, double e, double f, double g) {
 		double h = g * g;

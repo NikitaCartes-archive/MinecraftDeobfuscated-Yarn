@@ -23,12 +23,12 @@ public abstract class CoralFeature extends Feature<DefaultFeatureConfig> {
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		BlockState blockState = BlockTags.field_15461.getRandom(random).getDefaultState();
-		return this.method_12863(iWorld, random, blockPos, blockState);
+		return this.spawnCoral(iWorld, random, blockPos, blockState);
 	}
 
-	protected abstract boolean method_12863(IWorld iWorld, Random random, BlockPos blockPos, BlockState blockState);
+	protected abstract boolean spawnCoral(IWorld iWorld, Random random, BlockPos blockPos, BlockState blockState);
 
-	protected boolean method_12864(IWorld iWorld, Random random, BlockPos blockPos, BlockState blockState) {
+	protected boolean spawnCoralPiece(IWorld iWorld, Random random, BlockPos blockPos, BlockState blockState) {
 		BlockPos blockPos2 = blockPos.up();
 		BlockState blockState2 = iWorld.getBlockState(blockPos);
 		if ((blockState2.getBlock() == Blocks.field_10382 || blockState2.matches(BlockTags.field_15488))

@@ -24,7 +24,7 @@ public class ChunkGeneratorType<C extends ChunkGeneratorConfig, T extends ChunkG
 		"flat", FlatChunkGenerator::new, FlatChunkGeneratorConfig::new, false
 	);
 	private final ChunkGeneratorFactory<C, T> factory;
-	private final boolean field_12767;
+	private final boolean buffetScreenOption;
 	private final Supplier<C> settingsSupplier;
 
 	private static <C extends ChunkGeneratorConfig, T extends ChunkGenerator<C>> ChunkGeneratorType<C, T> register(
@@ -35,7 +35,7 @@ public class ChunkGeneratorType<C extends ChunkGeneratorConfig, T extends ChunkG
 
 	public ChunkGeneratorType(ChunkGeneratorFactory<C, T> chunkGeneratorFactory, boolean bl, Supplier<C> supplier) {
 		this.factory = chunkGeneratorFactory;
-		this.field_12767 = bl;
+		this.buffetScreenOption = bl;
 		this.settingsSupplier = supplier;
 	}
 
@@ -49,7 +49,7 @@ public class ChunkGeneratorType<C extends ChunkGeneratorConfig, T extends ChunkG
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_12118() {
-		return this.field_12767;
+	public boolean isBuffetScreenOption() {
+		return this.buffetScreenOption;
 	}
 }

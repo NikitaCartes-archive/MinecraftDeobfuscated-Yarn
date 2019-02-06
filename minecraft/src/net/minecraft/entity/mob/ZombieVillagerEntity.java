@@ -27,6 +27,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
@@ -100,7 +101,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 			int i = this.method_7194();
 			this.conversionTimer -= i;
 			if (this.conversionTimer <= 0) {
-				this.finishConversion();
+				this.finishConversion((ServerWorld)this.world);
 			}
 		}
 
@@ -170,37 +171,37 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		}
 	}
 
-	protected void finishConversion() {
-		VillagerEntity villagerEntity = new VillagerEntity(this.world);
+	protected void finishConversion(ServerWorld serverWorld) {
+		VillagerEntity villagerEntity = new VillagerEntity(serverWorld);
 		villagerEntity.setPositionAndAngles(this);
 		villagerEntity.setVillagerData(this.getVillagerData());
 		if (this.offerData != null) {
 			villagerEntity.setRecipes(new VillagerRecipeList(this.offerData));
 		}
 
-		villagerEntity.prepareEntityData(this.world, this.world.getLocalDifficulty(new BlockPos(villagerEntity)), SpawnType.field_16468, null, null);
+		villagerEntity.prepareEntityData(serverWorld, serverWorld.getLocalDifficulty(new BlockPos(villagerEntity)), SpawnType.field_16468, null, null);
 		villagerEntity.setRecentlyRescued();
 		if (this.isChild()) {
 			villagerEntity.setBreedingAge(-24000);
 		}
 
-		this.world.removeEntity(this);
+		serverWorld.method_18216(this);
 		villagerEntity.setAiDisabled(this.isAiDisabled());
 		if (this.hasCustomName()) {
 			villagerEntity.setCustomName(this.getCustomName());
 			villagerEntity.setCustomNameVisible(this.isCustomNameVisible());
 		}
 
-		this.world.spawnEntity(villagerEntity);
+		serverWorld.spawnEntity(villagerEntity);
 		if (this.converter != null) {
-			PlayerEntity playerEntity = this.world.getPlayerByUuid(this.converter);
+			PlayerEntity playerEntity = serverWorld.getPlayerByUuid(this.converter);
 			if (playerEntity instanceof ServerPlayerEntity) {
 				Criterions.CURED_ZOMBIE_VILLAGER.handle((ServerPlayerEntity)playerEntity, this, villagerEntity);
 			}
 		}
 
 		villagerEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5916, 200, 0));
-		this.world.fireWorldEvent(null, 1027, new BlockPos((int)this.x, (int)this.y, (int)this.z), 0);
+		serverWorld.playEvent(null, 1027, new BlockPos((int)this.x, (int)this.y, (int)this.z), 0);
 	}
 
 	protected int method_7194() {

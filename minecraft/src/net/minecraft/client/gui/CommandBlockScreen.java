@@ -6,7 +6,7 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.server.network.packet.UpdateCommandBlockServerPacket;
+import net.minecraft.server.network.packet.UpdateCommandBlockC2SPacket;
 import net.minecraft.sortme.CommandBlockExecutor;
 import net.minecraft.util.math.BlockPos;
 
@@ -102,7 +102,7 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 		this.client
 			.getNetworkHandler()
 			.sendPacket(
-				new UpdateCommandBlockServerPacket(
+				new UpdateCommandBlockC2SPacket(
 					new BlockPos(commandBlockExecutor.getPos()),
 					this.consoleCommandTextField.getText(),
 					this.type,

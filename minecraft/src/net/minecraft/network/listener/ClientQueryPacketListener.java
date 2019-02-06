@@ -1,10 +1,10 @@
 package net.minecraft.network.listener;
 
-import net.minecraft.client.network.packet.QueryPongClientPacket;
-import net.minecraft.client.network.packet.QueryResponseClientPacket;
+import net.minecraft.client.network.packet.QueryPongS2CPacket;
+import net.minecraft.client.network.packet.QueryResponseS2CPacket;
 
 public interface ClientQueryPacketListener extends PacketListener {
-	void onResponse(QueryResponseClientPacket queryResponseClientPacket);
+	void method_12667(QueryResponseS2CPacket queryResponseS2CPacket);
 
-	void onPong(QueryPongClientPacket queryPongClientPacket);
+	void method_12666(QueryPongS2CPacket queryPongS2CPacket);
 }

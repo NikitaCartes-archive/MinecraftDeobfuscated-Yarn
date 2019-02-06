@@ -120,11 +120,11 @@ public class BatEntity extends AmbientEntity {
 
 				if (this.world.getClosestSurvivalPlayer(this, 4.0) != null) {
 					this.setRoosting(false);
-					this.world.fireWorldEvent(null, 1025, blockPos, 0);
+					this.world.playEvent(null, 1025, blockPos, 0);
 				}
 			} else {
 				this.setRoosting(false);
-				this.world.fireWorldEvent(null, 1025, blockPos, 0);
+				this.world.playEvent(null, 1025, blockPos, 0);
 			}
 		} else {
 			if (this.field_6729 != null && (!this.world.isAir(this.field_6729) || this.field_6729.getY() < 1)) {

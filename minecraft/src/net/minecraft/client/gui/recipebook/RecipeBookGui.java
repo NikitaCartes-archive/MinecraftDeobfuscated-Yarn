@@ -33,7 +33,7 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeGridAligner;
-import net.minecraft.server.network.packet.RecipeBookDataServerPacket;
+import net.minecraft.server.network.packet.RecipeBookDataC2SPacket;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -456,7 +456,7 @@ public class RecipeBookGui extends Drawable implements GuiEventListener, RecipeD
 			this.client
 				.getNetworkHandler()
 				.sendPacket(
-					new RecipeBookDataServerPacket(
+					new RecipeBookDataC2SPacket(
 						this.recipeBook.isGuiOpen(),
 						this.recipeBook.isFilteringCraftable(),
 						this.recipeBook.isFurnaceGuiOpen(),

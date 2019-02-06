@@ -1,8 +1,9 @@
 package net.minecraft.server.network;
 
-import net.minecraft.client.network.packet.GameStateChangeClientPacket;
+import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -17,8 +18,8 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 	private int field_13888;
 	private int field_13887;
 
-	public DemoServerPlayerInteractionManager(World world) {
-		super(world);
+	public DemoServerPlayerInteractionManager(ServerWorld serverWorld) {
+		super(serverWorld);
 	}
 
 	@Override
@@ -29,7 +30,7 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 		long m = l / 24000L + 1L;
 		if (!this.field_13890 && this.field_13887 > 20) {
 			this.field_13890 = true;
-			this.player.networkHandler.sendPacket(new GameStateChangeClientPacket(5, 0.0F));
+			this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 0.0F));
 		}
 
 		this.field_13889 = l > 120500L;
@@ -40,18 +41,18 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 		if (l % 24000L == 500L) {
 			if (m <= 6L) {
 				if (m == 6L) {
-					this.player.networkHandler.sendPacket(new GameStateChangeClientPacket(5, 104.0F));
+					this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 104.0F));
 				} else {
 					this.player.appendCommandFeedback(new TranslatableTextComponent("demo.day." + m));
 				}
 			}
 		} else if (m == 1L) {
 			if (l == 100L) {
-				this.player.networkHandler.sendPacket(new GameStateChangeClientPacket(5, 101.0F));
+				this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 101.0F));
 			} else if (l == 175L) {
-				this.player.networkHandler.sendPacket(new GameStateChangeClientPacket(5, 102.0F));
+				this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 102.0F));
 			} else if (l == 250L) {
-				this.player.networkHandler.sendPacket(new GameStateChangeClientPacket(5, 103.0F));
+				this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 103.0F));
 			}
 		} else if (m == 5L && l % 24000L == 22000L) {
 			this.player.appendCommandFeedback(new TranslatableTextComponent("demo.day.warning"));

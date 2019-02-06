@@ -42,4 +42,9 @@ public class EmptyProfileResult implements ProfileResult {
 	public int getEndTick() {
 		return 0;
 	}
+
+	@Override
+	public String method_18052() {
+		return "";
+	}
 }

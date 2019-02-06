@@ -14,7 +14,7 @@ import net.minecraft.world.gen.ProbabilityConfig;
 public class UnderwaterRavineCarver extends RavineCarver {
 	public UnderwaterRavineCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> function) {
 		super(function);
-		this.field_13302 = ImmutableSet.of(
+		this.alwaysCarvableBlocks = ImmutableSet.of(
 			Blocks.field_10340,
 			Blocks.field_10474,
 			Blocks.field_10508,
@@ -55,12 +55,12 @@ public class UnderwaterRavineCarver extends RavineCarver {
 	}
 
 	@Override
-	protected boolean method_12711(Chunk chunk, int i, int j, int k, int l, int m, int n, int o, int p) {
+	protected boolean isRegionUncarvable(Chunk chunk, int i, int j, int k, int l, int m, int n, int o, int p) {
 		return false;
 	}
 
 	@Override
-	protected boolean method_16581(
+	protected boolean carveAtPoint(
 		Chunk chunk,
 		BitSet bitSet,
 		Random random,
@@ -77,6 +77,6 @@ public class UnderwaterRavineCarver extends RavineCarver {
 		int p,
 		AtomicBoolean atomicBoolean
 	) {
-		return UnderwaterCaveCarver.method_16138(this, chunk, bitSet, random, mutable, i, j, k, l, m, n, o, p);
+		return UnderwaterCaveCarver.carveAtPoint(this, chunk, bitSet, random, mutable, i, j, k, l, m, n, o, p);
 	}
 }

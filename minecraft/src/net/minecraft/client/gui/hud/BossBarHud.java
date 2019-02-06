@@ -8,7 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.network.packet.BossBarClientPacket;
+import net.minecraft.client.network.packet.BossBarS2CPacket;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.util.Identifier;
 
@@ -57,13 +57,13 @@ public class BossBarHud extends Drawable {
 		}
 	}
 
-	public void handlePacket(BossBarClientPacket bossBarClientPacket) {
-		if (bossBarClientPacket.getType() == BossBarClientPacket.Type.ADD) {
-			this.bossBars.put(bossBarClientPacket.getUuid(), new ClientBossBar(bossBarClientPacket));
-		} else if (bossBarClientPacket.getType() == BossBarClientPacket.Type.REMOVE) {
-			this.bossBars.remove(bossBarClientPacket.getUuid());
+	public void method_1795(BossBarS2CPacket bossBarS2CPacket) {
+		if (bossBarS2CPacket.getType() == BossBarS2CPacket.Type.ADD) {
+			this.bossBars.put(bossBarS2CPacket.getUuid(), new ClientBossBar(bossBarS2CPacket));
+		} else if (bossBarS2CPacket.getType() == BossBarS2CPacket.Type.REMOVE) {
+			this.bossBars.remove(bossBarS2CPacket.getUuid());
 		} else {
-			((ClientBossBar)this.bossBars.get(bossBarClientPacket.getUuid())).handlePacket(bossBarClientPacket);
+			((ClientBossBar)this.bossBars.get(bossBarS2CPacket.getUuid())).method_1894(bossBarS2CPacket);
 		}
 	}
 
