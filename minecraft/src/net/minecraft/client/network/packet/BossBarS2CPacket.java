@@ -118,7 +118,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11330(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11078(this);
+		clientPlayPacketListener.onBossBar(this);
 	}
 
 	@Environment(EnvType.CLIENT)

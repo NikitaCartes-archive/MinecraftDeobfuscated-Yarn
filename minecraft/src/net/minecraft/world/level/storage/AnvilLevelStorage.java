@@ -58,7 +58,7 @@ public class AnvilLevelStorage {
 		BiomeSourceType<VanillaLayeredBiomeSourceConfig, VanillaLayeredBiomeSource> biomeSourceType2 = BiomeSourceType.VANILLA_LAYERED;
 		BiomeSource biomeSource;
 		if (levelProperties != null && levelProperties.getGeneratorType() == LevelGeneratorType.FLAT) {
-			biomeSource = biomeSourceType.applyConfig(biomeSourceType.getConfig().setBiome(Biomes.biome));
+			biomeSource = biomeSourceType.applyConfig(biomeSourceType.getConfig().setBiome(Biomes.field_9451));
 		} else {
 			biomeSource = biomeSourceType2.applyConfig(
 				biomeSourceType2.getConfig().setLevelProperties(levelProperties).setGeneratorSettings(ChunkGeneratorType.field_12769.createSettings())

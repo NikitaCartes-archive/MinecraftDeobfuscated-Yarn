@@ -23,8 +23,8 @@ import java.util.Map.Entry;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_3530;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.LowercaseEnumTypeAdapterFactory;
 import net.minecraft.util.SystemUtil;
 
 public interface TextComponent extends Message, Iterable<TextComponent> {
@@ -76,7 +76,7 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 				String string3 = textComponent.getStyle().getFormatString();
 				if (!string3.equals(string)) {
 					if (!string.isEmpty()) {
-						stringBuilder.append(TextFormat.RESET);
+						stringBuilder.append(TextFormat.field_1070);
 					}
 
 					stringBuilder.append(string3);
@@ -88,7 +88,7 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 		}
 
 		if (!string.isEmpty()) {
-			stringBuilder.append(TextFormat.RESET);
+			stringBuilder.append(TextFormat.field_1070);
 		}
 
 		return stringBuilder.toString();
@@ -140,19 +140,19 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 
 		if (textFormat.isModifier()) {
 			switch (textFormat) {
-				case OBFUSCATED:
+				case field_1051:
 					style.setObfuscated(true);
 					break;
-				case BOLD:
+				case field_1067:
 					style.setBold(true);
 					break;
-				case STRIKETHROUGH:
+				case field_1055:
 					style.setStrikethrough(true);
 					break;
-				case UNDERLINE:
+				case field_1073:
 					style.setUnderline(true);
 					break;
-				case ITALIC:
+				case field_1056:
 					style.setItalic(true);
 			}
 		}
@@ -171,7 +171,7 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 			GsonBuilder gsonBuilder = new GsonBuilder();
 			gsonBuilder.registerTypeHierarchyAdapter(TextComponent.class, new TextComponent.Serializer());
 			gsonBuilder.registerTypeHierarchyAdapter(Style.class, new Style.Serializer());
-			gsonBuilder.registerTypeAdapterFactory(new class_3530());
+			gsonBuilder.registerTypeAdapterFactory(new LowercaseEnumTypeAdapterFactory());
 			return gsonBuilder.create();
 		});
 		private static final Field POS_FIELD = SystemUtil.get(() -> {

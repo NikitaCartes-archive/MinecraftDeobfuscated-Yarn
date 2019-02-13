@@ -12,7 +12,7 @@ import org.apache.logging.log4j.MarkerManager;
 
 public class PacketEncoder extends MessageToByteEncoder<Packet<?>> {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Marker MARKER = MarkerManager.getMarker("PACKET_SENT", ClientConnection.field_11639);
+	private static final Marker MARKER = MarkerManager.getMarker("PACKET_SENT", ClientConnection.MARKER_NETWORK_PACKETS);
 	private final NetworkSide side;
 
 	public PacketEncoder(NetworkSide networkSide) {

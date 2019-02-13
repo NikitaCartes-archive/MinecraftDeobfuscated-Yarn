@@ -86,7 +86,7 @@ public class ResourceImpl implements Resource {
 	}
 
 	@Override
-	public String getPackName() {
+	public String getResourcePackName() {
 		return this.packName;
 	}
 

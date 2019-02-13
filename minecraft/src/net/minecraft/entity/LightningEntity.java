@@ -19,24 +19,24 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 
 public class LightningEntity extends Entity {
-	private int field_7185;
-	public long field_7186;
-	private int field_7183;
-	private final boolean field_7184;
+	private int ambientTick;
+	public long seed;
+	private int remainingActions;
+	private final boolean cosmetic;
 	@Nullable
-	private ServerPlayerEntity field_7182;
+	private ServerPlayerEntity channeller;
 
 	public LightningEntity(World world, double d, double e, double f, boolean bl) {
 		super(EntityType.LIGHTNING_BOLT, world);
 		this.ignoreCameraFrustum = true;
 		this.setPositionAndAngles(d, e, f, 0.0F, 0.0F);
-		this.field_7185 = 2;
-		this.field_7186 = this.random.nextLong();
-		this.field_7183 = this.random.nextInt(3) + 1;
-		this.field_7184 = bl;
+		this.ambientTick = 2;
+		this.seed = this.random.nextLong();
+		this.remainingActions = this.random.nextInt(3) + 1;
+		this.cosmetic = bl;
 		Difficulty difficulty = world.getDifficulty();
 		if (difficulty == Difficulty.NORMAL || difficulty == Difficulty.HARD) {
-			this.method_6960(4);
+			this.spawnFire(4);
 		}
 	}
 
@@ -45,34 +45,34 @@ public class LightningEntity extends Entity {
 		return SoundCategory.field_15252;
 	}
 
-	public void method_6961(@Nullable ServerPlayerEntity serverPlayerEntity) {
-		this.field_7182 = serverPlayerEntity;
+	public void setChanneller(@Nullable ServerPlayerEntity serverPlayerEntity) {
+		this.channeller = serverPlayerEntity;
 	}
 
 	@Override
 	public void update() {
 		super.update();
-		if (this.field_7185 == 2) {
+		if (this.ambientTick == 2) {
 			this.world.playSound(null, this.x, this.y, this.z, SoundEvents.field_14865, SoundCategory.field_15252, 10000.0F, 0.8F + this.random.nextFloat() * 0.2F);
 			this.world.playSound(null, this.x, this.y, this.z, SoundEvents.field_14956, SoundCategory.field_15252, 2.0F, 0.5F + this.random.nextFloat() * 0.2F);
 		}
 
-		this.field_7185--;
-		if (this.field_7185 < 0) {
-			if (this.field_7183 == 0) {
+		this.ambientTick--;
+		if (this.ambientTick < 0) {
+			if (this.remainingActions == 0) {
 				this.invalidate();
-			} else if (this.field_7185 < -this.random.nextInt(10)) {
-				this.field_7183--;
-				this.field_7185 = 1;
-				this.field_7186 = this.random.nextLong();
-				this.method_6960(0);
+			} else if (this.ambientTick < -this.random.nextInt(10)) {
+				this.remainingActions--;
+				this.ambientTick = 1;
+				this.seed = this.random.nextLong();
+				this.spawnFire(0);
 			}
 		}
 
-		if (this.field_7185 >= 0) {
+		if (this.ambientTick >= 0) {
 			if (this.world.isClient) {
 				this.world.setTicksSinceLightning(2);
-			} else if (!this.field_7184) {
+			} else if (!this.cosmetic) {
 				double d = 3.0;
 				List<Entity> list = this.world
 					.getVisibleEntities(this, new BoundingBox(this.x - 3.0, this.y - 3.0, this.z - 3.0, this.x + 3.0, this.y + 6.0 + 3.0, this.z + 3.0));
@@ -82,15 +82,15 @@ public class LightningEntity extends Entity {
 					entity.onStruckByLightning(this);
 				}
 
-				if (this.field_7182 != null) {
-					Criterions.CHANNELED_LIGHTNING.method_8803(this.field_7182, list);
+				if (this.channeller != null) {
+					Criterions.CHANNELED_LIGHTNING.method_8803(this.channeller, list);
 				}
 			}
 		}
 	}
 
-	private void method_6960(int i) {
-		if (!this.field_7184 && !this.world.isClient && this.world.getGameRules().getBoolean("doFireTick")) {
+	private void spawnFire(int i) {
+		if (!this.cosmetic && !this.world.isClient && this.world.getGameRules().getBoolean("doFireTick")) {
 			BlockState blockState = Blocks.field_10036.getDefaultState();
 			BlockPos blockPos = new BlockPos(this);
 			if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {

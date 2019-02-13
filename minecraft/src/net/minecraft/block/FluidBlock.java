@@ -41,10 +41,10 @@ public class FluidBlock extends Block implements FluidDrainable {
 		this.statesByLevel.add(baseFluid.getState(false));
 
 		for (int i = 1; i < 8; i++) {
-			this.statesByLevel.add(baseFluid.method_15728(8 - i, false));
+			this.statesByLevel.add(baseFluid.getFlowing(8 - i, false));
 		}
 
-		this.statesByLevel.add(baseFluid.method_15728(8, true));
+		this.statesByLevel.add(baseFluid.getFlowing(8, true));
 		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11278, Integer.valueOf(0)));
 	}
 
@@ -139,7 +139,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 					return false;
 				}
 
-				if (fluidState.method_15763(world, blockPos) >= 0.44444445F) {
+				if (fluidState.getHeight(world, blockPos) >= 0.44444445F) {
 					world.setBlockState(blockPos, Blocks.field_10445.getDefaultState());
 					this.method_10318(world, blockPos);
 					return false;

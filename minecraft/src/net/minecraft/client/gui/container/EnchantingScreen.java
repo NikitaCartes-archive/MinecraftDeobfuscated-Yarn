@@ -7,7 +7,7 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.ContainerScreen;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.entity.model.BookModel;
@@ -148,12 +148,12 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 				String string = "" + u;
 				int v = 86 - this.fontRenderer.getStringWidth(string);
 				String string2 = EnchantingPhrases.getInstance().generatePhrase(this.fontRenderer, v);
-				FontRenderer fontRenderer = this.client.getFontManager().getFontRenderer(MinecraftClient.altFontRendererId);
+				TextRenderer textRenderer = this.client.getFontManager().getTextRenderer(MinecraftClient.ALT_TEXT_RENDERER_ID);
 				int w = 6839882;
 				if ((q < r + 1 || this.client.player.experience < u) && !this.client.player.abilities.creativeMode) {
 					this.drawTexturedRect(s, l + 14 + 19 * r, 0, 185, 108, 19);
 					this.drawTexturedRect(s + 1, l + 15 + 19 * r, 16 * r, 239, 16, 16);
-					fontRenderer.drawStringBounded(string2, t, l + 16 + 19 * r, v, (w & 16711422) >> 1);
+					textRenderer.drawStringBounded(string2, t, l + 16 + 19 * r, v, (w & 16711422) >> 1);
 					w = 4226832;
 				} else {
 					int x = i - (k + 60);
@@ -166,12 +166,12 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 					}
 
 					this.drawTexturedRect(s + 1, l + 15 + 19 * r, 16 * r, 223, 16, 16);
-					fontRenderer.drawStringBounded(string2, t, l + 16 + 19 * r, v, w);
+					textRenderer.drawStringBounded(string2, t, l + 16 + 19 * r, v, w);
 					w = 8453920;
 				}
 
-				fontRenderer = this.client.fontRenderer;
-				fontRenderer.drawWithShadow(string, (float)(t + 86 - fontRenderer.getStringWidth(string)), (float)(l + 16 + 19 * r + 7), w);
+				textRenderer = this.client.textRenderer;
+				textRenderer.drawWithShadow(string, (float)(t + 86 - textRenderer.getStringWidth(string)), (float)(l + 16 + 19 * r + 7), w);
 			}
 		}
 	}
@@ -181,7 +181,7 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 		f = this.client.getTickDelta();
 		this.drawBackground();
 		super.draw(i, j, f);
-		this.drawMousoverTooltip(i, j);
+		this.drawMouseoverTooltip(i, j);
 		boolean bl = this.client.player.abilities.creativeMode;
 		int k = this.container.method_7638();
 
@@ -192,11 +192,11 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 			int o = l + 1;
 			if (this.isPointWithinBounds(60, 14 + 19 * l, 108, 17, (double)i, (double)j) && m > 0 && n >= 0 && enchantment != null) {
 				List<String> list = Lists.<String>newArrayList();
-				list.add("" + TextFormat.WHITE + TextFormat.ITALIC + I18n.translate("container.enchant.clue", enchantment.getTextComponent(n).getFormattedText()));
+				list.add("" + TextFormat.field_1068 + TextFormat.field_1056 + I18n.translate("container.enchant.clue", enchantment.getTextComponent(n).getFormattedText()));
 				if (!bl) {
 					list.add("");
 					if (this.client.player.experience < m) {
-						list.add(TextFormat.RED + I18n.translate("container.enchant.level.requirement", this.container.enchantmentPower[l]));
+						list.add(TextFormat.field_1061 + I18n.translate("container.enchant.level.requirement", this.container.enchantmentPower[l]));
 					} else {
 						String string;
 						if (o == 1) {
@@ -205,7 +205,7 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 							string = I18n.translate("container.enchant.lapis.many", o);
 						}
 
-						TextFormat textFormat = k >= o ? TextFormat.GRAY : TextFormat.RED;
+						TextFormat textFormat = k >= o ? TextFormat.field_1080 : TextFormat.field_1061;
 						list.add(textFormat + "" + string);
 						if (o == 1) {
 							string = I18n.translate("container.enchant.level.one");
@@ -213,7 +213,7 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 							string = I18n.translate("container.enchant.level.many", o);
 						}
 
-						list.add(TextFormat.GRAY + "" + string);
+						list.add(TextFormat.field_1080 + "" + string);
 					}
 				}
 

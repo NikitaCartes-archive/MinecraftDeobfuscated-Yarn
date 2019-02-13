@@ -6,26 +6,26 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.village.SimpleVillager;
-import net.minecraft.village.Villager;
-import net.minecraft.village.VillagerInventory;
-import net.minecraft.village.VillagerRecipeList;
+import net.minecraft.village.SimpleTrader;
+import net.minecraft.village.Trader;
+import net.minecraft.village.TraderInventory;
+import net.minecraft.village.TraderRecipeList;
 
 public class MerchantContainer extends Container {
-	private final Villager villager;
-	private final VillagerInventory villagerInventory;
+	private final Trader villager;
+	private final TraderInventory villagerInventory;
 
 	public MerchantContainer(int i, PlayerInventory playerInventory) {
-		this(i, playerInventory, new SimpleVillager(playerInventory.player));
+		this(i, playerInventory, new SimpleTrader(playerInventory.player));
 	}
 
-	public MerchantContainer(int i, PlayerInventory playerInventory, Villager villager) {
+	public MerchantContainer(int i, PlayerInventory playerInventory, Trader trader) {
 		super(ContainerType.MERCHANT, i);
-		this.villager = villager;
-		this.villagerInventory = new VillagerInventory(villager);
+		this.villager = trader;
+		this.villagerInventory = new TraderInventory(trader);
 		this.addSlot(new Slot(this.villagerInventory, 0, 36, 53));
 		this.addSlot(new Slot(this.villagerInventory, 1, 62, 53));
-		this.addSlot(new VillagerOutputSlot(playerInventory.player, villager, this.villagerInventory, 2, 120, 53));
+		this.addSlot(new VillagerOutputSlot(playerInventory.player, trader, this.villagerInventory, 2, 120, 53));
 
 		for (int j = 0; j < 3; j++) {
 			for (int k = 0; k < 9; k++) {
@@ -98,7 +98,7 @@ public class MerchantContainer extends Container {
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
 		this.villager.setCurrentCustomer(null);
-		if (!this.villager.getVillagerWorld().isClient) {
+		if (!this.villager.getTraderWorld().isClient) {
 			ItemStack itemStack = this.villagerInventory.removeInvStack(0);
 			if (!itemStack.isEmpty()) {
 				playerEntity.dropItem(itemStack, false);
@@ -112,12 +112,12 @@ public class MerchantContainer extends Container {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_17437(VillagerRecipeList villagerRecipeList) {
-		this.villager.setServerRecipes(villagerRecipeList);
+	public void method_17437(TraderRecipeList traderRecipeList) {
+		this.villager.setServerRecipes(traderRecipeList);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public VillagerRecipeList method_17438() {
+	public TraderRecipeList method_17438() {
 		return this.villager.getRecipes();
 	}
 }

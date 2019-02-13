@@ -8,7 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.MaterialColor;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
@@ -120,14 +120,14 @@ public class MapRenderer implements AutoCloseable {
 			int k = 0;
 
 			for (MapIcon mapIcon : this.mapState.icons.values()) {
-				if (!bl || mapIcon.method_94()) {
+				if (!bl || mapIcon.renderIfNotHeld()) {
 					MapRenderer.this.textureManager.bindTexture(MapRenderer.MAP_ICONS_TEXTURE);
 					GlStateManager.pushMatrix();
 					GlStateManager.translatef(0.0F + (float)mapIcon.getX() / 2.0F + 64.0F, 0.0F + (float)mapIcon.getZ() / 2.0F + 64.0F, -0.02F);
-					GlStateManager.rotatef((float)(mapIcon.getType() * 360) / 16.0F, 0.0F, 0.0F, 1.0F);
+					GlStateManager.rotatef((float)(mapIcon.getAngle() * 360) / 16.0F, 0.0F, 0.0F, 1.0F);
 					GlStateManager.scalef(4.0F, 4.0F, 3.0F);
 					GlStateManager.translatef(-0.125F, 0.125F, 0.0F);
-					byte b = mapIcon.getDirection();
+					byte b = mapIcon.getTypeId();
 					float g = (float)(b % 16 + 0) / 16.0F;
 					float h = (float)(b / 16 + 0) / 16.0F;
 					float l = (float)(b % 16 + 1) / 16.0F;
@@ -141,17 +141,17 @@ public class MapRenderer implements AutoCloseable {
 					bufferBuilder.vertex(-1.0, -1.0, (double)((float)k * -0.001F)).texture((double)g, (double)m).next();
 					tessellator.draw();
 					GlStateManager.popMatrix();
-					if (mapIcon.method_88() != null) {
-						FontRenderer fontRenderer = MinecraftClient.getInstance().fontRenderer;
-						String string = mapIcon.method_88().getFormattedText();
-						float o = (float)fontRenderer.getStringWidth(string);
+					if (mapIcon.getText() != null) {
+						TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+						String string = mapIcon.getText().getFormattedText();
+						float o = (float)textRenderer.getStringWidth(string);
 						float p = MathHelper.clamp(25.0F / o, 0.0F, 6.0F / 9.0F);
 						GlStateManager.pushMatrix();
 						GlStateManager.translatef(0.0F + (float)mapIcon.getX() / 2.0F + 64.0F - o * p / 2.0F, 0.0F + (float)mapIcon.getZ() / 2.0F + 64.0F + 4.0F, -0.025F);
 						GlStateManager.scalef(p, p, 1.0F);
 						Drawable.drawRect(-1, -1, (int)o, 9 - 1, Integer.MIN_VALUE);
 						GlStateManager.translatef(0.0F, 0.0F, -0.1F);
-						fontRenderer.draw(string, 0.0F, 0.0F, -1);
+						textRenderer.draw(string, 0.0F, 0.0F, -1);
 						GlStateManager.popMatrix();
 					}
 

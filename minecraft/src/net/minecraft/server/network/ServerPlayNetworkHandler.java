@@ -263,12 +263,12 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 
 	public void disconnect(TextComponent textComponent) {
 		this.client.sendPacket(new DisconnectS2CPacket(textComponent), future -> this.client.disconnect(textComponent));
-		this.client.method_10757();
+		this.client.disableAutoRead();
 		this.server.executeFuture(this.client::handleDisconnection).join();
 	}
 
 	@Override
-	public void method_12067(PlayerLookC2SPacket playerLookC2SPacket) {
+	public void onPlayerLook(PlayerLookC2SPacket playerLookC2SPacket) {
 		NetworkThreadUtils.forceMainThread(playerLookC2SPacket, this, this.player.getServerWorld());
 		this.player.method_14218(playerLookC2SPacket.getYaw(), playerLookC2SPacket.getPitch(), playerLookC2SPacket.isJumping(), playerLookC2SPacket.isSneaking());
 	}
@@ -294,7 +294,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12078(VehicleMoveC2SPacket vehicleMoveC2SPacket) {
+	public void onVehicleMove(VehicleMoveC2SPacket vehicleMoveC2SPacket) {
 		NetworkThreadUtils.forceMainThread(vehicleMoveC2SPacket, this, this.player.getServerWorld());
 		if (validateVehicleMove(vehicleMoveC2SPacket)) {
 			this.disconnect(new TranslatableTextComponent("multiplayer.disconnect.invalid_vehicle_movement"));
@@ -361,7 +361,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12050(TeleportConfirmC2SPacket teleportConfirmC2SPacket) {
+	public void onTeleportConfirm(TeleportConfirmC2SPacket teleportConfirmC2SPacket) {
 		NetworkThreadUtils.forceMainThread(teleportConfirmC2SPacket, this, this.player.getServerWorld());
 		if (teleportConfirmC2SPacket.getTeleportId() == this.requestedTeleportId) {
 			this.player
@@ -378,7 +378,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12047(RecipeBookDataC2SPacket recipeBookDataC2SPacket) {
+	public void onRecipeBookData(RecipeBookDataC2SPacket recipeBookDataC2SPacket) {
 		NetworkThreadUtils.forceMainThread(recipeBookDataC2SPacket, this, this.player.getServerWorld());
 		if (recipeBookDataC2SPacket.getMode() == RecipeBookDataC2SPacket.Mode.field_13011) {
 			this.server.getRecipeManager().get(recipeBookDataC2SPacket.getRecipeId()).ifPresent(this.player.getRecipeBook()::onRecipeDisplayed);
@@ -395,7 +395,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12058(AdvancementTabC2SPacket advancementTabC2SPacket) {
+	public void onAdvancementTab(AdvancementTabC2SPacket advancementTabC2SPacket) {
 		NetworkThreadUtils.forceMainThread(advancementTabC2SPacket, this, this.player.getServerWorld());
 		if (advancementTabC2SPacket.getAction() == AdvancementTabC2SPacket.Action.field_13024) {
 			Identifier identifier = advancementTabC2SPacket.getTabToOpen();
@@ -407,7 +407,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12059(RequestCommandCompletionsC2SPacket requestCommandCompletionsC2SPacket) {
+	public void onRequestCommandCompletions(RequestCommandCompletionsC2SPacket requestCommandCompletionsC2SPacket) {
 		NetworkThreadUtils.forceMainThread(requestCommandCompletionsC2SPacket, this, this.player.getServerWorld());
 		StringReader stringReader = new StringReader(requestCommandCompletionsC2SPacket.getPartialCommand());
 		if (stringReader.canRead() && stringReader.peek() == '/') {
@@ -423,7 +423,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12077(UpdateCommandBlockC2SPacket updateCommandBlockC2SPacket) {
+	public void onUpdateCommandBlock(UpdateCommandBlockC2SPacket updateCommandBlockC2SPacket) {
 		NetworkThreadUtils.forceMainThread(updateCommandBlockC2SPacket, this, this.player.getServerWorld());
 		if (!this.server.areCommandBlocksEnabled()) {
 			this.player.appendCommandFeedback(new TranslatableTextComponent("advMode.notEnabled"));
@@ -444,7 +444,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 			if (commandBlockExecutor != null) {
 				Direction direction = this.player.world.getBlockState(blockPos).get(CommandBlock.FACING);
 				switch (updateCommandBlockC2SPacket.getType()) {
-					case CHAIN: {
+					case field_11922: {
 						BlockState blockState = Blocks.field_10395.getDefaultState();
 						this.player
 							.world
@@ -455,7 +455,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 							);
 						break;
 					}
-					case REPEATING: {
+					case field_11923: {
 						BlockState blockState = Blocks.field_10263.getDefaultState();
 						this.player
 							.world
@@ -466,7 +466,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 							);
 						break;
 					}
-					case NORMAL:
+					case field_11924:
 					default: {
 						BlockState blockState = Blocks.field_10525.getDefaultState();
 						this.player
@@ -497,7 +497,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12049(UpdateCommandBlockMinecartC2SPacket updateCommandBlockMinecartC2SPacket) {
+	public void onUpdateCommandBlockMinecart(UpdateCommandBlockMinecartC2SPacket updateCommandBlockMinecartC2SPacket) {
 		NetworkThreadUtils.forceMainThread(updateCommandBlockMinecartC2SPacket, this, this.player.getServerWorld());
 		if (!this.server.areCommandBlocksEnabled()) {
 			this.player.appendCommandFeedback(new TranslatableTextComponent("advMode.notEnabled"));
@@ -519,7 +519,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12084(PickFromInventoryC2SPacket pickFromInventoryC2SPacket) {
+	public void onPickFromInventory(PickFromInventoryC2SPacket pickFromInventoryC2SPacket) {
 		NetworkThreadUtils.forceMainThread(pickFromInventoryC2SPacket, this, this.player.getServerWorld());
 		this.player.inventory.swapSlotWithHotbar(pickFromInventoryC2SPacket.getSlot());
 		this.player
@@ -532,7 +532,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12060(RenameItemC2SPacket renameItemC2SPacket) {
+	public void onRenameItem(RenameItemC2SPacket renameItemC2SPacket) {
 		NetworkThreadUtils.forceMainThread(renameItemC2SPacket, this, this.player.getServerWorld());
 		if (this.player.container instanceof AnvilContainer) {
 			AnvilContainer anvilContainer = (AnvilContainer)this.player.container;
@@ -544,7 +544,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12057(UpdateBeaconC2SPacket updateBeaconC2SPacket) {
+	public void onUpdateBeacon(UpdateBeaconC2SPacket updateBeaconC2SPacket) {
 		NetworkThreadUtils.forceMainThread(updateBeaconC2SPacket, this, this.player.getServerWorld());
 		if (this.player.container instanceof BeaconContainer) {
 			((BeaconContainer)this.player.container).method_17372(updateBeaconC2SPacket.getPrimaryEffectId(), updateBeaconC2SPacket.getSecondaryEffectId());
@@ -552,7 +552,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12051(UpdateStructureBlockC2SPacket updateStructureBlockC2SPacket) {
+	public void onStructureBlockUpdate(UpdateStructureBlockC2SPacket updateStructureBlockC2SPacket) {
 		NetworkThreadUtils.forceMainThread(updateStructureBlockC2SPacket, this, this.player.getServerWorld());
 		if (this.player.method_7338()) {
 			BlockPos blockPos = updateStructureBlockC2SPacket.getPos();
@@ -608,7 +608,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_16383(UpdateJigsawC2SPacket updateJigsawC2SPacket) {
+	public void onJigsawUpdate(UpdateJigsawC2SPacket updateJigsawC2SPacket) {
 		NetworkThreadUtils.forceMainThread(updateJigsawC2SPacket, this, this.player.getServerWorld());
 		if (this.player.method_7338()) {
 			BlockPos blockPos = updateJigsawC2SPacket.getPos();
@@ -626,7 +626,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12080(SelectVillagerTradeC2SPacket selectVillagerTradeC2SPacket) {
+	public void onVillagerTradeSelect(SelectVillagerTradeC2SPacket selectVillagerTradeC2SPacket) {
 		NetworkThreadUtils.forceMainThread(selectVillagerTradeC2SPacket, this, this.player.getServerWorld());
 		int i = selectVillagerTradeC2SPacket.method_12431();
 		Container container = this.player.container;
@@ -636,7 +636,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12053(BookUpdateC2SPacket bookUpdateC2SPacket) {
+	public void onBookUpdate(BookUpdateC2SPacket bookUpdateC2SPacket) {
 		ItemStack itemStack = bookUpdateC2SPacket.stack();
 		if (!itemStack.isEmpty()) {
 			if (WritableBookItem.method_8047(itemStack.getTag())) {
@@ -671,7 +671,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12074(QueryEntityNbtC2SPacket queryEntityNbtC2SPacket) {
+	public void onQueryEntityNbt(QueryEntityNbtC2SPacket queryEntityNbtC2SPacket) {
 		NetworkThreadUtils.forceMainThread(queryEntityNbtC2SPacket, this, this.player.getServerWorld());
 		if (this.player.allowsPermissionLevel(2)) {
 			Entity entity = this.player.getServerWorld().getEntityById(queryEntityNbtC2SPacket.getEntityId());
@@ -683,7 +683,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12072(QueryBlockNbtC2SPacket queryBlockNbtC2SPacket) {
+	public void onQueryBlockNbt(QueryBlockNbtC2SPacket queryBlockNbtC2SPacket) {
 		NetworkThreadUtils.forceMainThread(queryBlockNbtC2SPacket, this, this.player.getServerWorld());
 		if (this.player.allowsPermissionLevel(2)) {
 			BlockEntity blockEntity = this.player.getServerWorld().getBlockEntity(queryBlockNbtC2SPacket.getPos());
@@ -761,7 +761,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 							n = i - this.updatedY;
 							o = j - this.updatedZ;
 							if (this.player.onGround && !playerMoveServerMessage.isOnGround() && n > 0.0) {
-								this.player.method_6043();
+								this.player.jump();
 							}
 
 							this.player.move(MovementType.field_6305, m, n, o);
@@ -835,7 +835,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12066(PlayerActionC2SPacket playerActionC2SPacket) {
+	public void onPlayerAction(PlayerActionC2SPacket playerActionC2SPacket) {
 		NetworkThreadUtils.forceMainThread(playerActionC2SPacket, this, this.player.getServerWorld());
 		ServerWorld serverWorld = this.server.getWorld(this.player.dimension);
 		BlockPos blockPos = playerActionC2SPacket.getPos();
@@ -902,7 +902,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12046(PlayerInteractBlockC2SPacket playerInteractBlockC2SPacket) {
+	public void onPlayerInteractBlock(PlayerInteractBlockC2SPacket playerInteractBlockC2SPacket) {
 		NetworkThreadUtils.forceMainThread(playerInteractBlockC2SPacket, this, this.player.getServerWorld());
 		ServerWorld serverWorld = this.server.getWorld(this.player.dimension);
 		Hand hand = playerInteractBlockC2SPacket.getHand();
@@ -919,7 +919,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 				this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult);
 			}
 		} else {
-			TextComponent textComponent = new TranslatableTextComponent("build.tooHigh", this.server.getWorldHeight()).applyFormat(TextFormat.RED);
+			TextComponent textComponent = new TranslatableTextComponent("build.tooHigh", this.server.getWorldHeight()).applyFormat(TextFormat.field_1061);
 			this.player.networkHandler.sendPacket(new ChatMessageS2CPacket(textComponent, ChatMessageType.field_11733));
 		}
 
@@ -928,7 +928,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12065(PlayerInteractItemC2SPacket playerInteractItemC2SPacket) {
+	public void onPlayerInteractItem(PlayerInteractItemC2SPacket playerInteractItemC2SPacket) {
 		NetworkThreadUtils.forceMainThread(playerInteractItemC2SPacket, this, this.player.getServerWorld());
 		ServerWorld serverWorld = this.server.getWorld(this.player.dimension);
 		Hand hand = playerInteractItemC2SPacket.getHand();
@@ -940,7 +940,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12073(SpectatorTeleportC2SPacket spectatorTeleportC2SPacket) {
+	public void onSpectatorTeleport(SpectatorTeleportC2SPacket spectatorTeleportC2SPacket) {
 		NetworkThreadUtils.forceMainThread(spectatorTeleportC2SPacket, this, this.player.getServerWorld());
 		if (this.player.isSpectator()) {
 			for (ServerWorld serverWorld : this.server.getWorlds()) {
@@ -954,11 +954,11 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12081(ResourcePackStatusC2SPacket resourcePackStatusC2SPacket) {
+	public void onResourcePackStatus(ResourcePackStatusC2SPacket resourcePackStatusC2SPacket) {
 	}
 
 	@Override
-	public void method_12064(BoatPaddleStateC2SPacket boatPaddleStateC2SPacket) {
+	public void onBoatPaddleState(BoatPaddleStateC2SPacket boatPaddleStateC2SPacket) {
 		NetworkThreadUtils.forceMainThread(boatPaddleStateC2SPacket, this, this.player.getServerWorld());
 		Entity entity = this.player.getRiddenEntity();
 		if (entity instanceof BoatEntity) {
@@ -967,12 +967,12 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void onConnectionLost(TextComponent textComponent) {
+	public void onDisconnected(TextComponent textComponent) {
 		LOGGER.info("{} lost connection: {}", this.player.getName().getString(), textComponent.getString());
 		this.server.method_3856();
 		this.server
 			.getPlayerManager()
-			.sendToAll(new TranslatableTextComponent("multiplayer.player.left", this.player.getDisplayName()).applyFormat(TextFormat.YELLOW));
+			.sendToAll(new TranslatableTextComponent("multiplayer.player.left", this.player.getDisplayName()).applyFormat(TextFormat.field_1054));
 		this.player.method_14231();
 		this.server.getPlayerManager().method_14611(this.player);
 		if (this.server.isSinglePlayer() && this.player.getName().getString().equals(this.server.getUserName())) {
@@ -1009,7 +1009,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12056(UpdateSelectedSlotC2SPacket updateSelectedSlotC2SPacket) {
+	public void onUpdateSelectedSlot(UpdateSelectedSlotC2SPacket updateSelectedSlotC2SPacket) {
 		NetworkThreadUtils.forceMainThread(updateSelectedSlotC2SPacket, this, this.player.getServerWorld());
 		if (updateSelectedSlotC2SPacket.getSelectedSlot() >= 0 && updateSelectedSlotC2SPacket.getSelectedSlot() < PlayerInventory.getHotbarSize()) {
 			this.player.inventory.selectedSlot = updateSelectedSlotC2SPacket.getSelectedSlot();
@@ -1020,10 +1020,10 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12048(ChatMessageC2SPacket chatMessageC2SPacket) {
+	public void onChatMessage(ChatMessageC2SPacket chatMessageC2SPacket) {
 		NetworkThreadUtils.forceMainThread(chatMessageC2SPacket, this, this.player.getServerWorld());
 		if (this.player.getClientChatVisibility() == PlayerEntity.ChatVisibility.HIDDEN) {
-			this.sendPacket(new ChatMessageS2CPacket(new TranslatableTextComponent("chat.cannotSend").applyFormat(TextFormat.RED)));
+			this.sendPacket(new ChatMessageS2CPacket(new TranslatableTextComponent("chat.cannotSend").applyFormat(TextFormat.field_1061)));
 		} else {
 			this.player.updateLastActionTime();
 			String string = chatMessageC2SPacket.getChatMessage();
@@ -1055,14 +1055,14 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12052(HandSwingC2SPacket handSwingC2SPacket) {
+	public void onHandSwing(HandSwingC2SPacket handSwingC2SPacket) {
 		NetworkThreadUtils.forceMainThread(handSwingC2SPacket, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
 		this.player.swingHand(handSwingC2SPacket.getHand());
 	}
 
 	@Override
-	public void method_12045(ClientCommandC2SPacket clientCommandC2SPacket) {
+	public void onClientCommand(ClientCommandC2SPacket clientCommandC2SPacket) {
 		NetworkThreadUtils.forceMainThread(clientCommandC2SPacket, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
 		switch (clientCommandC2SPacket.getMode()) {
@@ -1120,7 +1120,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12062(PlayerInteractEntityC2SPacket playerInteractEntityC2SPacket) {
+	public void onPlayerInteractEntity(PlayerInteractEntityC2SPacket playerInteractEntityC2SPacket) {
 		NetworkThreadUtils.forceMainThread(playerInteractEntityC2SPacket, this, this.player.getServerWorld());
 		ServerWorld serverWorld = this.server.getWorld(this.player.dimension);
 		Entity entity = playerInteractEntityC2SPacket.getEntity(serverWorld);
@@ -1153,7 +1153,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12068(ClientStatusC2SPacket clientStatusC2SPacket) {
+	public void onClientStatus(ClientStatusC2SPacket clientStatusC2SPacket) {
 		NetworkThreadUtils.forceMainThread(clientStatusC2SPacket, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
 		ClientStatusC2SPacket.Mode mode = clientStatusC2SPacket.getMode();
@@ -1181,13 +1181,13 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12054(GuiCloseC2SPacket guiCloseC2SPacket) {
+	public void onGuiClose(GuiCloseC2SPacket guiCloseC2SPacket) {
 		NetworkThreadUtils.forceMainThread(guiCloseC2SPacket, this, this.player.getServerWorld());
 		this.player.method_14247();
 	}
 
 	@Override
-	public void method_12076(ClickWindowC2SPacket clickWindowC2SPacket) {
+	public void onClickWindow(ClickWindowC2SPacket clickWindowC2SPacket) {
 		NetworkThreadUtils.forceMainThread(clickWindowC2SPacket, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
 		if (this.player.container.syncId == clickWindowC2SPacket.getSyncId() && this.player.container.isRestricted(this.player)) {
@@ -1227,7 +1227,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12061(CraftRequestC2SPacket craftRequestC2SPacket) {
+	public void onCraftRequest(CraftRequestC2SPacket craftRequestC2SPacket) {
 		NetworkThreadUtils.forceMainThread(craftRequestC2SPacket, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
 		if (!this.player.isSpectator()
@@ -1252,7 +1252,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12070(CreativeInventoryActionC2SPacket creativeInventoryActionC2SPacket) {
+	public void onCreativeInventoryAction(CreativeInventoryActionC2SPacket creativeInventoryActionC2SPacket) {
 		NetworkThreadUtils.forceMainThread(creativeInventoryActionC2SPacket, this, this.player.getServerWorld());
 		if (this.player.interactionManager.isCreative()) {
 			boolean bl = creativeInventoryActionC2SPacket.getSlot() < 0;
@@ -1291,7 +1291,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12079(GuiActionConfirmC2SPacket guiActionConfirmC2SPacket) {
+	public void onConfirmTransaction(GuiActionConfirmC2SPacket guiActionConfirmC2SPacket) {
 		NetworkThreadUtils.forceMainThread(guiActionConfirmC2SPacket, this, this.player.getServerWorld());
 		Short short_ = this.transactions.get(this.player.container.syncId);
 		if (short_ != null
@@ -1304,7 +1304,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12071(UpdateSignC2SPacket updateSignC2SPacket) {
+	public void onSignUpdate(UpdateSignC2SPacket updateSignC2SPacket) {
 		NetworkThreadUtils.forceMainThread(updateSignC2SPacket, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
 		ServerWorld serverWorld = this.server.getWorld(this.player.dimension);
@@ -1334,7 +1334,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12082(KeepAliveC2SPacket keepAliveC2SPacket) {
+	public void onKeepAlive(KeepAliveC2SPacket keepAliveC2SPacket) {
 		if (this.waitingForKeepAlive && keepAliveC2SPacket.getId() == this.keepAliveId) {
 			int i = (int)(SystemUtil.getMeasuringTimeMs() - this.lastKeepAliveTime);
 			this.player.field_13967 = (this.player.field_13967 * 3 + i) / 4;
@@ -1345,18 +1345,18 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void method_12083(UpdatePlayerAbilitiesC2SPacket updatePlayerAbilitiesC2SPacket) {
+	public void onPlayerAbilities(UpdatePlayerAbilitiesC2SPacket updatePlayerAbilitiesC2SPacket) {
 		NetworkThreadUtils.forceMainThread(updatePlayerAbilitiesC2SPacket, this, this.player.getServerWorld());
 		this.player.abilities.flying = updatePlayerAbilitiesC2SPacket.isFlying() && this.player.abilities.allowFlying;
 	}
 
 	@Override
-	public void method_12069(ClientSettingsC2SPacket clientSettingsC2SPacket) {
+	public void onClientSettings(ClientSettingsC2SPacket clientSettingsC2SPacket) {
 		NetworkThreadUtils.forceMainThread(clientSettingsC2SPacket, this, this.player.getServerWorld());
 		this.player.setClientSettings(clientSettingsC2SPacket);
 	}
 
 	@Override
-	public void method_12075(CustomPayloadC2SPacket customPayloadC2SPacket) {
+	public void onCustomPayload(CustomPayloadC2SPacket customPayloadC2SPacket) {
 	}
 }

@@ -11,7 +11,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
 import javax.annotation.Nullable;
-import net.minecraft.class_3530;
 import net.minecraft.advancement.AdvancementManager;
 import net.minecraft.advancement.AdvancementPosition;
 import net.minecraft.advancement.AdvancementRewards;
@@ -23,6 +22,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.TextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.LowercaseEnumTypeAdapterFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,7 +39,7 @@ public class ServerAdvancementLoader implements SynchronousResourceReloadListene
 		.registerTypeAdapter(AdvancementRewards.class, new AdvancementRewards.Deserializer())
 		.registerTypeHierarchyAdapter(TextComponent.class, new TextComponent.Serializer())
 		.registerTypeHierarchyAdapter(Style.class, new Style.Serializer())
-		.registerTypeAdapterFactory(new class_3530())
+		.registerTypeAdapterFactory(new LowercaseEnumTypeAdapterFactory())
 		.create();
 	private static final AdvancementManager MANAGER = new AdvancementManager();
 	public static final int PATH_PREFIX_LENGTH = "advancements/".length();
@@ -104,7 +104,7 @@ public class ServerAdvancementLoader implements SynchronousResourceReloadListene
 	}
 
 	@Override
-	public void reloadResources(ResourceManager resourceManager) {
+	public void apply(ResourceManager resourceManager) {
 		this.errored = false;
 		MANAGER.clear();
 		Map<Identifier, SimpleAdvancement.Builder> map = this.scanAdvancements(resourceManager);

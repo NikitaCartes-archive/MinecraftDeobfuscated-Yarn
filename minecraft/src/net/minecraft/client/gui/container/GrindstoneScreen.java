@@ -28,7 +28,7 @@ public class GrindstoneScreen extends ContainerScreen<GrindstoneContainer> {
 		this.drawBackground();
 		this.drawBackground(f, i, j);
 		super.draw(i, j, f);
-		this.drawMousoverTooltip(i, j);
+		this.drawMouseoverTooltip(i, j);
 	}
 
 	@Override

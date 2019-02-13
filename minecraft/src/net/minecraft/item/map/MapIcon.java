@@ -8,27 +8,27 @@ import net.minecraft.text.TextComponent;
 import net.minecraft.util.math.MathHelper;
 
 public class MapIcon {
-	private final MapIcon.Direction direction;
+	private final MapIcon.Type type;
 	private byte x;
 	private byte z;
-	private byte type;
-	private final TextComponent field_78;
+	private byte angle;
+	private final TextComponent text;
 
-	public MapIcon(MapIcon.Direction direction, byte b, byte c, byte d, @Nullable TextComponent textComponent) {
-		this.direction = direction;
+	public MapIcon(MapIcon.Type type, byte b, byte c, byte d, @Nullable TextComponent textComponent) {
+		this.type = type;
 		this.x = b;
 		this.z = c;
-		this.type = d;
-		this.field_78 = textComponent;
+		this.angle = d;
+		this.text = textComponent;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public byte getDirection() {
-		return this.direction.method_98();
+	public byte getTypeId() {
+		return this.type.getId();
 	}
 
-	public MapIcon.Direction method_93() {
-		return this.direction;
+	public MapIcon.Type getType() {
+		return this.type;
 	}
 
 	public byte getX() {
@@ -39,18 +39,18 @@ public class MapIcon {
 		return this.z;
 	}
 
-	public byte getType() {
-		return this.type;
+	public byte getAngle() {
+		return this.angle;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_94() {
-		return this.direction.method_95();
+	public boolean renderIfNotHeld() {
+		return this.type.renderIfNotHeld();
 	}
 
 	@Nullable
-	public TextComponent method_88() {
-		return this.field_78;
+	public TextComponent getText() {
+		return this.text;
 	}
 
 	public boolean equals(Object object) {
@@ -60,27 +60,27 @@ public class MapIcon {
 			return false;
 		} else {
 			MapIcon mapIcon = (MapIcon)object;
-			if (this.direction != mapIcon.direction) {
+			if (this.type != mapIcon.type) {
 				return false;
-			} else if (this.type != mapIcon.type) {
+			} else if (this.angle != mapIcon.angle) {
 				return false;
 			} else if (this.x != mapIcon.x) {
 				return false;
 			} else {
-				return this.z != mapIcon.z ? false : Objects.equals(this.field_78, mapIcon.field_78);
+				return this.z != mapIcon.z ? false : Objects.equals(this.text, mapIcon.text);
 			}
 		}
 	}
 
 	public int hashCode() {
-		int i = this.direction.method_98();
+		int i = this.type.getId();
 		i = 31 * i + this.x;
 		i = 31 * i + this.z;
-		i = 31 * i + this.type;
-		return 31 * i + Objects.hashCode(this.field_78);
+		i = 31 * i + this.angle;
+		return 31 * i + Objects.hashCode(this.text);
 	}
 
-	public static enum Direction {
+	public static enum Type {
 		field_91(false),
 		field_95(true),
 		field_89(false),
@@ -109,37 +109,37 @@ public class MapIcon {
 		field_103(true),
 		field_110(true);
 
-		private final byte field_81 = (byte)this.ordinal();
-		private final boolean field_111;
-		private final int field_82;
+		private final byte id = (byte)this.ordinal();
+		private final boolean renderNotHeld;
+		private final int tintColor;
 
-		private Direction(boolean bl) {
+		private Type(boolean bl) {
 			this(bl, -1);
 		}
 
-		private Direction(boolean bl, int j) {
-			this.field_111 = bl;
-			this.field_82 = j;
+		private Type(boolean bl, int j) {
+			this.renderNotHeld = bl;
+			this.tintColor = j;
 		}
 
-		public byte method_98() {
-			return this.field_81;
+		public byte getId() {
+			return this.id;
 		}
 
 		@Environment(EnvType.CLIENT)
-		public boolean method_95() {
-			return this.field_111;
+		public boolean renderIfNotHeld() {
+			return this.renderNotHeld;
 		}
 
-		public boolean method_97() {
-			return this.field_82 >= 0;
+		public boolean hasTintColor() {
+			return this.tintColor >= 0;
 		}
 
-		public int method_96() {
-			return this.field_82;
+		public int getTintColor() {
+			return this.tintColor;
 		}
 
-		public static MapIcon.Direction method_99(byte b) {
+		public static MapIcon.Type byId(byte b) {
 			return values()[MathHelper.clamp(b, 0, values().length - 1)];
 		}
 	}

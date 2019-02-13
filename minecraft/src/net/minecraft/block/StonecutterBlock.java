@@ -1,8 +1,8 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.minecraft.class_3914;
 import net.minecraft.client.network.ClientDummyContainerProvider;
+import net.minecraft.container.ContainerWorldContext;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.container.StonecutterContainer;
 import net.minecraft.entity.VerticalEntityPosition;
@@ -46,7 +46,7 @@ public class StonecutterBlock extends Block {
 	@Override
 	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
 		return new ClientDummyContainerProvider(
-			(i, playerInventory, playerEntity) -> new StonecutterContainer(i, playerInventory, class_3914.method_17392(world, blockPos)), field_17650
+			(i, playerInventory, playerEntity) -> new StonecutterContainer(i, playerInventory, ContainerWorldContext.create(world, blockPos)), field_17650
 		);
 	}
 

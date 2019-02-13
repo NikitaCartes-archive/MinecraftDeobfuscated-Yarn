@@ -22,7 +22,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 	private volatile boolean hasSkyLightUpdates;
 
 	protected SkyLightStorage(ChunkProvider chunkProvider) {
-		super(LightType.SKY_LIGHT, chunkProvider, new SkyLightStorage.Data(new Long2ObjectOpenHashMap<>(), new Long2IntOpenHashMap(), Integer.MAX_VALUE));
+		super(LightType.SKY, chunkProvider, new SkyLightStorage.Data(new Long2ObjectOpenHashMap<>(), new Long2IntOpenHashMap(), Integer.MAX_VALUE));
 	}
 
 	@Override

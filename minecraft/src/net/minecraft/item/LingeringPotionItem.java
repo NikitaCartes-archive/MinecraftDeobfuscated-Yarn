@@ -4,7 +4,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.item.TooltipOptions;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.thrown.ThrownPotionEntity;
 import net.minecraft.potion.PotionUtil;
@@ -24,7 +24,7 @@ public class LingeringPotionItem extends PotionItem {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
 		PotionUtil.buildTooltip(itemStack, list, 0.25F);
 	}
 
@@ -43,6 +43,6 @@ public class LingeringPotionItem extends PotionItem {
 		}
 
 		playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
-		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+		return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 	}
 }

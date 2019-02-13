@@ -245,7 +245,7 @@ public class ServerPlayerInteractionManager {
 			ItemStack itemStack2 = typedActionResult.getValue();
 			if (itemStack2 == itemStack && itemStack2.getAmount() == i && itemStack2.getMaxUseTime() <= 0 && itemStack2.getDamage() == j) {
 				return typedActionResult.getResult();
-			} else if (typedActionResult.getResult() == ActionResult.FAILURE && itemStack2.getMaxUseTime() > 0 && !playerEntity.isUsingItem()) {
+			} else if (typedActionResult.getResult() == ActionResult.field_5814 && itemStack2.getMaxUseTime() > 0 && !playerEntity.isUsingItem()) {
 				return typedActionResult.getResult();
 			} else {
 				playerEntity.setStackInHand(hand, itemStack2);
@@ -276,7 +276,7 @@ public class ServerPlayerInteractionManager {
 			NameableContainerProvider nameableContainerProvider = blockState.createContainerProvider(world, blockPos);
 			if (nameableContainerProvider != null) {
 				playerEntity.openContainer(nameableContainerProvider);
-				return ActionResult.SUCCESS;
+				return ActionResult.field_5812;
 			} else {
 				return ActionResult.PASS;
 			}
@@ -284,7 +284,7 @@ public class ServerPlayerInteractionManager {
 			boolean bl = !playerEntity.getMainHandStack().isEmpty() || !playerEntity.getOffHandStack().isEmpty();
 			boolean bl2 = playerEntity.isSneaking() && bl;
 			if (!bl2 && blockState.activate(world, playerEntity, hand, blockHitResult)) {
-				return ActionResult.SUCCESS;
+				return ActionResult.field_5812;
 			} else if (!itemStack.isEmpty() && !playerEntity.getItemCooldownManager().isCooldown(itemStack.getItem())) {
 				ItemUsageContext itemUsageContext = new ItemUsageContext(playerEntity, playerEntity.getStackInHand(hand), blockHitResult);
 				if (this.isCreative()) {

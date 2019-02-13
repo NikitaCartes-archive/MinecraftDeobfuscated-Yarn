@@ -161,7 +161,7 @@ public abstract class LavaFluid extends BaseFluid {
 
 	@Override
 	public boolean method_15777(FluidState fluidState, BlockView blockView, BlockPos blockPos, Fluid fluid, Direction direction) {
-		return fluidState.method_15763(blockView, blockPos) >= 0.44444445F && fluid.matches(FluidTags.field_15517);
+		return fluidState.getHeight(blockView, blockPos) >= 0.44444445F && fluid.matches(FluidTags.field_15517);
 	}
 
 	@Override
@@ -176,7 +176,7 @@ public abstract class LavaFluid extends BaseFluid {
 			&& !fluidState2.isEmpty()
 			&& !(Boolean)fluidState.get(FALLING)
 			&& !(Boolean)fluidState2.get(FALLING)
-			&& fluidState2.method_15763(world, blockPos) > fluidState.method_15763(world, blockPos)
+			&& fluidState2.getHeight(world, blockPos) > fluidState.getHeight(world, blockPos)
 			&& world.getRandom().nextInt(4) != 0) {
 			i *= 4;
 		}

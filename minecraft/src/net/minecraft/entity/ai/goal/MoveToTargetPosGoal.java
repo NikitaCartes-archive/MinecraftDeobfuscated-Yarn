@@ -5,7 +5,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ViewableWorld;
 
 public abstract class MoveToTargetPosGoal extends Goal {
-	private final MobEntityWithAi owner;
+	protected final MobEntityWithAi owner;
 	public final double speed;
 	protected int counter;
 	protected int tryingTime;

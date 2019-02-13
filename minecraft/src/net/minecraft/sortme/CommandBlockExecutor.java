@@ -177,7 +177,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 			return false;
 		} else {
 			if (playerEntity.getEntityWorld().isClient) {
-				playerEntity.openCommandBlockMinecartGui(this);
+				playerEntity.openCommandBlockMinecartScreen(this);
 			}
 
 			return true;

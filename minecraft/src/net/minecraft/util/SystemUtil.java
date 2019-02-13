@@ -2,6 +2,7 @@ package net.minecraft.util;
 
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.mojang.datafixers.DataFixUtils;
 import it.unimi.dsi.fastutil.Hash.Strategy;
 import java.io.File;
@@ -25,6 +26,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinWorkerThread;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
@@ -36,11 +43,14 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.state.property.Property;
+import net.minecraft.util.math.MathHelper;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class SystemUtil {
+	private static final AtomicInteger field_18034 = new AtomicInteger(1);
+	private static final ExecutorService SERVER_WORKER_EXECUTOR = createServerWorkerExecutor();
 	public static LongSupplier nanoTimeSupplier = System::nanoTime;
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Pattern ILLEGAL_FILE_NAME_PATTERN = Pattern.compile(
@@ -71,6 +81,42 @@ public class SystemUtil {
 		return Instant.now().toEpochMilli();
 	}
 
+	private static ExecutorService createServerWorkerExecutor() {
+		int i = MathHelper.clamp(Runtime.getRuntime().availableProcessors() - 1, 1, 7);
+		ExecutorService executorService;
+		if (i <= 0) {
+			executorService = MoreExecutors.newDirectExecutorService();
+		} else {
+			executorService = new ForkJoinPool(i, forkJoinPool -> {
+				ForkJoinWorkerThread forkJoinWorkerThread = new ForkJoinWorkerThread(forkJoinPool) {
+				};
+				forkJoinWorkerThread.setName("Server-Worker-" + field_18034.getAndIncrement());
+				return forkJoinWorkerThread;
+			}, (thread, throwable) -> LOGGER.error(String.format("Caught exception in thread %s", thread), throwable), true);
+		}
+
+		return executorService;
+	}
+
+	public static Executor getServerWorkerExecutor() {
+		return SERVER_WORKER_EXECUTOR;
+	}
+
+	public static void method_18350() {
+		SERVER_WORKER_EXECUTOR.shutdown();
+
+		boolean bl;
+		try {
+			bl = SERVER_WORKER_EXECUTOR.awaitTermination(3L, TimeUnit.SECONDS);
+		} catch (InterruptedException var2) {
+			bl = false;
+		}
+
+		if (!bl) {
+			SERVER_WORKER_EXECUTOR.shutdownNow();
+		}
+	}
+
 	public static SystemUtil.OperatingSystem getOperatingSystem() {
 		String string = System.getProperty("os.name").toLowerCase(Locale.ROOT);
 		if (string.contains("win")) {
@@ -93,12 +139,12 @@ public class SystemUtil {
 		return runtimeMXBean.getInputArguments().stream().filter(string -> string.startsWith("-X"));
 	}
 
-	public static boolean method_653(Path path) {
+	public static boolean isPathNormalized(Path path) {
 		Path path2 = path.normalize();
 		return path2.equals(path);
 	}
 
-	public static boolean isPathIllegal(Path path) {
+	public static boolean isPathLegal(Path path) {
 		for (Path path2 : path) {
 			if (ILLEGAL_FILE_NAME_PATTERN.matcher(path2.toString()).matches()) {
 				return false;

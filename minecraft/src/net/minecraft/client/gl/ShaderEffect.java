@@ -223,16 +223,16 @@ public class ShaderEffect implements AutoCloseable {
 				default:
 					break;
 				case 1:
-					glUniform.put(fs[0]);
+					glUniform.set(fs[0]);
 					break;
 				case 2:
-					glUniform.put(fs[0], fs[1]);
+					glUniform.set(fs[0], fs[1]);
 					break;
 				case 3:
-					glUniform.put(fs[0], fs[1], fs[2]);
+					glUniform.set(fs[0], fs[1], fs[2]);
 					break;
 				case 4:
-					glUniform.put(fs[0], fs[1], fs[2], fs[3]);
+					glUniform.set(fs[0], fs[1], fs[2], fs[3]);
 			}
 		}
 	}
@@ -242,7 +242,7 @@ public class ShaderEffect implements AutoCloseable {
 	}
 
 	public void addTarget(String string, int i, int j) {
-		GlFramebuffer glFramebuffer = new GlFramebuffer(i, j, true, MinecraftClient.isSystemMac);
+		GlFramebuffer glFramebuffer = new GlFramebuffer(i, j, true, MinecraftClient.IS_SYSTEM_MAC);
 		glFramebuffer.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
 		this.targetsByName.put(string, glFramebuffer);
 		if (i == this.width && j == this.height) {
@@ -282,7 +282,7 @@ public class ShaderEffect implements AutoCloseable {
 		}
 
 		for (GlFramebuffer glFramebuffer : this.defaultSizedTargets) {
-			glFramebuffer.resize(i, j, MinecraftClient.isSystemMac);
+			glFramebuffer.resize(i, j, MinecraftClient.IS_SYSTEM_MAC);
 		}
 	}
 

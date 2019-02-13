@@ -104,12 +104,12 @@ public abstract class RealmsScreen extends RealmsGuiEventListener {
 	}
 
 	public static void bindFace(String string, String string2) {
-		Identifier identifier = AbstractClientPlayerEntity.method_3124(string2);
+		Identifier identifier = AbstractClientPlayerEntity.getSkinId(string2);
 		if (identifier == null) {
 			identifier = DefaultSkinHelper.getTexture(UUIDTypeAdapter.fromString(string));
 		}
 
-		AbstractClientPlayerEntity.method_3120(identifier, string2);
+		AbstractClientPlayerEntity.loadSkin(identifier, string2);
 		MinecraftClient.getInstance().getTextureManager().bindTexture(identifier);
 	}
 
@@ -197,7 +197,7 @@ public abstract class RealmsScreen extends RealmsGuiEventListener {
 	}
 
 	public List<String> getLocalizedStringWithLineWidth(String string, int i) {
-		return this.minecraft.fontRenderer.wrapStringToWidthAsList(I18n.translate(string), i);
+		return this.minecraft.textRenderer.wrapStringToWidthAsList(I18n.translate(string), i);
 	}
 
 	public RealmsAnvilLevelStorageSource getLevelStorageSource() {

@@ -28,18 +28,15 @@ public abstract class RecipeBookButtonWidget extends ButtonWidget {
 
 	@Override
 	public void draw(int i, int j, float f) {
-		if (this.visible) {
-			this.hovered = i >= this.x && j >= this.y && i < this.x + this.width && j < this.y + this.height;
-			MinecraftClient minecraftClient = MinecraftClient.getInstance();
-			minecraftClient.getTextureManager().bindTexture(this.texture);
-			GlStateManager.disableDepthTest();
-			int k = this.v;
-			if (this.hovered) {
-				k += this.hoverVOffset;
-			}
-
-			this.drawTexturedRect(this.x, this.y, this.u, k, this.width, this.height);
-			GlStateManager.enableDepthTest();
+		MinecraftClient minecraftClient = MinecraftClient.getInstance();
+		minecraftClient.getTextureManager().bindTexture(this.texture);
+		GlStateManager.disableDepthTest();
+		int k = this.v;
+		if (this.isHovered()) {
+			k += this.hoverVOffset;
 		}
+
+		this.drawTexturedRect(this.x, this.y, this.u, k, this.width, this.height);
+		GlStateManager.enableDepthTest();
 	}
 }

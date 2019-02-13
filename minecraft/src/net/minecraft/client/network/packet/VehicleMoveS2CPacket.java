@@ -45,7 +45,7 @@ public class VehicleMoveS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11672(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11134(this);
+		clientPlayPacketListener.onVehicleMove(this);
 	}
 
 	@Environment(EnvType.CLIENT)

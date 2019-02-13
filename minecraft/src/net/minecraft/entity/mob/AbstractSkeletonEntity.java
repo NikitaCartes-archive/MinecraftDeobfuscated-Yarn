@@ -79,7 +79,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 		this.targetSelector.add(1, new class_1399(this));
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
 		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, true));
-		this.targetSelector.add(3, new FollowTargetGoal(this, TurtleEntity.class, 10, true, false, TurtleEntity.field_6921));
+		this.targetSelector.add(3, new FollowTargetGoal(this, TurtleEntity.class, 10, true, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
 	}
 
 	@Override
@@ -132,8 +132,8 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	}
 
 	@Override
-	public void method_5842() {
-		super.method_5842();
+	public void updateRiding() {
+		super.updateRiding();
 		if (this.getRiddenEntity() instanceof MobEntityWithAi) {
 			MobEntityWithAi mobEntityWithAi = (MobEntityWithAi)this.getRiddenEntity();
 			this.field_6283 = mobEntityWithAi.field_6283;

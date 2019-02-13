@@ -55,7 +55,7 @@ public class TextureFont implements Font {
 			this.ascent = j;
 		}
 
-		public static TextureFont.Loader method_2037(JsonObject jsonObject) {
+		public static TextureFont.Loader fromJson(JsonObject jsonObject) {
 			int i = JsonHelper.getInt(jsonObject, "height", 8);
 			int j = JsonHelper.getInt(jsonObject, "ascent");
 			if (j > i) {

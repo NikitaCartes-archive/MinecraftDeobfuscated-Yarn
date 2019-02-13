@@ -183,15 +183,15 @@ public class EntityMobNavigation extends EntityNavigation {
 					double g = (double)r + 0.5 - vec3d.z;
 					if (!(f * d + g * e < 0.0)) {
 						PathNodeType pathNodeType = this.nodeMaker.getPathNodeType(this.world, q, j - 1, r, this.entity, l, m, n, true, true);
-						if (pathNodeType == PathNodeType.WATER) {
+						if (pathNodeType == PathNodeType.field_18) {
 							return false;
 						}
 
-						if (pathNodeType == PathNodeType.LAVA) {
+						if (pathNodeType == PathNodeType.field_14) {
 							return false;
 						}
 
-						if (pathNodeType == PathNodeType.AIR) {
+						if (pathNodeType == PathNodeType.field_7) {
 							return false;
 						}
 
@@ -201,7 +201,7 @@ public class EntityMobNavigation extends EntityNavigation {
 							return false;
 						}
 
-						if (pathNodeType == PathNodeType.FIRE || pathNodeType == PathNodeType.FIRE_NEAR || pathNodeType == PathNodeType.field_17) {
+						if (pathNodeType == PathNodeType.field_3 || pathNodeType == PathNodeType.field_9 || pathNodeType == PathNodeType.field_17) {
 							return false;
 						}
 					}

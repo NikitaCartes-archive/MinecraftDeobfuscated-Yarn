@@ -52,7 +52,7 @@ public class EnchantmentHelper {
 
 		for (int i = 0; i < listTag.size(); i++) {
 			CompoundTag compoundTag = listTag.getCompoundTag(i);
-			Registry.ENCHANTMENT.getOptional(Identifier.create(compoundTag.getString("id"))).ifPresent(enchantment -> {
+			Registry.ENCHANTMENT.getOrEmpty(Identifier.create(compoundTag.getString("id"))).ifPresent(enchantment -> {
 				Integer var10000 = (Integer)map.put(enchantment, compoundTag.getInt("lvl"));
 			});
 		}
@@ -91,7 +91,7 @@ public class EnchantmentHelper {
 			for (int i = 0; i < listTag.size(); i++) {
 				String string = listTag.getCompoundTag(i).getString("id");
 				int j = listTag.getCompoundTag(i).getInt("lvl");
-				Registry.ENCHANTMENT.getOptional(Identifier.create(string)).ifPresent(enchantment -> consumer.accept(enchantment, j));
+				Registry.ENCHANTMENT.getOrEmpty(Identifier.create(string)).ifPresent(enchantment -> consumer.accept(enchantment, j));
 			}
 		}
 	}

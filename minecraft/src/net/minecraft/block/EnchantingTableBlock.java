@@ -4,10 +4,10 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3914;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EnchantingTableBlockEntity;
 import net.minecraft.client.network.ClientDummyContainerProvider;
+import net.minecraft.container.ContainerWorldContext;
 import net.minecraft.container.EnchantingTableContainer;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.LivingEntity;
@@ -103,7 +103,7 @@ public class EnchantingTableBlock extends BlockWithEntity {
 		if (blockEntity instanceof EnchantingTableBlockEntity) {
 			TextComponent textComponent = ((Nameable)blockEntity).getDisplayName();
 			return new ClientDummyContainerProvider(
-				(i, playerInventory, playerEntity) -> new EnchantingTableContainer(i, playerInventory, class_3914.method_17392(world, blockPos)), textComponent
+				(i, playerInventory, playerEntity) -> new EnchantingTableContainer(i, playerInventory, ContainerWorldContext.create(world, blockPos)), textComponent
 			);
 		} else {
 			return null;

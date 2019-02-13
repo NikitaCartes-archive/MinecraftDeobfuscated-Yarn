@@ -29,7 +29,7 @@ public class PandaHeldItemFeatureRenderer extends FeatureRenderer<PandaEntity, P
 
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef(0.1F, n, m);
-			MinecraftClient.getInstance().getItemRenderer().renderHeldItem(itemStack, pandaEntity, ModelTransformation.Type.GROUND, false);
+			MinecraftClient.getInstance().getItemRenderer().renderHeldItem(itemStack, pandaEntity, ModelTransformation.Type.field_4318, false);
 			GlStateManager.popMatrix();
 		}
 	}

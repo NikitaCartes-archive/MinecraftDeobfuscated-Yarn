@@ -68,7 +68,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_6807() {
+	public boolean isTrader() {
 		return false;
 	}
 
@@ -359,7 +359,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 	}
 
 	public LlamaEntity createChild(PassiveEntity passiveEntity) {
-		LlamaEntity llamaEntity = this.method_18004();
+		LlamaEntity llamaEntity = this.createChild();
 		this.method_6743(passiveEntity, llamaEntity);
 		LlamaEntity llamaEntity2 = (LlamaEntity)passiveEntity;
 		int i = this.random.nextInt(Math.max(this.getStrength(), llamaEntity2.getStrength())) + 1;
@@ -372,7 +372,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 		return llamaEntity;
 	}
 
-	protected LlamaEntity method_18004() {
+	protected LlamaEntity createChild() {
 		return new LlamaEntity(this.world);
 	}
 
@@ -402,7 +402,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 			if (f >= 6.0F) {
 				this.damage(DamageSource.FALL, (float)i);
 				if (this.hasPassengers()) {
-					for (Entity entity : this.method_5736()) {
+					for (Entity entity : this.getPassengersDeep()) {
 						entity.damage(DamageSource.FALL, (float)i);
 					}
 				}

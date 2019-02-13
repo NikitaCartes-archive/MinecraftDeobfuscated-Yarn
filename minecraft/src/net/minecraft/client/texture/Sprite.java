@@ -1,6 +1,7 @@
 package net.minecraft.client.texture;
 
 import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Pair;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +31,6 @@ public class Sprite {
 	protected int[] field_5264;
 	protected NativeImage[] interpolatedImages;
 	private AnimationResourceMetadata animationMetadata;
-	protected boolean rotated;
 	protected int x;
 	protected int y;
 	private float uMin;
@@ -55,18 +55,35 @@ public class Sprite {
 	protected Sprite(Identifier identifier, class_1050 arg, @Nullable AnimationResourceMetadata animationResourceMetadata) {
 		this.id = identifier;
 		if (animationResourceMetadata != null) {
-			int i = Math.min(arg.width, arg.height);
-			this.height = this.width = i;
-		} else {
-			if (arg.height != arg.width) {
-				throw new RuntimeException("broken aspect ratio and not an animation");
+			Pair<Integer, Integer> pair = method_18341(animationResourceMetadata.getWidth(), animationResourceMetadata.getHeight(), arg.field_5227, arg.field_5226);
+			this.width = pair.getFirst();
+			this.height = pair.getSecond();
+			if (!method_18340(arg.field_5227, this.width) || !method_18340(arg.field_5226, this.height)) {
+				throw new IllegalArgumentException(
+					String.format("Image size %s,%s is not multiply of frame size %s,%s", this.width, this.height, arg.field_5227, arg.field_5226)
+				);
 			}
-
-			this.width = arg.width;
-			this.height = arg.height;
+		} else {
+			this.width = arg.field_5227;
+			this.height = arg.field_5226;
 		}
 
 		this.animationMetadata = animationResourceMetadata;
+	}
+
+	private static Pair<Integer, Integer> method_18341(int i, int j, int k, int l) {
+		if (i != -1) {
+			return j != -1 ? Pair.of(i, j) : Pair.of(i, l);
+		} else if (j != -1) {
+			return Pair.of(k, j);
+		} else {
+			int m = Math.min(k, l);
+			return Pair.of(m, m);
+		}
+	}
+
+	private static boolean method_18340(int i, int j) {
+		return i / j * j == i;
 	}
 
 	private void generateMipmapsInternal(int i) {
@@ -196,10 +213,9 @@ public class Sprite {
 		}
 	}
 
-	public void init(int i, int j, int k, int l, boolean bl) {
+	public void init(int i, int j, int k, int l) {
 		this.x = k;
 		this.y = l;
-		this.rotated = bl;
 		this.uMin = (float)k / (float)i;
 		this.uMax = (float)(k + this.width) / (float)i;
 		this.vMin = (float)l / (float)j;
@@ -435,8 +451,6 @@ public class Sprite {
 			+ '\''
 			+ ", frameCount="
 			+ i
-			+ ", rotated="
-			+ this.rotated
 			+ ", x="
 			+ this.x
 			+ ", y="

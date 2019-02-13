@@ -7,7 +7,6 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3914;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -39,8 +38,8 @@ public abstract class Container {
 		this.syncId = i;
 	}
 
-	protected static boolean canUse(class_3914 arg, PlayerEntity playerEntity, Block block) {
-		return arg.method_17396(
+	protected static boolean canUse(ContainerWorldContext containerWorldContext, PlayerEntity playerEntity, Block block) {
+		return containerWorldContext.apply(
 			(world, blockPos) -> world.getBlockState(blockPos).getBlock() != block
 					? false
 					: playerEntity.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) <= 64.0,
@@ -155,16 +154,16 @@ public abstract class Container {
 			int k = this.quickCraftButton;
 			this.quickCraftButton = unpackButtonId(j);
 			if ((k != 1 || this.quickCraftButton != 2) && k != this.quickCraftButton) {
-				this.quickCraftEnd();
+				this.endQuickCraft();
 			} else if (playerInventory.getCursorStack().isEmpty()) {
-				this.quickCraftEnd();
+				this.endQuickCraft();
 			} else if (this.quickCraftButton == 0) {
 				this.quickCraftStage = unpackQuickCraftStage(j);
-				if (method_7600(this.quickCraftStage, playerEntity)) {
+				if (shouldQuickCraftContinue(this.quickCraftStage, playerEntity)) {
 					this.quickCraftButton = 1;
 					this.quickCraftSlots.clear();
 				} else {
-					this.quickCraftEnd();
+					this.endQuickCraft();
 				}
 			} else if (this.quickCraftButton == 1) {
 				Slot slot = (Slot)this.slotList.get(i);
@@ -205,12 +204,12 @@ public abstract class Container {
 					playerInventory.setCursorStack(itemStack3);
 				}
 
-				this.quickCraftEnd();
+				this.endQuickCraft();
 			} else {
-				this.quickCraftEnd();
+				this.endQuickCraft();
 			}
 		} else if (this.quickCraftButton != 0) {
-			this.quickCraftEnd();
+			this.endQuickCraft();
 		} else if ((slotActionType == SlotActionType.field_7790 || slotActionType == SlotActionType.field_7794) && (j == 0 || j == 1)) {
 			if (i == -999) {
 				if (!playerInventory.getCursorStack().isEmpty()) {
@@ -370,7 +369,9 @@ public abstract class Container {
 				for (int p = 0; p < 2; p++) {
 					for (int q = l; q >= 0 && q < this.slotList.size() && itemStack3x.getAmount() < itemStack3x.getMaxAmount(); q += ox) {
 						Slot slot4 = (Slot)this.slotList.get(q);
-						if (slot4.hasStack() && canInsertItemIntoSlot(slot4, itemStack3x, true) && slot4.canTakeItems(playerEntity) && this.method_7613(itemStack3x, slot4)) {
+						if (slot4.hasStack() && canInsertItemIntoSlot(slot4, itemStack3x, true) && slot4.canTakeItems(playerEntity) && this.canInsertIntoSlot(itemStack3x, slot4)
+							)
+						 {
 							ItemStack itemStack6 = slot4.getStack();
 							if (p != 0 || itemStack6.getAmount() != itemStack6.getMaxAmount()) {
 								int n = Math.min(itemStack3x.getMaxAmount() - itemStack3x.getAmount(), itemStack6.getAmount());
@@ -397,7 +398,7 @@ public abstract class Container {
 		return itemStack.getItem() == itemStack2.getItem() && ItemStack.areTagsEqual(itemStack, itemStack2);
 	}
 
-	public boolean method_7613(ItemStack itemStack, Slot slot) {
+	public boolean canInsertIntoSlot(ItemStack itemStack, Slot slot) {
 		return true;
 	}
 
@@ -540,7 +541,7 @@ public abstract class Container {
 		return i & 3 | (j & 3) << 2;
 	}
 
-	public static boolean method_7600(int i, PlayerEntity playerEntity) {
+	public static boolean shouldQuickCraftContinue(int i, PlayerEntity playerEntity) {
 		if (i == 0) {
 			return true;
 		} else {
@@ -548,7 +549,7 @@ public abstract class Container {
 		}
 	}
 
-	protected void quickCraftEnd() {
+	protected void endQuickCraft() {
 		this.quickCraftButton = 0;
 		this.quickCraftSlots.clear();
 	}

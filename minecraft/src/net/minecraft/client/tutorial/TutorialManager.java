@@ -106,6 +106,6 @@ public class TutorialManager {
 	}
 
 	public static TextComponent getKeybindName(String string) {
-		return new KeybindTextComponent("key." + string).applyFormat(TextFormat.BOLD);
+		return new KeybindTextComponent("key." + string).applyFormat(TextFormat.field_1067);
 	}
 }

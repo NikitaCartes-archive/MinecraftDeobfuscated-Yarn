@@ -21,7 +21,7 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 	private TextComponent field_12597 = new StringTextComponent("");
 	private String nameTagVisibilityRule = AbstractScoreboardTeam.VisibilityRule.ALWAYS.field_1445;
 	private String collisionRule = AbstractScoreboardTeam.CollisionRule.field_1437.field_1436;
-	private TextFormat field_12598 = TextFormat.RESET;
+	private TextFormat field_12598 = TextFormat.field_1070;
 	private final Collection<String> playerList = Lists.<String>newArrayList();
 	private int mode;
 	private int flags;
@@ -106,7 +106,7 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11860(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11099(this);
+		clientPlayPacketListener.onTeam(this);
 	}
 
 	@Environment(EnvType.CLIENT)

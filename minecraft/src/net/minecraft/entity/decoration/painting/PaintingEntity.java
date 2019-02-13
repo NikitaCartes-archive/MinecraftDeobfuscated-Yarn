@@ -38,7 +38,7 @@ public class PaintingEntity extends AbstractDecorationEntity {
 			this.setFacing(direction);
 			if (this.method_6888()) {
 				list.add(paintingMotive);
-				int j = paintingMotive.getWidth() * paintingMotive.getHeight();
+				int j = paintingMotive.getWidth() * paintingMotive.getTextureY();
 				if (j > i) {
 					i = j;
 				}
@@ -50,7 +50,7 @@ public class PaintingEntity extends AbstractDecorationEntity {
 
 			while (iterator.hasNext()) {
 				PaintingMotive paintingMotivex = (PaintingMotive)iterator.next();
-				if (paintingMotivex.getWidth() * paintingMotivex.getHeight() < i) {
+				if (paintingMotivex.getWidth() * paintingMotivex.getTextureY() < i) {
 					iterator.remove();
 				}
 			}
@@ -87,7 +87,7 @@ public class PaintingEntity extends AbstractDecorationEntity {
 
 	@Override
 	public int getHeightPixels() {
-		return this.motive.getHeight();
+		return this.motive.getTextureY();
 	}
 
 	@Override

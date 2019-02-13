@@ -117,11 +117,7 @@ public class StatsScreen extends Screen implements class_452 {
 			this.drawBackground();
 			this.drawStringCentered(this.fontRenderer, I18n.translate("multiplayer.downloadingStats"), this.width / 2, this.height / 2, 16777215);
 			this.drawStringCentered(
-				this.fontRenderer,
-				SPOOKY_PROGRESS_STAGES[(int)(SystemUtil.getMeasuringTimeMs() / 150L % (long)SPOOKY_PROGRESS_STAGES.length)],
-				this.width / 2,
-				this.height / 2 + 9 * 2,
-				16777215
+				this.fontRenderer, field_2668[(int)(SystemUtil.getMeasuringTimeMs() / 150L % (long)field_2668.length)], this.width / 2, this.height / 2 + 9 * 2, 16777215
 			);
 		} else {
 			this.field_2643.draw(i, j, f);
@@ -223,7 +219,7 @@ public class StatsScreen extends Screen implements class_452 {
 			}
 
 			Stat<Identifier> stat = (Stat<Identifier>)this.field_2650.next();
-			TextComponent textComponent = new TranslatableTextComponent("stat." + stat.getValue().toString().replace(':', '.')).applyFormat(TextFormat.GRAY);
+			TextComponent textComponent = new TranslatableTextComponent("stat." + stat.getValue().toString().replace(':', '.')).applyFormat(TextFormat.field_1080);
 			this.drawString(StatsScreen.this.fontRenderer, textComponent.getString(), j + 2, k + 1, i % 2 == 0 ? 16777215 : 9474192);
 			String string = stat.format(StatsScreen.this.field_2647.getStat(stat));
 			this.drawString(

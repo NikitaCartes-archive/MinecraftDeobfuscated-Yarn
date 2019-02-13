@@ -33,9 +33,9 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeItem;
+import net.minecraft.item.FoodItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -117,7 +117,7 @@ public class CatEntity extends TameableEntity {
 		this.goalSelector.add(11, new class_1394(this, 0.8, 1.0000001E-5F));
 		this.goalSelector.add(12, new LookAtEntityGoal(this, PlayerEntity.class, 10.0F));
 		this.targetSelector.add(1, new class_1404(this, RabbitEntity.class, false, null));
-		this.targetSelector.add(1, new class_1404(this, TurtleEntity.class, false, TurtleEntity.field_6921));
+		this.targetSelector.add(1, new class_1404(this, TurtleEntity.class, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
 	}
 
 	public int getOcelotType() {
@@ -158,7 +158,7 @@ public class CatEntity extends TameableEntity {
 		this.dataTracker.startTracking(CAT_TYPE, 1);
 		this.dataTracker.startTracking(field_16284, false);
 		this.dataTracker.startTracking(field_16292, false);
-		this.dataTracker.startTracking(COLLAR_COLOR, DyeColor.RED.getId());
+		this.dataTracker.startTracking(COLLAR_COLOR, DyeColor.field_7964.getId());
 	}
 
 	@Override
@@ -251,7 +251,7 @@ public class CatEntity extends TameableEntity {
 	}
 
 	@Override
-	public boolean method_6121(Entity entity) {
+	public boolean attack(Entity entity) {
 		return entity.damage(DamageSource.mob(this), 3.0F);
 	}
 
@@ -267,7 +267,7 @@ public class CatEntity extends TameableEntity {
 
 	private void method_16085() {
 		if ((this.method_16086() || this.method_16093()) && this.age % 5 == 0) {
-			this.playSound(SoundEvents.field_14741, 0.5F + this.random.nextFloat() - this.random.nextFloat(), 1.0F);
+			this.playSound(SoundEvents.field_14741, 0.6F + 0.4F * (this.random.nextFloat() - this.random.nextFloat()), 1.0F);
 		}
 
 		this.method_16090();
@@ -312,19 +312,21 @@ public class CatEntity extends TameableEntity {
 
 	public CatEntity createChild(PassiveEntity passiveEntity) {
 		CatEntity catEntity = new CatEntity(this.world);
-		if (this.isTamed() && passiveEntity instanceof CatEntity) {
-			catEntity.setOwnerUuid(this.getOwnerUuid());
-			catEntity.setTamed(true);
+		if (passiveEntity instanceof CatEntity) {
 			if (this.random.nextBoolean()) {
 				catEntity.getOcelotType(this.getOcelotType());
 			} else {
 				catEntity.getOcelotType(((CatEntity)passiveEntity).getOcelotType());
 			}
 
-			if (this.random.nextBoolean()) {
-				catEntity.setCollarColor(this.getCollarColor());
-			} else {
-				catEntity.setCollarColor(((CatEntity)passiveEntity).getCollarColor());
+			if (this.isTamed()) {
+				catEntity.setOwnerUuid(this.getOwnerUuid());
+				catEntity.setTamed(true);
+				if (this.random.nextBoolean()) {
+					catEntity.setCollarColor(this.getCollarColor());
+				} else {
+					catEntity.setCollarColor(((CatEntity)passiveEntity).getCollarColor());
+				}
 			}
 		}
 
@@ -380,7 +382,14 @@ public class CatEntity extends TameableEntity {
 						this.setPersistent();
 						return true;
 					}
-				} else if (!this.world.isClient && !this.isBreedingItem(itemStack)) {
+				} else if (this.isBreedingItem(itemStack)) {
+					if (this.getHealth() < this.getHealthMaximum() && item instanceof FoodItem) {
+						this.method_6475(playerEntity, itemStack);
+						FoodItem foodItem = (FoodItem)item;
+						this.heal((float)foodItem.getHungerRestored(itemStack));
+						return true;
+					}
+				} else if (!this.world.isClient) {
 					this.field_6321.method_6311(!this.isSitting());
 				}
 			}
@@ -459,9 +468,11 @@ public class CatEntity extends TameableEntity {
 	static class CatTemptGoal extends TemptGoal {
 		@Nullable
 		private PlayerEntity field_16298;
+		private CatEntity field_17948;
 
-		public CatTemptGoal(MobEntityWithAi mobEntityWithAi, double d, Ingredient ingredient, boolean bl) {
-			super(mobEntityWithAi, d, ingredient, bl);
+		public CatTemptGoal(CatEntity catEntity, double d, Ingredient ingredient, boolean bl) {
+			super(catEntity, d, ingredient, bl);
+			this.field_17948 = catEntity;
 		}
 
 		@Override
@@ -477,6 +488,11 @@ public class CatEntity extends TameableEntity {
 		@Override
 		protected boolean method_16081() {
 			return this.field_16298 != null && this.field_16298.equals(this.field_6617) ? false : super.method_16081();
+		}
+
+		@Override
+		public boolean canStart() {
+			return super.canStart() && !this.field_17948.isTamed();
 		}
 	}
 
@@ -574,7 +590,6 @@ public class CatEntity extends TameableEntity {
 					false
 				);
 			mutable.set(this.entity);
-			this.entity.method_6176().method_6311(true);
 			LootSupplier lootSupplier = this.entity.world.getServer().getLootManager().getSupplier(LootTables.ENTITY_CAT_MORNING_GIFT);
 			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.entity.world)
 				.put(LootContextParameters.field_1232, mutable)

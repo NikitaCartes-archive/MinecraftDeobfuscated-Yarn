@@ -90,6 +90,6 @@ public class PlaySoundIdS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11466(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11104(this);
+		clientPlayPacketListener.onPlaySoundId(this);
 	}
 }

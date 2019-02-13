@@ -39,9 +39,9 @@ public class StuckArrowsFeatureRenderer<T extends LivingEntity, M extends Entity
 				float o = random.nextFloat();
 				float p = random.nextFloat();
 				float q = random.nextFloat();
-				float r = MathHelper.lerp(o, box.field_3645, box.field_3648) / 16.0F;
-				float s = MathHelper.lerp(p, box.field_3644, box.field_3647) / 16.0F;
-				float t = MathHelper.lerp(q, box.field_3643, box.field_3646) / 16.0F;
+				float r = MathHelper.lerp(o, box.xMin, box.xMax) / 16.0F;
+				float s = MathHelper.lerp(p, box.yMin, box.yMax) / 16.0F;
+				float t = MathHelper.lerp(q, box.zMin, box.zMax) / 16.0F;
 				GlStateManager.translatef(r, s, t);
 				o = o * 2.0F - 1.0F;
 				p = p * 2.0F - 1.0F;

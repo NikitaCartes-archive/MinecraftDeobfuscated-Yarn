@@ -225,7 +225,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 		if (i > 0) {
 			this.damage(DamageSource.FALL, (float)i);
 			if (this.hasPassengers()) {
-				for (Entity entity : this.method_5736()) {
+				for (Entity entity : this.getPassengersDeep()) {
 					entity.damage(DamageSource.FALL, (float)i);
 				}
 			}

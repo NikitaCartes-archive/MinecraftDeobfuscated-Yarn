@@ -133,7 +133,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 
 	@Nullable
 	@Override
-	public BlockEntityUpdateS2CPacket method_16886() {
+	public BlockEntityUpdateS2CPacket toUpdatePacket() {
 		return new BlockEntityUpdateS2CPacket(this.pos, 7, this.toInitialChunkDataTag());
 	}
 
@@ -147,7 +147,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 			return false;
 		} else {
 			if (playerEntity.getEntityWorld().isClient) {
-				playerEntity.openStructureBlockGui(this);
+				playerEntity.openStructureBlockScreen(this);
 			}
 
 			return true;

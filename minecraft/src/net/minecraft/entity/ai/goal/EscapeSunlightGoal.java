@@ -9,7 +9,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class EscapeSunlightGoal extends Goal {
-	private final MobEntityWithAi owner;
+	protected final MobEntityWithAi owner;
 	private double targetX;
 	private double targetY;
 	private double targetZ;
@@ -31,18 +31,20 @@ public class EscapeSunlightGoal extends Goal {
 			return false;
 		} else if (!this.world.isSkyVisible(new BlockPos(this.owner.x, this.owner.getBoundingBox().minY, this.owner.z))) {
 			return false;
-		} else if (!this.owner.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
+		} else {
+			return !this.owner.getEquippedStack(EquipmentSlot.HEAD).isEmpty() ? false : this.method_18250();
+		}
+	}
+
+	protected boolean method_18250() {
+		Vec3d vec3d = this.locateShadedPos();
+		if (vec3d == null) {
 			return false;
 		} else {
-			Vec3d vec3d = this.locateShadedPos();
-			if (vec3d == null) {
-				return false;
-			} else {
-				this.targetX = vec3d.x;
-				this.targetY = vec3d.y;
-				this.targetZ = vec3d.z;
-				return true;
-			}
+			this.targetX = vec3d.x;
+			this.targetY = vec3d.y;
+			this.targetZ = vec3d.z;
+			return true;
 		}
 	}
 
@@ -57,13 +59,13 @@ public class EscapeSunlightGoal extends Goal {
 	}
 
 	@Nullable
-	private Vec3d locateShadedPos() {
+	protected Vec3d locateShadedPos() {
 		Random random = this.owner.getRand();
 		BlockPos blockPos = new BlockPos(this.owner.x, this.owner.getBoundingBox().minY, this.owner.z);
 
 		for (int i = 0; i < 10; i++) {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);
-			if (!this.world.isSkyVisible(blockPos2) && this.owner.method_6149(blockPos2) < 0.0F) {
+			if (!this.world.isSkyVisible(blockPos2) && this.owner.getPathfindingFavor(blockPos2) < 0.0F) {
 				return new Vec3d((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
 			}
 		}

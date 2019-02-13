@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LecternBlock;
-import net.minecraft.client.item.TooltipOptions;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -32,7 +32,7 @@ public class WrittenBookItem extends Item {
 		super(settings);
 	}
 
-	public static boolean method_8053(@Nullable CompoundTag compoundTag) {
+	public static boolean isValidBook(@Nullable CompoundTag compoundTag) {
 		if (!WritableBookItem.method_8047(compoundTag)) {
 			return false;
 		} else if (!compoundTag.containsKey("title", 8)) {
@@ -67,15 +67,15 @@ public class WrittenBookItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
 		if (itemStack.hasTag()) {
 			CompoundTag compoundTag = itemStack.getTag();
 			String string = compoundTag.getString("author");
 			if (!ChatUtil.isEmpty(string)) {
-				list.add(new TranslatableTextComponent("book.byAuthor", string).applyFormat(TextFormat.GRAY));
+				list.add(new TranslatableTextComponent("book.byAuthor", string).applyFormat(TextFormat.field_1080));
 			}
 
-			list.add(new TranslatableTextComponent("book.generation." + compoundTag.getInt("generation")).applyFormat(TextFormat.GRAY));
+			list.add(new TranslatableTextComponent("book.generation." + compoundTag.getInt("generation")).applyFormat(TextFormat.field_1080));
 		}
 	}
 
@@ -85,7 +85,7 @@ public class WrittenBookItem extends Item {
 		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.getBlock() == Blocks.field_16330) {
-			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, itemUsageContext.getItemStack()) ? ActionResult.SUCCESS : ActionResult.PASS;
+			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, itemUsageContext.getItemStack()) ? ActionResult.field_5812 : ActionResult.PASS;
 		} else {
 			return ActionResult.PASS;
 		}
@@ -94,16 +94,16 @@ public class WrittenBookItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		playerEntity.openBookEditorGui(itemStack, hand);
+		playerEntity.openEditBookScreen(itemStack, hand);
 		playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
-		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+		return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 	}
 
 	public static boolean resolve(ItemStack itemStack, @Nullable ServerCommandSource serverCommandSource, @Nullable PlayerEntity playerEntity) {
 		CompoundTag compoundTag = itemStack.getTag();
 		if (compoundTag != null && !compoundTag.getBoolean("resolved")) {
 			compoundTag.putBoolean("resolved", true);
-			if (!method_8053(compoundTag)) {
+			if (!isValidBook(compoundTag)) {
 				return false;
 			} else {
 				ListTag listTag = compoundTag.getList("pages", 8);

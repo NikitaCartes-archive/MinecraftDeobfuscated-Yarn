@@ -38,7 +38,7 @@ public class FishHookEntityRenderer extends EntityRenderer<FishHookEntity> {
 			float j = 0.5F;
 			float k = 0.5F;
 			GlStateManager.rotatef(180.0F - this.renderManager.field_4679, 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotatef((float)(this.renderManager.settings.field_1850 == 2 ? -1 : 1) * -this.renderManager.field_4677, 1.0F, 0.0F, 0.0F);
+			GlStateManager.rotatef((float)(this.renderManager.settings.perspective == 2 ? -1 : 1) * -this.renderManager.field_4677, 1.0F, 0.0F, 0.0F);
 			if (this.renderOutlines) {
 				GlStateManager.enableColorMaterial();
 				GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(fishHookEntity));
@@ -74,7 +74,7 @@ public class FishHookEntityRenderer extends EntityRenderer<FishHookEntity> {
 			double u;
 			double v;
 			double w;
-			if ((this.renderManager.settings == null || this.renderManager.settings.field_1850 <= 0) && playerEntity == MinecraftClient.getInstance().player) {
+			if ((this.renderManager.settings == null || this.renderManager.settings.perspective <= 0) && playerEntity == MinecraftClient.getInstance().player) {
 				double x = this.renderManager.settings.fov;
 				x /= 100.0;
 				Vec3d vec3d = new Vec3d((double)l * -0.36 * x, -0.045 * x, 0.4);

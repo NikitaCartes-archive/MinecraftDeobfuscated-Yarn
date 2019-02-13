@@ -36,7 +36,7 @@ public class GlassBottleItem extends Item {
 			AreaEffectCloudEntity areaEffectCloudEntity = (AreaEffectCloudEntity)list.get(0);
 			areaEffectCloudEntity.setRadius(areaEffectCloudEntity.getRadius() - 0.5F);
 			world.playSound(null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_15029, SoundCategory.field_15254, 1.0F, 1.0F);
-			return new TypedActionResult<>(ActionResult.SUCCESS, this.method_7725(itemStack, playerEntity, new ItemStack(Items.field_8613)));
+			return new TypedActionResult<>(ActionResult.field_5812, this.method_7725(itemStack, playerEntity, new ItemStack(Items.field_8613)));
 		} else {
 			HitResult hitResult = getHitResult(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
 			if (hitResult.getType() == HitResult.Type.NONE) {
@@ -51,7 +51,7 @@ public class GlassBottleItem extends Item {
 					if (world.getFluidState(blockPos).matches(FluidTags.field_15517)) {
 						world.playSound(playerEntity, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_14779, SoundCategory.field_15254, 1.0F, 1.0F);
 						return new TypedActionResult<>(
-							ActionResult.SUCCESS, this.method_7725(itemStack, playerEntity, PotionUtil.setPotion(new ItemStack(Items.field_8574), Potions.field_8991))
+							ActionResult.field_5812, this.method_7725(itemStack, playerEntity, PotionUtil.setPotion(new ItemStack(Items.field_8574), Potions.field_8991))
 						);
 					}
 				}

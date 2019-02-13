@@ -26,6 +26,6 @@ public class QueryPongS2CPacket implements Packet<ClientQueryPacketListener> {
 	}
 
 	public void method_12670(ClientQueryPacketListener clientQueryPacketListener) {
-		clientQueryPacketListener.method_12666(this);
+		clientQueryPacketListener.onPong(this);
 	}
 }

@@ -134,7 +134,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 				}
 			} else {
 				Potion potion = null;
-				if (this.random.nextFloat() < 0.15F && this.method_5777(FluidTags.field_15517) && !this.hasPotionEffect(StatusEffects.field_5923)) {
+				if (this.random.nextFloat() < 0.15F && this.isInFluid(FluidTags.field_15517) && !this.hasPotionEffect(StatusEffects.field_5923)) {
 					potion = Potions.field_8994;
 				} else if (this.random.nextFloat() < 0.15F
 					&& (this.isOnFire() || this.method_6081() != null && this.method_6081().isFire())

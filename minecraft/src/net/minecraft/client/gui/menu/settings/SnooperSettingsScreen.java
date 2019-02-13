@@ -19,10 +19,10 @@ public class SnooperSettingsScreen extends Screen {
 	private final GameOptions settings;
 	private final List<String> field_2569 = Lists.<String>newArrayList();
 	private final List<String> field_2567 = Lists.<String>newArrayList();
-	private String field_2571;
-	private String[] field_2572;
-	private SnooperSettingsScreen.class_439 field_2573;
-	private ButtonWidget field_2568;
+	private String title;
+	private String[] description;
+	private SnooperSettingsScreen.SnooperInfoList snooperInfoList;
+	private ButtonWidget allowSnooperButton;
 
 	public SnooperSettingsScreen(Screen screen, GameOptions gameOptions) {
 		this.parent = screen;
@@ -31,12 +31,12 @@ public class SnooperSettingsScreen extends Screen {
 
 	@Override
 	public GuiEventListener getFocused() {
-		return this.field_2573;
+		return this.snooperInfoList;
 	}
 
 	@Override
 	protected void onInitialized() {
-		this.field_2571 = I18n.translate("options.snooper.title");
+		this.title = I18n.translate("options.snooper.title");
 		String string = I18n.translate("options.snooper.desc");
 		List<String> list = Lists.<String>newArrayList();
 
@@ -44,18 +44,18 @@ public class SnooperSettingsScreen extends Screen {
 			list.add(string2);
 		}
 
-		this.field_2572 = (String[])list.toArray(new String[list.size()]);
+		this.description = (String[])list.toArray(new String[list.size()]);
 		this.field_2569.clear();
 		this.field_2567.clear();
 		ButtonWidget buttonWidget = new ButtonWidget(1, this.width / 2 - 152, this.height - 30, 150, 20, this.settings.getTranslatedName(GameOptions.Option.SNOOPER)) {
 			@Override
 			public void onPressed(double d, double e) {
-				SnooperSettingsScreen.this.settings.updateOption(GameOptions.Option.SNOOPER, 1);
-				SnooperSettingsScreen.this.field_2568.text = SnooperSettingsScreen.this.settings.getTranslatedName(GameOptions.Option.SNOOPER);
+				SnooperSettingsScreen.this.settings.setInteger(GameOptions.Option.SNOOPER, 1);
+				SnooperSettingsScreen.this.allowSnooperButton.setText(SnooperSettingsScreen.this.settings.getTranslatedName(GameOptions.Option.SNOOPER));
 			}
 		};
 		buttonWidget.enabled = false;
-		this.field_2568 = this.addButton(buttonWidget);
+		this.allowSnooperButton = this.addButton(buttonWidget);
 		this.addButton(new ButtonWidget(2, this.width / 2 + 2, this.height - 30, 150, 20, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
@@ -68,28 +68,28 @@ public class SnooperSettingsScreen extends Screen {
 
 		for (Entry<String, String> entry : new TreeMap(this.client.getSnooper().getEntryListClient()).entrySet()) {
 			this.field_2569.add((bl ? "C " : "") + (String)entry.getKey());
-			this.field_2567.add(this.fontRenderer.method_1714((String)entry.getValue(), this.width - 220));
+			this.field_2567.add(this.fontRenderer.trimToWidth((String)entry.getValue(), this.width - 220));
 		}
 
 		if (bl) {
 			for (Entry<String, String> entry : new TreeMap(this.client.getServer().getSnooper().getEntryListClient()).entrySet()) {
 				this.field_2569.add("S " + (String)entry.getKey());
-				this.field_2567.add(this.fontRenderer.method_1714((String)entry.getValue(), this.width - 220));
+				this.field_2567.add(this.fontRenderer.trimToWidth((String)entry.getValue(), this.width - 220));
 			}
 		}
 
-		this.field_2573 = new SnooperSettingsScreen.class_439();
-		this.listeners.add(this.field_2573);
+		this.snooperInfoList = new SnooperSettingsScreen.SnooperInfoList();
+		this.listeners.add(this.snooperInfoList);
 	}
 
 	@Override
 	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		this.field_2573.draw(i, j, f);
-		this.drawStringCentered(this.fontRenderer, this.field_2571, this.width / 2, 8, 16777215);
+		this.snooperInfoList.draw(i, j, f);
+		this.drawStringCentered(this.fontRenderer, this.title, this.width / 2, 8, 16777215);
 		int k = 22;
 
-		for (String string : this.field_2572) {
+		for (String string : this.description) {
 			this.drawStringCentered(this.fontRenderer, string, this.width / 2, k, 8421504);
 			k += 9;
 		}
@@ -98,8 +98,8 @@ public class SnooperSettingsScreen extends Screen {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class class_439 extends AbstractListWidget {
-		public class_439() {
+	class SnooperInfoList extends AbstractListWidget {
+		public SnooperInfoList() {
 			super(
 				SnooperSettingsScreen.this.client, SnooperSettingsScreen.this.width, SnooperSettingsScreen.this.height, 80, SnooperSettingsScreen.this.height - 40, 9 + 1
 			);

@@ -93,6 +93,6 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public void appendCommandFeedback(TextComponent textComponent) {
-		MinecraftClient.getInstance().inGameHud.getHudChat().addMessage(textComponent);
+		MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(textComponent);
 	}
 }

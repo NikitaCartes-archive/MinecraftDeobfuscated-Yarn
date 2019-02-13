@@ -36,7 +36,7 @@ public class RemoveEntityEffectS2CPacket implements Packet<ClientPlayPacketListe
 	}
 
 	public void method_11769(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11119(this);
+		clientPlayPacketListener.onRemoveEntityEffect(this);
 	}
 
 	@Nullable

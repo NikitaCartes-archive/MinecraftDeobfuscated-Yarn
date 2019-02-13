@@ -50,14 +50,14 @@ public final class LevelSelectEntryWidget extends EntryListWidget.Entry<LevelSel
 	private final LevelSelectScreen guiLevelSelect;
 	private final LevelSummary levelSummary;
 	private final Identifier iconLocation;
-	private final LevelListWidget field_3241;
+	private final LevelListWidget levelList;
 	private File iconFile;
 	@Nullable
 	private final NativeImageBackedTexture levelIcon;
 	private long field_3248;
 
 	public LevelSelectEntryWidget(LevelListWidget levelListWidget, LevelSummary levelSummary, LevelStorage levelStorage) {
-		this.field_3241 = levelListWidget;
+		this.levelList = levelListWidget;
 		this.guiLevelSelect = levelListWidget.method_2752();
 		this.levelSummary = levelSummary;
 		this.client = MinecraftClient.getInstance();
@@ -86,7 +86,7 @@ public final class LevelSelectEntryWidget extends EntryListWidget.Entry<LevelSel
 		} else {
 			string3 = I18n.translate("gameMode." + this.levelSummary.getGameMode().getName());
 			if (this.levelSummary.isHardcore()) {
-				string3 = TextFormat.DARK_RED + I18n.translate("gameMode.hardcore") + TextFormat.RESET;
+				string3 = TextFormat.field_1079 + I18n.translate("gameMode.hardcore") + TextFormat.field_1070;
 			}
 
 			if (this.levelSummary.hasCheats()) {
@@ -96,18 +96,18 @@ public final class LevelSelectEntryWidget extends EntryListWidget.Entry<LevelSel
 			String string4 = this.levelSummary.getVersionTextComponent().getFormattedText();
 			if (this.levelSummary.isDifferentVersion()) {
 				if (this.levelSummary.isFutureLevel()) {
-					string3 = string3 + ", " + I18n.translate("selectWorld.version") + " " + TextFormat.RED + string4 + TextFormat.RESET;
+					string3 = string3 + ", " + I18n.translate("selectWorld.version") + " " + TextFormat.field_1061 + string4 + TextFormat.field_1070;
 				} else {
-					string3 = string3 + ", " + I18n.translate("selectWorld.version") + " " + TextFormat.ITALIC + string4 + TextFormat.RESET;
+					string3 = string3 + ", " + I18n.translate("selectWorld.version") + " " + TextFormat.field_1056 + string4 + TextFormat.field_1070;
 				}
 			} else {
 				string3 = string3 + ", " + I18n.translate("selectWorld.version") + " " + string4;
 			}
 		}
 
-		this.client.fontRenderer.draw(string, (float)(n + 32 + 3), (float)(m + 1), 16777215);
-		this.client.fontRenderer.draw(string2, (float)(n + 32 + 3), (float)(m + 9 + 3), 8421504);
-		this.client.fontRenderer.draw(string3, (float)(n + 32 + 3), (float)(m + 9 + 9 + 3), 8421504);
+		this.client.textRenderer.draw(string, (float)(n + 32 + 3), (float)(m + 1), 16777215);
+		this.client.textRenderer.draw(string2, (float)(n + 32 + 3), (float)(m + 9 + 3), 8421504);
+		this.client.textRenderer.draw(string3, (float)(n + 32 + 3), (float)(m + 9 + 9 + 3), 8421504);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(this.levelIcon != null ? this.iconLocation : UNKNOWN_SERVER_TEX);
 		GlStateManager.enableBlend();
@@ -125,18 +125,18 @@ public final class LevelSelectEntryWidget extends EntryListWidget.Entry<LevelSel
 					Drawable.drawTexturedRect(n, m, 96.0F, (float)p, 32, 32, 256.0F, 256.0F);
 					if (o < 32) {
 						TextComponent textComponent = new TranslatableTextComponent("selectWorld.tooltip.unsupported", this.levelSummary.getVersionTextComponent())
-							.applyFormat(TextFormat.RED);
-						this.guiLevelSelect.method_2739(this.client.fontRenderer.wrapStringToWidth(textComponent.getFormattedText(), 175));
+							.applyFormat(TextFormat.field_1061);
+						this.guiLevelSelect.method_2739(this.client.textRenderer.wrapStringToWidth(textComponent.getFormattedText(), 175));
 					}
 				} else if (this.levelSummary.isFutureLevel()) {
 					Drawable.drawTexturedRect(n, m, 96.0F, (float)p, 32, 32, 256.0F, 256.0F);
 					if (o < 32) {
 						this.guiLevelSelect
 							.method_2739(
-								TextFormat.RED
+								TextFormat.field_1061
 									+ I18n.translate("selectWorld.tooltip.fromNewerVersion1")
 									+ "\n"
-									+ TextFormat.RED
+									+ TextFormat.field_1061
 									+ I18n.translate("selectWorld.tooltip.fromNewerVersion2")
 							);
 					}
@@ -145,7 +145,11 @@ public final class LevelSelectEntryWidget extends EntryListWidget.Entry<LevelSel
 					if (o < 32) {
 						this.guiLevelSelect
 							.method_2739(
-								TextFormat.GOLD + I18n.translate("selectWorld.tooltip.snapshot1") + "\n" + TextFormat.GOLD + I18n.translate("selectWorld.tooltip.snapshot2")
+								TextFormat.field_1065
+									+ I18n.translate("selectWorld.tooltip.snapshot1")
+									+ "\n"
+									+ TextFormat.field_1065
+									+ I18n.translate("selectWorld.tooltip.snapshot2")
 							);
 					}
 				}
@@ -157,7 +161,7 @@ public final class LevelSelectEntryWidget extends EntryListWidget.Entry<LevelSel
 
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
-		this.field_3241.method_2751(this.method_1908());
+		this.levelList.method_2751(this.method_1908());
 		if (d - (double)this.getX() <= 32.0) {
 			this.loadLevel();
 			return true;
@@ -233,7 +237,7 @@ public final class LevelSelectEntryWidget extends EntryListWidget.Entry<LevelSel
 							this.client.openScreen(new WorkingScreen());
 							LevelStorage levelStorage = this.client.getLevelStorage();
 							levelStorage.deleteLevel(this.levelSummary.getName());
-							this.field_3241.filter(() -> this.guiLevelSelect.searchBox.getText(), true);
+							this.levelList.filter(() -> this.guiLevelSelect.searchBox.getText(), true);
 						}
 
 						this.client.openScreen(this.guiLevelSelect);
@@ -250,7 +254,7 @@ public final class LevelSelectEntryWidget extends EntryListWidget.Entry<LevelSel
 	public void method_2756() {
 		this.client.openScreen(new BackupLevelScreen((bl, i) -> {
 			if (bl) {
-				this.field_3241.filter(() -> this.guiLevelSelect.searchBox.getText(), true);
+				this.levelList.filter(() -> this.guiLevelSelect.searchBox.getText(), true);
 			}
 
 			this.client.openScreen(this.guiLevelSelect);

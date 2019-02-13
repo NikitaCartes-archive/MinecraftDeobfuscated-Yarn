@@ -17,7 +17,7 @@ public class BiomeGroupToBiomeLayer implements IdentitySamplingLayer {
 	private static final int BADLANDS_PLATEAU_ID = Registry.BIOME.getRawId(Biomes.field_9433);
 	private static final int WOODED_BADLANDS_PLATEAU_ID = Registry.BIOME.getRawId(Biomes.field_9410);
 	private static final int MUSHROOM_FIELDS_ID = Registry.BIOME.getRawId(Biomes.field_9462);
-	private static final int PLAINS_ID = Registry.BIOME.getRawId(Biomes.biome);
+	private static final int PLAINS_ID = Registry.BIOME.getRawId(Biomes.field_9451);
 	private static final int GIANT_TREE_TAIGA_ID = Registry.BIOME.getRawId(Biomes.field_9477);
 	private static final int DARK_FOREST_ID = Registry.BIOME.getRawId(Biomes.field_9475);
 	private static final int SAVANNA_ID = Registry.BIOME.getRawId(Biomes.field_9449);

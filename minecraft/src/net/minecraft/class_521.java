@@ -20,10 +20,10 @@ public abstract class class_521 extends EntryListWidget<class_520> {
 
 	@Override
 	protected void method_1940(int i, int j, Tessellator tessellator) {
-		String string = TextFormat.UNDERLINE + "" + TextFormat.BOLD + this.method_2689();
+		String string = TextFormat.field_1073 + "" + TextFormat.field_1067 + this.method_2689();
 		this.field_3166
-			.fontRenderer
-			.draw(string, (float)(i + this.width / 2 - this.field_3166.fontRenderer.getStringWidth(string) / 2), (float)Math.min(this.y1 + 3, j), 16777215);
+			.textRenderer
+			.draw(string, (float)(i + this.width / 2 - this.field_3166.textRenderer.getStringWidth(string) / 2), (float)Math.min(this.y1 + 3, j), 16777215);
 	}
 
 	protected abstract String method_2689();

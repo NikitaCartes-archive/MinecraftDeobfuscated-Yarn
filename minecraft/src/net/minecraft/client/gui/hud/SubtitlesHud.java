@@ -25,7 +25,7 @@ public class SubtitlesHud extends Drawable implements ListenerSoundInstance {
 		this.client = minecraftClient;
 	}
 
-	public void method_1957() {
+	public void draw() {
 		if (!this.enabled && this.client.options.showSubtitles) {
 			this.client.getSoundLoader().registerListener(this);
 			this.enabled = true;
@@ -57,14 +57,14 @@ public class SubtitlesHud extends Drawable implements ListenerSoundInstance {
 				if (subtitleEntry.getTime() + 3000L <= SystemUtil.getMeasuringTimeMs()) {
 					iterator.remove();
 				} else {
-					j = Math.max(j, this.client.fontRenderer.getStringWidth(subtitleEntry.getText()));
+					j = Math.max(j, this.client.textRenderer.getStringWidth(subtitleEntry.getText()));
 				}
 			}
 
-			j += this.client.fontRenderer.getStringWidth("<")
-				+ this.client.fontRenderer.getStringWidth(" ")
-				+ this.client.fontRenderer.getStringWidth(">")
-				+ this.client.fontRenderer.getStringWidth(" ");
+			j += this.client.textRenderer.getStringWidth("<")
+				+ this.client.textRenderer.getStringWidth(" ")
+				+ this.client.textRenderer.getStringWidth(">")
+				+ this.client.textRenderer.getStringWidth(" ");
 
 			for (SubtitlesHud.SubtitleEntry subtitleEntry : this.entries) {
 				int k = 255;
@@ -77,7 +77,7 @@ public class SubtitlesHud extends Drawable implements ListenerSoundInstance {
 				int m = 9;
 				int n = m / 2;
 				float f = 1.0F;
-				int o = this.client.fontRenderer.getStringWidth(string);
+				int o = this.client.textRenderer.getStringWidth(string);
 				int p = MathHelper.floor(MathHelper.lerpClamped(255.0, 75.0, (double)((float)(SystemUtil.getMeasuringTimeMs() - subtitleEntry.getTime()) / 3000.0F)));
 				int q = p << 16 | p << 8 | p;
 				GlStateManager.pushMatrix();
@@ -91,13 +91,13 @@ public class SubtitlesHud extends Drawable implements ListenerSoundInstance {
 				GlStateManager.enableBlend();
 				if (!bl) {
 					if (d > 0.0) {
-						this.client.fontRenderer.draw(">", (float)(l - this.client.fontRenderer.getStringWidth(">")), (float)(-n), q + -16777216);
+						this.client.textRenderer.draw(">", (float)(l - this.client.textRenderer.getStringWidth(">")), (float)(-n), q + -16777216);
 					} else if (d < 0.0) {
-						this.client.fontRenderer.draw("<", (float)(-l), (float)(-n), q + -16777216);
+						this.client.textRenderer.draw("<", (float)(-l), (float)(-n), q + -16777216);
 					}
 				}
 
-				this.client.fontRenderer.draw(string, (float)(-o / 2), (float)(-n), q + -16777216);
+				this.client.textRenderer.draw(string, (float)(-o / 2), (float)(-n), q + -16777216);
 				GlStateManager.popMatrix();
 				i++;
 			}

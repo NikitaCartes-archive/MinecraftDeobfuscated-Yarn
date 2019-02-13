@@ -44,7 +44,7 @@ public class AnvilScreen extends ContainerScreen<AnvilContainer> implements Cont
 		this.nameField.method_1860(-1);
 		this.nameField.setHasBorder(false);
 		this.nameField.setMaxLength(35);
-		this.nameField.setChangedListener(this::method_2403);
+		this.nameField.setChangedListener(this::onRenamed);
 		this.listeners.add(this.nameField);
 		this.container.addListener(this);
 	}
@@ -68,7 +68,7 @@ public class AnvilScreen extends ContainerScreen<AnvilContainer> implements Cont
 		GlStateManager.disableLighting();
 		GlStateManager.disableBlend();
 		this.fontRenderer.draw(this.name.getFormattedText(), 60.0F, 6.0F, 4210752);
-		int k = this.container.method_17369();
+		int k = this.container.getLevelCost();
 		if (k > 0) {
 			int l = 8453920;
 			boolean bl = true;
@@ -93,7 +93,7 @@ public class AnvilScreen extends ContainerScreen<AnvilContainer> implements Cont
 		GlStateManager.enableLighting();
 	}
 
-	private void method_2403(int i, String string) {
+	private void onRenamed(int i, String string) {
 		if (!string.isEmpty()) {
 			String string2 = string;
 			Slot slot = this.container.getSlot(0);
@@ -110,7 +110,7 @@ public class AnvilScreen extends ContainerScreen<AnvilContainer> implements Cont
 	public void draw(int i, int j, float f) {
 		this.drawBackground();
 		super.draw(i, j, f);
-		this.drawMousoverTooltip(i, j);
+		this.drawMouseoverTooltip(i, j);
 		GlStateManager.disableLighting();
 		GlStateManager.disableBlend();
 		this.nameField.render(i, j, f);

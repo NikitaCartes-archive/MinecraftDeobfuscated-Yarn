@@ -1,7 +1,7 @@
 package net.minecraft.util;
 
 public enum ActionResult {
-	SUCCESS,
+	field_5812,
 	PASS,
-	FAILURE;
+	field_5814;
 }

@@ -23,8 +23,8 @@ public class ChatHud extends Drawable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final MinecraftClient client;
 	private final List<String> field_2063 = Lists.<String>newArrayList();
-	private final List<ChatHudLine> field_2061 = Lists.<ChatHudLine>newArrayList();
-	private final List<ChatHudLine> field_2064 = Lists.<ChatHudLine>newArrayList();
+	private final List<ChatHudLine> messages = Lists.<ChatHudLine>newArrayList();
+	private final List<ChatHudLine> visibleMessages = Lists.<ChatHudLine>newArrayList();
 	private int field_2066;
 	private boolean field_2067;
 
@@ -32,10 +32,10 @@ public class ChatHud extends Drawable {
 		this.client = minecraftClient;
 	}
 
-	public void method_1805(int i) {
+	public void draw(int i) {
 		if (this.client.options.chatVisibility != PlayerEntity.ChatVisibility.HIDDEN) {
-			int j = this.method_1813();
-			int k = this.field_2064.size();
+			int j = this.getVisibleLineCount();
+			int k = this.visibleMessages.size();
 			double d = this.client.options.chatOpacity * 0.9F + 0.1F;
 			if (k > 0) {
 				boolean bl = false;
@@ -50,8 +50,8 @@ public class ChatHud extends Drawable {
 				GlStateManager.scaled(e, e, 1.0);
 				int m = 0;
 
-				for (int n = 0; n + this.field_2066 < this.field_2064.size() && n < j; n++) {
-					ChatHudLine chatHudLine = (ChatHudLine)this.field_2064.get(n + this.field_2066);
+				for (int n = 0; n + this.field_2066 < this.visibleMessages.size() && n < j; n++) {
+					ChatHudLine chatHudLine = (ChatHudLine)this.visibleMessages.get(n + this.field_2066);
 					if (chatHudLine != null) {
 						int o = i - chatHudLine.getTickCreated();
 						if (o < 200 || bl) {
@@ -73,7 +73,7 @@ public class ChatHud extends Drawable {
 								drawRect(-2, r - 9, 0 + l + 4, r, p / 2 << 24);
 								String string = chatHudLine.getContents().getFormattedText();
 								GlStateManager.enableBlend();
-								this.client.fontRenderer.drawWithShadow(string, 0.0F, (float)(r - 8), 16777215 + (p << 24));
+								this.client.textRenderer.drawWithShadow(string, 0.0F, (float)(r - 8), 16777215 + (p << 24));
 								GlStateManager.disableAlphaTest();
 								GlStateManager.disableBlend();
 							}
@@ -102,8 +102,8 @@ public class ChatHud extends Drawable {
 	}
 
 	public void clear(boolean bl) {
-		this.field_2064.clear();
-		this.field_2061.clear();
+		this.visibleMessages.clear();
+		this.messages.clear();
 		if (bl) {
 			this.field_2063.clear();
 		}
@@ -124,7 +124,7 @@ public class ChatHud extends Drawable {
 		}
 
 		int k = MathHelper.floor((double)this.getWidth() / this.getScale());
-		List<TextComponent> list = TextComponentUtil.wrapLines(textComponent, k, this.client.fontRenderer, false, false);
+		List<TextComponent> list = TextComponentUtil.wrapLines(textComponent, k, this.client.textRenderer, false, false);
 		boolean bl2 = this.isChatFocused();
 
 		for (TextComponent textComponent2 : list) {
@@ -133,28 +133,28 @@ public class ChatHud extends Drawable {
 				this.method_1802(1.0);
 			}
 
-			this.field_2064.add(0, new ChatHudLine(j, textComponent2, i));
+			this.visibleMessages.add(0, new ChatHudLine(j, textComponent2, i));
 		}
 
-		while (this.field_2064.size() > 100) {
-			this.field_2064.remove(this.field_2064.size() - 1);
+		while (this.visibleMessages.size() > 100) {
+			this.visibleMessages.remove(this.visibleMessages.size() - 1);
 		}
 
 		if (!bl) {
-			this.field_2061.add(0, new ChatHudLine(j, textComponent, i));
+			this.messages.add(0, new ChatHudLine(j, textComponent, i));
 
-			while (this.field_2061.size() > 100) {
-				this.field_2061.remove(this.field_2061.size() - 1);
+			while (this.messages.size() > 100) {
+				this.messages.remove(this.messages.size() - 1);
 			}
 		}
 	}
 
 	public void reset() {
-		this.field_2064.clear();
+		this.visibleMessages.clear();
 		this.method_1820();
 
-		for (int i = this.field_2061.size() - 1; i >= 0; i--) {
-			ChatHudLine chatHudLine = (ChatHudLine)this.field_2061.get(i);
+		for (int i = this.messages.size() - 1; i >= 0; i--) {
+			ChatHudLine chatHudLine = (ChatHudLine)this.messages.get(i);
 			this.addMessage(chatHudLine.getContents(), chatHudLine.getId(), chatHudLine.getTickCreated(), true);
 		}
 	}
@@ -176,9 +176,9 @@ public class ChatHud extends Drawable {
 
 	public void method_1802(double d) {
 		this.field_2066 = (int)((double)this.field_2066 + d);
-		int i = this.field_2064.size();
-		if (this.field_2066 > i - this.method_1813()) {
-			this.field_2066 = i - this.method_1813();
+		int i = this.visibleMessages.size();
+		if (this.field_2066 > i - this.getVisibleLineCount()) {
+			this.field_2066 = i - this.getVisibleLineCount();
 		}
 
 		if (this.field_2066 <= 0) {
@@ -188,7 +188,7 @@ public class ChatHud extends Drawable {
 	}
 
 	@Nullable
-	public TextComponent method_1816(double d, double e) {
+	public TextComponent getTextComponentAt(double d, double e) {
 		if (!this.isChatFocused()) {
 			return null;
 		} else {
@@ -198,16 +198,16 @@ public class ChatHud extends Drawable {
 			g = (double)MathHelper.floor(g / f);
 			h = (double)MathHelper.floor(h / f);
 			if (!(g < 0.0) && !(h < 0.0)) {
-				int i = Math.min(this.method_1813(), this.field_2064.size());
+				int i = Math.min(this.getVisibleLineCount(), this.visibleMessages.size());
 				if (g <= (double)MathHelper.floor((double)this.getWidth() / this.getScale()) && h < (double)(9 * i + i)) {
 					int j = (int)(h / 9.0 + (double)this.field_2066);
-					if (j >= 0 && j < this.field_2064.size()) {
-						ChatHudLine chatHudLine = (ChatHudLine)this.field_2064.get(j);
+					if (j >= 0 && j < this.visibleMessages.size()) {
+						ChatHudLine chatHudLine = (ChatHudLine)this.visibleMessages.get(j);
 						int k = 0;
 
 						for (TextComponent textComponent : chatHudLine.getContents()) {
 							if (textComponent instanceof StringTextComponent) {
-								k += this.client.fontRenderer.getStringWidth(TextComponentUtil.method_1849(((StringTextComponent)textComponent).getTextField(), false));
+								k += this.client.textRenderer.getStringWidth(TextComponentUtil.method_1849(((StringTextComponent)textComponent).getTextField(), false));
 								if ((double)k > g) {
 									return textComponent;
 								}
@@ -230,7 +230,7 @@ public class ChatHud extends Drawable {
 	}
 
 	public void removeMessage(int i) {
-		Iterator<ChatHudLine> iterator = this.field_2064.iterator();
+		Iterator<ChatHudLine> iterator = this.visibleMessages.iterator();
 
 		while (iterator.hasNext()) {
 			ChatHudLine chatHudLine = (ChatHudLine)iterator.next();
@@ -239,7 +239,7 @@ public class ChatHud extends Drawable {
 			}
 		}
 
-		iterator = this.field_2061.iterator();
+		iterator = this.messages.iterator();
 
 		while (iterator.hasNext()) {
 			ChatHudLine chatHudLine = (ChatHudLine)iterator.next();
@@ -251,30 +251,30 @@ public class ChatHud extends Drawable {
 	}
 
 	public int getWidth() {
-		return method_1806(this.client.options.chatWidth);
+		return getWidth(this.client.options.chatWidth);
 	}
 
 	public int getHeight() {
-		return method_1818(this.isChatFocused() ? this.client.options.chatHeightFocused : this.client.options.chatHeightUnfocused);
+		return getHeight(this.isChatFocused() ? this.client.options.chatHeightFocused : this.client.options.chatHeightUnfocused);
 	}
 
 	public double getScale() {
 		return this.client.options.chatScale;
 	}
 
-	public static int method_1806(double d) {
+	public static int getWidth(double d) {
 		int i = 320;
 		int j = 40;
 		return MathHelper.floor(d * 280.0 + 40.0);
 	}
 
-	public static int method_1818(double d) {
+	public static int getHeight(double d) {
 		int i = 180;
 		int j = 20;
 		return MathHelper.floor(d * 160.0 + 20.0);
 	}
 
-	public int method_1813() {
+	public int getVisibleLineCount() {
 		return this.getHeight() / 9;
 	}
 }

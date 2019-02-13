@@ -55,21 +55,21 @@ import net.minecraft.world.loot.LootTables;
 public class SheepEntity extends AnimalEntity {
 	private static final TrackedData<Byte> COLOR = DataTracker.registerData(SheepEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final Map<DyeColor, ItemProvider> DROPS = SystemUtil.consume(Maps.newEnumMap(DyeColor.class), enumMap -> {
-		enumMap.put(DyeColor.WHITE, Blocks.field_10446);
-		enumMap.put(DyeColor.ORANGE, Blocks.field_10095);
-		enumMap.put(DyeColor.MAGENTA, Blocks.field_10215);
-		enumMap.put(DyeColor.LIGHT_BLUE, Blocks.field_10294);
-		enumMap.put(DyeColor.YELLOW, Blocks.field_10490);
-		enumMap.put(DyeColor.LIME, Blocks.field_10028);
-		enumMap.put(DyeColor.PINK, Blocks.field_10459);
-		enumMap.put(DyeColor.GRAY, Blocks.field_10423);
-		enumMap.put(DyeColor.LIGHT_GRAY, Blocks.field_10222);
-		enumMap.put(DyeColor.CYAN, Blocks.field_10619);
-		enumMap.put(DyeColor.PURPLE, Blocks.field_10259);
-		enumMap.put(DyeColor.BLUE, Blocks.field_10514);
-		enumMap.put(DyeColor.BROWN, Blocks.field_10113);
-		enumMap.put(DyeColor.GREEN, Blocks.field_10170);
-		enumMap.put(DyeColor.RED, Blocks.field_10314);
+		enumMap.put(DyeColor.field_7952, Blocks.field_10446);
+		enumMap.put(DyeColor.field_7946, Blocks.field_10095);
+		enumMap.put(DyeColor.field_7958, Blocks.field_10215);
+		enumMap.put(DyeColor.field_7951, Blocks.field_10294);
+		enumMap.put(DyeColor.field_7947, Blocks.field_10490);
+		enumMap.put(DyeColor.field_7961, Blocks.field_10028);
+		enumMap.put(DyeColor.field_7954, Blocks.field_10459);
+		enumMap.put(DyeColor.field_7944, Blocks.field_10423);
+		enumMap.put(DyeColor.field_7967, Blocks.field_10222);
+		enumMap.put(DyeColor.field_7955, Blocks.field_10619);
+		enumMap.put(DyeColor.field_7945, Blocks.field_10259);
+		enumMap.put(DyeColor.field_7966, Blocks.field_10514);
+		enumMap.put(DyeColor.field_7957, Blocks.field_10113);
+		enumMap.put(DyeColor.field_7942, Blocks.field_10170);
+		enumMap.put(DyeColor.field_7964, Blocks.field_10314);
 		enumMap.put(DyeColor.BLACK, Blocks.field_10146);
 	});
 	private static final Map<DyeColor, float[]> COLORS = Maps.newEnumMap(
@@ -79,7 +79,7 @@ public class SheepEntity extends AnimalEntity {
 	private EatGrassGoal eatGrassGoal;
 
 	private static float[] method_6630(DyeColor dyeColor) {
-		if (dyeColor == DyeColor.WHITE) {
+		if (dyeColor == DyeColor.field_7952) {
 			return new float[]{0.9019608F, 0.9019608F, 0.9019608F};
 		} else {
 			float[] fs = dyeColor.getColorComponents();
@@ -145,36 +145,36 @@ public class SheepEntity extends AnimalEntity {
 			return this.getType().getLootTableId();
 		} else {
 			switch (this.getColor()) {
-				case WHITE:
+				case field_7952:
 				default:
 					return LootTables.ENTITY_SHEEP_WHITE;
-				case ORANGE:
+				case field_7946:
 					return LootTables.ENTITY_SHEEP_ORANGE;
-				case MAGENTA:
+				case field_7958:
 					return LootTables.ENTITY_SHEEP_MAGENTA;
-				case LIGHT_BLUE:
+				case field_7951:
 					return LootTables.ENTITY_SHEEP_LIGHT_BLUE;
-				case YELLOW:
+				case field_7947:
 					return LootTables.ENTITY_SHEEP_YELLOW;
-				case LIME:
+				case field_7961:
 					return LootTables.ENTITY_SHEEP_LIME;
-				case PINK:
+				case field_7954:
 					return LootTables.ENTITY_SHEEP_PINK;
-				case GRAY:
+				case field_7944:
 					return LootTables.ENTITY_SHEEP_GRAY;
-				case LIGHT_GRAY:
+				case field_7967:
 					return LootTables.ENTITY_SHEEP_LIGHT_GRAY;
-				case CYAN:
+				case field_7955:
 					return LootTables.ENTITY_SHEEP_CYAN;
-				case PURPLE:
+				case field_7945:
 					return LootTables.ENTITY_SHEEP_PURPLE;
-				case BLUE:
+				case field_7966:
 					return LootTables.ENTITY_SHEEP_BLUE;
-				case BROWN:
+				case field_7957:
 					return LootTables.ENTITY_SHEEP_BROWN;
-				case GREEN:
+				case field_7942:
 					return LootTables.ENTITY_SHEEP_GREEN;
-				case RED:
+				case field_7964:
 					return LootTables.ENTITY_SHEEP_RED;
 				case BLACK:
 					return LootTables.ENTITY_SHEEP_BLACK;
@@ -303,13 +303,13 @@ public class SheepEntity extends AnimalEntity {
 		if (i < 5) {
 			return DyeColor.BLACK;
 		} else if (i < 10) {
-			return DyeColor.GRAY;
+			return DyeColor.field_7944;
 		} else if (i < 15) {
-			return DyeColor.LIGHT_GRAY;
+			return DyeColor.field_7967;
 		} else if (i < 18) {
-			return DyeColor.BROWN;
+			return DyeColor.field_7957;
 		} else {
-			return random.nextInt(500) == 0 ? DyeColor.PINK : DyeColor.WHITE;
+			return random.nextInt(500) == 0 ? DyeColor.field_7954 : DyeColor.field_7952;
 		}
 	}
 

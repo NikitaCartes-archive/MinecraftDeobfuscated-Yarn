@@ -41,8 +41,10 @@ public abstract class EntityTypePredicate {
 			} else {
 				Identifier identifier = new Identifier(string);
 				EntityType<?> entityType = (EntityType<?>)Registry.ENTITY_TYPE
-					.getOptional(identifier)
-					.orElseThrow(() -> new JsonSyntaxException("Unknown entity type '" + identifier + "', valid types are: " + COMMA_JOINER.join(Registry.ENTITY_TYPE.keys())));
+					.getOrEmpty(identifier)
+					.orElseThrow(
+						() -> new JsonSyntaxException("Unknown entity type '" + identifier + "', valid types are: " + COMMA_JOINER.join(Registry.ENTITY_TYPE.getIds()))
+					);
 				return new EntityTypePredicate.Single(entityType);
 			}
 		} else {

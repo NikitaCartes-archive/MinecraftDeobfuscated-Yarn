@@ -22,8 +22,8 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1138;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.audio.paulscode.LibraryLWJGL3;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -50,7 +50,7 @@ public class SoundManager {
 	private static final Set<Identifier> unknownSounds = Sets.<Identifier>newHashSet();
 	private final SoundLoader loader;
 	private final GameOptions settings;
-	private SoundManager.SoundSystemMinecraft field_5560;
+	private SoundManager.System system;
 	private boolean initialized;
 	private int ticks;
 	private final Map<String, SoundInstance> playingSounds = HashBiMap.create();
@@ -68,7 +68,7 @@ public class SoundManager {
 		this.settings = gameOptions;
 
 		try {
-			SoundSystemConfig.addLibrary(class_1138.class);
+			SoundSystemConfig.addLibrary(LibraryLWJGL3.class);
 			SoundSystemConfig.setCodec("ogg", CodecJOrbis.class);
 		} catch (SoundSystemException var4) {
 			LOGGER.error(MARKER, "Error linking with the LibraryJavaSound plug-in", (Throwable)var4);
@@ -119,9 +119,9 @@ public class SoundManager {
 							}
 						}
 					});
-					this.field_5560 = new SoundManager.SoundSystemMinecraft();
+					this.system = new SoundManager.System();
 					this.initialized = true;
-					this.field_5560.setMasterVolume(this.settings.getSoundVolume(SoundCategory.field_15250));
+					this.system.setMasterVolume(this.settings.getSoundVolume(SoundCategory.field_15250));
 					Iterator<Sound> iterator = this.field_5551.iterator();
 
 					while (iterator.hasNext()) {
@@ -149,7 +149,7 @@ public class SoundManager {
 	public void updateSoundVolume(SoundCategory soundCategory, float f) {
 		if (this.initialized) {
 			if (soundCategory == SoundCategory.field_15250) {
-				this.field_5560.setMasterVolume(f);
+				this.system.setMasterVolume(f);
 			} else {
 				for (String string : this.playingSoundsByCategory.get(soundCategory)) {
 					SoundInstance soundInstance = (SoundInstance)this.playingSounds.get(string);
@@ -157,7 +157,7 @@ public class SoundManager {
 					if (g <= 0.0F) {
 						this.stop(soundInstance);
 					} else {
-						this.field_5560.setVolume(string, g);
+						this.system.setVolume(string, g);
 					}
 				}
 			}
@@ -167,7 +167,7 @@ public class SoundManager {
 	public void deinitialize() {
 		if (this.initialized) {
 			this.stopAll();
-			this.field_5560.cleanup();
+			this.system.cleanup();
 			this.initialized = false;
 		}
 	}
@@ -175,7 +175,7 @@ public class SoundManager {
 	public void stopAll() {
 		if (this.initialized) {
 			for (String string : this.playingSounds.keySet()) {
-				this.field_5560.stop(string);
+				this.system.stop(string);
 			}
 
 			this.playingSounds.clear();
@@ -204,9 +204,9 @@ public class SoundManager {
 				this.stop(tickableSoundInstance);
 			} else {
 				String string = (String)this.playingSoundIds.get(tickableSoundInstance);
-				this.field_5560.setVolume(string, this.getAdjustedVolume(tickableSoundInstance));
-				this.field_5560.setPitch(string, this.getAdjustedPitch(tickableSoundInstance));
-				this.field_5560.setPosition(string, tickableSoundInstance.getX(), tickableSoundInstance.getY(), tickableSoundInstance.getZ());
+				this.system.setVolume(string, this.getAdjustedVolume(tickableSoundInstance));
+				this.system.setPitch(string, this.getAdjustedPitch(tickableSoundInstance));
+				this.system.setPosition(string, tickableSoundInstance.getX(), tickableSoundInstance.getY(), tickableSoundInstance.getZ());
 			}
 		}
 
@@ -221,7 +221,7 @@ public class SoundManager {
 				this.stop(soundInstance);
 			}
 
-			if (!this.field_5560.playing(string)) {
+			if (!this.system.playing(string)) {
 				int i = (Integer)this.field_5554.get(string);
 				if (i <= this.ticks) {
 					int j = soundInstance.getRepeatDelay();
@@ -231,7 +231,7 @@ public class SoundManager {
 
 					iterator.remove();
 					LOGGER.debug(MARKER, "Removed channel {} because it's not playing anymore", string);
-					this.field_5560.removeSource(string);
+					this.system.removeSource(string);
 					this.field_5554.remove(string);
 
 					try {
@@ -267,7 +267,7 @@ public class SoundManager {
 			return false;
 		} else {
 			String string = (String)this.playingSoundIds.get(soundInstance);
-			return string == null ? false : this.field_5560.playing(string) || this.field_5554.containsKey(string) && (Integer)this.field_5554.get(string) <= this.ticks;
+			return string == null ? false : this.system.playing(string) || this.field_5554.containsKey(string) && (Integer)this.field_5554.get(string) <= this.ticks;
 		}
 	}
 
@@ -275,7 +275,7 @@ public class SoundManager {
 		if (this.initialized) {
 			String string = (String)this.playingSoundIds.get(soundInstance);
 			if (string != null) {
-				this.field_5560.stop(string);
+				this.system.stop(string);
 			}
 		}
 	}
@@ -295,7 +295,7 @@ public class SoundManager {
 					}
 				}
 
-				if (this.field_5560.getMasterVolume() <= 0.0F) {
+				if (this.system.getMasterVolume() <= 0.0F) {
 					LOGGER.debug(MARKER, "Skipped playing soundEvent: {}, master volume was zero", identifier);
 				} else {
 					Sound sound = soundInstance.getSound();
@@ -320,7 +320,7 @@ public class SoundManager {
 							String string = MathHelper.randomUuid(ThreadLocalRandom.current()).toString();
 							Identifier identifier2 = sound.getLocation();
 							if (sound.isStreamed()) {
-								this.field_5560
+								this.system
 									.newStreamingSource(
 										soundInstance.method_4787(),
 										string,
@@ -334,7 +334,7 @@ public class SoundManager {
 										g
 									);
 							} else {
-								this.field_5560
+								this.system
 									.newSource(
 										soundInstance.method_4787(),
 										string,
@@ -350,9 +350,9 @@ public class SoundManager {
 							}
 
 							LOGGER.debug(MARKER, "Playing sound {} for event {} as channel {}", sound.getIdentifier(), identifier, string);
-							this.field_5560.setPitch(string, i);
-							this.field_5560.setVolume(string, h);
-							this.field_5560.play(string);
+							this.system.setPitch(string, i);
+							this.system.setVolume(string, h);
+							this.system.play(string);
 							this.field_5554.put(string, this.ticks + 20);
 							this.playingSounds.put(string, soundInstance);
 							this.playingSoundsByCategory.put(soundCategory, string);
@@ -373,7 +373,7 @@ public class SoundManager {
 	private void method_4836(Sound sound) {
 		Identifier identifier = sound.getLocation();
 		LOGGER.info(MARKER, "Preloading sound {}", identifier);
-		this.field_5560.loadSound(getSoundURL(identifier), identifier.toString());
+		this.system.loadSound(getSoundURL(identifier), identifier.toString());
 	}
 
 	private float getAdjustedPitch(SoundInstance soundInstance) {
@@ -390,7 +390,7 @@ public class SoundManager {
 			boolean bl = this.isPlaying((SoundInstance)entry.getValue());
 			if (bl) {
 				LOGGER.debug(MARKER, "Pausing channel {}", string);
-				this.field_5560.pause(string);
+				this.system.pause(string);
 				this.pausedSoundIds.add(string);
 			}
 		}
@@ -399,7 +399,7 @@ public class SoundManager {
 	public void resume() {
 		for (String string : this.pausedSoundIds) {
 			LOGGER.debug(MARKER, "Resuming channel {}", string);
-			this.field_5560.play(string);
+			this.system.play(string);
 		}
 
 		this.pausedSoundIds.clear();
@@ -448,8 +448,8 @@ public class SoundManager {
 			float r = k * l;
 			float s = j * n;
 			float u = k * n;
-			this.field_5560.setListenerPosition((float)d, (float)e, (float)i);
-			this.field_5560.setListenerOrientation(p, m, r, s, o, u);
+			this.system.setListenerPosition((float)d, (float)e, (float)i);
+			this.system.setListenerOrientation(p, m, r, s, o, u);
 		}
 	}
 
@@ -475,8 +475,8 @@ public class SoundManager {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class SoundSystemMinecraft extends SoundSystem {
-		private SoundSystemMinecraft() {
+	class System extends SoundSystem {
+		private System() {
 		}
 
 		@Override

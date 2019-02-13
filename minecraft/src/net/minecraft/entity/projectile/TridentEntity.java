@@ -140,7 +140,7 @@ public class TridentEntity extends ProjectileEntity {
 				LightningEntity lightningEntity = new LightningEntity(
 					this.world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, false
 				);
-				lightningEntity.method_6961(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity2 : null);
+				lightningEntity.setChanneller(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity2 : null);
 				((ServerWorld)this.world).addLightning(lightningEntity);
 				soundEvent = SoundEvents.field_14896;
 				g = 5.0F;

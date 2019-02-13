@@ -29,8 +29,8 @@ public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityMod
 				GlStateManager.scalef(0.5F, 0.5F, 0.5F);
 			}
 
-			this.method_4192(livingEntity, itemStack2, ModelTransformation.Type.THIRD_PERSON_RIGHT_HAND, OptionMainHand.field_6183);
-			this.method_4192(livingEntity, itemStack, ModelTransformation.Type.THIRD_PERSON_LEFT_HAND, OptionMainHand.field_6182);
+			this.method_4192(livingEntity, itemStack2, ModelTransformation.Type.field_4320, OptionMainHand.field_6183);
+			this.method_4192(livingEntity, itemStack, ModelTransformation.Type.field_4323, OptionMainHand.field_6182);
 			GlStateManager.popMatrix();
 		}
 	}

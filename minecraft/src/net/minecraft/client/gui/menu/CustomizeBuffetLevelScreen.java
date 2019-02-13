@@ -23,13 +23,13 @@ import net.minecraft.world.biome.source.BiomeSourceType;
 @Environment(EnvType.CLIENT)
 public class CustomizeBuffetLevelScreen extends Screen {
 	private static final List<Identifier> field_2436 = (List<Identifier>)Registry.CHUNK_GENERATOR_TYPE
-		.keys()
+		.getIds()
 		.stream()
 		.filter(identifier -> Registry.CHUNK_GENERATOR_TYPE.get(identifier).isBuffetScreenOption())
 		.collect(Collectors.toList());
 	private final NewLevelScreen field_2437;
 	private final List<Identifier> field_2440 = Lists.<Identifier>newArrayList();
-	private final Identifier[] field_2435 = new Identifier[Registry.BIOME.keys().size()];
+	private final Identifier[] field_2435 = new Identifier[Registry.BIOME.getIds().size()];
 	private String field_2442;
 	private CustomizeBuffetLevelScreen.class_416 field_2441;
 	private int field_2439;
@@ -39,7 +39,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		this.field_2437 = newLevelScreen;
 		int i = 0;
 
-		for (Identifier identifier : Registry.BIOME.keys()) {
+		for (Identifier identifier : Registry.BIOME.getIds()) {
 			this.field_2435[i] = identifier;
 			i++;
 		}
@@ -127,11 +127,13 @@ public class CustomizeBuffetLevelScreen extends Screen {
 						CustomizeBuffetLevelScreen.this.field_2439 = 0;
 					}
 
-					this.text = I18n.translate("createWorld.customize.buffet.generatortype")
-						+ " "
-						+ I18n.translate(
-							SystemUtil.createTranslationKey("generator", (Identifier)CustomizeBuffetLevelScreen.field_2436.get(CustomizeBuffetLevelScreen.this.field_2439))
-						);
+					this.setText(
+						I18n.translate("createWorld.customize.buffet.generatortype")
+							+ " "
+							+ I18n.translate(
+								SystemUtil.createTranslationKey("generator", (Identifier)CustomizeBuffetLevelScreen.field_2436.get(CustomizeBuffetLevelScreen.this.field_2439))
+							)
+					);
 				}
 			}
 		);

@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.sortme.ItemScatterer;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Hand;
@@ -25,10 +26,11 @@ import net.minecraft.world.World;
 
 public class BarrelBlock extends BlockWithEntity {
 	public static final DirectionProperty FACING = Properties.FACING;
+	public static final BooleanProperty field_18006 = Properties.OPEN;
 
 	public BarrelBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(field_18006, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -102,7 +104,7 @@ public class BarrelBlock extends BlockWithEntity {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING);
+		builder.with(FACING, field_18006);
 	}
 
 	@Override

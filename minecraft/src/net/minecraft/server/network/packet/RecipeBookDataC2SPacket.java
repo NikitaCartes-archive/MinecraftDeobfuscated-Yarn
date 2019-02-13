@@ -77,7 +77,7 @@ public class RecipeBookDataC2SPacket implements Packet<ServerPlayPacketListener>
 	}
 
 	public void method_12400(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.method_12047(this);
+		serverPlayPacketListener.onRecipeBookData(this);
 	}
 
 	public RecipeBookDataC2SPacket.Mode getMode() {

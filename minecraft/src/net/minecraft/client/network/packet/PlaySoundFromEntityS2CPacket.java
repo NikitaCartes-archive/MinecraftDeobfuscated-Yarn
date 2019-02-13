@@ -33,7 +33,7 @@ public class PlaySoundFromEntityS2CPacket implements Packet<ClientPlayPacketList
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.sound = Registry.SOUND_EVENT.getInt(packetByteBuf.readVarInt());
+		this.sound = Registry.SOUND_EVENT.get(packetByteBuf.readVarInt());
 		this.category = packetByteBuf.readEnumConstant(SoundCategory.class);
 		this.entityId = packetByteBuf.readVarInt();
 		this.volume = packetByteBuf.readFloat();
@@ -75,6 +75,6 @@ public class PlaySoundFromEntityS2CPacket implements Packet<ClientPlayPacketList
 	}
 
 	public void method_11884(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11125(this);
+		clientPlayPacketListener.onPlaySoundFromEntity(this);
 	}
 }

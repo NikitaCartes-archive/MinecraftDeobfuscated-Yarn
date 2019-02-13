@@ -196,7 +196,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	@Override
-	public void reloadResources(ResourceManager resourceManager) {
+	public void apply(ResourceManager resourceManager) {
 		this.textureManager.bindTexture(FORCEFIELD_TEX);
 		GlStateManager.texParameter(3553, 10242, 10497);
 		GlStateManager.texParameter(3553, 10243, 10497);
@@ -490,7 +490,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		this.chunkBatcher.method_3632();
 	}
 
-	public void method_3242(int i, int j) {
+	public void onResized(int i, int j) {
 		this.method_3292();
 		if (GLX.usePostProcess) {
 			if (this.entityOutlineShader != null) {
@@ -508,8 +508,8 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			double g = MathHelper.lerp((double)f, entity.prevZ, entity.z);
 			this.world.getProfiler().push("prepare");
 			Entity entity2 = this.client.getCameraEntity();
-			BlockEntityRenderDispatcher.INSTANCE.configure(this.world, this.client.getTextureManager(), this.client.fontRenderer, entity2, this.client.hitResult, f);
-			this.entityRenderDispatcher.method_3941(this.world, this.client.fontRenderer, entity2, this.client.targetedEntity, this.client.options, f);
+			BlockEntityRenderDispatcher.INSTANCE.configure(this.world, this.client.getTextureManager(), this.client.textRenderer, entity2, this.client.hitResult, f);
+			this.entityRenderDispatcher.method_3941(this.world, this.client.textRenderer, entity2, this.client.targetedEntity, this.client.options, f);
 			this.renderedEntities = 0;
 			this.field_4110 = 0;
 			double h = MathHelper.lerp((double)f, entity2.prevRenderX, entity2.x);
@@ -526,7 +526,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 			for (Entity entity3 : this.world.getEntities()) {
 				if ((this.entityRenderDispatcher.method_3950(entity3, visibleRegion, d, e, g) || entity3.method_5821(this.client.player))
-					&& (entity3 != entity2 || this.client.options.field_1850 != 0 || entity2 instanceof LivingEntity && ((LivingEntity)entity2).isSleeping())) {
+					&& (entity3 != entity2 || this.client.options.perspective != 0 || entity2 instanceof LivingEntity && ((LivingEntity)entity2).isSleeping())) {
 					this.renderedEntities++;
 					this.entityRenderDispatcher.render(entity3, f, false);
 					if (entity3.isGlowing() || entity3 instanceof PlayerEntity && this.client.player.isSpectator() && this.client.options.keySpectatorOutlines.isPressed()) {
@@ -547,7 +547,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 			if (this.canDrawEntityOutlines() && (!list.isEmpty() || this.entityOutlinesUpdateNecessary)) {
 				this.world.getProfiler().swap("entityOutlines");
-				this.entityOutlinesFramebuffer.clear(MinecraftClient.isSystemMac);
+				this.entityOutlinesFramebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
 				this.entityOutlinesUpdateNecessary = !list.isEmpty();
 				if (!list.isEmpty()) {
 					GlStateManager.depthFunc(519);
@@ -833,7 +833,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	protected Vector3f method_3286(Entity entity, double d) {
 		float f = (float)MathHelper.lerp(d, (double)entity.prevPitch, (double)entity.pitch);
 		float g = (float)MathHelper.lerp(d, (double)entity.prevYaw, (double)entity.yaw);
-		if (MinecraftClient.getInstance().options.field_1850 == 2) {
+		if (MinecraftClient.getInstance().options.perspective == 2) {
 			f += 180.0F;
 		}
 
@@ -859,7 +859,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 				for (WorldRenderer.class_762 lv : this.field_4086) {
 					if (lv.field_4124.chunkRenderData.isBufferInitialized(blockRenderLayer) && i++ < 15) {
-						this.chunkBatcher.resortTransparency(lv.field_4124);
+						this.chunkBatcher.method_3620(lv.field_4124);
 					}
 				}
 			}
@@ -1069,7 +1069,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			tessellator.draw();
 			k = 20.0F;
 			this.textureManager.bindTexture(MOON_PHASES_TEX);
-			int r = this.world.method_8394();
+			int r = this.world.getMoonPhase();
 			int m = r % 4;
 			int n = r / 4 % 2;
 			float o = (float)(m + 0) / 4.0F;

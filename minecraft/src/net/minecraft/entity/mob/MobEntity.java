@@ -67,7 +67,7 @@ import net.minecraft.world.loot.context.LootContext;
 
 public abstract class MobEntity extends LivingEntity {
 	private static final TrackedData<Byte> MOB_FLAGS = DataTracker.registerData(MobEntity.class, TrackedDataHandlerRegistry.BYTE);
-	public int field_6191;
+	public int ambientSoundChance;
 	protected int experiencePoints;
 	protected LookControl lookControl;
 	protected MoveControl moveControl;
@@ -202,8 +202,8 @@ public abstract class MobEntity extends LivingEntity {
 	public void updateLogic() {
 		super.updateLogic();
 		this.world.getProfiler().push("mobBaseTick");
-		if (this.isValid() && this.random.nextInt(1000) < this.field_6191++) {
-			this.method_5975();
+		if (this.isValid() && this.random.nextInt(1000) < this.ambientSoundChance++) {
+			this.resetSoundDelay();
 			this.playAmbientSound();
 		}
 
@@ -212,12 +212,12 @@ public abstract class MobEntity extends LivingEntity {
 
 	@Override
 	protected void method_6013(DamageSource damageSource) {
-		this.method_5975();
+		this.resetSoundDelay();
 		super.method_6013(damageSource);
 	}
 
-	private void method_5975() {
-		this.field_6191 = -this.getMinAmbientSoundDelay();
+	private void resetSoundDelay() {
+		this.ambientSoundChance = -this.getMinAmbientSoundDelay();
 	}
 
 	@Override
@@ -485,8 +485,8 @@ public abstract class MobEntity extends LivingEntity {
 		ItemStack itemStack = itemEntity.getStack();
 		EquipmentSlot equipmentSlot = getPreferredEquipmentSlot(itemStack);
 		ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
-		boolean bl = this.method_5955(itemStack, itemStack2, equipmentSlot);
-		if (bl && this.method_5939(itemStack)) {
+		boolean bl = this.isBetterItemFor(itemStack, itemStack2, equipmentSlot);
+		if (bl && this.canPickupItem(itemStack)) {
 			double d = (double)this.method_5929(equipmentSlot);
 			if (!itemStack2.isEmpty() && (double)(this.random.nextFloat() - 0.1F) < d) {
 				this.dropStack(itemStack2);
@@ -502,12 +502,12 @@ public abstract class MobEntity extends LivingEntity {
 			}
 
 			this.persistent = true;
-			this.method_6103(itemEntity, itemStack.getAmount());
+			this.pickUpEntity(itemEntity, itemStack.getAmount());
 			itemEntity.invalidate();
 		}
 	}
 
-	protected boolean method_5955(ItemStack itemStack, ItemStack itemStack2, EquipmentSlot equipmentSlot) {
+	protected boolean isBetterItemFor(ItemStack itemStack, ItemStack itemStack2, EquipmentSlot equipmentSlot) {
 		boolean bl = true;
 		if (!itemStack2.isEmpty()) {
 			if (equipmentSlot.getType() == EquipmentSlot.Type.HAND) {
@@ -544,7 +544,7 @@ public abstract class MobEntity extends LivingEntity {
 		return bl;
 	}
 
-	protected boolean method_5939(ItemStack itemStack) {
+	protected boolean canPickupItem(ItemStack itemStack) {
 		return true;
 	}
 
@@ -970,7 +970,7 @@ public abstract class MobEntity extends LivingEntity {
 			}
 
 			if (!this.world.isClient && bl && this.world instanceof ServerWorld) {
-				((ServerWorld)this.world).getEntityTracker().method_14079(this, new EntityAttachS2CPacket(this, null));
+				((ServerWorld)this.world).getEntityTracker().sendToTrackingPlayers(this, new EntityAttachS2CPacket(this, null));
 			}
 		}
 	}
@@ -996,7 +996,7 @@ public abstract class MobEntity extends LivingEntity {
 		}
 
 		if (!this.world.isClient && bl && this.world instanceof ServerWorld) {
-			((ServerWorld)this.world).getEntityTracker().method_14079(this, new EntityAttachS2CPacket(this, this.holdingEntity));
+			((ServerWorld)this.world).getEntityTracker().sendToTrackingPlayers(this, new EntityAttachS2CPacket(this, this.holdingEntity));
 		}
 
 		if (this.hasVehicle()) {
@@ -1106,7 +1106,7 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	@Override
-	public boolean method_6121(Entity entity) {
+	public boolean attack(Entity entity) {
 		float f = (float)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue();
 		float g = (float)this.getAttributeInstance(EntityAttributes.ATTACK_KNOCKBACK).getValue();
 		if (entity instanceof LivingEntity) {
@@ -1141,7 +1141,7 @@ public abstract class MobEntity extends LivingEntity {
 				}
 			}
 
-			this.method_5723(this, entity);
+			this.dealDamage(this, entity);
 		}
 
 		return bl;

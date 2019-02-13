@@ -14,33 +14,33 @@ import net.fabricmc.api.Environment;
 
 public enum TextFormat {
 	BLACK("BLACK", '0', 0, 0),
-	DARK_BLUE("DARK_BLUE", '1', 1, 170),
-	DARK_GREEN("DARK_GREEN", '2', 2, 43520),
-	DARK_AQUA("DARK_AQUA", '3', 3, 43690),
-	DARK_RED("DARK_RED", '4', 4, 11141120),
-	DARK_PURPLE("DARK_PURPLE", '5', 5, 11141290),
-	GOLD("GOLD", '6', 6, 16755200),
-	GRAY("GRAY", '7', 7, 11184810),
-	DARK_GRAY("DARK_GRAY", '8', 8, 5592405),
-	BLUE("BLUE", '9', 9, 5592575),
-	GREEN("GREEN", 'a', 10, 5635925),
-	AQUA("AQUA", 'b', 11, 5636095),
-	RED("RED", 'c', 12, 16733525),
-	LIGHT_PURPLE("LIGHT_PURPLE", 'd', 13, 16733695),
-	YELLOW("YELLOW", 'e', 14, 16777045),
-	WHITE("WHITE", 'f', 15, 16777215),
-	OBFUSCATED("OBFUSCATED", 'k', true),
-	BOLD("BOLD", 'l', true),
-	STRIKETHROUGH("STRIKETHROUGH", 'm', true),
-	UNDERLINE("UNDERLINE", 'n', true),
-	ITALIC("ITALIC", 'o', true),
-	RESET("RESET", 'r', -1, null);
+	field_1058("DARK_BLUE", '1', 1, 170),
+	field_1077("DARK_GREEN", '2', 2, 43520),
+	field_1062("DARK_AQUA", '3', 3, 43690),
+	field_1079("DARK_RED", '4', 4, 11141120),
+	field_1064("DARK_PURPLE", '5', 5, 11141290),
+	field_1065("GOLD", '6', 6, 16755200),
+	field_1080("GRAY", '7', 7, 11184810),
+	field_1063("DARK_GRAY", '8', 8, 5592405),
+	field_1078("BLUE", '9', 9, 5592575),
+	field_1060("GREEN", 'a', 10, 5635925),
+	field_1075("AQUA", 'b', 11, 5636095),
+	field_1061("RED", 'c', 12, 16733525),
+	field_1076("LIGHT_PURPLE", 'd', 13, 16733695),
+	field_1054("YELLOW", 'e', 14, 16777045),
+	field_1068("WHITE", 'f', 15, 16777215),
+	field_1051("OBFUSCATED", 'k', true),
+	field_1067("BOLD", 'l', true),
+	field_1055("STRIKETHROUGH", 'm', true),
+	field_1073("UNDERLINE", 'n', true),
+	field_1056("ITALIC", 'o', true),
+	field_1070("RESET", 'r', -1, null);
 
 	private static final Map<String, TextFormat> field_1052 = (Map<String, TextFormat>)Arrays.stream(values())
 		.collect(Collectors.toMap(textFormat -> sanitizeName(textFormat.field_1057), textFormat -> textFormat));
 	private static final Pattern FORMAT_PATTERN = Pattern.compile("(?i)§[0-9A-FK-OR]");
 	private final String field_1057;
-	private final char field_1059;
+	private final char sectionSignCode;
 	private final boolean modifier;
 	private final String code;
 	private final int id;
@@ -61,7 +61,7 @@ public enum TextFormat {
 
 	private TextFormat(String string2, char c, boolean bl, int j, @Nullable Integer integer) {
 		this.field_1057 = string2;
-		this.field_1059 = c;
+		this.sectionSignCode = c;
 		this.modifier = bl;
 		this.id = j;
 		this.color = integer;
@@ -76,13 +76,13 @@ public enum TextFormat {
 
 		while ((i = string.indexOf(167, i + 1)) != -1) {
 			if (i < j - 1) {
-				TextFormat textFormat = method_544(string.charAt(i + 1));
+				TextFormat textFormat = bySectionSignCode(string.charAt(i + 1));
 				if (textFormat != null) {
-					if (textFormat.method_545()) {
+					if (textFormat.affectsGlyphWidth()) {
 						stringBuilder.setLength(0);
 					}
 
-					if (textFormat != RESET) {
+					if (textFormat != field_1070) {
 						stringBuilder.append(textFormat);
 					}
 				}
@@ -101,7 +101,7 @@ public enum TextFormat {
 	}
 
 	public boolean isColor() {
-		return !this.modifier && this != RESET;
+		return !this.modifier && this != field_1070;
 	}
 
 	@Nullable
@@ -111,7 +111,7 @@ public enum TextFormat {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_545() {
+	public boolean affectsGlyphWidth() {
 		return !this.modifier;
 	}
 
@@ -136,7 +136,7 @@ public enum TextFormat {
 	@Nullable
 	public static TextFormat byId(int i) {
 		if (i < 0) {
-			return RESET;
+			return field_1070;
 		} else {
 			for (TextFormat textFormat : values()) {
 				if (textFormat.getId() == i) {
@@ -150,11 +150,11 @@ public enum TextFormat {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public static TextFormat method_544(char c) {
+	public static TextFormat bySectionSignCode(char c) {
 		char d = Character.toString(c).toLowerCase(Locale.ROOT).charAt(0);
 
 		for (TextFormat textFormat : values()) {
-			if (textFormat.field_1059 == d) {
+			if (textFormat.sectionSignCode == d) {
 				return textFormat;
 			}
 		}

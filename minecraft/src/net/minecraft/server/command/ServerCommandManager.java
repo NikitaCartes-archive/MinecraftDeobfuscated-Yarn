@@ -141,7 +141,7 @@ public class ServerCommandManager {
 			if (var14.getInput() != null && var14.getCursor() >= 0) {
 				int i = Math.min(var14.getInput().length(), var14.getCursor());
 				TextComponent textComponent = new StringTextComponent("")
-					.applyFormat(TextFormat.GRAY)
+					.applyFormat(TextFormat.field_1080)
 					.modifyStyle(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, string)));
 				if (i > 10) {
 					textComponent.append("...");
@@ -149,11 +149,12 @@ public class ServerCommandManager {
 
 				textComponent.append(var14.getInput().substring(Math.max(0, i - 10), i));
 				if (i < var14.getInput().length()) {
-					TextComponent textComponent2 = new StringTextComponent(var14.getInput().substring(i)).applyFormat(new TextFormat[]{TextFormat.RED, TextFormat.UNDERLINE});
+					TextComponent textComponent2 = new StringTextComponent(var14.getInput().substring(i))
+						.applyFormat(new TextFormat[]{TextFormat.field_1061, TextFormat.field_1073});
 					textComponent.append(textComponent2);
 				}
 
-				textComponent.append(new TranslatableTextComponent("command.context.here").applyFormat(new TextFormat[]{TextFormat.RED, TextFormat.ITALIC}));
+				textComponent.append(new TranslatableTextComponent("command.context.here").applyFormat(new TextFormat[]{TextFormat.field_1061, TextFormat.field_1056}));
 				serverCommandSource.sendError(textComponent);
 			}
 

@@ -37,7 +37,7 @@ public class WorldUpdater {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final ThreadFactory UPDATE_THREAD_FACTORY = new ThreadFactoryBuilder().setDaemon(true).build();
 	private final String levelName;
-	private final WorldSaveHandler field_5761;
+	private final WorldSaveHandler worldSaveHandler;
 	private final Thread updateThread;
 	private final File worldDirectory;
 	private volatile boolean keepUpgradingChunks = true;
@@ -55,12 +55,12 @@ public class WorldUpdater {
 
 	public WorldUpdater(String string, LevelStorage levelStorage, LevelProperties levelProperties) {
 		this.levelName = levelProperties.getLevelName();
-		this.field_5761 = levelStorage.method_242(string, null);
-		this.field_5761.saveWorld(levelProperties);
+		this.worldSaveHandler = levelStorage.method_242(string, null);
+		this.worldSaveHandler.saveWorld(levelProperties);
 		this.persistentStateManager = new PersistentStateManager(
-			new File(DimensionType.field_13072.getFile(this.field_5761.getWorldDir()), "data"), this.field_5761.getDataFixer()
+			new File(DimensionType.field_13072.getFile(this.worldSaveHandler.getWorldDir()), "data"), this.worldSaveHandler.getDataFixer()
 		);
-		this.worldDirectory = this.field_5761.getWorldDir();
+		this.worldDirectory = this.worldSaveHandler.getWorldDir();
 		this.updateThread = UPDATE_THREAD_FACTORY.newThread(this::updateWorld);
 		this.updateThread.setUncaughtExceptionHandler((thread, throwable) -> {
 			LOGGER.error("Error upgrading world", throwable);
@@ -79,7 +79,7 @@ public class WorldUpdater {
 	}
 
 	private void updateWorld() {
-		File file = this.field_5761.getWorldDir();
+		File file = this.worldSaveHandler.getWorldDir();
 		this.totalChunkCount = 0;
 		Builder<DimensionType, ListIterator<ChunkPos>> builder = ImmutableMap.builder();
 
@@ -98,7 +98,7 @@ public class WorldUpdater {
 
 			for (DimensionType dimensionType2 : DimensionType.getAll()) {
 				final File file2 = dimensionType2.getFile(file);
-				builder2.put(dimensionType2, new VersionedRegionFileCache(this.field_5761.getDataFixer()) {
+				builder2.put(dimensionType2, new VersionedRegionFileCache(this.worldSaveHandler.getDataFixer()) {
 					@Override
 					protected File getRegionDir() {
 						return new File(file2, "region");

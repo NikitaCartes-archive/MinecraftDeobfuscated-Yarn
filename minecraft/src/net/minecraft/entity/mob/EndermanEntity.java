@@ -61,7 +61,7 @@ public class EndermanEntity extends HostileEntity {
 	public EndermanEntity(World world) {
 		super(EntityType.ENDERMAN, world);
 		this.stepHeight = 1.0F;
-		this.setPathNodeTypeWeight(PathNodeType.WATER, -1.0F);
+		this.setPathNodeTypeWeight(PathNodeType.field_18, -1.0F);
 	}
 
 	@Override

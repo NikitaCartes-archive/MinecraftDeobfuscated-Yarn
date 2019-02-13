@@ -133,7 +133,7 @@ public class RecipeAlternatesWidget extends Drawable implements GuiEventListener
 			GuiLighting.disable();
 
 			for (RecipeAlternatesWidget.AlternateButtonWidget alternateButtonWidget : this.alternateButtons) {
-				alternateButtonWidget.draw(i, j, f);
+				alternateButtonWidget.render(i, j, f);
 			}
 
 			GlStateManager.popMatrix();
@@ -211,14 +211,13 @@ public class RecipeAlternatesWidget extends Drawable implements GuiEventListener
 			GuiLighting.enableForItems();
 			GlStateManager.enableAlphaTest();
 			RecipeAlternatesWidget.this.client.getTextureManager().bindTexture(RecipeAlternatesWidget.BG_TEX);
-			this.hovered = i >= this.x && j >= this.y && i < this.x + this.width && j < this.y + this.height;
 			int k = 152;
 			if (!this.isCraftable) {
 				k += 26;
 			}
 
 			int l = RecipeAlternatesWidget.this.furnace ? 130 : 78;
-			if (this.hovered) {
+			if (this.isHovered()) {
 				l += 26;
 			}
 

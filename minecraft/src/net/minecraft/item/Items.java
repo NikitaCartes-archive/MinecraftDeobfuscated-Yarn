@@ -801,25 +801,25 @@ public class Items {
 	public static final Item field_8373 = register("cooked_cod", new FishItem(FishItem.Type.COD, true, new Item.Settings().itemGroup(ItemGroup.FOOD)));
 	public static final Item field_8509 = register("cooked_salmon", new FishItem(FishItem.Type.SALMON, true, new Item.Settings().itemGroup(ItemGroup.FOOD)));
 	public static final Item field_8794 = register("ink_sac", new Item(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
-	public static final Item field_8264 = register("red_dye", new DyeItem(DyeColor.RED, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
-	public static final Item field_8408 = register("green_dye", new DyeItem(DyeColor.GREEN, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
+	public static final Item field_8264 = register("red_dye", new DyeItem(DyeColor.field_7964, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
+	public static final Item field_8408 = register("green_dye", new DyeItem(DyeColor.field_7942, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8116 = register("cocoa_beans", new BlockItem(Blocks.field_10302, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8759 = register("lapis_lazuli", new Item(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
-	public static final Item field_8296 = register("purple_dye", new DyeItem(DyeColor.PURPLE, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
-	public static final Item field_8632 = register("cyan_dye", new DyeItem(DyeColor.CYAN, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
-	public static final Item field_8851 = register("light_gray_dye", new DyeItem(DyeColor.LIGHT_GRAY, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
-	public static final Item field_8298 = register("gray_dye", new DyeItem(DyeColor.GRAY, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
-	public static final Item field_8330 = register("pink_dye", new DyeItem(DyeColor.PINK, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
-	public static final Item field_8131 = register("lime_dye", new DyeItem(DyeColor.LIME, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
-	public static final Item field_8192 = register("yellow_dye", new DyeItem(DyeColor.YELLOW, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
-	public static final Item field_8273 = register("light_blue_dye", new DyeItem(DyeColor.LIGHT_BLUE, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
-	public static final Item field_8669 = register("magenta_dye", new DyeItem(DyeColor.MAGENTA, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
-	public static final Item field_8492 = register("orange_dye", new DyeItem(DyeColor.ORANGE, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
+	public static final Item field_8296 = register("purple_dye", new DyeItem(DyeColor.field_7945, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
+	public static final Item field_8632 = register("cyan_dye", new DyeItem(DyeColor.field_7955, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
+	public static final Item field_8851 = register("light_gray_dye", new DyeItem(DyeColor.field_7967, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
+	public static final Item field_8298 = register("gray_dye", new DyeItem(DyeColor.field_7944, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
+	public static final Item field_8330 = register("pink_dye", new DyeItem(DyeColor.field_7954, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
+	public static final Item field_8131 = register("lime_dye", new DyeItem(DyeColor.field_7961, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
+	public static final Item field_8192 = register("yellow_dye", new DyeItem(DyeColor.field_7947, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
+	public static final Item field_8273 = register("light_blue_dye", new DyeItem(DyeColor.field_7951, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
+	public static final Item field_8669 = register("magenta_dye", new DyeItem(DyeColor.field_7958, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
+	public static final Item field_8492 = register("orange_dye", new DyeItem(DyeColor.field_7946, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8324 = register("bone_meal", new BoneMealItem(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
-	public static final Item field_8345 = register("blue_dye", new DyeItem(DyeColor.BLUE, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
-	public static final Item field_8099 = register("brown_dye", new DyeItem(DyeColor.BROWN, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
+	public static final Item field_8345 = register("blue_dye", new DyeItem(DyeColor.field_7966, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
+	public static final Item field_8099 = register("brown_dye", new DyeItem(DyeColor.field_7957, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8226 = register("black_dye", new DyeItem(DyeColor.BLACK, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
-	public static final Item field_8446 = register("white_dye", new DyeItem(DyeColor.WHITE, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
+	public static final Item field_8446 = register("white_dye", new DyeItem(DyeColor.field_7952, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8606 = register("bone", new Item(new Item.Settings().itemGroup(ItemGroup.MISC)));
 	public static final Item field_8479 = register("sugar", new Item(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_17534 = register(new BlockItem(Blocks.field_10183, new Item.Settings().stackSize(1).itemGroup(ItemGroup.FOOD)));
@@ -921,6 +921,9 @@ public class Items {
 	);
 	public static final Item field_8795 = register(
 		"evoker_spawn_egg", new SpawnEggItem(EntityType.EVOKER, 9804699, 1973274, new Item.Settings().itemGroup(ItemGroup.MISC))
+	);
+	public static final Item field_18005 = register(
+		"fox_spawn_egg", new SpawnEggItem(EntityType.field_17943, 14005919, 13396256, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8265 = register(
 		"ghast_spawn_egg", new SpawnEggItem(EntityType.GHAST, 16382457, 12369084, new Item.Settings().itemGroup(ItemGroup.MISC))

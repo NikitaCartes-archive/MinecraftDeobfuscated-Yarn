@@ -15,7 +15,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.class_478;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.item.TooltipOptions;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.options.HotbarStorage;
 import net.minecraft.client.options.HotbarStorageEntry;
@@ -52,7 +52,7 @@ import net.minecraft.util.registry.Registry;
 public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen<CreativePlayerInventoryScreen.CreativeContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/creative_inventory/tabs.png");
 	private static final BasicInventory inventory = new BasicInventory(45);
-	private static int selectedTab = ItemGroup.BUILDING_BLOCKS.getId();
+	private static int selectedTab = ItemGroup.BUILDING_BLOCKS.getIndex();
 	private float scrollPosition;
 	private boolean field_2892;
 	private TextFieldWidget searchBox;
@@ -89,7 +89,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 
 		boolean bl = slotActionType == SlotActionType.field_7794;
 		slotActionType = i == -999 && slotActionType == SlotActionType.field_7790 ? SlotActionType.field_7795 : slotActionType;
-		if (slot == null && selectedTab != ItemGroup.INVENTORY.getId() && slotActionType != SlotActionType.field_7789) {
+		if (slot == null && selectedTab != ItemGroup.INVENTORY.getIndex() && slotActionType != SlotActionType.field_7789) {
 			PlayerInventory playerInventory = this.client.player.inventory;
 			if (!playerInventory.getCursorStack().isEmpty() && this.field_2887) {
 				if (j == 0) {
@@ -113,7 +113,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 				for (int k = 0; k < this.client.player.containerPlayer.getStacks().size(); k++) {
 					this.client.interactionManager.method_2909(ItemStack.EMPTY, k);
 				}
-			} else if (selectedTab == ItemGroup.INVENTORY.getId()) {
+			} else if (selectedTab == ItemGroup.INVENTORY.getIndex()) {
 				if (slot == this.deleteItemSlot) {
 					this.client.player.inventory.setCursorStack(ItemStack.EMPTY);
 				} else if (slotActionType == SlotActionType.field_7795 && slot != null && slot.hasStack()) {
@@ -275,7 +275,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 	public boolean charTyped(char c, int i) {
 		if (this.field_2888) {
 			return false;
-		} else if (selectedTab != ItemGroup.SEARCH.getId()) {
+		} else if (selectedTab != ItemGroup.SEARCH.getIndex()) {
 			return false;
 		} else {
 			String string = this.searchBox.getText();
@@ -294,7 +294,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
 		this.field_2888 = false;
-		if (selectedTab != ItemGroup.SEARCH.getId()) {
+		if (selectedTab != ItemGroup.SEARCH.getIndex()) {
 			if (this.client.options.keyChat.matchesKey(i, j)) {
 				this.field_2888 = true;
 				this.setSelectedTab(ItemGroup.SEARCH);
@@ -334,7 +334,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		String string = this.searchBox.getText();
 		if (string.isEmpty()) {
 			for (Item item : Registry.ITEM) {
-				item.addStacksForDisplay(ItemGroup.SEARCH, this.container.itemList);
+				item.appendItemsForGroup(ItemGroup.SEARCH, this.container.itemList);
 			}
 		} else {
 			Searchable<ItemStack> searchable;
@@ -391,7 +391,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 				}
 			}
 
-			if (selectedTab != ItemGroup.INVENTORY.getId() && this.method_2467(d, e)) {
+			if (selectedTab != ItemGroup.INVENTORY.getIndex() && this.method_2467(d, e)) {
 				this.field_2892 = this.doRenderScrollBar();
 				return true;
 			}
@@ -419,12 +419,12 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 	}
 
 	private boolean doRenderScrollBar() {
-		return selectedTab != ItemGroup.INVENTORY.getId() && ItemGroup.GROUPS[selectedTab].useScrollBar() && this.container.method_2474();
+		return selectedTab != ItemGroup.INVENTORY.getIndex() && ItemGroup.GROUPS[selectedTab].hasScrollbar() && this.container.method_2474();
 	}
 
 	private void setSelectedTab(ItemGroup itemGroup) {
 		int i = selectedTab;
-		selectedTab = itemGroup.getId();
+		selectedTab = itemGroup.getIndex();
 		this.slots.clear();
 		this.container.itemList.clear();
 		if (itemGroup == ItemGroup.HOTBAR) {
@@ -450,7 +450,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 				}
 			}
 		} else if (itemGroup != ItemGroup.SEARCH) {
-			itemGroup.getStacksForDisplay(this.container.itemList);
+			itemGroup.appendItems(this.container.itemList);
 		}
 
 		if (itemGroup == ItemGroup.INVENTORY) {
@@ -491,7 +491,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 
 			this.deleteItemSlot = new Slot(inventory, 0, 173, 112);
 			this.container.slotList.add(this.deleteItemSlot);
-		} else if (i == ItemGroup.INVENTORY.getId()) {
+		} else if (i == ItemGroup.INVENTORY.getIndex()) {
 			this.container.slotList.clear();
 			this.container.slotList.addAll(this.slots);
 			this.slots = null;
@@ -502,7 +502,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 				this.searchBox.setVisible(true);
 				this.searchBox.method_1856(false);
 				this.searchBox.setFocused(true);
-				if (i != itemGroup.getId()) {
+				if (i != itemGroup.getIndex()) {
 					this.searchBox.setText("");
 				}
 
@@ -575,21 +575,21 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		}
 
 		if (this.deleteItemSlot != null
-			&& selectedTab == ItemGroup.INVENTORY.getId()
+			&& selectedTab == ItemGroup.INVENTORY.getIndex()
 			&& this.isPointWithinBounds(this.deleteItemSlot.xPosition, this.deleteItemSlot.yPosition, 16, 16, (double)i, (double)j)) {
 			this.drawTooltip(I18n.translate("inventory.binSlot"), i, j);
 		}
 
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.disableLighting();
-		this.drawMousoverTooltip(i, j);
+		this.drawMouseoverTooltip(i, j);
 	}
 
 	@Override
 	protected void drawStackTooltip(ItemStack itemStack, int i, int j) {
-		if (selectedTab == ItemGroup.SEARCH.getId()) {
+		if (selectedTab == ItemGroup.SEARCH.getIndex()) {
 			List<TextComponent> list = itemStack.getTooltipText(
-				this.client.player, this.client.options.advancedItemTooltips ? TooltipOptions.Instance.ADVANCED : TooltipOptions.Instance.NORMAL
+				this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL
 			);
 			List<String> list2 = Lists.<String>newArrayListWithCapacity(list.size());
 
@@ -605,7 +605,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 					Enchantment enchantment = (Enchantment)map.keySet().iterator().next();
 
 					for (ItemGroup itemGroup2 : ItemGroup.GROUPS) {
-						if (itemGroup2.containsEnchantmentType(enchantment.type)) {
+						if (itemGroup2.containsEnchantments(enchantment.type)) {
 							itemGroup = itemGroup2;
 							break;
 						}
@@ -615,18 +615,18 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 
 			this.field_16201.forEach((identifier, tag) -> {
 				if (tag.contains(item)) {
-					list2.add(1, "" + TextFormat.BOLD + TextFormat.DARK_PURPLE + "#" + identifier);
+					list2.add(1, "" + TextFormat.field_1067 + TextFormat.field_1064 + "#" + identifier);
 				}
 			});
 			if (itemGroup != null) {
-				list2.add(1, "" + TextFormat.BOLD + TextFormat.BLUE + I18n.translate(itemGroup.getTranslationKey()));
+				list2.add(1, "" + TextFormat.field_1067 + TextFormat.field_1078 + I18n.translate(itemGroup.getTranslationKey()));
 			}
 
 			for (int k = 0; k < list2.size(); k++) {
 				if (k == 0) {
 					list2.set(k, itemStack.getRarity().formatting + (String)list2.get(k));
 				} else {
-					list2.set(k, TextFormat.GRAY + (String)list2.get(k));
+					list2.set(k, TextFormat.field_1080 + (String)list2.get(k));
 				}
 			}
 
@@ -644,7 +644,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 
 		for (ItemGroup itemGroup2 : ItemGroup.GROUPS) {
 			this.client.getTextureManager().bindTexture(TEXTURE);
-			if (itemGroup2.getId() != selectedTab) {
+			if (itemGroup2.getIndex() != selectedTab) {
 				this.method_2468(itemGroup2);
 			}
 		}
@@ -657,7 +657,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		int l = this.top + 18;
 		int m = l + 112;
 		this.client.getTextureManager().bindTexture(TEXTURE);
-		if (itemGroup.useScrollBar()) {
+		if (itemGroup.hasScrollbar()) {
 			this.drawTexturedRect(k, l + (int)((float)(m - l - 17) * this.scrollPosition), 232 + (this.doRenderScrollBar() ? 0 : 12), 0, 12, 15);
 		}
 
@@ -671,7 +671,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		int i = itemGroup.getColumn();
 		int j = 28 * i;
 		int k = 0;
-		if (itemGroup.isTabRightAligned()) {
+		if (itemGroup.isSpecial()) {
 			j = this.containerWidth - 28 * (6 - i) + 2;
 		} else if (i > 0) {
 			j += i;
@@ -690,7 +690,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		int k = itemGroup.getColumn();
 		int l = 28 * k;
 		int m = 0;
-		if (itemGroup.isTabRightAligned()) {
+		if (itemGroup.isSpecial()) {
 			l = this.containerWidth - 28 * (6 - k) + 2;
 		} else if (k > 0) {
 			l += k;
@@ -711,7 +711,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 	}
 
 	protected void method_2468(ItemGroup itemGroup) {
-		boolean bl = itemGroup.getId() == selectedTab;
+		boolean bl = itemGroup.getIndex() == selectedTab;
 		boolean bl2 = itemGroup.isTopRow();
 		int i = itemGroup.getColumn();
 		int j = i * 28;
@@ -723,7 +723,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 			k += 32;
 		}
 
-		if (itemGroup.isTabRightAligned()) {
+		if (itemGroup.isSpecial()) {
 			l = this.left + this.containerWidth - 28 * (6 - i);
 		} else if (i > 0) {
 			l += i;
@@ -744,7 +744,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		m += 8 + (bl2 ? 1 : -1);
 		GlStateManager.enableLighting();
 		GlStateManager.enableRescaleNormal();
-		ItemStack itemStack = itemGroup.getIconItemStack();
+		ItemStack itemStack = itemGroup.getIcon();
 		this.itemRenderer.renderGuiItem(itemStack, l, m);
 		this.itemRenderer.renderGuiItemOverlay(this.fontRenderer, itemStack, l, m);
 		GlStateManager.disableLighting();
@@ -756,7 +756,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		return selectedTab;
 	}
 
-	public static void method_2462(MinecraftClient minecraftClient, int i, boolean bl, boolean bl2) {
+	public static void onHotbarKeyPress(MinecraftClient minecraftClient, int i, boolean bl, boolean bl2) {
 		ClientPlayerEntity clientPlayerEntity = minecraftClient.player;
 		HotbarStorage hotbarStorage = minecraftClient.getCreativeHotbarStorage();
 		HotbarStorageEntry hotbarStorageEntry = hotbarStorage.getSavedHotbar(i);
@@ -842,7 +842,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		}
 
 		@Override
-		public boolean method_7613(ItemStack itemStack, Slot slot) {
+		public boolean canInsertIntoSlot(ItemStack itemStack, Slot slot) {
 			return slot.inventory != CreativePlayerInventoryScreen.inventory;
 		}
 

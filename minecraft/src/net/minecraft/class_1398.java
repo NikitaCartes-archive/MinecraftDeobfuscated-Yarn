@@ -82,7 +82,7 @@ public class class_1398 extends Goal {
 	@Override
 	public void onRemove() {
 		this.field_6636.setTarget(null);
-		super.start();
+		super.onRemove();
 	}
 
 	protected double method_6315() {

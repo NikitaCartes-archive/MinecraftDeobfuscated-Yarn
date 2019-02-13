@@ -51,7 +51,7 @@ public class OpenContainerPacket implements Packet<ClientPlayPacketListener> {
 	@Nullable
 	@Environment(EnvType.CLIENT)
 	public ContainerType<?> getContainerType() {
-		return Registry.CONTAINER.getInt(this.containerId);
+		return Registry.CONTAINER.get(this.containerId);
 	}
 
 	@Environment(EnvType.CLIENT)

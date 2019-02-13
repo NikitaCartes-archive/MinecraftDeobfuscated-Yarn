@@ -95,7 +95,7 @@ import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.village.VillagerRecipeList;
+import net.minecraft.village.TraderRecipeList;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
@@ -131,7 +131,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	public float renderOffsetY;
 	public float field_7497;
 	private boolean field_7517;
-	protected boolean field_7490;
+	protected boolean isInWater;
 	private BlockPos spawnPosition;
 	private boolean spawnForced;
 	public final PlayerAbilities abilities = new PlayerAbilities();
@@ -211,8 +211,8 @@ public abstract class PlayerEntity extends LivingEntity {
 			}
 		}
 
-		this.method_7300();
-		this.method_7295();
+		this.updateBubbleColumn();
+		this.updateInWater();
 		super.update();
 		if (!this.world.isClient && this.container != null && !this.container.canUse(this)) {
 			this.closeGui();
@@ -257,19 +257,19 @@ public abstract class PlayerEntity extends LivingEntity {
 			this.field_7525 = itemStack.isEmpty() ? ItemStack.EMPTY : itemStack.copy();
 		}
 
-		this.method_7330();
+		this.updateTurtleHelmet();
 		this.itemCooldownManager.update();
 		this.updateSize();
 	}
 
-	protected boolean method_7295() {
-		this.field_7490 = this.method_5744(FluidTags.field_15517, true);
-		return this.field_7490;
+	protected boolean updateInWater() {
+		this.isInWater = this.isInFluid(FluidTags.field_15517, true);
+		return this.isInWater;
 	}
 
-	private void method_7330() {
+	private void updateTurtleHelmet() {
 		ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
-		if (itemStack.getItem() == Items.field_8090 && !this.method_5777(FluidTags.field_15517)) {
+		if (itemStack.getItem() == Items.field_8090 && !this.isInFluid(FluidTags.field_15517)) {
 			this.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5923, 200, 0, false, false, true));
 		}
 	}
@@ -278,7 +278,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		return new ItemCooldownManager();
 	}
 
-	private void method_7300() {
+	private void updateBubbleColumn() {
 		BlockState blockState = this.world.getBlockState(this.getBoundingBox().expand(0.0, -0.4F, 0.0).contract(0.001), Blocks.field_10422);
 		if (blockState != null) {
 			if (!this.field_7517 && !this.field_5953 && blockState.getBlock() == Blocks.field_10422 && !this.isSpectator()) {
@@ -386,7 +386,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	protected SoundEvent method_5672() {
+	protected SoundEvent getSoundHighSpeedSplash() {
 		return SoundEvents.field_14876;
 	}
 
@@ -423,14 +423,14 @@ public abstract class PlayerEntity extends LivingEntity {
 		} else if (b == 22) {
 			this.reducedDebugInfo = true;
 		} else if (b == 43) {
-			this.method_16475(ParticleTypes.field_11204);
+			this.spawnParticles(ParticleTypes.field_11204);
 		} else {
 			super.method_5711(b);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	private void method_16475(ParticleParameters particleParameters) {
+	private void spawnParticles(ParticleParameters particleParameters) {
 		for (int i = 0; i < 5; i++) {
 			double d = this.random.nextGaussian() * 0.02;
 			double e = this.random.nextGaussian() * 0.02;
@@ -458,7 +458,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public void method_5842() {
+	public void updateRiding() {
 		if (!this.world.isClient && this.isSneaking() && this.hasVehicle()) {
 			this.stopRiding();
 			this.setSneaking(false);
@@ -468,7 +468,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			double f = this.z;
 			float g = this.yaw;
 			float h = this.pitch;
-			super.method_5842();
+			super.updateRiding();
 			this.field_7505 = this.field_7483;
 			this.field_7483 = 0.0F;
 			this.method_7260(this.x - d, this.y - e, this.z - f);
@@ -555,26 +555,26 @@ public abstract class PlayerEntity extends LivingEntity {
 			for (int i = 0; i < list.size(); i++) {
 				Entity entity = (Entity)list.get(i);
 				if (!entity.invalid) {
-					this.method_7341(entity);
+					this.collideWithEntity(entity);
 				}
 			}
 		}
 
-		this.method_7267(this.getShoulderEntityLeft());
-		this.method_7267(this.getShoulderEntityRight());
+		this.updateShoulderEntity(this.getShoulderEntityLeft());
+		this.updateShoulderEntity(this.getShoulderEntityRight());
 		if (!this.world.isClient && (this.fallDistance > 0.5F || this.isInsideWater() || this.hasVehicle()) || this.abilities.flying) {
-			this.method_7262();
+			this.dropShoulderEntities();
 		}
 	}
 
-	private void method_7267(@Nullable CompoundTag compoundTag) {
+	private void updateShoulderEntity(@Nullable CompoundTag compoundTag) {
 		if (compoundTag != null && !compoundTag.containsKey("Silent") || !compoundTag.getBoolean("Silent")) {
 			String string = compoundTag.getString("id");
 			EntityType.get(string).filter(entityType -> entityType == EntityType.PARROT).ifPresent(entityType -> ParrotEntity.method_6589(this.world, this));
 		}
 	}
 
-	private void method_7341(Entity entity) {
+	private void collideWithEntity(Entity entity) {
 		entity.onPlayerCollision(this);
 	}
 
@@ -624,12 +624,12 @@ public abstract class PlayerEntity extends LivingEntity {
 	protected void dropInventory() {
 		super.dropInventory();
 		if (!this.world.getGameRules().getBoolean("keepInventory")) {
-			this.method_7293();
+			this.vanishCursedItems();
 			this.inventory.dropAll();
 		}
 	}
 
-	protected void method_7293() {
+	protected void vanishCursedItems() {
 		for (int i = 0; i < this.inventory.getInvSize(); i++) {
 			ItemStack itemStack = this.inventory.getInvStack(i);
 			if (!itemStack.isEmpty() && EnchantmentHelper.hasVanishingCurse(itemStack)) {
@@ -737,7 +737,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			f *= g;
 		}
 
-		if (this.method_5777(FluidTags.field_15517) && !EnchantmentHelper.hasAquaAffinity(this)) {
+		if (this.isInFluid(FluidTags.field_15517) && !EnchantmentHelper.hasAquaAffinity(this)) {
 			f /= 5.0F;
 		}
 
@@ -846,7 +846,7 @@ public abstract class PlayerEntity extends LivingEntity {
 					this.wakeUp(true, true, false);
 				}
 
-				this.method_7262();
+				this.dropShoulderEntities();
 				if (damageSource.isScaledWithDifficulty()) {
 					if (this.world.getDifficulty() == Difficulty.PEACEFUL) {
 						f = 0.0F;
@@ -890,7 +890,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	protected void method_6056(float f) {
+	protected void damageShield(float f) {
 		if (f >= 3.0F && this.activeItemStack.getItem() == Items.field_8255) {
 			int i = 1 + MathHelper.floor(f);
 			this.activeItemStack.applyDamage(i, this);
@@ -944,19 +944,19 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 	}
 
-	public void openSignEditorGui(SignBlockEntity signBlockEntity) {
+	public void openEditSignScreen(SignBlockEntity signBlockEntity) {
 	}
 
-	public void openCommandBlockMinecartGui(CommandBlockExecutor commandBlockExecutor) {
+	public void openCommandBlockMinecartScreen(CommandBlockExecutor commandBlockExecutor) {
 	}
 
-	public void openCommandBlockGui(CommandBlockBlockEntity commandBlockBlockEntity) {
+	public void openCommandBlockScreen(CommandBlockBlockEntity commandBlockBlockEntity) {
 	}
 
-	public void openStructureBlockGui(StructureBlockBlockEntity structureBlockBlockEntity) {
+	public void openStructureBlockScreen(StructureBlockBlockEntity structureBlockBlockEntity) {
 	}
 
-	public void openJigsawGui(JigsawBlockEntity jigsawBlockEntity) {
+	public void openJigsawScreen(JigsawBlockEntity jigsawBlockEntity) {
 	}
 
 	public void openHorseInventory(HorseBaseEntity horseBaseEntity, Inventory inventory) {
@@ -966,10 +966,10 @@ public abstract class PlayerEntity extends LivingEntity {
 		return OptionalInt.empty();
 	}
 
-	public void sendVillagerRecipes(int i, VillagerRecipeList villagerRecipeList) {
+	public void sendVillagerRecipes(int i, TraderRecipeList traderRecipeList) {
 	}
 
-	public void openBookEditorGui(ItemStack itemStack, Hand hand) {
+	public void openEditBookScreen(ItemStack itemStack, Hand hand) {
 	}
 
 	public ActionResult interact(Entity entity, Hand hand) {
@@ -987,7 +987,7 @@ public abstract class PlayerEntity extends LivingEntity {
 					itemStack.setAmount(itemStack2.getAmount());
 				}
 
-				return ActionResult.SUCCESS;
+				return ActionResult.field_5812;
 			} else {
 				if (!itemStack.isEmpty() && entity instanceof LivingEntity) {
 					if (this.abilities.creativeMode) {
@@ -999,7 +999,7 @@ public abstract class PlayerEntity extends LivingEntity {
 							this.setStackInHand(hand, ItemStack.EMPTY);
 						}
 
-						return ActionResult.SUCCESS;
+						return ActionResult.field_5812;
 					}
 				}
 
@@ -1148,7 +1148,7 @@ public abstract class PlayerEntity extends LivingEntity {
 							this.addEnchantedHitParticles(entity);
 						}
 
-						this.method_6114(entity);
+						this.onAttacking(entity);
 						if (entity instanceof LivingEntity) {
 							EnchantmentHelper.onUserDamaged((LivingEntity)entity, this);
 						}
@@ -1197,7 +1197,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	protected void method_5997(LivingEntity livingEntity) {
+	protected void attackLivingEntity(LivingEntity livingEntity) {
 		this.attack(livingEntity);
 	}
 
@@ -1299,7 +1299,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			this.stopRiding();
 		}
 
-		this.method_7262();
+		this.dropShoulderEntities();
 		this.resetStat(Stats.field_15419.getOrCreateStat(Stats.field_15429));
 		this.setSize(0.2F, 0.2F);
 		if (this.world.isBlockLoaded(blockPos)) {
@@ -1469,8 +1469,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public void method_6043() {
-		super.method_6043();
+	public void jump() {
+		super.jump();
 		this.increaseStat(Stats.field_15428);
 		if (this.isSprinting()) {
 			this.addExhaustion(0.2F);
@@ -1541,7 +1541,7 @@ public abstract class PlayerEntity extends LivingEntity {
 					this.method_7339(Stats.field_15423, i);
 					this.addExhaustion(0.01F * (float)i * 0.01F);
 				}
-			} else if (this.method_5744(FluidTags.field_15517, true)) {
+			} else if (this.isInFluid(FluidTags.field_15517, true)) {
 				int i = Math.round(MathHelper.sqrt(d * d + e * e + f * f) * 100.0F);
 				if (i > 0) {
 					this.method_7339(Stats.field_15401, i);
@@ -1825,7 +1825,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 	}
 
-	protected void method_7262() {
+	protected void dropShoulderEntities() {
 		this.method_7296(this.getShoulderEntityLeft());
 		this.setShoulderEntityLeft(new CompoundTag());
 		this.method_7296(this.getShoulderEntityRight());

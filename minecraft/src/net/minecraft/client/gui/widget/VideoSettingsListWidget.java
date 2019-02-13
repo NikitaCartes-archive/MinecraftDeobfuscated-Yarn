@@ -27,12 +27,12 @@ public class VideoSettingsListWidget extends EntryListWidget<VideoSettingsListWi
 		} else {
 			int l = option.getId();
 			return (ButtonWidget)(option.isSlider()
-				? new OptionSliderWidget(l, i, j, k, 20, option, 0.0, 1.0)
+				? new GameOptionSliderWidget(minecraftClient, l, i, j, k, 20, option)
 				: new OptionButtonWidget(l, i, j, k, 20, option, minecraftClient.options.getTranslatedName(option)) {
 					@Override
 					public void onPressed(double d, double e) {
-						minecraftClient.options.updateOption(option, 1);
-						this.text = minecraftClient.options.getTranslatedName(GameOptions.Option.byId(this.id));
+						minecraftClient.options.setInteger(option, 1);
+						this.setText(minecraftClient.options.getTranslatedName(GameOptions.Option.byId(this.id)));
 					}
 				});
 		}
@@ -75,12 +75,12 @@ public class VideoSettingsListWidget extends EntryListWidget<VideoSettingsListWi
 		public void draw(int i, int j, int k, int l, boolean bl, float f) {
 			if (this.field_2149 != null) {
 				this.field_2149.y = this.getY();
-				this.field_2149.draw(k, l, f);
+				this.field_2149.render(k, l, f);
 			}
 
 			if (this.field_2150 != null) {
 				this.field_2150.y = this.getY();
-				this.field_2150.draw(k, l, f);
+				this.field_2150.render(k, l, f);
 			}
 		}
 

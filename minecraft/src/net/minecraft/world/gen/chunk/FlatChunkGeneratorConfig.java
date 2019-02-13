@@ -145,7 +145,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 	public static Block parseBlock(String string) {
 		try {
 			Identifier identifier = new Identifier(string);
-			return (Block)Registry.BLOCK.getOptional(identifier).orElse(null);
+			return (Block)Registry.BLOCK.getOrEmpty(identifier).orElse(null);
 		} catch (IllegalArgumentException var2) {
 			LOGGER.warn("Invalid blockstate: {}", string, var2);
 			return null;
@@ -386,7 +386,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 				flatChunkGeneratorConfig.getLayers().addAll(list);
 				flatChunkGeneratorConfig.updateLayerBlocks();
 				Biome biome = iterator.hasNext() ? Registry.BIOME.get(new Identifier((String)iterator.next())) : null;
-				flatChunkGeneratorConfig.setBiome(biome == null ? Biomes.biome : biome);
+				flatChunkGeneratorConfig.setBiome(biome == null ? Biomes.field_9451 : biome);
 				if (iterator.hasNext()) {
 					String[] strings = ((String)iterator.next()).toLowerCase(Locale.ROOT).split(",");
 
@@ -461,7 +461,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 
 	public static FlatChunkGeneratorConfig getDefaultConfig() {
 		FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.field_12766.createSettings();
-		flatChunkGeneratorConfig.setBiome(Biomes.biome);
+		flatChunkGeneratorConfig.setBiome(Biomes.field_9451);
 		flatChunkGeneratorConfig.getLayers().add(new FlatChunkGeneratorLayer(1, Blocks.field_9987));
 		flatChunkGeneratorConfig.getLayers().add(new FlatChunkGeneratorLayer(2, Blocks.field_10566));
 		flatChunkGeneratorConfig.getLayers().add(new FlatChunkGeneratorLayer(1, Blocks.field_10219));

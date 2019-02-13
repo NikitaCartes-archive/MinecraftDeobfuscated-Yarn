@@ -12,15 +12,15 @@ import net.minecraft.state.StateFactory;
 
 @Environment(EnvType.CLIENT)
 public class OrMultipartModelSelector implements MultipartModelSelector {
-	private final Iterable<? extends MultipartModelSelector> field_4337;
+	private final Iterable<? extends MultipartModelSelector> selectors;
 
 	public OrMultipartModelSelector(Iterable<? extends MultipartModelSelector> iterable) {
-		this.field_4337 = iterable;
+		this.selectors = iterable;
 	}
 
 	@Override
 	public Predicate<BlockState> getPredicate(StateFactory<Block, BlockState> stateFactory) {
-		List<Predicate<BlockState>> list = (List<Predicate<BlockState>>)Streams.stream(this.field_4337)
+		List<Predicate<BlockState>> list = (List<Predicate<BlockState>>)Streams.stream(this.selectors)
 			.map(multipartModelSelector -> multipartModelSelector.getPredicate(stateFactory))
 			.collect(Collectors.toList());
 		return blockState -> list.stream().anyMatch(predicate -> predicate.test(blockState));

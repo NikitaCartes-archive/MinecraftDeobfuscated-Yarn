@@ -36,7 +36,7 @@ public class OpenToLanScreen extends Screen {
 					textComponent = new TranslatableTextComponent("commands.publish.failed");
 				}
 
-				OpenToLanScreen.this.client.inGameHud.getHudChat().addMessage(textComponent);
+				OpenToLanScreen.this.client.inGameHud.getChatHud().addMessage(textComponent);
 			}
 		});
 		this.addButton(new ButtonWidget(102, this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel")) {
@@ -72,13 +72,8 @@ public class OpenToLanScreen extends Screen {
 	}
 
 	private void updateButtonText() {
-		this.buttonGameMode.text = I18n.translate("selectWorld.gameMode") + ": " + I18n.translate("selectWorld.gameMode." + this.gameMode);
-		this.buttonAllowCommands.text = I18n.translate("selectWorld.allowCommands") + " ";
-		if (this.allowCommands) {
-			this.buttonAllowCommands.text = this.buttonAllowCommands.text + I18n.translate("options.on");
-		} else {
-			this.buttonAllowCommands.text = this.buttonAllowCommands.text + I18n.translate("options.off");
-		}
+		this.buttonGameMode.setText(I18n.translate("selectWorld.gameMode") + ": " + I18n.translate("selectWorld.gameMode." + this.gameMode));
+		this.buttonAllowCommands.setText(I18n.translate("selectWorld.allowCommands") + ' ' + I18n.translate(this.allowCommands ? "options.on" : "options.off"));
 	}
 
 	@Override

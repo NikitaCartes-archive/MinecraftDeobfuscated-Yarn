@@ -24,7 +24,7 @@ public class ArmorStandItem extends Item {
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		Direction direction = itemUsageContext.getFacing();
 		if (direction == Direction.DOWN) {
-			return ActionResult.FAILURE;
+			return ActionResult.field_5814;
 		} else {
 			World world = itemUsageContext.getWorld();
 			ItemPlacementContext itemPlacementContext = new ItemPlacementContext(itemUsageContext);
@@ -36,7 +36,7 @@ public class ArmorStandItem extends Item {
 				double f = (double)blockPos.getZ();
 				List<Entity> list = world.getVisibleEntities(null, new BoundingBox(d, e, f, d + 1.0, e + 2.0, f + 1.0));
 				if (!list.isEmpty()) {
-					return ActionResult.FAILURE;
+					return ActionResult.field_5814;
 				} else {
 					ItemStack itemStack = itemUsageContext.getItemStack();
 					if (!world.isClient) {
@@ -52,10 +52,10 @@ public class ArmorStandItem extends Item {
 					}
 
 					itemStack.subtractAmount(1);
-					return ActionResult.SUCCESS;
+					return ActionResult.field_5812;
 				}
 			} else {
-				return ActionResult.FAILURE;
+				return ActionResult.field_5814;
 			}
 		}
 	}

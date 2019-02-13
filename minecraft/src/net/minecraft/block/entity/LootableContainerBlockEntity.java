@@ -101,7 +101,7 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 	}
 
 	@Override
-	public void setInvStack(int i, @Nullable ItemStack itemStack) {
+	public void setInvStack(int i, ItemStack itemStack) {
 		this.checkLootInteraction(null);
 		this.getInvStackList().set(i, itemStack);
 		if (itemStack.getAmount() > this.getInvMaxStackAmount()) {
@@ -119,7 +119,7 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 	}
 
 	@Override
-	public void clearInv() {
+	public void clear() {
 		this.getInvStackList().clear();
 	}
 

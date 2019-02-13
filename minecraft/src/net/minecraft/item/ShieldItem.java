@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.DispenserBlock;
-import net.minecraft.client.item.TooltipOptions;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.block.BannerItem;
 import net.minecraft.tag.ItemTags;
@@ -37,7 +37,7 @@ public class ShieldItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
 		BannerItem.buildBannerTooltip(itemStack, list);
 	}
 
@@ -55,7 +55,7 @@ public class ShieldItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		playerEntity.setCurrentHand(hand);
-		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+		return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 	}
 
 	@Override

@@ -25,9 +25,9 @@ public class GlProgramManager {
 	}
 
 	public void deleteProgram(class_3679 arg) {
-		arg.getFragmentShader().method_1282();
-		arg.getVertexShader().method_1282();
-		GLX.glDeleteProgram(arg.getProgramRef());
+		arg.method_1278().method_1282();
+		arg.method_1274().method_1282();
+		GLX.glDeleteProgram(arg.method_1270());
 	}
 
 	public int createProgram() throws IOException {
@@ -40,15 +40,13 @@ public class GlProgramManager {
 	}
 
 	public void linkProgram(class_3679 arg) throws IOException {
-		arg.getFragmentShader().attachTo(arg);
-		arg.getVertexShader().attachTo(arg);
-		GLX.glLinkProgram(arg.getProgramRef());
-		int i = GLX.glGetProgrami(arg.getProgramRef(), GLX.GL_LINK_STATUS);
+		arg.method_1278().attachTo(arg);
+		arg.method_1274().attachTo(arg);
+		GLX.glLinkProgram(arg.method_1270());
+		int i = GLX.glGetProgrami(arg.method_1270(), GLX.GL_LINK_STATUS);
 		if (i == 0) {
-			LOGGER.warn(
-				"Error encountered when linking program containing VS {} and FS {}. Log output:", arg.getVertexShader().getName(), arg.getFragmentShader().getName()
-			);
-			LOGGER.warn(GLX.glGetProgramInfoLog(arg.getProgramRef(), 32768));
+			LOGGER.warn("Error encountered when linking program containing VS {} and FS {}. Log output:", arg.method_1274().getName(), arg.method_1278().getName());
+			LOGGER.warn(GLX.glGetProgramInfoLog(arg.method_1270(), 32768));
 		}
 	}
 }

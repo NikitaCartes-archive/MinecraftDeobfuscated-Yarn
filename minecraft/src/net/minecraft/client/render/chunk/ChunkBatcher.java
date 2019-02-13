@@ -41,9 +41,9 @@ public class ChunkBatcher {
 	private final List<ChunkRenderWorker> workers = Lists.<ChunkRenderWorker>newArrayList();
 	private final PriorityBlockingQueue<ChunkRenderTask> pendingChunks = Queues.newPriorityBlockingQueue();
 	private final BlockingQueue<BlockLayeredBufferBuilder> availableBuffers;
-	private final BufferRenderer field_4437 = new BufferRenderer();
+	private final BufferRenderer bufferRenderer = new BufferRenderer();
 	private final class_294 field_4441 = new class_294();
-	private final Queue<ChunkBatcher.class_847> pendingUploads = Queues.<ChunkBatcher.class_847>newPriorityQueue();
+	private final Queue<ChunkBatcher.ChunkUploadTask> pendingUploads = Queues.<ChunkBatcher.ChunkUploadTask>newPriorityQueue();
 	private final ChunkRenderWorker activeWorker;
 
 	public ChunkBatcher() {
@@ -95,7 +95,7 @@ public class ChunkBatcher {
 
 			synchronized (this.pendingUploads) {
 				if (!this.pendingUploads.isEmpty()) {
-					((ChunkBatcher.class_847)this.pendingUploads.poll()).field_4446.run();
+					((ChunkBatcher.ChunkUploadTask)this.pendingUploads.poll()).task.run();
 					bl2 = true;
 					bl = true;
 				}
@@ -173,7 +173,7 @@ public class ChunkBatcher {
 		return (ChunkRenderTask)this.pendingChunks.take();
 	}
 
-	public boolean resortTransparency(ChunkRenderer chunkRenderer) {
+	public boolean method_3620(ChunkRenderer chunkRenderer) {
 		chunkRenderer.getChunkRenderLock().lock();
 
 		boolean var3;
@@ -209,7 +209,7 @@ public class ChunkBatcher {
 				() -> this.method_3635(blockRenderLayer, bufferBuilder, chunkRenderer, chunkRenderData, d), null
 			);
 			synchronized (this.pendingUploads) {
-				this.pendingUploads.add(new ChunkBatcher.class_847(listenableFutureTask, d));
+				this.pendingUploads.add(new ChunkBatcher.ChunkUploadTask(listenableFutureTask, d));
 				return listenableFutureTask;
 			}
 		}
@@ -219,7 +219,7 @@ public class ChunkBatcher {
 		GlStateManager.newList(i, 4864);
 		GlStateManager.pushMatrix();
 		chunkRenderer.multiplyMatrix();
-		this.field_4437.draw(bufferBuilder);
+		this.bufferRenderer.draw(bufferBuilder);
 		GlStateManager.popMatrix();
 		GlStateManager.endList();
 	}
@@ -262,17 +262,17 @@ public class ChunkBatcher {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class class_847 implements Comparable<ChunkBatcher.class_847> {
-		private final ListenableFutureTask<Object> field_4446;
-		private final double field_4447;
+	class ChunkUploadTask implements Comparable<ChunkBatcher.ChunkUploadTask> {
+		private final ListenableFutureTask<Object> task;
+		private final double priority;
 
-		public class_847(ListenableFutureTask<Object> listenableFutureTask, double d) {
-			this.field_4446 = listenableFutureTask;
-			this.field_4447 = d;
+		public ChunkUploadTask(ListenableFutureTask<Object> listenableFutureTask, double d) {
+			this.task = listenableFutureTask;
+			this.priority = d;
 		}
 
-		public int method_3638(ChunkBatcher.class_847 arg) {
-			return Doubles.compare(this.field_4447, arg.field_4447);
+		public int method_3638(ChunkBatcher.ChunkUploadTask chunkUploadTask) {
+			return Doubles.compare(this.priority, chunkUploadTask.priority);
 		}
 	}
 }

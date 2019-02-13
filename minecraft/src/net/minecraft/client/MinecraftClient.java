@@ -43,8 +43,8 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.client.audio.MusicTracker;
 import net.minecraft.client.audio.SoundLoader;
-import net.minecraft.client.font.FontRenderer;
-import net.minecraft.client.font.FontRendererManager;
+import net.minecraft.client.font.FontManager;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.GlDebug;
 import net.minecraft.client.gl.GlFramebuffer;
 import net.minecraft.client.gui.CloseWorldScreen;
@@ -69,7 +69,7 @@ import net.minecraft.client.gui.menu.OutOfMemoryScreen;
 import net.minecraft.client.gui.menu.PauseMenuScreen;
 import net.minecraft.client.gui.menu.ServerConnectingScreen;
 import net.minecraft.client.gui.menu.WorkingScreen;
-import net.minecraft.client.item.TooltipOptions;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -111,6 +111,7 @@ import net.minecraft.client.search.SearchManager;
 import net.minecraft.client.search.SearchableContainer;
 import net.minecraft.client.search.TextSearchableContainer;
 import net.minecraft.client.sortme.PlayerSkinProvider;
+import net.minecraft.client.texture.PaintingManager;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
@@ -170,6 +171,7 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.ThreadTaskQueue;
 import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.UserCache;
+import net.minecraft.util.Void;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -199,11 +201,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class MinecraftClient extends ThreadTaskQueue<Runnable> implements SnooperListener, WindowEventHandler, InputListener {
+public class MinecraftClient extends ThreadTaskQueue<Runnable> implements SnooperListener, WindowEventHandler, InputListener, AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final boolean isSystemMac = SystemUtil.getOperatingSystem() == SystemUtil.OperatingSystem.MAC;
-	public static final Identifier defaultFontRendererId = new Identifier("default");
-	public static final Identifier altFontRendererId = new Identifier("alt");
+	public static final boolean IS_SYSTEM_MAC = SystemUtil.getOperatingSystem() == SystemUtil.OperatingSystem.MAC;
+	public static final Identifier DEFAULT_TEXT_RENDERER_ID = new Identifier("default");
+	public static final Identifier ALT_TEXT_RENDERER_ID = new Identifier("alt");
+	public static CompletableFuture<Void> voidFuture = CompletableFuture.completedFuture(Void.INSTANCE);
 	public static byte[] memoryReservedForCrash = new byte[10485760];
 	private static int cachedMaxTextureSize = -1;
 	private final File resourcePackDir;
@@ -236,7 +239,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 	private final Session session;
 	private boolean isPaused;
 	private float pausedTickDelta;
-	public FontRenderer fontRenderer;
+	public TextRenderer textRenderer;
 	@Nullable
 	public Screen currentScreen;
 	public GameRenderer gameRenderer;
@@ -244,7 +247,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 	protected int attackCooldown;
 	@Nullable
 	private IntegratedServer server;
-	private final AtomicReference<WorldGenerationProgressTracker> field_17405 = new AtomicReference();
+	private final AtomicReference<WorldGenerationProgressTracker> worldGenProgressTracker = new AtomicReference();
 	public InGameHud inGameHud;
 	public boolean skipGameRender;
 	public HitResult hitResult;
@@ -280,13 +283,14 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 	private SpriteAtlasTexture spriteAtlas;
 	private SoundLoader soundLoader;
 	private MusicTracker musicTracker;
-	private FontRendererManager fontManager;
+	private FontManager fontManager;
 	private SplashTextResourceLoader splashTextLoader;
 	private final MinecraftSessionService sessionService;
 	private PlayerSkinProvider skinProvider;
 	private final Thread thread = Thread.currentThread();
 	private BakedModelManager bakedModelManager;
 	private BlockRenderManager blockRenderManager;
+	private PaintingManager paintingManager;
 	private final ToastManager toastManager;
 	private final MinecraftClientGame game = new MinecraftClientGame(this);
 	private volatile boolean isRunning = true;
@@ -335,7 +339,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 		}
 
 		Bootstrap.initialize();
-		Bootstrap.method_17598();
+		Bootstrap.logMissingTranslations();
 		KeybindTextComponent.field_11766 = KeyBinding::method_1419;
 		this.dataFixer = Schemas.getFixer();
 		this.toastManager = new ToastManager(this);
@@ -424,32 +428,32 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 		this.keyboard.setup(this.window.getHandle());
 		GLX.init();
 		GlDebug.enableDebug(this.options.glDebugVerbosity, false);
-		this.framebuffer = new GlFramebuffer(this.window.getFramebufferWidth(), this.window.getFramebufferHeight(), true, isSystemMac);
+		this.framebuffer = new GlFramebuffer(this.window.getFramebufferWidth(), this.window.getFramebufferHeight(), true, IS_SYSTEM_MAC);
 		this.framebuffer.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
 		this.resourceManager = new ReloadableResourceManagerImpl(ResourceType.ASSETS, this.thread);
 		this.languageManager = new LanguageManager(this.options.language);
-		this.resourceManager.addListener(this.languageManager);
+		this.resourceManager.registerListener(this.languageManager);
 		this.options.addResourcePackContainersToManager(this.resourcePackContainerManager);
 		this.reloadResources();
 		this.textureManager = new TextureManager(this.resourceManager);
-		this.resourceManager.addListener(this.textureManager);
+		this.resourceManager.registerListener(this.textureManager);
 		this.onResolutionChanged();
 		this.skinProvider = new PlayerSkinProvider(this.textureManager, new File(this.assetDirectory, "skins"), this.sessionService);
 		this.levelStorage = new LevelStorage(this.runDirectory.toPath().resolve("saves"), this.runDirectory.toPath().resolve("backups"), this.dataFixer);
 		this.soundLoader = new SoundLoader(this.options);
-		this.resourceManager.addListener(this.soundLoader);
+		this.resourceManager.registerListener(this.soundLoader);
 		this.splashTextLoader = new SplashTextResourceLoader();
-		this.resourceManager.addListener(this.splashTextLoader);
+		this.resourceManager.registerListener(this.splashTextLoader);
 		this.musicTracker = new MusicTracker(this);
-		this.fontManager = new FontRendererManager(this.textureManager, this.forcesUnicodeFont());
-		this.resourceManager.addListener(this.fontManager);
-		this.fontRenderer = this.fontManager.getFontRenderer(defaultFontRendererId);
+		this.fontManager = new FontManager(this.textureManager, this.forcesUnicodeFont());
+		this.resourceManager.registerListener(this.fontManager);
+		this.textRenderer = this.fontManager.getTextRenderer(DEFAULT_TEXT_RENDERER_ID);
 		if (this.options.language != null) {
-			this.fontRenderer.setRightToLeft(this.languageManager.isRightToLeft());
+			this.textRenderer.setRightToLeft(this.languageManager.isRightToLeft());
 		}
 
-		this.resourceManager.addListener(new GrassColormapResourceLoader());
-		this.resourceManager.addListener(new FoliageColormapResourceLoader());
+		this.resourceManager.registerListener(new GrassColormapResourceLoader());
+		this.resourceManager.registerListener(new FoliageColormapResourceLoader());
 		this.window.setPhase("Startup");
 		GlStateManager.enableTexture();
 		GlStateManager.shadeModel(7425);
@@ -469,24 +473,26 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 		this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 		this.spriteAtlas.setFilter(false, this.options.mipmapLevels > 0);
 		this.bakedModelManager = new BakedModelManager(this.spriteAtlas);
-		this.resourceManager.addListener(this.bakedModelManager);
+		this.resourceManager.registerListener(this.bakedModelManager);
 		this.blockColorMap = BlockColorMap.create();
 		this.itemColorMap = ItemColorMap.create(this.blockColorMap);
 		this.itemRenderer = new ItemRenderer(this.textureManager, this.bakedModelManager, this.itemColorMap);
 		this.entityRenderManager = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.resourceManager);
 		this.firstPersonRenderer = new FirstPersonRenderer(this);
-		this.resourceManager.addListener(this.itemRenderer);
+		this.resourceManager.registerListener(this.itemRenderer);
 		this.gameRenderer = new GameRenderer(this, this.resourceManager);
-		this.resourceManager.addListener(this.gameRenderer);
+		this.resourceManager.registerListener(this.gameRenderer);
 		this.blockRenderManager = new BlockRenderManager(this.bakedModelManager.getBlockStateMaps(), this.blockColorMap);
-		this.resourceManager.addListener(this.blockRenderManager);
+		this.resourceManager.registerListener(this.blockRenderManager);
 		this.worldRenderer = new WorldRenderer(this);
-		this.resourceManager.addListener(this.worldRenderer);
+		this.resourceManager.registerListener(this.worldRenderer);
 		this.initializeSearchableContainers();
-		this.resourceManager.addListener(this.searchManager);
+		this.resourceManager.registerListener(this.searchManager);
 		GlStateManager.viewport(0, 0, this.window.getFramebufferWidth(), this.window.getFramebufferHeight());
 		this.particleManager = new ParticleManager(this.world, this.textureManager);
-		this.resourceManager.addListener(this.particleManager);
+		this.resourceManager.registerListener(this.particleManager);
+		this.paintingManager = new PaintingManager(this.textureManager);
+		this.resourceManager.registerListener(this.paintingManager);
 		this.inGameHud = new InGameHud(this);
 		this.debugRenderer = new DebugRenderer(this);
 		GLX.setGlfwErrorCallback(this::handleGlErrorByDisableVsync);
@@ -497,22 +503,26 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 
 		this.window.setVsync(this.options.enableVsync);
 		this.window.logOnGlError();
-		this.openScreen(new SplashScreen(this.resourceManager.method_18231(), splashScreen -> {
-			if (this.autoConnectServerIp != null) {
-				this.openScreen(new ServerConnectingScreen(new MainMenuScreen(), this, this.autoConnectServerIp, this.autoConnectServerPort));
-			} else {
-				this.openScreen(new MainMenuScreen(splashScreen.method_18104(), 1000L));
-			}
+		this.openScreen(
+			new SplashScreen(
+				this.resourceManager.createReloadHandler(SystemUtil.getServerWorkerExecutor(), this, CompletableFuture.completedFuture(Void.INSTANCE)), splashScreen -> {
+					if (this.autoConnectServerIp != null) {
+						this.openScreen(new ServerConnectingScreen(new MainMenuScreen(), this, this.autoConnectServerIp, this.autoConnectServerPort));
+					} else {
+						this.openScreen(new MainMenuScreen(splashScreen.method_18104(), 1000L));
+					}
 
-			if (SharedConstants.isDevelopment) {
-				this.checkGameData();
-			}
-		}));
+					if (SharedConstants.isDevelopment) {
+						this.checkGameData();
+					}
+				}
+			)
+		);
 	}
 
 	private void initializeSearchableContainers() {
 		TextSearchableContainer<ItemStack> textSearchableContainer = new TextSearchableContainer<>(
-			itemStack -> itemStack.getTooltipText(null, TooltipOptions.Instance.NORMAL)
+			itemStack -> itemStack.getTooltipText(null, TooltipContext.Default.NORMAL)
 					.stream()
 					.map(textComponent -> TextFormat.stripFormatting(textComponent.getString()).trim())
 					.filter(string -> !string.isEmpty()),
@@ -524,7 +534,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 		DefaultedList<ItemStack> defaultedList = DefaultedList.create();
 
 		for (Item item : Registry.ITEM) {
-			item.addStacksForDisplay(ItemGroup.SEARCH, defaultedList);
+			item.appendItemsForGroup(ItemGroup.SEARCH, defaultedList);
 		}
 
 		defaultedList.forEach(itemStack -> {
@@ -534,7 +544,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 		TextSearchableContainer<RecipeResultCollection> textSearchableContainer2 = new TextSearchableContainer<>(
 			recipeResultCollection -> recipeResultCollection.getAllRecipes()
 					.stream()
-					.flatMap(recipe -> recipe.getOutput().getTooltipText(null, TooltipOptions.Instance.NORMAL).stream())
+					.flatMap(recipe -> recipe.getOutput().getTooltipText(null, TooltipContext.Default.NORMAL).stream())
 					.map(textComponent -> TextFormat.stripFormatting(textComponent.getString()).trim())
 					.filter(string -> !string.isEmpty()),
 			recipeResultCollection -> recipeResultCollection.getAllRecipes().stream().map(recipe -> Registry.ITEM.getId(recipe.getOutput().getItem()))
@@ -627,7 +637,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 		}
 
 		try {
-			this.resourceManager.reload(list);
+			this.method_18248(this.resourceManager.reload(SystemUtil.getServerWorkerExecutor(), this, list, voidFuture));
 		} catch (RuntimeException var4) {
 			LOGGER.info("Caught error stitching, removing all assigned resourcepacks", (Throwable)var4);
 			this.resourcePackContainerManager.setEnabled(Collections.emptyList());
@@ -636,7 +646,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 				.stream()
 				.map(ResourcePackContainer::createResourcePack)
 				.collect(Collectors.toList());
-			this.resourceManager.reload(list2);
+			this.method_18248(this.resourceManager.reload(SystemUtil.getServerWorkerExecutor(), this, list2, voidFuture));
 			this.options.resourcePacks.clear();
 			this.options.incompatibleResourcePacks.clear();
 			this.options.write();
@@ -681,7 +691,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 
 		for (Item item : Registry.ITEM) {
 			defaultedList.clear();
-			item.addStacksForDisplay(ItemGroup.SEARCH, defaultedList);
+			item.appendItemsForGroup(ItemGroup.SEARCH, defaultedList);
 
 			for (ItemStack itemStack : defaultedList) {
 				String string = new TranslatableTextComponent(itemStack.getTranslationKey()).getString();
@@ -721,7 +731,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 
 		if (screen instanceof MainMenuScreen || screen instanceof MultiplayerScreen) {
 			this.options.debugEnabled = false;
-			this.inGameHud.getHudChat().clear(true);
+			this.inGameHud.getChatHud().clear(true);
 		}
 
 		this.currentScreen = screen;
@@ -745,7 +755,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 					this.world.disconnect();
 				}
 
-				this.method_18099();
+				this.openWorkingScreen();
 			} catch (Throwable var5) {
 			}
 
@@ -753,18 +763,28 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 				this.currentScreen.onClosed();
 			}
 
-			this.spriteAtlas.clear();
-			this.fontRenderer.close();
-			this.gameRenderer.close();
-			this.worldRenderer.close();
-			this.soundLoader.deinitialize();
+			this.close();
 		} finally {
-			this.windowProvider.close();
-			this.window.close();
 			SystemUtil.nanoTimeSupplier = System::nanoTime;
 			if (!this.crashed) {
 				System.exit(0);
 			}
+		}
+	}
+
+	public void close() {
+		try {
+			this.spriteAtlas.clear();
+			this.textRenderer.close();
+			this.fontManager.close();
+			this.gameRenderer.close();
+			this.worldRenderer.close();
+			this.soundLoader.deinitialize();
+			this.resourcePackContainerManager.close();
+			SystemUtil.method_18350();
+		} finally {
+			this.windowProvider.close();
+			this.window.close();
 		}
 	}
 
@@ -805,7 +825,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 		this.profiler.pop();
 		this.profiler.push("render");
 		GlStateManager.pushMatrix();
-		GlStateManager.clear(16640, isSystemMac);
+		GlStateManager.clear(16640, IS_SYSTEM_MAC);
 		this.framebuffer.beginWrite(true);
 		this.profiler.push("display");
 		GlStateManager.enableTexture();
@@ -901,11 +921,11 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 
 		GlFramebuffer glFramebuffer = this.getFramebuffer();
 		if (glFramebuffer != null) {
-			glFramebuffer.resize(this.window.getFramebufferWidth(), this.window.getFramebufferHeight(), isSystemMac);
+			glFramebuffer.resize(this.window.getFramebufferWidth(), this.window.getFramebufferHeight(), IS_SYSTEM_MAC);
 		}
 
 		if (this.gameRenderer != null) {
-			this.gameRenderer.method_3169(this.window.getFramebufferWidth(), this.window.getFramebufferHeight());
+			this.gameRenderer.onResized(this.window.getFramebufferWidth(), this.window.getFramebufferHeight());
 		}
 
 		if (this.mouse != null) {
@@ -971,7 +991,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 			ProfileResult profileResult = this.profiler.getController().getResults();
 			List<ProfilerTiming> list = profileResult.getTimings(this.openProfilerSection);
 			ProfilerTiming profilerTiming = (ProfilerTiming)list.remove(0);
-			GlStateManager.clear(256, isSystemMac);
+			GlStateManager.clear(256, IS_SYSTEM_MAC);
 			GlStateManager.matrixMode(5889);
 			GlStateManager.enableColorMaterial();
 			GlStateManager.loadIdentity();
@@ -1043,9 +1063,9 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 			}
 
 			int m = 16777215;
-			this.fontRenderer.drawWithShadow(string, (float)(j - 160), (float)(k - 80 - 16), 16777215);
+			this.textRenderer.drawWithShadow(string, (float)(j - 160), (float)(k - 80 - 16), 16777215);
 			string = decimalFormat.format(profilerTiming.totalUsagePercentage) + "%";
-			this.fontRenderer.drawWithShadow(string, (float)(j + 160 - this.fontRenderer.getStringWidth(string)), (float)(k - 80 - 16), 16777215);
+			this.textRenderer.drawWithShadow(string, (float)(j + 160 - this.textRenderer.getStringWidth(string)), (float)(k - 80 - 16), 16777215);
 
 			for (int s = 0; s < list.size(); s++) {
 				ProfilerTiming profilerTiming3 = (ProfilerTiming)list.get(s);
@@ -1057,13 +1077,13 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 				}
 
 				String string2 = stringBuilder.append(profilerTiming3.name).toString();
-				this.fontRenderer.drawWithShadow(string2, (float)(j - 160), (float)(k + 80 + s * 8 + 20), profilerTiming3.getColor());
+				this.textRenderer.drawWithShadow(string2, (float)(j - 160), (float)(k + 80 + s * 8 + 20), profilerTiming3.getColor());
 				string2 = decimalFormat.format(profilerTiming3.parentSectionUsagePercentage) + "%";
-				this.fontRenderer
-					.drawWithShadow(string2, (float)(j + 160 - 50 - this.fontRenderer.getStringWidth(string2)), (float)(k + 80 + s * 8 + 20), profilerTiming3.getColor());
+				this.textRenderer
+					.drawWithShadow(string2, (float)(j + 160 - 50 - this.textRenderer.getStringWidth(string2)), (float)(k + 80 + s * 8 + 20), profilerTiming3.getColor());
 				string2 = decimalFormat.format(profilerTiming3.totalUsagePercentage) + "%";
-				this.fontRenderer
-					.drawWithShadow(string2, (float)(j + 160 - this.fontRenderer.getStringWidth(string2)), (float)(k + 80 + s * 8 + 20), profilerTiming3.getColor());
+				this.textRenderer
+					.drawWithShadow(string2, (float)(j + 160 - this.textRenderer.getStringWidth(string2)), (float)(k + 80 + s * 8 + 20), profilerTiming3.getColor());
 			}
 		}
 	}
@@ -1150,11 +1170,11 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 							case ENTITY:
 								EntityHitResult entityHitResult = (EntityHitResult)this.hitResult;
 								Entity entity = entityHitResult.getEntity();
-								if (this.interactionManager.interactEntityAtLocation(this.player, entity, entityHitResult, hand) == ActionResult.SUCCESS) {
+								if (this.interactionManager.interactEntityAtLocation(this.player, entity, entityHitResult, hand) == ActionResult.field_5812) {
 									return;
 								}
 
-								if (this.interactionManager.interactEntity(this.player, entity, hand) == ActionResult.SUCCESS) {
+								if (this.interactionManager.interactEntity(this.player, entity, hand) == ActionResult.field_5812) {
 									return;
 								}
 								break;
@@ -1162,7 +1182,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 								BlockHitResult blockHitResult = (BlockHitResult)this.hitResult;
 								int i = itemStack.getAmount();
 								ActionResult actionResult = this.interactionManager.interactBlock(this.player, this.world, hand, blockHitResult);
-								if (actionResult == ActionResult.SUCCESS) {
+								if (actionResult == ActionResult.field_5812) {
 									this.player.swingHand(hand);
 									if (!itemStack.isEmpty() && (itemStack.getAmount() != i || this.interactionManager.hasCreativeInventory())) {
 										this.gameRenderer.firstPersonRenderer.resetEquipProgress(hand);
@@ -1171,13 +1191,13 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 									return;
 								}
 
-								if (actionResult == ActionResult.FAILURE) {
+								if (actionResult == ActionResult.field_5814) {
 									return;
 								}
 						}
 					}
 
-					if (!itemStack.isEmpty() && this.interactionManager.interactItem(this.player, this.world, hand) == ActionResult.SUCCESS) {
+					if (!itemStack.isEmpty() && this.interactionManager.interactItem(this.player, this.world, hand) == ActionResult.field_5812) {
 						this.gameRenderer.firstPersonRenderer.resetEquipProgress(hand);
 						return;
 					}
@@ -1232,7 +1252,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 		}
 
 		if (!this.options.debugEnabled) {
-			this.inGameHud.method_1745();
+			this.inGameHud.resetDebugHudChunk();
 		}
 
 		if (this.currentScreen == null || this.currentScreen.field_2558) {
@@ -1313,14 +1333,14 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 
 	private void handleInputEvents() {
 		while (this.options.keyTogglePerspective.wasPressed()) {
-			this.options.field_1850++;
-			if (this.options.field_1850 > 2) {
-				this.options.field_1850 = 0;
+			this.options.perspective++;
+			if (this.options.perspective > 2) {
+				this.options.perspective = 0;
 			}
 
-			if (this.options.field_1850 == 0) {
+			if (this.options.perspective == 0) {
 				this.gameRenderer.onCameraEntitySet(this.getCameraEntity());
-			} else if (this.options.field_1850 == 1) {
+			} else if (this.options.perspective == 1) {
 				this.gameRenderer.onCameraEntitySet(null);
 			}
 
@@ -1336,18 +1356,18 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 			boolean bl2 = this.options.keyLoadToolbarActivator.isPressed();
 			if (this.options.keysHotbar[i].wasPressed()) {
 				if (this.player.isSpectator()) {
-					this.inGameHud.getSpectatorWidget().method_1977(i);
+					this.inGameHud.getSpectatorWidget().onHotbarKeyPress(i);
 				} else if (!this.player.isCreative() || this.currentScreen != null || !bl2 && !bl) {
 					this.player.inventory.selectedSlot = i;
 				} else {
-					CreativePlayerInventoryScreen.method_2462(this, i, bl2, bl);
+					CreativePlayerInventoryScreen.onHotbarKeyPress(this, i, bl2, bl);
 				}
 			}
 		}
 
 		while (this.options.keyInventory.wasPressed()) {
 			if (this.interactionManager.hasRidingInventory()) {
-				this.player.method_3132();
+				this.player.openRidingInventory();
 			} else {
 				this.tutorialManager.onInventoryOpened();
 				this.openScreen(new PlayerInventoryScreen(this.player));
@@ -1383,7 +1403,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 
 		if (this.player.isUsingItem()) {
 			if (!this.options.keyUse.isPressed()) {
-				this.interactionManager.method_2897(this.player);
+				this.interactionManager.stopUsingItem(this.player);
 			}
 
 			while (this.options.keyAttack.wasPressed()) {
@@ -1416,7 +1436,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 	}
 
 	public void startIntegratedServer(String string, String string2, @Nullable LevelInfo levelInfo) {
-		this.method_18099();
+		this.openWorkingScreen();
 		WorldSaveHandler worldSaveHandler = this.levelStorage.method_242(string, null);
 		LevelProperties levelProperties = worldSaveHandler.readProperties();
 		if (levelProperties == null && levelInfo != null) {
@@ -1428,7 +1448,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 			levelInfo = new LevelInfo(levelProperties);
 		}
 
-		this.field_17405.set(null);
+		this.worldGenProgressTracker.set(null);
 
 		try {
 			YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.netProxy, UUID.randomUUID().toString());
@@ -1442,7 +1462,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 				this, string, string2, levelInfo, yggdrasilAuthenticationService, minecraftSessionService, gameProfileRepository, userCache, i -> {
 					WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(i + 0);
 					worldGenerationProgressTracker.start();
-					this.field_17405.set(worldGenerationProgressTracker);
+					this.worldGenProgressTracker.set(worldGenerationProgressTracker);
 					return new QueueingWorldGenerationProgressListener(worldGenerationProgressTracker, this.renderTaskQueue::add);
 				}
 			);
@@ -1456,11 +1476,13 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 			throw new CrashException(crashReport);
 		}
 
-		while (this.field_17405.get() == null) {
+		while (this.worldGenProgressTracker.get() == null) {
 			Thread.yield();
 		}
 
-		WorldGenerationProgressScreen worldGenerationProgressScreen = new WorldGenerationProgressScreen((WorldGenerationProgressTracker)this.field_17405.get());
+		WorldGenerationProgressScreen worldGenerationProgressScreen = new WorldGenerationProgressScreen(
+			(WorldGenerationProgressTracker)this.worldGenProgressTracker.get()
+		);
 		this.openScreen(worldGenerationProgressScreen);
 
 		while (!this.server.method_3820()) {
@@ -1492,7 +1514,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 		workingScreen.method_15412(new TranslatableTextComponent("connect.joining"));
 		this.method_18098(workingScreen);
 		this.world = clientWorld;
-		this.method_18097(clientWorld);
+		this.setWorld(clientWorld);
 		if (!this.isIntegratedServerRunning) {
 			AuthenticationService authenticationService = new YggdrasilAuthenticationService(this.netProxy, UUID.randomUUID().toString());
 			MinecraftSessionService minecraftSessionService = authenticationService.createMinecraftSessionService();
@@ -1504,7 +1526,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 		}
 	}
 
-	public void method_18099() {
+	public void openWorkingScreen() {
 		this.method_18096(new WorkingScreen());
 	}
 
@@ -1536,12 +1558,12 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 		}
 
 		this.world = null;
-		this.method_18097(null);
+		this.setWorld(null);
 		this.player = null;
 	}
 
 	private void method_18098(Screen screen) {
-		this.musicTracker.method_4859();
+		this.musicTracker.stop();
 		this.soundLoader.stopAll();
 		this.cameraEntity = null;
 		this.clientConnection = null;
@@ -1549,7 +1571,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 		this.render(false);
 	}
 
-	private void method_18097(@Nullable ClientWorld clientWorld) {
+	private void setWorld(@Nullable ClientWorld clientWorld) {
 		if (this.worldRenderer != null) {
 			this.worldRenderer.setWorld(clientWorld);
 		}
@@ -1570,7 +1592,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 		return this.player == null ? null : this.player.networkHandler;
 	}
 
-	public static boolean method_1498() {
+	public static boolean isHudEnabled() {
 		return instance == null || !instance.options.hudHidden;
 	}
 
@@ -1653,7 +1675,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 				} else if (entity instanceof EnderCrystalEntity) {
 					itemStack = new ItemStack(Items.field_8301);
 				} else {
-					SpawnEggItem spawnEggItem = SpawnEggItem.method_8019(entity.getType());
+					SpawnEggItem spawnEggItem = SpawnEggItem.forEntity(entity.getType());
 					if (spawnEggItem == null) {
 						return;
 					}
@@ -1891,7 +1913,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 		return this.is64Bit;
 	}
 
-	public boolean method_1493() {
+	public boolean isPaused() {
 		return this.isPaused;
 	}
 
@@ -1901,22 +1923,22 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 
 	public MusicTracker.MusicType getMusicType() {
 		if (this.currentScreen instanceof EndCreditsScreen) {
-			return MusicTracker.MusicType.CREDITS;
+			return MusicTracker.MusicType.field_5578;
 		} else if (this.player == null) {
-			return MusicTracker.MusicType.MENU;
+			return MusicTracker.MusicType.field_5585;
 		} else if (this.player.world.dimension instanceof TheNetherDimension) {
-			return MusicTracker.MusicType.NETHER;
+			return MusicTracker.MusicType.field_5582;
 		} else if (this.player.world.dimension instanceof TheEndDimension) {
-			return this.inGameHud.getHudBossBar().shouldPlayDragonMusic() ? MusicTracker.MusicType.DRAGON : MusicTracker.MusicType.END;
+			return this.inGameHud.getBossBarHud().shouldPlayDragonMusic() ? MusicTracker.MusicType.field_5580 : MusicTracker.MusicType.field_5583;
 		} else {
 			Biome.Category category = this.player.world.getBiome(new BlockPos(this.player.x, this.player.y, this.player.z)).getCategory();
-			if (!this.musicTracker.method_4860(MusicTracker.MusicType.field_5576)
+			if (!this.musicTracker.isPlayingType(MusicTracker.MusicType.field_5576)
 				&& (
-					!this.player.method_5869()
-						|| this.musicTracker.method_4860(MusicTracker.MusicType.GAME)
+					!this.player.isInWater()
+						|| this.musicTracker.isPlayingType(MusicTracker.MusicType.field_5586)
 						|| category != Biome.Category.OCEAN && category != Biome.Category.RIVER
 				)) {
-				return this.player.abilities.creativeMode && this.player.abilities.allowFlying ? MusicTracker.MusicType.CREATIVE : MusicTracker.MusicType.GAME;
+				return this.player.abilities.creativeMode && this.player.abilities.allowFlying ? MusicTracker.MusicType.field_5581 : MusicTracker.MusicType.field_5586;
 			} else {
 				return MusicTracker.MusicType.field_5576;
 			}
@@ -1995,8 +2017,8 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 		return this.renderTickCounter.tickDelta;
 	}
 
-	public float method_1534() {
-		return this.renderTickCounter.field_1969;
+	public float getLastFrameDuration() {
+		return this.renderTickCounter.lastFrameDuration;
 	}
 
 	public BlockColorMap getBlockColorMap() {
@@ -2027,8 +2049,12 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 		return this.bakedModelManager;
 	}
 
-	public FontRendererManager getFontManager() {
+	public FontManager getFontManager() {
 		return this.fontManager;
+	}
+
+	public PaintingManager getPaintingManager() {
+		return this.paintingManager;
 	}
 
 	@Override

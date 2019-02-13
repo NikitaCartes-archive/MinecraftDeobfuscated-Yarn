@@ -34,6 +34,6 @@ public class EnderPearlItem extends Item {
 		}
 
 		playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
-		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+		return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 	}
 }

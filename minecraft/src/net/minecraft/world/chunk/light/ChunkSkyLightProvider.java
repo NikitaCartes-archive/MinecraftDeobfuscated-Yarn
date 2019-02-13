@@ -13,7 +13,7 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 	private static final Direction[] HORIZONTAL_DIRECTIONS = new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
 
 	public ChunkSkyLightProvider(ChunkProvider chunkProvider) {
-		super(chunkProvider, LightType.SKY_LIGHT, new SkyLightStorage(chunkProvider));
+		super(chunkProvider, LightType.SKY, new SkyLightStorage(chunkProvider));
 	}
 
 	@Override

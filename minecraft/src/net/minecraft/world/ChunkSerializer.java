@@ -65,7 +65,7 @@ public class ChunkSerializer {
 			int[] is = compoundTag2.getIntArray("Biomes");
 
 			for (int i = 0; i < is.length; i++) {
-				biomes[i] = Registry.BIOME.getInt(is[i]);
+				biomes[i] = Registry.BIOME.get(is[i]);
 				if (biomes[i] == null) {
 					biomes[i] = biomeSource.getBiome(mutable.set((i & 15) + chunkPos.getStartX(), 0, (i >> 4 & 15) + chunkPos.getStartZ()));
 				}
@@ -106,12 +106,11 @@ public class ChunkSerializer {
 
 			if (bl) {
 				if (compoundTag3.containsKey("BlockLight", 7)) {
-					chunkManager.getLightingProvider()
-						.setSection(LightType.BLOCK_LIGHT, chunkPos.x, m, chunkPos.z, new ChunkNibbleArray(compoundTag3.getByteArray("BlockLight")));
+					chunkManager.getLightingProvider().setSection(LightType.BLOCK, chunkPos.x, m, chunkPos.z, new ChunkNibbleArray(compoundTag3.getByteArray("BlockLight")));
 				}
 
 				if (bl2 && compoundTag3.containsKey("SkyLight", 7)) {
-					chunkManager.getLightingProvider().setSection(LightType.SKY_LIGHT, chunkPos.x, m, chunkPos.z, new ChunkNibbleArray(compoundTag3.getByteArray("SkyLight")));
+					chunkManager.getLightingProvider().setSection(LightType.SKY, chunkPos.x, m, chunkPos.z, new ChunkNibbleArray(compoundTag3.getByteArray("SkyLight")));
 				}
 			}
 		}
@@ -243,8 +242,8 @@ public class ChunkSerializer {
 				.filter(chunkSectionx -> chunkSectionx != null && chunkSectionx.getYOffset() >> 4 == j)
 				.findFirst()
 				.orElse(WorldChunk.EMPTY_SECTION);
-			ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.BLOCK_LIGHT).getChunkLightArray(chunkPos.x, j, chunkPos.z);
-			ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.SKY_LIGHT).getChunkLightArray(chunkPos.x, j, chunkPos.z);
+			ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.BLOCK).getChunkLightArray(chunkPos.x, j, chunkPos.z);
+			ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.SKY).getChunkLightArray(chunkPos.x, j, chunkPos.z);
 			if (chunkSection != WorldChunk.EMPTY_SECTION || chunkNibbleArray != null || chunkNibbleArray2 != null) {
 				CompoundTag compoundTag3 = new CompoundTag();
 				compoundTag3.putByte("Y", (byte)(j & 0xFF));

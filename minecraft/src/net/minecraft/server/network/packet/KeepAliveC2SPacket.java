@@ -19,7 +19,7 @@ public class KeepAliveC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	public void method_12266(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.method_12082(this);
+		serverPlayPacketListener.onKeepAlive(this);
 	}
 
 	@Override

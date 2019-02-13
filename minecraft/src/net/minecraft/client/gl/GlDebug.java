@@ -29,8 +29,8 @@ public class GlDebug {
 	protected static final ByteBuffer field_4924 = GlAllocationUtils.allocateByteBuffer(64);
 	protected static final FloatBuffer field_4916 = field_4924.asFloatBuffer();
 	protected static final IntBuffer field_4917 = field_4924.asIntBuffer();
-	private static final Joiner field_4920 = Joiner.on('\n');
-	private static final Joiner field_4918 = Joiner.on("; ");
+	private static final Joiner NEWLINE_JOINER = Joiner.on('\n');
+	private static final Joiner SEMICOLON_JOINER = Joiner.on("; ");
 	private static final Map<Integer, String> CONSTANTS = Maps.<Integer, String>newHashMap();
 	private static final List<Integer> KHR_VERBOSITY_LEVELS = ImmutableList.of(37190, 37191, 37192, 33387);
 	private static final List<Integer> ARB_VERBOSITY_LEVELS = ImmutableList.of(37190, 37191, 37192);

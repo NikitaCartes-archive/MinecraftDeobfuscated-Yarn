@@ -26,7 +26,7 @@ import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.entity.model.ShulkerEntityModel;
 import net.minecraft.client.texture.TextureManager;
@@ -43,7 +43,7 @@ import net.minecraft.world.World;
 public class BlockEntityRenderDispatcher {
 	private final Map<Class<? extends BlockEntity>, BlockEntityRenderer<? extends BlockEntity>> renderers = Maps.<Class<? extends BlockEntity>, BlockEntityRenderer<? extends BlockEntity>>newHashMap();
 	public static final BlockEntityRenderDispatcher INSTANCE = new BlockEntityRenderDispatcher();
-	private FontRenderer fontRenderer;
+	private TextRenderer fontRenderer;
 	public static double renderOffsetX;
 	public static double renderOffsetY;
 	public static double renderOffsetZ;
@@ -97,14 +97,14 @@ public class BlockEntityRenderDispatcher {
 		return blockEntity == null ? null : this.get(blockEntity.getClass());
 	}
 
-	public void configure(World world, TextureManager textureManager, FontRenderer fontRenderer, Entity entity, HitResult hitResult, float f) {
+	public void configure(World world, TextureManager textureManager, TextRenderer textRenderer, Entity entity, HitResult hitResult, float f) {
 		if (this.world != world) {
 			this.setWorld(world);
 		}
 
 		this.textureManager = textureManager;
 		this.cameraEntity = entity;
-		this.fontRenderer = fontRenderer;
+		this.fontRenderer = textRenderer;
 		this.hitResult = hitResult;
 		this.cameraYaw = MathHelper.lerp(f, entity.prevYaw, entity.yaw);
 		this.cameraPitch = MathHelper.lerp(f, entity.prevPitch, entity.pitch);
@@ -161,7 +161,7 @@ public class BlockEntityRenderDispatcher {
 		}
 	}
 
-	public FontRenderer getFontRenderer() {
+	public TextRenderer getFontRenderer() {
 		return this.fontRenderer;
 	}
 }

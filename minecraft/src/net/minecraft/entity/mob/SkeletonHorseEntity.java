@@ -43,7 +43,7 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 	@Override
 	protected SoundEvent getAmbientSound() {
 		super.getAmbientSound();
-		return this.method_5777(FluidTags.field_15517) ? SoundEvents.field_14686 : SoundEvents.field_14984;
+		return this.isInFluid(FluidTags.field_15517) ? SoundEvents.field_14686 : SoundEvents.field_14984;
 	}
 
 	@Override

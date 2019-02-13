@@ -28,7 +28,7 @@ import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.ai.pathing.SwimNavigation;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.passive.AbstractVillagerEntity;
+import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -38,6 +38,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -57,7 +58,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 		super(EntityType.DROWNED, world);
 		this.stepHeight = 1.0F;
 		this.moveControl = new DrownedEntity.DrownedMoveControl(this);
-		this.setPathNodeTypeWeight(PathNodeType.WATER, 0.0F);
+		this.setPathNodeTypeWeight(PathNodeType.field_18, 0.0F);
 		this.field_7234 = new SwimNavigation(this, world);
 		this.field_7232 = new EntityMobNavigation(this, world);
 	}
@@ -72,9 +73,9 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 		this.goalSelector.add(7, new WanderAroundGoal(this, 1.0));
 		this.targetSelector.add(1, new class_1399(this, DrownedEntity.class).method_6318(PigZombieEntity.class));
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, new DrownedEntity.class_1553(this)));
-		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractVillagerEntity.class, false));
+		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractTraderEntity.class, false));
 		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, true));
-		this.targetSelector.add(5, new FollowTargetGoal(this, TurtleEntity.class, 10, true, false, TurtleEntity.field_6921));
+		this.targetSelector.add(5, new FollowTargetGoal(this, TurtleEntity.class, 10, true, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
 	}
 
 	@Override
@@ -155,13 +156,13 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 	}
 
 	@Override
-	protected boolean method_5955(ItemStack itemStack, ItemStack itemStack2, EquipmentSlot equipmentSlot) {
+	protected boolean isBetterItemFor(ItemStack itemStack, ItemStack itemStack2, EquipmentSlot equipmentSlot) {
 		if (itemStack2.getItem() == Items.field_8864) {
 			return false;
 		} else if (itemStack2.getItem() == Items.field_8547) {
 			return itemStack.getItem() == Items.field_8547 ? itemStack.getDamage() < itemStack2.getDamage() : false;
 		} else {
-			return itemStack.getItem() == Items.field_8547 ? true : super.method_5955(itemStack, itemStack2, equipmentSlot);
+			return itemStack.getItem() == Items.field_8547 ? true : super.isBetterItemFor(itemStack, itemStack2, equipmentSlot);
 		}
 	}
 
@@ -491,11 +492,13 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 		public void start() {
 			super.start();
 			this.field_7249.setArmsRaised(true);
+			this.field_7249.setCurrentHand(Hand.MAIN);
 		}
 
 		@Override
 		public void onRemove() {
 			super.onRemove();
+			this.field_7249.method_6021();
 			this.field_7249.setArmsRaised(false);
 		}
 	}

@@ -19,10 +19,10 @@ import net.minecraft.text.event.HoverEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ResourcePackContainer {
+public class ResourcePackContainer implements AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final PackResourceMetadata BROKEN_PACK_META = new PackResourceMetadata(
-		new TranslatableTextComponent("resourcePack.broken_assets").applyFormat(new TextFormat[]{TextFormat.RED, TextFormat.ITALIC}),
+		new TranslatableTextComponent("resourcePack.broken_assets").applyFormat(new TextFormat[]{TextFormat.field_1061, TextFormat.field_1056}),
 		SharedConstants.getGameVersion().getPackVersion()
 	);
 	private final String name;
@@ -135,7 +135,7 @@ public class ResourcePackContainer {
 	public TextComponent getInformationText(boolean bl) {
 		return TextFormatter.bracketed(new StringTextComponent(this.name))
 			.modifyStyle(
-				style -> style.setColor(bl ? TextFormat.GREEN : TextFormat.RED)
+				style -> style.setColor(bl ? TextFormat.field_1060 : TextFormat.field_1061)
 						.setInsertion(StringArgumentType.escapeIfRequired(this.name))
 						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent("").append(this.displayName).append("\n").append(this.description)))
 			);
@@ -178,6 +178,9 @@ public class ResourcePackContainer {
 
 	public int hashCode() {
 		return this.name.hashCode();
+	}
+
+	public void close() {
 	}
 
 	@FunctionalInterface

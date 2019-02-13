@@ -3,7 +3,6 @@ package net.minecraft.container;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3914;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,7 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 
 public class BeaconContainer extends Container {
-	private final Inventory field_17287 = new BasicInventory(1) {
+	private final Inventory paymentInv = new BasicInventory(1) {
 		@Override
 		public boolean isValidInvStack(int i, ItemStack itemStack) {
 			return itemStack.getItem() == Items.field_8687
@@ -28,21 +27,21 @@ public class BeaconContainer extends Container {
 			return 1;
 		}
 	};
-	private final BeaconContainer.SlotPayment field_17288;
-	private final class_3914 field_17289;
+	private final BeaconContainer.SlotPayment paymentSlot;
+	private final ContainerWorldContext context;
 	private final PropertyDelegate propertyDelegate;
 
 	public BeaconContainer(int i, Inventory inventory) {
-		this(i, inventory, new ArrayPropertyDelegate(3), class_3914.field_17304);
+		this(i, inventory, new ArrayPropertyDelegate(3), ContainerWorldContext.NO_OP_CONTEXT);
 	}
 
-	public BeaconContainer(int i, Inventory inventory, PropertyDelegate propertyDelegate, class_3914 arg) {
+	public BeaconContainer(int i, Inventory inventory, PropertyDelegate propertyDelegate, ContainerWorldContext containerWorldContext) {
 		super(ContainerType.BEACON, i);
 		checkContainerDataCount(propertyDelegate, 3);
 		this.propertyDelegate = propertyDelegate;
-		this.field_17289 = arg;
-		this.field_17288 = new BeaconContainer.SlotPayment(this.field_17287, 0, 136, 110);
-		this.addSlot(this.field_17288);
+		this.context = containerWorldContext;
+		this.paymentSlot = new BeaconContainer.SlotPayment(this.paymentInv, 0, 136, 110);
+		this.addSlot(this.paymentSlot);
 		this.addProperties(propertyDelegate);
 		int j = 36;
 		int k = 137;
@@ -62,7 +61,7 @@ public class BeaconContainer extends Container {
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
 		if (!playerEntity.world.isClient) {
-			ItemStack itemStack = this.field_17288.takeStack(this.field_17288.getMaxStackAmount());
+			ItemStack itemStack = this.paymentSlot.takeStack(this.paymentSlot.getMaxStackAmount());
 			if (!itemStack.isEmpty()) {
 				playerEntity.dropItem(itemStack, false);
 			}
@@ -71,7 +70,7 @@ public class BeaconContainer extends Container {
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return canUse(this.field_17289, playerEntity, Blocks.field_10327);
+		return canUse(this.context, playerEntity, Blocks.field_10327);
 	}
 
 	@Override
@@ -93,7 +92,7 @@ public class BeaconContainer extends Container {
 				}
 
 				slot.onStackChanged(itemStack2, itemStack);
-			} else if (!this.field_17288.hasStack() && this.field_17288.canInsert(itemStack2) && itemStack2.getAmount() == 1) {
+			} else if (!this.paymentSlot.hasStack() && this.paymentSlot.canInsert(itemStack2) && itemStack2.getAmount() == 1) {
 				if (!this.insertItem(itemStack2, 0, 1, false)) {
 					return ItemStack.EMPTY;
 				}
@@ -132,27 +131,27 @@ public class BeaconContainer extends Container {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public StatusEffect method_17374() {
+	public StatusEffect getPrimaryEffect() {
 		return StatusEffect.byRawId(this.propertyDelegate.get(1));
 	}
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public StatusEffect method_17375() {
+	public StatusEffect getSecondaryEffect() {
 		return StatusEffect.byRawId(this.propertyDelegate.get(2));
 	}
 
 	public void method_17372(int i, int j) {
-		if (this.field_17288.hasStack()) {
+		if (this.paymentSlot.hasStack()) {
 			this.propertyDelegate.set(1, i);
 			this.propertyDelegate.set(2, j);
-			this.field_17288.takeStack(1);
+			this.paymentSlot.takeStack(1);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_17376() {
-		return !this.field_17287.getInvStack(0).isEmpty();
+	public boolean hasPayment() {
+		return !this.paymentInv.getInvStack(0).isEmpty();
 	}
 
 	class SlotPayment extends Slot {

@@ -81,7 +81,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 					GlStateManager.translatef(0.0F, 0.1875F, 0.0F);
 				}
 
-				MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(livingEntity, itemStack, ModelTransformation.Type.HEAD);
+				MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(livingEntity, itemStack, ModelTransformation.Type.field_4316);
 			}
 
 			GlStateManager.popMatrix();

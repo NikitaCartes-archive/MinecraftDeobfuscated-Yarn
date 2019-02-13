@@ -26,14 +26,14 @@ public class GlShader {
 
 	public void attachTo(class_3679 arg) {
 		this.refCount++;
-		GLX.glAttachShader(arg.getProgramRef(), this.shaderRef);
+		GLX.glAttachShader(arg.method_1270(), this.shaderRef);
 	}
 
 	public void method_1282() {
 		this.refCount--;
 		if (this.refCount <= 0) {
 			GLX.glDeleteShader(this.shaderRef);
-			this.shaderType.getNameObjectMap().remove(this.name);
+			this.shaderType.getLoadedShaders().remove(this.name);
 		}
 	}
 
@@ -46,7 +46,7 @@ public class GlShader {
 		if (string2 == null) {
 			throw new IOException("Could not load program " + type.getName());
 		} else {
-			int i = GLX.glCreateShader(type.getShaderType());
+			int i = GLX.glCreateShader(type.getGlType());
 			GLX.glShaderSource(i, string2);
 			GLX.glCompileShader(i);
 			if (GLX.glGetShaderi(i, GLX.GL_COMPILE_STATUS) == 0) {
@@ -54,7 +54,7 @@ public class GlShader {
 				throw new IOException("Couldn't compile " + type.getName() + " program: " + string3);
 			} else {
 				GlShader glShader = new GlShader(type, i, string);
-				type.getNameObjectMap().put(string, glShader);
+				type.getLoadedShaders().put(string, glShader);
 				return glShader;
 			}
 		}
@@ -67,13 +67,13 @@ public class GlShader {
 
 		private final String name;
 		private final String fileExtension;
-		private final int shaderType;
-		private final Map<String, GlShader> nameObjectMap = Maps.<String, GlShader>newHashMap();
+		private final int glType;
+		private final Map<String, GlShader> loadedShaders = Maps.<String, GlShader>newHashMap();
 
 		private Type(String string2, String string3, int j) {
 			this.name = string2;
 			this.fileExtension = string3;
-			this.shaderType = j;
+			this.glType = j;
 		}
 
 		public String getName() {
@@ -84,12 +84,12 @@ public class GlShader {
 			return this.fileExtension;
 		}
 
-		private int getShaderType() {
-			return this.shaderType;
+		private int getGlType() {
+			return this.glType;
 		}
 
-		public Map<String, GlShader> getNameObjectMap() {
-			return this.nameObjectMap;
+		public Map<String, GlShader> getLoadedShaders() {
+			return this.loadedShaders;
 		}
 	}
 }

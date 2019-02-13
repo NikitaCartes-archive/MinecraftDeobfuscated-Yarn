@@ -43,46 +43,43 @@ public class GroupButtonWidget extends ToggleButtonWidget {
 
 	@Override
 	public void draw(int i, int j, float f) {
-		if (this.visible) {
-			if (this.bounce > 0.0F) {
-				float g = 1.0F + 0.1F * (float)Math.sin((double)(this.bounce / 15.0F * (float) Math.PI));
-				GlStateManager.pushMatrix();
-				GlStateManager.translatef((float)(this.x + 8), (float)(this.y + 12), 0.0F);
-				GlStateManager.scalef(1.0F, g, 1.0F);
-				GlStateManager.translatef((float)(-(this.x + 8)), (float)(-(this.y + 12)), 0.0F);
-			}
+		if (this.bounce > 0.0F) {
+			float g = 1.0F + 0.1F * (float)Math.sin((double)(this.bounce / 15.0F * (float) Math.PI));
+			GlStateManager.pushMatrix();
+			GlStateManager.translatef((float)(this.x + 8), (float)(this.y + 12), 0.0F);
+			GlStateManager.scalef(1.0F, g, 1.0F);
+			GlStateManager.translatef((float)(-(this.x + 8)), (float)(-(this.y + 12)), 0.0F);
+		}
 
-			this.hovered = i >= this.x && j >= this.y && i < this.x + this.width && j < this.y + this.height;
-			MinecraftClient minecraftClient = MinecraftClient.getInstance();
-			minecraftClient.getTextureManager().bindTexture(this.texture);
-			GlStateManager.disableDepthTest();
-			int k = this.u;
-			int l = this.v;
-			if (this.toggled) {
-				k += this.pressedUOffset;
-			}
+		MinecraftClient minecraftClient = MinecraftClient.getInstance();
+		minecraftClient.getTextureManager().bindTexture(this.texture);
+		GlStateManager.disableDepthTest();
+		int k = this.u;
+		int l = this.v;
+		if (this.toggled) {
+			k += this.pressedUOffset;
+		}
 
-			if (this.hovered) {
-				l += this.hoverVOffset;
-			}
+		if (this.isHovered()) {
+			l += this.hoverVOffset;
+		}
 
-			int m = this.x;
-			if (this.toggled) {
-				m -= 2;
-			}
+		int m = this.x;
+		if (this.toggled) {
+			m -= 2;
+		}
 
-			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.drawTexturedRect(m, this.y, k, l, this.width, this.height);
-			GlStateManager.enableDepthTest();
-			GuiLighting.enableForItems();
-			GlStateManager.disableLighting();
-			this.method_2621(minecraftClient.getItemRenderer());
-			GlStateManager.enableLighting();
-			GuiLighting.disable();
-			if (this.bounce > 0.0F) {
-				GlStateManager.popMatrix();
-				this.bounce -= f;
-			}
+		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		this.drawTexturedRect(m, this.y, k, l, this.width, this.height);
+		GlStateManager.enableDepthTest();
+		GuiLighting.enableForItems();
+		GlStateManager.disableLighting();
+		this.method_2621(minecraftClient.getItemRenderer());
+		GlStateManager.enableLighting();
+		GuiLighting.disable();
+		if (this.bounce > 0.0F) {
+			GlStateManager.popMatrix();
+			this.bounce -= f;
 		}
 	}
 

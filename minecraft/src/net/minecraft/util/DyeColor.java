@@ -11,21 +11,21 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.MaterialColor;
 
 public enum DyeColor implements StringRepresentable {
-	WHITE(0, "white", 16383998, MaterialColor.WHITE, 15790320, 16777215),
-	ORANGE(1, "orange", 16351261, MaterialColor.ORANGE, 15435844, 16738335),
-	MAGENTA(2, "magenta", 13061821, MaterialColor.MAGENTA, 12801229, 16711935),
-	LIGHT_BLUE(3, "light_blue", 3847130, MaterialColor.LIGHT_BLUE, 6719955, 10141901),
-	YELLOW(4, "yellow", 16701501, MaterialColor.YELLOW, 14602026, 16776960),
-	LIME(5, "lime", 8439583, MaterialColor.LIME, 4312372, 12582656),
-	PINK(6, "pink", 15961002, MaterialColor.PINK, 14188952, 16738740),
-	GRAY(7, "gray", 4673362, MaterialColor.GRAY, 4408131, 8421504),
-	LIGHT_GRAY(8, "light_gray", 10329495, MaterialColor.LIGHT_GRAY, 11250603, 13882323),
-	CYAN(9, "cyan", 1481884, MaterialColor.CYAN, 2651799, 65535),
-	PURPLE(10, "purple", 8991416, MaterialColor.PURPLE, 8073150, 10494192),
-	BLUE(11, "blue", 3949738, MaterialColor.BLUE, 2437522, 255),
-	BROWN(12, "brown", 8606770, MaterialColor.BROWN, 5320730, 9127187),
-	GREEN(13, "green", 6192150, MaterialColor.GREEN, 3887386, 65280),
-	RED(14, "red", 11546150, MaterialColor.RED, 11743532, 16711680),
+	field_7952(0, "white", 16383998, MaterialColor.WHITE, 15790320, 16777215),
+	field_7946(1, "orange", 16351261, MaterialColor.ORANGE, 15435844, 16738335),
+	field_7958(2, "magenta", 13061821, MaterialColor.MAGENTA, 12801229, 16711935),
+	field_7951(3, "light_blue", 3847130, MaterialColor.LIGHT_BLUE, 6719955, 10141901),
+	field_7947(4, "yellow", 16701501, MaterialColor.YELLOW, 14602026, 16776960),
+	field_7961(5, "lime", 8439583, MaterialColor.LIME, 4312372, 12582656),
+	field_7954(6, "pink", 15961002, MaterialColor.PINK, 14188952, 16738740),
+	field_7944(7, "gray", 4673362, MaterialColor.GRAY, 4408131, 8421504),
+	field_7967(8, "light_gray", 10329495, MaterialColor.LIGHT_GRAY, 11250603, 13882323),
+	field_7955(9, "cyan", 1481884, MaterialColor.CYAN, 2651799, 65535),
+	field_7945(10, "purple", 8991416, MaterialColor.PURPLE, 8073150, 10494192),
+	field_7966(11, "blue", 3949738, MaterialColor.BLUE, 2437522, 255),
+	field_7957(12, "brown", 8606770, MaterialColor.BROWN, 5320730, 9127187),
+	field_7942(13, "green", 6192150, MaterialColor.GREEN, 3887386, 65280),
+	field_7964(14, "red", 11546150, MaterialColor.RED, 11743532, 16711680),
 	BLACK(15, "black", 1908001, MaterialColor.BLACK, 1973019, 0);
 
 	private static final DyeColor[] VALUES = (DyeColor[])Arrays.stream(values()).sorted(Comparator.comparingInt(DyeColor::getId)).toArray(DyeColor[]::new);

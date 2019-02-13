@@ -12,7 +12,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_852;
-import net.minecraft.class_853;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockRenderType;
@@ -29,6 +28,7 @@ import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.util.GlAllocationUtils;
+import net.minecraft.client.world.SafeWorldView;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
@@ -119,7 +119,7 @@ public class ChunkRenderer {
 		}
 	}
 
-	public void method_3657(float f, float g, float h, ChunkRenderTask chunkRenderTask) {
+	public void resortTransparency(float f, float g, float h, ChunkRenderTask chunkRenderTask) {
 		ChunkRenderData chunkRenderData = chunkRenderTask.getRenderData();
 		if (chunkRenderData.getBufferState() != null && !chunkRenderData.method_3641(BlockRenderLayer.TRANSLUCENT)) {
 			this.beginBufferBuilding(chunkRenderTask.getBufferBuilders().get(BlockRenderLayer.TRANSLUCENT), this.origin);
@@ -128,7 +128,7 @@ public class ChunkRenderer {
 		}
 	}
 
-	public void method_3652(float f, float g, float h, ChunkRenderTask chunkRenderTask) {
+	public void rebuildChunk(float f, float g, float h, ChunkRenderTask chunkRenderTask) {
 		ChunkRenderData chunkRenderData = new ChunkRenderData();
 		int i = 1;
 		BlockPos blockPos = this.origin.toImmutable();
@@ -149,8 +149,8 @@ public class ChunkRenderer {
 
 			class_852 lv = new class_852();
 			HashSet set = Sets.newHashSet();
-			class_853 lv2 = chunkRenderTask.method_3606();
-			if (lv2 != null) {
+			SafeWorldView safeWorldView = chunkRenderTask.getAndInvalidateWorldView();
+			if (safeWorldView != null) {
 				chunkUpdateCount++;
 				boolean[] bls = new boolean[BlockRenderLayer.values().length];
 				BlockModelRenderer.enableBrightnessCache();
@@ -158,14 +158,14 @@ public class ChunkRenderer {
 				BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
 
 				for (BlockPos blockPos3 : BlockPos.iterateBoxPositions(blockPos, blockPos2)) {
-					BlockState blockState = lv2.getBlockState(blockPos3);
+					BlockState blockState = safeWorldView.getBlockState(blockPos3);
 					Block block = blockState.getBlock();
-					if (blockState.isFullOpaque(lv2, blockPos3)) {
+					if (blockState.isFullOpaque(safeWorldView, blockPos3)) {
 						lv.method_3682(blockPos3);
 					}
 
 					if (block.hasBlockEntity()) {
-						BlockEntity blockEntity = lv2.method_3688(blockPos3, WorldChunk.AccessType.GET);
+						BlockEntity blockEntity = safeWorldView.getBlockEntity(blockPos3, WorldChunk.CreationType.field_12859);
 						if (blockEntity != null) {
 							BlockEntityRenderer<BlockEntity> blockEntityRenderer = BlockEntityRenderDispatcher.INSTANCE.get(blockEntity);
 							if (blockEntityRenderer != null) {
@@ -177,7 +177,7 @@ public class ChunkRenderer {
 						}
 					}
 
-					FluidState fluidState = lv2.getFluidState(blockPos3);
+					FluidState fluidState = safeWorldView.getFluidState(blockPos3);
 					if (!fluidState.isEmpty()) {
 						BlockRenderLayer blockRenderLayer = fluidState.getRenderLayer();
 						int j = blockRenderLayer.ordinal();
@@ -187,7 +187,7 @@ public class ChunkRenderer {
 							this.beginBufferBuilding(bufferBuilder, blockPos);
 						}
 
-						bls[j] |= blockRenderManager.tesselateFluid(blockPos3, lv2, bufferBuilder, fluidState);
+						bls[j] |= blockRenderManager.tesselateFluid(blockPos3, safeWorldView, bufferBuilder, fluidState);
 					}
 
 					if (blockState.getRenderType() != BlockRenderType.field_11455) {
@@ -199,7 +199,7 @@ public class ChunkRenderer {
 							this.beginBufferBuilding(bufferBuilder, blockPos);
 						}
 
-						bls[j] |= blockRenderManager.tesselateBlock(blockState, blockPos3, lv2, bufferBuilder, random);
+						bls[j] |= blockRenderManager.tesselateBlock(blockState, blockPos3, safeWorldView, bufferBuilder, random);
 					}
 				}
 
@@ -258,8 +258,8 @@ public class ChunkRenderer {
 			this.cancel();
 			BlockPos blockPos = this.origin.toImmutable();
 			int i = 1;
-			class_853 lv = class_853.method_3689(this.world, blockPos.add(-1, -1, -1), blockPos.add(16, 16, 16), 1);
-			this.chunkRenderDataTask = new ChunkRenderTask(this, ChunkRenderTask.Mode.field_4426, this.getDistanceToPlayerSquared(), lv);
+			SafeWorldView safeWorldView = SafeWorldView.create(this.world, blockPos.add(-1, -1, -1), blockPos.add(16, 16, 16), 1);
+			this.chunkRenderDataTask = new ChunkRenderTask(this, ChunkRenderTask.Mode.field_4426, this.getDistanceToPlayerSquared(), safeWorldView);
 			var4 = this.chunkRenderDataTask;
 		} finally {
 			this.chunkRenderLock.unlock();

@@ -88,7 +88,7 @@ public class SnowBlock extends Block {
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (world.getLightLevel(LightType.BLOCK_LIGHT, blockPos) > 11) {
+		if (world.getLightLevel(LightType.BLOCK, blockPos) > 11) {
 			dropStacks(blockState, world, blockPos);
 			world.clearBlockState(blockPos);
 		}

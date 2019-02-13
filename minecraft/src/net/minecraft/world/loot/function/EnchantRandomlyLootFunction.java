@@ -102,7 +102,7 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 				for (JsonElement jsonElement : JsonHelper.getArray(jsonObject, "enchantments")) {
 					String string = JsonHelper.asString(jsonElement, "enchantment");
 					Enchantment enchantment = (Enchantment)Registry.ENCHANTMENT
-						.getOptional(new Identifier(string))
+						.getOrEmpty(new Identifier(string))
 						.orElseThrow(() -> new JsonSyntaxException("Unknown enchantment '" + string + "'"));
 					list.add(enchantment);
 				}

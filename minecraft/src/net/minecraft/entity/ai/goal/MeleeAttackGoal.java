@@ -110,7 +110,7 @@ public class MeleeAttackGoal extends Goal {
 		if (d <= e && this.field_6505 <= 0) {
 			this.field_6505 = 20;
 			this.entity.swingHand(Hand.MAIN);
-			this.entity.method_6121(livingEntity);
+			this.entity.attack(livingEntity);
 		}
 	}
 

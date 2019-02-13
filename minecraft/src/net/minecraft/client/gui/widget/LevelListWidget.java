@@ -19,8 +19,8 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class LevelListWidget extends EntryListWidget<LevelSelectEntryWidget> {
-	private static final Logger field_3238 = LogManager.getLogger();
-	private final LevelSelectScreen field_3237;
+	private static final Logger LOGGER = LogManager.getLogger();
+	private final LevelSelectScreen parent;
 	private int field_3236 = -1;
 	@Nullable
 	private List<LevelSummary> levels;
@@ -37,7 +37,7 @@ public class LevelListWidget extends EntryListWidget<LevelSelectEntryWidget> {
 		@Nullable LevelListWidget levelListWidget
 	) {
 		super(minecraftClient, i, j, k, l, m);
-		this.field_3237 = levelSelectScreen;
+		this.parent = levelSelectScreen;
 		if (levelListWidget != null) {
 			this.levels = levelListWidget.levels;
 		}
@@ -52,7 +52,7 @@ public class LevelListWidget extends EntryListWidget<LevelSelectEntryWidget> {
 			try {
 				this.levels = levelStorage.getLevelList();
 			} catch (LevelStorageException var7) {
-				field_3238.error("Couldn't load level list", (Throwable)var7);
+				LOGGER.error("Couldn't load level list", (Throwable)var7);
 				this.client.openScreen(new ErrorScreen(I18n.translate("selectWorld.unable_to_load"), var7.getMessage()));
 				return;
 			}
@@ -81,7 +81,7 @@ public class LevelListWidget extends EntryListWidget<LevelSelectEntryWidget> {
 
 	public void method_2751(int i) {
 		this.field_3236 = i;
-		this.field_3237.method_2746(this.method_2753());
+		this.parent.method_2746(this.method_2753());
 	}
 
 	@Override
@@ -95,6 +95,6 @@ public class LevelListWidget extends EntryListWidget<LevelSelectEntryWidget> {
 	}
 
 	public LevelSelectScreen method_2752() {
-		return this.field_3237;
+		return this.parent;
 	}
 }

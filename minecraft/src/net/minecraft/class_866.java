@@ -38,13 +38,13 @@ public class class_866 implements DebugRenderer.DebugRenderer {
 		LongSet longSet = new LongOpenHashSet();
 
 		for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
-			int i = world.getLightLevel(LightType.SKY_LIGHT, blockPos2);
+			int i = world.getLightLevel(LightType.SKY, blockPos2);
 			float h = (float)(15 - i) / 15.0F * 0.5F + 0.16F;
 			int j = MathHelper.hsvToRgb(h, 0.9F, 0.9F);
 			long m = BlockPos.toChunkSectionOrigin(blockPos2.asLong());
 			if (longSet.add(m)) {
 				DebugRenderer.method_3712(
-					world.getChunkManager().getLightingProvider().method_15564(LightType.SKY_LIGHT, BlockPos.fromLong(m)),
+					world.getChunkManager().getLightingProvider().method_15564(LightType.SKY, BlockPos.fromLong(m)),
 					(double)(BlockPos.unpackLongX(m) + 8),
 					(double)(BlockPos.unpackLongY(m) + 8),
 					(double)(BlockPos.unpackLongZ(m) + 8),

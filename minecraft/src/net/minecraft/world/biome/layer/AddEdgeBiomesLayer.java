@@ -32,7 +32,7 @@ public enum AddEdgeBiomesLayer implements CrossSamplingLayer {
 
 	@Override
 	public int sample(LayerRandomnessSource layerRandomnessSource, int i, int j, int k, int l, int m) {
-		Biome biome = Registry.BIOME.getInt(m);
+		Biome biome = Registry.BIOME.get(m);
 		if (m == MUSHROOM_FIELDS_ID) {
 			if (BiomeLayers.isShallowOcean(i) || BiomeLayers.isShallowOcean(j) || BiomeLayers.isShallowOcean(k) || BiomeLayers.isShallowOcean(l)) {
 				return MUSHROOM_FIELD_SHORE_ID;
@@ -72,7 +72,7 @@ public enum AddEdgeBiomesLayer implements CrossSamplingLayer {
 	}
 
 	private static boolean isWooded(int i) {
-		return Registry.BIOME.getInt(i) != null && Registry.BIOME.getInt(i).getCategory() == Biome.Category.JUNGLE
+		return Registry.BIOME.get(i) != null && Registry.BIOME.get(i).getCategory() == Biome.Category.JUNGLE
 			? true
 			: i == JUNGLE_EDGE_ID || i == JUNGLE_ID || i == JUNGLE_HILLS_ID || i == FOREST_ID || i == TAIGA_ID || BiomeLayers.isOcean(i);
 	}

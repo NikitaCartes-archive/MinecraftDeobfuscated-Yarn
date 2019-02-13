@@ -5,12 +5,6 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import javax.annotation.Nullable;
-import net.minecraft.class_2899;
-import net.minecraft.class_2901;
-import net.minecraft.class_2905;
-import net.minecraft.class_2907;
-import net.minecraft.class_2909;
-import net.minecraft.class_2913;
 import net.minecraft.client.network.packet.AdvancementUpdateS2CPacket;
 import net.minecraft.client.network.packet.BlockActionS2CPacket;
 import net.minecraft.client.network.packet.BlockBreakingProgressS2CPacket;
@@ -59,6 +53,11 @@ import net.minecraft.client.network.packet.InventoryS2CPacket;
 import net.minecraft.client.network.packet.ItemPickupAnimationS2CPacket;
 import net.minecraft.client.network.packet.KeepAliveS2CPacket;
 import net.minecraft.client.network.packet.LightUpdateS2CPacket;
+import net.minecraft.client.network.packet.LoginCompressionS2CPacket;
+import net.minecraft.client.network.packet.LoginDisconnectS2CPacket;
+import net.minecraft.client.network.packet.LoginHelloS2CPacket;
+import net.minecraft.client.network.packet.LoginQueryRequestS2CPacket;
+import net.minecraft.client.network.packet.LoginSuccessS2CPacket;
 import net.minecraft.client.network.packet.LookAtS2CPacket;
 import net.minecraft.client.network.packet.MapUpdateS2CPacket;
 import net.minecraft.client.network.packet.MobSpawnS2CPacket;
@@ -119,6 +118,7 @@ import net.minecraft.server.network.packet.HandshakeC2SPacket;
 import net.minecraft.server.network.packet.KeepAliveC2SPacket;
 import net.minecraft.server.network.packet.LoginHelloC2SPacket;
 import net.minecraft.server.network.packet.LoginKeyC2SPacket;
+import net.minecraft.server.network.packet.LoginQueryResponseC2SPacket;
 import net.minecraft.server.network.packet.PickFromInventoryC2SPacket;
 import net.minecraft.server.network.packet.PlayerActionC2SPacket;
 import net.minecraft.server.network.packet.PlayerInteractBlockC2SPacket;
@@ -301,14 +301,14 @@ public enum NetworkState {
 	},
 	LOGIN(2) {
 		{
-			this.method_10784(NetworkSide.CLIENT, class_2909.class);
-			this.method_10784(NetworkSide.CLIENT, class_2905.class);
-			this.method_10784(NetworkSide.CLIENT, class_2901.class);
-			this.method_10784(NetworkSide.CLIENT, class_2907.class);
-			this.method_10784(NetworkSide.CLIENT, class_2899.class);
+			this.method_10784(NetworkSide.CLIENT, LoginDisconnectS2CPacket.class);
+			this.method_10784(NetworkSide.CLIENT, LoginHelloS2CPacket.class);
+			this.method_10784(NetworkSide.CLIENT, LoginSuccessS2CPacket.class);
+			this.method_10784(NetworkSide.CLIENT, LoginCompressionS2CPacket.class);
+			this.method_10784(NetworkSide.CLIENT, LoginQueryRequestS2CPacket.class);
 			this.method_10784(NetworkSide.SERVER, LoginHelloC2SPacket.class);
 			this.method_10784(NetworkSide.SERVER, LoginKeyC2SPacket.class);
-			this.method_10784(NetworkSide.SERVER, class_2913.class);
+			this.method_10784(NetworkSide.SERVER, LoginQueryResponseC2SPacket.class);
 		}
 	};
 

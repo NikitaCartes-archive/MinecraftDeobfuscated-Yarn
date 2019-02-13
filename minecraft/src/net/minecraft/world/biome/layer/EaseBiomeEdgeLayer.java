@@ -17,7 +17,7 @@ public enum EaseBiomeEdgeLayer implements CrossSamplingLayer {
 	private static final int BALDANDS_ID = Registry.BIOME.getRawId(Biomes.field_9415);
 	private static final int BADLANDS_PLATEAU_ID = Registry.BIOME.getRawId(Biomes.field_9433);
 	private static final int WOODED_BADLANDS_PLATEAU_ID = Registry.BIOME.getRawId(Biomes.field_9410);
-	private static final int PLAINS_ID = Registry.BIOME.getRawId(Biomes.biome);
+	private static final int PLAINS_ID = Registry.BIOME.getRawId(Biomes.field_9451);
 	private static final int GIANT_TREE_TAIGA_ID = Registry.BIOME.getRawId(Biomes.field_9477);
 	private static final int MOUNTAIN_EDGE_ID = Registry.BIOME.getRawId(Biomes.field_9464);
 	private static final int SWAMP_ID = Registry.BIOME.getRawId(Biomes.field_9471);
@@ -101,8 +101,8 @@ public enum EaseBiomeEdgeLayer implements CrossSamplingLayer {
 		if (BiomeLayers.areSimilar(i, j)) {
 			return true;
 		} else {
-			Biome biome = Registry.BIOME.getInt(i);
-			Biome biome2 = Registry.BIOME.getInt(j);
+			Biome biome = Registry.BIOME.get(i);
+			Biome biome2 = Registry.BIOME.get(j);
 			if (biome != null && biome2 != null) {
 				Biome.TemperatureGroup temperatureGroup = biome.getTemperatureGroup();
 				Biome.TemperatureGroup temperatureGroup2 = biome2.getTemperatureGroup();

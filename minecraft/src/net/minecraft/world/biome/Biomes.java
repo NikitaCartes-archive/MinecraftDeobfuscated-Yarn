@@ -7,7 +7,7 @@ import net.minecraft.util.registry.Registry;
 public abstract class Biomes {
 	public static final Biome field_9423 = register(0, "ocean", new OceanBiome());
 	public static final Biome DEFAULT = field_9423;
-	public static final Biome biome = register(1, "plains", new PlainsBiome());
+	public static final Biome field_9451 = register(1, "plains", new PlainsBiome());
 	public static final Biome field_9424 = register(2, "desert", new DesertBiome());
 	public static final Biome field_9472 = register(3, "mountains", new MountainsBiome());
 	public static final Biome field_9409 = register(4, "forest", new ForestBiome());
@@ -83,7 +83,7 @@ public abstract class Biomes {
 	public static final Biome field_9468 = register(169, "bamboo_jungle_hills", new BambooJungleHillsBiome());
 
 	private static Biome register(int i, String string, Biome biome) {
-		Registry.set(Registry.BIOME, i, string, biome);
+		Registry.register(Registry.BIOME, i, string, biome);
 		if (biome.hasParent()) {
 			Biome.PARENT_BIOME_ID_MAP.set(biome, Registry.BIOME.getRawId(Registry.BIOME.get(new Identifier(biome.parent))));
 		}
@@ -96,7 +96,7 @@ public abstract class Biomes {
 			Biome.BIOMES,
 			new Biome[]{
 				field_9423,
-				biome,
+				field_9451,
 				field_9424,
 				field_9472,
 				field_9409,

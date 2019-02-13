@@ -126,7 +126,7 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 				itemStack = itemStack.copy();
 				itemStack.setAmount(this.field_2803);
 				if (itemStack.isEmpty()) {
-					string = "" + TextFormat.YELLOW + "0";
+					string = "" + TextFormat.field_1054 + "0";
 				}
 			}
 
@@ -153,7 +153,7 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 		GuiLighting.enable();
 	}
 
-	protected void drawMousoverTooltip(int i, int j) {
+	protected void drawMouseoverTooltip(int i, int j) {
 		if (this.client.player.inventory.getCursorStack().isEmpty() && this.focusedSlot != null && this.focusedSlot.hasStack()) {
 			this.drawStackTooltip(this.focusedSlot.getStack(), i, j);
 		}
@@ -196,7 +196,7 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 				Container.calculateStackSize(this.slots, this.field_2790, itemStack, slot.getStack().isEmpty() ? 0 : slot.getStack().getAmount());
 				int k = Math.min(itemStack.getMaxAmount(), slot.getMaxStackAmount(itemStack));
 				if (itemStack.getAmount() > k) {
-					string = TextFormat.YELLOW.toString() + k;
+					string = TextFormat.field_1054.toString() + k;
 					itemStack.setAmount(k);
 				}
 			} else {
@@ -409,7 +409,7 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 			l = -999;
 		}
 
-		if (this.field_2783 && slot != null && i == 0 && this.container.method_7613(ItemStack.EMPTY, slot)) {
+		if (this.field_2783 && slot != null && i == 0 && this.container.canInsertIntoSlot(ItemStack.EMPTY, slot)) {
 			if (isShiftPressed()) {
 				if (!this.field_2791.isEmpty()) {
 					for (Slot slot2 : this.container.slotList) {

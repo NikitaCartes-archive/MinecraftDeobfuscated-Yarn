@@ -55,7 +55,7 @@ public class ArrayPalette<T> implements Palette<T> {
 		this.size = packetByteBuf.readVarInt();
 
 		for (int i = 0; i < this.size; i++) {
-			this.field_12904[i] = this.idList.getInt(packetByteBuf.readVarInt());
+			this.field_12904[i] = this.idList.get(packetByteBuf.readVarInt());
 		}
 	}
 

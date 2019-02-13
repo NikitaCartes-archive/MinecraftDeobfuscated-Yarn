@@ -3,7 +3,6 @@ package net.minecraft.container;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3914;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantment;
@@ -32,21 +31,21 @@ public class AnvilContainer extends Container {
 			AnvilContainer.this.onContentChanged(this);
 		}
 	};
-	private final Property pos = Property.create();
-	private final class_3914 world;
+	private final Property levelCost = Property.create();
+	private final ContainerWorldContext context;
 	private int field_7776;
 	private String newItemName;
 	private final PlayerEntity player;
 
 	public AnvilContainer(int i, PlayerInventory playerInventory) {
-		this(i, playerInventory, class_3914.field_17304);
+		this(i, playerInventory, ContainerWorldContext.NO_OP_CONTEXT);
 	}
 
-	public AnvilContainer(int i, PlayerInventory playerInventory, class_3914 arg) {
+	public AnvilContainer(int i, PlayerInventory playerInventory, ContainerWorldContext containerWorldContext) {
 		super(ContainerType.ANVIL, i);
-		this.world = arg;
+		this.context = containerWorldContext;
 		this.player = playerInventory.player;
-		this.addProperty(this.pos);
+		this.addProperty(this.levelCost);
 		this.addSlot(new Slot(this.inventory, 0, 27, 47));
 		this.addSlot(new Slot(this.inventory, 1, 76, 47));
 		this.addSlot(
@@ -58,15 +57,15 @@ public class AnvilContainer extends Container {
 
 				@Override
 				public boolean canTakeItems(PlayerEntity playerEntity) {
-					return (playerEntity.abilities.creativeMode || playerEntity.experience >= AnvilContainer.this.pos.get())
-						&& AnvilContainer.this.pos.get() > 0
+					return (playerEntity.abilities.creativeMode || playerEntity.experience >= AnvilContainer.this.levelCost.get())
+						&& AnvilContainer.this.levelCost.get() > 0
 						&& this.hasStack();
 				}
 
 				@Override
 				public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
 					if (!playerEntity.abilities.creativeMode) {
-						playerEntity.method_7316(-AnvilContainer.this.pos.get());
+						playerEntity.method_7316(-AnvilContainer.this.levelCost.get());
 					}
 
 					AnvilContainer.this.inventory.setInvStack(0, ItemStack.EMPTY);
@@ -82,8 +81,8 @@ public class AnvilContainer extends Container {
 						AnvilContainer.this.inventory.setInvStack(1, ItemStack.EMPTY);
 					}
 
-					AnvilContainer.this.pos.set(0);
-					arg.method_17393((world, blockPos) -> {
+					AnvilContainer.this.levelCost.set(0);
+					containerWorldContext.run((world, blockPos) -> {
 						BlockState blockState = world.getBlockState(blockPos);
 						if (!playerEntity.abilities.creativeMode && blockState.matches(BlockTags.field_15486) && playerEntity.getRand().nextFloat() < 0.12F) {
 							BlockState blockState2 = AnvilBlock.getLandingState(blockState);
@@ -124,13 +123,13 @@ public class AnvilContainer extends Container {
 
 	public void method_7628() {
 		ItemStack itemStack = this.inventory.getInvStack(0);
-		this.pos.set(1);
+		this.levelCost.set(1);
 		int i = 0;
 		int j = 0;
 		int k = 0;
 		if (itemStack.isEmpty()) {
 			this.result.setInvStack(0, ItemStack.EMPTY);
-			this.pos.set(0);
+			this.levelCost.set(0);
 		} else {
 			ItemStack itemStack2 = itemStack.copy();
 			ItemStack itemStack3 = this.inventory.getInvStack(1);
@@ -143,7 +142,7 @@ public class AnvilContainer extends Container {
 					int l = Math.min(itemStack2.getDamage(), itemStack2.getDurability() / 4);
 					if (l <= 0) {
 						this.result.setInvStack(0, ItemStack.EMPTY);
-						this.pos.set(0);
+						this.levelCost.set(0);
 						return;
 					}
 
@@ -159,7 +158,7 @@ public class AnvilContainer extends Container {
 				} else {
 					if (!bl && (itemStack2.getItem() != itemStack3.getItem() || !itemStack2.hasDurability())) {
 						this.result.setInvStack(0, ItemStack.EMPTY);
-						this.pos.set(0);
+						this.levelCost.set(0);
 						return;
 					}
 
@@ -238,7 +237,7 @@ public class AnvilContainer extends Container {
 
 					if (bl3 && !bl2) {
 						this.result.setInvStack(0, ItemStack.EMPTY);
-						this.pos.set(0);
+						this.levelCost.set(0);
 						return;
 					}
 				}
@@ -256,16 +255,16 @@ public class AnvilContainer extends Container {
 				itemStack2.setDisplayName(new StringTextComponent(this.newItemName));
 			}
 
-			this.pos.set(j + i);
+			this.levelCost.set(j + i);
 			if (i <= 0) {
 				itemStack2 = ItemStack.EMPTY;
 			}
 
-			if (k == i && k > 0 && this.pos.get() >= 40) {
-				this.pos.set(39);
+			if (k == i && k > 0 && this.levelCost.get() >= 40) {
+				this.levelCost.set(39);
 			}
 
-			if (this.pos.get() >= 40 && !this.player.abilities.creativeMode) {
+			if (this.levelCost.get() >= 40 && !this.player.abilities.creativeMode) {
 				itemStack2 = ItemStack.EMPTY;
 			}
 
@@ -291,13 +290,13 @@ public class AnvilContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.world.method_17393((world, blockPos) -> this.dropInventory(playerEntity, world, this.inventory));
+		this.context.run((world, blockPos) -> this.dropInventory(playerEntity, world, this.inventory));
 	}
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return this.world
-			.method_17396(
+		return this.context
+			.apply(
 				(world, blockPos) -> !world.getBlockState(blockPos).matches(BlockTags.field_15486)
 						? false
 						: playerEntity.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) <= 64.0,
@@ -357,7 +356,7 @@ public class AnvilContainer extends Container {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_17369() {
-		return this.pos.get();
+	public int getLevelCost() {
+		return this.levelCost.get();
 	}
 }

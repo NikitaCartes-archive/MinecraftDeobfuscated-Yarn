@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_3829;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -24,6 +23,7 @@ import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.structure.processor.StructureProcessor;
+import net.minecraft.util.Clearable;
 import net.minecraft.util.IdList;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
@@ -190,7 +190,7 @@ public class Structure {
 						BlockState blockState = structureBlockInfo.state.mirror(structurePlacementData.getMirror()).rotate(structurePlacementData.getRotation());
 						if (structureBlockInfo.tag != null) {
 							BlockEntity blockEntity = iWorld.getBlockEntity(blockPos2);
-							class_3829.method_16825(blockEntity);
+							Clearable.clear(blockEntity);
 							iWorld.setBlockState(blockPos2, Blocks.field_10499.getDefaultState(), 4);
 						}
 
@@ -239,7 +239,7 @@ public class Structure {
 						for (int p = 0; p < directions.length && !fluidState2.isStill(); p++) {
 							BlockPos blockPos5 = blockPos4.offset(directions[p]);
 							FluidState fluidState3 = iWorld.getFluidState(blockPos5);
-							if (fluidState3.method_15763(iWorld, blockPos5) > fluidState2.method_15763(iWorld, blockPos4) || fluidState3.isStill() && !fluidState2.isStill()) {
+							if (fluidState3.getHeight(iWorld, blockPos5) > fluidState2.getHeight(iWorld, blockPos4) || fluidState3.isStill() && !fluidState2.isStill()) {
 								fluidState2 = fluidState3;
 								blockPos4 = blockPos5;
 							}
@@ -731,7 +731,7 @@ public class Structure {
 
 		@Nullable
 		public BlockState method_15185(int i) {
-			BlockState blockState = this.field_15591.getInt(i);
+			BlockState blockState = this.field_15591.get(i);
 			return blockState == null ? field_15590 : blockState;
 		}
 

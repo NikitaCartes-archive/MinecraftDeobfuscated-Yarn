@@ -41,7 +41,7 @@ public class WorldEventS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11535(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11098(this);
+		clientPlayPacketListener.onWorldEvent(this);
 	}
 
 	@Environment(EnvType.CLIENT)

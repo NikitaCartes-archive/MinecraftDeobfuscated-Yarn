@@ -20,7 +20,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
@@ -49,7 +49,7 @@ import net.minecraft.world.dimension.DimensionType;
 @Environment(EnvType.CLIENT)
 public class DebugHud extends Drawable {
 	private final MinecraftClient client;
-	private final FontRenderer fontRenderer;
+	private final TextRenderer fontRenderer;
 	private HitResult blockHit;
 	private HitResult fluidHit;
 	@Nullable
@@ -61,7 +61,7 @@ public class DebugHud extends Drawable {
 
 	public DebugHud(MinecraftClient minecraftClient) {
 		this.client = minecraftClient;
-		this.fontRenderer = minecraftClient.fontRenderer;
+		this.fontRenderer = minecraftClient.textRenderer;
 	}
 
 	public void resetChunk() {
@@ -135,8 +135,8 @@ public class DebugHud extends Drawable {
 	protected List<String> getLeftText() {
 		IntegratedServer integratedServer = this.client.getServer();
 		ClientConnection clientConnection = this.client.getNetworkHandler().getClientConnection();
-		float f = clientConnection.getPacketsSent();
-		float g = clientConnection.getPacketsReceived();
+		float f = clientConnection.getAveragePacketsSent();
+		float g = clientConnection.getAveragePacketsReceived();
 		String string;
 		if (integratedServer != null) {
 			string = String.format("Integrated server @ %.0f ms ticks, %.0f tx, %.0f rx", integratedServer.getTickTime(), f, g);
@@ -232,9 +232,9 @@ public class DebugHud extends Drawable {
 							"Client Light: "
 								+ worldChunk.getLightLevel(blockPos, 0)
 								+ " ("
-								+ this.client.world.getLightLevel(LightType.SKY_LIGHT, blockPos)
+								+ this.client.world.getLightLevel(LightType.SKY, blockPos)
 								+ " sky, "
-								+ this.client.world.getLightLevel(LightType.BLOCK_LIGHT, blockPos)
+								+ this.client.world.getLightLevel(LightType.BLOCK, blockPos)
 								+ " block)"
 						);
 						WorldChunk worldChunk2 = this.getChunk();
@@ -242,9 +242,9 @@ public class DebugHud extends Drawable {
 							LightingProvider lightingProvider = world.getChunkManager().getLightingProvider();
 							list.add(
 								"Server Light: ("
-									+ lightingProvider.get(LightType.SKY_LIGHT).getLightLevel(blockPos)
+									+ lightingProvider.get(LightType.SKY).getLightLevel(blockPos)
 									+ " sky, "
-									+ lightingProvider.get(LightType.BLOCK_LIGHT).getLightLevel(blockPos)
+									+ lightingProvider.get(LightType.BLOCK).getLightLevel(blockPos)
 									+ " block)"
 							);
 						}
@@ -356,7 +356,7 @@ public class DebugHud extends Drawable {
 				BlockPos blockPos = ((BlockHitResult)this.blockHit).getBlockPos();
 				BlockState blockState = this.client.world.getBlockState(blockPos);
 				list.add("");
-				list.add(TextFormat.UNDERLINE + "Targeted Block");
+				list.add(TextFormat.field_1073 + "Targeted Block");
 				list.add(String.valueOf(Registry.BLOCK.getId(blockState.getBlock())));
 
 				for (Entry<Property<?>, Comparable<?>> entry : blockState.getEntries().entrySet()) {
@@ -372,7 +372,7 @@ public class DebugHud extends Drawable {
 				BlockPos blockPos = ((BlockHitResult)this.fluidHit).getBlockPos();
 				FluidState fluidState = this.client.world.getFluidState(blockPos);
 				list.add("");
-				list.add(TextFormat.UNDERLINE + "Targeted Fluid");
+				list.add(TextFormat.field_1073 + "Targeted Fluid");
 				list.add(String.valueOf(Registry.FLUID.getId(fluidState.getFluid())));
 
 				for (Entry<Property<?>, Comparable<?>> entry : fluidState.getEntries().entrySet()) {
@@ -387,7 +387,7 @@ public class DebugHud extends Drawable {
 			Entity entity = this.client.targetedEntity;
 			if (entity != null) {
 				list.add("");
-				list.add(TextFormat.UNDERLINE + "Targeted Entity");
+				list.add(TextFormat.field_1073 + "Targeted Entity");
 				list.add(String.valueOf(Registry.ENTITY_TYPE.getId(entity.getType())));
 			}
 
@@ -400,9 +400,9 @@ public class DebugHud extends Drawable {
 		Comparable<?> comparable = (Comparable<?>)entry.getValue();
 		String string = SystemUtil.getValueAsString(property, comparable);
 		if (Boolean.TRUE.equals(comparable)) {
-			string = TextFormat.GREEN + string;
+			string = TextFormat.field_1060 + string;
 		} else if (Boolean.FALSE.equals(comparable)) {
-			string = TextFormat.RED + string;
+			string = TextFormat.field_1061 + string;
 		}
 
 		return property.getName() + ": " + string;

@@ -166,12 +166,8 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (!bl && blockState.getBlock() != blockState2.getBlock()) {
 			super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
-			this.method_9994(world, blockPos);
 			this.method_9997(world, blockPos, blockState);
 		}
-	}
-
-	protected void method_9994(World world, BlockPos blockPos) {
 	}
 
 	protected void method_9997(World world, BlockPos blockPos, BlockState blockState) {

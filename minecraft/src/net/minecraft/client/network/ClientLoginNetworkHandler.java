@@ -12,16 +12,15 @@ import javax.annotation.Nullable;
 import javax.crypto.SecretKey;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2899;
-import net.minecraft.class_2901;
-import net.minecraft.class_2905;
-import net.minecraft.class_2907;
-import net.minecraft.class_2909;
-import net.minecraft.class_2913;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.menu.DisconnectedScreen;
 import net.minecraft.client.gui.menu.RealmsScreen;
+import net.minecraft.client.network.packet.LoginCompressionS2CPacket;
+import net.minecraft.client.network.packet.LoginDisconnectS2CPacket;
+import net.minecraft.client.network.packet.LoginHelloS2CPacket;
+import net.minecraft.client.network.packet.LoginQueryRequestS2CPacket;
+import net.minecraft.client.network.packet.LoginSuccessS2CPacket;
 import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkEncryptionUtils;
@@ -29,6 +28,7 @@ import net.minecraft.network.NetworkState;
 import net.minecraft.network.listener.ClientLoginPacketListener;
 import net.minecraft.realms.DisconnectedRealmsScreen;
 import net.minecraft.server.network.packet.LoginKeyC2SPacket;
+import net.minecraft.server.network.packet.LoginQueryResponseC2SPacket;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import org.apache.logging.log4j.LogManager;
@@ -40,7 +40,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	private final MinecraftClient client;
 	@Nullable
 	private final Screen parentGui;
-	private final Consumer<TextComponent> field_3711;
+	private final Consumer<TextComponent> statusConsumer;
 	private final ClientConnection connection;
 	private GameProfile playerProfile;
 
@@ -48,18 +48,18 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 		this.connection = clientConnection;
 		this.client = minecraftClient;
 		this.parentGui = screen;
-		this.field_3711 = consumer;
+		this.statusConsumer = consumer;
 	}
 
 	@Override
-	public void method_12587(class_2905 arg) {
+	public void onHello(LoginHelloS2CPacket loginHelloS2CPacket) {
 		SecretKey secretKey = NetworkEncryptionUtils.generateKey();
-		PublicKey publicKey = arg.method_12611();
-		String string = new BigInteger(NetworkEncryptionUtils.method_15240(arg.method_12610(), publicKey, secretKey)).toString(16);
-		LoginKeyC2SPacket loginKeyC2SPacket = new LoginKeyC2SPacket(secretKey, publicKey, arg.method_12613());
-		this.field_3711.accept(new TranslatableTextComponent("connect.authorizing"));
+		PublicKey publicKey = loginHelloS2CPacket.getPublicKey();
+		String string = new BigInteger(NetworkEncryptionUtils.method_15240(loginHelloS2CPacket.getServerId(), publicKey, secretKey)).toString(16);
+		LoginKeyC2SPacket loginKeyC2SPacket = new LoginKeyC2SPacket(secretKey, publicKey, loginHelloS2CPacket.method_12613());
+		this.statusConsumer.accept(new TranslatableTextComponent("connect.authorizing"));
 		NetworkUtils.downloadExecutor.submit((Runnable)(() -> {
-			TextComponent textComponent = this.method_2892(string);
+			TextComponent textComponent = this.joinServerSession(string);
 			if (textComponent != null) {
 				if (this.client.getCurrentServerEntry() == null || !this.client.getCurrentServerEntry().isLocal()) {
 					this.connection.disconnect(textComponent);
@@ -69,15 +69,15 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 				LOGGER.warn(textComponent.getString());
 			}
 
-			this.field_3711.accept(new TranslatableTextComponent("connect.encrypting"));
+			this.statusConsumer.accept(new TranslatableTextComponent("connect.encrypting"));
 			this.connection.sendPacket(loginKeyC2SPacket, future -> this.connection.setupEncryption(secretKey));
 		}));
 	}
 
 	@Nullable
-	private TextComponent method_2892(String string) {
+	private TextComponent joinServerSession(String string) {
 		try {
-			this.method_2891().joinServer(this.client.getSession().getProfile(), this.client.getSession().getAccessToken(), string);
+			this.getSessionService().joinServer(this.client.getSession().getProfile(), this.client.getSession().getAccessToken(), string);
 			return null;
 		} catch (AuthenticationUnavailableException var3) {
 			return new TranslatableTextComponent("disconnect.loginFailedInfo", new TranslatableTextComponent("disconnect.loginFailedInfo.serversUnavailable"));
@@ -88,20 +88,20 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 		}
 	}
 
-	private MinecraftSessionService method_2891() {
+	private MinecraftSessionService getSessionService() {
 		return this.client.getSessionService();
 	}
 
 	@Override
-	public void method_12588(class_2901 arg) {
-		this.field_3711.accept(new TranslatableTextComponent("connect.joining"));
-		this.playerProfile = arg.method_12593();
+	public void onLoginSuccess(LoginSuccessS2CPacket loginSuccessS2CPacket) {
+		this.statusConsumer.accept(new TranslatableTextComponent("connect.joining"));
+		this.playerProfile = loginSuccessS2CPacket.getPlayerProfile();
 		this.connection.setState(NetworkState.GAME);
 		this.connection.setPacketListener(new ClientPlayNetworkHandler(this.client, this.parentGui, this.connection, this.playerProfile));
 	}
 
 	@Override
-	public void onConnectionLost(TextComponent textComponent) {
+	public void onDisconnected(TextComponent textComponent) {
 		if (this.parentGui != null && this.parentGui instanceof RealmsScreen) {
 			this.client.openScreen(new DisconnectedRealmsScreen(((RealmsScreen)this.parentGui).getRealmsScreen(), "connect.failed", textComponent).getProxy());
 		} else {
@@ -110,20 +110,20 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	}
 
 	@Override
-	public void method_12584(class_2909 arg) {
-		this.connection.disconnect(arg.method_12638());
+	public void onDisconnect(LoginDisconnectS2CPacket loginDisconnectS2CPacket) {
+		this.connection.disconnect(loginDisconnectS2CPacket.getReason());
 	}
 
 	@Override
-	public void method_12585(class_2907 arg) {
+	public void onCompression(LoginCompressionS2CPacket loginCompressionS2CPacket) {
 		if (!this.connection.isLocal()) {
-			this.connection.setMinCompressedSize(arg.method_12634());
+			this.connection.setMinCompressedSize(loginCompressionS2CPacket.getMinCompressedSize());
 		}
 	}
 
 	@Override
-	public void method_12586(class_2899 arg) {
-		this.field_3711.accept(new TranslatableTextComponent("connect.negotiating"));
-		this.connection.sendPacket(new class_2913(arg.method_12592(), null));
+	public void onQueryRequest(LoginQueryRequestS2CPacket loginQueryRequestS2CPacket) {
+		this.statusConsumer.accept(new TranslatableTextComponent("connect.negotiating"));
+		this.connection.sendPacket(new LoginQueryResponseC2SPacket(loginQueryRequestS2CPacket.getQueryId(), null));
 	}
 }

@@ -24,14 +24,14 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class StructureBlockScreen extends Screen {
-	private static final Logger field_2989 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private final StructureBlockBlockEntity structureBlock;
 	private Mirror mirror = Mirror.NONE;
 	private Rotation rotation = Rotation.ROT_0;
 	private StructureBlockMode mode = StructureBlockMode.field_12696;
-	private boolean field_2985;
-	private boolean field_2997;
-	private boolean field_2983;
+	private boolean ignoreEntities;
+	private boolean showAir;
+	private boolean showBoundingBox;
 	private TextFieldWidget inputName;
 	private TextFieldWidget inputPosX;
 	private TextFieldWidget inputPosY;
@@ -88,9 +88,9 @@ public class StructureBlockScreen extends Screen {
 		this.structureBlock.setMirror(this.mirror);
 		this.structureBlock.setRotation(this.rotation);
 		this.structureBlock.setMode(this.mode);
-		this.structureBlock.setIgnoreEntities(this.field_2985);
-		this.structureBlock.setShowAir(this.field_2997);
-		this.structureBlock.setShowBoundingBox(this.field_2983);
+		this.structureBlock.setIgnoreEntities(this.ignoreEntities);
+		this.structureBlock.setShowAir(this.showAir);
+		this.structureBlock.setShowBoundingBox(this.showBoundingBox);
 		this.client.openScreen(null);
 	}
 
@@ -264,11 +264,11 @@ public class StructureBlockScreen extends Screen {
 		this.updateRotationButton();
 		this.mode = this.structureBlock.getMode();
 		this.updateMode();
-		this.field_2985 = this.structureBlock.shouldIgnoreEntities();
+		this.ignoreEntities = this.structureBlock.shouldIgnoreEntities();
 		this.updateIgnoreEntitiesButton();
-		this.field_2997 = this.structureBlock.shouldShowAir();
+		this.showAir = this.structureBlock.shouldShowAir();
 		this.updateShowAirButton();
-		this.field_2983 = this.structureBlock.shouldShowBoundingBox();
+		this.showBoundingBox = this.structureBlock.shouldShowBoundingBox();
 		this.updateShowBoundingBoxButton();
 		this.inputName.setFocused(true);
 		this.setFocused(this.inputName);
@@ -307,27 +307,27 @@ public class StructureBlockScreen extends Screen {
 	private void updateIgnoreEntitiesButton() {
 		boolean bl = !this.structureBlock.shouldIgnoreEntities();
 		if (bl) {
-			this.buttonEntities.text = I18n.translate("options.on");
+			this.buttonEntities.setText(I18n.translate("options.on"));
 		} else {
-			this.buttonEntities.text = I18n.translate("options.off");
+			this.buttonEntities.setText(I18n.translate("options.off"));
 		}
 	}
 
 	private void updateShowAirButton() {
 		boolean bl = this.structureBlock.shouldShowAir();
 		if (bl) {
-			this.buttonShowAir.text = I18n.translate("options.on");
+			this.buttonShowAir.setText(I18n.translate("options.on"));
 		} else {
-			this.buttonShowAir.text = I18n.translate("options.off");
+			this.buttonShowAir.setText(I18n.translate("options.off"));
 		}
 	}
 
 	private void updateShowBoundingBoxButton() {
 		boolean bl = this.structureBlock.shouldShowBoundingBox();
 		if (bl) {
-			this.buttonShowBoundingBox.text = I18n.translate("options.on");
+			this.buttonShowBoundingBox.setText(I18n.translate("options.on"));
 		} else {
-			this.buttonShowBoundingBox.text = I18n.translate("options.off");
+			this.buttonShowBoundingBox.setText(I18n.translate("options.off"));
 		}
 	}
 
@@ -335,13 +335,13 @@ public class StructureBlockScreen extends Screen {
 		Mirror mirror = this.structureBlock.getMirror();
 		switch (mirror) {
 			case NONE:
-				this.buttonMirror.text = "|";
+				this.buttonMirror.setText("|");
 				break;
 			case LEFT_RIGHT:
-				this.buttonMirror.text = "< >";
+				this.buttonMirror.setText("< >");
 				break;
 			case FRONT_BACK:
-				this.buttonMirror.text = "^ v";
+				this.buttonMirror.setText("^ v");
 		}
 	}
 
@@ -436,7 +436,7 @@ public class StructureBlockScreen extends Screen {
 				this.inputMetadata.setVisible(true);
 		}
 
-		this.buttonMode.text = I18n.translate("structure_block.mode." + this.structureBlock.getMode().asString());
+		this.buttonMode.setText(I18n.translate("structure_block.mode." + this.structureBlock.getMode().asString()));
 	}
 
 	private boolean method_2516(StructureBlockBlockEntity.Action action) {

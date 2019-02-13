@@ -58,7 +58,7 @@ public class CraftingResultInventory implements Inventory, RecipeUnlocker {
 	}
 
 	@Override
-	public void clearInv() {
+	public void clear() {
 		this.stack.clear();
 	}
 

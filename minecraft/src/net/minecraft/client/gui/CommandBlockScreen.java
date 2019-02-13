@@ -12,21 +12,21 @@ import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
 public class CommandBlockScreen extends AbstractCommandBlockScreen {
-	private final CommandBlockBlockEntity field_2865;
-	private ButtonWidget typeButton;
+	private final CommandBlockBlockEntity blockEntity;
+	private ButtonWidget modeButton;
 	private ButtonWidget conditionalModeButton;
 	private ButtonWidget redstoneTriggerButton;
-	private CommandBlockBlockEntity.Type type = CommandBlockBlockEntity.Type.NORMAL;
+	private CommandBlockBlockEntity.Type mode = CommandBlockBlockEntity.Type.field_11924;
 	private boolean conditional;
-	private boolean alwaysActive;
+	private boolean autoActivate;
 
 	public CommandBlockScreen(CommandBlockBlockEntity commandBlockBlockEntity) {
-		this.field_2865 = commandBlockBlockEntity;
+		this.blockEntity = commandBlockBlockEntity;
 	}
 
 	@Override
 	CommandBlockExecutor getCommandExecutor() {
-		return this.field_2865.getCommandExecutor();
+		return this.blockEntity.getCommandExecutor();
 	}
 
 	@Override
@@ -37,48 +37,48 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
-		this.typeButton = this.addButton(new ButtonWidget(5, this.width / 2 - 50 - 100 - 4, 165, 100, 20, I18n.translate("advMode.mode.sequence")) {
+		this.modeButton = this.addButton(new ButtonWidget(5, this.width / 2 - 50 - 100 - 4, 165, 100, 20, I18n.translate("advMode.mode.sequence")) {
 			@Override
 			public void onPressed(double d, double e) {
-				CommandBlockScreen.this.method_2450();
-				CommandBlockScreen.this.method_2451();
+				CommandBlockScreen.this.cycleType();
+				CommandBlockScreen.this.updateMode();
 			}
 		});
 		this.conditionalModeButton = this.addButton(new ButtonWidget(6, this.width / 2 - 50, 165, 100, 20, I18n.translate("advMode.mode.unconditional")) {
 			@Override
 			public void onPressed(double d, double e) {
 				CommandBlockScreen.this.conditional = !CommandBlockScreen.this.conditional;
-				CommandBlockScreen.this.method_2452();
+				CommandBlockScreen.this.updateConditionalMode();
 			}
 		});
 		this.redstoneTriggerButton = this.addButton(new ButtonWidget(7, this.width / 2 + 50 + 4, 165, 100, 20, I18n.translate("advMode.mode.redstoneTriggered")) {
 			@Override
 			public void onPressed(double d, double e) {
-				CommandBlockScreen.this.alwaysActive = !CommandBlockScreen.this.alwaysActive;
-				CommandBlockScreen.this.method_2454();
+				CommandBlockScreen.this.autoActivate = !CommandBlockScreen.this.autoActivate;
+				CommandBlockScreen.this.updateActivationMode();
 			}
 		});
 		this.doneButton.enabled = false;
 		this.toggleTrackingOutputButton.enabled = false;
-		this.typeButton.enabled = false;
+		this.modeButton.enabled = false;
 		this.conditionalModeButton.enabled = false;
 		this.redstoneTriggerButton.enabled = false;
 	}
 
 	public void method_2457() {
-		CommandBlockExecutor commandBlockExecutor = this.field_2865.getCommandExecutor();
+		CommandBlockExecutor commandBlockExecutor = this.blockEntity.getCommandExecutor();
 		this.consoleCommandTextField.setText(commandBlockExecutor.getCommand());
-		this.field_2752 = commandBlockExecutor.isTrackingOutput();
-		this.type = this.field_2865.getType();
-		this.conditional = this.field_2865.isConditionalCommandBlock();
-		this.alwaysActive = this.field_2865.isAuto();
-		this.method_2368();
-		this.method_2451();
-		this.method_2452();
-		this.method_2454();
+		this.trackingOutput = commandBlockExecutor.isTrackingOutput();
+		this.mode = this.blockEntity.getType();
+		this.conditional = this.blockEntity.isConditionalCommandBlock();
+		this.autoActivate = this.blockEntity.isAuto();
+		this.updateTrackedOutput();
+		this.updateMode();
+		this.updateConditionalMode();
+		this.updateActivationMode();
 		this.doneButton.enabled = true;
 		this.toggleTrackingOutputButton.enabled = true;
-		this.typeButton.enabled = true;
+		this.modeButton.enabled = true;
 		this.conditionalModeButton.enabled = true;
 		this.redstoneTriggerButton.enabled = true;
 	}
@@ -86,72 +86,72 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 	@Override
 	public void onScaleChanged(MinecraftClient minecraftClient, int i, int j) {
 		super.onScaleChanged(minecraftClient, i, j);
-		this.method_2368();
-		this.method_2451();
-		this.method_2452();
-		this.method_2454();
+		this.updateTrackedOutput();
+		this.updateMode();
+		this.updateConditionalMode();
+		this.updateActivationMode();
 		this.doneButton.enabled = true;
 		this.toggleTrackingOutputButton.enabled = true;
-		this.typeButton.enabled = true;
+		this.modeButton.enabled = true;
 		this.conditionalModeButton.enabled = true;
 		this.redstoneTriggerButton.enabled = true;
 	}
 
 	@Override
-	protected void method_2352(CommandBlockExecutor commandBlockExecutor) {
+	protected void syncSettingsToServer(CommandBlockExecutor commandBlockExecutor) {
 		this.client
 			.getNetworkHandler()
 			.sendPacket(
 				new UpdateCommandBlockC2SPacket(
 					new BlockPos(commandBlockExecutor.getPos()),
 					this.consoleCommandTextField.getText(),
-					this.type,
+					this.mode,
 					commandBlockExecutor.isTrackingOutput(),
 					this.conditional,
-					this.alwaysActive
+					this.autoActivate
 				)
 			);
 	}
 
-	private void method_2451() {
-		switch (this.type) {
-			case CHAIN:
-				this.typeButton.text = I18n.translate("advMode.mode.sequence");
+	private void updateMode() {
+		switch (this.mode) {
+			case field_11922:
+				this.modeButton.setText(I18n.translate("advMode.mode.sequence"));
 				break;
-			case REPEATING:
-				this.typeButton.text = I18n.translate("advMode.mode.auto");
+			case field_11923:
+				this.modeButton.setText(I18n.translate("advMode.mode.auto"));
 				break;
-			case NORMAL:
-				this.typeButton.text = I18n.translate("advMode.mode.redstone");
+			case field_11924:
+				this.modeButton.setText(I18n.translate("advMode.mode.redstone"));
 		}
 	}
 
-	private void method_2450() {
-		switch (this.type) {
-			case CHAIN:
-				this.type = CommandBlockBlockEntity.Type.REPEATING;
+	private void cycleType() {
+		switch (this.mode) {
+			case field_11922:
+				this.mode = CommandBlockBlockEntity.Type.field_11923;
 				break;
-			case REPEATING:
-				this.type = CommandBlockBlockEntity.Type.NORMAL;
+			case field_11923:
+				this.mode = CommandBlockBlockEntity.Type.field_11924;
 				break;
-			case NORMAL:
-				this.type = CommandBlockBlockEntity.Type.CHAIN;
+			case field_11924:
+				this.mode = CommandBlockBlockEntity.Type.field_11922;
 		}
 	}
 
-	private void method_2452() {
+	private void updateConditionalMode() {
 		if (this.conditional) {
-			this.conditionalModeButton.text = I18n.translate("advMode.mode.conditional");
+			this.conditionalModeButton.setText(I18n.translate("advMode.mode.conditional"));
 		} else {
-			this.conditionalModeButton.text = I18n.translate("advMode.mode.unconditional");
+			this.conditionalModeButton.setText(I18n.translate("advMode.mode.unconditional"));
 		}
 	}
 
-	private void method_2454() {
-		if (this.alwaysActive) {
-			this.redstoneTriggerButton.text = I18n.translate("advMode.mode.autoexec.bat");
+	private void updateActivationMode() {
+		if (this.autoActivate) {
+			this.redstoneTriggerButton.setText(I18n.translate("advMode.mode.autoexec.bat"));
 		} else {
-			this.redstoneTriggerButton.text = I18n.translate("advMode.mode.redstoneTriggered");
+			this.redstoneTriggerButton.setText(I18n.translate("advMode.mode.redstoneTriggered"));
 		}
 	}
 }

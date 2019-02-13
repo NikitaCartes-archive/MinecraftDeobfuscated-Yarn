@@ -4,8 +4,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.GameOptionSliderWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
-import net.minecraft.client.gui.widget.OptionSliderWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
@@ -43,15 +43,15 @@ public class ChatSettingsScreen extends Screen {
 
 		for (GameOptions.Option option : SETTINGS) {
 			if (option.isSlider()) {
-				this.addButton(new OptionSliderWidget(option.getId(), this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), option));
+				this.addButton(new GameOptionSliderWidget(this.client, option.getId(), this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), option));
 			} else {
 				OptionButtonWidget optionButtonWidget = new OptionButtonWidget(
 					option.getId(), this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), option, this.settings.getTranslatedName(option)
 				) {
 					@Override
 					public void onPressed(double d, double e) {
-						ChatSettingsScreen.this.settings.updateOption(this.getOption(), 1);
-						this.text = ChatSettingsScreen.this.settings.getTranslatedName(GameOptions.Option.byId(this.id));
+						ChatSettingsScreen.this.settings.setInteger(this.getOption(), 1);
+						this.setText(ChatSettingsScreen.this.settings.getTranslatedName(GameOptions.Option.byId(this.id)));
 					}
 				};
 				this.addButton(optionButtonWidget);
@@ -87,6 +87,6 @@ public class ChatSettingsScreen extends Screen {
 	}
 
 	public void method_2096() {
-		this.field_2355.text = this.settings.getTranslatedName(GameOptions.Option.byId(this.field_2355.id));
+		this.field_2355.setText(this.settings.getTranslatedName(GameOptions.Option.byId(this.field_2355.id)));
 	}
 }

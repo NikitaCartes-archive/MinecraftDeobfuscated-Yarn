@@ -15,11 +15,11 @@ import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.ingame.ConfirmChatLinkScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.LabelWidget;
-import net.minecraft.client.item.TooltipOptions;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
@@ -55,12 +55,12 @@ public abstract class Screen extends DrawableContainer implements YesNoCallback 
 	protected final List<ButtonWidget> buttons = Lists.<ButtonWidget>newArrayList();
 	protected final List<LabelWidget> labelWidgets = Lists.<LabelWidget>newArrayList();
 	public boolean field_2558;
-	public FontRenderer fontRenderer;
+	public TextRenderer fontRenderer;
 	private URI uri;
 
 	public void draw(int i, int j, float f) {
 		for (int k = 0; k < this.buttons.size(); k++) {
-			((ButtonWidget)this.buttons.get(k)).draw(i, j, f);
+			((ButtonWidget)this.buttons.get(k)).render(i, j, f);
 		}
 
 		for (int k = 0; k < this.labelWidgets.size(); k++) {
@@ -98,7 +98,7 @@ public abstract class Screen extends DrawableContainer implements YesNoCallback 
 
 	public List<String> getStackTooltip(ItemStack itemStack) {
 		List<TextComponent> list = itemStack.getTooltipText(
-			this.client.player, this.client.options.advancedItemTooltips ? TooltipOptions.Instance.ADVANCED : TooltipOptions.Instance.NORMAL
+			this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL
 		);
 		List<String> list2 = Lists.<String>newArrayList();
 
@@ -192,7 +192,7 @@ public abstract class Screen extends DrawableContainer implements YesNoCallback 
 				}
 
 				if (itemStack.isEmpty()) {
-					this.drawTooltip(TextFormat.RED + "Invalid Item!", i, j);
+					this.drawTooltip(TextFormat.field_1061 + "Invalid Item!", i, j);
 				} else {
 					this.drawStackTooltip(itemStack, i, j);
 				}
@@ -214,11 +214,11 @@ public abstract class Screen extends DrawableContainer implements YesNoCallback 
 						list.add(compoundTag.getString("id"));
 						this.drawTooltip(list, i, j);
 					} catch (CommandSyntaxException | JsonSyntaxException var9) {
-						this.drawTooltip(TextFormat.RED + "Invalid Entity!", i, j);
+						this.drawTooltip(TextFormat.field_1061 + "Invalid Entity!", i, j);
 					}
 				}
 			} else if (hoverEvent.getAction() == HoverEvent.Action.SHOW_TEXT) {
-				this.drawTooltip(this.client.fontRenderer.wrapStringToWidthAsList(hoverEvent.getValue().getFormattedText(), Math.max(this.width / 2, 200)), i, j);
+				this.drawTooltip(this.client.textRenderer.wrapStringToWidthAsList(hoverEvent.getValue().getFormattedText(), Math.max(this.width / 2, 200)), i, j);
 			}
 
 			GlStateManager.disableLighting();
@@ -269,7 +269,7 @@ public abstract class Screen extends DrawableContainer implements YesNoCallback 
 				} else if (clickEvent.getAction() == ClickEvent.Action.SUGGEST_COMMAND) {
 					this.method_2237(clickEvent.getValue(), true);
 				} else if (clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
-					this.method_2213(clickEvent.getValue(), false);
+					this.sendMessage(clickEvent.getValue(), false);
 				} else {
 					LOGGER.error("Don't know how to handle {}", clickEvent);
 				}
@@ -281,13 +281,13 @@ public abstract class Screen extends DrawableContainer implements YesNoCallback 
 		}
 	}
 
-	public void method_2230(String string) {
-		this.method_2213(string, true);
+	public void sendMessage(String string) {
+		this.sendMessage(string, true);
 	}
 
-	public void method_2213(String string, boolean bl) {
+	public void sendMessage(String string, boolean bl) {
 		if (bl) {
-			this.client.inGameHud.getHudChat().method_1803(string);
+			this.client.inGameHud.getChatHud().method_1803(string);
 		}
 
 		this.client.player.sendChatMessage(string);
@@ -296,7 +296,7 @@ public abstract class Screen extends DrawableContainer implements YesNoCallback 
 	public void initialize(MinecraftClient minecraftClient, int i, int j) {
 		this.client = minecraftClient;
 		this.itemRenderer = minecraftClient.getItemRenderer();
-		this.fontRenderer = minecraftClient.fontRenderer;
+		this.fontRenderer = minecraftClient.textRenderer;
 		this.width = i;
 		this.height = j;
 		this.buttons.clear();
@@ -371,7 +371,7 @@ public abstract class Screen extends DrawableContainer implements YesNoCallback 
 	}
 
 	public static boolean isControlPressed() {
-		return MinecraftClient.isSystemMac
+		return MinecraftClient.IS_SYSTEM_MAC
 			? InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 343)
 				|| InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 347)
 			: InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 341)

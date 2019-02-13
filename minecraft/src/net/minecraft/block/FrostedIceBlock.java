@@ -24,7 +24,7 @@ public class FrostedIceBlock extends IceBlock {
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if ((random.nextInt(3) == 0 || this.method_10202(world, blockPos, 4))
-			&& world.method_8602(blockPos) > 11 - (Integer)blockState.get(AGE) - blockState.getLightSubtracted(world, blockPos)
+			&& world.getLightLevel(blockPos) > 11 - (Integer)blockState.get(AGE) - blockState.getLightSubtracted(world, blockPos)
 			&& this.increaseAge(blockState, world, blockPos)) {
 			try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 				for (Direction direction : Direction.values()) {

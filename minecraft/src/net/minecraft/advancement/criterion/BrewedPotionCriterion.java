@@ -62,7 +62,7 @@ public class BrewedPotionCriterion implements Criterion<BrewedPotionCriterion.Co
 		Potion potion = null;
 		if (jsonObject.has("potion")) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "potion"));
-			potion = (Potion)Registry.POTION.getOptional(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown potion '" + identifier + "'"));
+			potion = (Potion)Registry.POTION.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown potion '" + identifier + "'"));
 		}
 
 		return new BrewedPotionCriterion.Conditions(potion);

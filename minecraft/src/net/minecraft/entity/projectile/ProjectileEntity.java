@@ -562,7 +562,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 		}
 
 		if (compoundTag.containsKey("SoundEvent", 8)) {
-			this.sound = (SoundEvent)Registry.SOUND_EVENT.getOptional(new Identifier(compoundTag.getString("SoundEvent"))).orElse(null);
+			this.sound = (SoundEvent)Registry.SOUND_EVENT.getOrEmpty(new Identifier(compoundTag.getString("SoundEvent"))).orElse(null);
 		}
 
 		this.setShotFromCrossbow(compoundTag.getBoolean("ShotFromCrossbow"));
@@ -577,7 +577,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 
 	@Nullable
 	public Entity getOwner() {
-		return this.ownerUuid != null && this.world instanceof ServerWorld ? ((ServerWorld)this.world).method_14190(this.ownerUuid) : null;
+		return this.ownerUuid != null && this.world instanceof ServerWorld ? ((ServerWorld)this.world).getEntity(this.ownerUuid) : null;
 	}
 
 	@Override
@@ -591,7 +591,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 			}
 
 			if (bl) {
-				playerEntity.method_6103(this, 1);
+				playerEntity.pickUpEntity(this, 1);
 				this.invalidate();
 			}
 		}

@@ -33,10 +33,10 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.village.TraderRecipeList;
 import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerDataContainer;
 import net.minecraft.village.VillagerProfession;
-import net.minecraft.village.VillagerRecipeList;
 import net.minecraft.village.VillagerType;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
@@ -176,7 +176,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		villagerEntity.setPositionAndAngles(this);
 		villagerEntity.setVillagerData(this.getVillagerData());
 		if (this.offerData != null) {
-			villagerEntity.setRecipes(new VillagerRecipeList(this.offerData));
+			villagerEntity.setRecipes(new TraderRecipeList(this.offerData));
 		}
 
 		villagerEntity.prepareEntityData(serverWorld, serverWorld.getLocalDifficulty(new BlockPos(villagerEntity)), SpawnType.field_16468, null, null);

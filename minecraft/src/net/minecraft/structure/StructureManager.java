@@ -40,7 +40,7 @@ public class StructureManager implements SynchronousResourceReloadListener {
 		this.server = minecraftServer;
 		this.dataFixer = dataFixer;
 		this.generatedPath = file.toPath().resolve("generated").normalize();
-		minecraftServer.getDataManager().addListener(this);
+		minecraftServer.getDataManager().registerListener(this);
 	}
 
 	public Structure getStructureOrBlank(Identifier identifier) {
@@ -62,7 +62,7 @@ public class StructureManager implements SynchronousResourceReloadListener {
 	}
 
 	@Override
-	public void reloadResources(ResourceManager resourceManager) {
+	public void apply(ResourceManager resourceManager) {
 		this.structures.clear();
 	}
 
@@ -220,7 +220,7 @@ public class StructureManager implements SynchronousResourceReloadListener {
 			throw new InvalidIdentifierException("Invalid resource path: " + identifier);
 		} else {
 			Path path = this.getStructurePath(identifier, string);
-			if (path.startsWith(this.generatedPath) && SystemUtil.method_653(path) && SystemUtil.isPathIllegal(path)) {
+			if (path.startsWith(this.generatedPath) && SystemUtil.isPathNormalized(path) && SystemUtil.isPathLegal(path)) {
 				return path;
 			} else {
 				throw new InvalidIdentifierException("Invalid resource path: " + path);

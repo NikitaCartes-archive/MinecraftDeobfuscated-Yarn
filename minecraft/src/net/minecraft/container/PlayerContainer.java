@@ -16,7 +16,7 @@ import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
 
 public class PlayerContainer extends CraftingContainer<CraftingInventory> {
-	private static final String[] field_7829 = new String[]{
+	private static final String[] EMPTY_ARMOR_SLOT_IDS = new String[]{
 		"item/empty_armor_slot_boots", "item/empty_armor_slot_leggings", "item/empty_armor_slot_chestplate", "item/empty_armor_slot_helmet"
 	};
 	private static final EquipmentSlot[] EQUIPMENT_SLOT_ORDER = new EquipmentSlot[]{
@@ -62,7 +62,7 @@ public class PlayerContainer extends CraftingContainer<CraftingInventory> {
 				@Environment(EnvType.CLIENT)
 				@Override
 				public String getBackgroundSprite() {
-					return PlayerContainer.field_7829[equipmentSlot.getEntitySlotId()];
+					return PlayerContainer.EMPTY_ARMOR_SLOT_IDS[equipmentSlot.getEntitySlotId()];
 				}
 			});
 		}
@@ -94,8 +94,8 @@ public class PlayerContainer extends CraftingContainer<CraftingInventory> {
 
 	@Override
 	public void clearCraftingSlots() {
-		this.invCraftingResult.clearInv();
-		this.invCrafting.clearInv();
+		this.invCraftingResult.clear();
+		this.invCrafting.clear();
 	}
 
 	@Override
@@ -111,7 +111,7 @@ public class PlayerContainer extends CraftingContainer<CraftingInventory> {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.invCraftingResult.clearInv();
+		this.invCraftingResult.clear();
 		if (!playerEntity.world.isClient) {
 			this.dropInventory(playerEntity, playerEntity.world, this.invCrafting);
 		}
@@ -185,8 +185,8 @@ public class PlayerContainer extends CraftingContainer<CraftingInventory> {
 	}
 
 	@Override
-	public boolean method_7613(ItemStack itemStack, Slot slot) {
-		return slot.inventory != this.invCraftingResult && super.method_7613(itemStack, slot);
+	public boolean canInsertIntoSlot(ItemStack itemStack, Slot slot) {
+		return slot.inventory != this.invCraftingResult && super.canInsertIntoSlot(itemStack, slot);
 	}
 
 	@Override

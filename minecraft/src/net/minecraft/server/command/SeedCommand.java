@@ -19,7 +19,7 @@ public class SeedCommand {
 						TextComponent textComponent = TextFormatter.bracketed(
 							new StringTextComponent(String.valueOf(l))
 								.modifyStyle(
-									style -> style.setColor(TextFormat.GREEN)
+									style -> style.setColor(TextFormat.field_1060)
 											.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, String.valueOf(l)))
 											.setInsertion(String.valueOf(l))
 								)

@@ -48,6 +48,6 @@ public class BucketMilkItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		playerEntity.setCurrentHand(hand);
-		return new TypedActionResult<>(ActionResult.SUCCESS, playerEntity.getStackInHand(hand));
+		return new TypedActionResult<>(ActionResult.field_5812, playerEntity.getStackInHand(hand));
 	}
 }

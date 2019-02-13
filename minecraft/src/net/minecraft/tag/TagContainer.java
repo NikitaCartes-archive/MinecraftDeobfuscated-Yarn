@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -81,38 +82,43 @@ public class TagContainer<T> {
 		this.idMap.clear();
 	}
 
-	public CompletableFuture<Map<Identifier, Tag.Builder<T>>> prepareReload(ResourceManager resourceManager) {
-		return CompletableFuture.supplyAsync(() -> {
-			Map<Identifier, Tag.Builder<T>> map = Maps.<Identifier, Tag.Builder<T>>newHashMap();
+	public CompletableFuture<Map<Identifier, Tag.Builder<T>>> prepareReload(ResourceManager resourceManager, Executor executor) {
+		return CompletableFuture.supplyAsync(
+			() -> {
+				Map<Identifier, Tag.Builder<T>> map = Maps.<Identifier, Tag.Builder<T>>newHashMap();
 
-			for (Identifier identifier : resourceManager.findResources(this.path, stringx -> stringx.endsWith(".json"))) {
-				String string = identifier.getPath();
-				Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(this.path.length() + 1, string.length() - JSON_EXTENSION_LENGTH));
+				for (Identifier identifier : resourceManager.findResources(this.path, stringx -> stringx.endsWith(".json"))) {
+					String string = identifier.getPath();
+					Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(this.path.length() + 1, string.length() - JSON_EXTENSION_LENGTH));
 
-				try {
-					for (Resource resource : resourceManager.getAllResources(identifier)) {
-						try {
-							JsonObject jsonObject = JsonHelper.deserialize(GSON, IOUtils.toString(resource.getInputStream(), StandardCharsets.UTF_8), JsonObject.class);
-							if (jsonObject == null) {
-								LOGGER.error("Couldn't load {} tag list {} from {} in data pack {} as it's empty or null", this.type, identifier2, identifier, resource.getPackName());
-							} else {
-								Tag.Builder<T> builder = (Tag.Builder<T>)map.getOrDefault(identifier2, Tag.Builder.create());
-								builder.fromJson(this.getter, jsonObject);
-								map.put(identifier2, builder);
+					try {
+						for (Resource resource : resourceManager.getAllResources(identifier)) {
+							try {
+								JsonObject jsonObject = JsonHelper.deserialize(GSON, IOUtils.toString(resource.getInputStream(), StandardCharsets.UTF_8), JsonObject.class);
+								if (jsonObject == null) {
+									LOGGER.error(
+										"Couldn't load {} tag list {} from {} in data pack {} as it's empty or null", this.type, identifier2, identifier, resource.getResourcePackName()
+									);
+								} else {
+									Tag.Builder<T> builder = (Tag.Builder<T>)map.getOrDefault(identifier2, Tag.Builder.create());
+									builder.fromJson(this.getter, jsonObject);
+									map.put(identifier2, builder);
+								}
+							} catch (RuntimeException | IOException var15) {
+								LOGGER.error("Couldn't read {} tag list {} from {} in data pack {}", this.type, identifier2, identifier, resource.getResourcePackName(), var15);
+							} finally {
+								IOUtils.closeQuietly(resource);
 							}
-						} catch (RuntimeException | IOException var15) {
-							LOGGER.error("Couldn't read {} tag list {} from {} in data pack {}", this.type, identifier2, identifier, resource.getPackName(), var15);
-						} finally {
-							IOUtils.closeQuietly(resource);
 						}
+					} catch (IOException var17) {
+						LOGGER.error("Couldn't read {} tag list {} from {}", this.type, identifier2, identifier, var17);
 					}
-				} catch (IOException var17) {
-					LOGGER.error("Couldn't read {} tag list {} from {}", this.type, identifier2, identifier, var17);
 				}
-			}
 
-			return map;
-		});
+				return map;
+			},
+			executor
+		);
 	}
 
 	public void applyReload(Map<Identifier, Tag.Builder<T>> map) {

@@ -7,7 +7,7 @@ import java.util.Iterator;
 import javax.annotation.Nullable;
 import net.minecraft.util.math.MathHelper;
 
-public class Int2ObjectBiMap<K> implements IntIterable<K> {
+public class Int2ObjectBiMap<K> implements IndexedIterable<K> {
 	private static final Object empty = null;
 	private K[] values;
 	private int[] ids;
@@ -28,7 +28,7 @@ public class Int2ObjectBiMap<K> implements IntIterable<K> {
 
 	@Nullable
 	@Override
-	public K getInt(int i) {
+	public K get(int i) {
 		return i >= 0 && i < this.idToValues.length ? this.idToValues[i] : null;
 	}
 

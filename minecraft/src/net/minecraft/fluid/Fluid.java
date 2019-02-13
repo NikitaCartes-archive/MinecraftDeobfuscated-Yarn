@@ -83,7 +83,7 @@ public abstract class Fluid {
 
 	protected abstract float getBlastResistance();
 
-	public abstract float method_15788(FluidState fluidState, BlockView blockView, BlockPos blockPos);
+	public abstract float getHeight(FluidState fluidState, BlockView blockView, BlockPos blockPos);
 
 	protected abstract BlockState toBlockState(FluidState fluidState);
 

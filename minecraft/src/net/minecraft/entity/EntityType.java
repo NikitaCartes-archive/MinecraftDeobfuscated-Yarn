@@ -11,10 +11,9 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_3986;
 import net.minecraft.datafixers.Schemas;
 import net.minecraft.datafixers.TypeReferences;
-import net.minecraft.entity.boss.EntityWither;
+import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.decoration.EnderCrystalEntity;
@@ -62,6 +61,7 @@ import net.minecraft.entity.passive.CodEntity;
 import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.entity.passive.DolphinEntity;
 import net.minecraft.entity.passive.DonkeyEntity;
+import net.minecraft.entity.passive.FoxEntity;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.LlamaEntity;
@@ -78,6 +78,7 @@ import net.minecraft.entity.passive.SalmonEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.passive.SnowmanEntity;
 import net.minecraft.entity.passive.SquidEntity;
+import net.minecraft.entity.passive.TraderLlamaEntity;
 import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -209,6 +210,9 @@ public class EntityType<T extends Entity> {
 	);
 	public static final EntityType<FireworkEntity> FIREWORK_ROCKET = register(
 		"firework_rocket", EntityType.Builder.<FireworkEntity>create(FireworkEntity::new, EntityCategory.field_17715).setSize(0.25F, 0.25F)
+	);
+	public static final EntityType<FoxEntity> field_17943 = register(
+		"fox", EntityType.Builder.<FoxEntity>create(FoxEntity::new, EntityCategory.field_6294).setSize(0.6F, 0.5F)
 	);
 	public static final EntityType<GhastEntity> GHAST = register(
 		"ghast", EntityType.Builder.<GhastEntity>create(GhastEntity::new, EntityCategory.field_6302).setSize(4.0F, 4.0F)
@@ -352,8 +356,8 @@ public class EntityType<T extends Entity> {
 	public static final EntityType<StrayEntity> STRAY = register(
 		"stray", EntityType.Builder.<StrayEntity>create(StrayEntity::new, EntityCategory.field_6302).setSize(0.6F, 1.99F)
 	);
-	public static final EntityType<class_3986> field_17714 = register(
-		"trader_llama", EntityType.Builder.<class_3986>create(class_3986::new, EntityCategory.field_6294).setSize(0.9F, 1.87F)
+	public static final EntityType<TraderLlamaEntity> field_17714 = register(
+		"trader_llama", EntityType.Builder.<TraderLlamaEntity>create(TraderLlamaEntity::new, EntityCategory.field_6294).setSize(0.9F, 1.87F)
 	);
 	public static final EntityType<TropicalFishEntity> TROPICAL_FISH = register(
 		"tropical_fish", EntityType.Builder.<TropicalFishEntity>create(TropicalFishEntity::new, EntityCategory.field_6300).setSize(0.5F, 0.4F)
@@ -398,8 +402,8 @@ public class EntityType<T extends Entity> {
 	public static final EntityType<WitchEntity> WITCH = register(
 		"witch", EntityType.Builder.<WitchEntity>create(WitchEntity::new, EntityCategory.field_6302).setSize(0.6F, 1.95F)
 	);
-	public static final EntityType<EntityWither> WITHER = register(
-		"wither", EntityType.Builder.<EntityWither>create(EntityWither::new, EntityCategory.field_6302).setSize(0.9F, 3.5F)
+	public static final EntityType<WitherEntity> WITHER = register(
+		"wither", EntityType.Builder.<WitherEntity>create(WitherEntity::new, EntityCategory.field_6302).setSize(0.9F, 3.5F)
 	);
 	public static final EntityType<WitherSkeletonEntity> WITHER_SKELETON = register(
 		"wither_skeleton", EntityType.Builder.<WitherSkeletonEntity>create(WitherSkeletonEntity::new, EntityCategory.field_6302).setSize(0.7F, 2.4F)
@@ -458,7 +462,7 @@ public class EntityType<T extends Entity> {
 	}
 
 	public static Optional<EntityType<?>> get(String string) {
-		return Registry.ENTITY_TYPE.getOptional(Identifier.create(string));
+		return Registry.ENTITY_TYPE.getOrEmpty(Identifier.create(string));
 	}
 
 	public EntityType(
@@ -626,7 +630,7 @@ public class EntityType<T extends Entity> {
 	@Nullable
 	@Environment(EnvType.CLIENT)
 	public static Entity createInstanceFromId(int i, World world) {
-		return newInstance(world, Registry.ENTITY_TYPE.getInt(i));
+		return newInstance(world, Registry.ENTITY_TYPE.get(i));
 	}
 
 	public static Optional<Entity> getEntityFromTag(CompoundTag compoundTag, World world) {
@@ -649,7 +653,7 @@ public class EntityType<T extends Entity> {
 	}
 
 	public static Optional<EntityType<?>> fromTag(CompoundTag compoundTag) {
-		return Registry.ENTITY_TYPE.getOptional(new Identifier(compoundTag.getString("id")));
+		return Registry.ENTITY_TYPE.getOrEmpty(new Identifier(compoundTag.getString("id")));
 	}
 
 	@Nullable

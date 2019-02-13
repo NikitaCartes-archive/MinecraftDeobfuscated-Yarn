@@ -1,0 +1,142 @@
+package net.minecraft.entity.passive;
+
+import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.ai.goal.EscapeDangerGoal;
+import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.TrackTargetGoal;
+import net.minecraft.entity.mob.IllagerEntity;
+import net.minecraft.entity.mob.ZombieEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.World;
+
+public class TraderLlamaEntity extends LlamaEntity {
+	private int despawnDelay;
+
+	public TraderLlamaEntity(World world) {
+		super(EntityType.field_17714, world);
+		this.teleporting = true;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public boolean isTrader() {
+		return true;
+	}
+
+	@Override
+	protected LlamaEntity createChild() {
+		return new TraderLlamaEntity(this.world);
+	}
+
+	@Override
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		compoundTag.putInt("DespawnDelay", this.despawnDelay);
+	}
+
+	@Override
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		if (compoundTag.containsKey("DespawnDelay", 99)) {
+			this.despawnDelay = compoundTag.getInt("DespawnDelay");
+		}
+	}
+
+	@Override
+	protected void initGoals() {
+		super.initGoals();
+		this.goalSelector.add(1, new EscapeDangerGoal(this, 2.0));
+		this.targetSelector.add(1, new TraderLlamaEntity.DefendTraderGoal(this));
+		this.targetSelector.add(2, new FollowTargetGoal(this, ZombieEntity.class, true));
+		this.targetSelector.add(2, new FollowTargetGoal(this, IllagerEntity.class, true));
+	}
+
+	public void setDespawnDelay(int i) {
+		this.despawnDelay = i;
+	}
+
+	@Override
+	protected void method_6726(PlayerEntity playerEntity) {
+		Entity entity = this.getHoldingEntity();
+		if (!this.isLeashed() || !(entity instanceof WanderingTraderEntity)) {
+			super.method_6726(playerEntity);
+		}
+	}
+
+	@Override
+	public void update() {
+		super.update();
+		if (this.despawnDelay > 0 && --this.despawnDelay == 0 && this.isLeashed() && this.getHoldingEntity() instanceof WanderingTraderEntity) {
+			WanderingTraderEntity wanderingTraderEntity = (WanderingTraderEntity)this.getHoldingEntity();
+			int i = wanderingTraderEntity.getDespawnDelay();
+			if (i > 0) {
+				this.despawnDelay = i;
+			} else {
+				this.invalidate();
+			}
+		}
+	}
+
+	@Nullable
+	@Override
+	public EntityData prepareEntityData(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	) {
+		EntityData entityData2 = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		if (spawnType == SpawnType.field_16467) {
+			this.setBreedingAge(0);
+		}
+
+		return entityData2;
+	}
+
+	public class DefendTraderGoal extends TrackTargetGoal {
+		private final LlamaEntity field_17718;
+		private LivingEntity offender;
+		private int traderLastAttackedTime;
+
+		public DefendTraderGoal(LlamaEntity llamaEntity) {
+			super(llamaEntity, false);
+			this.field_17718 = llamaEntity;
+			this.setControlBits(1);
+		}
+
+		@Override
+		public boolean canStart() {
+			if (!this.field_17718.isLeashed()) {
+				return false;
+			} else {
+				Entity entity = this.field_17718.getHoldingEntity();
+				if (!(entity instanceof WanderingTraderEntity)) {
+					return false;
+				} else {
+					WanderingTraderEntity wanderingTraderEntity = (WanderingTraderEntity)entity;
+					this.offender = wanderingTraderEntity.getAttacker();
+					int i = wanderingTraderEntity.getLastAttackedTime();
+					return i != this.traderLastAttackedTime && this.canTrack(this.offender, false);
+				}
+			}
+		}
+
+		@Override
+		public void start() {
+			this.entity.setTarget(this.offender);
+			Entity entity = this.field_17718.getHoldingEntity();
+			if (TraderLlamaEntity.this.isLeashed() && entity instanceof WanderingTraderEntity) {
+				this.traderLastAttackedTime = ((WanderingTraderEntity)entity).getLastAttackedTime();
+			}
+
+			super.start();
+		}
+	}
+}

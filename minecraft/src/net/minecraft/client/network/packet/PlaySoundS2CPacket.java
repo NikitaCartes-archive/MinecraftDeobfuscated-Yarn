@@ -36,7 +36,7 @@ public class PlaySoundS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.sound = Registry.SOUND_EVENT.getInt(packetByteBuf.readVarInt());
+		this.sound = Registry.SOUND_EVENT.get(packetByteBuf.readVarInt());
 		this.category = packetByteBuf.readEnumConstant(SoundCategory.class);
 		this.fixedX = packetByteBuf.readInt();
 		this.fixedY = packetByteBuf.readInt();
@@ -92,6 +92,6 @@ public class PlaySoundS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11895(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11146(this);
+		clientPlayPacketListener.onPlaySound(this);
 	}
 }

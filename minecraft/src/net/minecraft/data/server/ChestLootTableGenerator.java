@@ -310,7 +310,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						.withEntry(
 							ItemEntry.builder(Items.field_8895)
 								.withFunction(
-									ExplorationMapLootFunction.create().destination("buried_treasure").decoration(MapIcon.Direction.field_110).zoom((byte)1).skipExistingChunks(false)
+									ExplorationMapLootFunction.create().destination("buried_treasure").decoration(MapIcon.Type.field_110).zoom((byte)1).skipExistingChunks(false)
 								)
 						)
 				)
@@ -537,7 +537,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 							ItemEntry.builder(Items.field_8895)
 								.setWeight(10)
 								.withFunction(
-									ExplorationMapLootFunction.create().destination("buried_treasure").decoration(MapIcon.Direction.field_110).zoom((byte)1).skipExistingChunks(false)
+									ExplorationMapLootFunction.create().destination("buried_treasure").decoration(MapIcon.Type.field_110).zoom((byte)1).skipExistingChunks(false)
 								)
 						)
 				)
@@ -564,7 +564,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 							ItemEntry.builder(Items.field_8895)
 								.setWeight(5)
 								.withFunction(
-									ExplorationMapLootFunction.create().destination("buried_treasure").decoration(MapIcon.Direction.field_110).zoom((byte)1).skipExistingChunks(false)
+									ExplorationMapLootFunction.create().destination("buried_treasure").decoration(MapIcon.Type.field_110).zoom((byte)1).skipExistingChunks(false)
 								)
 						)
 				)
@@ -693,6 +693,21 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						.withEntry(ItemEntry.builder(Items.field_8803).setWeight(2).withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F))))
 						.withEntry(ItemEntry.builder(Items.field_8145).setWeight(6).withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F))))
 						.withEntry(ItemEntry.builder(Items.field_8600).setWeight(6).withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F))))
+				)
+		);
+		biConsumer.accept(
+			LootTables.field_18007,
+			LootSupplier.create()
+				.withPool(
+					LootPool.create()
+						.withRolls(UniformLootTableRange.between(1.0F, 5.0F))
+						.withEntry(ItemEntry.builder(Items.field_8687).setWeight(1))
+						.withEntry(ItemEntry.builder(Items.field_8429).setWeight(2).withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F))))
+						.withEntry(ItemEntry.builder(Items.field_8209).setWeight(1).withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F))))
+						.withEntry(ItemEntry.builder(Items.field_8705).setWeight(1).withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F))))
+						.withEntry(ItemEntry.builder(Items.field_16307).setWeight(1).withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F))))
+						.withEntry(ItemEntry.builder(Items.field_8317).setWeight(3).withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F))))
+						.withEntry(ItemEntry.builder(Items.field_8713).setWeight(2).withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F))))
 				)
 		);
 		biConsumer.accept(

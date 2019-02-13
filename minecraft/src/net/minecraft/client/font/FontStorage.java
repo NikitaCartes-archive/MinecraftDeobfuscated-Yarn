@@ -27,30 +27,30 @@ public class FontStorage implements AutoCloseable {
 	private static final Random RANDOM = new Random();
 	private final TextureManager textureManager;
 	private final Identifier id;
-	private GlyphRenderer BLANK_GLYPH_RENDERER;
+	private GlyphRenderer blankGlyphRenderer;
 	private final List<Font> fonts = Lists.<Font>newArrayList();
 	private final Char2ObjectMap<GlyphRenderer> glyphRendererCache = new Char2ObjectOpenHashMap<>();
 	private final Char2ObjectMap<Glyph> glyphCache = new Char2ObjectOpenHashMap<>();
 	private final Int2ObjectMap<CharList> charactersByWidth = new Int2ObjectOpenHashMap<>();
-	private final List<GlyphAtlasTexture> field_2254 = Lists.<GlyphAtlasTexture>newArrayList();
+	private final List<GlyphAtlasTexture> glyphAtlases = Lists.<GlyphAtlasTexture>newArrayList();
 
 	public FontStorage(TextureManager textureManager, Identifier identifier) {
 		this.textureManager = textureManager;
 		this.id = identifier;
 	}
 
-	public void method_2004(List<Font> list) {
+	public void setFonts(List<Font> list) {
 		for (Font font : this.fonts) {
 			font.close();
 		}
 
 		this.fonts.clear();
-		this.method_2010();
-		this.field_2254.clear();
+		this.closeGlyphAtlases();
+		this.glyphAtlases.clear();
 		this.glyphRendererCache.clear();
 		this.glyphCache.clear();
 		this.charactersByWidth.clear();
-		this.BLANK_GLYPH_RENDERER = this.getGlyphRenderer(BlankGlyph.INSTANCE);
+		this.blankGlyphRenderer = this.getGlyphRenderer(BlankGlyph.INSTANCE);
 		Set<Font> set = Sets.<Font>newHashSet();
 
 		for (char c = 0; c < '\uffff'; c++) {
@@ -70,11 +70,11 @@ public class FontStorage implements AutoCloseable {
 	}
 
 	public void close() {
-		this.method_2010();
+		this.closeGlyphAtlases();
 	}
 
-	public void method_2010() {
-		for (GlyphAtlasTexture glyphAtlasTexture : this.field_2254) {
+	public void closeGlyphAtlases() {
+		for (GlyphAtlasTexture glyphAtlasTexture : this.glyphAtlases) {
 			glyphAtlasTexture.close();
 		}
 	}
@@ -100,7 +100,7 @@ public class FontStorage implements AutoCloseable {
 	}
 
 	private GlyphRenderer getGlyphRenderer(RenderableGlyph renderableGlyph) {
-		for (GlyphAtlasTexture glyphAtlasTexture : this.field_2254) {
+		for (GlyphAtlasTexture glyphAtlasTexture : this.glyphAtlases) {
 			GlyphRenderer glyphRenderer = glyphAtlasTexture.getGlyphRenderer(renderableGlyph);
 			if (glyphRenderer != null) {
 				return glyphRenderer;
@@ -108,16 +108,16 @@ public class FontStorage implements AutoCloseable {
 		}
 
 		GlyphAtlasTexture glyphAtlasTexture2 = new GlyphAtlasTexture(
-			new Identifier(this.id.getNamespace(), this.id.getPath() + "/" + this.field_2254.size()), renderableGlyph.hasColor()
+			new Identifier(this.id.getNamespace(), this.id.getPath() + "/" + this.glyphAtlases.size()), renderableGlyph.hasColor()
 		);
-		this.field_2254.add(glyphAtlasTexture2);
+		this.glyphAtlases.add(glyphAtlasTexture2);
 		this.textureManager.registerTexture(glyphAtlasTexture2.getId(), glyphAtlasTexture2);
 		GlyphRenderer glyphRenderer2 = glyphAtlasTexture2.getGlyphRenderer(renderableGlyph);
-		return glyphRenderer2 == null ? this.BLANK_GLYPH_RENDERER : glyphRenderer2;
+		return glyphRenderer2 == null ? this.blankGlyphRenderer : glyphRenderer2;
 	}
 
 	public GlyphRenderer getObfuscatedGlyphRenderer(Glyph glyph) {
 		CharList charList = this.charactersByWidth.get(MathHelper.ceil(glyph.getAdvance(false)));
-		return charList != null && !charList.isEmpty() ? this.getGlyphRenderer(charList.get(RANDOM.nextInt(charList.size()))) : this.BLANK_GLYPH_RENDERER;
+		return charList != null && !charList.isEmpty() ? this.getGlyphRenderer(charList.get(RANDOM.nextInt(charList.size()))) : this.blankGlyphRenderer;
 	}
 }

@@ -47,14 +47,14 @@ public class ChunkCache implements ExtendedBlockView {
 	@Nullable
 	@Override
 	public BlockEntity getBlockEntity(BlockPos blockPos) {
-		return this.getBlockEntity(blockPos, WorldChunk.AccessType.CREATE);
+		return this.getBlockEntity(blockPos, WorldChunk.CreationType.field_12860);
 	}
 
 	@Nullable
-	public BlockEntity getBlockEntity(BlockPos blockPos, WorldChunk.AccessType accessType) {
+	public BlockEntity getBlockEntity(BlockPos blockPos, WorldChunk.CreationType creationType) {
 		int i = (blockPos.getX() >> 4) - this.minX;
 		int j = (blockPos.getZ() >> 4) - this.minZ;
-		return this.chunks[i][j].getBlockEntity(blockPos, accessType);
+		return this.chunks[i][j].getBlockEntity(blockPos, creationType);
 	}
 
 	@Override

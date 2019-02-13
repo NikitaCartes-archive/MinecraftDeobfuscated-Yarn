@@ -45,22 +45,22 @@ public class class_3161 implements class_3162 {
 			}
 		};
 	private final BlockEntity field_13784;
-	private final BlockPos pos;
+	private final BlockPos field_13783;
 
 	public class_3161(BlockEntity blockEntity, BlockPos blockPos) {
 		this.field_13784 = blockEntity;
-		this.pos = blockPos;
+		this.field_13783 = blockPos;
 	}
 
 	@Override
 	public void method_13880(CompoundTag compoundTag) {
-		compoundTag.putInt("x", this.pos.getX());
-		compoundTag.putInt("y", this.pos.getY());
-		compoundTag.putInt("z", this.pos.getZ());
+		compoundTag.putInt("x", this.field_13783.getX());
+		compoundTag.putInt("y", this.field_13783.getY());
+		compoundTag.putInt("z", this.field_13783.getZ());
 		this.field_13784.fromTag(compoundTag);
 		this.field_13784.markDirty();
-		BlockState blockState = this.field_13784.getWorld().getBlockState(this.pos);
-		this.field_13784.getWorld().updateListeners(this.pos, blockState, blockState, 3);
+		BlockState blockState = this.field_13784.getWorld().getBlockState(this.field_13783);
+		this.field_13784.getWorld().updateListeners(this.field_13783, blockState, blockState, 3);
 	}
 
 	@Override
@@ -70,18 +70,20 @@ public class class_3161 implements class_3162 {
 
 	@Override
 	public TextComponent method_13883() {
-		return new TranslatableTextComponent("commands.data.block.modified", this.pos.getX(), this.pos.getY(), this.pos.getZ());
+		return new TranslatableTextComponent("commands.data.block.modified", this.field_13783.getX(), this.field_13783.getY(), this.field_13783.getZ());
 	}
 
 	@Override
 	public TextComponent method_13882(Tag tag) {
-		return new TranslatableTextComponent("commands.data.block.query", this.pos.getX(), this.pos.getY(), this.pos.getZ(), tag.toTextComponent());
+		return new TranslatableTextComponent(
+			"commands.data.block.query", this.field_13783.getX(), this.field_13783.getY(), this.field_13783.getZ(), tag.toTextComponent()
+		);
 	}
 
 	@Override
 	public TextComponent method_13879(NbtPathArgumentType.class_2209 arg, double d, int i) {
 		return new TranslatableTextComponent(
-			"commands.data.block.get", arg, this.pos.getX(), this.pos.getY(), this.pos.getZ(), String.format(Locale.ROOT, "%.2f", d), i
+			"commands.data.block.get", arg, this.field_13783.getX(), this.field_13783.getY(), this.field_13783.getZ(), String.format(Locale.ROOT, "%.2f", d), i
 		);
 	}
 }

@@ -95,7 +95,7 @@ public class ServerStatHandler extends StatHandler {
 						for (String string2 : compoundTag2.getKeys()) {
 							if (compoundTag2.containsKey(string2, 10)) {
 								SystemUtil.method_17974(
-									Registry.STAT_TYPE.getOptional(new Identifier(string2)),
+									Registry.STAT_TYPE.getOrEmpty(new Identifier(string2)),
 									statType -> {
 										CompoundTag compoundTag2x = compoundTag2.getCompound(string2);
 
@@ -143,7 +143,7 @@ public class ServerStatHandler extends StatHandler {
 	}
 
 	private <T> Optional<Stat<T>> method_14905(StatType<T> statType, String string) {
-		return Optional.ofNullable(Identifier.create(string)).flatMap(statType.getRegistry()::getOptional).map(statType::getOrCreateStat);
+		return Optional.ofNullable(Identifier.create(string)).flatMap(statType.getRegistry()::getOrEmpty).map(statType::getOrCreateStat);
 	}
 
 	private static CompoundTag jsonToCompound(JsonObject jsonObject) {

@@ -33,7 +33,7 @@ public class BossBarHud extends Drawable {
 				this.client.getTextureManager().bindTexture(BAR_TEX);
 				this.drawBossBar(k, j, clientBossBar);
 				String string = clientBossBar.getName().getFormattedText();
-				this.client.fontRenderer.drawWithShadow(string, (float)(i / 2 - this.client.fontRenderer.getStringWidth(string) / 2), (float)(j - 9), 16777215);
+				this.client.textRenderer.drawWithShadow(string, (float)(i / 2 - this.client.textRenderer.getStringWidth(string) / 2), (float)(j - 9), 16777215);
 				j += 10 + 9;
 				if (j >= this.client.window.getScaledHeight() / 3) {
 					break;
@@ -57,13 +57,13 @@ public class BossBarHud extends Drawable {
 		}
 	}
 
-	public void method_1795(BossBarS2CPacket bossBarS2CPacket) {
+	public void handlePacket(BossBarS2CPacket bossBarS2CPacket) {
 		if (bossBarS2CPacket.getType() == BossBarS2CPacket.Type.ADD) {
 			this.bossBars.put(bossBarS2CPacket.getUuid(), new ClientBossBar(bossBarS2CPacket));
 		} else if (bossBarS2CPacket.getType() == BossBarS2CPacket.Type.REMOVE) {
 			this.bossBars.remove(bossBarS2CPacket.getUuid());
 		} else {
-			((ClientBossBar)this.bossBars.get(bossBarS2CPacket.getUuid())).method_1894(bossBarS2CPacket);
+			((ClientBossBar)this.bossBars.get(bossBarS2CPacket.getUuid())).handlePacket(bossBarS2CPacket);
 		}
 	}
 

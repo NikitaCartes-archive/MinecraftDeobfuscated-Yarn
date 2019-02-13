@@ -120,7 +120,7 @@ public class LocationPredicate {
 			Biome biome = null;
 			if (jsonObject.has("biome")) {
 				Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "biome"));
-				biome = (Biome)Registry.BIOME.getOptional(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown biome '" + identifier + "'"));
+				biome = (Biome)Registry.BIOME.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown biome '" + identifier + "'"));
 			}
 
 			return new LocationPredicate(float_, float2, float3, biome, structureFeature, dimensionType);

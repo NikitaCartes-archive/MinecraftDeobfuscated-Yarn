@@ -45,7 +45,7 @@ public class BiMapPalette<T> implements Palette<T> {
 	@Nullable
 	@Override
 	public T getByIndex(int i) {
-		return this.map.getInt(i);
+		return this.map.get(i);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -55,7 +55,7 @@ public class BiMapPalette<T> implements Palette<T> {
 		int i = packetByteBuf.readVarInt();
 
 		for (int j = 0; j < i; j++) {
-			this.map.add(this.idList.getInt(packetByteBuf.readVarInt()));
+			this.map.add(this.idList.get(packetByteBuf.readVarInt()));
 		}
 	}
 
@@ -65,7 +65,7 @@ public class BiMapPalette<T> implements Palette<T> {
 		packetByteBuf.writeVarInt(i);
 
 		for (int j = 0; j < i; j++) {
-			packetByteBuf.writeVarInt(this.idList.getId(this.map.getInt(j)));
+			packetByteBuf.writeVarInt(this.idList.getId(this.map.get(j)));
 		}
 	}
 
@@ -74,7 +74,7 @@ public class BiMapPalette<T> implements Palette<T> {
 		int i = PacketByteBuf.getVarIntSizeBytes(this.getIndexBits());
 
 		for (int j = 0; j < this.getIndexBits(); j++) {
-			i += PacketByteBuf.getVarIntSizeBytes(this.idList.getId(this.map.getInt(j)));
+			i += PacketByteBuf.getVarIntSizeBytes(this.idList.getId(this.map.get(j)));
 		}
 
 		return i;
@@ -95,7 +95,7 @@ public class BiMapPalette<T> implements Palette<T> {
 
 	public void toTag(ListTag listTag) {
 		for (int i = 0; i < this.getIndexBits(); i++) {
-			listTag.add(this.elementSerializer.apply(this.map.getInt(i)));
+			listTag.add(this.elementSerializer.apply(this.map.get(i)));
 		}
 	}
 }

@@ -50,8 +50,8 @@ public class HuskEntity extends ZombieEntity {
 	}
 
 	@Override
-	public boolean method_6121(Entity entity) {
-		boolean bl = super.method_6121(entity);
+	public boolean attack(Entity entity) {
+		boolean bl = super.attack(entity);
 		if (bl && this.getMainHandStack().isEmpty() && entity instanceof LivingEntity) {
 			float f = this.world.getLocalDifficulty(new BlockPos(this)).getLocalDifficulty();
 			((LivingEntity)entity).addPotionEffect(new StatusEffectInstance(StatusEffects.field_5903, 140 * (int)f));

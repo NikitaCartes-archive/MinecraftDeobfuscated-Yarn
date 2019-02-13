@@ -276,7 +276,7 @@ public class ClientWorld extends World {
 					BlockState blockState = worldChunk.getBlockState(blockPos);
 					r += o;
 					s += p;
-					if (blockState.isAir() && this.getLightLevel(blockPos, 0) <= this.random.nextInt(8) && this.getLightLevel(LightType.SKY_LIGHT, blockPos) <= 0) {
+					if (blockState.isAir() && this.getLightLevel(blockPos, 0) <= this.random.nextInt(8) && this.getLightLevel(LightType.SKY, blockPos) <= 0) {
 						this.playSound(
 							(double)r + 0.5,
 							(double)t + 0.5,
@@ -396,7 +396,7 @@ public class ClientWorld extends World {
 		FluidState fluidState = this.getFluidState(mutable);
 		if (!fluidState.isEmpty()) {
 			fluidState.randomDisplayTick(this, mutable, random);
-			ParticleParameters particleParameters = fluidState.method_15766();
+			ParticleParameters particleParameters = fluidState.getParticle();
 			if (particleParameters != null && this.random.nextInt(10) == 0) {
 				boolean bl2 = Block.isFaceFullSquare(blockState.getCollisionShape(this, mutable), Direction.DOWN);
 				BlockPos blockPos = mutable.down();

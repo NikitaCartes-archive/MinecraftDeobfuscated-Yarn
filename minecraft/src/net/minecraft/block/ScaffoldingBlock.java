@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import javax.annotation.Nullable;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.fluid.FluidState;
@@ -67,20 +66,14 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		Direction direction = this.method_16372(viewableWorld, blockPos);
-		if (direction == null) {
-			return false;
-		} else {
-			BlockState blockState2 = viewableWorld.getBlockState(blockPos.offset(direction));
-			return blockState2.getBlock() != this || (Integer)blockState2.get(DISTANCE) + 1 <= 7;
-		}
+		return this.method_16372(viewableWorld, blockPos) < 7;
 	}
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		World world = itemPlacementContext.getWorld();
-		int i = this.method_16371(world, blockPos);
+		int i = this.method_16372(world, blockPos);
 		return this.getDefaultState()
 			.with(WATERLOGGED, Boolean.valueOf(world.getFluidState(blockPos).getFluid() == Fluids.WATER))
 			.with(DISTANCE, Integer.valueOf(i))
@@ -111,7 +104,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		int i = this.method_16371(world, blockPos);
+		int i = this.method_16372(world, blockPos);
 		BlockState blockState2 = blockState.with(DISTANCE, Integer.valueOf(i)).with(BOTTOM, Boolean.valueOf(this.method_16373(world, blockPos, i)));
 		if ((Integer)blockState2.get(DISTANCE) == 7) {
 			if ((Integer)blockState.get(DISTANCE) == 7) {
@@ -148,40 +141,27 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 		return i > 0 && blockView.getBlockState(blockPos.down()).getBlock() != this;
 	}
 
-	@Nullable
-	private Direction method_16372(BlockView blockView, BlockPos blockPos) {
-		BlockState blockState = blockView.getBlockState(blockPos.down());
+	private int method_16372(BlockView blockView, BlockPos blockPos) {
+		BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos).setOffset(Direction.DOWN);
+		BlockState blockState = blockView.getBlockState(mutable);
+		int i = 7;
 		if (blockState.getBlock() == this) {
-			return Direction.DOWN;
-		} else if (Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos), Direction.UP)) {
-			return Direction.DOWN;
-		} else {
-			Direction direction = null;
-			int i = 7;
+			i = (Integer)blockState.get(DISTANCE);
+		} else if (Block.isFaceFullSquare(blockState.getCollisionShape(blockView, mutable), Direction.UP)) {
+			return 0;
+		}
 
-			for (Direction direction2 : Direction.Type.HORIZONTAL) {
-				BlockState blockState2 = blockView.getBlockState(blockPos.offset(direction2));
-				if (blockState2.getBlock() == this) {
-					int j = (Integer)blockState2.get(DISTANCE);
-					if (j < i) {
-						i = j;
-						direction = direction2;
-					}
+		for (Direction direction : Direction.Type.HORIZONTAL) {
+			BlockState blockState2 = blockView.getBlockState(mutable.set(blockPos).setOffset(direction));
+			if (blockState2.getBlock() == this) {
+				i = Math.min(i, (Integer)blockState2.get(DISTANCE) + 1);
+				if (i == 1) {
+					break;
 				}
 			}
-
-			return direction;
 		}
-	}
 
-	private int method_16371(BlockView blockView, BlockPos blockPos) {
-		Direction direction = this.method_16372(blockView, blockPos);
-		if (direction == null) {
-			return 7;
-		} else {
-			BlockState blockState = blockView.getBlockState(blockPos.offset(direction));
-			return blockState.getBlock() == this ? Math.min(7, (Integer)blockState.get(DISTANCE) + (direction.getAxis() == Direction.Axis.Y ? 0 : 1)) : 0;
-		}
+		return i;
 	}
 
 	static {

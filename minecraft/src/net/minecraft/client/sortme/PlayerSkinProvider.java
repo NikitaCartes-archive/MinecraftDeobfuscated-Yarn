@@ -54,17 +54,19 @@ public class PlayerSkinProvider {
 			});
 	}
 
-	public Identifier method_4656(MinecraftProfileTexture minecraftProfileTexture, Type type) {
-		return this.method_4651(minecraftProfileTexture, type, null);
+	public Identifier loadSkin(MinecraftProfileTexture minecraftProfileTexture, Type type) {
+		return this.loadSkin(minecraftProfileTexture, type, null);
 	}
 
-	public Identifier method_4651(MinecraftProfileTexture minecraftProfileTexture, Type type, @Nullable PlayerSkinProvider.class_1072 arg) {
+	public Identifier loadSkin(
+		MinecraftProfileTexture minecraftProfileTexture, Type type, @Nullable PlayerSkinProvider.SkinTextureAvailableCallback skinTextureAvailableCallback
+	) {
 		String string = Hashing.sha1().hashUnencodedChars(minecraftProfileTexture.getHash()).toString();
 		final Identifier identifier = new Identifier("skins/" + string);
 		Texture texture = this.textureManager.getTexture(identifier);
 		if (texture != null) {
-			if (arg != null) {
-				arg.onSkinTextureAvailable(type, identifier, minecraftProfileTexture);
+			if (skinTextureAvailableCallback != null) {
+				skinTextureAvailableCallback.onSkinTextureAvailable(type, identifier, minecraftProfileTexture);
 			}
 		} else {
 			File file = new File(this.skinCacheDir, string.length() > 2 ? string.substring(0, 2) : "xx");
@@ -82,8 +84,8 @@ public class PlayerSkinProvider {
 						imageFilter.method_3238();
 					}
 
-					if (arg != null) {
-						arg.onSkinTextureAvailable(type, identifier, minecraftProfileTexture);
+					if (skinTextureAvailableCallback != null) {
+						skinTextureAvailableCallback.onSkinTextureAvailable(type, identifier, minecraftProfileTexture);
 					}
 				}
 			});
@@ -93,7 +95,7 @@ public class PlayerSkinProvider {
 		return identifier;
 	}
 
-	public void method_4652(GameProfile gameProfile, PlayerSkinProvider.class_1072 arg, boolean bl) {
+	public void method_4652(GameProfile gameProfile, PlayerSkinProvider.SkinTextureAvailableCallback skinTextureAvailableCallback, boolean bl) {
 		EXECUTOR_SERVICE.submit(() -> {
 			Map<Type, MinecraftProfileTexture> map = Maps.<Type, MinecraftProfileTexture>newHashMap();
 
@@ -119,22 +121,22 @@ public class PlayerSkinProvider {
 
 			MinecraftClient.getInstance().execute(() -> {
 				if (map.containsKey(Type.SKIN)) {
-					this.method_4651((MinecraftProfileTexture)map.get(Type.SKIN), Type.SKIN, arg);
+					this.loadSkin((MinecraftProfileTexture)map.get(Type.SKIN), Type.SKIN, skinTextureAvailableCallback);
 				}
 
 				if (map.containsKey(Type.CAPE)) {
-					this.method_4651((MinecraftProfileTexture)map.get(Type.CAPE), Type.CAPE, arg);
+					this.loadSkin((MinecraftProfileTexture)map.get(Type.CAPE), Type.CAPE, skinTextureAvailableCallback);
 				}
 			});
 		});
 	}
 
-	public Map<Type, MinecraftProfileTexture> method_4654(GameProfile gameProfile) {
+	public Map<Type, MinecraftProfileTexture> getTextures(GameProfile gameProfile) {
 		return this.skinCache.getUnchecked(gameProfile);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public interface class_1072 {
+	public interface SkinTextureAvailableCallback {
 		void onSkinTextureAvailable(Type type, Identifier identifier, MinecraftProfileTexture minecraftProfileTexture);
 	}
 }

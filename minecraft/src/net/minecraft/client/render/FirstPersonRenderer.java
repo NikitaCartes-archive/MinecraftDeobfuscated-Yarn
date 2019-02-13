@@ -332,49 +332,45 @@ public class FirstPersonRenderer {
 				this.method_3222(i, optionMainHand, h, itemStack);
 			}
 		} else if (itemStack.getItem() == Items.field_8399) {
-			if (!abstractClientPlayerEntity.isInvisible()) {
-				boolean bl2 = CrossbowItem.isCharged(itemStack);
-				boolean bl3 = optionMainHand == OptionMainHand.field_6183;
-				int j = bl3 ? 1 : -1;
-				if (abstractClientPlayerEntity.isUsingItem() && abstractClientPlayerEntity.method_6014() > 0 && abstractClientPlayerEntity.getActiveHand() == hand) {
-					this.method_3224(optionMainHand, i);
-					GlStateManager.translatef((float)j * -0.4785682F, -0.094387F, 0.05731531F);
-					GlStateManager.rotatef(-11.935F, 1.0F, 0.0F, 0.0F);
-					GlStateManager.rotatef((float)j * 65.3F, 0.0F, 1.0F, 0.0F);
-					GlStateManager.rotatef((float)j * -9.785F, 0.0F, 0.0F, 1.0F);
-					float k = (float)itemStack.getMaxUseTime() - ((float)this.client.player.method_6014() - f + 1.0F);
-					float l = k / (float)CrossbowItem.getPullTime(itemStack);
-					if (l > 1.0F) {
-						l = 1.0F;
-					}
-
-					if (l > 0.1F) {
-						float m = MathHelper.sin((k - 0.1F) * 1.3F);
-						float n = l - 0.1F;
-						float o = m * n;
-						GlStateManager.translatef(o * 0.0F, o * 0.004F, o * 0.0F);
-					}
-
-					GlStateManager.translatef(l * 0.0F, l * 0.0F, l * 0.04F);
-					GlStateManager.scalef(1.0F, 1.0F, 1.0F + l * 0.2F);
-					GlStateManager.rotatef((float)j * 45.0F, 0.0F, -1.0F, 0.0F);
-				} else {
-					float kx = -0.4F * MathHelper.sin(MathHelper.sqrt(h) * (float) Math.PI);
-					float lx = 0.2F * MathHelper.sin(MathHelper.sqrt(h) * (float) (Math.PI * 2));
-					float m = -0.2F * MathHelper.sin(h * (float) Math.PI);
-					GlStateManager.translatef((float)j * kx, lx, m);
-					this.method_3224(optionMainHand, i);
-					this.method_3217(optionMainHand, h);
-					if (bl2 && h < 0.001F) {
-						GlStateManager.translatef((float)j * -0.641864F, 0.0F, 0.0F);
-						GlStateManager.rotatef((float)j * 10.0F, 0.0F, 1.0F, 0.0F);
-					}
+			boolean bl2 = CrossbowItem.isCharged(itemStack);
+			boolean bl3 = optionMainHand == OptionMainHand.field_6183;
+			int j = bl3 ? 1 : -1;
+			if (abstractClientPlayerEntity.isUsingItem() && abstractClientPlayerEntity.method_6014() > 0 && abstractClientPlayerEntity.getActiveHand() == hand) {
+				this.method_3224(optionMainHand, i);
+				GlStateManager.translatef((float)j * -0.4785682F, -0.094387F, 0.05731531F);
+				GlStateManager.rotatef(-11.935F, 1.0F, 0.0F, 0.0F);
+				GlStateManager.rotatef((float)j * 65.3F, 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotatef((float)j * -9.785F, 0.0F, 0.0F, 1.0F);
+				float k = (float)itemStack.getMaxUseTime() - ((float)this.client.player.method_6014() - f + 1.0F);
+				float l = k / (float)CrossbowItem.getPullTime(itemStack);
+				if (l > 1.0F) {
+					l = 1.0F;
 				}
 
-				this.renderItemFromSide(
-					abstractClientPlayerEntity, itemStack, bl3 ? ModelTransformation.Type.FIRST_PERSON_RIGHT_HAND : ModelTransformation.Type.FIRST_PERSON_LEFT_HAND, !bl3
-				);
+				if (l > 0.1F) {
+					float m = MathHelper.sin((k - 0.1F) * 1.3F);
+					float n = l - 0.1F;
+					float o = m * n;
+					GlStateManager.translatef(o * 0.0F, o * 0.004F, o * 0.0F);
+				}
+
+				GlStateManager.translatef(l * 0.0F, l * 0.0F, l * 0.04F);
+				GlStateManager.scalef(1.0F, 1.0F, 1.0F + l * 0.2F);
+				GlStateManager.rotatef((float)j * 45.0F, 0.0F, -1.0F, 0.0F);
+			} else {
+				float kx = -0.4F * MathHelper.sin(MathHelper.sqrt(h) * (float) Math.PI);
+				float lx = 0.2F * MathHelper.sin(MathHelper.sqrt(h) * (float) (Math.PI * 2));
+				float m = -0.2F * MathHelper.sin(h * (float) Math.PI);
+				GlStateManager.translatef((float)j * kx, lx, m);
+				this.method_3224(optionMainHand, i);
+				this.method_3217(optionMainHand, h);
+				if (bl2 && h < 0.001F) {
+					GlStateManager.translatef((float)j * -0.641864F, 0.0F, 0.0F);
+					GlStateManager.rotatef((float)j * 10.0F, 0.0F, 1.0F, 0.0F);
+				}
 			}
+
+			this.renderItemFromSide(abstractClientPlayerEntity, itemStack, bl3 ? ModelTransformation.Type.field_4322 : ModelTransformation.Type.field_4321, !bl3);
 		} else {
 			boolean bl2 = optionMainHand == OptionMainHand.field_6183;
 			if (abstractClientPlayerEntity.isUsingItem() && abstractClientPlayerEntity.method_6014() > 0 && abstractClientPlayerEntity.getActiveHand() == hand) {
@@ -454,9 +450,7 @@ public class FirstPersonRenderer {
 				this.method_3217(optionMainHand, h);
 			}
 
-			this.renderItemFromSide(
-				abstractClientPlayerEntity, itemStack, bl2 ? ModelTransformation.Type.FIRST_PERSON_RIGHT_HAND : ModelTransformation.Type.FIRST_PERSON_LEFT_HAND, !bl2
-			);
+			this.renderItemFromSide(abstractClientPlayerEntity, itemStack, bl2 ? ModelTransformation.Type.field_4322 : ModelTransformation.Type.field_4321, !bl2);
 		}
 
 		GlStateManager.popMatrix();
@@ -485,7 +479,7 @@ public class FirstPersonRenderer {
 		}
 
 		if (!this.client.player.isSpectator()) {
-			if (this.client.player.method_5777(FluidTags.field_15517)) {
+			if (this.client.player.isInFluid(FluidTags.field_15517)) {
 				this.renderWaterOverlay(f);
 			}
 

@@ -30,7 +30,7 @@ import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
 public class SpawnEggItem extends Item {
-	private static final Map<EntityType<?>, SpawnEggItem> field_8914 = Maps.<EntityType<?>, SpawnEggItem>newIdentityHashMap();
+	private static final Map<EntityType<?>, SpawnEggItem> SPAWN_EGGS = Maps.<EntityType<?>, SpawnEggItem>newIdentityHashMap();
 	private final int field_8916;
 	private final int field_8915;
 	private final EntityType<?> field_8917;
@@ -40,14 +40,14 @@ public class SpawnEggItem extends Item {
 		this.field_8917 = entityType;
 		this.field_8916 = i;
 		this.field_8915 = j;
-		field_8914.put(entityType, this);
+		SPAWN_EGGS.put(entityType, this);
 	}
 
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		World world = itemUsageContext.getWorld();
 		if (world.isClient) {
-			return ActionResult.SUCCESS;
+			return ActionResult.field_5812;
 		} else {
 			ItemStack itemStack = itemUsageContext.getItemStack();
 			BlockPos blockPos = itemUsageContext.getBlockPos();
@@ -63,7 +63,7 @@ public class SpawnEggItem extends Item {
 					blockEntity.markDirty();
 					world.updateListeners(blockPos, blockState, blockState, 3);
 					itemStack.subtractAmount(1);
-					return ActionResult.SUCCESS;
+					return ActionResult.field_5812;
 				}
 			}
 
@@ -82,7 +82,7 @@ public class SpawnEggItem extends Item {
 				itemStack.subtractAmount(1);
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.field_5812;
 		}
 	}
 
@@ -110,10 +110,10 @@ public class SpawnEggItem extends Item {
 						}
 
 						playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
-						return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+						return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 					}
 				} else {
-					return new TypedActionResult<>(ActionResult.FAILURE, itemStack);
+					return new TypedActionResult<>(ActionResult.field_5814, itemStack);
 				}
 			}
 		}
@@ -129,12 +129,12 @@ public class SpawnEggItem extends Item {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static SpawnEggItem method_8019(@Nullable EntityType<?> entityType) {
-		return (SpawnEggItem)field_8914.get(entityType);
+	public static SpawnEggItem forEntity(@Nullable EntityType<?> entityType) {
+		return (SpawnEggItem)SPAWN_EGGS.get(entityType);
 	}
 
-	public static Iterable<SpawnEggItem> method_8017() {
-		return Iterables.unmodifiableIterable(field_8914.values());
+	public static Iterable<SpawnEggItem> iterator() {
+		return Iterables.unmodifiableIterable(SPAWN_EGGS.values());
 	}
 
 	public EntityType<?> method_8015(@Nullable CompoundTag compoundTag) {

@@ -11,7 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.client.item.TooltipOptions;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -109,7 +109,7 @@ public class Block implements ItemProvider {
 	}
 
 	public static BlockState getStateFromRawId(int i) {
-		BlockState blockState = STATE_IDS.getInt(i);
+		BlockState blockState = STATE_IDS.get(i);
 		return blockState == null ? Blocks.field_10124.getDefaultState() : blockState;
 	}
 
@@ -308,7 +308,7 @@ public class Block implements ItemProvider {
 
 	@Deprecated
 	public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
-		return this.material.isReplaceable() && itemPlacementContext.getItemStack().getItem() != this.getItem();
+		return this.material.isReplaceable() && (itemPlacementContext.getItemStack().isEmpty() || itemPlacementContext.getItemStack().getItem() != this.getItem());
 	}
 
 	@Deprecated
@@ -467,6 +467,9 @@ public class Block implements ItemProvider {
 
 	@Deprecated
 	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+		if (this.hasBlockEntity() && blockState.getBlock() != blockState2.getBlock()) {
+			world.removeBlockEntity(blockPos);
+		}
 	}
 
 	@Deprecated
@@ -785,7 +788,7 @@ public class Block implements ItemProvider {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void buildTooltip(ItemStack itemStack, @Nullable BlockView blockView, List<TextComponent> list, TooltipOptions tooltipOptions) {
+	public void buildTooltip(ItemStack itemStack, @Nullable BlockView blockView, List<TextComponent> list, TooltipContext tooltipContext) {
 	}
 
 	public static boolean isNaturalStone(Block block) {

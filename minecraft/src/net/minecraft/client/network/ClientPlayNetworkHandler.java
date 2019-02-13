@@ -292,7 +292,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	private MinecraftClient client;
 	private ClientWorld world;
 	private boolean field_3698;
-	private final Map<UUID, ScoreboardEntry> field_3693 = Maps.<UUID, ScoreboardEntry>newHashMap();
+	private final Map<UUID, ScoreboardEntry> scoreboardEntries = Maps.<UUID, ScoreboardEntry>newHashMap();
 	private final ClientAdvancementManager advancementHandler;
 	private final ClientCommandSource commandSource;
 	private TagManager tagManager = new TagManager();
@@ -324,7 +324,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11120(GameJoinS2CPacket gameJoinS2CPacket) {
+	public void onGameJoin(GameJoinS2CPacket gameJoinS2CPacket) {
 		NetworkThreadUtils.forceMainThread(gameJoinS2CPacket, this, this.client);
 		this.client.interactionManager = new ClientPlayerInteractionManager(this.client, this);
 		this.world = new ClientWorld(
@@ -365,7 +365,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11112(EntitySpawnS2CPacket entitySpawnS2CPacket) {
+	public void onEntitySpawn(EntitySpawnS2CPacket entitySpawnS2CPacket) {
 		NetworkThreadUtils.forceMainThread(entitySpawnS2CPacket, this, this.client);
 		double d = entitySpawnS2CPacket.getX();
 		double e = entitySpawnS2CPacket.getY();
@@ -497,7 +497,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11091(ExperienceOrbSpawnS2CPacket experienceOrbSpawnS2CPacket) {
+	public void onExperienceOrbSpawn(ExperienceOrbSpawnS2CPacket experienceOrbSpawnS2CPacket) {
 		NetworkThreadUtils.forceMainThread(experienceOrbSpawnS2CPacket, this, this.client);
 		double d = experienceOrbSpawnS2CPacket.getX();
 		double e = experienceOrbSpawnS2CPacket.getY();
@@ -511,7 +511,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11156(EntitySpawnGlobalS2CPacket entitySpawnGlobalS2CPacket) {
+	public void onEntitySpawnGlobal(EntitySpawnGlobalS2CPacket entitySpawnGlobalS2CPacket) {
 		NetworkThreadUtils.forceMainThread(entitySpawnGlobalS2CPacket, this, this.client);
 		double d = entitySpawnGlobalS2CPacket.getX();
 		double e = entitySpawnGlobalS2CPacket.getY();
@@ -527,7 +527,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11114(PaintingSpawnS2CPacket paintingSpawnS2CPacket) {
+	public void onPaintingSpawn(PaintingSpawnS2CPacket paintingSpawnS2CPacket) {
 		NetworkThreadUtils.forceMainThread(paintingSpawnS2CPacket, this, this.client);
 		PaintingEntity paintingEntity = new PaintingEntity(
 			this.world, paintingSpawnS2CPacket.getPos(), paintingSpawnS2CPacket.getFacing(), paintingSpawnS2CPacket.getMotive()
@@ -538,7 +538,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11132(EntityVelocityUpdateS2CPacket entityVelocityUpdateS2CPacket) {
+	public void onVelocityUpdate(EntityVelocityUpdateS2CPacket entityVelocityUpdateS2CPacket) {
 		NetworkThreadUtils.forceMainThread(entityVelocityUpdateS2CPacket, this, this.client);
 		Entity entity = this.world.getEntityById(entityVelocityUpdateS2CPacket.getId());
 		if (entity != null) {
@@ -551,7 +551,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11093(EntityTrackerUpdateS2CPacket entityTrackerUpdateS2CPacket) {
+	public void onEntityTrackerUpdate(EntityTrackerUpdateS2CPacket entityTrackerUpdateS2CPacket) {
 		NetworkThreadUtils.forceMainThread(entityTrackerUpdateS2CPacket, this, this.client);
 		Entity entity = this.world.getEntityById(entityTrackerUpdateS2CPacket.id());
 		if (entity != null && entityTrackerUpdateS2CPacket.getTrackedValues() != null) {
@@ -560,7 +560,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11097(PlayerSpawnS2CPacket playerSpawnS2CPacket) {
+	public void onPlayerSpawn(PlayerSpawnS2CPacket playerSpawnS2CPacket) {
 		NetworkThreadUtils.forceMainThread(playerSpawnS2CPacket, this, this.client);
 		double d = playerSpawnS2CPacket.getX();
 		double e = playerSpawnS2CPacket.getY();
@@ -588,7 +588,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11086(EntityPositionS2CPacket entityPositionS2CPacket) {
+	public void onEntityPosition(EntityPositionS2CPacket entityPositionS2CPacket) {
 		NetworkThreadUtils.forceMainThread(entityPositionS2CPacket, this, this.client);
 		Entity entity = this.world.getEntityById(entityPositionS2CPacket.getId());
 		if (entity != null) {
@@ -611,7 +611,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11135(HeldItemChangeS2CPacket heldItemChangeS2CPacket) {
+	public void onHeldItemChange(HeldItemChangeS2CPacket heldItemChangeS2CPacket) {
 		NetworkThreadUtils.forceMainThread(heldItemChangeS2CPacket, this, this.client);
 		if (PlayerInventory.isValidHotbarIndex(heldItemChangeS2CPacket.getSlot())) {
 			this.client.player.inventory.selectedSlot = heldItemChangeS2CPacket.getSlot();
@@ -619,7 +619,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11155(EntityS2CPacket entityS2CPacket) {
+	public void onEntityUpdate(EntityS2CPacket entityS2CPacket) {
 		NetworkThreadUtils.forceMainThread(entityS2CPacket, this, this.client);
 		Entity entity = entityS2CPacket.getEntity(this.world);
 		if (entity != null) {
@@ -639,7 +639,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11139(EntitySetHeadYawS2CPacket entitySetHeadYawS2CPacket) {
+	public void onEntitySetHeadYaw(EntitySetHeadYawS2CPacket entitySetHeadYawS2CPacket) {
 		NetworkThreadUtils.forceMainThread(entitySetHeadYawS2CPacket, this, this.client);
 		Entity entity = entitySetHeadYawS2CPacket.getEntity(this.world);
 		if (entity != null) {
@@ -649,7 +649,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11095(EntitiesDestroyS2CPacket entitiesDestroyS2CPacket) {
+	public void onEntitiesDestroy(EntitiesDestroyS2CPacket entitiesDestroyS2CPacket) {
 		NetworkThreadUtils.forceMainThread(entitiesDestroyS2CPacket, this, this.client);
 
 		for (int i = 0; i < entitiesDestroyS2CPacket.getEntityIds().length; i++) {
@@ -658,7 +658,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11157(PlayerPositionLookS2CPacket playerPositionLookS2CPacket) {
+	public void onPlayerPositionLook(PlayerPositionLookS2CPacket playerPositionLookS2CPacket) {
 		NetworkThreadUtils.forceMainThread(playerPositionLookS2CPacket, this, this.client);
 		PlayerEntity playerEntity = this.client.player;
 		double d = playerPositionLookS2CPacket.getX();
@@ -714,7 +714,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11100(ChunkDeltaUpdateS2CPacket chunkDeltaUpdateS2CPacket) {
+	public void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket chunkDeltaUpdateS2CPacket) {
 		NetworkThreadUtils.forceMainThread(chunkDeltaUpdateS2CPacket, this, this.client);
 
 		for (ChunkDeltaUpdateS2CPacket.ChunkDeltaRecord chunkDeltaRecord : chunkDeltaUpdateS2CPacket.getRecords()) {
@@ -723,7 +723,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11128(ChunkDataS2CPacket chunkDataS2CPacket) {
+	public void onChunkData(ChunkDataS2CPacket chunkDataS2CPacket) {
 		NetworkThreadUtils.forceMainThread(chunkDataS2CPacket, this, this.client);
 		int i = chunkDataS2CPacket.getX();
 		int j = chunkDataS2CPacket.getZ();
@@ -756,7 +756,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11107(UnloadChunkS2CPacket unloadChunkS2CPacket) {
+	public void onUnloadChunk(UnloadChunkS2CPacket unloadChunkS2CPacket) {
 		NetworkThreadUtils.forceMainThread(unloadChunkS2CPacket, this, this.client);
 		int i = unloadChunkS2CPacket.getX();
 		int j = unloadChunkS2CPacket.getZ();
@@ -768,19 +768,19 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11136(BlockUpdateS2CPacket blockUpdateS2CPacket) {
+	public void onBlockUpdate(BlockUpdateS2CPacket blockUpdateS2CPacket) {
 		NetworkThreadUtils.forceMainThread(blockUpdateS2CPacket, this, this.client);
 		this.world.method_2937(blockUpdateS2CPacket.getPos(), blockUpdateS2CPacket.getState());
 	}
 
 	@Override
-	public void method_11083(DisconnectS2CPacket disconnectS2CPacket) {
+	public void onDisconnect(DisconnectS2CPacket disconnectS2CPacket) {
 		this.connection.disconnect(disconnectS2CPacket.getReason());
 	}
 
 	@Override
-	public void onConnectionLost(TextComponent textComponent) {
-		this.client.method_18099();
+	public void onDisconnected(TextComponent textComponent) {
+		this.client.openWorkingScreen();
 		if (this.field_3701 != null) {
 			if (this.field_3701 instanceof RealmsScreen) {
 				this.client.openScreen(new DisconnectedRealmsScreen(((RealmsScreen)this.field_3701).getRealmsScreen(), "disconnect.lost", textComponent).getProxy());
@@ -797,7 +797,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11150(ItemPickupAnimationS2CPacket itemPickupAnimationS2CPacket) {
+	public void onItemPickupAnimation(ItemPickupAnimationS2CPacket itemPickupAnimationS2CPacket) {
 		NetworkThreadUtils.forceMainThread(itemPickupAnimationS2CPacket, this, this.client);
 		Entity entity = this.world.getEntityById(itemPickupAnimationS2CPacket.getEntityId());
 		LivingEntity livingEntity = (LivingEntity)this.world.getEntityById(itemPickupAnimationS2CPacket.getCollectorEntityId());
@@ -842,13 +842,13 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11121(ChatMessageS2CPacket chatMessageS2CPacket) {
+	public void onChatMessage(ChatMessageS2CPacket chatMessageS2CPacket) {
 		NetworkThreadUtils.forceMainThread(chatMessageS2CPacket, this, this.client);
 		this.client.inGameHud.addChatMessage(chatMessageS2CPacket.getLocation(), chatMessageS2CPacket.getMessage());
 	}
 
 	@Override
-	public void method_11160(EntityAnimationS2CPacket entityAnimationS2CPacket) {
+	public void onEntityAnimation(EntityAnimationS2CPacket entityAnimationS2CPacket) {
 		NetworkThreadUtils.forceMainThread(entityAnimationS2CPacket, this, this.client);
 		Entity entity = this.world.getEntityById(entityAnimationS2CPacket.getId());
 		if (entity != null) {
@@ -872,13 +872,13 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11137(PlayerUseBedS2CPacket playerUseBedS2CPacket) {
+	public void onPlayerUseBed(PlayerUseBedS2CPacket playerUseBedS2CPacket) {
 		NetworkThreadUtils.forceMainThread(playerUseBedS2CPacket, this, this.client);
 		playerUseBedS2CPacket.getPlayer(this.world).trySleep(playerUseBedS2CPacket.getBedHeadPos());
 	}
 
 	@Override
-	public void method_11138(MobSpawnS2CPacket mobSpawnS2CPacket) {
+	public void onMobSpawn(MobSpawnS2CPacket mobSpawnS2CPacket) {
 		NetworkThreadUtils.forceMainThread(mobSpawnS2CPacket, this, this.client);
 		double d = mobSpawnS2CPacket.getX();
 		double e = mobSpawnS2CPacket.getY();
@@ -916,21 +916,21 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11079(WorldTimeUpdateS2CPacket worldTimeUpdateS2CPacket) {
+	public void onWorldTimeUpdate(WorldTimeUpdateS2CPacket worldTimeUpdateS2CPacket) {
 		NetworkThreadUtils.forceMainThread(worldTimeUpdateS2CPacket, this, this.client);
 		this.client.world.setTime(worldTimeUpdateS2CPacket.getTime());
 		this.client.world.setTimeOfDay(worldTimeUpdateS2CPacket.getTimeOfDay());
 	}
 
 	@Override
-	public void method_11142(PlayerSpawnPositionS2CPacket playerSpawnPositionS2CPacket) {
+	public void onPlayerSpawnPosition(PlayerSpawnPositionS2CPacket playerSpawnPositionS2CPacket) {
 		NetworkThreadUtils.forceMainThread(playerSpawnPositionS2CPacket, this, this.client);
 		this.client.player.setPlayerSpawn(playerSpawnPositionS2CPacket.getPos(), true);
 		this.client.world.getLevelProperties().setSpawnPos(playerSpawnPositionS2CPacket.getPos());
 	}
 
 	@Override
-	public void method_11080(EntityPassengersSetS2CPacket entityPassengersSetS2CPacket) {
+	public void onEntityPassengersSet(EntityPassengersSetS2CPacket entityPassengersSetS2CPacket) {
 		NetworkThreadUtils.forceMainThread(entityPassengersSetS2CPacket, this, this.client);
 		Entity entity = this.world.getEntityById(entityPassengersSetS2CPacket.getId());
 		if (entity == null) {
@@ -952,7 +952,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11110(EntityAttachS2CPacket entityAttachS2CPacket) {
+	public void onEntityAttach(EntityAttachS2CPacket entityAttachS2CPacket) {
 		NetworkThreadUtils.forceMainThread(entityAttachS2CPacket, this, this.client);
 		Entity entity = this.world.getEntityById(entityAttachS2CPacket.getAttachedEntityId());
 		Entity entity2 = this.world.getEntityById(entityAttachS2CPacket.getHoldingEntityId());
@@ -966,7 +966,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11148(EntityStatusS2CPacket entityStatusS2CPacket) {
+	public void onEntityStatus(EntityStatusS2CPacket entityStatusS2CPacket) {
 		NetworkThreadUtils.forceMainThread(entityStatusS2CPacket, this, this.client);
 		Entity entity = entityStatusS2CPacket.getEntity(this.world);
 		if (entity != null) {
@@ -986,7 +986,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11122(HealthUpdateS2CPacket healthUpdateS2CPacket) {
+	public void onHealthUpdate(HealthUpdateS2CPacket healthUpdateS2CPacket) {
 		NetworkThreadUtils.forceMainThread(healthUpdateS2CPacket, this, this.client);
 		this.client.player.updateHealth(healthUpdateS2CPacket.getHealth());
 		this.client.player.getHungerManager().setFoodLevel(healthUpdateS2CPacket.getFood());
@@ -994,7 +994,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11101(ExperienceBarUpdateS2CPacket experienceBarUpdateS2CPacket) {
+	public void onExperienceBarUpdate(ExperienceBarUpdateS2CPacket experienceBarUpdateS2CPacket) {
 		NetworkThreadUtils.forceMainThread(experienceBarUpdateS2CPacket, this, this.client);
 		this.client
 			.player
@@ -1002,7 +1002,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11117(PlayerRespawnS2CPacket playerRespawnS2CPacket) {
+	public void onPlayerRespawn(PlayerRespawnS2CPacket playerRespawnS2CPacket) {
 		NetworkThreadUtils.forceMainThread(playerRespawnS2CPacket, this, this.client);
 		DimensionType dimensionType = playerRespawnS2CPacket.getDimension();
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
@@ -1052,7 +1052,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11124(ExplosionS2CPacket explosionS2CPacket) {
+	public void onExplosion(ExplosionS2CPacket explosionS2CPacket) {
 		NetworkThreadUtils.forceMainThread(explosionS2CPacket, this, this.client);
 		Explosion explosion = new Explosion(
 			this.client.world,
@@ -1070,7 +1070,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11089(GuiOpenS2CPacket guiOpenS2CPacket) {
+	public void onGuiOpen(GuiOpenS2CPacket guiOpenS2CPacket) {
 		NetworkThreadUtils.forceMainThread(guiOpenS2CPacket, this, this.client);
 		Entity entity = this.world.getEntityById(guiOpenS2CPacket.getHorseId());
 		if (entity instanceof HorseBaseEntity) {
@@ -1090,7 +1090,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11109(GuiSlotUpdateS2CPacket guiSlotUpdateS2CPacket) {
+	public void onGuiSlotUpdate(GuiSlotUpdateS2CPacket guiSlotUpdateS2CPacket) {
 		NetworkThreadUtils.forceMainThread(guiSlotUpdateS2CPacket, this, this.client);
 		PlayerEntity playerEntity = this.client.player;
 		ItemStack itemStack = guiSlotUpdateS2CPacket.getItemStack();
@@ -1104,7 +1104,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			boolean bl = false;
 			if (this.client.currentScreen instanceof CreativePlayerInventoryScreen) {
 				CreativePlayerInventoryScreen creativePlayerInventoryScreen = (CreativePlayerInventoryScreen)this.client.currentScreen;
-				bl = creativePlayerInventoryScreen.method_2469() != ItemGroup.INVENTORY.getId();
+				bl = creativePlayerInventoryScreen.method_2469() != ItemGroup.INVENTORY.getIndex();
 			}
 
 			if (guiSlotUpdateS2CPacket.getId() == 0 && guiSlotUpdateS2CPacket.getSlot() >= 36 && i < 45) {
@@ -1123,7 +1123,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11123(ConfirmGuiActionS2CPacket confirmGuiActionS2CPacket) {
+	public void onGuiActionConfirm(ConfirmGuiActionS2CPacket confirmGuiActionS2CPacket) {
 		NetworkThreadUtils.forceMainThread(confirmGuiActionS2CPacket, this, this.client);
 		Container container = null;
 		PlayerEntity playerEntity = this.client.player;
@@ -1139,7 +1139,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11153(InventoryS2CPacket inventoryS2CPacket) {
+	public void onInventory(InventoryS2CPacket inventoryS2CPacket) {
 		NetworkThreadUtils.forceMainThread(inventoryS2CPacket, this, this.client);
 		PlayerEntity playerEntity = this.client.player;
 		if (inventoryS2CPacket.getGuiId() == 0) {
@@ -1150,7 +1150,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11108(SignEditorOpenS2CPacket signEditorOpenS2CPacket) {
+	public void onSignEditorOpen(SignEditorOpenS2CPacket signEditorOpenS2CPacket) {
 		NetworkThreadUtils.forceMainThread(signEditorOpenS2CPacket, this, this.client);
 		BlockEntity blockEntity = this.world.getBlockEntity(signEditorOpenS2CPacket.getPos());
 		if (!(blockEntity instanceof SignBlockEntity)) {
@@ -1159,11 +1159,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			blockEntity.setPos(signEditorOpenS2CPacket.getPos());
 		}
 
-		this.client.player.openSignEditorGui((SignBlockEntity)blockEntity);
+		this.client.player.openEditSignScreen((SignBlockEntity)blockEntity);
 	}
 
 	@Override
-	public void method_11094(BlockEntityUpdateS2CPacket blockEntityUpdateS2CPacket) {
+	public void onBlockEntityUpdate(BlockEntityUpdateS2CPacket blockEntityUpdateS2CPacket) {
 		NetworkThreadUtils.forceMainThread(blockEntityUpdateS2CPacket, this, this.client);
 		if (this.client.world.isBlockLoaded(blockEntityUpdateS2CPacket.getPos())) {
 			BlockEntity blockEntity = this.client.world.getBlockEntity(blockEntityUpdateS2CPacket.getPos());
@@ -1191,7 +1191,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11131(GuiUpdateS2CPacket guiUpdateS2CPacket) {
+	public void onGuiUpdate(GuiUpdateS2CPacket guiUpdateS2CPacket) {
 		NetworkThreadUtils.forceMainThread(guiUpdateS2CPacket, this, this.client);
 		PlayerEntity playerEntity = this.client.player;
 		if (playerEntity.container != null && playerEntity.container.syncId == guiUpdateS2CPacket.getId()) {
@@ -1200,7 +1200,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11151(EntityEquipmentUpdateS2CPacket entityEquipmentUpdateS2CPacket) {
+	public void onEquipmentUpdate(EntityEquipmentUpdateS2CPacket entityEquipmentUpdateS2CPacket) {
 		NetworkThreadUtils.forceMainThread(entityEquipmentUpdateS2CPacket, this, this.client);
 		Entity entity = this.world.getEntityById(entityEquipmentUpdateS2CPacket.getId());
 		if (entity != null) {
@@ -1209,13 +1209,13 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11102(GuiCloseS2CPacket guiCloseS2CPacket) {
+	public void onGuiClose(GuiCloseS2CPacket guiCloseS2CPacket) {
 		NetworkThreadUtils.forceMainThread(guiCloseS2CPacket, this, this.client);
 		this.client.player.method_3137();
 	}
 
 	@Override
-	public void method_11158(BlockActionS2CPacket blockActionS2CPacket) {
+	public void onBlockAction(BlockActionS2CPacket blockActionS2CPacket) {
 		NetworkThreadUtils.forceMainThread(blockActionS2CPacket, this, this.client);
 		this.client
 			.world
@@ -1223,7 +1223,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11116(BlockBreakingProgressS2CPacket blockBreakingProgressS2CPacket) {
+	public void onBlockDestroyProgress(BlockBreakingProgressS2CPacket blockBreakingProgressS2CPacket) {
 		NetworkThreadUtils.forceMainThread(blockBreakingProgressS2CPacket, this, this.client);
 		this.client
 			.world
@@ -1233,7 +1233,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11085(GameStateChangeS2CPacket gameStateChangeS2CPacket) {
+	public void onGameStateChange(GameStateChangeS2CPacket gameStateChangeS2CPacket) {
 		NetworkThreadUtils.forceMainThread(gameStateChangeS2CPacket, this, this.client);
 		PlayerEntity playerEntity = this.client.player;
 		int i = gameStateChangeS2CPacket.getReason();
@@ -1268,7 +1268,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			} else if (f == 101.0F) {
 				this.client
 					.inGameHud
-					.getHudChat()
+					.getChatHud()
 					.addMessage(
 						new TranslatableTextComponent(
 							"demo.help.movement",
@@ -1279,11 +1279,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 						)
 					);
 			} else if (f == 102.0F) {
-				this.client.inGameHud.getHudChat().addMessage(new TranslatableTextComponent("demo.help.jump", gameOptions.keyJump.getLocalizedName()));
+				this.client.inGameHud.getChatHud().addMessage(new TranslatableTextComponent("demo.help.jump", gameOptions.keyJump.getLocalizedName()));
 			} else if (f == 103.0F) {
-				this.client.inGameHud.getHudChat().addMessage(new TranslatableTextComponent("demo.help.inventory", gameOptions.keyInventory.getLocalizedName()));
+				this.client.inGameHud.getChatHud().addMessage(new TranslatableTextComponent("demo.help.inventory", gameOptions.keyInventory.getLocalizedName()));
 			} else if (f == 104.0F) {
-				this.client.inGameHud.getHudChat().addMessage(new TranslatableTextComponent("demo.day.6", gameOptions.keyScreenshot.getLocalizedName()));
+				this.client.inGameHud.getChatHud().addMessage(new TranslatableTextComponent("demo.day.6", gameOptions.keyScreenshot.getLocalizedName()));
 			}
 		} else if (i == 6) {
 			this.world
@@ -1310,7 +1310,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11088(MapUpdateS2CPacket mapUpdateS2CPacket) {
+	public void onMapUpdate(MapUpdateS2CPacket mapUpdateS2CPacket) {
 		NetworkThreadUtils.forceMainThread(mapUpdateS2CPacket, this, this.client);
 		MapRenderer mapRenderer = this.client.gameRenderer.getMapRenderer();
 		String string = FilledMapItem.method_17440(mapUpdateS2CPacket.getId());
@@ -1332,7 +1332,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11098(WorldEventS2CPacket worldEventS2CPacket) {
+	public void onWorldEvent(WorldEventS2CPacket worldEventS2CPacket) {
 		NetworkThreadUtils.forceMainThread(worldEventS2CPacket, this, this.client);
 		if (worldEventS2CPacket.isGlobal()) {
 			this.client.world.playGlobalEvent(worldEventS2CPacket.getEventId(), worldEventS2CPacket.getPos(), worldEventS2CPacket.getEffectData());
@@ -1342,13 +1342,13 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11130(AdvancementUpdateS2CPacket advancementUpdateS2CPacket) {
+	public void onAdvancements(AdvancementUpdateS2CPacket advancementUpdateS2CPacket) {
 		NetworkThreadUtils.forceMainThread(advancementUpdateS2CPacket, this, this.client);
-		this.advancementHandler.method_2861(advancementUpdateS2CPacket);
+		this.advancementHandler.onAdvancements(advancementUpdateS2CPacket);
 	}
 
 	@Override
-	public void method_11161(SelectAdvancementTabS2CPacket selectAdvancementTabS2CPacket) {
+	public void onSelectAdvancementTab(SelectAdvancementTabS2CPacket selectAdvancementTabS2CPacket) {
 		NetworkThreadUtils.forceMainThread(selectAdvancementTabS2CPacket, this, this.client);
 		Identifier identifier = selectAdvancementTabS2CPacket.getTabId();
 		if (identifier == null) {
@@ -1360,25 +1360,25 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11145(CommandTreeS2CPacket commandTreeS2CPacket) {
+	public void onCommandTree(CommandTreeS2CPacket commandTreeS2CPacket) {
 		NetworkThreadUtils.forceMainThread(commandTreeS2CPacket, this, this.client);
 		this.commandDispatcher = new CommandDispatcher<>(commandTreeS2CPacket.method_11403());
 	}
 
 	@Override
-	public void method_11082(StopSoundS2CPacket stopSoundS2CPacket) {
+	public void onStopSound(StopSoundS2CPacket stopSoundS2CPacket) {
 		NetworkThreadUtils.forceMainThread(stopSoundS2CPacket, this, this.client);
 		this.client.getSoundLoader().stopSounds(stopSoundS2CPacket.getSoundId(), stopSoundS2CPacket.getCategory());
 	}
 
 	@Override
-	public void method_11081(CommandSuggestionsS2CPacket commandSuggestionsS2CPacket) {
+	public void onCommandSuggestions(CommandSuggestionsS2CPacket commandSuggestionsS2CPacket) {
 		NetworkThreadUtils.forceMainThread(commandSuggestionsS2CPacket, this, this.client);
 		this.commandSource.method_2931(commandSuggestionsS2CPacket.method_11399(), commandSuggestionsS2CPacket.getSuggestions());
 	}
 
 	@Override
-	public void method_11106(SynchronizeRecipesS2CPacket synchronizeRecipesS2CPacket) {
+	public void onSynchronizeRecipes(SynchronizeRecipesS2CPacket synchronizeRecipesS2CPacket) {
 		NetworkThreadUtils.forceMainThread(synchronizeRecipesS2CPacket, this, this.client);
 		this.recipeManager.clear();
 
@@ -1395,7 +1395,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11092(LookAtS2CPacket lookAtS2CPacket) {
+	public void onLookAt(LookAtS2CPacket lookAtS2CPacket) {
 		NetworkThreadUtils.forceMainThread(lookAtS2CPacket, this, this.client);
 		Vec3d vec3d = lookAtS2CPacket.getTargetPosition(this.world);
 		if (vec3d != null) {
@@ -1404,7 +1404,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11127(TagQueryResponseS2CPacket tagQueryResponseS2CPacket) {
+	public void onTagQuery(TagQueryResponseS2CPacket tagQueryResponseS2CPacket) {
 		NetworkThreadUtils.forceMainThread(tagQueryResponseS2CPacket, this, this.client);
 		if (!this.field_3692.method_1404(tagQueryResponseS2CPacket.getTransactionId(), tagQueryResponseS2CPacket.getTag())) {
 			LOGGER.debug("Got unhandled response to tag query {}", tagQueryResponseS2CPacket.getTransactionId());
@@ -1412,7 +1412,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11129(StatisticsS2CPacket statisticsS2CPacket) {
+	public void onStatistics(StatisticsS2CPacket statisticsS2CPacket) {
 		NetworkThreadUtils.forceMainThread(statisticsS2CPacket, this, this.client);
 
 		for (Entry<Stat<?>, Integer> entry : statisticsS2CPacket.getStatMap().entrySet()) {
@@ -1427,7 +1427,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11115(UnlockRecipesS2CPacket unlockRecipesS2CPacket) {
+	public void onUnlockRecipes(UnlockRecipesS2CPacket unlockRecipesS2CPacket) {
 		NetworkThreadUtils.forceMainThread(unlockRecipesS2CPacket, this, this.client);
 		ClientRecipeBook clientRecipeBook = this.client.player.getRecipeBook();
 		clientRecipeBook.setGuiOpen(unlockRecipesS2CPacket.isGuiOpen());
@@ -1467,7 +1467,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11084(EntityPotionEffectS2CPacket entityPotionEffectS2CPacket) {
+	public void onEntityPotionEffect(EntityPotionEffectS2CPacket entityPotionEffectS2CPacket) {
 		NetworkThreadUtils.forceMainThread(entityPotionEffectS2CPacket, this, this.client);
 		Entity entity = this.world.getEntityById(entityPotionEffectS2CPacket.method_11943());
 		if (entity instanceof LivingEntity) {
@@ -1488,7 +1488,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11126(SynchronizeTagsS2CPacket synchronizeTagsS2CPacket) {
+	public void onSynchronizeTags(SynchronizeTagsS2CPacket synchronizeTagsS2CPacket) {
 		NetworkThreadUtils.forceMainThread(synchronizeTagsS2CPacket, this, this.client);
 		this.tagManager = synchronizeTagsS2CPacket.getTagManager();
 		if (!this.connection.isLocal()) {
@@ -1502,7 +1502,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11133(CombatEventS2CPacket combatEventS2CPacket) {
+	public void onCombatEvent(CombatEventS2CPacket combatEventS2CPacket) {
 		NetworkThreadUtils.forceMainThread(combatEventS2CPacket, this, this.client);
 		if (combatEventS2CPacket.type == CombatEventS2CPacket.Type.DEATH) {
 			Entity entity = this.world.getEntityById(combatEventS2CPacket.entityId);
@@ -1513,14 +1513,14 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11140(DifficultyS2CPacket difficultyS2CPacket) {
+	public void onDifficulty(DifficultyS2CPacket difficultyS2CPacket) {
 		NetworkThreadUtils.forceMainThread(difficultyS2CPacket, this, this.client);
 		this.client.world.getLevelProperties().setDifficulty(difficultyS2CPacket.getDifficulty());
 		this.client.world.getLevelProperties().setDifficultyLocked(difficultyS2CPacket.method_11340());
 	}
 
 	@Override
-	public void method_11111(SetCameraEntityS2CPacket setCameraEntityS2CPacket) {
+	public void onSetCameraEntity(SetCameraEntityS2CPacket setCameraEntityS2CPacket) {
 		NetworkThreadUtils.forceMainThread(setCameraEntityS2CPacket, this, this.client);
 		Entity entity = setCameraEntityS2CPacket.getEntity(this.world);
 		if (entity != null) {
@@ -1529,13 +1529,13 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11096(WorldBorderS2CPacket worldBorderS2CPacket) {
+	public void onWorldBorder(WorldBorderS2CPacket worldBorderS2CPacket) {
 		NetworkThreadUtils.forceMainThread(worldBorderS2CPacket, this, this.client);
 		worldBorderS2CPacket.apply(this.world.getWorldBorder());
 	}
 
 	@Override
-	public void method_11103(TitleS2CPacket titleS2CPacket) {
+	public void onTitle(TitleS2CPacket titleS2CPacket) {
 		NetworkThreadUtils.forceMainThread(titleS2CPacket, this, this.client);
 		TitleS2CPacket.Action action = titleS2CPacket.getAction();
 		String string = null;
@@ -1552,16 +1552,16 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				this.client.inGameHud.setOverlayMessage(string3, false);
 				return;
 			case RESET:
-				this.client.inGameHud.method_1763("", "", -1, -1, -1);
-				this.client.inGameHud.method_1742();
+				this.client.inGameHud.setTitles("", "", -1, -1, -1);
+				this.client.inGameHud.setDefaultTitleFade();
 				return;
 		}
 
-		this.client.inGameHud.method_1763(string, string2, titleS2CPacket.getTicksFadeIn(), titleS2CPacket.getTicksDisplay(), titleS2CPacket.getTicksFadeOut());
+		this.client.inGameHud.setTitles(string, string2, titleS2CPacket.getTicksFadeIn(), titleS2CPacket.getTicksDisplay(), titleS2CPacket.getTicksFadeOut());
 	}
 
 	@Override
-	public void method_11105(PlayerListHeaderS2CPacket playerListHeaderS2CPacket) {
+	public void onPlayerListHeader(PlayerListHeaderS2CPacket playerListHeaderS2CPacket) {
 		this.client
 			.inGameHud
 			.getScoreboardWidget()
@@ -1573,7 +1573,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11119(RemoveEntityEffectS2CPacket removeEntityEffectS2CPacket) {
+	public void onRemoveEntityEffect(RemoveEntityEffectS2CPacket removeEntityEffectS2CPacket) {
 		NetworkThreadUtils.forceMainThread(removeEntityEffectS2CPacket, this, this.client);
 		Entity entity = removeEntityEffectS2CPacket.getEntity(this.world);
 		if (entity instanceof LivingEntity) {
@@ -1582,17 +1582,17 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11113(PlayerListS2CPacket playerListS2CPacket) {
+	public void onPlayerList(PlayerListS2CPacket playerListS2CPacket) {
 		NetworkThreadUtils.forceMainThread(playerListS2CPacket, this, this.client);
 
 		for (PlayerListS2CPacket.class_2705 lv : playerListS2CPacket.method_11722()) {
 			if (playerListS2CPacket.getType() == PlayerListS2CPacket.Type.REMOVE) {
-				this.field_3693.remove(lv.method_11726().getId());
+				this.scoreboardEntries.remove(lv.method_11726().getId());
 			} else {
-				ScoreboardEntry scoreboardEntry = (ScoreboardEntry)this.field_3693.get(lv.method_11726().getId());
+				ScoreboardEntry scoreboardEntry = (ScoreboardEntry)this.scoreboardEntries.get(lv.method_11726().getId());
 				if (playerListS2CPacket.getType() == PlayerListS2CPacket.Type.ADD) {
 					scoreboardEntry = new ScoreboardEntry(lv);
-					this.field_3693.put(scoreboardEntry.getProfile().getId(), scoreboardEntry);
+					this.scoreboardEntries.put(scoreboardEntry.getProfile().getId(), scoreboardEntry);
 				}
 
 				if (scoreboardEntry != null) {
@@ -1617,12 +1617,12 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11147(KeepAliveS2CPacket keepAliveS2CPacket) {
+	public void onKeepAlive(KeepAliveS2CPacket keepAliveS2CPacket) {
 		this.sendPacket(new KeepAliveC2SPacket(keepAliveS2CPacket.method_11517()));
 	}
 
 	@Override
-	public void method_11154(PlayerAbilitiesS2CPacket playerAbilitiesS2CPacket) {
+	public void onPlayerAbilities(PlayerAbilitiesS2CPacket playerAbilitiesS2CPacket) {
 		NetworkThreadUtils.forceMainThread(playerAbilitiesS2CPacket, this, this.client);
 		PlayerEntity playerEntity = this.client.player;
 		playerEntity.abilities.flying = playerAbilitiesS2CPacket.isFlying();
@@ -1634,7 +1634,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11146(PlaySoundS2CPacket playSoundS2CPacket) {
+	public void onPlaySound(PlaySoundS2CPacket playSoundS2CPacket) {
 		NetworkThreadUtils.forceMainThread(playSoundS2CPacket, this, this.client);
 		this.client
 			.world
@@ -1651,7 +1651,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11125(PlaySoundFromEntityS2CPacket playSoundFromEntityS2CPacket) {
+	public void onPlaySoundFromEntity(PlaySoundFromEntityS2CPacket playSoundFromEntityS2CPacket) {
 		NetworkThreadUtils.forceMainThread(playSoundFromEntityS2CPacket, this, this.client);
 		Entity entity = this.world.getEntityById(playSoundFromEntityS2CPacket.getEntityId());
 		if (entity != null) {
@@ -1669,7 +1669,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11104(PlaySoundIdS2CPacket playSoundIdS2CPacket) {
+	public void onPlaySoundId(PlaySoundIdS2CPacket playSoundIdS2CPacket) {
 		NetworkThreadUtils.forceMainThread(playSoundIdS2CPacket, this, this.client);
 		this.client
 			.getSoundLoader()
@@ -1690,7 +1690,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11141(ResourcePackSendS2CPacket resourcePackSendS2CPacket) {
+	public void onResourcePackSend(ResourcePackSendS2CPacket resourcePackSendS2CPacket) {
 		String string = resourcePackSendS2CPacket.getURL();
 		String string2 = resourcePackSendS2CPacket.getSHA1();
 		if (this.validateResourcePackUrl(string)) {
@@ -1700,7 +1700,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 					File file = new File(this.client.runDirectory, "saves");
 					File file2 = new File(file, string3);
 					if (file2.isFile()) {
-						this.method_2873(ResourcePackStatusC2SPacket.Status.field_13016);
+						this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.field_13016);
 						CompletableFuture<?> completableFuture = this.client.getResourcePackDownloader().loadServerPack(file2);
 						this.method_2885(completableFuture);
 						return;
@@ -1708,14 +1708,14 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				} catch (UnsupportedEncodingException var8) {
 				}
 
-				this.method_2873(ResourcePackStatusC2SPacket.Status.field_13015);
+				this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.field_13015);
 			} else {
 				ServerEntry serverEntry = this.client.getCurrentServerEntry();
 				if (serverEntry != null && serverEntry.getResourcePack() == ServerEntry.ResourcePackState.ENABLED) {
-					this.method_2873(ResourcePackStatusC2SPacket.Status.field_13016);
+					this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.field_13016);
 					this.method_2885(this.client.getResourcePackDownloader().download(string, string2));
 				} else if (serverEntry != null && serverEntry.getResourcePack() != ServerEntry.ResourcePackState.PROMPT) {
-					this.method_2873(ResourcePackStatusC2SPacket.Status.field_13018);
+					this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.field_13018);
 				} else {
 					this.client.execute(() -> this.client.openScreen(new YesNoScreen((bl, i) -> {
 							this.client = MinecraftClient.getInstance();
@@ -1725,14 +1725,14 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 									serverEntryx.setResourcePackState(ServerEntry.ResourcePackState.ENABLED);
 								}
 
-								this.method_2873(ResourcePackStatusC2SPacket.Status.field_13016);
+								this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.field_13016);
 								this.method_2885(this.client.getResourcePackDownloader().download(string, string2));
 							} else {
 								if (serverEntryx != null) {
 									serverEntryx.setResourcePackState(ServerEntry.ResourcePackState.DISABLED);
 								}
 
-								this.method_2873(ResourcePackStatusC2SPacket.Status.field_13018);
+								this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.field_13018);
 							}
 
 							ServerList.updateServerListEntry(serverEntryx);
@@ -1756,30 +1756,30 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				throw new URISyntaxException(string, "Invalid levelstorage resourcepack path");
 			}
 		} catch (URISyntaxException var5) {
-			this.method_2873(ResourcePackStatusC2SPacket.Status.field_13015);
+			this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.field_13015);
 			return false;
 		}
 	}
 
 	private void method_2885(CompletableFuture<?> completableFuture) {
-		completableFuture.thenRun(() -> this.method_2873(ResourcePackStatusC2SPacket.Status.field_13017)).exceptionally(throwable -> {
-			this.method_2873(ResourcePackStatusC2SPacket.Status.field_13015);
+		completableFuture.thenRun(() -> this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.field_13017)).exceptionally(throwable -> {
+			this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.field_13015);
 			return null;
 		});
 	}
 
-	private void method_2873(ResourcePackStatusC2SPacket.Status status) {
+	private void sendResourcePackStatus(ResourcePackStatusC2SPacket.Status status) {
 		this.connection.sendPacket(new ResourcePackStatusC2SPacket(status));
 	}
 
 	@Override
-	public void method_11078(BossBarS2CPacket bossBarS2CPacket) {
+	public void onBossBar(BossBarS2CPacket bossBarS2CPacket) {
 		NetworkThreadUtils.forceMainThread(bossBarS2CPacket, this, this.client);
-		this.client.inGameHud.getHudBossBar().method_1795(bossBarS2CPacket);
+		this.client.inGameHud.getBossBarHud().handlePacket(bossBarS2CPacket);
 	}
 
 	@Override
-	public void method_11087(CooldownUpdateS2CPacket cooldownUpdateS2CPacket) {
+	public void onCooldownUpdate(CooldownUpdateS2CPacket cooldownUpdateS2CPacket) {
 		NetworkThreadUtils.forceMainThread(cooldownUpdateS2CPacket, this, this.client);
 		if (cooldownUpdateS2CPacket.getCooldown() == 0) {
 			this.client.player.getItemCooldownManager().remove(cooldownUpdateS2CPacket.getItem());
@@ -1789,7 +1789,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11134(VehicleMoveS2CPacket vehicleMoveS2CPacket) {
+	public void onVehicleMove(VehicleMoveS2CPacket vehicleMoveS2CPacket) {
 		NetworkThreadUtils.forceMainThread(vehicleMoveS2CPacket, this, this.client);
 		Entity entity = this.client.player.getTopmostRiddenEntity();
 		if (entity != this.client.player && entity.method_5787()) {
@@ -1801,16 +1801,16 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_17186(OpenWrittenBookS2CPacket openWrittenBookS2CPacket) {
+	public void onOpenWrittenBook(OpenWrittenBookS2CPacket openWrittenBookS2CPacket) {
 		NetworkThreadUtils.forceMainThread(openWrittenBookS2CPacket, this, this.client);
 		ItemStack itemStack = this.client.player.getStackInHand(openWrittenBookS2CPacket.getHand());
 		if (itemStack.getItem() == Items.field_8360) {
-			this.client.openScreen(new WrittenBookScreen(new WrittenBookScreen.class_3933(itemStack)));
+			this.client.openScreen(new WrittenBookScreen(new WrittenBookScreen.WrittenBookContents(itemStack)));
 		}
 	}
 
 	@Override
-	public void method_11152(CustomPayloadS2CPacket customPayloadS2CPacket) {
+	public void onCustomPayload(CustomPayloadS2CPacket customPayloadS2CPacket) {
 		NetworkThreadUtils.forceMainThread(customPayloadS2CPacket, this, this.client);
 		Identifier identifier = customPayloadS2CPacket.getChannel();
 		PacketByteBuf packetByteBuf = null;
@@ -1881,7 +1881,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11144(ScoreboardObjectiveUpdateS2CPacket scoreboardObjectiveUpdateS2CPacket) {
+	public void onScoreboardObjectiveUpdate(ScoreboardObjectiveUpdateS2CPacket scoreboardObjectiveUpdateS2CPacket) {
 		NetworkThreadUtils.forceMainThread(scoreboardObjectiveUpdateS2CPacket, this, this.client);
 		Scoreboard scoreboard = this.world.getScoreboard();
 		String string = scoreboardObjectiveUpdateS2CPacket.getName();
@@ -1899,7 +1899,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11118(ScoreboardPlayerUpdateS2CPacket scoreboardPlayerUpdateS2CPacket) {
+	public void onScoreboardPlayerUpdate(ScoreboardPlayerUpdateS2CPacket scoreboardPlayerUpdateS2CPacket) {
 		NetworkThreadUtils.forceMainThread(scoreboardPlayerUpdateS2CPacket, this, this.client);
 		Scoreboard scoreboard = this.world.getScoreboard();
 		String string = scoreboardPlayerUpdateS2CPacket.getObjectiveName();
@@ -1915,7 +1915,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11159(ScoreboardDisplayS2CPacket scoreboardDisplayS2CPacket) {
+	public void onScoreboardDisplay(ScoreboardDisplayS2CPacket scoreboardDisplayS2CPacket) {
 		NetworkThreadUtils.forceMainThread(scoreboardDisplayS2CPacket, this, this.client);
 		Scoreboard scoreboard = this.world.getScoreboard();
 		String string = scoreboardDisplayS2CPacket.method_11804();
@@ -1924,7 +1924,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11099(TeamS2CPacket teamS2CPacket) {
+	public void onTeam(TeamS2CPacket teamS2CPacket) {
 		NetworkThreadUtils.forceMainThread(teamS2CPacket, this, this.client);
 		Scoreboard scoreboard = this.world.getScoreboard();
 		ScoreboardTeam scoreboardTeam;
@@ -1970,7 +1970,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11077(ParticleS2CPacket particleS2CPacket) {
+	public void onParticle(ParticleS2CPacket particleS2CPacket) {
 		NetworkThreadUtils.forceMainThread(particleS2CPacket, this, this.client);
 		if (particleS2CPacket.getParticleCount() == 0) {
 			double d = (double)(particleS2CPacket.method_11543() * particleS2CPacket.getOffsetX());
@@ -2022,7 +2022,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11149(EntityAttributesS2CPacket entityAttributesS2CPacket) {
+	public void onEntityAttributes(EntityAttributesS2CPacket entityAttributesS2CPacket) {
 		NetworkThreadUtils.forceMainThread(entityAttributesS2CPacket, this, this.client);
 		Entity entity = this.world.getEntityById(entityAttributesS2CPacket.method_11937());
 		if (entity != null) {
@@ -2051,7 +2051,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11090(CraftResponseS2CPacket craftResponseS2CPacket) {
+	public void onCraftResponse(CraftResponseS2CPacket craftResponseS2CPacket) {
 		NetworkThreadUtils.forceMainThread(craftResponseS2CPacket, this, this.client);
 		Container container = this.client.player.container;
 		if (container.syncId == craftResponseS2CPacket.getSyncId() && container.isRestricted(this.client.player)) {
@@ -2065,7 +2065,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_11143(LightUpdateS2CPacket lightUpdateS2CPacket) {
+	public void onLightUpdate(LightUpdateS2CPacket lightUpdateS2CPacket) {
 		NetworkThreadUtils.forceMainThread(lightUpdateS2CPacket, this, this.client);
 		int i = lightUpdateS2CPacket.method_11558();
 		int j = lightUpdateS2CPacket.method_11554();
@@ -2073,11 +2073,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		int k = lightUpdateS2CPacket.method_11556();
 		int l = lightUpdateS2CPacket.method_16124();
 		Iterator<byte[]> iterator = lightUpdateS2CPacket.method_11555().iterator();
-		this.method_2870(i, j, lightingProvider, LightType.SKY_LIGHT, k, l, iterator);
+		this.method_2870(i, j, lightingProvider, LightType.SKY, k, l, iterator);
 		int m = lightUpdateS2CPacket.method_11559();
 		int n = lightUpdateS2CPacket.method_16125();
 		Iterator<byte[]> iterator2 = lightUpdateS2CPacket.method_11557().iterator();
-		this.method_2870(i, j, lightingProvider, LightType.BLOCK_LIGHT, m, n, iterator2);
+		this.method_2870(i, j, lightingProvider, LightType.BLOCK, m, n, iterator2);
 	}
 
 	@Override
@@ -2105,18 +2105,18 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		return this.connection;
 	}
 
-	public Collection<ScoreboardEntry> method_2880() {
-		return this.field_3693.values();
+	public Collection<ScoreboardEntry> getScoreboardEntries() {
+		return this.scoreboardEntries.values();
 	}
 
 	@Nullable
 	public ScoreboardEntry method_2871(UUID uUID) {
-		return (ScoreboardEntry)this.field_3693.get(uUID);
+		return (ScoreboardEntry)this.scoreboardEntries.get(uUID);
 	}
 
 	@Nullable
-	public ScoreboardEntry method_2874(String string) {
-		for (ScoreboardEntry scoreboardEntry : this.field_3693.values()) {
+	public ScoreboardEntry getScoreboardEntry(String string) {
+		for (ScoreboardEntry scoreboardEntry : this.scoreboardEntries.values()) {
 			if (scoreboardEntry.getProfile().getName().equals(string)) {
 				return scoreboardEntry;
 			}
@@ -2133,7 +2133,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		return this.advancementHandler;
 	}
 
-	public CommandDispatcher<CommandSource> method_2886() {
+	public CommandDispatcher<CommandSource> getCommandDispatcher() {
 		return this.commandDispatcher;
 	}
 

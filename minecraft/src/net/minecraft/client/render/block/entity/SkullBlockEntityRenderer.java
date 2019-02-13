@@ -120,9 +120,9 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 		Identifier identifier = (Identifier)TEXTURES.get(skullType);
 		if (skullType == SkullBlock.Type.PLAYER && gameProfile != null) {
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
-			Map<Type, MinecraftProfileTexture> map = minecraftClient.getSkinProvider().method_4654(gameProfile);
+			Map<Type, MinecraftProfileTexture> map = minecraftClient.getSkinProvider().getTextures(gameProfile);
 			if (map.containsKey(Type.SKIN)) {
-				identifier = minecraftClient.getSkinProvider().method_4656((MinecraftProfileTexture)map.get(Type.SKIN), Type.SKIN);
+				identifier = minecraftClient.getSkinProvider().loadSkin((MinecraftProfileTexture)map.get(Type.SKIN), Type.SKIN);
 			} else {
 				identifier = DefaultSkinHelper.getTexture(PlayerEntity.getUuidFromProfile(gameProfile));
 			}

@@ -74,7 +74,7 @@ public class ExperienceOrbEntity extends Entity {
 		this.prevX = this.x;
 		this.prevY = this.y;
 		this.prevZ = this.z;
-		if (this.method_5777(FluidTags.field_15517)) {
+		if (this.isInFluid(FluidTags.field_15517)) {
 			this.method_5921();
 		} else if (!this.isUnaffectedByGravity()) {
 			this.velocityY -= 0.03F;
@@ -188,7 +188,7 @@ public class ExperienceOrbEntity extends Entity {
 		if (!this.world.isClient) {
 			if (this.field_6163 == 0 && playerEntity.field_7504 == 0) {
 				playerEntity.field_7504 = 2;
-				playerEntity.method_6103(this, 1);
+				playerEntity.pickUpEntity(this, 1);
 				ItemStack itemStack = EnchantmentHelper.getRandomEnchantedEquipment(Enchantments.field_9101, playerEntity);
 				if (!itemStack.isEmpty() && itemStack.isDamaged()) {
 					int i = Math.min(this.method_5917(this.amount), itemStack.getDamage());

@@ -21,7 +21,7 @@ import net.minecraft.world.chunk.light.LightingProvider;
 
 @Environment(EnvType.CLIENT)
 public class EmptyChunk extends WorldChunk {
-	private static final Biome[] BIOMES = SystemUtil.consume(new Biome[256], biomes -> Arrays.fill(biomes, Biomes.biome));
+	private static final Biome[] BIOMES = SystemUtil.consume(new Biome[256], biomes -> Arrays.fill(biomes, Biomes.field_9451));
 
 	public EmptyChunk(World world, ChunkPos chunkPos) {
 		super(world, chunkPos, BIOMES);
@@ -57,7 +57,7 @@ public class EmptyChunk extends WorldChunk {
 
 	@Nullable
 	@Override
-	public BlockEntity getBlockEntity(BlockPos blockPos, WorldChunk.AccessType accessType) {
+	public BlockEntity getBlockEntity(BlockPos blockPos, WorldChunk.CreationType creationType) {
 		return null;
 	}
 

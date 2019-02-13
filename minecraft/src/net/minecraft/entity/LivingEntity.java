@@ -34,7 +34,7 @@ import net.minecraft.entity.attribute.EntityAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.boss.EntityWither;
+import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTracker;
 import net.minecraft.entity.damage.EntityDamageSource;
@@ -162,10 +162,11 @@ public abstract class LivingEntity extends Entity {
 	protected double field_6242;
 	protected int field_6265;
 	private boolean field_6285 = true;
+	@Nullable
 	private LivingEntity attacker;
 	private int lastAttackedTime;
-	private LivingEntity field_6236;
-	private int field_6270;
+	private LivingEntity attacking;
+	private int lastAttackTime;
 	private float field_6287;
 	private int field_6228;
 	private float absorptionAmount;
@@ -268,7 +269,7 @@ public abstract class LivingEntity extends Entity {
 
 		boolean bl2 = bl && ((PlayerEntity)this).abilities.invulnerable;
 		if (this.isValid()) {
-			if (this.method_5777(FluidTags.field_15517)
+			if (this.isInFluid(FluidTags.field_15517)
 				&& this.world.getBlockState(new BlockPos(this.x, this.y + (double)this.getEyeHeight(), this.z)).getBlock() != Blocks.field_10422) {
 				if (!this.canBreatheInWater() && !StatusEffectUtil.hasWaterBreathing(this) && !bl2) {
 					this.setBreath(this.method_6130(this.getBreath()));
@@ -326,8 +327,8 @@ public abstract class LivingEntity extends Entity {
 			this.field_6258 = null;
 		}
 
-		if (this.field_6236 != null && !this.field_6236.isValid()) {
-			this.field_6236 = null;
+		if (this.attacking != null && !this.attacking.isValid()) {
+			this.attacking = null;
 		}
 
 		if (this.attacker != null) {
@@ -439,22 +440,23 @@ public abstract class LivingEntity extends Entity {
 		this.lastAttackedTime = this.age;
 	}
 
-	public LivingEntity method_6052() {
-		return this.field_6236;
+	@Nullable
+	public LivingEntity getAttacking() {
+		return this.attacking;
 	}
 
-	public int method_6083() {
-		return this.field_6270;
+	public int getLastAttackTime() {
+		return this.lastAttackTime;
 	}
 
-	public void method_6114(Entity entity) {
+	public void onAttacking(Entity entity) {
 		if (entity instanceof LivingEntity) {
-			this.field_6236 = (LivingEntity)entity;
+			this.attacking = (LivingEntity)entity;
 		} else {
-			this.field_6236 = null;
+			this.attacking = null;
 		}
 
-		this.field_6270 = this.age;
+		this.lastAttackTime = this.age;
 	}
 
 	public int getDespawnCounter() {
@@ -782,7 +784,7 @@ public abstract class LivingEntity extends Entity {
 			boolean bl = false;
 			float h = 0.0F;
 			if (f > 0.0F && this.method_6061(damageSource)) {
-				this.method_6056(f);
+				this.damageShield(f);
 				h = f;
 				f = 0.0F;
 				if (!damageSource.isProjectile()) {
@@ -1008,7 +1010,7 @@ public abstract class LivingEntity extends Entity {
 			this.getDamageTracker().update();
 			if (!this.world.isClient) {
 				this.method_16080(damageSource);
-				if (livingEntity instanceof EntityWither && this.world.getGameRules().getBoolean("mobGriefing")) {
+				if (livingEntity instanceof WitherEntity && this.world.getGameRules().getBoolean("mobGriefing")) {
 					BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
 					BlockState blockState = Blocks.field_10606.getDefaultState();
 					if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
@@ -1171,7 +1173,7 @@ public abstract class LivingEntity extends Entity {
 	protected void method_6105(float f) {
 	}
 
-	protected void method_6056(float f) {
+	protected void damageShield(float f) {
 	}
 
 	protected float method_6132(DamageSource damageSource, float f) {
@@ -1277,7 +1279,7 @@ public abstract class LivingEntity extends Entity {
 			this.field_6252 = true;
 			this.preferredHand = hand;
 			if (this.world instanceof ServerWorld) {
-				((ServerWorld)this.world).getEntityTracker().method_14079(this, new EntityAnimationS2CPacket(this, hand == Hand.MAIN ? 0 : 3));
+				((ServerWorld)this.world).getEntityTracker().sendToTrackingPlayers(this, new EntityAnimationS2CPacket(this, hand == Hand.MAIN ? 0 : 3));
 			}
 		}
 	}
@@ -1441,7 +1443,7 @@ public abstract class LivingEntity extends Entity {
 			double k = entity.x;
 			double l = entity.getBoundingBox().minY + (double)entity.getHeight();
 			double e = entity.z;
-			Direction direction = entity.method_5755();
+			Direction direction = entity.getMovementDirection();
 			if (direction != null) {
 				Direction direction2 = direction.rotateYClockwise();
 				int[][] is = new int[][]{{0, 1}, {0, -1}, {-1, 1}, {-1, -1}, {1, 1}, {1, -1}, {-1, 0}, {1, 0}, {0, 1}};
@@ -1515,12 +1517,12 @@ public abstract class LivingEntity extends Entity {
 		return this.isCustomNameVisible();
 	}
 
-	protected float method_6106() {
+	protected float getJumpVelocity() {
 		return 0.42F;
 	}
 
-	protected void method_6043() {
-		this.velocityY = (double)this.method_6106();
+	protected void jump() {
+		this.velocityY = (double)this.getJumpVelocity();
 		if (this.hasPotionEffect(StatusEffects.field_5913)) {
 			this.velocityY = this.velocityY + (double)((float)(this.getPotionEffect(StatusEffects.field_5913).getAmplifier() + 1) * 0.1F);
 		}
@@ -1748,8 +1750,8 @@ public abstract class LivingEntity extends Entity {
 		this.field_6287 = f;
 	}
 
-	public boolean method_6121(Entity entity) {
-		this.method_6114(entity);
+	public boolean attack(Entity entity) {
+		this.onAttacking(entity);
 		return false;
 	}
 
@@ -1790,7 +1792,9 @@ public abstract class LivingEntity extends Entity {
 
 				ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
 				if (!ItemStack.areEqual(itemStack2, itemStack)) {
-					((ServerWorld)this.world).getEntityTracker().method_14079(this, new EntityEquipmentUpdateS2CPacket(this.getEntityId(), equipmentSlot, itemStack2));
+					((ServerWorld)this.world)
+						.getEntityTracker()
+						.sendToTrackingPlayers(this, new EntityEquipmentUpdateS2CPacket(this.getEntityId(), equipmentSlot, itemStack2));
 					if (!itemStack.isEmpty()) {
 						this.getAttributeContainer().method_6209(itemStack.getAttributeModifiers(equipmentSlot));
 					}
@@ -1978,7 +1982,7 @@ public abstract class LivingEntity extends Entity {
 				if (this.isTouchingLava()) {
 					this.method_6010(FluidTags.field_15518);
 				} else if ((this.onGround || this.field_5964 > 0.0 && this.field_5964 <= 0.4) && this.field_6228 == 0) {
-					this.method_6043();
+					this.jump();
 					this.field_6228 = 10;
 				}
 			} else {
@@ -2063,7 +2067,7 @@ public abstract class LivingEntity extends Entity {
 			for (int i = 0; i < list.size(); i++) {
 				Entity entity = (Entity)list.get(i);
 				if (entity instanceof LivingEntity) {
-					this.method_5997((LivingEntity)entity);
+					this.attackLivingEntity((LivingEntity)entity);
 					this.field_6261 = 0;
 					this.velocityX *= -0.2;
 					this.velocityY *= -0.2;
@@ -2084,7 +2088,7 @@ public abstract class LivingEntity extends Entity {
 		entity.pushAwayFrom(this);
 	}
 
-	protected void method_5997(LivingEntity livingEntity) {
+	protected void attackLivingEntity(LivingEntity livingEntity) {
 	}
 
 	public void method_6018(int i) {
@@ -2108,8 +2112,8 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	@Override
-	public void method_5842() {
-		super.method_5842();
+	public void updateRiding() {
+		super.updateRiding();
 		this.field_6217 = this.field_6233;
 		this.field_6233 = 0.0F;
 		this.fallDistance = 0.0F;
@@ -2137,11 +2141,11 @@ public abstract class LivingEntity extends Entity {
 		this.field_6282 = bl;
 	}
 
-	public void method_6103(Entity entity, int i) {
+	public void pickUpEntity(Entity entity, int i) {
 		if (!entity.invalid && !this.world.isClient) {
 			EntityTracker entityTracker = ((ServerWorld)this.world).getEntityTracker();
 			if (entity instanceof ItemEntity || entity instanceof ProjectileEntity || entity instanceof ExperienceOrbEntity) {
-				entityTracker.method_14079(entity, new ItemPickupAnimationS2CPacket(entity.getEntityId(), this.getEntityId(), i));
+				entityTracker.sendToTrackingPlayers(entity, new ItemPickupAnimationS2CPacket(entity.getEntityId(), this.getEntityId(), i));
 			}
 		}
 	}

@@ -25,7 +25,7 @@ public class SynchronizeRecipesS2CPacket implements Packet<ClientPlayPacketListe
 	}
 
 	public void method_11997(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11106(this);
+		clientPlayPacketListener.onSynchronizeRecipes(this);
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class SynchronizeRecipesS2CPacket implements Packet<ClientPlayPacketListe
 		Identifier identifier = packetByteBuf.readIdentifier();
 		Identifier identifier2 = packetByteBuf.readIdentifier();
 		return ((RecipeSerializer)Registry.RECIPE_SERIALIZER
-				.getOptional(identifier)
+				.getOrEmpty(identifier)
 				.orElseThrow(() -> new IllegalArgumentException("Unknown recipe serializer " + identifier)))
 			.read(identifier2, packetByteBuf);
 	}

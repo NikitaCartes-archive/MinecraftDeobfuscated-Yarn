@@ -12,23 +12,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4010;
-import net.minecraft.class_4014;
-import net.minecraft.client.resource.ResourceLoadProgressProvider;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Void;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ReloadableResourceManagerImpl implements ReloadableResourceManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Map<String, NamespaceResourceManager> namespaceManagers = Maps.<String, NamespaceResourceManager>newHashMap();
-	private final List<ResourceReloadListener<?>> field_17935 = Lists.<ResourceReloadListener<?>>newArrayList();
-	private final List<ResourceReloadListener<?>> field_17936 = Lists.<ResourceReloadListener<?>>newArrayList();
+	private final List<ResourceReloadListener> field_17935 = Lists.<ResourceReloadListener>newArrayList();
+	private final List<ResourceReloadListener> field_17936 = Lists.<ResourceReloadListener>newArrayList();
 	private final Set<String> namespaces = Sets.<String>newLinkedHashSet();
 	private final ResourceType type;
 	private final Thread field_17937;
@@ -69,9 +67,9 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean method_18234(Identifier identifier) {
+	public boolean containsResource(Identifier identifier) {
 		ResourceManager resourceManager = (ResourceManager)this.namespaceManagers.get(identifier.getNamespace());
-		return resourceManager != null ? resourceManager.method_18234(identifier) : false;
+		return resourceManager != null ? resourceManager.containsResource(identifier) : false;
 	}
 
 	@Override
@@ -103,7 +101,7 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 	}
 
 	@Override
-	public void reload(List<ResourcePack> list) {
+	public CompletableFuture<Void> reload(Executor executor, Executor executor2, List<ResourcePack> list, CompletableFuture<Void> completableFuture) {
 		this.clear();
 		LOGGER.info("Reloading ResourceManager: {}", list.stream().map(ResourcePack::getName).collect(Collectors.joining(", ")));
 
@@ -111,36 +109,37 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 			this.load(resourcePack);
 		}
 
-		ResourceLoadProgressProvider resourceLoadProgressProvider = this.method_18233();
-		resourceLoadProgressProvider.method_18226();
+		ResourceReloadHandler resourceReloadHandler = this.method_18232(executor, executor2, completableFuture);
+		return resourceReloadHandler.whenComplete();
 	}
 
 	@Override
-	public void addListener(ResourceReloadListener<?> resourceReloadListener) {
+	public void registerListener(ResourceReloadListener resourceReloadListener) {
 		this.field_17935.add(resourceReloadListener);
 		this.field_17936.add(resourceReloadListener);
 	}
 
-	protected ResourceLoadProgressProvider method_18240(List<ResourceReloadListener<?>> list, @Nullable CompletableFuture<Void> completableFuture) {
-		ResourceLoadProgressProvider resourceLoadProgressProvider;
+	protected ResourceReloadHandler createReloadManager(
+		Executor executor, Executor executor2, List<ResourceReloadListener> list, CompletableFuture<Void> completableFuture
+	) {
+		ResourceReloadHandler resourceReloadHandler;
 		if (LOGGER.isDebugEnabled()) {
-			resourceLoadProgressProvider = new class_4010(this, new ArrayList(list), completableFuture);
+			resourceReloadHandler = new ProfilingResourceReloadHandlerImpl(this, new ArrayList(list), executor, executor2, completableFuture);
 		} else {
-			resourceLoadProgressProvider = new class_4014(this, new ArrayList(list), completableFuture);
+			resourceReloadHandler = ResourceReloadHandlerImpl.create(this, new ArrayList(list), executor, executor2, completableFuture);
 		}
 
 		this.field_17936.clear();
-		return resourceLoadProgressProvider;
+		return resourceReloadHandler;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ResourceLoadProgressProvider method_18230(@Nullable CompletableFuture<Void> completableFuture) {
-		return this.method_18240(this.field_17936, completableFuture);
+	public ResourceReloadHandler createReloadHandler(Executor executor, Executor executor2, CompletableFuture<Void> completableFuture) {
+		return this.createReloadManager(executor, executor2, this.field_17936, completableFuture);
 	}
 
-	@Override
-	public ResourceLoadProgressProvider method_18232(@Nullable CompletableFuture<Void> completableFuture) {
-		return this.method_18240(this.field_17935, completableFuture);
+	public ResourceReloadHandler method_18232(Executor executor, Executor executor2, CompletableFuture<Void> completableFuture) {
+		return this.createReloadManager(executor, executor2, this.field_17935, completableFuture);
 	}
 }

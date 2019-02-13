@@ -58,7 +58,7 @@ public class WitchHeldItemFeatureRenderer<T extends LivingEntity> extends Featur
 
 			GlStateManager.rotatef(-15.0F, 1.0F, 0.0F, 0.0F);
 			GlStateManager.rotatef(40.0F, 0.0F, 0.0F, 1.0F);
-			MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(livingEntity, itemStack, ModelTransformation.Type.THIRD_PERSON_RIGHT_HAND);
+			MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(livingEntity, itemStack, ModelTransformation.Type.field_4320);
 			GlStateManager.popMatrix();
 		}
 	}

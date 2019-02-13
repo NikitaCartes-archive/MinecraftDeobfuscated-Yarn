@@ -18,7 +18,7 @@ public class ClientGameSession implements GameSession {
 	private final UUID sessionId;
 
 	public ClientGameSession(ClientWorld clientWorld, ClientPlayerEntity clientPlayerEntity, ClientPlayNetworkHandler clientPlayNetworkHandler) {
-		this.playerCount = clientPlayNetworkHandler.method_2880().size();
+		this.playerCount = clientPlayNetworkHandler.getScoreboardEntries().size();
 		this.remoteServer = !clientPlayNetworkHandler.getClientConnection().isLocal();
 		this.difficulty = clientWorld.getDifficulty().getTranslationKey();
 		ScoreboardEntry scoreboardEntry = clientPlayNetworkHandler.method_2871(clientPlayerEntity.getUuid());

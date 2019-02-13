@@ -168,7 +168,7 @@ public abstract class PlayerManager {
 			textComponent = new TranslatableTextComponent("multiplayer.player.joined.renamed", serverPlayerEntity.getDisplayName(), string);
 		}
 
-		this.sendToAll(textComponent.applyFormat(TextFormat.YELLOW));
+		this.sendToAll(textComponent.applyFormat(TextFormat.field_1054));
 		serverPlayNetworkHandler.teleportRequest(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z, serverPlayerEntity.yaw, serverPlayerEntity.pitch);
 		this.players.add(serverPlayerEntity);
 		this.playerMap.put(serverPlayerEntity.getUuid(), serverPlayerEntity);
@@ -200,7 +200,7 @@ public abstract class PlayerManager {
 				if (entity.getUuid().equals(uUID)) {
 					serverPlayerEntity.startRiding(entity, true);
 				} else {
-					for (Entity entity2 : entity.method_5736()) {
+					for (Entity entity2 : entity.getPassengersDeep()) {
 						if (entity2.getUuid().equals(uUID)) {
 							serverPlayerEntity.startRiding(entity2, true);
 							break;
@@ -212,7 +212,7 @@ public abstract class PlayerManager {
 					LOGGER.warn("Couldn't reattach entity to player");
 					serverWorld.method_18217(entity);
 
-					for (Entity entity2x : entity.method_5736()) {
+					for (Entity entity2x : entity.getPassengersDeep()) {
 						serverWorld.method_18217(entity2x);
 					}
 				}
@@ -339,7 +339,7 @@ public abstract class PlayerManager {
 				serverPlayerEntity.stopRiding();
 				serverWorld.method_18217(entity);
 
-				for (Entity entity2 : entity.method_5736()) {
+				for (Entity entity2 : entity.getPassengersDeep()) {
 					serverWorld.method_18217(entity2);
 				}
 
@@ -364,7 +364,7 @@ public abstract class PlayerManager {
 	}
 
 	@Nullable
-	public TextComponent method_14586(SocketAddress socketAddress, GameProfile gameProfile) {
+	public TextComponent checkCanJoin(SocketAddress socketAddress, GameProfile gameProfile) {
 		if (this.bannedProfiles.contains(gameProfile)) {
 			BannedPlayerEntry bannedPlayerEntry = this.bannedProfiles.get(gameProfile);
 			TextComponent textComponent = new TranslatableTextComponent("multiplayer.disconnect.banned.reason", bannedPlayerEntry.getReason());

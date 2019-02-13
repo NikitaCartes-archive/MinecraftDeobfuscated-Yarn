@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
@@ -42,7 +43,7 @@ public class MainMenuScreen extends Screen {
 	private ButtonWidget field_2602;
 	private ButtonWidget buttonResetDemo;
 	private final Object mutex = new Object();
-	public static final String OUTDATED_GL_TEXT = "Please click " + TextFormat.UNDERLINE + "here" + TextFormat.RESET + " for more information.";
+	public static final String OUTDATED_GL_TEXT = "Please click " + TextFormat.field_1073 + "here" + TextFormat.field_1070 + " for more information.";
 	private int warningTextWidth;
 	private int warningTitleWidth;
 	private int warningAlignLeft;
@@ -90,12 +91,12 @@ public class MainMenuScreen extends Screen {
 		}
 	}
 
-	public static CompletableFuture<Void> method_18105(TextureManager textureManager) {
+	public static CompletableFuture<Void> method_18105(TextureManager textureManager, Executor executor) {
 		return CompletableFuture.allOf(
-			textureManager.method_18168(MINECRAFT_TITLE_TEXTURE),
-			textureManager.method_18168(EDITION_TITLE_TEXTURE),
-			textureManager.method_18168(field_17775),
-			field_17774.method_18143(textureManager)
+			textureManager.method_18168(MINECRAFT_TITLE_TEXTURE, executor),
+			textureManager.method_18168(EDITION_TITLE_TEXTURE, executor),
+			textureManager.method_18168(field_17775, executor),
+			field_17774.method_18143(textureManager, executor)
 		);
 	}
 
@@ -297,7 +298,7 @@ public class MainMenuScreen extends Screen {
 		}
 
 		for (ButtonWidget buttonWidget : this.buttons) {
-			buttonWidget.method_18100(g);
+			buttonWidget.setOpacity(g);
 		}
 
 		super.draw(i, j, f);

@@ -63,15 +63,15 @@ public class FollowOwnerGoal extends Goal {
 	@Override
 	public void start() {
 		this.field_6443 = 0;
-		this.field_6447 = this.caller.getPathNodeTypeWeight(PathNodeType.WATER);
-		this.caller.setPathNodeTypeWeight(PathNodeType.WATER, 0.0F);
+		this.field_6447 = this.caller.getPathNodeTypeWeight(PathNodeType.field_18);
+		this.caller.setPathNodeTypeWeight(PathNodeType.field_18, 0.0F);
 	}
 
 	@Override
 	public void onRemove() {
 		this.owner = null;
 		this.field_6446.stop();
-		this.caller.setPathNodeTypeWeight(PathNodeType.WATER, this.field_6447);
+		this.caller.setPathNodeTypeWeight(PathNodeType.field_18, this.field_6447);
 	}
 
 	@Override

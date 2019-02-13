@@ -34,7 +34,7 @@ public class FireballEntity extends class_3855 {
 			if (hitResult.getType() == HitResult.Type.ENTITY) {
 				Entity entity = ((EntityHitResult)hitResult).getEntity();
 				entity.damage(DamageSource.explosiveProjectile(this, this.owner), 6.0F);
-				this.method_5723(this.owner, entity);
+				this.dealDamage(this.owner, entity);
 			}
 
 			boolean bl = this.world.getGameRules().getBoolean("mobGriefing");

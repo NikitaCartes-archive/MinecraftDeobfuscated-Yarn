@@ -4,7 +4,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.item.TooltipOptions;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.InfoEnchantment;
 import net.minecraft.nbt.CompoundTag;
@@ -38,8 +38,8 @@ public class EnchantedBookItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
-		super.buildTooltip(itemStack, world, list, tooltipOptions);
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
+		super.buildTooltip(itemStack, world, list, tooltipContext);
 		ItemStack.method_17870(list, getEnchantmentTag(itemStack));
 	}
 
@@ -78,7 +78,7 @@ public class EnchantedBookItem extends Item {
 	}
 
 	@Override
-	public void addStacksForDisplay(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
+	public void appendItemsForGroup(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
 		if (itemGroup == ItemGroup.SEARCH) {
 			for (Enchantment enchantment : Registry.ENCHANTMENT) {
 				if (enchantment.type != null) {
@@ -87,9 +87,9 @@ public class EnchantedBookItem extends Item {
 					}
 				}
 			}
-		} else if (itemGroup.getEnchantmentTypes().length != 0) {
+		} else if (itemGroup.getEnchantments().length != 0) {
 			for (Enchantment enchantmentx : Registry.ENCHANTMENT) {
-				if (itemGroup.containsEnchantmentType(enchantmentx.type)) {
+				if (itemGroup.containsEnchantments(enchantmentx.type)) {
 					defaultedList.add(method_7808(new InfoEnchantment(enchantmentx, enchantmentx.getMaximumLevel())));
 				}
 			}

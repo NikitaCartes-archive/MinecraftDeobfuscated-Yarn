@@ -64,7 +64,7 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11879(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11103(this);
+		clientPlayPacketListener.onTitle(this);
 	}
 
 	@Environment(EnvType.CLIENT)

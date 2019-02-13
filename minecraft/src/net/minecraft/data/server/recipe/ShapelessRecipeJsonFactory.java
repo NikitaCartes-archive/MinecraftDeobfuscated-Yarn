@@ -108,7 +108,7 @@ public class ShapelessRecipeJsonFactory {
 				this.group == null ? "" : this.group,
 				this.inputs,
 				this.builder,
-				new Identifier(identifier.getNamespace(), "recipes/" + this.output.getItemGroup().method_7751() + "/" + identifier.getPath())
+				new Identifier(identifier.getNamespace(), "recipes/" + this.output.getItemGroup().getName() + "/" + identifier.getPath())
 			)
 		);
 	}

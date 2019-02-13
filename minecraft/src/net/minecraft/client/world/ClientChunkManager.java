@@ -81,11 +81,13 @@ public class ClientChunkManager extends ChunkManager {
 			WorldChunk worldChunk = (WorldChunk)this.chunks.chunks.get(l);
 			if (worldChunk == null) {
 				worldChunk = new WorldChunk(world, new ChunkPos(i, j), new Biome[256]);
+				worldChunk.loadFromPacket(packetByteBuf, compoundTag, k, bl);
 				this.chunks.chunks.set(l, worldChunk);
 				this.loadedChunkCount++;
+			} else {
+				worldChunk.loadFromPacket(packetByteBuf, compoundTag, k, bl);
 			}
 
-			worldChunk.loadFromPacket(packetByteBuf, compoundTag, k, bl);
 			worldChunk.setLoadedToWorld(true);
 			ChunkSection[] chunkSections = worldChunk.getSectionArray();
 			LightingProvider lightingProvider = this.getLightingProvider();

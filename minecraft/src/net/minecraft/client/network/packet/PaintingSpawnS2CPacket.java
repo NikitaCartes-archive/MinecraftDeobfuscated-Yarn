@@ -50,7 +50,7 @@ public class PaintingSpawnS2CPacket implements Packet<ClientPlayPacketListener> 
 	}
 
 	public void method_11224(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11114(this);
+		clientPlayPacketListener.onPaintingSpawn(this);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -75,6 +75,6 @@ public class PaintingSpawnS2CPacket implements Packet<ClientPlayPacketListener> 
 
 	@Environment(EnvType.CLIENT)
 	public PaintingMotive getMotive() {
-		return Registry.MOTIVE.getInt(this.motive);
+		return Registry.MOTIVE.get(this.motive);
 	}
 }

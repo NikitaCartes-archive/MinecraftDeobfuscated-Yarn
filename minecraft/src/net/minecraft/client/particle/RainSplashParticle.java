@@ -57,7 +57,7 @@ public class RainSplashParticle extends class_4003 {
 					.getBlockState(blockPos)
 					.getCollisionShape(this.world, blockPos)
 					.method_1102(Direction.Axis.Y, this.posX - (double)blockPos.getX(), this.posZ - (double)blockPos.getZ()),
-				(double)this.world.getFluidState(blockPos).method_15763(this.world, blockPos)
+				(double)this.world.getFluidState(blockPos).getHeight(this.world, blockPos)
 			);
 			if (d > 0.0 && this.posY < (double)blockPos.getY() + d) {
 				this.markDead();

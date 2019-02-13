@@ -1,9 +1,9 @@
 package net.minecraft.sortme.rule;
 
-import net.minecraft.class_3817;
+import net.minecraft.util.DynamicDeserializer;
 import net.minecraft.util.registry.Registry;
 
-public interface RuleTest extends class_3817<AbstractRuleTest> {
+public interface RuleTest extends DynamicDeserializer<AbstractRuleTest> {
 	RuleTest field_16982 = register("always_true", dynamic -> AlwaysTrueRuleTest.INSTANCE);
 	RuleTest field_16981 = register("block_match", BlockMatchRuleTest::new);
 	RuleTest field_16985 = register("blockstate_match", BlockStateMatchRuleTest::new);

@@ -38,7 +38,7 @@ public class AdvancementUpdateS2CPacket implements Packet<ClientPlayPacketListen
 	}
 
 	public void method_11925(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11130(this);
+		clientPlayPacketListener.onAdvancements(this);
 	}
 
 	@Override

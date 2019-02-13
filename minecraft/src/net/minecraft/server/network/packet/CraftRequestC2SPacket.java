@@ -39,7 +39,7 @@ public class CraftRequestC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	public void method_12317(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.method_12061(this);
+		serverPlayPacketListener.onCraftRequest(this);
 	}
 
 	public int getSyncId() {

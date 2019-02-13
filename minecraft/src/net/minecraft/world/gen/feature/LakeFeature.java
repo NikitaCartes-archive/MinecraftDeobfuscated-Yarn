@@ -99,7 +99,7 @@ public class LakeFeature extends Feature<LakeFeatureConfig> {
 					for (int txx = 4; txx < 8; txx++) {
 						if (bls[(j * 16 + s) * 8 + txx]) {
 							BlockPos blockPos2 = blockPos.add(j, txx - 1, s);
-							if (Block.isNaturalDirt(iWorld.getBlockState(blockPos2).getBlock()) && iWorld.getLightLevel(LightType.SKY_LIGHT, blockPos.add(j, txx, s)) > 0) {
+							if (Block.isNaturalDirt(iWorld.getBlockState(blockPos2).getBlock()) && iWorld.getLightLevel(LightType.SKY, blockPos.add(j, txx, s)) > 0) {
 								Biome biome = iWorld.getBiome(blockPos2);
 								if (biome.getSurfaceConfig().getTopMaterial().getBlock() == Blocks.field_10402) {
 									iWorld.setBlockState(blockPos2, Blocks.field_10402.getDefaultState(), 2);

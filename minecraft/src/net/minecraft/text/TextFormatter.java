@@ -44,7 +44,7 @@ public class TextFormatter {
 	}
 
 	public static TextComponent sortedJoin(Collection<String> collection) {
-		return sortedJoin(collection, string -> new StringTextComponent(string).applyFormat(TextFormat.GREEN));
+		return sortedJoin(collection, string -> new StringTextComponent(string).applyFormat(TextFormat.field_1060));
 	}
 
 	public static <T extends Comparable<T>> TextComponent sortedJoin(Collection<T> collection, Function<T, TextComponent> function) {
@@ -70,7 +70,7 @@ public class TextFormatter {
 
 			for (T object : collection) {
 				if (!bl) {
-					textComponent.append(new StringTextComponent(", ").applyFormat(TextFormat.GRAY));
+					textComponent.append(new StringTextComponent(", ").applyFormat(TextFormat.field_1080));
 				}
 
 				textComponent.append((TextComponent)function.apply(object));

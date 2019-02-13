@@ -3,7 +3,6 @@ package net.minecraft.container;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3914;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.network.packet.GuiSlotUpdateS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,16 +21,16 @@ import net.minecraft.world.World;
 public class CraftingTableContainer extends CraftingContainer<CraftingInventory> {
 	private final CraftingInventory craftingInv = new CraftingInventory(this, 3, 3);
 	private final CraftingResultInventory resultInv = new CraftingResultInventory();
-	private final class_3914 world;
+	private final ContainerWorldContext context;
 	private final PlayerEntity player;
 
 	public CraftingTableContainer(int i, PlayerInventory playerInventory) {
-		this(i, playerInventory, class_3914.field_17304);
+		this(i, playerInventory, ContainerWorldContext.NO_OP_CONTEXT);
 	}
 
-	public CraftingTableContainer(int i, PlayerInventory playerInventory, class_3914 arg) {
+	public CraftingTableContainer(int i, PlayerInventory playerInventory, ContainerWorldContext containerWorldContext) {
 		super(ContainerType.CRAFTING, i);
-		this.world = arg;
+		this.context = containerWorldContext;
 		this.player = playerInventory.player;
 		this.addSlot(new CraftingResultSlot(playerInventory.player, this.craftingInv, this.resultInv, 0, 124, 35));
 
@@ -73,7 +72,7 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
-		this.world.method_17393((world, blockPos) -> method_17399(this.syncId, world, this.player, this.craftingInv, this.resultInv));
+		this.context.run((world, blockPos) -> method_17399(this.syncId, world, this.player, this.craftingInv, this.resultInv));
 	}
 
 	@Override
@@ -83,8 +82,8 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 
 	@Override
 	public void clearCraftingSlots() {
-		this.craftingInv.clearInv();
-		this.resultInv.clearInv();
+		this.craftingInv.clear();
+		this.resultInv.clear();
 	}
 
 	@Override
@@ -95,12 +94,12 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.world.method_17393((world, blockPos) -> this.dropInventory(playerEntity, world, this.craftingInv));
+		this.context.run((world, blockPos) -> this.dropInventory(playerEntity, world, this.craftingInv));
 	}
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return canUse(this.world, playerEntity, Blocks.field_9980);
+		return canUse(this.context, playerEntity, Blocks.field_9980);
 	}
 
 	@Override
@@ -111,7 +110,7 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
 			if (i == 0) {
-				this.world.method_17393((world, blockPos) -> itemStack2.getItem().onCrafted(itemStack2, world, playerEntity));
+				this.context.run((world, blockPos) -> itemStack2.getItem().onCrafted(itemStack2, world, playerEntity));
 				if (!this.insertItem(itemStack2, 10, 46, true)) {
 					return ItemStack.EMPTY;
 				}
@@ -149,8 +148,8 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 	}
 
 	@Override
-	public boolean method_7613(ItemStack itemStack, Slot slot) {
-		return slot.inventory != this.resultInv && super.method_7613(itemStack, slot);
+	public boolean canInsertIntoSlot(ItemStack itemStack, Slot slot) {
+		return slot.inventory != this.resultInv && super.canInsertIntoSlot(itemStack, slot);
 	}
 
 	@Override

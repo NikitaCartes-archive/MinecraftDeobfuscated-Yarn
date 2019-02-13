@@ -7,7 +7,7 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
-public class DolphinJumpGoal extends Goal {
+public class DolphinJumpGoal extends DiveJumpingGoal {
 	private static final int[] field_6474 = new int[]{0, 1, 4, 5, 6, 7};
 	private final DolphinEntity dolphin;
 	private final int chance;
@@ -16,7 +16,6 @@ public class DolphinJumpGoal extends Goal {
 	public DolphinJumpGoal(DolphinEntity dolphinEntity, int i) {
 		this.dolphin = dolphinEntity;
 		this.chance = i;
-		this.setControlBits(5);
 	}
 
 	@Override
@@ -24,7 +23,7 @@ public class DolphinJumpGoal extends Goal {
 		if (this.dolphin.getRand().nextInt(this.chance) != 0) {
 			return false;
 		} else {
-			Direction direction = this.dolphin.method_5755();
+			Direction direction = this.dolphin.getMovementDirection();
 			int i = direction.getOffsetX();
 			int j = direction.getOffsetZ();
 			BlockPos blockPos = new BlockPos(this.dolphin);
@@ -66,7 +65,7 @@ public class DolphinJumpGoal extends Goal {
 
 	@Override
 	public void start() {
-		Direction direction = this.dolphin.method_5755();
+		Direction direction = this.dolphin.getMovementDirection();
 		this.dolphin.velocityX = this.dolphin.velocityX + (double)direction.getOffsetX() * 0.6;
 		this.dolphin.velocityY += 0.7;
 		this.dolphin.velocityZ = this.dolphin.velocityZ + (double)direction.getOffsetZ() * 0.6;
@@ -91,7 +90,7 @@ public class DolphinJumpGoal extends Goal {
 		}
 
 		if (this.dolphin.velocityY * this.dolphin.velocityY < 0.03F && this.dolphin.pitch != 0.0F) {
-			this.dolphin.pitch = this.method_6283(this.dolphin.pitch, 0.0F, 0.2F);
+			this.dolphin.pitch = this.updatePitch(this.dolphin.pitch, 0.0F, 0.2F);
 		} else {
 			double d = Math.sqrt(
 				this.dolphin.velocityX * this.dolphin.velocityX + this.dolphin.velocityY * this.dolphin.velocityY + this.dolphin.velocityZ * this.dolphin.velocityZ
@@ -100,19 +99,5 @@ public class DolphinJumpGoal extends Goal {
 			double f = Math.signum(-this.dolphin.velocityY) * Math.acos(e / d) * 180.0F / (float)Math.PI;
 			this.dolphin.pitch = (float)f;
 		}
-	}
-
-	protected float method_6283(float f, float g, float h) {
-		float i = g - f;
-
-		while (i < -180.0F) {
-			i += 360.0F;
-		}
-
-		while (i >= 180.0F) {
-			i -= 360.0F;
-		}
-
-		return f + h * i;
 	}
 }

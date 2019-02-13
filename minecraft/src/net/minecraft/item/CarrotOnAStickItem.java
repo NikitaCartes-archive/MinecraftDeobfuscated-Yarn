@@ -26,10 +26,10 @@ public class CarrotOnAStickItem extends Item {
 					if (itemStack.isEmpty()) {
 						ItemStack itemStack2 = new ItemStack(Items.field_8378);
 						itemStack2.setTag(itemStack.getTag());
-						return new TypedActionResult<>(ActionResult.SUCCESS, itemStack2);
+						return new TypedActionResult<>(ActionResult.field_5812, itemStack2);
 					}
 
-					return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+					return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 				}
 			}
 

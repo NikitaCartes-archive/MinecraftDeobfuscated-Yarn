@@ -29,23 +29,23 @@ public class AdvancementToast implements Toast {
 		AdvancementDisplay advancementDisplay = this.field_2205.getDisplay();
 		toastManager.drawTexturedRect(0, 0, 0, 0, 160, 32);
 		if (advancementDisplay != null) {
-			List<String> list = toastManager.getGame().fontRenderer.wrapStringToWidthAsList(advancementDisplay.getTitle().getFormattedText(), 125);
+			List<String> list = toastManager.getGame().textRenderer.wrapStringToWidthAsList(advancementDisplay.getTitle().getFormattedText(), 125);
 			int i = advancementDisplay.getFrame() == AdvancementFrame.CHALLENGE ? 16746751 : 16776960;
 			if (list.size() == 1) {
-				toastManager.getGame().fontRenderer.draw(I18n.translate("advancements.toast." + advancementDisplay.getFrame().getId()), 30.0F, 7.0F, i | 0xFF000000);
-				toastManager.getGame().fontRenderer.draw(advancementDisplay.getTitle().getFormattedText(), 30.0F, 18.0F, -1);
+				toastManager.getGame().textRenderer.draw(I18n.translate("advancements.toast." + advancementDisplay.getFrame().getId()), 30.0F, 7.0F, i | 0xFF000000);
+				toastManager.getGame().textRenderer.draw(advancementDisplay.getTitle().getFormattedText(), 30.0F, 18.0F, -1);
 			} else {
 				int j = 1500;
 				float f = 300.0F;
 				if (l < 1500L) {
 					int k = MathHelper.floor(MathHelper.clamp((float)(1500L - l) / 300.0F, 0.0F, 1.0F) * 255.0F) << 24 | 67108864;
-					toastManager.getGame().fontRenderer.draw(I18n.translate("advancements.toast." + advancementDisplay.getFrame().getId()), 30.0F, 11.0F, i | k);
+					toastManager.getGame().textRenderer.draw(I18n.translate("advancements.toast." + advancementDisplay.getFrame().getId()), 30.0F, 11.0F, i | k);
 				} else {
 					int k = MathHelper.floor(MathHelper.clamp((float)(l - 1500L) / 300.0F, 0.0F, 1.0F) * 252.0F) << 24 | 67108864;
 					int m = 16 - list.size() * 9 / 2;
 
 					for (String string : list) {
-						toastManager.getGame().fontRenderer.draw(string, 30.0F, (float)m, 16777215 | k);
+						toastManager.getGame().textRenderer.draw(string, 30.0F, (float)m, 16777215 | k);
 						m += 9;
 					}
 				}

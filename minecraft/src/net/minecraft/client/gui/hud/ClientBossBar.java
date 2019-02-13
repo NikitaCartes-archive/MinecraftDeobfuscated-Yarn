@@ -36,7 +36,7 @@ public class ClientBossBar extends BossBar {
 		return MathHelper.lerp(f, this.percent, this.healthLatest);
 	}
 
-	public void method_1894(BossBarS2CPacket bossBarS2CPacket) {
+	public void handlePacket(BossBarS2CPacket bossBarS2CPacket) {
 		switch (bossBarS2CPacket.getType()) {
 			case UPDATE_TITLE:
 				this.setName(bossBarS2CPacket.getName());

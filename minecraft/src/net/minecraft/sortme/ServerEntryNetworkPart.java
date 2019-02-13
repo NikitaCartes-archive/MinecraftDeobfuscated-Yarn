@@ -64,7 +64,7 @@ public class ServerEntryNetworkPart {
 				private long field_3772;
 
 				@Override
-				public void method_12667(QueryResponseS2CPacket queryResponseS2CPacket) {
+				public void onResponse(QueryResponseS2CPacket queryResponseS2CPacket) {
 					if (this.field_3773) {
 						clientConnection.disconnect(new TranslatableTextComponent("multiplayer.status.unrequested"));
 					} else {
@@ -85,13 +85,13 @@ public class ServerEntryNetworkPart {
 						}
 
 						if (serverMetadata.getPlayers() != null) {
-							serverEntry.playerCountLabel = TextFormat.GRAY
+							serverEntry.playerCountLabel = TextFormat.field_1080
 								+ ""
 								+ serverMetadata.getPlayers().getOnlinePlayerCount()
 								+ ""
-								+ TextFormat.DARK_GRAY
+								+ TextFormat.field_1063
 								+ "/"
-								+ TextFormat.GRAY
+								+ TextFormat.field_1080
 								+ serverMetadata.getPlayers().getPlayerLimit();
 							if (ArrayUtils.isNotEmpty(serverMetadata.getPlayers().getSample())) {
 								StringBuilder stringBuilder = new StringBuilder();
@@ -117,7 +117,7 @@ public class ServerEntryNetworkPart {
 								serverEntry.playerListSummary = stringBuilder.toString();
 							}
 						} else {
-							serverEntry.playerCountLabel = TextFormat.DARK_GRAY + I18n.translate("multiplayer.status.unknown");
+							serverEntry.playerCountLabel = TextFormat.field_1063 + I18n.translate("multiplayer.status.unknown");
 						}
 
 						if (serverMetadata.getFavicon() != null) {
@@ -138,7 +138,7 @@ public class ServerEntryNetworkPart {
 				}
 
 				@Override
-				public void method_12666(QueryPongS2CPacket queryPongS2CPacket) {
+				public void onPong(QueryPongS2CPacket queryPongS2CPacket) {
 					long l = this.field_3772;
 					long m = SystemUtil.getMeasuringTimeMs();
 					serverEntry.ping = m - l;
@@ -146,10 +146,10 @@ public class ServerEntryNetworkPart {
 				}
 
 				@Override
-				public void onConnectionLost(TextComponent textComponent) {
+				public void onDisconnected(TextComponent textComponent) {
 					if (!this.field_3775) {
 						ServerEntryNetworkPart.LOGGER.error("Can't ping {}: {}", serverEntry.address, textComponent.getString());
-						serverEntry.label = TextFormat.DARK_RED + I18n.translate("multiplayer.status.cannot_connect");
+						serverEntry.label = TextFormat.field_1079 + I18n.translate("multiplayer.status.cannot_connect");
 						serverEntry.playerCountLabel = "";
 						ServerEntryNetworkPart.this.ping(serverEntry);
 					}
@@ -222,7 +222,7 @@ public class ServerEntryNetworkPart {
 								serverEntry.protocolVersion = -1;
 								serverEntry.version = string2;
 								serverEntry.label = string3;
-								serverEntry.playerCountLabel = TextFormat.GRAY + "" + j + "" + TextFormat.DARK_GRAY + "/" + TextFormat.GRAY + k;
+								serverEntry.playerCountLabel = TextFormat.field_1080 + "" + j + "" + TextFormat.field_1063 + "/" + TextFormat.field_1080 + k;
 							}
 						}
 

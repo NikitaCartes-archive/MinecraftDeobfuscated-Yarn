@@ -43,22 +43,22 @@ public class AdvancementWidget extends Drawable {
 		this.advancement = simpleAdvancement;
 		this.display = advancementDisplay;
 		this.client = minecraftClient;
-		this.field_2713 = minecraftClient.fontRenderer.method_1714(advancementDisplay.getTitle().getFormattedText(), 163);
+		this.field_2713 = minecraftClient.textRenderer.trimToWidth(advancementDisplay.getTitle().getFormattedText(), 163);
 		this.xPos = MathHelper.floor(advancementDisplay.getX() * 28.0F);
 		this.yPos = MathHelper.floor(advancementDisplay.getY() * 27.0F);
 		int i = simpleAdvancement.getRequirementCount();
 		int j = String.valueOf(i).length();
 		int k = i > 1
-			? minecraftClient.fontRenderer.getStringWidth("  ")
-				+ minecraftClient.fontRenderer.getStringWidth("0") * j * 2
-				+ minecraftClient.fontRenderer.getStringWidth("/")
+			? minecraftClient.textRenderer.getStringWidth("  ")
+				+ minecraftClient.textRenderer.getStringWidth("0") * j * 2
+				+ minecraftClient.textRenderer.getStringWidth("/")
 			: 0;
-		int l = 29 + minecraftClient.fontRenderer.getStringWidth(this.field_2713) + k;
+		int l = 29 + minecraftClient.textRenderer.getStringWidth(this.field_2713) + k;
 		String string = advancementDisplay.getDescription().getFormattedText();
 		this.field_2705 = this.method_2330(string, l);
 
 		for (String string2 : this.field_2705) {
-			l = Math.max(l, minecraftClient.fontRenderer.getStringWidth(string2));
+			l = Math.max(l, minecraftClient.textRenderer.getStringWidth(string2));
 		}
 
 		this.field_2715 = l + 3 + 5;
@@ -68,21 +68,21 @@ public class AdvancementWidget extends Drawable {
 		if (string.isEmpty()) {
 			return Collections.emptyList();
 		} else {
-			List<String> list = this.client.fontRenderer.wrapStringToWidthAsList(string, i);
+			List<String> list = this.client.textRenderer.wrapStringToWidthAsList(string, i);
 			if (list.size() < 2) {
 				return list;
 			} else {
 				String string2 = (String)list.get(0);
 				String string3 = (String)list.get(1);
-				int j = this.client.fontRenderer.getStringWidth(string2 + ' ' + string3.split(" ")[0]);
+				int j = this.client.textRenderer.getStringWidth(string2 + ' ' + string3.split(" ")[0]);
 				if (j - i <= 10) {
-					return this.client.fontRenderer.wrapStringToWidthAsList(string, j);
+					return this.client.textRenderer.wrapStringToWidthAsList(string, j);
 				} else {
 					Matcher matcher = field_2708.matcher(string2);
 					if (matcher.matches()) {
-						int k = this.client.fontRenderer.getStringWidth(matcher.group(1));
+						int k = this.client.textRenderer.getStringWidth(matcher.group(1));
 						if (i - k <= 10) {
-							return this.client.fontRenderer.wrapStringToWidthAsList(string, k);
+							return this.client.textRenderer.wrapStringToWidthAsList(string, k);
 						}
 					}
 
@@ -164,7 +164,7 @@ public class AdvancementWidget extends Drawable {
 	public void method_2331(int i, int j, float f, int k, int l) {
 		boolean bl = k + i + this.xPos + this.field_2715 + 26 >= this.tree.method_2312().width;
 		String string = this.field_2714 == null ? null : this.field_2714.getProgressBarFraction();
-		int m = string == null ? 0 : this.client.fontRenderer.getStringWidth(string);
+		int m = string == null ? 0 : this.client.textRenderer.getStringWidth(string);
 		boolean bl2 = 113 - j - this.yPos - 26 <= 6 + this.field_2705.size() * 9;
 		float g = this.field_2714 == null ? 0.0F : this.field_2714.getProgressBarPercentage();
 		int n = MathHelper.floor(g * (float)this.field_2715);
@@ -217,24 +217,24 @@ public class AdvancementWidget extends Drawable {
 		this.drawTexturedRect(q + n, p, 200 - o, lv2.method_2320() * 26, o, 26);
 		this.drawTexturedRect(i + this.xPos + 3, j + this.yPos, this.display.getFrame().texV(), 128 + lv3.method_2320() * 26, 26, 26);
 		if (bl) {
-			this.client.fontRenderer.drawWithShadow(this.field_2713, (float)(q + 5), (float)(j + this.yPos + 9), -1);
+			this.client.textRenderer.drawWithShadow(this.field_2713, (float)(q + 5), (float)(j + this.yPos + 9), -1);
 			if (string != null) {
-				this.client.fontRenderer.drawWithShadow(string, (float)(i + this.xPos - m), (float)(j + this.yPos + 9), -1);
+				this.client.textRenderer.drawWithShadow(string, (float)(i + this.xPos - m), (float)(j + this.yPos + 9), -1);
 			}
 		} else {
-			this.client.fontRenderer.drawWithShadow(this.field_2713, (float)(i + this.xPos + 32), (float)(j + this.yPos + 9), -1);
+			this.client.textRenderer.drawWithShadow(this.field_2713, (float)(i + this.xPos + 32), (float)(j + this.yPos + 9), -1);
 			if (string != null) {
-				this.client.fontRenderer.drawWithShadow(string, (float)(i + this.xPos + this.field_2715 - m - 5), (float)(j + this.yPos + 9), -1);
+				this.client.textRenderer.drawWithShadow(string, (float)(i + this.xPos + this.field_2715 - m - 5), (float)(j + this.yPos + 9), -1);
 			}
 		}
 
 		if (bl2) {
 			for (int s = 0; s < this.field_2705.size(); s++) {
-				this.client.fontRenderer.draw((String)this.field_2705.get(s), (float)(q + 5), (float)(p + 26 - r + 7 + s * 9), -5592406);
+				this.client.textRenderer.draw((String)this.field_2705.get(s), (float)(q + 5), (float)(p + 26 - r + 7 + s * 9), -5592406);
 			}
 		} else {
 			for (int s = 0; s < this.field_2705.size(); s++) {
-				this.client.fontRenderer.draw((String)this.field_2705.get(s), (float)(q + 5), (float)(j + this.yPos + 9 + 17 + s * 9), -5592406);
+				this.client.textRenderer.draw((String)this.field_2705.get(s), (float)(q + 5), (float)(j + this.yPos + 9 + 17 + s * 9), -5592406);
 			}
 		}
 

@@ -18,6 +18,8 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.AutomaticItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.Packet;
@@ -29,6 +31,7 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
@@ -138,15 +141,7 @@ public class FallingBlockEntity extends Entity {
 					}
 				}
 
-				if (!this.onGround && !bl2) {
-					if (this.timeFalling > 100 && !this.world.isClient && (blockPos.getY() < 1 || blockPos.getY() > 256) || this.timeFalling > 600) {
-						if (this.dropItem && this.world.getGameRules().getBoolean("doEntityDrops")) {
-							this.dropItem(block);
-						}
-
-						this.invalidate();
-					}
-				} else {
+				if (this.onGround || bl2) {
 					BlockState blockState = this.world.getBlockState(blockPos);
 					this.velocityX *= 0.7F;
 					this.velocityZ *= 0.7F;
@@ -154,7 +149,9 @@ public class FallingBlockEntity extends Entity {
 					if (blockState.getBlock() != Blocks.field_10008) {
 						this.invalidate();
 						if (!this.destroyedOnLanding) {
-							if (blockState.getMaterial().isReplaceable() && (bl2 || !FallingBlock.canFallThrough(this.world.getBlockState(blockPos.down())))) {
+							if (bl2
+								|| blockState.method_11587(new AutomaticItemPlacementContext(this.world, blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP))
+									&& this.block.canPlaceAt(this.world, blockPos)) {
 								if (this.block.contains(Properties.WATERLOGGED) && this.world.getFluidState(blockPos).getFluid() == Fluids.WATER) {
 									this.block = this.block.with(Properties.WATERLOGGED, Boolean.valueOf(true));
 								}
@@ -190,6 +187,12 @@ public class FallingBlockEntity extends Entity {
 							((FallingBlock)block).onDestroyedOnLanding(this.world, blockPos);
 						}
 					}
+				} else if (!this.world.isClient && (this.timeFalling > 100 && (blockPos.getY() < 1 || blockPos.getY() > 256) || this.timeFalling > 600)) {
+					if (this.dropItem && this.world.getGameRules().getBoolean("doEntityDrops")) {
+						this.dropItem(block);
+					}
+
+					this.invalidate();
 				}
 			}
 

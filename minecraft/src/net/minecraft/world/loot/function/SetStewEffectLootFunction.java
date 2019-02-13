@@ -101,7 +101,7 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 				for (JsonElement jsonElement : JsonHelper.getArray(jsonObject, "effects")) {
 					String string = JsonHelper.getString(jsonElement.getAsJsonObject(), "type");
 					StatusEffect statusEffect = (StatusEffect)Registry.STATUS_EFFECT
-						.getOptional(new Identifier(string))
+						.getOrEmpty(new Identifier(string))
 						.orElseThrow(() -> new JsonSyntaxException("Unknown mob effect '" + string + "'"));
 					UniformLootTableRange uniformLootTableRange = JsonHelper.deserialize(
 						jsonElement.getAsJsonObject(), "duration", jsonDeserializationContext, UniformLootTableRange.class

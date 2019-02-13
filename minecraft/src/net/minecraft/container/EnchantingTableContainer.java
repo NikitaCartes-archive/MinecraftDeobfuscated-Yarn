@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3914;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -30,20 +29,20 @@ public class EnchantingTableContainer extends Container {
 			EnchantingTableContainer.this.onContentChanged(this);
 		}
 	};
-	private final class_3914 pos;
+	private final ContainerWorldContext context;
 	private final Random random = new Random();
-	private final Property world = Property.create();
+	private final Property seed = Property.create();
 	public final int[] enchantmentPower = new int[3];
 	public final int[] enchantmentId = new int[]{-1, -1, -1};
 	public final int[] enchantmentLevel = new int[]{-1, -1, -1};
 
 	public EnchantingTableContainer(int i, PlayerInventory playerInventory) {
-		this(i, playerInventory, class_3914.field_17304);
+		this(i, playerInventory, ContainerWorldContext.NO_OP_CONTEXT);
 	}
 
-	public EnchantingTableContainer(int i, PlayerInventory playerInventory, class_3914 arg) {
+	public EnchantingTableContainer(int i, PlayerInventory playerInventory, ContainerWorldContext containerWorldContext) {
 		super(ContainerType.ENCHANTMENT, i);
-		this.pos = arg;
+		this.context = containerWorldContext;
 		this.addSlot(new Slot(this.inventory, 0, 15, 47) {
 			@Override
 			public boolean canInsert(ItemStack itemStack) {
@@ -75,7 +74,7 @@ public class EnchantingTableContainer extends Container {
 		this.addProperty(Property.create(this.enchantmentPower, 0));
 		this.addProperty(Property.create(this.enchantmentPower, 1));
 		this.addProperty(Property.create(this.enchantmentPower, 2));
-		this.addProperty(this.world).set(playerInventory.player.getEnchantmentTableSeed());
+		this.addProperty(this.seed).set(playerInventory.player.getEnchantmentTableSeed());
 		this.addProperty(Property.create(this.enchantmentId, 0));
 		this.addProperty(Property.create(this.enchantmentId, 1));
 		this.addProperty(Property.create(this.enchantmentId, 2));
@@ -89,7 +88,7 @@ public class EnchantingTableContainer extends Container {
 		if (inventory == this.inventory) {
 			ItemStack itemStack = inventory.getInvStack(0);
 			if (!itemStack.isEmpty() && itemStack.isEnchantable()) {
-				this.pos.method_17393((world, blockPos) -> {
+				this.context.run((world, blockPos) -> {
 					int ix = 0;
 
 					for (int j = -1; j <= 1; j++) {
@@ -124,7 +123,7 @@ public class EnchantingTableContainer extends Container {
 						}
 					}
 
-					this.random.setSeed((long)this.world.get());
+					this.random.setSeed((long)this.seed.get());
 
 					for (int j = 0; j < 3; j++) {
 						this.enchantmentPower[j] = EnchantmentHelper.calculateEnchantmentPower(this.random, j, ix, itemStack);
@@ -170,7 +169,7 @@ public class EnchantingTableContainer extends Container {
 			|| (playerEntity.experience < j || playerEntity.experience < this.enchantmentPower[i]) && !playerEntity.abilities.creativeMode) {
 			return false;
 		} else {
-			this.pos.method_17393((world, blockPos) -> {
+			this.context.run((world, blockPos) -> {
 				ItemStack itemStack3 = itemStack;
 				List<InfoEnchantment> list = this.getRandomEnchantments(itemStack, i, this.enchantmentPower[i]);
 				if (!list.isEmpty()) {
@@ -203,7 +202,7 @@ public class EnchantingTableContainer extends Container {
 					}
 
 					this.inventory.markDirty();
-					this.world.set(playerEntity.getEnchantmentTableSeed());
+					this.seed.set(playerEntity.getEnchantmentTableSeed());
 					this.onContentChanged(this.inventory);
 					world.playSound(null, blockPos, SoundEvents.field_15119, SoundCategory.field_15245, 1.0F, world.random.nextFloat() * 0.1F + 0.9F);
 				}
@@ -213,7 +212,7 @@ public class EnchantingTableContainer extends Container {
 	}
 
 	private List<InfoEnchantment> getRandomEnchantments(ItemStack itemStack, int i, int j) {
-		this.random.setSeed((long)(this.world.get() + i));
+		this.random.setSeed((long)(this.seed.get() + i));
 		List<InfoEnchantment> list = EnchantmentHelper.getEnchantments(this.random, itemStack, j, false);
 		if (itemStack.getItem() == Items.field_8529 && list.size() > 1) {
 			list.remove(this.random.nextInt(list.size()));
@@ -230,18 +229,18 @@ public class EnchantingTableContainer extends Container {
 
 	@Environment(EnvType.CLIENT)
 	public int method_17413() {
-		return this.world.get();
+		return this.seed.get();
 	}
 
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.pos.method_17393((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.inventory));
+		this.context.run((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.inventory));
 	}
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return canUse(this.pos, playerEntity, Blocks.field_10485);
+		return canUse(this.context, playerEntity, Blocks.field_10485);
 	}
 
 	@Override

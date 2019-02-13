@@ -52,7 +52,7 @@ public class CommandBlock extends BlockWithEntity {
 				boolean bl = world.isReceivingRedstonePower(blockPos);
 				boolean bl2 = commandBlockBlockEntity.isPowered();
 				commandBlockBlockEntity.setPowered(bl);
-				if (!bl2 && !commandBlockBlockEntity.isAuto() && commandBlockBlockEntity.getType() != CommandBlockBlockEntity.Type.CHAIN) {
+				if (!bl2 && !commandBlockBlockEntity.isAuto() && commandBlockBlockEntity.getType() != CommandBlockBlockEntity.Type.field_11922) {
 					if (bl) {
 						commandBlockBlockEntity.updateConditionMet();
 						world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
@@ -72,7 +72,7 @@ public class CommandBlock extends BlockWithEntity {
 				boolean bl = !ChatUtil.isEmpty(commandBlockExecutor.getCommand());
 				CommandBlockBlockEntity.Type type = commandBlockBlockEntity.getType();
 				boolean bl2 = commandBlockBlockEntity.isConditionMet();
-				if (type == CommandBlockBlockEntity.Type.REPEATING) {
+				if (type == CommandBlockBlockEntity.Type.field_11923) {
 					commandBlockBlockEntity.updateConditionMet();
 					if (bl2) {
 						this.method_9780(blockState, world, blockPos, commandBlockExecutor, bl);
@@ -83,7 +83,7 @@ public class CommandBlock extends BlockWithEntity {
 					if (commandBlockBlockEntity.isPowered() || commandBlockBlockEntity.isAuto()) {
 						world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
 					}
-				} else if (type == CommandBlockBlockEntity.Type.NORMAL) {
+				} else if (type == CommandBlockBlockEntity.Type.field_11924) {
 					if (bl2) {
 						this.method_9780(blockState, world, blockPos, commandBlockExecutor, bl);
 					} else if (commandBlockBlockEntity.isConditionalCommandBlock()) {
@@ -115,7 +115,7 @@ public class CommandBlock extends BlockWithEntity {
 	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof CommandBlockBlockEntity && playerEntity.method_7338()) {
-			playerEntity.openCommandBlockGui((CommandBlockBlockEntity)blockEntity);
+			playerEntity.openCommandBlockScreen((CommandBlockBlockEntity)blockEntity);
 			return true;
 		} else {
 			return false;
@@ -149,7 +149,7 @@ public class CommandBlock extends BlockWithEntity {
 					commandBlockBlockEntity.setAuto(this == Blocks.field_10395);
 				}
 
-				if (commandBlockBlockEntity.getType() == CommandBlockBlockEntity.Type.CHAIN) {
+				if (commandBlockBlockEntity.getType() == CommandBlockBlockEntity.Type.field_11922) {
 					boolean bl = world.isReceivingRedstonePower(blockPos);
 					commandBlockBlockEntity.setPowered(bl);
 				}
@@ -201,7 +201,7 @@ public class CommandBlock extends BlockWithEntity {
 			}
 
 			CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
-			if (commandBlockBlockEntity.getType() != CommandBlockBlockEntity.Type.CHAIN) {
+			if (commandBlockBlockEntity.getType() != CommandBlockBlockEntity.Type.field_11922) {
 				break;
 			}
 

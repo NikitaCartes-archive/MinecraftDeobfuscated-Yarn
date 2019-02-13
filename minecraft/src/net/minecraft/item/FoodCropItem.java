@@ -36,7 +36,7 @@ public class FoodCropItem extends FoodItem {
 			}
 
 			itemStack.subtractAmount(1);
-			return ActionResult.SUCCESS;
+			return ActionResult.field_5812;
 		} else {
 			return ActionResult.PASS;
 		}

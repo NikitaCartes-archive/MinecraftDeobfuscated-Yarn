@@ -411,6 +411,6 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			}
 		}
 
-		return MinecraftClient.method_1498() && livingEntity != this.renderManager.field_4686 && bl && !livingEntity.hasPassengers();
+		return MinecraftClient.isHudEnabled() && livingEntity != this.renderManager.field_4686 && bl && !livingEntity.hasPassengers();
 	}
 }

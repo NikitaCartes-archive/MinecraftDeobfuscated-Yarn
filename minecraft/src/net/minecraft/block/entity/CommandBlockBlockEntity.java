@@ -95,7 +95,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 
 	@Nullable
 	@Override
-	public BlockEntityUpdateS2CPacket method_16886() {
+	public BlockEntityUpdateS2CPacket toUpdatePacket() {
 		if (this.needsUpdatePacket()) {
 			this.setNeedsUpdatePacket(false);
 			CompoundTag compoundTag = this.toTag(new CompoundTag());
@@ -129,7 +129,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	public void setAuto(boolean bl) {
 		boolean bl2 = this.auto;
 		this.auto = bl;
-		if (!bl2 && bl && !this.powered && this.world != null && this.getType() != CommandBlockBlockEntity.Type.CHAIN) {
+		if (!bl2 && bl && !this.powered && this.world != null && this.getType() != CommandBlockBlockEntity.Type.field_11922) {
 			Block block = this.getCachedState().getBlock();
 			if (block instanceof CommandBlock) {
 				this.updateConditionMet();
@@ -168,11 +168,11 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	public CommandBlockBlockEntity.Type getType() {
 		Block block = this.getCachedState().getBlock();
 		if (block == Blocks.field_10525) {
-			return CommandBlockBlockEntity.Type.NORMAL;
+			return CommandBlockBlockEntity.Type.field_11924;
 		} else if (block == Blocks.field_10263) {
-			return CommandBlockBlockEntity.Type.REPEATING;
+			return CommandBlockBlockEntity.Type.field_11923;
 		} else {
-			return block == Blocks.field_10395 ? CommandBlockBlockEntity.Type.CHAIN : CommandBlockBlockEntity.Type.NORMAL;
+			return block == Blocks.field_10395 ? CommandBlockBlockEntity.Type.field_11922 : CommandBlockBlockEntity.Type.field_11924;
 		}
 	}
 
@@ -188,8 +188,8 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	public static enum Type {
-		CHAIN,
-		REPEATING,
-		NORMAL;
+		field_11922,
+		field_11923,
+		field_11924;
 	}
 }

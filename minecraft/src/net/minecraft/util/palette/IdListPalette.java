@@ -23,7 +23,7 @@ public class IdListPalette<T> implements Palette<T> {
 
 	@Override
 	public T getByIndex(int i) {
-		T object = this.idList.getInt(i);
+		T object = this.idList.get(i);
 		return object == null ? this.field_12829 : object;
 	}
 

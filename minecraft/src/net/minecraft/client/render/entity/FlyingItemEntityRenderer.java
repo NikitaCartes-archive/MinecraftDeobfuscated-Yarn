@@ -32,7 +32,7 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.scalef(this.field_17147, this.field_17147, this.field_17147);
 		GlStateManager.rotatef(-this.renderManager.field_4679, 0.0F, 1.0F, 0.0F);
-		GlStateManager.rotatef((float)(this.renderManager.settings.field_1850 == 2 ? -1 : 1) * this.renderManager.field_4677, 1.0F, 0.0F, 0.0F);
+		GlStateManager.rotatef((float)(this.renderManager.settings.perspective == 2 ? -1 : 1) * this.renderManager.field_4677, 1.0F, 0.0F, 0.0F);
 		GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
 		this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 		if (this.renderOutlines) {
@@ -40,7 +40,7 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(entity));
 		}
 
-		this.item.renderItem(entity.getItem(), ModelTransformation.Type.GROUND);
+		this.item.renderItem(entity.getItem(), ModelTransformation.Type.field_4318);
 		if (this.renderOutlines) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();

@@ -53,8 +53,6 @@ public class PistonExtensionBlock extends BlockWithEntity {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof PistonBlockEntity) {
 				((PistonBlockEntity)blockEntity).method_11513();
-			} else {
-				super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
 			}
 		}
 	}

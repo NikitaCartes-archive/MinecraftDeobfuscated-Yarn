@@ -23,7 +23,7 @@ public class ScoreboardTeam extends AbstractScoreboardTeam {
 	private boolean showFriendlyInvisibles = true;
 	private AbstractScoreboardTeam.VisibilityRule nameTagVisibilityRule = AbstractScoreboardTeam.VisibilityRule.ALWAYS;
 	private AbstractScoreboardTeam.VisibilityRule deathMessageVisibilityRule = AbstractScoreboardTeam.VisibilityRule.ALWAYS;
-	private TextFormat color = TextFormat.RESET;
+	private TextFormat color = TextFormat.field_1070;
 	private AbstractScoreboardTeam.CollisionRule collisionRule = AbstractScoreboardTeam.CollisionRule.field_1437;
 
 	public ScoreboardTeam(Scoreboard scoreboard, String string) {
@@ -48,7 +48,7 @@ public class ScoreboardTeam extends AbstractScoreboardTeam {
 				.modifyStyle(style -> style.setInsertion(this.name).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent(this.name))))
 		);
 		TextFormat textFormat = this.getColor();
-		if (textFormat != TextFormat.RESET) {
+		if (textFormat != TextFormat.field_1070) {
 			textComponent.applyFormat(textFormat);
 		}
 
@@ -91,7 +91,7 @@ public class ScoreboardTeam extends AbstractScoreboardTeam {
 	public TextComponent method_1198(TextComponent textComponent) {
 		TextComponent textComponent2 = new StringTextComponent("").append(this.prefix).append(textComponent).append(this.suffix);
 		TextFormat textFormat = this.getColor();
-		if (textFormat != TextFormat.RESET) {
+		if (textFormat != TextFormat.field_1070) {
 			textComponent2.applyFormat(textFormat);
 		}
 

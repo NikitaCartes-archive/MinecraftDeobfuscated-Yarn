@@ -53,7 +53,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.village.VillageProperties;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -287,13 +286,13 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean method_6121(Entity entity) {
+	public boolean attack(Entity entity) {
 		this.playSound(SoundEvents.field_14552, 1.0F, 1.0F);
 		if (!this.isAggressive()) {
 			this.field_6770 = true;
 		}
 
-		return super.method_6121(entity);
+		return super.attack(entity);
 	}
 
 	@Override
@@ -497,7 +496,7 @@ public class PandaEntity extends AnimalEntity {
 
 		for (PandaEntity pandaEntity : this.world.getVisibleEntities(PandaEntity.class, this.getBoundingBox().expand(10.0))) {
 			if (!pandaEntity.isChild() && pandaEntity.onGround && !pandaEntity.isInsideWater() && !pandaEntity.method_6514()) {
-				pandaEntity.method_6043();
+				pandaEntity.jump();
 			}
 		}
 
@@ -512,7 +511,7 @@ public class PandaEntity extends AnimalEntity {
 			ItemStack itemStack = itemEntity.getStack();
 			this.setEquippedStack(EquipmentSlot.HAND_MAIN, itemStack);
 			this.handDropChances[EquipmentSlot.HAND_MAIN.getEntitySlotId()] = 2.0F;
-			this.method_6103(itemEntity, itemStack.getAmount());
+			this.pickUpEntity(itemEntity, itemStack.getAmount());
 			itemEntity.invalidate();
 		}
 	}
@@ -521,34 +520,6 @@ public class PandaEntity extends AnimalEntity {
 	public boolean damage(DamageSource damageSource, float f) {
 		this.method_6513(false);
 		return super.damage(damageSource, f);
-	}
-
-	@Override
-	public void setAttacker(@Nullable LivingEntity livingEntity) {
-		super.setAttacker(livingEntity);
-		if (livingEntity instanceof PlayerEntity) {
-			List<VillagerEntity> list = this.world.getVisibleEntities(VillagerEntity.class, this.getBoundingBox().expand(10.0));
-			boolean bl = false;
-
-			for (VillagerEntity villagerEntity : list) {
-				if (villagerEntity.isValid()) {
-					this.world.summonParticle(villagerEntity, (byte)13);
-					if (!bl) {
-						VillageProperties villageProperties = villagerEntity.getVillage();
-						if (villageProperties != null) {
-							bl = true;
-							villageProperties.addAttacker(livingEntity);
-							int i = -1;
-							if (this.isChild()) {
-								i = -3;
-							}
-
-							villageProperties.changeRating(((PlayerEntity)livingEntity).getGameProfile().getName(), i);
-						}
-					}
-				}
-			}
-		}
 	}
 
 	@Nullable

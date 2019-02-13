@@ -196,7 +196,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 
 		@Override
 		public void tick() {
-			if (this.fish.method_5777(FluidTags.field_15517)) {
+			if (this.fish.isInFluid(FluidTags.field_15517)) {
 				this.fish.velocityY += 0.005;
 			}
 

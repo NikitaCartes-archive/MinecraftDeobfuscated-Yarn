@@ -38,7 +38,7 @@ public class ChatMessageS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11386(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11121(this);
+		clientPlayPacketListener.onChatMessage(this);
 	}
 
 	@Environment(EnvType.CLIENT)

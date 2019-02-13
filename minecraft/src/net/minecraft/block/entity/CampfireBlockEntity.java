@@ -3,7 +3,6 @@ package net.minecraft.block.entity;
 import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_3829;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.inventory.BasicInventory;
@@ -14,6 +13,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.cooking.CampfireCookingRecipe;
 import net.minecraft.sortme.ItemScatterer;
+import net.minecraft.util.Clearable;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.InventoryUtil;
 import net.minecraft.util.Tickable;
@@ -22,7 +22,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-public class CampfireBlockEntity extends BlockEntity implements class_3829, Tickable {
+public class CampfireBlockEntity extends BlockEntity implements Clearable, Tickable {
 	private final DefaultedList<ItemStack> itemsBeingCooked = DefaultedList.create(4, ItemStack.EMPTY);
 	private final int[] cookingTimes = new int[4];
 	private final int[] cookingTotalTimes = new int[4];
@@ -144,7 +144,7 @@ public class CampfireBlockEntity extends BlockEntity implements class_3829, Tick
 
 	@Nullable
 	@Override
-	public BlockEntityUpdateS2CPacket method_16886() {
+	public BlockEntityUpdateS2CPacket toUpdatePacket() {
 		return new BlockEntityUpdateS2CPacket(this.pos, 13, this.toInitialChunkDataTag());
 	}
 
@@ -180,7 +180,7 @@ public class CampfireBlockEntity extends BlockEntity implements class_3829, Tick
 	}
 
 	@Override
-	public void clearInv() {
+	public void clear() {
 		this.itemsBeingCooked.clear();
 	}
 

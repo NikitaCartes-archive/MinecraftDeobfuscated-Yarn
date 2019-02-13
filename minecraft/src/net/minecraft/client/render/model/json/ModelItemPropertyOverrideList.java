@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class ModelItemPropertyOverrideList {
-	public static final ModelItemPropertyOverrideList ORIGIN = new ModelItemPropertyOverrideList();
+	public static final ModelItemPropertyOverrideList EMPTY = new ModelItemPropertyOverrideList();
 	private final List<ModelItemOverride> overrides = Lists.<ModelItemOverride>newArrayList();
 	private final List<BakedModel> models;
 

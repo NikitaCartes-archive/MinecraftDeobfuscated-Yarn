@@ -186,7 +186,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	@Override
-	public Direction method_5755() {
+	public Direction getMovementDirection() {
 		return this.field_7660 ? this.getHorizontalFacing().getOpposite().rotateYClockwise() : this.getHorizontalFacing().rotateYClockwise();
 	}
 

@@ -4,9 +4,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.GameOptionSliderWidget;
 import net.minecraft.client.gui.widget.KeyBindingListWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
-import net.minecraft.client.gui.widget.OptionSliderWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.resource.language.I18n;
@@ -21,9 +21,9 @@ public class ControlsSettingsScreen extends Screen {
 	private final Screen parent;
 	protected String title = "Controls";
 	private final GameOptions settings;
-	public KeyBinding field_2727;
+	public KeyBinding focusedBinding;
 	public long field_2723;
-	private KeyBindingListWidget field_2728;
+	private KeyBindingListWidget keyBindingListWidget;
 	private ButtonWidget resetButton;
 
 	public ControlsSettingsScreen(Screen screen, GameOptions gameOptions) {
@@ -33,9 +33,9 @@ public class ControlsSettingsScreen extends Screen {
 
 	@Override
 	protected void onInitialized() {
-		this.field_2728 = new KeyBindingListWidget(this, this.client);
-		this.listeners.add(this.field_2728);
-		this.setFocused(this.field_2728);
+		this.keyBindingListWidget = new KeyBindingListWidget(this, this.client);
+		this.listeners.add(this.keyBindingListWidget);
+		this.setFocused(this.keyBindingListWidget);
 		this.addButton(new ButtonWidget(200, this.width / 2 - 155 + 160, this.height - 29, 150, 20, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
@@ -57,14 +57,14 @@ public class ControlsSettingsScreen extends Screen {
 
 		for (GameOptions.Option option : SETTINGS) {
 			if (option.isSlider()) {
-				this.addButton(new OptionSliderWidget(option.getId(), this.width / 2 - 155 + i % 2 * 160, 18 + 24 * (i >> 1), option));
+				this.addButton(new GameOptionSliderWidget(this.client, option.getId(), this.width / 2 - 155 + i % 2 * 160, 18 + 24 * (i >> 1), option));
 			} else {
 				this.addButton(
 					new OptionButtonWidget(option.getId(), this.width / 2 - 155 + i % 2 * 160, 18 + 24 * (i >> 1), option, this.settings.getTranslatedName(option)) {
 						@Override
 						public void onPressed(double d, double e) {
-							ControlsSettingsScreen.this.settings.updateOption(this.getOption(), 1);
-							this.text = ControlsSettingsScreen.this.settings.getTranslatedName(GameOptions.Option.byId(this.id));
+							ControlsSettingsScreen.this.settings.setInteger(this.getOption(), 1);
+							this.setText(ControlsSettingsScreen.this.settings.getTranslatedName(GameOptions.Option.byId(this.id)));
 						}
 					}
 				);
@@ -76,14 +76,14 @@ public class ControlsSettingsScreen extends Screen {
 
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
-		if (this.field_2727 != null) {
-			this.settings.method_1641(this.field_2727, InputUtil.Type.field_1672.createFromCode(i));
-			this.field_2727 = null;
+		if (this.focusedBinding != null) {
+			this.settings.setKeyCode(this.focusedBinding, InputUtil.Type.field_1672.createFromCode(i));
+			this.focusedBinding = null;
 			KeyBinding.updateKeysByCode();
 			return true;
-		} else if (i == 0 && this.field_2728.mouseClicked(d, e, i)) {
+		} else if (i == 0 && this.keyBindingListWidget.mouseClicked(d, e, i)) {
 			this.setActive(true);
-			this.setFocused(this.field_2728);
+			this.setFocused(this.keyBindingListWidget);
 			return true;
 		} else {
 			return super.mouseClicked(d, e, i);
@@ -92,7 +92,7 @@ public class ControlsSettingsScreen extends Screen {
 
 	@Override
 	public boolean mouseReleased(double d, double e, int i) {
-		if (i == 0 && this.field_2728.mouseReleased(d, e, i)) {
+		if (i == 0 && this.keyBindingListWidget.mouseReleased(d, e, i)) {
 			this.setActive(false);
 			return true;
 		} else {
@@ -102,14 +102,14 @@ public class ControlsSettingsScreen extends Screen {
 
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
-		if (this.field_2727 != null) {
+		if (this.focusedBinding != null) {
 			if (i == 256) {
-				this.settings.method_1641(this.field_2727, InputUtil.UNKNOWN_KEYCODE);
+				this.settings.setKeyCode(this.focusedBinding, InputUtil.UNKNOWN_KEYCODE);
 			} else {
-				this.settings.method_1641(this.field_2727, InputUtil.getKeyCode(i, j));
+				this.settings.setKeyCode(this.focusedBinding, InputUtil.getKeyCode(i, j));
 			}
 
-			this.field_2727 = null;
+			this.focusedBinding = null;
 			this.field_2723 = SystemUtil.getMeasuringTimeMs();
 			KeyBinding.updateKeysByCode();
 			return true;
@@ -121,7 +121,7 @@ public class ControlsSettingsScreen extends Screen {
 	@Override
 	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		this.field_2728.draw(i, j, f);
+		this.keyBindingListWidget.draw(i, j, f);
 		this.drawStringCentered(this.fontRenderer, this.title, this.width / 2, 8, 16777215);
 		boolean bl = false;
 

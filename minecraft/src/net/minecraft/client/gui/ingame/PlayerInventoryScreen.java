@@ -94,7 +94,7 @@ public class PlayerInventoryScreen extends AbstractPlayerInventoryScreen<PlayerC
 			this.recipeBook.drawGhostSlots(this.left, this.top, false, f);
 		}
 
-		this.drawMousoverTooltip(i, j);
+		this.drawMouseoverTooltip(i, j);
 		this.recipeBook.drawTooltip(this.left, this.top, i, j);
 		this.mouseX = (float)i;
 		this.mouseY = (float)j;

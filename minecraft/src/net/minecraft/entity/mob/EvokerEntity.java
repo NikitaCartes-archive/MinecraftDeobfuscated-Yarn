@@ -17,7 +17,7 @@ import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.passive.AbstractVillagerEntity;
+import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -53,7 +53,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
 		this.targetSelector.add(1, new class_1399(this, IllagerEntity.class).method_6318());
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true).setMaxTimeWithoutVisibility(300));
-		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractVillagerEntity.class, false).setMaxTimeWithoutVisibility(300));
+		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractTraderEntity.class, false).setMaxTimeWithoutVisibility(300));
 		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, false));
 	}
 
@@ -282,7 +282,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 	}
 
 	public class WololoGoal extends SpellcastingIllagerEntity.CastSpellGoal {
-		private final Predicate<SheepEntity> purpleSheepPredicate = sheepEntity -> sheepEntity.getColor() == DyeColor.BLUE;
+		private final Predicate<SheepEntity> purpleSheepPredicate = sheepEntity -> sheepEntity.getColor() == DyeColor.field_7966;
 
 		@Override
 		public boolean canStart() {
@@ -321,7 +321,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		protected void castSpell() {
 			SheepEntity sheepEntity = EvokerEntity.this.getWololoTarget();
 			if (sheepEntity != null && sheepEntity.isValid()) {
-				sheepEntity.setColor(DyeColor.RED);
+				sheepEntity.setColor(DyeColor.field_7964);
 			}
 		}
 

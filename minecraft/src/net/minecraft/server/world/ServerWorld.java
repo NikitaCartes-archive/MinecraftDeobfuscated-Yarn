@@ -223,7 +223,7 @@ public class ServerWorld extends World {
 		this.tickScheduledTicks();
 		this.getProfiler().swap("village");
 		this.villageManager.tick();
-		this.field_13958.tick();
+		this.field_13958.method_6445();
 		this.getProfiler().swap("portalForcer");
 		this.portalForcer.tick(this.getTime());
 		this.getProfiler().swap("raid");
@@ -1061,7 +1061,7 @@ public class ServerWorld extends World {
 
 	@Override
 	public void summonParticle(Entity entity, byte b) {
-		this.getEntityTracker().method_14073(entity, new EntityStatusS2CPacket(entity, b));
+		this.getEntityTracker().sendToTrackingPlayersAndSelf(entity, new EntityStatusS2CPacket(entity, b));
 	}
 
 	public ServerChunkManager getChunkManager() {
@@ -1231,7 +1231,7 @@ public class ServerWorld extends World {
 	}
 
 	@Nullable
-	public Entity method_14190(UUID uUID) {
+	public Entity getEntity(UUID uUID) {
 		return (Entity)this.entitiesByUuid.get(uUID);
 	}
 

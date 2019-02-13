@@ -30,7 +30,7 @@ public class BiomeLayerSampler {
 	}
 
 	private Biome getBiome(int i) {
-		Biome biome = Registry.BIOME.getInt(i);
+		Biome biome = Registry.BIOME.get(i);
 		if (biome == null) {
 			if (SharedConstants.isDevelopment) {
 				throw new IllegalStateException("Unknown biome id: " + i);

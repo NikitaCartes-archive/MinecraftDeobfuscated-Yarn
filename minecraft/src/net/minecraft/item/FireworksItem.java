@@ -7,7 +7,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.item.TooltipOptions;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.FireworkEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -38,7 +38,7 @@ public class FireworksItem extends Item {
 			itemStack.subtractAmount(1);
 		}
 
-		return ActionResult.SUCCESS;
+		return ActionResult.field_5812;
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class FireworksItem extends Item {
 				}
 			}
 
-			return new TypedActionResult<>(ActionResult.SUCCESS, playerEntity.getStackInHand(hand));
+			return new TypedActionResult<>(ActionResult.field_5812, playerEntity.getStackInHand(hand));
 		} else {
 			return new TypedActionResult<>(ActionResult.PASS, playerEntity.getStackInHand(hand));
 		}
@@ -60,7 +60,7 @@ public class FireworksItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
 		CompoundTag compoundTag = itemStack.getSubCompoundTag("Fireworks");
 		if (compoundTag != null) {
 			if (compoundTag.containsKey("Flight", 99)) {
@@ -68,7 +68,7 @@ public class FireworksItem extends Item {
 					new TranslatableTextComponent("item.minecraft.firework_rocket.flight")
 						.append(" ")
 						.append(String.valueOf(compoundTag.getByte("Flight")))
-						.applyFormat(TextFormat.GRAY)
+						.applyFormat(TextFormat.field_1080)
 				);
 			}
 
@@ -80,7 +80,7 @@ public class FireworksItem extends Item {
 					FireworkChargeItem.buildTooltip(compoundTag2, list2);
 					if (!list2.isEmpty()) {
 						for (int j = 1; j < list2.size(); j++) {
-							list2.set(j, new StringTextComponent("  ").append((TextComponent)list2.get(j)).applyFormat(TextFormat.GRAY));
+							list2.set(j, new StringTextComponent("  ").append((TextComponent)list2.get(j)).applyFormat(TextFormat.field_1080));
 						}
 
 						list.addAll(list2);

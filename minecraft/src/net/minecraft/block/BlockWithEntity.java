@@ -17,14 +17,6 @@ public abstract class BlockWithEntity extends Block implements BlockEntityProvid
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-		if (blockState.getBlock() != blockState2.getBlock()) {
-			super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
-			world.removeBlockEntity(blockPos);
-		}
-	}
-
-	@Override
 	public boolean onBlockAction(BlockState blockState, World world, BlockPos blockPos, int i, int j) {
 		super.onBlockAction(blockState, world, blockPos, i, j);
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);

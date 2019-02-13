@@ -18,7 +18,7 @@ public class BlockStateParticleParameters implements ParticleParameters {
 		}
 
 		public BlockStateParticleParameters read(ParticleType<BlockStateParticleParameters> particleType, PacketByteBuf packetByteBuf) {
-			return new BlockStateParticleParameters(particleType, Block.STATE_IDS.getInt(packetByteBuf.readVarInt()));
+			return new BlockStateParticleParameters(particleType, Block.STATE_IDS.get(packetByteBuf.readVarInt()));
 		}
 	};
 	private final ParticleType<BlockStateParticleParameters> type;

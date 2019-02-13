@@ -92,8 +92,8 @@ public class DoubleInventory implements Inventory {
 	}
 
 	@Override
-	public void clearInv() {
-		this.first.clearInv();
-		this.second.clearInv();
+	public void clear() {
+		this.first.clear();
+		this.second.clear();
 	}
 }

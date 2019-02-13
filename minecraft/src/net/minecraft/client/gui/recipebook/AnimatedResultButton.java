@@ -33,7 +33,7 @@ public class AnimatedResultButton extends ButtonWidget {
 
 	public void showResultCollection(RecipeResultCollection recipeResultCollection, RecipeBookGuiResults recipeBookGuiResults) {
 		this.results = recipeResultCollection;
-		this.craftingContainer = (CraftingContainer<?>)recipeBookGuiResults.method_2637().player.container;
+		this.craftingContainer = (CraftingContainer<?>)recipeBookGuiResults.getMinecraftClient().player.container;
 		this.recipeBook = recipeBookGuiResults.getRecipeBook();
 		List<Recipe<?>> list = recipeResultCollection.getResults(this.recipeBook.isFilteringCraftable(this.craftingContainer));
 
@@ -57,54 +57,51 @@ public class AnimatedResultButton extends ButtonWidget {
 
 	@Override
 	public void draw(int i, int j, float f) {
-		if (this.visible) {
-			if (!Screen.isControlPressed()) {
-				this.time += f;
-			}
-
-			this.hovered = i >= this.x && j >= this.y && i < this.x + this.width && j < this.y + this.height;
-			GuiLighting.enableForItems();
-			MinecraftClient minecraftClient = MinecraftClient.getInstance();
-			minecraftClient.getTextureManager().bindTexture(BG_TEX);
-			GlStateManager.disableLighting();
-			int k = 29;
-			if (!this.results.hasCraftableResults()) {
-				k += 25;
-			}
-
-			int l = 206;
-			if (this.results.getResults(this.recipeBook.isFilteringCraftable(this.craftingContainer)).size() > 1) {
-				l += 25;
-			}
-
-			boolean bl = this.bounce > 0.0F;
-			if (bl) {
-				float g = 1.0F + 0.1F * (float)Math.sin((double)(this.bounce / 15.0F * (float) Math.PI));
-				GlStateManager.pushMatrix();
-				GlStateManager.translatef((float)(this.x + 8), (float)(this.y + 12), 0.0F);
-				GlStateManager.scalef(g, g, 1.0F);
-				GlStateManager.translatef((float)(-(this.x + 8)), (float)(-(this.y + 12)), 0.0F);
-				this.bounce -= f;
-			}
-
-			this.drawTexturedRect(this.x, this.y, k, l, this.width, this.height);
-			List<Recipe<?>> list = this.getResults();
-			this.currentResultIndex = MathHelper.floor(this.time / 30.0F) % list.size();
-			ItemStack itemStack = ((Recipe)list.get(this.currentResultIndex)).getOutput();
-			int m = 4;
-			if (this.results.method_2656() && this.getResults().size() > 1) {
-				minecraftClient.getItemRenderer().renderGuiItem(itemStack, this.x + m + 1, this.y + m + 1);
-				m--;
-			}
-
-			minecraftClient.getItemRenderer().renderGuiItem(itemStack, this.x + m, this.y + m);
-			if (bl) {
-				GlStateManager.popMatrix();
-			}
-
-			GlStateManager.enableLighting();
-			GuiLighting.disable();
+		if (!Screen.isControlPressed()) {
+			this.time += f;
 		}
+
+		GuiLighting.enableForItems();
+		MinecraftClient minecraftClient = MinecraftClient.getInstance();
+		minecraftClient.getTextureManager().bindTexture(BG_TEX);
+		GlStateManager.disableLighting();
+		int k = 29;
+		if (!this.results.hasCraftableResults()) {
+			k += 25;
+		}
+
+		int l = 206;
+		if (this.results.getResults(this.recipeBook.isFilteringCraftable(this.craftingContainer)).size() > 1) {
+			l += 25;
+		}
+
+		boolean bl = this.bounce > 0.0F;
+		if (bl) {
+			float g = 1.0F + 0.1F * (float)Math.sin((double)(this.bounce / 15.0F * (float) Math.PI));
+			GlStateManager.pushMatrix();
+			GlStateManager.translatef((float)(this.x + 8), (float)(this.y + 12), 0.0F);
+			GlStateManager.scalef(g, g, 1.0F);
+			GlStateManager.translatef((float)(-(this.x + 8)), (float)(-(this.y + 12)), 0.0F);
+			this.bounce -= f;
+		}
+
+		this.drawTexturedRect(this.x, this.y, k, l, this.width, this.height);
+		List<Recipe<?>> list = this.getResults();
+		this.currentResultIndex = MathHelper.floor(this.time / 30.0F) % list.size();
+		ItemStack itemStack = ((Recipe)list.get(this.currentResultIndex)).getOutput();
+		int m = 4;
+		if (this.results.method_2656() && this.getResults().size() > 1) {
+			minecraftClient.getItemRenderer().renderGuiItem(itemStack, this.x + m + 1, this.y + m + 1);
+			m--;
+		}
+
+		minecraftClient.getItemRenderer().renderGuiItem(itemStack, this.x + m, this.y + m);
+		if (bl) {
+			GlStateManager.popMatrix();
+		}
+
+		GlStateManager.enableLighting();
+		GuiLighting.disable();
 	}
 
 	private List<Recipe<?>> getResults() {

@@ -15,67 +15,67 @@ public abstract class ItemGroup {
 	public static final ItemGroup BUILDING_BLOCKS = (new ItemGroup(0, "buildingBlocks") {
 		@Environment(EnvType.CLIENT)
 		@Override
-		public ItemStack getIconItem() {
+		public ItemStack createIcon() {
 			return new ItemStack(Blocks.field_10104);
 		}
-	}).method_7739("building_blocks");
+	}).setName("building_blocks");
 	public static final ItemGroup DECORATIONS = new ItemGroup(1, "decorations") {
 		@Environment(EnvType.CLIENT)
 		@Override
-		public ItemStack getIconItem() {
+		public ItemStack createIcon() {
 			return new ItemStack(Blocks.field_10003);
 		}
 	};
 	public static final ItemGroup REDSTONE = new ItemGroup(2, "redstone") {
 		@Environment(EnvType.CLIENT)
 		@Override
-		public ItemStack getIconItem() {
+		public ItemStack createIcon() {
 			return new ItemStack(Items.field_8725);
 		}
 	};
 	public static final ItemGroup TRANSPORTATION = new ItemGroup(3, "transportation") {
 		@Environment(EnvType.CLIENT)
 		@Override
-		public ItemStack getIconItem() {
+		public ItemStack createIcon() {
 			return new ItemStack(Blocks.field_10425);
 		}
 	};
 	public static final ItemGroup MISC = new ItemGroup(6, "misc") {
 		@Environment(EnvType.CLIENT)
 		@Override
-		public ItemStack getIconItem() {
+		public ItemStack createIcon() {
 			return new ItemStack(Items.field_8187);
 		}
 	};
 	public static final ItemGroup SEARCH = (new ItemGroup(5, "search") {
 		@Environment(EnvType.CLIENT)
 		@Override
-		public ItemStack getIconItem() {
+		public ItemStack createIcon() {
 			return new ItemStack(Items.field_8251);
 		}
 	}).setTexture("item_search.png");
 	public static final ItemGroup FOOD = new ItemGroup(7, "food") {
 		@Environment(EnvType.CLIENT)
 		@Override
-		public ItemStack getIconItem() {
+		public ItemStack createIcon() {
 			return new ItemStack(Items.field_8279);
 		}
 	};
 	public static final ItemGroup TOOLS = (new ItemGroup(8, "tools") {
 		@Environment(EnvType.CLIENT)
 		@Override
-		public ItemStack getIconItem() {
+		public ItemStack createIcon() {
 			return new ItemStack(Items.field_8475);
 		}
-	}).setEnchantmentTypes(new EnchantmentTarget[]{EnchantmentTarget.ALL, EnchantmentTarget.BREAKER, EnchantmentTarget.FISHING, EnchantmentTarget.TOOL});
+	}).setEnchantments(new EnchantmentTarget[]{EnchantmentTarget.ALL, EnchantmentTarget.BREAKER, EnchantmentTarget.FISHING, EnchantmentTarget.TOOL});
 	public static final ItemGroup COMBAT = (new ItemGroup(9, "combat") {
 			@Environment(EnvType.CLIENT)
 			@Override
-			public ItemStack getIconItem() {
+			public ItemStack createIcon() {
 				return new ItemStack(Items.field_8845);
 			}
 		})
-		.setEnchantmentTypes(
+		.setEnchantments(
 			new EnchantmentTarget[]{
 				EnchantmentTarget.ALL,
 				EnchantmentTarget.ARMOR,
@@ -94,7 +94,7 @@ public abstract class ItemGroup {
 	public static final ItemGroup BREWING = new ItemGroup(10, "brewing") {
 		@Environment(EnvType.CLIENT)
 		@Override
-		public ItemStack getIconItem() {
+		public ItemStack createIcon() {
 			return PotionUtil.setPotion(new ItemStack(Items.field_8574), Potions.field_8991);
 		}
 	};
@@ -102,75 +102,75 @@ public abstract class ItemGroup {
 	public static final ItemGroup HOTBAR = new ItemGroup(4, "hotbar") {
 		@Environment(EnvType.CLIENT)
 		@Override
-		public ItemStack getIconItem() {
+		public ItemStack createIcon() {
 			return new ItemStack(Blocks.field_10504);
 		}
 
 		@Environment(EnvType.CLIENT)
 		@Override
-		public void getStacksForDisplay(DefaultedList<ItemStack> defaultedList) {
+		public void appendItems(DefaultedList<ItemStack> defaultedList) {
 			throw new RuntimeException("Implement exception client-side.");
 		}
 
 		@Environment(EnvType.CLIENT)
 		@Override
-		public boolean isTabRightAligned() {
+		public boolean isSpecial() {
 			return true;
 		}
 	};
 	public static final ItemGroup INVENTORY = (new ItemGroup(11, "inventory") {
 		@Environment(EnvType.CLIENT)
 		@Override
-		public ItemStack getIconItem() {
+		public ItemStack createIcon() {
 			return new ItemStack(Blocks.field_10034);
 		}
-	}).setTexture("inventory.png").setNotUseScrollBar().disableTooltip();
-	private final int id;
-	private final String unlocalizedName;
-	private String field_7926;
+	}).setTexture("inventory.png").setNoScrollbar().setNoTooltip();
+	private final int index;
+	private final String id;
+	private String name;
 	private String texture = "items.png";
-	private boolean useScrollBar = true;
+	private boolean scrollbar = true;
 	private boolean tooltip = true;
-	private EnchantmentTarget[] enchantmentTypes = new EnchantmentTarget[0];
-	private ItemStack stack;
+	private EnchantmentTarget[] enchantments = new EnchantmentTarget[0];
+	private ItemStack icon;
 
 	public ItemGroup(int i, String string) {
-		this.id = i;
-		this.unlocalizedName = string;
-		this.stack = ItemStack.EMPTY;
+		this.index = i;
+		this.id = string;
+		this.icon = ItemStack.EMPTY;
 		GROUPS[i] = this;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int getId() {
-		return this.id;
+	public int getIndex() {
+		return this.index;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public String getUntranslatedName() {
-		return this.unlocalizedName;
+	public String getId() {
+		return this.id;
 	}
 
-	public String method_7751() {
-		return this.field_7926 == null ? this.unlocalizedName : this.field_7926;
+	public String getName() {
+		return this.name == null ? this.id : this.name;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public String getTranslationKey() {
-		return "itemGroup." + this.getUntranslatedName();
+		return "itemGroup." + this.getId();
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ItemStack getIconItemStack() {
-		if (this.stack.isEmpty()) {
-			this.stack = this.getIconItem();
+	public ItemStack getIcon() {
+		if (this.icon.isEmpty()) {
+			this.icon = this.createIcon();
 		}
 
-		return this.stack;
+		return this.icon;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public abstract ItemStack getIconItem();
+	public abstract ItemStack createIcon();
 
 	@Environment(EnvType.CLIENT)
 	public String getTexture() {
@@ -182,8 +182,8 @@ public abstract class ItemGroup {
 		return this;
 	}
 
-	public ItemGroup method_7739(String string) {
-		this.field_7926 = string;
+	public ItemGroup setName(String string) {
+		this.name = string;
 		return this;
 	}
 
@@ -192,48 +192,48 @@ public abstract class ItemGroup {
 		return this.tooltip;
 	}
 
-	public ItemGroup disableTooltip() {
+	public ItemGroup setNoTooltip() {
 		this.tooltip = false;
 		return this;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean useScrollBar() {
-		return this.useScrollBar;
+	public boolean hasScrollbar() {
+		return this.scrollbar;
 	}
 
-	public ItemGroup setNotUseScrollBar() {
-		this.useScrollBar = false;
+	public ItemGroup setNoScrollbar() {
+		this.scrollbar = false;
 		return this;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public int getColumn() {
-		return this.id % 6;
+		return this.index % 6;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public boolean isTopRow() {
-		return this.id < 6;
+		return this.index < 6;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean isTabRightAligned() {
+	public boolean isSpecial() {
 		return this.getColumn() == 5;
 	}
 
-	public EnchantmentTarget[] getEnchantmentTypes() {
-		return this.enchantmentTypes;
+	public EnchantmentTarget[] getEnchantments() {
+		return this.enchantments;
 	}
 
-	public ItemGroup setEnchantmentTypes(EnchantmentTarget... enchantmentTargets) {
-		this.enchantmentTypes = enchantmentTargets;
+	public ItemGroup setEnchantments(EnchantmentTarget... enchantmentTargets) {
+		this.enchantments = enchantmentTargets;
 		return this;
 	}
 
-	public boolean containsEnchantmentType(@Nullable EnchantmentTarget enchantmentTarget) {
+	public boolean containsEnchantments(@Nullable EnchantmentTarget enchantmentTarget) {
 		if (enchantmentTarget != null) {
-			for (EnchantmentTarget enchantmentTarget2 : this.enchantmentTypes) {
+			for (EnchantmentTarget enchantmentTarget2 : this.enchantments) {
 				if (enchantmentTarget2 == enchantmentTarget) {
 					return true;
 				}
@@ -244,9 +244,9 @@ public abstract class ItemGroup {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void getStacksForDisplay(DefaultedList<ItemStack> defaultedList) {
+	public void appendItems(DefaultedList<ItemStack> defaultedList) {
 		for (Item item : Registry.ITEM) {
-			item.addStacksForDisplay(this, defaultedList);
+			item.appendItemsForGroup(this, defaultedList);
 		}
 	}
 }

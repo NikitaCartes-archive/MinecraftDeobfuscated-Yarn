@@ -71,7 +71,7 @@ public class MoveControl {
 					&& pathNodeMaker.getPathNodeType(
 							this.entity.world, MathHelper.floor(this.entity.x + (double)m), MathHelper.floor(this.entity.y), MathHelper.floor(this.entity.z + (double)n)
 						)
-						!= PathNodeType.NORMAL) {
+						!= PathNodeType.field_12) {
 					this.field_6368 = 1.0F;
 					this.field_6373 = 0.0F;
 					g = f;

@@ -131,7 +131,7 @@ public class CommandFunctionManager implements Tickable, SynchronousResourceRelo
 	}
 
 	@Override
-	public void reloadResources(ResourceManager resourceManager) {
+	public void apply(ResourceManager resourceManager) {
 		this.idMap.clear();
 		this.tickFunctions.clear();
 		this.tags.clear();
@@ -153,7 +153,7 @@ public class CommandFunctionManager implements Tickable, SynchronousResourceRelo
 			LOGGER.info("Loaded {} custom command functions", this.idMap.size());
 		}
 
-		this.tags.applyReload((Map<Identifier, Tag.Builder<CommandFunction>>)this.tags.prepareReload(resourceManager).join());
+		this.tags.applyReload((Map<Identifier, Tag.Builder<CommandFunction>>)this.tags.prepareReload(resourceManager, this.server.method_17191()).join());
 		this.tickFunctions.addAll(this.tags.getOrCreate(TICK_FUNCTION).values());
 		this.justLoaded = true;
 	}
@@ -212,18 +212,18 @@ public class CommandFunctionManager implements Tickable, SynchronousResourceRelo
 
 	public static class Entry {
 		private final CommandFunctionManager manager;
-		private final ServerCommandSource field_13424;
+		private final ServerCommandSource source;
 		private final CommandFunction.Element element;
 
 		public Entry(CommandFunctionManager commandFunctionManager, ServerCommandSource serverCommandSource, CommandFunction.Element element) {
 			this.manager = commandFunctionManager;
-			this.field_13424 = serverCommandSource;
+			this.source = serverCommandSource;
 			this.element = element;
 		}
 
 		public void execute(ArrayDeque<CommandFunctionManager.Entry> arrayDeque, int i) {
 			try {
-				this.element.execute(this.manager, this.field_13424, arrayDeque, i);
+				this.element.execute(this.manager, this.source, arrayDeque, i);
 			} catch (Throwable var4) {
 			}
 		}

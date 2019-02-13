@@ -78,8 +78,8 @@ public class SimpleScrolledSelectionList extends AbstractListWidget {
 
 			this.drawEntries(m, n, i, j, f);
 			GlStateManager.disableDepthTest();
-			this.method_1954(0, this.y1, 255, 255);
-			this.method_1954(this.y2, this.height, 255, 255);
+			this.renderCoverBackground(0, this.y1, 255, 255);
+			this.renderCoverBackground(this.y2, this.height, 255, 255);
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(
 				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE

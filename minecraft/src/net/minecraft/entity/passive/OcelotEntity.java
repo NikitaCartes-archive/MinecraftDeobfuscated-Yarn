@@ -91,7 +91,7 @@ public class OcelotEntity extends AnimalEntity {
 		this.goalSelector.add(10, new class_1394(this, 0.8, 1.0000001E-5F));
 		this.goalSelector.add(11, new LookAtEntityGoal(this, PlayerEntity.class, 10.0F));
 		this.targetSelector.add(1, new FollowTargetGoal(this, ChickenEntity.class, false));
-		this.targetSelector.add(1, new FollowTargetGoal(this, TurtleEntity.class, 10, false, false, TurtleEntity.field_6921));
+		this.targetSelector.add(1, new FollowTargetGoal(this, TurtleEntity.class, 10, false, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
 	}
 
 	@Override
@@ -152,7 +152,7 @@ public class OcelotEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean method_6121(Entity entity) {
+	public boolean attack(Entity entity) {
 		return entity.damage(DamageSource.mob(this), 3.0F);
 	}
 

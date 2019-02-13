@@ -509,7 +509,7 @@ public class EditBookScreen extends Screen {
 			if (this.tickCounter / 6 % 2 == 0) {
 				string = string + "" + TextFormat.BLACK + "_";
 			} else {
-				string = string + "" + TextFormat.GRAY + "_";
+				string = string + "" + TextFormat.field_1080 + "_";
 			}
 
 			String string2 = I18n.translate("book.editTitle");
@@ -519,7 +519,7 @@ public class EditBookScreen extends Screen {
 			this.fontRenderer.draw(string, (float)(k + 36 + (114 - n) / 2), 50.0F, 0);
 			String string3 = I18n.translate("book.byAuthor", this.player.getName().getString());
 			int o = this.getStringWidth(string3);
-			this.fontRenderer.draw(TextFormat.DARK_GRAY + string3, (float)(k + 36 + (114 - o) / 2), 60.0F, 0);
+			this.fontRenderer.draw(TextFormat.field_1063 + string3, (float)(k + 36 + (114 - o) / 2), 60.0F, 0);
 			String string4 = I18n.translate("book.finalizeWarning");
 			this.fontRenderer.drawStringBounded(string4, k + 36, 82, 114, 0);
 		} else {

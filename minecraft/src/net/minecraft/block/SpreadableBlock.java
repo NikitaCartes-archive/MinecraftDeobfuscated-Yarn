@@ -13,13 +13,13 @@ public abstract class SpreadableBlock extends SnowyBlock {
 
 	private static boolean method_10614(ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.up();
-		return viewableWorld.method_8602(blockPos2) >= 4
+		return viewableWorld.getLightLevel(blockPos2) >= 4
 			|| viewableWorld.getBlockState(blockPos2).getLightSubtracted(viewableWorld, blockPos2) < viewableWorld.getMaxLightLevel();
 	}
 
 	private static boolean method_10613(ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.up();
-		return viewableWorld.method_8602(blockPos2) >= 4
+		return viewableWorld.getLightLevel(blockPos2) >= 4
 			&& viewableWorld.getBlockState(blockPos2).getLightSubtracted(viewableWorld, blockPos2) < viewableWorld.getMaxLightLevel()
 			&& !viewableWorld.getFluidState(blockPos2).matches(FluidTags.field_15517);
 	}
@@ -30,7 +30,7 @@ public abstract class SpreadableBlock extends SnowyBlock {
 			if (!method_10614(world, blockPos)) {
 				world.setBlockState(blockPos, Blocks.field_10566.getDefaultState());
 			} else {
-				if (world.method_8602(blockPos.up()) >= 9) {
+				if (world.getLightLevel(blockPos.up()) >= 9) {
 					for (int i = 0; i < 4; i++) {
 						BlockPos blockPos2 = blockPos.add(random.nextInt(3) - 1, random.nextInt(5) - 3, random.nextInt(3) - 1);
 						if (world.getBlockState(blockPos2).getBlock() == Blocks.field_10566 && method_10613(world, blockPos2)) {

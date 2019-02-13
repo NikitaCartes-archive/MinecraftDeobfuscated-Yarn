@@ -16,7 +16,7 @@ public class BrewingRecipeRegistry {
 	private static final List<BrewingRecipeRegistry.Recipe<Potion>> POTION_RECIPES = Lists.<BrewingRecipeRegistry.Recipe<Potion>>newArrayList();
 	private static final List<BrewingRecipeRegistry.Recipe<Item>> ITEM_RECIPES = Lists.<BrewingRecipeRegistry.Recipe<Item>>newArrayList();
 	private static final List<Ingredient> POTION_TYPES = Lists.<Ingredient>newArrayList();
-	private static final Predicate<ItemStack> field_8958 = itemStack -> {
+	private static final Predicate<ItemStack> POTION_TYPE_PREDICATE = itemStack -> {
 		for (Ingredient ingredient : POTION_TYPES) {
 			if (ingredient.matches(itemStack)) {
 				return true;
@@ -55,7 +55,7 @@ public class BrewingRecipeRegistry {
 	}
 
 	public static boolean hasRecipe(ItemStack itemStack, ItemStack itemStack2) {
-		return !field_8958.test(itemStack) ? false : hasItemRecipe(itemStack, itemStack2) || hasPotionRecipe(itemStack, itemStack2);
+		return !POTION_TYPE_PREDICATE.test(itemStack) ? false : hasItemRecipe(itemStack, itemStack2) || hasPotionRecipe(itemStack, itemStack2);
 	}
 
 	protected static boolean hasItemRecipe(ItemStack itemStack, ItemStack itemStack2) {
@@ -113,11 +113,11 @@ public class BrewingRecipeRegistry {
 	}
 
 	public static void registerDefaults() {
-		method_8080(Items.field_8574);
-		method_8080(Items.field_8436);
-		method_8080(Items.field_8150);
-		method_8071(Items.field_8574, Items.field_8054, Items.field_8436);
-		method_8071(Items.field_8436, Items.field_8613, Items.field_8150);
+		registerPotionType(Items.field_8574);
+		registerPotionType(Items.field_8436);
+		registerPotionType(Items.field_8150);
+		registerItemRecipe(Items.field_8574, Items.field_8054, Items.field_8436);
+		registerItemRecipe(Items.field_8436, Items.field_8613, Items.field_8150);
 		registerPotionRecipe(Potions.field_8991, Items.field_8597, Potions.field_8967);
 		registerPotionRecipe(Potions.field_8991, Items.field_8070, Potions.field_8967);
 		registerPotionRecipe(Potions.field_8991, Items.field_8073, Potions.field_8967);
@@ -175,7 +175,7 @@ public class BrewingRecipeRegistry {
 		registerPotionRecipe(Potions.field_8974, Items.field_8725, Potions.field_8964);
 	}
 
-	private static void method_8071(Item item, Item item2, Item item3) {
+	private static void registerItemRecipe(Item item, Item item2, Item item3) {
 		if (!(item instanceof PotionItem)) {
 			throw new IllegalArgumentException("Expected a potion, got: " + Registry.ITEM.getId(item));
 		} else if (!(item3 instanceof PotionItem)) {
@@ -185,7 +185,7 @@ public class BrewingRecipeRegistry {
 		}
 	}
 
-	private static void method_8080(Item item) {
+	private static void registerPotionType(Item item) {
 		if (!(item instanceof PotionItem)) {
 			throw new IllegalArgumentException("Expected a potion, got: " + Registry.ITEM.getId(item));
 		} else {

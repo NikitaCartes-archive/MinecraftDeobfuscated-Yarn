@@ -79,7 +79,7 @@ public class ItemEntity extends Entity {
 			double d = this.velocityX;
 			double e = this.velocityY;
 			double f = this.velocityZ;
-			if (this.method_5777(FluidTags.field_15517)) {
+			if (this.isInFluid(FluidTags.field_15517)) {
 				this.method_6974();
 			} else if (!this.isUnaffectedByGravity()) {
 				this.velocityY -= 0.04F;
@@ -281,7 +281,7 @@ public class ItemEntity extends Entity {
 			if (this.pickupDelay == 0
 				&& (this.owner == null || 6000 - this.age <= 200 || this.owner.equals(playerEntity.getUuid()))
 				&& playerEntity.inventory.insertStack(itemStack)) {
-				playerEntity.method_6103(this, i);
+				playerEntity.pickUpEntity(this, i);
 				if (itemStack.isEmpty()) {
 					this.invalidate();
 					itemStack.setAmount(i);

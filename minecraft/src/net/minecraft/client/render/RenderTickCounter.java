@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 public class RenderTickCounter {
 	public int ticksThisFrame;
 	public float tickDelta;
-	public float field_1969;
+	public float lastFrameDuration;
 	private long prevTimeMillis;
 	private final float timeScale;
 
@@ -17,9 +17,9 @@ public class RenderTickCounter {
 	}
 
 	public void method_1658(long l) {
-		this.field_1969 = (float)(l - this.prevTimeMillis) / this.timeScale;
+		this.lastFrameDuration = (float)(l - this.prevTimeMillis) / this.timeScale;
 		this.prevTimeMillis = l;
-		this.tickDelta = this.tickDelta + this.field_1969;
+		this.tickDelta = this.tickDelta + this.lastFrameDuration;
 		this.ticksThisFrame = (int)this.tickDelta;
 		this.tickDelta = this.tickDelta - (float)this.ticksThisFrame;
 	}

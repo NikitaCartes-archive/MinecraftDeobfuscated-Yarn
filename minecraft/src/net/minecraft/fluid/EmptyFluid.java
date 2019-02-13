@@ -53,7 +53,7 @@ public class EmptyFluid extends Fluid {
 	}
 
 	@Override
-	public float method_15788(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
+	public float getHeight(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
 		return 0.0F;
 	}
 

@@ -20,7 +20,7 @@ public class class_1116 implements class_1104 {
 	@Override
 	public void method_4756() {
 		this.field_5480--;
-		if (this.field_5480 <= 0 && this.field_5481.method_5869()) {
+		if (this.field_5480 <= 0 && this.field_5481.isInWater()) {
 			float f = this.field_5481.world.random.nextFloat();
 			if (f < 1.0E-4F) {
 				this.field_5480 = 0;

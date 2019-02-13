@@ -38,7 +38,7 @@ public class ClientCommandSource implements CommandSource {
 	public Collection<String> getPlayerNames() {
 		List<String> list = Lists.<String>newArrayList();
 
-		for (ScoreboardEntry scoreboardEntry : this.networkHandler.method_2880()) {
+		for (ScoreboardEntry scoreboardEntry : this.networkHandler.getScoreboardEntries()) {
 			list.add(scoreboardEntry.getProfile().getName());
 		}
 

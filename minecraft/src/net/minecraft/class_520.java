@@ -113,16 +113,16 @@ public class class_520 extends EntryListWidget.Entry<class_520> {
 			}
 		}
 
-		int ox = this.field_3165.fontRenderer.getStringWidth(string);
+		int ox = this.field_3165.textRenderer.getStringWidth(string);
 		if (ox > 157) {
-			string = this.field_3165.fontRenderer.method_1714(string, 157 - this.field_3165.fontRenderer.getStringWidth("...")) + "...";
+			string = this.field_3165.textRenderer.trimToWidth(string, 157 - this.field_3165.textRenderer.getStringWidth("...")) + "...";
 		}
 
-		this.field_3165.fontRenderer.drawWithShadow(string, (float)(n + 32 + 2), (float)(m + 1), 16777215);
-		List<String> list = this.field_3165.fontRenderer.wrapStringToWidthAsList(string2, 157);
+		this.field_3165.textRenderer.drawWithShadow(string, (float)(n + 32 + 2), (float)(m + 1), 16777215);
+		List<String> list = this.field_3165.textRenderer.wrapStringToWidthAsList(string2, 157);
 
 		for (int q = 0; q < 2 && q < list.size(); q++) {
-			this.field_3165.fontRenderer.drawWithShadow((String)list.get(q), (float)(n + 32 + 2), (float)(m + 12 + 10 * q), 8421504);
+			this.field_3165.textRenderer.drawWithShadow((String)list.get(q), (float)(n + 32 + 2), (float)(m + 12 + 10 * q), 8421504);
 		}
 	}
 

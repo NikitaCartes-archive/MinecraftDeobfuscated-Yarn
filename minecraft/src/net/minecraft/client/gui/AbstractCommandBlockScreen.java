@@ -40,14 +40,14 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	protected ButtonWidget doneButton;
 	protected ButtonWidget cancelButton;
 	protected ButtonWidget toggleTrackingOutputButton;
-	protected boolean field_2752;
+	protected boolean trackingOutput;
 	protected final List<String> field_2761 = Lists.<String>newArrayList();
 	protected int field_2757;
 	protected int field_2756;
-	protected ParseResults<CommandSource> field_2758;
+	protected ParseResults<CommandSource> parsedCommand;
 	protected CompletableFuture<Suggestions> field_2754;
 	protected AbstractCommandBlockScreen.class_464 field_2759;
-	private boolean field_2750;
+	private boolean suggestionsDisabled;
 
 	@Override
 	public void update() {
@@ -78,7 +78,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 			public void onPressed(double d, double e) {
 				CommandBlockExecutor commandBlockExecutor = AbstractCommandBlockScreen.this.getCommandExecutor();
 				commandBlockExecutor.shouldTrackOutput(!commandBlockExecutor.isTrackingOutput());
-				AbstractCommandBlockScreen.this.method_2368();
+				AbstractCommandBlockScreen.this.updateTrackedOutput();
 			}
 		});
 		this.consoleCommandTextField = new TextFieldWidget(2, this.fontRenderer, this.width / 2 - 150, 50, 300, 20) {
@@ -91,8 +91,8 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 			}
 		};
 		this.consoleCommandTextField.setMaxLength(32500);
-		this.consoleCommandTextField.method_1854(this::method_2348);
-		this.consoleCommandTextField.setChangedListener(this::method_2360);
+		this.consoleCommandTextField.setRenderTextProvider(this::method_2348);
+		this.consoleCommandTextField.setChangedListener(this::onCommandChanged);
 		this.listeners.add(this.consoleCommandTextField);
 		this.previousOutputTextField = new TextFieldWidget(3, this.fontRenderer, this.width / 2 - 150, this.method_2364(), 276, 20) {
 			@Override
@@ -109,30 +109,30 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.listeners.add(this.previousOutputTextField);
 		this.consoleCommandTextField.setFocused(true);
 		this.setFocused(this.consoleCommandTextField);
-		this.method_2353();
+		this.updateCommand();
 	}
 
 	@Override
 	public void onScaleChanged(MinecraftClient minecraftClient, int i, int j) {
 		String string = this.consoleCommandTextField.getText();
 		this.initialize(minecraftClient, i, j);
-		this.method_2346(string);
-		this.method_2353();
+		this.setCommand(string);
+		this.updateCommand();
 	}
 
-	protected void method_2368() {
+	protected void updateTrackedOutput() {
 		if (this.getCommandExecutor().isTrackingOutput()) {
-			this.toggleTrackingOutputButton.text = "O";
+			this.toggleTrackingOutputButton.setText("O");
 			this.previousOutputTextField.setText(this.getCommandExecutor().getLastOutput().getString());
 		} else {
-			this.toggleTrackingOutputButton.text = "X";
+			this.toggleTrackingOutputButton.setText("X");
 			this.previousOutputTextField.setText("-");
 		}
 	}
 
 	protected void method_2359() {
 		CommandBlockExecutor commandBlockExecutor = this.getCommandExecutor();
-		this.method_2352(commandBlockExecutor);
+		this.syncSettingsToServer(commandBlockExecutor);
 		if (!commandBlockExecutor.isTrackingOutput()) {
 			commandBlockExecutor.setLastOutput(null);
 		}
@@ -145,10 +145,10 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.client.keyboard.enableRepeatEvents(false);
 	}
 
-	protected abstract void method_2352(CommandBlockExecutor commandBlockExecutor);
+	protected abstract void syncSettingsToServer(CommandBlockExecutor commandBlockExecutor);
 
 	protected void method_2358() {
-		this.getCommandExecutor().shouldTrackOutput(this.field_2752);
+		this.getCommandExecutor().shouldTrackOutput(this.trackingOutput);
 		this.client.openScreen(null);
 	}
 
@@ -157,8 +157,8 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.method_2358();
 	}
 
-	private void method_2360(int i, String string) {
-		this.method_2353();
+	private void onCommandChanged(int i, String string) {
+		this.updateCommand();
 	}
 
 	@Override
@@ -187,23 +187,23 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		return this.field_2759 != null && this.field_2759.method_2372((int)d, (int)e, i) ? true : super.mouseClicked(d, e, i);
 	}
 
-	protected void method_2353() {
-		this.field_2758 = null;
-		if (!this.field_2750) {
+	protected void updateCommand() {
+		this.parsedCommand = null;
+		if (!this.suggestionsDisabled) {
 			this.consoleCommandTextField.setSuggestion(null);
 			this.field_2759 = null;
 		}
 
 		this.field_2761.clear();
-		CommandDispatcher<CommandSource> commandDispatcher = this.client.player.networkHandler.method_2886();
+		CommandDispatcher<CommandSource> commandDispatcher = this.client.player.networkHandler.getCommandDispatcher();
 		String string = this.consoleCommandTextField.getText();
 		StringReader stringReader = new StringReader(string);
 		if (stringReader.canRead() && stringReader.peek() == '/') {
 			stringReader.skip();
 		}
 
-		this.field_2758 = commandDispatcher.parse(stringReader, this.client.player.networkHandler.getCommandSource());
-		if (this.field_2759 == null || !this.field_2750) {
+		this.parsedCommand = commandDispatcher.parse(stringReader, this.client.player.networkHandler.getCommandSource());
+		if (this.field_2759 == null || !this.suggestionsDisabled) {
 			StringReader stringReader2 = new StringReader(string.substring(0, Math.min(string.length(), this.consoleCommandTextField.getCursor())));
 			if (stringReader2.canRead() && stringReader2.peek() == '/') {
 				stringReader2.skip();
@@ -221,11 +221,11 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 	private void method_2354() {
 		if (((Suggestions)this.field_2754.join()).isEmpty()
-			&& !this.field_2758.getExceptions().isEmpty()
+			&& !this.parsedCommand.getExceptions().isEmpty()
 			&& this.consoleCommandTextField.getCursor() == this.consoleCommandTextField.getText().length()) {
 			int i = 0;
 
-			for (Entry<CommandNode<CommandSource>, CommandSyntaxException> entry : this.field_2758.getExceptions().entrySet()) {
+			for (Entry<CommandNode<CommandSource>, CommandSyntaxException> entry : this.parsedCommand.getExceptions().entrySet()) {
 				CommandSyntaxException commandSyntaxException = (CommandSyntaxException)entry.getValue();
 				if (commandSyntaxException.getType() == CommandSyntaxException.BUILT_IN_EXCEPTIONS.literalIncorrect()) {
 					i++;
@@ -242,7 +242,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.field_2757 = 0;
 		this.field_2756 = this.width;
 		if (this.field_2761.isEmpty()) {
-			this.method_2356(TextFormat.GRAY);
+			this.method_2356(TextFormat.field_1080);
 		}
 
 		this.field_2759 = null;
@@ -252,16 +252,16 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	}
 
 	private String method_2348(String string, int i) {
-		return this.field_2758 != null ? ChatScreen.method_2105(this.field_2758, string, i) : string;
+		return this.parsedCommand != null ? ChatScreen.getRenderText(this.parsedCommand, string, i) : string;
 	}
 
 	private void method_2356(TextFormat textFormat) {
-		CommandContextBuilder<CommandSource> commandContextBuilder = this.field_2758.getContext();
+		CommandContextBuilder<CommandSource> commandContextBuilder = this.parsedCommand.getContext();
 		CommandContextBuilder<CommandSource> commandContextBuilder2 = commandContextBuilder.getLastChild();
 		if (!commandContextBuilder2.getNodes().isEmpty()) {
 			CommandNode<CommandSource> commandNode;
 			int i;
-			if (this.field_2758.getReader().canRead()) {
+			if (this.parsedCommand.getReader().canRead()) {
 				Entry<CommandNode<CommandSource>, StringRange> entry = Iterables.getLast(commandContextBuilder2.getNodes().entrySet());
 				commandNode = (CommandNode<CommandSource>)entry.getKey();
 				i = ((StringRange)entry.getValue()).getEnd() + 1;
@@ -284,7 +284,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 			Map<CommandNode<CommandSource>, String> map = this.client
 				.player
 				.networkHandler
-				.method_2886()
+				.getCommandDispatcher()
 				.getSmartUsage(commandNode, this.client.player.networkHandler.getCommandSource());
 			List<String> list = Lists.<String>newArrayList();
 			int j = 0;
@@ -355,7 +355,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		}
 	}
 
-	protected void method_2346(String string) {
+	protected void setCommand(String string) {
 		this.consoleCommandTextField.setText(string);
 	}
 
@@ -557,13 +557,13 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 		public void method_2375() {
 			Suggestion suggestion = (Suggestion)this.field_2764.getList().get(this.field_2766);
-			AbstractCommandBlockScreen.this.field_2750 = true;
-			AbstractCommandBlockScreen.this.method_2346(suggestion.apply(this.field_2768));
+			AbstractCommandBlockScreen.this.suggestionsDisabled = true;
+			AbstractCommandBlockScreen.this.setCommand(suggestion.apply(this.field_2768));
 			int i = suggestion.getRange().getStart() + suggestion.getText().length();
 			AbstractCommandBlockScreen.this.consoleCommandTextField.setCursor(i);
 			AbstractCommandBlockScreen.this.consoleCommandTextField.method_1884(i);
 			this.method_2374(this.field_2766);
-			AbstractCommandBlockScreen.this.field_2750 = false;
+			AbstractCommandBlockScreen.this.suggestionsDisabled = false;
 			this.field_2765 = true;
 		}
 

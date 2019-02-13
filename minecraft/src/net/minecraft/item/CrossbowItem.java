@@ -58,9 +58,9 @@ public class CrossbowItem extends BaseBowItem {
 		if (isCharged(itemStack)) {
 			this.shootAllProjectiles(world, playerEntity, itemStack);
 			setCharged(itemStack, false);
-			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+			return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 		} else if (!playerEntity.abilities.creativeMode && itemStack2.isEmpty() && !bl) {
-			return itemStack2.isEmpty() && !bl ? new TypedActionResult<>(ActionResult.FAILURE, itemStack) : new TypedActionResult<>(ActionResult.PASS, itemStack);
+			return itemStack2.isEmpty() && !bl ? new TypedActionResult<>(ActionResult.field_5814, itemStack) : new TypedActionResult<>(ActionResult.PASS, itemStack);
 		} else {
 			if (!isCharged(itemStack)) {
 				this.field_7937 = false;
@@ -68,7 +68,7 @@ public class CrossbowItem extends BaseBowItem {
 				playerEntity.setCurrentHand(hand);
 			}
 
-			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+			return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 		}
 	}
 

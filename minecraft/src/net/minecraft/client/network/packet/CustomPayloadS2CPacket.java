@@ -47,7 +47,7 @@ public class CustomPayloadS2CPacket implements Packet<ClientPlayPacketListener> 
 	}
 
 	public void method_11457(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11152(this);
+		clientPlayPacketListener.onCustomPayload(this);
 	}
 
 	@Environment(EnvType.CLIENT)

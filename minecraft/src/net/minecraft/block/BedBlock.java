@@ -167,14 +167,6 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-		if (blockState.getBlock() != blockState2.getBlock()) {
-			super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
-			world.removeBlockEntity(blockPos);
-		}
-	}
-
-	@Override
 	public void onBreak(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
 		BedPart bedPart = blockState.get(PART);
 		BlockPos blockPos2 = blockPos.offset(method_9488(bedPart, blockState.get(field_11177)));

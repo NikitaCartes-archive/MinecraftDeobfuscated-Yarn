@@ -284,7 +284,7 @@ public class FluidRenderer {
 
 			FluidState fluidState = blockView.getFluidState(blockPos2);
 			if (fluidState.getFluid().matchesType(fluid)) {
-				float g = fluidState.method_15763(blockView, blockPos2);
+				float g = fluidState.getHeight(blockView, blockPos2);
 				if (g >= 0.8F) {
 					f += g * 10.0F;
 					i += 10;

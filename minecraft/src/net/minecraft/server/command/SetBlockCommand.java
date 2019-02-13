@@ -5,7 +5,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.class_3829;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.command.arguments.BlockArgument;
@@ -13,6 +12,7 @@ import net.minecraft.command.arguments.BlockArgumentType;
 import net.minecraft.command.arguments.BlockPosArgumentType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.util.Clearable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 
@@ -94,7 +94,7 @@ public class SetBlockCommand {
 				bl = !blockArgument.getBlockState().isAir();
 			} else {
 				BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
-				class_3829.method_16825(blockEntity);
+				Clearable.clear(blockEntity);
 				bl = true;
 			}
 

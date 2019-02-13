@@ -25,7 +25,7 @@ public class StatisticsS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11270(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11129(this);
+		clientPlayPacketListener.onStatistics(this);
 	}
 
 	@Override
@@ -34,14 +34,14 @@ public class StatisticsS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.stats = new Object2IntOpenHashMap<>(i);
 
 		for (int j = 0; j < i; j++) {
-			this.readStat(Registry.STAT_TYPE.getInt(packetByteBuf.readVarInt()), packetByteBuf);
+			this.readStat(Registry.STAT_TYPE.get(packetByteBuf.readVarInt()), packetByteBuf);
 		}
 	}
 
 	private <T> void readStat(StatType<T> statType, PacketByteBuf packetByteBuf) {
 		int i = packetByteBuf.readVarInt();
 		int j = packetByteBuf.readVarInt();
-		this.stats.put(statType.getOrCreateStat(statType.getRegistry().getInt(i)), j);
+		this.stats.put(statType.getOrCreateStat(statType.getRegistry().get(i)), j);
 	}
 
 	@Override

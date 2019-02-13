@@ -5,9 +5,9 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.List;
 import java.util.Random;
-import net.minecraft.class_3817;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
+import net.minecraft.util.DynamicDeserializer;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
@@ -26,7 +26,10 @@ public class ListPoolElement extends StructurePoolElement {
 	}
 
 	public ListPoolElement(Dynamic<?> dynamic) {
-		this(dynamic.get("elements").asList(dynamicx -> class_3817.deserialize(dynamicx, Registry.STRUCTURE_POOL_ELEMENT, "element_type", EmptyPoolElement.INSTANCE)));
+		this(
+			dynamic.get("elements")
+				.asList(dynamicx -> DynamicDeserializer.deserialize(dynamicx, Registry.STRUCTURE_POOL_ELEMENT, "element_type", EmptyPoolElement.INSTANCE))
+		);
 	}
 
 	@Override

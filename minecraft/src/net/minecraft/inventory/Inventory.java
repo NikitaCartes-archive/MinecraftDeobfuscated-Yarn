@@ -1,10 +1,10 @@
 package net.minecraft.inventory;
 
-import net.minecraft.class_3829;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Clearable;
 
-public interface Inventory extends class_3829 {
+public interface Inventory extends Clearable {
 	int getInvSize();
 
 	boolean isInvEmpty();

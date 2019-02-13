@@ -2,6 +2,7 @@ package net.minecraft;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -118,11 +119,11 @@ public class class_751 {
 		GlStateManager.enableDepthTest();
 	}
 
-	public CompletableFuture<Void> method_18143(TextureManager textureManager) {
+	public CompletableFuture<Void> method_18143(TextureManager textureManager, Executor executor) {
 		CompletableFuture<?>[] completableFutures = new CompletableFuture[6];
 
 		for (int i = 0; i < completableFutures.length; i++) {
-			completableFutures[i] = textureManager.method_18168(this.field_3952[i]);
+			completableFutures[i] = textureManager.method_18168(this.field_3952[i], executor);
 		}
 
 		return CompletableFuture.allOf(completableFutures);

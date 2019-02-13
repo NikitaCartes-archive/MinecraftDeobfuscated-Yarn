@@ -7,7 +7,6 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.shorts.ShortList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -291,7 +290,7 @@ public class WorldChunk implements Chunk {
 				return null;
 			} else {
 				if (block2 instanceof BlockEntityProvider) {
-					BlockEntity blockEntity = this.getBlockEntity(blockPos, WorldChunk.AccessType.GET);
+					BlockEntity blockEntity = this.getBlockEntity(blockPos, WorldChunk.CreationType.field_12859);
 					if (blockEntity != null) {
 						blockEntity.resetBlock();
 					}
@@ -302,7 +301,7 @@ public class WorldChunk implements Chunk {
 				}
 
 				if (block instanceof BlockEntityProvider) {
-					BlockEntity blockEntity = this.getBlockEntity(blockPos, WorldChunk.AccessType.GET);
+					BlockEntity blockEntity = this.getBlockEntity(blockPos, WorldChunk.CreationType.field_12859);
 					if (blockEntity == null) {
 						blockEntity = ((BlockEntityProvider)block).createBlockEntity(this.world);
 						this.world.setBlockEntity(blockPos, blockEntity);
@@ -394,11 +393,11 @@ public class WorldChunk implements Chunk {
 	@Nullable
 	@Override
 	public BlockEntity getBlockEntity(BlockPos blockPos) {
-		return this.getBlockEntity(blockPos, WorldChunk.AccessType.GET);
+		return this.getBlockEntity(blockPos, WorldChunk.CreationType.field_12859);
 	}
 
 	@Nullable
-	public BlockEntity getBlockEntity(BlockPos blockPos, WorldChunk.AccessType accessType) {
+	public BlockEntity getBlockEntity(BlockPos blockPos, WorldChunk.CreationType creationType) {
 		BlockEntity blockEntity = (BlockEntity)this.blockEntityMap.get(blockPos);
 		if (blockEntity == null) {
 			CompoundTag compoundTag = (CompoundTag)this.pendingBlockEntityTags.remove(blockPos);
@@ -411,7 +410,7 @@ public class WorldChunk implements Chunk {
 		}
 
 		if (blockEntity == null) {
-			if (accessType == WorldChunk.AccessType.CREATE) {
+			if (creationType == WorldChunk.CreationType.field_12860) {
 				blockEntity = this.createBlockEntity(blockPos);
 				this.world.setBlockEntity(blockPos, blockEntity);
 			}
@@ -565,30 +564,19 @@ public class WorldChunk implements Chunk {
 
 	@Environment(EnvType.CLIENT)
 	public void loadFromPacket(PacketByteBuf packetByteBuf, CompoundTag compoundTag, int i, boolean bl) {
-		if (bl) {
-			this.blockEntityMap.clear();
-		} else {
-			Iterator<BlockPos> iterator = this.blockEntityMap.keySet().iterator();
+		Predicate<BlockPos> predicate = bl ? blockPos -> true : blockPos -> (i & 1 << (blockPos.getY() >> 4)) != 0;
+		Sets.newHashSet(this.blockEntityMap.keySet()).stream().filter(predicate).forEach(this.world::removeBlockEntity);
 
-			while (iterator.hasNext()) {
-				BlockPos blockPos = (BlockPos)iterator.next();
-				int j = blockPos.getY() >> 4;
-				if ((i & 1 << j) != 0) {
-					iterator.remove();
-				}
-			}
-		}
-
-		for (int k = 0; k < this.sections.length; k++) {
-			ChunkSection chunkSection = this.sections[k];
-			if ((i & 1 << k) == 0) {
+		for (int j = 0; j < this.sections.length; j++) {
+			ChunkSection chunkSection = this.sections[j];
+			if ((i & 1 << j) == 0) {
 				if (bl && chunkSection != EMPTY_SECTION) {
-					this.sections[k] = EMPTY_SECTION;
+					this.sections[j] = EMPTY_SECTION;
 				}
 			} else {
 				if (chunkSection == EMPTY_SECTION) {
-					chunkSection = new ChunkSection(k << 4);
-					this.sections[k] = chunkSection;
+					chunkSection = new ChunkSection(j << 4);
+					this.sections[j] = chunkSection;
 				}
 
 				chunkSection.fromPacket(packetByteBuf);
@@ -596,8 +584,8 @@ public class WorldChunk implements Chunk {
 		}
 
 		if (bl) {
-			for (int kx = 0; kx < this.biomeArray.length; kx++) {
-				this.biomeArray[kx] = Registry.BIOME.getInt(packetByteBuf.readInt());
+			for (int jx = 0; jx < this.biomeArray.length; jx++) {
+				this.biomeArray[jx] = Registry.BIOME.get(packetByteBuf.readInt());
 			}
 		}
 
@@ -833,9 +821,9 @@ public class WorldChunk implements Chunk {
 		this.setShouldSave(true);
 	}
 
-	public static enum AccessType {
-		CREATE,
+	public static enum CreationType {
+		field_12860,
 		field_12861,
-		GET;
+		field_12859;
 	}
 }

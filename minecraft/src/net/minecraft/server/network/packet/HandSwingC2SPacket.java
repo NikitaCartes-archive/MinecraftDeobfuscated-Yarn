@@ -27,7 +27,7 @@ public class HandSwingC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	public void method_12511(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.method_12052(this);
+		serverPlayPacketListener.onHandSwing(this);
 	}
 
 	public Hand getHand() {

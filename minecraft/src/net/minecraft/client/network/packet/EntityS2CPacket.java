@@ -42,7 +42,7 @@ public class EntityS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11651(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11155(this);
+		clientPlayPacketListener.onEntityUpdate(this);
 	}
 
 	public String toString() {

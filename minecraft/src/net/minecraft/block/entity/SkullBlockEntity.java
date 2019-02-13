@@ -86,7 +86,7 @@ public class SkullBlockEntity extends BlockEntity implements Tickable {
 
 	@Nullable
 	@Override
-	public BlockEntityUpdateS2CPacket method_16886() {
+	public BlockEntityUpdateS2CPacket toUpdatePacket() {
 		return new BlockEntityUpdateS2CPacket(this.pos, 4, this.toInitialChunkDataTag());
 	}
 

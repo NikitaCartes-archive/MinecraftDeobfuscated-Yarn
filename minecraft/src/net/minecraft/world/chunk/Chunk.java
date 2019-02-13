@@ -65,8 +65,8 @@ public interface Chunk extends BlockViewWithStructures {
 		if (lightingProvider == null) {
 			return 0;
 		} else {
-			int j = bl ? lightingProvider.get(LightType.SKY_LIGHT).getLightLevel(blockPos) - i : 0;
-			int k = lightingProvider.get(LightType.BLOCK_LIGHT).getLightLevel(blockPos);
+			int j = bl ? lightingProvider.get(LightType.SKY).getLightLevel(blockPos) - i : 0;
+			int k = lightingProvider.get(LightType.BLOCK).getLightLevel(blockPos);
 			return Math.max(k, j);
 		}
 	}

@@ -2,7 +2,6 @@ package net.minecraft.server;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.google.gson.JsonElement;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
@@ -35,11 +34,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinWorkerThread;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
@@ -51,7 +47,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_3738;
 import net.minecraft.client.network.packet.WorldTimeUpdateS2CPacket;
 import net.minecraft.datafixers.Schemas;
 import net.minecraft.entity.boss.BossBarManager;
@@ -124,12 +119,11 @@ import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implements SnooperListener, CommandOutput, AutoCloseable, Runnable {
+public abstract class MinecraftServer extends ThreadTaskQueue<ServerTask> implements SnooperListener, CommandOutput, AutoCloseable, Runnable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final File USER_CACHE_FILE = new File("usercache.json");
 	public static final LevelInfo field_17704 = new LevelInfo((long)"North Carolina".hashCode(), GameMode.field_9215, true, false, LevelGeneratorType.DEFAULT)
 		.setBonusChest();
-	private final AtomicInteger serverWorkerThreadCounter = new AtomicInteger(1);
 	private final LevelStorage levelStorage;
 	private final Snooper snooper = new Snooper("server", this, SystemUtil.getMeasuringTimeMs());
 	private final File gameDir;
@@ -206,9 +200,10 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 	private boolean field_4570;
 	private boolean forceWorldUpgrade;
 	private float tickTime;
-	private final ExecutorService field_17200;
+	private final Executor field_17200;
 	@Nullable
 	private String field_17601;
+	private boolean field_18036;
 
 	public MinecraftServer(
 		File file,
@@ -233,12 +228,12 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 		this.worldGenerationProgressListenerFactory = worldGenerationProgressListenerFactory;
 		this.levelStorage = new LevelStorage(file.toPath(), file.toPath().resolve("../backups"), dataFixer);
 		this.dataFixer = dataFixer;
-		this.dataManager.addListener(this.tagManager);
-		this.dataManager.addListener(this.recipeManager);
-		this.dataManager.addListener(this.lootManager);
-		this.dataManager.addListener(this.commandFunctionManager);
-		this.dataManager.addListener(this.advancementManager);
-		this.field_17200 = this.method_17191(MathHelper.clamp(Runtime.getRuntime().availableProcessors() - 1, 1, 7));
+		this.dataManager.registerListener(this.tagManager);
+		this.dataManager.registerListener(this.recipeManager);
+		this.dataManager.registerListener(this.lootManager);
+		this.dataManager.registerListener(this.commandFunctionManager);
+		this.dataManager.registerListener(this.advancementManager);
+		this.field_17200 = SystemUtil.getServerWorkerExecutor();
 		this.levelName = string;
 	}
 
@@ -246,22 +241,6 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 		ScoreboardState scoreboardState = persistentStateManager.getOrCreate(ScoreboardState::new, "scoreboard");
 		scoreboardState.setScoreboard(this.getScoreboard());
 		this.getScoreboard().method_12935(new ScoreboardSynchronizer(scoreboardState));
-	}
-
-	private ExecutorService method_17191(int i) {
-		ExecutorService executorService;
-		if (i <= 0) {
-			executorService = MoreExecutors.newDirectExecutorService();
-		} else {
-			executorService = new ForkJoinPool(i, forkJoinPool -> {
-				ForkJoinWorkerThread forkJoinWorkerThread = new ForkJoinWorkerThread(forkJoinPool) {
-				};
-				forkJoinWorkerThread.setName("Server-Worker-" + this.serverWorkerThreadCounter.getAndIncrement());
-				return forkJoinWorkerThread;
-			}, (thread, throwable) -> LOGGER.error(String.format("Caught exception in thread %s", thread), throwable), true);
-		}
-
-		return executorService;
 	}
 
 	protected abstract boolean setupServer() throws IOException;
@@ -575,27 +554,14 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 			if (serverWorldx != null) {
 				try {
 					serverWorldx.close();
-				} catch (IOException var5) {
-					LOGGER.error("Exception closing the level", (Throwable)var5);
+				} catch (IOException var4) {
+					LOGGER.error("Exception closing the level", (Throwable)var4);
 				}
 			}
 		}
 
 		if (this.snooper.isActive()) {
 			this.snooper.cancel();
-		}
-
-		this.field_17200.shutdown();
-
-		boolean bl;
-		try {
-			bl = this.field_17200.awaitTermination(3L, TimeUnit.SECONDS);
-		} catch (InterruptedException var4) {
-			bl = false;
-		}
-
-		if (!bl) {
-			this.field_17200.shutdownNow();
 		}
 	}
 
@@ -623,7 +589,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 	}
 
 	private boolean shouldKeepTicking() {
-		return SystemUtil.getMeasuringTimeMs() < this.timeReference;
+		return this.field_18036 || SystemUtil.getMeasuringTimeMs() < this.timeReference;
 	}
 
 	public void run() {
@@ -632,7 +598,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 				this.timeReference = SystemUtil.getMeasuringTimeMs();
 				this.metadata.setDescription(new StringTextComponent(this.motd));
 				this.metadata.setVersion(new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion()));
-				this.method_3791(this.metadata);
+				this.setFavicon(this.metadata);
 
 				while (this.running) {
 					long l = SystemUtil.getMeasuringTimeMs() - this.timeReference;
@@ -704,8 +670,22 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 		} while (bl || this.shouldKeepTicking());
 	}
 
-	protected class_3738 method_16209(Runnable runnable) {
-		return new class_3738(this.ticks, runnable);
+	protected ServerTask createTask(Runnable runnable) {
+		return new ServerTask(this.ticks, runnable);
+	}
+
+	@Override
+	public <T> T method_18248(CompletableFuture<T> completableFuture) {
+		this.field_18036 = true;
+
+		Object var2;
+		try {
+			var2 = super.method_18248(completableFuture);
+		} finally {
+			this.field_18036 = false;
+		}
+
+		return (T)var2;
 	}
 
 	@Override
@@ -718,14 +698,14 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 			}
 		}
 
-		class_3738 lv = (class_3738)this.taskQueue.peek();
-		if (lv == null) {
+		ServerTask serverTask = (ServerTask)this.taskQueue.peek();
+		if (serverTask == null) {
 			return false;
-		} else if (!this.shouldKeepTicking() && lv.method_16338() + 3 >= this.ticks) {
+		} else if (!this.shouldKeepTicking() && serverTask.getCreationTicks() + 3 >= this.ticks) {
 			return false;
 		} else {
 			try {
-				((class_3738)this.taskQueue.remove()).run();
+				((ServerTask)this.taskQueue.remove()).run();
 			} catch (Exception var3) {
 				LOGGER.fatal("Error executing task", (Throwable)var3);
 			}
@@ -734,7 +714,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 		}
 	}
 
-	public void method_3791(ServerMetadata serverMetadata) {
+	public void setFavicon(ServerMetadata serverMetadata) {
 		File file = this.getFile("server-icon.png");
 		if (!file.exists()) {
 			file = this.getLevelStorage().resolveFile(this.getLevelName(), "icon.png");
@@ -930,7 +910,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 			}
 
 			Bootstrap.initialize();
-			Bootstrap.method_17598();
+			Bootstrap.logMissingTranslations();
 			String string = optionSet.valueOf(optionSpec8);
 			YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(Proxy.NO_PROXY, UUID.randomUUID().toString());
 			MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
@@ -1441,7 +1421,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 		this.field_4595.setEnabled(list);
 		List<ResourcePack> list2 = Lists.<ResourcePack>newArrayList();
 		this.field_4595.getEnabledContainers().forEach(resourcePackContainerx -> list2.add(resourcePackContainerx.createResourcePack()));
-		this.dataManager.reload(list2);
+		this.method_18248(this.dataManager.reload(this.field_17200, this, list2, CompletableFuture.completedFuture(net.minecraft.util.Void.INSTANCE)));
 		levelProperties.getEnabledDataPacks().clear();
 		levelProperties.getDisabledDataPacks().clear();
 		this.field_4595.getEnabledContainers().forEach(resourcePackContainerx -> levelProperties.getEnabledDataPacks().add(resourcePackContainerx.getName()));
@@ -1565,5 +1545,9 @@ public abstract class MinecraftServer extends ThreadTaskQueue<class_3738> implem
 
 	public DisableableProfiler getProfiler() {
 		return this.profiler;
+	}
+
+	public Executor method_17191() {
+		return this.field_17200;
 	}
 }

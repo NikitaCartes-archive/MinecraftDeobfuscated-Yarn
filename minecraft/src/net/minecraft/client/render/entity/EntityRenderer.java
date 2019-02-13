@@ -8,7 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
@@ -184,7 +184,7 @@ public abstract class EntityRenderer<T extends Entity> {
 		for (BlockPos blockPos : BlockPos.iterateBoxPositions(new BlockPos(m, o, q), new BlockPos(n, p, r))) {
 			BlockPos blockPos2 = blockPos.down();
 			BlockState blockState = viewableWorld.getBlockState(blockPos2);
-			if (blockState.getRenderType() != BlockRenderType.field_11455 && viewableWorld.method_8602(blockPos) > 3) {
+			if (blockState.getRenderType() != BlockRenderType.field_11455 && viewableWorld.getLightLevel(blockPos) > 3) {
 				this.projectShadow(blockState, viewableWorld, blockPos2, d, e, f, blockPos, g, i, s, t, u);
 			}
 		}
@@ -218,7 +218,7 @@ public abstract class EntityRenderer<T extends Entity> {
 			if (!voxelShape.isEmpty()) {
 				Tessellator tessellator = Tessellator.getInstance();
 				BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-				double l = ((double)g - (e - ((double)blockPos2.getY() + j)) / 2.0) * 0.5 * (double)this.method_3935().method_8610(blockPos2);
+				double l = ((double)g - (e - ((double)blockPos2.getY() + j)) / 2.0) * 0.5 * (double)this.method_3935().getBrightness(blockPos2);
 				if (!(l < 0.0)) {
 					if (l > 1.0) {
 						l = 1.0;
@@ -295,7 +295,7 @@ public abstract class EntityRenderer<T extends Entity> {
 		}
 	}
 
-	public FontRenderer getFontRenderer() {
+	public TextRenderer getFontRenderer() {
 		return this.renderManager.getFontRenderer();
 	}
 
@@ -305,7 +305,7 @@ public abstract class EntityRenderer<T extends Entity> {
 			boolean bl = entity.isSneaking();
 			float h = this.renderManager.field_4679;
 			float j = this.renderManager.field_4677;
-			boolean bl2 = this.renderManager.settings.field_1850 == 2;
+			boolean bl2 = this.renderManager.settings.perspective == 2;
 			float k = entity.getHeight() + 0.5F - (bl ? 0.25F : 0.0F);
 			int l = "deadmau5".equals(string) ? -10 : 0;
 			GameRenderer.method_3179(this.getFontRenderer(), string, (float)d, (float)e + k, (float)f, l, h, j, bl2, bl);

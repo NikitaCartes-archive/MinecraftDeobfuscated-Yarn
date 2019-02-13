@@ -34,32 +34,33 @@ import org.apache.logging.log4j.Logger;
 public class SpriteAtlasTexture extends AbstractTexture implements TickableTexture {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final Identifier BLOCK_ATLAS_TEX = new Identifier("textures/atlas/blocks.png");
-	public static final Identifier field_17898 = new Identifier("textures/atlas/particles.png");
+	public static final Identifier PARTICLE_ATLAS_TEX = new Identifier("textures/atlas/particles.png");
+	public static final Identifier PAINTING_ATLAS_TEX = new Identifier("textures/atlas/paintings.png");
 	private final List<Sprite> animatedSprites = Lists.<Sprite>newArrayList();
 	private final Set<Identifier> spritesToLoad = Sets.<Identifier>newHashSet();
 	private final Map<Identifier, Sprite> sprites = Maps.<Identifier, Sprite>newHashMap();
 	private final String pathPrefix;
-	private final int field_17899;
+	private final int maxTextureSize;
 	private int mipLevel;
 	private final Sprite missingSprite = MissingSprite.getMissingSprite();
 
 	public SpriteAtlasTexture(String string) {
 		this.pathPrefix = string;
-		this.field_17899 = MinecraftClient.getMaxTextureSize();
+		this.maxTextureSize = MinecraftClient.getMaxTextureSize();
 	}
 
 	@Override
 	public void load(ResourceManager resourceManager) throws IOException {
 	}
 
-	public void method_18159(SpriteAtlasTexture.class_4007 arg) {
+	public void upload(SpriteAtlasTexture.Data data) {
 		this.spritesToLoad.clear();
-		this.spritesToLoad.addAll(arg.field_17900);
-		LOGGER.info("Created: {}x{} {}-atlas", arg.field_17901, arg.field_17902, this.pathPrefix);
-		TextureUtil.prepareImage(this.getGlId(), this.mipLevel, arg.field_17901, arg.field_17902);
+		this.spritesToLoad.addAll(data.field_17900);
+		LOGGER.info("Created: {}x{} {}-atlas", data.field_17901, data.field_17902, this.pathPrefix);
+		TextureUtil.prepareImage(this.getGlId(), this.mipLevel, data.field_17901, data.field_17902);
 		this.clear();
 
-		for (Sprite sprite : arg.field_17903) {
+		for (Sprite sprite : data.field_17903) {
 			this.sprites.put(sprite.getId(), sprite);
 
 			try {
@@ -78,7 +79,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 		}
 	}
 
-	public SpriteAtlasTexture.class_4007 method_18163(ResourceManager resourceManager, Iterable<Identifier> iterable, Profiler profiler) {
+	public SpriteAtlasTexture.Data stitch(ResourceManager resourceManager, Iterable<Identifier> iterable, Profiler profiler) {
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 		profiler.push("preparing");
 		iterable.forEach(identifier -> {
@@ -88,8 +89,8 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 				set.add(identifier);
 			}
 		});
-		int i = this.field_17899;
-		TextureStitcher textureStitcher = new TextureStitcher(i, i, 0, this.mipLevel);
+		int i = this.maxTextureSize;
+		TextureStitcher textureStitcher = new TextureStitcher(i, i, this.mipLevel);
 		int j = Integer.MAX_VALUE;
 		int k = 1 << this.mipLevel;
 		profiler.swap("extracting_frames");
@@ -129,7 +130,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 		profiler.swap("loading");
 		List<Sprite> list = this.method_18161(resourceManager, textureStitcher);
 		profiler.pop();
-		return new SpriteAtlasTexture.class_4007(set, textureStitcher.getWidth(), textureStitcher.getHeight(), list);
+		return new SpriteAtlasTexture.Data(set, textureStitcher.getWidth(), textureStitcher.getHeight(), list);
 	}
 
 	private Collection<Sprite> method_18164(ResourceManager resourceManager, Set<Identifier> set) {
@@ -280,13 +281,13 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class class_4007 {
+	public static class Data {
 		final Set<Identifier> field_17900;
 		final int field_17901;
 		final int field_17902;
 		final List<Sprite> field_17903;
 
-		public class_4007(Set<Identifier> set, int i, int j, List<Sprite> list) {
+		public Data(Set<Identifier> set, int i, int j, List<Sprite> list) {
 			this.field_17900 = set;
 			this.field_17901 = i;
 			this.field_17902 = j;

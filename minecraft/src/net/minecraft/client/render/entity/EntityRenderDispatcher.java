@@ -7,13 +7,11 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3986;
-import net.minecraft.class_3992;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.BufferBuilder;
@@ -33,7 +31,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.PrimedTntEntity;
-import net.minecraft.entity.boss.EntityWither;
+import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.decoration.EnderCrystalEntity;
@@ -81,6 +79,7 @@ import net.minecraft.entity.passive.CodEntity;
 import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.entity.passive.DolphinEntity;
 import net.minecraft.entity.passive.DonkeyEntity;
+import net.minecraft.entity.passive.FoxEntity;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.LlamaEntity;
@@ -97,6 +96,7 @@ import net.minecraft.entity.passive.SalmonEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.passive.SnowmanEntity;
 import net.minecraft.entity.passive.SquidEntity;
+import net.minecraft.entity.passive.TraderLlamaEntity;
 import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -137,7 +137,7 @@ public class EntityRenderDispatcher {
 	private final Map<Class<? extends Entity>, EntityRenderer<? extends Entity>> renderers = Maps.<Class<? extends Entity>, EntityRenderer<? extends Entity>>newHashMap();
 	private final Map<String, PlayerEntityRenderer> skinMap = Maps.<String, PlayerEntityRenderer>newHashMap();
 	private final PlayerEntityRenderer playerRenderer;
-	private FontRenderer fontRenderer;
+	private TextRenderer fontRenderer;
 	private double renderPosX;
 	private double renderPosY;
 	private double renderPosZ;
@@ -194,7 +194,7 @@ public class EntityRenderDispatcher {
 		this.method_17145(GhastEntity.class, new GhastEntityRenderer(this));
 		this.method_17145(SquidEntity.class, new SquidEntityRenderer(this));
 		this.method_17145(VillagerEntity.class, new VillagerEntityRenderer(this, reloadableResourceManager));
-		this.method_17145(WanderingTraderEntity.class, new class_3992(this));
+		this.method_17145(WanderingTraderEntity.class, new WanderingTraderEntityRenderer(this));
 		this.method_17145(IronGolemEntity.class, new IronGolemEntityRenderer(this));
 		this.method_17145(BatEntity.class, new BatEntityRenderer(this));
 		this.method_17145(GuardianEntity.class, new GuardianEntityRenderer(this));
@@ -215,9 +215,10 @@ public class EntityRenderDispatcher {
 		this.method_17145(DolphinEntity.class, new DolphinEntityRenderer(this));
 		this.method_17145(PandaEntity.class, new PandaEntityRenderer(this));
 		this.method_17145(CatEntity.class, new CatEntityRenderer(this));
+		this.method_17145(FoxEntity.class, new FoxEntityRenderer(this));
 		this.method_17145(EnderDragonEntity.class, new EnderDragonEntityRenderer(this));
 		this.method_17145(EnderCrystalEntity.class, new EnderCrystalEntityRenderer(this));
-		this.method_17145(EntityWither.class, new WitherEntityRenderer(this));
+		this.method_17145(WitherEntity.class, new WitherEntityRenderer(this));
 		this.method_17145(Entity.class, new DefaultEntityRenderer(this));
 		this.method_17145(PaintingEntity.class, new PaintingEntityRenderer(this));
 		this.method_17145(ItemFrameEntity.class, new ItemFrameEntityRenderer(this, itemRenderer));
@@ -255,7 +256,7 @@ public class EntityRenderDispatcher {
 		this.method_17145(MuleEntity.class, new DonkeyEntityRenderer(this, 0.92F));
 		this.method_17145(DonkeyEntity.class, new DonkeyEntityRenderer(this, 0.87F));
 		this.method_17145(LlamaEntity.class, new LlamaEntityRenderer(this));
-		this.method_17145(class_3986.class, new LlamaEntityRenderer(this));
+		this.method_17145(TraderLlamaEntity.class, new LlamaEntityRenderer(this));
 		this.method_17145(LlamaSpitEntity.class, new LlamaSpitEntityRenderer(this));
 		this.method_17145(LightningEntity.class, new LightningEntityRenderer(this));
 		this.playerRenderer = new PlayerEntityRenderer(this);
@@ -290,12 +291,12 @@ public class EntityRenderDispatcher {
 		}
 	}
 
-	public void method_3941(World world, FontRenderer fontRenderer, Entity entity, Entity entity2, GameOptions gameOptions, float f) {
+	public void method_3941(World world, TextRenderer textRenderer, Entity entity, Entity entity2, GameOptions gameOptions, float f) {
 		this.world = world;
 		this.settings = gameOptions;
 		this.field_4686 = entity;
 		this.field_4678 = entity2;
-		this.fontRenderer = fontRenderer;
+		this.fontRenderer = textRenderer;
 		if (entity instanceof LivingEntity && ((LivingEntity)entity).isSleeping()) {
 			BlockState blockState = world.getBlockState(new BlockPos(entity));
 			Block block = blockState.getBlock();
@@ -309,7 +310,7 @@ public class EntityRenderDispatcher {
 			this.field_4677 = MathHelper.lerp(f, entity.prevPitch, entity.pitch);
 		}
 
-		if (gameOptions.field_1850 == 2) {
+		if (gameOptions.perspective == 2) {
 			this.field_4679 += 180.0F;
 		}
 
@@ -524,7 +525,7 @@ public class EntityRenderDispatcher {
 		return g * g + h * h + i * i;
 	}
 
-	public FontRenderer getFontRenderer() {
+	public TextRenderer getFontRenderer() {
 		return this.fontRenderer;
 	}
 

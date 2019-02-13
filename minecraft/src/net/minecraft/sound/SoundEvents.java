@@ -229,6 +229,16 @@ public class SoundEvents {
 	public static final SoundEvent field_15102 = register("block.fire.extinguish");
 	public static final SoundEvent field_14591 = register("entity.fish.swim");
 	public static final SoundEvent field_15145 = register("item.flintandsteel.use");
+	public static final SoundEvent field_18055 = register("entity.fox.aggro");
+	public static final SoundEvent field_18056 = register("entity.fox.ambient");
+	public static final SoundEvent field_18057 = register("entity.fox.bark");
+	public static final SoundEvent field_18058 = register("entity.fox.bite");
+	public static final SoundEvent field_18059 = register("entity.fox.death");
+	public static final SoundEvent field_18060 = register("entity.fox.eat");
+	public static final SoundEvent field_18061 = register("entity.fox.hurt");
+	public static final SoundEvent field_18062 = register("entity.fox.sleep");
+	public static final SoundEvent field_18063 = register("entity.fox.sniff");
+	public static final SoundEvent field_18054 = register("entity.fox.spit");
 	public static final SoundEvent field_15006 = register("block.furnace.fire_crackle");
 	public static final SoundEvent field_14928 = register("entity.generic.big_fall");
 	public static final SoundEvent field_14821 = register("entity.generic.burn");

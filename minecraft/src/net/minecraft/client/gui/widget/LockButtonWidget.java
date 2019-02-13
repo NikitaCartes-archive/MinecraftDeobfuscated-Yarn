@@ -23,29 +23,18 @@ public abstract class LockButtonWidget extends ButtonWidget {
 
 	@Override
 	public void draw(int i, int j, float f) {
-		if (this.visible) {
-			MinecraftClient.getInstance().getTextureManager().bindTexture(ButtonWidget.WIDGET_TEX);
-			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			boolean bl = i >= this.x && j >= this.y && i < this.x + this.width && j < this.y + this.height;
-			LockButtonWidget.IconLocation iconLocation;
-			if (this.locked) {
-				if (!this.enabled) {
-					iconLocation = LockButtonWidget.IconLocation.LOCKED_DISABLED;
-				} else if (bl) {
-					iconLocation = LockButtonWidget.IconLocation.LOCKED_HOVERED;
-				} else {
-					iconLocation = LockButtonWidget.IconLocation.LOCKED;
-				}
-			} else if (!this.enabled) {
-				iconLocation = LockButtonWidget.IconLocation.UNLOCKED_DISABLED;
-			} else if (bl) {
-				iconLocation = LockButtonWidget.IconLocation.UNLOCKED_HOVERED;
-			} else {
-				iconLocation = LockButtonWidget.IconLocation.UNLOCKED;
-			}
-
-			this.drawTexturedRect(this.x, this.y, iconLocation.getU(), iconLocation.getV(), this.width, this.height);
+		MinecraftClient.getInstance().getTextureManager().bindTexture(ButtonWidget.WIDGET_TEX);
+		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		LockButtonWidget.IconLocation iconLocation;
+		if (!this.enabled) {
+			iconLocation = this.locked ? LockButtonWidget.IconLocation.LOCKED_DISABLED : LockButtonWidget.IconLocation.UNLOCKED_DISABLED;
+		} else if (this.isHovered()) {
+			iconLocation = this.locked ? LockButtonWidget.IconLocation.LOCKED_HOVERED : LockButtonWidget.IconLocation.UNLOCKED_HOVERED;
+		} else {
+			iconLocation = this.locked ? LockButtonWidget.IconLocation.LOCKED : LockButtonWidget.IconLocation.UNLOCKED;
 		}
+
+		this.drawTexturedRect(this.x, this.y, iconLocation.getU(), iconLocation.getV(), this.width, this.height);
 	}
 
 	@Environment(EnvType.CLIENT)

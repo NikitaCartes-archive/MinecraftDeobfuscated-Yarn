@@ -9,7 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.JukeboxBlock;
-import net.minecraft.client.item.TooltipOptions;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.Stats;
@@ -49,7 +49,7 @@ public class RecordItem extends Item {
 				}
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.field_5812;
 		} else {
 			return ActionResult.PASS;
 		}
@@ -61,8 +61,8 @@ public class RecordItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
-		list.add(this.getDescription().applyFormat(TextFormat.GRAY));
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
+		list.add(this.getDescription().applyFormat(TextFormat.field_1080));
 	}
 
 	@Environment(EnvType.CLIENT)

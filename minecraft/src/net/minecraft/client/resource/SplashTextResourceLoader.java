@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -20,13 +21,15 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
 @Environment(EnvType.CLIENT)
-public class SplashTextResourceLoader implements ResourceReloadListener<List<String>> {
+public class SplashTextResourceLoader implements ResourceReloadListener {
 	private static final Identifier RESOURCE_ID = new Identifier("texts/splashes.txt");
 	private static final Random RANDOM = new Random();
 	private final List<String> splashTexts = Lists.<String>newArrayList();
 
 	@Override
-	public CompletableFuture<List<String>> prepare(ResourceManager resourceManager, Profiler profiler) {
+	public CompletableFuture<Void> apply(
+		ResourceReloadListener.Helper helper, ResourceManager resourceManager, Profiler profiler, Profiler profiler2, Executor executor, Executor executor2
+	) {
 		return CompletableFuture.supplyAsync(() -> {
 			List<String> list = Lists.<String>newArrayList();
 
@@ -64,12 +67,10 @@ public class SplashTextResourceLoader implements ResourceReloadListener<List<Str
 			}
 
 			return list;
-		});
-	}
-
-	public void method_18175(ResourceManager resourceManager, List<String> list, Profiler profiler) {
-		this.splashTexts.clear();
-		this.splashTexts.addAll(list);
+		}, executor).thenCompose(helper::waitForAll).thenAcceptAsync(list -> {
+			this.splashTexts.clear();
+			this.splashTexts.addAll(list);
+		}, executor2);
 	}
 
 	public String get() {

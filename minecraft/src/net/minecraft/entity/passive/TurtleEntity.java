@@ -63,7 +63,7 @@ public class TurtleEntity extends AnimalEntity {
 	private static final TrackedData<Boolean> field_6924 = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> field_6925 = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private int field_6918;
-	public static final Predicate<Entity> field_6921 = entity -> !(entity instanceof LivingEntity)
+	public static final Predicate<Entity> BABY_TURTLE_ON_LAND_FILTER = entity -> !(entity instanceof LivingEntity)
 			? false
 			: ((LivingEntity)entity).isChild() && !entity.isInsideWater();
 
@@ -282,8 +282,10 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	public float method_6144(BlockPos blockPos, ViewableWorld viewableWorld) {
-		return !this.method_6684() && viewableWorld.getFluidState(blockPos).matches(FluidTags.field_15517) ? 10.0F : super.method_6144(blockPos, viewableWorld);
+	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
+		return !this.method_6684() && viewableWorld.getFluidState(blockPos).matches(FluidTags.field_15517)
+			? 10.0F
+			: super.getPathfindingFavor(blockPos, viewableWorld);
 	}
 
 	@Override

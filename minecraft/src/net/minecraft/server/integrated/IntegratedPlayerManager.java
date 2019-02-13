@@ -29,10 +29,10 @@ public class IntegratedPlayerManager extends PlayerManager {
 	}
 
 	@Override
-	public TextComponent method_14586(SocketAddress socketAddress, GameProfile gameProfile) {
+	public TextComponent checkCanJoin(SocketAddress socketAddress, GameProfile gameProfile) {
 		return (TextComponent)(gameProfile.getName().equalsIgnoreCase(this.getServer().getUserName()) && this.getPlayer(gameProfile.getName()) != null
 			? new TranslatableTextComponent("multiplayer.disconnect.name_taken")
-			: super.method_14586(socketAddress, gameProfile));
+			: super.checkCanJoin(socketAddress, gameProfile));
 	}
 
 	public IntegratedServer getServer() {

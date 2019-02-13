@@ -18,7 +18,7 @@ public class KeepAliveS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11518(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11147(this);
+		clientPlayPacketListener.onKeepAlive(this);
 	}
 
 	@Override

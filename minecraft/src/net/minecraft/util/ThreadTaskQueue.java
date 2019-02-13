@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 public abstract class ThreadTaskQueue<R extends Runnable> implements Executor {
 	private static final Logger LOGGER = LogManager.getLogger();
 	protected final Queue<R> taskQueue = Queues.<R>newConcurrentLinkedQueue();
+	private boolean field_17942 = false;
 
 	@Environment(EnvType.CLIENT)
 	public <V> CompletableFuture<V> executeFuture(Supplier<V> supplier) {
@@ -55,18 +56,31 @@ public abstract class ThreadTaskQueue<R extends Runnable> implements Executor {
 		if (runnable == null) {
 			return false;
 		} else {
+			this.field_17942 = true;
+
 			try {
 				runnable.run();
-			} catch (Exception var3) {
-				LOGGER.fatal("Error executing task", (Throwable)var3);
+			} catch (Exception var6) {
+				LOGGER.fatal("Error executing task", (Throwable)var6);
+			} finally {
+				this.field_17942 = false;
 			}
 
 			return true;
 		}
 	}
 
+	protected <T> T method_18248(CompletableFuture<T> completableFuture) {
+		while (!completableFuture.isDone()) {
+			this.executeQueuedTask();
+			Thread.yield();
+		}
+
+		return (T)completableFuture.join();
+	}
+
 	public boolean isOffThread() {
-		return !this.isMainThread();
+		return this.field_17942 || !this.isMainThread();
 	}
 
 	public abstract boolean isMainThread();

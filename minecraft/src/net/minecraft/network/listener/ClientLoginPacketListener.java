@@ -1,19 +1,19 @@
 package net.minecraft.network.listener;
 
-import net.minecraft.class_2899;
-import net.minecraft.class_2901;
-import net.minecraft.class_2905;
-import net.minecraft.class_2907;
-import net.minecraft.class_2909;
+import net.minecraft.client.network.packet.LoginCompressionS2CPacket;
+import net.minecraft.client.network.packet.LoginDisconnectS2CPacket;
+import net.minecraft.client.network.packet.LoginHelloS2CPacket;
+import net.minecraft.client.network.packet.LoginQueryRequestS2CPacket;
+import net.minecraft.client.network.packet.LoginSuccessS2CPacket;
 
 public interface ClientLoginPacketListener extends PacketListener {
-	void method_12587(class_2905 arg);
+	void onHello(LoginHelloS2CPacket loginHelloS2CPacket);
 
-	void method_12588(class_2901 arg);
+	void onLoginSuccess(LoginSuccessS2CPacket loginSuccessS2CPacket);
 
-	void method_12584(class_2909 arg);
+	void onDisconnect(LoginDisconnectS2CPacket loginDisconnectS2CPacket);
 
-	void method_12585(class_2907 arg);
+	void onCompression(LoginCompressionS2CPacket loginCompressionS2CPacket);
 
-	void method_12586(class_2899 arg);
+	void onQueryRequest(LoginQueryRequestS2CPacket loginQueryRequestS2CPacket);
 }

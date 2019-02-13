@@ -37,17 +37,17 @@ public class RemoteServerListEntry extends ServerListWidget.Entry {
 	private final MultiplayerScreen guiMultiplayer;
 	private final MinecraftClient client;
 	private final ServerEntry serverEntry;
-	private final Identifier field_3065;
+	private final Identifier serverIconTextureId;
 	private String field_3062;
-	private NativeImageBackedTexture field_3063;
+	private NativeImageBackedTexture serverIconTexture;
 	private long field_3067;
 
 	protected RemoteServerListEntry(MultiplayerScreen multiplayerScreen, ServerEntry serverEntry) {
 		this.guiMultiplayer = multiplayerScreen;
 		this.serverEntry = serverEntry;
 		this.client = MinecraftClient.getInstance();
-		this.field_3065 = new Identifier("servers/" + Hashing.sha1().hashUnencodedChars(serverEntry.address) + "/icon");
-		this.field_3063 = (NativeImageBackedTexture)this.client.getTextureManager().getTexture(this.field_3065);
+		this.serverIconTextureId = new Identifier("servers/" + Hashing.sha1().hashUnencodedChars(serverEntry.address) + "/icon");
+		this.serverIconTexture = (NativeImageBackedTexture)this.client.getTextureManager().getTexture(this.serverIconTextureId);
 	}
 
 	@Override
@@ -64,10 +64,10 @@ public class RemoteServerListEntry extends ServerListWidget.Entry {
 					this.guiMultiplayer.method_2538().method_3003(this.serverEntry);
 				} catch (UnknownHostException var2) {
 					this.serverEntry.ping = -1L;
-					this.serverEntry.label = TextFormat.DARK_RED + I18n.translate("multiplayer.status.cannot_resolve");
+					this.serverEntry.label = TextFormat.field_1079 + I18n.translate("multiplayer.status.cannot_resolve");
 				} catch (Exception var3) {
 					this.serverEntry.ping = -1L;
-					this.serverEntry.label = TextFormat.DARK_RED + I18n.translate("multiplayer.status.cannot_connect");
+					this.serverEntry.label = TextFormat.field_1079 + I18n.translate("multiplayer.status.cannot_connect");
 				}
 			});
 		}
@@ -75,16 +75,16 @@ public class RemoteServerListEntry extends ServerListWidget.Entry {
 		boolean bl2 = this.serverEntry.protocolVersion > SharedConstants.getGameVersion().getProtocolVersion();
 		boolean bl3 = this.serverEntry.protocolVersion < SharedConstants.getGameVersion().getProtocolVersion();
 		boolean bl4 = bl2 || bl3;
-		this.client.fontRenderer.draw(this.serverEntry.name, (float)(n + 32 + 3), (float)(m + 1), 16777215);
-		List<String> list = this.client.fontRenderer.wrapStringToWidthAsList(this.serverEntry.label, i - 32 - 2);
+		this.client.textRenderer.draw(this.serverEntry.name, (float)(n + 32 + 3), (float)(m + 1), 16777215);
+		List<String> list = this.client.textRenderer.wrapStringToWidthAsList(this.serverEntry.label, i - 32 - 2);
 
 		for (int o = 0; o < Math.min(list.size(), 2); o++) {
-			this.client.fontRenderer.draw((String)list.get(o), (float)(n + 32 + 3), (float)(m + 12 + 9 * o), 8421504);
+			this.client.textRenderer.draw((String)list.get(o), (float)(n + 32 + 3), (float)(m + 12 + 9 * o), 8421504);
 		}
 
-		String string = bl4 ? TextFormat.DARK_RED + this.serverEntry.version : this.serverEntry.playerCountLabel;
-		int p = this.client.fontRenderer.getStringWidth(string);
-		this.client.fontRenderer.draw(string, (float)(n + i - p - 15 - 2), (float)(m + 1), 8421504);
+		String string = bl4 ? TextFormat.field_1079 + this.serverEntry.version : this.serverEntry.playerCountLabel;
+		int p = this.client.textRenderer.getStringWidth(string);
+		this.client.textRenderer.draw(string, (float)(n + i - p - 15 - 2), (float)(m + 1), 8421504);
 		int q = 0;
 		String string2 = null;
 		int r;
@@ -133,8 +133,8 @@ public class RemoteServerListEntry extends ServerListWidget.Entry {
 			this.guiMultiplayer.method_2529().saveFile();
 		}
 
-		if (this.field_3063 != null) {
-			this.drawIcon(n, m, this.field_3065);
+		if (this.serverIconTexture != null) {
+			this.drawIcon(n, m, this.serverIconTextureId);
 		} else {
 			this.drawIcon(n, m, UNKNOWN_SERVER);
 		}
@@ -193,25 +193,25 @@ public class RemoteServerListEntry extends ServerListWidget.Entry {
 	private void method_2554() {
 		String string = this.serverEntry.getIcon();
 		if (string == null) {
-			this.client.getTextureManager().destroyTexture(this.field_3065);
-			if (this.field_3063 != null && this.field_3063.getImage() != null) {
-				this.field_3063.getImage().close();
+			this.client.getTextureManager().destroyTexture(this.serverIconTextureId);
+			if (this.serverIconTexture != null && this.serverIconTexture.getImage() != null) {
+				this.serverIconTexture.getImage().close();
 			}
 
-			this.field_3063 = null;
+			this.serverIconTexture = null;
 		} else {
 			try {
 				NativeImage nativeImage = NativeImage.fromBase64(string);
 				Validate.validState(nativeImage.getWidth() == 64, "Must be 64 pixels wide");
 				Validate.validState(nativeImage.getHeight() == 64, "Must be 64 pixels high");
-				if (this.field_3063 == null) {
-					this.field_3063 = new NativeImageBackedTexture(nativeImage);
+				if (this.serverIconTexture == null) {
+					this.serverIconTexture = new NativeImageBackedTexture(nativeImage);
 				} else {
-					this.field_3063.setImage(nativeImage);
-					this.field_3063.upload();
+					this.serverIconTexture.setImage(nativeImage);
+					this.serverIconTexture.upload();
 				}
 
-				this.client.getTextureManager().registerTexture(this.field_3065, this.field_3063);
+				this.client.getTextureManager().registerTexture(this.serverIconTextureId, this.serverIconTexture);
 			} catch (Throwable var3) {
 				LOGGER.error("Invalid icon for server {} ({})", this.serverEntry.name, this.serverEntry.address, var3);
 				this.serverEntry.setIcon(null);
@@ -250,7 +250,7 @@ public class RemoteServerListEntry extends ServerListWidget.Entry {
 		return false;
 	}
 
-	public ServerEntry method_2556() {
+	public ServerEntry getServerEntry() {
 		return this.serverEntry;
 	}
 }

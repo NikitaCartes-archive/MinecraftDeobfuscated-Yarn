@@ -11,7 +11,7 @@ public interface ExtendedBlockView extends BlockView {
 	int getLightLevel(LightType lightType, BlockPos blockPos);
 
 	default boolean isSkyVisible(BlockPos blockPos) {
-		return this.getLightLevel(LightType.SKY_LIGHT, blockPos) >= this.getMaxLightLevel();
+		return this.getLightLevel(LightType.SKY, blockPos) >= this.getMaxLightLevel();
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -46,8 +46,8 @@ public interface ExtendedBlockView extends BlockView {
 
 	@Environment(EnvType.CLIENT)
 	default int getLightmapIndex(BlockPos blockPos, int i) {
-		int j = this.method_8312(LightType.SKY_LIGHT, blockPos);
-		int k = this.method_8312(LightType.BLOCK_LIGHT, blockPos);
+		int j = this.method_8312(LightType.SKY, blockPos);
+		int k = this.method_8312(LightType.BLOCK, blockPos);
 		if (k < i) {
 			k = i;
 		}

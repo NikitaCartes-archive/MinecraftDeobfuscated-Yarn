@@ -27,7 +27,7 @@ public class PlayerInteractItemC2SPacket implements Packet<ServerPlayPacketListe
 	}
 
 	public void method_12550(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.method_12065(this);
+		serverPlayPacketListener.onPlayerInteractItem(this);
 	}
 
 	public Hand getHand() {

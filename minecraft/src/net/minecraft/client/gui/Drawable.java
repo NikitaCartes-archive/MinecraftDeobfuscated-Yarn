@@ -3,7 +3,7 @@ package net.minecraft.client.gui;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
@@ -102,12 +102,12 @@ public abstract class Drawable {
 		GlStateManager.enableTexture();
 	}
 
-	public void drawStringCentered(FontRenderer fontRenderer, String string, int i, int j, int k) {
-		fontRenderer.drawWithShadow(string, (float)(i - fontRenderer.getStringWidth(string) / 2), (float)j, k);
+	public void drawStringCentered(TextRenderer textRenderer, String string, int i, int j, int k) {
+		textRenderer.drawWithShadow(string, (float)(i - textRenderer.getStringWidth(string) / 2), (float)j, k);
 	}
 
-	public void drawString(FontRenderer fontRenderer, String string, int i, int j, int k) {
-		fontRenderer.drawWithShadow(string, (float)i, (float)j, k);
+	public void drawString(TextRenderer textRenderer, String string, int i, int j, int k) {
+		textRenderer.drawWithShadow(string, (float)i, (float)j, k);
 	}
 
 	public void drawTexturedRect(int i, int j, int k, int l, int m, int n) {

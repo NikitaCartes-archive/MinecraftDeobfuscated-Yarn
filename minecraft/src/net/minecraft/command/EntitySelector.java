@@ -113,7 +113,7 @@ public class EntitySelector {
 			return (List<? extends Entity>)(serverPlayerEntity == null ? Collections.emptyList() : Lists.newArrayList(serverPlayerEntity));
 		} else if (this.entityId != null) {
 			for (ServerWorld serverWorld : serverCommandSource.getMinecraftServer().getWorlds()) {
-				Entity entity = serverWorld.method_14190(this.entityId);
+				Entity entity = serverWorld.getEntity(this.entityId);
 				if (entity != null) {
 					return Lists.newArrayList(entity);
 				}

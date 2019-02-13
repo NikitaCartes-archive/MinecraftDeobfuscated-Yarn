@@ -8,17 +8,17 @@ import net.minecraft.util.shape.OffsetVoxelShapeContainer;
 import net.minecraft.util.shape.VoxelShape;
 
 public class class_263 extends VoxelShape {
-	private final VoxelShape parent;
-	private final Direction.Axis axis;
-	private final DoubleList axisList = new FractionalDoubleList(1);
+	private final VoxelShape field_1397;
+	private final Direction.Axis field_1396;
+	private final DoubleList field_1395 = new FractionalDoubleList(1);
 
 	public class_263(VoxelShape voxelShape, Direction.Axis axis, int i) {
-		super(offset(voxelShape.shape, axis, i));
-		this.parent = voxelShape;
-		this.axis = axis;
+		super(method_1088(voxelShape.shape, axis, i));
+		this.field_1397 = voxelShape;
+		this.field_1396 = axis;
 	}
 
-	private static AbstractVoxelShapeContainer offset(AbstractVoxelShapeContainer abstractVoxelShapeContainer, Direction.Axis axis, int i) {
+	private static AbstractVoxelShapeContainer method_1088(AbstractVoxelShapeContainer abstractVoxelShapeContainer, Direction.Axis axis, int i) {
 		return new OffsetVoxelShapeContainer(
 			abstractVoxelShapeContainer,
 			axis.choose(i, 0, 0),
@@ -32,6 +32,6 @@ public class class_263 extends VoxelShape {
 
 	@Override
 	protected DoubleList getIncludedPoints(Direction.Axis axis) {
-		return axis == this.axis ? this.axisList : this.parent.getIncludedPoints(axis);
+		return axis == this.field_1396 ? this.field_1395 : this.field_1397.getIncludedPoints(axis);
 	}
 }

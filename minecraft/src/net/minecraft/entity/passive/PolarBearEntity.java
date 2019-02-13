@@ -70,6 +70,7 @@ public class PolarBearEntity extends AnimalEntity {
 		this.goalSelector.add(7, new LookAroundGoal(this));
 		this.targetSelector.add(1, new PolarBearEntity.class_1459());
 		this.targetSelector.add(2, new PolarBearEntity.class_1457());
+		this.targetSelector.add(3, new FollowTargetGoal(this, FoxEntity.class, 10, true, true, null));
 	}
 
 	@Override
@@ -145,10 +146,10 @@ public class PolarBearEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean method_6121(Entity entity) {
+	public boolean attack(Entity entity) {
 		boolean bl = entity.damage(DamageSource.mob(this), (float)((int)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue()));
 		if (bl) {
-			this.method_5723(this, entity);
+			this.dealDamage(this, entity);
 		}
 
 		return bl;
@@ -252,7 +253,7 @@ public class PolarBearEntity extends AnimalEntity {
 			double e = this.method_6289(livingEntity);
 			if (d <= e && this.field_6505 <= 0) {
 				this.field_6505 = 20;
-				this.entity.method_6121(livingEntity);
+				this.entity.attack(livingEntity);
 				PolarBearEntity.this.method_6603(false);
 			} else if (d <= e * 2.0) {
 				if (this.field_6505 <= 0) {

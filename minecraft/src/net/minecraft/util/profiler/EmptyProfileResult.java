@@ -44,7 +44,7 @@ public class EmptyProfileResult implements ProfileResult {
 	}
 
 	@Override
-	public String method_18052() {
+	public String getTimingTreeString() {
 		return "";
 	}
 }

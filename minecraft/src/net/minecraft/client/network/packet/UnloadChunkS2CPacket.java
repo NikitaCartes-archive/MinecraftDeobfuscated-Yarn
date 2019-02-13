@@ -32,7 +32,7 @@ public class UnloadChunkS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11486(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11107(this);
+		clientPlayPacketListener.onUnloadChunk(this);
 	}
 
 	@Environment(EnvType.CLIENT)

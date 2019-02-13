@@ -43,7 +43,7 @@ public abstract class BaseFluid extends Fluid {
 		object2ByteLinkedOpenHashMap.defaultReturnValue((byte)127);
 		return object2ByteLinkedOpenHashMap;
 	});
-	private final Map<FluidState, VoxelShape> field_17587 = Maps.<FluidState, VoxelShape>newIdentityHashMap();
+	private final Map<FluidState, VoxelShape> shapeCache = Maps.<FluidState, VoxelShape>newIdentityHashMap();
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Fluid, FluidState> builder) {
@@ -61,21 +61,21 @@ public abstract class BaseFluid extends Fluid {
 				pooledMutable.set(blockPos).setOffset(direction);
 				FluidState fluidState2 = blockView.getFluidState(pooledMutable);
 				if (this.method_15748(fluidState2)) {
-					float f = fluidState2.method_15763(blockView, pooledMutable);
+					float f = fluidState2.getHeight(blockView, pooledMutable);
 					float g = 0.0F;
 					if (f == 0.0F) {
 						if (!blockView.getBlockState(pooledMutable).getMaterial().suffocates()) {
 							BlockPos blockPos2 = pooledMutable.down();
 							FluidState fluidState3 = blockView.getFluidState(blockPos2);
 							if (this.method_15748(fluidState3)) {
-								f = fluidState3.method_15763(blockView, blockPos2);
+								f = fluidState3.getHeight(blockView, blockPos2);
 								if (f > 0.0F) {
-									g = fluidState.method_15763(blockView, blockPos) - (f - 0.8888889F);
+									g = fluidState.getHeight(blockView, blockPos) - (f - 0.8888889F);
 								}
 							}
 						}
 					} else if (f > 0.0F) {
-						g = fluidState.method_15763(blockView, blockPos) - f;
+						g = fluidState.getHeight(blockView, blockPos) - f;
 					}
 
 					if (g != 0.0F) {
@@ -191,10 +191,10 @@ public abstract class BaseFluid extends Fluid {
 		if (!fluidState3.isEmpty()
 			&& fluidState3.getFluid().matchesType(this)
 			&& this.method_15732(Direction.UP, viewableWorld, blockPos, blockState, blockPos3, blockState4)) {
-			return this.method_15728(8, true);
+			return this.getFlowing(8, true);
 		} else {
 			int k = i - this.method_15739(viewableWorld);
-			return k <= 0 ? Fluids.EMPTY.getDefaultState() : this.method_15728(k, false);
+			return k <= 0 ? Fluids.EMPTY.getDefaultState() : this.getFlowing(k, false);
 		}
 	}
 
@@ -233,7 +233,7 @@ public abstract class BaseFluid extends Fluid {
 
 	public abstract Fluid getFlowing();
 
-	public FluidState method_15728(int i, boolean bl) {
+	public FluidState getFlowing(int i, boolean bl) {
 		return this.getFlowing().getDefaultState().with(LEVEL, Integer.valueOf(i)).with(FALLING, Boolean.valueOf(bl));
 	}
 
@@ -459,20 +459,20 @@ public abstract class BaseFluid extends Fluid {
 		return fluidState.isStill() ? 0 : 8 - Math.min(fluidState.getLevel(), 8) + (fluidState.get(FALLING) ? 8 : 0);
 	}
 
-	private static boolean method_17774(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
+	private static boolean isFluidAboveEqual(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
 		return fluidState.getFluid().matchesType(blockView.getFluidState(blockPos.up()).getFluid());
 	}
 
 	@Override
-	public float method_15788(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
-		return method_17774(fluidState, blockView, blockPos) ? 1.0F : (float)fluidState.getLevel() / 9.0F;
+	public float getHeight(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
+		return isFluidAboveEqual(fluidState, blockView, blockPos) ? 1.0F : (float)fluidState.getLevel() / 9.0F;
 	}
 
 	@Override
 	public VoxelShape getShape(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
-		return fluidState.getLevel() == 9 && method_17774(fluidState, blockView, blockPos)
+		return fluidState.getLevel() == 9 && isFluidAboveEqual(fluidState, blockView, blockPos)
 			? VoxelShapes.fullCube()
-			: (VoxelShape)this.field_17587
-				.computeIfAbsent(fluidState, fluidStatex -> VoxelShapes.cube(0.0, 0.0, 0.0, 1.0, (double)fluidStatex.method_15763(blockView, blockPos), 1.0));
+			: (VoxelShape)this.shapeCache
+				.computeIfAbsent(fluidState, fluidStatex -> VoxelShapes.cube(0.0, 0.0, 0.0, 1.0, (double)fluidStatex.getHeight(blockView, blockPos), 1.0));
 	}
 }

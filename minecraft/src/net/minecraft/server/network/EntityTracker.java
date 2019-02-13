@@ -14,7 +14,7 @@ import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.FireworkEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.PrimedTntEntity;
-import net.minecraft.entity.boss.EntityWither;
+import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
@@ -101,7 +101,7 @@ public class EntityTracker {
 			this.add(entity, 80, 3, true);
 		} else if (entity instanceof SquidEntity) {
 			this.add(entity, 64, 3, true);
-		} else if (entity instanceof EntityWither) {
+		} else if (entity instanceof WitherEntity) {
 			this.add(entity, 80, 3, false);
 		} else if (entity instanceof ShulkerBulletEntity) {
 			this.add(entity, 80, 3, true);
@@ -225,14 +225,14 @@ public class EntityTracker {
 		}
 	}
 
-	public void method_14079(Entity entity, Packet<?> packet) {
+	public void sendToTrackingPlayers(Entity entity, Packet<?> packet) {
 		EntityTrackerEntry entityTrackerEntry = this.trackedEntitiesById.get(entity.getEntityId());
 		if (entityTrackerEntry != null) {
 			entityTrackerEntry.sendToTrackingPlayers(packet);
 		}
 	}
 
-	public void method_14073(Entity entity, Packet<?> packet) {
+	public void sendToTrackingPlayersAndSelf(Entity entity, Packet<?> packet) {
 		EntityTrackerEntry entityTrackerEntry = this.trackedEntitiesById.get(entity.getEntityId());
 		if (entityTrackerEntry != null) {
 			entityTrackerEntry.sendToTrackingPlayersAndSelf(packet);

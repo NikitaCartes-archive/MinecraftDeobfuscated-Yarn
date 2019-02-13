@@ -52,7 +52,7 @@ public class MusicTracker implements Tickable {
 		this.field_5573 = true;
 	}
 
-	public void method_4859() {
+	public void stop() {
 		if (this.current != null) {
 			this.client.getSoundLoader().stop(this.current);
 			this.current = null;
@@ -61,19 +61,19 @@ public class MusicTracker implements Tickable {
 		}
 	}
 
-	public boolean method_4860(MusicTracker.MusicType musicType) {
+	public boolean isPlayingType(MusicTracker.MusicType musicType) {
 		return this.current == null ? false : musicType.getSound().getId().equals(this.current.getId());
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static enum MusicType {
-		MENU(SoundEvents.field_15129, 20, 600),
-		GAME(SoundEvents.field_14681, 12000, 24000),
-		CREATIVE(SoundEvents.field_14995, 1200, 3600),
-		CREDITS(SoundEvents.field_14755, 0, 0),
-		NETHER(SoundEvents.field_14893, 1200, 3600),
-		DRAGON(SoundEvents.field_14837, 0, 0),
-		END(SoundEvents.field_14631, 6000, 24000),
+		field_5585(SoundEvents.field_15129, 20, 600),
+		field_5586(SoundEvents.field_14681, 12000, 24000),
+		field_5581(SoundEvents.field_14995, 1200, 3600),
+		field_5578(SoundEvents.field_14755, 0, 0),
+		field_5582(SoundEvents.field_14893, 1200, 3600),
+		field_5580(SoundEvents.field_14837, 0, 0),
+		field_5583(SoundEvents.field_14631, 6000, 24000),
 		field_5576(SoundEvents.field_15198, 12000, 24000);
 
 		private final SoundEvent sound;

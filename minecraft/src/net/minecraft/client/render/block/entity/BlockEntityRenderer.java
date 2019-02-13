@@ -5,7 +5,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.TextureManager;
@@ -70,7 +70,7 @@ public abstract class BlockEntityRenderer<T extends BlockEntity> {
 		this.renderManager = blockEntityRenderDispatcher;
 	}
 
-	public FontRenderer getFontRenderer() {
+	public TextRenderer getFontRenderer() {
 		return this.renderManager.getFontRenderer();
 	}
 

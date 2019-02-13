@@ -1,6 +1,7 @@
 package net.minecraft.block.entity;
 
 import net.minecraft.block.BarrelBlock;
+import net.minecraft.block.BlockState;
 import net.minecraft.container.Container;
 import net.minecraft.container.GenericContainer;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,11 +17,11 @@ import net.minecraft.util.DefaultedList;
 import net.minecraft.util.InventoryUtil;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3i;
 
 public class BarrelBlockEntity extends LootableContainerBlockEntity implements Tickable {
 	private DefaultedList<ItemStack> inventory = DefaultedList.create(27, ItemStack.EMPTY);
-	protected int viewerCount;
-	protected boolean open;
+	private int viewerCount;
 	private int ticksOpen;
 
 	private BarrelBlockEntity(BlockEntityType<?> blockEntityType) {
@@ -34,7 +35,10 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity implements T
 	@Override
 	public CompoundTag toTag(CompoundTag compoundTag) {
 		super.toTag(compoundTag);
-		InventoryUtil.serialize(compoundTag, this.inventory);
+		if (!this.serializeLootTable(compoundTag)) {
+			InventoryUtil.serialize(compoundTag, this.inventory);
+		}
+
 		return compoundTag;
 	}
 
@@ -42,7 +46,9 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity implements T
 	public void fromTag(CompoundTag compoundTag) {
 		super.fromTag(compoundTag);
 		this.inventory = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
-		InventoryUtil.deserialize(compoundTag, this.inventory);
+		if (!this.deserializeLootTable(compoundTag)) {
+			InventoryUtil.deserialize(compoundTag, this.inventory);
+		}
 	}
 
 	@Override
@@ -85,7 +91,7 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity implements T
 	}
 
 	@Override
-	public void clearInv() {
+	public void clear() {
 		this.inventory.clear();
 	}
 
@@ -135,23 +141,25 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity implements T
 			int k = this.pos.getZ();
 			this.ticksOpen++;
 			this.viewerCount = ChestBlockEntity.recalculateViewerCountIfNecessary(this.world, this, this.ticksOpen, i, j, k, this.viewerCount);
-			if (this.viewerCount > 0 && !this.open) {
-				this.playSound(SoundEvents.field_17604);
-				this.open = true;
-			}
-
-			if (this.viewerCount == 0 && this.open) {
-				this.playSound(SoundEvents.field_17603);
-				this.open = false;
+			BlockState blockState = this.getCachedState();
+			boolean bl = (Boolean)blockState.get(BarrelBlock.field_18006);
+			boolean bl2 = this.viewerCount > 0;
+			if (bl2 != bl) {
+				this.playSound(blockState, bl2 ? SoundEvents.field_17604 : SoundEvents.field_17603);
+				this.method_18318(blockState, bl2);
 			}
 		}
 	}
 
-	private void playSound(SoundEvent soundEvent) {
-		Direction direction = this.getCachedState().get(BarrelBlock.FACING);
-		double d = (double)this.pos.getX() + 0.5 + (double)direction.getVector().getX() / 2.0;
-		double e = (double)this.pos.getY() + 0.5 + (double)direction.getVector().getZ() / 2.0;
-		double f = (double)this.pos.getZ() + 0.5;
+	private void method_18318(BlockState blockState, boolean bl) {
+		this.world.setBlockState(this.getPos(), blockState.with(BarrelBlock.field_18006, Boolean.valueOf(bl)), 3);
+	}
+
+	private void playSound(BlockState blockState, SoundEvent soundEvent) {
+		Vec3i vec3i = ((Direction)blockState.get(BarrelBlock.FACING)).getVector();
+		double d = (double)this.pos.getX() + 0.5 + (double)vec3i.getX() / 2.0;
+		double e = (double)this.pos.getY() + 0.5 + (double)vec3i.getY() / 2.0;
+		double f = (double)this.pos.getZ() + 0.5 + (double)vec3i.getZ() / 2.0;
 		this.world.playSound(null, d, e, f, soundEvent, SoundCategory.field_15245, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 	}
 }

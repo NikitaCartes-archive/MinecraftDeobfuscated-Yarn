@@ -10,7 +10,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.GuiEventListener;
 import net.minecraft.client.gui.Screen;
@@ -22,7 +22,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class TextFieldWidget extends Drawable implements GuiEventListener {
 	private final int id;
-	private final FontRenderer fontRenderer;
+	private final TextRenderer fontRenderer;
 	private int x;
 	private int y;
 	private final int width;
@@ -44,15 +44,15 @@ public class TextFieldWidget extends Drawable implements GuiEventListener {
 	private String suggestion;
 	private BiConsumer<Integer, String> changedListener;
 	private Predicate<String> textPredicate = Predicates.alwaysTrue();
-	private BiFunction<String, Integer, String> field_2099 = (string, integer) -> string;
+	private BiFunction<String, Integer, String> renderTextProvider = (string, integer) -> string;
 
-	public TextFieldWidget(int i, FontRenderer fontRenderer, int j, int k, int l, int m) {
-		this(i, fontRenderer, j, k, l, m, null);
+	public TextFieldWidget(int i, TextRenderer textRenderer, int j, int k, int l, int m) {
+		this(i, textRenderer, j, k, l, m, null);
 	}
 
-	public TextFieldWidget(int i, FontRenderer fontRenderer, int j, int k, int l, int m, @Nullable TextFieldWidget textFieldWidget) {
+	public TextFieldWidget(int i, TextRenderer textRenderer, int j, int k, int l, int m, @Nullable TextFieldWidget textFieldWidget) {
 		this.id = i;
-		this.fontRenderer = fontRenderer;
+		this.fontRenderer = textRenderer;
 		this.x = j;
 		this.y = k;
 		this.width = l;
@@ -66,8 +66,8 @@ public class TextFieldWidget extends Drawable implements GuiEventListener {
 		this.changedListener = biConsumer;
 	}
 
-	public void method_1854(BiFunction<String, Integer, String> biFunction) {
-		this.field_2099 = biFunction;
+	public void setRenderTextProvider(BiFunction<String, Integer, String> biFunction) {
+		this.renderTextProvider = biFunction;
 	}
 
 	public void tick() {
@@ -354,8 +354,8 @@ public class TextFieldWidget extends Drawable implements GuiEventListener {
 					j -= 4;
 				}
 
-				String string = this.fontRenderer.method_1714(this.text.substring(this.field_2103), this.method_1859());
-				this.method_1883(this.fontRenderer.method_1714(string, j).length() + this.field_2103);
+				String string = this.fontRenderer.trimToWidth(this.text.substring(this.field_2103), this.method_1859());
+				this.method_1883(this.fontRenderer.trimToWidth(string, j).length() + this.field_2103);
 				return true;
 			} else {
 				return false;
@@ -373,7 +373,7 @@ public class TextFieldWidget extends Drawable implements GuiEventListener {
 			int k = this.editable ? this.field_2100 : this.field_2098;
 			int l = this.cursorMax - this.field_2103;
 			int m = this.cursorMin - this.field_2103;
-			String string = this.fontRenderer.method_1714(this.text.substring(this.field_2103), this.method_1859());
+			String string = this.fontRenderer.trimToWidth(this.text.substring(this.field_2103), this.method_1859());
 			boolean bl = l >= 0 && l <= string.length();
 			boolean bl2 = this.focused && this.focusedTicks / 6 % 2 == 0 && bl;
 			int n = this.hasBorder ? this.x + 4 : this.x;
@@ -385,7 +385,7 @@ public class TextFieldWidget extends Drawable implements GuiEventListener {
 
 			if (!string.isEmpty()) {
 				String string2 = bl ? string.substring(0, l) : string;
-				p = this.fontRenderer.drawWithShadow((String)this.field_2099.apply(string2, this.field_2103), (float)n, (float)o, k);
+				p = this.fontRenderer.drawWithShadow((String)this.renderTextProvider.apply(string2, this.field_2103), (float)n, (float)o, k);
 			}
 
 			boolean bl3 = this.cursorMax < this.text.length() || this.text.length() >= this.getMaxLength();
@@ -398,7 +398,7 @@ public class TextFieldWidget extends Drawable implements GuiEventListener {
 			}
 
 			if (!string.isEmpty() && bl && l < string.length()) {
-				this.fontRenderer.drawWithShadow((String)this.field_2099.apply(string.substring(l), this.cursorMax), (float)p, (float)o, k);
+				this.fontRenderer.drawWithShadow((String)this.renderTextProvider.apply(string.substring(l), this.cursorMax), (float)p, (float)o, k);
 			}
 
 			if (!bl3 && this.suggestion != null) {
@@ -528,10 +528,10 @@ public class TextFieldWidget extends Drawable implements GuiEventListener {
 			}
 
 			int k = this.method_1859();
-			String string = this.fontRenderer.method_1714(this.text.substring(this.field_2103), k);
+			String string = this.fontRenderer.trimToWidth(this.text.substring(this.field_2103), k);
 			int l = string.length() + this.field_2103;
 			if (this.cursorMin == this.field_2103) {
-				this.field_2103 = this.field_2103 - this.fontRenderer.method_1711(this.text, k, true).length();
+				this.field_2103 = this.field_2103 - this.fontRenderer.trimToWidth(this.text, k, true).length();
 			}
 
 			if (this.cursorMin > l) {

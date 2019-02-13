@@ -13,7 +13,7 @@ import net.minecraft.client.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
 public class ModelTransformation {
-	public static final ModelTransformation ORIGIN = new ModelTransformation();
+	public static final ModelTransformation NONE = new ModelTransformation();
 	public static float globalTranslationX;
 	public static float globalTranslationY;
 	public static float globalTranslationZ;
@@ -34,14 +34,14 @@ public class ModelTransformation {
 
 	private ModelTransformation() {
 		this(
-			Transformation.ORIGIN,
-			Transformation.ORIGIN,
-			Transformation.ORIGIN,
-			Transformation.ORIGIN,
-			Transformation.ORIGIN,
-			Transformation.ORIGIN,
-			Transformation.ORIGIN,
-			Transformation.ORIGIN
+			Transformation.NONE,
+			Transformation.NONE,
+			Transformation.NONE,
+			Transformation.NONE,
+			Transformation.NONE,
+			Transformation.NONE,
+			Transformation.NONE,
+			Transformation.NONE
 		);
 	}
 
@@ -81,7 +81,7 @@ public class ModelTransformation {
 	}
 
 	public static void applyGl(Transformation transformation, boolean bl) {
-		if (transformation != Transformation.ORIGIN) {
+		if (transformation != Transformation.NONE) {
 			int i = bl ? -1 : 1;
 			GlStateManager.translatef(
 				(float)i * (globalTranslationX + transformation.translation.x()),
@@ -105,29 +105,29 @@ public class ModelTransformation {
 
 	public Transformation getTransformation(ModelTransformation.Type type) {
 		switch (type) {
-			case THIRD_PERSON_LEFT_HAND:
+			case field_4323:
 				return this.thirdPersonLeftHand;
-			case THIRD_PERSON_RIGHT_HAND:
+			case field_4320:
 				return this.thirdPersonRightHand;
-			case FIRST_PERSON_LEFT_HAND:
+			case field_4321:
 				return this.firstPersonLeftHand;
-			case FIRST_PERSON_RIGHT_HAND:
+			case field_4322:
 				return this.firstPersonRightHand;
-			case HEAD:
+			case field_4316:
 				return this.head;
-			case GUI:
+			case field_4317:
 				return this.gui;
-			case GROUND:
+			case field_4318:
 				return this.ground;
 			case FIXED:
 				return this.fixed;
 			default:
-				return Transformation.ORIGIN;
+				return Transformation.NONE;
 		}
 	}
 
 	public boolean isTransformationDefined(ModelTransformation.Type type) {
-		return this.getTransformation(type) != Transformation.ORIGIN;
+		return this.getTransformation(type) != Transformation.NONE;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -139,13 +139,13 @@ public class ModelTransformation {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			Transformation transformation = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "thirdperson_righthand");
 			Transformation transformation2 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "thirdperson_lefthand");
-			if (transformation2 == Transformation.ORIGIN) {
+			if (transformation2 == Transformation.NONE) {
 				transformation2 = transformation;
 			}
 
 			Transformation transformation3 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "firstperson_righthand");
 			Transformation transformation4 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "firstperson_lefthand");
-			if (transformation4 == Transformation.ORIGIN) {
+			if (transformation4 == Transformation.NONE) {
 				transformation4 = transformation3;
 			}
 
@@ -159,20 +159,20 @@ public class ModelTransformation {
 		}
 
 		private Transformation parseModelTransformation(JsonDeserializationContext jsonDeserializationContext, JsonObject jsonObject, String string) {
-			return jsonObject.has(string) ? jsonDeserializationContext.deserialize(jsonObject.get(string), Transformation.class) : Transformation.ORIGIN;
+			return jsonObject.has(string) ? jsonDeserializationContext.deserialize(jsonObject.get(string), Transformation.class) : Transformation.NONE;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static enum Type {
-		ORIGIN,
-		THIRD_PERSON_LEFT_HAND,
-		THIRD_PERSON_RIGHT_HAND,
-		FIRST_PERSON_LEFT_HAND,
-		FIRST_PERSON_RIGHT_HAND,
-		HEAD,
-		GUI,
-		GROUND,
+		field_4315,
+		field_4323,
+		field_4320,
+		field_4321,
+		field_4322,
+		field_4316,
+		field_4317,
+		field_4318,
 		FIXED;
 	}
 }

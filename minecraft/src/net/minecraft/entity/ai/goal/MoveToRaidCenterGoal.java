@@ -48,7 +48,7 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 			this.includeFreeRaiders(raid);
 		}
 
-		if (!this.owner.method_6150() && this.owner.hasPatrolTarget()) {
+		if (!this.owner.isNavigating() && this.owner.hasPatrolTarget()) {
 			Vec3d vec3d = new Vec3d(this.owner.getPatrolTarget());
 			Vec3d vec3d2 = new Vec3d(this.owner.x, this.owner.y, this.owner.z);
 			Vec3d vec3d3 = vec3d2.subtract(vec3d);

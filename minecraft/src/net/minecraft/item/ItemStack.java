@@ -23,7 +23,7 @@ import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.client.item.TooltipOptions;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.command.arguments.BlockArgumentParser;
 import net.minecraft.command.arguments.BlockPredicateArgumentType;
 import net.minecraft.enchantment.Enchantment;
@@ -156,7 +156,7 @@ public final class ItemStack {
 		} else {
 			Item item = this.getItem();
 			ActionResult actionResult = item.useOnBlock(itemUsageContext);
-			if (playerEntity != null && actionResult == ActionResult.SUCCESS) {
+			if (playerEntity != null && actionResult == ActionResult.field_5812) {
 				playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(item));
 			}
 
@@ -488,16 +488,16 @@ public final class ItemStack {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public List<TextComponent> getTooltipText(@Nullable PlayerEntity playerEntity, TooltipOptions tooltipOptions) {
+	public List<TextComponent> getTooltipText(@Nullable PlayerEntity playerEntity, TooltipContext tooltipContext) {
 		List<TextComponent> list = Lists.<TextComponent>newArrayList();
 		TextComponent textComponent = new StringTextComponent("").append(this.getDisplayName()).applyFormat(this.getRarity().formatting);
 		if (this.hasDisplayName()) {
-			textComponent.applyFormat(TextFormat.ITALIC);
+			textComponent.applyFormat(TextFormat.field_1056);
 		}
 
 		list.add(textComponent);
-		if (!tooltipOptions.isAdvanced() && !this.hasDisplayName() && this.getItem() == Items.field_8204) {
-			list.add(new StringTextComponent("#" + FilledMapItem.method_8003(this)).applyFormat(TextFormat.GRAY));
+		if (!tooltipContext.isAdvanced() && !this.hasDisplayName() && this.getItem() == Items.field_8204) {
+			list.add(new StringTextComponent("#" + FilledMapItem.method_8003(this)).applyFormat(TextFormat.field_1080));
 		}
 
 		int i = 0;
@@ -506,7 +506,7 @@ public final class ItemStack {
 		}
 
 		if ((i & 32) == 0) {
-			this.getItem().buildTooltip(this, playerEntity == null ? null : playerEntity.world, list, tooltipOptions);
+			this.getItem().buildTooltip(this, playerEntity == null ? null : playerEntity.world, list, tooltipContext);
 		}
 
 		if (this.hasTag()) {
@@ -517,10 +517,10 @@ public final class ItemStack {
 			if (this.tag.containsKey("display", 10)) {
 				CompoundTag compoundTag = this.tag.getCompound("display");
 				if (compoundTag.containsKey("color", 3)) {
-					if (tooltipOptions.isAdvanced()) {
-						list.add(new TranslatableTextComponent("item.color", String.format("#%06X", compoundTag.getInt("color"))).applyFormat(TextFormat.GRAY));
+					if (tooltipContext.isAdvanced()) {
+						list.add(new TranslatableTextComponent("item.color", String.format("#%06X", compoundTag.getInt("color"))).applyFormat(TextFormat.field_1080));
 					} else {
-						list.add(new TranslatableTextComponent("item.dyed").applyFormat(new TextFormat[]{TextFormat.GRAY, TextFormat.ITALIC}));
+						list.add(new TranslatableTextComponent("item.dyed").applyFormat(new TextFormat[]{TextFormat.field_1080, TextFormat.field_1056}));
 					}
 				}
 
@@ -533,7 +533,7 @@ public final class ItemStack {
 						try {
 							TextComponent textComponent2 = TextComponent.Serializer.fromJsonString(string);
 							if (textComponent2 != null) {
-								list.add(TextFormatter.addStyle(textComponent2, new Style().setColor(TextFormat.DARK_PURPLE).setItalic(true)));
+								list.add(TextFormatter.addStyle(textComponent2, new Style().setColor(TextFormat.field_1064).setItalic(true)));
 							}
 						} catch (JsonParseException var19) {
 							compoundTag.remove("Lore");
@@ -547,7 +547,7 @@ public final class ItemStack {
 			Multimap<String, EntityAttributeModifier> multimap = this.getAttributeModifiers(equipmentSlot);
 			if (!multimap.isEmpty() && (i & 2) == 0) {
 				list.add(new StringTextComponent(""));
-				list.add(new TranslatableTextComponent("item.modifiers." + equipmentSlot.getName()).applyFormat(TextFormat.GRAY));
+				list.add(new TranslatableTextComponent("item.modifiers." + equipmentSlot.getName()).applyFormat(TextFormat.field_1080));
 
 				for (Entry<String, EntityAttributeModifier> entry : multimap.entries()) {
 					EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)entry.getValue();
@@ -582,7 +582,7 @@ public final class ItemStack {
 										new TranslatableTextComponent("attribute.name." + (String)entry.getKey())
 									)
 								)
-								.applyFormat(TextFormat.DARK_GREEN)
+								.applyFormat(TextFormat.field_1077)
 						);
 					} else if (d > 0.0) {
 						list.add(
@@ -591,7 +591,7 @@ public final class ItemStack {
 									MODIFIER_FORMAT.format(e),
 									new TranslatableTextComponent("attribute.name." + (String)entry.getKey())
 								)
-								.applyFormat(TextFormat.BLUE)
+								.applyFormat(TextFormat.field_1078)
 						);
 					} else if (d < 0.0) {
 						e *= -1.0;
@@ -601,7 +601,7 @@ public final class ItemStack {
 									MODIFIER_FORMAT.format(e),
 									new TranslatableTextComponent("attribute.name." + (String)entry.getKey())
 								)
-								.applyFormat(TextFormat.RED)
+								.applyFormat(TextFormat.field_1061)
 						);
 					}
 				}
@@ -609,14 +609,14 @@ public final class ItemStack {
 		}
 
 		if (this.hasTag() && this.getTag().getBoolean("Unbreakable") && (i & 4) == 0) {
-			list.add(new TranslatableTextComponent("item.unbreakable").applyFormat(TextFormat.BLUE));
+			list.add(new TranslatableTextComponent("item.unbreakable").applyFormat(TextFormat.field_1078));
 		}
 
 		if (this.hasTag() && this.tag.containsKey("CanDestroy", 9) && (i & 8) == 0) {
 			ListTag listTag2 = this.tag.getList("CanDestroy", 8);
 			if (!listTag2.isEmpty()) {
 				list.add(new StringTextComponent(""));
-				list.add(new TranslatableTextComponent("item.canBreak").applyFormat(TextFormat.GRAY));
+				list.add(new TranslatableTextComponent("item.canBreak").applyFormat(TextFormat.field_1080));
 
 				for (int k = 0; k < listTag2.size(); k++) {
 					list.addAll(method_7937(listTag2.getString(k)));
@@ -628,7 +628,7 @@ public final class ItemStack {
 			ListTag listTag2 = this.tag.getList("CanPlaceOn", 8);
 			if (!listTag2.isEmpty()) {
 				list.add(new StringTextComponent(""));
-				list.add(new TranslatableTextComponent("item.canPlace").applyFormat(TextFormat.GRAY));
+				list.add(new TranslatableTextComponent("item.canPlace").applyFormat(TextFormat.field_1080));
 
 				for (int k = 0; k < listTag2.size(); k++) {
 					list.addAll(method_7937(listTag2.getString(k)));
@@ -636,14 +636,14 @@ public final class ItemStack {
 			}
 		}
 
-		if (tooltipOptions.isAdvanced()) {
+		if (tooltipContext.isAdvanced()) {
 			if (this.isDamaged()) {
 				list.add(new TranslatableTextComponent("item.durability", this.getDurability() - this.getDamage(), this.getDurability()));
 			}
 
-			list.add(new StringTextComponent(Registry.ITEM.getId(this.getItem()).toString()).applyFormat(TextFormat.DARK_GRAY));
+			list.add(new StringTextComponent(Registry.ITEM.getId(this.getItem()).toString()).applyFormat(TextFormat.field_1063));
 			if (this.hasTag()) {
-				list.add(new TranslatableTextComponent("item.nbt_tags", this.getTag().getKeys().size()).applyFormat(TextFormat.DARK_GRAY));
+				list.add(new TranslatableTextComponent("item.nbt_tags", this.getTag().getKeys().size()).applyFormat(TextFormat.field_1063));
 			}
 		}
 
@@ -655,7 +655,7 @@ public final class ItemStack {
 		for (int i = 0; i < listTag.size(); i++) {
 			CompoundTag compoundTag = listTag.getCompoundTag(i);
 			Registry.ENCHANTMENT
-				.getOptional(Identifier.create(compoundTag.getString("id")))
+				.getOrEmpty(Identifier.create(compoundTag.getString("id")))
 				.ifPresent(enchantment -> list.add(enchantment.getTextComponent(compoundTag.getInt("lvl"))));
 		}
 	}
@@ -670,7 +670,7 @@ public final class ItemStack {
 			boolean bl2 = identifier != null;
 			if (bl || bl2) {
 				if (bl) {
-					return Lists.<TextComponent>newArrayList(blockState.getBlock().getTextComponent().applyFormat(TextFormat.DARK_GRAY));
+					return Lists.<TextComponent>newArrayList(blockState.getBlock().getTextComponent().applyFormat(TextFormat.field_1063));
 				}
 
 				Tag<Block> tag = BlockTags.getContainer().get(identifier);
@@ -679,7 +679,7 @@ public final class ItemStack {
 					if (!collection.isEmpty()) {
 						return (Collection<TextComponent>)collection.stream()
 							.map(Block::getTextComponent)
-							.map(textComponent -> textComponent.applyFormat(TextFormat.DARK_GRAY))
+							.map(textComponent -> textComponent.applyFormat(TextFormat.field_1063))
 							.collect(Collectors.toList());
 					}
 				}
@@ -687,7 +687,7 @@ public final class ItemStack {
 		} catch (CommandSyntaxException var8) {
 		}
 
-		return Lists.<TextComponent>newArrayList(new StringTextComponent("missingno").applyFormat(TextFormat.DARK_GRAY));
+		return Lists.<TextComponent>newArrayList(new StringTextComponent("missingno").applyFormat(TextFormat.field_1063));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -787,7 +787,7 @@ public final class ItemStack {
 	public TextComponent toTextComponent() {
 		TextComponent textComponent = new StringTextComponent("").append(this.getDisplayName());
 		if (this.hasDisplayName()) {
-			textComponent.applyFormat(TextFormat.ITALIC);
+			textComponent.applyFormat(TextFormat.field_1056);
 		}
 
 		TextComponent textComponent2 = TextFormatter.bracketed(textComponent);

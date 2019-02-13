@@ -36,7 +36,7 @@ public class ExperienceBarUpdateS2CPacket implements Packet<ClientPlayPacketList
 	}
 
 	public void method_11829(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11101(this);
+		clientPlayPacketListener.onExperienceBarUpdate(this);
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -41,7 +41,7 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		ParticleType<?> particleType = Registry.PARTICLE_TYPE.getInt(packetByteBuf.readInt());
+		ParticleType<?> particleType = Registry.PARTICLE_TYPE.get(packetByteBuf.readInt());
 		if (particleType == null) {
 			particleType = ParticleTypes.field_11235;
 		}
@@ -128,6 +128,6 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11553(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11077(this);
+		clientPlayPacketListener.onParticle(this);
 	}
 }

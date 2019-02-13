@@ -19,7 +19,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.GlProgramManager;
 import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.gui.MapRenderer;
@@ -220,7 +220,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	}
 
 	@Override
-	public void reloadResources(ResourceManager resourceManager) {
+	public void apply(ResourceManager resourceManager) {
 		if (this.shader != null) {
 			this.shader.close();
 		}
@@ -251,7 +251,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		this.firstPersonRenderer.updateHeldItems();
 		this.method_3177();
 		this.tickStartSkyDarkness = this.tickEndSkyDarkness;
-		if (this.client.inGameHud.getHudBossBar().shouldDarkenSky()) {
+		if (this.client.inGameHud.getBossBarHud().shouldDarkenSky()) {
 			this.tickEndSkyDarkness += 0.05F;
 			if (this.tickEndSkyDarkness > 1.0F) {
 				this.tickEndSkyDarkness = 1.0F;
@@ -272,13 +272,13 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		return this.shader;
 	}
 
-	public void method_3169(int i, int j) {
+	public void onResized(int i, int j) {
 		if (GLX.usePostProcess) {
 			if (this.shader != null) {
 				this.shader.setupDimensions(i, j);
 			}
 
-			this.client.worldRenderer.method_3242(i, j);
+			this.client.worldRenderer.onResized(i, j);
 		}
 	}
 
@@ -368,7 +368,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				d /= (double)((1.0F - 500.0F / (g + 500.0F)) * 2.0F + 1.0F);
 			}
 
-			FluidState fluidState = class_295.getFluidState(this.client.world, entity, f);
+			FluidState fluidState = class_295.method_1374(this.client.world, entity, f);
 			if (!fluidState.isEmpty()) {
 				d = d * 60.0 / 70.0;
 			}
@@ -433,14 +433,14 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				GlStateManager.rotatef(MathHelper.lerp(f, entity.prevYaw, entity.yaw) + 180.0F, 0.0F, -1.0F, 0.0F);
 				GlStateManager.rotatef(MathHelper.lerp(f, entity.prevPitch, entity.pitch), -1.0F, 0.0F, 0.0F);
 			}
-		} else if (this.client.options.field_1850 > 0) {
+		} else if (this.client.options.perspective > 0) {
 			double i = (double)MathHelper.lerp(f, this.field_4000, 4.0F);
 			if (this.client.options.field_1821) {
 				GlStateManager.translatef(0.0F, 0.0F, (float)(-i));
 			} else {
 				float j = entity.yaw;
 				float k = entity.pitch;
-				if (this.client.options.field_1850 == 2) {
+				if (this.client.options.perspective == 2) {
 					k += 180.0F;
 				}
 
@@ -474,7 +474,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 					}
 				}
 
-				if (this.client.options.field_1850 == 2) {
+				if (this.client.options.perspective == 2) {
 					GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
 				}
 
@@ -558,7 +558,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			}
 
 			boolean bl = this.client.getCameraEntity() instanceof LivingEntity && ((LivingEntity)this.client.getCameraEntity()).isSleeping();
-			if (this.client.options.field_1850 == 0
+			if (this.client.options.perspective == 0
 				&& !bl
 				&& !this.client.options.hudHidden
 				&& this.client.interactionManager.getCurrentGameMode() != GameMode.field_9219) {
@@ -568,7 +568,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			}
 
 			GlStateManager.popMatrix();
-			if (this.client.options.field_1850 == 0 && !bl) {
+			if (this.client.options.perspective == 0 && !bl) {
 				this.firstPersonRenderer.renderOverlays(f);
 				this.method_3198(f);
 			}
@@ -635,7 +635,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				this.client.getProfiler().swap("gui");
 				if (!this.client.options.hudHidden || this.client.currentScreen != null) {
 					GlStateManager.alphaFunc(516, 0.1F);
-					this.client.window.method_4493(MinecraftClient.isSystemMac);
+					this.client.window.method_4493(MinecraftClient.IS_SYSTEM_MAC);
 					this.renderFloatingItem(this.client.window.getScaledWidth(), this.client.window.getScaledHeight(), f);
 					this.client.inGameHud.draw(f);
 				}
@@ -647,14 +647,14 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				GlStateManager.loadIdentity();
 				GlStateManager.matrixMode(5888);
 				GlStateManager.loadIdentity();
-				this.client.window.method_4493(MinecraftClient.isSystemMac);
+				this.client.window.method_4493(MinecraftClient.IS_SYSTEM_MAC);
 			}
 
 			if (this.client.currentScreen != null) {
-				GlStateManager.clear(256, MinecraftClient.isSystemMac);
+				GlStateManager.clear(256, MinecraftClient.IS_SYSTEM_MAC);
 
 				try {
-					this.client.currentScreen.draw(i, j, this.client.method_1534());
+					this.client.currentScreen.draw(i, j, this.client.getLastFrameDuration());
 				} catch (Throwable var13) {
 					CrashReport crashReport = CrashReport.create(var13, "Rendering screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen render details");
@@ -714,7 +714,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	}
 
 	public void method_3200(float f) {
-		this.client.window.method_4493(MinecraftClient.isSystemMac);
+		this.client.window.method_4493(MinecraftClient.IS_SYSTEM_MAC);
 	}
 
 	private boolean shouldRenderBlockOutline() {
@@ -769,11 +769,11 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		this.client.getProfiler().swap("clear");
 		GlStateManager.viewport(0, 0, this.client.window.getFramebufferWidth(), this.client.window.getFramebufferHeight());
 		this.backgroundRenderer.renderBackground(f);
-		GlStateManager.clear(16640, MinecraftClient.isSystemMac);
+		GlStateManager.clear(16640, MinecraftClient.IS_SYSTEM_MAC);
 		this.client.getProfiler().swap("camera");
 		this.method_3185(f);
 		Frustum frustum = GlMatrixFrustum.get();
-		class_295.method_1373(this.client.player, this.client.options.field_1850 == 2, this.viewDistance, frustum);
+		class_295.method_1373(this.client.player, this.client.options.perspective == 2, this.viewDistance, frustum);
 		this.client.getProfiler().swap("culling");
 		VisibleRegion visibleRegion = new FrustumWithOrigin(frustum);
 		Entity entity = this.client.getCameraEntity();
@@ -902,7 +902,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 
 		this.client.getProfiler().swap("hand");
 		if (this.field_3992) {
-			GlStateManager.clear(256, MinecraftClient.isSystemMac);
+			GlStateManager.clear(256, MinecraftClient.IS_SYSTEM_MAC);
 			this.method_3172(f);
 		}
 	}
@@ -979,7 +979,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 					FluidState fluidState = viewableWorld.getFluidState(blockPos2);
 					VoxelShape voxelShape = blockState.getCollisionShape(viewableWorld, blockPos3);
 					double n = voxelShape.method_1102(Direction.Axis.Y, h, m);
-					double o = (double)fluidState.method_15763(viewableWorld, blockPos2);
+					double o = (double)fluidState.getHeight(viewableWorld, blockPos2);
 					double p;
 					double q;
 					if (n >= o) {
@@ -1204,7 +1204,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		return this.mapRenderer;
 	}
 
-	public static void method_3179(FontRenderer fontRenderer, String string, float f, float g, float h, int i, float j, float k, boolean bl, boolean bl2) {
+	public static void method_3179(TextRenderer textRenderer, String string, float f, float g, float h, int i, float j, float k, boolean bl, boolean bl2) {
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef(f, g, h);
 		GlStateManager.normal3f(0.0F, 1.0F, 0.0F);
@@ -1221,7 +1221,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		GlStateManager.blendFuncSeparate(
 			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
-		int l = fontRenderer.getStringWidth(string) / 2;
+		int l = textRenderer.getStringWidth(string) / 2;
 		GlStateManager.disableTexture();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
@@ -1233,12 +1233,12 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		tessellator.draw();
 		GlStateManager.enableTexture();
 		if (!bl2) {
-			fontRenderer.draw(string, (float)(-fontRenderer.getStringWidth(string) / 2), (float)i, 553648127);
+			textRenderer.draw(string, (float)(-textRenderer.getStringWidth(string) / 2), (float)i, 553648127);
 			GlStateManager.enableDepthTest();
 		}
 
 		GlStateManager.depthMask(true);
-		fontRenderer.draw(string, (float)(-fontRenderer.getStringWidth(string) / 2), (float)i, bl2 ? 553648127 : -1);
+		textRenderer.draw(string, (float)(-textRenderer.getStringWidth(string) / 2), (float)i, bl2 ? 553648127 : -1);
 		GlStateManager.enableLighting();
 		GlStateManager.disableBlend();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);

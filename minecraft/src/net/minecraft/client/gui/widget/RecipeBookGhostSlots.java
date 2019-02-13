@@ -74,7 +74,7 @@ public class RecipeBookGhostSlots {
 			Drawable.drawRect(l, m, l + 16, m + 16, 822083583);
 			GlStateManager.depthFunc(515);
 			if (k == 0) {
-				itemRenderer.renderGuiItemOverlay(minecraftClient.fontRenderer, itemStack, l, m);
+				itemRenderer.renderGuiItemOverlay(minecraftClient.textRenderer, itemStack, l, m);
 			}
 
 			GlStateManager.enableLighting();

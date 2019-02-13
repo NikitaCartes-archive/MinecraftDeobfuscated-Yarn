@@ -307,7 +307,7 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 	}
 
 	@Override
-	public boolean method_6121(Entity entity) {
+	public boolean attack(Entity entity) {
 		return entity.damage(DamageSource.mob(this), 3.0F);
 	}
 

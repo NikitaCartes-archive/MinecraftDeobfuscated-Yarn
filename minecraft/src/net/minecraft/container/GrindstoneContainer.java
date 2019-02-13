@@ -3,7 +3,6 @@ package net.minecraft.container;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import net.minecraft.class_3914;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -27,15 +26,15 @@ public class GrindstoneContainer extends Container {
 			GrindstoneContainer.this.onContentChanged(this);
 		}
 	};
-	private final class_3914 world;
+	private final ContainerWorldContext context;
 
 	public GrindstoneContainer(int i, PlayerInventory playerInventory) {
-		this(i, playerInventory, class_3914.field_17304);
+		this(i, playerInventory, ContainerWorldContext.NO_OP_CONTEXT);
 	}
 
-	public GrindstoneContainer(int i, PlayerInventory playerInventory, class_3914 arg) {
+	public GrindstoneContainer(int i, PlayerInventory playerInventory, ContainerWorldContext containerWorldContext) {
 		super(ContainerType.GRINDSTONE, i);
-		this.world = arg;
+		this.context = containerWorldContext;
 		this.addSlot(new Slot(this.craftingInventory, 0, 49, 19) {
 			@Override
 			public boolean canInsert(ItemStack itemStack) {
@@ -56,7 +55,7 @@ public class GrindstoneContainer extends Container {
 
 			@Override
 			public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
-				arg.method_17393((world, blockPos) -> {
+				containerWorldContext.run((world, blockPos) -> {
 					int i = this.method_17416(world);
 
 					while (i > 0) {
@@ -192,12 +191,12 @@ public class GrindstoneContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.world.method_17393((world, blockPos) -> this.dropInventory(playerEntity, world, this.craftingInventory));
+		this.context.run((world, blockPos) -> this.dropInventory(playerEntity, world, this.craftingInventory));
 	}
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return canUse(this.world, playerEntity, Blocks.field_16337);
+		return canUse(this.context, playerEntity, Blocks.field_16337);
 	}
 
 	@Override

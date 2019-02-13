@@ -899,7 +899,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 
 		public Dynamic<?> getBlock(int i) {
 			if (i >= 0 && i <= 4095) {
-				Dynamic<?> dynamic = this.paletteMap.getInt(this.states[i]);
+				Dynamic<?> dynamic = this.paletteMap.get(this.states[i]);
 				return dynamic == null ? ChunkPalettedStorageFix.air : dynamic;
 			} else {
 				return ChunkPalettedStorageFix.air;

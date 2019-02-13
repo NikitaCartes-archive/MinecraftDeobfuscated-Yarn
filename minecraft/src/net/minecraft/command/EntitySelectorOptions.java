@@ -76,7 +76,7 @@ public class EntitySelectorOptions {
 		options.put(string, new EntitySelectorOptions.SelectorOption(selectorHandler, predicate, textComponent));
 	}
 
-	public static void method_9960() {
+	public static void register() {
 		if (options.isEmpty()) {
 			putOption("name", entitySelectorReader -> {
 				int i = entitySelectorReader.getReader().getCursor();
@@ -279,10 +279,10 @@ public class EntitySelectorOptions {
 			}, entitySelectorReader -> !entitySelectorReader.method_9904(), new TranslatableTextComponent("argument.entity.options.team.description"));
 			putOption("type", entitySelectorReader -> {
 				entitySelectorReader.setSuggestionProvider((suggestionsBuilder, consumer) -> {
-					CommandSource.suggestIdentifiers(Registry.ENTITY_TYPE.keys(), suggestionsBuilder, String.valueOf('!'));
+					CommandSource.suggestIdentifiers(Registry.ENTITY_TYPE.getIds(), suggestionsBuilder, String.valueOf('!'));
 					CommandSource.suggestIdentifiers(EntityTags.getContainer().getKeys(), suggestionsBuilder, "!#");
 					if (!entitySelectorReader.method_9910()) {
-						CommandSource.suggestIdentifiers(Registry.ENTITY_TYPE.keys(), suggestionsBuilder);
+						CommandSource.suggestIdentifiers(Registry.ENTITY_TYPE.getIds(), suggestionsBuilder);
 						CommandSource.suggestIdentifiers(EntityTags.getContainer().getKeys(), suggestionsBuilder, String.valueOf('#'));
 					}
 
@@ -309,7 +309,7 @@ public class EntitySelectorOptions {
 						entitySelectorReader.setPredicate(entity -> tag.contains(entity.getType()) != bl);
 					} else {
 						Identifier identifier = Identifier.parse(entitySelectorReader.getReader());
-						EntityType<?> entityType = (EntityType<?>)Registry.ENTITY_TYPE.getOptional(identifier).orElseThrow(() -> {
+						EntityType<?> entityType = (EntityType<?>)Registry.ENTITY_TYPE.getOrEmpty(identifier).orElseThrow(() -> {
 							entitySelectorReader.getReader().setCursor(i);
 							return INVALID_TYPE_EXCEPTION.createWithContext(entitySelectorReader.getReader(), identifier.toString());
 						});

@@ -56,7 +56,7 @@ import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.boss.EntityWither;
+import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -104,7 +104,7 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.village.VillagerRecipeList;
+import net.minecraft.village.TraderRecipeList;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.dimension.DimensionType;
@@ -440,7 +440,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 							int i = 256;
 							String string = textComponent.getStringTruncated(256);
 							TextComponent textComponent2 = new TranslatableTextComponent(
-								"death.attack.message_too_long", new StringTextComponent(string).applyFormat(TextFormat.YELLOW)
+								"death.attack.message_too_long", new StringTextComponent(string).applyFormat(TextFormat.field_1054)
 							);
 							TextComponent textComponent3 = new TranslatableTextComponent("death.attack.even_more_magic", this.getDisplayName())
 								.modifyStyle(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, textComponent2)));
@@ -460,7 +460,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.DEATH));
 		}
 
-		this.method_7262();
+		this.dropShoulderEntities();
 		if (!this.isSpectator()) {
 			this.method_16080(damageSource);
 		}
@@ -470,7 +470,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		if (livingEntity != null) {
 			this.incrementStat(Stats.field_15411.getOrCreateStat(livingEntity.getType()));
 			livingEntity.method_5716(this, this.field_6232, damageSource);
-			if (!this.world.isClient && livingEntity instanceof EntityWither) {
+			if (!this.world.isClient && livingEntity instanceof WitherEntity) {
 				BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
 				BlockState blockState = Blocks.field_10606.getDefaultState();
 				if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
@@ -600,7 +600,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	private void sendBlockEntityUpdate(BlockEntity blockEntity) {
 		if (blockEntity != null) {
-			BlockEntityUpdateS2CPacket blockEntityUpdateS2CPacket = blockEntity.method_16886();
+			BlockEntityUpdateS2CPacket blockEntityUpdateS2CPacket = blockEntity.toUpdatePacket();
 			if (blockEntityUpdateS2CPacket != null) {
 				this.networkHandler.sendPacket(blockEntityUpdateS2CPacket);
 			}
@@ -608,8 +608,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void method_6103(Entity entity, int i) {
-		super.method_6103(entity, i);
+	public void pickUpEntity(Entity entity, int i) {
+		super.pickUpEntity(entity, i);
 		this.container.sendContentUpdates();
 	}
 
@@ -619,7 +619,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		if (sleepResult == PlayerEntity.SleepResult.SUCCESS) {
 			this.increaseStat(Stats.field_15381);
 			Packet<?> packet = new PlayerUseBedS2CPacket(this, blockPos);
-			this.getServerWorld().getEntityTracker().method_14079(this, packet);
+			this.getServerWorld().getEntityTracker().sendToTrackingPlayers(this, packet);
 			this.networkHandler.teleportRequest(this.x, this.y, this.z, this.yaw, this.pitch);
 			this.networkHandler.sendPacket(packet);
 			Criterions.SLEPT_IN_BED.handle(this);
@@ -631,7 +631,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	@Override
 	public void wakeUp(boolean bl, boolean bl2, boolean bl3) {
 		if (this.isSleeping()) {
-			this.getServerWorld().getEntityTracker().method_14073(this, new EntityAnimationS2CPacket(this, 2));
+			this.getServerWorld().getEntityTracker().sendToTrackingPlayersAndSelf(this, new EntityAnimationS2CPacket(this, 2));
 		}
 
 		super.wakeUp(bl, bl2, bl3);
@@ -703,7 +703,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void openSignEditorGui(SignBlockEntity signBlockEntity) {
+	public void openEditSignScreen(SignBlockEntity signBlockEntity) {
 		signBlockEntity.setEditor(this);
 		this.networkHandler.sendPacket(new SignEditorOpenS2CPacket(signBlockEntity.getPos()));
 	}
@@ -725,7 +725,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			Container container = nameableContainerProvider.createMenu(this.containerSyncId, this.inventory, this);
 			if (container == null) {
 				if (this.isSpectator()) {
-					this.addChatMessage(new TranslatableTextComponent("container.spectatorCantOpen").applyFormat(TextFormat.RED), true);
+					this.addChatMessage(new TranslatableTextComponent("container.spectatorCantOpen").applyFormat(TextFormat.field_1061), true);
 				}
 
 				return OptionalInt.empty();
@@ -739,8 +739,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void sendVillagerRecipes(int i, VillagerRecipeList villagerRecipeList) {
-		this.networkHandler.sendPacket(new SetVillagerRecipesPacket(i, villagerRecipeList));
+	public void sendVillagerRecipes(int i, TraderRecipeList traderRecipeList) {
+		this.networkHandler.sendPacket(new SetVillagerRecipesPacket(i, traderRecipeList));
 	}
 
 	@Override
@@ -756,7 +756,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void openBookEditorGui(ItemStack itemStack, Hand hand) {
+	public void openEditBookScreen(ItemStack itemStack, Hand hand) {
 		Item item = itemStack.getItem();
 		if (item == Items.field_8360) {
 			if (WrittenBookItem.resolve(itemStack, this.getCommandSource(), this)) {
@@ -768,7 +768,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void openCommandBlockGui(CommandBlockBlockEntity commandBlockBlockEntity) {
+	public void openCommandBlockScreen(CommandBlockBlockEntity commandBlockBlockEntity) {
 		commandBlockBlockEntity.setNeedsUpdatePacket(true);
 		this.sendBlockEntityUpdate(commandBlockBlockEntity);
 	}
@@ -984,12 +984,12 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	public void addCritParticles(Entity entity) {
-		this.getServerWorld().getEntityTracker().method_14073(this, new EntityAnimationS2CPacket(entity, 4));
+		this.getServerWorld().getEntityTracker().sendToTrackingPlayersAndSelf(this, new EntityAnimationS2CPacket(entity, 4));
 	}
 
 	@Override
 	public void addEnchantedHitParticles(Entity entity) {
-		this.getServerWorld().getEntityTracker().method_14073(this, new EntityAnimationS2CPacket(entity, 5));
+		this.getServerWorld().getEntityTracker().sendToTrackingPlayersAndSelf(this, new EntityAnimationS2CPacket(entity, 5));
 	}
 
 	@Override
@@ -1009,7 +1009,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		this.interactionManager.setGameMode(gameMode);
 		this.networkHandler.sendPacket(new GameStateChangeS2CPacket(3, (float)gameMode.getId()));
 		if (gameMode == GameMode.field_9219) {
-			this.method_7262();
+			this.dropShoulderEntities();
 			this.stopRiding();
 		} else {
 			this.method_14224(this);
@@ -1042,11 +1042,11 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 					if (!future.isSuccess() && (chatMessageType == ChatMessageType.field_11733 || chatMessageType == ChatMessageType.field_11735)) {
 						int i = 256;
 						String string = textComponent.getStringTruncated(256);
-						TextComponent textComponent2 = new StringTextComponent(string).applyFormat(TextFormat.YELLOW);
+						TextComponent textComponent2 = new StringTextComponent(string).applyFormat(TextFormat.field_1054);
 						this.networkHandler
 							.sendPacket(
 								new ChatMessageS2CPacket(
-									new TranslatableTextComponent("multiplayer.message_not_delivered", textComponent2).applyFormat(TextFormat.RED), ChatMessageType.field_11735
+									new TranslatableTextComponent("multiplayer.message_not_delivered", textComponent2).applyFormat(TextFormat.field_1061), ChatMessageType.field_11735
 								)
 							);
 					}

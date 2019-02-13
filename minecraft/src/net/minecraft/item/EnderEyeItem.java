@@ -35,7 +35,7 @@ public class EnderEyeItem extends Item {
 		if (blockState.getBlock() != Blocks.field_10398 || (Boolean)blockState.get(EndPortalFrameBlock.EYE)) {
 			return ActionResult.PASS;
 		} else if (world.isClient) {
-			return ActionResult.SUCCESS;
+			return ActionResult.field_5812;
 		} else {
 			BlockState blockState2 = blockState.with(EndPortalFrameBlock.EYE, Boolean.valueOf(true));
 			Block.pushEntitiesUpBeforeBlockChange(blockState, blockState2, world, blockPos);
@@ -67,7 +67,7 @@ public class EnderEyeItem extends Item {
 				world.playGlobalEvent(1038, blockPos2.add(1, 0, 1), 0);
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.field_5812;
 		}
 	}
 
@@ -99,11 +99,11 @@ public class EnderEyeItem extends Item {
 					}
 
 					playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
-					return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+					return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 				}
 			}
 
-			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+			return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 		}
 	}
 }

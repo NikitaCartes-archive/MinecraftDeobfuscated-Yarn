@@ -35,7 +35,7 @@ public class SmallFireballEntity extends class_3855 {
 					entity.setOnFireFor(5);
 					boolean bl = entity.damage(DamageSource.explosiveProjectile(this, this.owner), 5.0F);
 					if (bl) {
-						this.method_5723(this.owner, entity);
+						this.dealDamage(this.owner, entity);
 					}
 				}
 			} else if (this.owner == null || !(this.owner instanceof MobEntity) || this.world.getGameRules().getBoolean("mobGriefing")) {

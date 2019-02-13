@@ -170,13 +170,13 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	public boolean method_6121(Entity entity) {
+	public boolean attack(Entity entity) {
 		this.field_6762 = 10;
 		this.world.summonParticle(this, (byte)4);
 		boolean bl = entity.damage(DamageSource.mob(this), (float)(7 + this.random.nextInt(15)));
 		if (bl) {
 			entity.velocityY += 0.4F;
-			this.method_5723(this, entity);
+			this.dealDamage(this, entity);
 		}
 
 		this.playSound(SoundEvents.field_14649, 1.0F, 1.0F);

@@ -89,22 +89,22 @@ public class RecipeBookGuiResults {
 	public void draw(int i, int j, int k, int l, float f) {
 		if (this.pageCount > 1) {
 			String string = this.currentPage + 1 + "/" + this.pageCount;
-			int m = this.client.fontRenderer.getStringWidth(string);
-			this.client.fontRenderer.draw(string, (float)(i - m / 2 + 73), (float)(j + 141), -1);
+			int m = this.client.textRenderer.getStringWidth(string);
+			this.client.textRenderer.draw(string, (float)(i - m / 2 + 73), (float)(j + 141), -1);
 		}
 
 		GuiLighting.disable();
 		this.hoveredResultButton = null;
 
 		for (AnimatedResultButton animatedResultButton : this.resultButtons) {
-			animatedResultButton.draw(k, l, f);
+			animatedResultButton.render(k, l, f);
 			if (animatedResultButton.visible && animatedResultButton.isHovered()) {
 				this.hoveredResultButton = animatedResultButton;
 			}
 		}
 
-		this.prevPageButton.draw(k, l, f);
-		this.nextPageButton.draw(k, l, f);
+		this.prevPageButton.render(k, l, f);
+		this.nextPageButton.render(k, l, f);
 		this.alternatesWidget.draw(k, l, f);
 	}
 
@@ -181,7 +181,7 @@ public class RecipeBookGuiResults {
 		}
 	}
 
-	public MinecraftClient method_2637() {
+	public MinecraftClient getMinecraftClient() {
 		return this.client;
 	}
 

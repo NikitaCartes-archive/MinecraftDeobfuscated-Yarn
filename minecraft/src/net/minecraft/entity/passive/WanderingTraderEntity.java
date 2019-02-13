@@ -36,15 +36,15 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.village.VillagerRecipe;
-import net.minecraft.village.VillagerRecipeList;
-import net.minecraft.village.VillagerTrades;
+import net.minecraft.village.TraderRecipe;
+import net.minecraft.village.TraderRecipeList;
+import net.minecraft.village.Trades;
 import net.minecraft.world.World;
 
-public class WanderingTraderEntity extends AbstractVillagerEntity {
+public class WanderingTraderEntity extends AbstractTraderEntity {
 	@Nullable
-	private BlockPos field_17758;
-	private int field_17725;
+	private BlockPos wanderTarget;
+	private int despawnDelay;
 
 	public WanderingTraderEntity(World world) {
 		super(EntityType.field_17713, world);
@@ -74,7 +74,7 @@ public class WanderingTraderEntity extends AbstractVillagerEntity {
 		this.goalSelector.add(1, new FleeEntityGoal(this, IllusionerEntity.class, 12.0F, 0.5, 0.5));
 		this.goalSelector.add(1, new EscapeDangerGoal(this, 0.5));
 		this.goalSelector.add(1, new class_1364(this));
-		this.goalSelector.add(2, new WanderingTraderEntity.class_3994(this, 2.0, 0.35));
+		this.goalSelector.add(2, new WanderingTraderEntity.WanderToTargetGoal(this, 2.0, 0.35));
 		this.goalSelector.add(8, new class_1394(this, 0.35));
 		this.goalSelector.add(9, new class_1358(this, PlayerEntity.class, 3.0F, 1.0F));
 		this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
@@ -103,7 +103,7 @@ public class WanderingTraderEntity extends AbstractVillagerEntity {
 			} else {
 				if (!this.world.isClient) {
 					this.setCurrentCustomer(playerEntity);
-					this.method_17449(playerEntity, this.getDisplayName());
+					this.sendRecipes(playerEntity, this.getDisplayName());
 				}
 
 				return true;
@@ -114,9 +114,9 @@ public class WanderingTraderEntity extends AbstractVillagerEntity {
 	}
 
 	@Override
-	protected void method_7237() {
-		VillagerTrades.Factory[] factorys = VillagerTrades.WANDERING_TRADER_TRADES.get(1);
-		VillagerTrades.Factory[] factorys2 = VillagerTrades.WANDERING_TRADER_TRADES.get(2);
+	protected void fillRecipes() {
+		Trades.Factory[] factorys = Trades.WANDERING_TRADER_TRADES.get(1);
+		Trades.Factory[] factorys2 = Trades.WANDERING_TRADER_TRADES.get(2);
 		if (factorys != null && factorys2 != null) {
 			Set<Integer> set = Sets.<Integer>newHashSet();
 			if (factorys.length > 5) {
@@ -129,21 +129,21 @@ public class WanderingTraderEntity extends AbstractVillagerEntity {
 				}
 			}
 
-			VillagerRecipeList villagerRecipeList = this.getRecipes();
+			TraderRecipeList traderRecipeList = this.getRecipes();
 
 			for (Integer integer : set) {
-				VillagerTrades.Factory factory = factorys[integer];
-				VillagerRecipe villagerRecipe = factory.create(this, this.random);
-				if (villagerRecipe != null) {
-					villagerRecipeList.add(villagerRecipe);
+				Trades.Factory factory = factorys[integer];
+				TraderRecipe traderRecipe = factory.create(this, this.random);
+				if (traderRecipe != null) {
+					traderRecipeList.add(traderRecipe);
 				}
 			}
 
 			int j = this.random.nextInt(factorys2.length);
-			VillagerTrades.Factory factory2 = factorys2[j];
-			VillagerRecipe villagerRecipe2 = factory2.create(this, this.random);
-			if (villagerRecipe2 != null) {
-				villagerRecipeList.add(villagerRecipe2);
+			Trades.Factory factory2 = factorys2[j];
+			TraderRecipe traderRecipe2 = factory2.create(this, this.random);
+			if (traderRecipe2 != null) {
+				traderRecipeList.add(traderRecipe2);
 			}
 		}
 	}
@@ -151,9 +151,9 @@ public class WanderingTraderEntity extends AbstractVillagerEntity {
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putInt("DespawnDelay", this.field_17725);
-		if (this.field_17758 != null) {
-			compoundTag.put("WanderTarget", TagHelper.serializeBlockPos(this.field_17758));
+		compoundTag.putInt("DespawnDelay", this.despawnDelay);
+		if (this.wanderTarget != null) {
+			compoundTag.put("WanderTarget", TagHelper.serializeBlockPos(this.wanderTarget));
 		}
 	}
 
@@ -161,11 +161,11 @@ public class WanderingTraderEntity extends AbstractVillagerEntity {
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
 		if (compoundTag.containsKey("DespawnDelay", 99)) {
-			this.field_17725 = compoundTag.getInt("DespawnDelay");
+			this.despawnDelay = compoundTag.getInt("DespawnDelay");
 		}
 
 		if (compoundTag.containsKey("WanderTarget")) {
-			this.field_17758 = TagHelper.deserializeBlockPos(compoundTag.getCompound("WanderTarget"));
+			this.wanderTarget = TagHelper.deserializeBlockPos(compoundTag.getCompound("WanderTarget"));
 		}
 	}
 
@@ -175,8 +175,8 @@ public class WanderingTraderEntity extends AbstractVillagerEntity {
 	}
 
 	@Override
-	protected void method_18008(VillagerRecipe villagerRecipe) {
-		if (villagerRecipe.getRewardExp()) {
+	protected void afterUsing(TraderRecipe traderRecipe) {
+		if (traderRecipe.getRewardExp()) {
 			int i = 3 + this.random.nextInt(4);
 			this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.x, this.y + 0.5, this.z, i));
 		}
@@ -198,82 +198,82 @@ public class WanderingTraderEntity extends AbstractVillagerEntity {
 	}
 
 	@Override
-	protected SoundEvent method_18012(boolean bl) {
+	protected SoundEvent getTradingSound(boolean bl) {
 		return bl ? SoundEvents.field_17752 : SoundEvents.field_17750;
 	}
 
 	@Override
-	protected SoundEvent method_18010() {
+	protected SoundEvent getYesSound() {
 		return SoundEvents.field_17752;
 	}
 
-	public void method_18013(int i) {
-		this.field_17725 = i;
+	public void setDespawnDelay(int i) {
+		this.despawnDelay = i;
 	}
 
-	public int method_18014() {
-		return this.field_17725;
+	public int getDespawnDelay() {
+		return this.despawnDelay;
 	}
 
 	@Override
 	public void update() {
 		super.update();
-		if (this.field_17725 > 0 && !this.hasCustomer() && --this.field_17725 == 0) {
+		if (this.despawnDelay > 0 && !this.hasCustomer() && --this.despawnDelay == 0) {
 			this.invalidate();
 		}
 	}
 
-	public void method_18069(@Nullable BlockPos blockPos) {
-		this.field_17758 = blockPos;
+	public void setWanderTarget(@Nullable BlockPos blockPos) {
+		this.wanderTarget = blockPos;
 	}
 
 	@Nullable
-	private BlockPos method_18065() {
-		return this.field_17758;
+	private BlockPos getWanderTarget() {
+		return this.wanderTarget;
 	}
 
-	class class_3994 extends Goal {
+	class WanderToTargetGoal extends Goal {
 		final WanderingTraderEntity field_17759;
-		final double field_17760;
-		final double field_17761;
+		final double proximityDistance;
+		final double speed;
 
-		class_3994(WanderingTraderEntity wanderingTraderEntity2, double d, double e) {
+		WanderToTargetGoal(WanderingTraderEntity wanderingTraderEntity2, double d, double e) {
 			this.field_17759 = wanderingTraderEntity2;
-			this.field_17760 = d;
-			this.field_17761 = e;
+			this.proximityDistance = d;
+			this.speed = e;
 			this.setControlBits(1);
 		}
 
 		@Override
 		public void onRemove() {
-			this.field_17759.method_18069(null);
+			this.field_17759.setWanderTarget(null);
 			WanderingTraderEntity.this.navigation.stop();
 		}
 
 		@Override
 		public boolean canStart() {
-			BlockPos blockPos = this.field_17759.method_18065();
-			return blockPos != null && this.method_18070(blockPos, this.field_17760);
+			BlockPos blockPos = this.field_17759.getWanderTarget();
+			return blockPos != null && this.isTooFarFrom(blockPos, this.proximityDistance);
 		}
 
 		@Override
 		public void tick() {
-			BlockPos blockPos = this.field_17759.method_18065();
+			BlockPos blockPos = this.field_17759.getWanderTarget();
 			if (blockPos != null && WanderingTraderEntity.this.navigation.isIdle()) {
-				if (this.method_18070(blockPos, 10.0)) {
+				if (this.isTooFarFrom(blockPos, 10.0)) {
 					Vec3d vec3d = new Vec3d(
 							(double)blockPos.getX() - this.field_17759.x, (double)blockPos.getY() - this.field_17759.y, (double)blockPos.getZ() - this.field_17759.z
 						)
 						.normalize();
 					Vec3d vec3d2 = vec3d.multiply(10.0).add(this.field_17759.x, this.field_17759.y, this.field_17759.z);
-					WanderingTraderEntity.this.navigation.startMovingTo(vec3d2.x, vec3d2.y, vec3d2.z, this.field_17761);
+					WanderingTraderEntity.this.navigation.startMovingTo(vec3d2.x, vec3d2.y, vec3d2.z, this.speed);
 				} else {
-					WanderingTraderEntity.this.navigation.startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), this.field_17761);
+					WanderingTraderEntity.this.navigation.startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), this.speed);
 				}
 			}
 		}
 
-		private boolean method_18070(BlockPos blockPos, double d) {
+		private boolean isTooFarFrom(BlockPos blockPos, double d) {
 			return this.field_17759.squaredDistanceTo(blockPos) > d * d;
 		}
 	}

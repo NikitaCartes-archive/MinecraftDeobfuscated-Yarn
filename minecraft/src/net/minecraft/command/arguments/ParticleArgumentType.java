@@ -44,7 +44,7 @@ public class ParticleArgumentType implements ArgumentType<ParticleParameters> {
 	public static ParticleParameters readParameters(StringReader stringReader) throws CommandSyntaxException {
 		Identifier identifier = Identifier.parse(stringReader);
 		ParticleType<?> particleType = (ParticleType<?>)Registry.PARTICLE_TYPE
-			.getOptional(identifier)
+			.getOrEmpty(identifier)
 			.orElseThrow(() -> UNKNOWN_PARTICLE_EXCEPTION.create(identifier));
 		return readParameters(stringReader, (ParticleType<ParticleParameters>)particleType);
 	}
@@ -55,6 +55,6 @@ public class ParticleArgumentType implements ArgumentType<ParticleParameters> {
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-		return CommandSource.suggestIdentifiers(Registry.PARTICLE_TYPE.keys(), suggestionsBuilder);
+		return CommandSource.suggestIdentifiers(Registry.PARTICLE_TYPE.getIds(), suggestionsBuilder);
 	}
 }

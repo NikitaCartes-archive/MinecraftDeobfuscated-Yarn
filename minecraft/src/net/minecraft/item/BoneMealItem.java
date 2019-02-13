@@ -33,7 +33,7 @@ public class BoneMealItem extends Item {
 				world.playEvent(2005, blockPos, 0);
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.field_5812;
 		} else {
 			BlockState blockState = world.getBlockState(blockPos);
 			boolean bl = Block.isFaceFullSquare(blockState.getCollisionShape(world, blockPos), itemUsageContext.getFacing());
@@ -42,7 +42,7 @@ public class BoneMealItem extends Item {
 					world.playEvent(2005, blockPos2, 0);
 				}
 
-				return ActionResult.SUCCESS;
+				return ActionResult.field_5812;
 			} else {
 				return ActionResult.PASS;
 			}

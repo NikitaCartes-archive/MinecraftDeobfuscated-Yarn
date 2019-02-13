@@ -22,7 +22,7 @@ import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.ai.pathing.EntityMobNavigation;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.passive.AbstractVillagerEntity;
+import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
@@ -54,7 +54,7 @@ public class VindicatorEntity extends IllagerEntity {
 		this.goalSelector.add(4, new MeleeAttackGoal(this, 1.0, false));
 		this.targetSelector.add(1, new class_1399(this, RaiderEntity.class).method_6318());
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
-		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractVillagerEntity.class, true));
+		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractTraderEntity.class, true));
 		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, true));
 		this.targetSelector.add(4, new VindicatorEntity.class_1633(this));
 		this.goalSelector.add(8, new WanderAroundGoal(this, 0.6));

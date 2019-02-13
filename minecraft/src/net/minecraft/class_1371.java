@@ -60,7 +60,7 @@ public class class_1371 extends Goal {
 		if (!(e > d)) {
 			if (this.field_6540 <= 0) {
 				this.field_6540 = 20;
-				this.field_6541.method_6121(this.field_6539);
+				this.field_6541.attack(this.field_6539);
 			}
 		}
 	}

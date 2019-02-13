@@ -43,23 +43,20 @@ public class ToggleButtonWidget extends ButtonWidget {
 
 	@Override
 	public void draw(int i, int j, float f) {
-		if (this.visible) {
-			this.hovered = i >= this.x && j >= this.y && i < this.x + this.width && j < this.y + this.height;
-			MinecraftClient minecraftClient = MinecraftClient.getInstance();
-			minecraftClient.getTextureManager().bindTexture(this.texture);
-			GlStateManager.disableDepthTest();
-			int k = this.u;
-			int l = this.v;
-			if (this.toggled) {
-				k += this.pressedUOffset;
-			}
-
-			if (this.hovered) {
-				l += this.hoverVOffset;
-			}
-
-			this.drawTexturedRect(this.x, this.y, k, l, this.width, this.height);
-			GlStateManager.enableDepthTest();
+		MinecraftClient minecraftClient = MinecraftClient.getInstance();
+		minecraftClient.getTextureManager().bindTexture(this.texture);
+		GlStateManager.disableDepthTest();
+		int k = this.u;
+		int l = this.v;
+		if (this.toggled) {
+			k += this.pressedUOffset;
 		}
+
+		if (this.isHovered()) {
+			l += this.hoverVOffset;
+		}
+
+		this.drawTexturedRect(this.x, this.y, k, l, this.width, this.height);
+		GlStateManager.enableDepthTest();
 	}
 }

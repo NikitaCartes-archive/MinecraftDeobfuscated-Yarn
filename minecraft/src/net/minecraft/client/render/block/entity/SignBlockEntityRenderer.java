@@ -10,7 +10,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.StandingSignBlock;
 import net.minecraft.block.WallSignBlock;
 import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
@@ -63,7 +63,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		GlStateManager.scalef(0.6666667F, -0.6666667F, -0.6666667F);
 		this.model.render();
 		GlStateManager.popMatrix();
-		FontRenderer fontRenderer = this.getFontRenderer();
+		TextRenderer textRenderer = this.getFontRenderer();
 		float j = 0.010416667F;
 		GlStateManager.translatef(0.0F, 0.33333334F, 0.046666667F);
 		GlStateManager.scalef(0.010416667F, -0.010416667F, 0.010416667F);
@@ -73,29 +73,29 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		if (i < 0) {
 			for (int l = 0; l < 4; l++) {
 				String string = signBlockEntity.getTextBeingEditedOnRow(l, textComponent -> {
-					List<TextComponent> list = TextComponentUtil.wrapLines(textComponent, 90, fontRenderer, false, true);
+					List<TextComponent> list = TextComponentUtil.wrapLines(textComponent, 90, textRenderer, false, true);
 					return list.isEmpty() ? "" : ((TextComponent)list.get(0)).getFormattedText();
 				});
 				if (string != null) {
-					fontRenderer.draw(string, (float)(-fontRenderer.getStringWidth(string) / 2), (float)(l * 10 - signBlockEntity.text.length * 5), k);
+					textRenderer.draw(string, (float)(-textRenderer.getStringWidth(string) / 2), (float)(l * 10 - signBlockEntity.text.length * 5), k);
 					if (l == signBlockEntity.getCurrentRow() && signBlockEntity.getSelectionStart() >= 0) {
-						int m = fontRenderer.getStringWidth(string.substring(0, Math.max(Math.min(signBlockEntity.getSelectionStart(), string.length()), 0)));
-						int n = fontRenderer.isRightToLeft() ? -1 : 1;
-						int o = (m - fontRenderer.getStringWidth(string) / 2) * n;
+						int m = textRenderer.getStringWidth(string.substring(0, Math.max(Math.min(signBlockEntity.getSelectionStart(), string.length()), 0)));
+						int n = textRenderer.isRightToLeft() ? -1 : 1;
+						int o = (m - textRenderer.getStringWidth(string) / 2) * n;
 						int p = l * 10 - signBlockEntity.text.length * 5;
 						if (signBlockEntity.isCaretVisible()) {
 							if (signBlockEntity.getSelectionStart() < string.length()) {
 								Drawable.drawRect(o, p - 1, o + 1, p + 9, 0xFF000000 | k);
 							} else {
-								fontRenderer.draw("_", (float)o, (float)p, k);
+								textRenderer.draw("_", (float)o, (float)p, k);
 							}
 						}
 
 						if (signBlockEntity.getSelectionEnd() != signBlockEntity.getSelectionStart()) {
 							int q = Math.min(signBlockEntity.getSelectionStart(), signBlockEntity.getSelectionEnd());
 							int r = Math.max(signBlockEntity.getSelectionStart(), signBlockEntity.getSelectionEnd());
-							int s = (fontRenderer.getStringWidth(string.substring(0, q)) - fontRenderer.getStringWidth(string) / 2) * n;
-							int t = (fontRenderer.getStringWidth(string.substring(0, r)) - fontRenderer.getStringWidth(string) / 2) * n;
+							int s = (textRenderer.getStringWidth(string.substring(0, q)) - textRenderer.getStringWidth(string) / 2) * n;
+							int t = (textRenderer.getStringWidth(string.substring(0, r)) - textRenderer.getStringWidth(string) / 2) * n;
 							this.method_16210(Math.min(s, t), p, Math.max(s, t), p + 9);
 						}
 					}

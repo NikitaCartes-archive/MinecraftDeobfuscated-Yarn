@@ -87,7 +87,7 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.id = packetByteBuf.readVarInt();
 		this.uuid = packetByteBuf.readUuid();
-		this.entityTypeId = Registry.ENTITY_TYPE.getInt(packetByteBuf.readVarInt());
+		this.entityTypeId = Registry.ENTITY_TYPE.get(packetByteBuf.readVarInt());
 		this.x = packetByteBuf.readDouble();
 		this.y = packetByteBuf.readDouble();
 		this.z = packetByteBuf.readDouble();
@@ -116,7 +116,7 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11178(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11112(this);
+		clientPlayPacketListener.onEntitySpawn(this);
 	}
 
 	@Environment(EnvType.CLIENT)

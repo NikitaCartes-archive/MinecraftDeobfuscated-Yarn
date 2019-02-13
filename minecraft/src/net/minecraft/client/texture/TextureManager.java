@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_4005;
@@ -27,7 +28,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class TextureManager implements TextureTickListener, ResourceReloadListener<Void> {
+public class TextureManager implements TextureTickListener, ResourceReloadListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final Identifier field_5285 = new Identifier("");
 	private final Map<Identifier, Texture> textures = Maps.<Identifier, Texture>newHashMap();
@@ -101,9 +102,9 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 		return identifier;
 	}
 
-	public CompletableFuture<Void> method_18168(Identifier identifier) {
+	public CompletableFuture<Void> method_18168(Identifier identifier, Executor executor) {
 		if (!this.textures.containsKey(identifier)) {
-			class_4005 lv = new class_4005(this.resourceContainer, identifier);
+			class_4005 lv = new class_4005(this.resourceContainer, identifier, executor);
 			this.textures.put(identifier, lv);
 			return lv.method_18148().thenRunAsync(() -> this.registerTexture(identifier, lv), MinecraftClient.getInstance());
 		} else {
@@ -126,23 +127,25 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 	}
 
 	@Override
-	public CompletableFuture<Void> prepare(ResourceManager resourceManager, Profiler profiler) {
-		return CompletableFuture.allOf(MainMenuScreen.method_18105(this), this.method_18168(ButtonWidget.WIDGET_TEX));
-	}
+	public CompletableFuture<Void> apply(
+		ResourceReloadListener.Helper helper, ResourceManager resourceManager, Profiler profiler, Profiler profiler2, Executor executor, Executor executor2
+	) {
+		return CompletableFuture.allOf(MainMenuScreen.method_18105(this, executor), this.method_18168(ButtonWidget.WIDGET_TEX, executor))
+			.thenCompose(helper::waitForAll)
+			.thenAcceptAsync(void_ -> {
+				MissingSprite.getMissingSpriteTexture();
+				Iterator<Entry<Identifier, Texture>> iterator = this.textures.entrySet().iterator();
 
-	public void method_18167(ResourceManager resourceManager, Void void_, Profiler profiler) {
-		MissingSprite.getMissingSpriteTexture();
-		Iterator<Entry<Identifier, Texture>> iterator = this.textures.entrySet().iterator();
-
-		while (iterator.hasNext()) {
-			Entry<Identifier, Texture> entry = (Entry<Identifier, Texture>)iterator.next();
-			Identifier identifier = (Identifier)entry.getKey();
-			Texture texture = (Texture)entry.getValue();
-			if (texture == MissingSprite.getMissingSpriteTexture() && !identifier.equals(MissingSprite.getMissingSpriteId())) {
-				iterator.remove();
-			} else {
-				texture.method_18169(this, resourceManager, identifier);
-			}
-		}
+				while (iterator.hasNext()) {
+					Entry<Identifier, Texture> entry = (Entry<Identifier, Texture>)iterator.next();
+					Identifier identifier = (Identifier)entry.getKey();
+					Texture texture = (Texture)entry.getValue();
+					if (texture == MissingSprite.getMissingSpriteTexture() && !identifier.equals(MissingSprite.getMissingSpriteId())) {
+						iterator.remove();
+					} else {
+						texture.method_18169(this, resourceManager, identifier, executor2);
+					}
+				}
+			}, executor2);
 	}
 }

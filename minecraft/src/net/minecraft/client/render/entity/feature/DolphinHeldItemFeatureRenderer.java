@@ -53,7 +53,7 @@ public class DolphinHeldItemFeatureRenderer extends FeatureRenderer<DolphinEntit
 					GlStateManager.translatef(0.0F, 1.0F + h * 0.8F, -1.0F + h * 0.2F);
 				}
 
-				this.field_4847.renderHeldItem(itemStack, livingEntity, ModelTransformation.Type.GROUND, false);
+				this.field_4847.renderHeldItem(itemStack, livingEntity, ModelTransformation.Type.field_4318, false);
 				if (bl) {
 					GlStateManager.depthMask(true);
 				}

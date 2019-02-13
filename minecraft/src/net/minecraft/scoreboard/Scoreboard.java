@@ -283,7 +283,7 @@ public class Scoreboard {
 			default:
 				if (i >= 3 && i <= 18) {
 					TextFormat textFormat = TextFormat.byId(i - 3);
-					if (textFormat != null && textFormat != TextFormat.RESET) {
+					if (textFormat != null && textFormat != TextFormat.field_1070) {
 						return "sidebar.team." + textFormat.getFormatName();
 					}
 				}

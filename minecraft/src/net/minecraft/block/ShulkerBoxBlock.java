@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.client.item.TooltipOptions;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.container.Container;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.VerticalEntityPosition;
@@ -168,8 +168,8 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable BlockView blockView, List<TextComponent> list, TooltipOptions tooltipOptions) {
-		super.buildTooltip(itemStack, blockView, list, tooltipOptions);
+	public void buildTooltip(ItemStack itemStack, @Nullable BlockView blockView, List<TextComponent> list, TooltipContext tooltipContext) {
+		super.buildTooltip(itemStack, blockView, list, tooltipContext);
 		CompoundTag compoundTag = itemStack.getSubCompoundTag("BlockEntityTag");
 		if (compoundTag != null) {
 			if (compoundTag.containsKey("LootTable", 8)) {
@@ -195,7 +195,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 				}
 
 				if (j - i > 0) {
-					list.add(new TranslatableTextComponent("container.shulkerBox.more", j - i).applyFormat(TextFormat.ITALIC));
+					list.add(new TranslatableTextComponent("container.shulkerBox.more", j - i).applyFormat(TextFormat.field_1056));
 				}
 			}
 		}
@@ -259,36 +259,36 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 			return Blocks.field_10603;
 		} else {
 			switch (dyeColor) {
-				case WHITE:
+				case field_7952:
 					return Blocks.field_10199;
-				case ORANGE:
+				case field_7946:
 					return Blocks.field_10407;
-				case MAGENTA:
+				case field_7958:
 					return Blocks.field_10063;
-				case LIGHT_BLUE:
+				case field_7951:
 					return Blocks.field_10203;
-				case YELLOW:
+				case field_7947:
 					return Blocks.field_10600;
-				case LIME:
+				case field_7961:
 					return Blocks.field_10275;
-				case PINK:
+				case field_7954:
 					return Blocks.field_10051;
-				case GRAY:
+				case field_7944:
 					return Blocks.field_10140;
-				case LIGHT_GRAY:
+				case field_7967:
 					return Blocks.field_10320;
-				case CYAN:
+				case field_7955:
 					return Blocks.field_10532;
-				case PURPLE:
+				case field_7945:
 				default:
 					return Blocks.field_10268;
-				case BLUE:
+				case field_7966:
 					return Blocks.field_10605;
-				case BROWN:
+				case field_7957:
 					return Blocks.field_10373;
-				case GREEN:
+				case field_7942:
 					return Blocks.field_10055;
-				case RED:
+				case field_7964:
 					return Blocks.field_10068;
 				case BLACK:
 					return Blocks.field_10371;

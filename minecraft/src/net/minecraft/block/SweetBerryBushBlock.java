@@ -4,6 +4,7 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.damage.DamageSource;
@@ -59,7 +60,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-		if (entity instanceof LivingEntity) {
+		if (entity instanceof LivingEntity && entity.getType() != EntityType.field_17943) {
 			entity.slowMovement(blockState, new Vec3d(0.8F, 0.75, 0.8F));
 			if (!world.isClient && (Integer)blockState.get(AGE) > 0 && (entity.prevRenderX != entity.x || entity.prevRenderZ != entity.z)) {
 				double d = Math.abs(entity.x - entity.prevRenderX);

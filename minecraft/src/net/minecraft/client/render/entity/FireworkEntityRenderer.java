@@ -23,7 +23,7 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
 		GlStateManager.translatef((float)d, (float)e, (float)f);
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.rotatef(-this.renderManager.field_4679, 0.0F, 1.0F, 0.0F);
-		GlStateManager.rotatef((float)(this.renderManager.settings.field_1850 == 2 ? -1 : 1) * this.renderManager.field_4677, 1.0F, 0.0F, 0.0F);
+		GlStateManager.rotatef((float)(this.renderManager.settings.perspective == 2 ? -1 : 1) * this.renderManager.field_4677, 1.0F, 0.0F, 0.0F);
 		if (fireworkEntity.method_7477()) {
 			GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
 		} else {
@@ -36,7 +36,7 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(fireworkEntity));
 		}
 
-		this.field_4703.renderItem(fireworkEntity.getItem(), ModelTransformation.Type.GROUND);
+		this.field_4703.renderItem(fireworkEntity.getItem(), ModelTransformation.Type.field_4318);
 		if (this.renderOutlines) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();

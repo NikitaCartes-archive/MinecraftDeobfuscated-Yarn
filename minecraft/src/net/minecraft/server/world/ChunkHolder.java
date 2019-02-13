@@ -153,7 +153,7 @@ public class ChunkHolder {
 	public void method_14012(LightType lightType, int i) {
 		WorldChunk worldChunk = this.getWorldChunk();
 		if (worldChunk != null) {
-			if (lightType == LightType.SKY_LIGHT) {
+			if (lightType == LightType.SKY) {
 				this.blockLightUpdateBits |= 1 << i - -1;
 			} else {
 				this.skyLightUpdateBits |= 1 << i - -1;
@@ -218,7 +218,7 @@ public class ChunkHolder {
 	private void sendBlockEntityUpdatePacket(World world, BlockPos blockPos) {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity != null) {
-			BlockEntityUpdateS2CPacket blockEntityUpdateS2CPacket = blockEntity.method_16886();
+			BlockEntityUpdateS2CPacket blockEntityUpdateS2CPacket = blockEntity.toUpdatePacket();
 			if (blockEntityUpdateS2CPacket != null) {
 				this.sendPacketToPlayersWatching(blockEntityUpdateS2CPacket, false);
 			}

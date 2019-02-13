@@ -40,8 +40,8 @@ public class SkinSettingsScreen extends Screen {
 			) {
 				@Override
 				public void onPressed(double d, double e) {
-					SkinSettingsScreen.this.client.options.updateOption(GameOptions.Option.MAIN_HAND, 1);
-					this.text = SkinSettingsScreen.this.client.options.getTranslatedName(GameOptions.Option.MAIN_HAND);
+					SkinSettingsScreen.this.client.options.setInteger(GameOptions.Option.MAIN_HAND, 1);
+					this.setText(SkinSettingsScreen.this.client.options.getTranslatedName(GameOptions.Option.MAIN_HAND));
 					SkinSettingsScreen.this.client.options.onPlayerModelPartChange();
 				}
 			}
@@ -95,7 +95,7 @@ public class SkinSettingsScreen extends Screen {
 		@Override
 		public void onPressed(double d, double e) {
 			SkinSettingsScreen.this.client.options.togglePlayerModelPart(this.field_2579);
-			this.text = SkinSettingsScreen.this.method_2248(this.field_2579);
+			this.setText(SkinSettingsScreen.this.method_2248(this.field_2579));
 		}
 	}
 }

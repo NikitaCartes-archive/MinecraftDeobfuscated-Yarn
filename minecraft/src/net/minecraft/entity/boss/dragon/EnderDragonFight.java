@@ -433,7 +433,7 @@ public class EnderDragonFight {
 			this.generateEndPortal(true);
 		} else {
 			this.countAliveCrystals();
-			Entity entity = this.world.method_14190(this.dragonUuid);
+			Entity entity = this.world.getEntity(this.dragonUuid);
 			if (entity instanceof EnderDragonEntity) {
 				((EnderDragonEntity)entity).crystalDestroyed(enderCrystalEntity, new BlockPos(enderCrystalEntity), damageSource);
 			}

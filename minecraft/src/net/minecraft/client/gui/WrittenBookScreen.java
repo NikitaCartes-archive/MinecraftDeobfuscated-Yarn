@@ -32,42 +32,42 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class WrittenBookScreen extends Screen {
-	public static final WrittenBookScreen.class_3931 EMPTY_PAGE_PROVIDER = new WrittenBookScreen.class_3931() {
+	public static final WrittenBookScreen.Contents EMPTY_PROVIDER = new WrittenBookScreen.Contents() {
 		@Override
-		public int method_17560() {
+		public int getLineCount() {
 			return 0;
 		}
 
 		@Override
-		public TextComponent method_17561(int i) {
+		public TextComponent getLine(int i) {
 			return new StringTextComponent("");
 		}
 	};
 	public static final Identifier BOOK_TEXTURE = new Identifier("textures/gui/book.png");
-	private WrittenBookScreen.class_3931 pageProvider;
+	private WrittenBookScreen.Contents contents;
 	private int pageIndex;
 	private List<TextComponent> cachedPage = Collections.emptyList();
 	private int cachedPageIndex = -1;
 	private BookPageButtonWidget lastPageButton;
 	private BookPageButtonWidget nextPageButton;
 
-	public WrittenBookScreen(WrittenBookScreen.class_3931 arg) {
-		this.pageProvider = arg;
+	public WrittenBookScreen(WrittenBookScreen.Contents contents) {
+		this.contents = contents;
 	}
 
 	public WrittenBookScreen() {
-		this(EMPTY_PAGE_PROVIDER);
+		this(EMPTY_PROVIDER);
 	}
 
-	public void setPageProvider(WrittenBookScreen.class_3931 arg) {
-		this.pageProvider = arg;
-		this.pageIndex = MathHelper.clamp(this.pageIndex, 0, arg.method_17560());
+	public void setPageProvider(WrittenBookScreen.Contents contents) {
+		this.contents = contents;
+		this.pageIndex = MathHelper.clamp(this.pageIndex, 0, contents.getLineCount());
 		this.updatePageButtons();
 		this.cachedPageIndex = -1;
 	}
 
 	public boolean setPage(int i) {
-		int j = MathHelper.clamp(i, 0, this.pageProvider.method_17560() - 1);
+		int j = MathHelper.clamp(i, 0, this.contents.getLineCount() - 1);
 		if (j != this.pageIndex) {
 			this.pageIndex = j;
 			this.updatePageButtons();
@@ -78,7 +78,7 @@ public class WrittenBookScreen extends Screen {
 		}
 	}
 
-	protected boolean method_17789(int i) {
+	protected boolean jumpToPage(int i) {
 		return this.setPage(i);
 	}
 
@@ -126,7 +126,7 @@ public class WrittenBookScreen extends Screen {
 	}
 
 	private int getPageCount() {
-		return this.pageProvider.method_17560();
+		return this.contents.getLineCount();
 	}
 
 	protected void goToPreviousPage() {
@@ -177,7 +177,7 @@ public class WrittenBookScreen extends Screen {
 		this.drawTexturedRect(k, 2, 0, 0, 192, 192);
 		String string = I18n.translate("book.pageIndicator", this.pageIndex + 1, Math.max(this.getPageCount(), 1));
 		if (this.cachedPageIndex != this.pageIndex) {
-			TextComponent textComponent = this.pageProvider.method_17563(this.pageIndex);
+			TextComponent textComponent = this.contents.getLineOrDefault(this.pageIndex);
 			this.cachedPage = TextComponentUtil.wrapLines(textComponent, 114, this.fontRenderer, true, true);
 		}
 
@@ -225,7 +225,7 @@ public class WrittenBookScreen extends Screen {
 
 			try {
 				int i = Integer.parseInt(string) - 1;
-				return this.method_17789(i);
+				return this.jumpToPage(i);
 			} catch (Exception var5) {
 				return false;
 			}
@@ -256,7 +256,7 @@ public class WrittenBookScreen extends Screen {
 
 						for (TextComponent textComponent2 : textComponent) {
 							if (textComponent2 instanceof StringTextComponent) {
-								m += this.client.fontRenderer.getStringWidth(textComponent2.getFormattedText());
+								m += this.client.textRenderer.getStringWidth(textComponent2.getFormattedText());
 								if (m > i) {
 									return textComponent2;
 								}
@@ -274,7 +274,7 @@ public class WrittenBookScreen extends Screen {
 		}
 	}
 
-	public static List<String> method_17555(CompoundTag compoundTag) {
+	public static List<String> getLines(CompoundTag compoundTag) {
 		ListTag listTag = compoundTag.getList("pages", 8).copy();
 		Builder<String> builder = ImmutableList.builder();
 
@@ -290,72 +290,72 @@ public class WrittenBookScreen extends Screen {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public interface class_3931 {
-		int method_17560();
+	public interface Contents {
+		int getLineCount();
 
-		TextComponent method_17561(int i);
+		TextComponent getLine(int i);
 
-		default TextComponent method_17563(int i) {
-			return (TextComponent)(i >= 0 && i < this.method_17560() ? this.method_17561(i) : new StringTextComponent(""));
+		default TextComponent getLineOrDefault(int i) {
+			return (TextComponent)(i >= 0 && i < this.getLineCount() ? this.getLine(i) : new StringTextComponent(""));
 		}
 
-		static WrittenBookScreen.class_3931 method_17562(ItemStack itemStack) {
+		static WrittenBookScreen.Contents create(ItemStack itemStack) {
 			Item item = itemStack.getItem();
 			if (item == Items.field_8360) {
-				return new WrittenBookScreen.class_3933(itemStack);
+				return new WrittenBookScreen.WrittenBookContents(itemStack);
 			} else {
-				return (WrittenBookScreen.class_3931)(item == Items.field_8674 ? new WrittenBookScreen.class_3932(itemStack) : WrittenBookScreen.EMPTY_PAGE_PROVIDER);
+				return (WrittenBookScreen.Contents)(item == Items.field_8674 ? new WrittenBookScreen.WritableBookContents(itemStack) : WrittenBookScreen.EMPTY_PROVIDER);
 			}
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class class_3932 implements WrittenBookScreen.class_3931 {
-		private final List<String> field_17419;
+	public static class WritableBookContents implements WrittenBookScreen.Contents {
+		private final List<String> lines;
 
-		public class_3932(ItemStack itemStack) {
-			this.field_17419 = method_17564(itemStack);
+		public WritableBookContents(ItemStack itemStack) {
+			this.lines = getLines(itemStack);
 		}
 
-		private static List<String> method_17564(ItemStack itemStack) {
+		private static List<String> getLines(ItemStack itemStack) {
 			CompoundTag compoundTag = itemStack.getTag();
-			return (List<String>)(compoundTag != null ? WrittenBookScreen.method_17555(compoundTag) : ImmutableList.of());
+			return (List<String>)(compoundTag != null ? WrittenBookScreen.getLines(compoundTag) : ImmutableList.of());
 		}
 
 		@Override
-		public int method_17560() {
-			return this.field_17419.size();
+		public int getLineCount() {
+			return this.lines.size();
 		}
 
 		@Override
-		public TextComponent method_17561(int i) {
-			return new StringTextComponent((String)this.field_17419.get(i));
+		public TextComponent getLine(int i) {
+			return new StringTextComponent((String)this.lines.get(i));
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class class_3933 implements WrittenBookScreen.class_3931 {
-		private final List<String> field_17420;
+	public static class WrittenBookContents implements WrittenBookScreen.Contents {
+		private final List<String> lines;
 
-		public class_3933(ItemStack itemStack) {
-			this.field_17420 = method_17565(itemStack);
+		public WrittenBookContents(ItemStack itemStack) {
+			this.lines = getLines(itemStack);
 		}
 
-		private static List<String> method_17565(ItemStack itemStack) {
+		private static List<String> getLines(ItemStack itemStack) {
 			CompoundTag compoundTag = itemStack.getTag();
-			return (List<String>)(compoundTag != null && WrittenBookItem.method_8053(compoundTag)
-				? WrittenBookScreen.method_17555(compoundTag)
-				: ImmutableList.of(new TranslatableTextComponent("book.invalid.tag").applyFormat(TextFormat.DARK_RED).getFormattedText()));
+			return (List<String>)(compoundTag != null && WrittenBookItem.isValidBook(compoundTag)
+				? WrittenBookScreen.getLines(compoundTag)
+				: ImmutableList.of(new TranslatableTextComponent("book.invalid.tag").applyFormat(TextFormat.field_1079).getFormattedText()));
 		}
 
 		@Override
-		public int method_17560() {
-			return this.field_17420.size();
+		public int getLineCount() {
+			return this.lines.size();
 		}
 
 		@Override
-		public TextComponent method_17561(int i) {
-			String string = (String)this.field_17420.get(i);
+		public TextComponent getLine(int i) {
+			String string = (String)this.lines.get(i);
 
 			try {
 				TextComponent textComponent = TextComponent.Serializer.fromJsonString(string);

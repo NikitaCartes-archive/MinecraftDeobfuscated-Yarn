@@ -72,7 +72,7 @@ public class CraftingTableScreen extends ContainerScreen<CraftingTableContainer>
 			this.recipeBookGui.drawGhostSlots(this.left, this.top, true, f);
 		}
 
-		this.drawMousoverTooltip(i, j);
+		this.drawMouseoverTooltip(i, j);
 		this.recipeBookGui.drawTooltip(this.left, this.top, i, j);
 	}
 

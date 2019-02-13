@@ -4,7 +4,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.item.TooltipOptions;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -35,7 +35,7 @@ public class TippedArrowItem extends ArrowItem {
 	}
 
 	@Override
-	public void addStacksForDisplay(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
+	public void appendItemsForGroup(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
 		if (this.isInItemGroup(itemGroup)) {
 			for (Potion potion : Registry.POTION) {
 				if (!potion.getEffects().isEmpty()) {
@@ -47,7 +47,7 @@ public class TippedArrowItem extends ArrowItem {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
 		PotionUtil.buildTooltip(itemStack, list, 0.125F);
 	}
 

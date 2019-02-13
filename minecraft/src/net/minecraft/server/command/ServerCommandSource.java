@@ -350,7 +350,7 @@ public class ServerCommandSource implements CommandSource {
 
 	private void sendToOps(TextComponent textComponent) {
 		TextComponent textComponent2 = new TranslatableTextComponent("chat.type.admin", this.getDisplayName(), textComponent)
-			.applyFormat(new TextFormat[]{TextFormat.GRAY, TextFormat.ITALIC});
+			.applyFormat(new TextFormat[]{TextFormat.field_1080, TextFormat.field_1056});
 		if (this.minecraftServer.getGameRules().getBoolean("sendCommandFeedback")) {
 			for (ServerPlayerEntity serverPlayerEntity : this.minecraftServer.getPlayerManager().getPlayerList()) {
 				if (serverPlayerEntity != this.output && this.minecraftServer.getPlayerManager().isOperator(serverPlayerEntity.getGameProfile())) {
@@ -366,7 +366,7 @@ public class ServerCommandSource implements CommandSource {
 
 	public void sendError(TextComponent textComponent) {
 		if (this.output.shouldTrackOutput() && !this.silent) {
-			this.output.appendCommandFeedback(new StringTextComponent("").append(textComponent).applyFormat(TextFormat.RED));
+			this.output.appendCommandFeedback(new StringTextComponent("").append(textComponent).applyFormat(TextFormat.field_1061));
 		}
 	}
 
@@ -388,7 +388,7 @@ public class ServerCommandSource implements CommandSource {
 
 	@Override
 	public Collection<Identifier> getSoundIds() {
-		return Registry.SOUND_EVENT.keys();
+		return Registry.SOUND_EVENT.getIds();
 	}
 
 	@Override

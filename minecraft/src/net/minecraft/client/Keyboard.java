@@ -53,10 +53,10 @@ public class Keyboard {
 	private void debugWarn(String string, Object... objects) {
 		this.client
 			.inGameHud
-			.getHudChat()
+			.getChatHud()
 			.addMessage(
 				new StringTextComponent("")
-					.append(new TranslatableTextComponent("debug.prefix").applyFormat(new TextFormat[]{TextFormat.YELLOW, TextFormat.BOLD}))
+					.append(new TranslatableTextComponent("debug.prefix").applyFormat(new TextFormat[]{TextFormat.field_1054, TextFormat.field_1067}))
 					.append(" ")
 					.append(new TranslatableTextComponent(string, objects))
 			);
@@ -65,10 +65,10 @@ public class Keyboard {
 	private void debugError(String string, Object... objects) {
 		this.client
 			.inGameHud
-			.getHudChat()
+			.getChatHud()
 			.addMessage(
 				new StringTextComponent("")
-					.append(new TranslatableTextComponent("debug.prefix").applyFormat(new TextFormat[]{TextFormat.RED, TextFormat.BOLD}))
+					.append(new TranslatableTextComponent("debug.prefix").applyFormat(new TextFormat[]{TextFormat.field_1061, TextFormat.field_1067}))
 					.append(" ")
 					.append(new TranslatableTextComponent(string, objects))
 			);
@@ -109,7 +109,7 @@ public class Keyboard {
 					return true;
 				case 68:
 					if (this.client.inGameHud != null) {
-						this.client.inGameHud.getHudChat().clear(false);
+						this.client.inGameHud.getChatHud().clear(false);
 					}
 
 					return true;
@@ -124,7 +124,7 @@ public class Keyboard {
 				default:
 					return false;
 				case 70:
-					this.client.options.updateOption(GameOptions.Option.RENDER_DISTANCE, Screen.isShiftPressed() ? -1 : 1);
+					this.client.options.setInteger(GameOptions.Option.RENDER_DISTANCE, Screen.isShiftPressed() ? -1 : 1);
 					this.debugWarn("debug.cycle_renderdistance.message", this.client.options.viewDistance);
 					return true;
 				case 71:
@@ -159,7 +159,7 @@ public class Keyboard {
 					return true;
 				case 81:
 					this.debugWarn("debug.help.message");
-					ChatHud chatHud = this.client.inGameHud.getHudChat();
+					ChatHud chatHud = this.client.inGameHud.getChatHud();
 					chatHud.addMessage(new TranslatableTextComponent("debug.reload_chunks.help"));
 					chatHud.addMessage(new TranslatableTextComponent("debug.show_hitboxes.help"));
 					chatHud.addMessage(new TranslatableTextComponent("debug.copy_location.help"));
@@ -297,9 +297,16 @@ public class Keyboard {
 						this.client.window.getFramebufferWidth(),
 						this.client.window.getFramebufferHeight(),
 						this.client.getFramebuffer(),
-						textComponent -> this.client.execute(() -> this.client.inGameHud.getHudChat().addMessage(textComponent))
+						textComponent -> this.client.execute(() -> this.client.inGameHud.getChatHud().addMessage(textComponent))
 					);
 					return;
+				}
+			}
+
+			if (k != 0 && i == 66 && Screen.isControlPressed()) {
+				this.client.options.setInteger(GameOptions.Option.NARRATOR, 1);
+				if (guiEventListener instanceof ChatSettingsScreen) {
+					((ChatSettingsScreen)guiEventListener).method_2096();
 				}
 			}
 
@@ -333,13 +340,6 @@ public class Keyboard {
 						}
 					}
 				} else {
-					if (i == 66 && Screen.isControlPressed()) {
-						this.client.options.updateOption(GameOptions.Option.NARRATOR, 1);
-						if (guiEventListener instanceof ChatSettingsScreen) {
-							((ChatSettingsScreen)guiEventListener).method_2096();
-						}
-					}
-
 					if (i == 293 && this.client.gameRenderer != null) {
 						this.client.gameRenderer.toggleShadersEnabled();
 					}

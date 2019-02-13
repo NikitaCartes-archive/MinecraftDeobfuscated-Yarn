@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nullable;
 
-public class IdList<T> implements IntIterable<T> {
+public class IdList<T> implements IndexedIterable<T> {
 	private int nextId;
 	private final IdentityHashMap<T, Integer> idMap;
 	private final List<T> list;
@@ -46,7 +46,7 @@ public class IdList<T> implements IntIterable<T> {
 
 	@Nullable
 	@Override
-	public final T getInt(int i) {
+	public final T get(int i) {
 		return (T)(i >= 0 && i < this.list.size() ? this.list.get(i) : null);
 	}
 

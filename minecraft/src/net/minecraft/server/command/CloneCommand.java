@@ -9,7 +9,6 @@ import java.util.Deque;
 import java.util.List;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.class_3829;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -19,6 +18,7 @@ import net.minecraft.command.arguments.BlockPredicateArgumentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.util.Clearable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 
@@ -273,7 +273,7 @@ public class CloneCommand {
 					if (arg == CloneCommand.class_3025.field_13500) {
 						for (BlockPos blockPos8 : deque) {
 							BlockEntity blockEntity2 = serverWorld.getBlockEntity(blockPos8);
-							class_3829.method_16825(blockEntity2);
+							Clearable.clear(blockEntity2);
 							serverWorld.setBlockState(blockPos8, Blocks.field_10499.getDefaultState(), 2);
 						}
 
@@ -290,7 +290,7 @@ public class CloneCommand {
 
 					for (CloneCommand.class_3024 lv : list5) {
 						BlockEntity blockEntity3 = serverWorld.getBlockEntity(lv.field_13496);
-						class_3829.method_16825(blockEntity3);
+						Clearable.clear(blockEntity3);
 						serverWorld.setBlockState(lv.field_13496, Blocks.field_10499.getDefaultState(), 2);
 					}
 

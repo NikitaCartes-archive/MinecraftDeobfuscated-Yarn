@@ -1,9 +1,9 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.minecraft.class_3914;
 import net.minecraft.client.network.ClientDummyContainerProvider;
 import net.minecraft.container.CartographyTableContainer;
+import net.minecraft.container.ContainerWorldContext;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.stat.Stats;
@@ -31,7 +31,7 @@ public class CartographyTableBlock extends Block {
 	@Override
 	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
 		return new ClientDummyContainerProvider(
-			(i, playerInventory, playerEntity) -> new CartographyTableContainer(i, playerInventory, class_3914.method_17392(world, blockPos)), CONTAINER_NAME
+			(i, playerInventory, playerEntity) -> new CartographyTableContainer(i, playerInventory, ContainerWorldContext.create(world, blockPos)), CONTAINER_NAME
 		);
 	}
 }

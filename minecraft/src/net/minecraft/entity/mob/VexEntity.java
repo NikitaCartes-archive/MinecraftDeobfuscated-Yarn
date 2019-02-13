@@ -245,7 +245,7 @@ public class VexEntity extends HostileEntity {
 		public void tick() {
 			LivingEntity livingEntity = VexEntity.this.getTarget();
 			if (VexEntity.this.getBoundingBox().intersects(livingEntity.getBoundingBox())) {
-				VexEntity.this.method_6121(livingEntity);
+				VexEntity.this.attack(livingEntity);
 				VexEntity.this.method_7177(false);
 			} else {
 				double d = VexEntity.this.squaredDistanceTo(livingEntity);

@@ -16,7 +16,7 @@ public class WitchEntityModel<T extends Entity> extends VillagerEntityModel<T> {
 		this.mole.setRotationPoint(0.0F, -2.0F, 0.0F);
 		this.mole.setTextureOffset(0, 0).addBox(0.0F, 3.0F, -6.75F, 1, 1, 1, -0.25F);
 		this.nose.addChild(this.mole);
-		this.head.method_17578(this.field_17141);
+		this.head.removeChild(this.field_17141);
 		this.field_17141 = new Cuboid(this).setTextureSize(64, 128);
 		this.field_17141.setRotationPoint(-5.0F, -10.03125F, -5.0F);
 		this.field_17141.setTextureOffset(0, 64).addBox(0.0F, 0.0F, 0.0F, 10, 2, 10);

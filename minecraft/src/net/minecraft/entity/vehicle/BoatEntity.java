@@ -67,8 +67,8 @@ public class BoatEntity extends Entity {
 	private boolean field_7693;
 	private double field_7697;
 	private float field_7714;
-	private BoatEntity.class_1691 field_7702;
-	private BoatEntity.class_1691 field_7701;
+	private BoatEntity.Location location;
+	private BoatEntity.Location lastLocation;
 	private double field_7696;
 	private boolean field_7689;
 	private boolean field_7703;
@@ -227,15 +227,15 @@ public class BoatEntity extends Entity {
 	}
 
 	@Override
-	public Direction method_5755() {
+	public Direction getMovementDirection() {
 		return this.getHorizontalFacing().rotateYClockwise();
 	}
 
 	@Override
 	public void update() {
-		this.field_7701 = this.field_7702;
-		this.field_7702 = this.method_7552();
-		if (this.field_7702 != BoatEntity.class_1691.field_7717 && this.field_7702 != BoatEntity.class_1691.field_7716) {
+		this.lastLocation = this.location;
+		this.location = this.checkLocation();
+		if (this.location != BoatEntity.Location.field_7717 && this.location != BoatEntity.Location.field_7716) {
 			this.field_7706 = 0.0F;
 		} else {
 			this.field_7706++;
@@ -283,7 +283,7 @@ public class BoatEntity extends Entity {
 				if (!this.isSilent()
 					&& (double)(this.field_7704[i] % (float) (Math.PI * 2)) <= (float) (Math.PI / 4)
 					&& ((double)this.field_7704[i] + (float) (Math.PI / 8)) % (float) (Math.PI * 2) >= (float) (Math.PI / 4)) {
-					SoundEvent soundEvent = this.method_7537();
+					SoundEvent soundEvent = this.getPaddleSoundEvent();
 					if (soundEvent != null) {
 						Vec3d vec3d = this.getRotationVec(1.0F);
 						double d = i == 1 ? -vec3d.z : vec3d.z;
@@ -359,8 +359,8 @@ public class BoatEntity extends Entity {
 	}
 
 	@Nullable
-	protected SoundEvent method_7537() {
-		switch (this.method_7552()) {
+	protected SoundEvent getPaddleSoundEvent() {
+		switch (this.checkLocation()) {
 			case field_7718:
 			case field_7717:
 			case field_7716:
@@ -399,20 +399,20 @@ public class BoatEntity extends Entity {
 			: 0.0F;
 	}
 
-	private BoatEntity.class_1691 method_7552() {
-		BoatEntity.class_1691 lv = this.method_7532();
-		if (lv != null) {
+	private BoatEntity.Location checkLocation() {
+		BoatEntity.Location location = this.getUnderWaterLocation();
+		if (location != null) {
 			this.field_7697 = this.getBoundingBox().maxY;
-			return lv;
-		} else if (this.method_7545()) {
-			return BoatEntity.class_1691.field_7718;
+			return location;
+		} else if (this.checKBoatInWater()) {
+			return BoatEntity.Location.field_7718;
 		} else {
 			float f = this.method_7548();
 			if (f > 0.0F) {
 				this.field_7714 = f;
-				return BoatEntity.class_1691.field_7719;
+				return BoatEntity.Location.field_7719;
 			} else {
-				return BoatEntity.class_1691.field_7720;
+				return BoatEntity.Location.field_7720;
 			}
 		}
 	}
@@ -438,7 +438,7 @@ public class BoatEntity extends Entity {
 							pooledMutable.set(p, o, q);
 							FluidState fluidState = this.world.getFluidState(pooledMutable);
 							if (fluidState.matches(FluidTags.field_15517)) {
-								f = Math.max(f, fluidState.method_15763(this.world, pooledMutable));
+								f = Math.max(f, fluidState.getHeight(this.world, pooledMutable));
 							}
 
 							if (f >= 1.0F) {
@@ -499,7 +499,7 @@ public class BoatEntity extends Entity {
 		return f / (float)o;
 	}
 
-	private boolean method_7545() {
+	private boolean checKBoatInWater() {
 		BoundingBox boundingBox = this.getBoundingBox();
 		int i = MathHelper.floor(boundingBox.minX);
 		int j = MathHelper.ceil(boundingBox.maxX);
@@ -517,7 +517,7 @@ public class BoatEntity extends Entity {
 						pooledMutable.set(o, p, q);
 						FluidState fluidState = this.world.getFluidState(pooledMutable);
 						if (fluidState.matches(FluidTags.field_15517)) {
-							float f = (float)p + fluidState.method_15763(this.world, pooledMutable);
+							float f = (float)p + fluidState.getHeight(this.world, pooledMutable);
 							this.field_7697 = Math.max((double)f, this.field_7697);
 							bl |= boundingBox.minY < (double)f;
 						}
@@ -530,7 +530,7 @@ public class BoatEntity extends Entity {
 	}
 
 	@Nullable
-	private BoatEntity.class_1691 method_7532() {
+	private BoatEntity.Location getUnderWaterLocation() {
 		BoundingBox boundingBox = this.getBoundingBox();
 		double d = boundingBox.maxY + 0.001;
 		int i = MathHelper.floor(boundingBox.minX);
@@ -547,9 +547,9 @@ public class BoatEntity extends Entity {
 					for (int q = m; q < n; q++) {
 						pooledMutable.set(o, p, q);
 						FluidState fluidState = this.world.getFluidState(pooledMutable);
-						if (fluidState.matches(FluidTags.field_15517) && d < (double)((float)pooledMutable.getY() + fluidState.method_15763(this.world, pooledMutable))) {
+						if (fluidState.matches(FluidTags.field_15517) && d < (double)((float)pooledMutable.getY() + fluidState.getHeight(this.world, pooledMutable))) {
 							if (!fluidState.isStill()) {
-								return BoatEntity.class_1691.field_7716;
+								return BoatEntity.Location.field_7716;
 							}
 
 							bl = true;
@@ -559,7 +559,7 @@ public class BoatEntity extends Entity {
 			}
 		}
 
-		return bl ? BoatEntity.class_1691.field_7717 : null;
+		return bl ? BoatEntity.Location.field_7717 : null;
 	}
 
 	private void method_7534() {
@@ -567,27 +567,27 @@ public class BoatEntity extends Entity {
 		double e = this.isUnaffectedByGravity() ? 0.0 : -0.04F;
 		double f = 0.0;
 		this.field_7692 = 0.05F;
-		if (this.field_7701 == BoatEntity.class_1691.field_7720
-			&& this.field_7702 != BoatEntity.class_1691.field_7720
-			&& this.field_7702 != BoatEntity.class_1691.field_7719) {
+		if (this.lastLocation == BoatEntity.Location.field_7720 && this.location != BoatEntity.Location.field_7720 && this.location != BoatEntity.Location.field_7719
+			)
+		 {
 			this.field_7697 = this.getBoundingBox().minY + (double)this.getHeight();
 			this.setPosition(this.x, (double)(this.method_7544() - this.getHeight()) + 0.101, this.z);
 			this.velocityY = 0.0;
 			this.field_7696 = 0.0;
-			this.field_7702 = BoatEntity.class_1691.field_7718;
+			this.location = BoatEntity.Location.field_7718;
 		} else {
-			if (this.field_7702 == BoatEntity.class_1691.field_7718) {
+			if (this.location == BoatEntity.Location.field_7718) {
 				f = (this.field_7697 - this.getBoundingBox().minY) / (double)this.getHeight();
 				this.field_7692 = 0.9F;
-			} else if (this.field_7702 == BoatEntity.class_1691.field_7716) {
+			} else if (this.location == BoatEntity.Location.field_7716) {
 				e = -7.0E-4;
 				this.field_7692 = 0.9F;
-			} else if (this.field_7702 == BoatEntity.class_1691.field_7717) {
+			} else if (this.location == BoatEntity.Location.field_7717) {
 				f = 0.01F;
 				this.field_7692 = 0.45F;
-			} else if (this.field_7702 == BoatEntity.class_1691.field_7720) {
+			} else if (this.location == BoatEntity.Location.field_7720) {
 				this.field_7692 = 0.9F;
-			} else if (this.field_7702 == BoatEntity.class_1691.field_7719) {
+			} else if (this.location == BoatEntity.Location.field_7719) {
 				this.field_7692 = this.field_7714;
 				if (this.getPrimaryPassenger() instanceof PlayerEntity) {
 					this.field_7714 /= 2.0F;
@@ -714,7 +714,7 @@ public class BoatEntity extends Entity {
 		if (!this.hasVehicle()) {
 			if (bl) {
 				if (this.fallDistance > 3.0F) {
-					if (this.field_7702 != BoatEntity.class_1691.field_7719) {
+					if (this.location != BoatEntity.Location.field_7719) {
 						this.fallDistance = 0.0F;
 						return;
 					}
@@ -724,7 +724,7 @@ public class BoatEntity extends Entity {
 						this.invalidate();
 						if (this.world.getGameRules().getBoolean("doEntityDrops")) {
 							for (int i = 0; i < 3; i++) {
-								this.dropItem(this.getBoatType().method_7560());
+								this.dropItem(this.getBoatType().getBaseBlock());
 							}
 
 							for (int i = 0; i < 2; i++) {
@@ -792,7 +792,7 @@ public class BoatEntity extends Entity {
 
 	@Override
 	protected boolean canAddPassenger(Entity entity) {
-		return this.getPassengerList().size() < 2 && !this.method_5777(FluidTags.field_15517);
+		return this.getPassengerList().size() < 2 && !this.isInFluid(FluidTags.field_15517);
 	}
 
 	@Nullable
@@ -815,6 +815,14 @@ public class BoatEntity extends Entity {
 		return new EntitySpawnS2CPacket(this);
 	}
 
+	public static enum Location {
+		field_7718,
+		field_7717,
+		field_7716,
+		field_7719,
+		field_7720;
+	}
+
 	public static enum Type {
 		OAK(Blocks.field_10161, "oak"),
 		SPRUCE(Blocks.field_9975, "spruce"),
@@ -824,19 +832,19 @@ public class BoatEntity extends Entity {
 		DARK_OAK(Blocks.field_10075, "dark_oak");
 
 		private final String name;
-		private final Block field_7731;
+		private final Block baseBlock;
 
 		private Type(Block block, String string2) {
 			this.name = string2;
-			this.field_7731 = block;
+			this.baseBlock = block;
 		}
 
 		public String getName() {
 			return this.name;
 		}
 
-		public Block method_7560() {
-			return this.field_7731;
+		public Block getBaseBlock() {
+			return this.baseBlock;
 		}
 
 		public String toString() {
@@ -863,13 +871,5 @@ public class BoatEntity extends Entity {
 
 			return types[0];
 		}
-	}
-
-	public static enum class_1691 {
-		field_7718,
-		field_7717,
-		field_7716,
-		field_7719,
-		field_7720;
 	}
 }

@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.GuiEventListener;
 
@@ -14,15 +14,15 @@ public class LabelWidget extends Drawable implements GuiEventListener {
 	protected int field_2112;
 	public final int field_2111;
 	public int field_2110;
-	private final List<String> field_2121;
-	private boolean field_2116;
+	private final List<String> lines;
+	private boolean centered;
 	public boolean field_2117;
 	private boolean field_2115;
-	private final int field_2123;
+	private final int color;
 	private int field_2122;
 	private int field_2120;
 	private int field_2119;
-	private final FontRenderer field_2113;
+	private final TextRenderer fontRenderer;
 	private int field_2118;
 
 	public void draw(int i, int j, float f) {
@@ -33,13 +33,13 @@ public class LabelWidget extends Drawable implements GuiEventListener {
 			);
 			this.method_1891(i, j, f);
 			int k = this.field_2110 + this.field_2112 / 2 + this.field_2118 / 2;
-			int l = k - this.field_2121.size() * 10 / 2;
+			int l = k - this.lines.size() * 10 / 2;
 
-			for (int m = 0; m < this.field_2121.size(); m++) {
-				if (this.field_2116) {
-					this.drawStringCentered(this.field_2113, (String)this.field_2121.get(m), this.field_2111 + this.field_2114 / 2, l + m * 10, this.field_2123);
+			for (int m = 0; m < this.lines.size(); m++) {
+				if (this.centered) {
+					this.drawStringCentered(this.fontRenderer, (String)this.lines.get(m), this.field_2111 + this.field_2114 / 2, l + m * 10, this.color);
 				} else {
-					this.drawString(this.field_2113, (String)this.field_2121.get(m), this.field_2111, l + m * 10, this.field_2123);
+					this.drawString(this.fontRenderer, (String)this.lines.get(m), this.field_2111, l + m * 10, this.color);
 				}
 			}
 		}

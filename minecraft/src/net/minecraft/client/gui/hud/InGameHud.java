@@ -16,7 +16,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.class_336;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.ContainerScreen;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.options.GameOptions;
@@ -71,25 +71,25 @@ public class InGameHud extends Drawable {
 	private final Random random = new Random();
 	private final MinecraftClient client;
 	private final ItemRenderer itemRenderer;
-	private final ChatHud hudChat;
+	private final ChatHud chatHud;
 	private int ticks;
 	private String overlayMessage = "";
 	private int overlayRemaining;
 	private boolean overlayTinted;
 	public float field_2013 = 1.0F;
-	private int field_2040;
+	private int heldItemTooltipFade;
 	private ItemStack currentStack = ItemStack.EMPTY;
-	private final DebugHud hudDebug;
-	private final SubtitlesHud hudSubtitles;
-	private final SpectatorHud hudSpectator;
-	private final ScoreboardHud hudScoreboard;
-	private final BossBarHud hudBossBar;
-	private int field_2023;
-	private String field_2016 = "";
-	private String field_2039 = "";
-	private int field_2037;
-	private int field_2017;
-	private int field_2036;
+	private final DebugHud debugHud;
+	private final SubtitlesHud subtitlesHud;
+	private final SpectatorHud spectatorHud;
+	private final ScoreboardHud scoreboardHud;
+	private final BossBarHud bossBarHud;
+	private int titleTotalTicks;
+	private String title = "";
+	private String subtitle = "";
+	private int titleFadeInTicks;
+	private int titleRemainTicks;
+	private int titleFadeOutTicks;
 	private int field_2014;
 	private int field_2033;
 	private long field_2012;
@@ -101,12 +101,12 @@ public class InGameHud extends Drawable {
 	public InGameHud(MinecraftClient minecraftClient) {
 		this.client = minecraftClient;
 		this.itemRenderer = minecraftClient.getItemRenderer();
-		this.hudDebug = new DebugHud(minecraftClient);
-		this.hudSpectator = new SpectatorHud(minecraftClient);
-		this.hudChat = new ChatHud(minecraftClient);
-		this.hudScoreboard = new ScoreboardHud(minecraftClient, this);
-		this.hudBossBar = new BossBarHud(minecraftClient);
-		this.hudSubtitles = new SubtitlesHud(minecraftClient);
+		this.debugHud = new DebugHud(minecraftClient);
+		this.spectatorHud = new SpectatorHud(minecraftClient);
+		this.chatHud = new ChatHud(minecraftClient);
+		this.scoreboardHud = new ScoreboardHud(minecraftClient, this);
+		this.bossBarHud = new BossBarHud(minecraftClient);
+		this.subtitlesHud = new SubtitlesHud(minecraftClient);
 
 		for (ChatMessageType chatMessageType : ChatMessageType.values()) {
 			this.listeners.put(chatMessageType, Lists.newArrayList());
@@ -118,22 +118,22 @@ public class InGameHud extends Drawable {
 		((List)this.listeners.get(ChatMessageType.field_11735)).add(new ChatListenerHud(minecraftClient));
 		((List)this.listeners.get(ChatMessageType.field_11735)).add(clientChatListener);
 		((List)this.listeners.get(ChatMessageType.field_11733)).add(new class_336(minecraftClient));
-		this.method_1742();
+		this.setDefaultTitleFade();
 	}
 
-	public void method_1742() {
-		this.field_2037 = 10;
-		this.field_2017 = 70;
-		this.field_2036 = 20;
+	public void setDefaultTitleFade() {
+		this.titleFadeInTicks = 10;
+		this.titleRemainTicks = 70;
+		this.titleFadeOutTicks = 20;
 	}
 
 	public void draw(float f) {
 		this.scaledWidth = this.client.window.getScaledWidth();
 		this.scaledHeight = this.client.window.getScaledHeight();
-		FontRenderer fontRenderer = this.getFontRenderer();
+		TextRenderer textRenderer = this.getFontRenderer();
 		GlStateManager.enableBlend();
 		if (MinecraftClient.isFancyGraphicsEnabled()) {
-			this.method_1735(this.client.getCameraEntity());
+			this.renderVignetteOverlay(this.client.getCameraEntity());
 		} else {
 			GlStateManager.enableDepthTest();
 			GlStateManager.blendFuncSeparate(
@@ -142,21 +142,21 @@ public class InGameHud extends Drawable {
 		}
 
 		ItemStack itemStack = this.client.player.inventory.getArmorStack(3);
-		if (this.client.options.field_1850 == 0 && itemStack.getItem() == Blocks.field_10147.getItem()) {
-			this.method_1761();
+		if (this.client.options.perspective == 0 && itemStack.getItem() == Blocks.field_10147.getItem()) {
+			this.renderPumpkinOverlay();
 		}
 
 		if (!this.client.player.hasPotionEffect(StatusEffects.field_5916)) {
 			float g = MathHelper.lerp(f, this.client.player.field_3911, this.client.player.field_3929);
 			if (g > 0.0F) {
-				this.method_1746(g);
+				this.renderPortalOverlay(g);
 			}
 		}
 
 		if (this.client.interactionManager.getCurrentGameMode() == GameMode.field_9219) {
-			this.hudSpectator.draw(f);
+			this.spectatorHud.draw(f);
 		} else if (!this.client.options.hudHidden) {
-			this.method_1759(f);
+			this.renderHotbar(f);
 		}
 
 		if (!this.client.options.hudHidden) {
@@ -164,32 +164,32 @@ public class InGameHud extends Drawable {
 			this.client.getTextureManager().bindTexture(ICONS);
 			GlStateManager.enableBlend();
 			GlStateManager.enableAlphaTest();
-			this.method_1736(f);
+			this.renderCrosshair(f);
 			GlStateManager.blendFuncSeparate(
 				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
 			this.client.getProfiler().push("bossHealth");
-			this.hudBossBar.draw();
+			this.bossBarHud.draw();
 			this.client.getProfiler().pop();
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			this.client.getTextureManager().bindTexture(ICONS);
 			if (this.client.interactionManager.hasStatusBars()) {
-				this.method_1760();
+				this.renderStatusBars();
 			}
 
-			this.method_1741();
+			this.drawMountHealth();
 			GlStateManager.disableBlend();
 			int i = this.scaledWidth / 2 - 91;
-			if (this.client.player.method_3131()) {
-				this.method_1752(i);
+			if (this.client.player.hasJumpingMount()) {
+				this.renderMountJumpBar(i);
 			} else if (this.client.interactionManager.hasExperienceBar()) {
-				this.method_1754(i);
+				this.renderExperienceBar(i);
 			}
 
 			if (this.client.options.heldItemTooltips && this.client.interactionManager.getCurrentGameMode() != GameMode.field_9219) {
-				this.method_1749();
+				this.renderHeldItemTooltip();
 			} else if (this.client.player.isSpectator()) {
-				this.hudSpectator.method_1979();
+				this.spectatorHud.draw();
 			}
 		}
 
@@ -215,9 +215,9 @@ public class InGameHud extends Drawable {
 			this.renderDemoTimer();
 		}
 
-		this.method_1765();
+		this.renderStatusEffectOverlay();
 		if (this.client.options.debugEnabled) {
-			this.hudDebug.draw();
+			this.debugHud.draw();
 		}
 
 		if (!this.client.options.hudHidden) {
@@ -241,7 +241,7 @@ public class InGameHud extends Drawable {
 						j = MathHelper.hsvToRgb(g / 50.0F, 0.7F, 0.6F) & 16777215;
 					}
 
-					fontRenderer.draw(this.overlayMessage, (float)(-fontRenderer.getStringWidth(this.overlayMessage) / 2), -4.0F, j + (k << 24 & 0xFF000000));
+					textRenderer.draw(this.overlayMessage, (float)(-textRenderer.getStringWidth(this.overlayMessage) / 2), -4.0F, j + (k << 24 & 0xFF000000));
 					GlStateManager.disableBlend();
 					GlStateManager.popMatrix();
 				}
@@ -249,17 +249,17 @@ public class InGameHud extends Drawable {
 				this.client.getProfiler().pop();
 			}
 
-			if (this.field_2023 > 0) {
+			if (this.titleTotalTicks > 0) {
 				this.client.getProfiler().push("titleAndSubtitle");
-				float gx = (float)this.field_2023 - f;
+				float gx = (float)this.titleTotalTicks - f;
 				int kx = 255;
-				if (this.field_2023 > this.field_2036 + this.field_2017) {
-					float l = (float)(this.field_2037 + this.field_2017 + this.field_2036) - gx;
-					kx = (int)(l * 255.0F / (float)this.field_2037);
+				if (this.titleTotalTicks > this.titleFadeOutTicks + this.titleRemainTicks) {
+					float l = (float)(this.titleFadeInTicks + this.titleRemainTicks + this.titleFadeOutTicks) - gx;
+					kx = (int)(l * 255.0F / (float)this.titleFadeInTicks);
 				}
 
-				if (this.field_2023 <= this.field_2036) {
-					kx = (int)(gx * 255.0F / (float)this.field_2036);
+				if (this.titleTotalTicks <= this.titleFadeOutTicks) {
+					kx = (int)(gx * 255.0F / (float)this.titleFadeOutTicks);
 				}
 
 				kx = MathHelper.clamp(kx, 0, 255);
@@ -273,11 +273,11 @@ public class InGameHud extends Drawable {
 					GlStateManager.pushMatrix();
 					GlStateManager.scalef(4.0F, 4.0F, 4.0F);
 					int j = kx << 24 & 0xFF000000;
-					fontRenderer.drawWithShadow(this.field_2016, (float)(-fontRenderer.getStringWidth(this.field_2016) / 2), -10.0F, 16777215 | j);
+					textRenderer.drawWithShadow(this.title, (float)(-textRenderer.getStringWidth(this.title) / 2), -10.0F, 16777215 | j);
 					GlStateManager.popMatrix();
 					GlStateManager.pushMatrix();
 					GlStateManager.scalef(2.0F, 2.0F, 2.0F);
-					fontRenderer.drawWithShadow(this.field_2039, (float)(-fontRenderer.getStringWidth(this.field_2039) / 2), 5.0F, 16777215 | j);
+					textRenderer.drawWithShadow(this.subtitle, (float)(-textRenderer.getStringWidth(this.subtitle) / 2), 5.0F, 16777215 | j);
 					GlStateManager.popMatrix();
 					GlStateManager.disableBlend();
 					GlStateManager.popMatrix();
@@ -286,7 +286,7 @@ public class InGameHud extends Drawable {
 				this.client.getProfiler().pop();
 			}
 
-			this.hudSubtitles.method_1957();
+			this.subtitlesHud.draw();
 			Scoreboard scoreboard = this.client.world.getScoreboard();
 			ScoreboardObjective scoreboardObjective = null;
 			ScoreboardTeam scoreboardTeam = scoreboard.getPlayerTeam(this.client.player.getEntityName());
@@ -299,7 +299,7 @@ public class InGameHud extends Drawable {
 
 			ScoreboardObjective scoreboardObjective2 = scoreboardObjective != null ? scoreboardObjective : scoreboard.getObjectiveForSlot(1);
 			if (scoreboardObjective2 != null) {
-				this.method_1757(scoreboardObjective2);
+				this.renderScoreboardSidebar(scoreboardObjective2);
 			}
 
 			GlStateManager.enableBlend();
@@ -310,16 +310,16 @@ public class InGameHud extends Drawable {
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef(0.0F, (float)(this.scaledHeight - 48), 0.0F);
 			this.client.getProfiler().push("chat");
-			this.hudChat.method_1805(this.ticks);
+			this.chatHud.draw(this.ticks);
 			this.client.getProfiler().pop();
 			GlStateManager.popMatrix();
 			scoreboardObjective2 = scoreboard.getObjectiveForSlot(0);
 			if (!this.client.options.keyPlayerList.isPressed()
-				|| this.client.isInSingleplayer() && this.client.player.networkHandler.method_2880().size() <= 1 && scoreboardObjective2 == null) {
-				this.hudScoreboard.method_1921(false);
+				|| this.client.isInSingleplayer() && this.client.player.networkHandler.getScoreboardEntries().size() <= 1 && scoreboardObjective2 == null) {
+				this.scoreboardHud.method_1921(false);
 			} else {
-				this.hudScoreboard.method_1921(true);
-				this.hudScoreboard.method_1919(this.scaledWidth, scoreboard, scoreboardObjective2);
+				this.scoreboardHud.method_1921(true);
+				this.scoreboardHud.method_1919(this.scaledWidth, scoreboard, scoreboardObjective2);
 			}
 		}
 
@@ -328,10 +328,10 @@ public class InGameHud extends Drawable {
 		GlStateManager.enableAlphaTest();
 	}
 
-	private void method_1736(float f) {
+	private void renderCrosshair(float f) {
 		GameOptions gameOptions = this.client.options;
-		if (gameOptions.field_1850 == 0) {
-			if (this.client.interactionManager.getCurrentGameMode() != GameMode.field_9219 || this.method_17534(this.client.hitResult)) {
+		if (gameOptions.perspective == 0) {
+			if (this.client.interactionManager.getCurrentGameMode() != GameMode.field_9219 || this.shouldRenderSpectatorCrosshair(this.client.hitResult)) {
 				if (gameOptions.debugEnabled && !gameOptions.hudHidden && !this.client.player.getReducedDebugInfo() && !gameOptions.reducedDebugInfo) {
 					GlStateManager.pushMatrix();
 					GlStateManager.translatef((float)(this.scaledWidth / 2), (float)(this.scaledHeight / 2), this.zOffset);
@@ -373,7 +373,7 @@ public class InGameHud extends Drawable {
 		}
 	}
 
-	private boolean method_17534(HitResult hitResult) {
+	private boolean shouldRenderSpectatorCrosshair(HitResult hitResult) {
 		if (hitResult == null) {
 			return false;
 		} else if (hitResult.getType() == HitResult.Type.ENTITY) {
@@ -387,7 +387,7 @@ public class InGameHud extends Drawable {
 		}
 	}
 
-	protected void method_1765() {
+	protected void renderStatusEffectOverlay() {
 		Collection<StatusEffectInstance> collection = this.client.player.getPotionEffects();
 		if (!collection.isEmpty()) {
 			this.client.getTextureManager().bindTexture(ContainerScreen.BACKGROUND_TEXTURE);
@@ -436,7 +436,7 @@ public class InGameHud extends Drawable {
 		}
 	}
 
-	protected void method_1759(float f) {
+	protected void renderHotbar(float f) {
 		PlayerEntity playerEntity = this.getCameraPlayer();
 		if (playerEntity != null) {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -469,15 +469,15 @@ public class InGameHud extends Drawable {
 			for (int l = 0; l < 9; l++) {
 				int m = i - 90 + l * 20 + 2;
 				int n = this.scaledHeight - 16 - 3;
-				this.method_1762(m, n, f, playerEntity, playerEntity.inventory.main.get(l));
+				this.renderHotbarItem(m, n, f, playerEntity, playerEntity.inventory.main.get(l));
 			}
 
 			if (!itemStack.isEmpty()) {
 				int l = this.scaledHeight - 16 - 3;
 				if (optionMainHand == OptionMainHand.field_6182) {
-					this.method_1762(i - 91 - 26, l, f, playerEntity, itemStack);
+					this.renderHotbarItem(i - 91 - 26, l, f, playerEntity, itemStack);
 				} else {
-					this.method_1762(i + 91 + 10, l, f, playerEntity, itemStack);
+					this.renderHotbarItem(i + 91 + 10, l, f, playerEntity, itemStack);
 				}
 			}
 
@@ -504,7 +504,7 @@ public class InGameHud extends Drawable {
 		}
 	}
 
-	public void method_1752(int i) {
+	public void renderMountJumpBar(int i) {
 		this.client.getProfiler().push("jumpBar");
 		this.client.getTextureManager().bindTexture(Drawable.ICONS);
 		float f = this.client.player.method_3151();
@@ -519,7 +519,7 @@ public class InGameHud extends Drawable {
 		this.client.getProfiler().pop();
 	}
 
-	public void method_1754(int i) {
+	public void renderExperienceBar(int i) {
 		this.client.getProfiler().push("expBar");
 		this.client.getTextureManager().bindTexture(Drawable.ICONS);
 		int j = this.client.player.method_7349();
@@ -548,12 +548,12 @@ public class InGameHud extends Drawable {
 		}
 	}
 
-	public void method_1749() {
+	public void renderHeldItemTooltip() {
 		this.client.getProfiler().push("selectedItemName");
-		if (this.field_2040 > 0 && !this.currentStack.isEmpty()) {
+		if (this.heldItemTooltipFade > 0 && !this.currentStack.isEmpty()) {
 			TextComponent textComponent = new StringTextComponent("").append(this.currentStack.getDisplayName()).applyFormat(this.currentStack.getRarity().formatting);
 			if (this.currentStack.hasDisplayName()) {
-				textComponent.applyFormat(TextFormat.ITALIC);
+				textComponent.applyFormat(TextFormat.field_1056);
 			}
 
 			String string = textComponent.getFormattedText();
@@ -563,7 +563,7 @@ public class InGameHud extends Drawable {
 				j += 14;
 			}
 
-			int k = (int)((float)this.field_2040 * 256.0F / 10.0F);
+			int k = (int)((float)this.heldItemTooltipFade * 256.0F / 10.0F);
 			if (k > 255) {
 				k = 255;
 			}
@@ -597,7 +597,7 @@ public class InGameHud extends Drawable {
 		this.client.getProfiler().pop();
 	}
 
-	private void method_1757(ScoreboardObjective scoreboardObjective) {
+	private void renderScoreboardSidebar(ScoreboardObjective scoreboardObjective) {
 		Scoreboard scoreboard = scoreboardObjective.getScoreboard();
 		Collection<ScoreboardPlayerScore> collection = scoreboard.getAllPlayerScores(scoreboardObjective);
 		List<ScoreboardPlayerScore> list = (List<ScoreboardPlayerScore>)collection.stream()
@@ -617,7 +617,7 @@ public class InGameHud extends Drawable {
 			ScoreboardTeam scoreboardTeam = scoreboard.getPlayerTeam(scoreboardPlayerScore.getPlayerName());
 			String string2 = ScoreboardTeam.method_1142(scoreboardTeam, new StringTextComponent(scoreboardPlayerScore.getPlayerName())).getFormattedText()
 				+ ": "
-				+ TextFormat.RED
+				+ TextFormat.field_1061
 				+ scoreboardPlayerScore.getScore();
 			j = Math.max(j, this.getFontRenderer().getStringWidth(string2));
 		}
@@ -632,7 +632,7 @@ public class InGameHud extends Drawable {
 			o++;
 			ScoreboardTeam scoreboardTeam2 = scoreboard.getPlayerTeam(scoreboardPlayerScore2.getPlayerName());
 			String string3 = ScoreboardTeam.method_1142(scoreboardTeam2, new StringTextComponent(scoreboardPlayerScore2.getPlayerName())).getFormattedText();
-			String string4 = TextFormat.RED + "" + scoreboardPlayerScore2.getScore();
+			String string4 = TextFormat.field_1061 + "" + scoreboardPlayerScore2.getScore();
 			int q = l - o * 9;
 			int r = this.scaledWidth - 3 + 2;
 			drawRect(n - 2, q, r, q + 9, 1342177280);
@@ -650,7 +650,7 @@ public class InGameHud extends Drawable {
 		return !(this.client.getCameraEntity() instanceof PlayerEntity) ? null : (PlayerEntity)this.client.getCameraEntity();
 	}
 
-	private LivingEntity method_1734() {
+	private LivingEntity getRiddenEntity() {
 		PlayerEntity playerEntity = this.getCameraPlayer();
 		if (playerEntity != null) {
 			Entity entity = playerEntity.getRiddenEntity();
@@ -684,7 +684,7 @@ public class InGameHud extends Drawable {
 		return (int)Math.ceil((double)i / 10.0);
 	}
 
-	private void method_1760() {
+	private void renderStatusBars() {
 		PlayerEntity playerEntity = this.getCameraPlayer();
 		if (playerEntity != null) {
 			int i = MathHelper.ceil(playerEntity.getHealth());
@@ -806,7 +806,7 @@ public class InGameHud extends Drawable {
 				}
 			}
 
-			LivingEntity livingEntity = this.method_1734();
+			LivingEntity livingEntity = this.getRiddenEntity();
 			int yxx = this.method_1744(livingEntity);
 			if (yxx == 0) {
 				this.client.getProfiler().swap("food");
@@ -841,7 +841,7 @@ public class InGameHud extends Drawable {
 			this.client.getProfiler().swap("air");
 			int zx = playerEntity.getBreath();
 			int aaxx = playerEntity.getMaxBreath();
-			if (playerEntity.method_5777(FluidTags.field_15517) || zx < aaxx) {
+			if (playerEntity.isInFluid(FluidTags.field_15517) || zx < aaxx) {
 				int abxx = this.method_1733(yxx) - 1;
 				t -= abxx * 10;
 				int acxx = MathHelper.ceil((double)(zx - 2) * 10.0 / (double)aaxx);
@@ -860,8 +860,8 @@ public class InGameHud extends Drawable {
 		}
 	}
 
-	private void method_1741() {
-		LivingEntity livingEntity = this.method_1734();
+	private void drawMountHealth() {
+		LivingEntity livingEntity = this.getRiddenEntity();
 		if (livingEntity != null) {
 			int i = this.method_1744(livingEntity);
 			if (i != 0) {
@@ -896,7 +896,7 @@ public class InGameHud extends Drawable {
 		}
 	}
 
-	private void method_1761() {
+	private void renderPumpkinOverlay() {
 		GlStateManager.disableDepthTest();
 		GlStateManager.depthMask(false);
 		GlStateManager.blendFuncSeparate(
@@ -926,7 +926,7 @@ public class InGameHud extends Drawable {
 		}
 	}
 
-	private void method_1735(Entity entity) {
+	private void renderVignetteOverlay(Entity entity) {
 		WorldBorder worldBorder = this.client.world.getWorldBorder();
 		float f = (float)worldBorder.contains(entity);
 		double d = Math.min(
@@ -967,7 +967,7 @@ public class InGameHud extends Drawable {
 		);
 	}
 
-	private void method_1746(float f) {
+	private void renderPortalOverlay(float f) {
 		if (f < 1.0F) {
 			f *= f;
 			f *= f;
@@ -1001,7 +1001,7 @@ public class InGameHud extends Drawable {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
-	private void method_1762(int i, int j, float f, PlayerEntity playerEntity, ItemStack itemStack) {
+	private void renderHotbarItem(int i, int j, float f, PlayerEntity playerEntity, ItemStack itemStack) {
 		if (!itemStack.isEmpty()) {
 			float g = (float)itemStack.getUpdateCooldown() - f;
 			if (g > 0.0F) {
@@ -1017,7 +1017,7 @@ public class InGameHud extends Drawable {
 				GlStateManager.popMatrix();
 			}
 
-			this.itemRenderer.renderGuiItemOverlay(this.client.fontRenderer, itemStack, i, j);
+			this.itemRenderer.renderGuiItemOverlay(this.client.textRenderer, itemStack, i, j);
 		}
 	}
 
@@ -1026,11 +1026,11 @@ public class InGameHud extends Drawable {
 			this.overlayRemaining--;
 		}
 
-		if (this.field_2023 > 0) {
-			this.field_2023--;
-			if (this.field_2023 <= 0) {
-				this.field_2016 = "";
-				this.field_2039 = "";
+		if (this.titleTotalTicks > 0) {
+			this.titleTotalTicks--;
+			if (this.titleTotalTicks <= 0) {
+				this.title = "";
+				this.subtitle = "";
 			}
 		}
 
@@ -1043,13 +1043,13 @@ public class InGameHud extends Drawable {
 		if (this.client.player != null) {
 			ItemStack itemStack = this.client.player.inventory.getMainHandStack();
 			if (itemStack.isEmpty()) {
-				this.field_2040 = 0;
+				this.heldItemTooltipFade = 0;
 			} else if (this.currentStack.isEmpty()
 				|| itemStack.getItem() != this.currentStack.getItem()
 				|| !itemStack.getDisplayName().equals(this.currentStack.getDisplayName())) {
-				this.field_2040 = 40;
-			} else if (this.field_2040 > 0) {
-				this.field_2040--;
+				this.heldItemTooltipFade = 40;
+			} else if (this.heldItemTooltipFade > 0) {
+				this.heldItemTooltipFade--;
 			}
 
 			this.currentStack = itemStack;
@@ -1066,31 +1066,31 @@ public class InGameHud extends Drawable {
 		this.overlayTinted = bl;
 	}
 
-	public void method_1763(String string, String string2, int i, int j, int k) {
+	public void setTitles(String string, String string2, int i, int j, int k) {
 		if (string == null && string2 == null && i < 0 && j < 0 && k < 0) {
-			this.field_2016 = "";
-			this.field_2039 = "";
-			this.field_2023 = 0;
+			this.title = "";
+			this.subtitle = "";
+			this.titleTotalTicks = 0;
 		} else if (string != null) {
-			this.field_2016 = string;
-			this.field_2023 = this.field_2037 + this.field_2017 + this.field_2036;
+			this.title = string;
+			this.titleTotalTicks = this.titleFadeInTicks + this.titleRemainTicks + this.titleFadeOutTicks;
 		} else if (string2 != null) {
-			this.field_2039 = string2;
+			this.subtitle = string2;
 		} else {
 			if (i >= 0) {
-				this.field_2037 = i;
+				this.titleFadeInTicks = i;
 			}
 
 			if (j >= 0) {
-				this.field_2017 = j;
+				this.titleRemainTicks = j;
 			}
 
 			if (k >= 0) {
-				this.field_2036 = k;
+				this.titleFadeOutTicks = k;
 			}
 
-			if (this.field_2023 > 0) {
-				this.field_2023 = this.field_2037 + this.field_2017 + this.field_2036;
+			if (this.titleTotalTicks > 0) {
+				this.titleTotalTicks = this.titleFadeInTicks + this.titleRemainTicks + this.titleFadeOutTicks;
 			}
 		}
 	}
@@ -1105,37 +1105,37 @@ public class InGameHud extends Drawable {
 		}
 	}
 
-	public ChatHud getHudChat() {
-		return this.hudChat;
+	public ChatHud getChatHud() {
+		return this.chatHud;
 	}
 
 	public int getTicks() {
 		return this.ticks;
 	}
 
-	public FontRenderer getFontRenderer() {
-		return this.client.fontRenderer;
+	public TextRenderer getFontRenderer() {
+		return this.client.textRenderer;
 	}
 
 	public SpectatorHud getSpectatorWidget() {
-		return this.hudSpectator;
+		return this.spectatorHud;
 	}
 
 	public ScoreboardHud getScoreboardWidget() {
-		return this.hudScoreboard;
+		return this.scoreboardHud;
 	}
 
 	public void clear() {
-		this.hudScoreboard.clear();
-		this.hudBossBar.clear();
+		this.scoreboardHud.clear();
+		this.bossBarHud.clear();
 		this.client.getToastManager().clear();
 	}
 
-	public BossBarHud getHudBossBar() {
-		return this.hudBossBar;
+	public BossBarHud getBossBarHud() {
+		return this.bossBarHud;
 	}
 
-	public void method_1745() {
-		this.hudDebug.resetChunk();
+	public void resetDebugHudChunk() {
+		this.debugHud.resetChunk();
 	}
 }

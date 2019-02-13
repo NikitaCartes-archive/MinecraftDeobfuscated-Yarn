@@ -47,7 +47,7 @@ public class ScreenshotUtils {
 					try {
 						nativeImage.writeFile(file3);
 						TextComponent textComponent = new StringTextComponent(file3.getName())
-							.applyFormat(TextFormat.UNDERLINE)
+							.applyFormat(TextFormat.field_1073)
 							.modifyStyle(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file3.getAbsolutePath())));
 						consumer.accept(new TranslatableTextComponent("screenshot.success", textComponent));
 					} catch (Exception var7x) {

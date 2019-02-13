@@ -28,15 +28,15 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 			String string2 = keyBinding.getCategory();
 			if (!string2.equals(string)) {
 				string = string2;
-				this.addEntry(new KeyBindingListWidget.class_460(string2));
+				this.addEntry(new KeyBindingListWidget.CategoryEntry(string2));
 			}
 
-			int i = minecraftClient.fontRenderer.getStringWidth(I18n.translate(keyBinding.getId()));
+			int i = minecraftClient.textRenderer.getStringWidth(I18n.translate(keyBinding.getId()));
 			if (i > this.field_2733) {
 				this.field_2733 = i;
 			}
 
-			this.addEntry(new KeyBindingListWidget.class_462(keyBinding));
+			this.addEntry(new KeyBindingListWidget.KeyBindingEntry(keyBinding));
 		}
 	}
 
@@ -51,47 +51,47 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 	}
 
 	@Environment(EnvType.CLIENT)
-	public abstract static class Entry extends EntryListWidget.Entry<KeyBindingListWidget.Entry> {
-	}
+	public class CategoryEntry extends KeyBindingListWidget.Entry {
+		private final String name;
+		private final int nameWidth;
 
-	@Environment(EnvType.CLIENT)
-	public class class_460 extends KeyBindingListWidget.Entry {
-		private final String field_2736;
-		private final int field_2737;
-
-		public class_460(String string) {
-			this.field_2736 = I18n.translate(string);
-			this.field_2737 = KeyBindingListWidget.this.client.fontRenderer.getStringWidth(this.field_2736);
+		public CategoryEntry(String string) {
+			this.name = I18n.translate(string);
+			this.nameWidth = KeyBindingListWidget.this.client.textRenderer.getStringWidth(this.name);
 		}
 
 		@Override
 		public void draw(int i, int j, int k, int l, boolean bl, float f) {
 			KeyBindingListWidget.this.client
-				.fontRenderer
-				.draw(this.field_2736, (float)(KeyBindingListWidget.this.client.currentScreen.width / 2 - this.field_2737 / 2), (float)(this.getY() + j - 9 - 1), 16777215);
+				.textRenderer
+				.draw(this.name, (float)(KeyBindingListWidget.this.client.currentScreen.width / 2 - this.nameWidth / 2), (float)(this.getY() + j - 9 - 1), 16777215);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public class class_462 extends KeyBindingListWidget.Entry {
-		private final KeyBinding field_2740;
-		private final String field_2741;
-		private final ButtonWidget field_2739;
-		private final ButtonWidget field_2743;
+	public abstract static class Entry extends EntryListWidget.Entry<KeyBindingListWidget.Entry> {
+	}
 
-		private class_462(KeyBinding keyBinding) {
-			this.field_2740 = keyBinding;
-			this.field_2741 = I18n.translate(keyBinding.getId());
-			this.field_2739 = new ButtonWidget(0, 0, 0, 75, 20, I18n.translate(keyBinding.getId())) {
+	@Environment(EnvType.CLIENT)
+	public class KeyBindingEntry extends KeyBindingListWidget.Entry {
+		private final KeyBinding binding;
+		private final String bindingName;
+		private final ButtonWidget editButton;
+		private final ButtonWidget resetButton;
+
+		private KeyBindingEntry(KeyBinding keyBinding) {
+			this.binding = keyBinding;
+			this.bindingName = I18n.translate(keyBinding.getId());
+			this.editButton = new ButtonWidget(0, 0, 0, 75, 20, I18n.translate(keyBinding.getId())) {
 				@Override
 				public void onPressed(double d, double e) {
-					KeyBindingListWidget.this.gui.field_2727 = keyBinding;
+					KeyBindingListWidget.this.gui.focusedBinding = keyBinding;
 				}
 			};
-			this.field_2743 = new ButtonWidget(0, 0, 0, 50, 20, I18n.translate("controls.reset")) {
+			this.resetButton = new ButtonWidget(0, 0, 0, 50, 20, I18n.translate("controls.reset")) {
 				@Override
 				public void onPressed(double d, double e) {
-					KeyBindingListWidget.this.client.options.method_1641(keyBinding, keyBinding.getDefaultKeyCode());
+					KeyBindingListWidget.this.client.options.setKeyCode(keyBinding, keyBinding.getDefaultKeyCode());
 					KeyBinding.updateKeysByCode();
 				}
 			};
@@ -101,21 +101,21 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 		public void draw(int i, int j, int k, int l, boolean bl, float f) {
 			int m = this.getY();
 			int n = this.getX();
-			boolean bl2 = KeyBindingListWidget.this.gui.field_2727 == this.field_2740;
+			boolean bl2 = KeyBindingListWidget.this.gui.focusedBinding == this.binding;
 			KeyBindingListWidget.this.client
-				.fontRenderer
-				.draw(this.field_2741, (float)(n + 90 - KeyBindingListWidget.this.field_2733), (float)(m + j / 2 - 9 / 2), 16777215);
-			this.field_2743.x = n + 190;
-			this.field_2743.y = m;
-			this.field_2743.enabled = !this.field_2740.isDefault();
-			this.field_2743.draw(k, l, f);
-			this.field_2739.x = n + 105;
-			this.field_2739.y = m;
-			this.field_2739.text = this.field_2740.getLocalizedName();
+				.textRenderer
+				.draw(this.bindingName, (float)(n + 90 - KeyBindingListWidget.this.field_2733), (float)(m + j / 2 - 9 / 2), 16777215);
+			this.resetButton.x = n + 190;
+			this.resetButton.y = m;
+			this.resetButton.enabled = !this.binding.isDefault();
+			this.resetButton.render(k, l, f);
+			this.editButton.x = n + 105;
+			this.editButton.y = m;
+			this.editButton.setText(this.binding.getLocalizedName());
 			boolean bl3 = false;
-			if (!this.field_2740.isNotBound()) {
+			if (!this.binding.isNotBound()) {
 				for (KeyBinding keyBinding : KeyBindingListWidget.this.client.options.keysAll) {
-					if (keyBinding != this.field_2740 && this.field_2740.equals(keyBinding)) {
+					if (keyBinding != this.binding && this.binding.equals(keyBinding)) {
 						bl3 = true;
 						break;
 					}
@@ -123,22 +123,22 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 			}
 
 			if (bl2) {
-				this.field_2739.text = TextFormat.WHITE + "> " + TextFormat.YELLOW + this.field_2739.text + TextFormat.WHITE + " <";
+				this.editButton.setText(TextFormat.field_1068 + "> " + TextFormat.field_1054 + this.editButton.getText() + TextFormat.field_1068 + " <");
 			} else if (bl3) {
-				this.field_2739.text = TextFormat.RED + this.field_2739.text;
+				this.editButton.setText(TextFormat.field_1061 + this.editButton.getText());
 			}
 
-			this.field_2739.draw(k, l, f);
+			this.editButton.render(k, l, f);
 		}
 
 		@Override
 		public boolean mouseClicked(double d, double e, int i) {
-			return this.field_2739.mouseClicked(d, e, i) ? true : this.field_2743.mouseClicked(d, e, i);
+			return this.editButton.mouseClicked(d, e, i) ? true : this.resetButton.mouseClicked(d, e, i);
 		}
 
 		@Override
 		public boolean mouseReleased(double d, double e, int i) {
-			return this.field_2739.mouseReleased(d, e, i) || this.field_2743.mouseReleased(d, e, i);
+			return this.editButton.mouseReleased(d, e, i) || this.resetButton.mouseReleased(d, e, i);
 		}
 	}
 }

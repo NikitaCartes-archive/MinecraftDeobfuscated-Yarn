@@ -49,7 +49,7 @@ public class LanguageManager implements SynchronousResourceReloadListener {
 	}
 
 	@Override
-	public void reloadResources(ResourceManager resourceManager) {
+	public void apply(ResourceManager resourceManager) {
 		List<String> list = Lists.<String>newArrayList("en_us");
 		if (!"en_us".equals(this.currentLanguageCode)) {
 			list.add(this.currentLanguageCode);

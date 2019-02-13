@@ -4,7 +4,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.item.TooltipOptions;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
@@ -51,12 +51,12 @@ public class FishBucketItem extends BucketItem {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
 		if (this.fishType == EntityType.TROPICAL_FISH) {
 			CompoundTag compoundTag = itemStack.getTag();
 			if (compoundTag != null && compoundTag.containsKey("BucketVariantTag", 3)) {
 				int i = compoundTag.getInt("BucketVariantTag");
-				TextFormat[] textFormats = new TextFormat[]{TextFormat.ITALIC, TextFormat.GRAY};
+				TextFormat[] textFormats = new TextFormat[]{TextFormat.field_1056, TextFormat.field_1080};
 				String string = "color.minecraft." + TropicalFishEntity.getBaseDyeColor(i);
 				String string2 = "color.minecraft." + TropicalFishEntity.getPatternDyeColor(i);
 

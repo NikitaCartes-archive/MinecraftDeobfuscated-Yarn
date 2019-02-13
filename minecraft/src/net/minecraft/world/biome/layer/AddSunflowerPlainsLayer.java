@@ -6,7 +6,7 @@ import net.minecraft.world.biome.Biomes;
 public enum AddSunflowerPlainsLayer implements SouthEastSamplingLayer {
 	INSTANCE;
 
-	private static final int PLAINS_ID = Registry.BIOME.getRawId(Biomes.biome);
+	private static final int PLAINS_ID = Registry.BIOME.getRawId(Biomes.field_9451);
 	private static final int SUNFLOWER_PLAINS = Registry.BIOME.getRawId(Biomes.field_9455);
 
 	@Override

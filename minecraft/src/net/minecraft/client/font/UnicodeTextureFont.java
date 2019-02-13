@@ -20,22 +20,22 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class UnicodeTextureFont implements Font {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final ResourceManager field_2302;
-	private final byte[] widths;
-	private final String field_2300;
-	private final Map<Identifier, NativeImage> field_2299 = Maps.<Identifier, NativeImage>newHashMap();
+	private final ResourceManager resourceManager;
+	private final byte[] sizes;
+	private final String template;
+	private final Map<Identifier, NativeImage> images = Maps.<Identifier, NativeImage>newHashMap();
 
 	public UnicodeTextureFont(ResourceManager resourceManager, byte[] bs, String string) {
-		this.field_2302 = resourceManager;
-		this.widths = bs;
-		this.field_2300 = string;
+		this.resourceManager = resourceManager;
+		this.sizes = bs;
+		this.template = string;
 
 		for (int i = 0; i < 256; i++) {
 			char c = (char)(i * 256);
-			Identifier identifier = this.method_2041(c);
+			Identifier identifier = this.getGlyphId(c);
 
 			try {
-				Resource resource = this.field_2302.getResource(identifier);
+				Resource resource = this.resourceManager.getResource(identifier);
 				Throwable var8 = null;
 
 				try (NativeImage nativeImage = NativeImage.fromInputStream(NativeImage.Format.field_4997, resource.getInputStream())) {
@@ -73,20 +73,20 @@ public class UnicodeTextureFont implements Font {
 
 	@Override
 	public void close() {
-		this.field_2299.values().forEach(NativeImage::close);
+		this.images.values().forEach(NativeImage::close);
 	}
 
-	private Identifier method_2041(char c) {
-		Identifier identifier = new Identifier(String.format(this.field_2300, String.format("%02x", c / 256)));
+	private Identifier getGlyphId(char c) {
+		Identifier identifier = new Identifier(String.format(this.template, String.format("%02x", c / 256)));
 		return new Identifier(identifier.getNamespace(), "textures/" + identifier.getPath());
 	}
 
 	@Nullable
 	@Override
 	public RenderableGlyph getGlyph(char c) {
-		byte b = this.widths[c];
+		byte b = this.sizes[c];
 		if (b != 0) {
-			NativeImage nativeImage = (NativeImage)this.field_2299.computeIfAbsent(this.method_2041(c), this::method_2042);
+			NativeImage nativeImage = (NativeImage)this.images.computeIfAbsent(this.getGlyphId(c), this::getGlyphImage);
 			if (nativeImage != null) {
 				int i = method_2043(b);
 				return new UnicodeTextureFont.UnicodeTextureGlyph(c % 16 * 16 + i, (c & 255) / 16 * 16, method_2044(b) - i, 16, nativeImage);
@@ -97,9 +97,9 @@ public class UnicodeTextureFont implements Font {
 	}
 
 	@Nullable
-	private NativeImage method_2042(Identifier identifier) {
+	private NativeImage getGlyphImage(Identifier identifier) {
 		try {
-			Resource resource = this.field_2302.getResource(identifier);
+			Resource resource = this.resourceManager.getResource(identifier);
 			Throwable var3 = null;
 
 			NativeImage var4;
@@ -139,15 +139,15 @@ public class UnicodeTextureFont implements Font {
 
 	@Environment(EnvType.CLIENT)
 	public static class Loader implements FontLoader {
-		private final Identifier field_2304;
-		private final String field_2305;
+		private final Identifier sizes;
+		private final String template;
 
 		public Loader(Identifier identifier, String string) {
-			this.field_2304 = identifier;
-			this.field_2305 = string;
+			this.sizes = identifier;
+			this.template = string;
 		}
 
-		public static FontLoader method_2046(JsonObject jsonObject) {
+		public static FontLoader fromJson(JsonObject jsonObject) {
 			return new UnicodeTextureFont.Loader(new Identifier(JsonHelper.getString(jsonObject, "sizes")), JsonHelper.getString(jsonObject, "template"));
 		}
 
@@ -155,14 +155,14 @@ public class UnicodeTextureFont implements Font {
 		@Override
 		public Font load(ResourceManager resourceManager) {
 			try {
-				Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(this.field_2304);
+				Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(this.sizes);
 				Throwable var3 = null;
 
 				UnicodeTextureFont var5;
 				try {
 					byte[] bs = new byte[65536];
 					resource.getInputStream().read(bs);
-					var5 = new UnicodeTextureFont(resourceManager, bs, this.field_2305);
+					var5 = new UnicodeTextureFont(resourceManager, bs, this.template);
 				} catch (Throwable var15) {
 					var3 = var15;
 					throw var15;
@@ -182,7 +182,7 @@ public class UnicodeTextureFont implements Font {
 
 				return var5;
 			} catch (IOException var17) {
-				UnicodeTextureFont.LOGGER.error("Cannot load {}, unicode glyphs will not render correctly", this.field_2304);
+				UnicodeTextureFont.LOGGER.error("Cannot load {}, unicode glyphs will not render correctly", this.sizes);
 				return null;
 			}
 		}

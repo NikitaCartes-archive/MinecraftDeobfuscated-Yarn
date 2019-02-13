@@ -67,13 +67,13 @@ import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.village.TraderRecipe;
+import net.minecraft.village.TraderRecipeList;
+import net.minecraft.village.Trades;
 import net.minecraft.village.VillageProperties;
 import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerDataContainer;
 import net.minecraft.village.VillagerProfession;
-import net.minecraft.village.VillagerRecipe;
-import net.minecraft.village.VillagerRecipeList;
-import net.minecraft.village.VillagerTrades;
 import net.minecraft.village.VillagerType;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
@@ -83,7 +83,7 @@ import net.minecraft.world.World;
 		value = EnvType.CLIENT,
 		itf = VillagerDataContainer.class
 	)})
-public class VillagerEntity extends AbstractVillagerEntity implements RaidVictim, VillagerDataContainer {
+public class VillagerEntity extends AbstractTraderEntity implements RaidVictim, VillagerDataContainer {
 	private static final TrackedData<VillagerData> VILLAGER_DATA = DataTracker.registerData(VillagerEntity.class, TrackedDataHandlerRegistry.VILLAGER_DATA);
 	private int findVillageCountdown;
 	private int unlockTradeCountdown;
@@ -179,9 +179,9 @@ public class VillagerEntity extends AbstractVillagerEntity implements RaidVictim
 			this.unlockTradeCountdown--;
 			if (this.unlockTradeCountdown <= 0) {
 				if (this.unlockTrade) {
-					for (VillagerRecipe villagerRecipe : this.getRecipes()) {
-						if (villagerRecipe.isDisabled()) {
-							villagerRecipe.increasedMaxUses(this.random.nextInt(6) + this.random.nextInt(6) + 2);
+					for (TraderRecipe traderRecipe : this.getRecipes()) {
+						if (traderRecipe.isDisabled()) {
+							traderRecipe.increasedMaxUses(this.random.nextInt(6) + this.random.nextInt(6) + 2);
 						}
 					}
 
@@ -220,7 +220,7 @@ public class VillagerEntity extends AbstractVillagerEntity implements RaidVictim
 						this.world.summonParticle(this, (byte)42);
 					} else {
 						this.setCurrentCustomer(playerEntity);
-						this.method_17449(playerEntity, this.getDisplayName());
+						this.sendRecipes(playerEntity, this.getDisplayName());
 					}
 				}
 
@@ -252,7 +252,7 @@ public class VillagerEntity extends AbstractVillagerEntity implements RaidVictim
 		}
 
 		if (compoundTag.containsKey("Offers", 10)) {
-			this.recipes = new VillagerRecipeList(compoundTag.getCompound("Offers"));
+			this.recipes = new TraderRecipeList(compoundTag.getCompound("Offers"));
 		}
 
 		this.willingToMate = compoundTag.getBoolean("Willing");
@@ -295,9 +295,9 @@ public class VillagerEntity extends AbstractVillagerEntity implements RaidVictim
 	}
 
 	@Override
-	protected void method_18008(VillagerRecipe villagerRecipe) {
+	protected void afterUsing(TraderRecipe traderRecipe) {
 		int i = 3 + this.random.nextInt(4);
-		if (villagerRecipe.getUses() == 1 || this.random.nextInt(5) == 0) {
+		if (traderRecipe.getUses() == 1 || this.random.nextInt(5) == 0) {
 			this.unlockTradeCountdown = 40;
 			this.unlockTrade = true;
 			this.willingToMate = true;
@@ -305,7 +305,7 @@ public class VillagerEntity extends AbstractVillagerEntity implements RaidVictim
 			i += 5;
 		}
 
-		if (villagerRecipe.getRewardExp()) {
+		if (traderRecipe.getRewardExp()) {
 			this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.x, this.y + 0.5, this.z, i));
 		}
 	}
@@ -376,15 +376,15 @@ public class VillagerEntity extends AbstractVillagerEntity implements RaidVictim
 		if (!this.willingToMate && bl && this.hasFoodForWilling()) {
 			boolean bl2 = false;
 
-			for (int i = 0; i < this.method_18011().getInvSize(); i++) {
-				ItemStack itemStack = this.method_18011().getInvStack(i);
+			for (int i = 0; i < this.getInventory().getInvSize(); i++) {
+				ItemStack itemStack = this.getInventory().getInvStack(i);
 				if (!itemStack.isEmpty()) {
 					if (itemStack.getItem() == Items.field_8229 && itemStack.getAmount() >= 3) {
 						bl2 = true;
-						this.method_18011().takeInvStack(i, 3);
+						this.getInventory().takeInvStack(i, 3);
 					} else if ((itemStack.getItem() == Items.field_8567 || itemStack.getItem() == Items.field_8179) && itemStack.getAmount() >= 12) {
 						bl2 = true;
-						this.method_18011().takeInvStack(i, 12);
+						this.getInventory().takeInvStack(i, 12);
 					}
 				}
 
@@ -403,13 +403,13 @@ public class VillagerEntity extends AbstractVillagerEntity implements RaidVictim
 		this.willingToMate = bl;
 	}
 
-	public void setRecipes(VillagerRecipeList villagerRecipeList) {
-		this.recipes = villagerRecipeList;
+	public void setRecipes(TraderRecipeList traderRecipeList) {
+		this.recipes = traderRecipeList;
 	}
 
 	private void levelUp() {
 		this.setVillagerData(this.getVillagerData().withLevel(this.getVillagerData().getLevel() + 1));
-		this.method_7237();
+		this.fillRecipes();
 	}
 
 	@Override
@@ -514,7 +514,7 @@ public class VillagerEntity extends AbstractVillagerEntity implements RaidVictim
 		ItemStack itemStack = itemEntity.getStack();
 		Item item = itemStack.getItem();
 		if (this.canPickUp(item)) {
-			ItemStack itemStack2 = this.method_18011().add(itemStack);
+			ItemStack itemStack2 = this.getInventory().add(itemStack);
 			if (itemStack2.isEmpty()) {
 				itemEntity.invalidate();
 			} else {
@@ -537,7 +537,7 @@ public class VillagerEntity extends AbstractVillagerEntity implements RaidVictim
 		return this.hasEnoughFood(1);
 	}
 
-	public boolean method_7234() {
+	public boolean wantsToStartBreeding() {
 		return this.hasEnoughFood(2);
 	}
 
@@ -549,8 +549,8 @@ public class VillagerEntity extends AbstractVillagerEntity implements RaidVictim
 	private boolean hasEnoughFood(int i) {
 		boolean bl = this.getVillagerData().getProfession() == VillagerProfession.field_17056;
 
-		for (int j = 0; j < this.method_18011().getInvSize(); j++) {
-			ItemStack itemStack = this.method_18011().getInvStack(j);
+		for (int j = 0; j < this.getInventory().getInvSize(); j++) {
+			ItemStack itemStack = this.getInventory().getInvStack(j);
 			Item item = itemStack.getItem();
 			int k = itemStack.getAmount();
 			if (item == Items.field_8229 && k >= 3 * i
@@ -569,8 +569,8 @@ public class VillagerEntity extends AbstractVillagerEntity implements RaidVictim
 	}
 
 	public boolean hasSeed() {
-		for (int i = 0; i < this.method_18011().getInvSize(); i++) {
-			Item item = this.method_18011().getInvStack(i).getItem();
+		for (int i = 0; i < this.getInventory().getInvSize(); i++) {
+			Item item = this.getInventory().getInvStack(i).getItem();
 			if (item == Items.field_8317 || item == Items.field_8567 || item == Items.field_8179 || item == Items.field_8309) {
 				return true;
 			}
@@ -580,19 +580,18 @@ public class VillagerEntity extends AbstractVillagerEntity implements RaidVictim
 	}
 
 	@Override
-	protected void method_7237() {
+	protected void fillRecipes() {
 		VillagerData villagerData = this.getVillagerData();
-		Int2ObjectMap<VillagerTrades.Factory[]> int2ObjectMap = (Int2ObjectMap<VillagerTrades.Factory[]>)VillagerTrades.PROFESSION_TO_LEVELED_TRADE
-			.get(villagerData.getProfession());
+		Int2ObjectMap<Trades.Factory[]> int2ObjectMap = (Int2ObjectMap<Trades.Factory[]>)Trades.PROFESSION_TO_LEVELED_TRADE.get(villagerData.getProfession());
 		if (int2ObjectMap != null && !int2ObjectMap.isEmpty()) {
-			VillagerTrades.Factory[] factorys = int2ObjectMap.get(villagerData.getLevel());
+			Trades.Factory[] factorys = int2ObjectMap.get(villagerData.getLevel());
 			if (factorys != null) {
-				VillagerRecipeList villagerRecipeList = this.getRecipes();
+				TraderRecipeList traderRecipeList = this.getRecipes();
 
-				for (VillagerTrades.Factory factory : factorys) {
-					VillagerRecipe villagerRecipe = factory.create(this, this.random);
-					if (villagerRecipe != null) {
-						villagerRecipeList.add(villagerRecipe);
+				for (Trades.Factory factory : factorys) {
+					TraderRecipe traderRecipe = factory.create(this, this.random);
+					if (traderRecipe != null) {
+						traderRecipeList.add(traderRecipe);
 					}
 				}
 			}

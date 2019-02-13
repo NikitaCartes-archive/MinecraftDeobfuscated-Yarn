@@ -53,9 +53,9 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.icons = new MapIcon[packetByteBuf.readVarInt()];
 
 		for (int i = 0; i < this.icons.length; i++) {
-			MapIcon.Direction direction = packetByteBuf.readEnumConstant(MapIcon.Direction.class);
+			MapIcon.Type type = packetByteBuf.readEnumConstant(MapIcon.Type.class);
 			this.icons[i] = new MapIcon(
-				direction,
+				type,
 				packetByteBuf.readByte(),
 				packetByteBuf.readByte(),
 				(byte)(packetByteBuf.readByte() & 15),
@@ -81,13 +81,13 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 		packetByteBuf.writeVarInt(this.icons.length);
 
 		for (MapIcon mapIcon : this.icons) {
-			packetByteBuf.writeEnumConstant(mapIcon.method_93());
+			packetByteBuf.writeEnumConstant(mapIcon.getType());
 			packetByteBuf.writeByte(mapIcon.getX());
 			packetByteBuf.writeByte(mapIcon.getZ());
-			packetByteBuf.writeByte(mapIcon.getType() & 15);
-			if (mapIcon.method_88() != null) {
+			packetByteBuf.writeByte(mapIcon.getAngle() & 15);
+			if (mapIcon.getText() != null) {
 				packetByteBuf.writeBoolean(true);
-				packetByteBuf.writeTextComponent(mapIcon.method_88());
+				packetByteBuf.writeTextComponent(mapIcon.getText());
 			} else {
 				packetByteBuf.writeBoolean(false);
 			}
@@ -103,7 +103,7 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11643(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11088(this);
+		clientPlayPacketListener.onMapUpdate(this);
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -152,7 +152,7 @@ public class PotionUtil {
 		List<StatusEffectInstance> list2 = getPotionEffects(itemStack);
 		List<Pair<String, EntityAttributeModifier>> list3 = Lists.<Pair<String, EntityAttributeModifier>>newArrayList();
 		if (list2.isEmpty()) {
-			list.add(new TranslatableTextComponent("effect.none").applyFormat(TextFormat.GRAY));
+			list.add(new TranslatableTextComponent("effect.none").applyFormat(TextFormat.field_1080));
 		} else {
 			for (StatusEffectInstance statusEffectInstance : list2) {
 				TextComponent textComponent = new TranslatableTextComponent(statusEffectInstance.getTranslationKey());
@@ -178,13 +178,13 @@ public class PotionUtil {
 					textComponent.append(" (").append(StatusEffectUtil.durationToString(statusEffectInstance, f)).append(")");
 				}
 
-				list.add(textComponent.applyFormat(statusEffect.isNegative() ? TextFormat.RED : TextFormat.BLUE));
+				list.add(textComponent.applyFormat(statusEffect.isNegative() ? TextFormat.field_1061 : TextFormat.field_1078));
 			}
 		}
 
 		if (!list3.isEmpty()) {
 			list.add(new StringTextComponent(""));
-			list.add(new TranslatableTextComponent("potion.whenDrank").applyFormat(TextFormat.DARK_PURPLE));
+			list.add(new TranslatableTextComponent("potion.whenDrank").applyFormat(TextFormat.field_1064));
 
 			for (Pair<String, EntityAttributeModifier> pair : list3) {
 				EntityAttributeModifier entityAttributeModifier3 = pair.getRight();
@@ -204,7 +204,7 @@ public class PotionUtil {
 								ItemStack.MODIFIER_FORMAT.format(e),
 								new TranslatableTextComponent("attribute.name." + pair.getLeft())
 							)
-							.applyFormat(TextFormat.BLUE)
+							.applyFormat(TextFormat.field_1078)
 					);
 				} else if (d < 0.0) {
 					e *= -1.0;
@@ -214,7 +214,7 @@ public class PotionUtil {
 								ItemStack.MODIFIER_FORMAT.format(e),
 								new TranslatableTextComponent("attribute.name." + pair.getLeft())
 							)
-							.applyFormat(TextFormat.RED)
+							.applyFormat(TextFormat.field_1061)
 					);
 				}
 			}

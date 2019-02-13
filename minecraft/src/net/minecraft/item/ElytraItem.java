@@ -34,9 +34,9 @@ public class ElytraItem extends Item {
 		if (itemStack2.isEmpty()) {
 			playerEntity.setEquippedStack(equipmentSlot, itemStack.copy());
 			itemStack.setAmount(0);
-			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+			return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 		} else {
-			return new TypedActionResult<>(ActionResult.FAILURE, itemStack);
+			return new TypedActionResult<>(ActionResult.field_5814, itemStack);
 		}
 	}
 }

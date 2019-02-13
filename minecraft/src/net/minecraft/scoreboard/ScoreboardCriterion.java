@@ -25,39 +25,39 @@ public class ScoreboardCriterion {
 	public static final ScoreboardCriterion LEVEL = new ScoreboardCriterion("level", true, ScoreboardCriterion.Type.INTEGER);
 	public static final ScoreboardCriterion[] TEAM_KILLS = new ScoreboardCriterion[]{
 		new ScoreboardCriterion("teamkill." + TextFormat.BLACK.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.DARK_BLUE.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.DARK_GREEN.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.DARK_AQUA.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.DARK_RED.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.DARK_PURPLE.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.GOLD.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.GRAY.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.DARK_GRAY.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.BLUE.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.GREEN.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.AQUA.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.RED.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.LIGHT_PURPLE.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.YELLOW.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.WHITE.getFormatName())
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1058.getFormatName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1077.getFormatName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1062.getFormatName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1079.getFormatName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1064.getFormatName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1065.getFormatName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1080.getFormatName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1063.getFormatName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1078.getFormatName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1060.getFormatName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1075.getFormatName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1061.getFormatName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1076.getFormatName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1054.getFormatName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1068.getFormatName())
 	};
 	public static final ScoreboardCriterion[] KILLED_BY_TEAMS = new ScoreboardCriterion[]{
 		new ScoreboardCriterion("killedByTeam." + TextFormat.BLACK.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.DARK_BLUE.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.DARK_GREEN.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.DARK_AQUA.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.DARK_RED.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.DARK_PURPLE.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.GOLD.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.GRAY.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.DARK_GRAY.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.BLUE.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.GREEN.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.AQUA.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.RED.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.LIGHT_PURPLE.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.YELLOW.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.WHITE.getFormatName())
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1058.getFormatName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1077.getFormatName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1062.getFormatName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1079.getFormatName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1064.getFormatName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1065.getFormatName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1080.getFormatName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1063.getFormatName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1078.getFormatName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1060.getFormatName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1075.getFormatName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1061.getFormatName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1076.getFormatName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1054.getFormatName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1068.getFormatName())
 	};
 	private final String name;
 	private final boolean readOnly;
@@ -82,13 +82,13 @@ public class ScoreboardCriterion {
 			return i < 0
 				? Optional.empty()
 				: Registry.STAT_TYPE
-					.getOptional(Identifier.createSplit(string.substring(0, i), '.'))
+					.getOrEmpty(Identifier.createSplit(string.substring(0, i), '.'))
 					.flatMap(statType -> method_1223(statType, Identifier.createSplit(string.substring(i + 1), '.')));
 		}
 	}
 
 	private static <T> Optional<ScoreboardCriterion> method_1223(StatType<T> statType, Identifier identifier) {
-		return statType.getRegistry().getOptional(identifier).map(statType::getOrCreateStat);
+		return statType.getRegistry().getOrEmpty(identifier).map(statType::getOrCreateStat);
 	}
 
 	public String getName() {

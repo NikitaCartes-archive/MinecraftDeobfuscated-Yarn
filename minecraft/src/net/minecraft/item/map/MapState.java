@@ -96,7 +96,7 @@ public class MapState extends PersistentState {
 			MapFrameInstance mapFrameInstance = MapFrameInstance.fromNbt(listTag2.getCompoundTag(j));
 			this.field_121.put(mapFrameInstance.method_82(), mapFrameInstance);
 			this.method_107(
-				MapIcon.Direction.field_95,
+				MapIcon.Type.field_95,
 				null,
 				"frame-" + mapFrameInstance.getEntityId(),
 				(double)mapFrameInstance.getPos().getX(),
@@ -150,7 +150,7 @@ public class MapState extends PersistentState {
 			String string = lv2.field_125.getName().getString();
 			if (!lv2.field_125.invalid && (lv2.field_125.inventory.containsStack(itemStack) || itemStack.isHeldInItemFrame())) {
 				if (!itemStack.isHeldInItemFrame() && lv2.field_125.dimension == this.dimension && this.showIcons) {
-					this.method_107(MapIcon.Direction.field_91, lv2.field_125.world, string, lv2.field_125.x, lv2.field_125.z, (double)lv2.field_125.yaw, null);
+					this.method_107(MapIcon.Type.field_91, lv2.field_125.world, string, lv2.field_125.x, lv2.field_125.z, (double)lv2.field_125.yaw, null);
 				}
 			} else {
 				this.field_120.remove(lv2.field_125);
@@ -169,7 +169,7 @@ public class MapState extends PersistentState {
 
 			MapFrameInstance mapFrameInstance2 = new MapFrameInstance(blockPos, itemFrameEntity.facing.getHorizontal() * 90, itemFrameEntity.getEntityId());
 			this.method_107(
-				MapIcon.Direction.field_95,
+				MapIcon.Type.field_95,
 				playerEntity.world,
 				"frame-" + itemFrameEntity.getEntityId(),
 				(double)blockPos.getX(),
@@ -188,7 +188,7 @@ public class MapState extends PersistentState {
 				CompoundTag compoundTag2 = listTag.getCompoundTag(j);
 				if (!this.icons.containsKey(compoundTag2.getString("id"))) {
 					this.method_107(
-						MapIcon.Direction.method_99(compoundTag2.getByte("type")),
+						MapIcon.Type.byId(compoundTag2.getByte("type")),
 						playerEntity.world,
 						compoundTag2.getString("id"),
 						compoundTag2.getDouble("x"),
@@ -201,7 +201,7 @@ public class MapState extends PersistentState {
 		}
 	}
 
-	public static void method_110(ItemStack itemStack, BlockPos blockPos, String string, MapIcon.Direction direction) {
+	public static void method_110(ItemStack itemStack, BlockPos blockPos, String string, MapIcon.Type type) {
 		ListTag listTag;
 		if (itemStack.hasTag() && itemStack.getTag().containsKey("Decorations", 9)) {
 			listTag = itemStack.getTag().getList("Decorations", 10);
@@ -211,21 +211,19 @@ public class MapState extends PersistentState {
 		}
 
 		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.putByte("type", direction.method_98());
+		compoundTag.putByte("type", type.getId());
 		compoundTag.putString("id", string);
 		compoundTag.putDouble("x", (double)blockPos.getX());
 		compoundTag.putDouble("z", (double)blockPos.getZ());
 		compoundTag.putDouble("rot", 180.0);
 		listTag.add(compoundTag);
-		if (direction.method_97()) {
+		if (type.hasTintColor()) {
 			CompoundTag compoundTag2 = itemStack.getOrCreateSubCompoundTag("display");
-			compoundTag2.putInt("MapColor", direction.method_96());
+			compoundTag2.putInt("MapColor", type.getTintColor());
 		}
 	}
 
-	private void method_107(
-		MapIcon.Direction direction, @Nullable IWorld iWorld, String string, double d, double e, double f, @Nullable TextComponent textComponent
-	) {
+	private void method_107(MapIcon.Type type, @Nullable IWorld iWorld, String string, double d, double e, double f, @Nullable TextComponent textComponent) {
 		int i = 1 << this.scale;
 		float g = (float)(d - (double)this.xCenter) / (float)i;
 		float h = (float)(e - (double)this.zCenter) / (float)i;
@@ -241,21 +239,21 @@ public class MapState extends PersistentState {
 				k = (byte)(l * l * 34187121 + l * 121 >> 15 & 15);
 			}
 		} else {
-			if (direction != MapIcon.Direction.field_91) {
+			if (type != MapIcon.Type.field_91) {
 				this.icons.remove(string);
 				return;
 			}
 
 			int l = 320;
 			if (Math.abs(g) < 320.0F && Math.abs(h) < 320.0F) {
-				direction = MapIcon.Direction.field_86;
+				type = MapIcon.Type.field_86;
 			} else {
 				if (!this.unlimitedTracking) {
 					this.icons.remove(string);
 					return;
 				}
 
-				direction = MapIcon.Direction.field_87;
+				type = MapIcon.Type.field_87;
 			}
 
 			k = 0;
@@ -276,7 +274,7 @@ public class MapState extends PersistentState {
 			}
 		}
 
-		this.icons.put(string, new MapIcon(direction, b, c, k, textComponent));
+		this.icons.put(string, new MapIcon(type, b, c, k, textComponent));
 	}
 
 	@Nullable

@@ -2,7 +2,6 @@ package net.minecraft.container;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3914;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,56 +19,56 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
 
 public class LoomContainer extends Container {
-	private final class_3914 field_17316;
-	private final Property field_17317 = Property.create();
-	private Runnable field_17318 = () -> {
+	private final ContainerWorldContext context;
+	private final Property selectedPattern = Property.create();
+	private Runnable inventoryChangeListener = () -> {
 	};
-	private final Slot field_17319;
-	private final Slot field_17320;
-	private final Slot field_17321;
-	private final Slot field_17322;
-	private final Inventory inv = new BasicInventory(3) {
+	private final Slot bannerSlot;
+	private final Slot dyeSlot;
+	private final Slot patternSlot;
+	private final Slot outputSlot;
+	private final Inventory inputInventory = new BasicInventory(3) {
 		@Override
 		public void markDirty() {
 			super.markDirty();
 			LoomContainer.this.onContentChanged(this);
-			LoomContainer.this.field_17318.run();
+			LoomContainer.this.inventoryChangeListener.run();
 		}
 	};
-	private final Inventory field_17323 = new BasicInventory(1) {
+	private final Inventory outputInventory = new BasicInventory(1) {
 		@Override
 		public void markDirty() {
 			super.markDirty();
-			LoomContainer.this.field_17318.run();
+			LoomContainer.this.inventoryChangeListener.run();
 		}
 	};
 
 	public LoomContainer(int i, PlayerInventory playerInventory) {
-		this(i, playerInventory, class_3914.field_17304);
+		this(i, playerInventory, ContainerWorldContext.NO_OP_CONTEXT);
 	}
 
-	public LoomContainer(int i, PlayerInventory playerInventory, class_3914 arg) {
+	public LoomContainer(int i, PlayerInventory playerInventory, ContainerWorldContext containerWorldContext) {
 		super(ContainerType.LOOM, i);
-		this.field_17316 = arg;
-		this.field_17319 = this.addSlot(new Slot(this.inv, 0, 13, 26) {
+		this.context = containerWorldContext;
+		this.bannerSlot = this.addSlot(new Slot(this.inputInventory, 0, 13, 26) {
 			@Override
 			public boolean canInsert(ItemStack itemStack) {
 				return itemStack.getItem() instanceof BannerItem;
 			}
 		});
-		this.field_17320 = this.addSlot(new Slot(this.inv, 1, 33, 26) {
+		this.dyeSlot = this.addSlot(new Slot(this.inputInventory, 1, 33, 26) {
 			@Override
 			public boolean canInsert(ItemStack itemStack) {
 				return itemStack.getItem() instanceof DyeItem;
 			}
 		});
-		this.field_17321 = this.addSlot(new Slot(this.inv, 2, 23, 45) {
+		this.patternSlot = this.addSlot(new Slot(this.inputInventory, 2, 23, 45) {
 			@Override
 			public boolean canInsert(ItemStack itemStack) {
 				return itemStack.getItem() instanceof BannerPatternItem;
 			}
 		});
-		this.field_17322 = this.addSlot(new Slot(this.field_17323, 0, 143, 58) {
+		this.outputSlot = this.addSlot(new Slot(this.outputInventory, 0, 143, 58) {
 			@Override
 			public boolean canInsert(ItemStack itemStack) {
 				return false;
@@ -77,10 +76,10 @@ public class LoomContainer extends Container {
 
 			@Override
 			public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
-				LoomContainer.this.field_17319.takeStack(1);
-				LoomContainer.this.field_17320.takeStack(1);
-				LoomContainer.this.field_17317.set(0);
-				arg.method_17393((world, blockPos) -> world.playSound(null, blockPos, SoundEvents.field_15096, SoundCategory.field_15245, 1.0F, 1.0F));
+				LoomContainer.this.bannerSlot.takeStack(1);
+				LoomContainer.this.dyeSlot.takeStack(1);
+				LoomContainer.this.selectedPattern.set(0);
+				containerWorldContext.run((world, blockPos) -> world.playSound(null, blockPos, SoundEvents.field_15096, SoundCategory.field_15245, 1.0F, 1.0F));
 				return super.onTakeItem(playerEntity, itemStack);
 			}
 		});
@@ -95,58 +94,58 @@ public class LoomContainer extends Container {
 			this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 142));
 		}
 
-		this.addProperty(this.field_17317);
+		this.addProperty(this.selectedPattern);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_7647() {
-		return this.field_17317.get();
+	public int getSelectedPattern() {
+		return this.selectedPattern.get();
 	}
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return canUse(this.field_17316, playerEntity, Blocks.field_10083);
+		return canUse(this.context, playerEntity, Blocks.field_10083);
 	}
 
 	@Override
 	public boolean onButtonClick(PlayerEntity playerEntity, int i) {
-		this.field_17317.set(i);
-		this.method_7648();
+		this.selectedPattern.set(i);
+		this.updateOutputSlot();
 		return true;
 	}
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
-		ItemStack itemStack = this.field_17319.getStack();
-		ItemStack itemStack2 = this.field_17320.getStack();
-		ItemStack itemStack3 = this.field_17321.getStack();
-		ItemStack itemStack4 = this.field_17322.getStack();
+		ItemStack itemStack = this.bannerSlot.getStack();
+		ItemStack itemStack2 = this.dyeSlot.getStack();
+		ItemStack itemStack3 = this.patternSlot.getStack();
+		ItemStack itemStack4 = this.outputSlot.getStack();
 		if (itemStack4.isEmpty()
 			|| !itemStack.isEmpty()
 				&& !itemStack2.isEmpty()
-				&& this.field_17317.get() > 0
-				&& (this.field_17317.get() < BannerPattern.COUNT - 4 || !itemStack3.isEmpty())) {
+				&& this.selectedPattern.get() > 0
+				&& (this.selectedPattern.get() < BannerPattern.COUNT - 4 || !itemStack3.isEmpty())) {
 			if (!itemStack3.isEmpty() && itemStack3.getItem() instanceof BannerPatternItem) {
 				CompoundTag compoundTag = itemStack.getOrCreateSubCompoundTag("BlockEntityTag");
 				boolean bl = compoundTag.containsKey("Patterns", 9) && !itemStack.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;
 				if (bl) {
-					this.field_17317.set(0);
+					this.selectedPattern.set(0);
 				} else {
-					this.field_17317.set(((BannerPatternItem)itemStack3.getItem()).getPattern().ordinal());
+					this.selectedPattern.set(((BannerPatternItem)itemStack3.getItem()).getPattern().ordinal());
 				}
 			}
 		} else {
-			this.field_17322.setStack(ItemStack.EMPTY);
-			this.field_17317.set(0);
+			this.outputSlot.setStack(ItemStack.EMPTY);
+			this.selectedPattern.set(0);
 		}
 
-		this.method_7648();
+		this.updateOutputSlot();
 		this.sendContentUpdates();
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_17423(Runnable runnable) {
-		this.field_17318 = runnable;
+	public void setInventoryChangeListener(Runnable runnable) {
+		this.inventoryChangeListener = runnable;
 	}
 
 	@Override
@@ -156,23 +155,23 @@ public class LoomContainer extends Container {
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
-			if (i == this.field_17322.id) {
+			if (i == this.outputSlot.id) {
 				if (!this.insertItem(itemStack2, 4, 40, true)) {
 					return ItemStack.EMPTY;
 				}
 
 				slot.onStackChanged(itemStack2, itemStack);
-			} else if (i != this.field_17320.id && i != this.field_17319.id && i != this.field_17321.id) {
+			} else if (i != this.dyeSlot.id && i != this.bannerSlot.id && i != this.patternSlot.id) {
 				if (itemStack2.getItem() instanceof BannerItem) {
-					if (!this.insertItem(itemStack2, this.field_17319.id, this.field_17319.id + 1, false)) {
+					if (!this.insertItem(itemStack2, this.bannerSlot.id, this.bannerSlot.id + 1, false)) {
 						return ItemStack.EMPTY;
 					}
 				} else if (itemStack2.getItem() instanceof DyeItem) {
-					if (!this.insertItem(itemStack2, this.field_17320.id, this.field_17320.id + 1, false)) {
+					if (!this.insertItem(itemStack2, this.dyeSlot.id, this.dyeSlot.id + 1, false)) {
 						return ItemStack.EMPTY;
 					}
 				} else if (itemStack2.getItem() instanceof BannerPatternItem) {
-					if (!this.insertItem(itemStack2, this.field_17321.id, this.field_17321.id + 1, false)) {
+					if (!this.insertItem(itemStack2, this.patternSlot.id, this.patternSlot.id + 1, false)) {
 						return ItemStack.EMPTY;
 					}
 				} else if (i >= 4 && i < 31) {
@@ -205,19 +204,19 @@ public class LoomContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.field_17316.method_17393((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.inv));
+		this.context.run((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.inputInventory));
 	}
 
-	private void method_7648() {
-		this.field_17316.method_17393((world, blockPos) -> {
-			if (this.field_17317.get() > 0) {
-				ItemStack itemStack = this.field_17319.getStack();
-				ItemStack itemStack2 = this.field_17320.getStack();
+	private void updateOutputSlot() {
+		this.context.run((world, blockPos) -> {
+			if (this.selectedPattern.get() > 0) {
+				ItemStack itemStack = this.bannerSlot.getStack();
+				ItemStack itemStack2 = this.dyeSlot.getStack();
 				ItemStack itemStack3 = ItemStack.EMPTY;
 				if (!itemStack.isEmpty() && !itemStack2.isEmpty()) {
 					itemStack3 = itemStack.copy();
 					itemStack3.setAmount(1);
-					BannerPattern bannerPattern = BannerPattern.values()[this.field_17317.get()];
+					BannerPattern bannerPattern = BannerPattern.values()[this.selectedPattern.get()];
 					DyeColor dyeColor = ((DyeItem)itemStack2.getItem()).getColor();
 					CompoundTag compoundTag = itemStack3.getOrCreateSubCompoundTag("BlockEntityTag");
 					ListTag listTag;
@@ -234,30 +233,30 @@ public class LoomContainer extends Container {
 					listTag.add(compoundTag2);
 				}
 
-				if (!ItemStack.areEqual(itemStack3, this.field_17322.getStack())) {
-					this.field_17322.setStack(itemStack3);
+				if (!ItemStack.areEqual(itemStack3, this.outputSlot.getStack())) {
+					this.outputSlot.setStack(itemStack3);
 				}
 			}
 		});
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Slot method_17428() {
-		return this.field_17319;
+	public Slot getBannerSlot() {
+		return this.bannerSlot;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Slot method_17429() {
-		return this.field_17320;
+	public Slot getDyeSlot() {
+		return this.dyeSlot;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Slot method_17430() {
-		return this.field_17321;
+	public Slot getPatternSlot() {
+		return this.patternSlot;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Slot method_17431() {
-		return this.field_17322;
+	public Slot getOutputSlot() {
+		return this.outputSlot;
 	}
 }

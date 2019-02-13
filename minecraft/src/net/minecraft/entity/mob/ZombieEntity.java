@@ -38,7 +38,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.passive.AbstractVillagerEntity;
+import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.TurtleEntity;
@@ -99,9 +99,9 @@ public class ZombieEntity extends HostileEntity {
 		this.goalSelector.add(7, new class_1394(this, 1.0));
 		this.targetSelector.add(1, new class_1399(this).method_6318(PigZombieEntity.class));
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
-		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractVillagerEntity.class, false));
+		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractTraderEntity.class, false));
 		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, true));
-		this.targetSelector.add(5, new FollowTargetGoal(this, TurtleEntity.class, 10, true, false, TurtleEntity.field_6921));
+		this.targetSelector.add(5, new FollowTargetGoal(this, TurtleEntity.class, 10, true, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
 	}
 
 	@Override
@@ -210,7 +210,7 @@ public class ZombieEntity extends HostileEntity {
 					this.method_7218();
 				}
 			} else if (this.method_7209()) {
-				if (this.method_5777(FluidTags.field_15517)) {
+				if (this.isInFluid(FluidTags.field_15517)) {
 					this.field_7426++;
 					if (this.field_7426 >= 600) {
 						this.method_7213(300);
@@ -313,7 +313,7 @@ public class ZombieEntity extends HostileEntity {
 					int n = j + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1);
 					int o = k + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1);
 					BlockPos blockPos = new BlockPos(m, n - 1, o);
-					if (this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos) && this.world.method_8602(new BlockPos(m, n, o)) < 10) {
+					if (this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos) && this.world.getLightLevel(new BlockPos(m, n, o)) < 10) {
 						zombieEntity.setPosition((double)m, (double)n, (double)o);
 						if (!this.world.containsVisiblePlayer((double)m, (double)n, (double)o, 7.0)
 							&& this.world.method_8606(zombieEntity)
@@ -339,8 +339,8 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	public boolean method_6121(Entity entity) {
-		boolean bl = super.method_6121(entity);
+	public boolean attack(Entity entity) {
+		boolean bl = super.attack(entity);
 		if (bl) {
 			float f = this.world.getLocalDifficulty(new BlockPos(this)).getLocalDifficulty();
 			if (this.getMainHandStack().isEmpty() && this.isOnFire() && this.random.nextFloat() < f * 0.3F) {
@@ -459,8 +459,8 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	protected boolean method_5939(ItemStack itemStack) {
-		return itemStack.getItem() == Items.field_8803 && this.isChild() && this.hasVehicle() ? false : super.method_5939(itemStack);
+	protected boolean canPickupItem(ItemStack itemStack) {
+		return itemStack.getItem() == Items.field_8803 && this.isChild() && this.hasVehicle() ? false : super.canPickupItem(itemStack);
 	}
 
 	@Nullable

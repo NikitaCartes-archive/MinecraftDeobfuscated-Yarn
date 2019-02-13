@@ -6,7 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.text.TextFormat;
 import net.minecraft.util.math.MathHelper;
@@ -14,7 +14,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class SelectionManager {
 	private final MinecraftClient client;
-	private final FontRenderer fontRenderer;
+	private final TextRenderer fontRenderer;
 	private final Supplier<String> stringSupplier;
 	private final Consumer<String> stringConsumer;
 	private final int field_16455;
@@ -23,7 +23,7 @@ public class SelectionManager {
 
 	public SelectionManager(MinecraftClient minecraftClient, Supplier<String> supplier, Consumer<String> consumer, int i) {
 		this.client = minecraftClient;
-		this.fontRenderer = minecraftClient.fontRenderer;
+		this.fontRenderer = minecraftClient.textRenderer;
 		this.stringSupplier = supplier;
 		this.stringConsumer = consumer;
 		this.field_16455 = i;

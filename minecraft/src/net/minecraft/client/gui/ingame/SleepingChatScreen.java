@@ -15,20 +15,20 @@ public class SleepingChatScreen extends ChatScreen {
 		this.addButton(new ButtonWidget(1, this.width / 2 - 100, this.height - 40, I18n.translate("multiplayer.stopSleeping")) {
 			@Override
 			public void onPressed(double d, double e) {
-				SleepingChatScreen.this.method_2180();
+				SleepingChatScreen.this.stopSleeping();
 			}
 		});
 	}
 
 	@Override
 	public void close() {
-		this.method_2180();
+		this.stopSleeping();
 	}
 
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
 		if (i == 256) {
-			this.method_2180();
+			this.stopSleeping();
 		} else if (i == 257 || i == 335) {
 			String string = this.chatField.getText().trim();
 			if (!string.isEmpty()) {
@@ -36,14 +36,14 @@ public class SleepingChatScreen extends ChatScreen {
 			}
 
 			this.chatField.setText("");
-			this.client.inGameHud.getHudChat().method_1820();
+			this.client.inGameHud.getChatHud().method_1820();
 			return true;
 		}
 
 		return super.keyPressed(i, j, k);
 	}
 
-	private void method_2180() {
+	private void stopSleeping() {
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.player.networkHandler;
 		clientPlayNetworkHandler.sendPacket(new ClientCommandC2SPacket(this.client.player, ClientCommandC2SPacket.Mode.field_12986));
 	}

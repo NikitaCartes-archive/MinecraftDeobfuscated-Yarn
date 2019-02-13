@@ -70,7 +70,7 @@ public class EndCreditsScreen extends Screen {
 			Resource resource = null;
 
 			try {
-				String string = "" + TextFormat.WHITE + TextFormat.OBFUSCATED + TextFormat.GREEN + TextFormat.AQUA;
+				String string = "" + TextFormat.field_1068 + TextFormat.field_1051 + TextFormat.field_1060 + TextFormat.field_1075;
 				int i = 274;
 				if (this.field_2627) {
 					resource = this.client.getResourceManager().getResource(new Identifier("texts/end.txt"));
@@ -86,10 +86,10 @@ public class EndCreditsScreen extends Screen {
 							int j = string2.indexOf(string);
 							String string3 = string2.substring(0, j);
 							String string4 = string2.substring(j + string.length());
-							string2 = string3 + TextFormat.WHITE + TextFormat.OBFUSCATED + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string4;
+							string2 = string3 + TextFormat.field_1068 + TextFormat.field_1051 + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string4;
 						}
 
-						this.field_2634.addAll(this.client.fontRenderer.wrapStringToWidthAsList(string2, 274));
+						this.field_2634.addAll(this.client.textRenderer.wrapStringToWidthAsList(string2, 274));
 						this.field_2634.add("");
 					}
 
@@ -107,7 +107,7 @@ public class EndCreditsScreen extends Screen {
 				while ((string5 = bufferedReader.readLine()) != null) {
 					string5 = string5.replaceAll("PLAYERNAME", this.client.getSession().getUsername());
 					string5 = string5.replaceAll("\t", "    ");
-					this.field_2634.addAll(this.client.fontRenderer.wrapStringToWidthAsList(string5, 274));
+					this.field_2634.addAll(this.client.textRenderer.wrapStringToWidthAsList(string5, 274));
 					this.field_2634.add("");
 				}
 

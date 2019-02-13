@@ -51,7 +51,7 @@ public class LootManager implements SynchronousResourceReloadListener {
 	}
 
 	@Override
-	public void reloadResources(ResourceManager resourceManager) {
+	public void apply(ResourceManager resourceManager) {
 		this.suppliers.clear();
 
 		for (Identifier identifier : resourceManager.findResources("loot_tables", stringx -> stringx.endsWith(".json"))) {

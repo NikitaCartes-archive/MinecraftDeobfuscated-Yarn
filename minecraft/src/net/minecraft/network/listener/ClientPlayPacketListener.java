@@ -90,177 +90,177 @@ import net.minecraft.client.network.packet.WorldEventS2CPacket;
 import net.minecraft.client.network.packet.WorldTimeUpdateS2CPacket;
 
 public interface ClientPlayPacketListener extends PacketListener {
-	void method_11112(EntitySpawnS2CPacket entitySpawnS2CPacket);
+	void onEntitySpawn(EntitySpawnS2CPacket entitySpawnS2CPacket);
 
-	void method_11091(ExperienceOrbSpawnS2CPacket experienceOrbSpawnS2CPacket);
+	void onExperienceOrbSpawn(ExperienceOrbSpawnS2CPacket experienceOrbSpawnS2CPacket);
 
-	void method_11156(EntitySpawnGlobalS2CPacket entitySpawnGlobalS2CPacket);
+	void onEntitySpawnGlobal(EntitySpawnGlobalS2CPacket entitySpawnGlobalS2CPacket);
 
-	void method_11138(MobSpawnS2CPacket mobSpawnS2CPacket);
+	void onMobSpawn(MobSpawnS2CPacket mobSpawnS2CPacket);
 
-	void method_11144(ScoreboardObjectiveUpdateS2CPacket scoreboardObjectiveUpdateS2CPacket);
+	void onScoreboardObjectiveUpdate(ScoreboardObjectiveUpdateS2CPacket scoreboardObjectiveUpdateS2CPacket);
 
-	void method_11114(PaintingSpawnS2CPacket paintingSpawnS2CPacket);
+	void onPaintingSpawn(PaintingSpawnS2CPacket paintingSpawnS2CPacket);
 
-	void method_11097(PlayerSpawnS2CPacket playerSpawnS2CPacket);
+	void onPlayerSpawn(PlayerSpawnS2CPacket playerSpawnS2CPacket);
 
-	void method_11160(EntityAnimationS2CPacket entityAnimationS2CPacket);
+	void onEntityAnimation(EntityAnimationS2CPacket entityAnimationS2CPacket);
 
-	void method_11129(StatisticsS2CPacket statisticsS2CPacket);
+	void onStatistics(StatisticsS2CPacket statisticsS2CPacket);
 
-	void method_11115(UnlockRecipesS2CPacket unlockRecipesS2CPacket);
+	void onUnlockRecipes(UnlockRecipesS2CPacket unlockRecipesS2CPacket);
 
-	void method_11116(BlockBreakingProgressS2CPacket blockBreakingProgressS2CPacket);
+	void onBlockDestroyProgress(BlockBreakingProgressS2CPacket blockBreakingProgressS2CPacket);
 
-	void method_11108(SignEditorOpenS2CPacket signEditorOpenS2CPacket);
+	void onSignEditorOpen(SignEditorOpenS2CPacket signEditorOpenS2CPacket);
 
-	void method_11094(BlockEntityUpdateS2CPacket blockEntityUpdateS2CPacket);
+	void onBlockEntityUpdate(BlockEntityUpdateS2CPacket blockEntityUpdateS2CPacket);
 
-	void method_11158(BlockActionS2CPacket blockActionS2CPacket);
+	void onBlockAction(BlockActionS2CPacket blockActionS2CPacket);
 
-	void method_11136(BlockUpdateS2CPacket blockUpdateS2CPacket);
+	void onBlockUpdate(BlockUpdateS2CPacket blockUpdateS2CPacket);
 
-	void method_11121(ChatMessageS2CPacket chatMessageS2CPacket);
+	void onChatMessage(ChatMessageS2CPacket chatMessageS2CPacket);
 
-	void method_11100(ChunkDeltaUpdateS2CPacket chunkDeltaUpdateS2CPacket);
+	void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket chunkDeltaUpdateS2CPacket);
 
-	void method_11088(MapUpdateS2CPacket mapUpdateS2CPacket);
+	void onMapUpdate(MapUpdateS2CPacket mapUpdateS2CPacket);
 
-	void method_11123(ConfirmGuiActionS2CPacket confirmGuiActionS2CPacket);
+	void onGuiActionConfirm(ConfirmGuiActionS2CPacket confirmGuiActionS2CPacket);
 
-	void method_11102(GuiCloseS2CPacket guiCloseS2CPacket);
+	void onGuiClose(GuiCloseS2CPacket guiCloseS2CPacket);
 
-	void method_11153(InventoryS2CPacket inventoryS2CPacket);
+	void onInventory(InventoryS2CPacket inventoryS2CPacket);
 
-	void method_11089(GuiOpenS2CPacket guiOpenS2CPacket);
+	void onGuiOpen(GuiOpenS2CPacket guiOpenS2CPacket);
 
-	void method_11131(GuiUpdateS2CPacket guiUpdateS2CPacket);
+	void onGuiUpdate(GuiUpdateS2CPacket guiUpdateS2CPacket);
 
-	void method_11109(GuiSlotUpdateS2CPacket guiSlotUpdateS2CPacket);
+	void onGuiSlotUpdate(GuiSlotUpdateS2CPacket guiSlotUpdateS2CPacket);
 
-	void method_11152(CustomPayloadS2CPacket customPayloadS2CPacket);
+	void onCustomPayload(CustomPayloadS2CPacket customPayloadS2CPacket);
 
-	void method_11083(DisconnectS2CPacket disconnectS2CPacket);
+	void onDisconnect(DisconnectS2CPacket disconnectS2CPacket);
 
-	void method_11137(PlayerUseBedS2CPacket playerUseBedS2CPacket);
+	void onPlayerUseBed(PlayerUseBedS2CPacket playerUseBedS2CPacket);
 
-	void method_11148(EntityStatusS2CPacket entityStatusS2CPacket);
+	void onEntityStatus(EntityStatusS2CPacket entityStatusS2CPacket);
 
-	void method_11110(EntityAttachS2CPacket entityAttachS2CPacket);
+	void onEntityAttach(EntityAttachS2CPacket entityAttachS2CPacket);
 
-	void method_11080(EntityPassengersSetS2CPacket entityPassengersSetS2CPacket);
+	void onEntityPassengersSet(EntityPassengersSetS2CPacket entityPassengersSetS2CPacket);
 
-	void method_11124(ExplosionS2CPacket explosionS2CPacket);
+	void onExplosion(ExplosionS2CPacket explosionS2CPacket);
 
-	void method_11085(GameStateChangeS2CPacket gameStateChangeS2CPacket);
+	void onGameStateChange(GameStateChangeS2CPacket gameStateChangeS2CPacket);
 
-	void method_11147(KeepAliveS2CPacket keepAliveS2CPacket);
+	void onKeepAlive(KeepAliveS2CPacket keepAliveS2CPacket);
 
-	void method_11128(ChunkDataS2CPacket chunkDataS2CPacket);
+	void onChunkData(ChunkDataS2CPacket chunkDataS2CPacket);
 
-	void method_11107(UnloadChunkS2CPacket unloadChunkS2CPacket);
+	void onUnloadChunk(UnloadChunkS2CPacket unloadChunkS2CPacket);
 
-	void method_11098(WorldEventS2CPacket worldEventS2CPacket);
+	void onWorldEvent(WorldEventS2CPacket worldEventS2CPacket);
 
-	void method_11120(GameJoinS2CPacket gameJoinS2CPacket);
+	void onGameJoin(GameJoinS2CPacket gameJoinS2CPacket);
 
-	void method_11155(EntityS2CPacket entityS2CPacket);
+	void onEntityUpdate(EntityS2CPacket entityS2CPacket);
 
-	void method_11157(PlayerPositionLookS2CPacket playerPositionLookS2CPacket);
+	void onPlayerPositionLook(PlayerPositionLookS2CPacket playerPositionLookS2CPacket);
 
-	void method_11077(ParticleS2CPacket particleS2CPacket);
+	void onParticle(ParticleS2CPacket particleS2CPacket);
 
-	void method_11154(PlayerAbilitiesS2CPacket playerAbilitiesS2CPacket);
+	void onPlayerAbilities(PlayerAbilitiesS2CPacket playerAbilitiesS2CPacket);
 
-	void method_11113(PlayerListS2CPacket playerListS2CPacket);
+	void onPlayerList(PlayerListS2CPacket playerListS2CPacket);
 
-	void method_11095(EntitiesDestroyS2CPacket entitiesDestroyS2CPacket);
+	void onEntitiesDestroy(EntitiesDestroyS2CPacket entitiesDestroyS2CPacket);
 
-	void method_11119(RemoveEntityEffectS2CPacket removeEntityEffectS2CPacket);
+	void onRemoveEntityEffect(RemoveEntityEffectS2CPacket removeEntityEffectS2CPacket);
 
-	void method_11117(PlayerRespawnS2CPacket playerRespawnS2CPacket);
+	void onPlayerRespawn(PlayerRespawnS2CPacket playerRespawnS2CPacket);
 
-	void method_11139(EntitySetHeadYawS2CPacket entitySetHeadYawS2CPacket);
+	void onEntitySetHeadYaw(EntitySetHeadYawS2CPacket entitySetHeadYawS2CPacket);
 
-	void method_11135(HeldItemChangeS2CPacket heldItemChangeS2CPacket);
+	void onHeldItemChange(HeldItemChangeS2CPacket heldItemChangeS2CPacket);
 
-	void method_11159(ScoreboardDisplayS2CPacket scoreboardDisplayS2CPacket);
+	void onScoreboardDisplay(ScoreboardDisplayS2CPacket scoreboardDisplayS2CPacket);
 
-	void method_11093(EntityTrackerUpdateS2CPacket entityTrackerUpdateS2CPacket);
+	void onEntityTrackerUpdate(EntityTrackerUpdateS2CPacket entityTrackerUpdateS2CPacket);
 
-	void method_11132(EntityVelocityUpdateS2CPacket entityVelocityUpdateS2CPacket);
+	void onVelocityUpdate(EntityVelocityUpdateS2CPacket entityVelocityUpdateS2CPacket);
 
-	void method_11151(EntityEquipmentUpdateS2CPacket entityEquipmentUpdateS2CPacket);
+	void onEquipmentUpdate(EntityEquipmentUpdateS2CPacket entityEquipmentUpdateS2CPacket);
 
-	void method_11101(ExperienceBarUpdateS2CPacket experienceBarUpdateS2CPacket);
+	void onExperienceBarUpdate(ExperienceBarUpdateS2CPacket experienceBarUpdateS2CPacket);
 
-	void method_11122(HealthUpdateS2CPacket healthUpdateS2CPacket);
+	void onHealthUpdate(HealthUpdateS2CPacket healthUpdateS2CPacket);
 
-	void method_11099(TeamS2CPacket teamS2CPacket);
+	void onTeam(TeamS2CPacket teamS2CPacket);
 
-	void method_11118(ScoreboardPlayerUpdateS2CPacket scoreboardPlayerUpdateS2CPacket);
+	void onScoreboardPlayerUpdate(ScoreboardPlayerUpdateS2CPacket scoreboardPlayerUpdateS2CPacket);
 
-	void method_11142(PlayerSpawnPositionS2CPacket playerSpawnPositionS2CPacket);
+	void onPlayerSpawnPosition(PlayerSpawnPositionS2CPacket playerSpawnPositionS2CPacket);
 
-	void method_11079(WorldTimeUpdateS2CPacket worldTimeUpdateS2CPacket);
+	void onWorldTimeUpdate(WorldTimeUpdateS2CPacket worldTimeUpdateS2CPacket);
 
-	void method_11146(PlaySoundS2CPacket playSoundS2CPacket);
+	void onPlaySound(PlaySoundS2CPacket playSoundS2CPacket);
 
-	void method_11125(PlaySoundFromEntityS2CPacket playSoundFromEntityS2CPacket);
+	void onPlaySoundFromEntity(PlaySoundFromEntityS2CPacket playSoundFromEntityS2CPacket);
 
-	void method_11104(PlaySoundIdS2CPacket playSoundIdS2CPacket);
+	void onPlaySoundId(PlaySoundIdS2CPacket playSoundIdS2CPacket);
 
-	void method_11150(ItemPickupAnimationS2CPacket itemPickupAnimationS2CPacket);
+	void onItemPickupAnimation(ItemPickupAnimationS2CPacket itemPickupAnimationS2CPacket);
 
-	void method_11086(EntityPositionS2CPacket entityPositionS2CPacket);
+	void onEntityPosition(EntityPositionS2CPacket entityPositionS2CPacket);
 
-	void method_11149(EntityAttributesS2CPacket entityAttributesS2CPacket);
+	void onEntityAttributes(EntityAttributesS2CPacket entityAttributesS2CPacket);
 
-	void method_11084(EntityPotionEffectS2CPacket entityPotionEffectS2CPacket);
+	void onEntityPotionEffect(EntityPotionEffectS2CPacket entityPotionEffectS2CPacket);
 
-	void method_11126(SynchronizeTagsS2CPacket synchronizeTagsS2CPacket);
+	void onSynchronizeTags(SynchronizeTagsS2CPacket synchronizeTagsS2CPacket);
 
-	void method_11133(CombatEventS2CPacket combatEventS2CPacket);
+	void onCombatEvent(CombatEventS2CPacket combatEventS2CPacket);
 
-	void method_11140(DifficultyS2CPacket difficultyS2CPacket);
+	void onDifficulty(DifficultyS2CPacket difficultyS2CPacket);
 
-	void method_11111(SetCameraEntityS2CPacket setCameraEntityS2CPacket);
+	void onSetCameraEntity(SetCameraEntityS2CPacket setCameraEntityS2CPacket);
 
-	void method_11096(WorldBorderS2CPacket worldBorderS2CPacket);
+	void onWorldBorder(WorldBorderS2CPacket worldBorderS2CPacket);
 
-	void method_11103(TitleS2CPacket titleS2CPacket);
+	void onTitle(TitleS2CPacket titleS2CPacket);
 
-	void method_11105(PlayerListHeaderS2CPacket playerListHeaderS2CPacket);
+	void onPlayerListHeader(PlayerListHeaderS2CPacket playerListHeaderS2CPacket);
 
-	void method_11141(ResourcePackSendS2CPacket resourcePackSendS2CPacket);
+	void onResourcePackSend(ResourcePackSendS2CPacket resourcePackSendS2CPacket);
 
-	void method_11078(BossBarS2CPacket bossBarS2CPacket);
+	void onBossBar(BossBarS2CPacket bossBarS2CPacket);
 
-	void method_11087(CooldownUpdateS2CPacket cooldownUpdateS2CPacket);
+	void onCooldownUpdate(CooldownUpdateS2CPacket cooldownUpdateS2CPacket);
 
-	void method_11134(VehicleMoveS2CPacket vehicleMoveS2CPacket);
+	void onVehicleMove(VehicleMoveS2CPacket vehicleMoveS2CPacket);
 
-	void method_11130(AdvancementUpdateS2CPacket advancementUpdateS2CPacket);
+	void onAdvancements(AdvancementUpdateS2CPacket advancementUpdateS2CPacket);
 
-	void method_11161(SelectAdvancementTabS2CPacket selectAdvancementTabS2CPacket);
+	void onSelectAdvancementTab(SelectAdvancementTabS2CPacket selectAdvancementTabS2CPacket);
 
-	void method_11090(CraftResponseS2CPacket craftResponseS2CPacket);
+	void onCraftResponse(CraftResponseS2CPacket craftResponseS2CPacket);
 
-	void method_11145(CommandTreeS2CPacket commandTreeS2CPacket);
+	void onCommandTree(CommandTreeS2CPacket commandTreeS2CPacket);
 
-	void method_11082(StopSoundS2CPacket stopSoundS2CPacket);
+	void onStopSound(StopSoundS2CPacket stopSoundS2CPacket);
 
-	void method_11081(CommandSuggestionsS2CPacket commandSuggestionsS2CPacket);
+	void onCommandSuggestions(CommandSuggestionsS2CPacket commandSuggestionsS2CPacket);
 
-	void method_11106(SynchronizeRecipesS2CPacket synchronizeRecipesS2CPacket);
+	void onSynchronizeRecipes(SynchronizeRecipesS2CPacket synchronizeRecipesS2CPacket);
 
-	void method_11092(LookAtS2CPacket lookAtS2CPacket);
+	void onLookAt(LookAtS2CPacket lookAtS2CPacket);
 
-	void method_11127(TagQueryResponseS2CPacket tagQueryResponseS2CPacket);
+	void onTagQuery(TagQueryResponseS2CPacket tagQueryResponseS2CPacket);
 
-	void method_11143(LightUpdateS2CPacket lightUpdateS2CPacket);
+	void onLightUpdate(LightUpdateS2CPacket lightUpdateS2CPacket);
 
-	void method_17186(OpenWrittenBookS2CPacket openWrittenBookS2CPacket);
+	void onOpenWrittenBook(OpenWrittenBookS2CPacket openWrittenBookS2CPacket);
 
 	void onOpenContainer(OpenContainerPacket openContainerPacket);
 

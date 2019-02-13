@@ -33,8 +33,8 @@ public class RecipeToast implements Toast {
 			toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
 			GlStateManager.color3f(1.0F, 1.0F, 1.0F);
 			toastManager.drawTexturedRect(0, 0, 0, 32, 160, 32);
-			toastManager.getGame().fontRenderer.draw(I18n.translate("recipe.toast.title"), 30.0F, 7.0F, -11534256);
-			toastManager.getGame().fontRenderer.draw(I18n.translate("recipe.toast.description"), 30.0F, 18.0F, -16777216);
+			toastManager.getGame().textRenderer.draw(I18n.translate("recipe.toast.title"), 30.0F, 7.0F, -11534256);
+			toastManager.getGame().textRenderer.draw(I18n.translate("recipe.toast.description"), 30.0F, 18.0F, -16777216);
 			GuiLighting.enableForItems();
 			Recipe<?> recipe = (Recipe<?>)this.recipes.get((int)(l / (5000L / (long)this.recipes.size()) % (long)this.recipes.size()));
 			ItemStack itemStack = recipe.getRecipeKindIcon();

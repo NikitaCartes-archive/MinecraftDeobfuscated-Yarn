@@ -17,7 +17,7 @@ public class SearchManager implements SynchronousResourceReloadListener {
 	private final Map<SearchManager.Key<?>, SearchableContainer<?>> instances = Maps.<SearchManager.Key<?>, SearchableContainer<?>>newHashMap();
 
 	@Override
-	public void reloadResources(ResourceManager resourceManager) {
+	public void apply(ResourceManager resourceManager) {
 		for (SearchableContainer<?> searchableContainer : this.instances.values()) {
 			searchableContainer.reload();
 		}

@@ -39,7 +39,7 @@ public class EntityTrackerUpdateS2CPacket implements Packet<ClientPlayPacketList
 	}
 
 	public void method_11808(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11093(this);
+		clientPlayPacketListener.onEntityTrackerUpdate(this);
 	}
 
 	@Environment(EnvType.CLIENT)

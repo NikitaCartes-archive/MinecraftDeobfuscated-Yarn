@@ -32,7 +32,7 @@ public interface IWorld extends ViewableWorld, ModifiableTestableWorld {
 	}
 
 	@Environment(EnvType.CLIENT)
-	default int method_8394() {
+	default int getMoonPhase() {
 		return this.getDimension().getMoonPhase(this.getLevelProperties().getTimeOfDay());
 	}
 

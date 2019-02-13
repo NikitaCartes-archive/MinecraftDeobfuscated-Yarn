@@ -79,7 +79,7 @@ public class RecipeBookGui extends Drawable implements GuiEventListener, RecipeD
 		this.client.player.inventory.populateRecipeFinder(this.recipeFinder);
 		this.craftingContainer.populateRecipeFinder(this.recipeFinder);
 		String string = this.searchField != null ? this.searchField.getText() : "";
-		this.searchField = new TextFieldWidget(0, this.client.fontRenderer, i + 25, j + 14, 80, 9 + 5);
+		this.searchField = new TextFieldWidget(0, this.client.textRenderer, i + 25, j + 14, 80, 9 + 5);
 		this.searchField.setMaxLength(50);
 		this.searchField.setHasBorder(false);
 		this.searchField.setVisible(true);
@@ -233,10 +233,10 @@ public class RecipeBookGui extends Drawable implements GuiEventListener, RecipeD
 			GuiLighting.disable();
 
 			for (GroupButtonWidget groupButtonWidget : this.tabButtons) {
-				groupButtonWidget.draw(i, j, f);
+				groupButtonWidget.render(i, j, f);
 			}
 
-			this.toggleCraftableButton.draw(i, j, f);
+			this.toggleCraftableButton.render(i, j, f);
 			this.recipesArea.draw(k, l, i, j, f);
 			GlStateManager.popMatrix();
 		}
@@ -405,7 +405,7 @@ public class RecipeBookGui extends Drawable implements GuiEventListener, RecipeD
 			languageManager.setLanguage(languageDefinition);
 			this.client.options.language = languageDefinition.getCode();
 			this.client.reloadResources();
-			this.client.fontRenderer.setRightToLeft(languageManager.isRightToLeft());
+			this.client.textRenderer.setRightToLeft(languageManager.isRightToLeft());
 			this.client.options.write();
 		}
 	}

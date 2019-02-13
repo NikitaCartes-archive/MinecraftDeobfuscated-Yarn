@@ -44,7 +44,7 @@ public class WaterDebugRenderer implements DebugRenderer.DebugRenderer {
 		for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
 			FluidState fluidState = viewableWorld.getFluidState(blockPos2);
 			if (fluidState.matches(FluidTags.field_15517)) {
-				double d = (double)((float)blockPos2.getY() + fluidState.method_15763(viewableWorld, blockPos2));
+				double d = (double)((float)blockPos2.getY() + fluidState.getHeight(viewableWorld, blockPos2));
 				WorldRenderer.drawBox(
 					new BoundingBox(
 							(double)((float)blockPos2.getX() + 0.01F),
@@ -69,7 +69,7 @@ public class WaterDebugRenderer implements DebugRenderer.DebugRenderer {
 				DebugRenderer.method_3714(
 					String.valueOf(fluidState.getLevel()),
 					(double)blockPos2x.getX() + 0.5,
-					(double)((float)blockPos2x.getY() + fluidState.method_15763(viewableWorld, blockPos2x)),
+					(double)((float)blockPos2x.getY() + fluidState.getHeight(viewableWorld, blockPos2x)),
 					(double)blockPos2x.getZ() + 0.5,
 					f,
 					-16777216

@@ -123,7 +123,7 @@ public abstract class World implements ExtendedBlockView, EntityView, IWorld, Au
 			return worldChunk.getBiome(blockPos);
 		} else {
 			ChunkGenerator<?> chunkGenerator = this.getChunkManager().getChunkGenerator();
-			return chunkGenerator == null ? Biomes.biome : chunkGenerator.getBiomeSource().getBiome(blockPos);
+			return chunkGenerator == null ? Biomes.field_9451 : chunkGenerator.getBiomeSource().getBiome(blockPos);
 		}
 	}
 
@@ -584,7 +584,7 @@ public abstract class World implements ExtendedBlockView, EntityView, IWorld, Au
 			if (entity.field_6016) {
 				entity.age++;
 				if (entity.hasVehicle()) {
-					entity.method_5842();
+					entity.updateRiding();
 				} else {
 					this.profiler.push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()));
 					entity.update();
@@ -779,7 +779,7 @@ public abstract class World implements ExtendedBlockView, EntityView, IWorld, Au
 			}
 
 			if (blockEntity == null) {
-				blockEntity = this.getWorldChunk(blockPos).getBlockEntity(blockPos, WorldChunk.AccessType.CREATE);
+				blockEntity = this.getWorldChunk(blockPos).getBlockEntity(blockPos, WorldChunk.CreationType.field_12860);
 			}
 
 			if (blockEntity == null) {

@@ -28,7 +28,7 @@ public class PauseMenuScreen extends Screen {
 					if (bl) {
 						PauseMenuScreen.this.client.method_18096(new CloseWorldScreen(I18n.translate("menu.savingLevel")));
 					} else {
-						PauseMenuScreen.this.client.method_18099();
+						PauseMenuScreen.this.client.openWorkingScreen();
 					}
 
 					if (bl) {
@@ -43,7 +43,7 @@ public class PauseMenuScreen extends Screen {
 			}
 		);
 		if (!this.client.isInSingleplayer()) {
-			buttonWidget.text = I18n.translate("menu.disconnect");
+			buttonWidget.setText(I18n.translate("menu.disconnect"));
 		}
 
 		this.addButton(new ButtonWidget(4, this.width / 2 - 102, this.height / 4 + 24 + -16, 204, 20, I18n.translate("menu.returnToGame")) {

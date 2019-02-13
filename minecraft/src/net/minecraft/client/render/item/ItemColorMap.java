@@ -63,7 +63,7 @@ public class ItemColorMap {
 		}, Items.field_8450);
 		itemColorMap.register((itemStack, i) -> i > 0 ? -1 : PotionUtil.getColor(itemStack), Items.field_8574, Items.field_8436, Items.field_8150);
 
-		for (SpawnEggItem spawnEggItem : SpawnEggItem.method_8017()) {
+		for (SpawnEggItem spawnEggItem : SpawnEggItem.iterator()) {
 			itemColorMap.register((itemStack, i) -> spawnEggItem.method_8016(i), spawnEggItem);
 		}
 
@@ -90,7 +90,7 @@ public class ItemColorMap {
 	}
 
 	public int getRenderColor(ItemStack itemStack, int i) {
-		ItemColorMapper itemColorMapper = this.mappers.getInt(Registry.ITEM.getRawId(itemStack.getItem()));
+		ItemColorMapper itemColorMapper = this.mappers.get(Registry.ITEM.getRawId(itemStack.getItem()));
 		return itemColorMapper == null ? -1 : itemColorMapper.getColor(itemStack, i);
 	}
 

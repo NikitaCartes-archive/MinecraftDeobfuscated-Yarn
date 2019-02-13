@@ -192,7 +192,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	public void clearInv() {
+	public void clear() {
 		this.method_7563(null);
 		this.inventory.clear();
 	}

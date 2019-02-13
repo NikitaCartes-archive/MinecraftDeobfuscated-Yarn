@@ -413,7 +413,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	public void clearInv() {
+	public void clear() {
 		this.inventory.clear();
 	}
 

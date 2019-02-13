@@ -63,8 +63,8 @@ public class NamespaceResourceManager implements ResourceManager {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean method_18234(Identifier identifier) {
-		if (!this.method_18221(identifier)) {
+	public boolean containsResource(Identifier identifier) {
+		if (!this.isPathAbsolute(identifier)) {
 			return false;
 		} else {
 			for (int i = this.packList.size() - 1; i >= 0; i--) {
@@ -84,12 +84,12 @@ public class NamespaceResourceManager implements ResourceManager {
 	}
 
 	private void validate(Identifier identifier) throws IOException {
-		if (!this.method_18221(identifier)) {
+		if (!this.isPathAbsolute(identifier)) {
 			throw new IOException("Invalid relative path to resource: " + identifier);
 		}
 	}
 
-	private boolean method_18221(Identifier identifier) {
+	private boolean isPathAbsolute(Identifier identifier) {
 		return !identifier.getPath().contains("..");
 	}
 

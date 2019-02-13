@@ -120,7 +120,7 @@ public class IntegratedServer extends MinecraftServer {
 	@Override
 	public void method_3748(BooleanSupplier booleanSupplier) {
 		boolean bl = this.field_5524;
-		this.field_5524 = MinecraftClient.getInstance().getNetworkHandler() != null && MinecraftClient.getInstance().method_1493();
+		this.field_5524 = MinecraftClient.getInstance().getNetworkHandler() != null && MinecraftClient.getInstance().isPaused();
 		DisableableProfiler disableableProfiler = this.getProfiler();
 		if (!bl && this.field_5524) {
 			disableableProfiler.push("autoSave");

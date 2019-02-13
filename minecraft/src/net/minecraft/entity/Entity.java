@@ -804,7 +804,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return SoundEvents.field_14737;
 	}
 
-	protected SoundEvent method_5672() {
+	protected SoundEvent getSoundHighSpeedSplash() {
 		return SoundEvents.field_14737;
 	}
 
@@ -952,7 +952,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return this.isInsideWater() || this.isInsideBubbleColumn();
 	}
 
-	public boolean method_5869() {
+	public boolean isInWater() {
 		return this.field_6000 && this.isInsideWater();
 	}
 
@@ -966,7 +966,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		if (this.isSwimming()) {
 			this.method_5796(this.isSprinting() && this.isInsideWater() && !this.hasVehicle());
 		} else {
-			this.method_5796(this.isSprinting() && this.method_5869() && !this.hasVehicle());
+			this.method_5796(this.isSprinting() && this.isInWater() && !this.hasVehicle());
 		}
 	}
 
@@ -989,7 +989,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	private void method_5630() {
-		this.field_6000 = this.method_5744(FluidTags.field_15517, true);
+		this.field_6000 = this.isInFluid(FluidTags.field_15517, true);
 	}
 
 	protected void onSwimmingStart() {
@@ -1003,7 +1003,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		if ((double)g < 0.25) {
 			this.playSound(this.getSoundSplash(), g, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
 		} else {
-			this.playSound(this.method_5672(), g, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
+			this.playSound(this.getSoundHighSpeedSplash(), g, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
 		}
 
 		float h = (float)MathHelper.floor(this.getBoundingBox().minY);
@@ -1057,11 +1057,11 @@ public abstract class Entity implements Nameable, CommandOutput {
 		}
 	}
 
-	public boolean method_5777(Tag<Fluid> tag) {
-		return this.method_5744(tag, false);
+	public boolean isInFluid(Tag<Fluid> tag) {
+		return this.isInFluid(tag, false);
 	}
 
-	public boolean method_5744(Tag<Fluid> tag, boolean bl) {
+	public boolean isInFluid(Tag<Fluid> tag, boolean bl) {
 		if (this.getRiddenEntity() instanceof BoatEntity) {
 			return false;
 		} else {
@@ -1071,7 +1071,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 				return false;
 			} else {
 				FluidState fluidState = this.world.getFluidState(blockPos);
-				return fluidState.matches(tag) && d < (double)((float)blockPos.getY() + fluidState.method_15763(this.world, blockPos) + 0.11111111F);
+				return fluidState.matches(tag) && d < (double)((float)blockPos.getY() + fluidState.getHeight(this.world, blockPos) + 0.11111111F);
 			}
 		}
 	}
@@ -1110,7 +1110,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(MathHelper.floor(this.x), 0, MathHelper.floor(this.z));
 		if (this.world.isBlockLoaded(mutable)) {
 			mutable.setY(MathHelper.floor(this.y + (double)this.getEyeHeight()));
-			return this.world.method_8610(mutable);
+			return this.world.getBrightness(mutable);
 		} else {
 			return 0.0F;
 		}
@@ -1608,7 +1608,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return null;
 	}
 
-	public void method_5842() {
+	public void updateRiding() {
 		Entity entity = this.getRiddenEntity();
 		if (this.hasVehicle() && entity.invalid) {
 			this.stopRiding();
@@ -2265,7 +2265,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return Direction.fromRotation((double)this.yaw);
 	}
 
-	public Direction method_5755() {
+	public Direction getMovementDirection() {
 		return this.getHorizontalFacing();
 	}
 
@@ -2335,7 +2335,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return false;
 	}
 
-	protected void method_5723(LivingEntity livingEntity, Entity entity) {
+	protected void dealDamage(LivingEntity livingEntity, Entity entity) {
 		if (entity instanceof LivingEntity) {
 			EnchantmentHelper.onUserDamaged((LivingEntity)entity, livingEntity);
 		}
@@ -2414,7 +2414,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return false;
 	}
 
-	public Collection<Entity> method_5736() {
+	public Collection<Entity> getPassengersDeep() {
 		Set<Entity> set = Sets.<Entity>newHashSet();
 
 		for (Entity entity : this.getPassengerList()) {
@@ -2565,7 +2565,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 							pooledMutable.set(p, q, r);
 							FluidState fluidState = this.world.getFluidState(pooledMutable);
 							if (fluidState.matches(tag)) {
-								double e = (double)((float)q + fluidState.method_15763(this.world, pooledMutable));
+								double e = (double)((float)q + fluidState.getHeight(this.world, pooledMutable));
 								if (e >= boundingBox.minY) {
 									bl2 = true;
 									d = Math.max(e - boundingBox.minY, d);

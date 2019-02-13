@@ -26,7 +26,7 @@ public class LeashItem extends Item {
 				method_7994(playerEntity, world, blockPos);
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.field_5812;
 		} else {
 			return ActionResult.PASS;
 		}

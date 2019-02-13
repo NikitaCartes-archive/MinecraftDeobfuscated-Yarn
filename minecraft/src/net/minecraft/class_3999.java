@@ -37,7 +37,7 @@ public interface class_3999 {
 			GuiLighting.disable();
 			GlStateManager.disableBlend();
 			GlStateManager.depthMask(true);
-			textureManager.bindTexture(SpriteAtlasTexture.field_17898);
+			textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX);
 			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
 		}
 
@@ -55,7 +55,7 @@ public interface class_3999 {
 		public void method_18130(BufferBuilder bufferBuilder, TextureManager textureManager) {
 			GuiLighting.disable();
 			GlStateManager.depthMask(false);
-			textureManager.bindTexture(SpriteAtlasTexture.field_17898);
+			textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX);
 			GlStateManager.enableBlend();
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			GlStateManager.alphaFunc(516, 0.003921569F);
@@ -76,7 +76,7 @@ public interface class_3999 {
 		public void method_18130(BufferBuilder bufferBuilder, TextureManager textureManager) {
 			GlStateManager.disableBlend();
 			GlStateManager.depthMask(true);
-			textureManager.bindTexture(SpriteAtlasTexture.field_17898);
+			textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX);
 			GuiLighting.disable();
 			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
 		}

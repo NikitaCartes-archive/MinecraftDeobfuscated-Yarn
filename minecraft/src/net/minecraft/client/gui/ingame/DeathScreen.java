@@ -104,7 +104,7 @@ public class DeathScreen extends Screen {
 		}
 
 		this.drawStringCentered(
-			this.fontRenderer, I18n.translate("deathScreen.score") + ": " + TextFormat.YELLOW + this.client.player.getScore(), this.width / 2, 100, 16777215
+			this.fontRenderer, I18n.translate("deathScreen.score") + ": " + TextFormat.field_1054 + this.client.player.getScore(), this.width / 2, 100, 16777215
 		);
 		if (this.msg != null && j > 85 && j < 85 + 9) {
 			TextComponent textComponent = this.method_2164(i);
@@ -121,13 +121,13 @@ public class DeathScreen extends Screen {
 		if (this.msg == null) {
 			return null;
 		} else {
-			int j = this.client.fontRenderer.getStringWidth(this.msg.getFormattedText());
+			int j = this.client.textRenderer.getStringWidth(this.msg.getFormattedText());
 			int k = this.width / 2 - j / 2;
 			int l = this.width / 2 + j / 2;
 			int m = k;
 			if (i >= k && i <= l) {
 				for (TextComponent textComponent : this.msg) {
-					m += this.client.fontRenderer.getStringWidth(TextComponentUtil.method_1849(textComponent.getText(), false));
+					m += this.client.textRenderer.getStringWidth(TextComponentUtil.method_1849(textComponent.getText(), false));
 					if (m > i) {
 						return textComponent;
 					}

@@ -3,11 +3,11 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.entity.boss.EntityWither;
+import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class WitherEntityModel<T extends EntityWither> extends EntityModel<T> {
+public class WitherEntityModel<T extends WitherEntity> extends EntityModel<T> {
 	private final Cuboid[] field_3613;
 	private final Cuboid[] field_3612;
 
@@ -38,8 +38,8 @@ public class WitherEntityModel<T extends EntityWither> extends EntityModel<T> {
 		this.field_3612[2].rotationPointY = 4.0F;
 	}
 
-	public void method_17129(T entityWither, float f, float g, float h, float i, float j, float k) {
-		this.method_17130(entityWither, f, g, h, i, j, k);
+	public void method_17129(T witherEntity, float f, float g, float h, float i, float j, float k) {
+		this.method_17130(witherEntity, f, g, h, i, j, k);
 
 		for (Cuboid cuboid : this.field_3612) {
 			cuboid.render(k);
@@ -50,7 +50,7 @@ public class WitherEntityModel<T extends EntityWither> extends EntityModel<T> {
 		}
 	}
 
-	public void method_17130(T entityWither, float f, float g, float h, float i, float j, float k) {
+	public void method_17130(T witherEntity, float f, float g, float h, float i, float j, float k) {
 		float l = MathHelper.cos(h * 0.1F);
 		this.field_3613[1].pitch = (0.065F + 0.05F * l) * (float) Math.PI;
 		this.field_3613[2].setRotationPoint(-2.0F, 6.9F + MathHelper.cos(this.field_3613[1].pitch) * 10.0F, -0.5F + MathHelper.sin(this.field_3613[1].pitch) * 10.0F);
@@ -59,10 +59,10 @@ public class WitherEntityModel<T extends EntityWither> extends EntityModel<T> {
 		this.field_3612[0].pitch = j * (float) (Math.PI / 180.0);
 	}
 
-	public void method_17128(T entityWither, float f, float g, float h) {
+	public void method_17128(T witherEntity, float f, float g, float h) {
 		for (int i = 1; i < 3; i++) {
-			this.field_3612[i].yaw = (entityWither.method_6879(i - 1) - entityWither.field_6283) * (float) (Math.PI / 180.0);
-			this.field_3612[i].pitch = entityWither.method_6887(i - 1) * (float) (Math.PI / 180.0);
+			this.field_3612[i].yaw = (witherEntity.method_6879(i - 1) - witherEntity.field_6283) * (float) (Math.PI / 180.0);
+			this.field_3612[i].pitch = witherEntity.method_6887(i - 1) * (float) (Math.PI / 180.0);
 		}
 	}
 }

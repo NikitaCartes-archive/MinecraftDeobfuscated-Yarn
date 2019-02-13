@@ -32,7 +32,7 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
 	@Override
 	public void draw(int i, int j, float f) {
 		super.draw(i, j, f);
-		this.drawMousoverTooltip(i, j);
+		this.drawMouseoverTooltip(i, j);
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
 			int q = o / 4;
 			int r = l + q * 18 + 2;
 			int s = this.containerHeight;
-			if (n == this.container.method_17862()) {
+			if (n == this.container.getSelectedRecipe()) {
 				s += 18;
 			} else if (i >= p && j >= r && i < p + 16 && j < r + 18) {
 				s += 36;

@@ -8,7 +8,7 @@ import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.pattern.BlockPatternBuilder;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.boss.EntityWither;
+import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
@@ -52,23 +52,23 @@ public class WitherSkullBlock extends SkullBlock {
 					}
 
 					BlockPos blockPos2 = result.translate(1, 0, 0).getBlockPos();
-					EntityWither entityWither = new EntityWither(world);
+					WitherEntity witherEntity = new WitherEntity(world);
 					BlockPos blockPos3 = result.translate(1, 2, 0).getBlockPos();
-					entityWither.setPositionAndAngles(
+					witherEntity.setPositionAndAngles(
 						(double)blockPos3.getX() + 0.5,
 						(double)blockPos3.getY() + 0.55,
 						(double)blockPos3.getZ() + 0.5,
 						result.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F,
 						0.0F
 					);
-					entityWither.field_6283 = result.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F;
-					entityWither.method_6885();
+					witherEntity.field_6283 = result.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F;
+					witherEntity.method_6885();
 
-					for (ServerPlayerEntity serverPlayerEntity : world.getVisibleEntities(ServerPlayerEntity.class, entityWither.getBoundingBox().expand(50.0))) {
-						Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, entityWither);
+					for (ServerPlayerEntity serverPlayerEntity : world.getVisibleEntities(ServerPlayerEntity.class, witherEntity.getBoundingBox().expand(50.0))) {
+						Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, witherEntity);
 					}
 
-					world.spawnEntity(entityWither);
+					world.spawnEntity(witherEntity);
 
 					for (int k = 0; k < 120; k++) {
 						world.addParticle(

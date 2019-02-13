@@ -28,7 +28,7 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
 		double[] es = new double[8];
 		double i = 0.0;
 		double j = 0.0;
-		Random random = new Random(lightningEntity.field_7186);
+		Random random = new Random(lightningEntity.seed);
 
 		for (int k = 7; k >= 0; k--) {
 			ds[k] = i;
@@ -38,7 +38,7 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
 		}
 
 		for (int l = 0; l < 4; l++) {
-			Random random2 = new Random(lightningEntity.field_7186);
+			Random random2 = new Random(lightningEntity.seed);
 
 			for (int m = 0; m < 3; m++) {
 				int n = 7;

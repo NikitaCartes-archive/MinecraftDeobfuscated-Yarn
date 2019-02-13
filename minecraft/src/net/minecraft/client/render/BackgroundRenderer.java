@@ -47,7 +47,7 @@ public class BackgroundRenderer {
 	public void renderBackground(float f) {
 		World world = this.client.world;
 		Entity entity = this.client.getCameraEntity();
-		FluidState fluidState = class_295.getFluidState(this.client.world, entity, f);
+		FluidState fluidState = class_295.method_1374(this.client.world, entity, f);
 		if (fluidState.matches(FluidTags.field_15517)) {
 			this.updateColorInWater(entity, world, f);
 		} else if (fluidState.matches(FluidTags.field_15518)) {
@@ -211,7 +211,7 @@ public class BackgroundRenderer {
 		this.updateFogColor(false);
 		GlStateManager.normal3f(0.0F, -1.0F, 0.0F);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		FluidState fluidState = class_295.getFluidState(this.client.world, entity, f);
+		FluidState fluidState = class_295.method_1374(this.client.world, entity, f);
 		if (entity instanceof LivingEntity && ((LivingEntity)entity).hasPotionEffect(StatusEffects.field_5919)) {
 			float g = 5.0F;
 			int j = ((LivingEntity)entity).getPotionEffect(StatusEffects.field_5919).getDuration();
@@ -262,7 +262,7 @@ public class BackgroundRenderer {
 			}
 
 			GLX.setupNvFogDistance();
-			if (this.client.world.dimension.shouldRenderFog((int)entity.x, (int)entity.z) || this.client.inGameHud.getHudBossBar().shouldThickenFog()) {
+			if (this.client.world.dimension.shouldRenderFog((int)entity.x, (int)entity.z) || this.client.inGameHud.getBossBarHud().shouldThickenFog()) {
 				GlStateManager.fogStart(gx * 0.05F);
 				GlStateManager.fogEnd(Math.min(gx, 192.0F) * 0.5F);
 			}

@@ -100,7 +100,7 @@ public class AxeItem extends MiningToolItem {
 				}
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.field_5812;
 		} else {
 			return ActionResult.PASS;
 		}

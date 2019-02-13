@@ -22,7 +22,7 @@ public class ConfirmGuiActionS2CPacket implements Packet<ClientPlayPacketListene
 	}
 
 	public void method_11424(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11123(this);
+		clientPlayPacketListener.onGuiActionConfirm(this);
 	}
 
 	@Override

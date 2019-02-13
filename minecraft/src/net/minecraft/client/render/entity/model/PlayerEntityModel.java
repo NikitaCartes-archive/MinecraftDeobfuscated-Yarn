@@ -94,7 +94,7 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 	}
 
 	public void method_2824(float f) {
-		this.mau5Ears.method_17138(this.head);
+		this.mau5Ears.copyRotation(this.head);
 		this.mau5Ears.rotationPointX = 0.0F;
 		this.mau5Ears.rotationPointY = 0.0F;
 		this.mau5Ears.render(f);
@@ -107,11 +107,11 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 	@Override
 	public void method_17087(T livingEntity, float f, float g, float h, float i, float j, float k) {
 		super.method_17087(livingEntity, f, g, h, i, j, k);
-		this.leftLegOverlay.method_17138(this.legLeft);
-		this.rightLegOverlay.method_17138(this.legRight);
-		this.leftArmOverlay.method_17138(this.armLeft);
-		this.rightArmOverlay.method_17138(this.armRight);
-		this.bodyOverlay.method_17138(this.body);
+		this.leftLegOverlay.copyRotation(this.legLeft);
+		this.rightLegOverlay.copyRotation(this.legRight);
+		this.leftArmOverlay.copyRotation(this.armLeft);
+		this.rightArmOverlay.copyRotation(this.armRight);
+		this.bodyOverlay.copyRotation(this.body);
 		if (livingEntity.isSneaking()) {
 			this.cape.rotationPointY = 2.0F;
 		} else {

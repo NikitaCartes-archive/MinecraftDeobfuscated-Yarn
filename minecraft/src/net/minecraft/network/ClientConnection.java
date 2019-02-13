@@ -50,8 +50,8 @@ import org.apache.logging.log4j.MarkerManager;
 
 public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final Marker field_11641 = MarkerManager.getMarker("NETWORK");
-	public static final Marker field_11639 = MarkerManager.getMarker("NETWORK_PACKETS", field_11641);
+	public static final Marker MARKER_NETWORK = MarkerManager.getMarker("NETWORK");
+	public static final Marker MARKER_NETWORK_PACKETS = MarkerManager.getMarker("NETWORK_PACKETS", MARKER_NETWORK);
 	public static final AttributeKey<NetworkState> ATTR_KEY_PROTOCOL = AttributeKey.valueOf("protocol");
 	public static final Lazy<NioEventLoopGroup> CLIENT_IO_GROUP = new Lazy<>(
 		() -> new NioEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Client IO #%d").setDaemon(true).build())
@@ -71,11 +71,11 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	private TextComponent disconnectReason;
 	private boolean encrypted;
 	private boolean disconnected;
-	private int field_11658;
-	private int field_11656;
-	private float field_11654;
-	private float field_11653;
-	private int field_11655;
+	private int packetsReceivedCounter;
+	private int packetsSentCounter;
+	private float avgPacketsReceived;
+	private float avgPacketsSent;
+	private int ticks;
 	private boolean field_11640;
 
 	public ClientConnection(NetworkSide networkSide) {
@@ -122,7 +122,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 					if (bl) {
 						LOGGER.debug("Failed to sent packet", throwable);
 						this.sendPacket(new DisconnectS2CPacket(textComponent), future -> this.disconnect(textComponent));
-						this.method_10757();
+						this.disableAutoRead();
 					} else {
 						LOGGER.debug("Double fault", throwable);
 						this.disconnect(textComponent);
@@ -139,7 +139,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 			} catch (OffThreadException var4) {
 			}
 
-			this.field_11658++;
+			this.packetsReceivedCounter++;
 		}
 	}
 
@@ -175,7 +175,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	private void method_10764(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> genericFutureListener) {
 		NetworkState networkState = NetworkState.getPacketHandlerState(packet);
 		NetworkState networkState2 = this.channel.attr(ATTR_KEY_PROTOCOL).get();
-		this.field_11656++;
+		this.packetsSentCounter++;
 		if (networkState2 != networkState) {
 			LOGGER.debug("Disabled auto read");
 			this.channel.config().setAutoRead(false);
@@ -233,11 +233,11 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 			this.channel.flush();
 		}
 
-		if (this.field_11655++ % 20 == 0) {
-			this.field_11653 = this.field_11653 * 0.75F + (float)this.field_11656 * 0.25F;
-			this.field_11654 = this.field_11654 * 0.75F + (float)this.field_11658 * 0.25F;
-			this.field_11656 = 0;
-			this.field_11658 = 0;
+		if (this.ticks++ % 20 == 0) {
+			this.avgPacketsSent = this.avgPacketsSent * 0.75F + (float)this.packetsSentCounter * 0.25F;
+			this.avgPacketsReceived = this.avgPacketsReceived * 0.75F + (float)this.packetsReceivedCounter * 0.25F;
+			this.packetsSentCounter = 0;
+			this.packetsReceivedCounter = 0;
 		}
 	}
 
@@ -336,7 +336,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		return this.disconnectReason;
 	}
 
-	public void method_10757() {
+	public void disableAutoRead() {
 		this.channel.config().setAutoRead(false);
 	}
 
@@ -371,22 +371,22 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 			} else {
 				this.disconnected = true;
 				if (this.getDisconnectReason() != null) {
-					this.getPacketListener().onConnectionLost(this.getDisconnectReason());
+					this.getPacketListener().onDisconnected(this.getDisconnectReason());
 				} else if (this.getPacketListener() != null) {
-					this.getPacketListener().onConnectionLost(new TranslatableTextComponent("multiplayer.disconnect.generic"));
+					this.getPacketListener().onDisconnected(new TranslatableTextComponent("multiplayer.disconnect.generic"));
 				}
 			}
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float getPacketsReceived() {
-		return this.field_11654;
+	public float getAveragePacketsReceived() {
+		return this.avgPacketsReceived;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float getPacketsSent() {
-		return this.field_11653;
+	public float getAveragePacketsSent() {
+		return this.avgPacketsSent;
 	}
 
 	static class class_2536 {

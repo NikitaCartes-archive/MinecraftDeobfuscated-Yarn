@@ -13,7 +13,7 @@ import org.apache.logging.log4j.MarkerManager;
 
 public class DecoderHandler extends ByteToMessageDecoder {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Marker MARKER = MarkerManager.getMarker("PACKET_RECEIVED", ClientConnection.field_11639);
+	private static final Marker MARKER = MarkerManager.getMarker("PACKET_RECEIVED", ClientConnection.MARKER_NETWORK_PACKETS);
 	private final NetworkSide side;
 
 	public DecoderHandler(NetworkSide networkSide) {

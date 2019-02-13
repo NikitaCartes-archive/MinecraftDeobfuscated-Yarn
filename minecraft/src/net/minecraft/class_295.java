@@ -51,11 +51,11 @@ public class class_295 {
 		return new Vec3d(h, i, j);
 	}
 
-	public static FluidState getFluidState(BlockView blockView, Entity entity, float f) {
+	public static FluidState method_1374(BlockView blockView, Entity entity, float f) {
 		Vec3d vec3d = method_1379(entity, (double)f);
 		BlockPos blockPos = new BlockPos(vec3d);
 		FluidState fluidState = blockView.getFluidState(blockPos);
-		return !fluidState.isEmpty() && vec3d.y >= (double)((float)blockPos.getY() + fluidState.method_15763(blockView, blockPos))
+		return !fluidState.isEmpty() && vec3d.y >= (double)((float)blockPos.getY() + fluidState.getHeight(blockView, blockPos))
 			? Fluids.EMPTY.getDefaultState()
 			: fluidState;
 	}

@@ -32,7 +32,7 @@ public class ClientAdvancementManager {
 		this.client = minecraftClient;
 	}
 
-	public void method_2861(AdvancementUpdateS2CPacket advancementUpdateS2CPacket) {
+	public void onAdvancements(AdvancementUpdateS2CPacket advancementUpdateS2CPacket) {
 		if (advancementUpdateS2CPacket.shouldClearCurrent()) {
 			this.manager.clear();
 			this.field_3681.clear();

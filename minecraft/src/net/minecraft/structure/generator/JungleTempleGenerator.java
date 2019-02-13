@@ -1,7 +1,6 @@
 package net.minecraft.structure.generator;
 
 import java.util.Random;
-import net.minecraft.class_3418;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeverBlock;
@@ -18,13 +17,14 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
+import net.minecraft.structure.StructurePieceWithDimensions;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.loot.LootTables;
 
-public class JungleTempleGenerator extends class_3418 {
+public class JungleTempleGenerator extends StructurePieceWithDimensions {
 	private boolean placedMainChest;
 	private boolean placedHiddenChest;
 	private boolean placedTrap1;

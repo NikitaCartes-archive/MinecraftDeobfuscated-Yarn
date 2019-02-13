@@ -82,7 +82,7 @@ public class MinecartItem extends Item {
 		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (!blockState.matches(BlockTags.field_15463)) {
-			return ActionResult.FAILURE;
+			return ActionResult.field_5814;
 		} else {
 			ItemStack itemStack = itemUsageContext.getItemStack();
 			if (!world.isClient) {
@@ -105,7 +105,7 @@ public class MinecartItem extends Item {
 			}
 
 			itemStack.subtractAmount(1);
-			return ActionResult.SUCCESS;
+			return ActionResult.field_5812;
 		}
 	}
 }

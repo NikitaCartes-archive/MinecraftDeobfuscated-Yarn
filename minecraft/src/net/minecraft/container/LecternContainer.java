@@ -84,7 +84,7 @@ public class LecternContainer extends Container {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_17419() {
+	public int getPage() {
 		return this.propertyDelegate.get(0);
 	}
 }

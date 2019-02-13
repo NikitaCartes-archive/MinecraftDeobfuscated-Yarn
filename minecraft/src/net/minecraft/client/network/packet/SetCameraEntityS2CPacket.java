@@ -31,7 +31,7 @@ public class SetCameraEntityS2CPacket implements Packet<ClientPlayPacketListener
 	}
 
 	public void method_11801(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11111(this);
+		clientPlayPacketListener.onSetCameraEntity(this);
 	}
 
 	@Nullable

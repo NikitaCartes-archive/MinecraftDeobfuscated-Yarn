@@ -1,7 +1,6 @@
 package net.minecraft.block.entity;
 
 import javax.annotation.Nullable;
-import net.minecraft.class_3829;
 import net.minecraft.block.LecternBlock;
 import net.minecraft.container.Container;
 import net.minecraft.container.LecternContainer;
@@ -21,11 +20,12 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.util.Clearable;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 
-public class LecternBlockEntity extends BlockEntity implements class_3829, NameableContainerProvider {
+public class LecternBlockEntity extends BlockEntity implements Clearable, NameableContainerProvider {
 	private final Inventory inventory = new Inventory() {
 		@Override
 		public int getInvSize() {
@@ -102,7 +102,7 @@ public class LecternBlockEntity extends BlockEntity implements class_3829, Namea
 		}
 
 		@Override
-		public void clearInv() {
+		public void clear() {
 		}
 	};
 	private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
@@ -225,7 +225,7 @@ public class LecternBlockEntity extends BlockEntity implements class_3829, Namea
 	}
 
 	@Override
-	public void clearInv() {
+	public void clear() {
 		this.setBook(ItemStack.EMPTY);
 	}
 

@@ -48,7 +48,7 @@ public class EvokerFangsEntity extends Entity {
 	@Nullable
 	public LivingEntity getOwner() {
 		if (this.owner == null && this.ownerUuid != null && this.world instanceof ServerWorld) {
-			Entity entity = ((ServerWorld)this.world).method_14190(this.ownerUuid);
+			Entity entity = ((ServerWorld)this.world).getEntity(this.ownerUuid);
 			if (entity instanceof LivingEntity) {
 				this.owner = (LivingEntity)entity;
 			}

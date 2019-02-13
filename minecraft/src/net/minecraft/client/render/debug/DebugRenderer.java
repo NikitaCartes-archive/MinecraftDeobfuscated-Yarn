@@ -7,7 +7,7 @@ import net.minecraft.class_860;
 import net.minecraft.class_866;
 import net.minecraft.class_871;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.MathHelper;
@@ -127,7 +127,7 @@ public class DebugRenderer {
 	public static void method_3712(String string, double d, double e, double f, float g, int i, float h) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		if (minecraftClient.player != null && minecraftClient.getEntityRenderManager() != null && minecraftClient.getEntityRenderManager().settings != null) {
-			FontRenderer fontRenderer = minecraftClient.fontRenderer;
+			TextRenderer textRenderer = minecraftClient.textRenderer;
 			PlayerEntity playerEntity = minecraftClient.player;
 			double j = MathHelper.lerp((double)g, playerEntity.prevRenderX, playerEntity.x);
 			double k = MathHelper.lerp((double)g, playerEntity.prevRenderY, playerEntity.y);
@@ -138,13 +138,13 @@ public class DebugRenderer {
 			GlStateManager.scalef(h, -h, h);
 			EntityRenderDispatcher entityRenderDispatcher = minecraftClient.getEntityRenderManager();
 			GlStateManager.rotatef(-entityRenderDispatcher.field_4679, 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotatef((float)(entityRenderDispatcher.settings.field_1850 == 2 ? 1 : -1) * entityRenderDispatcher.field_4677, 1.0F, 0.0F, 0.0F);
+			GlStateManager.rotatef((float)(entityRenderDispatcher.settings.perspective == 2 ? 1 : -1) * entityRenderDispatcher.field_4677, 1.0F, 0.0F, 0.0F);
 			GlStateManager.disableLighting();
 			GlStateManager.enableTexture();
 			GlStateManager.enableDepthTest();
 			GlStateManager.depthMask(true);
 			GlStateManager.scalef(-1.0F, 1.0F, 1.0F);
-			fontRenderer.draw(string, (float)(-fontRenderer.getStringWidth(string) / 2), 0.0F, i);
+			textRenderer.draw(string, (float)(-textRenderer.getStringWidth(string) / 2), 0.0F, i);
 			GlStateManager.enableLighting();
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.popMatrix();

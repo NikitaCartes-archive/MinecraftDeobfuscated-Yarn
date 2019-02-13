@@ -59,7 +59,7 @@ public class VillagerFarmGoal extends MoveToTargetPosGoal {
 			if (this.field_6456 == 0 && block instanceof CropBlock && ((CropBlock)block).isValidState(blockState)) {
 				iWorld.breakBlock(blockPos, true);
 			} else if (this.field_6456 == 1 && blockState.isAir()) {
-				BasicInventory basicInventory = this.owner.method_18011();
+				BasicInventory basicInventory = this.owner.getInventory();
 
 				for (int i = 0; i < basicInventory.getInvSize(); i++) {
 					ItemStack itemStack = basicInventory.getInvStack(i);

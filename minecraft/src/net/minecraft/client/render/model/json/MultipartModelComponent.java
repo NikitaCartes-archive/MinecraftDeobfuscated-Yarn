@@ -17,7 +17,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.sortme.BlockStatePropertyValuePredicateFactory;
 import net.minecraft.state.StateFactory;
 import net.minecraft.util.JsonHelper;
 
@@ -93,7 +92,7 @@ public class MultipartModelComponent {
 		}
 
 		private static MultipartModelSelector createStatePropertySelector(Entry<String, JsonElement> entry) {
-			return new BlockStatePropertyValuePredicateFactory((String)entry.getKey(), ((JsonElement)entry.getValue()).getAsString());
+			return new SimpleMultipartModelSelector((String)entry.getKey(), ((JsonElement)entry.getValue()).getAsString());
 		}
 	}
 }

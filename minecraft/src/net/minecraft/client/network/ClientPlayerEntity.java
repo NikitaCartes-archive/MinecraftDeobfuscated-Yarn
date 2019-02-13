@@ -334,11 +334,11 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		return true;
 	}
 
-	protected void method_3133() {
+	protected void startRidingJump() {
 		this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.field_12987, MathHelper.floor(this.method_3151() * 100.0F)));
 	}
 
-	public void method_3132() {
+	public void openRidingInventory() {
 		this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.field_12988));
 	}
 
@@ -379,7 +379,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		if (bl) {
 			this.client.inGameHud.setOverlayMessage(textComponent, false);
 		} else {
-			this.client.inGameHud.getHudChat().addMessage(textComponent);
+			this.client.inGameHud.getChatHud().addMessage(textComponent);
 		}
 	}
 
@@ -448,7 +448,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public void appendCommandFeedback(TextComponent textComponent) {
-		this.client.inGameHud.getHudChat().addMessage(textComponent);
+		this.client.inGameHud.getChatHud().addMessage(textComponent);
 	}
 
 	@Override
@@ -519,7 +519,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 	}
 
-	public boolean method_3131() {
+	public boolean hasJumpingMount() {
 		Entity entity = this.getRiddenEntity();
 		return this.hasVehicle() && entity instanceof JumpingMount && ((JumpingMount)entity).canJump();
 	}
@@ -529,32 +529,32 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void openSignEditorGui(SignBlockEntity signBlockEntity) {
+	public void openEditSignScreen(SignBlockEntity signBlockEntity) {
 		this.client.openScreen(new EditSignScreen(signBlockEntity));
 	}
 
 	@Override
-	public void openCommandBlockMinecartGui(CommandBlockExecutor commandBlockExecutor) {
+	public void openCommandBlockMinecartScreen(CommandBlockExecutor commandBlockExecutor) {
 		this.client.openScreen(new CommandBlockMinecartScreen(commandBlockExecutor));
 	}
 
 	@Override
-	public void openCommandBlockGui(CommandBlockBlockEntity commandBlockBlockEntity) {
+	public void openCommandBlockScreen(CommandBlockBlockEntity commandBlockBlockEntity) {
 		this.client.openScreen(new CommandBlockScreen(commandBlockBlockEntity));
 	}
 
 	@Override
-	public void openStructureBlockGui(StructureBlockBlockEntity structureBlockBlockEntity) {
+	public void openStructureBlockScreen(StructureBlockBlockEntity structureBlockBlockEntity) {
 		this.client.openScreen(new StructureBlockScreen(structureBlockBlockEntity));
 	}
 
 	@Override
-	public void openJigsawGui(JigsawBlockEntity jigsawBlockEntity) {
+	public void openJigsawScreen(JigsawBlockEntity jigsawBlockEntity) {
 		this.client.openScreen(new JigsawBlockScreen(jigsawBlockEntity));
 	}
 
 	@Override
-	public void openBookEditorGui(ItemStack itemStack, Hand hand) {
+	public void openEditBookScreen(ItemStack itemStack, Hand hand) {
 		Item item = itemStack.getItem();
 		if (item == Items.field_8674) {
 			this.client.openScreen(new EditBookScreen(this, itemStack, hand));
@@ -669,7 +669,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		boolean bl5 = (float)this.getHungerManager().getFoodLevel() > 6.0F || this.abilities.allowFlying;
-		if ((this.onGround || this.method_5869())
+		if ((this.onGround || this.isInWater())
 			&& !bl2
 			&& !bl3
 			&& this.input.field_3905 >= 0.8F
@@ -685,7 +685,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		if (!this.isSprinting()
-			&& (!this.isInsideWater() || this.method_5869())
+			&& (!this.isInsideWater() || this.isInWater())
 			&& this.input.field_3905 >= 0.8F
 			&& bl5
 			&& !this.isUsingItem()
@@ -696,7 +696,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 		if (this.isSprinting()) {
 			boolean bl6 = this.input.field_3905 < 0.8F || !bl5;
-			boolean bl7 = bl6 || this.horizontalCollision || this.isInsideWater() && !this.method_5869();
+			boolean bl7 = bl6 || this.horizontalCollision || this.isInsideWater() && !this.isInWater();
 			if (this.isSwimming()) {
 				if (!this.onGround && !this.input.sneaking && bl6 || !this.isInsideWater()) {
 					this.setSprinting(false);
@@ -735,11 +735,11 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			this.method_6093();
 		}
 
-		if (this.method_5777(FluidTags.field_15517)) {
+		if (this.isInFluid(FluidTags.field_15517)) {
 			int i = this.isSpectator() ? 10 : 1;
 			this.field_3917 = MathHelper.clamp(this.field_3917 + i, 0, 600);
 		} else if (this.field_3917 > 0) {
-			this.method_5777(FluidTags.field_15517);
+			this.isInFluid(FluidTags.field_15517);
 			this.field_3917 = MathHelper.clamp(this.field_3917 - 10, 0, 600);
 		}
 
@@ -755,7 +755,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			}
 		}
 
-		if (this.method_3131()) {
+		if (this.hasJumpingMount()) {
 			JumpingMount jumpingMount = (JumpingMount)this.getRiddenEntity();
 			if (this.field_3938 < 0) {
 				this.field_3938++;
@@ -767,7 +767,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			if (bl && !this.input.jumping) {
 				this.field_3938 = -10;
 				jumpingMount.setJumpStrength(MathHelper.floor(this.method_3151() * 100.0F));
-				this.method_3133();
+				this.startRidingJump();
 			} else if (!bl && this.input.jumping) {
 				this.field_3938 = 0;
 				this.field_3922 = 0.0F;
@@ -791,8 +791,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void method_5842() {
-		super.method_5842();
+	public void updateRiding() {
+		super.updateRiding();
 		this.field_3942 = false;
 		if (this.getRiddenEntity() instanceof BoatEntity) {
 			BoatEntity boatEntity = (BoatEntity)this.getRiddenEntity();
@@ -932,7 +932,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	public float method_3140() {
-		if (!this.method_5777(FluidTags.field_15517)) {
+		if (!this.isInFluid(FluidTags.field_15517)) {
 			return 0.0F;
 		} else {
 			float f = 600.0F;
@@ -948,16 +948,16 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public boolean method_5869() {
-		return this.field_7490;
+	public boolean isInWater() {
+		return this.isInWater;
 	}
 
 	@Override
-	protected boolean method_7295() {
-		boolean bl = this.field_7490;
-		boolean bl2 = super.method_7295();
+	protected boolean updateInWater() {
+		boolean bl = this.isInWater;
+		boolean bl2 = super.updateInWater();
 		if (this.isSpectator()) {
-			return this.field_7490;
+			return this.isInWater;
 		} else {
 			if (!bl && bl2) {
 				this.world.playSound(this.x, this.y, this.z, SoundEvents.field_14756, SoundCategory.field_15256, 1.0F, 1.0F, false);
@@ -968,7 +968,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 				this.world.playSound(this.x, this.y, this.z, SoundEvents.field_14828, SoundCategory.field_15256, 1.0F, 1.0F, false);
 			}
 
-			return this.field_7490;
+			return this.isInWater;
 		}
 	}
 }

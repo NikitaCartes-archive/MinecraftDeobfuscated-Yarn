@@ -25,7 +25,7 @@ public class class_1118 {
 
 		@Override
 		public void tick() {
-			if (!this.field_5482.invalid && this.field_5482.method_5869()) {
+			if (!this.field_5482.invalid && this.field_5482.isInWater()) {
 				this.x = (float)this.field_5482.x;
 				this.y = (float)this.field_5482.y;
 				this.z = (float)this.field_5482.z;
@@ -55,7 +55,7 @@ public class class_1118 {
 				this.x = (float)this.field_5483.x;
 				this.y = (float)this.field_5483.y;
 				this.z = (float)this.field_5483.z;
-				if (this.field_5483.method_5869()) {
+				if (this.field_5483.isInWater()) {
 					this.field_5484++;
 				} else {
 					this.field_5484 -= 2;

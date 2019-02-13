@@ -249,7 +249,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 				thread2.start();
 			}
 
-			Items.AIR.addStacksForDisplay(ItemGroup.SEARCH, DefaultedList.create());
+			Items.AIR.appendItemsForGroup(ItemGroup.SEARCH, DefaultedList.create());
 			return true;
 		}
 	}
@@ -567,5 +567,11 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 	public void setUseWhitelist(boolean bl) {
 		this.propertiesLoader.apply(serverPropertiesHandler -> serverPropertiesHandler.whiteList.set(bl));
+	}
+
+	@Override
+	public void shutdown() {
+		super.shutdown();
+		SystemUtil.method_18350();
 	}
 }

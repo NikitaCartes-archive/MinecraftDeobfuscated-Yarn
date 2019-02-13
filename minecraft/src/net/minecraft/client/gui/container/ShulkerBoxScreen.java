@@ -22,7 +22,7 @@ public class ShulkerBoxScreen extends ContainerScreen<ShulkerBoxContainer> {
 	public void draw(int i, int j, float f) {
 		this.drawBackground();
 		super.draw(i, j, f);
-		this.drawMousoverTooltip(i, j);
+		this.drawMouseoverTooltip(i, j);
 	}
 
 	@Override

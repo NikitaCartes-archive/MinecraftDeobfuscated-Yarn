@@ -36,11 +36,11 @@ public class MessageCommand {
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
 			serverPlayerEntity.appendCommandFeedback(
 				new TranslatableTextComponent("commands.message.display.incoming", serverCommandSource.getDisplayName(), textComponent.copy())
-					.applyFormat(new TextFormat[]{TextFormat.GRAY, TextFormat.ITALIC})
+					.applyFormat(new TextFormat[]{TextFormat.field_1080, TextFormat.field_1056})
 			);
 			serverCommandSource.sendFeedback(
 				new TranslatableTextComponent("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), textComponent.copy())
-					.applyFormat(new TextFormat[]{TextFormat.GRAY, TextFormat.ITALIC}),
+					.applyFormat(new TextFormat[]{TextFormat.field_1080, TextFormat.field_1056}),
 				false
 			);
 		}

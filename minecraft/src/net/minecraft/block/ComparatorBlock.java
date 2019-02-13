@@ -60,11 +60,6 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	}
 
 	@Override
-	protected void method_9994(World world, BlockPos blockPos) {
-		world.removeBlockEntity(blockPos);
-	}
-
-	@Override
 	protected int method_9991(World world, BlockPos blockPos, BlockState blockState) {
 		int i = super.method_9991(world, blockPos, blockState);
 		Direction direction = blockState.get(field_11177);
