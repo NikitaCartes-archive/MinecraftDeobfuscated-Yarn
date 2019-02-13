@@ -165,7 +165,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11721(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11113(this);
+		clientPlayPacketListener.onPlayerList(this);
 	}
 
 	@Environment(EnvType.CLIENT)

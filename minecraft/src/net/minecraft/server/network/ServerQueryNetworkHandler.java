@@ -22,11 +22,11 @@ public class ServerQueryNetworkHandler implements ServerQueryPacketListener {
 	}
 
 	@Override
-	public void onConnectionLost(TextComponent textComponent) {
+	public void onDisconnected(TextComponent textComponent) {
 	}
 
 	@Override
-	public void method_12698(QueryRequestC2SPacket queryRequestC2SPacket) {
+	public void onRequest(QueryRequestC2SPacket queryRequestC2SPacket) {
 		if (this.responseSent) {
 			this.client.disconnect(REQUEST_HANDLED);
 		} else {
@@ -36,7 +36,7 @@ public class ServerQueryNetworkHandler implements ServerQueryPacketListener {
 	}
 
 	@Override
-	public void method_12697(QueryPingC2SPacket queryPingC2SPacket) {
+	public void onPing(QueryPingC2SPacket queryPingC2SPacket) {
 		this.client.sendPacket(new QueryPongS2CPacket(queryPingC2SPacket.getStartTime()));
 		this.client.disconnect(REQUEST_HANDLED);
 	}

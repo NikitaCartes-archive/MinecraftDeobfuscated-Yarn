@@ -94,7 +94,7 @@ public class class_1414 {
 						}
 					}
 
-					float h = mobEntityWithAi.method_6149(blockPos2);
+					float h = mobEntityWithAi.getPathfindingFavor(blockPos2);
 					if (h > g) {
 						g = h;
 						k = o;

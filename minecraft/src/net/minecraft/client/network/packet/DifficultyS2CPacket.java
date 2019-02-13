@@ -21,7 +21,7 @@ public class DifficultyS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11341(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11140(this);
+		clientPlayPacketListener.onDifficulty(this);
 	}
 
 	@Override

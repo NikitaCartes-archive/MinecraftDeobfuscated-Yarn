@@ -6,24 +6,24 @@ import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.PacketByteBuf;
-import net.minecraft.village.VillagerRecipeList;
+import net.minecraft.village.TraderRecipeList;
 
 public class SetVillagerRecipesPacket implements Packet<ClientPlayPacketListener> {
 	private int syncId;
-	private VillagerRecipeList recipes;
+	private TraderRecipeList recipes;
 
 	public SetVillagerRecipesPacket() {
 	}
 
-	public SetVillagerRecipesPacket(int i, VillagerRecipeList villagerRecipeList) {
+	public SetVillagerRecipesPacket(int i, TraderRecipeList traderRecipeList) {
 		this.syncId = i;
-		this.recipes = villagerRecipeList;
+		this.recipes = traderRecipeList;
 	}
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.syncId = packetByteBuf.readVarInt();
-		this.recipes = VillagerRecipeList.fromPacket(packetByteBuf);
+		this.recipes = TraderRecipeList.fromPacket(packetByteBuf);
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class SetVillagerRecipesPacket implements Packet<ClientPlayPacketListener
 	}
 
 	@Environment(EnvType.CLIENT)
-	public VillagerRecipeList getRecipes() {
+	public TraderRecipeList getRecipes() {
 		return this.recipes;
 	}
 }

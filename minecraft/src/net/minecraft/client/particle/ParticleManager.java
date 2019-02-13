@@ -17,6 +17,7 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -53,7 +54,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class ParticleManager implements ResourceReloadListener<SpriteAtlasTexture.class_4007> {
+public class ParticleManager implements ResourceReloadListener {
 	private static final List<class_3999> field_17820 = ImmutableList.of(
 		class_3999.field_17827, class_3999.field_17828, class_3999.field_17830, class_3999.field_17829, class_3999.field_17831
 	);
@@ -104,7 +105,7 @@ public class ParticleManager implements ResourceReloadListener<SpriteAtlasTextur
 		this.world = world;
 		this.textureManager = textureManager;
 		this.field_17821 = new SpriteAtlasTexture("textures/particle");
-		textureManager.registerTextureUpdateable(SpriteAtlasTexture.field_17898, this.field_17821);
+		textureManager.registerTextureUpdateable(SpriteAtlasTexture.PARTICLE_ATLAS_TEX, this.field_17821);
 		this.registerDefaultFactories(collection -> {
 			this.field_17822.addAll(collection);
 			return this.method_18127(collection);
@@ -112,23 +113,23 @@ public class ParticleManager implements ResourceReloadListener<SpriteAtlasTextur
 	}
 
 	@Override
-	public CompletableFuture<SpriteAtlasTexture.class_4007> prepare(ResourceManager resourceManager, Profiler profiler) {
+	public CompletableFuture<Void> apply(
+		ResourceReloadListener.Helper helper, ResourceManager resourceManager, Profiler profiler, Profiler profiler2, Executor executor, Executor executor2
+	) {
 		return CompletableFuture.supplyAsync(() -> {
 			profiler.startTick();
 			profiler.push("particle_stitching");
-			SpriteAtlasTexture.class_4007 lv = this.field_17821.method_18163(resourceManager, this.field_17822, profiler);
+			SpriteAtlasTexture.Data data = this.field_17821.stitch(resourceManager, this.field_17822, profiler);
 			profiler.pop();
 			profiler.endTick();
-			return lv;
-		});
-	}
-
-	public void method_18128(ResourceManager resourceManager, SpriteAtlasTexture.class_4007 arg, Profiler profiler) {
-		profiler.startTick();
-		profiler.push("particle_upload");
-		this.field_17821.method_18159(arg);
-		profiler.pop();
-		profiler.endTick();
+			return data;
+		}, executor).thenCompose(helper::waitForAll).thenAcceptAsync(data -> {
+			profiler2.startTick();
+			profiler2.push("particle_upload");
+			this.field_17821.upload(data);
+			profiler2.pop();
+			profiler2.endTick();
+		}, executor2);
 	}
 
 	private void registerDefaultFactories(class_4001 arg) {

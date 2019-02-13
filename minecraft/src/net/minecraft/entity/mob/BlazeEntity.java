@@ -34,10 +34,10 @@ public class BlazeEntity extends HostileEntity {
 
 	public BlazeEntity(World world) {
 		super(EntityType.BLAZE, world);
-		this.setPathNodeTypeWeight(PathNodeType.WATER, -1.0F);
-		this.setPathNodeTypeWeight(PathNodeType.LAVA, 8.0F);
-		this.setPathNodeTypeWeight(PathNodeType.FIRE_NEAR, 0.0F);
-		this.setPathNodeTypeWeight(PathNodeType.FIRE, 0.0F);
+		this.setPathNodeTypeWeight(PathNodeType.field_18, -1.0F);
+		this.setPathNodeTypeWeight(PathNodeType.field_14, 8.0F);
+		this.setPathNodeTypeWeight(PathNodeType.field_9, 0.0F);
+		this.setPathNodeTypeWeight(PathNodeType.field_3, 0.0F);
 		this.fireImmune = true;
 		this.experiencePoints = 10;
 	}
@@ -215,7 +215,7 @@ public class BlazeEntity extends HostileEntity {
 			if (d < 4.0) {
 				if (this.field_7217 <= 0) {
 					this.field_7217 = 20;
-					this.field_7219.method_6121(livingEntity);
+					this.field_7219.attack(livingEntity);
 				}
 
 				this.field_7219.getMoveControl().moveTo(livingEntity.x, livingEntity.y, livingEntity.z, 1.0);

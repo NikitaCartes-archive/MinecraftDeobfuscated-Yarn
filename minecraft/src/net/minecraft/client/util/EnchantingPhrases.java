@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 import org.apache.commons.lang3.StringUtils;
 
 @Environment(EnvType.CLIENT)
@@ -21,7 +21,7 @@ public class EnchantingPhrases {
 		return INSTANCE;
 	}
 
-	public String generatePhrase(FontRenderer fontRenderer, int i) {
+	public String generatePhrase(TextRenderer textRenderer, int i) {
 		int j = this.random.nextInt(2) + 3;
 		String string = "";
 
@@ -33,7 +33,7 @@ public class EnchantingPhrases {
 			string = string + this.phrases[this.random.nextInt(this.phrases.length)];
 		}
 
-		List<String> list = fontRenderer.wrapStringToWidthAsList(string, i);
+		List<String> list = textRenderer.wrapStringToWidthAsList(string, i);
 		return StringUtils.join(list.size() >= 2 ? list.subList(0, 2) : list, " ");
 	}
 

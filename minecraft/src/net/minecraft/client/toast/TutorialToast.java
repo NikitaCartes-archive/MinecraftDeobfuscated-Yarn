@@ -33,10 +33,10 @@ public class TutorialToast implements Toast {
 		toastManager.drawTexturedRect(0, 0, 0, 96, 160, 32);
 		this.type.drawIcon(toastManager, 6, 6);
 		if (this.description == null) {
-			toastManager.getGame().fontRenderer.draw(this.title, 30.0F, 12.0F, -11534256);
+			toastManager.getGame().textRenderer.draw(this.title, 30.0F, 12.0F, -11534256);
 		} else {
-			toastManager.getGame().fontRenderer.draw(this.title, 30.0F, 7.0F, -11534256);
-			toastManager.getGame().fontRenderer.draw(this.description, 30.0F, 18.0F, -16777216);
+			toastManager.getGame().textRenderer.draw(this.title, 30.0F, 7.0F, -11534256);
+			toastManager.getGame().textRenderer.draw(this.description, 30.0F, 18.0F, -16777216);
 		}
 
 		if (this.field_2222) {

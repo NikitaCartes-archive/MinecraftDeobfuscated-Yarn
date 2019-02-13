@@ -5,9 +5,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.text.TextFormat;
 
 public enum AdvancementFrame {
-	TASK("task", 0, TextFormat.GREEN),
-	CHALLENGE("challenge", 26, TextFormat.DARK_PURPLE),
-	GOAL("goal", 52, TextFormat.GREEN);
+	TASK("task", 0, TextFormat.field_1060),
+	CHALLENGE("challenge", 26, TextFormat.field_1064),
+	GOAL("goal", 52, TextFormat.field_1060);
 
 	private final String id;
 	private final int texV;

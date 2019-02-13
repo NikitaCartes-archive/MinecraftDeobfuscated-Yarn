@@ -37,7 +37,7 @@ public class class_4004<T extends LivingEntity> extends FeatureRenderer<T, Villa
 
 			GlStateManager.translatef(0.0F, 0.4F, -0.4F);
 			GlStateManager.rotatef(180.0F, 1.0F, 0.0F, 0.0F);
-			this.field_17893.renderHeldItem(itemStack, livingEntity, ModelTransformation.Type.GROUND, false);
+			this.field_17893.renderHeldItem(itemStack, livingEntity, ModelTransformation.Type.field_4318, false);
 			if (bl) {
 				GlStateManager.depthMask(true);
 			}

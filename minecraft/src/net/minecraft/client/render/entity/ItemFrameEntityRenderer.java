@@ -114,7 +114,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 	}
 
 	protected void method_3995(ItemFrameEntity itemFrameEntity, double d, double e, double f) {
-		if (MinecraftClient.method_1498()
+		if (MinecraftClient.isHudEnabled()
 			&& !itemFrameEntity.getHeldItemStack().isEmpty()
 			&& itemFrameEntity.getHeldItemStack().hasDisplayName()
 			&& this.renderManager.field_4678 == itemFrameEntity) {

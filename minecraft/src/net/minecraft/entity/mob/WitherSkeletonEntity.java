@@ -86,8 +86,8 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	public boolean method_6121(Entity entity) {
-		if (!super.method_6121(entity)) {
+	public boolean attack(Entity entity) {
+		if (!super.attack(entity)) {
 			return false;
 		} else {
 			if (entity instanceof LivingEntity) {

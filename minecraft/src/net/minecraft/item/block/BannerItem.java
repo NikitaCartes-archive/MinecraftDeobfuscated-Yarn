@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractBannerBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BannerPattern;
-import net.minecraft.client.item.TooltipOptions;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -37,7 +37,7 @@ public class BannerItem extends WallStandingBlockItem {
 				DyeColor dyeColor = DyeColor.byId(compoundTag2.getInt("Color"));
 				BannerPattern bannerPattern = BannerPattern.byId(compoundTag2.getString("Pattern"));
 				if (bannerPattern != null) {
-					list.add(new TranslatableTextComponent("block.minecraft.banner." + bannerPattern.getName() + '.' + dyeColor.getName()).applyFormat(TextFormat.GRAY));
+					list.add(new TranslatableTextComponent("block.minecraft.banner." + bannerPattern.getName() + '.' + dyeColor.getName()).applyFormat(TextFormat.field_1080));
 				}
 			}
 		}
@@ -49,7 +49,7 @@ public class BannerItem extends WallStandingBlockItem {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
 		buildBannerTooltip(itemStack, list);
 	}
 }

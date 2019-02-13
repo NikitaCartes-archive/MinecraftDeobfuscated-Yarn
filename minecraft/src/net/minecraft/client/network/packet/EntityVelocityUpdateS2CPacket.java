@@ -70,7 +70,7 @@ public class EntityVelocityUpdateS2CPacket implements Packet<ClientPlayPacketLis
 	}
 
 	public void method_11817(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11132(this);
+		clientPlayPacketListener.onVelocityUpdate(this);
 	}
 
 	@Environment(EnvType.CLIENT)

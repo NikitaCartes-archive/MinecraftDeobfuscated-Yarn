@@ -103,7 +103,7 @@ public class WorldBorderS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11796(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11096(this);
+		clientPlayPacketListener.onWorldBorder(this);
 	}
 
 	@Environment(EnvType.CLIENT)

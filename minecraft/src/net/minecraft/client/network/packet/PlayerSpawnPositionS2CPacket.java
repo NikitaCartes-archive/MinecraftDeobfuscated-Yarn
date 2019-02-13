@@ -29,7 +29,7 @@ public class PlayerSpawnPositionS2CPacket implements Packet<ClientPlayPacketList
 	}
 
 	public void method_11869(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11142(this);
+		clientPlayPacketListener.onPlayerSpawnPosition(this);
 	}
 
 	@Environment(EnvType.CLIENT)

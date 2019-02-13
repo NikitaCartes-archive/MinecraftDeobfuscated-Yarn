@@ -18,7 +18,7 @@ public class DimensionType {
 	private final boolean hasSkyLight;
 
 	private static DimensionType register(String string, DimensionType dimensionType) {
-		return Registry.set(Registry.DIMENSION, dimensionType.id, string, dimensionType);
+		return Registry.register(Registry.DIMENSION, dimensionType.id, string, dimensionType);
 	}
 
 	protected DimensionType(int i, String string, String string2, BiFunction<World, DimensionType, ? extends Dimension> biFunction, boolean bl) {
@@ -55,7 +55,7 @@ public class DimensionType {
 
 	@Nullable
 	public static DimensionType byRawId(int i) {
-		return Registry.DIMENSION.getInt(i - -1);
+		return Registry.DIMENSION.get(i - -1);
 	}
 
 	@Nullable

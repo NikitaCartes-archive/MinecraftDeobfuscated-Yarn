@@ -12,7 +12,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.item.TooltipOptions;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -72,7 +72,7 @@ public class Item implements ItemProvider {
 	}
 
 	public static Item byRawId(int i) {
-		return Registry.ITEM.getInt(i);
+		return Registry.ITEM.get(i);
 	}
 
 	@Deprecated
@@ -226,7 +226,7 @@ public class Item implements ItemProvider {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
 	}
 
 	public TextComponent getTranslatedNameTrimmed(ItemStack itemStack) {
@@ -278,7 +278,7 @@ public class Item implements ItemProvider {
 		return 0;
 	}
 
-	public void addStacksForDisplay(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
+	public void appendItemsForGroup(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
 		if (this.isInItemGroup(itemGroup)) {
 			defaultedList.add(new ItemStack(this));
 		}

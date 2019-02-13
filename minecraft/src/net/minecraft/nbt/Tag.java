@@ -8,10 +8,10 @@ import net.minecraft.text.TextFormat;
 
 public interface Tag {
 	String[] TYPES = new String[]{"END", "BYTE", "SHORT", "INT", "LONG", "FLOAT", "DOUBLE", "BYTE[]", "STRING", "LIST", "COMPOUND", "INT[]", "LONG[]"};
-	TextFormat AQUA = TextFormat.AQUA;
-	TextFormat GREEN = TextFormat.GREEN;
-	TextFormat GOLD = TextFormat.GOLD;
-	TextFormat RED = TextFormat.RED;
+	TextFormat AQUA = TextFormat.field_1075;
+	TextFormat GREEN = TextFormat.field_1060;
+	TextFormat GOLD = TextFormat.field_1065;
+	TextFormat RED = TextFormat.field_1061;
 
 	void write(DataOutput dataOutput) throws IOException;
 

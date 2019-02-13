@@ -232,32 +232,16 @@ public class NewLevelScreen extends Screen {
 	}
 
 	private void method_2722() {
-		this.buttonGameModeSwitch.text = I18n.translate("selectWorld.gameMode") + ": " + I18n.translate("selectWorld.gameMode." + this.gameMode);
+		this.buttonGameModeSwitch.setText(I18n.translate("selectWorld.gameMode") + ": " + I18n.translate("selectWorld.gameMode." + this.gameMode));
 		this.field_3194 = I18n.translate("selectWorld.gameMode." + this.gameMode + ".line1");
 		this.field_3199 = I18n.translate("selectWorld.gameMode." + this.gameMode + ".line2");
-		this.buttonGenerateStructures.text = I18n.translate("selectWorld.mapFeatures") + " ";
-		if (this.structures) {
-			this.buttonGenerateStructures.text = this.buttonGenerateStructures.text + I18n.translate("options.on");
-		} else {
-			this.buttonGenerateStructures.text = this.buttonGenerateStructures.text + I18n.translate("options.off");
-		}
-
-		this.buttonGenerateBonusItems.text = I18n.translate("selectWorld.bonusItems") + " ";
-		if (this.enableBonusItems && !this.field_3178) {
-			this.buttonGenerateBonusItems.text = this.buttonGenerateBonusItems.text + I18n.translate("options.on");
-		} else {
-			this.buttonGenerateBonusItems.text = this.buttonGenerateBonusItems.text + I18n.translate("options.off");
-		}
-
-		this.buttonMapTypeSwitch.text = I18n.translate("selectWorld.mapType")
-			+ " "
-			+ I18n.translate(LevelGeneratorType.TYPES[this.generatorType].getTranslationKey());
-		this.buttonCommandsAllowed.text = I18n.translate("selectWorld.allowCommands") + " ";
-		if (this.commandsAllowed && !this.field_3178) {
-			this.buttonCommandsAllowed.text = this.buttonCommandsAllowed.text + I18n.translate("options.on");
-		} else {
-			this.buttonCommandsAllowed.text = this.buttonCommandsAllowed.text + I18n.translate("options.off");
-		}
+		this.buttonGenerateStructures.setText(I18n.translate("selectWorld.mapFeatures") + ' ' + I18n.translate(this.structures ? "options.on" : "options.off"));
+		this.buttonGenerateBonusItems
+			.setText(I18n.translate("selectWorld.bonusItems") + ' ' + I18n.translate(this.enableBonusItems && !this.field_3178 ? "options.on" : "options.off"));
+		this.buttonMapTypeSwitch
+			.setText(I18n.translate("selectWorld.mapType") + ' ' + I18n.translate(LevelGeneratorType.TYPES[this.generatorType].getTranslationKey()));
+		this.buttonCommandsAllowed
+			.setText(I18n.translate("selectWorld.allowCommands") + ' ' + I18n.translate(this.commandsAllowed && !this.field_3178 ? "options.on" : "options.off"));
 	}
 
 	public static String sanitizeLevelName(LevelStorage levelStorage, String string) {
@@ -357,9 +341,9 @@ public class NewLevelScreen extends Screen {
 
 		this.method_2722();
 		if (this.field_3202) {
-			this.buttonMoreOptions.text = I18n.translate("gui.done");
+			this.buttonMoreOptions.setText(I18n.translate("gui.done"));
 		} else {
-			this.buttonMoreOptions.text = I18n.translate("selectWorld.moreWorldOptions");
+			this.buttonMoreOptions.setText(I18n.translate("selectWorld.moreWorldOptions"));
 		}
 	}
 

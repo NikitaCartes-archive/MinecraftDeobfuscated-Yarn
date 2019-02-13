@@ -28,8 +28,8 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 	private static final Identifier BG_TEX = new Identifier("textures/gui/container/beacon.png");
 	private BeaconScreen.WidgetButtonIconDone doneButton;
 	private boolean canConsumeGem;
-	private StatusEffect field_17412;
-	private StatusEffect field_17413;
+	private StatusEffect primaryEffect;
+	private StatusEffect secondaryEffect;
 
 	public BeaconScreen(BeaconContainer beaconContainer, PlayerInventory playerInventory, TextComponent textComponent) {
 		super(beaconContainer, playerInventory, textComponent);
@@ -46,8 +46,8 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 
 			@Override
 			public void onContainerPropertyUpdate(Container container, int i, int j) {
-				BeaconScreen.this.field_17412 = beaconContainer.method_17374();
-				BeaconScreen.this.field_17413 = beaconContainer.method_17375();
+				BeaconScreen.this.primaryEffect = beaconContainer.getPrimaryEffect();
+				BeaconScreen.this.secondaryEffect = beaconContainer.getSecondaryEffect();
 				BeaconScreen.this.canConsumeGem = true;
 			}
 		});
@@ -83,7 +83,7 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 					this.addButton(widgetButtonIconEffect);
 					if (k >= i) {
 						widgetButtonIconEffect.enabled = false;
-					} else if (statusEffect == this.field_17412) {
+					} else if (statusEffect == this.primaryEffect) {
 						widgetButtonIconEffect.setDisabled(true);
 					}
 				}
@@ -101,25 +101,25 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 				this.addButton(widgetButtonIconEffect);
 				if (3 >= i) {
 					widgetButtonIconEffect.enabled = false;
-				} else if (statusEffect == this.field_17413) {
+				} else if (statusEffect == this.secondaryEffect) {
 					widgetButtonIconEffect.setDisabled(true);
 				}
 			}
 
-			if (this.field_17412 != null) {
+			if (this.primaryEffect != null) {
 				BeaconScreen.WidgetButtonIconEffect widgetButtonIconEffect2 = new BeaconScreen.WidgetButtonIconEffect(
-					j++, this.left + 167 + (l - 1) * 24 - m / 2, this.top + 47, this.field_17412, false
+					j++, this.left + 167 + (l - 1) * 24 - m / 2, this.top + 47, this.primaryEffect, false
 				);
 				this.addButton(widgetButtonIconEffect2);
 				if (3 >= i) {
 					widgetButtonIconEffect2.enabled = false;
-				} else if (this.field_17412 == this.field_17413) {
+				} else if (this.primaryEffect == this.secondaryEffect) {
 					widgetButtonIconEffect2.setDisabled(true);
 				}
 			}
 		}
 
-		this.doneButton.enabled = this.container.method_17376() && this.field_17412 != null;
+		this.doneButton.enabled = this.container.hasPayment() && this.primaryEffect != null;
 	}
 
 	@Override
@@ -157,7 +157,7 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 	public void draw(int i, int j, float f) {
 		this.drawBackground();
 		super.draw(i, j, f);
-		this.drawMousoverTooltip(i, j);
+		this.drawMouseoverTooltip(i, j);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -176,27 +176,24 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 
 		@Override
 		public void draw(int i, int j, float f) {
-			if (this.visible) {
-				MinecraftClient.getInstance().getTextureManager().bindTexture(BeaconScreen.BG_TEX);
-				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-				this.hovered = i >= this.x && j >= this.y && i < this.x + this.width && j < this.y + this.height;
-				int k = 219;
-				int l = 0;
-				if (!this.enabled) {
-					l += this.width * 2;
-				} else if (this.disabled) {
-					l += this.width * 1;
-				} else if (this.hovered) {
-					l += this.width * 3;
-				}
-
-				this.drawTexturedRect(this.x, this.y, l, 219, this.width, this.height);
-				if (!BeaconScreen.BG_TEX.equals(this.iconTexture)) {
-					MinecraftClient.getInstance().getTextureManager().bindTexture(this.iconTexture);
-				}
-
-				this.drawTexturedRect(this.x + 2, this.y + 2, this.iconU, this.iconV, 18, 18);
+			MinecraftClient.getInstance().getTextureManager().bindTexture(BeaconScreen.BG_TEX);
+			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			int k = 219;
+			int l = 0;
+			if (!this.enabled) {
+				l += this.width * 2;
+			} else if (this.disabled) {
+				l += this.width * 1;
+			} else if (this.isHovered()) {
+				l += this.width * 3;
 			}
+
+			this.drawTexturedRect(this.x, this.y, l, 219, this.width, this.height);
+			if (!BeaconScreen.BG_TEX.equals(this.iconTexture)) {
+				MinecraftClient.getInstance().getTextureManager().bindTexture(this.iconTexture);
+			}
+
+			this.drawTexturedRect(this.x + 2, this.y + 2, this.iconU, this.iconV, 18, 18);
 		}
 
 		public boolean isDisabled() {
@@ -236,7 +233,7 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 		public void onPressed(double d, double e) {
 			BeaconScreen.this.client
 				.getNetworkHandler()
-				.sendPacket(new UpdateBeaconC2SPacket(StatusEffect.getRawId(BeaconScreen.this.field_17412), StatusEffect.getRawId(BeaconScreen.this.field_17413)));
+				.sendPacket(new UpdateBeaconC2SPacket(StatusEffect.getRawId(BeaconScreen.this.primaryEffect), StatusEffect.getRawId(BeaconScreen.this.secondaryEffect)));
 			BeaconScreen.this.client.player.networkHandler.sendPacket(new GuiCloseC2SPacket(BeaconScreen.this.client.player.container.syncId));
 			BeaconScreen.this.client.openScreen(null);
 		}
@@ -250,21 +247,21 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 	@Environment(EnvType.CLIENT)
 	class WidgetButtonIconEffect extends BeaconScreen.WidgetButtonIcon {
 		private final StatusEffect effect;
-		private final boolean field_17416;
+		private final boolean primary;
 
 		public WidgetButtonIconEffect(int i, int j, int k, StatusEffect statusEffect, boolean bl) {
 			super(i, j, k, ContainerScreen.BACKGROUND_TEXTURE, statusEffect.getIconIndex() % 12 * 18, 198 + statusEffect.getIconIndex() / 12 * 18);
 			this.effect = statusEffect;
-			this.field_17416 = bl;
+			this.primary = bl;
 		}
 
 		@Override
 		public void onPressed(double d, double e) {
 			if (!this.isDisabled()) {
-				if (this.field_17416) {
-					BeaconScreen.this.field_17412 = this.effect;
+				if (this.primary) {
+					BeaconScreen.this.primaryEffect = this.effect;
 				} else {
-					BeaconScreen.this.field_17413 = this.effect;
+					BeaconScreen.this.secondaryEffect = this.effect;
 				}
 
 				BeaconScreen.this.buttons.clear();
@@ -277,7 +274,7 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 		@Override
 		public void onHover(int i, int j) {
 			String string = I18n.translate(this.effect.getTranslationKey());
-			if (!this.field_17416 && this.effect != StatusEffects.field_5924) {
+			if (!this.primary && this.effect != StatusEffects.field_5924) {
 				string = string + " II";
 			}
 

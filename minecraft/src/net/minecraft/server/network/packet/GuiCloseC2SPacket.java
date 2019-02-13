@@ -19,7 +19,7 @@ public class GuiCloseC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	public void method_12198(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.method_12054(this);
+		serverPlayPacketListener.onGuiClose(this);
 	}
 
 	@Override

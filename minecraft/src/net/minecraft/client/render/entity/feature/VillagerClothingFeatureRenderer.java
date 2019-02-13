@@ -17,7 +17,7 @@ import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.DefaultMappedRegistry;
+import net.minecraft.util.registry.DefaultedRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerDataContainer;
@@ -46,7 +46,7 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 		super(featureRendererContext);
 		this.resourceManager = reloadableResourceManager;
 		this.entityType = string;
-		reloadableResourceManager.addListener(this);
+		reloadableResourceManager.registerListener(this);
 	}
 
 	public void method_17151(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
@@ -83,11 +83,11 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 	}
 
 	public <K> VillagerResourceMetadata.HatType getHatType(
-		Object2ObjectMap<K, VillagerResourceMetadata.HatType> object2ObjectMap, String string, DefaultMappedRegistry<K> defaultMappedRegistry, K object
+		Object2ObjectMap<K, VillagerResourceMetadata.HatType> object2ObjectMap, String string, DefaultedRegistry<K> defaultedRegistry, K object
 	) {
 		return (VillagerResourceMetadata.HatType)object2ObjectMap.computeIfAbsent(object, object2 -> {
 			try {
-				Resource resource = this.resourceManager.getResource(this.findTexture(string, defaultMappedRegistry.getId(object)));
+				Resource resource = this.resourceManager.getResource(this.findTexture(string, defaultedRegistry.getId(object)));
 				Throwable var6 = null;
 
 				VillagerResourceMetadata.HatType var8;
@@ -123,7 +123,7 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 	}
 
 	@Override
-	public void reloadResources(ResourceManager resourceManager) {
+	public void apply(ResourceManager resourceManager) {
 		this.professionToHat.clear();
 		this.villagerTypeToHat.clear();
 	}

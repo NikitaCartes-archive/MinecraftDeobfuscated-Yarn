@@ -23,7 +23,7 @@ import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.passive.AbstractVillagerEntity;
+import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
@@ -61,7 +61,7 @@ public class RavagerEntity extends RaiderEntity {
 		this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
 		this.targetSelector.add(2, new class_1399(this, IllagerEntity.class).method_6318());
 		this.targetSelector.add(3, new FollowTargetGoal(this, PlayerEntity.class, true));
-		this.targetSelector.add(4, new FollowTargetGoal(this, AbstractVillagerEntity.class, true));
+		this.targetSelector.add(4, new FollowTargetGoal(this, AbstractTraderEntity.class, true));
 		this.targetSelector.add(4, new FollowTargetGoal(this, IronGolemEntity.class, true));
 	}
 
@@ -149,7 +149,7 @@ public class RavagerEntity extends RaiderEntity {
 			}
 
 			if (!bl && this.onGround) {
-				this.method_6043();
+				this.jump();
 			}
 		}
 
@@ -266,11 +266,11 @@ public class RavagerEntity extends RaiderEntity {
 	}
 
 	@Override
-	public boolean method_6121(Entity entity) {
+	public boolean attack(Entity entity) {
 		this.attackTick = 10;
 		this.world.summonParticle(this, (byte)4);
 		this.playSound(SoundEvents.field_15240, 1.0F, 1.0F);
-		return super.method_6121(entity);
+		return super.attack(entity);
 	}
 
 	@Nullable
@@ -338,7 +338,7 @@ public class RavagerEntity extends RaiderEntity {
 
 		@Override
 		protected PathNodeType method_61(BlockView blockView, boolean bl, boolean bl2, BlockPos blockPos, PathNodeType pathNodeType) {
-			return pathNodeType == PathNodeType.field_6 ? PathNodeType.AIR : super.method_61(blockView, bl, bl2, blockPos, pathNodeType);
+			return pathNodeType == PathNodeType.field_6 ? PathNodeType.field_7 : super.method_61(blockView, bl, bl2, blockPos, pathNodeType);
 		}
 	}
 }

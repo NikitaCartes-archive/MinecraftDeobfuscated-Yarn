@@ -1,8 +1,8 @@
 package net.minecraft.world;
 
 public enum LightType {
-	SKY_LIGHT(15),
-	BLOCK_LIGHT(0);
+	SKY(15),
+	BLOCK(0);
 
 	public final int field_9283;
 

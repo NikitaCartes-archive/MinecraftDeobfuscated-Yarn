@@ -47,7 +47,7 @@ public class LilyPadItem extends BlockItem {
 				BlockPos blockPos = blockHitResult.getBlockPos();
 				Direction direction = blockHitResult.getSide();
 				if (!world.canPlayerModifyAt(playerEntity, blockPos) || !playerEntity.canPlaceBlock(blockPos.offset(direction), direction, itemStack)) {
-					return new TypedActionResult<>(ActionResult.FAILURE, itemStack);
+					return new TypedActionResult<>(ActionResult.field_5814, itemStack);
 				}
 
 				BlockPos blockPos2 = blockPos.up();
@@ -66,11 +66,11 @@ public class LilyPadItem extends BlockItem {
 
 					playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 					world.playSound(playerEntity, blockPos, SoundEvents.field_15173, SoundCategory.field_15245, 1.0F, 1.0F);
-					return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+					return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 				}
 			}
 
-			return new TypedActionResult<>(ActionResult.FAILURE, itemStack);
+			return new TypedActionResult<>(ActionResult.field_5814, itemStack);
 		}
 	}
 }

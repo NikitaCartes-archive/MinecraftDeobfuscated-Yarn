@@ -2,27 +2,16 @@ package net.minecraft.resource;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import javax.annotation.Nullable;
+import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.resource.ResourceLoadProgressProvider;
+import net.minecraft.util.Void;
 
 public interface ReloadableResourceManager extends ResourceManager {
-	void reload(List<ResourcePack> list);
+	CompletableFuture<Void> reload(Executor executor, Executor executor2, List<ResourcePack> list, CompletableFuture<Void> completableFuture);
 
 	@Environment(EnvType.CLIENT)
-	default ResourceLoadProgressProvider method_18231() {
-		return this.method_18230(null);
-	}
+	ResourceReloadHandler createReloadHandler(Executor executor, Executor executor2, CompletableFuture<Void> completableFuture);
 
-	@Environment(EnvType.CLIENT)
-	ResourceLoadProgressProvider method_18230(@Nullable CompletableFuture<Void> completableFuture);
-
-	default ResourceLoadProgressProvider method_18233() {
-		return this.method_18232(null);
-	}
-
-	ResourceLoadProgressProvider method_18232(@Nullable CompletableFuture<Void> completableFuture);
-
-	void addListener(ResourceReloadListener<?> resourceReloadListener);
+	void registerListener(ResourceReloadListener resourceReloadListener);
 }

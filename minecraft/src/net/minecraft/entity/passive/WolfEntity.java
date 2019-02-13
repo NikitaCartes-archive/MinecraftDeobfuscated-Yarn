@@ -1,6 +1,7 @@
 package net.minecraft.entity.passive;
 
 import java.util.UUID;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -9,12 +10,12 @@ import net.minecraft.class_1394;
 import net.minecraft.class_1399;
 import net.minecraft.class_1403;
 import net.minecraft.class_1404;
-import net.minecraft.class_1406;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
+import net.minecraft.entity.ai.goal.AttackWithOwnerGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.FollowOwnerGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
@@ -53,6 +54,7 @@ public class WolfEntity extends TameableEntity {
 	private static final TrackedData<Float> WOLF_HEALTH = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Boolean> field_6946 = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> COLLAR_COLOR = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	public static final Predicate<Entity> field_18004 = entity -> entity instanceof SheepEntity || entity instanceof RabbitEntity || entity instanceof FoxEntity;
 	private float field_6952;
 	private float field_6949;
 	private boolean field_6944;
@@ -80,11 +82,10 @@ public class WolfEntity extends TameableEntity {
 		this.goalSelector.add(10, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(10, new LookAroundGoal(this));
 		this.targetSelector.add(1, new class_1403(this));
-		this.targetSelector.add(2, new class_1406(this));
+		this.targetSelector.add(2, new AttackWithOwnerGoal(this));
 		this.targetSelector.add(3, new class_1399(this).method_6318());
-		this.targetSelector
-			.add(4, new class_1404(this, AnimalEntity.class, false, animalEntity -> animalEntity instanceof SheepEntity || animalEntity instanceof RabbitEntity));
-		this.targetSelector.add(4, new class_1404(this, TurtleEntity.class, false, TurtleEntity.field_6921));
+		this.targetSelector.add(4, new class_1404(this, AnimalEntity.class, false, field_18004));
+		this.targetSelector.add(4, new class_1404(this, TurtleEntity.class, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
 		this.targetSelector.add(5, new FollowTargetGoal(this, AbstractSkeletonEntity.class, false));
 	}
 
@@ -121,7 +122,7 @@ public class WolfEntity extends TameableEntity {
 		super.initDataTracker();
 		this.dataTracker.startTracking(WOLF_HEALTH, this.getHealth());
 		this.dataTracker.startTracking(field_6946, false);
-		this.dataTracker.startTracking(COLLAR_COLOR, DyeColor.RED.getId());
+		this.dataTracker.startTracking(COLLAR_COLOR, DyeColor.field_7964.getId());
 	}
 
 	@Override
@@ -174,7 +175,7 @@ public class WolfEntity extends TameableEntity {
 	@Override
 	public void updateMovement() {
 		super.updateMovement();
-		if (!this.world.isClient && this.field_6944 && !this.field_6951 && !this.method_6150() && this.onGround) {
+		if (!this.world.isClient && this.field_6944 && !this.field_6951 && !this.isNavigating() && this.onGround) {
 			this.field_6951 = true;
 			this.field_6947 = 0.0F;
 			this.field_6945 = 0.0F;
@@ -285,10 +286,10 @@ public class WolfEntity extends TameableEntity {
 	}
 
 	@Override
-	public boolean method_6121(Entity entity) {
+	public boolean attack(Entity entity) {
 		boolean bl = entity.damage(DamageSource.mob(this), (float)((int)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue()));
 		if (bl) {
-			this.method_5723(this, entity);
+			this.dealDamage(this, entity);
 		}
 
 		return bl;

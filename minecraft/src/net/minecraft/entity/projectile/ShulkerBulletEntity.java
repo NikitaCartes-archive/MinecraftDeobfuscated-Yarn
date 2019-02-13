@@ -322,7 +322,7 @@ public class ShulkerBulletEntity extends Entity {
 			Entity entity = ((EntityHitResult)hitResult).getEntity();
 			boolean bl = entity.damage(DamageSource.mobProjectile(this, this.field_7630).setProjectile(), 4.0F);
 			if (bl) {
-				this.method_5723(this.field_7630, entity);
+				this.dealDamage(this.field_7630, entity);
 				if (entity instanceof LivingEntity) {
 					((LivingEntity)entity).addPotionEffect(new StatusEffectInstance(StatusEffects.field_5902, 200));
 				}

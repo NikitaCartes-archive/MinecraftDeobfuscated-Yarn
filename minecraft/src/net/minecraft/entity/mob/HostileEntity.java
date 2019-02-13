@@ -79,16 +79,16 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 	}
 
 	@Override
-	public float method_6144(BlockPos blockPos, ViewableWorld viewableWorld) {
-		return 0.5F - viewableWorld.method_8610(blockPos);
+	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
+		return 0.5F - viewableWorld.getBrightness(blockPos);
 	}
 
 	protected boolean checkLightLevelForSpawn() {
 		BlockPos blockPos = new BlockPos(this.x, this.getBoundingBox().minY, this.z);
-		if (this.world.getLightLevel(LightType.SKY_LIGHT, blockPos) > this.random.nextInt(32)) {
+		if (this.world.getLightLevel(LightType.SKY, blockPos) > this.random.nextInt(32)) {
 			return false;
 		} else {
-			int i = this.world.isThundering() ? this.world.method_8603(blockPos, 10) : this.world.method_8602(blockPos);
+			int i = this.world.isThundering() ? this.world.method_8603(blockPos, 10) : this.world.getLightLevel(blockPos);
 			return i <= this.random.nextInt(8);
 		}
 	}

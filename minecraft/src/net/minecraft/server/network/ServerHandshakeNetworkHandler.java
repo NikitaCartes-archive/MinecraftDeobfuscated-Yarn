@@ -1,7 +1,7 @@
 package net.minecraft.server.network;
 
 import net.minecraft.SharedConstants;
-import net.minecraft.class_2909;
+import net.minecraft.client.network.packet.LoginDisconnectS2CPacket;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.listener.ServerHandshakePacketListener;
@@ -26,11 +26,11 @@ public class ServerHandshakeNetworkHandler implements ServerHandshakePacketListe
 				this.client.setState(NetworkState.LOGIN);
 				if (handshakeC2SPacket.getProtocolVersion() > SharedConstants.getGameVersion().getProtocolVersion()) {
 					TextComponent textComponent = new TranslatableTextComponent("multiplayer.disconnect.outdated_server", SharedConstants.getGameVersion().getName());
-					this.client.sendPacket(new class_2909(textComponent));
+					this.client.sendPacket(new LoginDisconnectS2CPacket(textComponent));
 					this.client.disconnect(textComponent);
 				} else if (handshakeC2SPacket.getProtocolVersion() < SharedConstants.getGameVersion().getProtocolVersion()) {
 					TextComponent textComponent = new TranslatableTextComponent("multiplayer.disconnect.outdated_client", SharedConstants.getGameVersion().getName());
-					this.client.sendPacket(new class_2909(textComponent));
+					this.client.sendPacket(new LoginDisconnectS2CPacket(textComponent));
 					this.client.disconnect(textComponent);
 				} else {
 					this.client.setPacketListener(new ServerLoginNetworkHandler(this.server, this.client));
@@ -46,6 +46,6 @@ public class ServerHandshakeNetworkHandler implements ServerHandshakePacketListe
 	}
 
 	@Override
-	public void onConnectionLost(TextComponent textComponent) {
+	public void onDisconnected(TextComponent textComponent) {
 	}
 }

@@ -86,7 +86,7 @@ public class ChaseBoatGoal extends Goal {
 					this.state = class_1340.field_6400;
 				}
 			} else if (this.state == class_1340.field_6400) {
-				Direction direction = this.passenger.method_5755();
+				Direction direction = this.passenger.getMovementDirection();
 				BlockPos blockPos2 = new BlockPos(this.passenger).offset(direction, 10);
 				this.owner.getNavigation().startMovingTo((double)blockPos2.getX(), (double)(blockPos2.getY() - 1), (double)blockPos2.getZ(), 1.0);
 				if (this.owner.distanceTo(this.passenger) > 12.0F) {

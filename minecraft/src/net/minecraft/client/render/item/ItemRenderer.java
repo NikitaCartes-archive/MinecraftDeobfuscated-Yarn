@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
@@ -259,7 +259,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.prepareGuiItemRender(i, j, bakedModel.hasDepthInGui());
-		bakedModel.getTransformation().applyGl(ModelTransformation.Type.GUI);
+		bakedModel.getTransformation().applyGl(ModelTransformation.Type.field_4317);
 		this.renderItemAndGlow(itemStack, bakedModel);
 		GlStateManager.disableAlphaTest();
 		GlStateManager.disableRescaleNormal();
@@ -305,18 +305,18 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		}
 	}
 
-	public void renderGuiItemOverlay(FontRenderer fontRenderer, ItemStack itemStack, int i, int j) {
-		this.renderGuiItemOverlay(fontRenderer, itemStack, i, j, null);
+	public void renderGuiItemOverlay(TextRenderer textRenderer, ItemStack itemStack, int i, int j) {
+		this.renderGuiItemOverlay(textRenderer, itemStack, i, j, null);
 	}
 
-	public void renderGuiItemOverlay(FontRenderer fontRenderer, ItemStack itemStack, int i, int j, @Nullable String string) {
+	public void renderGuiItemOverlay(TextRenderer textRenderer, ItemStack itemStack, int i, int j, @Nullable String string) {
 		if (!itemStack.isEmpty()) {
 			if (itemStack.getAmount() != 1 || string != null) {
 				String string2 = string == null ? String.valueOf(itemStack.getAmount()) : string;
 				GlStateManager.disableLighting();
 				GlStateManager.disableDepthTest();
 				GlStateManager.disableBlend();
-				fontRenderer.drawWithShadow(string2, (float)(i + 19 - 2 - fontRenderer.getStringWidth(string2)), (float)(j + 6 + 3), 16777215);
+				textRenderer.drawWithShadow(string2, (float)(i + 19 - 2 - textRenderer.getStringWidth(string2)), (float)(j + 6 + 3), 16777215);
 				GlStateManager.enableBlend();
 				GlStateManager.enableLighting();
 				GlStateManager.enableDepthTest();
@@ -372,7 +372,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	}
 
 	@Override
-	public void reloadResources(ResourceManager resourceManager) {
+	public void apply(ResourceManager resourceManager) {
 		this.models.reloadModels();
 	}
 }

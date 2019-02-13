@@ -176,8 +176,8 @@ public abstract class AbstractListWidget extends DrawableContainer {
 
 			this.drawEntries(m, n, i, j, f);
 			GlStateManager.disableDepthTest();
-			this.method_1954(0, this.y1, 255, 255);
-			this.method_1954(this.y2, this.height, 255, 255);
+			this.renderCoverBackground(0, this.y1, 255, 255);
+			this.renderCoverBackground(this.y2, this.height, 255, 255);
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(
 				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE
@@ -367,7 +367,7 @@ public abstract class AbstractListWidget extends DrawableContainer {
 		return this.width / 2 + 124;
 	}
 
-	protected void method_1954(int i, int j, int k, int l) {
+	protected void renderCoverBackground(int i, int j, int k, int l) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		this.client.getTextureManager().bindTexture(Drawable.OPTIONS_BG);

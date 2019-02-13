@@ -325,7 +325,7 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 			this.legRight.pitch = MathHelper.lerp(this.field_3396, this.legRight.pitch, 0.3F * MathHelper.cos(f * 0.33333334F));
 		}
 
-		this.headwear.method_17138(this.head);
+		this.headwear.copyRotation(this.head);
 	}
 
 	protected float method_2804(float f, float g, float h) {

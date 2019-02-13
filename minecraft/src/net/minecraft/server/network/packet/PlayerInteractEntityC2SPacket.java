@@ -70,7 +70,7 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 	}
 
 	public void method_12251(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.method_12062(this);
+		serverPlayPacketListener.onPlayerInteractEntity(this);
 	}
 
 	@Nullable

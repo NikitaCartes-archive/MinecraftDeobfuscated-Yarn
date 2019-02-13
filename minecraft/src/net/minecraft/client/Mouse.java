@@ -38,7 +38,7 @@ public class Mouse {
 	private void onMouseButton(long l, int i, int j, int k) {
 		if (l == this.client.window.getHandle()) {
 			boolean bl = j == 1;
-			if (MinecraftClient.isSystemMac && i == 0) {
+			if (MinecraftClient.IS_SYSTEM_MAC && i == 0) {
 				if (bl) {
 					if ((k & 2) == 2) {
 						i = 1;
@@ -241,7 +241,7 @@ public class Mouse {
 	public void lockCursor() {
 		if (this.client.isWindowFocused()) {
 			if (!this.isCursorLocked) {
-				if (!MinecraftClient.isSystemMac) {
+				if (!MinecraftClient.IS_SYSTEM_MAC) {
 					KeyBinding.updatePressedStates();
 				}
 

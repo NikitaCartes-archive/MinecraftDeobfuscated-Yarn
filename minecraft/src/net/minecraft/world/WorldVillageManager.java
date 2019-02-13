@@ -69,6 +69,7 @@ public class WorldVillageManager extends PersistentState {
 		return this.villages;
 	}
 
+	@Nullable
 	public VillageProperties getNearestVillage(BlockPos blockPos, int i) {
 		VillageProperties villageProperties = null;
 		double d = Float.MAX_VALUE;

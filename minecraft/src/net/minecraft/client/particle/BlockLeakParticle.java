@@ -106,7 +106,7 @@ public class BlockLeakParticle extends class_4003 {
 
 			BlockPos blockPos = new BlockPos(this.posX, this.posY, this.posZ);
 			FluidState fluidState = this.world.getFluidState(blockPos);
-			if (fluidState.getFluid() == this.field_3789 && this.posY < (double)((float)blockPos.getY() + fluidState.method_15763(this.world, blockPos))) {
+			if (fluidState.getFluid() == this.field_3789 && this.posY < (double)((float)blockPos.getY() + fluidState.getHeight(this.world, blockPos))) {
 				this.markDead();
 			}
 		}

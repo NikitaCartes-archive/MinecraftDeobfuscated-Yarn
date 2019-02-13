@@ -82,7 +82,7 @@ public abstract class Biome {
 
 	@Nullable
 	public static Biome getParentBiome(Biome biome) {
-		return PARENT_BIOME_ID_MAP.getInt(Registry.BIOME.getRawId(biome));
+		return PARENT_BIOME_ID_MAP.get(Registry.BIOME.getRawId(biome));
 	}
 
 	public static <C extends CarverConfig> ConfiguredCarver<C> configureCarver(Carver<C> carver, C carverConfig) {
@@ -177,7 +177,7 @@ public abstract class Biome {
 		if (this.getTemperature(blockPos) >= 0.15F) {
 			return false;
 		} else {
-			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.BLOCK_LIGHT, blockPos) < 10) {
+			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.BLOCK, blockPos) < 10) {
 				BlockState blockState = viewableWorld.getBlockState(blockPos);
 				FluidState fluidState = viewableWorld.getFluidState(blockPos);
 				if (fluidState.getFluid() == Fluids.WATER && blockState.getBlock() instanceof FluidBlock) {
@@ -203,7 +203,7 @@ public abstract class Biome {
 		if (this.getTemperature(blockPos) >= 0.15F) {
 			return false;
 		} else {
-			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.BLOCK_LIGHT, blockPos) < 10) {
+			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.BLOCK, blockPos) < 10) {
 				BlockState blockState = viewableWorld.getBlockState(blockPos);
 				if (blockState.isAir() && Blocks.field_10477.getDefaultState().canPlaceAt(viewableWorld, blockPos)) {
 					return true;

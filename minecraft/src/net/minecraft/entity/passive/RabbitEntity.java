@@ -84,7 +84,7 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected float method_6106() {
+	protected float getJumpVelocity() {
 		if (!this.horizontalCollision && (!this.moveControl.isMoving() || !(this.moveControl.getTargetY() > this.y + 0.5))) {
 			Path path = this.navigation.getCurrentPath();
 			if (path != null && path.getCurrentNodeIndex() < path.getLength()) {
@@ -101,8 +101,8 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void method_6043() {
-		super.method_6043();
+	protected void jump() {
+		super.jump();
 		double d = this.moveControl.getSpeed();
 		if (d > 0.0) {
 			double e = this.velocityX * this.velocityX + this.velocityZ * this.velocityZ;
@@ -277,7 +277,7 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean method_6121(Entity entity) {
+	public boolean attack(Entity entity) {
 		if (this.getRabbitType() == 99) {
 			this.playSound(SoundEvents.field_15147, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 			return entity.damage(DamageSource.mob(this), 8.0F);

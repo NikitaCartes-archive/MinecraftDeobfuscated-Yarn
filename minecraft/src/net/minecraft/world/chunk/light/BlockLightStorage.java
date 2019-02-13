@@ -9,7 +9,7 @@ import net.minecraft.world.chunk.WorldNibbleStorage;
 
 public class BlockLightStorage extends LightStorage<BlockLightStorage.Data> {
 	protected BlockLightStorage(ChunkProvider chunkProvider) {
-		super(LightType.BLOCK_LIGHT, chunkProvider, new BlockLightStorage.Data(new Long2ObjectOpenHashMap<>()));
+		super(LightType.BLOCK, chunkProvider, new BlockLightStorage.Data(new Long2ObjectOpenHashMap<>()));
 	}
 
 	@Override

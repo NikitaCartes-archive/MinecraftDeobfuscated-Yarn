@@ -40,6 +40,6 @@ public class ArmorStandArmorEntityModel extends BipedEntityModel<ArmorStandEntit
 		this.legRight.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getRightLegRotation().getY();
 		this.legRight.roll = (float) (Math.PI / 180.0) * armorStandEntity.getRightLegRotation().getZ();
 		this.legRight.setRotationPoint(-1.9F, 11.0F, 0.0F);
-		this.headwear.method_17138(this.head);
+		this.headwear.copyRotation(this.head);
 	}
 }

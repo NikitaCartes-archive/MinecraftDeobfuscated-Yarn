@@ -14,7 +14,7 @@ public class BlastFurnaceRecipeBookScreen extends AbstractFurnaceRecipeBookScree
 	}
 
 	@Override
-	protected void method_17060(boolean bl) {
+	protected void setFilteringCraftable(boolean bl) {
 		this.recipeBook.setBlastFurnaceFilteringCraftable(bl);
 	}
 

@@ -1,7 +1,9 @@
 package net.minecraft.tag;
 
+import com.mojang.datafixers.util.Pair;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.Fluid;
@@ -13,7 +15,7 @@ import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 
-public class TagManager implements ResourceReloadListener<TagManager.class_4015> {
+public class TagManager implements ResourceReloadListener {
 	private final RegistryTagContainer<Block> blocks = new RegistryTagContainer<>(Registry.BLOCK, "tags/blocks", "block");
 	private final RegistryTagContainer<Item> items = new RegistryTagContainer<>(Registry.ITEM, "tags/items", "item");
 	private final RegistryTagContainer<Fluid> fluids = new RegistryTagContainer<>(Registry.FLUID, "tags/fluids", "fluid");
@@ -59,32 +61,35 @@ public class TagManager implements ResourceReloadListener<TagManager.class_4015>
 	}
 
 	@Override
-	public CompletableFuture<TagManager.class_4015> prepare(ResourceManager resourceManager, Profiler profiler) {
-		CompletableFuture<Map<Identifier, Tag.Builder<Block>>> completableFuture = this.blocks.prepareReload(resourceManager);
-		CompletableFuture<Map<Identifier, Tag.Builder<Item>>> completableFuture2 = this.items.prepareReload(resourceManager);
-		CompletableFuture<Map<Identifier, Tag.Builder<Fluid>>> completableFuture3 = this.fluids.prepareReload(resourceManager);
-		CompletableFuture<Map<Identifier, Tag.Builder<EntityType<?>>>> completableFuture4 = this.entities.prepareReload(resourceManager);
-		return CompletableFuture.allOf(completableFuture, completableFuture2, completableFuture3, completableFuture4)
-			.thenApply(
-				void_ -> new TagManager.class_4015(
-						(Map<Identifier, Tag.Builder<Block>>)completableFuture.join(),
-						(Map<Identifier, Tag.Builder<Item>>)completableFuture2.join(),
-						(Map<Identifier, Tag.Builder<Fluid>>)completableFuture3.join(),
-						(Map<Identifier, Tag.Builder<EntityType<?>>>)completableFuture4.join()
+	public CompletableFuture<Void> apply(
+		ResourceReloadListener.Helper helper, ResourceManager resourceManager, Profiler profiler, Profiler profiler2, Executor executor, Executor executor2
+	) {
+		CompletableFuture<Map<Identifier, Tag.Builder<Block>>> completableFuture = this.blocks.prepareReload(resourceManager, executor);
+		CompletableFuture<Map<Identifier, Tag.Builder<Item>>> completableFuture2 = this.items.prepareReload(resourceManager, executor);
+		CompletableFuture<Map<Identifier, Tag.Builder<Fluid>>> completableFuture3 = this.fluids.prepareReload(resourceManager, executor);
+		CompletableFuture<Map<Identifier, Tag.Builder<EntityType<?>>>> completableFuture4 = this.entities.prepareReload(resourceManager, executor);
+		return completableFuture.thenCombine(completableFuture2, Pair::of)
+			.thenCombine(
+				completableFuture3.thenCombine(completableFuture4, Pair::of),
+				(pair, pair2) -> new TagManager.class_4015(
+						(Map<Identifier, Tag.Builder<Block>>)pair.getFirst(),
+						(Map<Identifier, Tag.Builder<Item>>)pair.getSecond(),
+						(Map<Identifier, Tag.Builder<Fluid>>)pair2.getFirst(),
+						(Map<Identifier, Tag.Builder<EntityType<?>>>)pair2.getSecond()
 					)
-			);
-	}
-
-	public void method_18245(ResourceManager resourceManager, TagManager.class_4015 arg, Profiler profiler) {
-		this.clear();
-		this.blocks.applyReload(arg.field_17938);
-		this.items.applyReload(arg.field_17939);
-		this.fluids.applyReload(arg.field_17940);
-		this.entities.applyReload(arg.field_17941);
-		BlockTags.setContainer(this.blocks);
-		ItemTags.setContainer(this.items);
-		FluidTags.setContainer(this.fluids);
-		EntityTags.setContainer(this.entities);
+			)
+			.thenCompose(helper::waitForAll)
+			.thenAcceptAsync(arg -> {
+				this.clear();
+				this.blocks.applyReload(arg.field_17938);
+				this.items.applyReload(arg.field_17939);
+				this.fluids.applyReload(arg.field_17940);
+				this.entities.applyReload(arg.field_17941);
+				BlockTags.setContainer(this.blocks);
+				ItemTags.setContainer(this.items);
+				FluidTags.setContainer(this.fluids);
+				EntityTags.setContainer(this.entities);
+			}, executor2);
 	}
 
 	public static class class_4015 {

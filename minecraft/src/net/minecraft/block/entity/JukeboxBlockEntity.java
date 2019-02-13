@@ -1,10 +1,10 @@
 package net.minecraft.block.entity;
 
-import net.minecraft.class_3829;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Clearable;
 
-public class JukeboxBlockEntity extends BlockEntity implements class_3829 {
+public class JukeboxBlockEntity extends BlockEntity implements Clearable {
 	private ItemStack record = ItemStack.EMPTY;
 
 	public JukeboxBlockEntity() {
@@ -39,7 +39,7 @@ public class JukeboxBlockEntity extends BlockEntity implements class_3829 {
 	}
 
 	@Override
-	public void clearInv() {
+	public void clear() {
 		this.setRecord(ItemStack.EMPTY);
 	}
 }

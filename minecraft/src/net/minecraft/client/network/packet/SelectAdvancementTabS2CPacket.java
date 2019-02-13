@@ -21,7 +21,7 @@ public class SelectAdvancementTabS2CPacket implements Packet<ClientPlayPacketLis
 	}
 
 	public void method_11794(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11161(this);
+		clientPlayPacketListener.onSelectAdvancementTab(this);
 	}
 
 	@Override

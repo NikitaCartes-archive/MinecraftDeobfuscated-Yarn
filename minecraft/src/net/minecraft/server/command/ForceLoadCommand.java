@@ -31,6 +31,7 @@ public class ForceLoadCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
 			ServerCommandManager.literal("forceload")
+				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
 					ServerCommandManager.literal("add")
 						.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
@@ -86,7 +87,6 @@ public class ForceLoadCommand {
 				)
 				.then(
 					ServerCommandManager.literal("query")
-						.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 						.executes(commandContext -> method_13373(commandContext.getSource()))
 						.then(
 							ServerCommandManager.argument("pos", ColumnPosArgumentType.create())

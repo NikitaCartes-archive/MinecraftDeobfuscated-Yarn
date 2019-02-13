@@ -119,8 +119,8 @@ public class BiomeLayers {
 		if (i == j) {
 			return true;
 		} else {
-			Biome biome = Registry.BIOME.getInt(i);
-			Biome biome2 = Registry.BIOME.getInt(j);
+			Biome biome = Registry.BIOME.get(i);
+			Biome biome2 = Registry.BIOME.get(j);
 			if (biome == null || biome2 == null) {
 				return false;
 			} else if (biome != Biomes.field_9410 && biome != Biomes.field_9433) {

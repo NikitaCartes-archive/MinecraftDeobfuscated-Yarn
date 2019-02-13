@@ -41,7 +41,7 @@ public class RecipeManager implements SynchronousResourceReloadListener {
 	private boolean hadErrors;
 
 	@Override
-	public void reloadResources(ResourceManager resourceManager) {
+	public void apply(ResourceManager resourceManager) {
 		Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 		this.hadErrors = false;
 		method_17719(this.recipeMap);
@@ -150,7 +150,7 @@ public class RecipeManager implements SynchronousResourceReloadListener {
 	public static Recipe<?> deserialize(Identifier identifier, JsonObject jsonObject) {
 		String string = JsonHelper.getString(jsonObject, "type");
 		return ((RecipeSerializer)Registry.RECIPE_SERIALIZER
-				.getOptional(new Identifier(string))
+				.getOrEmpty(new Identifier(string))
 				.orElseThrow(() -> new JsonSyntaxException("Invalid or unsupported recipe type '" + string + "'")))
 			.read(identifier, jsonObject);
 	}

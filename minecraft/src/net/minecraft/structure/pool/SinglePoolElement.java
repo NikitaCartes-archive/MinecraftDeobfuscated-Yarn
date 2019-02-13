@@ -8,7 +8,6 @@ import com.mojang.datafixers.types.DynamicOps;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import net.minecraft.class_3817;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.structure.Structure;
@@ -18,6 +17,7 @@ import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.structure.processor.JigsawReplacementStructureProcessor;
 import net.minecraft.structure.processor.NopStructureProcessor;
 import net.minecraft.structure.processor.StructureProcessor;
+import net.minecraft.util.DynamicDeserializer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
@@ -42,7 +42,7 @@ public class SinglePoolElement extends StructurePoolElement {
 		this(
 			dynamic.get("location").asString(""),
 			dynamic.get("processors")
-				.asList(dynamicx -> class_3817.deserialize(dynamicx, Registry.STRUCTURE_PROCESSOR, "processor_type", NopStructureProcessor.INSTANCE))
+				.asList(dynamicx -> DynamicDeserializer.deserialize(dynamicx, Registry.STRUCTURE_PROCESSOR, "processor_type", NopStructureProcessor.INSTANCE))
 		);
 	}
 

@@ -4,7 +4,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.item.TooltipOptions;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TextComponent;
@@ -20,7 +20,7 @@ public class FireworkChargeItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
 		CompoundTag compoundTag = itemStack.getSubCompoundTag("Explosion");
 		if (compoundTag != null) {
 			buildTooltip(compoundTag, list);
@@ -30,23 +30,23 @@ public class FireworkChargeItem extends Item {
 	@Environment(EnvType.CLIENT)
 	public static void buildTooltip(CompoundTag compoundTag, List<TextComponent> list) {
 		FireworksItem.Type type = FireworksItem.Type.fromId(compoundTag.getByte("Type"));
-		list.add(new TranslatableTextComponent("item.minecraft.firework_star.shape." + type.getName()).applyFormat(TextFormat.GRAY));
+		list.add(new TranslatableTextComponent("item.minecraft.firework_star.shape." + type.getName()).applyFormat(TextFormat.field_1080));
 		int[] is = compoundTag.getIntArray("Colors");
 		if (is.length > 0) {
-			list.add(appendColorNames(new StringTextComponent("").applyFormat(TextFormat.GRAY), is));
+			list.add(appendColorNames(new StringTextComponent("").applyFormat(TextFormat.field_1080), is));
 		}
 
 		int[] js = compoundTag.getIntArray("FadeColors");
 		if (js.length > 0) {
-			list.add(appendColorNames(new TranslatableTextComponent("item.minecraft.firework_star.fade_to").append(" ").applyFormat(TextFormat.GRAY), js));
+			list.add(appendColorNames(new TranslatableTextComponent("item.minecraft.firework_star.fade_to").append(" ").applyFormat(TextFormat.field_1080), js));
 		}
 
 		if (compoundTag.getBoolean("Trail")) {
-			list.add(new TranslatableTextComponent("item.minecraft.firework_star.trail").applyFormat(TextFormat.GRAY));
+			list.add(new TranslatableTextComponent("item.minecraft.firework_star.trail").applyFormat(TextFormat.field_1080));
 		}
 
 		if (compoundTag.getBoolean("Flicker")) {
-			list.add(new TranslatableTextComponent("item.minecraft.firework_star.flicker").applyFormat(TextFormat.GRAY));
+			list.add(new TranslatableTextComponent("item.minecraft.firework_star.flicker").applyFormat(TextFormat.field_1080));
 		}
 	}
 

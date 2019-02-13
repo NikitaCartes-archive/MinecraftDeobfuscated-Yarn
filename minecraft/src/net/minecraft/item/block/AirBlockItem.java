@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
-import net.minecraft.client.item.TooltipOptions;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.TextComponent;
@@ -26,8 +26,8 @@ public class AirBlockItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
-		super.buildTooltip(itemStack, world, list, tooltipOptions);
-		this.block.buildTooltip(itemStack, world, list, tooltipOptions);
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
+		super.buildTooltip(itemStack, world, list, tooltipContext);
+		this.block.buildTooltip(itemStack, world, list, tooltipContext);
 	}
 }

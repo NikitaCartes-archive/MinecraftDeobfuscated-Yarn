@@ -323,19 +323,19 @@ public class ArmorStandEntity extends LivingEntity {
 				}
 			} else {
 				if (this.method_6915(equipmentSlot)) {
-					return ActionResult.FAILURE;
+					return ActionResult.field_5814;
 				}
 
 				if (equipmentSlot.getType() == EquipmentSlot.Type.HAND && !this.shouldShowArms()) {
-					return ActionResult.FAILURE;
+					return ActionResult.field_5814;
 				}
 
 				this.method_6904(playerEntity, equipmentSlot, itemStack, hand);
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.field_5812;
 		} else {
-			return ActionResult.SUCCESS;
+			return ActionResult.field_5812;
 		}
 	}
 

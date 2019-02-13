@@ -18,5 +18,5 @@ public interface Resource extends Closeable {
 	@Environment(EnvType.CLIENT)
 	<T> T getMetadata(ResourceMetadataReader<T> resourceMetadataReader);
 
-	String getPackName();
+	String getResourcePackName();
 }

@@ -379,7 +379,7 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 				entity.addVelocity(f / h * 4.0, 0.2F, g / h * 4.0);
 				if (!this.phaseManager.getCurrent().method_6848() && ((LivingEntity)entity).getLastAttackedTime() < entity.age - 2) {
 					entity.damage(DamageSource.mob(this), 5.0F);
-					this.method_5723(this, entity);
+					this.dealDamage(this, entity);
 				}
 			}
 		}
@@ -390,7 +390,7 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 			Entity entity = (Entity)list.get(i);
 			if (entity instanceof LivingEntity) {
 				entity.damage(DamageSource.mob(this), 10.0F);
-				this.method_5723(this, entity);
+				this.dealDamage(this, entity);
 			}
 		}
 	}

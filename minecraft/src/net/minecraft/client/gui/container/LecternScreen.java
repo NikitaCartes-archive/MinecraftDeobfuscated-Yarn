@@ -93,8 +93,8 @@ public class LecternScreen extends WrittenBookScreen implements ContainerProvide
 	}
 
 	@Override
-	protected boolean method_17789(int i) {
-		if (i != this.lecternContainer.method_17419()) {
+	protected boolean jumpToPage(int i) {
+		if (i != this.lecternContainer.getPage()) {
 			this.sendButtonPressPacket(100 + i);
 			return true;
 		} else {
@@ -117,10 +117,10 @@ public class LecternScreen extends WrittenBookScreen implements ContainerProvide
 
 	private void updatePageProvider() {
 		ItemStack itemStack = this.lecternContainer.getBookItem();
-		this.setPageProvider(WrittenBookScreen.class_3931.method_17562(itemStack));
+		this.setPageProvider(WrittenBookScreen.Contents.create(itemStack));
 	}
 
 	private void updatePage() {
-		this.setPage(this.lecternContainer.method_17419());
+		this.setPage(this.lecternContainer.getPage());
 	}
 }

@@ -17,21 +17,18 @@ public abstract class BookPageButtonWidget extends ButtonWidget {
 
 	@Override
 	public void draw(int i, int j, float f) {
-		if (this.visible) {
-			boolean bl = i >= this.x && j >= this.y && i < this.x + this.width && j < this.y + this.height;
-			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			MinecraftClient.getInstance().getTextureManager().bindTexture(WrittenBookScreen.BOOK_TEXTURE);
-			int k = 0;
-			int l = 192;
-			if (bl) {
-				k += 23;
-			}
-
-			if (!this.isNextPageButton) {
-				l += 13;
-			}
-
-			this.drawTexturedRect(this.x, this.y, k, l, 23, 13);
+		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		MinecraftClient.getInstance().getTextureManager().bindTexture(WrittenBookScreen.BOOK_TEXTURE);
+		int k = 0;
+		int l = 192;
+		if (this.isHovered()) {
+			k += 23;
 		}
+
+		if (!this.isNextPageButton) {
+			l += 13;
+		}
+
+		this.drawTexturedRect(this.x, this.y, k, l, 23, 13);
 	}
 }

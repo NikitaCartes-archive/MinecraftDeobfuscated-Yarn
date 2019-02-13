@@ -40,7 +40,7 @@ public class CustomPayloadC2SPacket implements Packet<ServerPlayPacketListener> 
 	}
 
 	public void method_12199(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.method_12075(this);
+		serverPlayPacketListener.onCustomPayload(this);
 		if (this.data != null) {
 			this.data.release();
 		}

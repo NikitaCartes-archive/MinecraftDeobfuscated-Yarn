@@ -32,7 +32,7 @@ public class StatusEffect {
 
 	@Nullable
 	public static StatusEffect byRawId(int i) {
-		return Registry.STATUS_EFFECT.getInt(i);
+		return Registry.STATUS_EFFECT.get(i);
 	}
 
 	public static int getRawId(StatusEffect statusEffect) {

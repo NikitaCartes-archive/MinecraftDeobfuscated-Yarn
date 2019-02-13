@@ -135,7 +135,7 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 	}
 
 	@Override
-	public void clearInv() {
+	public void clear() {
 		this.stackList.clear();
 	}
 

@@ -14,23 +14,23 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.packet.SelectVillagerTradeC2SPacket;
 import net.minecraft.text.TextComponent;
 import net.minecraft.util.Identifier;
-import net.minecraft.village.VillagerRecipe;
-import net.minecraft.village.VillagerRecipeList;
+import net.minecraft.village.TraderRecipe;
+import net.minecraft.village.TraderRecipeList;
 
 @Environment(EnvType.CLIENT)
 public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/villager.png");
 	private VillagerScreen.WidgetButtonPage buttonPageNext;
 	private VillagerScreen.WidgetButtonPage buttonPagePrevious;
-	private int field_2947;
+	private int recipeIndex;
 
 	public VillagerScreen(MerchantContainer merchantContainer, PlayerInventory playerInventory, TextComponent textComponent) {
 		super(merchantContainer, playerInventory, textComponent);
 	}
 
-	private void method_2496() {
-		this.container.setRecipeIndex(this.field_2947);
-		this.client.getNetworkHandler().sendPacket(new SelectVillagerTradeC2SPacket(this.field_2947));
+	private void syncRecipeIndex() {
+		this.container.setRecipeIndex(this.recipeIndex);
+		this.client.getNetworkHandler().sendPacket(new SelectVillagerTradeC2SPacket(this.recipeIndex));
 	}
 
 	@Override
@@ -41,24 +41,24 @@ public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 		this.buttonPageNext = this.addButton(new VillagerScreen.WidgetButtonPage(1, i + 120 + 27, j + 24 - 1, true) {
 			@Override
 			public void onPressed(double d, double e) {
-				VillagerScreen.this.field_2947++;
-				VillagerRecipeList villagerRecipeList = VillagerScreen.this.container.method_17438();
-				if (villagerRecipeList != null && VillagerScreen.this.field_2947 >= villagerRecipeList.size()) {
-					VillagerScreen.this.field_2947 = villagerRecipeList.size() - 1;
+				VillagerScreen.this.recipeIndex++;
+				TraderRecipeList traderRecipeList = VillagerScreen.this.container.method_17438();
+				if (traderRecipeList != null && VillagerScreen.this.recipeIndex >= traderRecipeList.size()) {
+					VillagerScreen.this.recipeIndex = traderRecipeList.size() - 1;
 				}
 
-				VillagerScreen.this.method_2496();
+				VillagerScreen.this.syncRecipeIndex();
 			}
 		});
 		this.buttonPagePrevious = this.addButton(new VillagerScreen.WidgetButtonPage(2, i + 36 - 19, j + 24 - 1, false) {
 			@Override
 			public void onPressed(double d, double e) {
-				VillagerScreen.this.field_2947--;
-				if (VillagerScreen.this.field_2947 < 0) {
-					VillagerScreen.this.field_2947 = 0;
+				VillagerScreen.this.recipeIndex--;
+				if (VillagerScreen.this.recipeIndex < 0) {
+					VillagerScreen.this.recipeIndex = 0;
 				}
 
-				VillagerScreen.this.method_2496();
+				VillagerScreen.this.syncRecipeIndex();
 			}
 		});
 		this.buttonPageNext.enabled = false;
@@ -75,9 +75,9 @@ public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 	@Override
 	public void update() {
 		super.update();
-		VillagerRecipeList villagerRecipeList = this.container.method_17438();
-		this.buttonPageNext.enabled = this.field_2947 < villagerRecipeList.size() - 1;
-		this.buttonPagePrevious.enabled = this.field_2947 > 0;
+		TraderRecipeList traderRecipeList = this.container.method_17438();
+		this.buttonPageNext.enabled = this.recipeIndex < traderRecipeList.size() - 1;
+		this.buttonPagePrevious.enabled = this.recipeIndex > 0;
 	}
 
 	@Override
@@ -87,15 +87,15 @@ public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 		int k = (this.width - this.containerWidth) / 2;
 		int l = (this.height - this.containerHeight) / 2;
 		this.drawTexturedRect(k, l, 0, 0, this.containerWidth, this.containerHeight);
-		VillagerRecipeList villagerRecipeList = this.container.method_17438();
-		if (!villagerRecipeList.isEmpty()) {
-			int m = this.field_2947;
-			if (m < 0 || m >= villagerRecipeList.size()) {
+		TraderRecipeList traderRecipeList = this.container.method_17438();
+		if (!traderRecipeList.isEmpty()) {
+			int m = this.recipeIndex;
+			if (m < 0 || m >= traderRecipeList.size()) {
 				return;
 			}
 
-			VillagerRecipe villagerRecipe = (VillagerRecipe)villagerRecipeList.get(m);
-			if (villagerRecipe.isDisabled()) {
+			TraderRecipe traderRecipe = (TraderRecipe)traderRecipeList.get(m);
+			if (traderRecipe.isDisabled()) {
 				this.client.getTextureManager().bindTexture(TEXTURE);
 				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				GlStateManager.disableLighting();
@@ -109,15 +109,15 @@ public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 	public void draw(int i, int j, float f) {
 		this.drawBackground();
 		super.draw(i, j, f);
-		VillagerRecipeList villagerRecipeList = this.container.method_17438();
-		if (!villagerRecipeList.isEmpty()) {
+		TraderRecipeList traderRecipeList = this.container.method_17438();
+		if (!traderRecipeList.isEmpty()) {
 			int k = (this.width - this.containerWidth) / 2;
 			int l = (this.height - this.containerHeight) / 2;
-			int m = this.field_2947;
-			VillagerRecipe villagerRecipe = (VillagerRecipe)villagerRecipeList.get(m);
-			ItemStack itemStack = villagerRecipe.getFirstBuyItem();
-			ItemStack itemStack2 = villagerRecipe.getSecondBuyItem();
-			ItemStack itemStack3 = villagerRecipe.getModifiableSellItem();
+			int m = this.recipeIndex;
+			TraderRecipe traderRecipe = (TraderRecipe)traderRecipeList.get(m);
+			ItemStack itemStack = traderRecipe.getFirstBuyItem();
+			ItemStack itemStack2 = traderRecipe.getSecondBuyItem();
+			ItemStack itemStack3 = traderRecipe.getModifiableSellItem();
 			GlStateManager.pushMatrix();
 			GuiLighting.enableForItems();
 			GlStateManager.disableLighting();
@@ -142,7 +142,7 @@ public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 				this.drawStackTooltip(itemStack2, i, j);
 			} else if (!itemStack3.isEmpty() && this.isPointWithinBounds(120, 24, 16, 16, (double)i, (double)j)) {
 				this.drawStackTooltip(itemStack3, i, j);
-			} else if (villagerRecipe.isDisabled()
+			} else if (traderRecipe.isDisabled()
 				&& (this.isPointWithinBounds(83, 21, 28, 21, (double)i, (double)j) || this.isPointWithinBounds(83, 51, 28, 21, (double)i, (double)j))) {
 				this.drawTooltip(I18n.translate("merchant.deprecated"), i, j);
 			}
@@ -153,7 +153,7 @@ public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 			GuiLighting.enable();
 		}
 
-		this.drawMousoverTooltip(i, j);
+		this.drawMouseoverTooltip(i, j);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -167,24 +167,21 @@ public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 
 		@Override
 		public void draw(int i, int j, float f) {
-			if (this.visible) {
-				MinecraftClient.getInstance().getTextureManager().bindTexture(VillagerScreen.TEXTURE);
-				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-				boolean bl = i >= this.x && j >= this.y && i < this.x + this.width && j < this.y + this.height;
-				int k = 0;
-				int l = 176;
-				if (!this.enabled) {
-					l += this.width * 2;
-				} else if (bl) {
-					l += this.width;
-				}
-
-				if (!this.next) {
-					k += this.height;
-				}
-
-				this.drawTexturedRect(this.x, this.y, l, k, this.width, this.height);
+			MinecraftClient.getInstance().getTextureManager().bindTexture(VillagerScreen.TEXTURE);
+			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			int k = 0;
+			int l = 176;
+			if (!this.enabled) {
+				l += this.width * 2;
+			} else if (this.isHovered()) {
+				l += this.width;
 			}
+
+			if (!this.next) {
+				k += this.height;
+			}
+
+			this.drawTexturedRect(this.x, this.y, l, k, this.width, this.height);
 		}
 	}
 }

@@ -125,7 +125,7 @@ public class ModelLoader {
 	);
 	private final Map<Identifier, UnbakedModel> modelsToBake = Maps.<Identifier, UnbakedModel>newHashMap();
 	private final Map<Identifier, BakedModel> bakedModels = Maps.<Identifier, BakedModel>newHashMap();
-	private final SpriteAtlasTexture.class_4007 field_17907;
+	private final SpriteAtlasTexture.Data field_17907;
 
 	public ModelLoader(ResourceManager resourceManager, SpriteAtlasTexture spriteAtlasTexture, Profiler profiler) {
 		this.resourceManager = resourceManager;
@@ -152,7 +152,7 @@ public class ModelLoader {
 
 		profiler.swap("items");
 
-		for(Identifier identifier : Registry.ITEM.keys()) {
+		for(Identifier identifier : Registry.ITEM.getIds()) {
 			this.addModel(new ModelIdentifier(identifier, "inventory"));
 		}
 
@@ -168,13 +168,13 @@ public class ModelLoader {
 		set2.addAll(DEFAULT_TEXTURES);
 		set.forEach(string -> LOGGER.warn("Unable to resolve texture reference: {}", string));
 		profiler.swap("stitching");
-		this.field_17907 = this.spriteAtlas.method_18163(this.resourceManager, set2, profiler);
+		this.field_17907 = this.spriteAtlas.stitch(this.resourceManager, set2, profiler);
 		profiler.pop();
 	}
 
 	public void method_18177(Profiler profiler) {
 		profiler.push("atlas");
-		this.spriteAtlas.method_18159(this.field_17907);
+		this.spriteAtlas.upload(this.field_17907);
 		profiler.swap("baking");
 		this.modelsToBake.keySet().forEach(identifier -> {
 			BakedModel bakedModel = null;
@@ -302,7 +302,7 @@ public class ModelLoader {
 										Pair var4x;
 										try {
 											var4x = Pair.of(
-												resource.getPackName(),
+												resource.getResourcePackName(),
 												ModelVariantMap.deserialize(this.variantMapDeserializationContext, new InputStreamReader(inputStream, StandardCharsets.UTF_8))
 											);
 										} catch (Throwable var14xx) {
@@ -326,7 +326,7 @@ public class ModelLoader {
 									} catch (Exception var16xx) {
 										throw new ModelLoader.ModelLoaderException(
 											String.format(
-												"Exception loading blockstate definition: '%s' in resourcepack: '%s': %s", resource.getId(), resource.getPackName(), var16xx.getMessage()
+												"Exception loading blockstate definition: '%s' in resourcepack: '%s': %s", resource.getId(), resource.getResourcePackName(), var16xx.getMessage()
 											)
 										);
 									}

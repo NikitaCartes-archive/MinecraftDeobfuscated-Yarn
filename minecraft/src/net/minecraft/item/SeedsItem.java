@@ -41,9 +41,9 @@ public class SeedsItem extends Item {
 			}
 
 			itemStack.subtractAmount(1);
-			return ActionResult.SUCCESS;
+			return ActionResult.field_5812;
 		} else {
-			return ActionResult.FAILURE;
+			return ActionResult.field_5814;
 		}
 	}
 }

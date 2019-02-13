@@ -52,6 +52,51 @@ public class ServerMetadata {
 		return this.favicon;
 	}
 
+	public static class Deserializer implements JsonDeserializer<ServerMetadata>, JsonSerializer<ServerMetadata> {
+		public ServerMetadata fromJson(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "status");
+			ServerMetadata serverMetadata = new ServerMetadata();
+			if (jsonObject.has("description")) {
+				serverMetadata.setDescription(jsonDeserializationContext.deserialize(jsonObject.get("description"), TextComponent.class));
+			}
+
+			if (jsonObject.has("players")) {
+				serverMetadata.setPlayers(jsonDeserializationContext.deserialize(jsonObject.get("players"), ServerMetadata.Players.class));
+			}
+
+			if (jsonObject.has("version")) {
+				serverMetadata.setVersion(jsonDeserializationContext.deserialize(jsonObject.get("version"), ServerMetadata.Version.class));
+			}
+
+			if (jsonObject.has("favicon")) {
+				serverMetadata.setFavicon(JsonHelper.getString(jsonObject, "favicon"));
+			}
+
+			return serverMetadata;
+		}
+
+		public JsonElement toJson(ServerMetadata serverMetadata, Type type, JsonSerializationContext jsonSerializationContext) {
+			JsonObject jsonObject = new JsonObject();
+			if (serverMetadata.getDescription() != null) {
+				jsonObject.add("description", jsonSerializationContext.serialize(serverMetadata.getDescription()));
+			}
+
+			if (serverMetadata.getPlayers() != null) {
+				jsonObject.add("players", jsonSerializationContext.serialize(serverMetadata.getPlayers()));
+			}
+
+			if (serverMetadata.getVersion() != null) {
+				jsonObject.add("version", jsonSerializationContext.serialize(serverMetadata.getVersion()));
+			}
+
+			if (serverMetadata.getFavicon() != null) {
+				jsonObject.addProperty("favicon", serverMetadata.getFavicon());
+			}
+
+			return jsonObject;
+		}
+	}
+
 	public static class Players {
 		private final int max;
 		private final int online;
@@ -78,8 +123,8 @@ public class ServerMetadata {
 			this.sample = gameProfiles;
 		}
 
-		public static class class_2928 implements JsonDeserializer<ServerMetadata.Players>, JsonSerializer<ServerMetadata.Players> {
-			public ServerMetadata.Players method_12689(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public static class Deserializer implements JsonDeserializer<ServerMetadata.Players>, JsonSerializer<ServerMetadata.Players> {
+			public ServerMetadata.Players fromJson(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 				JsonObject jsonObject = JsonHelper.asObject(jsonElement, "players");
 				ServerMetadata.Players players = new ServerMetadata.Players(JsonHelper.getInt(jsonObject, "max"), JsonHelper.getInt(jsonObject, "online"));
 				if (JsonHelper.hasArray(jsonObject, "sample")) {
@@ -100,7 +145,7 @@ public class ServerMetadata {
 				return players;
 			}
 
-			public JsonElement method_12690(ServerMetadata.Players players, Type type, JsonSerializationContext jsonSerializationContext) {
+			public JsonElement toJson(ServerMetadata.Players players, Type type, JsonSerializationContext jsonSerializationContext) {
 				JsonObject jsonObject = new JsonObject();
 				jsonObject.addProperty("max", players.getPlayerLimit());
 				jsonObject.addProperty("online", players.getOnlinePlayerCount());
@@ -140,63 +185,18 @@ public class ServerMetadata {
 			return this.protocolVersion;
 		}
 
-		public static class class_2931 implements JsonDeserializer<ServerMetadata.Version>, JsonSerializer<ServerMetadata.Version> {
-			public ServerMetadata.Version method_12695(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public static class Serializer implements JsonDeserializer<ServerMetadata.Version>, JsonSerializer<ServerMetadata.Version> {
+			public ServerMetadata.Version fromJson(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 				JsonObject jsonObject = JsonHelper.asObject(jsonElement, "version");
 				return new ServerMetadata.Version(JsonHelper.getString(jsonObject, "name"), JsonHelper.getInt(jsonObject, "protocol"));
 			}
 
-			public JsonElement method_12696(ServerMetadata.Version version, Type type, JsonSerializationContext jsonSerializationContext) {
+			public JsonElement toJson(ServerMetadata.Version version, Type type, JsonSerializationContext jsonSerializationContext) {
 				JsonObject jsonObject = new JsonObject();
 				jsonObject.addProperty("name", version.getGameVersion());
 				jsonObject.addProperty("protocol", version.getProtocolVersion());
 				return jsonObject;
 			}
-		}
-	}
-
-	public static class class_2929 implements JsonDeserializer<ServerMetadata>, JsonSerializer<ServerMetadata> {
-		public ServerMetadata method_12691(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "status");
-			ServerMetadata serverMetadata = new ServerMetadata();
-			if (jsonObject.has("description")) {
-				serverMetadata.setDescription(jsonDeserializationContext.deserialize(jsonObject.get("description"), TextComponent.class));
-			}
-
-			if (jsonObject.has("players")) {
-				serverMetadata.setPlayers(jsonDeserializationContext.deserialize(jsonObject.get("players"), ServerMetadata.Players.class));
-			}
-
-			if (jsonObject.has("version")) {
-				serverMetadata.setVersion(jsonDeserializationContext.deserialize(jsonObject.get("version"), ServerMetadata.Version.class));
-			}
-
-			if (jsonObject.has("favicon")) {
-				serverMetadata.setFavicon(JsonHelper.getString(jsonObject, "favicon"));
-			}
-
-			return serverMetadata;
-		}
-
-		public JsonElement method_12692(ServerMetadata serverMetadata, Type type, JsonSerializationContext jsonSerializationContext) {
-			JsonObject jsonObject = new JsonObject();
-			if (serverMetadata.getDescription() != null) {
-				jsonObject.add("description", jsonSerializationContext.serialize(serverMetadata.getDescription()));
-			}
-
-			if (serverMetadata.getPlayers() != null) {
-				jsonObject.add("players", jsonSerializationContext.serialize(serverMetadata.getPlayers()));
-			}
-
-			if (serverMetadata.getVersion() != null) {
-				jsonObject.add("version", jsonSerializationContext.serialize(serverMetadata.getVersion()));
-			}
-
-			if (serverMetadata.getFavicon() != null) {
-				jsonObject.addProperty("favicon", serverMetadata.getFavicon());
-			}
-
-			return jsonObject;
 		}
 	}
 }

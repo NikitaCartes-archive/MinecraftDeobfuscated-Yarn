@@ -8,15 +8,15 @@ import net.minecraft.sortme.CommandBlockExecutor;
 
 @Environment(EnvType.CLIENT)
 public class CommandBlockMinecartScreen extends AbstractCommandBlockScreen {
-	private final CommandBlockExecutor field_2976;
+	private final CommandBlockExecutor commandExecutor;
 
 	public CommandBlockMinecartScreen(CommandBlockExecutor commandBlockExecutor) {
-		this.field_2976 = commandBlockExecutor;
+		this.commandExecutor = commandBlockExecutor;
 	}
 
 	@Override
 	public CommandBlockExecutor getCommandExecutor() {
-		return this.field_2976;
+		return this.commandExecutor;
 	}
 
 	@Override
@@ -27,13 +27,13 @@ public class CommandBlockMinecartScreen extends AbstractCommandBlockScreen {
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
-		this.field_2752 = this.getCommandExecutor().isTrackingOutput();
-		this.method_2368();
+		this.trackingOutput = this.getCommandExecutor().isTrackingOutput();
+		this.updateTrackedOutput();
 		this.consoleCommandTextField.setText(this.getCommandExecutor().getCommand());
 	}
 
 	@Override
-	protected void method_2352(CommandBlockExecutor commandBlockExecutor) {
+	protected void syncSettingsToServer(CommandBlockExecutor commandBlockExecutor) {
 		if (commandBlockExecutor instanceof CommandBlockMinecartEntity.class_1698) {
 			CommandBlockMinecartEntity.class_1698 lv = (CommandBlockMinecartEntity.class_1698)commandBlockExecutor;
 			this.client

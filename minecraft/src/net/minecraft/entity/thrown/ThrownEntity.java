@@ -246,7 +246,7 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 	@Nullable
 	public LivingEntity getOwner() {
 		if (this.owner == null && this.field_7644 != null && this.world instanceof ServerWorld) {
-			Entity entity = ((ServerWorld)this.world).method_14190(this.field_7644);
+			Entity entity = ((ServerWorld)this.world).getEntity(this.field_7644);
 			if (entity instanceof LivingEntity) {
 				this.owner = (LivingEntity)entity;
 			} else {

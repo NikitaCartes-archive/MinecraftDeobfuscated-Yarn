@@ -43,7 +43,7 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 	}
 
 	public void method_11753(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11115(this);
+		clientPlayPacketListener.onUnlockRecipes(this);
 	}
 
 	@Override

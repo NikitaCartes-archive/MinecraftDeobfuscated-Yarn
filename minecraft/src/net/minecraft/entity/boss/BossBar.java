@@ -86,13 +86,13 @@ public abstract class BossBar {
 	}
 
 	public static enum Color {
-		field_5788("pink", TextFormat.RED),
-		field_5780("blue", TextFormat.BLUE),
-		field_5784("red", TextFormat.DARK_RED),
-		field_5785("green", TextFormat.GREEN),
-		field_5782("yellow", TextFormat.YELLOW),
-		field_5783("purple", TextFormat.DARK_BLUE),
-		field_5786("white", TextFormat.WHITE);
+		field_5788("pink", TextFormat.field_1061),
+		field_5780("blue", TextFormat.field_1078),
+		field_5784("red", TextFormat.field_1079),
+		field_5785("green", TextFormat.field_1060),
+		field_5782("yellow", TextFormat.field_1054),
+		field_5783("purple", TextFormat.field_1058),
+		field_5786("white", TextFormat.field_1068);
 
 		private final String name;
 		private final TextFormat format;

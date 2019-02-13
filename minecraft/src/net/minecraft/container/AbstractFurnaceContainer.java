@@ -68,7 +68,7 @@ public abstract class AbstractFurnaceContainer extends CraftingContainer<Invento
 
 	@Override
 	public void clearCraftingSlots() {
-		this.inventory.clearInv();
+		this.inventory.clear();
 	}
 
 	@Override

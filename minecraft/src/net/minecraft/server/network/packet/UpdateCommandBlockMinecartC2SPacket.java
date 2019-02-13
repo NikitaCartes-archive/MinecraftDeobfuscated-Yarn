@@ -42,7 +42,7 @@ public class UpdateCommandBlockMinecartC2SPacket implements Packet<ServerPlayPac
 	}
 
 	public void method_12477(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.method_12049(this);
+		serverPlayPacketListener.onUpdateCommandBlockMinecart(this);
 	}
 
 	@Nullable

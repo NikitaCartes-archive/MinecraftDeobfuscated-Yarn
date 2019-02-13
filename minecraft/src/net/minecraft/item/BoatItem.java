@@ -53,7 +53,7 @@ public class BoatItem extends Item {
 				boatEntity.setBoatType(this.type);
 				boatEntity.yaw = playerEntity.yaw;
 				if (!world.isEntityColliding(boatEntity, boatEntity.getBoundingBox().expand(-0.1))) {
-					return new TypedActionResult<>(ActionResult.FAILURE, itemStack);
+					return new TypedActionResult<>(ActionResult.field_5814, itemStack);
 				} else {
 					if (!world.isClient) {
 						world.spawnEntity(boatEntity);
@@ -64,7 +64,7 @@ public class BoatItem extends Item {
 					}
 
 					playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
-					return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+					return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 				}
 			} else {
 				return new TypedActionResult<>(ActionResult.PASS, itemStack);

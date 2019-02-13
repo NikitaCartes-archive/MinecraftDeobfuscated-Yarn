@@ -193,7 +193,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			}
 
 			this.setEquippedStack(equipmentSlot, itemStack);
-			this.method_6103(itemEntity, itemStack.getAmount());
+			this.pickUpEntity(itemEntity, itemStack.getAmount());
 			itemEntity.invalidate();
 			this.getRaid().setRaidLeader(this.getWave(), this);
 			this.setPatrolLeader(true);

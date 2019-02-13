@@ -39,7 +39,7 @@ public class FlintAndSteelItem extends Item {
 				itemStack.applyDamage(1, playerEntity);
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.field_5812;
 		} else {
 			BlockState blockState = iWorld.getBlockState(blockPos);
 			if (method_17439(blockState)) {
@@ -49,9 +49,9 @@ public class FlintAndSteelItem extends Item {
 					itemUsageContext.getItemStack().applyDamage(1, playerEntity);
 				}
 
-				return ActionResult.SUCCESS;
+				return ActionResult.field_5812;
 			} else {
-				return ActionResult.FAILURE;
+				return ActionResult.field_5814;
 			}
 		}
 	}

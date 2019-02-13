@@ -26,7 +26,7 @@ public enum AddHillsLayer implements MergingLayer, NorthWestCoordinateTransforme
 	private static final int BAMBOO_JUNGLE_HILLS_ID = Registry.BIOME.getRawId(Biomes.field_9468);
 	private static final int BADLANDS_ID = Registry.BIOME.getRawId(Biomes.field_9415);
 	private static final int WOODED_BADLANDS_PLATEAU_ID = Registry.BIOME.getRawId(Biomes.field_9410);
-	private static final int PLAINS_ID = Registry.BIOME.getRawId(Biomes.biome);
+	private static final int PLAINS_ID = Registry.BIOME.getRawId(Biomes.field_9451);
 	private static final int GIANT_TREE_TAIGA_ID = Registry.BIOME.getRawId(Biomes.field_9477);
 	private static final int GIANT_TREE_TAIGA_HILLS_ID = Registry.BIOME.getRawId(Biomes.field_9429);
 	private static final int DARK_FOREST_ID = Registry.BIOME.getRawId(Biomes.field_9475);
@@ -47,7 +47,7 @@ public enum AddHillsLayer implements MergingLayer, NorthWestCoordinateTransforme
 
 		int m = (l - 2) % 29;
 		if (!BiomeLayers.isShallowOcean(k) && l >= 2 && m == 1) {
-			Biome biome = Registry.BIOME.getInt(k);
+			Biome biome = Registry.BIOME.get(k);
 			if (biome == null || !biome.hasParent()) {
 				Biome biome2 = Biome.getParentBiome(biome);
 				return biome2 == null ? k : Registry.BIOME.getRawId(biome2);
@@ -100,7 +100,7 @@ public enum AddHillsLayer implements MergingLayer, NorthWestCoordinateTransforme
 			}
 
 			if (m == 0 && n != k) {
-				Biome biome2 = Biome.getParentBiome(Registry.BIOME.getInt(n));
+				Biome biome2 = Biome.getParentBiome(Registry.BIOME.get(n));
 				n = biome2 == null ? k : Registry.BIOME.getRawId(biome2);
 			}
 

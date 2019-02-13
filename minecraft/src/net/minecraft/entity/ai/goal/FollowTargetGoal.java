@@ -22,7 +22,7 @@ import net.minecraft.util.math.BoundingBox;
 
 public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 	protected final Class<T> field_6643;
-	private final int field_6641;
+	protected final int reciprocalChance;
 	protected final FollowTargetGoal.ClosestSelector field_6645;
 	protected final Predicate<? super T> field_6642;
 	protected T field_6644;
@@ -38,7 +38,7 @@ public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 	public FollowTargetGoal(MobEntityWithAi mobEntityWithAi, Class<T> class_, int i, boolean bl, boolean bl2, @Nullable Predicate<? super T> predicate) {
 		super(mobEntityWithAi, bl, bl2);
 		this.field_6643 = class_;
-		this.field_6641 = i;
+		this.reciprocalChance = i;
 		this.field_6645 = new FollowTargetGoal.ClosestSelector(mobEntityWithAi);
 		this.setControlBits(1);
 		this.field_6642 = livingEntity -> {
@@ -54,7 +54,7 @@ public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 
 	@Override
 	public boolean canStart() {
-		if (this.field_6641 > 0 && this.entity.getRand().nextInt(this.field_6641) != 0) {
+		if (this.reciprocalChance > 0 && this.entity.getRand().nextInt(this.reciprocalChance) != 0) {
 			return false;
 		} else if (this.field_6643 != PlayerEntity.class && this.field_6643 != ServerPlayerEntity.class) {
 			List<T> list = this.entity.world.getEntities(this.field_6643, this.getSearchBox(this.getFollowRange()), this.field_6642);

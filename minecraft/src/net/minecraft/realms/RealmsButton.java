@@ -45,7 +45,7 @@ public abstract class RealmsButton {
 		this.proxy.setEnabled(bl);
 	}
 
-	public void msg(String string) {
+	public void setMessage(String string) {
 		this.proxy.setText(string);
 	}
 
@@ -62,7 +62,7 @@ public abstract class RealmsButton {
 	}
 
 	public void render(int i, int j, float f) {
-		this.proxy.draw(i, j, f);
+		this.proxy.render(i, j, f);
 	}
 
 	public void blit(int i, int j, int k, int l, int m, int n) {

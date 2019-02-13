@@ -31,7 +31,7 @@ public class BlockActionS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.pos = packetByteBuf.readBlockPos();
 		this.type = packetByteBuf.readUnsignedByte();
 		this.data = packetByteBuf.readUnsignedByte();
-		this.block = Registry.BLOCK.getInt(packetByteBuf.readVarInt());
+		this.block = Registry.BLOCK.get(packetByteBuf.readVarInt());
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class BlockActionS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11297(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11158(this);
+		clientPlayPacketListener.onBlockAction(this);
 	}
 
 	@Environment(EnvType.CLIENT)

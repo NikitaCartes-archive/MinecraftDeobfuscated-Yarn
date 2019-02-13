@@ -107,7 +107,7 @@ public class ItemPredicate {
 				Item item = null;
 				if (jsonObject.has("item")) {
 					Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "item"));
-					item = (Item)Registry.ITEM.getOptional(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown item id '" + identifier + "'"));
+					item = (Item)Registry.ITEM.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown item id '" + identifier + "'"));
 				}
 
 				Tag<Item> tag = null;
@@ -123,7 +123,7 @@ public class ItemPredicate {
 				Potion potion = null;
 				if (jsonObject.has("potion")) {
 					Identifier identifier3 = new Identifier(JsonHelper.getString(jsonObject, "potion"));
-					potion = (Potion)Registry.POTION.getOptional(identifier3).orElseThrow(() -> new JsonSyntaxException("Unknown potion '" + identifier3 + "'"));
+					potion = (Potion)Registry.POTION.getOrEmpty(identifier3).orElseThrow(() -> new JsonSyntaxException("Unknown potion '" + identifier3 + "'"));
 				}
 
 				return new ItemPredicate(tag, item, integer, integer2, enchantmentPredicates, potion, nbtPredicate);

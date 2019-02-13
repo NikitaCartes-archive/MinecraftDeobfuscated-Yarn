@@ -141,7 +141,7 @@ public class ProfileResultImpl implements ProfileResult {
 	}
 
 	@Override
-	public String method_18052() {
+	public String getTimingTreeString() {
 		StringBuilder stringBuilder = new StringBuilder();
 		this.appendTiming(0, "root", stringBuilder);
 		return stringBuilder.toString();

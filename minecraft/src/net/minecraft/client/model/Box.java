@@ -8,12 +8,12 @@ import net.minecraft.client.render.BufferBuilder;
 public class Box {
 	private final Vertex[] vertices;
 	private final Polygon[] polygons;
-	public final float field_3645;
-	public final float field_3644;
-	public final float field_3643;
-	public final float field_3648;
-	public final float field_3647;
-	public final float field_3646;
+	public final float xMin;
+	public final float yMin;
+	public final float zMin;
+	public final float xMax;
+	public final float yMax;
+	public final float zMax;
 	public String name;
 
 	public Box(Cuboid cuboid, int i, int j, float f, float g, float h, int k, int l, int m, float n) {
@@ -21,12 +21,12 @@ public class Box {
 	}
 
 	public Box(Cuboid cuboid, int i, int j, float f, float g, float h, int k, int l, int m, float n, boolean bl) {
-		this.field_3645 = f;
-		this.field_3644 = g;
-		this.field_3643 = h;
-		this.field_3648 = f + (float)k;
-		this.field_3647 = g + (float)l;
-		this.field_3646 = h + (float)m;
+		this.xMin = f;
+		this.yMin = g;
+		this.zMin = h;
+		this.xMax = f + (float)k;
+		this.yMax = g + (float)l;
+		this.zMax = h + (float)m;
 		this.vertices = new Vertex[8];
 		this.polygons = new Polygon[6];
 		float o = f + (float)k;

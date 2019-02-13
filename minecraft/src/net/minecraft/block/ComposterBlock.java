@@ -198,7 +198,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		if (i < 8 && ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(itemStack.getItem())) {
 			if (i < 7 && !world.isClient) {
 				boolean bl = addToComposter(blockState, world, blockPos, itemStack);
-				world.playEvent(1500, blockPos, bl ? 0 : 1);
+				world.playEvent(1500, blockPos, bl ? 1 : 0);
 				if (!playerEntity.abilities.creativeMode) {
 					itemStack.subtractAmount(1);
 				}

@@ -67,7 +67,7 @@ public class MapExtendingRecipe extends ShapedRecipe {
 	private boolean method_8120(MapState mapState) {
 		if (mapState.icons != null) {
 			for(MapIcon mapIcon : mapState.icons.values()) {
-				if (mapIcon.method_93() == MapIcon.Direction.field_88 || mapIcon.method_93() == MapIcon.Direction.field_98) {
+				if (mapIcon.getType() == MapIcon.Type.field_88 || mapIcon.getType() == MapIcon.Type.field_98) {
 					return true;
 				}
 			}

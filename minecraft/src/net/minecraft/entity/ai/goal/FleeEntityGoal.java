@@ -12,7 +12,7 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.math.Vec3d;
 
 public class FleeEntityGoal<T extends Entity> extends Goal {
-	private final Predicate<Entity> field_6389 = new Predicate<Entity>() {
+	protected final Predicate<Entity> field_6389 = new Predicate<Entity>() {
 		public boolean method_6248(@Nullable Entity entity) {
 			return entity.isValid() && FleeEntityGoal.this.field_6391.getVisibilityCache().canSee(entity) && !FleeEntityGoal.this.field_6391.isTeammate(entity);
 		}
@@ -21,12 +21,12 @@ public class FleeEntityGoal<T extends Entity> extends Goal {
 	private final double field_6385;
 	private final double field_6395;
 	protected T field_6390;
-	private final float field_6386;
-	private Path field_6387;
-	private final EntityNavigation field_6394;
-	private final Class<T> field_6392;
-	private final Predicate<? super Entity> field_6393;
-	private final Predicate<? super Entity> field_6388;
+	protected final float field_6386;
+	protected Path field_6387;
+	protected final EntityNavigation field_6394;
+	protected final Class<T> field_6392;
+	protected final Predicate<? super Entity> field_6393;
+	protected final Predicate<? super Entity> field_6388;
 
 	public FleeEntityGoal(MobEntityWithAi mobEntityWithAi, Class<T> class_, float f, double d, double e) {
 		this(mobEntityWithAi, class_, entity -> true, f, d, e, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR);

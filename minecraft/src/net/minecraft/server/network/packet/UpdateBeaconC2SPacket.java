@@ -33,7 +33,7 @@ public class UpdateBeaconC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	public void method_12434(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.method_12057(this);
+		serverPlayPacketListener.onUpdateBeacon(this);
 	}
 
 	public int getPrimaryEffectId() {

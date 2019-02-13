@@ -39,7 +39,7 @@ public class ScoreboardDisplayS2CPacket implements Packet<ClientPlayPacketListen
 	}
 
 	public void method_11805(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11159(this);
+		clientPlayPacketListener.onScoreboardDisplay(this);
 	}
 
 	@Environment(EnvType.CLIENT)

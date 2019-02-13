@@ -77,7 +77,7 @@ public class NetworkEncryptionUtils {
 		}
 	}
 
-	public static PublicKey method_15242(byte[] bs) {
+	public static PublicKey readEncodedPublicKey(byte[] bs) {
 		try {
 			EncodedKeySpec encodedKeySpec = new X509EncodedKeySpec(bs);
 			KeyFactory keyFactory = KeyFactory.getInstance("RSA");

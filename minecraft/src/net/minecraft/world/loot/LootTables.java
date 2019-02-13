@@ -20,6 +20,7 @@ public class LootTables {
 	public static final Identifier field_17011 = registerLootTable("chests/village/village_shepherd");
 	public static final Identifier field_17012 = registerLootTable("chests/village/village_butcher");
 	public static final Identifier field_17108 = registerLootTable("chests/village/village_fletcher");
+	public static final Identifier field_18007 = registerLootTable("chests/village/village_fisher");
 	public static final Identifier field_16750 = registerLootTable("chests/village/village_tannery");
 	public static final Identifier field_17109 = registerLootTable("chests/village/village_temple");
 	public static final Identifier field_16752 = registerLootTable("chests/village/village_desert_house");
@@ -60,11 +61,11 @@ public class LootTables {
 	public static final Identifier ENTITY_SHEEP_GREEN = registerLootTable("entities/sheep/green");
 	public static final Identifier ENTITY_SHEEP_RED = registerLootTable("entities/sheep/red");
 	public static final Identifier ENTITY_SHEEP_BLACK = registerLootTable("entities/sheep/black");
-	public static final Identifier ENTITY_CAT_MORNING_GIFT = registerLootTable("entities/cat_morning_gift");
 	public static final Identifier GAMEPLAY_FISHING = registerLootTable("gameplay/fishing");
 	public static final Identifier GAMEPLAY_FISHING_JUNK = registerLootTable("gameplay/fishing/junk");
 	public static final Identifier GAMEPLAY_FISHING_TREASURE = registerLootTable("gameplay/fishing/treasure");
 	public static final Identifier GAMEPLAY_FISHING_FISH = registerLootTable("gameplay/fishing/fish");
+	public static final Identifier ENTITY_CAT_MORNING_GIFT = registerLootTable("gameplay/cat_morning_gift");
 
 	private static Identifier registerLootTable(String string) {
 		return registerLootTable(new Identifier(string));

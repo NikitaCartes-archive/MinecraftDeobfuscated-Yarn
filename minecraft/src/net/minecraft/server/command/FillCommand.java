@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.class_3829;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -21,6 +20,7 @@ import net.minecraft.command.arguments.BlockPosArgumentType;
 import net.minecraft.command.arguments.BlockPredicateArgumentType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.util.Clearable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 
@@ -169,7 +169,7 @@ public class FillCommand {
 					BlockArgument blockArgument2 = arg.field_13654.filter(mutableIntBoundingBox, blockPos, blockArgument, serverWorld);
 					if (blockArgument2 != null) {
 						BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
-						class_3829.method_16825(blockEntity);
+						Clearable.clear(blockEntity);
 						if (blockArgument2.setBlockState(serverWorld, blockPos, 2)) {
 							list.add(blockPos.toImmutable());
 							++j;

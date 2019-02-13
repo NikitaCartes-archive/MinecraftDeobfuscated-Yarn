@@ -25,6 +25,6 @@ public class IntegratedServerHandshakeNetworkHandler implements ServerHandshakeP
 	}
 
 	@Override
-	public void onConnectionLost(TextComponent textComponent) {
+	public void onDisconnected(TextComponent textComponent) {
 	}
 }

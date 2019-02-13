@@ -38,7 +38,7 @@ public class BlockEntityUpdateS2CPacket implements Packet<ClientPlayPacketListen
 	}
 
 	public void method_11292(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11094(this);
+		clientPlayPacketListener.onBlockEntityUpdate(this);
 	}
 
 	@Environment(EnvType.CLIENT)

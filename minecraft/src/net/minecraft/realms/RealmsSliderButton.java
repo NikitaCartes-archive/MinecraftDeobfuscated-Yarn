@@ -23,7 +23,7 @@ public abstract class RealmsSliderButton extends RealmsButton {
 		this.minValue = d;
 		this.maxValue = e;
 		this.value = this.toPct((double)n);
-		this.getProxy().text = this.getMessage();
+		this.getProxy().setText(this.getMessage());
 	}
 
 	public String getMessage() {
@@ -58,21 +58,19 @@ public abstract class RealmsSliderButton extends RealmsButton {
 
 	@Override
 	public void renderBg(int i, int j) {
-		if (this.getProxy().visible) {
-			if (this.sliding) {
-				this.value = (double)((float)(i - (this.getProxy().x + 4)) / (float)(this.getProxy().getWidth() - 8));
-				this.value = MathHelper.clamp(this.value, 0.0, 1.0);
-				double d = this.toValue(this.value);
-				this.clicked(d);
-				this.value = this.toPct(d);
-				this.getProxy().text = this.getMessage();
-			}
-
-			MinecraftClient.getInstance().getTextureManager().bindTexture(WIDGETS_LOCATION);
-			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.blit(this.getProxy().x + (int)(this.value * (double)(this.getProxy().getWidth() - 8)), this.getProxy().y, 0, 66, 4, 20);
-			this.blit(this.getProxy().x + (int)(this.value * (double)(this.getProxy().getWidth() - 8)) + 4, this.getProxy().y, 196, 66, 4, 20);
+		if (this.sliding) {
+			this.value = (double)((float)(i - (this.getProxy().x + 4)) / (float)(this.getProxy().getWidth() - 8));
+			this.value = MathHelper.clamp(this.value, 0.0, 1.0);
+			double d = this.toValue(this.value);
+			this.clicked(d);
+			this.value = this.toPct(d);
+			this.getProxy().setText(this.getMessage());
 		}
+
+		MinecraftClient.getInstance().getTextureManager().bindTexture(WIDGETS_LOCATION);
+		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		this.blit(this.getProxy().x + (int)(this.value * (double)(this.getProxy().getWidth() - 8)), this.getProxy().y, 0, 66, 4, 20);
+		this.blit(this.getProxy().x + (int)(this.value * (double)(this.getProxy().getWidth() - 8)) + 4, this.getProxy().y, 196, 66, 4, 20);
 	}
 
 	@Override
@@ -80,7 +78,7 @@ public abstract class RealmsSliderButton extends RealmsButton {
 		this.value = (d - (double)(this.getProxy().x + 4)) / (double)(this.getProxy().getWidth() - 8);
 		this.value = MathHelper.clamp(this.value, 0.0, 1.0);
 		this.clicked(this.toValue(this.value));
-		this.getProxy().text = this.getMessage();
+		this.getProxy().setText(this.getMessage());
 		this.sliding = true;
 	}
 

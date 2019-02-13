@@ -17,6 +17,6 @@ public class ChatListenerHud implements ClientChatListener {
 
 	@Override
 	public void onChatMessage(ChatMessageType chatMessageType, TextComponent textComponent) {
-		this.client.inGameHud.getHudChat().addMessage(textComponent);
+		this.client.inGameHud.getChatHud().addMessage(textComponent);
 	}
 }

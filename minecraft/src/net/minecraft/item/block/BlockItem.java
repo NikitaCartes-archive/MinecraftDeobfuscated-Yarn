@@ -9,7 +9,7 @@ import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.item.TooltipOptions;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -46,17 +46,17 @@ public class BlockItem extends Item {
 
 	public ActionResult place(ItemPlacementContext itemPlacementContext) {
 		if (!itemPlacementContext.canPlace()) {
-			return ActionResult.FAILURE;
+			return ActionResult.field_5814;
 		} else {
 			ItemPlacementContext itemPlacementContext2 = this.getPlacementContext(itemPlacementContext);
 			if (itemPlacementContext2 == null) {
-				return ActionResult.FAILURE;
+				return ActionResult.field_5814;
 			} else {
 				BlockState blockState = this.getBlockState(itemPlacementContext2);
 				if (blockState == null) {
-					return ActionResult.FAILURE;
+					return ActionResult.field_5814;
 				} else if (!this.setBlockState(itemPlacementContext2, blockState)) {
-					return ActionResult.FAILURE;
+					return ActionResult.field_5814;
 				} else {
 					BlockPos blockPos = itemPlacementContext2.getBlockPos();
 					World world = itemPlacementContext2.getWorld();
@@ -83,7 +83,7 @@ public class BlockItem extends Item {
 						blockSoundGroup.getPitch() * 0.8F
 					);
 					itemStack.subtractAmount(1);
-					return ActionResult.SUCCESS;
+					return ActionResult.field_5812;
 				}
 			}
 		}
@@ -179,7 +179,7 @@ public class BlockItem extends Item {
 	}
 
 	@Override
-	public void addStacksForDisplay(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
+	public void appendItemsForGroup(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
 		if (this.isInItemGroup(itemGroup)) {
 			this.getBlock().addStacksForDisplay(itemGroup, defaultedList);
 		}
@@ -187,9 +187,9 @@ public class BlockItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
-		super.buildTooltip(itemStack, world, list, tooltipOptions);
-		this.getBlock().buildTooltip(itemStack, world, list, tooltipOptions);
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
+		super.buildTooltip(itemStack, world, list, tooltipContext);
+		this.getBlock().buildTooltip(itemStack, world, list, tooltipContext);
 	}
 
 	public Block getBlock() {

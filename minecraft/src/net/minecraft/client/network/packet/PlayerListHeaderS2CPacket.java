@@ -25,7 +25,7 @@ public class PlayerListHeaderS2CPacket implements Packet<ClientPlayPacketListene
 	}
 
 	public void method_11907(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11105(this);
+		clientPlayPacketListener.onPlayerListHeader(this);
 	}
 
 	@Environment(EnvType.CLIENT)

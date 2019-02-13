@@ -31,7 +31,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.passive.AbstractVillagerEntity;
+import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
@@ -72,7 +72,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 		this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 15.0F));
 		this.targetSelector.add(1, new class_1399(this, IllagerEntity.class).method_6318());
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
-		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractVillagerEntity.class, false));
+		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractTraderEntity.class, false));
 		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, true));
 	}
 
@@ -157,9 +157,9 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 	}
 
 	@Override
-	public float method_6144(BlockPos blockPos, ViewableWorld viewableWorld) {
+	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
 		Block block = viewableWorld.getBlockState(blockPos.down()).getBlock();
-		return block != Blocks.field_10219 && block != Blocks.field_10102 ? 0.5F - viewableWorld.method_8610(blockPos) : 10.0F;
+		return block != Blocks.field_10219 && block != Blocks.field_10102 ? 0.5F - viewableWorld.getBrightness(blockPos) : 10.0F;
 	}
 
 	@Override
@@ -169,7 +169,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 
 	@Override
 	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-		return iWorld.getLightLevel(LightType.BLOCK_LIGHT, new BlockPos(this.x, this.y, this.z)) > 8 ? false : super.canSpawn(iWorld, spawnType);
+		return iWorld.getLightLevel(LightType.BLOCK, new BlockPos(this.x, this.y, this.z)) > 8 ? false : super.canSpawn(iWorld, spawnType);
 	}
 
 	@Override

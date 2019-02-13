@@ -26,17 +26,17 @@ import org.apache.logging.log4j.Logger;
 
 public class ExplorationMapLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final MapIcon.Direction DEFAULT_DECORATION = MapIcon.Direction.field_88;
+	public static final MapIcon.Type DEFAULT_DECORATION = MapIcon.Type.field_88;
 	private final String destination;
-	private final MapIcon.Direction decoration;
+	private final MapIcon.Type decoration;
 	private final byte zoom;
 	private final int searchRadius;
 	private final boolean skipExistingChunks;
 
-	private ExplorationMapLootFunction(LootCondition[] lootConditions, String string, MapIcon.Direction direction, byte b, int i, boolean bl) {
+	private ExplorationMapLootFunction(LootCondition[] lootConditions, String string, MapIcon.Type type, byte b, int i, boolean bl) {
 		super(lootConditions);
 		this.destination = string;
-		this.decoration = direction;
+		this.decoration = type;
 		this.zoom = b;
 		this.searchRadius = i;
 		this.skipExistingChunks = bl;
@@ -75,7 +75,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 
 	public static class Builder extends ConditionalLootFunction.Builder<ExplorationMapLootFunction.Builder> {
 		private String destination = "Buried_Treasure";
-		private MapIcon.Direction decoration = ExplorationMapLootFunction.DEFAULT_DECORATION;
+		private MapIcon.Type decoration = ExplorationMapLootFunction.DEFAULT_DECORATION;
 		private byte zoom = 2;
 		private int searchRadius = 50;
 		private boolean skipExistingChunks = true;
@@ -89,8 +89,8 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 			return this;
 		}
 
-		public ExplorationMapLootFunction.Builder decoration(MapIcon.Direction direction) {
-			this.decoration = direction;
+		public ExplorationMapLootFunction.Builder decoration(MapIcon.Type type) {
+			this.decoration = type;
 			return this;
 		}
 
@@ -142,10 +142,10 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 			String string = jsonObject.has("destination") ? JsonHelper.getString(jsonObject, "destination") : "Buried_Treasure";
 			string = Feature.STRUCTURES.containsKey(string.toLowerCase(Locale.ROOT)) ? string : "Buried_Treasure";
 			String string2 = jsonObject.has("decoration") ? JsonHelper.getString(jsonObject, "decoration") : "mansion";
-			MapIcon.Direction direction = ExplorationMapLootFunction.DEFAULT_DECORATION;
+			MapIcon.Type type = ExplorationMapLootFunction.DEFAULT_DECORATION;
 
 			try {
-				direction = MapIcon.Direction.valueOf(string2.toUpperCase(Locale.ROOT));
+				type = MapIcon.Type.valueOf(string2.toUpperCase(Locale.ROOT));
 			} catch (IllegalArgumentException var10) {
 				ExplorationMapLootFunction.LOGGER
 					.error("Error while parsing loot table decoration entry. Found {}. Defaulting to " + ExplorationMapLootFunction.DEFAULT_DECORATION, string2);
@@ -154,7 +154,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 			byte b = JsonHelper.getByte(jsonObject, "zoom", (byte)2);
 			int i = JsonHelper.getInt(jsonObject, "search_radius", 50);
 			boolean bl = JsonHelper.getBoolean(jsonObject, "skip_existing_chunks", true);
-			return new ExplorationMapLootFunction(lootConditions, string, direction, b, i, bl);
+			return new ExplorationMapLootFunction(lootConditions, string, type, b, i, bl);
 		}
 	}
 }

@@ -62,15 +62,15 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 			return PathNodeType.field_16;
 		} else {
 			return fluidState.matches(FluidTags.field_15517) && blockState.canPlaceAtSide(blockView, blockPos, BlockPlacementEnvironment.field_48)
-				? PathNodeType.WATER
-				: PathNodeType.BLOCKED;
+				? PathNodeType.field_18
+				: PathNodeType.field_22;
 		}
 	}
 
 	@Nullable
 	private PathNode getPathNodeInWater(int i, int j, int k) {
 		PathNodeType pathNodeType = this.getPathNodeType(i, j, k);
-		return (!this.field_58 || pathNodeType != PathNodeType.field_16) && pathNodeType != PathNodeType.WATER ? null : this.getPathNode(i, j, k);
+		return (!this.field_58 || pathNodeType != PathNodeType.field_16) && pathNodeType != PathNodeType.field_18 ? null : this.getPathNode(i, j, k);
 	}
 
 	@Nullable
@@ -88,7 +88,7 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 			}
 		}
 
-		return pathNodeType == PathNodeType.AIR ? pathNode : pathNode;
+		return pathNodeType == PathNodeType.field_7 ? pathNode : pathNode;
 	}
 
 	private PathNodeType getPathNodeType(int i, int j, int k) {
@@ -104,13 +104,13 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 					}
 
 					if (!fluidState.matches(FluidTags.field_15517)) {
-						return PathNodeType.BLOCKED;
+						return PathNodeType.field_22;
 					}
 				}
 			}
 		}
 
 		BlockState blockState2 = this.blockView.getBlockState(mutable);
-		return blockState2.canPlaceAtSide(this.blockView, mutable, BlockPlacementEnvironment.field_48) ? PathNodeType.WATER : PathNodeType.BLOCKED;
+		return blockState2.canPlaceAtSide(this.blockView, mutable, BlockPlacementEnvironment.field_48) ? PathNodeType.field_18 : PathNodeType.field_22;
 	}
 }

@@ -55,7 +55,7 @@ public class HoeItem extends ToolItem {
 					}
 				}
 
-				return ActionResult.SUCCESS;
+				return ActionResult.field_5812;
 			}
 		}
 

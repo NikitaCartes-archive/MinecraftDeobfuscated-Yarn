@@ -85,7 +85,7 @@ public class MagmaCubeEntity extends SlimeEntity {
 	}
 
 	@Override
-	protected void method_6043() {
+	protected void jump() {
 		this.velocityY = (double)(0.42F + (float)this.getSize() * 0.1F);
 		this.velocityDirty = true;
 	}

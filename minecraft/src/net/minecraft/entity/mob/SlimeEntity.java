@@ -223,7 +223,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 			&& this.squaredDistanceTo(livingEntity) < 0.6 * (double)i * 0.6 * (double)i
 			&& livingEntity.damage(DamageSource.mob(this), (float)this.method_7158())) {
 			this.playSound(SoundEvents.field_14863, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-			this.method_5723(this, livingEntity);
+			this.dealDamage(this, livingEntity);
 		}
 	}
 
@@ -272,7 +272,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 					&& this.y < 70.0
 					&& this.random.nextFloat() < 0.5F
 					&& this.random.nextFloat() < iWorld.method_8391()
-					&& iWorld.method_8602(new BlockPos(this)) <= this.random.nextInt(8)) {
+					&& iWorld.getLightLevel(new BlockPos(this)) <= this.random.nextInt(8)) {
 					return super.canSpawn(iWorld, spawnType);
 				}
 
@@ -302,7 +302,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	protected void method_6043() {
+	protected void jump() {
 		this.velocityY = 0.42F;
 		this.velocityDirty = true;
 	}

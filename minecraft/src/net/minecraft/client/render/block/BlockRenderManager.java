@@ -104,7 +104,7 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 	}
 
 	@Override
-	public void reloadResources(ResourceManager resourceManager) {
+	public void apply(ResourceManager resourceManager) {
 		this.fluidRenderer.onResourceReload();
 	}
 }

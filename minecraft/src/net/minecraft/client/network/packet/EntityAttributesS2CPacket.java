@@ -76,7 +76,7 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 	}
 
 	public void method_11936(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11149(this);
+		clientPlayPacketListener.onEntityAttributes(this);
 	}
 
 	@Environment(EnvType.CLIENT)

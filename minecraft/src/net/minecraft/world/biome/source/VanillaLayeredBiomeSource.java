@@ -21,7 +21,7 @@ public class VanillaLayeredBiomeSource extends BiomeSource {
 	private final BiomeLayerSampler biomeLayer;
 	private final Biome[] biomes = new Biome[]{
 		Biomes.field_9423,
-		Biomes.biome,
+		Biomes.field_9451,
 		Biomes.field_9424,
 		Biomes.field_9472,
 		Biomes.field_9409,

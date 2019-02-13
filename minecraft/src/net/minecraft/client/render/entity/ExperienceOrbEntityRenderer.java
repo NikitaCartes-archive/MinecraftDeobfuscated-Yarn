@@ -48,7 +48,7 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 			int x = (int)((MathHelper.sin(u + (float) (Math.PI * 4.0 / 3.0)) + 1.0F) * 0.1F * 255.0F);
 			GlStateManager.translatef(0.0F, 0.1F, 0.0F);
 			GlStateManager.rotatef(180.0F - this.renderManager.field_4679, 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotatef((float)(this.renderManager.settings.field_1850 == 2 ? -1 : 1) * -this.renderManager.field_4677, 1.0F, 0.0F, 0.0F);
+			GlStateManager.rotatef((float)(this.renderManager.settings.perspective == 2 ? -1 : 1) * -this.renderManager.field_4677, 1.0F, 0.0F, 0.0F);
 			float y = 0.3F;
 			GlStateManager.scalef(0.3F, 0.3F, 0.3F);
 			Tessellator tessellator = Tessellator.getInstance();

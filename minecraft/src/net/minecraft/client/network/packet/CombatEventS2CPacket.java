@@ -65,7 +65,7 @@ public class CombatEventS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11706(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11133(this);
+		clientPlayPacketListener.onCombatEvent(this);
 	}
 
 	@Override

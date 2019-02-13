@@ -98,8 +98,8 @@ public class JsonUnbakedModel implements UnbakedModel {
 		return this.elements.isEmpty() && this.parent != null ? this.parent.getElements() : this.elements;
 	}
 
-	public boolean hasAmbientOcclusion() {
-		return this.parent != null ? this.parent.hasAmbientOcclusion() : this.ambientOcclusion;
+	public boolean useAmbientOcclusion() {
+		return this.parent != null ? this.parent.useAmbientOcclusion() : this.ambientOcclusion;
 	}
 
 	public boolean hasDepthInGui() {
@@ -112,7 +112,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 
 	private ModelItemPropertyOverrideList compileOverrides(ModelLoader modelLoader, JsonUnbakedModel jsonUnbakedModel) {
 		return this.overrides.isEmpty()
-			? ModelItemPropertyOverrideList.ORIGIN
+			? ModelItemPropertyOverrideList.EMPTY
 			: new ModelItemPropertyOverrideList(modelLoader, jsonUnbakedModel, modelLoader::getOrLoadModel, this.overrides);
 	}
 
@@ -278,13 +278,13 @@ public class JsonUnbakedModel implements UnbakedModel {
 	}
 
 	public ModelTransformation getTransformations() {
-		Transformation transformation = this.getTransformation(ModelTransformation.Type.THIRD_PERSON_LEFT_HAND);
-		Transformation transformation2 = this.getTransformation(ModelTransformation.Type.THIRD_PERSON_RIGHT_HAND);
-		Transformation transformation3 = this.getTransformation(ModelTransformation.Type.FIRST_PERSON_LEFT_HAND);
-		Transformation transformation4 = this.getTransformation(ModelTransformation.Type.FIRST_PERSON_RIGHT_HAND);
-		Transformation transformation5 = this.getTransformation(ModelTransformation.Type.HEAD);
-		Transformation transformation6 = this.getTransformation(ModelTransformation.Type.GUI);
-		Transformation transformation7 = this.getTransformation(ModelTransformation.Type.GROUND);
+		Transformation transformation = this.getTransformation(ModelTransformation.Type.field_4323);
+		Transformation transformation2 = this.getTransformation(ModelTransformation.Type.field_4320);
+		Transformation transformation3 = this.getTransformation(ModelTransformation.Type.field_4321);
+		Transformation transformation4 = this.getTransformation(ModelTransformation.Type.field_4322);
+		Transformation transformation5 = this.getTransformation(ModelTransformation.Type.field_4316);
+		Transformation transformation6 = this.getTransformation(ModelTransformation.Type.field_4317);
+		Transformation transformation7 = this.getTransformation(ModelTransformation.Type.field_4318);
 		Transformation transformation8 = this.getTransformation(ModelTransformation.Type.FIXED);
 		return new ModelTransformation(
 			transformation, transformation2, transformation3, transformation4, transformation5, transformation6, transformation7, transformation8
@@ -309,7 +309,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 			String string = this.deserializeParent(jsonObject);
 			Map<String, String> map = this.deserializeTextures(jsonObject);
 			boolean bl = this.deserializeAmbientOcclusion(jsonObject);
-			ModelTransformation modelTransformation = ModelTransformation.ORIGIN;
+			ModelTransformation modelTransformation = ModelTransformation.NONE;
 			if (jsonObject.has("display")) {
 				JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "display");
 				modelTransformation = jsonDeserializationContext.deserialize(jsonObject2, ModelTransformation.class);

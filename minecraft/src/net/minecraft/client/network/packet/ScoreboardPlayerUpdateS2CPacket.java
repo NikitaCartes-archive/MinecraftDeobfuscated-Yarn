@@ -53,7 +53,7 @@ public class ScoreboardPlayerUpdateS2CPacket implements Packet<ClientPlayPacketL
 	}
 
 	public void method_11866(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11118(this);
+		clientPlayPacketListener.onScoreboardPlayerUpdate(this);
 	}
 
 	@Environment(EnvType.CLIENT)

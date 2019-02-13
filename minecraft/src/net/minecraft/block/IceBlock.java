@@ -42,7 +42,7 @@ public class IceBlock extends TransparentBlock {
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (world.getLightLevel(LightType.BLOCK_LIGHT, blockPos) > 11 - blockState.getLightSubtracted(world, blockPos)) {
+		if (world.getLightLevel(LightType.BLOCK, blockPos) > 11 - blockState.getLightSubtracted(world, blockPos)) {
 			this.melt(blockState, world, blockPos);
 		}
 	}

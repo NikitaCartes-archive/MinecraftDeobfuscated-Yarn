@@ -28,7 +28,7 @@ public abstract class Enchantment {
 	@Nullable
 	@Environment(EnvType.CLIENT)
 	public static Enchantment byRawId(int i) {
-		return Registry.ENCHANTMENT.getInt(i);
+		return Registry.ENCHANTMENT.get(i);
 	}
 
 	protected Enchantment(Enchantment.Weight weight, EnchantmentTarget enchantmentTarget, EquipmentSlot[] equipmentSlots) {
@@ -97,9 +97,9 @@ public abstract class Enchantment {
 	public TextComponent getTextComponent(int i) {
 		TextComponent textComponent = new TranslatableTextComponent(this.getTranslationKey());
 		if (this.isCursed()) {
-			textComponent.applyFormat(TextFormat.RED);
+			textComponent.applyFormat(TextFormat.field_1061);
 		} else {
-			textComponent.applyFormat(TextFormat.GRAY);
+			textComponent.applyFormat(TextFormat.field_1080);
 		}
 
 		if (i != 1 || this.getMaximumLevel() != 1) {

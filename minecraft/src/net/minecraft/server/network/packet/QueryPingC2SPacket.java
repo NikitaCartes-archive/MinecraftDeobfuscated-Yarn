@@ -29,7 +29,7 @@ public class QueryPingC2SPacket implements Packet<ServerQueryPacketListener> {
 	}
 
 	public void method_12699(ServerQueryPacketListener serverQueryPacketListener) {
-		serverQueryPacketListener.method_12697(this);
+		serverQueryPacketListener.onPing(this);
 	}
 
 	public long getStartTime() {

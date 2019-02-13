@@ -173,10 +173,10 @@ public class DolphinEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public boolean method_6121(Entity entity) {
+	public boolean attack(Entity entity) {
 		boolean bl = entity.damage(DamageSource.mob(this), (float)((int)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue()));
 		if (bl) {
-			this.method_5723(this, entity);
+			this.dealDamage(this, entity);
 			this.playSound(SoundEvents.field_14992, 1.0F, 1.0F);
 		}
 
@@ -217,10 +217,10 @@ public class DolphinEntity extends WaterCreatureEntity {
 	protected void pickupItem(ItemEntity itemEntity) {
 		if (this.getEquippedStack(EquipmentSlot.HAND_MAIN).isEmpty()) {
 			ItemStack itemStack = itemEntity.getStack();
-			if (this.method_5939(itemStack)) {
+			if (this.canPickupItem(itemStack)) {
 				this.setEquippedStack(EquipmentSlot.HAND_MAIN, itemStack);
 				this.handDropChances[EquipmentSlot.HAND_MAIN.getEntitySlotId()] = 2.0F;
-				this.method_6103(itemEntity, itemStack.getAmount());
+				this.pickUpEntity(itemEntity, itemStack.getAmount());
 				itemEntity.invalidate();
 			}
 		}

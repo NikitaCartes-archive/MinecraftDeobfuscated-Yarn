@@ -7,7 +7,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_853;
+import net.minecraft.client.world.SafeWorldView;
 
 @Environment(EnvType.CLIENT)
 public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
@@ -17,17 +17,17 @@ public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
 	private final ChunkRenderTask.Mode mode;
 	private final double distanceToPlayerSquared;
 	@Nullable
-	private class_853 field_4414;
+	private SafeWorldView worldView;
 	private BlockLayeredBufferBuilder bufferBuilder;
 	private ChunkRenderData renderData;
 	private ChunkRenderTask.Stage stage = ChunkRenderTask.Stage.field_4422;
 	private boolean cancelled;
 
-	public ChunkRenderTask(ChunkRenderer chunkRenderer, ChunkRenderTask.Mode mode, double d, @Nullable class_853 arg) {
+	public ChunkRenderTask(ChunkRenderer chunkRenderer, ChunkRenderTask.Mode mode, double d, @Nullable SafeWorldView safeWorldView) {
 		this.chunkRenderer = chunkRenderer;
 		this.mode = mode;
 		this.distanceToPlayerSquared = d;
-		this.field_4414 = arg;
+		this.worldView = safeWorldView;
 	}
 
 	public ChunkRenderTask.Stage getStage() {
@@ -39,10 +39,10 @@ public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
 	}
 
 	@Nullable
-	public class_853 method_3606() {
-		class_853 lv = this.field_4414;
-		this.field_4414 = null;
-		return lv;
+	public SafeWorldView getAndInvalidateWorldView() {
+		SafeWorldView safeWorldView = this.worldView;
+		this.worldView = null;
+		return safeWorldView;
 	}
 
 	public ChunkRenderData getRenderData() {
@@ -75,7 +75,7 @@ public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
 		this.lock.lock();
 
 		try {
-			this.field_4414 = null;
+			this.worldView = null;
 			if (this.mode == ChunkRenderTask.Mode.field_4426 && this.stage != ChunkRenderTask.Stage.field_4423) {
 				this.chunkRenderer.scheduleRender(false);
 			}

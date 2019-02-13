@@ -84,7 +84,7 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 		return scoreboardEntry == null ? null : scoreboardEntry.getElytraTexture();
 	}
 
-	public static PlayerSkinTexture method_3120(Identifier identifier, String string) {
+	public static PlayerSkinTexture loadSkin(Identifier identifier, String string) {
 		TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
 		Texture texture = textureManager.getTexture(identifier);
 		if (texture == null) {
@@ -100,7 +100,7 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 		return (PlayerSkinTexture)texture;
 	}
 
-	public static Identifier method_3124(String string) {
+	public static Identifier getSkinId(String string) {
 		return new Identifier("skins/" + Hashing.sha1().hashUnencodedChars(ChatUtil.stripTextFormat(string)));
 	}
 

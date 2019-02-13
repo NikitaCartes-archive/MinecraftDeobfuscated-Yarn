@@ -51,7 +51,7 @@ public class DebugStickItem extends Item {
 			this.method_7759(playerEntity, world.getBlockState(blockPos), world, blockPos, true, itemUsageContext.getItemStack());
 		}
 
-		return ActionResult.SUCCESS;
+		return ActionResult.field_5812;
 	}
 
 	private void method_7759(PlayerEntity playerEntity, BlockState blockState, IWorld iWorld, BlockPos blockPos, boolean bl, ItemStack itemStack) {

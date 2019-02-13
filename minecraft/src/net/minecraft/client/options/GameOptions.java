@@ -40,6 +40,7 @@ import net.minecraft.server.network.packet.ClientSettingsC2SPacket;
 import net.minecraft.sortme.OptionMainHand;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
@@ -189,7 +190,7 @@ public class GameOptions {
 	private File optionsFile;
 	public Difficulty difficulty = Difficulty.NORMAL;
 	public boolean hudHidden;
-	public int field_1850;
+	public int perspective;
 	public boolean debugEnabled;
 	public boolean debugProfilerEnabled;
 	public boolean debugTpsEnabled;
@@ -221,12 +222,12 @@ public class GameOptions {
 	public GameOptions() {
 	}
 
-	public void method_1641(KeyBinding keyBinding, InputUtil.KeyCode keyCode) {
+	public void setKeyCode(KeyBinding keyBinding, InputUtil.KeyCode keyCode) {
 		keyBinding.setKeyCode(keyCode);
 		this.write();
 	}
 
-	public void method_1625(GameOptions.Option option, double d) {
+	public void setDouble(GameOptions.Option option, double d) {
 		if (option == GameOptions.Option.SENSITIVITY) {
 			this.mouseSensitivity = d;
 		}
@@ -246,27 +247,27 @@ public class GameOptions {
 
 		if (option == GameOptions.Option.CHAT_OPACITY) {
 			this.chatOpacity = d;
-			this.client.inGameHud.getHudChat().reset();
+			this.client.inGameHud.getChatHud().reset();
 		}
 
 		if (option == GameOptions.Option.CHAT_HEIGHT_FOCUSED) {
 			this.chatHeightFocused = d;
-			this.client.inGameHud.getHudChat().reset();
+			this.client.inGameHud.getChatHud().reset();
 		}
 
 		if (option == GameOptions.Option.CHAT_HEIGHT_UNFOCUSED) {
 			this.chatHeightUnfocused = d;
-			this.client.inGameHud.getHudChat().reset();
+			this.client.inGameHud.getChatHud().reset();
 		}
 
 		if (option == GameOptions.Option.CHAT_WIDTH) {
 			this.chatWidth = d;
-			this.client.inGameHud.getHudChat().reset();
+			this.client.inGameHud.getChatHud().reset();
 		}
 
 		if (option == GameOptions.Option.CHAT_SCALE) {
 			this.chatScale = d;
-			this.client.inGameHud.getHudChat().reset();
+			this.client.inGameHud.getChatHud().reset();
 		}
 
 		if (option == GameOptions.Option.MIPMAP_LEVELS) {
@@ -299,9 +300,9 @@ public class GameOptions {
 		}
 	}
 
-	public void updateOption(GameOptions.Option option, int i) {
+	public void setInteger(GameOptions.Option option, int i) {
 		if (option == GameOptions.Option.RENDER_DISTANCE) {
-			this.method_1625(option, MathHelper.clamp((double)(this.viewDistance + i), option.getMinimumValue(), option.getMaximumValue()));
+			this.setDouble(option, MathHelper.clamp((double)(this.viewDistance + i), option.getMinimumValue(), option.getMaximumValue()));
 		}
 
 		if (option == GameOptions.Option.MAIN_HAND) {
@@ -330,7 +331,7 @@ public class GameOptions {
 
 		if (option == GameOptions.Option.FORCE_UNICODE_FONT) {
 			this.forceUnicodeFont = !this.forceUnicodeFont;
-			this.client.getFontManager().setForceUnicodeFont(this.forceUnicodeFont);
+			this.client.getFontManager().setForceUnicodeFont(this.forceUnicodeFont, SystemUtil.getServerWorkerExecutor(), this.client);
 		}
 
 		if (option == GameOptions.Option.GRAPHICS) {
@@ -421,7 +422,7 @@ public class GameOptions {
 		this.write();
 	}
 
-	public double method_1637(GameOptions.Option option) {
+	public double getDouble(GameOptions.Option option) {
 		if (option == GameOptions.Option.BIOME_BLEND_RADIUS) {
 			return (double)this.biomeBlendRadius;
 		} else if (option == GameOptions.Option.FOV) {
@@ -510,7 +511,7 @@ public class GameOptions {
 	public String getTranslatedName(GameOptions.Option option) {
 		String string = I18n.translate(option.getTranslationKey()) + ": ";
 		if (option.isSlider()) {
-			double d = this.method_1637(option);
+			double d = this.getDouble(option);
 			double e = option.method_1651(d);
 			if (option == GameOptions.Option.SENSITIVITY) {
 				if (e == 0.0) {
@@ -546,11 +547,11 @@ public class GameOptions {
 			} else if (option == GameOptions.Option.CHAT_OPACITY) {
 				return string + (int)(e * 90.0 + 10.0) + "%";
 			} else if (option == GameOptions.Option.CHAT_HEIGHT_UNFOCUSED) {
-				return string + ChatHud.method_1818(e) + "px";
+				return string + ChatHud.getHeight(e) + "px";
 			} else if (option == GameOptions.Option.CHAT_HEIGHT_FOCUSED) {
-				return string + ChatHud.method_1818(e) + "px";
+				return string + ChatHud.getHeight(e) + "px";
 			} else if (option == GameOptions.Option.CHAT_WIDTH) {
-				return string + ChatHud.method_1806(e) + "px";
+				return string + ChatHud.getWidth(e) + "px";
 			} else if (option == GameOptions.Option.RENDER_DISTANCE) {
 				return string + I18n.translate("options.chunks", (int)d);
 			} else if (option == GameOptions.Option.MOUSE_WHEEL_SENSITIVITY) {
@@ -1198,7 +1199,7 @@ public class GameOptions {
 			return MathHelper.clamp((this.method_1657(d) - this.min) / (this.max - this.min), 0.0, 1.0);
 		}
 
-		public double method_1645(double d) {
+		public double progressToValue(double d) {
 			return this.method_1657(MathHelper.lerp(MathHelper.clamp(d, 0.0, 1.0), this.min, this.max));
 		}
 

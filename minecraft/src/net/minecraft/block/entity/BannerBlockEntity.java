@@ -20,7 +20,7 @@ import net.minecraft.util.Nameable;
 
 public class BannerBlockEntity extends BlockEntity implements Nameable {
 	private TextComponent customName;
-	private DyeColor baseColor = DyeColor.WHITE;
+	private DyeColor baseColor = DyeColor.field_7952;
 	private ListTag patternListTag;
 	private boolean patternListTagRead;
 	private List<BannerPattern> patterns;
@@ -103,7 +103,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 
 	@Nullable
 	@Override
-	public BlockEntityUpdateS2CPacket method_16886() {
+	public BlockEntityUpdateS2CPacket toUpdatePacket() {
 		return new BlockEntityUpdateS2CPacket(this.pos, 6, this.toInitialChunkDataTag());
 	}
 

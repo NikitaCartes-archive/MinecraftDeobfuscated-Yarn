@@ -111,7 +111,7 @@ public class MobSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11217(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11138(this);
+		clientPlayPacketListener.onMobSpawn(this);
 	}
 
 	@Nullable

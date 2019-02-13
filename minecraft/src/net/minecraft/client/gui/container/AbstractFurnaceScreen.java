@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> extends ContainerScreen<T> implements RecipeBookProvider {
 	private static final Identifier RECIPE_BUTTON_TEXTURE = new Identifier("textures/gui/recipe_button.png");
 	public final AbstractFurnaceRecipeBookScreen recipeBook;
-	private boolean field_2925;
+	private boolean narrow;
 
 	public AbstractFurnaceScreen(
 		T abstractFurnaceContainer, AbstractFurnaceRecipeBookScreen abstractFurnaceRecipeBookScreen, PlayerInventory playerInventory, TextComponent textComponent
@@ -30,17 +30,17 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 	@Override
 	public void onInitialized() {
 		super.onInitialized();
-		this.field_2925 = this.width < 379;
-		this.recipeBook.initialize(this.width, this.height, this.client, this.field_2925, this.container);
-		this.left = this.recipeBook.findLeftEdge(this.field_2925, this.width, this.containerWidth);
+		this.narrow = this.width < 379;
+		this.recipeBook.initialize(this.width, this.height, this.client, this.narrow, this.container);
+		this.left = this.recipeBook.findLeftEdge(this.narrow, this.width, this.containerWidth);
 		this.addButton(
 			new RecipeBookButtonWidget(10, this.left + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE) {
 				@Override
 				public void onPressed(double d, double e) {
-					AbstractFurnaceScreen.this.recipeBook.reset(AbstractFurnaceScreen.this.field_2925);
+					AbstractFurnaceScreen.this.recipeBook.reset(AbstractFurnaceScreen.this.narrow);
 					AbstractFurnaceScreen.this.recipeBook.toggleOpen();
 					AbstractFurnaceScreen.this.left = AbstractFurnaceScreen.this.recipeBook
-						.findLeftEdge(AbstractFurnaceScreen.this.field_2925, AbstractFurnaceScreen.this.width, AbstractFurnaceScreen.this.containerWidth);
+						.findLeftEdge(AbstractFurnaceScreen.this.narrow, AbstractFurnaceScreen.this.width, AbstractFurnaceScreen.this.containerWidth);
 					this.setPos(AbstractFurnaceScreen.this.left + 20, AbstractFurnaceScreen.this.height / 2 - 49);
 				}
 			}
@@ -58,7 +58,7 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 	@Override
 	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		if (this.recipeBook.isOpen() && this.field_2925) {
+		if (this.recipeBook.isOpen() && this.narrow) {
 			this.drawBackground(f, i, j);
 			this.recipeBook.draw(i, j, f);
 		} else {
@@ -67,7 +67,7 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 			this.recipeBook.drawGhostSlots(this.left, this.top, true, f);
 		}
 
-		this.drawMousoverTooltip(i, j);
+		this.drawMouseoverTooltip(i, j);
 		this.recipeBook.drawTooltip(this.left, this.top, i, j);
 	}
 
@@ -99,7 +99,7 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 		if (this.recipeBook.mouseClicked(d, e, i)) {
 			return true;
 		} else {
-			return this.field_2925 && this.recipeBook.isOpen() ? true : super.mouseClicked(d, e, i);
+			return this.narrow && this.recipeBook.isOpen() ? true : super.mouseClicked(d, e, i);
 		}
 	}
 

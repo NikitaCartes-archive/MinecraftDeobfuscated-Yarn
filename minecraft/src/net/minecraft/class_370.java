@@ -33,10 +33,10 @@ public class class_370 implements Toast {
 		GlStateManager.color3f(1.0F, 1.0F, 1.0F);
 		toastManager.drawTexturedRect(0, 0, 0, 64, 160, 32);
 		if (this.field_2217 == null) {
-			toastManager.getGame().fontRenderer.draw(this.field_2215, 18.0F, 12.0F, -256);
+			toastManager.getGame().textRenderer.draw(this.field_2215, 18.0F, 12.0F, -256);
 		} else {
-			toastManager.getGame().fontRenderer.draw(this.field_2215, 18.0F, 7.0F, -256);
-			toastManager.getGame().fontRenderer.draw(this.field_2217, 18.0F, 18.0F, -1);
+			toastManager.getGame().textRenderer.draw(this.field_2215, 18.0F, 7.0F, -256);
+			toastManager.getGame().textRenderer.draw(this.field_2217, 18.0F, 18.0F, -1);
 		}
 
 		return l - this.field_2216 < 5000L ? Toast.Visibility.field_2210 : Toast.Visibility.field_2209;

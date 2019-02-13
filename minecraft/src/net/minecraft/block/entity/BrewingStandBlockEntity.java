@@ -277,7 +277,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	}
 
 	@Override
-	public void clearInv() {
+	public void clear() {
 		this.inventory.clear();
 	}
 

@@ -46,7 +46,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Simpl
 		Biomes.field_9444,
 		Biomes.field_9410,
 		Biomes.field_9449,
-		Biomes.biome,
+		Biomes.field_9451,
 		Biomes.field_9463,
 		Biomes.field_9477,
 		Biomes.field_9478,

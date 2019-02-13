@@ -14,10 +14,6 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import net.minecraft.class_2430;
-import net.minecraft.class_2434;
-import net.minecraft.class_2437;
-import net.minecraft.class_3714;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
@@ -36,11 +32,11 @@ public class LootTablesProvider implements DataProvider {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 	private final DataGenerator root;
 	private final List<Pair<Supplier<Consumer<BiConsumer<Identifier, LootSupplier.Builder>>>, LootContextType>> field_11354 = ImmutableList.of(
-		Pair.of(class_2437::new, LootContextTypes.FISHING),
+		Pair.of(FishingLootTableGenerator::new, LootContextTypes.FISHING),
 		Pair.of(ChestLootTableGenerator::new, LootContextTypes.CHEST),
-		Pair.of(class_2434::new, LootContextTypes.ENTITY),
-		Pair.of(class_2430::new, LootContextTypes.BLOCK),
-		Pair.of(class_3714::new, LootContextTypes.GIFT)
+		Pair.of(EntityLootTableGenerator::new, LootContextTypes.ENTITY),
+		Pair.of(BlockLootTableGenerator::new, LootContextTypes.BLOCK),
+		Pair.of(GiftLootTableGenerator::new, LootContextTypes.GIFT)
 	);
 
 	public LootTablesProvider(DataGenerator dataGenerator) {

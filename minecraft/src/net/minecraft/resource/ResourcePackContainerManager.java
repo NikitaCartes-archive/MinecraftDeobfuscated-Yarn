@@ -14,7 +14,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
-public class ResourcePackContainerManager<T extends ResourcePackContainer> {
+public class ResourcePackContainerManager<T extends ResourcePackContainer> implements AutoCloseable {
 	private final Set<ResourcePackCreator> creators = Sets.<ResourcePackCreator>newHashSet();
 	private final Map<String, T> nameToContainer = Maps.newLinkedHashMap();
 	private final List<T> enabledContainers = Lists.<T>newLinkedList();
@@ -25,6 +25,7 @@ public class ResourcePackContainerManager<T extends ResourcePackContainer> {
 	}
 
 	public void callCreators() {
+		this.close();
 		Set<String> set = (Set)this.enabledContainers.stream().map(ResourcePackContainer::getName).collect(Collectors.toCollection(LinkedHashSet::new));
 		this.nameToContainer.clear();
 		this.enabledContainers.clear();
@@ -82,5 +83,9 @@ public class ResourcePackContainerManager<T extends ResourcePackContainer> {
 
 	public void addCreator(ResourcePackCreator resourcePackCreator) {
 		this.creators.add(resourcePackCreator);
+	}
+
+	public void close() {
+		this.nameToContainer.values().forEach(ResourcePackContainer::close);
 	}
 }

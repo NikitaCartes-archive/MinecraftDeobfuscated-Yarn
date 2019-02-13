@@ -10,10 +10,10 @@ import net.minecraft.util.DefaultedList;
 
 @Environment(EnvType.CLIENT)
 public class class_478 implements ContainerListener {
-	private final MinecraftClient client;
+	private final MinecraftClient field_2876;
 
 	public class_478(MinecraftClient minecraftClient) {
-		this.client = minecraftClient;
+		this.field_2876 = minecraftClient;
 	}
 
 	@Override
@@ -22,7 +22,7 @@ public class class_478 implements ContainerListener {
 
 	@Override
 	public void onContainerSlotUpdate(Container container, int i, ItemStack itemStack) {
-		this.client.interactionManager.method_2909(itemStack, i);
+		this.field_2876.interactionManager.method_2909(itemStack, i);
 	}
 
 	@Override

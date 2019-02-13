@@ -13,7 +13,7 @@ public class Schema100 extends Schema {
 		super(i, schema);
 	}
 
-	public static TypeTemplate method_5196(Schema schema) {
+	protected static TypeTemplate method_5196(Schema schema) {
 		return DSL.optionalFields("ArmorItems", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "HandItems", DSL.list(TypeReferences.ITEM_STACK.in(schema)));
 	}
 

@@ -26,7 +26,7 @@ public class BlockUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.pos = packetByteBuf.readBlockPos();
-		this.state = Block.STATE_IDS.getInt(packetByteBuf.readVarInt());
+		this.state = Block.STATE_IDS.get(packetByteBuf.readVarInt());
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class BlockUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11310(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11136(this);
+		clientPlayPacketListener.onBlockUpdate(this);
 	}
 
 	@Environment(EnvType.CLIENT)

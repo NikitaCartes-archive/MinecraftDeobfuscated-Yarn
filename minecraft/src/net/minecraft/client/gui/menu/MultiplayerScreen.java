@@ -87,7 +87,7 @@ public class MultiplayerScreen extends Screen {
 						: (EntryListWidget.Entry)MultiplayerScreen.this.field_3043.getEntries().get(MultiplayerScreen.this.field_3043.getIndex());
 					MultiplayerScreen.this.field_3036 = true;
 					if (entry instanceof RemoteServerListEntry) {
-						ServerEntry serverEntry = ((RemoteServerListEntry)entry).method_2556();
+						ServerEntry serverEntry = ((RemoteServerListEntry)entry).getServerEntry();
 						MultiplayerScreen.this.field_3051 = new ServerEntry(serverEntry.name, serverEntry.address, false);
 						MultiplayerScreen.this.field_3051.copyFrom(serverEntry);
 						MultiplayerScreen.this.client.openScreen(new AddServerScreen(MultiplayerScreen.this, MultiplayerScreen.this.field_3051));
@@ -103,7 +103,7 @@ public class MultiplayerScreen extends Screen {
 						? null
 						: (EntryListWidget.Entry)MultiplayerScreen.this.field_3043.getEntries().get(MultiplayerScreen.this.field_3043.getIndex());
 					if (entry instanceof RemoteServerListEntry) {
-						String string = ((RemoteServerListEntry)entry).method_2556().name;
+						String string = ((RemoteServerListEntry)entry).getServerEntry().name;
 						if (string != null) {
 							MultiplayerScreen.this.field_3039 = true;
 							String string2 = I18n.translate("selectServer.deleteQuestion");
@@ -215,7 +215,7 @@ public class MultiplayerScreen extends Screen {
 		} else if (this.field_3036) {
 			this.field_3036 = false;
 			if (bl && entry instanceof RemoteServerListEntry) {
-				ServerEntry serverEntry = ((RemoteServerListEntry)entry).method_2556();
+				ServerEntry serverEntry = ((RemoteServerListEntry)entry).getServerEntry();
 				serverEntry.name = this.field_3051.name;
 				serverEntry.address = this.field_3051.address;
 				serverEntry.copyFrom(this.field_3051);
@@ -313,7 +313,7 @@ public class MultiplayerScreen extends Screen {
 	public void method_2536() {
 		EntryListWidget.Entry<?> entry = this.field_3043.getIndex() < 0 ? null : (EntryListWidget.Entry)this.field_3043.getEntries().get(this.field_3043.getIndex());
 		if (entry instanceof RemoteServerListEntry) {
-			this.method_2548(((RemoteServerListEntry)entry).method_2556());
+			this.method_2548(((RemoteServerListEntry)entry).getServerEntry());
 		} else if (entry instanceof LocalServerListEntry) {
 			LanServerEntry lanServerEntry = ((LocalServerListEntry)entry).getLanServerEntry();
 			this.method_2548(new ServerEntry(lanServerEntry.getMotd(), lanServerEntry.getAddressPort(), true));

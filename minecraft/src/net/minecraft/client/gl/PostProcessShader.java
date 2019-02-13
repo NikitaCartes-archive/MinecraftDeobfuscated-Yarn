@@ -15,7 +15,7 @@ import net.minecraft.resource.ResourceManager;
 
 @Environment(EnvType.CLIENT)
 public class PostProcessShader implements AutoCloseable {
-	private final GlProgram program;
+	private final JsonGlProgram program;
 	public final GlFramebuffer input;
 	public final GlFramebuffer output;
 	private final List<Object> field_1534 = Lists.<Object>newArrayList();
@@ -25,7 +25,7 @@ public class PostProcessShader implements AutoCloseable {
 	private Matrix4f projectionMatrix;
 
 	public PostProcessShader(ResourceManager resourceManager, String string, GlFramebuffer glFramebuffer, GlFramebuffer glFramebuffer2) throws IOException {
-		this.program = new GlProgram(resourceManager, string);
+		this.program = new JsonGlProgram(resourceManager, string);
 		this.input = glFramebuffer;
 		this.output = glFramebuffer2;
 	}
@@ -69,19 +69,19 @@ public class PostProcessShader implements AutoCloseable {
 			this.program.bindSampler((String)this.field_1539.get(i), this.field_1534.get(i));
 			this.program
 				.getUniformByNameOrDummy("AuxSize" + i)
-				.put((float)((Integer)this.field_1533.get(i)).intValue(), (float)((Integer)this.field_1537.get(i)).intValue());
+				.set((float)((Integer)this.field_1533.get(i)).intValue(), (float)((Integer)this.field_1537.get(i)).intValue());
 		}
 
-		this.program.getUniformByNameOrDummy("ProjMat").put(this.projectionMatrix);
-		this.program.getUniformByNameOrDummy("InSize").put((float)this.input.texWidth, (float)this.input.texHeight);
-		this.program.getUniformByNameOrDummy("OutSize").put(g, h);
-		this.program.getUniformByNameOrDummy("Time").put(f);
+		this.program.getUniformByNameOrDummy("ProjMat").set(this.projectionMatrix);
+		this.program.getUniformByNameOrDummy("InSize").set((float)this.input.texWidth, (float)this.input.texHeight);
+		this.program.getUniformByNameOrDummy("OutSize").set(g, h);
+		this.program.getUniformByNameOrDummy("Time").set(f);
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		this.program
 			.getUniformByNameOrDummy("ScreenSize")
-			.put((float)minecraftClient.window.getFramebufferWidth(), (float)minecraftClient.window.getFramebufferHeight());
+			.set((float)minecraftClient.window.getFramebufferWidth(), (float)minecraftClient.window.getFramebufferHeight());
 		this.program.enable();
-		this.output.clear(MinecraftClient.isSystemMac);
+		this.output.clear(MinecraftClient.IS_SYSTEM_MAC);
 		this.output.beginWrite(false);
 		GlStateManager.depthMask(false);
 		GlStateManager.colorMask(true, true, true, true);
@@ -106,7 +106,7 @@ public class PostProcessShader implements AutoCloseable {
 		}
 	}
 
-	public GlProgram getProgram() {
+	public JsonGlProgram getProgram() {
 		return this.program;
 	}
 }

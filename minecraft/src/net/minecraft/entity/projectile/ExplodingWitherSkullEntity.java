@@ -6,7 +6,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.boss.EntityWither;
+import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -52,7 +52,7 @@ public class ExplodingWitherSkullEntity extends ExplosiveProjectileEntity {
 	public float getEffectiveExplosionResistance(
 		Explosion explosion, BlockView blockView, BlockPos blockPos, BlockState blockState, FluidState fluidState, float f
 	) {
-		return this.method_7503() && EntityWither.canDestroy(blockState) ? Math.min(0.8F, f) : f;
+		return this.method_7503() && WitherEntity.canDestroy(blockState) ? Math.min(0.8F, f) : f;
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class ExplodingWitherSkullEntity extends ExplosiveProjectileEntity {
 				if (this.owner != null) {
 					if (entity.damage(DamageSource.mob(this.owner), 8.0F)) {
 						if (entity.isValid()) {
-							this.method_5723(this.owner, entity);
+							this.dealDamage(this.owner, entity);
 						} else {
 							this.owner.heal(5.0F);
 						}

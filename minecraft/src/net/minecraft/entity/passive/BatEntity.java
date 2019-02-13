@@ -206,7 +206,7 @@ public class BatEntity extends AmbientEntity {
 		if (blockPos.getY() >= iWorld.getSeaLevel()) {
 			return false;
 		} else {
-			int i = iWorld.method_8602(blockPos);
+			int i = iWorld.getLightLevel(blockPos);
 			int j = 4;
 			if (this.method_6451()) {
 				j = 7;

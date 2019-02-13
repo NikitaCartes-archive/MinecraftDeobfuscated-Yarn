@@ -433,17 +433,17 @@ public class Raid {
 		ItemStack itemStack = new ItemStack(Items.field_8539);
 		CompoundTag compoundTag = itemStack.getOrCreateSubCompoundTag("BlockEntityTag");
 		ListTag listTag = new BannerPattern.Builder()
-			.with(BannerPattern.RHOMBUS, DyeColor.CYAN)
-			.with(BannerPattern.STRIPE_BOTTOM, DyeColor.LIGHT_GRAY)
-			.with(BannerPattern.STRIPE_CENTER, DyeColor.GRAY)
-			.with(BannerPattern.BORDER, DyeColor.LIGHT_GRAY)
+			.with(BannerPattern.RHOMBUS, DyeColor.field_7955)
+			.with(BannerPattern.STRIPE_BOTTOM, DyeColor.field_7967)
+			.with(BannerPattern.STRIPE_CENTER, DyeColor.field_7944)
+			.with(BannerPattern.BORDER, DyeColor.field_7967)
 			.with(BannerPattern.STRIPE_MIDDLE, DyeColor.BLACK)
-			.with(BannerPattern.HALF_HORIZONTAL_TOP, DyeColor.LIGHT_GRAY)
-			.with(BannerPattern.CIRCLE, DyeColor.LIGHT_GRAY)
+			.with(BannerPattern.HALF_HORIZONTAL_TOP, DyeColor.field_7967)
+			.with(BannerPattern.CIRCLE, DyeColor.field_7967)
 			.with(BannerPattern.BORDER, DyeColor.BLACK)
 			.build();
 		compoundTag.put("Patterns", listTag);
-		itemStack.setDisplayName(new TranslatableTextComponent("block.minecraft.illager_banner").applyFormat(TextFormat.GOLD));
+		itemStack.setDisplayName(new TranslatableTextComponent("block.minecraft.illager_banner").applyFormat(TextFormat.field_1065));
 		return itemStack;
 	}
 

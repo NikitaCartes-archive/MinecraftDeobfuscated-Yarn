@@ -3,7 +3,6 @@ package net.minecraft.block;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2475;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.fluid.Fluid;
@@ -20,8 +19,8 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 
-public class TallSeagrassBlock extends class_2475 implements FluidFillable {
-	public static final EnumProperty<DoubleBlockHalf> HALF = class_2475.field_11484;
+public class TallSeagrassBlock extends ReplaceableTallPlantBlock implements FluidFillable {
+	public static final EnumProperty<DoubleBlockHalf> HALF = ReplaceableTallPlantBlock.HALF;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0);
 
 	public TallSeagrassBlock(Block.Settings settings) {

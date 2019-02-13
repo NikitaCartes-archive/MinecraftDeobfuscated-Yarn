@@ -3,12 +3,12 @@ package net.minecraft.client.render.block;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2475;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.MaterialColor;
 import net.minecraft.block.RedstoneWireBlock;
+import net.minecraft.block.ReplaceableTallPlantBlock;
 import net.minecraft.block.StemBlock;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.util.IdList;
@@ -25,7 +25,7 @@ public class BlockColorMap {
 		BlockColorMap blockColorMap = new BlockColorMap();
 		blockColorMap.register(
 			(blockState, extendedBlockView, blockPos, i) -> extendedBlockView != null && blockPos != null
-					? BiomeColors.grassColorAt(extendedBlockView, blockState.get(class_2475.field_11484) == DoubleBlockHalf.field_12609 ? blockPos.down() : blockPos)
+					? BiomeColors.grassColorAt(extendedBlockView, blockState.get(ReplaceableTallPlantBlock.HALF) == DoubleBlockHalf.field_12609 ? blockPos.down() : blockPos)
 					: -1,
 			Blocks.field_10313,
 			Blocks.field_10214
@@ -77,7 +77,7 @@ public class BlockColorMap {
 	}
 
 	public int method_1691(BlockState blockState, World world, BlockPos blockPos) {
-		BlockColorMapper blockColorMapper = this.mappers.getInt(Registry.BLOCK.getRawId(blockState.getBlock()));
+		BlockColorMapper blockColorMapper = this.mappers.get(Registry.BLOCK.getRawId(blockState.getBlock()));
 		if (blockColorMapper != null) {
 			return blockColorMapper.getColor(blockState, null, null, 0);
 		} else {
@@ -87,7 +87,7 @@ public class BlockColorMap {
 	}
 
 	public int getRenderColor(BlockState blockState, @Nullable ExtendedBlockView extendedBlockView, @Nullable BlockPos blockPos, int i) {
-		BlockColorMapper blockColorMapper = this.mappers.getInt(Registry.BLOCK.getRawId(blockState.getBlock()));
+		BlockColorMapper blockColorMapper = this.mappers.get(Registry.BLOCK.getRawId(blockState.getBlock()));
 		return blockColorMapper == null ? -1 : blockColorMapper.getColor(blockState, extendedBlockView, blockPos, i);
 	}
 

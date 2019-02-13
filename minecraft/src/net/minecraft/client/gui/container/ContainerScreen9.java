@@ -21,7 +21,7 @@ public class ContainerScreen9 extends ContainerScreen<Generic3x3Container> {
 	public void draw(int i, int j, float f) {
 		this.drawBackground();
 		super.draw(i, j, f);
-		this.drawMousoverTooltip(i, j);
+		this.drawMouseoverTooltip(i, j);
 	}
 
 	@Override

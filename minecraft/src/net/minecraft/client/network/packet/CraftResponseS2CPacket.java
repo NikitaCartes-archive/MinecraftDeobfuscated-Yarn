@@ -44,6 +44,6 @@ public class CraftResponseS2CPacket implements Packet<ClientPlayPacketListener> 
 	}
 
 	public void method_11686(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11090(this);
+		clientPlayPacketListener.onCraftResponse(this);
 	}
 }

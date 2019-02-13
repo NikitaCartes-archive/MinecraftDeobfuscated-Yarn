@@ -66,6 +66,6 @@ public class HorseScreen extends ContainerScreen<HorseContainer> {
 		this.mouseX = (float)i;
 		this.mouseY = (float)j;
 		super.draw(i, j, f);
-		this.drawMousoverTooltip(i, j);
+		this.drawMouseoverTooltip(i, j);
 	}
 }

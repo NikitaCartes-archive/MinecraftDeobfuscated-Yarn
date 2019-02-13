@@ -73,7 +73,7 @@ public class CraftingInventory implements Inventory, RecipeInputProvider {
 	}
 
 	@Override
-	public void clearInv() {
+	public void clear() {
 		this.stacks.clear();
 	}
 

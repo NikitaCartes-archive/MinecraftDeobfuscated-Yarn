@@ -58,7 +58,7 @@ public class class_2291 {
 	public void method_9795() throws CommandSyntaxException {
 		int i = this.field_10802.getCursor();
 		Identifier identifier = Identifier.parse(this.field_10802);
-		this.field_10803 = (Item)Registry.ITEM.getOptional(identifier).orElseThrow(() -> {
+		this.field_10803 = (Item)Registry.ITEM.getOrEmpty(identifier).orElseThrow(() -> {
 			this.field_10802.setCursor(i);
 			return field_10799.createWithContext(this.field_10802, identifier.toString());
 		});
@@ -113,7 +113,7 @@ public class class_2291 {
 			CommandSource.suggestIdentifiers(ItemTags.getContainer().getKeys(), suggestionsBuilder, String.valueOf('#'));
 		}
 
-		return CommandSource.suggestIdentifiers(Registry.ITEM.keys(), suggestionsBuilder);
+		return CommandSource.suggestIdentifiers(Registry.ITEM.getIds(), suggestionsBuilder);
 	}
 
 	public CompletableFuture<Suggestions> method_9793(SuggestionsBuilder suggestionsBuilder) {

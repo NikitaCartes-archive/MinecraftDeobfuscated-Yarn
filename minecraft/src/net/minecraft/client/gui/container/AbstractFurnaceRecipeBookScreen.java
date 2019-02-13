@@ -30,13 +30,13 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookGui {
 	@Override
 	protected boolean toggleFilteringCraftable() {
 		boolean bl = !this.isFilteringCraftable();
-		this.method_17060(bl);
+		this.setFilteringCraftable(bl);
 		return bl;
 	}
 
 	protected abstract boolean isFilteringCraftable();
 
-	protected abstract void method_17060(boolean bl);
+	protected abstract void setFilteringCraftable(boolean bl);
 
 	@Override
 	public boolean isOpen() {

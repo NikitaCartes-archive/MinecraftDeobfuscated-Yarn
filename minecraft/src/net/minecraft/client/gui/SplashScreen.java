@@ -5,8 +5,7 @@ import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_766;
-import net.minecraft.client.resource.ResourceLoadProgressProvider;
-import net.minecraft.resource.ResourceReloadStatus;
+import net.minecraft.resource.ResourceReloadHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
@@ -14,14 +13,14 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class SplashScreen extends Screen {
 	private static final Identifier LOGO = new Identifier("textures/gui/title/mojang.png");
-	private final ResourceLoadProgressProvider field_17767;
+	private final ResourceReloadHandler field_17767;
 	private final Consumer<SplashScreen> splashScreenConsumer;
 	private final class_766 field_17769 = new class_766(MainMenuScreen.field_17774);
 	private float field_17770;
 	private long field_17771 = -1L;
 
-	public SplashScreen(ResourceLoadProgressProvider resourceLoadProgressProvider, Consumer<SplashScreen> consumer) {
-		this.field_17767 = resourceLoadProgressProvider;
+	public SplashScreen(ResourceReloadHandler resourceReloadHandler, Consumer<SplashScreen> consumer) {
+		this.field_17767 = resourceReloadHandler;
 		this.splashScreenConsumer = consumer;
 	}
 
@@ -46,7 +45,7 @@ public class SplashScreen extends Screen {
 			drawTexturedRect(0, 0, 0.0F, 0.0F, 16, 128, this.width, this.height, 16.0F, 128.0F);
 		}
 
-		float h = (float)this.field_17767.getProgress() / (float)this.field_17767.getTotal();
+		float h = this.field_17767.getProgress();
 		this.field_17770 = this.field_17770 * 0.95F + h * 0.050000012F;
 		if (g < 1.0F) {
 			this.renderProgressBar(
@@ -58,7 +57,7 @@ public class SplashScreen extends Screen {
 			this.splashScreenConsumer.accept(this);
 		}
 
-		if (this.field_17771 == -1L && this.field_17767.getStatus() == ResourceReloadStatus.field_17925) {
+		if (this.field_17771 == -1L && this.field_17767.whenComplete().isDone()) {
 			this.field_17771 = SystemUtil.getMeasuringTimeMs();
 		}
 	}

@@ -27,7 +27,7 @@ public class class_1419 {
 		this.field_6727 = world;
 	}
 
-	public void tick() {
+	public void method_6445() {
 		if (this.field_6727.isDaylight()) {
 			this.field_6724 = 0;
 		} else if (this.field_6724 != 2) {

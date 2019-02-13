@@ -1,10 +1,10 @@
 package net.minecraft.structure.processor;
 
 import com.mojang.datafixers.Dynamic;
-import net.minecraft.class_3817;
+import net.minecraft.util.DynamicDeserializer;
 import net.minecraft.util.registry.Registry;
 
-public interface StructureProcessorType extends class_3817<StructureProcessor> {
+public interface StructureProcessorType extends DynamicDeserializer<StructureProcessor> {
 	StructureProcessorType field_16986 = register("block_ignore", BlockIgnoreStructureProcessor::new);
 	StructureProcessorType field_16988 = register("block_rot", BlockRotStructureProcessor::new);
 	StructureProcessorType field_16989 = register("gravity", GravityStructureProcessor::new);

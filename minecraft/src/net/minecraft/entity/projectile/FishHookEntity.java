@@ -147,7 +147,7 @@ public class FishHookEntity extends Entity {
 			BlockPos blockPos = new BlockPos(this);
 			FluidState fluidState = this.world.getFluidState(blockPos);
 			if (fluidState.matches(FluidTags.field_15517)) {
-				f = fluidState.method_15763(this.world, blockPos);
+				f = fluidState.getHeight(this.world, blockPos);
 			}
 
 			if (this.state == FishHookEntity.State.field_7180) {

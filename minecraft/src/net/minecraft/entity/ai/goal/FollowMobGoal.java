@@ -58,15 +58,15 @@ public class FollowMobGoal extends Goal {
 	@Override
 	public void start() {
 		this.field_6431 = 0;
-		this.field_6437 = this.field_6432.getPathNodeTypeWeight(PathNodeType.WATER);
-		this.field_6432.setPathNodeTypeWeight(PathNodeType.WATER, 0.0F);
+		this.field_6437 = this.field_6432.getPathNodeTypeWeight(PathNodeType.field_18);
+		this.field_6432.setPathNodeTypeWeight(PathNodeType.field_18, 0.0F);
 	}
 
 	@Override
 	public void onRemove() {
 		this.field_6433 = null;
 		this.field_6434.stop();
-		this.field_6432.setPathNodeTypeWeight(PathNodeType.WATER, this.field_6437);
+		this.field_6432.setPathNodeTypeWeight(PathNodeType.field_18, this.field_6437);
 	}
 
 	@Override

@@ -35,7 +35,7 @@ public class PlayerUseBedS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11748(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11137(this);
+		clientPlayPacketListener.onPlayerUseBed(this);
 	}
 
 	@Environment(EnvType.CLIENT)

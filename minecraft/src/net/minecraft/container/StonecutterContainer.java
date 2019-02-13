@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3914;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -51,7 +50,7 @@ public class StonecutterContainer extends Container {
 		Items.field_8314,
 		Items.field_8216
 	);
-	private final class_3914 field_17630;
+	private final ContainerWorldContext context;
 	private final Property selectedRecipe = Property.create();
 	private final World world;
 	private List<StonecuttingRecipe> availableRecipes = Lists.<StonecuttingRecipe>newArrayList();
@@ -71,12 +70,12 @@ public class StonecutterContainer extends Container {
 	};
 
 	public StonecutterContainer(int i, PlayerInventory playerInventory) {
-		this(i, playerInventory, class_3914.field_17304);
+		this(i, playerInventory, ContainerWorldContext.NO_OP_CONTEXT);
 	}
 
-	public StonecutterContainer(int i, PlayerInventory playerInventory, class_3914 arg) {
+	public StonecutterContainer(int i, PlayerInventory playerInventory, ContainerWorldContext containerWorldContext) {
 		super(ContainerType.field_17625, i);
-		this.field_17630 = arg;
+		this.context = containerWorldContext;
 		this.world = playerInventory.player.world;
 		this.inputSlot = this.addSlot(new Slot(this.inventory, 0, 20, 33));
 		this.outputSlot = this.addSlot(new Slot(this.inventory, 1, 143, 33) {
@@ -93,7 +92,7 @@ public class StonecutterContainer extends Container {
 				}
 
 				itemStack.getItem().onCrafted(itemStack, playerEntity.world, playerEntity);
-				arg.method_17393((world, blockPos) -> {
+				containerWorldContext.run((world, blockPos) -> {
 					long l = world.getTime();
 					if (StonecutterContainer.this.lastTakeTime != l) {
 						world.playSound(null, blockPos, SoundEvents.field_17710, SoundCategory.field_15245, 1.0F, 1.0F);
@@ -118,7 +117,7 @@ public class StonecutterContainer extends Container {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_17862() {
+	public int getSelectedRecipe() {
 		return this.selectedRecipe.get();
 	}
 
@@ -139,7 +138,7 @@ public class StonecutterContainer extends Container {
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return canUse(this.field_17630, playerEntity, Blocks.field_16335);
+		return canUse(this.context, playerEntity, Blocks.field_16335);
 	}
 
 	@Override
@@ -242,6 +241,6 @@ public class StonecutterContainer extends Container {
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
 		this.inventory.removeInvStack(1);
-		this.field_17630.method_17393((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.inventory));
+		this.context.run((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.inventory));
 	}
 }

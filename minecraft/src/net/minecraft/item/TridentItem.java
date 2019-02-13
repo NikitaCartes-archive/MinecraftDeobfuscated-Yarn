@@ -120,12 +120,12 @@ public class TridentItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.getDamage() >= itemStack.getDurability()) {
-			return new TypedActionResult<>(ActionResult.FAILURE, itemStack);
+			return new TypedActionResult<>(ActionResult.field_5814, itemStack);
 		} else if (EnchantmentHelper.getRiptide(itemStack) > 0 && !playerEntity.isInsideWaterOrRain()) {
-			return new TypedActionResult<>(ActionResult.FAILURE, itemStack);
+			return new TypedActionResult<>(ActionResult.field_5814, itemStack);
 		} else {
 			playerEntity.setCurrentHand(hand);
-			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+			return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 		}
 	}
 

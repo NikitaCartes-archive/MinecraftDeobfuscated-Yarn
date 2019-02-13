@@ -203,7 +203,7 @@ public class LecternBlock extends BlockWithEntity {
 			);
 			itemEntity.setToDefaultPickupDelay();
 			world.spawnEntity(itemEntity);
-			lecternBlockEntity.clearInv();
+			lecternBlockEntity.clear();
 		}
 	}
 

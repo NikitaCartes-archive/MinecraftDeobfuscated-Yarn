@@ -18,20 +18,20 @@ public abstract class MobEntityWithAi extends MobEntity {
 		super(entityType, world);
 	}
 
-	public float method_6149(BlockPos blockPos) {
-		return this.method_6144(blockPos, this.world);
+	public float getPathfindingFavor(BlockPos blockPos) {
+		return this.getPathfindingFavor(blockPos, this.world);
 	}
 
-	public float method_6144(BlockPos blockPos, ViewableWorld viewableWorld) {
+	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
 		return 0.0F;
 	}
 
 	@Override
 	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-		return super.canSpawn(iWorld, spawnType) && this.method_6144(new BlockPos(this.x, this.getBoundingBox().minY, this.z), iWorld) >= 0.0F;
+		return super.canSpawn(iWorld, spawnType) && this.getPathfindingFavor(new BlockPos(this.x, this.getBoundingBox().minY, this.z), iWorld) >= 0.0F;
 	}
 
-	public boolean method_6150() {
+	public boolean isNavigating() {
 		return !this.getNavigation().isIdle();
 	}
 

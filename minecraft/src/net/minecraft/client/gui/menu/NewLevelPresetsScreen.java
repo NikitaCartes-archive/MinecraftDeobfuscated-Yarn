@@ -139,7 +139,7 @@ public class NewLevelPresetsScreen extends Screen {
 		method_2195(
 			I18n.translate("createWorld.customize.preset.classic_flat"),
 			Blocks.field_10219,
-			Biomes.biome,
+			Biomes.field_9451,
 			Arrays.asList("village"),
 			new FlatChunkGeneratorLayer(1, Blocks.field_10219),
 			new FlatChunkGeneratorLayer(2, Blocks.field_10566),
@@ -169,7 +169,7 @@ public class NewLevelPresetsScreen extends Screen {
 		method_2195(
 			I18n.translate("createWorld.customize.preset.overworld"),
 			Blocks.field_10479,
-			Biomes.biome,
+			Biomes.field_9451,
 			Arrays.asList("village", "biome_1", "decoration", "stronghold", "mineshaft", "dungeon", "lake", "lava_lake"),
 			new FlatChunkGeneratorLayer(1, Blocks.field_10219),
 			new FlatChunkGeneratorLayer(3, Blocks.field_10566),
@@ -190,7 +190,7 @@ public class NewLevelPresetsScreen extends Screen {
 		method_2195(
 			I18n.translate("createWorld.customize.preset.bottomless_pit"),
 			Items.field_8153,
-			Biomes.biome,
+			Biomes.field_9451,
 			Arrays.asList("village", "biome_1"),
 			new FlatChunkGeneratorLayer(1, Blocks.field_10219),
 			new FlatChunkGeneratorLayer(3, Blocks.field_10566),

@@ -302,14 +302,14 @@ public class BlockArgumentParser {
 			CommandSource.suggestIdentifiers(BlockTags.getContainer().getKeys(), suggestionsBuilder, String.valueOf('#'));
 		}
 
-		CommandSource.suggestIdentifiers(Registry.BLOCK.keys(), suggestionsBuilder);
+		CommandSource.suggestIdentifiers(Registry.BLOCK.getIds(), suggestionsBuilder);
 		return suggestionsBuilder.buildFuture();
 	}
 
 	public void parseBlockId() throws CommandSyntaxException {
 		int i = this.reader.getCursor();
 		this.blockId = Identifier.parse(this.reader);
-		Block block = (Block)Registry.BLOCK.getOptional(this.blockId).orElseThrow(() -> {
+		Block block = (Block)Registry.BLOCK.getOrEmpty(this.blockId).orElseThrow(() -> {
 			this.reader.setCursor(i);
 			return INVALID_BLOCK_ID_EXCEPTION.createWithContext(this.reader, this.blockId.toString());
 		});

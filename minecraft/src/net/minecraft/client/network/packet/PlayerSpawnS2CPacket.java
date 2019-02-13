@@ -62,7 +62,7 @@ public class PlayerSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11235(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11097(this);
+		clientPlayPacketListener.onPlayerSpawn(this);
 	}
 
 	@Nullable

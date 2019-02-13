@@ -28,6 +28,9 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	@Nullable
 	public abstract PassiveEntity createChild(PassiveEntity passiveEntity);
 
+	protected void method_18249(PlayerEntity playerEntity, PassiveEntity passiveEntity) {
+	}
+
 	@Override
 	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
@@ -43,6 +46,7 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 						passiveEntity.setCustomName(itemStack.getDisplayName());
 					}
 
+					this.method_18249(playerEntity, passiveEntity);
 					if (!playerEntity.abilities.creativeMode) {
 						itemStack.subtractAmount(1);
 					}

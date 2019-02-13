@@ -28,7 +28,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 	}
 
 	public void method_11782(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11117(this);
+		clientPlayPacketListener.onPlayerRespawn(this);
 	}
 
 	@Override

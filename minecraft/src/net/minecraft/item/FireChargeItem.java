@@ -17,7 +17,7 @@ public class FireChargeItem extends Item {
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		World world = itemUsageContext.getWorld();
 		if (world.isClient) {
-			return ActionResult.SUCCESS;
+			return ActionResult.field_5812;
 		} else {
 			BlockPos blockPos = itemUsageContext.getBlockPos().offset(itemUsageContext.getFacing());
 			if (world.getBlockState(blockPos).isAir()) {
@@ -26,7 +26,7 @@ public class FireChargeItem extends Item {
 			}
 
 			itemUsageContext.getItemStack().subtractAmount(1);
-			return ActionResult.SUCCESS;
+			return ActionResult.field_5812;
 		}
 	}
 }

@@ -38,8 +38,8 @@ public interface FluidState extends PropertyContainer<FluidState> {
 		return this.getFluid().isEmpty();
 	}
 
-	default float method_15763(BlockView blockView, BlockPos blockPos) {
-		return this.getFluid().method_15788(this, blockView, blockPos);
+	default float getHeight(BlockView blockView, BlockPos blockPos) {
+		return this.getFluid().getHeight(this, blockView, blockPos);
 	}
 
 	default int getLevel() {
@@ -88,7 +88,7 @@ public interface FluidState extends PropertyContainer<FluidState> {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	default ParticleParameters method_15766() {
+	default ParticleParameters getParticle() {
 		return this.getFluid().getParticle();
 	}
 

@@ -29,7 +29,7 @@ public class DisconnectS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11467(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11083(this);
+		clientPlayPacketListener.onDisconnect(this);
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -1,20 +1,20 @@
 package net.minecraft.structure.generator;
 
 import java.util.Random;
-import net.minecraft.class_3418;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePieceType;
+import net.minecraft.structure.StructurePieceWithDimensions;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.loot.LootTables;
 
-public class DesertTempleGenerator extends class_3418 {
+public class DesertTempleGenerator extends StructurePieceWithDimensions {
 	private final boolean[] hasPlacedChest = new boolean[4];
 
 	public DesertTempleGenerator(Random random, int i, int j) {

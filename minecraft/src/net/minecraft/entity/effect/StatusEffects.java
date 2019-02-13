@@ -98,6 +98,6 @@ public class StatusEffects {
 	public static final StatusEffect field_16595 = register(31, "bad_omen", new StatusEffect(false, 745784).setIcon(8, 1));
 
 	private static StatusEffect register(int i, String string, StatusEffect statusEffect) {
-		return Registry.set(Registry.STATUS_EFFECT, i, string, statusEffect);
+		return Registry.register(Registry.STATUS_EFFECT, i, string, statusEffect);
 	}
 }

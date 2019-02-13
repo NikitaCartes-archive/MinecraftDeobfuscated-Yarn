@@ -29,7 +29,7 @@ public class SynchronizeTagsS2CPacket implements Packet<ClientPlayPacketListener
 	}
 
 	public void method_12001(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11126(this);
+		clientPlayPacketListener.onSynchronizeTags(this);
 	}
 
 	@Environment(EnvType.CLIENT)

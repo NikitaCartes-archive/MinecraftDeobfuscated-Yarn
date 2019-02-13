@@ -2,9 +2,9 @@ package net.minecraft.world;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_3986;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.passive.TraderLlamaEntity;
 import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sortme.SpawnHelper;
@@ -72,8 +72,8 @@ public class WanderingTraderManager {
 					}
 
 					this.world.getLevelProperties().setWanderingTraderId(wanderingTraderEntity.getUuid());
-					wanderingTraderEntity.method_18013(48000);
-					wanderingTraderEntity.method_18069(new BlockPos(playerEntity.x, playerEntity.y, playerEntity.z));
+					wanderingTraderEntity.setDespawnDelay(48000);
+					wanderingTraderEntity.setWanderTarget(new BlockPos(playerEntity.x, playerEntity.y, playerEntity.z));
 					return true;
 				}
 			}
@@ -85,10 +85,10 @@ public class WanderingTraderManager {
 	private void method_18016(WanderingTraderEntity wanderingTraderEntity, int i) {
 		BlockPos blockPos = this.method_18017(new BlockPos(wanderingTraderEntity), i);
 		if (blockPos != null) {
-			class_3986 lv = EntityType.field_17714.spawn(this.world, null, null, null, blockPos, SpawnType.field_16467, false, false);
-			if (lv != null) {
-				lv.attachLeash(wanderingTraderEntity, true);
-				lv.method_18005(47999);
+			TraderLlamaEntity traderLlamaEntity = EntityType.field_17714.spawn(this.world, null, null, null, blockPos, SpawnType.field_16467, false, false);
+			if (traderLlamaEntity != null) {
+				traderLlamaEntity.attachLeash(wanderingTraderEntity, true);
+				traderLlamaEntity.setDespawnDelay(47999);
 			}
 		}
 	}

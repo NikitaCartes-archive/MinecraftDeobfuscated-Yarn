@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3914;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -19,6 +18,7 @@ import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.container.BeaconContainer;
 import net.minecraft.container.Container;
 import net.minecraft.container.ContainerLock;
+import net.minecraft.container.ContainerWorldContext;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.container.PropertyDelegate;
 import net.minecraft.entity.effect.StatusEffect;
@@ -166,7 +166,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		this.levels = 0;
 		this.beamSegments.clear();
 		this.active = true;
-		BeaconBlockEntity.BeamSegment beamSegment = new BeaconBlockEntity.BeamSegment(DyeColor.WHITE.getColorComponents());
+		BeaconBlockEntity.BeamSegment beamSegment = new BeaconBlockEntity.BeamSegment(DyeColor.field_7952.getColorComponents());
 		this.beamSegments.add(beamSegment);
 		boolean bl = true;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
@@ -279,7 +279,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 
 	@Nullable
 	@Override
-	public BlockEntityUpdateS2CPacket method_16886() {
+	public BlockEntityUpdateS2CPacket toUpdatePacket() {
 		return new BlockEntityUpdateS2CPacket(this.pos, 3, this.toInitialChunkDataTag());
 	}
 
@@ -345,7 +345,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 	@Override
 	public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
 		return LockableContainerBlockEntity.checkUnlocked(playerEntity, this.lock, this.getDisplayName())
-			? new BeaconContainer(i, playerInventory, this.propertyDelegate, class_3914.method_17392(this.world, this.getPos()))
+			? new BeaconContainer(i, playerInventory, this.propertyDelegate, ContainerWorldContext.create(this.world, this.getPos()))
 			: null;
 	}
 

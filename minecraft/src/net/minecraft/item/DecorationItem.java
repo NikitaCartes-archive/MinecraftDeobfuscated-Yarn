@@ -5,6 +5,7 @@ import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -24,8 +25,9 @@ public class DecorationItem extends Item {
 		Direction direction = itemUsageContext.getFacing();
 		BlockPos blockPos2 = blockPos.offset(direction);
 		PlayerEntity playerEntity = itemUsageContext.getPlayer();
-		if (playerEntity != null && !this.method_7834(playerEntity, direction, itemUsageContext.getItemStack(), blockPos2)) {
-			return ActionResult.FAILURE;
+		ItemStack itemStack = itemUsageContext.getItemStack();
+		if (playerEntity != null && !this.method_7834(playerEntity, direction, itemStack, blockPos2)) {
+			return ActionResult.field_5814;
 		} else {
 			World world = itemUsageContext.getWorld();
 			AbstractDecorationEntity abstractDecorationEntity;
@@ -33,10 +35,15 @@ public class DecorationItem extends Item {
 				abstractDecorationEntity = new PaintingEntity(world, blockPos2, direction);
 			} else {
 				if (this.entityType != EntityType.ITEM_FRAME) {
-					return ActionResult.SUCCESS;
+					return ActionResult.field_5812;
 				}
 
 				abstractDecorationEntity = new ItemFrameEntity(world, blockPos2, direction);
+			}
+
+			CompoundTag compoundTag = itemStack.getTag();
+			if (compoundTag != null) {
+				EntityType.loadFromEntityTag(world, playerEntity, abstractDecorationEntity, compoundTag);
 			}
 
 			if (abstractDecorationEntity.method_6888()) {
@@ -45,10 +52,10 @@ public class DecorationItem extends Item {
 					world.spawnEntity(abstractDecorationEntity);
 				}
 
-				itemUsageContext.getItemStack().subtractAmount(1);
+				itemStack.subtractAmount(1);
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.field_5812;
 		}
 	}
 

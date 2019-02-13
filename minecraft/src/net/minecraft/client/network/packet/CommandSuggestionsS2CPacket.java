@@ -61,7 +61,7 @@ public class CommandSuggestionsS2CPacket implements Packet<ClientPlayPacketListe
 	}
 
 	public void method_11398(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11081(this);
+		clientPlayPacketListener.onCommandSuggestions(this);
 	}
 
 	@Environment(EnvType.CLIENT)

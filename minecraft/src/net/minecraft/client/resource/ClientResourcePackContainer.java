@@ -88,4 +88,12 @@ public class ClientResourcePackContainer extends ResourcePackContainer {
 
 		textureManager.bindTexture(this.iconId);
 	}
+
+	@Override
+	public void close() {
+		super.close();
+		if (this.icon != null) {
+			this.icon.close();
+		}
+	}
 }

@@ -1,17 +1,16 @@
 package net.minecraft.resource;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import net.minecraft.util.profiler.Profiler;
 
-public interface SynchronousResourceReloadListener extends ResourceReloadListener<Void> {
+public interface SynchronousResourceReloadListener extends ResourceReloadListener {
 	@Override
-	default CompletableFuture<Void> prepare(ResourceManager resourceManager, Profiler profiler) {
-		return CompletableFuture.completedFuture(null);
+	default CompletableFuture<Void> apply(
+		ResourceReloadListener.Helper helper, ResourceManager resourceManager, Profiler profiler, Profiler profiler2, Executor executor, Executor executor2
+	) {
+		return helper.waitForAll(net.minecraft.util.Void.INSTANCE).thenRunAsync(() -> this.apply(resourceManager), executor2);
 	}
 
-	default void method_18235(ResourceManager resourceManager, Void void_, Profiler profiler) {
-		this.reloadResources(resourceManager);
-	}
-
-	void reloadResources(ResourceManager resourceManager);
+	void apply(ResourceManager resourceManager);
 }

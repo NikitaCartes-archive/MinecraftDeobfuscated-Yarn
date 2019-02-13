@@ -33,12 +33,12 @@ public class ItemEnchantmentArgumentType implements ArgumentType<Enchantment> {
 
 	public Enchantment method_9335(StringReader stringReader) throws CommandSyntaxException {
 		Identifier identifier = Identifier.parse(stringReader);
-		return (Enchantment)Registry.ENCHANTMENT.getOptional(identifier).orElseThrow(() -> field_9872.create(identifier));
+		return (Enchantment)Registry.ENCHANTMENT.getOrEmpty(identifier).orElseThrow(() -> field_9872.create(identifier));
 	}
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-		return CommandSource.suggestIdentifiers(Registry.ENCHANTMENT.keys(), suggestionsBuilder);
+		return CommandSource.suggestIdentifiers(Registry.ENCHANTMENT.getIds(), suggestionsBuilder);
 	}
 
 	@Override

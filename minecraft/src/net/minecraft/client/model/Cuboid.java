@@ -13,8 +13,8 @@ import net.minecraft.client.util.GlAllocationUtils;
 public class Cuboid {
 	public float textureWidth = 64.0F;
 	public float textureHeight = 32.0F;
-	private int textureOffsetX;
-	private int textureOffsetY;
+	private int textureOffsetU;
+	private int textureOffsetV;
 	public float rotationPointX;
 	public float rotationPointY;
 	public float rotationPointZ;
@@ -48,7 +48,7 @@ public class Cuboid {
 		this.setTextureOffset(i, j);
 	}
 
-	public void method_17138(Cuboid cuboid) {
+	public void copyRotation(Cuboid cuboid) {
 		this.pitch = cuboid.pitch;
 		this.yaw = cuboid.yaw;
 		this.roll = cuboid.roll;
@@ -65,41 +65,41 @@ public class Cuboid {
 		this.children.add(cuboid);
 	}
 
-	public void method_17578(Cuboid cuboid) {
+	public void removeChild(Cuboid cuboid) {
 		if (this.children != null) {
 			this.children.remove(cuboid);
 		}
 	}
 
 	public Cuboid setTextureOffset(int i, int j) {
-		this.textureOffsetX = i;
-		this.textureOffsetY = j;
+		this.textureOffsetU = i;
+		this.textureOffsetV = j;
 		return this;
 	}
 
 	public Cuboid addBox(String string, float f, float g, float h, int i, int j, int k, float l, int m, int n) {
 		string = this.name + "." + string;
 		this.setTextureOffset(m, n);
-		this.boxes.add(new Box(this, this.textureOffsetX, this.textureOffsetY, f, g, h, i, j, k, l).setName(string));
+		this.boxes.add(new Box(this, this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, l).setName(string));
 		return this;
 	}
 
 	public Cuboid addBox(float f, float g, float h, int i, int j, int k) {
-		this.boxes.add(new Box(this, this.textureOffsetX, this.textureOffsetY, f, g, h, i, j, k, 0.0F));
+		this.boxes.add(new Box(this, this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, 0.0F));
 		return this;
 	}
 
 	public Cuboid addBox(float f, float g, float h, int i, int j, int k, boolean bl) {
-		this.boxes.add(new Box(this, this.textureOffsetX, this.textureOffsetY, f, g, h, i, j, k, 0.0F, bl));
+		this.boxes.add(new Box(this, this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, 0.0F, bl));
 		return this;
 	}
 
 	public void addBox(float f, float g, float h, int i, int j, int k, float l) {
-		this.boxes.add(new Box(this, this.textureOffsetX, this.textureOffsetY, f, g, h, i, j, k, l));
+		this.boxes.add(new Box(this, this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, l));
 	}
 
 	public void addBox(float f, float g, float h, int i, int j, int k, float l, boolean bl) {
-		this.boxes.add(new Box(this, this.textureOffsetX, this.textureOffsetY, f, g, h, i, j, k, l, bl));
+		this.boxes.add(new Box(this, this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, l, bl));
 	}
 
 	public void setRotationPoint(float f, float g, float h) {

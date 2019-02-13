@@ -31,8 +31,9 @@ public class RealmsButtonWidget extends ButtonWidget {
 		this.enabled = bl;
 	}
 
+	@Override
 	public void setText(String string) {
-		super.text = string;
+		super.setText(string);
 	}
 
 	@Override

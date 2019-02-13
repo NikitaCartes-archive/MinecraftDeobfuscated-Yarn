@@ -516,7 +516,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 			LivingEntity livingEntity = PhantomEntity.this.getTarget();
 			PhantomEntity.this.field_7314 = new Vec3d(livingEntity.x, livingEntity.y + (double)livingEntity.getHeight() * 0.5, livingEntity.z);
 			if (PhantomEntity.this.getBoundingBox().expand(0.2F).intersects(livingEntity.getBoundingBox())) {
-				PhantomEntity.this.method_6121(livingEntity);
+				PhantomEntity.this.attack(livingEntity);
 				PhantomEntity.this.field_7315 = PhantomEntity.class_1594.field_7318;
 				PhantomEntity.this.world.playEvent(1039, new BlockPos(PhantomEntity.this), 0);
 			} else if (PhantomEntity.this.horizontalCollision || PhantomEntity.this.hurtTime > 0) {

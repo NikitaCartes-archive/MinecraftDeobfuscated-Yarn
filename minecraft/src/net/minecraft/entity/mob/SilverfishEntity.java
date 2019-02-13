@@ -112,8 +112,8 @@ public class SilverfishEntity extends HostileEntity {
 	}
 
 	@Override
-	public float method_6144(BlockPos blockPos, ViewableWorld viewableWorld) {
-		return InfestedBlock.hasRegularBlock(viewableWorld.getBlockState(blockPos.down())) ? 10.0F : super.method_6144(blockPos, viewableWorld);
+	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
+		return InfestedBlock.hasRegularBlock(viewableWorld.getBlockState(blockPos.down())) ? 10.0F : super.getPathfindingFavor(blockPos, viewableWorld);
 	}
 
 	@Override

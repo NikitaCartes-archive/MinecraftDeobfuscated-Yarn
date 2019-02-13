@@ -200,7 +200,7 @@ public class TrackedDataHandlerRegistry {
 		}
 
 		public ParticleParameters read(PacketByteBuf packetByteBuf) {
-			return this.method_12744(packetByteBuf, Registry.PARTICLE_TYPE.getInt(packetByteBuf.readVarInt()));
+			return this.method_12744(packetByteBuf, Registry.PARTICLE_TYPE.get(packetByteBuf.readVarInt()));
 		}
 
 		private <T extends ParticleParameters> T method_12744(PacketByteBuf packetByteBuf, ParticleType<T> particleType) {
@@ -341,7 +341,7 @@ public class TrackedDataHandlerRegistry {
 
 		public VillagerData method_17198(PacketByteBuf packetByteBuf) {
 			return new VillagerData(
-				Registry.VILLAGER_TYPE.getInt(packetByteBuf.readVarInt()), Registry.VILLAGER_PROFESSION.getInt(packetByteBuf.readVarInt()), packetByteBuf.readVarInt()
+				Registry.VILLAGER_TYPE.get(packetByteBuf.readVarInt()), Registry.VILLAGER_PROFESSION.get(packetByteBuf.readVarInt()), packetByteBuf.readVarInt()
 			);
 		}
 
@@ -380,7 +380,7 @@ public class TrackedDataHandlerRegistry {
 
 	@Nullable
 	public static TrackedDataHandler<?> get(int i) {
-		return field_13328.getInt(i);
+		return field_13328.get(i);
 	}
 
 	public static int getId(TrackedDataHandler<?> trackedDataHandler) {

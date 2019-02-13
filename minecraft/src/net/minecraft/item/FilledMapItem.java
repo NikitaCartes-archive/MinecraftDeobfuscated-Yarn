@@ -12,7 +12,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.MaterialColor;
-import net.minecraft.client.item.TooltipOptions;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -370,19 +370,19 @@ public class FilledMapItem extends MapItem {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipOptions tooltipOptions) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
 		MapState mapState = world == null ? null : method_8001(itemStack, world);
 		if (mapState != null && mapState.field_17403) {
-			list.add(new TranslatableTextComponent("filled_map.locked", method_8003(itemStack)).applyFormat(TextFormat.GRAY));
+			list.add(new TranslatableTextComponent("filled_map.locked", method_8003(itemStack)).applyFormat(TextFormat.field_1080));
 		}
 
-		if (tooltipOptions.isAdvanced()) {
+		if (tooltipContext.isAdvanced()) {
 			if (mapState != null) {
-				list.add(new TranslatableTextComponent("filled_map.id", method_8003(itemStack)).applyFormat(TextFormat.GRAY));
-				list.add(new TranslatableTextComponent("filled_map.scale", 1 << mapState.scale).applyFormat(TextFormat.GRAY));
-				list.add(new TranslatableTextComponent("filled_map.level", mapState.scale, 4).applyFormat(TextFormat.GRAY));
+				list.add(new TranslatableTextComponent("filled_map.id", method_8003(itemStack)).applyFormat(TextFormat.field_1080));
+				list.add(new TranslatableTextComponent("filled_map.scale", 1 << mapState.scale).applyFormat(TextFormat.field_1080));
+				list.add(new TranslatableTextComponent("filled_map.level", mapState.scale, 4).applyFormat(TextFormat.field_1080));
 			} else {
-				list.add(new TranslatableTextComponent("filled_map.unknown").applyFormat(TextFormat.GRAY));
+				list.add(new TranslatableTextComponent("filled_map.unknown").applyFormat(TextFormat.field_1080));
 			}
 		}
 	}
@@ -407,7 +407,7 @@ public class FilledMapItem extends MapItem {
 				mapState.method_108(itemUsageContext.getWorld(), itemUsageContext.getBlockPos());
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.field_5812;
 		} else {
 			return super.useOnBlock(itemUsageContext);
 		}

@@ -47,7 +47,7 @@ public class BucketItem extends Item {
 			BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 			BlockPos blockPos = blockHitResult.getBlockPos();
 			if (!world.canPlayerModifyAt(playerEntity, blockPos) || !playerEntity.canPlaceBlock(blockPos, blockHitResult.getSide(), itemStack)) {
-				return new TypedActionResult<>(ActionResult.FAILURE, itemStack);
+				return new TypedActionResult<>(ActionResult.field_5814, itemStack);
 			} else if (this.fluid == Fluids.EMPTY) {
 				BlockState blockState = world.getBlockState(blockPos);
 				if (blockState.getBlock() instanceof FluidDrainable) {
@@ -60,11 +60,11 @@ public class BucketItem extends Item {
 							Criterions.FILLED_BUCKET.method_8932((ServerPlayerEntity)playerEntity, new ItemStack(fluid.getBucketItem()));
 						}
 
-						return new TypedActionResult<>(ActionResult.SUCCESS, itemStack2);
+						return new TypedActionResult<>(ActionResult.field_5812, itemStack2);
 					}
 				}
 
-				return new TypedActionResult<>(ActionResult.FAILURE, itemStack);
+				return new TypedActionResult<>(ActionResult.field_5814, itemStack);
 			} else {
 				BlockState blockState = world.getBlockState(blockPos);
 				BlockPos blockPos2 = blockState.getBlock() instanceof FluidFillable ? blockPos : blockHitResult.getBlockPos().offset(blockHitResult.getSide());
@@ -75,9 +75,9 @@ public class BucketItem extends Item {
 					}
 
 					playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
-					return new TypedActionResult<>(ActionResult.SUCCESS, this.getEmptiedStack(itemStack, playerEntity));
+					return new TypedActionResult<>(ActionResult.field_5812, this.getEmptiedStack(itemStack, playerEntity));
 				} else {
-					return new TypedActionResult<>(ActionResult.FAILURE, itemStack);
+					return new TypedActionResult<>(ActionResult.field_5814, itemStack);
 				}
 			}
 		} else {

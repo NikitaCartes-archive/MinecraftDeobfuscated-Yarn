@@ -1,7 +1,6 @@
 package net.minecraft.structure.generator;
 
 import java.util.Random;
-import net.minecraft.class_3418;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.StairsBlock;
@@ -12,15 +11,16 @@ import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePieceType;
+import net.minecraft.structure.StructurePieceWithDimensions;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.chunk.ChunkPos;
 
-public class SwampHutGenerator extends class_3418 {
-	private boolean field_15322;
-	private boolean field_16445;
+public class SwampHutGenerator extends StructurePieceWithDimensions {
+	private boolean hasWitch;
+	private boolean hasCat;
 
 	public SwampHutGenerator(Random random, int i, int j) {
 		super(StructurePieceType.SWAMP_HUT, random, i, 64, j, 7, 7, 9);
@@ -28,15 +28,15 @@ public class SwampHutGenerator extends class_3418 {
 
 	public SwampHutGenerator(StructureManager structureManager, CompoundTag compoundTag) {
 		super(StructurePieceType.SWAMP_HUT, compoundTag);
-		this.field_15322 = compoundTag.getBoolean("Witch");
-		this.field_16445 = compoundTag.getBoolean("Cat");
+		this.hasWitch = compoundTag.getBoolean("Witch");
+		this.hasCat = compoundTag.getBoolean("Cat");
 	}
 
 	@Override
 	protected void toNbt(CompoundTag compoundTag) {
 		super.toNbt(compoundTag);
-		compoundTag.putBoolean("Witch", this.field_15322);
-		compoundTag.putBoolean("Cat", this.field_16445);
+		compoundTag.putBoolean("Witch", this.hasWitch);
+		compoundTag.putBoolean("Cat", this.hasCat);
 	}
 
 	@Override
@@ -84,12 +84,12 @@ public class SwampHutGenerator extends class_3418 {
 				}
 			}
 
-			if (!this.field_15322) {
+			if (!this.hasWitch) {
 				int i = this.applyXTransform(2, 5);
 				int j = this.applyYTransform(2);
 				int k = this.applyZTransform(2, 5);
 				if (mutableIntBoundingBox.contains(new BlockPos(i, j, k))) {
-					this.field_15322 = true;
+					this.hasWitch = true;
 					WitchEntity witchEntity = new WitchEntity(iWorld.getWorld());
 					witchEntity.setPersistent();
 					witchEntity.setPositionAndAngles((double)i + 0.5, (double)j, (double)k + 0.5, 0.0F, 0.0F);
@@ -104,12 +104,12 @@ public class SwampHutGenerator extends class_3418 {
 	}
 
 	private void method_16181(IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox) {
-		if (!this.field_16445) {
+		if (!this.hasCat) {
 			int i = this.applyXTransform(2, 5);
 			int j = this.applyYTransform(2);
 			int k = this.applyZTransform(2, 5);
 			if (mutableIntBoundingBox.contains(new BlockPos(i, j, k))) {
-				this.field_16445 = true;
+				this.hasCat = true;
 				CatEntity catEntity = new CatEntity(iWorld.getWorld());
 				catEntity.setPersistent();
 				catEntity.setPositionAndAngles((double)i + 0.5, (double)j, (double)k + 0.5, 0.0F, 0.0F);

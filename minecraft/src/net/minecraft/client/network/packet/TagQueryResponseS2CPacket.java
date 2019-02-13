@@ -35,7 +35,7 @@ public class TagQueryResponseS2CPacket implements Packet<ClientPlayPacketListene
 	}
 
 	public void method_11909(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11127(this);
+		clientPlayPacketListener.onTagQuery(this);
 	}
 
 	@Environment(EnvType.CLIENT)

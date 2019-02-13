@@ -125,9 +125,9 @@ public class BowItem extends BaseBowItem {
 		boolean bl = !this.findArrowStack(playerEntity).isEmpty();
 		if (playerEntity.abilities.creativeMode || bl) {
 			playerEntity.setCurrentHand(hand);
-			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+			return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 		} else {
-			return bl ? new TypedActionResult<>(ActionResult.PASS, itemStack) : new TypedActionResult<>(ActionResult.FAILURE, itemStack);
+			return bl ? new TypedActionResult<>(ActionResult.PASS, itemStack) : new TypedActionResult<>(ActionResult.field_5814, itemStack);
 		}
 	}
 }

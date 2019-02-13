@@ -620,7 +620,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	}
 
 	@Override
-	public void clearInv() {
+	public void clear() {
 		for(List<ItemStack> list : this.field_7543) {
 			list.clear();
 		}
