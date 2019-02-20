@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoField;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -12,6 +11,8 @@ import net.minecraft.class_1370;
 import net.minecraft.class_1394;
 import net.minecraft.class_1396;
 import net.minecraft.class_1399;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -48,7 +49,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -76,7 +76,7 @@ public class ZombieEntity extends HostileEntity {
 	private int field_7426;
 	private int field_7424;
 
-	public ZombieEntity(EntityType<?> entityType, World world) {
+	public ZombieEntity(EntityType<? extends ZombieEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
@@ -184,14 +184,12 @@ public class ZombieEntity extends HostileEntity {
 				entityAttributeInstance.addModifier(BABY_SPEED_BONUS);
 			}
 		}
-
-		this.setChildSize(bl);
 	}
 
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
 		if (BABY.equals(trackedData)) {
-			this.setChildSize(this.isChild());
+			this.method_18382();
 		}
 
 		super.onTrackedDataSet(trackedData);
@@ -255,13 +253,13 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	protected void method_7218() {
-		this.method_7200(DrownedEntity::new);
+		this.method_7200(EntityType.DROWNED);
 		this.world.playEvent(null, 1040, new BlockPos((int)this.x, (int)this.y, (int)this.z), 0);
 	}
 
-	protected void method_7200(Function<? super World, ? extends ZombieEntity> function) {
+	protected void method_7200(EntityType<? extends ZombieEntity> entityType) {
 		if (!this.invalid) {
-			ZombieEntity zombieEntity = (ZombieEntity)function.apply(this.world);
+			ZombieEntity zombieEntity = entityType.create(this.world);
 			zombieEntity.setPositionAndAngles(this);
 			zombieEntity.setCanPickUpLoot(this.canPickUpLoot());
 			zombieEntity.setBreakDoors(zombieEntity.method_7212() && this.canBreakDoors());
@@ -315,7 +313,7 @@ public class ZombieEntity extends HostileEntity {
 					BlockPos blockPos = new BlockPos(m, n - 1, o);
 					if (this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos) && this.world.getLightLevel(new BlockPos(m, n, o)) < 10) {
 						zombieEntity.setPosition((double)m, (double)n, (double)o);
-						if (!this.world.containsVisiblePlayer((double)m, (double)n, (double)o, 7.0)
+						if (!this.world.method_18458((double)m, (double)n, (double)o, 7.0)
 							&& this.world.method_8606(zombieEntity)
 							&& this.world.method_17892(zombieEntity)
 							&& !this.world.isInFluid(zombieEntity.getBoundingBox())) {
@@ -428,9 +426,9 @@ public class ZombieEntity extends HostileEntity {
 			}
 
 			VillagerEntity villagerEntity = (VillagerEntity)livingEntity;
-			ZombieVillagerEntity zombieVillagerEntity = new ZombieVillagerEntity(this.world);
+			ZombieVillagerEntity zombieVillagerEntity = EntityType.ZOMBIE_VILLAGER.create(this.world);
 			zombieVillagerEntity.setPositionAndAngles(villagerEntity);
-			((ServerWorld)this.world).method_18216(villagerEntity);
+			villagerEntity.invalidate();
 			zombieVillagerEntity.prepareEntityData(
 				this.world, this.world.getLocalDifficulty(new BlockPos(zombieVillagerEntity)), SpawnType.field_16468, new ZombieEntity.class_1644(false), null
 			);
@@ -449,13 +447,8 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	public float getEyeHeight() {
-		float f = 1.74F;
-		if (this.isChild()) {
-			f = (float)((double)f - 0.81);
-		}
-
-		return f;
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
+		return this.isChild() ? 0.93F : 1.74F;
 	}
 
 	@Override
@@ -480,14 +473,14 @@ public class ZombieEntity extends HostileEntity {
 			if (lv.field_7439) {
 				this.setChild(true);
 				if ((double)iWorld.getRandom().nextFloat() < 0.05) {
-					List<ChickenEntity> list = iWorld.getEntities(ChickenEntity.class, this.getBoundingBox().expand(5.0, 3.0, 5.0), EntityPredicates.NOT_MOUNTED);
+					List<ChickenEntity> list = iWorld.method_8390(ChickenEntity.class, this.getBoundingBox().expand(5.0, 3.0, 5.0), EntityPredicates.NOT_MOUNTED);
 					if (!list.isEmpty()) {
 						ChickenEntity chickenEntity = (ChickenEntity)list.get(0);
 						chickenEntity.setHasJockey(true);
 						this.startRiding(chickenEntity);
 					}
 				} else if ((double)iWorld.getRandom().nextFloat() < 0.05) {
-					ChickenEntity chickenEntity2 = new ChickenEntity(this.world);
+					ChickenEntity chickenEntity2 = EntityType.CHICKEN.create(this.world);
 					chickenEntity2.setPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0F);
 					chickenEntity2.prepareEntityData(iWorld, localDifficulty, SpawnType.field_16460, null, null);
 					chickenEntity2.setHasJockey(true);
@@ -531,12 +524,6 @@ public class ZombieEntity extends HostileEntity {
 				.addModifier(new EntityAttributeModifier("Leader zombie bonus", this.random.nextDouble() * 3.0 + 1.0, EntityAttributeModifier.Operation.field_6331));
 			this.setBreakDoors(this.method_7212());
 		}
-	}
-
-	public void setChildSize(boolean bl) {
-		float f = bl ? 0.5F : 1.0F;
-		EntityType<?> entityType = this.getType();
-		this.setSize(entityType.getWidth() * f, entityType.getHeight() * f);
 	}
 
 	@Override

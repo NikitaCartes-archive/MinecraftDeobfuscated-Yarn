@@ -1,29 +1,32 @@
 package net.minecraft.entity.ai.goal;
 
+import net.minecraft.class_4051;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.World;
 
 public class WolfBegGoal extends Goal {
 	private final WolfEntity owner;
 	private PlayerEntity begFrom;
-	private final ViewableWorld world;
+	private final World world;
 	private final float chance;
 	private int timer;
+	private final class_4051 field_18085;
 
 	public WolfBegGoal(WolfEntity wolfEntity, float f) {
 		this.owner = wolfEntity;
 		this.world = wolfEntity.world;
 		this.chance = f;
+		this.field_18085 = new class_4051().method_18418((double)f).method_18417().method_18421().method_18423();
 		this.setControlBits(2);
 	}
 
 	@Override
 	public boolean canStart() {
-		this.begFrom = this.world.getClosestPlayer(this.owner, (double)this.chance);
+		this.begFrom = this.world.method_18462(this.field_18085, this.owner);
 		return this.begFrom == null ? false : this.method_6244(this.begFrom);
 	}
 

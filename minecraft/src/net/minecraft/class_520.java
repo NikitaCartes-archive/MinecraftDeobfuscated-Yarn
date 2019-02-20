@@ -31,7 +31,7 @@ public class class_520 extends EntryListWidget.Entry<class_520> {
 	}
 
 	public void method_2686(class_523 arg) {
-		this.method_2681().getSortingDirection().locate(arg.getEntries(), this, class_520::method_2681, true);
+		this.method_2681().getSortingDirection().locate(arg.method_1968(), this, class_520::method_2681, true);
 	}
 
 	protected void method_2684() {
@@ -139,13 +139,13 @@ public class class_520 extends EntryListWidget.Entry<class_520> {
 	}
 
 	protected boolean method_2682() {
-		List<class_520> list = this.getParent().getEntries();
+		List<class_520> list = this.getParent().method_1968();
 		int i = list.indexOf(this);
 		return i > 0 && !((class_520)list.get(i - 1)).field_3161.sortsTillEnd();
 	}
 
 	protected boolean method_2683() {
-		List<class_520> list = this.getParent().getEntries();
+		List<class_520> list = this.getParent().method_1968();
 		int i = list.indexOf(this);
 		return i >= 0 && i < list.size() - 1 && !((class_520)list.get(i + 1)).field_3161.sortsTillEnd();
 	}
@@ -180,7 +180,7 @@ public class class_520 extends EntryListWidget.Entry<class_520> {
 			}
 
 			if (f > 16.0 && g < 16.0 && this.method_2682()) {
-				List<class_520> list = this.getParent().getEntries();
+				List<class_520> list = this.getParent().method_1968();
 				int j = list.indexOf(this);
 				list.remove(this);
 				list.add(j - 1, this);
@@ -189,7 +189,7 @@ public class class_520 extends EntryListWidget.Entry<class_520> {
 			}
 
 			if (f > 16.0 && g > 16.0 && this.method_2683()) {
-				List<class_520> list = this.getParent().getEntries();
+				List<class_520> list = this.getParent().method_1968();
 				int j = list.indexOf(this);
 				list.remove(this);
 				list.add(j + 1, this);

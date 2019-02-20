@@ -61,11 +61,11 @@ public class HorseScreen extends ContainerScreen<HorseContainer> {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		this.drawBackground();
 		this.mouseX = (float)i;
 		this.mouseY = (float)j;
-		super.draw(i, j, f);
+		super.method_18326(i, j, f);
 		this.drawMouseoverTooltip(i, j);
 	}
 }

@@ -9,8 +9,8 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 
 public class SalmonEntity extends SchoolingFishEntity {
-	public SalmonEntity(World world) {
-		super(EntityType.SALMON, world);
+	public SalmonEntity(EntityType<? extends SalmonEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override

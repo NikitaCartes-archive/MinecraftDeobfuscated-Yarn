@@ -87,11 +87,7 @@ public class CommandFunction {
 			CommandFunctionManager commandFunctionManager, ServerCommandSource serverCommandSource, ArrayDeque<CommandFunctionManager.Entry> arrayDeque, int i
 		) throws CommandSyntaxException {
 			commandFunctionManager.getDispatcher()
-				.execute(
-					new ParseResults<>(
-						this.parsed.getContext().withSource(serverCommandSource), this.parsed.getStartIndex(), this.parsed.getReader(), this.parsed.getExceptions()
-					)
-				);
+				.execute(new ParseResults<>(this.parsed.getContext().withSource(serverCommandSource), this.parsed.getReader(), this.parsed.getExceptions()));
 		}
 
 		public String toString() {

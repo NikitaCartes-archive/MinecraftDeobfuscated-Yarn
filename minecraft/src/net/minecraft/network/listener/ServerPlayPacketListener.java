@@ -20,10 +20,10 @@ import net.minecraft.server.network.packet.HandSwingC2SPacket;
 import net.minecraft.server.network.packet.KeepAliveC2SPacket;
 import net.minecraft.server.network.packet.PickFromInventoryC2SPacket;
 import net.minecraft.server.network.packet.PlayerActionC2SPacket;
+import net.minecraft.server.network.packet.PlayerInputC2SPacket;
 import net.minecraft.server.network.packet.PlayerInteractBlockC2SPacket;
 import net.minecraft.server.network.packet.PlayerInteractEntityC2SPacket;
 import net.minecraft.server.network.packet.PlayerInteractItemC2SPacket;
-import net.minecraft.server.network.packet.PlayerLookC2SPacket;
 import net.minecraft.server.network.packet.PlayerMoveServerMessage;
 import net.minecraft.server.network.packet.QueryBlockNbtC2SPacket;
 import net.minecraft.server.network.packet.QueryEntityNbtC2SPacket;
@@ -77,7 +77,7 @@ public interface ServerPlayPacketListener extends PacketListener {
 
 	void onClientCommand(ClientCommandC2SPacket clientCommandC2SPacket);
 
-	void onPlayerLook(PlayerLookC2SPacket playerLookC2SPacket);
+	void method_12067(PlayerInputC2SPacket playerInputC2SPacket);
 
 	void onUpdateSelectedSlot(UpdateSelectedSlotC2SPacket updateSelectedSlotC2SPacket);
 

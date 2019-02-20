@@ -1,6 +1,5 @@
 package net.minecraft.entity.mob;
 
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -39,10 +38,9 @@ import net.minecraft.world.World;
 
 public class VindicatorEntity extends IllagerEntity {
 	private boolean isJohnny;
-	private static final Predicate<Entity> field_7405 = entity -> entity instanceof LivingEntity && ((LivingEntity)entity).method_6102();
 
-	public VindicatorEntity(World world) {
-		super(EntityType.VINDICATOR, world);
+	public VindicatorEntity(EntityType<? extends VindicatorEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override
@@ -184,7 +182,7 @@ public class VindicatorEntity extends IllagerEntity {
 
 	static class class_1633 extends FollowTargetGoal<LivingEntity> {
 		public class_1633(VindicatorEntity vindicatorEntity) {
-			super(vindicatorEntity, LivingEntity.class, 0, true, true, VindicatorEntity.field_7405);
+			super(vindicatorEntity, LivingEntity.class, 0, true, true, LivingEntity::method_6102);
 		}
 
 		@Override

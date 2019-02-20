@@ -51,7 +51,7 @@ public class FurnaceSmeltLootFunction extends ConditionalLootFunction {
 			super(new Identifier("furnace_smelt"), FurnaceSmeltLootFunction.class);
 		}
 
-		public FurnaceSmeltLootFunction deserialize(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public FurnaceSmeltLootFunction method_726(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			return new FurnaceSmeltLootFunction(lootConditions);
 		}
 	}

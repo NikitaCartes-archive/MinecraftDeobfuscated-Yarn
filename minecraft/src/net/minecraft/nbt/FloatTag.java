@@ -38,7 +38,7 @@ public class FloatTag extends AbstractNumberTag {
 		return this.value + "f";
 	}
 
-	public FloatTag copy() {
+	public FloatTag method_10587() {
 		return new FloatTag(this.value);
 	}
 

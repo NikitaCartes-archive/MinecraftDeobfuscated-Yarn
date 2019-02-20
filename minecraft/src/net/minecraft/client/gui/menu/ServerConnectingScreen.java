@@ -129,7 +129,7 @@ public class ServerConnectingScreen extends Screen {
 
 	@Override
 	protected void onInitialized() {
-		this.addButton(new ButtonWidget(0, this.width / 2 - 100, this.height / 4 + 120 + 12, I18n.translate("gui.cancel")) {
+		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, I18n.translate("gui.cancel")) {
 			@Override
 			public void onPressed(double d, double e) {
 				ServerConnectingScreen.this.field_2409 = true;
@@ -143,9 +143,9 @@ public class ServerConnectingScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, this.status.getFormattedText(), this.width / 2, this.height / 2 - 50, 16777215);
-		super.draw(i, j, f);
+		super.method_18326(i, j, f);
 	}
 }

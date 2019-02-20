@@ -48,12 +48,12 @@ public class FallingBlockEntity extends Entity {
 	public CompoundTag blockEntityData;
 	protected static final TrackedData<BlockPos> BLOCK_POS = DataTracker.registerData(FallingBlockEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
 
-	public FallingBlockEntity(World world) {
-		super(EntityType.FALLING_BLOCK, world);
+	public FallingBlockEntity(EntityType<? extends FallingBlockEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public FallingBlockEntity(World world, double d, double e, double f, BlockState blockState) {
-		this(world);
+		this(EntityType.FALLING_BLOCK, world);
 		this.block = blockState;
 		this.field_6033 = true;
 		this.setPosition(d, e + (double)((1.0F - this.getHeight()) / 2.0F), f);

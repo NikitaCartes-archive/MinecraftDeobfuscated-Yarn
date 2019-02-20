@@ -4,7 +4,7 @@ import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.DyeableArmorItem;
+import net.minecraft.item.DyeableItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -138,10 +138,10 @@ public class CauldronBlock extends Block {
 
 				return true;
 			} else {
-				if (i > 0 && item instanceof DyeableArmorItem) {
-					DyeableArmorItem dyeableArmorItem = (DyeableArmorItem)item;
-					if (dyeableArmorItem.hasColor(itemStack) && !world.isClient) {
-						dyeableArmorItem.removeColor(itemStack);
+				if (i > 0 && item instanceof DyeableItem) {
+					DyeableItem dyeableItem = (DyeableItem)item;
+					if (dyeableItem.hasColor(itemStack) && !world.isClient) {
+						dyeableItem.removeColor(itemStack);
 						this.setLevel(world, blockPos, blockState, i - 1);
 						playerEntity.increaseStat(Stats.field_15382);
 						return true;
@@ -174,7 +174,7 @@ public class CauldronBlock extends Block {
 					if (block instanceof ShulkerBoxBlock && !world.isClient()) {
 						ItemStack itemStack3 = new ItemStack(Blocks.field_10603, 1);
 						if (itemStack.hasTag()) {
-							itemStack3.setTag(itemStack.getTag().copy());
+							itemStack3.setTag(itemStack.getTag().method_10553());
 						}
 
 						playerEntity.setStackInHand(hand, itemStack3);

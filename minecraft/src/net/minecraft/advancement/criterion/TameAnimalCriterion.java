@@ -55,7 +55,7 @@ public class TameAnimalCriterion implements Criterion<TameAnimalCriterion.Condit
 		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public TameAnimalCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public TameAnimalCriterion.Conditions method_9133(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("entity"));
 		return new TameAnimalCriterion.Conditions(entityPredicate);
 	}

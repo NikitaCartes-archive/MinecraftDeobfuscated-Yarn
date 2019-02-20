@@ -37,21 +37,21 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
-		this.modeButton = this.addButton(new ButtonWidget(5, this.width / 2 - 50 - 100 - 4, 165, 100, 20, I18n.translate("advMode.mode.sequence")) {
+		this.modeButton = this.addButton(new ButtonWidget(this.width / 2 - 50 - 100 - 4, 165, 100, 20, I18n.translate("advMode.mode.sequence")) {
 			@Override
 			public void onPressed(double d, double e) {
 				CommandBlockScreen.this.cycleType();
 				CommandBlockScreen.this.updateMode();
 			}
 		});
-		this.conditionalModeButton = this.addButton(new ButtonWidget(6, this.width / 2 - 50, 165, 100, 20, I18n.translate("advMode.mode.unconditional")) {
+		this.conditionalModeButton = this.addButton(new ButtonWidget(this.width / 2 - 50, 165, 100, 20, I18n.translate("advMode.mode.unconditional")) {
 			@Override
 			public void onPressed(double d, double e) {
 				CommandBlockScreen.this.conditional = !CommandBlockScreen.this.conditional;
 				CommandBlockScreen.this.updateConditionalMode();
 			}
 		});
-		this.redstoneTriggerButton = this.addButton(new ButtonWidget(7, this.width / 2 + 50 + 4, 165, 100, 20, I18n.translate("advMode.mode.redstoneTriggered")) {
+		this.redstoneTriggerButton = this.addButton(new ButtonWidget(this.width / 2 + 50 + 4, 165, 100, 20, I18n.translate("advMode.mode.redstoneTriggered")) {
 			@Override
 			public void onPressed(double d, double e) {
 				CommandBlockScreen.this.autoActivate = !CommandBlockScreen.this.autoActivate;

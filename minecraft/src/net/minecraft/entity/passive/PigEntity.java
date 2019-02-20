@@ -40,8 +40,8 @@ public class PigEntity extends AnimalEntity {
 	private int field_6812;
 	private int field_6813;
 
-	public PigEntity(World world) {
-		super(EntityType.PIG, world);
+	public PigEntity(EntityType<? extends PigEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override
@@ -178,7 +178,7 @@ public class PigEntity extends AnimalEntity {
 	@Override
 	public void onStruckByLightning(LightningEntity lightningEntity) {
 		if (!this.world.isClient && !this.invalid) {
-			PigZombieEntity pigZombieEntity = new PigZombieEntity(this.world);
+			PigZombieEntity pigZombieEntity = EntityType.ZOMBIE_PIGMAN.create(this.world);
 			pigZombieEntity.setEquippedStack(EquipmentSlot.HAND_MAIN, new ItemStack(Items.field_8845));
 			pigZombieEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
 			pigZombieEntity.setAiDisabled(this.isAiDisabled());
@@ -193,7 +193,7 @@ public class PigEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void method_6091(float f, float g, float h) {
+	public void travel(float f, float g, float h) {
 		Entity entity = this.getPassengerList().isEmpty() ? null : (Entity)this.getPassengerList().get(0);
 		if (this.hasPassengers() && this.method_5956()) {
 			this.yaw = entity.yaw;
@@ -203,7 +203,7 @@ public class PigEntity extends AnimalEntity {
 			this.field_6283 = this.yaw;
 			this.headYaw = this.yaw;
 			this.stepHeight = 1.0F;
-			this.field_6281 = this.method_6029() * 0.1F;
+			this.field_6281 = this.getMovementSpeed() * 0.1F;
 			if (this.field_6814 && this.field_6812++ > this.field_6813) {
 				this.field_6814 = false;
 			}
@@ -214,8 +214,8 @@ public class PigEntity extends AnimalEntity {
 					i += i * 1.15F * MathHelper.sin((float)this.field_6812 / (float)this.field_6813 * (float) Math.PI);
 				}
 
-				this.method_6125(i);
-				super.method_6091(0.0F, 0.0F, 1.0F);
+				this.setMovementSpeed(i);
+				super.travel(0.0F, 0.0F, 1.0F);
 			} else {
 				this.velocityX = 0.0;
 				this.velocityY = 0.0;
@@ -235,7 +235,7 @@ public class PigEntity extends AnimalEntity {
 		} else {
 			this.stepHeight = 0.5F;
 			this.field_6281 = 0.02F;
-			super.method_6091(f, g, h);
+			super.travel(f, g, h);
 		}
 	}
 
@@ -251,8 +251,8 @@ public class PigEntity extends AnimalEntity {
 		}
 	}
 
-	public PigEntity createChild(PassiveEntity passiveEntity) {
-		return new PigEntity(this.world);
+	public PigEntity method_6574(PassiveEntity passiveEntity) {
+		return EntityType.PIG.create(this.world);
 	}
 
 	@Override

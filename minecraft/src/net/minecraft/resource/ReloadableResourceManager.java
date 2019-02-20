@@ -13,5 +13,8 @@ public interface ReloadableResourceManager extends ResourceManager {
 	@Environment(EnvType.CLIENT)
 	ResourceReloadHandler createReloadHandler(Executor executor, Executor executor2, CompletableFuture<Void> completableFuture);
 
+	@Environment(EnvType.CLIENT)
+	ResourceReloadHandler method_18232(Executor executor, Executor executor2, CompletableFuture<Void> completableFuture, List<ResourcePack> list);
+
 	void registerListener(ResourceReloadListener resourceReloadListener);
 }

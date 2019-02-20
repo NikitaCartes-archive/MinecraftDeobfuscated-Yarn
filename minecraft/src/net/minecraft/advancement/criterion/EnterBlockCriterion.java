@@ -64,7 +64,7 @@ public class EnterBlockCriterion implements Criterion<EnterBlockCriterion.Condit
 		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public EnterBlockCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public EnterBlockCriterion.Conditions method_8883(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		Block block = null;
 		if (jsonObject.has("block")) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));

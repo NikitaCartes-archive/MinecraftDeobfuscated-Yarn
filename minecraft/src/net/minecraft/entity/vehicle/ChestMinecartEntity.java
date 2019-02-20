@@ -12,8 +12,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class ChestMinecartEntity extends StorageMinecartEntity {
-	public ChestMinecartEntity(World world) {
-		super(EntityType.CHEST_MINECART, world);
+	public ChestMinecartEntity(EntityType<? extends ChestMinecartEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public ChestMinecartEntity(World world, double d, double e, double f) {

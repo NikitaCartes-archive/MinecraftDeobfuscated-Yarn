@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 public abstract class IllagerEntity extends RaiderEntity {
 	protected static final TrackedData<Byte> field_7206 = DataTracker.registerData(IllagerEntity.class, TrackedDataHandlerRegistry.BYTE);
 
-	protected IllagerEntity(EntityType<?> entityType, World world) {
+	protected IllagerEntity(EntityType<? extends IllagerEntity> entityType, World world) {
 		super(entityType, world);
 	}
 

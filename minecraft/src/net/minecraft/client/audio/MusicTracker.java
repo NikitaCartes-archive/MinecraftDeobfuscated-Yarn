@@ -6,11 +6,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Tickable;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class MusicTracker implements Tickable {
+public class MusicTracker {
 	private final Random random = new Random();
 	private final MinecraftClient client;
 	private SoundInstance current;
@@ -21,8 +20,7 @@ public class MusicTracker implements Tickable {
 		this.client = minecraftClient;
 	}
 
-	@Override
-	public void tick() {
+	public void method_18669() {
 		MusicTracker.MusicType musicType = this.client.getMusicType();
 		if (this.current != null) {
 			if (!musicType.getSound().getId().equals(this.current.getId())) {

@@ -3,6 +3,7 @@ package net.minecraft.entity.ai.goal;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.class_4051;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.passive.AnimalEntity;
@@ -13,6 +14,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.world.World;
 
 public class AnimalMateGoal extends Goal {
+	private static final class_4051 field_18086 = new class_4051().method_18418(8.0).method_18417().method_18421().method_18422();
 	protected final AnimalEntity owner;
 	private final Class<? extends AnimalEntity> field_6403;
 	protected final World world;
@@ -65,7 +67,7 @@ public class AnimalMateGoal extends Goal {
 
 	@Nullable
 	private AnimalEntity findMate() {
-		List<AnimalEntity> list = this.world.getVisibleEntities(this.field_6403, this.owner.getBoundingBox().expand(8.0));
+		List<AnimalEntity> list = this.world.method_18466(this.field_6403, field_18086, this.owner, this.owner.getBoundingBox().expand(8.0));
 		double d = Double.MAX_VALUE;
 		AnimalEntity animalEntity = null;
 

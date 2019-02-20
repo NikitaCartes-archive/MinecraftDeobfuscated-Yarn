@@ -22,8 +22,8 @@ import net.minecraft.world.explosion.Explosion;
 public class TNTMinecartEntity extends AbstractMinecartEntity {
 	private int fuseTicks = -1;
 
-	public TNTMinecartEntity(World world) {
-		super(EntityType.TNT_MINECART, world);
+	public TNTMinecartEntity(EntityType<? extends TNTMinecartEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public TNTMinecartEntity(World world, double d, double e, double f) {

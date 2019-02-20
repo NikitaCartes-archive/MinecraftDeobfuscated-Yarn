@@ -10,7 +10,8 @@ public class DonkeyEntityModel<T extends AbstractDonkeyEntity> extends HorseEnti
 	private final Cuboid field_3349 = new Cuboid(this, 26, 21);
 	private final Cuboid field_3348;
 
-	public DonkeyEntityModel() {
+	public DonkeyEntityModel(float f) {
+		super(f);
 		this.field_3349.addBox(-4.0F, 0.0F, -2.0F, 8, 8, 3);
 		this.field_3348 = new Cuboid(this, 26, 21);
 		this.field_3348.addBox(-4.0F, 0.0F, -2.0F, 8, 8, 3);

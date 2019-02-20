@@ -27,8 +27,8 @@ import net.minecraft.world.dimension.DimensionType;
 public class ThrownEnderpearlEntity extends class_3857 {
 	private LivingEntity owner;
 
-	public ThrownEnderpearlEntity(World world) {
-		super(EntityType.ENDER_PEARL, world);
+	public ThrownEnderpearlEntity(EntityType<? extends ThrownEnderpearlEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public ThrownEnderpearlEntity(World world, LivingEntity livingEntity) {
@@ -90,7 +90,7 @@ public class ThrownEnderpearlEntity extends class_3857 {
 				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
 				if (serverPlayerEntity.networkHandler.getConnection().isOpen() && serverPlayerEntity.world == this.world && !serverPlayerEntity.isSleeping()) {
 					if (this.random.nextFloat() < 0.05F && this.world.getGameRules().getBoolean("doMobSpawning")) {
-						EndermiteEntity endermiteEntity = new EndermiteEntity(this.world);
+						EndermiteEntity endermiteEntity = EntityType.ENDERMITE.create(this.world);
 						endermiteEntity.method_7022(true);
 						endermiteEntity.setPositionAndAngles(livingEntity.x, livingEntity.y, livingEntity.z, livingEntity.yaw, livingEntity.pitch);
 						this.world.spawnEntity(endermiteEntity);

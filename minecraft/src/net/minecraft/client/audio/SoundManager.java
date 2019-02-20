@@ -199,7 +199,7 @@ public class SoundManager {
 		++this.ticks;
 
 		for(TickableSoundInstance tickableSoundInstance : this.tickingSounds) {
-			tickableSoundInstance.tick();
+			tickableSoundInstance.method_16896();
 			if (tickableSoundInstance.isDone()) {
 				this.stop(tickableSoundInstance);
 			} else {
@@ -253,7 +253,7 @@ public class SoundManager {
 			if (this.ticks >= entry2.getValue()) {
 				SoundInstance soundInstance = (SoundInstance)entry2.getKey();
 				if (soundInstance instanceof TickableSoundInstance) {
-					((TickableSoundInstance)soundInstance).tick();
+					((TickableSoundInstance)soundInstance).method_16896();
 				}
 
 				this.play(soundInstance);

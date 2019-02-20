@@ -9,11 +9,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.MathHelper;
 
-public class VillagerInteractionGoal extends class_1358 {
+public class VillagerBreedingGoal extends class_1358 {
 	private int delay;
 	private final VillagerEntity villager;
 
-	public VillagerInteractionGoal(VillagerEntity villagerEntity) {
+	public VillagerBreedingGoal(VillagerEntity villagerEntity) {
 		super(villagerEntity, VillagerEntity.class, 3.0F, 0.02F);
 		this.villager = villagerEntity;
 	}

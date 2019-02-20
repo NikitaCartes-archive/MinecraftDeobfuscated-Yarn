@@ -32,7 +32,7 @@ public class DisconnectedScreen extends Screen {
 		this.reasonFormatted = this.fontRenderer.wrapStringToWidthAsList(this.reason.getFormattedText(), this.width - 50);
 		this.reasonHeight = this.reasonFormatted.size() * 9;
 		this.addButton(
-			new ButtonWidget(0, this.width / 2 - 100, Math.min(this.height / 2 + this.reasonHeight / 2 + 9, this.height - 30), I18n.translate("gui.toMenu")) {
+			new ButtonWidget(this.width / 2 - 100, Math.min(this.height / 2 + this.reasonHeight / 2 + 9, this.height - 30), I18n.translate("gui.toMenu")) {
 				@Override
 				public void onPressed(double d, double e) {
 					DisconnectedScreen.this.client.openScreen(DisconnectedScreen.this.parent);
@@ -42,7 +42,7 @@ public class DisconnectedScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, this.title, this.width / 2, this.height / 2 - this.reasonHeight / 2 - 9 * 2, 11184810);
 		int k = this.height / 2 - this.reasonHeight / 2;
@@ -53,6 +53,6 @@ public class DisconnectedScreen extends Screen {
 			}
 		}
 
-		super.draw(i, j, f);
+		super.method_18326(i, j, f);
 	}
 }

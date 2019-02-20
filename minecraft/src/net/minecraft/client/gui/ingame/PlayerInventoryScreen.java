@@ -55,7 +55,7 @@ public class PlayerInventoryScreen extends AbstractPlayerInventoryScreen<PlayerC
 			this.left = this.recipeBook.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
 			this.listeners.add(this.recipeBook);
 			this.addButton(
-				new RecipeBookButtonWidget(10, this.left + 104, this.height / 2 - 22, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX) {
+				new RecipeBookButtonWidget(this.left + 104, this.height / 2 - 22, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX) {
 					@Override
 					public void onPressed(double d, double e) {
 						PlayerInventoryScreen.this.recipeBook.reset(PlayerInventoryScreen.this.isNarrow);
@@ -82,15 +82,15 @@ public class PlayerInventoryScreen extends AbstractPlayerInventoryScreen<PlayerC
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		this.drawBackground();
 		this.offsetGuiForEffects = !this.recipeBook.isOpen();
 		if (this.recipeBook.isOpen() && this.isNarrow) {
 			this.drawBackground(f, i, j);
-			this.recipeBook.draw(i, j, f);
+			this.recipeBook.method_18326(i, j, f);
 		} else {
-			this.recipeBook.draw(i, j, f);
-			super.draw(i, j, f);
+			this.recipeBook.method_18326(i, j, f);
+			super.method_18326(i, j, f);
 			this.recipeBook.drawGhostSlots(this.left, this.top, false, f);
 		}
 

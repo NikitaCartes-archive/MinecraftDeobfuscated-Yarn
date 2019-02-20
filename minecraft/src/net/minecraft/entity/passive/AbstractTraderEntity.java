@@ -3,6 +3,8 @@ package net.minecraft.entity.passive;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Npc;
@@ -28,12 +30,12 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	protected TraderRecipeList recipes;
 	private final BasicInventory inventory = new BasicInventory(8);
 
-	public AbstractTraderEntity(EntityType<?> entityType, World world) {
+	public AbstractTraderEntity(EntityType<? extends AbstractTraderEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
 	@Override
-	public float getEyeHeight() {
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
 		return this.isChild() ? 0.81F : 1.62F;
 	}
 

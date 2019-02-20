@@ -24,8 +24,8 @@ import net.minecraft.world.World;
 public class PaintingEntity extends AbstractDecorationEntity {
 	public PaintingMotive motive;
 
-	public PaintingEntity(World world) {
-		super(EntityType.PAINTING, world);
+	public PaintingEntity(EntityType<? extends PaintingEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public PaintingEntity(World world, BlockPos blockPos, Direction direction) {

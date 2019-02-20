@@ -7,8 +7,8 @@ import net.minecraft.client.MinecraftClient;
 
 @Environment(EnvType.CLIENT)
 public abstract class LanguageButtonWidget extends ButtonWidget {
-	public LanguageButtonWidget(int i, int j, int k) {
-		super(i, j, k, 20, 20, "");
+	public LanguageButtonWidget(int i, int j) {
+		super(i, j, 20, 20, "");
 	}
 
 	@Override

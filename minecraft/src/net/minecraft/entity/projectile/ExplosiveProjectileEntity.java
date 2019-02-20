@@ -28,11 +28,13 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 	public double field_7600;
 	public double field_7599;
 
-	protected ExplosiveProjectileEntity(EntityType<?> entityType, World world) {
+	protected ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
-	public ExplosiveProjectileEntity(EntityType<?> entityType, double d, double e, double f, double g, double h, double i, World world) {
+	public ExplosiveProjectileEntity(
+		EntityType<? extends ExplosiveProjectileEntity> entityType, double d, double e, double f, double g, double h, double i, World world
+	) {
 		this(entityType, world);
 		this.setPositionAndAngles(d, e, f, this.yaw, this.pitch);
 		this.setPosition(d, e, f);
@@ -42,7 +44,9 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 		this.field_7599 = i / j * 0.1;
 	}
 
-	public ExplosiveProjectileEntity(EntityType<?> entityType, LivingEntity livingEntity, double d, double e, double f, World world) {
+	public ExplosiveProjectileEntity(
+		EntityType<? extends ExplosiveProjectileEntity> entityType, LivingEntity livingEntity, double d, double e, double f, World world
+	) {
 		this(entityType, world);
 		this.owner = livingEntity;
 		this.setPositionAndAngles(livingEntity.x, livingEntity.y, livingEntity.z, livingEntity.yaw, livingEntity.pitch);

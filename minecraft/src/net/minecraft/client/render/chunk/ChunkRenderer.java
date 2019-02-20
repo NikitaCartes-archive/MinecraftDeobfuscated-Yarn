@@ -71,7 +71,7 @@ public class ChunkRenderer {
 	}
 
 	private static boolean method_3651(BlockPos blockPos, World world) {
-		return !world.getWorldChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4).isEmpty();
+		return !world.method_8497(blockPos.getX() >> 4, blockPos.getZ() >> 4).isEmpty();
 	}
 
 	public boolean method_3673() {

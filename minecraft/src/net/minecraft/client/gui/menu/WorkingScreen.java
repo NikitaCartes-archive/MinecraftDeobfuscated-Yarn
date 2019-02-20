@@ -48,7 +48,7 @@ public class WorkingScreen extends Screen implements ProgressListener {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		if (this.done) {
 			if (!this.client.isConnectedToRealms()) {
 				this.client.openScreen(null);
@@ -60,7 +60,7 @@ public class WorkingScreen extends Screen implements ProgressListener {
 				this.drawStringCentered(this.fontRenderer, this.task + " " + this.progress + "%", this.width / 2, 90, 16777215);
 			}
 
-			super.draw(i, j, f);
+			super.method_18326(i, j, f);
 		}
 	}
 }

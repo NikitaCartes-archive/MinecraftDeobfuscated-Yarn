@@ -78,7 +78,7 @@ public class JsonLikeTagParser {
 	protected Tag parseTagPrimitive() throws CommandSyntaxException {
 		this.reader.skipWhitespace();
 		int i = this.reader.getCursor();
-		if (this.reader.peek() == '"') {
+		if (StringReader.isQuotedStringStart(this.reader.peek())) {
 			return new StringTag(this.reader.readQuotedString());
 		} else {
 			String string = this.reader.readUnquotedString();
@@ -149,7 +149,9 @@ public class JsonLikeTagParser {
 	}
 
 	protected Tag parseTagArray() throws CommandSyntaxException {
-		return this.reader.canRead(3) && this.reader.peek(1) != '"' && this.reader.peek(2) == ';' ? this.parseTagPrimitiveArray() : this.parseListTag();
+		return this.reader.canRead(3) && !StringReader.isQuotedStringStart(this.reader.peek(1)) && this.reader.peek(2) == ';'
+			? this.parseTagPrimitiveArray()
+			: this.parseListTag();
 	}
 
 	public CompoundTag parseCompoundTag() throws CommandSyntaxException {

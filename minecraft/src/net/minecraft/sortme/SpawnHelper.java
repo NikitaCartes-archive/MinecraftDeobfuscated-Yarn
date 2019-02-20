@@ -69,7 +69,7 @@ public final class SpawnHelper {
 								mutable.set(n, k, o);
 								float f = (float)n + 0.5F;
 								float g = (float)o + 0.5F;
-								PlayerEntity playerEntity = world.findClosestVisiblePlayer((double)f, (double)g, -1.0);
+								PlayerEntity playerEntity = world.method_18457((double)f, (double)g, -1.0);
 								if (playerEntity == null) {
 									break label119;
 								}

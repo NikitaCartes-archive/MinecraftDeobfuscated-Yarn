@@ -4,10 +4,12 @@ import com.google.common.base.MoreObjects;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.mojang.datafixers.util.Pair;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.ViewableWorld;
 
@@ -161,6 +163,46 @@ public class BlockPattern {
 
 		public String toString() {
 			return MoreObjects.toStringHelper(this).add("up", this.up).add("forwards", this.forwards).add("frontTopLeft", this.frontTopLeft).toString();
+		}
+
+		public Pair<Vec3d, Pair<Vec3d, Integer>> method_18478(Direction direction, BlockPos blockPos, double d, Vec3d vec3d, double e) {
+			Direction direction2 = this.getForwards();
+			Direction direction3 = direction2.rotateYClockwise();
+			double f = (double)(this.getFrontTopLeft().getY() + 1) - d * (double)this.getHeight();
+			double g;
+			double h;
+			if (direction3 == Direction.NORTH) {
+				g = (double)blockPos.getX() + 0.5;
+				h = (double)(this.getFrontTopLeft().getZ() + 1) - (1.0 - e) * (double)this.getWidth();
+			} else if (direction3 == Direction.SOUTH) {
+				g = (double)blockPos.getX() + 0.5;
+				h = (double)this.getFrontTopLeft().getZ() + (1.0 - e) * (double)this.getWidth();
+			} else if (direction3 == Direction.WEST) {
+				g = (double)(this.getFrontTopLeft().getX() + 1) - (1.0 - e) * (double)this.getWidth();
+				h = (double)blockPos.getZ() + 0.5;
+			} else {
+				g = (double)this.getFrontTopLeft().getX() + (1.0 - e) * (double)this.getWidth();
+				h = (double)blockPos.getZ() + 0.5;
+			}
+
+			double i;
+			double j;
+			if (direction2.getOpposite() == direction) {
+				i = vec3d.x;
+				j = vec3d.z;
+			} else if (direction2.getOpposite() == direction.getOpposite()) {
+				i = -vec3d.x;
+				j = -vec3d.z;
+			} else if (direction2.getOpposite() == direction.rotateYClockwise()) {
+				i = -vec3d.z;
+				j = vec3d.x;
+			} else {
+				i = vec3d.z;
+				j = -vec3d.x;
+			}
+
+			int k = (direction2.getHorizontal() - direction.getOpposite().getHorizontal()) * 90;
+			return Pair.of(new Vec3d(g, f, h), Pair.of(new Vec3d(i, vec3d.y, j), k));
 		}
 	}
 }

@@ -18,6 +18,7 @@ import java.util.stream.IntStream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PaneBlock;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.EnderCrystalEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
@@ -100,7 +101,7 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 			}
 		}
 
-		EnderCrystalEntity enderCrystalEntity = new EnderCrystalEntity(iWorld.getWorld());
+		EnderCrystalEntity enderCrystalEntity = EntityType.END_CRYSTAL.create(iWorld.getWorld());
 		enderCrystalEntity.setBeamTarget(endSpikeFeatureConfig.getPos());
 		enderCrystalEntity.setInvulnerable(endSpikeFeatureConfig.isCrystalInvulerable());
 		enderCrystalEntity.setPositionAndAngles(

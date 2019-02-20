@@ -37,7 +37,7 @@ public class ShortTag extends AbstractNumberTag {
 		return this.value + "s";
 	}
 
-	public ShortTag copy() {
+	public ShortTag method_10704() {
 		return new ShortTag(this.value);
 	}
 

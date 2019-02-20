@@ -261,7 +261,7 @@ public class ShapedRecipe implements CraftingRecipe {
 	}
 
 	public static class Serializer implements RecipeSerializer<ShapedRecipe> {
-		public ShapedRecipe read(Identifier identifier, JsonObject jsonObject) {
+		public ShapedRecipe method_8164(Identifier identifier, JsonObject jsonObject) {
 			String string = JsonHelper.getString(jsonObject, "group", "");
 			Map<String, Ingredient> map = ShapedRecipe.deserializeComponents(JsonHelper.getObject(jsonObject, "key"));
 			String[] strings = ShapedRecipe.method_8146(ShapedRecipe.deserializePattern(JsonHelper.getArray(jsonObject, "pattern")));
@@ -272,7 +272,7 @@ public class ShapedRecipe implements CraftingRecipe {
 			return new ShapedRecipe(identifier, string, i, j, defaultedList, itemStack);
 		}
 
-		public ShapedRecipe read(Identifier identifier, PacketByteBuf packetByteBuf) {
+		public ShapedRecipe method_8163(Identifier identifier, PacketByteBuf packetByteBuf) {
 			int i = packetByteBuf.readVarInt();
 			int j = packetByteBuf.readVarInt();
 			String string = packetByteBuf.readString(32767);

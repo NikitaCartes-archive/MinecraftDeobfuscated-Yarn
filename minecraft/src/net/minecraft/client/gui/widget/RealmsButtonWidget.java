@@ -9,18 +9,14 @@ import net.minecraft.realms.RealmsButton;
 public class RealmsButtonWidget extends ButtonWidget {
 	private final RealmsButton realmsButton;
 
-	public RealmsButtonWidget(RealmsButton realmsButton, int i, int j, int k, String string) {
-		super(i, j, k, string);
+	public RealmsButtonWidget(RealmsButton realmsButton, int i, int j, String string) {
+		super(i, j, string);
 		this.realmsButton = realmsButton;
 	}
 
-	public RealmsButtonWidget(RealmsButton realmsButton, int i, int j, int k, String string, int l, int m) {
-		super(i, j, k, l, m, string);
+	public RealmsButtonWidget(RealmsButton realmsButton, int i, int j, String string, int k, int l) {
+		super(i, j, k, l, string);
 		this.realmsButton = realmsButton;
-	}
-
-	public int getId() {
-		return this.id;
 	}
 
 	public boolean getEnabled() {

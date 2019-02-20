@@ -68,7 +68,7 @@ public class ScoreTextComponent extends AbstractTextComponent implements class_2
 		}
 	}
 
-	public ScoreTextComponent getTextComponent() {
+	public ScoreTextComponent method_10929() {
 		ScoreTextComponent scoreTextComponent = new ScoreTextComponent(this.name, this.objective);
 		scoreTextComponent.setText(this.text);
 		return scoreTextComponent;
@@ -77,7 +77,7 @@ public class ScoreTextComponent extends AbstractTextComponent implements class_2
 	@Override
 	public TextComponent method_10890(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
 		if (serverCommandSource == null) {
-			return this.getTextComponent();
+			return this.method_10929();
 		} else {
 			String string;
 			if (this.selector != null) {

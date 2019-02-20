@@ -26,7 +26,7 @@ public class EndTag implements Tag {
 		return "END";
 	}
 
-	public EndTag copy() {
+	public EndTag method_10586() {
 		return new EndTag();
 	}
 

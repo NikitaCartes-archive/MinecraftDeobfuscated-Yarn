@@ -21,8 +21,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.loot.LootTables;
 
 public class MagmaCubeEntity extends SlimeEntity {
-	public MagmaCubeEntity(World world) {
-		super(EntityType.MAGMA_CUBE, world);
+	public MagmaCubeEntity(EntityType<? extends MagmaCubeEntity> entityType, World world) {
+		super(entityType, world);
 		this.fireImmune = true;
 	}
 

@@ -99,7 +99,7 @@ public class VillageProperties {
 
 	private void countGolems() {
 		List<IronGolemEntity> list = this.world
-			.getVisibleEntities(
+			.method_18467(
 				IronGolemEntity.class,
 				new BoundingBox(
 					(double)(this.center.getX() - this.radius),
@@ -115,7 +115,7 @@ public class VillageProperties {
 
 	private void countVillagers() {
 		List<VillagerEntity> list = this.world
-			.getVisibleEntities(
+			.method_18467(
 				VillagerEntity.class,
 				new BoundingBox(
 					(double)(this.center.getX() - this.radius),
@@ -277,7 +277,7 @@ public class VillageProperties {
 
 		for(String string : this.playerRatings.keySet()) {
 			if (this.isUnpopular(string)) {
-				PlayerEntity playerEntity2 = this.world.getPlayerByName(string);
+				PlayerEntity playerEntity2 = this.world.method_18469(string);
 				if (playerEntity2 != null) {
 					double e = playerEntity2.squaredDistanceTo(livingEntity);
 					if (!(e > d)) {

@@ -9,8 +9,8 @@ import net.minecraft.client.MinecraftClient;
 public abstract class LockButtonWidget extends ButtonWidget {
 	private boolean locked;
 
-	public LockButtonWidget(int i, int j, int k) {
-		super(i, j, k, 20, 20, "");
+	public LockButtonWidget(int i, int j) {
+		super(i, j, 20, 20, "");
 	}
 
 	public boolean isLocked() {

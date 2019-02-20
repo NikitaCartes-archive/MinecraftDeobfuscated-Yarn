@@ -1984,6 +1984,13 @@ public class RecipesProvider implements DataProvider {
 			.pattern("X X")
 			.criterion("has_leather", this.method_10426(Items.field_8745))
 			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Items.field_18138)
+			.input('X', Items.field_8745)
+			.pattern("X X")
+			.pattern("XXX")
+			.pattern("X X")
+			.criterion("has_leather", this.method_10426(Items.field_8745))
+			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_16330)
 			.input('S', ItemTags.field_15534)
 			.input('B', Blocks.field_10504)

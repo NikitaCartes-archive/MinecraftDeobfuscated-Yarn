@@ -376,7 +376,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 					mutableBoolean.setTrue();
 				});
 				if (mutableBoolean.isFalse()) {
-					CompoundTag compoundTag = this.field_9904.copy();
+					CompoundTag compoundTag = this.field_9904.method_10553();
 					listTag.add(compoundTag);
 					list.add(compoundTag);
 				}
@@ -448,7 +448,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 				CompoundTag compoundTag = (CompoundTag)tag;
 				Tag tag2 = compoundTag.getTag(this.field_9906);
 				if (tag2 == null) {
-					Tag var6 = this.field_9907.copy();
+					Tag var6 = this.field_9907.method_10553();
 					compoundTag.put(this.field_9906, var6);
 					list.add(var6);
 				} else if (this.field_9908.test(tag2)) {

@@ -56,7 +56,7 @@ public class UsedTotemCriterion implements Criterion<UsedTotemCriterion.Conditio
 		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public UsedTotemCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public UsedTotemCriterion.Conditions method_9163(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("item"));
 		return new UsedTotemCriterion.Conditions(itemPredicate);
 	}

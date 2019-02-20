@@ -26,7 +26,8 @@ public class NamespaceResourceManager implements ResourceManager {
 		this.type = resourceType;
 	}
 
-	public void add(ResourcePack resourcePack) {
+	@Override
+	public void method_14475(ResourcePack resourcePack) {
 		this.packList.add(resourcePack);
 	}
 

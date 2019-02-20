@@ -425,11 +425,11 @@ public class ProtoChunk implements Chunk {
 		Chunk.getList(this.postProcessingLists, i).add(s);
 	}
 
-	public ChunkTickScheduler<Block> getBlockTickScheduler() {
+	public ChunkTickScheduler<Block> method_12303() {
 		return this.blockTickScheduler;
 	}
 
-	public ChunkTickScheduler<Fluid> getFluidTickScheduler() {
+	public ChunkTickScheduler<Fluid> method_12313() {
 		return this.fluidTickScheduler;
 	}
 

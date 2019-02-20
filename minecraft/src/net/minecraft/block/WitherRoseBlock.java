@@ -14,8 +14,8 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class WitherRoseBlock extends FlowerBlock {
@@ -24,11 +24,9 @@ public class WitherRoseBlock extends FlowerBlock {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		BlockPos blockPos2 = blockPos.down();
-		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-		Block block = blockState2.getBlock();
-		return blockState2.hasSolidTopSurface(viewableWorld, blockPos2) && block != Blocks.field_10613;
+	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		Block block = blockState.getBlock();
+		return super.canPlantOnTop(blockState, blockView, blockPos) || block == Blocks.field_10515 || block == Blocks.field_10114;
 	}
 
 	@Environment(EnvType.CLIENT)

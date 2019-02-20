@@ -30,7 +30,7 @@ public class BannedPlayerList extends ServerConfigList<GameProfile, BannedPlayer
 		return strings;
 	}
 
-	protected String getStringKey(GameProfile gameProfile) {
+	protected String method_14649(GameProfile gameProfile) {
 		return gameProfile.getId().toString();
 	}
 }

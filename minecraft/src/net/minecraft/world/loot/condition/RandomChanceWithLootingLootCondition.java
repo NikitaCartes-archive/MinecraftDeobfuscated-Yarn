@@ -54,7 +54,7 @@ public class RandomChanceWithLootingLootCondition implements LootCondition {
 			jsonObject.addProperty("looting_multiplier", randomChanceWithLootingLootCondition.lootingMultiplier);
 		}
 
-		public RandomChanceWithLootingLootCondition deserialize(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public RandomChanceWithLootingLootCondition method_956(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			return new RandomChanceWithLootingLootCondition(JsonHelper.getFloat(jsonObject, "chance"), JsonHelper.getFloat(jsonObject, "looting_multiplier"));
 		}
 	}

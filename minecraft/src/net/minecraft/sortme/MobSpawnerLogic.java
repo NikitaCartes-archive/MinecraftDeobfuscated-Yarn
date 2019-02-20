@@ -62,7 +62,7 @@ public abstract class MobSpawnerLogic {
 	private boolean method_8284() {
 		BlockPos blockPos = this.getPos();
 		return this.getWorld()
-			.findVisiblePlayer((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, (double)this.requiredPlayerRange);
+			.method_18458((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, (double)this.requiredPlayerRange);
 	}
 
 	public void update() {
@@ -122,7 +122,7 @@ public abstract class MobSpawnerLogic {
 							return;
 						}
 
-						int l = world.getVisibleEntities(
+						int l = world.method_18467(
 								entity.getClass(),
 								new BoundingBox(
 										(double)blockPos.getX(),
@@ -240,7 +240,7 @@ public abstract class MobSpawnerLogic {
 			compoundTag.putShort("MaxNearbyEntities", (short)this.maxNearbyEntities);
 			compoundTag.putShort("RequiredPlayerRange", (short)this.requiredPlayerRange);
 			compoundTag.putShort("SpawnRange", (short)this.spawnRange);
-			compoundTag.put("SpawnData", this.spawnEntry.getEntityTag().copy());
+			compoundTag.put("SpawnData", this.spawnEntry.getEntityTag().method_10553());
 			ListTag listTag = new ListTag();
 			if (this.spawnPotentials.isEmpty()) {
 				listTag.add(this.spawnEntry.serialize());

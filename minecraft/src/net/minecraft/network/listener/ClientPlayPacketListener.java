@@ -65,7 +65,6 @@ import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
 import net.minecraft.client.network.packet.PlayerRespawnS2CPacket;
 import net.minecraft.client.network.packet.PlayerSpawnPositionS2CPacket;
 import net.minecraft.client.network.packet.PlayerSpawnS2CPacket;
-import net.minecraft.client.network.packet.PlayerUseBedS2CPacket;
 import net.minecraft.client.network.packet.RemoveEntityEffectS2CPacket;
 import net.minecraft.client.network.packet.ResourcePackSendS2CPacket;
 import net.minecraft.client.network.packet.ScoreboardDisplayS2CPacket;
@@ -141,8 +140,6 @@ public interface ClientPlayPacketListener extends PacketListener {
 	void onCustomPayload(CustomPayloadS2CPacket customPayloadS2CPacket);
 
 	void onDisconnect(DisconnectS2CPacket disconnectS2CPacket);
-
-	void onPlayerUseBed(PlayerUseBedS2CPacket playerUseBedS2CPacket);
 
 	void onEntityStatus(EntityStatusS2CPacket entityStatusS2CPacket);
 

@@ -7,7 +7,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiEventListener;
-import net.minecraft.util.SystemUtil;
 
 @Environment(EnvType.CLIENT)
 public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extends AbstractListWidget {
@@ -42,7 +41,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	}
 
 	@Override
-	public final List<E> getEntries() {
+	public final List<E> method_1968() {
 		return this.entries;
 	}
 
@@ -51,7 +50,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	}
 
 	private E getEntry(int i) {
-		return (E)this.getEntries().get(i);
+		return (E)this.method_1968().get(i);
 	}
 
 	protected final void addEntry(E entry) {
@@ -59,14 +58,8 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	}
 
 	@Override
-	public void method_1946(int i) {
-		this.field_2176 = i;
-		this.field_2177 = SystemUtil.getMeasuringTimeMs();
-	}
-
-	@Override
 	protected final int getEntryCount() {
-		return this.getEntries().size();
+		return this.method_1968().size();
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -174,11 +174,11 @@ public abstract class RealmsScreen extends RealmsGuiEventListener {
 	}
 
 	protected void focusOn(RealmsGuiEventListener realmsGuiEventListener) {
-		this.proxy.focusOn(realmsGuiEventListener.getProxy());
+		this.proxy.method_18624(realmsGuiEventListener.getProxy());
 	}
 
 	public void focusNext() {
-		this.proxy.focusNext();
+		this.proxy.method_18626();
 	}
 
 	public RealmsEditBox newEditBox(int i, int j, int k, int l, int m) {

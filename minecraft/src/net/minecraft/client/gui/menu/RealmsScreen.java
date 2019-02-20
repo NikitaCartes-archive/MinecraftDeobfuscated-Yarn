@@ -81,7 +81,7 @@ public class RealmsScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		this.realmsScreen.render(i, j, f);
 	}
 

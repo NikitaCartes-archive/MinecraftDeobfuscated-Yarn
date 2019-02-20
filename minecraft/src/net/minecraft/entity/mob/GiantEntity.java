@@ -1,5 +1,7 @@
 package net.minecraft.entity.mob;
 
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.util.math.BlockPos;
@@ -7,12 +9,12 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class GiantEntity extends HostileEntity {
-	public GiantEntity(World world) {
-		super(EntityType.GIANT, world);
+	public GiantEntity(EntityType<? extends GiantEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override
-	public float getEyeHeight() {
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
 		return 10.440001F;
 	}
 

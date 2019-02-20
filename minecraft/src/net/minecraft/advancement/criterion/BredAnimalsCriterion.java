@@ -57,7 +57,7 @@ public class BredAnimalsCriterion implements Criterion<BredAnimalsCriterion.Cond
 		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public BredAnimalsCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public BredAnimalsCriterion.Conditions method_854(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("parent"));
 		EntityPredicate entityPredicate2 = EntityPredicate.deserialize(jsonObject.get("partner"));
 		EntityPredicate entityPredicate3 = EntityPredicate.deserialize(jsonObject.get("child"));

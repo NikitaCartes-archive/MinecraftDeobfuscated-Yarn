@@ -4,7 +4,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.SliderWidget;
-import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.sound.SoundCategory;
 
@@ -12,8 +11,8 @@ import net.minecraft.sound.SoundCategory;
 public class class_444 extends SliderWidget {
 	private final SoundCategory field_2622;
 
-	public class_444(MinecraftClient minecraftClient, int i, int j, int k, SoundCategory soundCategory, int l) {
-		super(i, j, k, l, 20, minecraftClient, minecraftClient.options.getSoundVolume(soundCategory));
+	public class_444(MinecraftClient minecraftClient, int i, int j, SoundCategory soundCategory, int k) {
+		super(minecraftClient.options, i, j, k, 20, minecraftClient.options.getSoundVolume(soundCategory));
 		this.field_2622 = soundCategory;
 		this.updateText();
 	}
@@ -26,8 +25,7 @@ public class class_444 extends SliderWidget {
 
 	@Override
 	protected void onProgressChanged() {
-		GameOptions gameOptions = this.client.options;
-		gameOptions.setSoundVolume(this.field_2622, (float)this.progress);
-		gameOptions.write();
+		this.field_18211.setSoundVolume(this.field_2622, (float)this.progress);
+		this.field_18211.write();
 	}
 }

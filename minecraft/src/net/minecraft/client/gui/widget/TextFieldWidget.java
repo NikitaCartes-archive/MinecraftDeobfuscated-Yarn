@@ -2,13 +2,14 @@ package net.minecraft.client.gui.widget;
 
 import com.google.common.base.Predicates;
 import com.mojang.blaze3d.platform.GlStateManager;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_4068;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
@@ -20,8 +21,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class TextFieldWidget extends Drawable implements GuiEventListener {
-	private final int id;
+public class TextFieldWidget extends Drawable implements class_4068, GuiEventListener {
 	private final TextRenderer fontRenderer;
 	private int x;
 	private int y;
@@ -42,28 +42,27 @@ public class TextFieldWidget extends Drawable implements GuiEventListener {
 	private int field_2098 = 7368816;
 	private boolean visible = true;
 	private String suggestion;
-	private BiConsumer<Integer, String> changedListener;
+	private Consumer<String> changedListener;
 	private Predicate<String> textPredicate = Predicates.alwaysTrue();
 	private BiFunction<String, Integer, String> renderTextProvider = (string, integer) -> string;
 
-	public TextFieldWidget(int i, TextRenderer textRenderer, int j, int k, int l, int m) {
-		this(i, textRenderer, j, k, l, m, null);
+	public TextFieldWidget(TextRenderer textRenderer, int i, int j, int k, int l) {
+		this(textRenderer, i, j, k, l, null);
 	}
 
-	public TextFieldWidget(int i, TextRenderer textRenderer, int j, int k, int l, int m, @Nullable TextFieldWidget textFieldWidget) {
-		this.id = i;
+	public TextFieldWidget(TextRenderer textRenderer, int i, int j, int k, int l, @Nullable TextFieldWidget textFieldWidget) {
 		this.fontRenderer = textRenderer;
-		this.x = j;
-		this.y = k;
-		this.width = l;
-		this.height = m;
+		this.x = i;
+		this.y = j;
+		this.width = k;
+		this.height = l;
 		if (textFieldWidget != null) {
 			this.setText(textFieldWidget.getText());
 		}
 	}
 
-	public void setChangedListener(BiConsumer<Integer, String> biConsumer) {
-		this.changedListener = biConsumer;
+	public void setChangedListener(Consumer<String> consumer) {
+		this.changedListener = consumer;
 	}
 
 	public void setRenderTextProvider(BiFunction<String, Integer, String> biFunction) {
@@ -82,9 +81,9 @@ public class TextFieldWidget extends Drawable implements GuiEventListener {
 				this.text = string;
 			}
 
-			this.onChanged(this.id, string);
 			this.method_1872();
 			this.method_1884(this.cursorMax);
+			this.onChanged(string);
 		}
 	}
 
@@ -129,13 +128,13 @@ public class TextFieldWidget extends Drawable implements GuiEventListener {
 			this.text = string2;
 			this.setCursor(i + l);
 			this.method_1884(this.cursorMax);
-			this.onChanged(this.id, this.text);
+			this.onChanged(this.text);
 		}
 	}
 
-	public void onChanged(int i, String string) {
+	public void onChanged(String string) {
 		if (this.changedListener != null) {
-			this.changedListener.accept(i, string);
+			this.changedListener.accept(string);
 		}
 	}
 
@@ -180,7 +179,7 @@ public class TextFieldWidget extends Drawable implements GuiEventListener {
 						this.moveCursor(i);
 					}
 
-					this.onChanged(this.id, this.text);
+					this.onChanged(this.text);
 				}
 			}
 		}
@@ -234,7 +233,7 @@ public class TextFieldWidget extends Drawable implements GuiEventListener {
 			this.method_1884(this.cursorMax);
 		}
 
-		this.onChanged(this.id, this.text);
+		this.onChanged(this.text);
 	}
 
 	public void setCursor(int i) {
@@ -363,7 +362,8 @@ public class TextFieldWidget extends Drawable implements GuiEventListener {
 		}
 	}
 
-	public void render(int i, int j, float f) {
+	@Override
+	public void method_18326(int i, int j, float f) {
 		if (this.isVisible()) {
 			if (this.hasBorder()) {
 				drawRect(this.x - 1, this.y - 1, this.x + this.width + 1, this.y + this.height + 1, -6250336);
@@ -461,7 +461,7 @@ public class TextFieldWidget extends Drawable implements GuiEventListener {
 		this.maxLength = i;
 		if (this.text.length() > i) {
 			this.text = this.text.substring(0, i);
-			this.onChanged(this.id, this.text);
+			this.onChanged(this.text);
 		}
 	}
 

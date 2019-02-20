@@ -4,19 +4,17 @@ import java.util.Vector;
 import javax.swing.JList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Tickable;
 
-public class PlayerListGui extends JList<String> implements Tickable {
+public class PlayerListGui extends JList<String> {
 	private final MinecraftServer server;
 	private int tick;
 
 	public PlayerListGui(MinecraftServer minecraftServer) {
 		this.server = minecraftServer;
-		minecraftServer.registerTickable(this);
+		minecraftServer.registerTickable(this::method_18700);
 	}
 
-	@Override
-	public void tick() {
+	public void method_18700() {
 		if (this.tick++ % 20 == 0) {
 			Vector<String> vector = new Vector();
 

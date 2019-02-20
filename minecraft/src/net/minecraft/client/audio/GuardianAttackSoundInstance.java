@@ -19,7 +19,7 @@ public class GuardianAttackSoundInstance extends MovingSoundInstance {
 	}
 
 	@Override
-	public void tick() {
+	public void method_16896() {
 		if (!this.guardian.invalid && this.guardian.hasBeamTarget()) {
 			this.x = (float)this.guardian.x;
 			this.y = (float)this.guardian.y;

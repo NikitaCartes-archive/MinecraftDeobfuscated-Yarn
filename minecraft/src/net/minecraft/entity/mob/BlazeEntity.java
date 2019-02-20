@@ -32,8 +32,8 @@ public class BlazeEntity extends HostileEntity {
 	private int field_7215;
 	private static final TrackedData<Byte> BLAZE_FLAGS = DataTracker.registerData(BlazeEntity.class, TrackedDataHandlerRegistry.BYTE);
 
-	public BlazeEntity(World world) {
-		super(EntityType.BLAZE, world);
+	public BlazeEntity(EntityType<? extends BlazeEntity> entityType, World world) {
+		super(entityType, world);
 		this.setPathNodeTypeWeight(PathNodeType.field_18, -1.0F);
 		this.setPathNodeTypeWeight(PathNodeType.field_14, 8.0F);
 		this.setPathNodeTypeWeight(PathNodeType.field_9, 0.0F);

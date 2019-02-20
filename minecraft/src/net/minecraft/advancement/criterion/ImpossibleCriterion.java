@@ -29,7 +29,7 @@ public class ImpossibleCriterion implements Criterion<ImpossibleCriterion.Condit
 	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
 	}
 
-	public ImpossibleCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public ImpossibleCriterion.Conditions method_8949(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		return new ImpossibleCriterion.Conditions();
 	}
 

@@ -61,7 +61,7 @@ public class OnKilledCriterion implements Criterion<OnKilledCriterion.Conditions
 		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public OnKilledCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public OnKilledCriterion.Conditions method_8989(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		return new OnKilledCriterion.Conditions(
 			this.id, EntityPredicate.deserialize(jsonObject.get("entity")), DamageSourcePredicate.deserialize(jsonObject.get("killing_blow"))
 		);

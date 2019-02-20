@@ -80,7 +80,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 		private int searchRadius = 50;
 		private boolean skipExistingChunks = true;
 
-		protected ExplorationMapLootFunction.Builder create() {
+		protected ExplorationMapLootFunction.Builder method_501() {
 			return this;
 		}
 

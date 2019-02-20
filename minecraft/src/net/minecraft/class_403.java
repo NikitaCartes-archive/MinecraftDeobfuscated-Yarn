@@ -32,7 +32,7 @@ public class class_403 extends Screen {
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
-		this.addButton(new ButtonWidget(0, this.width / 2 - 100, this.height / 6 + 168, this.field_2349) {
+		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, this.field_2349) {
 			@Override
 			public void onPressed(double d, double e) {
 				class_403.this.field_2345.run();
@@ -43,7 +43,7 @@ public class class_403 extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, this.field_2350.getFormattedText(), this.width / 2, 70, 16777215);
 		int k = 90;
@@ -53,7 +53,7 @@ public class class_403 extends Screen {
 			k += 9;
 		}
 
-		super.draw(i, j, f);
+		super.method_18326(i, j, f);
 	}
 
 	@Override

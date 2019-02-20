@@ -55,7 +55,7 @@ public class BlockArgument implements Predicate<CachedBlockPosition> {
 			if (this.data != null) {
 				BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
 				if (blockEntity != null) {
-					CompoundTag compoundTag = this.data.copy();
+					CompoundTag compoundTag = this.data.method_10553();
 					compoundTag.putInt("x", blockPos.getX());
 					compoundTag.putInt("y", blockPos.getY());
 					compoundTag.putInt("z", blockPos.getZ());

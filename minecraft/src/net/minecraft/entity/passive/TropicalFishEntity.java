@@ -73,8 +73,8 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 		return variety.getShape() & 0xFF | (variety.getPattern() & 0xFF) << 8 | (dyeColor.getId() & 0xFF) << 16 | (dyeColor2.getId() & 0xFF) << 24;
 	}
 
-	public TropicalFishEntity(World world) {
-		super(EntityType.TROPICAL_FISH, world);
+	public TropicalFishEntity(EntityType<? extends TropicalFishEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Environment(EnvType.CLIENT)

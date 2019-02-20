@@ -59,7 +59,7 @@ public class ConsumeItemCriterion implements Criterion<ConsumeItemCriterion.Cond
 		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public ConsumeItemCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public ConsumeItemCriterion.Conditions method_8820(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		return new ConsumeItemCriterion.Conditions(ItemPredicate.deserialize(jsonObject.get("item")));
 	}
 

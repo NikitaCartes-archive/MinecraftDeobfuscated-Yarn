@@ -62,8 +62,8 @@ public class RabbitEntity extends AnimalEntity {
 	private int field_6848;
 	private int field_6847;
 
-	public RabbitEntity(World world) {
-		super(EntityType.RABBIT, world);
+	public RabbitEntity(EntityType<? extends RabbitEntity> entityType, World world) {
+		super(entityType, world);
 		this.jumpControl = new RabbitEntity.RabbitJumpControl(this);
 		this.moveControl = new RabbitEntity.RabbitMoveControl(this);
 		this.setSpeed(0.0);
@@ -107,7 +107,7 @@ public class RabbitEntity extends AnimalEntity {
 		if (d > 0.0) {
 			double e = this.velocityX * this.velocityX + this.velocityZ * this.velocityZ;
 			if (e < 0.010000000000000002) {
-				this.method_5724(0.0F, 0.0F, 1.0F, 0.1F);
+				this.updateVelocity(0.0F, 0.0F, 1.0F, 0.1F);
 			}
 		}
 
@@ -300,8 +300,8 @@ public class RabbitEntity extends AnimalEntity {
 		return item == Items.field_8179 || item == Items.field_8071 || item == Blocks.field_10182.getItem();
 	}
 
-	public RabbitEntity createChild(PassiveEntity passiveEntity) {
-		RabbitEntity rabbitEntity = new RabbitEntity(this.world);
+	public RabbitEntity method_6620(PassiveEntity passiveEntity) {
+		RabbitEntity rabbitEntity = EntityType.RABBIT.create(this.world);
 		int i = this.method_6622(this.world);
 		if (this.random.nextInt(20) != 0) {
 			if (passiveEntity instanceof RabbitEntity && this.random.nextBoolean()) {
@@ -400,7 +400,7 @@ public class RabbitEntity extends AnimalEntity {
 		}
 	}
 
-	static class RabbitFleeGoal<T extends Entity> extends FleeEntityGoal<T> {
+	static class RabbitFleeGoal<T extends LivingEntity> extends FleeEntityGoal<T> {
 		private final RabbitEntity field_6853;
 
 		public RabbitFleeGoal(RabbitEntity rabbitEntity, Class<T> class_, float f, double d, double e) {

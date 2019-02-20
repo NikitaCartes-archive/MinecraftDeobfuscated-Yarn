@@ -6,7 +6,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.YesNoCallback;
 
@@ -42,13 +41,13 @@ public class YesNoScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
-		this.addButton(new OptionButtonWidget(0, this.width / 2 - 155, this.height / 6 + 96, this.yesTranslated) {
+		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 96, 150, 20, this.yesTranslated) {
 			@Override
 			public void onPressed(double d, double e) {
 				YesNoScreen.this.callback.confirmResult(true, YesNoScreen.this.callbackId);
 			}
 		});
-		this.addButton(new OptionButtonWidget(1, this.width / 2 - 155 + 160, this.height / 6 + 96, this.noTranslated) {
+		this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height / 6 + 96, 150, 20, this.noTranslated) {
 			@Override
 			public void onPressed(double d, double e) {
 				YesNoScreen.this.callback.confirmResult(false, YesNoScreen.this.callbackId);
@@ -59,7 +58,7 @@ public class YesNoScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, this.title, this.width / 2, 70, 16777215);
 		int k = 90;
@@ -69,7 +68,7 @@ public class YesNoScreen extends Screen {
 			k += 9;
 		}
 
-		super.draw(i, j, f);
+		super.method_18326(i, j, f);
 	}
 
 	public void disableButtons(int i) {

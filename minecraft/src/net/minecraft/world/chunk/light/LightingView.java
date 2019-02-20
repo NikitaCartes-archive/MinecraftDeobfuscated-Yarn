@@ -1,11 +1,12 @@
 package net.minecraft.world.chunk.light;
 
+import net.minecraft.class_4076;
 import net.minecraft.util.math.BlockPos;
 
 public interface LightingView {
 	default void scheduleChunkLightUpdate(BlockPos blockPos, boolean bl) {
-		this.scheduleChunkLightUpdate(blockPos.getX() >> 4, blockPos.getY() >> 4, blockPos.getZ() >> 4, bl);
+		this.scheduleChunkLightUpdate(class_4076.method_18682(blockPos), bl);
 	}
 
-	void scheduleChunkLightUpdate(int i, int j, int k, boolean bl);
+	void scheduleChunkLightUpdate(class_4076 arg, boolean bl);
 }

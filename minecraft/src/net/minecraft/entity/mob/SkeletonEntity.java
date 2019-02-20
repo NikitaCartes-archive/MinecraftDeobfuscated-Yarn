@@ -14,8 +14,8 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 
 public class SkeletonEntity extends AbstractSkeletonEntity {
-	public SkeletonEntity(World world) {
-		super(EntityType.SKELETON, world);
+	public SkeletonEntity(EntityType<? extends SkeletonEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override

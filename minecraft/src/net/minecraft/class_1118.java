@@ -24,7 +24,7 @@ public class class_1118 {
 		}
 
 		@Override
-		public void tick() {
+		public void method_16896() {
 			if (!this.field_5482.invalid && this.field_5482.isInWater()) {
 				this.x = (float)this.field_5482.x;
 				this.y = (float)this.field_5482.y;
@@ -50,7 +50,7 @@ public class class_1118 {
 		}
 
 		@Override
-		public void tick() {
+		public void method_16896() {
 			if (!this.field_5483.invalid && this.field_5484 >= 0) {
 				this.x = (float)this.field_5483.x;
 				this.y = (float)this.field_5483.y;

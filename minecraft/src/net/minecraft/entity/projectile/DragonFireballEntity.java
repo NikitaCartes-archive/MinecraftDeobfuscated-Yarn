@@ -17,8 +17,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class DragonFireballEntity extends ExplosiveProjectileEntity {
-	public DragonFireballEntity(World world) {
-		super(EntityType.DRAGON_FIREBALL, world);
+	public DragonFireballEntity(EntityType<? extends DragonFireballEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -34,7 +34,7 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 	protected void onCollision(HitResult hitResult) {
 		if (hitResult.getType() != HitResult.Type.ENTITY || !((EntityHitResult)hitResult).getEntity().isPartOf(this.owner)) {
 			if (!this.world.isClient) {
-				List<LivingEntity> list = this.world.getVisibleEntities(LivingEntity.class, this.getBoundingBox().expand(4.0, 2.0, 4.0));
+				List<LivingEntity> list = this.world.method_18467(LivingEntity.class, this.getBoundingBox().expand(4.0, 2.0, 4.0));
 				AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.x, this.y, this.z);
 				areaEffectCloudEntity.setOwner(this.owner);
 				areaEffectCloudEntity.setParticleType(ParticleTypes.field_11216);

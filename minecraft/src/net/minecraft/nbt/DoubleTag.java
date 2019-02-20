@@ -38,7 +38,7 @@ public class DoubleTag extends AbstractNumberTag {
 		return this.value + "d";
 	}
 
-	public DoubleTag copy() {
+	public DoubleTag method_10585() {
 		return new DoubleTag(this.value);
 	}
 

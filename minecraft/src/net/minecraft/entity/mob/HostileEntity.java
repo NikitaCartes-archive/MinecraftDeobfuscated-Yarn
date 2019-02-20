@@ -16,7 +16,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class HostileEntity extends MobEntityWithAi implements Monster {
-	protected HostileEntity(EntityType<?> entityType, World world) {
+	protected HostileEntity(EntityType<? extends HostileEntity> entityType, World world) {
 		super(entityType, world);
 		this.experiencePoints = 5;
 	}

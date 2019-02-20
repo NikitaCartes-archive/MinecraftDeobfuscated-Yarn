@@ -1,12 +1,13 @@
 package net.minecraft.world.chunk.light;
 
 import javax.annotation.Nullable;
+import net.minecraft.class_4076;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 
 public interface ChunkLightingView extends LightingView {
 	@Nullable
-	ChunkNibbleArray getChunkLightArray(int i, int j, int k);
+	ChunkNibbleArray getChunkLightArray(class_4076 arg);
 
 	int getLightLevel(BlockPos blockPos);
 
@@ -15,7 +16,7 @@ public interface ChunkLightingView extends LightingView {
 
 		@Nullable
 		@Override
-		public ChunkNibbleArray getChunkLightArray(int i, int j, int k) {
+		public ChunkNibbleArray getChunkLightArray(class_4076 arg) {
 			return null;
 		}
 
@@ -25,7 +26,7 @@ public interface ChunkLightingView extends LightingView {
 		}
 
 		@Override
-		public void scheduleChunkLightUpdate(int i, int j, int k, boolean bl) {
+		public void scheduleChunkLightUpdate(class_4076 arg, boolean bl) {
 		}
 	}
 }

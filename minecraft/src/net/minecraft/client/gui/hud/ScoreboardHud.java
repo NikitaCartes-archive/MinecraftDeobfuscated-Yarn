@@ -143,7 +143,7 @@ public class ScoreboardHud extends Drawable {
 				ScoreboardEntry scoreboardEntry2 = (ScoreboardEntry)list.get(u);
 				GameProfile gameProfile = scoreboardEntry2.getProfile();
 				if (bl) {
-					PlayerEntity playerEntity = this.client.world.getPlayerByUuid(gameProfile.getId());
+					PlayerEntity playerEntity = this.client.world.method_18470(gameProfile.getId());
 					boolean bl2 = playerEntity != null
 						&& playerEntity.isSkinOverlayVisible(PlayerModelPart.CAPE)
 						&& ("Dinnerbone".equals(gameProfile.getName()) || "Grumm".equals(gameProfile.getName()));

@@ -35,7 +35,7 @@ public class CraftingTableScreen extends ContainerScreen<CraftingTableContainer>
 		this.left = this.recipeBookGui.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
 		this.listeners.add(this.recipeBookGui);
 		this.addButton(
-			new RecipeBookButtonWidget(10, this.left + 5, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX) {
+			new RecipeBookButtonWidget(this.left + 5, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX) {
 				@Override
 				public void onPressed(double d, double e) {
 					CraftingTableScreen.this.recipeBookGui.reset(CraftingTableScreen.this.isNarrow);
@@ -61,14 +61,14 @@ public class CraftingTableScreen extends ContainerScreen<CraftingTableContainer>
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		this.drawBackground();
 		if (this.recipeBookGui.isOpen() && this.isNarrow) {
 			this.drawBackground(f, i, j);
-			this.recipeBookGui.draw(i, j, f);
+			this.recipeBookGui.method_18326(i, j, f);
 		} else {
-			this.recipeBookGui.draw(i, j, f);
-			super.draw(i, j, f);
+			this.recipeBookGui.method_18326(i, j, f);
+			super.method_18326(i, j, f);
 			this.recipeBookGui.drawGhostSlots(this.left, this.top, true, f);
 		}
 

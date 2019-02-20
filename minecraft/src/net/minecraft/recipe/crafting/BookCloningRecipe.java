@@ -68,7 +68,7 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 
 		if (!itemStack.isEmpty() && itemStack.hasTag() && i >= 1 && WrittenBookItem.getBookGeneration(itemStack) < 2) {
 			ItemStack itemStack3 = new ItemStack(Items.field_8360, i);
-			CompoundTag compoundTag = itemStack.getTag().copy();
+			CompoundTag compoundTag = itemStack.getTag().method_10553();
 			compoundTag.putInt("generation", WrittenBookItem.getBookGeneration(itemStack) + 1);
 			itemStack3.setTag(compoundTag);
 			return itemStack3;

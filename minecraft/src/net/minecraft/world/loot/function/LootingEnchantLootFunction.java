@@ -72,7 +72,7 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 			}
 		}
 
-		public LootingEnchantLootFunction deserialize(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public LootingEnchantLootFunction method_554(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			int i = JsonHelper.getInt(jsonObject, "limit", 0);
 			return new LootingEnchantLootFunction(
 				lootConditions, JsonHelper.deserialize(jsonObject, "count", jsonDeserializationContext, UniformLootTableRange.class), i

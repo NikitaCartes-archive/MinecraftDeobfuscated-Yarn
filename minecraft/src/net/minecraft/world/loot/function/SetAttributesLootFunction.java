@@ -184,7 +184,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 			jsonObject.add("modifiers", jsonArray);
 		}
 
-		public SetAttributesLootFunction deserialize(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public SetAttributesLootFunction method_617(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			JsonArray jsonArray = JsonHelper.getArray(jsonObject, "modifiers");
 			List<SetAttributesLootFunction.Attribute> list = Lists.<SetAttributesLootFunction.Attribute>newArrayListWithExpectedSize(jsonArray.size());
 

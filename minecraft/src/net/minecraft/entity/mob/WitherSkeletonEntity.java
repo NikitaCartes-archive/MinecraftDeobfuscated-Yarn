@@ -1,6 +1,8 @@
 package net.minecraft.entity.mob;
 
 import javax.annotation.Nullable;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -22,8 +24,8 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
 public class WitherSkeletonEntity extends AbstractSkeletonEntity {
-	public WitherSkeletonEntity(World world) {
-		super(EntityType.WITHER_SKELETON, world);
+	public WitherSkeletonEntity(EntityType<? extends WitherSkeletonEntity> entityType, World world) {
+		super(entityType, world);
 		this.fireImmune = true;
 	}
 
@@ -81,7 +83,7 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	public float getEyeHeight() {
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
 		return 2.1F;
 	}
 

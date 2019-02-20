@@ -28,14 +28,14 @@ public class EnderCrystalEntity extends Entity {
 	private static final TrackedData<Boolean> SHOW_BOTTOM = DataTracker.registerData(EnderCrystalEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	public int field_7034;
 
-	public EnderCrystalEntity(World world) {
-		super(EntityType.END_CRYSTAL, world);
+	public EnderCrystalEntity(EntityType<? extends EnderCrystalEntity> entityType, World world) {
+		super(entityType, world);
 		this.field_6033 = true;
 		this.field_7034 = this.random.nextInt(100000);
 	}
 
 	public EnderCrystalEntity(World world, double d, double e, double f) {
-		this(world);
+		this(EntityType.END_CRYSTAL, world);
 		this.setPosition(d, e, f);
 	}
 

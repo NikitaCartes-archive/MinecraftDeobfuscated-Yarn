@@ -31,8 +31,8 @@ public class TridentEntity extends ProjectileEntity {
 	private boolean dealtDamage;
 	public int field_7649;
 
-	public TridentEntity(World world) {
-		super(EntityType.TRIDENT, world);
+	public TridentEntity(EntityType<? extends TridentEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public TridentEntity(World world, LivingEntity livingEntity, ItemStack itemStack) {

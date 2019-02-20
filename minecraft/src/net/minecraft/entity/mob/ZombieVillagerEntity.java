@@ -53,8 +53,8 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	private UUID converter;
 	private CompoundTag offerData;
 
-	public ZombieVillagerEntity(World world) {
-		super(EntityType.ZOMBIE_VILLAGER, world);
+	public ZombieVillagerEntity(EntityType<? extends ZombieVillagerEntity> entityType, World world) {
+		super(entityType, world);
 		this.setVillagerData(this.getVillagerData().withProfession(Registry.VILLAGER_PROFESSION.getRandom(this.random)));
 	}
 
@@ -172,7 +172,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	}
 
 	protected void finishConversion(ServerWorld serverWorld) {
-		VillagerEntity villagerEntity = new VillagerEntity(serverWorld);
+		VillagerEntity villagerEntity = EntityType.VILLAGER.create(serverWorld);
 		villagerEntity.setPositionAndAngles(this);
 		villagerEntity.setVillagerData(this.getVillagerData());
 		if (this.offerData != null) {
@@ -185,7 +185,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 			villagerEntity.setBreedingAge(-24000);
 		}
 
-		serverWorld.method_18216(this);
+		this.invalidate();
 		villagerEntity.setAiDisabled(this.isAiDisabled());
 		if (this.hasCustomName()) {
 			villagerEntity.setCustomName(this.getCustomName());
@@ -194,7 +194,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 
 		serverWorld.spawnEntity(villagerEntity);
 		if (this.converter != null) {
-			PlayerEntity playerEntity = serverWorld.getPlayerByUuid(this.converter);
+			PlayerEntity playerEntity = serverWorld.method_18470(this.converter);
 			if (playerEntity instanceof ServerPlayerEntity) {
 				Criterions.CURED_ZOMBIE_VILLAGER.handle((ServerPlayerEntity)playerEntity, this, villagerEntity);
 			}

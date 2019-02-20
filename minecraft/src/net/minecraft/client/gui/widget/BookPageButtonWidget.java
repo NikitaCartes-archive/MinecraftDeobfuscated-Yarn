@@ -10,8 +10,8 @@ import net.minecraft.client.gui.WrittenBookScreen;
 public abstract class BookPageButtonWidget extends ButtonWidget {
 	private final boolean isNextPageButton;
 
-	public BookPageButtonWidget(int i, int j, int k, boolean bl) {
-		super(i, j, k, 23, 13, "");
+	public BookPageButtonWidget(int i, int j, boolean bl) {
+		super(i, j, 23, 13, "");
 		this.isNextPageButton = bl;
 	}
 

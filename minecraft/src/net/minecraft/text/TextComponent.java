@@ -169,6 +169,7 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 	public static class Serializer implements JsonDeserializer<TextComponent>, JsonSerializer<TextComponent> {
 		private static final Gson GSON = SystemUtil.get(() -> {
 			GsonBuilder gsonBuilder = new GsonBuilder();
+			gsonBuilder.disableHtmlEscaping();
 			gsonBuilder.registerTypeHierarchyAdapter(TextComponent.class, new TextComponent.Serializer());
 			gsonBuilder.registerTypeHierarchyAdapter(Style.class, new Style.Serializer());
 			gsonBuilder.registerTypeAdapterFactory(new LowercaseEnumTypeAdapterFactory());

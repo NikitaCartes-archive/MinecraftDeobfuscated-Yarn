@@ -7,8 +7,8 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 
 public class DonkeyEntity extends AbstractDonkeyEntity {
-	public DonkeyEntity(World world) {
-		super(EntityType.DONKEY, world);
+	public DonkeyEntity(EntityType<? extends DonkeyEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override
@@ -42,7 +42,8 @@ public class DonkeyEntity extends AbstractDonkeyEntity {
 
 	@Override
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
-		HorseBaseEntity horseBaseEntity = (HorseBaseEntity)(passiveEntity instanceof HorseEntity ? new MuleEntity(this.world) : new DonkeyEntity(this.world));
+		EntityType<? extends HorseBaseEntity> entityType = passiveEntity instanceof HorseEntity ? EntityType.MULE : EntityType.DONKEY;
+		HorseBaseEntity horseBaseEntity = entityType.create(this.world);
 		this.method_6743(passiveEntity, horseBaseEntity);
 		return horseBaseEntity;
 	}

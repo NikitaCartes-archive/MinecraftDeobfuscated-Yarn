@@ -150,7 +150,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	}
 
 	protected <T extends AbstractMinecartEntity> List<T> method_10001(World world, BlockPos blockPos, Class<T> class_, @Nullable Predicate<Entity> predicate) {
-		return world.getEntities(class_, this.method_10004(blockPos), predicate);
+		return world.method_8390(class_, this.method_10004(blockPos), predicate);
 	}
 
 	private BoundingBox method_10004(BlockPos blockPos) {

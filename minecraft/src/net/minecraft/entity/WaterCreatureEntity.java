@@ -7,7 +7,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class WaterCreatureEntity extends MobEntityWithAi {
-	protected WaterCreatureEntity(EntityType<?> entityType, World world) {
+	protected WaterCreatureEntity(EntityType<? extends WaterCreatureEntity> entityType, World world) {
 		super(entityType, world);
 	}
 

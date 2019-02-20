@@ -44,8 +44,8 @@ public class CreeperEntity extends HostileEntity {
 	private int explosionRadius = 3;
 	private int field_7226;
 
-	public CreeperEntity(World world) {
-		super(EntityType.CREEPER, world);
+	public CreeperEntity(EntityType<? extends CreeperEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override

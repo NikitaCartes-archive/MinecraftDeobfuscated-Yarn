@@ -25,6 +25,12 @@ public class TextComponentBuiltInExceptionProvider implements BuiltInExceptionPr
 	private static final Dynamic2CommandExceptionType field_9793 = new Dynamic2CommandExceptionType(
 		(object, object2) -> new TranslatableTextComponent("argument.integer.big", object2, object)
 	);
+	private static final Dynamic2CommandExceptionType field_18140 = new Dynamic2CommandExceptionType(
+		(object, object2) -> new TranslatableTextComponent("argument.long.low", object2, object)
+	);
+	private static final Dynamic2CommandExceptionType field_18141 = new Dynamic2CommandExceptionType(
+		(object, object2) -> new TranslatableTextComponent("argument.long.big", object2, object)
+	);
 	private static final DynamicCommandExceptionType field_9796 = new DynamicCommandExceptionType(
 		object -> new TranslatableTextComponent("argument.literal.incorrect", object)
 	);
@@ -40,6 +46,10 @@ public class TextComponentBuiltInExceptionProvider implements BuiltInExceptionPr
 		object -> new TranslatableTextComponent("parsing.int.invalid", object)
 	);
 	private static final SimpleCommandExceptionType field_9801 = new SimpleCommandExceptionType(new TranslatableTextComponent("parsing.int.expected"));
+	private static final DynamicCommandExceptionType field_18142 = new DynamicCommandExceptionType(
+		object -> new TranslatableTextComponent("parsing.long.invalid", object)
+	);
+	private static final SimpleCommandExceptionType field_18143 = new SimpleCommandExceptionType(new TranslatableTextComponent("parsing.long.expected"));
 	private static final DynamicCommandExceptionType field_9800 = new DynamicCommandExceptionType(
 		object -> new TranslatableTextComponent("parsing.double.invalid", object)
 	);
@@ -90,6 +100,16 @@ public class TextComponentBuiltInExceptionProvider implements BuiltInExceptionPr
 	}
 
 	@Override
+	public Dynamic2CommandExceptionType longTooLow() {
+		return field_18140;
+	}
+
+	@Override
+	public Dynamic2CommandExceptionType longTooHigh() {
+		return field_18141;
+	}
+
+	@Override
 	public DynamicCommandExceptionType literalIncorrect() {
 		return field_9796;
 	}
@@ -122,6 +142,16 @@ public class TextComponentBuiltInExceptionProvider implements BuiltInExceptionPr
 	@Override
 	public SimpleCommandExceptionType readerExpectedInt() {
 		return field_9801;
+	}
+
+	@Override
+	public DynamicCommandExceptionType readerInvalidLong() {
+		return field_18142;
+	}
+
+	@Override
+	public SimpleCommandExceptionType readerExpectedLong() {
+		return field_18143;
 	}
 
 	@Override

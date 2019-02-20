@@ -37,7 +37,7 @@ public class IntTag extends AbstractNumberTag {
 		return String.valueOf(this.value);
 	}
 
-	public IntTag copy() {
+	public IntTag method_10592() {
 		return new IntTag(this.value);
 	}
 

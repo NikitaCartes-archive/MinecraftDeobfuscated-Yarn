@@ -9,6 +9,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1675;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
@@ -70,16 +72,16 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	private IntOpenHashSet field_7590;
 	private List<Entity> field_7579;
 
-	protected ProjectileEntity(EntityType<?> entityType, World world) {
+	protected ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
-	protected ProjectileEntity(EntityType<?> entityType, double d, double e, double f, World world) {
+	protected ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, double d, double e, double f, World world) {
 		this(entityType, world);
 		this.setPosition(d, e, f);
 	}
 
-	protected ProjectileEntity(EntityType<?> entityType, LivingEntity livingEntity, World world) {
+	protected ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, LivingEntity livingEntity, World world) {
 		this(entityType, livingEntity.x, livingEntity.y + (double)livingEntity.getEyeHeight() - 0.1F, livingEntity.z, world);
 		this.setOwner(livingEntity);
 		if (livingEntity instanceof PlayerEntity) {
@@ -562,7 +564,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 		}
 
 		if (compoundTag.containsKey("SoundEvent", 8)) {
-			this.sound = (SoundEvent)Registry.SOUND_EVENT.getOrEmpty(new Identifier(compoundTag.getString("SoundEvent"))).orElse(null);
+			this.sound = (SoundEvent)Registry.SOUND_EVENT.getOrEmpty(new Identifier(compoundTag.getString("SoundEvent"))).orElse(SoundEvents.field_15151);
 		}
 
 		this.setShotFromCrossbow(compoundTag.getBoolean("ShotFromCrossbow"));
@@ -622,7 +624,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	}
 
 	@Override
-	public float getEyeHeight() {
+	protected float method_18378(class_4050 arg, class_4048 arg2) {
 		return 0.0F;
 	}
 

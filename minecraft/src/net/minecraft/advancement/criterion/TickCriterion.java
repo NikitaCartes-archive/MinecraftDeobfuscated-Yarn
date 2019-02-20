@@ -51,7 +51,7 @@ public class TickCriterion implements Criterion<TickCriterion.Conditions> {
 		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public TickCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public TickCriterion.Conditions method_9140(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		return new TickCriterion.Conditions();
 	}
 

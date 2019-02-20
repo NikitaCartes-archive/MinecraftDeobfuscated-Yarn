@@ -58,8 +58,8 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 	private static final TrackedData<Boolean> CHARGING = DataTracker.registerData(PillagerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private final BasicInventory inventory = new BasicInventory(5);
 
-	public PillagerEntity(World world) {
-		super(EntityType.PILLAGER, world);
+	public PillagerEntity(EntityType<? extends PillagerEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override
@@ -80,7 +80,6 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 	protected void initAttributes() {
 		super.initAttributes();
 		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.35F);
-		this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).setBaseValue(20.0);
 		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(24.0);
 		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(5.0);
 		this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).setBaseValue(32.0);
@@ -100,11 +99,6 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 	@Override
 	public void setCharging(boolean bl) {
 		this.dataTracker.set(CHARGING, bl);
-	}
-
-	@Environment(EnvType.CLIENT)
-	public boolean method_7109() {
-		return this.method_6991(1);
 	}
 
 	@Override
@@ -130,7 +124,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 	@Environment(EnvType.CLIENT)
 	@Override
 	public IllagerEntity.State method_6990() {
-		if (this.method_7109()) {
+		if (this.hasArmsRaised()) {
 			return IllagerEntity.State.field_7211;
 		} else if (this.isCharging()) {
 			return IllagerEntity.State.field_7210;
@@ -250,7 +244,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean hasArmsRaised() {
-		return false;
+		return this.method_6991(1);
 	}
 
 	public BasicInventory getInventory() {

@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import net.minecraft.world.chunk.ChunkPos;
 
 public class LevelIndexedQueue<T> {
-	public static final int LEVEL_COUNT = ServerChunkManager.LEVEL_COUNT + 2;
+	public static final int LEVEL_COUNT = ThreadedAnvilChunkStorage.field_18239 + 2;
 	private final List<Long2ObjectLinkedOpenHashMap<List<Optional<T>>>> levelToPosToElements = (List<Long2ObjectLinkedOpenHashMap<List<Optional<T>>>>)IntStream.range(
 			0, LEVEL_COUNT
 		)

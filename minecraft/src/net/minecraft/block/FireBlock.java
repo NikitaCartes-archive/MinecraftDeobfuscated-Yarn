@@ -474,5 +474,6 @@ public class FireBlock extends Block {
 		fireBlock.registerFlammableBlock(Blocks.field_16492, 60, 60);
 		fireBlock.registerFlammableBlock(Blocks.field_16330, 30, 20);
 		fireBlock.registerFlammableBlock(Blocks.field_17563, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.field_16999, 60, 100);
 	}
 }

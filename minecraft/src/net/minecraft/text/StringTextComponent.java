@@ -16,7 +16,7 @@ public class StringTextComponent extends AbstractTextComponent {
 		return this.text;
 	}
 
-	public StringTextComponent getTextComponent() {
+	public StringTextComponent method_10992() {
 		return new StringTextComponent(this.text);
 	}
 

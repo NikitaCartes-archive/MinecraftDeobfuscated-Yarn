@@ -3,11 +3,13 @@ package net.minecraft.entity.mob;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.control.MoveControl;
-import net.minecraft.entity.ai.goal.FindNearestPlayerGoal;
+import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -32,8 +34,8 @@ public class GhastEntity extends FlyingEntity implements Monster {
 	private static final TrackedData<Boolean> SHOOTING = DataTracker.registerData(GhastEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private int fireballStrength = 1;
 
-	public GhastEntity(World world) {
-		super(EntityType.GHAST, world);
+	public GhastEntity(EntityType<? extends GhastEntity> entityType, World world) {
+		super(entityType, world);
 		this.fireImmune = true;
 		this.experiencePoints = 5;
 		this.moveControl = new GhastEntity.GhastMoveControl(this);
@@ -44,7 +46,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 		this.goalSelector.add(5, new GhastEntity.FlyRandomlyGoal(this));
 		this.goalSelector.add(7, new GhastEntity.class_1572(this));
 		this.goalSelector.add(7, new GhastEntity.ShootFireballGoal(this));
-		this.targetSelector.add(1, new FindNearestPlayerGoal(this));
+		this.targetSelector.add(1, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, livingEntity -> Math.abs(livingEntity.y - this.y) <= 4.0));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -143,7 +145,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public float getEyeHeight() {
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
 		return 2.6F;
 	}
 

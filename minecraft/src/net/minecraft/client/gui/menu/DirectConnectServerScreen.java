@@ -29,24 +29,24 @@ public class DirectConnectServerScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.selectServerButton = this.addButton(new ButtonWidget(0, this.width / 2 - 100, this.height / 4 + 96 + 12, I18n.translate("selectServer.select")) {
+		this.selectServerButton = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 12, I18n.translate("selectServer.select")) {
 			@Override
 			public void onPressed(double d, double e) {
 				DirectConnectServerScreen.this.saveAndClose();
 			}
 		});
-		this.addButton(new ButtonWidget(1, this.width / 2 - 100, this.height / 4 + 120 + 12, I18n.translate("gui.cancel")) {
+		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, I18n.translate("gui.cancel")) {
 			@Override
 			public void onPressed(double d, double e) {
 				DirectConnectServerScreen.this.parent.confirmResult(false, 0);
 			}
 		});
-		this.addressField = new TextFieldWidget(2, this.fontRenderer, this.width / 2 - 100, 116, 200, 20);
+		this.addressField = new TextFieldWidget(this.fontRenderer, this.width / 2 - 100, 116, 200, 20);
 		this.addressField.setMaxLength(128);
 		this.addressField.setFocused(true);
 		this.addressField.setText(this.client.options.lastServer);
 		this.listeners.add(this.addressField);
-		this.setFocused(this.addressField);
+		this.method_1967(this.addressField);
 		this.onAddressFieldChanged();
 	}
 
@@ -102,11 +102,11 @@ public class DirectConnectServerScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, I18n.translate("selectServer.direct"), this.width / 2, 20, 16777215);
 		this.drawString(this.fontRenderer, I18n.translate("addServer.enterIp"), this.width / 2 - 100, 100, 10526880);
-		this.addressField.render(i, j, f);
-		super.draw(i, j, f);
+		this.addressField.method_18326(i, j, f);
+		super.method_18326(i, j, f);
 	}
 }

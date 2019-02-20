@@ -48,8 +48,9 @@ public class IronGolemEntity extends GolemEntity {
 	private int field_6762;
 	private int field_6759;
 
-	public IronGolemEntity(World world) {
-		super(EntityType.IRON_GOLEM, world);
+	public IronGolemEntity(EntityType<? extends IronGolemEntity> entityType, World world) {
+		super(entityType, world);
+		this.stepHeight = 1.0F;
 	}
 
 	@Override
@@ -67,9 +68,7 @@ public class IronGolemEntity extends GolemEntity {
 		this.targetSelector
 			.add(
 				3,
-				new FollowTargetGoal(
-					this, MobEntity.class, 10, false, true, mobEntity -> mobEntity != null && Monster.field_7271.test(mobEntity) && !(mobEntity instanceof CreeperEntity)
-				)
+				new FollowTargetGoal(this, MobEntity.class, 5, false, false, livingEntity -> livingEntity instanceof Monster && !(livingEntity instanceof CreeperEntity))
 			);
 	}
 
@@ -85,10 +84,10 @@ public class IronGolemEntity extends GolemEntity {
 			this.findVillageDelay = 70 + this.random.nextInt(50);
 			this.villageProperties = this.world.getVillageManager().getNearestVillage(new BlockPos(this), 32);
 			if (this.villageProperties == null) {
-				this.setAiRangeUnlimited();
+				this.method_18409();
 			} else {
 				BlockPos blockPos = this.villageProperties.getCenter();
-				this.setAiHome(blockPos, (int)((float)this.villageProperties.getRadius() * 0.6F));
+				this.method_18408(blockPos, (int)((float)this.villageProperties.getRadius() * 0.6F));
 			}
 		}
 
@@ -149,11 +148,11 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	public boolean canTrack(Class<? extends LivingEntity> class_) {
-		if (this.isPlayerCreated() && PlayerEntity.class.isAssignableFrom(class_)) {
+	public boolean method_5973(EntityType<?> entityType) {
+		if (this.isPlayerCreated() && entityType == EntityType.PLAYER) {
 			return false;
 		} else {
-			return class_ == CreeperEntity.class ? false : super.canTrack(class_);
+			return entityType == EntityType.CREEPER ? false : super.method_5973(entityType);
 		}
 	}
 

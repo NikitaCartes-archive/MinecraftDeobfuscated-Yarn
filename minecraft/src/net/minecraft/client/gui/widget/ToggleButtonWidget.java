@@ -15,8 +15,8 @@ public class ToggleButtonWidget extends ButtonWidget {
 	protected int pressedUOffset;
 	protected int hoverVOffset;
 
-	public ToggleButtonWidget(int i, int j, int k, int l, int m, boolean bl) {
-		super(i, j, k, l, m, "");
+	public ToggleButtonWidget(int i, int j, int k, int l, boolean bl) {
+		super(i, j, k, l, "");
 		this.toggled = bl;
 	}
 

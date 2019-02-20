@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.entity.mob.VindicatorEntity;
@@ -98,13 +99,13 @@ public class WoodlandMansionGenerator {
 
 				this.addChest(iWorld, mutableIntBoundingBox, random, blockPos, LootTables.CHEST_WOODLAND_MANSION, blockState);
 			} else if ("Mage".equals(string)) {
-				EvokerEntity evokerEntity = new EvokerEntity(iWorld.getWorld());
+				EvokerEntity evokerEntity = EntityType.EVOKER.create(iWorld.getWorld());
 				evokerEntity.setPersistent();
 				evokerEntity.setPositionAndAngles(blockPos, 0.0F, 0.0F);
 				iWorld.spawnEntity(evokerEntity);
 				iWorld.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 2);
 			} else if ("Warrior".equals(string)) {
-				VindicatorEntity vindicatorEntity = new VindicatorEntity(iWorld.getWorld());
+				VindicatorEntity vindicatorEntity = EntityType.VINDICATOR.create(iWorld.getWorld());
 				vindicatorEntity.setPersistent();
 				vindicatorEntity.setPositionAndAngles(blockPos, 0.0F, 0.0F);
 				vindicatorEntity.prepareEntityData(iWorld, iWorld.getLocalDifficulty(new BlockPos(vindicatorEntity)), SpawnType.field_16474, null, null);

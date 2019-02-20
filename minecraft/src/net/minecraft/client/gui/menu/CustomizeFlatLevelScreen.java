@@ -67,7 +67,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 		this.field_2424 = new CustomizeFlatLevelScreen.class_414();
 		this.listeners.add(this.field_2424);
 		this.widgetButtonAddLayer = this.addButton(
-			new ButtonWidget(2, this.width / 2 - 154, this.height - 52, 100, 20, I18n.translate("createWorld.customize.flat.addLayer") + " (NYI)") {
+			new ButtonWidget(this.width / 2 - 154, this.height - 52, 100, 20, I18n.translate("createWorld.customize.flat.addLayer") + " (NYI)") {
 				@Override
 				public void onPressed(double d, double e) {
 					CustomizeFlatLevelScreen.this.config.updateLayerBlocks();
@@ -76,7 +76,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 			}
 		);
 		this.widgetButtonEditLayer = this.addButton(
-			new ButtonWidget(3, this.width / 2 - 50, this.height - 52, 100, 20, I18n.translate("createWorld.customize.flat.editLayer") + " (NYI)") {
+			new ButtonWidget(this.width / 2 - 50, this.height - 52, 100, 20, I18n.translate("createWorld.customize.flat.editLayer") + " (NYI)") {
 				@Override
 				public void onPressed(double d, double e) {
 					CustomizeFlatLevelScreen.this.config.updateLayerBlocks();
@@ -85,7 +85,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 			}
 		);
 		this.widgetButtonRemoveLayer = this.addButton(
-			new ButtonWidget(4, this.width / 2 - 155, this.height - 52, 150, 20, I18n.translate("createWorld.customize.flat.removeLayer")) {
+			new ButtonWidget(this.width / 2 - 155, this.height - 52, 150, 20, I18n.translate("createWorld.customize.flat.removeLayer")) {
 				@Override
 				public void onPressed(double d, double e) {
 					if (CustomizeFlatLevelScreen.this.method_2147()) {
@@ -99,7 +99,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 				}
 			}
 		);
-		this.addButton(new ButtonWidget(0, this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("gui.done")) {
+		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
 				CustomizeFlatLevelScreen.this.parent.field_3200 = CustomizeFlatLevelScreen.this.method_2140();
@@ -108,7 +108,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 				CustomizeFlatLevelScreen.this.method_2145();
 			}
 		});
-		this.addButton(new ButtonWidget(5, this.width / 2 + 5, this.height - 52, 150, 20, I18n.translate("createWorld.customize.presets")) {
+		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 52, 150, 20, I18n.translate("createWorld.customize.presets")) {
 			@Override
 			public void onPressed(double d, double e) {
 				CustomizeFlatLevelScreen.this.client.openScreen(new NewLevelPresetsScreen(CustomizeFlatLevelScreen.this));
@@ -116,7 +116,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 				CustomizeFlatLevelScreen.this.method_2145();
 			}
 		});
-		this.addButton(new ButtonWidget(1, this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel")) {
+		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel")) {
 			@Override
 			public void onPressed(double d, double e) {
 				CustomizeFlatLevelScreen.this.client.openScreen(CustomizeFlatLevelScreen.this.parent);
@@ -149,14 +149,14 @@ public class CustomizeFlatLevelScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		this.drawBackground();
-		this.field_2424.draw(i, j, f);
+		this.field_2424.method_18326(i, j, f);
 		this.drawStringCentered(this.fontRenderer, this.titleText, this.width / 2, 8, 16777215);
 		int k = this.width / 2 - 92 - 16;
 		this.drawString(this.fontRenderer, this.tileText, k, 32, 16777215);
 		this.drawString(this.fontRenderer, this.heightText, k + 2 + 213 - this.fontRenderer.getStringWidth(this.heightText), 32, 16777215);
-		super.draw(i, j, f);
+		super.method_18326(i, j, f);
 	}
 
 	@Environment(EnvType.CLIENT)

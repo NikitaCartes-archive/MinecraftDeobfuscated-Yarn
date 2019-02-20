@@ -67,7 +67,7 @@ public enum EnderDragonSpawnState {
 						Feature.field_13522
 							.generate(
 								serverWorld,
-								serverWorld.getChunkManager().getChunkGenerator(),
+								serverWorld.method_14178().getChunkGenerator(),
 								new Random(),
 								new BlockPos(spike.getCenterX(), 45, spike.getCenterZ()),
 								endSpikeFeatureConfig

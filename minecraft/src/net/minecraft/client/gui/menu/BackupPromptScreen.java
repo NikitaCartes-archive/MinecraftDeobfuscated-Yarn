@@ -6,7 +6,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 
 @Environment(EnvType.CLIENT)
@@ -35,19 +34,19 @@ public class BackupPromptScreen extends Screen {
 		super.onInitialized();
 		this.wrappedText.clear();
 		this.wrappedText.addAll(this.fontRenderer.wrapStringToWidthAsList(this.subtitle, this.width - 50));
-		this.addButton(new OptionButtonWidget(0, this.width / 2 - 155, 100 + (this.wrappedText.size() + 1) * 9, this.confirmText) {
+		this.addButton(new ButtonWidget(this.width / 2 - 155, 100 + (this.wrappedText.size() + 1) * 9, 150, 20, this.confirmText) {
 			@Override
 			public void onPressed(double d, double e) {
 				BackupPromptScreen.this.callback.proceed(true);
 			}
 		});
-		this.addButton(new OptionButtonWidget(1, this.width / 2 - 155 + 160, 100 + (this.wrappedText.size() + 1) * 9, this.skipText) {
+		this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, 100 + (this.wrappedText.size() + 1) * 9, 150, 20, this.skipText) {
 			@Override
 			public void onPressed(double d, double e) {
 				BackupPromptScreen.this.callback.proceed(false);
 			}
 		});
-		this.addButton(new ButtonWidget(1, this.width / 2 - 155 + 80, 124 + (this.wrappedText.size() + 1) * 9, 150, 20, this.cancelText) {
+		this.addButton(new ButtonWidget(this.width / 2 - 155 + 80, 124 + (this.wrappedText.size() + 1) * 9, 150, 20, this.cancelText) {
 			@Override
 			public void onPressed(double d, double e) {
 				BackupPromptScreen.this.client.openScreen(BackupPromptScreen.this.parent);
@@ -56,7 +55,7 @@ public class BackupPromptScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, this.title, this.width / 2, 70, 16777215);
 		int k = 90;
@@ -66,7 +65,7 @@ public class BackupPromptScreen extends Screen {
 			k += 9;
 		}
 
-		super.draw(i, j, f);
+		super.method_18326(i, j, f);
 	}
 
 	@Override

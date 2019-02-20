@@ -111,7 +111,7 @@ public class SwimNavigation extends EntityNavigation {
 			} else {
 				this.field_6680 = vec3d2;
 				double d = vec3d.distanceTo(this.field_6680);
-				this.field_6682 = this.entity.method_6029() > 0.0F ? d / (double)this.entity.method_6029() * 100.0 : 0.0;
+				this.field_6682 = this.entity.getMovementSpeed() > 0.0F ? d / (double)this.entity.getMovementSpeed() * 100.0 : 0.0;
 			}
 
 			if (this.field_6682 > 0.0 && (double)this.field_6670 > this.field_6682 * 2.0) {

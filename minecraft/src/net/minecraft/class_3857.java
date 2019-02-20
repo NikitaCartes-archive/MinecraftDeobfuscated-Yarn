@@ -24,15 +24,15 @@ import net.minecraft.world.World;
 public abstract class class_3857 extends ThrownEntity implements FlyingItemEntity {
 	private static final TrackedData<ItemStack> field_17082 = DataTracker.registerData(class_3857.class, TrackedDataHandlerRegistry.ITEM_STACK);
 
-	public class_3857(EntityType<?> entityType, World world) {
+	public class_3857(EntityType<? extends class_3857> entityType, World world) {
 		super(entityType, world);
 	}
 
-	public class_3857(EntityType<?> entityType, double d, double e, double f, World world) {
+	public class_3857(EntityType<? extends class_3857> entityType, double d, double e, double f, World world) {
 		super(entityType, d, e, f, world);
 	}
 
-	public class_3857(EntityType<?> entityType, LivingEntity livingEntity, World world) {
+	public class_3857(EntityType<? extends class_3857> entityType, LivingEntity livingEntity, World world) {
 		super(entityType, livingEntity, world);
 	}
 

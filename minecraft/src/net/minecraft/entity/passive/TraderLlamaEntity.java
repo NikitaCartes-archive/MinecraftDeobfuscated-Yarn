@@ -3,6 +3,7 @@ package net.minecraft.entity.passive;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4051;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -22,9 +23,8 @@ import net.minecraft.world.World;
 public class TraderLlamaEntity extends LlamaEntity {
 	private int despawnDelay;
 
-	public TraderLlamaEntity(World world) {
-		super(EntityType.field_17714, world);
-		this.teleporting = true;
+	public TraderLlamaEntity(EntityType<? extends TraderLlamaEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -35,7 +35,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 
 	@Override
 	protected LlamaEntity createChild() {
-		return new TraderLlamaEntity(this.world);
+		return EntityType.field_17714.create(this.world);
 	}
 
 	@Override
@@ -123,7 +123,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 					WanderingTraderEntity wanderingTraderEntity = (WanderingTraderEntity)entity;
 					this.offender = wanderingTraderEntity.getAttacker();
 					int i = wanderingTraderEntity.getLastAttackedTime();
-					return i != this.traderLastAttackedTime && this.canTrack(this.offender, false);
+					return i != this.traderLastAttackedTime && this.canTrack(this.offender, class_4051.field_18092);
 				}
 			}
 		}

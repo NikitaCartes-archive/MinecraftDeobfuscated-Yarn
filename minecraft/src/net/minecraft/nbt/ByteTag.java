@@ -37,7 +37,7 @@ public class ByteTag extends AbstractNumberTag {
 		return this.value + "b";
 	}
 
-	public ByteTag copy() {
+	public ByteTag method_10530() {
 		return new ByteTag(this.value);
 	}
 

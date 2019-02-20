@@ -15,8 +15,8 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class HuskEntity extends ZombieEntity {
-	public HuskEntity(World world) {
-		super(EntityType.HUSK, world);
+	public HuskEntity(EntityType<? extends HuskEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class HuskEntity extends ZombieEntity {
 
 	@Override
 	protected void method_7218() {
-		this.method_7200(ZombieEntity::new);
+		this.method_7200(EntityType.ZOMBIE);
 		this.world.playEvent(null, 1041, new BlockPos((int)this.x, (int)this.y, (int)this.z), 0);
 	}
 

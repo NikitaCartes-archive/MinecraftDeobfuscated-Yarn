@@ -1,6 +1,8 @@
 package net.minecraft.entity.ai.goal;
 
+import net.minecraft.class_4051;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -11,18 +13,29 @@ public class LookAtEntityGoal extends Goal {
 	protected final float range;
 	private int lookTime;
 	private final float chance;
-	protected final Class<? extends Entity> targetType;
+	protected final Class<? extends LivingEntity> targetType;
+	protected final class_4051 field_18087;
 
-	public LookAtEntityGoal(MobEntity mobEntity, Class<? extends Entity> class_, float f) {
+	public LookAtEntityGoal(MobEntity mobEntity, Class<? extends LivingEntity> class_, float f) {
 		this(mobEntity, class_, f, 0.02F);
 	}
 
-	public LookAtEntityGoal(MobEntity mobEntity, Class<? extends Entity> class_, float f, float g) {
+	public LookAtEntityGoal(MobEntity mobEntity, Class<? extends LivingEntity> class_, float f, float g) {
 		this.owner = mobEntity;
 		this.targetType = class_;
 		this.range = f;
 		this.chance = g;
 		this.setControlBits(2);
+		if (class_ == PlayerEntity.class) {
+			this.field_18087 = new class_4051()
+				.method_18418((double)f)
+				.method_18421()
+				.method_18417()
+				.method_18423()
+				.method_18420(livingEntity -> EntityPredicates.method_5913(mobEntity).test(livingEntity));
+		} else {
+			this.field_18087 = new class_4051().method_18418((double)f).method_18421().method_18417().method_18423();
+		}
 	}
 
 	@Override
@@ -35,15 +48,19 @@ public class LookAtEntityGoal extends Goal {
 			}
 
 			if (this.targetType == PlayerEntity.class) {
-				this.target = this.owner
-					.world
-					.getClosestPlayer(
-						this.owner.x, this.owner.y, this.owner.z, (double)this.range, EntityPredicates.EXCEPT_SPECTATOR.and(EntityPredicates.method_5913(this.owner))
-					);
+				this.target = this.owner.world.method_18463(this.field_18087, this.owner, this.owner.x, this.owner.y + (double)this.owner.getEyeHeight(), this.owner.z);
 			} else {
 				this.target = this.owner
 					.world
-					.getClosestVisibleEntityTo(this.targetType, this.owner.getBoundingBox().expand((double)this.range, 3.0, (double)this.range), this.owner);
+					.method_18465(
+						this.targetType,
+						this.field_18087,
+						this.owner,
+						this.owner.x,
+						this.owner.y + (double)this.owner.getEyeHeight(),
+						this.owner.z,
+						this.owner.getBoundingBox().expand((double)this.range, 3.0, (double)this.range)
+					);
 			}
 
 			return this.target != null;

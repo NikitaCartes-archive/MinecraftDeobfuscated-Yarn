@@ -62,8 +62,8 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
-		super.draw(i, j, f);
+	public void method_18326(int i, int j, float f) {
+		super.method_18326(i, j, f);
 		this.drawMouseoverTooltip(i, j);
 	}
 

@@ -320,7 +320,7 @@ public class CloneCommand {
 						serverWorld.updateNeighbors(lv2.field_13496, lv2.field_13495.getBlock());
 					}
 
-					serverWorld.getBlockTickScheduler().method_8666(mutableIntBoundingBox, blockPos5);
+					serverWorld.method_14196().method_8666(mutableIntBoundingBox, blockPos5);
 					if (l == 0) {
 						throw FAILED_EXCEPTION.create();
 					} else {

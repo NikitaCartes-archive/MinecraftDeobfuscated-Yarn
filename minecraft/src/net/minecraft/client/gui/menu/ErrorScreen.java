@@ -19,7 +19,7 @@ public class ErrorScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
-		this.addButton(new ButtonWidget(0, this.width / 2 - 100, 140, I18n.translate("gui.cancel")) {
+		this.addButton(new ButtonWidget(this.width / 2 - 100, 140, I18n.translate("gui.cancel")) {
 			@Override
 			public void onPressed(double d, double e) {
 				ErrorScreen.this.client.openScreen(null);
@@ -28,11 +28,11 @@ public class ErrorScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		this.drawGradientRect(0, 0, this.width, this.height, -12574688, -11530224);
 		this.drawStringCentered(this.fontRenderer, this.title, this.width / 2, 90, 16777215);
 		this.drawStringCentered(this.fontRenderer, this.message, this.width / 2, 110, 16777215);
-		super.draw(i, j, f);
+		super.method_18326(i, j, f);
 	}
 
 	@Override

@@ -15,7 +15,6 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 		super(clientWorld, gameProfile);
 		this.stepHeight = 1.0F;
 		this.noClip = true;
-		this.renderOffsetY = 0.25F;
 	}
 
 	@Override
@@ -36,7 +35,6 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public void update() {
-		this.renderOffsetY = 0.0F;
 		super.update();
 		this.field_6211 = this.field_6225;
 		double d = this.x - this.prevX;

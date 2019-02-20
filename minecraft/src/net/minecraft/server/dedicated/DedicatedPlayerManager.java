@@ -12,7 +12,7 @@ public class DedicatedPlayerManager extends PlayerManager {
 	public DedicatedPlayerManager(MinecraftDedicatedServer minecraftDedicatedServer) {
 		super(minecraftDedicatedServer, minecraftDedicatedServer.getProperties().maxPlayers);
 		ServerPropertiesHandler serverPropertiesHandler = minecraftDedicatedServer.getProperties();
-		this.setViewDistance(serverPropertiesHandler.viewDistance);
+		this.setViewDistance(serverPropertiesHandler.viewDistance, serverPropertiesHandler.viewDistance - 2);
 		super.setWhitelistEnabled(serverPropertiesHandler.whiteList.get());
 		if (!minecraftDedicatedServer.isSinglePlayer()) {
 			this.getUserBanList().setEnabled(true);
@@ -34,7 +34,7 @@ public class DedicatedPlayerManager extends PlayerManager {
 	@Override
 	public void setWhitelistEnabled(boolean bl) {
 		super.setWhitelistEnabled(bl);
-		this.getDedicatedServer().setUseWhitelist(bl);
+		this.method_13938().setUseWhitelist(bl);
 	}
 
 	@Override
@@ -123,7 +123,7 @@ public class DedicatedPlayerManager extends PlayerManager {
 		return !this.isWhitelistEnabled() || this.isOperator(gameProfile) || this.getWhitelist().method_14653(gameProfile);
 	}
 
-	public MinecraftDedicatedServer getDedicatedServer() {
+	public MinecraftDedicatedServer method_13938() {
 		return (MinecraftDedicatedServer)super.getServer();
 	}
 

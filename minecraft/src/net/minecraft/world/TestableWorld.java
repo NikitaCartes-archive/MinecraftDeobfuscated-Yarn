@@ -6,7 +6,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.gen.Heightmap;
 
 public interface TestableWorld {
-	boolean test(BlockPos blockPos, Predicate<BlockState> predicate);
+	boolean testBlockState(BlockPos blockPos, Predicate<BlockState> predicate);
 
 	BlockPos getTopPosition(Heightmap.Type type, BlockPos blockPos);
 }

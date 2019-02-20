@@ -25,8 +25,8 @@ import net.minecraft.world.explosion.Explosion;
 public class ExplodingWitherSkullEntity extends ExplosiveProjectileEntity {
 	private static final TrackedData<Boolean> CHARGED = DataTracker.registerData(ExplodingWitherSkullEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
-	public ExplodingWitherSkullEntity(World world) {
-		super(EntityType.WITHER_SKULL, world);
+	public ExplodingWitherSkullEntity(EntityType<? extends ExplodingWitherSkullEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public ExplodingWitherSkullEntity(World world, LivingEntity livingEntity, double d, double e, double f) {

@@ -42,12 +42,12 @@ public abstract class LootEntry implements LootChoiceProvider {
 
 		protected abstract T getThisBuilder();
 
-		public T withCondition(LootCondition.Builder builder) {
+		public T method_421(LootCondition.Builder builder) {
 			this.children.add(builder.build());
 			return this.getThisBuilder();
 		}
 
-		public final T getThis() {
+		public final T method_416() {
 			return this.getThisBuilder();
 		}
 

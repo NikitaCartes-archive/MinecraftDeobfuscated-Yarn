@@ -4,6 +4,7 @@ import java.util.Arrays;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4076;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.LevelIndexedProcessor;
 import net.minecraft.util.math.BlockPos;
@@ -40,7 +41,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 	@Override
 	protected void scheduleNewUpdate(long l) {
 		this.lightStorage.updateAll();
-		if (this.lightStorage.hasChunk(BlockPos.toChunkSectionOrigin(l))) {
+		if (this.lightStorage.hasChunk(class_4076.method_18691(l))) {
 			super.scheduleNewUpdate(l);
 		}
 	}
@@ -77,10 +78,10 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 		if (!BlockPos.isHeightInvalid(l) && !BlockPos.isHeightInvalid(m)) {
 			this.srcMutablePos.setFromLong(l);
 			this.destMutablePos.setFromLong(m);
-			int i = this.srcMutablePos.getX() >> 4;
-			int j = this.srcMutablePos.getZ() >> 4;
-			int k = this.destMutablePos.getX() >> 4;
-			int n = this.destMutablePos.getZ() >> 4;
+			int i = class_4076.method_18675(this.srcMutablePos.getX());
+			int j = class_4076.method_18675(this.srcMutablePos.getZ());
+			int k = class_4076.method_18675(this.destMutablePos.getX());
+			int n = class_4076.method_18675(this.destMutablePos.getZ());
 			BlockView blockView = this.method_17529(k, n);
 			if (blockView == null) {
 				return 16;
@@ -129,7 +130,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 
 	@Override
 	protected boolean isInvalidIndex(long l) {
-		return l == -1L;
+		return l == Long.MAX_VALUE;
 	}
 
 	@Override
@@ -139,11 +140,14 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 
 	@Override
 	protected int getCurrentLevelFor(long l) {
-		return l == -1L ? 0 : 15 - this.lightStorage.get(l);
+		return l == Long.MAX_VALUE ? 0 : 15 - this.lightStorage.get(l);
 	}
 
 	protected int getCurrentLevelFromArray(ChunkNibbleArray chunkNibbleArray, long l) {
-		return 15 - chunkNibbleArray.get(BlockPos.unpackLongX(l) & 15, BlockPos.unpackLongY(l) & 15, BlockPos.unpackLongZ(l) & 15);
+		return 15
+			- chunkNibbleArray.get(
+				class_4076.method_18684(BlockPos.unpackLongX(l)), class_4076.method_18684(BlockPos.unpackLongY(l)), class_4076.method_18684(BlockPos.unpackLongZ(l))
+			);
 	}
 
 	@Override
@@ -186,16 +190,14 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 		return i;
 	}
 
-	protected void setSection(int i, int j, int k, ChunkNibbleArray chunkNibbleArray) {
-		long l = BlockPos.asLong(i << 4, j << 4, k << 4);
+	protected void setSection(long l, ChunkNibbleArray chunkNibbleArray) {
 		this.lightStorage.scheduleToUpdate(l, chunkNibbleArray);
 	}
 
 	@Nullable
 	@Override
-	public ChunkNibbleArray getChunkLightArray(int i, int j, int k) {
-		long l = BlockPos.asLong(i << 4, j << 4, k << 4);
-		return this.lightStorage.getDataForChunk(l, false);
+	public ChunkNibbleArray getChunkLightArray(class_4076 arg) {
+		return this.lightStorage.getDataForChunk(arg.method_18694(), false);
 	}
 
 	@Override
@@ -221,13 +223,12 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 	}
 
 	@Override
-	public void scheduleChunkLightUpdate(int i, int j, int k, boolean bl) {
-		long l = BlockPos.asLong(i << 4, j << 4, k << 4);
-		this.lightStorage.scheduleChunkLightUpdate(l, bl);
+	public void scheduleChunkLightUpdate(class_4076 arg, boolean bl) {
+		this.lightStorage.scheduleChunkLightUpdate(arg.method_18694(), bl);
 	}
 
-	public void method_15512(int i, int j, boolean bl) {
-		long l = BlockPos.removeY(BlockPos.asLong(i << 4, 0, j << 4));
+	public void method_15512(ChunkPos chunkPos, boolean bl) {
+		long l = class_4076.method_18693(class_4076.method_18685(chunkPos.x, 0, chunkPos.z));
 		this.lightStorage.method_15535(l, bl);
 	}
 }

@@ -60,7 +60,7 @@ public class PressurePlateBlock extends AbstractPressurePlateBlock {
 				list = world.getVisibleEntities(null, boundingBox);
 				break;
 			case STONE:
-				list = world.getVisibleEntities(LivingEntity.class, boundingBox);
+				list = world.method_18467(LivingEntity.class, boundingBox);
 				break;
 			default:
 				return 0;

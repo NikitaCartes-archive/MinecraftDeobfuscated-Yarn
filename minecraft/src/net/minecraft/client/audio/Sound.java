@@ -47,7 +47,7 @@ public class Sound implements SoundContainer<Sound> {
 		return this.weight;
 	}
 
-	public Sound getSound() {
+	public Sound method_4765() {
 		return this;
 	}
 

@@ -4,6 +4,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1394;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
@@ -35,8 +37,8 @@ import net.minecraft.world.World;
 public class SnowmanEntity extends GolemEntity implements RangedAttacker {
 	private static final TrackedData<Byte> SNOWMAN_FLAGS = DataTracker.registerData(SnowmanEntity.class, TrackedDataHandlerRegistry.BYTE);
 
-	public SnowmanEntity(World world) {
-		super(EntityType.SNOW_GOLEM, world);
+	public SnowmanEntity(EntityType<? extends SnowmanEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override
@@ -45,7 +47,7 @@ public class SnowmanEntity extends GolemEntity implements RangedAttacker {
 		this.goalSelector.add(2, new class_1394(this, 1.0, 1.0000001E-5F));
 		this.goalSelector.add(3, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
 		this.goalSelector.add(4, new LookAroundGoal(this));
-		this.targetSelector.add(1, new FollowTargetGoal(this, MobEntity.class, 10, true, false, Monster.field_7270));
+		this.targetSelector.add(1, new FollowTargetGoal(this, MobEntity.class, 10, true, false, livingEntity -> livingEntity instanceof Monster));
 	}
 
 	@Override
@@ -124,7 +126,7 @@ public class SnowmanEntity extends GolemEntity implements RangedAttacker {
 	}
 
 	@Override
-	public float getEyeHeight() {
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
 		return 1.7F;
 	}
 

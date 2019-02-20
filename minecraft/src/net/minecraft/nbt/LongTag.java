@@ -37,7 +37,7 @@ public class LongTag extends AbstractNumberTag {
 		return this.value + "L";
 	}
 
-	public LongTag copy() {
+	public LongTag method_10621() {
 		return new LongTag(this.value);
 	}
 

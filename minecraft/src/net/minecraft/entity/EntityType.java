@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_4048;
 import net.minecraft.datafixers.Schemas;
 import net.minecraft.datafixers.TypeReferences;
 import net.minecraft.entity.boss.WitherEntity;
@@ -212,7 +213,7 @@ public class EntityType<T extends Entity> {
 		"firework_rocket", EntityType.Builder.<FireworkEntity>create(FireworkEntity::new, EntityCategory.field_17715).setSize(0.25F, 0.25F)
 	);
 	public static final EntityType<FoxEntity> field_17943 = register(
-		"fox", EntityType.Builder.<FoxEntity>create(FoxEntity::new, EntityCategory.field_6294).setSize(0.6F, 0.5F)
+		"fox", EntityType.Builder.<FoxEntity>create(FoxEntity::new, EntityCategory.field_6294).setSize(0.5F, 0.7F)
 	);
 	public static final EntityType<GhastEntity> GHAST = register(
 		"ghast", EntityType.Builder.<GhastEntity>create(GhastEntity::new, EntityCategory.field_6302).setSize(4.0F, 4.0F)
@@ -438,7 +439,7 @@ public class EntityType<T extends Entity> {
 	public static final EntityType<FishHookEntity> FISHING_BOBBER = register(
 		"fishing_bobber", EntityType.Builder.<FishHookEntity>create(EntityCategory.field_17715).disableSaving().disableSummon().setSize(0.25F, 0.25F)
 	);
-	private final Function<? super World, ? extends T> factory;
+	private final EntityType.class_4049<T> factory;
 	private final EntityCategory category;
 	private final boolean saveable;
 	private final boolean summonable;
@@ -450,8 +451,7 @@ public class EntityType<T extends Entity> {
 	private Identifier lootTableId;
 	@Nullable
 	private final Type<?> dataFixerType;
-	private final float width;
-	private final float height;
+	private final class_4048 field_18070;
 
 	private static <T extends Entity> EntityType<T> register(String string, EntityType.Builder<T> builder) {
 		return Registry.register(Registry.ENTITY_TYPE, string, builder.build(string));
@@ -465,16 +465,13 @@ public class EntityType<T extends Entity> {
 		return Registry.ENTITY_TYPE.getOrEmpty(Identifier.create(string));
 	}
 
-	public EntityType(
-		Function<? super World, ? extends T> function, EntityCategory entityCategory, boolean bl, boolean bl2, @Nullable Type<?> type, float f, float g
-	) {
-		this.factory = function;
+	public EntityType(EntityType.class_4049<T> arg, EntityCategory entityCategory, boolean bl, boolean bl2, @Nullable Type<?> type, class_4048 arg2) {
+		this.factory = arg;
 		this.category = entityCategory;
 		this.saveable = bl;
 		this.summonable = bl2;
 		this.dataFixerType = type;
-		this.width = f;
-		this.height = g;
+		this.field_18070 = arg2;
 	}
 
 	@Nullable
@@ -615,16 +612,16 @@ public class EntityType<T extends Entity> {
 	}
 
 	public float getWidth() {
-		return this.width;
+		return this.field_18070.field_18067;
 	}
 
 	public float getHeight() {
-		return this.height;
+		return this.field_18070.field_18068;
 	}
 
 	@Nullable
 	public T create(World world) {
-		return (T)this.factory.apply(world);
+		return this.factory.create(this, world);
 	}
 
 	@Nullable
@@ -650,6 +647,10 @@ public class EntityType<T extends Entity> {
 	public BoundingBox createSimpleBoundingBox(double d, double e, double f) {
 		float g = this.getWidth() / 2.0F;
 		return new BoundingBox(d - (double)g, e, f - (double)g, d + (double)g, e + (double)this.getHeight(), f + (double)g);
+	}
+
+	public class_4048 method_18386() {
+		return this.field_18070;
 	}
 
 	public static Optional<EntityType<?>> fromTag(CompoundTag compoundTag) {
@@ -683,30 +684,106 @@ public class EntityType<T extends Entity> {
 		}
 	}
 
+	public int method_18387() {
+		if (this == PLAYER) {
+			return 32;
+		} else if (this == END_CRYSTAL) {
+			return 16;
+		} else if (this == ENDER_DRAGON
+			|| this == TNT
+			|| this == FALLING_BLOCK
+			|| this == ITEM_FRAME
+			|| this == LEASH_KNOT
+			|| this == PAINTING
+			|| this == ARMOR_STAND
+			|| this == EXPERIENCE_ORB
+			|| this == AREA_EFFECT_CLOUD
+			|| this == EVOKER_FANGS) {
+			return 10;
+		} else {
+			return this != FISHING_BOBBER
+					&& this != ARROW
+					&& this != SPECTRAL_ARROW
+					&& this != TRIDENT
+					&& this != SMALL_FIREBALL
+					&& this != DRAGON_FIREBALL
+					&& this != FIREBALL
+					&& this != WITHER_SKULL
+					&& this != SNOWBALL
+					&& this != LLAMA_SPIT
+					&& this != ENDER_PEARL
+					&& this != EYE_OF_ENDER
+					&& this != EGG
+					&& this != POTION
+					&& this != EXPERIENCE_BOTTLE
+					&& this != FIREWORK_ROCKET
+					&& this != ITEM
+				? 5
+				: 4;
+		}
+	}
+
+	public int method_18388() {
+		if (this == PLAYER || this == EVOKER_FANGS) {
+			return 2;
+		} else if (this == EYE_OF_ENDER) {
+			return 4;
+		} else if (this == FISHING_BOBBER) {
+			return 5;
+		} else if (this == SMALL_FIREBALL
+			|| this == DRAGON_FIREBALL
+			|| this == FIREBALL
+			|| this == WITHER_SKULL
+			|| this == SNOWBALL
+			|| this == LLAMA_SPIT
+			|| this == ENDER_PEARL
+			|| this == EGG
+			|| this == POTION
+			|| this == EXPERIENCE_BOTTLE
+			|| this == FIREWORK_ROCKET
+			|| this == TNT) {
+			return 10;
+		} else if (this == ARROW || this == SPECTRAL_ARROW || this == TRIDENT || this == ITEM || this == FALLING_BLOCK || this == EXPERIENCE_ORB) {
+			return 20;
+		} else {
+			return this != ITEM_FRAME && this != LEASH_KNOT && this != PAINTING && this != AREA_EFFECT_CLOUD && this != END_CRYSTAL ? 3 : Integer.MAX_VALUE;
+		}
+	}
+
+	public boolean method_18389() {
+		return this != PLAYER
+			&& this != LLAMA_SPIT
+			&& this != WITHER
+			&& this != BAT
+			&& this != ITEM_FRAME
+			&& this != LEASH_KNOT
+			&& this != PAINTING
+			&& this != END_CRYSTAL
+			&& this != EVOKER_FANGS;
+	}
+
 	public static class Builder<T extends Entity> {
-		private final Function<? super World, ? extends T> function;
+		private final EntityType.class_4049<T> function;
 		private final EntityCategory entityClass;
 		private boolean saveable = true;
 		private boolean summonable = true;
-		private float width = -1.0F;
-		private float height = -1.0F;
+		private class_4048 field_18071 = class_4048.method_18384(0.6F, 1.8F);
 
-		private Builder(Function<? super World, ? extends T> function, EntityCategory entityCategory) {
-			this.function = function;
+		private Builder(EntityType.class_4049<T> arg, EntityCategory entityCategory) {
+			this.function = arg;
 			this.entityClass = entityCategory;
 		}
 
-		public static <T extends Entity> EntityType.Builder<T> create(Function<? super World, ? extends T> function, EntityCategory entityCategory) {
-			return new EntityType.Builder<>(function, entityCategory);
+		public static <T extends Entity> EntityType.Builder<T> create(EntityType.class_4049<T> arg, EntityCategory entityCategory) {
+			return new EntityType.Builder<>(arg, entityCategory);
 		}
 
 		public static <T extends Entity> EntityType.Builder<T> create(EntityCategory entityCategory) {
-			return new EntityType.Builder<>(world -> null, entityCategory);
+			return new EntityType.Builder<>((entityType, world) -> null, entityCategory);
 		}
 
 		public EntityType.Builder<T> setSize(float f, float g) {
-			this.width = f;
-			this.height = g;
+			this.field_18071 = class_4048.method_18384(f, g);
 			return this;
 		}
 
@@ -736,7 +813,11 @@ public class EntityType<T extends Entity> {
 				}
 			}
 
-			return new EntityType<>(this.function, this.entityClass, this.saveable, this.summonable, type, this.width, this.height);
+			return new EntityType<>(this.function, this.entityClass, this.saveable, this.summonable, type, this.field_18071);
 		}
+	}
+
+	public interface class_4049<T extends Entity> {
+		T create(EntityType<T> entityType, World world);
 	}
 }

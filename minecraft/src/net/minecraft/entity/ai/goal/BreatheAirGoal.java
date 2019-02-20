@@ -65,7 +65,7 @@ public class BreatheAirGoal extends Goal {
 	@Override
 	public void tick() {
 		this.moveToAir();
-		this.owner.method_5724(this.owner.field_6212, this.owner.field_6227, this.owner.field_6250, 0.02F);
+		this.owner.updateVelocity(this.owner.movementInputSideways, this.owner.movementInputUp, this.owner.movementInputForward, 0.02F);
 		this.owner.move(MovementType.field_6308, this.owner.velocityX, this.owner.velocityY, this.owner.velocityZ);
 	}
 

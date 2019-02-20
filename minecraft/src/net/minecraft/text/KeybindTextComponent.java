@@ -21,7 +21,7 @@ public class KeybindTextComponent extends AbstractTextComponent {
 		return (String)this.field_11768.get();
 	}
 
-	public KeybindTextComponent copy() {
+	public KeybindTextComponent method_10902() {
 		return new KeybindTextComponent(this.keybind);
 	}
 

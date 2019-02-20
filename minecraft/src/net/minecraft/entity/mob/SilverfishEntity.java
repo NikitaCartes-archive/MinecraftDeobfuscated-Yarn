@@ -2,6 +2,9 @@ package net.minecraft.entity.mob;
 
 import java.util.Random;
 import net.minecraft.class_1399;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
+import net.minecraft.class_4051;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.InfestedBlock;
@@ -26,10 +29,11 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class SilverfishEntity extends HostileEntity {
+	private static final class_4051 field_18131 = new class_4051().method_18418(5.0).method_18424();
 	private SilverfishEntity.class_1616 field_7366;
 
-	public SilverfishEntity(World world) {
-		super(EntityType.SILVERFISH, world);
+	public SilverfishEntity(EntityType<? extends SilverfishEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override
@@ -49,7 +53,7 @@ public class SilverfishEntity extends HostileEntity {
 	}
 
 	@Override
-	public float getEyeHeight() {
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
 		return 0.1F;
 	}
 
@@ -124,7 +128,7 @@ public class SilverfishEntity extends HostileEntity {
 	@Override
 	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
 		if (super.canSpawn(iWorld, spawnType)) {
-			PlayerEntity playerEntity = iWorld.getClosestSurvivalPlayer(this, 5.0);
+			PlayerEntity playerEntity = this.world.method_18462(field_18131, this);
 			return playerEntity == null;
 		} else {
 			return false;

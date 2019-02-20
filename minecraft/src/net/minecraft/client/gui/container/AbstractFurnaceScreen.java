@@ -34,7 +34,7 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 		this.recipeBook.initialize(this.width, this.height, this.client, this.narrow, this.container);
 		this.left = this.recipeBook.findLeftEdge(this.narrow, this.width, this.containerWidth);
 		this.addButton(
-			new RecipeBookButtonWidget(10, this.left + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE) {
+			new RecipeBookButtonWidget(this.left + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE) {
 				@Override
 				public void onPressed(double d, double e) {
 					AbstractFurnaceScreen.this.recipeBook.reset(AbstractFurnaceScreen.this.narrow);
@@ -56,14 +56,14 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		this.drawBackground();
 		if (this.recipeBook.isOpen() && this.narrow) {
 			this.drawBackground(f, i, j);
-			this.recipeBook.draw(i, j, f);
+			this.recipeBook.method_18326(i, j, f);
 		} else {
-			this.recipeBook.draw(i, j, f);
-			super.draw(i, j, f);
+			this.recipeBook.method_18326(i, j, f);
+			super.method_18326(i, j, f);
 			this.recipeBook.drawGhostSlots(this.left, this.top, true, f);
 		}
 

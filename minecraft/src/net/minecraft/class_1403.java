@@ -26,7 +26,7 @@ public class class_1403 extends TrackTargetGoal {
 			} else {
 				this.field_6655 = livingEntity.getAttacker();
 				int i = livingEntity.getLastAttackedTime();
-				return i != this.field_6653 && this.canTrack(this.field_6655, false) && this.field_6654.method_6178(this.field_6655, livingEntity);
+				return i != this.field_6653 && this.canTrack(this.field_6655, class_4051.field_18092) && this.field_6654.method_6178(this.field_6655, livingEntity);
 			}
 		}
 	}
