@@ -350,7 +350,7 @@ public class CompoundTag implements Tag {
 		return crashReport;
 	}
 
-	public CompoundTag copy() {
+	public CompoundTag method_10553() {
 		CompoundTag compoundTag = new CompoundTag();
 
 		for (String string : this.tags.keySet()) {
@@ -418,15 +418,17 @@ public class CompoundTag implements Tag {
 	}
 
 	protected static String escapeTagKey(String string) {
-		return PATTERN.matcher(string).matches() ? string : StringTag.escape(string, true);
+		return PATTERN.matcher(string).matches() ? string : StringTag.escape(string);
 	}
 
 	protected static TextComponent prettyPrintTagKey(String string) {
 		if (PATTERN.matcher(string).matches()) {
 			return new StringTextComponent(string).applyFormat(AQUA);
 		} else {
-			TextComponent textComponent = new StringTextComponent(StringTag.escape(string, false)).applyFormat(AQUA);
-			return new StringTextComponent("\"").append(textComponent).append("\"");
+			String string2 = StringTag.escape(string);
+			String string3 = string2.substring(0, 1);
+			TextComponent textComponent = new StringTextComponent(string2.substring(1, string2.length() - 1)).applyFormat(AQUA);
+			return new StringTextComponent(string3).append(textComponent).append(string3);
 		}
 	}
 

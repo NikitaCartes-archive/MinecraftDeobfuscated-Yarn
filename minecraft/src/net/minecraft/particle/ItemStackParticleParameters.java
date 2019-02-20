@@ -12,14 +12,14 @@ import net.minecraft.util.registry.Registry;
 
 public class ItemStackParticleParameters implements ParticleParameters {
 	public static final ParticleParameters.Factory<ItemStackParticleParameters> PARAMETERS_FACTORY = new ParticleParameters.Factory<ItemStackParticleParameters>() {
-		public ItemStackParticleParameters read(ParticleType<ItemStackParticleParameters> particleType, StringReader stringReader) throws CommandSyntaxException {
+		public ItemStackParticleParameters method_10290(ParticleType<ItemStackParticleParameters> particleType, StringReader stringReader) throws CommandSyntaxException {
 			stringReader.expect(' ');
 			class_2291 lv = new class_2291(stringReader, false).method_9789();
 			ItemStack itemStack = new class_2290(lv.method_9786(), lv.method_9797()).method_9781(1, false);
 			return new ItemStackParticleParameters(particleType, itemStack);
 		}
 
-		public ItemStackParticleParameters read(ParticleType<ItemStackParticleParameters> particleType, PacketByteBuf packetByteBuf) {
+		public ItemStackParticleParameters method_10291(ParticleType<ItemStackParticleParameters> particleType, PacketByteBuf packetByteBuf) {
 			return new ItemStackParticleParameters(particleType, packetByteBuf.readItemStack());
 		}
 	};

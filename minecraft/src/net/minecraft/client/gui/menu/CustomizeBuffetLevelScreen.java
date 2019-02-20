@@ -111,7 +111,6 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		this.listeners.add(this.field_2441);
 		this.addButton(
 			new ButtonWidget(
-				2,
 				(this.width - 200) / 2,
 				40,
 				200,
@@ -137,14 +136,14 @@ public class CustomizeBuffetLevelScreen extends Screen {
 				}
 			}
 		);
-		this.field_2438 = this.addButton(new ButtonWidget(0, this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("gui.done")) {
+		this.field_2438 = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
 				CustomizeBuffetLevelScreen.this.field_2437.field_3200 = CustomizeBuffetLevelScreen.this.method_2153();
 				CustomizeBuffetLevelScreen.this.client.openScreen(CustomizeBuffetLevelScreen.this.field_2437);
 			}
 		});
-		this.addButton(new ButtonWidget(1, this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel")) {
+		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel")) {
 			@Override
 			public void onPressed(double d, double e) {
 				CustomizeBuffetLevelScreen.this.client.openScreen(CustomizeBuffetLevelScreen.this.field_2437);
@@ -158,13 +157,13 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		this.drawTextureBackground(0);
-		this.field_2441.draw(i, j, f);
+		this.field_2441.method_18326(i, j, f);
 		this.drawStringCentered(this.fontRenderer, this.field_2442, this.width / 2, 8, 16777215);
 		this.drawStringCentered(this.fontRenderer, I18n.translate("createWorld.customize.buffet.generator"), this.width / 2, 30, 10526880);
 		this.drawStringCentered(this.fontRenderer, I18n.translate("createWorld.customize.buffet.biome"), this.width / 2, 68, 10526880);
-		super.draw(i, j, f);
+		super.method_18326(i, j, f);
 	}
 
 	@Environment(EnvType.CLIENT)

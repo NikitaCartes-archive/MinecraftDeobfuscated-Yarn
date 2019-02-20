@@ -56,7 +56,7 @@ public class ShotCrossbowCriterion implements Criterion<ShotCrossbowCriterion.Co
 		this.field_9744.remove(playerAdvancementTracker);
 	}
 
-	public ShotCrossbowCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public ShotCrossbowCriterion.Conditions method_9114(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("item"));
 		return new ShotCrossbowCriterion.Conditions(itemPredicate);
 	}

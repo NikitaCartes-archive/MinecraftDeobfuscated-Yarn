@@ -293,7 +293,7 @@ public final class ItemStack {
 		ItemStack itemStack = new ItemStack(this.getItem(), this.amount);
 		itemStack.setUpdateCooldown(this.getUpdateCooldown());
 		if (this.tag != null) {
-			itemStack.tag = this.tag.copy();
+			itemStack.tag = this.tag.method_10553();
 		}
 
 		return itemStack;

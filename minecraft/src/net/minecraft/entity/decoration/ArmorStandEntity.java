@@ -5,6 +5,8 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.piston.PistonBehavior;
@@ -60,7 +62,6 @@ public class ArmorStandEntity extends LivingEntity {
 	private boolean field_7111;
 	public long field_7112;
 	private int disabledSlots;
-	private boolean prevIsMarker;
 	private Rotation headRotation = DEFAULT_HEAD_ROTATION;
 	private Rotation bodyRotation = DEFAULT_BODY_ROTATION;
 	private Rotation leftArmRotation = DEFAULT_LEFT_ARM_ROTATION;
@@ -68,24 +69,23 @@ public class ArmorStandEntity extends LivingEntity {
 	private Rotation leftLegRotation = DEFAULT_LEFT_LEG_ROTATION;
 	private Rotation rightLegRotation = DEFAULT_RIGHT_LEG_ROTATION;
 
-	public ArmorStandEntity(World world) {
-		super(EntityType.ARMOR_STAND, world);
+	public ArmorStandEntity(EntityType<? extends ArmorStandEntity> entityType, World world) {
+		super(entityType, world);
 		this.stepHeight = 0.0F;
 	}
 
 	public ArmorStandEntity(World world, double d, double e, double f) {
-		this(world);
+		this(EntityType.ARMOR_STAND, world);
 		this.setPosition(d, e, f);
 	}
 
 	@Override
-	protected final void setSize(float f, float g) {
+	public void method_18382() {
 		double d = this.x;
 		double e = this.y;
-		double h = this.z;
-		float i = this.isMarker() ? 0.0F : (this.isChild() ? 0.5F : 1.0F);
-		super.setSize(f * i, g * i);
-		this.setPosition(d, e, h);
+		double f = this.z;
+		super.method_18382();
+		this.setPosition(d, e, f);
 	}
 
 	private boolean method_18059() {
@@ -174,6 +174,12 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
+	public boolean method_18397(ItemStack itemStack) {
+		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
+		return this.getEquippedStack(equipmentSlot).isEmpty() && !this.method_6915(equipmentSlot);
+	}
+
+	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
 		ListTag listTag = new ListTag();
@@ -237,7 +243,6 @@ public class ArmorStandEntity extends LivingEntity {
 		this.disabledSlots = compoundTag.getInt("DisabledSlots");
 		this.setHideBasePlate(compoundTag.getBoolean("NoBasePlate"));
 		this.setMarker(compoundTag.getBoolean("Marker"));
-		this.prevIsMarker = !this.isMarker();
 		this.noClip = !this.method_18059();
 		CompoundTag compoundTag2 = compoundTag.getCompound("Pose");
 		this.deserializePose(compoundTag2);
@@ -527,8 +532,8 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public float getEyeHeight() {
-		return this.isChild() ? this.getHeight() * 0.5F : this.getHeight() * 0.9F;
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
+		return arg2.field_18068 * (this.isChild() ? 0.5F : 0.9F);
 	}
 
 	@Override
@@ -537,9 +542,9 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public void method_6091(float f, float g, float h) {
+	public void travel(float f, float g, float h) {
 		if (this.method_18059()) {
-			super.method_6091(f, g, h);
+			super.travel(f, g, h);
 		}
 	}
 
@@ -587,21 +592,6 @@ public class ArmorStandEntity extends LivingEntity {
 		if (!this.rightLegRotation.equals(rotation6)) {
 			this.setRightLegRotation(rotation6);
 		}
-
-		boolean bl = this.isMarker();
-		if (this.prevIsMarker != bl) {
-			this.onMarkerValueChange(bl);
-			this.field_6033 = !bl;
-			this.prevIsMarker = bl;
-		}
-	}
-
-	private void onMarkerValueChange(boolean bl) {
-		if (bl) {
-			this.setSize(0.0F, 0.0F);
-		} else {
-			this.setSize(this.getType().getWidth(), this.getType().getHeight());
-		}
 	}
 
 	@Override
@@ -637,7 +627,6 @@ public class ArmorStandEntity extends LivingEntity {
 
 	private void setSmall(boolean bl) {
 		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), 1, bl));
-		this.setSize(this.getType().getWidth(), this.getType().getHeight());
 	}
 
 	public boolean isSmall() {
@@ -662,7 +651,6 @@ public class ArmorStandEntity extends LivingEntity {
 
 	private void setMarker(boolean bl) {
 		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), 16, bl));
-		this.setSize(this.getType().getWidth(), this.getType().getHeight());
 	}
 
 	public boolean isMarker() {
@@ -776,7 +764,8 @@ public class ArmorStandEntity extends LivingEntity {
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
 		if (ARMOR_STAND_FLAGS.equals(trackedData)) {
-			this.setSize(this.getType().getWidth(), this.getType().getHeight());
+			this.method_18382();
+			this.field_6033 = !this.isMarker();
 		}
 
 		super.onTrackedDataSet(trackedData);
@@ -785,5 +774,11 @@ public class ArmorStandEntity extends LivingEntity {
 	@Override
 	public boolean method_6102() {
 		return false;
+	}
+
+	@Override
+	public class_4048 method_18377(class_4050 arg) {
+		float f = this.isMarker() ? 0.0F : (this.isChild() ? 0.5F : 1.0F);
+		return this.getType().method_18386().method_18383(f);
 	}
 }

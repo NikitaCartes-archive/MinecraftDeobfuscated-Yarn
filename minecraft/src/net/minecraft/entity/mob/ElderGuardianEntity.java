@@ -11,6 +11,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -19,8 +20,8 @@ import net.minecraft.world.World;
 public class ElderGuardianEntity extends GuardianEntity {
 	public static final float field_17492 = EntityType.ELDER_GUARDIAN.getWidth() / EntityType.GUARDIAN.getWidth();
 
-	public ElderGuardianEntity(World world) {
-		super(EntityType.ELDER_GUARDIAN, world);
+	public ElderGuardianEntity(EntityType<? extends ElderGuardianEntity> entityType, World world) {
+		super(entityType, world);
 		this.setPersistent();
 		if (this.field_7289 != null) {
 			this.field_7289.setChance(400);
@@ -72,11 +73,8 @@ public class ElderGuardianEntity extends GuardianEntity {
 		int i = 1200;
 		if ((this.age + this.getEntityId()) % 1200 == 0) {
 			StatusEffect statusEffect = StatusEffects.field_5901;
-			List<ServerPlayerEntity> list = this.world
-				.getPlayers(
-					ServerPlayerEntity.class,
-					serverPlayerEntityx -> this.squaredDistanceTo(serverPlayerEntityx) < 2500.0 && serverPlayerEntityx.interactionManager.isSurvivalLike()
-				);
+			List<ServerPlayerEntity> list = ((ServerWorld)this.world)
+				.method_18766(serverPlayerEntityx -> this.squaredDistanceTo(serverPlayerEntityx) < 2500.0 && serverPlayerEntityx.interactionManager.isSurvivalLike());
 			int j = 2;
 			int k = 6000;
 			int l = 1200;
@@ -91,8 +89,8 @@ public class ElderGuardianEntity extends GuardianEntity {
 			}
 		}
 
-		if (!this.hasLimitedAiRange()) {
-			this.setAiHome(new BlockPos(this), 16);
+		if (!this.method_18410()) {
+			this.method_18408(new BlockPos(this), 16);
 		}
 	}
 }

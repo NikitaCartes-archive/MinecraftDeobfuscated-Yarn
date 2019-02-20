@@ -17,8 +17,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
 public class ZombieHorseEntity extends HorseBaseEntity {
-	public ZombieHorseEntity(World world) {
-		super(EntityType.ZOMBIE_HORSE, world);
+	public ZombieHorseEntity(EntityType<? extends ZombieHorseEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class ZombieHorseEntity extends HorseBaseEntity {
 	@Nullable
 	@Override
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
-		return new ZombieHorseEntity(this.world);
+		return EntityType.ZOMBIE_HORSE.create(this.world);
 	}
 
 	@Override

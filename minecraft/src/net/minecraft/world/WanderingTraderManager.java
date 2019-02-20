@@ -7,6 +7,7 @@ import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.passive.TraderLlamaEntity;
 import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sortme.SpawnHelper;
 import net.minecraft.sortme.SpawnRestriction;
 import net.minecraft.util.math.BlockPos;
@@ -16,15 +17,15 @@ import net.minecraft.world.level.LevelProperties;
 
 public class WanderingTraderManager {
 	private final Random random = new Random();
-	private final World world;
+	private final ServerWorld world;
 	private int field_17728;
 	private int field_17729;
 	private int field_17730;
 
-	public WanderingTraderManager(World world) {
-		this.world = world;
+	public WanderingTraderManager(ServerWorld serverWorld) {
+		this.world = serverWorld;
 		this.field_17728 = 1200;
-		LevelProperties levelProperties = world.getLevelProperties();
+		LevelProperties levelProperties = serverWorld.getLevelProperties();
 		this.field_17729 = levelProperties.getWanderingTraderSpawnDelay();
 		this.field_17730 = levelProperties.getWanderingTraderSpawnChance();
 		if (this.field_17729 == 0 && this.field_17730 == 0) {
@@ -56,7 +57,7 @@ public class WanderingTraderManager {
 	}
 
 	private boolean method_18018() {
-		PlayerEntity playerEntity = this.world.getRandomPlayer();
+		PlayerEntity playerEntity = this.world.method_18779();
 		if (playerEntity == null) {
 			return true;
 		} else if (this.random.nextInt(10) != 0) {

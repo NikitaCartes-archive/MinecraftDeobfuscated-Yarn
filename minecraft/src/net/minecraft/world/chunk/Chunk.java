@@ -93,6 +93,24 @@ public interface Chunk extends BlockViewWithStructures {
 		return this.getBiomeArray()[j << 4 | i];
 	}
 
+	default boolean method_12228(int i, int j) {
+		if (i < 0) {
+			i = 0;
+		}
+
+		if (j >= 256) {
+			j = 255;
+		}
+
+		for (int k = i; k <= j; k += 16) {
+			if (!ChunkSection.isEmpty(this.getSectionArray()[k >> 4])) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	Biome[] getBiomeArray();
 
 	void setShouldSave(boolean bl);

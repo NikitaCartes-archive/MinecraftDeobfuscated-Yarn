@@ -5,6 +5,7 @@ import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.pattern.BlockPatternBuilder;
 import net.minecraft.block.pattern.CachedBlockPosition;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.SnowmanEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -52,12 +53,12 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 				world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.field_10124.getDefaultState(), 2);
 			}
 
-			SnowmanEntity snowmanEntity = new SnowmanEntity(world);
+			SnowmanEntity snowmanEntity = EntityType.SNOW_GOLEM.create(world);
 			BlockPos blockPos2 = result.translate(0, 2, 0).getBlockPos();
 			snowmanEntity.setPositionAndAngles((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.05, (double)blockPos2.getZ() + 0.5, 0.0F, 0.0F);
 			world.spawnEntity(snowmanEntity);
 
-			for (ServerPlayerEntity serverPlayerEntity : world.getVisibleEntities(ServerPlayerEntity.class, snowmanEntity.getBoundingBox().expand(5.0))) {
+			for (ServerPlayerEntity serverPlayerEntity : world.method_18467(ServerPlayerEntity.class, snowmanEntity.getBoundingBox().expand(5.0))) {
 				Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, snowmanEntity);
 			}
 
@@ -79,12 +80,12 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 				}
 
 				BlockPos blockPos3 = result.translate(1, 2, 0).getBlockPos();
-				IronGolemEntity ironGolemEntity = new IronGolemEntity(world);
+				IronGolemEntity ironGolemEntity = EntityType.IRON_GOLEM.create(world);
 				ironGolemEntity.setPlayerCreated(true);
 				ironGolemEntity.setPositionAndAngles((double)blockPos3.getX() + 0.5, (double)blockPos3.getY() + 0.05, (double)blockPos3.getZ() + 0.5, 0.0F, 0.0F);
 				world.spawnEntity(ironGolemEntity);
 
-				for (ServerPlayerEntity serverPlayerEntity : world.getVisibleEntities(ServerPlayerEntity.class, ironGolemEntity.getBoundingBox().expand(5.0))) {
+				for (ServerPlayerEntity serverPlayerEntity : world.method_18467(ServerPlayerEntity.class, ironGolemEntity.getBoundingBox().expand(5.0))) {
 					Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, ironGolemEntity);
 				}
 

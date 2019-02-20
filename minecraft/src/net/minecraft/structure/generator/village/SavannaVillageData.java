@@ -3,8 +3,10 @@ package net.minecraft.structure.generator.village;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.PaneBlock;
 import net.minecraft.sortme.rule.AlwaysTrueRuleTest;
 import net.minecraft.sortme.rule.BlockMatchRuleTest;
+import net.minecraft.sortme.rule.BlockStateMatchRuleTest;
 import net.minecraft.sortme.rule.RandomBlockMatchRuleTest;
 import net.minecraft.sortme.rule.TagMatchRuleTest;
 import net.minecraft.structure.pool.EmptyPoolElement;
@@ -39,6 +41,19 @@ public class SavannaVillageData {
 					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10184, 0.05F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
 					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10143, 0.05F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
 					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10328, 0.05F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10285, 0.5F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
+					new StructureProcessorRule(
+						new BlockStateMatchRuleTest(
+							Blocks.field_10285.getDefaultState().with(PaneBlock.NORTH, Boolean.valueOf(true)).with(PaneBlock.SOUTH, Boolean.valueOf(true))
+						),
+						AlwaysTrueRuleTest.INSTANCE,
+						Blocks.field_10163.getDefaultState().with(PaneBlock.NORTH, Boolean.valueOf(true)).with(PaneBlock.SOUTH, Boolean.valueOf(true))
+					),
+					new StructureProcessorRule(
+						new BlockStateMatchRuleTest(Blocks.field_10285.getDefaultState().with(PaneBlock.EAST, Boolean.valueOf(true)).with(PaneBlock.WEST, Boolean.valueOf(true))),
+						AlwaysTrueRuleTest.INSTANCE,
+						Blocks.field_10163.getDefaultState().with(PaneBlock.EAST, Boolean.valueOf(true)).with(PaneBlock.WEST, Boolean.valueOf(true))
+					),
 					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10168.getDefaultState())
 				)
 			)

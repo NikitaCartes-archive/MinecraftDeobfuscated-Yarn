@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_336;
+import net.minecraft.class_4061;
+import net.minecraft.class_4074;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -350,7 +352,7 @@ public class InGameHud extends Drawable {
 					);
 					int i = 15;
 					this.drawTexturedRect((float)this.scaledWidth / 2.0F - 7.5F, (float)this.scaledHeight / 2.0F - 7.5F, 0, 0, 15, 15);
-					if (this.client.options.attackIndicator == 1) {
+					if (this.client.options.attackIndicator == class_4061.field_18152) {
 						float g = this.client.player.method_7261(0.0F);
 						boolean bl = false;
 						if (this.client.targetedEntity != null && this.client.targetedEntity instanceof LivingEntity && g >= 1.0F) {
@@ -390,21 +392,22 @@ public class InGameHud extends Drawable {
 	protected void renderStatusEffectOverlay() {
 		Collection<StatusEffectInstance> collection = this.client.player.getPotionEffects();
 		if (!collection.isEmpty()) {
-			this.client.getTextureManager().bindTexture(ContainerScreen.BACKGROUND_TEXTURE);
 			GlStateManager.enableBlend();
 			int i = 0;
 			int j = 0;
+			class_4074 lv = this.client.method_18505();
+			List<Runnable> list = Lists.<Runnable>newArrayListWithExpectedSize(collection.size());
+			this.client.getTextureManager().bindTexture(ContainerScreen.BACKGROUND_TEXTURE);
 
 			for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(collection)) {
 				StatusEffect statusEffect = statusEffectInstance.getEffectType();
-				if (statusEffect.hasIcon() && statusEffectInstance.shouldShowIcon()) {
+				if (statusEffectInstance.shouldShowIcon()) {
 					int k = this.scaledWidth;
 					int l = 1;
 					if (this.client.isDemo()) {
 						l += 15;
 					}
 
-					int m = statusEffect.getIconIndex();
 					if (statusEffect.method_5573()) {
 						i++;
 						k -= 25 * i;
@@ -421,18 +424,25 @@ public class InGameHud extends Drawable {
 					} else {
 						this.drawTexturedRect(k, l, 141, 166, 24, 24);
 						if (statusEffectInstance.getDuration() <= 200) {
-							int n = 10 - statusEffectInstance.getDuration() / 20;
+							int m = 10 - statusEffectInstance.getDuration() / 20;
 							f = MathHelper.clamp((float)statusEffectInstance.getDuration() / 10.0F / 5.0F * 0.5F, 0.0F, 0.5F)
-								+ MathHelper.cos((float)statusEffectInstance.getDuration() * (float) Math.PI / 5.0F) * MathHelper.clamp((float)n / 10.0F * 0.25F, 0.0F, 0.25F);
+								+ MathHelper.cos((float)statusEffectInstance.getDuration() * (float) Math.PI / 5.0F) * MathHelper.clamp((float)m / 10.0F * 0.25F, 0.0F, 0.25F);
 						}
 					}
 
-					GlStateManager.color4f(1.0F, 1.0F, 1.0F, f);
-					int n = m % 12;
-					int o = m / 12;
-					this.drawTexturedRect(k + 3, l + 3, n * 18, 198 + o * 18, 18, 18);
+					Sprite sprite = lv.method_18663(statusEffect);
+					int n = k;
+					int o = l;
+					float g = f;
+					list.add((Runnable)() -> {
+						GlStateManager.color4f(1.0F, 1.0F, 1.0F, g);
+						this.drawTexturedRect(n + 3, o + 3, sprite, 18, 18);
+					});
 				}
 			}
+
+			this.client.getTextureManager().bindTexture(SpriteAtlasTexture.field_18229);
+			list.forEach(Runnable::run);
 		}
 	}
 
@@ -481,7 +491,7 @@ public class InGameHud extends Drawable {
 				}
 			}
 
-			if (this.client.options.attackIndicator == 2) {
+			if (this.client.options.attackIndicator == class_4061.field_18153) {
 				float h = this.client.player.method_7261(0.0F);
 				if (h < 1.0F) {
 					int m = this.scaledHeight - 20;

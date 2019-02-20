@@ -6,7 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.DyeItem;
-import net.minecraft.item.DyeableArmorItem;
+import net.minecraft.item.DyeableItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeSerializer;
@@ -25,7 +25,7 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
 			ItemStack itemStack2 = craftingInventory.getInvStack(i);
 			if (!itemStack2.isEmpty()) {
-				if (itemStack2.getItem() instanceof DyeableArmorItem) {
+				if (itemStack2.getItem() instanceof DyeableItem) {
 					if (!itemStack.isEmpty()) {
 						return false;
 					}
@@ -49,22 +49,22 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 		int[] is = new int[3];
 		int i = 0;
 		int j = 0;
-		DyeableArmorItem dyeableArmorItem = null;
+		DyeableItem dyeableItem = null;
 
 		for (int k = 0; k < craftingInventory.getInvSize(); k++) {
 			ItemStack itemStack2 = craftingInventory.getInvStack(k);
 			if (!itemStack2.isEmpty()) {
 				Item item = itemStack2.getItem();
-				if (item instanceof DyeableArmorItem) {
-					dyeableArmorItem = (DyeableArmorItem)item;
+				if (item instanceof DyeableItem) {
+					dyeableItem = (DyeableItem)item;
 					if (!itemStack.isEmpty()) {
 						return ItemStack.EMPTY;
 					}
 
 					itemStack = itemStack2.copy();
 					itemStack.setAmount(1);
-					if (dyeableArmorItem.hasColor(itemStack2)) {
-						int l = dyeableArmorItem.getColor(itemStack);
+					if (dyeableItem.hasColor(itemStack2)) {
+						int l = dyeableItem.getColor(itemStack);
 						float f = (float)(l >> 16 & 0xFF) / 255.0F;
 						float g = (float)(l >> 8 & 0xFF) / 255.0F;
 						float h = (float)(l & 0xFF) / 255.0F;
@@ -92,7 +92,7 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 			}
 		}
 
-		if (dyeableArmorItem == null) {
+		if (dyeableItem == null) {
 			return ItemStack.EMPTY;
 		} else {
 			int kx = is[0] / j;
@@ -105,7 +105,7 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 			q = (int)((float)q * r / f);
 			int var25 = (kx << 8) + p;
 			var25 = (var25 << 8) + q;
-			dyeableArmorItem.setColor(itemStack, var25);
+			dyeableItem.setColor(itemStack, var25);
 			return itemStack;
 		}
 	}

@@ -56,7 +56,7 @@ public class CuredZombieVillagerCriterion implements Criterion<CuredZombieVillag
 		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public CuredZombieVillagerCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public CuredZombieVillagerCriterion.Conditions method_8830(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("zombie"));
 		EntityPredicate entityPredicate2 = EntityPredicate.deserialize(jsonObject.get("villager"));
 		return new CuredZombieVillagerCriterion.Conditions(entityPredicate, entityPredicate2);

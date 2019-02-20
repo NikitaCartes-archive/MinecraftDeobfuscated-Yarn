@@ -185,26 +185,9 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		GlStateManager.disableBlend();
 	}
 
-	protected void method_4219(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f) {
-		if (abstractClientPlayerEntity.isValid() && abstractClientPlayerEntity.isSleeping()) {
-			super.method_4048(
-				abstractClientPlayerEntity,
-				d + (double)abstractClientPlayerEntity.field_7516,
-				e + (double)abstractClientPlayerEntity.renderOffsetY,
-				f + (double)abstractClientPlayerEntity.field_7497
-			);
-		} else {
-			super.method_4048(abstractClientPlayerEntity, d, e, f);
-		}
-	}
-
 	protected void method_4212(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h) {
 		float i = abstractClientPlayerEntity.method_6024(h);
-		if (abstractClientPlayerEntity.isValid() && abstractClientPlayerEntity.isSleeping()) {
-			GlStateManager.rotatef(abstractClientPlayerEntity.method_7319(), 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotatef(this.getLyingAngle(abstractClientPlayerEntity), 0.0F, 0.0F, 1.0F);
-			GlStateManager.rotatef(270.0F, 0.0F, 1.0F, 0.0F);
-		} else if (abstractClientPlayerEntity.isFallFlying()) {
+		if (abstractClientPlayerEntity.isFallFlying()) {
 			super.setupTransforms(abstractClientPlayerEntity, f, g, h);
 			float j = (float)abstractClientPlayerEntity.method_6003() + h;
 			float k = MathHelper.clamp(j * j / 100.0F, 0.0F, 1.0F);

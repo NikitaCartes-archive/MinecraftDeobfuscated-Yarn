@@ -39,8 +39,8 @@ public class FireworkEntity extends Entity implements FlyingItemEntity {
 	private int field_7612;
 	private LivingEntity field_7616;
 
-	public FireworkEntity(World world) {
-		super(EntityType.FIREWORK_ROCKET, world);
+	public FireworkEntity(EntityType<? extends FireworkEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override
@@ -260,7 +260,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity {
 			double d = 5.0;
 			Vec3d vec3d = new Vec3d(this.x, this.y, this.z);
 
-			for (LivingEntity livingEntity : this.world.getVisibleEntities(LivingEntity.class, this.getBoundingBox().expand(5.0))) {
+			for (LivingEntity livingEntity : this.world.method_18467(LivingEntity.class, this.getBoundingBox().expand(5.0))) {
 				if (livingEntity != this.field_7616 && !(this.squaredDistanceTo(livingEntity) > 25.0)) {
 					boolean bl = false;
 

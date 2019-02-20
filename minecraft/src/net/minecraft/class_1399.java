@@ -2,11 +2,13 @@ package net.minecraft;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.TrackTargetGoal;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.util.math.BoundingBox;
 
 public class class_1399 extends TrackTargetGoal {
+	private static final class_4051 field_18091 = new class_4051().method_18422().method_18424();
 	private boolean field_6639;
 	private int field_6638;
 	private final Class<?>[] field_6637;
@@ -29,7 +31,7 @@ public class class_1399 extends TrackTargetGoal {
 				}
 			}
 
-			return this.canTrack(livingEntity, false);
+			return this.canTrack(livingEntity, field_18091);
 		} else {
 			return false;
 		}
@@ -57,33 +59,33 @@ public class class_1399 extends TrackTargetGoal {
 	protected void method_6317() {
 		double d = this.getFollowRange();
 
-		for (MobEntityWithAi mobEntityWithAi : this.entity
+		for (MobEntity mobEntity : this.entity
 			.world
-			.getVisibleEntities(
+			.method_18467(
 				this.entity.getClass(),
 				new BoundingBox(this.entity.x, this.entity.y, this.entity.z, this.entity.x + 1.0, this.entity.y + 1.0, this.entity.z + 1.0).expand(d, 10.0, d)
 			)) {
-			if (this.entity != mobEntityWithAi
-				&& mobEntityWithAi.getTarget() == null
-				&& (!(this.entity instanceof TameableEntity) || ((TameableEntity)this.entity).getOwner() == ((TameableEntity)mobEntityWithAi).getOwner())
-				&& !mobEntityWithAi.isTeammate(this.entity.getAttacker())) {
+			if (this.entity != mobEntity
+				&& mobEntity.getTarget() == null
+				&& (!(this.entity instanceof TameableEntity) || ((TameableEntity)this.entity).getOwner() == ((TameableEntity)mobEntity).getOwner())
+				&& !mobEntity.isTeammate(this.entity.getAttacker())) {
 				boolean bl = false;
 
 				for (Class<?> class_ : this.field_6640) {
-					if (mobEntityWithAi.getClass() == class_) {
+					if (mobEntity.getClass() == class_) {
 						bl = true;
 						break;
 					}
 				}
 
 				if (!bl) {
-					this.method_6319(mobEntityWithAi, this.entity.getAttacker());
+					this.method_6319(mobEntity, this.entity.getAttacker());
 				}
 			}
 		}
 	}
 
-	protected void method_6319(MobEntityWithAi mobEntityWithAi, LivingEntity livingEntity) {
-		mobEntityWithAi.setTarget(livingEntity);
+	protected void method_6319(MobEntity mobEntity, LivingEntity livingEntity) {
+		mobEntity.setTarget(livingEntity);
 	}
 }

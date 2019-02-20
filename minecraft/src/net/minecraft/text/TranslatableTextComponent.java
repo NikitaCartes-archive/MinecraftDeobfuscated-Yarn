@@ -168,7 +168,7 @@ public class TranslatableTextComponent extends AbstractTextComponent implements 
 		return stringBuilder.toString();
 	}
 
-	public TranslatableTextComponent getTextComponent() {
+	public TranslatableTextComponent method_11020() {
 		Object[] objects = new Object[this.params.length];
 
 		for (int i = 0; i < this.params.length; i++) {

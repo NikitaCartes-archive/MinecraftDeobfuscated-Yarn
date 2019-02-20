@@ -104,7 +104,7 @@ public class Structure {
 	}
 
 	private void method_15164(World world, BlockPos blockPos, BlockPos blockPos2) {
-		List<Entity> list = world.getEntities(Entity.class, new BoundingBox(blockPos, blockPos2), entityx -> !(entityx instanceof PlayerEntity));
+		List<Entity> list = world.method_8390(Entity.class, new BoundingBox(blockPos, blockPos2), entityx -> !(entityx instanceof PlayerEntity));
 		this.entities.clear();
 
 		for (Entity entity : list) {

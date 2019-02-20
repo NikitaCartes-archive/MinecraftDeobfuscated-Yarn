@@ -3,6 +3,7 @@ package net.minecraft.entity;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mojang.datafixers.util.Pair;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,6 +19,8 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -36,7 +39,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.parts.EntityPart;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
@@ -90,10 +92,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.PortalForcer;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.gen.Heightmap;
@@ -136,8 +138,6 @@ public abstract class Entity implements Nameable, CommandOutput {
 	protected boolean applyMovementMultiplier;
 	protected Vec3d movementMultiplier;
 	public boolean invalid;
-	private float width;
-	private float height;
 	public float field_6039;
 	public float field_5973;
 	public float field_5994;
@@ -168,6 +168,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	private static final TrackedData<Boolean> NAME_VISIBLE = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> SILENT = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> NO_GRAVITY = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<class_4050> field_18064 = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.field_18238);
 	public boolean field_6016;
 	public int chunkX;
 	public int chunkY;
@@ -195,12 +196,13 @@ public abstract class Entity implements Nameable, CommandOutput {
 	private boolean field_5966;
 	private final double[] pistonMovementDelta = new double[]{0.0, 0.0, 0.0};
 	private long pistonMovementTick;
+	private class_4048 field_18065;
+	private float field_18066;
 
 	public Entity(EntityType<?> entityType, World world) {
 		this.type = entityType;
 		this.world = world;
-		this.width = entityType.getWidth();
-		this.height = entityType.getHeight();
+		this.field_18065 = entityType.method_18386();
 		this.setPosition(0.0, 0.0, 0.0);
 		if (world != null) {
 			this.dimension = world.dimension.getType();
@@ -213,12 +215,23 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.dataTracker.startTracking(CUSTOM_NAME, Optional.empty());
 		this.dataTracker.startTracking(SILENT, false);
 		this.dataTracker.startTracking(NO_GRAVITY, false);
+		this.dataTracker.startTracking(field_18064, class_4050.field_18076);
 		this.initDataTracker();
-		this.setSize(entityType.getWidth(), entityType.getHeight());
+		this.field_18066 = this.method_18378(class_4050.field_18076, this.field_18065);
 	}
 
 	public boolean isSpectator() {
 		return false;
+	}
+
+	public final void method_18375() {
+		if (this.hasPassengers()) {
+			this.removeAllPassengers();
+		}
+
+		if (this.hasVehicle()) {
+			this.stopRiding();
+		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -293,35 +306,12 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.invalid = true;
 	}
 
-	public void setInWorld(boolean bl) {
+	protected void method_18380(class_4050 arg) {
+		this.dataTracker.set(field_18064, arg);
 	}
 
-	protected void setSize(float f, float g) {
-		if (f != this.width || g != this.height) {
-			float h = this.width;
-			this.width = f;
-			this.height = g;
-			if (this.width < h) {
-				double d = (double)f / 2.0;
-				this.setBoundingBox(new BoundingBox(this.x - d, this.y, this.z - d, this.x + d, this.y + (double)this.height, this.z + d));
-				return;
-			}
-
-			BoundingBox boundingBox = this.getBoundingBox();
-			this.setBoundingBox(
-				new BoundingBox(
-					boundingBox.minX,
-					boundingBox.minY,
-					boundingBox.minZ,
-					boundingBox.minX + (double)this.width,
-					boundingBox.minY + (double)this.height,
-					boundingBox.minZ + (double)this.width
-				)
-			);
-			if (this.width > h && !this.field_5953 && !this.world.isClient) {
-				this.move(MovementType.field_6308, (double)(h - this.width), 0.0, (double)(h - this.width));
-			}
-		}
+	public class_4050 method_18376() {
+		return this.dataTracker.get(field_18064);
 	}
 
 	protected void setRotation(float f, float g) {
@@ -333,8 +323,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.x = d;
 		this.y = e;
 		this.z = f;
-		float g = this.width / 2.0F;
-		float h = this.height;
+		float g = this.field_18065.field_18067 / 2.0F;
+		float h = this.field_18065.field_18068;
 		this.setBoundingBox(new BoundingBox(d - (double)g, e, f - (double)g, d + (double)g, e + (double)h, f + (double)g));
 	}
 
@@ -377,43 +367,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.prevZ = this.z;
 		this.prevPitch = this.pitch;
 		this.prevYaw = this.yaw;
-		if (!this.world.isClient && this.world instanceof ServerWorld) {
-			this.world.getProfiler().push("portal");
-			if (this.inPortal) {
-				MinecraftServer minecraftServer = this.world.getServer();
-				if (minecraftServer.isNetherAllowed()) {
-					if (!this.hasVehicle()) {
-						int i = this.getMaxPortalTime();
-						if (this.portalTime++ >= i) {
-							this.portalTime = i;
-							this.portalCooldown = this.getDefaultPortalCooldown();
-							DimensionType dimensionType;
-							if (this.world.dimension.getType() == DimensionType.field_13076) {
-								dimensionType = DimensionType.field_13072;
-							} else {
-								dimensionType = DimensionType.field_13076;
-							}
-
-							this.changeDimension(dimensionType);
-						}
-					}
-
-					this.inPortal = false;
-				}
-			} else {
-				if (this.portalTime > 0) {
-					this.portalTime -= 4;
-				}
-
-				if (this.portalTime < 0) {
-					this.portalTime = 0;
-				}
-			}
-
-			this.updatePortalCooldown();
-			this.world.getProfiler().pop();
-		}
-
+		this.method_18379();
 		this.attemptSprintingParticles();
 		this.method_5876();
 		if (this.world.isClient) {
@@ -820,7 +774,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 				for (int i = pooledMutable.getX(); i <= pooledMutable2.getX(); i++) {
 					for (int j = pooledMutable.getY(); j <= pooledMutable2.getY(); j++) {
 						for (int k = pooledMutable.getZ(); k <= pooledMutable2.getZ(); k++) {
-							pooledMutable3.set(i, j, k);
+							pooledMutable3.method_10113(i, j, k);
 							BlockState blockState = this.world.getBlockState(pooledMutable3);
 
 							try {
@@ -930,7 +884,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	private boolean isBeingRainedOn() {
 		boolean var3;
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.getEntityPos(this)) {
-			var3 = this.world.hasRain(pooledMutable) || this.world.hasRain(pooledMutable.set(this.x, this.y + (double)this.height, this.z));
+			var3 = this.world.hasRain(pooledMutable) || this.world.hasRain(pooledMutable.method_10112(this.x, this.y + (double)this.field_18065.field_18068, this.z));
 		}
 
 		return var3;
@@ -1008,9 +962,9 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 		float h = (float)MathHelper.floor(this.getBoundingBox().minY);
 
-		for (int i = 0; (float)i < 1.0F + this.width * 20.0F; i++) {
-			float j = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
-			float k = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
+		for (int i = 0; (float)i < 1.0F + this.field_18065.field_18067 * 20.0F; i++) {
+			float j = (this.random.nextFloat() * 2.0F - 1.0F) * this.field_18065.field_18067;
+			float k = (this.random.nextFloat() * 2.0F - 1.0F) * this.field_18065.field_18067;
 			this.world
 				.addParticle(
 					ParticleTypes.field_11247,
@@ -1023,9 +977,9 @@ public abstract class Entity implements Nameable, CommandOutput {
 				);
 		}
 
-		for (int i = 0; (float)i < 1.0F + this.width * 20.0F; i++) {
-			float j = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
-			float k = (this.random.nextFloat() * 2.0F - 1.0F) * this.width;
+		for (int i = 0; (float)i < 1.0F + this.field_18065.field_18067 * 20.0F; i++) {
+			float j = (this.random.nextFloat() * 2.0F - 1.0F) * this.field_18065.field_18067;
+			float k = (this.random.nextFloat() * 2.0F - 1.0F) * this.field_18065.field_18067;
 			this.world
 				.addParticle(ParticleTypes.field_11202, this.x + (double)j, (double)(h + 1.0F), this.z + (double)k, this.velocityX, this.velocityY, this.velocityZ);
 		}
@@ -1047,9 +1001,9 @@ public abstract class Entity implements Nameable, CommandOutput {
 			this.world
 				.addParticle(
 					new BlockStateParticleParameters(ParticleTypes.field_11217, blockState),
-					this.x + ((double)this.random.nextFloat() - 0.5) * (double)this.width,
+					this.x + ((double)this.random.nextFloat() - 0.5) * (double)this.field_18065.field_18067,
 					this.getBoundingBox().minY + 0.1,
-					this.z + ((double)this.random.nextFloat() - 0.5) * (double)this.width,
+					this.z + ((double)this.random.nextFloat() - 0.5) * (double)this.field_18065.field_18067,
 					-this.velocityX * 4.0,
 					1.5,
 					-this.velocityZ * 4.0
@@ -1080,7 +1034,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return this.world.containsBlockWithMaterial(this.getBoundingBox().contract(0.1F, 0.4F, 0.1F), Material.LAVA);
 	}
 
-	public void method_5724(float f, float g, float h, float i) {
+	public void updateVelocity(float f, float g, float h, float i) {
 		float j = f * f + g * g + h * h;
 		if (!(j < 1.0E-4F)) {
 			j = MathHelper.sqrt(j);
@@ -1583,11 +1537,11 @@ public abstract class Entity implements Nameable, CommandOutput {
 		} else {
 			try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 				for (int i = 0; i < 8; i++) {
-					int j = MathHelper.floor(this.y + (double)(((float)((i >> 0) % 2) - 0.5F) * 0.1F) + (double)this.getEyeHeight());
-					int k = MathHelper.floor(this.x + (double)(((float)((i >> 1) % 2) - 0.5F) * this.width * 0.8F));
-					int l = MathHelper.floor(this.z + (double)(((float)((i >> 2) % 2) - 0.5F) * this.width * 0.8F));
+					int j = MathHelper.floor(this.y + (double)(((float)((i >> 0) % 2) - 0.5F) * 0.1F) + (double)this.field_18066);
+					int k = MathHelper.floor(this.x + (double)(((float)((i >> 1) % 2) - 0.5F) * this.field_18065.field_18067 * 0.8F));
+					int l = MathHelper.floor(this.z + (double)(((float)((i >> 2) % 2) - 0.5F) * this.field_18065.field_18067 * 0.8F));
 					if (pooledMutable.getX() != k || pooledMutable.getY() != j || pooledMutable.getZ() != l) {
-						pooledMutable.set(k, j, l);
+						pooledMutable.method_10113(k, j, l);
 						if (this.world.getBlockState(pooledMutable).canSuffocate(this.world, pooledMutable)) {
 							return true;
 						}
@@ -1609,17 +1563,12 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void updateRiding() {
-		Entity entity = this.getRiddenEntity();
-		if (this.hasVehicle() && entity.invalid) {
-			this.stopRiding();
-		} else {
-			this.velocityX = 0.0;
-			this.velocityY = 0.0;
-			this.velocityZ = 0.0;
-			this.update();
-			if (this.hasVehicle()) {
-				entity.method_5865(this);
-			}
+		this.velocityX = 0.0;
+		this.velocityY = 0.0;
+		this.velocityZ = 0.0;
+		this.update();
+		if (this.hasVehicle()) {
+			this.getRiddenEntity().method_5865(this);
 		}
 	}
 
@@ -1638,7 +1587,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public double getMountedHeightOffset() {
-		return (double)this.height * 0.75;
+		return (double)this.field_18065.field_18068 * 0.75;
 	}
 
 	public boolean startRiding(Entity entity) {
@@ -1749,10 +1698,12 @@ public abstract class Entity implements Nameable, CommandOutput {
 				this.lastPortalPosition = new BlockPos(blockPos);
 				BlockPattern.Result result = ((PortalBlock)Blocks.field_10316).method_10350(this.world, this.lastPortalPosition);
 				double d = result.getForwards().getAxis() == Direction.Axis.X ? (double)result.getFrontTopLeft().getZ() : (double)result.getFrontTopLeft().getX();
-				double e = result.getForwards().getAxis() == Direction.Axis.X ? this.z : this.x;
-				e = Math.abs(
+				double e = Math.abs(
 					MathHelper.method_15370(
-						e - (double)(result.getForwards().rotateYClockwise().getDirection() == Direction.AxisDirection.NEGATIVE ? 1 : 0), d, d - (double)result.getWidth()
+						(result.getForwards().getAxis() == Direction.Axis.X ? this.z : this.x)
+							- (double)(result.getForwards().rotateYClockwise().getDirection() == Direction.AxisDirection.NEGATIVE ? 1 : 0),
+						d,
+						d - (double)result.getWidth()
 					)
 				);
 				double f = MathHelper.method_15370(this.y - 1.0, (double)result.getFrontTopLeft().getY(), (double)(result.getFrontTopLeft().getY() - result.getHeight()));
@@ -1761,6 +1712,33 @@ public abstract class Entity implements Nameable, CommandOutput {
 			}
 
 			this.inPortal = true;
+		}
+	}
+
+	protected void method_18379() {
+		if (this.world instanceof ServerWorld) {
+			int i = this.getMaxPortalTime();
+			if (this.inPortal) {
+				if (this.world.getServer().isNetherAllowed() && !this.hasVehicle() && this.portalTime++ >= i) {
+					this.world.getProfiler().push("portal");
+					this.portalTime = i;
+					this.portalCooldown = this.getDefaultPortalCooldown();
+					this.changeDimension(this.world.dimension.getType() == DimensionType.field_13076 ? DimensionType.field_13072 : DimensionType.field_13076);
+					this.world.getProfiler().pop();
+				}
+
+				this.inPortal = false;
+			} else {
+				if (this.portalTime > 0) {
+					this.portalTime -= 4;
+				}
+
+				if (this.portalTime < 0) {
+					this.portalTime = 0;
+				}
+			}
+
+			this.updatePortalCooldown();
 		}
 	}
 
@@ -2001,11 +1979,6 @@ public abstract class Entity implements Nameable, CommandOutput {
 		}
 	}
 
-	@Nullable
-	public EntityPart[] getParts() {
-		return null;
-	}
-
 	public boolean isPartOf(Entity entity) {
 		return this == entity;
 	}
@@ -2077,55 +2050,54 @@ public abstract class Entity implements Nameable, CommandOutput {
 			ServerWorld serverWorld = minecraftServer.getWorld(dimensionType2);
 			ServerWorld serverWorld2 = minecraftServer.getWorld(dimensionType);
 			this.dimension = dimensionType;
-			if (dimensionType2 == DimensionType.field_13078 && dimensionType == DimensionType.field_13078) {
-				serverWorld2 = minecraftServer.getWorld(DimensionType.field_13072);
-				this.dimension = DimensionType.field_13072;
-			}
-
-			((ServerWorld)this.world).method_18216(this);
-			this.invalid = false;
+			this.method_18375();
 			this.world.getProfiler().push("reposition");
+			Vec3d vec3d = new Vec3d(this.velocityX, this.velocityY, this.velocityZ);
+			float f = 0.0F;
 			BlockPos blockPos;
-			if (dimensionType == DimensionType.field_13078) {
+			if (dimensionType2 == DimensionType.field_13078 && dimensionType == DimensionType.field_13072) {
+				blockPos = serverWorld2.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, serverWorld2.getSpawnPos());
+			} else if (dimensionType == DimensionType.field_13078) {
 				blockPos = serverWorld2.getForcedSpawnPoint();
 			} else {
 				double d = this.x;
 				double e = this.z;
-				double f = 8.0;
-				if (dimensionType == DimensionType.field_13076) {
-					d = MathHelper.clamp(d / 8.0, serverWorld2.getWorldBorder().getBoundWest() + 16.0, serverWorld2.getWorldBorder().getBoundEast() - 16.0);
-					e = MathHelper.clamp(e / 8.0, serverWorld2.getWorldBorder().getBoundNorth() + 16.0, serverWorld2.getWorldBorder().getBoundSouth() - 16.0);
-				} else if (dimensionType == DimensionType.field_13072) {
-					d = MathHelper.clamp(d * 8.0, serverWorld2.getWorldBorder().getBoundWest() + 16.0, serverWorld2.getWorldBorder().getBoundEast() - 16.0);
-					e = MathHelper.clamp(e * 8.0, serverWorld2.getWorldBorder().getBoundNorth() + 16.0, serverWorld2.getWorldBorder().getBoundSouth() - 16.0);
+				double g = 8.0;
+				if (dimensionType2 == DimensionType.field_13072 && dimensionType == DimensionType.field_13076) {
+					d /= 8.0;
+					e /= 8.0;
+				} else if (dimensionType2 == DimensionType.field_13076 && dimensionType == DimensionType.field_13072) {
+					d *= 8.0;
+					e *= 8.0;
 				}
 
-				d = (double)MathHelper.clamp((int)d, -29999872, 29999872);
-				e = (double)MathHelper.clamp((int)e, -29999872, 29999872);
-				float g = this.yaw;
-				this.setPositionAndAngles(d, this.y, e, 90.0F, 0.0F);
-				PortalForcer portalForcer = serverWorld2.getPortalForcer();
-				portalForcer.method_8653(this, g);
-				blockPos = new BlockPos(this);
+				double h = Math.min(-2.9999872E7, serverWorld2.getWorldBorder().getBoundWest() + 16.0);
+				double i = Math.min(-2.9999872E7, serverWorld2.getWorldBorder().getBoundNorth() + 16.0);
+				double j = Math.min(2.9999872E7, serverWorld2.getWorldBorder().getBoundEast() - 16.0);
+				double k = Math.min(2.9999872E7, serverWorld2.getWorldBorder().getBoundSouth() - 16.0);
+				d = MathHelper.clamp(d, h, j);
+				e = MathHelper.clamp(e, i, k);
+				Vec3d vec3d2 = this.method_5656();
+				long l = ChunkPos.toLong(MathHelper.floor(d), MathHelper.floor(e));
+				blockPos = new BlockPos(d, this.y, e);
+				Pair<Vec3d, Pair<Vec3d, Integer>> pair = serverWorld2.getPortalForcer()
+					.method_18475(blockPos, new Vec3d(this.velocityX, this.velocityY, this.velocityZ), l, this.method_5843(), vec3d2.x, vec3d2.y);
+				if (pair != null) {
+					blockPos = new BlockPos(pair.getFirst());
+					vec3d = pair.getSecond().getFirst();
+					f = (float)pair.getSecond().getSecond().intValue();
+				}
 			}
 
-			serverWorld.updateChunkEntities(this);
 			this.world.getProfiler().swap("reloading");
 			Entity entity = this.getType().create(serverWorld2);
 			if (entity != null) {
 				entity.method_5878(this);
-				if (dimensionType2 == DimensionType.field_13078 && dimensionType == DimensionType.field_13078) {
-					BlockPos blockPos2 = serverWorld2.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, serverWorld2.getSpawnPos());
-					entity.setPositionAndAngles(blockPos2, entity.yaw, entity.pitch);
-				} else {
-					entity.setPositionAndAngles(blockPos, entity.yaw, entity.pitch);
-				}
-
-				boolean bl = entity.teleporting;
-				entity.teleporting = true;
-				serverWorld2.method_18214(entity);
-				entity.teleporting = bl;
-				serverWorld2.updateChunkEntities(entity);
+				entity.setPositionAndAngles(blockPos, entity.yaw + f, entity.pitch);
+				entity.velocityX = vec3d.x;
+				entity.velocityY = vec3d.y;
+				entity.velocityZ = vec3d.z;
+				serverWorld2.method_18769(entity);
 			}
 
 			this.invalid = true;
@@ -2248,9 +2220,11 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void method_5859(double d, double e, double f) {
-		this.field_5966 = true;
-		this.setPositionAndAngles(d, e, f, this.yaw, this.pitch);
-		this.world.updateChunkEntities(this);
+		if (this.world instanceof ServerWorld) {
+			this.field_5966 = true;
+			this.setPositionAndAngles(d, e, f, this.yaw, this.pitch);
+			((ServerWorld)this.world).method_18767(this);
+		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -2259,6 +2233,37 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
+		if (field_18064.equals(trackedData)) {
+			this.method_18382();
+		}
+	}
+
+	public void method_18382() {
+		class_4048 lv = this.field_18065;
+		class_4050 lv2 = this.method_18376();
+		class_4048 lv3 = this.method_18377(lv2);
+		this.field_18065 = lv3;
+		this.field_18066 = this.method_18378(lv2, lv3);
+		if (lv3.field_18067 < lv.field_18067) {
+			double d = (double)lv3.field_18067 / 2.0;
+			this.setBoundingBox(new BoundingBox(this.x - d, this.y, this.z - d, this.x + d, this.y + (double)lv3.field_18068, this.z + d));
+		} else {
+			BoundingBox boundingBox = this.getBoundingBox();
+			this.setBoundingBox(
+				new BoundingBox(
+					boundingBox.minX,
+					boundingBox.minY,
+					boundingBox.minZ,
+					boundingBox.minX + (double)lv3.field_18067,
+					boundingBox.minY + (double)lv3.field_18068,
+					boundingBox.minZ + (double)lv3.field_18067
+				)
+			);
+			if (lv3.field_18067 > lv.field_18067 && !this.field_5953 && !this.world.isClient) {
+				float f = lv.field_18067 - lv3.field_18067;
+				this.move(MovementType.field_6308, (double)f, 0.0, (double)f);
+			}
+		}
 	}
 
 	public Direction getHorizontalFacing() {
@@ -2298,8 +2303,17 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.boundingBox = boundingBox;
 	}
 
-	public float getEyeHeight() {
-		return this.height * 0.85F;
+	protected float method_18378(class_4050 arg, class_4048 arg2) {
+		return arg2.field_18068 * 0.85F;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public float method_18381(class_4050 arg) {
+		return this.method_18378(arg, this.method_18377(arg));
+	}
+
+	public final float getEyeHeight() {
+		return this.field_18066;
 	}
 
 	public boolean method_5758(int i, ItemStack itemStack) {
@@ -2562,7 +2576,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 				for (int p = i; p < j; p++) {
 					for (int q = k; q < l; q++) {
 						for (int r = m; r < n; r++) {
-							pooledMutable.set(p, q, r);
+							pooledMutable.method_10113(p, q, r);
 							FluidState fluidState = this.world.getFluidState(pooledMutable);
 							if (fluidState.matches(tag)) {
 								double e = (double)((float)q + fluidState.getHeight(this.world, pooledMutable));
@@ -2609,13 +2623,17 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return this.field_5964;
 	}
 
-	public float getWidth() {
-		return this.width;
+	public final float getWidth() {
+		return this.field_18065.field_18067;
 	}
 
-	public float getHeight() {
-		return this.height;
+	public final float getHeight() {
+		return this.field_18065.field_18068;
 	}
 
 	public abstract Packet<?> createSpawnPacket();
+
+	public class_4048 method_18377(class_4050 arg) {
+		return this.type.method_18386();
+	}
 }

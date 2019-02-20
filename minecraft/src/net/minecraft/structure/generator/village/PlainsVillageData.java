@@ -3,8 +3,10 @@ package net.minecraft.structure.generator.village;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.PaneBlock;
 import net.minecraft.sortme.rule.AlwaysTrueRuleTest;
 import net.minecraft.sortme.rule.BlockMatchRuleTest;
+import net.minecraft.sortme.rule.BlockStateMatchRuleTest;
 import net.minecraft.sortme.rule.RandomBlockMatchRuleTest;
 import net.minecraft.sortme.rule.TagMatchRuleTest;
 import net.minecraft.structure.pool.EmptyPoolElement;
@@ -40,6 +42,19 @@ public class PlainsVillageData {
 					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10161, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
 					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10563, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
 					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10519, 0.02F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10285, 0.5F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
+					new StructureProcessorRule(
+						new BlockStateMatchRuleTest(
+							Blocks.field_10285.getDefaultState().with(PaneBlock.NORTH, Boolean.valueOf(true)).with(PaneBlock.SOUTH, Boolean.valueOf(true))
+						),
+						AlwaysTrueRuleTest.INSTANCE,
+						Blocks.field_10163.getDefaultState().with(PaneBlock.NORTH, Boolean.valueOf(true)).with(PaneBlock.SOUTH, Boolean.valueOf(true))
+					),
+					new StructureProcessorRule(
+						new BlockStateMatchRuleTest(Blocks.field_10285.getDefaultState().with(PaneBlock.EAST, Boolean.valueOf(true)).with(PaneBlock.WEST, Boolean.valueOf(true))),
+						AlwaysTrueRuleTest.INSTANCE,
+						Blocks.field_10163.getDefaultState().with(PaneBlock.EAST, Boolean.valueOf(true)).with(PaneBlock.WEST, Boolean.valueOf(true))
+					),
 					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.3F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10609.getDefaultState()),
 					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10247.getDefaultState()),
 					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10341.getDefaultState())
@@ -447,6 +462,15 @@ public class PlainsVillageData {
 						new Pair<>(new SinglePoolElement("village/common/animals/sheep_1"), 1),
 						new Pair<>(new SinglePoolElement("village/common/animals/sheep_2"), 1)
 					),
+					StructurePool.Projection.RIGID
+				)
+			);
+		StructurePoolBasedGenerator.REGISTRY
+			.add(
+				new StructurePool(
+					new Identifier("village/common/iron_golem"),
+					new Identifier("empty"),
+					ImmutableList.of(new Pair<>(new SinglePoolElement("village/common/iron_golem"), 1)),
 					StructurePool.Projection.RIGID
 				)
 			);

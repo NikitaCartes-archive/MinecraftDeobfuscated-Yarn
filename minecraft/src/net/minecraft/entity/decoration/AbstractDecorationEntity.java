@@ -29,11 +29,11 @@ public abstract class AbstractDecorationEntity extends Entity {
 	@Nullable
 	public Direction facing;
 
-	protected AbstractDecorationEntity(EntityType<?> entityType, World world) {
+	protected AbstractDecorationEntity(EntityType<? extends AbstractDecorationEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
-	protected AbstractDecorationEntity(EntityType<?> entityType, World world, BlockPos blockPos) {
+	protected AbstractDecorationEntity(EntityType<? extends AbstractDecorationEntity> entityType, World world, BlockPos blockPos) {
 		this(entityType, world);
 		this.blockPos = blockPos;
 	}
@@ -262,5 +262,9 @@ public abstract class AbstractDecorationEntity extends Entity {
 
 	@Override
 	public void onStruckByLightning(LightningEntity lightningEntity) {
+	}
+
+	@Override
+	public void method_18382() {
 	}
 }

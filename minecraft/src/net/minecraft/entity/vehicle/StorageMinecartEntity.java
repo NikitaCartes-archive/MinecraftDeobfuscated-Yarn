@@ -128,11 +128,6 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	public void setInWorld(boolean bl) {
-		this.field_7733 = bl;
-	}
-
-	@Override
 	protected void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
 		if (this.lootTableId != null) {

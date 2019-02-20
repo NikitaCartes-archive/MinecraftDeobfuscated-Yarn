@@ -44,7 +44,7 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 		if (this.accessor == null) {
 			this.sound = SoundLoader.SOUND_MISSING;
 		} else {
-			this.sound = this.accessor.getSound();
+			this.sound = this.accessor.method_4887();
 		}
 
 		return this.accessor;

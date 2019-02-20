@@ -38,8 +38,8 @@ public abstract class Container {
 		this.syncId = i;
 	}
 
-	protected static boolean canUse(ContainerWorldContext containerWorldContext, PlayerEntity playerEntity, Block block) {
-		return containerWorldContext.apply(
+	protected static boolean canUse(BlockContext blockContext, PlayerEntity playerEntity, Block block) {
+		return blockContext.run(
 			(world, blockPos) -> world.getBlockState(blockPos).getBlock() != block
 					? false
 					: playerEntity.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) <= 64.0,

@@ -12,7 +12,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.MainMenuScreen;
-import net.minecraft.client.options.GameOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.util.Session;
@@ -111,7 +110,7 @@ public class Realms {
 	}
 
 	public static boolean getRealmsNotificationsEnabled() {
-		return MinecraftClient.getInstance().options.isEnabled(GameOptions.Option.REALMS_NOTIFICATIONS);
+		return MinecraftClient.getInstance().options.realmsNotifications;
 	}
 
 	public static boolean inTitleScreen() {

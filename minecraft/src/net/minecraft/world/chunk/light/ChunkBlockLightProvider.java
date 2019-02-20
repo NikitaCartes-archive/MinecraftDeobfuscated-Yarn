@@ -1,5 +1,6 @@
 package net.minecraft.world.chunk.light;
 
+import net.minecraft.class_4076;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
@@ -25,9 +26,9 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 
 	@Override
 	protected int getBaseLevelFor(long l, long m, int i) {
-		if (m == -1L) {
+		if (m == Long.MAX_VALUE) {
 			return 15;
-		} else if (l == -1L) {
+		} else if (l == Long.MAX_VALUE) {
 			return i + 15 - this.getLightSourceLuminance(m);
 		} else {
 			return i >= 15 ? i : i + Math.max(1, this.getLightBlockedBetween(l, m));
@@ -36,11 +37,11 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 
 	@Override
 	protected void processLevelAt(long l, int i, boolean bl) {
-		long m = BlockPos.toChunkSectionOrigin(l);
+		long m = class_4076.method_18691(l);
 
 		for (Direction direction : DIRECTIONS_BLOCKLIGHT) {
 			long n = BlockPos.offset(l, direction);
-			long o = BlockPos.toChunkSectionOrigin(n);
+			long o = class_4076.method_18691(n);
 			if (m == o || this.lightStorage.hasChunk(o)) {
 				this.scheduleUpdateRecursively(l, n, i, bl);
 			}
@@ -50,8 +51,8 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 	@Override
 	protected int getMergedLevel(long l, long m, int i) {
 		int j = i;
-		if (-1L != m) {
-			int k = this.getBaseLevelFor(-1L, l, 0);
+		if (Long.MAX_VALUE != m) {
+			int k = this.getBaseLevelFor(Long.MAX_VALUE, l, 0);
 			if (i > k) {
 				j = k;
 			}
@@ -61,13 +62,13 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 			}
 		}
 
-		long n = BlockPos.toChunkSectionOrigin(l);
+		long n = class_4076.method_18691(l);
 		ChunkNibbleArray chunkNibbleArray = this.lightStorage.getDataForChunk(n, true);
 
 		for (Direction direction : DIRECTIONS_BLOCKLIGHT) {
 			long o = BlockPos.offset(l, direction);
 			if (o != m) {
-				long p = BlockPos.toChunkSectionOrigin(o);
+				long p = class_4076.method_18691(o);
 				ChunkNibbleArray chunkNibbleArray2;
 				if (n == p) {
 					chunkNibbleArray2 = chunkNibbleArray;
@@ -94,6 +95,6 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 	@Override
 	public void method_15514(BlockPos blockPos, int i) {
 		this.lightStorage.updateAll();
-		this.scheduleNewLevelUpdate(-1L, blockPos.asLong(), 15 - i, true);
+		this.scheduleNewLevelUpdate(Long.MAX_VALUE, blockPos.asLong(), 15 - i, true);
 	}
 }

@@ -7,6 +7,9 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1394;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
+import net.minecraft.class_4051;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -56,7 +59,8 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
 public abstract class HorseBaseEntity extends AnimalEntity implements InventoryListener, JumpingMount {
-	private static final Predicate<Entity> field_6956 = entity -> entity instanceof HorseBaseEntity && ((HorseBaseEntity)entity).isBred();
+	private static final Predicate<LivingEntity> field_6956 = livingEntity -> livingEntity instanceof HorseBaseEntity && ((HorseBaseEntity)livingEntity).isBred();
+	private static final class_4051 field_18118 = new class_4051().method_18418(16.0).method_18417().method_18421().method_18422().method_18420(field_6956);
 	protected static final EntityAttribute ATTR_JUMP_STRENGTH = new ClampedEntityAttribute(null, "horse.jumpStrength", 0.7, 0.0, 2.0)
 		.setName("Jump Strength")
 		.method_6212(true);
@@ -81,7 +85,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	protected boolean field_6964 = true;
 	protected int field_6975;
 
-	protected HorseBaseEntity(EntityType<?> entityType, World world) {
+	protected HorseBaseEntity(EntityType<? extends HorseBaseEntity> entityType, World world) {
 		super(entityType, world);
 		this.stepHeight = 1.0F;
 		this.method_6721();
@@ -284,22 +288,6 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 		if (this.age > 20 && !bl && this.isSaddled()) {
 			this.playSound(SoundEvents.field_14704, 0.5F, 1.0F);
 		}
-	}
-
-	@Nullable
-	protected HorseBaseEntity method_6756(Entity entity, double d) {
-		double e = Double.MAX_VALUE;
-		Entity entity2 = null;
-
-		for (Entity entity3 : this.world.getEntities(entity, entity.getBoundingBox().stretch(d, d, d), field_6956)) {
-			double f = entity3.squaredDistanceTo(entity.x, entity.y, entity.z);
-			if (f < e) {
-				entity2 = entity3;
-				e = f;
-			}
-		}
-
-		return (HorseBaseEntity)entity2;
 	}
 
 	public double method_6771() {
@@ -552,9 +540,10 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 
 	protected void method_6746() {
 		if (this.isBred() && this.isChild() && !this.isEating()) {
-			HorseBaseEntity horseBaseEntity = this.method_6756(this, 16.0);
-			if (horseBaseEntity != null && this.squaredDistanceTo(horseBaseEntity) > 4.0) {
-				this.navigation.findPathTo(horseBaseEntity);
+			LivingEntity livingEntity = this.world
+				.method_18465(HorseBaseEntity.class, field_18118, this, this.x, this.y, this.z, this.getBoundingBox().stretch(16.0, 16.0, 16.0));
+			if (livingEntity != null && this.squaredDistanceTo(livingEntity) > 4.0) {
+				this.navigation.findPathTo(livingEntity);
 			}
 		}
 	}
@@ -676,7 +665,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	}
 
 	@Override
-	public void method_6091(float f, float g, float h) {
+	public void travel(float f, float g, float h) {
 		if (this.hasPassengers() && this.method_5956() && this.isSaddled()) {
 			LivingEntity livingEntity = (LivingEntity)this.getPrimaryPassenger();
 			this.yaw = livingEntity.yaw;
@@ -685,8 +674,8 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 			this.setRotation(this.yaw, this.pitch);
 			this.field_6283 = this.yaw;
 			this.headYaw = this.field_6283;
-			f = livingEntity.field_6212 * 0.5F;
-			h = livingEntity.field_6250;
+			f = livingEntity.movementInputSideways * 0.5F;
+			h = livingEntity.movementInputForward;
 			if (h <= 0.0F) {
 				h *= 0.25F;
 				this.field_6975 = 0;
@@ -716,10 +705,10 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 				this.field_6976 = 0.0F;
 			}
 
-			this.field_6281 = this.method_6029() * 0.1F;
+			this.field_6281 = this.getMovementSpeed() * 0.1F;
 			if (this.method_5787()) {
-				this.method_6125((float)this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
-				super.method_6091(f, g, h);
+				this.setMovementSpeed((float)this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
+				super.travel(f, g, h);
 			} else if (livingEntity instanceof PlayerEntity) {
 				this.velocityX = 0.0;
 				this.velocityY = 0.0;
@@ -743,7 +732,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 			this.field_6249 = this.field_6249 + this.field_6225;
 		} else {
 			this.field_6281 = 0.02F;
-			super.method_6091(f, g, h);
+			super.travel(f, g, h);
 		}
 	}
 
@@ -956,8 +945,8 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	}
 
 	@Override
-	public float getEyeHeight() {
-		return this.getHeight();
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
+		return arg2.field_18068;
 	}
 
 	public boolean method_6735() {

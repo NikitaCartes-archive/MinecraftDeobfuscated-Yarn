@@ -28,8 +28,8 @@ public class MobSpawnerMinecartEntity extends AbstractMinecartEntity {
 		}
 	};
 
-	public MobSpawnerMinecartEntity(World world) {
-		super(EntityType.SPAWNER_MINECART, world);
+	public MobSpawnerMinecartEntity(EntityType<? extends MobSpawnerMinecartEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public MobSpawnerMinecartEntity(World world, double d, double e, double f) {

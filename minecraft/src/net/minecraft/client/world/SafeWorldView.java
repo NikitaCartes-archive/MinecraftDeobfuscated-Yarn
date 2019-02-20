@@ -36,7 +36,7 @@ public class SafeWorldView implements ExtendedBlockView {
 
 		for (int n = j; n <= l; n++) {
 			for (int o = k; o <= m; o++) {
-				worldChunks[n - j][o - k] = world.getWorldChunk(n, o);
+				worldChunks[n - j][o - k] = world.method_8497(n, o);
 			}
 		}
 
@@ -45,7 +45,7 @@ public class SafeWorldView implements ExtendedBlockView {
 		for (int o = blockPos.getX() >> 4; o <= blockPos2.getX() >> 4; o++) {
 			for (int p = blockPos.getZ() >> 4; p <= blockPos2.getZ() >> 4; p++) {
 				WorldChunk worldChunk = worldChunks[o - j][p - k];
-				if (!worldChunk.areSectionsEmpty(blockPos.getY(), blockPos2.getY())) {
+				if (!worldChunk.method_12228(blockPos.getY(), blockPos2.getY())) {
 					bl = false;
 				}
 			}

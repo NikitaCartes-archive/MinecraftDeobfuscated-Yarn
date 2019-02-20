@@ -12,6 +12,8 @@ import net.minecraft.class_1386;
 import net.minecraft.class_1394;
 import net.minecraft.class_1404;
 import net.minecraft.class_3697;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -92,8 +94,8 @@ public class CatEntity extends TameableEntity {
 	private float field_16286;
 	private float field_16287;
 
-	public CatEntity(World world) {
-		super(EntityType.CAT, world);
+	public CatEntity(EntityType<? extends CatEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public Identifier method_16092() {
@@ -310,8 +312,8 @@ public class CatEntity extends TameableEntity {
 		return MathHelper.lerp(f, this.field_16287, this.field_16286);
 	}
 
-	public CatEntity createChild(PassiveEntity passiveEntity) {
-		CatEntity catEntity = new CatEntity(this.world);
+	public CatEntity method_6573(PassiveEntity passiveEntity) {
+		CatEntity catEntity = EntityType.CAT.create(this.world);
 		if (passiveEntity instanceof CatEntity) {
 			if (this.random.nextBoolean()) {
 				catEntity.getOcelotType(this.getOcelotType());
@@ -320,7 +322,7 @@ public class CatEntity extends TameableEntity {
 			}
 
 			if (this.isTamed()) {
-				catEntity.setOwnerUuid(this.getOwnerUuid());
+				catEntity.setOwnerUuid(this.method_6139());
 				catEntity.setTamed(true);
 				if (this.random.nextBoolean()) {
 					catEntity.setCollarColor(this.getCollarColor());
@@ -425,8 +427,8 @@ public class CatEntity extends TameableEntity {
 	}
 
 	@Override
-	public float getEyeHeight() {
-		return this.getHeight() * 0.5F;
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
+		return arg2.field_18068 * 0.5F;
 	}
 
 	@Override
@@ -446,11 +448,11 @@ public class CatEntity extends TameableEntity {
 		}
 	}
 
-	static class CatFleeGoal<T extends Entity> extends FleeEntityGoal<T> {
+	static class CatFleeGoal<T extends LivingEntity> extends FleeEntityGoal<T> {
 		private final CatEntity entity;
 
 		public CatFleeGoal(CatEntity catEntity, Class<T> class_, float f, double d, double e) {
-			super(catEntity, class_, f, d, e, EntityPredicates.EXCEPT_SPECTATOR);
+			super(catEntity, class_, f, d, e, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR::test);
 			this.entity = catEntity;
 		}
 
@@ -538,7 +540,7 @@ public class CatEntity extends TameableEntity {
 		}
 
 		private boolean method_16098() {
-			for (CatEntity catEntity : this.entity.world.getVisibleEntities(CatEntity.class, new BoundingBox(this.field_16294).expand(2.0))) {
+			for (CatEntity catEntity : this.entity.world.method_18467(CatEntity.class, new BoundingBox(this.field_16294).expand(2.0))) {
 				if (catEntity != this.entity && (catEntity.method_16086() || catEntity.method_16093())) {
 					return true;
 				}

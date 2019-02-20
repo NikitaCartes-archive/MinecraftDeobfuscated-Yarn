@@ -1,7 +1,6 @@
 package net.minecraft.client.gui.ingame;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.Message;
@@ -9,7 +8,7 @@ import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.ParsedArgument;
-import com.mojang.brigadier.context.StringRange;
+import com.mojang.brigadier.context.SuggestionContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -72,7 +71,7 @@ public class ChatScreen extends Screen {
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
 		this.field_2387 = this.client.inGameHud.getChatHud().method_1809().size();
-		this.chatField = new TextFieldWidget(0, this.fontRenderer, 4, this.height - 12, this.width - 4, 12);
+		this.chatField = new TextFieldWidget(this.fontRenderer, 4, this.height - 12, this.width - 4, 12);
 		this.chatField.setMaxLength(256);
 		this.chatField.setHasBorder(false);
 		this.chatField.setFocused(true);
@@ -103,7 +102,7 @@ public class ChatScreen extends Screen {
 		this.chatField.tick();
 	}
 
-	private void onChatFieldChanged(int i, String string) {
+	private void onChatFieldChanged(String string) {
 		String string2 = this.chatField.getText();
 		this.field_2380 = !string2.equals(this.field_2384);
 		this.updateCommand();
@@ -177,31 +176,33 @@ public class ChatScreen extends Screen {
 	}
 
 	private void updateCommand() {
-		this.parseResults = null;
+		String string = this.chatField.getText();
+		if (this.parseResults != null && !this.parseResults.getReader().getString().equals(string)) {
+			this.parseResults = null;
+		}
+
 		if (!this.suggestionsTemporarilyDisabled) {
 			this.chatField.setSuggestion(null);
 			this.suggestionsWindow = null;
 		}
 
 		this.commandExceptions.clear();
-		String string = this.chatField.getText();
 		StringReader stringReader = new StringReader(string);
 		if (stringReader.canRead() && stringReader.peek() == '/') {
 			stringReader.skip();
 			CommandDispatcher<CommandSource> commandDispatcher = this.client.player.networkHandler.getCommandDispatcher();
-			this.parseResults = commandDispatcher.parse(stringReader, this.client.player.networkHandler.getCommandSource());
-			if (this.suggestionsWindow == null || !this.suggestionsTemporarilyDisabled) {
-				StringReader stringReader2 = new StringReader(string.substring(0, Math.min(string.length(), this.chatField.getCursor())));
-				if (stringReader2.canRead() && stringReader2.peek() == '/') {
-					stringReader2.skip();
-					ParseResults<CommandSource> parseResults = commandDispatcher.parse(stringReader2, this.client.player.networkHandler.getCommandSource());
-					this.suggestionsFuture = commandDispatcher.getCompletionSuggestions(parseResults);
-					this.suggestionsFuture.thenRun(() -> {
-						if (this.suggestionsFuture.isDone()) {
-							this.updateSuggestionsAndExceptions();
-						}
-					});
-				}
+			if (this.parseResults == null) {
+				this.parseResults = commandDispatcher.parse(stringReader, this.client.player.networkHandler.getCommandSource());
+			}
+
+			int i = this.chatField.getCursor();
+			if (i >= 1 && (this.suggestionsWindow == null || !this.suggestionsTemporarilyDisabled)) {
+				this.suggestionsFuture = commandDispatcher.getCompletionSuggestions(this.parseResults, i);
+				this.suggestionsFuture.thenRun(() -> {
+					if (this.suggestionsFuture.isDone()) {
+						this.updateSuggestionsAndExceptions();
+					}
+				});
 			}
 		} else {
 			int i = getLastWhitespaceIndex(string);
@@ -360,9 +361,9 @@ public class ChatScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		drawRect(2, this.height - 14, this.width - 2, this.height - 2, Integer.MIN_VALUE);
-		this.chatField.render(i, j, f);
+		this.chatField.method_18326(i, j, f);
 		if (this.suggestionsWindow != null) {
 			this.suggestionsWindow.draw(i, j);
 		} else {
@@ -386,7 +387,7 @@ public class ChatScreen extends Screen {
 			this.drawTextComponentHover(textComponent, i, j);
 		}
 
-		super.draw(i, j, f);
+		super.method_18326(i, j, f);
 	}
 
 	@Override
@@ -396,50 +397,26 @@ public class ChatScreen extends Screen {
 
 	private void method_2107(TextFormat textFormat) {
 		CommandContextBuilder<CommandSource> commandContextBuilder = this.parseResults.getContext();
-		CommandContextBuilder<CommandSource> commandContextBuilder2 = commandContextBuilder.getLastChild();
-		if (!commandContextBuilder2.getNodes().isEmpty()) {
-			CommandNode<CommandSource> commandNode;
-			int i;
-			if (this.parseResults.getReader().canRead()) {
-				Entry<CommandNode<CommandSource>, StringRange> entry = Iterables.getLast(commandContextBuilder2.getNodes().entrySet());
-				commandNode = (CommandNode<CommandSource>)entry.getKey();
-				i = ((StringRange)entry.getValue()).getEnd() + 1;
-			} else if (commandContextBuilder2.getNodes().size() > 1) {
-				Entry<CommandNode<CommandSource>, StringRange> entry = Iterables.get(
-					commandContextBuilder2.getNodes().entrySet(), commandContextBuilder2.getNodes().size() - 2
-				);
-				commandNode = (CommandNode<CommandSource>)entry.getKey();
-				i = ((StringRange)entry.getValue()).getEnd() + 1;
-			} else {
-				if (commandContextBuilder == commandContextBuilder2 || commandContextBuilder2.getNodes().isEmpty()) {
-					return;
-				}
+		SuggestionContext<CommandSource> suggestionContext = commandContextBuilder.findSuggestionContext(this.chatField.getCursor());
+		Map<CommandNode<CommandSource>, String> map = this.client
+			.player
+			.networkHandler
+			.getCommandDispatcher()
+			.getSmartUsage(suggestionContext.parent, this.client.player.networkHandler.getCommandSource());
+		List<String> list = Lists.<String>newArrayList();
+		int i = 0;
 
-				Entry<CommandNode<CommandSource>, StringRange> entry = Iterables.getLast(commandContextBuilder2.getNodes().entrySet());
-				commandNode = (CommandNode<CommandSource>)entry.getKey();
-				i = ((StringRange)entry.getValue()).getEnd() + 1;
+		for (Entry<CommandNode<CommandSource>, String> entry : map.entrySet()) {
+			if (!(entry.getKey() instanceof LiteralCommandNode)) {
+				list.add(textFormat + (String)entry.getValue());
+				i = Math.max(i, this.fontRenderer.getStringWidth((String)entry.getValue()));
 			}
+		}
 
-			Map<CommandNode<CommandSource>, String> map = this.client
-				.player
-				.networkHandler
-				.getCommandDispatcher()
-				.getSmartUsage(commandNode, this.client.player.networkHandler.getCommandSource());
-			List<String> list = Lists.<String>newArrayList();
-			int j = 0;
-
-			for (Entry<CommandNode<CommandSource>, String> entry2 : map.entrySet()) {
-				if (!(entry2.getKey() instanceof LiteralCommandNode)) {
-					list.add(textFormat + (String)entry2.getValue());
-					j = Math.max(j, this.fontRenderer.getStringWidth((String)entry2.getValue()));
-				}
-			}
-
-			if (!list.isEmpty()) {
-				this.commandExceptions.addAll(list);
-				this.commandExceptionsX = MathHelper.clamp(this.chatField.method_1889(i) + this.fontRenderer.getStringWidth(" "), 0, this.width - j);
-				this.commandExceptionsWidth = j;
-			}
+		if (!list.isEmpty()) {
+			this.commandExceptions.addAll(list);
+			this.commandExceptionsX = MathHelper.clamp(this.chatField.method_1889(suggestionContext.startPos), 0, this.width - i);
+			this.commandExceptionsWidth = i;
 		}
 	}
 

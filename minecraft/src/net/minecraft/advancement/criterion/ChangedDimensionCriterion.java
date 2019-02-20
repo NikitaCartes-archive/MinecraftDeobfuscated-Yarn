@@ -56,7 +56,7 @@ public class ChangedDimensionCriterion implements Criterion<ChangedDimensionCrit
 		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public ChangedDimensionCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public ChangedDimensionCriterion.Conditions method_8793(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		DimensionType dimensionType = jsonObject.has("from") ? DimensionType.byId(new Identifier(JsonHelper.getString(jsonObject, "from"))) : null;
 		DimensionType dimensionType2 = jsonObject.has("to") ? DimensionType.byId(new Identifier(JsonHelper.getString(jsonObject, "to"))) : null;
 		return new ChangedDimensionCriterion.Conditions(dimensionType, dimensionType2);

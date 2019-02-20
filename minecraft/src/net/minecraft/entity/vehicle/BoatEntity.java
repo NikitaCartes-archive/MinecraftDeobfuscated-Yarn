@@ -76,13 +76,13 @@ public class BoatEntity extends Entity {
 	private float field_7694;
 	private float field_7711;
 
-	public BoatEntity(World world) {
-		super(EntityType.BOAT, world);
+	public BoatEntity(EntityType<? extends BoatEntity> entityType, World world) {
+		super(entityType, world);
 		this.field_6033 = true;
 	}
 
 	public BoatEntity(World world, double d, double e, double f) {
-		this(world);
+		this(EntityType.BOAT, world);
 		this.setPosition(d, e, f);
 		this.velocityX = 0.0;
 		this.velocityY = 0.0;
@@ -435,7 +435,7 @@ public class BoatEntity extends Entity {
 				while (true) {
 					if (p < j) {
 						for (int q = m; q < n; q++) {
-							pooledMutable.set(p, o, q);
+							pooledMutable.method_10113(p, o, q);
 							FluidState fluidState = this.world.getFluidState(pooledMutable);
 							if (fluidState.matches(FluidTags.field_15517)) {
 								f = Math.max(f, fluidState.getHeight(this.world, pooledMutable));
@@ -480,7 +480,7 @@ public class BoatEntity extends Entity {
 					if (r != 2) {
 						for (int s = k; s < l; s++) {
 							if (r <= 0 || s != k && s != l - 1) {
-								pooledMutable.set(p, s, q);
+								pooledMutable.method_10113(p, s, q);
 								BlockState blockState = this.world.getBlockState(pooledMutable);
 								if (!(blockState.getBlock() instanceof WaterlilyBlock)
 									&& VoxelShapes.compareShapes(
@@ -514,7 +514,7 @@ public class BoatEntity extends Entity {
 			for (int o = i; o < j; o++) {
 				for (int p = k; p < l; p++) {
 					for (int q = m; q < n; q++) {
-						pooledMutable.set(o, p, q);
+						pooledMutable.method_10113(o, p, q);
 						FluidState fluidState = this.world.getFluidState(pooledMutable);
 						if (fluidState.matches(FluidTags.field_15517)) {
 							float f = (float)p + fluidState.getHeight(this.world, pooledMutable);
@@ -545,7 +545,7 @@ public class BoatEntity extends Entity {
 			for (int o = i; o < j; o++) {
 				for (int p = k; p < l; p++) {
 					for (int q = m; q < n; q++) {
-						pooledMutable.set(o, p, q);
+						pooledMutable.method_10113(o, p, q);
 						FluidState fluidState = this.world.getFluidState(pooledMutable);
 						if (fluidState.matches(FluidTags.field_15517) && d < (double)((float)pooledMutable.getY() + fluidState.getHeight(this.world, pooledMutable))) {
 							if (!fluidState.isStill()) {

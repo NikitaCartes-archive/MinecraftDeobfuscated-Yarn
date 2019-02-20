@@ -22,12 +22,11 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagContainer;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Tickable;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class CommandFunctionManager implements Tickable, SynchronousResourceReloadListener {
+public class CommandFunctionManager implements SynchronousResourceReloadListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Identifier TICK_FUNCTION = new Identifier("tick");
 	private static final Identifier LOAD_FUNCTION = new Identifier("load");
@@ -65,8 +64,7 @@ public class CommandFunctionManager implements Tickable, SynchronousResourceRelo
 		return this.server.getCommandManager().getDispatcher();
 	}
 
-	@Override
-	public void tick() {
+	public void method_18699() {
 		this.server.getProfiler().push(TICK_FUNCTION::toString);
 
 		for (CommandFunction commandFunction : this.tickFunctions) {

@@ -3,7 +3,7 @@ package net.minecraft.server.network.packet;
 import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.sortme.OptionMainHand;
@@ -12,7 +12,7 @@ import net.minecraft.util.PacketByteBuf;
 public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener> {
 	private String language;
 	private int viewDistance;
-	private PlayerEntity.ChatVisibility chatVisibility;
+	private ChatVisibility chatVisibility;
 	private boolean field_12779;
 	private int playerModelBitMask;
 	private OptionMainHand mainHand;
@@ -21,7 +21,7 @@ public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener>
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ClientSettingsC2SPacket(String string, int i, PlayerEntity.ChatVisibility chatVisibility, boolean bl, int j, OptionMainHand optionMainHand) {
+	public ClientSettingsC2SPacket(String string, int i, ChatVisibility chatVisibility, boolean bl, int j, OptionMainHand optionMainHand) {
 		this.language = string;
 		this.viewDistance = i;
 		this.chatVisibility = chatVisibility;
@@ -34,7 +34,7 @@ public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener>
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.language = packetByteBuf.readString(16);
 		this.viewDistance = packetByteBuf.readByte();
-		this.chatVisibility = packetByteBuf.readEnumConstant(PlayerEntity.ChatVisibility.class);
+		this.chatVisibility = packetByteBuf.readEnumConstant(ChatVisibility.class);
 		this.field_12779 = packetByteBuf.readBoolean();
 		this.playerModelBitMask = packetByteBuf.readUnsignedByte();
 		this.mainHand = packetByteBuf.readEnumConstant(OptionMainHand.class);
@@ -58,7 +58,7 @@ public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener>
 		return this.language;
 	}
 
-	public PlayerEntity.ChatVisibility getChatVisibility() {
+	public ChatVisibility getChatVisibility() {
 		return this.chatVisibility;
 	}
 

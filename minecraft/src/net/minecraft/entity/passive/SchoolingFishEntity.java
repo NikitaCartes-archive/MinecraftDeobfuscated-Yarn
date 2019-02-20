@@ -16,7 +16,7 @@ public abstract class SchoolingFishEntity extends FishEntity {
 	private SchoolingFishEntity leader;
 	private int groupSize = 1;
 
-	public SchoolingFishEntity(EntityType<?> entityType, World world) {
+	public SchoolingFishEntity(EntityType<? extends SchoolingFishEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
@@ -71,7 +71,7 @@ public abstract class SchoolingFishEntity extends FishEntity {
 	public void update() {
 		super.update();
 		if (this.hasOtherFishInGroup() && this.world.random.nextInt(200) == 1) {
-			List<FishEntity> list = this.world.getVisibleEntities(this.getClass(), this.getBoundingBox().expand(8.0, 8.0, 8.0));
+			List<FishEntity> list = this.world.method_18467(this.getClass(), this.getBoundingBox().expand(8.0, 8.0, 8.0));
 			if (list.size() <= 1) {
 				this.groupSize = 1;
 			}

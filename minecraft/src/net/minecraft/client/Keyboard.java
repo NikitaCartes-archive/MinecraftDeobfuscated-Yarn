@@ -11,7 +11,7 @@ import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.menu.settings.ChatSettingsScreen;
 import net.minecraft.client.gui.menu.settings.ControlsSettingsScreen;
-import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.options.GameOption;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.Clipboard;
 import net.minecraft.client.util.GlfwUtil;
@@ -124,7 +124,15 @@ public class Keyboard {
 				default:
 					return false;
 				case 70:
-					this.client.options.setInteger(GameOptions.Option.RENDER_DISTANCE, Screen.isShiftPressed() ? -1 : 1);
+					GameOption.RENDER_DISTANCE
+						.method_18614(
+							this.client.options,
+							MathHelper.clamp(
+								(double)(this.client.options.viewDistance + (Screen.isShiftPressed() ? -1 : 1)),
+								GameOption.RENDER_DISTANCE.method_18615(),
+								GameOption.RENDER_DISTANCE.method_18617()
+							)
+						);
 					this.debugWarn("debug.cycle_renderdistance.message", this.client.options.viewDistance);
 					return true;
 				case 71:
@@ -304,7 +312,7 @@ public class Keyboard {
 			}
 
 			if (k != 0 && i == 66 && Screen.isControlPressed()) {
-				this.client.options.setInteger(GameOptions.Option.NARRATOR, 1);
+				GameOption.field_18194.method_18500(this.client.options, 1);
 				if (guiEventListener instanceof ChatSettingsScreen) {
 					((ChatSettingsScreen)guiEventListener).method_2096();
 				}
@@ -383,7 +391,7 @@ public class Keyboard {
 	private void onChar(long l, int i, int j) {
 		if (l == this.client.window.getHandle()) {
 			GuiEventListener guiEventListener = this.client.currentScreen;
-			if (guiEventListener != null) {
+			if (guiEventListener != null && this.client.method_18506() == null) {
 				if (Character.charCount(i) == 1) {
 					Screen.method_2217(() -> guiEventListener.charTyped((char)i, j), "charTyped event handler", guiEventListener.getClass().getCanonicalName());
 				} else {

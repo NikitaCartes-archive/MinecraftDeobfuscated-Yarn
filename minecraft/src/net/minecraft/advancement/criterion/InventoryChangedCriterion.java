@@ -63,7 +63,7 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public InventoryChangedCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public InventoryChangedCriterion.Conditions method_8952(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "slots", new JsonObject());
 		NumberRange.Integer integer = NumberRange.Integer.fromJson(jsonObject2.get("occupied"));
 		NumberRange.Integer integer2 = NumberRange.Integer.fromJson(jsonObject2.get("full"));

@@ -9,7 +9,7 @@ import net.minecraft.entity.raid.RaiderEntity;
 public class class_3760<T extends LivingEntity> extends FollowTargetGoal<T> {
 	private boolean field_17281 = true;
 
-	public class_3760(RaiderEntity raiderEntity, Class<T> class_, int i, boolean bl, boolean bl2, @Nullable Predicate<? super T> predicate) {
+	public class_3760(RaiderEntity raiderEntity, Class<T> class_, int i, boolean bl, boolean bl2, @Nullable Predicate<LivingEntity> predicate) {
 		super(raiderEntity, class_, i, bl, bl2, predicate);
 	}
 

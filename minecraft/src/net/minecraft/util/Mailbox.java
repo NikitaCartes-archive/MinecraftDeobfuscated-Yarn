@@ -42,7 +42,7 @@ public interface Mailbox<T, F> {
 		}
 
 		@Nullable
-		public Runnable getNext() {
+		public Runnable method_17346() {
 			for (Queue<Runnable> queue : this.queues) {
 				Runnable runnable = (Runnable)queue.poll();
 				if (runnable != null) {

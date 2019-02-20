@@ -78,7 +78,7 @@ public class EntityScoresLootCondition implements LootCondition {
 			jsonObject.add("entity", jsonSerializationContext.serialize(entityScoresLootCondition.target));
 		}
 
-		public EntityScoresLootCondition deserialize(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public EntityScoresLootCondition method_867(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			Set<Entry<String, JsonElement>> set = JsonHelper.getObject(jsonObject, "scores").entrySet();
 			Map<String, UniformLootTableRange> map = Maps.<String, UniformLootTableRange>newLinkedHashMap();
 

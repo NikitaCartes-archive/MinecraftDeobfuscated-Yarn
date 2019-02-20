@@ -163,7 +163,7 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 			packetByteBuf.writeByte(b);
 		}
 
-		public EntityArgumentType fromPacket(PacketByteBuf packetByteBuf) {
+		public EntityArgumentType method_9321(PacketByteBuf packetByteBuf) {
 			byte b = packetByteBuf.readByte();
 			return new EntityArgumentType((b & 1) != 0, (b & 2) != 0);
 		}

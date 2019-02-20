@@ -46,8 +46,8 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 	private BlockPos wanderTarget;
 	private int despawnDelay;
 
-	public WanderingTraderEntity(World world) {
-		super(EntityType.field_17713, world);
+	public WanderingTraderEntity(EntityType<? extends WanderingTraderEntity> entityType, World world) {
+		super(entityType, world);
 		this.teleporting = true;
 	}
 

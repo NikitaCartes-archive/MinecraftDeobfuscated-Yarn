@@ -432,7 +432,7 @@ public interface DispenserBehavior {
 					this.field_13364 = false;
 					BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
 
-					for (SheepEntity sheepEntity : world.getVisibleEntities(SheepEntity.class, new BoundingBox(blockPos))) {
+					for (SheepEntity sheepEntity : world.method_18467(SheepEntity.class, new BoundingBox(blockPos))) {
 						if (sheepEntity.isValid() && !sheepEntity.isSheared() && !sheepEntity.isChild()) {
 							sheepEntity.dropItems();
 							if (itemStack.applyDamage(1, world.random, null)) {

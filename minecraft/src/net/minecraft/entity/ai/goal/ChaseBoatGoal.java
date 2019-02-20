@@ -22,21 +22,22 @@ public class ChaseBoatGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		List<BoatEntity> list = this.owner.world.getVisibleEntities(BoatEntity.class, this.owner.getBoundingBox().expand(5.0));
+		List<BoatEntity> list = this.owner.world.method_18467(BoatEntity.class, this.owner.getBoundingBox().expand(5.0));
 		boolean bl = false;
 
 		for (BoatEntity boatEntity : list) {
 			if (boatEntity.getPrimaryPassenger() != null
 				&& (
-					MathHelper.abs(((LivingEntity)boatEntity.getPrimaryPassenger()).field_6212) > 0.0F
-						|| MathHelper.abs(((LivingEntity)boatEntity.getPrimaryPassenger()).field_6250) > 0.0F
+					MathHelper.abs(((LivingEntity)boatEntity.getPrimaryPassenger()).movementInputSideways) > 0.0F
+						|| MathHelper.abs(((LivingEntity)boatEntity.getPrimaryPassenger()).movementInputForward) > 0.0F
 				)) {
 				bl = true;
 				break;
 			}
 		}
 
-		return this.passenger != null && (MathHelper.abs(this.passenger.field_6212) > 0.0F || MathHelper.abs(this.passenger.field_6250) > 0.0F) || bl;
+		return this.passenger != null && (MathHelper.abs(this.passenger.movementInputSideways) > 0.0F || MathHelper.abs(this.passenger.movementInputForward) > 0.0F)
+			|| bl;
 	}
 
 	@Override
@@ -48,12 +49,12 @@ public class ChaseBoatGoal extends Goal {
 	public boolean shouldContinue() {
 		return this.passenger != null
 			&& this.passenger.hasVehicle()
-			&& (MathHelper.abs(this.passenger.field_6212) > 0.0F || MathHelper.abs(this.passenger.field_6250) > 0.0F);
+			&& (MathHelper.abs(this.passenger.movementInputSideways) > 0.0F || MathHelper.abs(this.passenger.movementInputForward) > 0.0F);
 	}
 
 	@Override
 	public void start() {
-		for (BoatEntity boatEntity : this.owner.world.getVisibleEntities(BoatEntity.class, this.owner.getBoundingBox().expand(5.0))) {
+		for (BoatEntity boatEntity : this.owner.world.method_18467(BoatEntity.class, this.owner.getBoundingBox().expand(5.0))) {
 			if (boatEntity.getPrimaryPassenger() != null && boatEntity.getPrimaryPassenger() instanceof LivingEntity) {
 				this.passenger = (LivingEntity)boatEntity.getPrimaryPassenger();
 				break;
@@ -71,9 +72,9 @@ public class ChaseBoatGoal extends Goal {
 
 	@Override
 	public void tick() {
-		boolean bl = MathHelper.abs(this.passenger.field_6212) > 0.0F || MathHelper.abs(this.passenger.field_6250) > 0.0F;
+		boolean bl = MathHelper.abs(this.passenger.movementInputSideways) > 0.0F || MathHelper.abs(this.passenger.movementInputForward) > 0.0F;
 		float f = this.state == class_1340.field_6400 ? (bl ? 0.17999999F : 0.0F) : 0.135F;
-		this.owner.method_5724(this.owner.field_6212, this.owner.field_6227, this.owner.field_6250, f);
+		this.owner.updateVelocity(this.owner.movementInputSideways, this.owner.movementInputUp, this.owner.movementInputForward, f);
 		this.owner.move(MovementType.field_6308, this.owner.velocityX, this.owner.velocityY, this.owner.velocityZ);
 		if (--this.field_6428 <= 0) {
 			this.field_6428 = 10;

@@ -67,7 +67,7 @@ public class ChunkHolder {
 		this.lightingProvider = lightingProvider;
 		this.levelUpdateListener = levelUpdateListener;
 		this.playersWatchingChunkProvider = playersWatchingChunkProvider;
-		this.field_16432 = ServerChunkManager.LEVEL_COUNT + 1;
+		this.field_16432 = ThreadedAnvilChunkStorage.field_18239 + 1;
 		this.level = this.field_16432;
 		this.lastLevelUpdatedTo = this.field_16432;
 		this.setLevel(i);
@@ -281,8 +281,16 @@ public class ChunkHolder {
 	protected void update(ThreadedAnvilChunkStorage threadedAnvilChunkStorage) {
 		ChunkStatus chunkStatus = getTargetGenerationStatus(this.field_16432);
 		ChunkStatus chunkStatus2 = getTargetGenerationStatus(this.level);
-		boolean bl = this.field_16432 <= ServerChunkManager.LEVEL_COUNT;
-		boolean bl2 = this.level <= ServerChunkManager.LEVEL_COUNT;
+		boolean bl = this.field_16432 <= ThreadedAnvilChunkStorage.field_18239;
+		boolean bl2 = this.level <= ThreadedAnvilChunkStorage.field_18239;
+		ChunkHolder.LevelType levelType = getLevelType(this.field_16432);
+		ChunkHolder.LevelType levelType2 = getLevelType(this.level);
+		boolean bl3 = levelType.isAfter(ChunkHolder.LevelType.TICKING);
+		boolean bl4 = levelType2.isAfter(ChunkHolder.LevelType.TICKING);
+		if (chunkStatus.isAfter(ChunkStatus.FULL) && !chunkStatus2.isAfter(ChunkStatus.FULL)) {
+			threadedAnvilChunkStorage.method_18720(this);
+		}
+
 		if (bl2) {
 			for (int i = bl ? chunkStatus.getIndex() + 1 : 0; i <= chunkStatus2.getIndex(); i++) {
 				this.getChunk((ChunkStatus)CHUNK_STATUSES.get(i), threadedAnvilChunkStorage);
@@ -307,10 +315,6 @@ public class ChunkHolder {
 			}
 		}
 
-		ChunkHolder.LevelType levelType = getLevelType(this.field_16432);
-		ChunkHolder.LevelType levelType2 = getLevelType(this.level);
-		boolean bl3 = levelType.isAfter(ChunkHolder.LevelType.TICKING);
-		boolean bl4 = levelType2.isAfter(ChunkHolder.LevelType.TICKING);
 		if (!bl3 && bl4) {
 			this.tickingFutureChunk = threadedAnvilChunkStorage.method_17235(this);
 			this.updateChunk(this.tickingFutureChunk);
@@ -364,11 +368,7 @@ public class ChunkHolder {
 	}
 
 	public interface PlayersWatchingChunkProvider {
-		default Stream<ServerPlayerEntity> getPlayersWatchingChunk(ChunkPos chunkPos, boolean bl) {
-			return this.getPlayersWatchingChunk(chunkPos, bl, false);
-		}
-
-		Stream<ServerPlayerEntity> getPlayersWatchingChunk(ChunkPos chunkPos, boolean bl, boolean bl2);
+		Stream<ServerPlayerEntity> getPlayersWatchingChunk(ChunkPos chunkPos, boolean bl);
 	}
 
 	public interface Unloaded {

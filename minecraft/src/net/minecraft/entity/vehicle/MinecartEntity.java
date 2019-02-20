@@ -6,8 +6,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
 public class MinecartEntity extends AbstractMinecartEntity {
-	public MinecartEntity(World world) {
-		super(EntityType.MINECART, world);
+	public MinecartEntity(EntityType<?> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public MinecartEntity(World world, double d, double e, double f) {

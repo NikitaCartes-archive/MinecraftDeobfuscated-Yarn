@@ -26,7 +26,7 @@ public class ExperienceOrbEntity extends Entity {
 	private int field_6160;
 
 	public ExperienceOrbEntity(World world, double d, double e, double f, int i) {
-		this(world);
+		this(EntityType.EXPERIENCE_ORB, world);
 		this.setPosition(d, e, f);
 		this.yaw = (float)(Math.random() * 360.0);
 		this.velocityX = (double)((float)(Math.random() * 0.2F - 0.1F) * 2.0F);
@@ -35,8 +35,8 @@ public class ExperienceOrbEntity extends Entity {
 		this.amount = i;
 	}
 
-	public ExperienceOrbEntity(World world) {
-		super(EntityType.EXPERIENCE_ORB, world);
+	public ExperienceOrbEntity(EntityType<? extends ExperienceOrbEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class ExperienceOrbEntity extends Entity {
 		double d = 8.0;
 		if (this.field_6160 < this.field_6165 - 20 + this.getEntityId() % 100) {
 			if (this.field_6162 == null || this.field_6162.squaredDistanceTo(this) > 64.0) {
-				this.field_6162 = this.world.getClosestPlayer(this, 8.0);
+				this.field_6162 = this.world.method_18460(this, 8.0);
 			}
 
 			this.field_6160 = this.field_6165;

@@ -23,7 +23,7 @@ public class MinecartSoundInstance extends MovingSoundInstance {
 	}
 
 	@Override
-	public void tick() {
+	public void method_16896() {
 		if (!this.minecart.invalid && this.player.hasVehicle() && this.player.getRiddenEntity() == this.minecart) {
 			float f = MathHelper.sqrt(this.minecart.velocityX * this.minecart.velocityX + this.minecart.velocityZ * this.minecart.velocityZ);
 			if ((double)f >= 0.01) {

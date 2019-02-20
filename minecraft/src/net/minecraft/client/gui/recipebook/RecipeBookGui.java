@@ -10,6 +10,7 @@ import java.util.Locale;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4068;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.GuiEventListener;
@@ -37,7 +38,7 @@ import net.minecraft.server.network.packet.RecipeBookDataC2SPacket;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class RecipeBookGui extends Drawable implements GuiEventListener, RecipeDisplayListener, RecipeGridAligner<Ingredient> {
+public class RecipeBookGui extends Drawable implements class_4068, GuiEventListener, RecipeDisplayListener, RecipeGridAligner<Ingredient> {
 	protected static final Identifier TEXTURE = new Identifier("textures/gui/recipe_book.png");
 	private int leftOffset;
 	private int parentWidth;
@@ -79,7 +80,7 @@ public class RecipeBookGui extends Drawable implements GuiEventListener, RecipeD
 		this.client.player.inventory.populateRecipeFinder(this.recipeFinder);
 		this.craftingContainer.populateRecipeFinder(this.recipeFinder);
 		String string = this.searchField != null ? this.searchField.getText() : "";
-		this.searchField = new TextFieldWidget(0, this.client.textRenderer, i + 25, j + 14, 80, 9 + 5);
+		this.searchField = new TextFieldWidget(this.client.textRenderer, i + 25, j + 14, 80, 9 + 5);
 		this.searchField.setMaxLength(50);
 		this.searchField.setHasBorder(false);
 		this.searchField.setVisible(true);
@@ -87,12 +88,12 @@ public class RecipeBookGui extends Drawable implements GuiEventListener, RecipeD
 		this.searchField.setText(string);
 		this.recipesArea.initialize(this.client, i, j);
 		this.recipesArea.setGui(this);
-		this.toggleCraftableButton = new ToggleButtonWidget(0, i + 110, j + 12, 26, 16, this.recipeBook.isFilteringCraftable(this.craftingContainer));
+		this.toggleCraftableButton = new ToggleButtonWidget(i + 110, j + 12, 26, 16, this.recipeBook.isFilteringCraftable(this.craftingContainer));
 		this.setBookButtonTexture();
 		this.tabButtons.clear();
 
 		for (RecipeBookGroup recipeBookGroup : ClientRecipeBook.getGroupsForContainer(this.craftingContainer)) {
-			this.tabButtons.add(new GroupButtonWidget(0, recipeBookGroup));
+			this.tabButtons.add(new GroupButtonWidget(recipeBookGroup));
 		}
 
 		if (this.currentTab != null) {
@@ -218,7 +219,8 @@ public class RecipeBookGui extends Drawable implements GuiEventListener, RecipeD
 		this.refreshResults(false);
 	}
 
-	public void draw(int i, int j, float f) {
+	@Override
+	public void method_18326(int i, int j, float f) {
 		if (this.isOpen()) {
 			GuiLighting.enableForItems();
 			GlStateManager.disableLighting();
@@ -229,14 +231,14 @@ public class RecipeBookGui extends Drawable implements GuiEventListener, RecipeD
 			int k = (this.parentWidth - 147) / 2 - this.leftOffset;
 			int l = (this.parentHeight - 166) / 2;
 			this.drawTexturedRect(k, l, 1, 1, 147, 166);
-			this.searchField.render(i, j, f);
+			this.searchField.method_18326(i, j, f);
 			GuiLighting.disable();
 
 			for (GroupButtonWidget groupButtonWidget : this.tabButtons) {
-				groupButtonWidget.render(i, j, f);
+				groupButtonWidget.method_18326(i, j, f);
 			}
 
-			this.toggleCraftableButton.render(i, j, f);
+			this.toggleCraftableButton.method_18326(i, j, f);
 			this.recipesArea.draw(k, l, i, j, f);
 			GlStateManager.popMatrix();
 		}

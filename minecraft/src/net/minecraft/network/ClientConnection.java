@@ -38,10 +38,11 @@ import net.minecraft.client.network.packet.DisconnectS2CPacket;
 import net.minecraft.network.encryption.PacketDecryptor;
 import net.minecraft.network.encryption.PacketEncryptor;
 import net.minecraft.network.listener.PacketListener;
+import net.minecraft.server.network.ServerLoginNetworkHandler;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Lazy;
-import net.minecraft.util.Tickable;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -225,8 +226,12 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 
 	public void tick() {
 		this.method_10751();
-		if (this.packetListener instanceof Tickable) {
-			((Tickable)this.packetListener).tick();
+		if (this.packetListener instanceof ServerLoginNetworkHandler) {
+			((ServerLoginNetworkHandler)this.packetListener).method_18785();
+		}
+
+		if (this.packetListener instanceof ServerPlayNetworkHandler) {
+			((ServerPlayNetworkHandler)this.packetListener).method_18784();
 		}
 
 		if (this.channel != null) {

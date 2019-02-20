@@ -31,7 +31,7 @@ public class RandomChanceLootCondition implements LootCondition {
 			jsonObject.addProperty("chance", randomChanceLootCondition.chance);
 		}
 
-		public RandomChanceLootCondition deserialize(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public RandomChanceLootCondition method_937(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			return new RandomChanceLootCondition(JsonHelper.getFloat(jsonObject, "chance"));
 		}
 	}

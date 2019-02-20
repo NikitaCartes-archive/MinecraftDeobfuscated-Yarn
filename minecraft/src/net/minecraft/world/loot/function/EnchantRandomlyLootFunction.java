@@ -96,7 +96,7 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 			}
 		}
 
-		public EnchantRandomlyLootFunction deserialize(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public EnchantRandomlyLootFunction method_490(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			List<Enchantment> list = Lists.<Enchantment>newArrayList();
 			if (jsonObject.has("enchantments")) {
 				for (JsonElement jsonElement : JsonHelper.getArray(jsonObject, "enchantments")) {

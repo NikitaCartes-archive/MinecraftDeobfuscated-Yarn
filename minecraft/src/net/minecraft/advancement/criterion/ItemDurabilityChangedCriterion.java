@@ -56,7 +56,7 @@ public class ItemDurabilityChangedCriterion implements Criterion<ItemDurabilityC
 		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public ItemDurabilityChangedCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public ItemDurabilityChangedCriterion.Conditions method_8962(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("item"));
 		NumberRange.Integer integer = NumberRange.Integer.fromJson(jsonObject.get("durability"));
 		NumberRange.Integer integer2 = NumberRange.Integer.fromJson(jsonObject.get("delta"));

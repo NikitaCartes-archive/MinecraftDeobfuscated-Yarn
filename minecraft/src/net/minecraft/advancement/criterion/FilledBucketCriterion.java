@@ -55,7 +55,7 @@ public class FilledBucketCriterion implements Criterion<FilledBucketCriterion.Co
 		this.field_9613.remove(playerAdvancementTracker);
 	}
 
-	public FilledBucketCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public FilledBucketCriterion.Conditions method_8931(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("item"));
 		return new FilledBucketCriterion.Conditions(itemPredicate);
 	}

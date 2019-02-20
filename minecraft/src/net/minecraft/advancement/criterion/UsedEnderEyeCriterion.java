@@ -54,7 +54,7 @@ public class UsedEnderEyeCriterion implements Criterion<UsedEnderEyeCriterion.Co
 		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public UsedEnderEyeCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public UsedEnderEyeCriterion.Conditions method_9156(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		NumberRange.Float float_ = NumberRange.Float.fromJson(jsonObject.get("distance"));
 		return new UsedEnderEyeCriterion.Conditions(float_);
 	}

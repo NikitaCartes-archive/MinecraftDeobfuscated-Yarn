@@ -55,7 +55,7 @@ public class RecipeUnlockedCriterion implements Criterion<RecipeUnlockedCriterio
 		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public RecipeUnlockedCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public RecipeUnlockedCriterion.Conditions method_9106(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "recipe"));
 		return new RecipeUnlockedCriterion.Conditions(identifier);
 	}

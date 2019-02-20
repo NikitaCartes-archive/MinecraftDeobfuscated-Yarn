@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.goal;
 
+import net.minecraft.class_4051;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.TameableEntity;
 
@@ -25,7 +26,7 @@ public class AttackWithOwnerGoal extends TrackTargetGoal {
 			} else {
 				this.attacking = livingEntity.getAttacking();
 				int i = livingEntity.getLastAttackTime();
-				return i != this.lastAttackTime && this.canTrack(this.attacking, false) && this.owner.method_6178(this.attacking, livingEntity);
+				return i != this.lastAttackTime && this.canTrack(this.attacking, class_4051.field_18092) && this.owner.method_6178(this.attacking, livingEntity);
 			}
 		}
 	}

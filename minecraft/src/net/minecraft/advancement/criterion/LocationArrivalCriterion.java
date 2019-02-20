@@ -59,7 +59,7 @@ public class LocationArrivalCriterion implements Criterion<LocationArrivalCriter
 		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public LocationArrivalCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public LocationArrivalCriterion.Conditions method_9026(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		LocationPredicate locationPredicate = LocationPredicate.deserialize(jsonObject);
 		return new LocationArrivalCriterion.Conditions(this.id, locationPredicate);
 	}

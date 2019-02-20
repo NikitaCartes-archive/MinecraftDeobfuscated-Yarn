@@ -6,71 +6,80 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4080;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
 @Environment(EnvType.CLIENT)
-public class SplashTextResourceLoader implements ResourceReloadListener {
+public class SplashTextResourceLoader extends class_4080<List<String>> {
 	private static final Identifier RESOURCE_ID = new Identifier("texts/splashes.txt");
 	private static final Random RANDOM = new Random();
 	private final List<String> splashTexts = Lists.<String>newArrayList();
 
-	@Override
-	public CompletableFuture<Void> apply(
-		ResourceReloadListener.Helper helper, ResourceManager resourceManager, Profiler profiler, Profiler profiler2, Executor executor, Executor executor2
-	) {
-		return CompletableFuture.supplyAsync(() -> {
-			List<String> list = Lists.<String>newArrayList();
+	protected List<String> method_18176(ResourceManager resourceManager, Profiler profiler) {
+		try {
+			Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(RESOURCE_ID);
+			Throwable var4 = null;
 
+			List var7;
 			try {
-				Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(RESOURCE_ID);
-				Throwable var2 = null;
+				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
+				Throwable var6 = null;
 
 				try {
-					BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
-
-					String string;
-					while ((string = bufferedReader.readLine()) != null) {
-						string = string.trim();
-						if (!string.isEmpty() && string.hashCode() != 125780783) {
-							list.add(string);
-						}
-					}
-				} catch (Throwable var13) {
-					var2 = var13;
-					throw var13;
+					var7 = (List)bufferedReader.lines().map(String::trim).filter(string -> string.hashCode() != 125780783).collect(Collectors.toList());
+				} catch (Throwable var32) {
+					var6 = var32;
+					throw var32;
 				} finally {
-					if (resource != null) {
-						if (var2 != null) {
+					if (bufferedReader != null) {
+						if (var6 != null) {
 							try {
-								resource.close();
-							} catch (Throwable var12) {
-								var2.addSuppressed(var12);
+								bufferedReader.close();
+							} catch (Throwable var31) {
+								var6.addSuppressed(var31);
 							}
 						} else {
-							resource.close();
+							bufferedReader.close();
 						}
 					}
 				}
-			} catch (IOException var15) {
+			} catch (Throwable var34) {
+				var4 = var34;
+				throw var34;
+			} finally {
+				if (resource != null) {
+					if (var4 != null) {
+						try {
+							resource.close();
+						} catch (Throwable var30) {
+							var4.addSuppressed(var30);
+						}
+					} else {
+						resource.close();
+					}
+				}
 			}
 
-			return list;
-		}, executor).thenCompose(helper::waitForAll).thenAcceptAsync(list -> {
-			this.splashTexts.clear();
-			this.splashTexts.addAll(list);
-		}, executor2);
+			return var7;
+		} catch (IOException var36) {
+			return Collections.emptyList();
+		}
+	}
+
+	protected void method_18175(List<String> list, ResourceManager resourceManager, Profiler profiler) {
+		this.splashTexts.clear();
+		this.splashTexts.addAll(list);
 	}
 
 	public String get() {

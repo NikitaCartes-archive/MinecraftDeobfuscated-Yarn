@@ -7,6 +7,7 @@ import java.nio.FloatBuffer;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4050;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
@@ -19,6 +20,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.AbstractScoreboardTeam;
 import net.minecraft.text.TextFormat;
 import net.minecraft.util.SystemUtil;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -318,11 +320,39 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	}
 
 	protected void method_4048(T livingEntity, double d, double e, double f) {
+		if (livingEntity.method_18376() == class_4050.field_18078) {
+			Direction direction = livingEntity.method_18401();
+			if (direction != null) {
+				float g = livingEntity.method_18381(class_4050.field_18076) - 0.1F;
+				GlStateManager.translatef((float)d - (float)direction.getOffsetX() * g, (float)e, (float)f - (float)direction.getOffsetZ() * g);
+				return;
+			}
+		}
+
 		GlStateManager.translatef((float)d, (float)e, (float)f);
 	}
 
+	private static float method_18656(Direction direction) {
+		switch (direction) {
+			case SOUTH:
+				return 90.0F;
+			case WEST:
+				return 0.0F;
+			case NORTH:
+				return 270.0F;
+			case EAST:
+				return 180.0F;
+			default:
+				return 0.0F;
+		}
+	}
+
 	protected void setupTransforms(T livingEntity, float f, float g, float h) {
-		GlStateManager.rotatef(180.0F - g, 0.0F, 1.0F, 0.0F);
+		class_4050 lv = livingEntity.method_18376();
+		if (lv != class_4050.field_18078) {
+			GlStateManager.rotatef(180.0F - g, 0.0F, 1.0F, 0.0F);
+		}
+
 		if (livingEntity.deathCounter > 0) {
 			float i = ((float)livingEntity.deathCounter + h - 1.0F) / 20.0F * 1.6F;
 			i = MathHelper.sqrt(i);
@@ -334,6 +364,11 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		} else if (livingEntity.isUsingRiptide()) {
 			GlStateManager.rotatef(-90.0F - livingEntity.pitch, 1.0F, 0.0F, 0.0F);
 			GlStateManager.rotatef(((float)livingEntity.age + h) * -75.0F, 0.0F, 1.0F, 0.0F);
+		} else if (lv == class_4050.field_18078) {
+			Direction direction = livingEntity.method_18401();
+			GlStateManager.rotatef(direction != null ? method_18656(direction) : g, 0.0F, 1.0F, 0.0F);
+			GlStateManager.rotatef(this.getLyingAngle(livingEntity), 0.0F, 0.0F, 1.0F);
+			GlStateManager.rotatef(270.0F, 0.0F, 1.0F, 0.0F);
 		} else if (livingEntity.hasCustomName() || livingEntity instanceof PlayerEntity) {
 			String string = TextFormat.stripFormatting(livingEntity.getName().getString());
 			if (string != null
@@ -375,7 +410,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	}
 
 	public void method_4041(T livingEntity, double d, double e, double f) {
-		if (this.shouldRenderName(livingEntity)) {
+		if (this.method_4055(livingEntity)) {
 			double g = livingEntity.squaredDistanceTo(this.renderManager.field_4686);
 			float h = livingEntity.isSneaking() ? 32.0F : 64.0F;
 			if (!(g >= (double)(h * h))) {
@@ -386,7 +421,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		}
 	}
 
-	protected boolean shouldRenderName(T livingEntity) {
+	protected boolean method_4055(T livingEntity) {
 		ClientPlayerEntity clientPlayerEntity = MinecraftClient.getInstance().player;
 		boolean bl = !livingEntity.canSeePlayer(clientPlayerEntity);
 		if (livingEntity != clientPlayerEntity) {

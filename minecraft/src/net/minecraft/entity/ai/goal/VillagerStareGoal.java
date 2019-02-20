@@ -25,7 +25,7 @@ public class VillagerStareGoal extends Goal {
 		} else if (this.owner.getRand().nextInt(400) != 0) {
 			return false;
 		} else {
-			List<VillagerEntity> list = this.owner.world.getVisibleEntities(VillagerEntity.class, this.owner.getBoundingBox().expand(6.0, 3.0, 6.0));
+			List<VillagerEntity> list = this.owner.world.method_18467(VillagerEntity.class, this.owner.getBoundingBox().expand(6.0, 3.0, 6.0));
 			double d = Double.MAX_VALUE;
 
 			for (VillagerEntity villagerEntity : list) {

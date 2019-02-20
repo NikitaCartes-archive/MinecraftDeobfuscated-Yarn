@@ -66,7 +66,7 @@ public class LeavesBlock extends Block {
 
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 			for (Direction direction : Direction.values()) {
-				pooledMutable.set(blockPos).setOffset(direction);
+				pooledMutable.method_10114(blockPos).method_10118(direction);
 				i = Math.min(i, getDistanceFromLog(iWorld.getBlockState(pooledMutable)) + 1);
 				if (i == 1) {
 					break;

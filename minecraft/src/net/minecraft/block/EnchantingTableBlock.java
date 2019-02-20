@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EnchantingTableBlockEntity;
 import net.minecraft.client.network.ClientDummyContainerProvider;
-import net.minecraft.container.ContainerWorldContext;
+import net.minecraft.container.BlockContext;
 import net.minecraft.container.EnchantingTableContainer;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.LivingEntity;
@@ -103,7 +103,7 @@ public class EnchantingTableBlock extends BlockWithEntity {
 		if (blockEntity instanceof EnchantingTableBlockEntity) {
 			TextComponent textComponent = ((Nameable)blockEntity).getDisplayName();
 			return new ClientDummyContainerProvider(
-				(i, playerInventory, playerEntity) -> new EnchantingTableContainer(i, playerInventory, ContainerWorldContext.create(world, blockPos)), textComponent
+				(i, playerInventory, playerEntity) -> new EnchantingTableContainer(i, playerInventory, BlockContext.create(world, blockPos)), textComponent
 			);
 		} else {
 			return null;

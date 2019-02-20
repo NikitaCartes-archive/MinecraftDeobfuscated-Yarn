@@ -75,7 +75,7 @@ public class IntArrayTag extends AbstractListTag<IntTag> {
 		return stringBuilder.append(']').toString();
 	}
 
-	public IntArrayTag copy() {
+	public IntArrayTag method_10591() {
 		int[] is = new int[this.value.length];
 		System.arraycopy(this.value, 0, is, 0, this.value.length);
 		return new IntArrayTag(is);

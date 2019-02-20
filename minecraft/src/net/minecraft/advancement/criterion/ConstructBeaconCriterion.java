@@ -55,7 +55,7 @@ public class ConstructBeaconCriterion implements Criterion<ConstructBeaconCriter
 		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public ConstructBeaconCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public ConstructBeaconCriterion.Conditions method_8811(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		NumberRange.Integer integer = NumberRange.Integer.fromJson(jsonObject.get("level"));
 		return new ConstructBeaconCriterion.Conditions(integer);
 	}

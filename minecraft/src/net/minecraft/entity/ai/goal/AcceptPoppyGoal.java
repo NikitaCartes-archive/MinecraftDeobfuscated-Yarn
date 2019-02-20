@@ -22,7 +22,7 @@ public class AcceptPoppyGoal extends Goal {
 		} else if (!this.owner.world.isDaylight()) {
 			return false;
 		} else {
-			List<IronGolemEntity> list = this.owner.world.getVisibleEntities(IronGolemEntity.class, this.owner.getBoundingBox().expand(6.0, 2.0, 6.0));
+			List<IronGolemEntity> list = this.owner.world.method_18467(IronGolemEntity.class, this.owner.getBoundingBox().expand(6.0, 2.0, 6.0));
 			if (list.isEmpty()) {
 				return false;
 			} else {

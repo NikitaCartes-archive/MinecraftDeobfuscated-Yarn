@@ -135,7 +135,7 @@ public class ChunkRegion implements IWorld {
 
 	@Nullable
 	@Override
-	public PlayerEntity getClosestPlayer(double d, double e, double f, double g, Predicate<Entity> predicate) {
+	public PlayerEntity method_8604(double d, double e, double f, double g, Predicate<Entity> predicate) {
 		return null;
 	}
 
@@ -356,12 +356,22 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public boolean test(BlockPos blockPos, Predicate<BlockState> predicate) {
+	public boolean testBlockState(BlockPos blockPos, Predicate<BlockState> predicate) {
 		return predicate.test(this.getBlockState(blockPos));
 	}
 
 	@Override
-	public <T extends Entity> List<T> getEntities(Class<? extends T> class_, BoundingBox boundingBox, @Nullable Predicate<? super T> predicate) {
+	public <T extends Entity> List<T> method_8390(Class<? extends T> class_, BoundingBox boundingBox, @Nullable Predicate<? super T> predicate) {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public List<Entity> getEntities(@Nullable Entity entity, BoundingBox boundingBox, @Nullable Predicate<? super Entity> predicate) {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public List<PlayerEntity> method_18456() {
 		return Collections.emptyList();
 	}
 

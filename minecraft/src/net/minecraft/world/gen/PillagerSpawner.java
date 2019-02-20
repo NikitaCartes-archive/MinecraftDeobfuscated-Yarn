@@ -34,11 +34,11 @@ public class PillagerSpawner {
 				} else if (random.nextInt(5) != 0) {
 					return 0;
 				} else {
-					int i = world.players.size();
+					int i = world.method_18456().size();
 					if (i < 1) {
 						return 0;
 					} else {
-						PlayerEntity playerEntity = (PlayerEntity)world.players.get(random.nextInt(i));
+						PlayerEntity playerEntity = (PlayerEntity)world.method_18456().get(random.nextInt(i));
 						if (playerEntity.isSpectator()) {
 							return 0;
 						} else {

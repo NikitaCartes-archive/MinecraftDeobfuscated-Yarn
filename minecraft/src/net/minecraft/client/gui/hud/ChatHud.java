@@ -10,8 +10,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.ingame.ChatScreen;
+import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.client.util.TextComponentUtil;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TextComponent;
 import net.minecraft.util.math.MathHelper;
@@ -33,7 +33,7 @@ public class ChatHud extends Drawable {
 	}
 
 	public void draw(int i) {
-		if (this.client.options.chatVisibility != PlayerEntity.ChatVisibility.HIDDEN) {
+		if (this.client.options.chatVisibility != ChatVisibility.HIDDEN) {
 			int j = this.getVisibleLineCount();
 			int k = this.visibleMessages.size();
 			double d = this.client.options.chatOpacity * 0.9F + 0.1F;

@@ -13,8 +13,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class ThrownExperienceBottleEntity extends class_3857 {
-	public ThrownExperienceBottleEntity(World world) {
-		super(EntityType.EXPERIENCE_BOTTLE, world);
+	public ThrownExperienceBottleEntity(EntityType<? extends ThrownExperienceBottleEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public ThrownExperienceBottleEntity(World world, LivingEntity livingEntity) {

@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.command.arguments.ParticleArgumentType;
@@ -51,15 +53,15 @@ public class AreaEffectCloudEntity extends Entity {
 	private LivingEntity owner;
 	private UUID ownerUuid;
 
-	public AreaEffectCloudEntity(World world) {
-		super(EntityType.AREA_EFFECT_CLOUD, world);
+	public AreaEffectCloudEntity(EntityType<? extends AreaEffectCloudEntity> entityType, World world) {
+		super(entityType, world);
 		this.noClip = true;
 		this.fireImmune = true;
 		this.setRadius(3.0F);
 	}
 
 	public AreaEffectCloudEntity(World world, double d, double e, double f) {
-		this(world);
+		this(EntityType.AREA_EFFECT_CLOUD, world);
 		this.setPosition(d, e, f);
 	}
 
@@ -72,14 +74,18 @@ public class AreaEffectCloudEntity extends Entity {
 	}
 
 	public void setRadius(float f) {
-		double d = this.x;
-		double e = this.y;
-		double g = this.z;
-		this.setSize(f * 2.0F, 0.5F);
-		this.setPosition(d, e, g);
 		if (!this.world.isClient) {
 			this.getDataTracker().set(RADIUS, f);
 		}
+	}
+
+	@Override
+	public void method_18382() {
+		double d = this.x;
+		double e = this.y;
+		double f = this.z;
+		super.method_18382();
+		this.setPosition(d, e, f);
 	}
 
 	public float getRadius() {
@@ -265,7 +271,7 @@ public class AreaEffectCloudEntity extends Entity {
 				if (list.isEmpty()) {
 					this.affectedEntities.clear();
 				} else {
-					List<LivingEntity> list2 = this.world.getVisibleEntities(LivingEntity.class, this.getBoundingBox());
+					List<LivingEntity> list2 = this.world.method_18467(LivingEntity.class, this.getBoundingBox());
 					if (!list2.isEmpty()) {
 						for (LivingEntity livingEntity : list2) {
 							if (!this.affectedEntities.containsKey(livingEntity) && livingEntity.method_6086()) {
@@ -415,7 +421,7 @@ public class AreaEffectCloudEntity extends Entity {
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
 		if (RADIUS.equals(trackedData)) {
-			this.setRadius(this.getRadius());
+			this.method_18382();
 		}
 
 		super.onTrackedDataSet(trackedData);
@@ -429,5 +435,10 @@ public class AreaEffectCloudEntity extends Entity {
 	@Override
 	public Packet<?> createSpawnPacket() {
 		return new EntitySpawnS2CPacket(this);
+	}
+
+	@Override
+	public class_4048 method_18377(class_4050 arg) {
+		return class_4048.method_18384(this.getRadius() * 2.0F, 0.5F);
 	}
 }

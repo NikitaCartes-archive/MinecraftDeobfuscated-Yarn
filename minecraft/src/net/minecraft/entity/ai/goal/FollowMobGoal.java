@@ -35,7 +35,7 @@ public class FollowMobGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		List<MobEntity> list = this.field_6432.world.getEntities(MobEntity.class, this.field_6432.getBoundingBox().expand((double)this.field_6435), this.field_6436);
+		List<MobEntity> list = this.field_6432.world.method_8390(MobEntity.class, this.field_6432.getBoundingBox().expand((double)this.field_6435), this.field_6436);
 		if (!list.isEmpty()) {
 			for (MobEntity mobEntity : list) {
 				if (!mobEntity.isInvisible()) {

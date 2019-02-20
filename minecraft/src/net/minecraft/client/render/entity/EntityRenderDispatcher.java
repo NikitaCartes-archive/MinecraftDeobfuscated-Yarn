@@ -7,9 +7,6 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BedBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -33,6 +30,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.PrimedTntEntity;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
+import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.decoration.EnderCrystalEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
@@ -71,7 +69,6 @@ import net.minecraft.entity.mob.WitherSkeletonEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.mob.ZombieHorseEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
-import net.minecraft.entity.parts.EntityPart;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.passive.ChickenEntity;
@@ -125,7 +122,6 @@ import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -298,11 +294,9 @@ public class EntityRenderDispatcher {
 		this.field_4678 = entity2;
 		this.fontRenderer = textRenderer;
 		if (entity instanceof LivingEntity && ((LivingEntity)entity).isSleeping()) {
-			BlockState blockState = world.getBlockState(new BlockPos(entity));
-			Block block = blockState.getBlock();
-			if (block instanceof BedBlock) {
-				int i = ((Direction)blockState.get(BedBlock.field_11177)).getHorizontal();
-				this.field_4679 = (float)(i * 90 + 180);
+			Direction direction = ((LivingEntity)entity).method_18401();
+			if (direction != null) {
+				this.field_4679 = direction.getOpposite().asRotation();
 				this.field_4677 = 0.0F;
 			}
 		} else {
@@ -459,13 +453,12 @@ public class EntityRenderDispatcher {
 			1.0F,
 			1.0F
 		);
-		EntityPart[] entityParts = entity.getParts();
-		if (entityParts != null) {
-			for (EntityPart entityPart : entityParts) {
-				double j = (entityPart.x - entityPart.prevX) * (double)h;
-				double k = (entityPart.y - entityPart.prevY) * (double)h;
-				double l = (entityPart.z - entityPart.prevZ) * (double)h;
-				BoundingBox boundingBox2 = entityPart.getBoundingBox();
+		if (entity instanceof EnderDragonEntity) {
+			for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).method_5690()) {
+				double j = (enderDragonPart.x - enderDragonPart.prevX) * (double)h;
+				double k = (enderDragonPart.y - enderDragonPart.prevY) * (double)h;
+				double l = (enderDragonPart.z - enderDragonPart.prevZ) * (double)h;
+				BoundingBox boundingBox2 = enderDragonPart.getBoundingBox();
 				WorldRenderer.drawBoxOutline(
 					boundingBox2.minX - this.renderPosX + j,
 					boundingBox2.minY - this.renderPosY + k,

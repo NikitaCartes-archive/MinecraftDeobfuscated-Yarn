@@ -51,29 +51,27 @@ public class NewLevelPresetsScreen extends Screen {
 		this.field_2522 = I18n.translate("createWorld.customize.presets.title");
 		this.field_2520 = I18n.translate("createWorld.customize.presets.share");
 		this.field_2524 = I18n.translate("createWorld.customize.presets.list");
-		this.field_2523 = new TextFieldWidget(2, this.fontRenderer, 50, 40, this.width - 100, 20);
+		this.field_2523 = new TextFieldWidget(this.fontRenderer, 50, 40, this.width - 100, 20);
 		this.field_2521 = new NewLevelPresetsScreen.class_432();
 		this.listeners.add(this.field_2521);
 		this.field_2523.setMaxLength(1230);
 		this.field_2523.setText(this.field_2519.method_2138());
 		this.listeners.add(this.field_2523);
-		this.field_2525 = this.addButton(
-			new ButtonWidget(0, this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("createWorld.customize.presets.select")) {
-				@Override
-				public void onPressed(double d, double e) {
-					NewLevelPresetsScreen.this.field_2519.method_2139(NewLevelPresetsScreen.this.field_2523.getText());
-					NewLevelPresetsScreen.this.client.openScreen(NewLevelPresetsScreen.this.field_2519);
-				}
+		this.field_2525 = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("createWorld.customize.presets.select")) {
+			@Override
+			public void onPressed(double d, double e) {
+				NewLevelPresetsScreen.this.field_2519.method_2139(NewLevelPresetsScreen.this.field_2523.getText());
+				NewLevelPresetsScreen.this.client.openScreen(NewLevelPresetsScreen.this.field_2519);
 			}
-		);
-		this.addButton(new ButtonWidget(1, this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel")) {
+		});
+		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel")) {
 			@Override
 			public void onPressed(double d, double e) {
 				NewLevelPresetsScreen.this.client.openScreen(NewLevelPresetsScreen.this.field_2519);
 			}
 		});
 		this.method_2191();
-		this.setFocused(this.field_2521);
+		this.method_1967(this.field_2521);
 	}
 
 	@Override
@@ -94,14 +92,14 @@ public class NewLevelPresetsScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		this.drawBackground();
-		this.field_2521.draw(i, j, f);
+		this.field_2521.method_18326(i, j, f);
 		this.drawStringCentered(this.fontRenderer, this.field_2522, this.width / 2, 8, 16777215);
 		this.drawString(this.fontRenderer, this.field_2520, 50, 30, 10526880);
 		this.drawString(this.fontRenderer, this.field_2524, 50, 70, 10526880);
-		this.field_2523.render(i, j, f);
-		super.draw(i, j, f);
+		this.field_2523.method_18326(i, j, f);
+		super.method_18326(i, j, f);
 	}
 
 	@Override

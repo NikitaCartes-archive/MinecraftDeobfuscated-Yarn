@@ -28,8 +28,8 @@ public class ArrowEntity extends ProjectileEntity {
 	private final Set<StatusEffectInstance> effects = Sets.<StatusEffectInstance>newHashSet();
 	private boolean field_7596;
 
-	public ArrowEntity(World world) {
-		super(EntityType.ARROW, world);
+	public ArrowEntity(EntityType<? extends ArrowEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public ArrowEntity(World world, double d, double e, double f) {

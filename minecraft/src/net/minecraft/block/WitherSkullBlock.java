@@ -7,6 +7,7 @@ import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.pattern.BlockPatternBuilder;
 import net.minecraft.block.pattern.CachedBlockPosition;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.item.ItemStack;
@@ -52,7 +53,7 @@ public class WitherSkullBlock extends SkullBlock {
 					}
 
 					BlockPos blockPos2 = result.translate(1, 0, 0).getBlockPos();
-					WitherEntity witherEntity = new WitherEntity(world);
+					WitherEntity witherEntity = EntityType.WITHER.create(world);
 					BlockPos blockPos3 = result.translate(1, 2, 0).getBlockPos();
 					witherEntity.setPositionAndAngles(
 						(double)blockPos3.getX() + 0.5,
@@ -64,7 +65,7 @@ public class WitherSkullBlock extends SkullBlock {
 					witherEntity.field_6283 = result.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F;
 					witherEntity.method_6885();
 
-					for (ServerPlayerEntity serverPlayerEntity : world.getVisibleEntities(ServerPlayerEntity.class, witherEntity.getBoundingBox().expand(50.0))) {
+					for (ServerPlayerEntity serverPlayerEntity : world.method_18467(ServerPlayerEntity.class, witherEntity.getBoundingBox().expand(50.0))) {
 						Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, witherEntity);
 					}
 

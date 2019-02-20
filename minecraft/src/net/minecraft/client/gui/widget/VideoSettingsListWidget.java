@@ -1,40 +1,30 @@
 package net.minecraft.client.gui.widget;
 
+import com.google.common.collect.ImmutableList;
+import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4069;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.options.GameOption;
 import net.minecraft.client.options.GameOptions;
 
 @Environment(EnvType.CLIENT)
 public class VideoSettingsListWidget extends EntryListWidget<VideoSettingsListWidget.class_354> {
-	public VideoSettingsListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m, GameOptions.Option... options) {
+	public VideoSettingsListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m, GameOption... gameOptions) {
 		super(minecraftClient, i, j, k, l, m);
 		this.field_2173 = false;
-		this.addEntry(new VideoSettingsListWidget.class_354(i, GameOptions.Option.FULLSCREEN_RESOLUTION));
+		this.addEntry(new VideoSettingsListWidget.class_354(minecraftClient.options, i, GameOption.FULLSCREEN_RESOLUTION));
 
-		for (int n = 0; n < options.length; n += 2) {
-			GameOptions.Option option = options[n];
-			GameOptions.Option option2 = n < options.length - 1 ? options[n + 1] : null;
-			this.addEntry(new VideoSettingsListWidget.class_354(i, option, option2));
-		}
-	}
-
-	@Nullable
-	private static ButtonWidget method_1914(MinecraftClient minecraftClient, int i, int j, int k, @Nullable GameOptions.Option option) {
-		if (option == null) {
-			return null;
-		} else {
-			int l = option.getId();
-			return (ButtonWidget)(option.isSlider()
-				? new GameOptionSliderWidget(minecraftClient, l, i, j, k, 20, option)
-				: new OptionButtonWidget(l, i, j, k, 20, option, minecraftClient.options.getTranslatedName(option)) {
-					@Override
-					public void onPressed(double d, double e) {
-						minecraftClient.options.setInteger(option, 1);
-						this.setText(minecraftClient.options.getTranslatedName(GameOptions.Option.byId(this.id)));
-					}
-				});
+		for (int n = 0; n < gameOptions.length; n += 2) {
+			GameOption gameOption = gameOptions[n];
+			if (n < gameOptions.length - 1) {
+				this.addEntry(new VideoSettingsListWidget.class_354(minecraftClient.options, i, gameOption, gameOptions[n + 1]));
+			} else {
+				this.addEntry(new VideoSettingsListWidget.class_354(minecraftClient.options, i, gameOption));
+			}
 		}
 	}
 
@@ -49,51 +39,55 @@ public class VideoSettingsListWidget extends EntryListWidget<VideoSettingsListWi
 	}
 
 	@Environment(EnvType.CLIENT)
-	public final class class_354 extends EntryListWidget.Entry<VideoSettingsListWidget.class_354> {
-		@Nullable
-		private final ButtonWidget field_2149;
-		@Nullable
-		private final ButtonWidget field_2150;
+	public static class class_354 extends EntryListWidget.Entry<VideoSettingsListWidget.class_354> implements class_4069 {
+		private boolean field_18212;
+		private GuiEventListener field_18213;
+		private List<ButtonWidget> field_18214;
 
-		public class_354(@Nullable ButtonWidget buttonWidget, @Nullable ButtonWidget buttonWidget2) {
-			this.field_2149 = buttonWidget;
-			this.field_2150 = buttonWidget2;
+		private class_354(List<ButtonWidget> list) {
+			this.field_18214 = list;
 		}
 
-		public class_354(int i, GameOptions.Option option) {
-			this(VideoSettingsListWidget.method_1914(VideoSettingsListWidget.this.client, i / 2 - 155, 0, 310, option), null);
+		public class_354(GameOptions gameOptions, int i, GameOption gameOption) {
+			this(ImmutableList.of(gameOption.method_18520(gameOptions, i / 2 - 155, 0, 310)));
 		}
 
-		public class_354(int i, GameOptions.Option option, @Nullable GameOptions.Option option2) {
-			this(
-				VideoSettingsListWidget.method_1914(VideoSettingsListWidget.this.client, i / 2 - 155, 0, 150, option),
-				VideoSettingsListWidget.method_1914(VideoSettingsListWidget.this.client, i / 2 - 155 + 160, 0, 150, option2)
-			);
+		public class_354(GameOptions gameOptions, int i, GameOption gameOption, GameOption gameOption2) {
+			this(ImmutableList.of(gameOption.method_18520(gameOptions, i / 2 - 155, 0, 150), gameOption2.method_18520(gameOptions, i / 2 - 155 + 160, 0, 150)));
 		}
 
 		@Override
 		public void draw(int i, int j, int k, int l, boolean bl, float f) {
-			if (this.field_2149 != null) {
-				this.field_2149.y = this.getY();
-				this.field_2149.render(k, l, f);
-			}
-
-			if (this.field_2150 != null) {
-				this.field_2150.y = this.getY();
-				this.field_2150.render(k, l, f);
-			}
+			this.field_18214.forEach(buttonWidget -> {
+				buttonWidget.y = this.getY();
+				buttonWidget.method_18326(k, l, f);
+			});
 		}
 
 		@Override
-		public boolean mouseClicked(double d, double e, int i) {
-			return this.field_2149.mouseClicked(d, e, i) ? true : this.field_2150 != null && this.field_2150.mouseClicked(d, e, i);
+		public List<? extends GuiEventListener> method_1968() {
+			return this.field_18214;
 		}
 
 		@Override
-		public boolean mouseReleased(double d, double e, int i) {
-			boolean bl = this.field_2149 != null && this.field_2149.mouseReleased(d, e, i);
-			boolean bl2 = this.field_2150 != null && this.field_2150.mouseReleased(d, e, i);
-			return bl || bl2;
+		public boolean method_1970() {
+			return this.field_18212;
+		}
+
+		@Override
+		public void method_1966(boolean bl) {
+			this.field_18212 = bl;
+		}
+
+		@Override
+		public void method_1967(@Nullable GuiEventListener guiEventListener) {
+			this.field_18213 = guiEventListener;
+		}
+
+		@Nullable
+		@Override
+		public GuiEventListener getFocused() {
+			return this.field_18213;
 		}
 
 		@Override

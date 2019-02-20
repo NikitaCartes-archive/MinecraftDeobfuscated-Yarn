@@ -128,7 +128,7 @@ public class Raid {
 	private void updateBarToPlayers() {
 		Set<ServerPlayerEntity> set = Sets.<ServerPlayerEntity>newHashSet();
 
-		for (ServerPlayerEntity serverPlayerEntity : this.world.getPlayers(ServerPlayerEntity.class, this.isInRaidDistance())) {
+		for (ServerPlayerEntity serverPlayerEntity : ((ServerWorld)this.world).method_18766(this.isInRaidDistance())) {
 			this.bar.addPlayer(serverPlayerEntity);
 			set.add(serverPlayerEntity);
 		}
@@ -315,7 +315,7 @@ public class Raid {
 			float f = 13.0F;
 			int i = 64;
 
-			for (PlayerEntity playerEntity : serverWorld.players) {
+			for (PlayerEntity playerEntity : serverWorld.method_18456()) {
 				Vec3d vec3d = new Vec3d(playerEntity.x, playerEntity.y, playerEntity.z);
 				Vec3d vec3d2 = new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 				float g = MathHelper.sqrt((vec3d2.x - vec3d.x) * (vec3d2.x - vec3d.x) + (vec3d2.z - vec3d.z) * (vec3d2.z - vec3d.z));

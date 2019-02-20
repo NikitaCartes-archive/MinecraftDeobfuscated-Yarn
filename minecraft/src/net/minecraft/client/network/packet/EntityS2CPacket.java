@@ -8,13 +8,14 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class EntityS2CPacket implements Packet<ClientPlayPacketListener> {
 	protected int id;
-	protected int deltaX;
-	protected int deltaY;
-	protected int deltaZ;
+	protected short deltaX;
+	protected short deltaY;
+	protected short deltaZ;
 	protected byte yaw;
 	protected byte pitch;
 	protected boolean onGround;
@@ -22,6 +23,10 @@ public class EntityS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	public static long method_18047(double d) {
 		return MathHelper.lfloor(d * 4096.0);
+	}
+
+	public static Vec3d method_18695(long l, long m, long n) {
+		return new Vec3d((double)l, (double)m, (double)n).multiply(2.4414062E-4F);
 	}
 
 	public EntityS2CPacket() {
@@ -55,17 +60,17 @@ public class EntityS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int getDeltaXShort() {
+	public short getDeltaXShort() {
 		return this.deltaX;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int getDeltaYShort() {
+	public short getDeltaYShort() {
 		return this.deltaY;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int getDeltaZShort() {
+	public short getDeltaZShort() {
 		return this.deltaZ;
 	}
 
@@ -93,11 +98,11 @@ public class EntityS2CPacket implements Packet<ClientPlayPacketListener> {
 		public MoveRelative() {
 		}
 
-		public MoveRelative(int i, long l, long m, long n, boolean bl) {
+		public MoveRelative(int i, short s, short t, short u, boolean bl) {
 			super(i);
-			this.deltaX = (int)l;
-			this.deltaY = (int)m;
-			this.deltaZ = (int)n;
+			this.deltaX = s;
+			this.deltaY = t;
+			this.deltaZ = u;
 			this.onGround = bl;
 		}
 
@@ -155,11 +160,11 @@ public class EntityS2CPacket implements Packet<ClientPlayPacketListener> {
 			this.rotate = true;
 		}
 
-		public RotateAndMoveRelative(int i, long l, long m, long n, byte b, byte c, boolean bl) {
+		public RotateAndMoveRelative(int i, short s, short t, short u, byte b, byte c, boolean bl) {
 			super(i);
-			this.deltaX = (int)l;
-			this.deltaY = (int)m;
-			this.deltaZ = (int)n;
+			this.deltaX = s;
+			this.deltaY = t;
+			this.deltaZ = u;
 			this.yaw = b;
 			this.pitch = c;
 			this.onGround = bl;

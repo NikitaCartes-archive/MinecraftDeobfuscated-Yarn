@@ -296,7 +296,7 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	private static boolean hasOcelotOnTop(IWorld iWorld, BlockPos blockPos) {
-		List<CatEntity> list = iWorld.getVisibleEntities(
+		List<CatEntity> list = iWorld.method_18467(
 			CatEntity.class,
 			new BoundingBox(
 				(double)blockPos.getX(),

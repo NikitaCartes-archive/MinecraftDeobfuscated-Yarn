@@ -51,7 +51,7 @@ public abstract class ConditionalLootFunction implements LootFunction {
 	public abstract static class Builder<T extends ConditionalLootFunction.Builder<T>> implements LootFunction.Builder, ConditionConsumerBuilder<T> {
 		private final List<LootCondition> conditionList = Lists.<LootCondition>newArrayList();
 
-		public T withCondition(LootCondition.Builder builder) {
+		public T method_524(LootCondition.Builder builder) {
 			this.conditionList.add(builder.build());
 			return this.build();
 		}
@@ -78,7 +78,7 @@ public abstract class ConditionalLootFunction implements LootFunction {
 			}
 		}
 
-		public final T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public final T method_528(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			LootCondition[] lootConditions = JsonHelper.deserialize(jsonObject, "conditions", new LootCondition[0], jsonDeserializationContext, LootCondition[].class);
 			return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
 		}
@@ -93,7 +93,7 @@ public abstract class ConditionalLootFunction implements LootFunction {
 			this.joiner = function;
 		}
 
-		protected ConditionalLootFunction.Joiner create() {
+		protected ConditionalLootFunction.Joiner method_527() {
 			return this;
 		}
 

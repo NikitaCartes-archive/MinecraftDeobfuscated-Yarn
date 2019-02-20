@@ -56,7 +56,7 @@ public class EnchantedItemCriterion implements Criterion<EnchantedItemCriterion.
 		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public EnchantedItemCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public EnchantedItemCriterion.Conditions method_8872(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("item"));
 		NumberRange.Integer integer = NumberRange.Integer.fromJson(jsonObject.get("levels"));
 		return new EnchantedItemCriterion.Conditions(itemPredicate, integer);

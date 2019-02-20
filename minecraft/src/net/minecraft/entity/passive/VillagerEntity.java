@@ -13,6 +13,7 @@ import net.minecraft.class_1365;
 import net.minecraft.class_1370;
 import net.minecraft.class_1390;
 import net.minecraft.class_1394;
+import net.minecraft.class_4051;
 import net.minecraft.datafixers.NbtOps;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -29,8 +30,8 @@ import net.minecraft.entity.ai.goal.OpenDoorGoal;
 import net.minecraft.entity.ai.goal.StayInsideGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.VillagerBreedGoal;
+import net.minecraft.entity.ai.goal.VillagerBreedingGoal;
 import net.minecraft.entity.ai.goal.VillagerFarmGoal;
-import net.minecraft.entity.ai.goal.VillagerInteractionGoal;
 import net.minecraft.entity.ai.goal.VillagerStareGoal;
 import net.minecraft.entity.ai.pathing.EntityMobNavigation;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -45,6 +46,7 @@ import net.minecraft.entity.mob.IllusionerEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.mob.PillagerEntity;
+import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.entity.mob.VindicatorEntity;
 import net.minecraft.entity.mob.WitchEntity;
@@ -85,6 +87,7 @@ import net.minecraft.world.World;
 	)})
 public class VillagerEntity extends AbstractTraderEntity implements RaidVictim, VillagerDataContainer {
 	private static final TrackedData<VillagerData> VILLAGER_DATA = DataTracker.registerData(VillagerEntity.class, TrackedDataHandlerRegistry.VILLAGER_DATA);
+	private static final class_4051 field_18133 = new class_4051().method_18418(16.0);
 	private int findVillageCountdown;
 	private int unlockTradeCountdown;
 	private boolean unlockTrade;
@@ -96,12 +99,12 @@ public class VillagerEntity extends AbstractTraderEntity implements RaidVictim, 
 	private boolean recentlyRescued;
 	private boolean goalsSet;
 
-	public VillagerEntity(World world) {
-		this(world, VillagerType.field_17073);
+	public VillagerEntity(EntityType<? extends VillagerEntity> entityType, World world) {
+		this(entityType, world, VillagerType.field_17073);
 	}
 
-	public VillagerEntity(World world, VillagerType villagerType) {
-		super(EntityType.VILLAGER, world);
+	public VillagerEntity(EntityType<? extends VillagerEntity> entityType, World world, VillagerType villagerType) {
+		super(entityType, world);
 		((EntityMobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
 		this.setCanPickUpLoot(true);
 		this.setVillagerData(this.getVillagerData().withProfession(Registry.VILLAGER_PROFESSION.getRandom(this.random)));
@@ -116,6 +119,7 @@ public class VillagerEntity extends AbstractTraderEntity implements RaidVictim, 
 		this.goalSelector.add(1, new FleeEntityGoal(this, VexEntity.class, 8.0F, 0.6, 0.6));
 		this.goalSelector.add(1, new FleeEntityGoal(this, PillagerEntity.class, 15.0F, 0.6, 0.6));
 		this.goalSelector.add(1, new FleeEntityGoal(this, IllusionerEntity.class, 12.0F, 0.6, 0.6));
+		this.goalSelector.add(1, new FleeEntityGoal(this, RavagerEntity.class, 12.0F, 0.8, 0.8));
 		this.goalSelector.add(1, new class_1390(this));
 		this.goalSelector.add(1, new class_1364(this));
 		this.goalSelector.add(2, new class_1365(this));
@@ -125,7 +129,7 @@ public class VillagerEntity extends AbstractTraderEntity implements RaidVictim, 
 		this.goalSelector.add(6, new VillagerBreedGoal(this));
 		this.goalSelector.add(7, new AcceptPoppyGoal(this));
 		this.goalSelector.add(9, new class_1358(this, PlayerEntity.class, 3.0F, 1.0F));
-		this.goalSelector.add(9, new VillagerInteractionGoal(this));
+		this.goalSelector.add(9, new VillagerBreedingGoal(this));
 		this.goalSelector.add(9, new class_1394(this, 0.6));
 		this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
 	}
@@ -164,10 +168,10 @@ public class VillagerEntity extends AbstractTraderEntity implements RaidVictim, 
 			this.findVillageCountdown = 70 + this.random.nextInt(50);
 			this.village = this.world.getVillageManager().getNearestVillage(blockPos, 32);
 			if (this.village == null) {
-				this.setAiRangeUnlimited();
+				this.method_18409();
 			} else {
 				BlockPos blockPos2 = this.village.getCenter();
-				this.setAiHome(blockPos2, this.village.getRadius());
+				this.method_18408(blockPos2, this.village.getRadius());
 				if (this.recentlyRescued) {
 					this.recentlyRescued = false;
 					this.village.changeAllRatings(5);
@@ -362,7 +366,7 @@ public class VillagerEntity extends AbstractTraderEntity implements RaidVictim, 
 					this.village.onVillagerDeath();
 				}
 			} else {
-				PlayerEntity playerEntity = this.world.getClosestPlayer(this, 16.0);
+				PlayerEntity playerEntity = this.world.method_18462(field_18133, this);
 				if (playerEntity != null) {
 					this.village.onVillagerDeath();
 				}
@@ -476,7 +480,7 @@ public class VillagerEntity extends AbstractTraderEntity implements RaidVictim, 
 		this.recentlyRescued = true;
 	}
 
-	public VillagerEntity createChild(PassiveEntity passiveEntity) {
+	public VillagerEntity method_7225(PassiveEntity passiveEntity) {
 		double d = this.random.nextDouble();
 		VillagerType villagerType;
 		if (d < 0.5) {
@@ -487,7 +491,7 @@ public class VillagerEntity extends AbstractTraderEntity implements RaidVictim, 
 			villagerType = ((VillagerEntity)passiveEntity).getVillagerData().getType();
 		}
 
-		VillagerEntity villagerEntity = new VillagerEntity(this.world, villagerType);
+		VillagerEntity villagerEntity = new VillagerEntity(EntityType.VILLAGER, this.world, villagerType);
 		villagerEntity.prepareEntityData(this.world, this.world.getLocalDifficulty(new BlockPos(villagerEntity)), SpawnType.field_16466, null, null);
 		return villagerEntity;
 	}
@@ -495,7 +499,7 @@ public class VillagerEntity extends AbstractTraderEntity implements RaidVictim, 
 	@Override
 	public void onStruckByLightning(LightningEntity lightningEntity) {
 		if (!this.world.isClient && !this.invalid) {
-			WitchEntity witchEntity = new WitchEntity(this.world);
+			WitchEntity witchEntity = EntityType.WITCH.create(this.world);
 			witchEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
 			witchEntity.prepareEntityData(this.world, this.world.getLocalDifficulty(new BlockPos(witchEntity)), SpawnType.field_16468, null, null);
 			witchEntity.setAiDisabled(this.isAiDisabled());

@@ -58,7 +58,7 @@ public class BrewedPotionCriterion implements Criterion<BrewedPotionCriterion.Co
 		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public BrewedPotionCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public BrewedPotionCriterion.Conditions method_8785(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		Potion potion = null;
 		if (jsonObject.has("potion")) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "potion"));

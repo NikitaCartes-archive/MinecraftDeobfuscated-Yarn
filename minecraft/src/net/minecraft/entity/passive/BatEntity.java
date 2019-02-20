@@ -3,6 +3,9 @@ package net.minecraft.entity.passive;
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
 import javax.annotation.Nullable;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
+import net.minecraft.class_4051;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -23,10 +26,11 @@ import net.minecraft.world.World;
 
 public class BatEntity extends AmbientEntity {
 	private static final TrackedData<Byte> BAT_FLAGS = DataTracker.registerData(BatEntity.class, TrackedDataHandlerRegistry.BYTE);
+	private static final class_4051 field_18100 = new class_4051().method_18418(4.0).method_18421();
 	private BlockPos field_6729;
 
-	public BatEntity(World world) {
-		super(EntityType.BAT, world);
+	public BatEntity(EntityType<? extends BatEntity> entityType, World world) {
+		super(entityType, world);
 		this.setRoosting(true);
 	}
 
@@ -118,7 +122,7 @@ public class BatEntity extends AmbientEntity {
 					this.headYaw = (float)this.random.nextInt(360);
 				}
 
-				if (this.world.getClosestSurvivalPlayer(this, 4.0) != null) {
+				if (this.world.method_18462(field_18100, this) != null) {
 					this.setRoosting(false);
 					this.world.playEvent(null, 1025, blockPos, 0);
 				}
@@ -149,7 +153,7 @@ public class BatEntity extends AmbientEntity {
 			this.velocityZ = this.velocityZ + (Math.signum(f) * 0.5 - this.velocityZ) * 0.1F;
 			float g = (float)(MathHelper.atan2(this.velocityZ, this.velocityX) * 180.0F / (float)Math.PI) - 90.0F;
 			float h = MathHelper.wrapDegrees(g - this.yaw);
-			this.field_6250 = 0.5F;
+			this.movementInputForward = 0.5F;
 			this.yaw += h;
 			if (this.random.nextInt(100) == 0 && this.world.getBlockState(blockPos2).isSimpleFullBlock(this.world, blockPos2)) {
 				this.setRoosting(true);
@@ -226,7 +230,7 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	@Override
-	public float getEyeHeight() {
-		return this.getHeight() / 2.0F;
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
+		return arg2.field_18068 / 2.0F;
 	}
 }

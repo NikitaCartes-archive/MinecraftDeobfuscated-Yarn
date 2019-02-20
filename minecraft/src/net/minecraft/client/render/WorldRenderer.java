@@ -19,6 +19,8 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4063;
+import net.minecraft.class_4066;
 import net.minecraft.class_852;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.Block;
@@ -150,7 +152,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	private int field_4097 = Integer.MIN_VALUE;
 	private int field_4116 = Integer.MIN_VALUE;
 	private net.minecraft.util.math.Vec3d field_4072 = net.minecraft.util.math.Vec3d.ZERO;
-	private int field_4080 = -1;
+	private class_4063 field_4080;
 	private ChunkBatcher chunkBatcher;
 	private ChunkRendererList chunkRendererList;
 	private int renderDistance = -1;
@@ -1217,7 +1219,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				GlStateManager.texCoordPointer(2, 5126, 28, 12);
 				GlStateManager.colorPointer(4, 5121, 28, 20);
 				GlStateManager.normalPointer(5120, 28, 24);
-				int u = this.field_4080 == 2 ? 0 : 1;
+				int u = this.field_4080 == class_4063.field_18164 ? 0 : 1;
 
 				for (int v = u; v < 2; v++) {
 					if (v == 0) {
@@ -1235,7 +1237,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				GlStateManager.disableClientState(32886);
 				GlStateManager.disableClientState(32885);
 			} else if (this.cloudsDisplayList >= 0) {
-				int u = this.field_4080 == 2 ? 0 : 1;
+				int u = this.field_4080 == class_4063.field_18164 ? 0 : 1;
 
 				for (int v = u; v < 2; v++) {
 					if (v == 0) {
@@ -1278,7 +1280,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		float y = p * 0.8F;
 		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_NORMAL);
 		float z = (float)Math.floor(e / 4.0) * 4.0F;
-		if (this.field_4080 == 2) {
+		if (this.field_4080 == class_4063.field_18164) {
 			for (int aa = -3; aa <= 4; aa++) {
 				for (int ab = -3; ab <= 4; ab++) {
 					float ac = (float)(aa * 8);
@@ -1866,7 +1868,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	private void method_3247(World world, BlockPos blockPos, boolean bl) {
-		for (LivingEntity livingEntity : world.getVisibleEntities(LivingEntity.class, new BoundingBox(blockPos).expand(3.0))) {
+		for (LivingEntity livingEntity : world.method_18467(LivingEntity.class, new BoundingBox(blockPos).expand(3.0))) {
 			livingEntity.method_6006(blockPos, bl);
 		}
 	}
@@ -1901,33 +1903,33 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	private Particle spawnParticle(ParticleParameters particleParameters, boolean bl, boolean bl2, double d, double e, double f, double g, double h, double i) {
 		Entity entity = this.client.getCameraEntity();
 		if (this.client != null && entity != null && this.client.particleManager != null) {
-			int j = this.getRandomParticleSpawnChance(bl2);
-			double k = entity.x - d;
-			double l = entity.y - e;
-			double m = entity.z - f;
+			class_4066 lv = this.getRandomParticleSpawnChance(bl2);
+			double j = entity.x - d;
+			double k = entity.y - e;
+			double l = entity.z - f;
 			if (bl) {
 				return this.client.particleManager.addParticle(particleParameters, d, e, f, g, h, i);
-			} else if (k * k + l * l + m * m > 1024.0) {
+			} else if (j * j + k * k + l * l > 1024.0) {
 				return null;
 			} else {
-				return j > 1 ? null : this.client.particleManager.addParticle(particleParameters, d, e, f, g, h, i);
+				return lv == class_4066.field_18199 ? null : this.client.particleManager.addParticle(particleParameters, d, e, f, g, h, i);
 			}
 		} else {
 			return null;
 		}
 	}
 
-	private int getRandomParticleSpawnChance(boolean bl) {
-		int i = this.client.options.particles;
-		if (bl && i == 2 && this.world.random.nextInt(10) == 0) {
-			i = 1;
+	private class_4066 getRandomParticleSpawnChance(boolean bl) {
+		class_4066 lv = this.client.options.particles;
+		if (bl && lv == class_4066.field_18199 && this.world.random.nextInt(10) == 0) {
+			lv = class_4066.field_18198;
 		}
 
-		if (i == 1 && this.world.random.nextInt(3) == 0) {
-			i = 2;
+		if (lv == class_4066.field_18198 && this.world.random.nextInt(3) == 0) {
+			lv = class_4066.field_18199;
 		}
 
-		return i;
+		return lv;
 	}
 
 	public void method_3267() {

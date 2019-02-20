@@ -232,7 +232,7 @@ public class ListTag extends AbstractListTag<Tag> {
 		}
 	}
 
-	public ListTag copy() {
+	public ListTag method_10612() {
 		ListTag listTag = new ListTag();
 		listTag.type = this.type;
 

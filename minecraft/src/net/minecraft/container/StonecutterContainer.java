@@ -3,6 +3,7 @@ package net.minecraft.container;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import java.util.List;
+import java.util.function.BiConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
@@ -17,6 +18,7 @@ import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.StonecuttingRecipe;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class StonecutterContainer extends Container {
@@ -49,7 +51,7 @@ public class StonecutterContainer extends Container {
 		Items.field_8314,
 		Items.field_8216
 	);
-	private final ContainerWorldContext context;
+	private final BlockContext context;
 	private final Property selectedRecipe = Property.create();
 	private final World world;
 	private List<StonecuttingRecipe> availableRecipes = Lists.<StonecuttingRecipe>newArrayList();
@@ -69,12 +71,12 @@ public class StonecutterContainer extends Container {
 	};
 
 	public StonecutterContainer(int i, PlayerInventory playerInventory) {
-		this(i, playerInventory, ContainerWorldContext.NO_OP_CONTEXT);
+		this(i, playerInventory, BlockContext.EMPTY);
 	}
 
-	public StonecutterContainer(int i, PlayerInventory playerInventory, ContainerWorldContext containerWorldContext) {
+	public StonecutterContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
 		super(ContainerType.field_17625, i);
-		this.context = containerWorldContext;
+		this.context = blockContext;
 		this.world = playerInventory.player.world;
 		this.inputSlot = this.addSlot(new Slot(this.inventory, 0, 20, 33));
 		this.outputSlot = this.addSlot(new Slot(this.inventory, 1, 143, 33) {
@@ -91,13 +93,13 @@ public class StonecutterContainer extends Container {
 				}
 
 				itemStack.getItem().onCrafted(itemStack, playerEntity.world, playerEntity);
-				containerWorldContext.run((world, blockPos) -> {
+				blockContext.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 					long l = world.getTime();
 					if (StonecutterContainer.this.lastTakeTime != l) {
 						world.playSound(null, blockPos, SoundEvents.field_17710, SoundCategory.field_15245, 1.0F, 1.0F);
 						StonecutterContainer.this.lastTakeTime = l;
 					}
-				});
+				}));
 				return super.onTakeItem(playerEntity, itemStack);
 			}
 		});
@@ -240,6 +242,6 @@ public class StonecutterContainer extends Container {
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
 		this.inventory.removeInvStack(1);
-		this.context.run((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.inventory));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.inventory)));
 	}
 }

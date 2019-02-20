@@ -55,7 +55,7 @@ public class EffectsChangedCriterion implements Criterion<EffectsChangedCriterio
 		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public EffectsChangedCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public EffectsChangedCriterion.Conditions method_8862(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		EntityEffectPredicate entityEffectPredicate = EntityEffectPredicate.deserialize(jsonObject.get("effects"));
 		return new EffectsChangedCriterion.Conditions(entityEffectPredicate);
 	}

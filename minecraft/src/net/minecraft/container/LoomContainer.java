@@ -1,5 +1,6 @@
 package net.minecraft.container;
 
+import java.util.function.BiConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
@@ -17,9 +18,11 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class LoomContainer extends Container {
-	private final ContainerWorldContext context;
+	private final BlockContext context;
 	private final Property selectedPattern = Property.create();
 	private Runnable inventoryChangeListener = () -> {
 	};
@@ -44,12 +47,12 @@ public class LoomContainer extends Container {
 	};
 
 	public LoomContainer(int i, PlayerInventory playerInventory) {
-		this(i, playerInventory, ContainerWorldContext.NO_OP_CONTEXT);
+		this(i, playerInventory, BlockContext.EMPTY);
 	}
 
-	public LoomContainer(int i, PlayerInventory playerInventory, ContainerWorldContext containerWorldContext) {
+	public LoomContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
 		super(ContainerType.LOOM, i);
-		this.context = containerWorldContext;
+		this.context = blockContext;
 		this.bannerSlot = this.addSlot(new Slot(this.inputInventory, 0, 13, 26) {
 			@Override
 			public boolean canInsert(ItemStack itemStack) {
@@ -68,21 +71,25 @@ public class LoomContainer extends Container {
 				return itemStack.getItem() instanceof BannerPatternItem;
 			}
 		});
-		this.outputSlot = this.addSlot(new Slot(this.outputInventory, 0, 143, 58) {
-			@Override
-			public boolean canInsert(ItemStack itemStack) {
-				return false;
-			}
+		this.outputSlot = this.addSlot(
+			new Slot(this.outputInventory, 0, 143, 58) {
+				@Override
+				public boolean canInsert(ItemStack itemStack) {
+					return false;
+				}
 
-			@Override
-			public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
-				LoomContainer.this.bannerSlot.takeStack(1);
-				LoomContainer.this.dyeSlot.takeStack(1);
-				LoomContainer.this.selectedPattern.set(0);
-				containerWorldContext.run((world, blockPos) -> world.playSound(null, blockPos, SoundEvents.field_15096, SoundCategory.field_15245, 1.0F, 1.0F));
-				return super.onTakeItem(playerEntity, itemStack);
+				@Override
+				public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
+					LoomContainer.this.bannerSlot.takeStack(1);
+					LoomContainer.this.dyeSlot.takeStack(1);
+					LoomContainer.this.selectedPattern.set(0);
+					blockContext.run(
+						(BiConsumer<World, BlockPos>)((world, blockPos) -> world.playSound(null, blockPos, SoundEvents.field_15096, SoundCategory.field_15245, 1.0F, 1.0F))
+					);
+					return super.onTakeItem(playerEntity, itemStack);
+				}
 			}
-		});
+		);
 
 		for (int j = 0; j < 3; j++) {
 			for (int k = 0; k < 9; k++) {
@@ -204,11 +211,11 @@ public class LoomContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.context.run((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.inputInventory));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.inputInventory)));
 	}
 
 	private void updateOutputSlot() {
-		this.context.run((world, blockPos) -> {
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 			if (this.selectedPattern.get() > 0) {
 				ItemStack itemStack = this.bannerSlot.getStack();
 				ItemStack itemStack2 = this.dyeSlot.getStack();
@@ -237,7 +244,7 @@ public class LoomContainer extends Container {
 					this.outputSlot.setStack(itemStack3);
 				}
 			}
-		});
+		}));
 	}
 
 	@Environment(EnvType.CLIENT)

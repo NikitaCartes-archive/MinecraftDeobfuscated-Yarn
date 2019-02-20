@@ -8,6 +8,8 @@ import net.minecraft.class_1394;
 import net.minecraft.class_1399;
 import net.minecraft.class_3760;
 import net.minecraft.class_3909;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -51,14 +53,14 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 	private class_3909<RaiderEntity> field_17283;
 	private class_3760<PlayerEntity> field_17284;
 
-	public WitchEntity(World world) {
-		super(EntityType.WITCH, world);
+	public WitchEntity(EntityType<? extends WitchEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override
 	protected void initGoals() {
 		super.initGoals();
-		this.field_17283 = new class_3909<>(this, RaiderEntity.class, true, raiderEntity -> raiderEntity != null && this.hasActiveRaid());
+		this.field_17283 = new class_3909<>(this, RaiderEntity.class, true, livingEntity -> livingEntity != null && this.hasActiveRaid());
 		this.field_17284 = new class_3760<>(this, PlayerEntity.class, 10, true, false, null);
 		this.goalSelector.add(1, new SwimGoal(this));
 		this.goalSelector.add(2, new ProjectileAttackGoal(this, 1.0, 60, 10.0F));
@@ -238,7 +240,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 	}
 
 	@Override
-	public float getEyeHeight() {
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
 		return 1.62F;
 	}
 

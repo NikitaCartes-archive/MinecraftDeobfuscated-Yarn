@@ -14,41 +14,41 @@ public class KeyboardInput extends Input {
 
 	@Override
 	public void tick() {
-		this.field_3907 = 0.0F;
-		this.field_3905 = 0.0F;
+		this.movementSideways = 0.0F;
+		this.movementForward = 0.0F;
 		if (this.settings.keyForward.isPressed()) {
-			this.field_3905++;
-			this.forward = true;
+			this.movementForward++;
+			this.pressingForward = true;
 		} else {
-			this.forward = false;
+			this.pressingForward = false;
 		}
 
 		if (this.settings.keyBack.isPressed()) {
-			this.field_3905--;
-			this.back = true;
+			this.movementForward--;
+			this.pressingBack = true;
 		} else {
-			this.back = false;
+			this.pressingBack = false;
 		}
 
 		if (this.settings.keyLeft.isPressed()) {
-			this.field_3907++;
-			this.left = true;
+			this.movementSideways++;
+			this.pressingLeft = true;
 		} else {
-			this.left = false;
+			this.pressingLeft = false;
 		}
 
 		if (this.settings.keyRight.isPressed()) {
-			this.field_3907--;
-			this.right = true;
+			this.movementSideways--;
+			this.pressingRight = true;
 		} else {
-			this.right = false;
+			this.pressingRight = false;
 		}
 
 		this.jumping = this.settings.keyJump.isPressed();
 		this.sneaking = this.settings.keySneak.isPressed();
 		if (this.sneaking) {
-			this.field_3907 = (float)((double)this.field_3907 * 0.3);
-			this.field_3905 = (float)((double)this.field_3905 * 0.3);
+			this.movementSideways = (float)((double)this.movementSideways * 0.3);
+			this.movementForward = (float)((double)this.movementForward * 0.3);
 		}
 	}
 }

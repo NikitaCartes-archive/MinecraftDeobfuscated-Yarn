@@ -189,7 +189,7 @@ public class LootSupplier {
 			return this;
 		}
 
-		public LootSupplier.Builder withFunction(LootFunction.Builder builder) {
+		public LootSupplier.Builder method_335(LootFunction.Builder builder) {
 			this.functions.add(builder.build());
 			return this;
 		}

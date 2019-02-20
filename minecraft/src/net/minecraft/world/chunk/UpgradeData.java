@@ -133,12 +133,12 @@ public class UpgradeData {
 						int k = j & 15;
 						int l = j >> 8 & 15;
 						int m = j >> 4 & 15;
-						pooledMutable.set(chunkPos.getStartX() + k, (i << 4) + l, chunkPos.getStartZ() + m);
+						pooledMutable.method_10113(chunkPos.getStartX() + k, (i << 4) + l, chunkPos.getStartZ() + m);
 						BlockState blockState = palettedContainer.get(j);
 						BlockState blockState2 = blockState;
 
 						for (Direction direction : directions) {
-							pooledMutable2.set(pooledMutable).setOffset(direction);
+							pooledMutable2.method_10114(pooledMutable).method_10118(direction);
 							if (pooledMutable.getX() >> 4 == chunkPos.x && pooledMutable.getZ() >> 4 == chunkPos.z) {
 								blockState2 = method_12351(blockState2, direction, iWorld, pooledMutable, pooledMutable2);
 							}

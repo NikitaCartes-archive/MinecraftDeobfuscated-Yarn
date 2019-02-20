@@ -2,6 +2,8 @@ package net.minecraft.entity.passive;
 
 import java.util.List;
 import java.util.function.Predicate;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
@@ -37,8 +39,8 @@ public class PufferfishEntity extends FishEntity {
 		}
 	};
 
-	public PufferfishEntity(World world) {
-		super(EntityType.PUFFERFISH, world);
+	public PufferfishEntity(EntityType<? extends PufferfishEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override
@@ -53,24 +55,14 @@ public class PufferfishEntity extends FishEntity {
 
 	public void method_6596(int i) {
 		this.dataTracker.set(field_6835, i);
-		this.method_6592(i);
-	}
-
-	private void method_6592(int i) {
-		float f = 1.0F;
-		if (i == 1) {
-			f = 0.7F;
-		} else if (i == 0) {
-			f = 0.5F;
-		}
-
-		EntityType<?> entityType = this.getType();
-		this.setSize(entityType.getWidth() * f, entityType.getHeight() * f);
 	}
 
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
-		this.method_6592(this.method_6594());
+		if (field_6835.equals(trackedData)) {
+			this.method_18382();
+		}
+
 		super.onTrackedDataSet(trackedData);
 	}
 
@@ -130,7 +122,7 @@ public class PufferfishEntity extends FishEntity {
 	public void updateMovement() {
 		super.updateMovement();
 		if (this.method_6594() > 0) {
-			for (MobEntity mobEntity : this.world.getEntities(MobEntity.class, this.getBoundingBox().expand(0.3), field_6834)) {
+			for (MobEntity mobEntity : this.world.method_8390(MobEntity.class, this.getBoundingBox().expand(0.3), field_6834)) {
 				if (mobEntity.isValid()) {
 					this.method_6593(mobEntity);
 				}
@@ -175,6 +167,22 @@ public class PufferfishEntity extends FishEntity {
 		return SoundEvents.field_15004;
 	}
 
+	@Override
+	public class_4048 method_18377(class_4050 arg) {
+		return super.method_18377(arg).method_18383(method_6592(this.method_6594()));
+	}
+
+	private static float method_6592(int i) {
+		switch (i) {
+			case 0:
+				return 0.5F;
+			case 1:
+				return 0.7F;
+			default:
+				return 1.0F;
+		}
+	}
+
 	static class class_1455 extends Goal {
 		private final PufferfishEntity field_6836;
 
@@ -184,7 +192,7 @@ public class PufferfishEntity extends FishEntity {
 
 		@Override
 		public boolean canStart() {
-			List<LivingEntity> list = this.field_6836.world.getEntities(LivingEntity.class, this.field_6836.getBoundingBox().expand(2.0), PufferfishEntity.field_6834);
+			List<LivingEntity> list = this.field_6836.world.method_8390(LivingEntity.class, this.field_6836.getBoundingBox().expand(2.0), PufferfishEntity.field_6834);
 			return !list.isEmpty();
 		}
 
@@ -201,7 +209,7 @@ public class PufferfishEntity extends FishEntity {
 
 		@Override
 		public boolean shouldContinue() {
-			List<LivingEntity> list = this.field_6836.world.getEntities(LivingEntity.class, this.field_6836.getBoundingBox().expand(2.0), PufferfishEntity.field_6834);
+			List<LivingEntity> list = this.field_6836.world.method_8390(LivingEntity.class, this.field_6836.getBoundingBox().expand(2.0), PufferfishEntity.field_6834);
 			return !list.isEmpty();
 		}
 	}

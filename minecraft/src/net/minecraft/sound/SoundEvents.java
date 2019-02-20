@@ -231,11 +231,11 @@ public class SoundEvents {
 	public static final SoundEvent field_15145 = register("item.flintandsteel.use");
 	public static final SoundEvent field_18055 = register("entity.fox.aggro");
 	public static final SoundEvent field_18056 = register("entity.fox.ambient");
-	public static final SoundEvent field_18057 = register("entity.fox.bark");
 	public static final SoundEvent field_18058 = register("entity.fox.bite");
 	public static final SoundEvent field_18059 = register("entity.fox.death");
 	public static final SoundEvent field_18060 = register("entity.fox.eat");
 	public static final SoundEvent field_18061 = register("entity.fox.hurt");
+	public static final SoundEvent field_18265 = register("entity.fox.screech");
 	public static final SoundEvent field_18062 = register("entity.fox.sleep");
 	public static final SoundEvent field_18063 = register("entity.fox.sniff");
 	public static final SoundEvent field_18054 = register("entity.fox.spit");
@@ -386,6 +386,10 @@ public class SoundEvents {
 	public static final SoundEvent field_14924 = register("block.metal.step");
 	public static final SoundEvent field_14832 = register("entity.minecart.inside");
 	public static final SoundEvent field_14784 = register("entity.minecart.riding");
+	public static final SoundEvent field_18266 = register("entity.mooshroom.convert");
+	public static final SoundEvent field_18267 = register("entity.mooshroom.eat");
+	public static final SoundEvent field_18268 = register("entity.mooshroom.milk");
+	public static final SoundEvent field_18269 = register("entity.mooshroom.suspicious_milk");
 	public static final SoundEvent field_14705 = register("entity.mooshroom.shear");
 	public static final SoundEvent field_14614 = register("entity.mule.ambient");
 	public static final SoundEvent field_15063 = register("entity.mule.chest");

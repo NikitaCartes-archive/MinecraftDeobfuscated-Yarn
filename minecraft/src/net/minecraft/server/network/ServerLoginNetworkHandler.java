@@ -27,13 +27,12 @@ import net.minecraft.server.network.packet.LoginKeyC2SPacket;
 import net.minecraft.server.network.packet.LoginQueryResponseC2SPacket;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.util.Tickable;
 import net.minecraft.util.UncaughtExceptionLogger;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tickable {
+public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	private static final AtomicInteger authenticatorThreadId = new AtomicInteger(0);
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Random RANDOM = new Random();
@@ -53,8 +52,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 		RANDOM.nextBytes(this.field_14167);
 	}
 
-	@Override
-	public void tick() {
+	public void method_18785() {
 		if (this.state == ServerLoginNetworkHandler.State.field_14168) {
 			this.method_14384();
 		} else if (this.state == ServerLoginNetworkHandler.State.field_14171) {

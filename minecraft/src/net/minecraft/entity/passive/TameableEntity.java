@@ -23,12 +23,12 @@ import net.minecraft.server.config.ServerConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 
-public abstract class TameableEntity extends AnimalEntity implements OwnableEntity {
+public abstract class TameableEntity extends AnimalEntity {
 	protected static final TrackedData<Byte> TAMEABLE_FLAGS = DataTracker.registerData(TameableEntity.class, TrackedDataHandlerRegistry.BYTE);
 	protected static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(TameableEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 	protected class_1386 field_6321;
 
-	protected TameableEntity(EntityType<?> entityType, World world) {
+	protected TameableEntity(EntityType<? extends TameableEntity> entityType, World world) {
 		super(entityType, world);
 		this.onTamedChanged();
 	}
@@ -43,10 +43,10 @@ public abstract class TameableEntity extends AnimalEntity implements OwnableEnti
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
-		if (this.getOwnerUuid() == null) {
+		if (this.method_6139() == null) {
 			compoundTag.putString("OwnerUUID", "");
 		} else {
-			compoundTag.putString("OwnerUUID", this.getOwnerUuid().toString());
+			compoundTag.putString("OwnerUUID", this.method_6139().toString());
 		}
 
 		compoundTag.putBoolean("Sitting", this.isSitting());
@@ -151,8 +151,7 @@ public abstract class TameableEntity extends AnimalEntity implements OwnableEnti
 	}
 
 	@Nullable
-	@Override
-	public UUID getOwnerUuid() {
+	public UUID method_6139() {
 		return (UUID)this.dataTracker.get(OWNER_UUID).orElse(null);
 	}
 
@@ -171,11 +170,16 @@ public abstract class TameableEntity extends AnimalEntity implements OwnableEnti
 	@Nullable
 	public LivingEntity getOwner() {
 		try {
-			UUID uUID = this.getOwnerUuid();
-			return uUID == null ? null : this.world.getPlayerByUuid(uUID);
+			UUID uUID = this.method_6139();
+			return uUID == null ? null : this.world.method_18470(uUID);
 		} catch (IllegalArgumentException var2) {
 			return null;
 		}
+	}
+
+	@Override
+	public boolean method_18395(LivingEntity livingEntity) {
+		return this.isOwner(livingEntity) ? false : super.method_18395(livingEntity);
 	}
 
 	public boolean isOwner(LivingEntity livingEntity) {

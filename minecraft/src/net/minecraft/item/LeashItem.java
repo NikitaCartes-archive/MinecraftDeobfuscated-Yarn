@@ -40,7 +40,7 @@ public class LeashItem extends Item {
 		int j = blockPos.getY();
 		int k = blockPos.getZ();
 
-		for (MobEntity mobEntity : world.getVisibleEntities(
+		for (MobEntity mobEntity : world.method_18467(
 			MobEntity.class, new BoundingBox((double)i - 7.0, (double)j - 7.0, (double)k - 7.0, (double)i + 7.0, (double)j + 7.0, (double)k + 7.0)
 		)) {
 			if (mobEntity.isLeashed() && mobEntity.getHoldingEntity() == playerEntity) {

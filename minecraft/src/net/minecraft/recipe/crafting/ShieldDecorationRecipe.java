@@ -69,7 +69,7 @@ public class ShieldDecorationRecipe extends SpecialCraftingRecipe {
 			return itemStack2;
 		} else {
 			CompoundTag compoundTag = itemStack.getSubCompoundTag("BlockEntityTag");
-			CompoundTag compoundTag2 = compoundTag == null ? new CompoundTag() : compoundTag.copy();
+			CompoundTag compoundTag2 = compoundTag == null ? new CompoundTag() : compoundTag.method_10553();
 			compoundTag2.putInt("Base", ((BannerItem)itemStack.getItem()).getColor().getId());
 			itemStack2.setChildTag("BlockEntityTag", compoundTag2);
 			return itemStack2;

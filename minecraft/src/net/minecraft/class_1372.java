@@ -5,6 +5,7 @@ import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 
 public class class_1372 extends Goal {
+	private static final class_4051 field_18089 = new class_4051().method_18418(6.0).method_18421().method_18417();
 	private final IronGolemEntity field_6542;
 	private VillagerEntity field_6544;
 	private int field_6543;
@@ -23,7 +24,15 @@ public class class_1372 extends Goal {
 		} else {
 			this.field_6544 = this.field_6542
 				.world
-				.getClosestVisibleEntityTo(VillagerEntity.class, this.field_6542.getBoundingBox().expand(6.0, 2.0, 6.0), this.field_6542);
+				.method_18465(
+					VillagerEntity.class,
+					field_18089,
+					this.field_6542,
+					this.field_6542.x,
+					this.field_6542.y,
+					this.field_6542.z,
+					this.field_6542.getBoundingBox().expand(6.0, 2.0, 6.0)
+				);
 			return this.field_6544 != null;
 		}
 	}

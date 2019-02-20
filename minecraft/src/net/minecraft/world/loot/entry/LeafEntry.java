@@ -76,7 +76,7 @@ public abstract class LeafEntry extends LootEntry {
 			this.factory = factory;
 		}
 
-		protected LeafEntry.BasicBuilder getThis() {
+		protected LeafEntry.BasicBuilder method_440() {
 			return this;
 		}
 
@@ -91,7 +91,7 @@ public abstract class LeafEntry extends LootEntry {
 		protected int quality = 0;
 		private final List<LootFunction> functions = Lists.<LootFunction>newArrayList();
 
-		public T withFunction(LootFunction.Builder builder) {
+		public T method_438(LootFunction.Builder builder) {
 			this.functions.add(builder.build());
 			return this.getThisBuilder();
 		}
@@ -145,7 +145,7 @@ public abstract class LeafEntry extends LootEntry {
 			}
 		}
 
-		public final T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public final T method_441(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			int i = JsonHelper.getInt(jsonObject, "weight", 1);
 			int j = JsonHelper.getInt(jsonObject, "quality", 0);
 			LootFunction[] lootFunctions = JsonHelper.deserialize(jsonObject, "functions", new LootFunction[0], jsonDeserializationContext, LootFunction[].class);

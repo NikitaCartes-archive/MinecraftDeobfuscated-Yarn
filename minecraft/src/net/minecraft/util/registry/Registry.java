@@ -121,7 +121,7 @@ public abstract class Registry<T> implements IndexedIterable<T> {
 	}
 
 	private static <T> Registry<T> create(String string, MutableRegistry<T> mutableRegistry) {
-		REGISTRIES.set(new Identifier(string), mutableRegistry);
+		REGISTRIES.add(new Identifier(string), mutableRegistry);
 		return mutableRegistry;
 	}
 
@@ -152,7 +152,7 @@ public abstract class Registry<T> implements IndexedIterable<T> {
 	}
 
 	public static <T> T register(Registry<? super T> registry, Identifier identifier, T object) {
-		return ((MutableRegistry)registry).set(identifier, object);
+		return ((MutableRegistry)registry).add(identifier, object);
 	}
 
 	public static <T> T register(Registry<? super T> registry, int i, String string, T object) {

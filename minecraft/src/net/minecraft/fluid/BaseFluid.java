@@ -58,7 +58,7 @@ public abstract class BaseFluid extends Fluid {
 		Vec3d var28;
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 			for (Direction direction : Direction.Type.HORIZONTAL) {
-				pooledMutable.set(blockPos).setOffset(direction);
+				pooledMutable.method_10114(blockPos).method_10118(direction);
 				FluidState fluidState2 = blockView.getFluidState(pooledMutable);
 				if (this.method_15748(fluidState2)) {
 					float f = fluidState2.getHeight(blockView, pooledMutable);
@@ -88,7 +88,7 @@ public abstract class BaseFluid extends Fluid {
 			Vec3d vec3d = new Vec3d(d, 0.0, e);
 			if ((Boolean)fluidState.get(FALLING)) {
 				for (Direction direction2 : Direction.Type.HORIZONTAL) {
-					pooledMutable.set(blockPos).setOffset(direction2);
+					pooledMutable.method_10114(blockPos).method_10118(direction2);
 					if (this.method_15749(blockView, pooledMutable, direction2) || this.method_15749(blockView, pooledMutable.up(), direction2)) {
 						vec3d = vec3d.normalize().add(0.0, -6.0, 0.0);
 						break;

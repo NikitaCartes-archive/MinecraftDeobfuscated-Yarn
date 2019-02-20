@@ -56,7 +56,7 @@ public class LevitationCriterion implements Criterion<LevitationCriterion.Condit
 		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public LevitationCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public LevitationCriterion.Conditions method_9006(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		DistancePredicate distancePredicate = DistancePredicate.deserialize(jsonObject.get("distance"));
 		NumberRange.Integer integer = NumberRange.Integer.fromJson(jsonObject.get("duration"));
 		return new LevitationCriterion.Conditions(distancePredicate, integer);

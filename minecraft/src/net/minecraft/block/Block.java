@@ -164,7 +164,7 @@ public class Block implements ItemProvider {
 	public void updateNeighborStates(BlockState blockState, IWorld iWorld, BlockPos blockPos, int i) {
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 			for (Direction direction : FACINGS) {
-				pooledMutable.set(blockPos).setOffset(direction);
+				pooledMutable.method_10114(blockPos).method_10118(direction);
 				BlockState blockState2 = iWorld.getBlockState(pooledMutable);
 				BlockState blockState3 = blockState2.getStateForNeighborUpdate(direction.getOpposite(), blockState, iWorld, pooledMutable, blockPos);
 				replaceBlock(blockState2, blockState3, iWorld, pooledMutable, i);

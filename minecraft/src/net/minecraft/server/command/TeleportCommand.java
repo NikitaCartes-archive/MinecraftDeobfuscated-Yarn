@@ -267,10 +267,8 @@ public class TeleportCommand {
 				entity.setPositionAndAngles(d, e, f, i, j);
 				entity.setHeadYaw(i);
 			} else {
-				ServerWorld serverWorld2 = (ServerWorld)entity.world;
-				serverWorld2.method_18216(entity);
+				entity.method_18375();
 				entity.dimension = serverWorld.dimension.getType();
-				entity.invalid = false;
 				Entity entity2 = entity;
 				entity = entity.getType().create(serverWorld);
 				if (entity == null) {
@@ -280,11 +278,7 @@ public class TeleportCommand {
 				entity.method_5878(entity2);
 				entity.setPositionAndAngles(d, e, f, i, j);
 				entity.setHeadYaw(i);
-				boolean bl = entity.teleporting;
-				entity.teleporting = true;
-				serverWorld.method_18197(entity, true);
-				entity.teleporting = bl;
-				serverWorld.updateChunkEntities(entity);
+				serverWorld.method_18769(entity);
 				entity2.invalid = true;
 			}
 		}

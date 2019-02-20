@@ -28,7 +28,7 @@ public abstract class AbstractTreeFeature<T extends FeatureConfig> extends Featu
 	}
 
 	protected static boolean canTreeReplace(TestableWorld testableWorld, BlockPos blockPos) {
-		return testableWorld.test(
+		return testableWorld.testBlockState(
 			blockPos,
 			blockState -> {
 				Block block = blockState.getBlock();
@@ -44,41 +44,41 @@ public abstract class AbstractTreeFeature<T extends FeatureConfig> extends Featu
 	}
 
 	protected static boolean isAir(TestableWorld testableWorld, BlockPos blockPos) {
-		return testableWorld.test(blockPos, BlockState::isAir);
+		return testableWorld.testBlockState(blockPos, BlockState::isAir);
 	}
 
 	protected static boolean isNaturalDirt(TestableWorld testableWorld, BlockPos blockPos) {
-		return testableWorld.test(blockPos, blockState -> Block.isNaturalDirt(blockState.getBlock()));
+		return testableWorld.testBlockState(blockPos, blockState -> Block.isNaturalDirt(blockState.getBlock()));
 	}
 
 	protected static boolean isWater(TestableWorld testableWorld, BlockPos blockPos) {
-		return testableWorld.test(blockPos, blockState -> blockState.getBlock() == Blocks.field_10382);
+		return testableWorld.testBlockState(blockPos, blockState -> blockState.getBlock() == Blocks.field_10382);
 	}
 
 	protected static boolean isLeaves(TestableWorld testableWorld, BlockPos blockPos) {
-		return testableWorld.test(blockPos, blockState -> blockState.matches(BlockTags.field_15503));
+		return testableWorld.testBlockState(blockPos, blockState -> blockState.matches(BlockTags.field_15503));
 	}
 
 	protected static boolean isAirOrLeaves(TestableWorld testableWorld, BlockPos blockPos) {
-		return testableWorld.test(blockPos, blockState -> blockState.isAir() || blockState.matches(BlockTags.field_15503));
+		return testableWorld.testBlockState(blockPos, blockState -> blockState.isAir() || blockState.matches(BlockTags.field_15503));
 	}
 
 	protected static boolean isNaturalDirtOrGrass(TestableWorld testableWorld, BlockPos blockPos) {
-		return testableWorld.test(blockPos, blockState -> {
+		return testableWorld.testBlockState(blockPos, blockState -> {
 			Block block = blockState.getBlock();
 			return Block.isNaturalDirt(block) || block == Blocks.field_10219;
 		});
 	}
 
 	protected static boolean isDirtOrGrass(TestableWorld testableWorld, BlockPos blockPos) {
-		return testableWorld.test(blockPos, blockState -> {
+		return testableWorld.testBlockState(blockPos, blockState -> {
 			Block block = blockState.getBlock();
 			return Block.isNaturalDirt(block) || block == Blocks.field_10219 || block == Blocks.field_10362;
 		});
 	}
 
 	protected static boolean isReplaceablePlant(TestableWorld testableWorld, BlockPos blockPos) {
-		return testableWorld.test(blockPos, blockState -> {
+		return testableWorld.testBlockState(blockPos, blockState -> {
 			Material material = blockState.getMaterial();
 			return material == Material.REPLACEABLE_PLANT;
 		});
@@ -125,7 +125,7 @@ public abstract class AbstractTreeFeature<T extends FeatureConfig> extends Featu
 			if (bl && !set.isEmpty()) {
 				for (BlockPos blockPos2 : Lists.newArrayList(set)) {
 					for (Direction direction : Direction.values()) {
-						pooledMutable.set(blockPos2).setOffset(direction);
+						pooledMutable.method_10114(blockPos2).method_10118(direction);
 						if (!set.contains(pooledMutable)) {
 							BlockState blockState = iWorld.getBlockState(pooledMutable);
 							if (blockState.contains(Properties.DISTANCE_1_7)) {
@@ -143,7 +143,7 @@ public abstract class AbstractTreeFeature<T extends FeatureConfig> extends Featu
 
 				for (BlockPos blockPos3 : set2) {
 					for (Direction direction2 : Direction.values()) {
-						pooledMutable.set(blockPos3).setOffset(direction2);
+						pooledMutable.method_10114(blockPos3).method_10118(direction2);
 						if (!set2.contains(pooledMutable) && !set3.contains(pooledMutable)) {
 							BlockState blockState2 = iWorld.getBlockState(pooledMutable);
 							if (blockState2.contains(Properties.DISTANCE_1_7)) {

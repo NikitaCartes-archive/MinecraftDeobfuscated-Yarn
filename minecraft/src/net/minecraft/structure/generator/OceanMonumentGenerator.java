@@ -9,6 +9,7 @@ import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.ElderGuardianEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -1733,7 +1734,7 @@ public class OceanMonumentGenerator {
 			int m = this.applyYTransform(j);
 			int n = this.applyZTransform(i, k);
 			if (mutableIntBoundingBox.contains(new BlockPos(l, m, n))) {
-				ElderGuardianEntity elderGuardianEntity = new ElderGuardianEntity(iWorld.getWorld());
+				ElderGuardianEntity elderGuardianEntity = EntityType.ELDER_GUARDIAN.create(iWorld.getWorld());
 				elderGuardianEntity.heal(elderGuardianEntity.getHealthMaximum());
 				elderGuardianEntity.setPositionAndAngles((double)l + 0.5, (double)m, (double)n + 0.5, 0.0F, 0.0F);
 				elderGuardianEntity.prepareEntityData(iWorld, iWorld.getLocalDifficulty(new BlockPos(elderGuardianEntity)), SpawnType.field_16474, null, null);

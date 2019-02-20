@@ -7,6 +7,7 @@ import net.minecraft.client.gui.GuiEventListener;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.VideoSettingsListWidget;
+import net.minecraft.client.options.GameOption;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
 
@@ -16,22 +17,22 @@ public class VideoSettingsScreen extends Screen {
 	protected String title = "Video Settings";
 	private final GameOptions settings;
 	private VideoSettingsListWidget field_2639;
-	private static final GameOptions.Option[] MENU_OPTIONS = new GameOptions.Option[]{
-		GameOptions.Option.GRAPHICS,
-		GameOptions.Option.RENDER_DISTANCE,
-		GameOptions.Option.AO,
-		GameOptions.Option.FRAMERATE_LIMIT,
-		GameOptions.Option.VSYNC,
-		GameOptions.Option.VIEW_BOBBING,
-		GameOptions.Option.GUI_SCALE,
-		GameOptions.Option.ATTACK_INDICATOR,
-		GameOptions.Option.GAMMA,
-		GameOptions.Option.RENDER_CLOUDS,
-		GameOptions.Option.FULLSCREEN,
-		GameOptions.Option.PARTICLES,
-		GameOptions.Option.MIPMAP_LEVELS,
-		GameOptions.Option.ENTITY_SHADOWS,
-		GameOptions.Option.BIOME_BLEND_RADIUS
+	private static final GameOption[] MENU_OPTIONS = new GameOption[]{
+		GameOption.GRAPHICS,
+		GameOption.RENDER_DISTANCE,
+		GameOption.AO,
+		GameOption.FRAMERATE_LIMIT,
+		GameOption.VSYNC,
+		GameOption.VIEW_BOBBING,
+		GameOption.GUI_SCALE,
+		GameOption.field_18192,
+		GameOption.GAMMA,
+		GameOption.RENDER_CLOUDS,
+		GameOption.FULLSCREEN,
+		GameOption.PARTICLES,
+		GameOption.field_18190,
+		GameOption.field_18184,
+		GameOption.field_18189
 	};
 
 	public VideoSettingsScreen(Screen screen, GameOptions gameOptions) {
@@ -48,7 +49,7 @@ public class VideoSettingsScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		this.title = I18n.translate("options.videoTitle");
-		this.addButton(new ButtonWidget(200, this.width / 2 - 100, this.height - 27, I18n.translate("gui.done")) {
+		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
 				VideoSettingsScreen.this.client.options.write();
@@ -61,9 +62,8 @@ public class VideoSettingsScreen extends Screen {
 	}
 
 	@Override
-	public void close() {
+	public void onClosed() {
 		this.client.options.write();
-		super.close();
 	}
 
 	@Override
@@ -97,10 +97,10 @@ public class VideoSettingsScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		this.drawBackground();
-		this.field_2639.draw(i, j, f);
+		this.field_2639.method_18326(i, j, f);
 		this.drawStringCentered(this.fontRenderer, this.title, this.width / 2, 5, 16777215);
-		super.draw(i, j, f);
+		super.method_18326(i, j, f);
 	}
 }

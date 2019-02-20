@@ -3,6 +3,8 @@ package net.minecraft.entity.decoration;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -36,8 +38,8 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	private static final TrackedData<Integer> ROTATION = DataTracker.registerData(ItemFrameEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private float itemDropChance = 1.0F;
 
-	public ItemFrameEntity(World world) {
-		super(EntityType.ITEM_FRAME, world);
+	public ItemFrameEntity(EntityType<? extends ItemFrameEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public ItemFrameEntity(World world, BlockPos blockPos, Direction direction) {
@@ -46,7 +48,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public float getEyeHeight() {
+	protected float method_18378(class_4050 arg, class_4048 arg2) {
 		return 0.0F;
 	}
 

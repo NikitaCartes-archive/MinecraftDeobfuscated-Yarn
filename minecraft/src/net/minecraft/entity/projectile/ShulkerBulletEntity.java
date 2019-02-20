@@ -48,14 +48,14 @@ public class ShulkerBulletEntity extends Entity {
 	private UUID field_7632;
 	private BlockPos field_7631;
 
-	public ShulkerBulletEntity(World world) {
-		super(EntityType.SHULKER_BULLET, world);
+	public ShulkerBulletEntity(EntityType<? extends ShulkerBulletEntity> entityType, World world) {
+		super(entityType, world);
 		this.noClip = true;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public ShulkerBulletEntity(World world, double d, double e, double f, double g, double h, double i) {
-		this(world);
+		this(EntityType.SHULKER_BULLET, world);
 		this.setPositionAndAngles(d, e, f, this.yaw, this.pitch);
 		this.velocityX = g;
 		this.velocityY = h;
@@ -63,7 +63,7 @@ public class ShulkerBulletEntity extends Entity {
 	}
 
 	public ShulkerBulletEntity(World world, LivingEntity livingEntity, Entity entity, Direction.Axis axis) {
-		this(world);
+		this(EntityType.SHULKER_BULLET, world);
 		this.field_7630 = livingEntity;
 		BlockPos blockPos = new BlockPos(livingEntity);
 		double d = (double)blockPos.getX() + 0.5;
@@ -224,7 +224,7 @@ public class ShulkerBulletEntity extends Entity {
 			if (!this.world.isClient) {
 				if (this.field_7626 == null && this.field_7632 != null) {
 					for (LivingEntity livingEntity : this.world
-						.getVisibleEntities(LivingEntity.class, new BoundingBox(this.field_7631.add(-2, -2, -2), this.field_7631.add(2, 2, 2)))) {
+						.method_18467(LivingEntity.class, new BoundingBox(this.field_7631.add(-2, -2, -2), this.field_7631.add(2, 2, 2)))) {
 						if (livingEntity.getUuid().equals(this.field_7632)) {
 							this.field_7626 = livingEntity;
 							break;
@@ -236,7 +236,7 @@ public class ShulkerBulletEntity extends Entity {
 
 				if (this.field_7630 == null && this.field_7629 != null) {
 					for (LivingEntity livingEntityx : this.world
-						.getVisibleEntities(LivingEntity.class, new BoundingBox(this.field_7634.add(-2, -2, -2), this.field_7634.add(2, 2, 2)))) {
+						.method_18467(LivingEntity.class, new BoundingBox(this.field_7634.add(-2, -2, -2), this.field_7634.add(2, 2, 2)))) {
 						if (livingEntityx.getUuid().equals(this.field_7629)) {
 							this.field_7630 = livingEntityx;
 							break;

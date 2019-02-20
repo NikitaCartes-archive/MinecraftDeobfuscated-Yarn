@@ -33,7 +33,7 @@ public class ParrotMoveControl extends MoveControl {
 				i = (float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.FLYING_SPEED).getValue());
 			}
 
-			this.entity.method_6125(i);
+			this.entity.setMovementSpeed(i);
 			double j = (double)MathHelper.sqrt(d * d + f * f);
 			float k = (float)(-(MathHelper.atan2(e, j) * 180.0F / (float)Math.PI));
 			this.entity.pitch = this.method_6238(this.entity.pitch, k, 10.0F);

@@ -76,25 +76,25 @@ public class StatsScreen extends Screen implements class_452 {
 	}
 
 	public void method_2267() {
-		this.addButton(new ButtonWidget(0, this.width / 2 - 100, this.height - 28, I18n.translate("gui.done")) {
+		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 28, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
 				StatsScreen.this.client.openScreen(StatsScreen.this.field_2648);
 			}
 		});
-		this.addButton(new ButtonWidget(1, this.width / 2 - 120, this.height - 52, 80, 20, I18n.translate("stat.generalButton")) {
+		this.addButton(new ButtonWidget(this.width / 2 - 120, this.height - 52, 80, 20, I18n.translate("stat.generalButton")) {
 			@Override
 			public void onPressed(double d, double e) {
 				StatsScreen.this.field_2643 = StatsScreen.this.field_2644;
 			}
 		});
-		ButtonWidget buttonWidget = this.addButton(new ButtonWidget(3, this.width / 2 - 40, this.height - 52, 80, 20, I18n.translate("stat.itemsButton")) {
+		ButtonWidget buttonWidget = this.addButton(new ButtonWidget(this.width / 2 - 40, this.height - 52, 80, 20, I18n.translate("stat.itemsButton")) {
 			@Override
 			public void onPressed(double d, double e) {
 				StatsScreen.this.field_2643 = StatsScreen.this.field_2642;
 			}
 		});
-		ButtonWidget buttonWidget2 = this.addButton(new ButtonWidget(4, this.width / 2 + 40, this.height - 52, 80, 20, I18n.translate("stat.mobsButton")) {
+		ButtonWidget buttonWidget2 = this.addButton(new ButtonWidget(this.width / 2 + 40, this.height - 52, 80, 20, I18n.translate("stat.mobsButton")) {
 			@Override
 			public void onPressed(double d, double e) {
 				StatsScreen.this.field_2643 = StatsScreen.this.field_2646;
@@ -112,7 +112,7 @@ public class StatsScreen extends Screen implements class_452 {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		if (this.field_2645) {
 			this.drawBackground();
 			this.drawStringCentered(this.fontRenderer, I18n.translate("multiplayer.downloadingStats"), this.width / 2, this.height / 2, 16777215);
@@ -120,9 +120,9 @@ public class StatsScreen extends Screen implements class_452 {
 				this.fontRenderer, field_2668[(int)(SystemUtil.getMeasuringTimeMs() / 150L % (long)field_2668.length)], this.width / 2, this.height / 2 + 9 * 2, 16777215
 			);
 		} else {
-			this.field_2643.draw(i, j, f);
+			this.field_2643.method_18326(i, j, f);
 			this.drawStringCentered(this.fontRenderer, this.field_2649, this.width / 2, 20, 16777215);
-			super.draw(i, j, f);
+			super.method_18326(i, j, f);
 		}
 	}
 

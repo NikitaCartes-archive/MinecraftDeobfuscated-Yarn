@@ -27,7 +27,7 @@ public class DimensionArgumentType implements ArgumentType<DimensionType> {
 		object -> new TranslatableTextComponent("argument.dimension.invalid", object)
 	);
 
-	public <S> DimensionType method_9287(StringReader stringReader) throws CommandSyntaxException {
+	public DimensionType method_9287(StringReader stringReader) throws CommandSyntaxException {
 		Identifier identifier = Identifier.parse(stringReader);
 		return (DimensionType)Registry.DIMENSION.getOrEmpty(identifier).orElseThrow(() -> INVALID_DIMENSION_EXCEPTION.create(identifier));
 	}

@@ -55,7 +55,7 @@ public class EntityHurtPlayerCriterion implements Criterion<EntityHurtPlayerCrit
 		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public EntityHurtPlayerCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public EntityHurtPlayerCriterion.Conditions method_8902(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		DamagePredicate damagePredicate = DamagePredicate.deserialize(jsonObject.get("damage"));
 		return new EntityHurtPlayerCriterion.Conditions(damagePredicate);
 	}

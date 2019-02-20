@@ -135,7 +135,7 @@ public class IntegratedServer extends MinecraftServer {
 			int i = Math.max(2, this.client.options.viewDistance + -2);
 			if (i != this.getPlayerManager().getViewDistance()) {
 				LOGGER.info("Changing view distance to {}, from {}", i, this.getPlayerManager().getViewDistance());
-				this.getPlayerManager().setViewDistance(i);
+				this.getPlayerManager().setViewDistance(i, i - 2);
 			}
 
 			if (this.client.world != null) {

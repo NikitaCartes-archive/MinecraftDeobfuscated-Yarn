@@ -6,6 +6,8 @@ import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
+import it.unimi.dsi.fastutil.ints.Int2ShortMap;
+import it.unimi.dsi.fastutil.ints.Int2ShortOpenHashMap;
 import java.util.Collections;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -33,6 +35,7 @@ import net.minecraft.client.network.packet.KeepAliveS2CPacket;
 import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
 import net.minecraft.client.network.packet.TagQueryResponseS2CPacket;
 import net.minecraft.client.network.packet.VehicleMoveS2CPacket;
+import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.container.AnvilContainer;
 import net.minecraft.container.BeaconContainer;
 import net.minecraft.container.Container;
@@ -47,7 +50,6 @@ import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.HorseBaseEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -83,10 +85,10 @@ import net.minecraft.server.network.packet.HandSwingC2SPacket;
 import net.minecraft.server.network.packet.KeepAliveC2SPacket;
 import net.minecraft.server.network.packet.PickFromInventoryC2SPacket;
 import net.minecraft.server.network.packet.PlayerActionC2SPacket;
+import net.minecraft.server.network.packet.PlayerInputC2SPacket;
 import net.minecraft.server.network.packet.PlayerInteractBlockC2SPacket;
 import net.minecraft.server.network.packet.PlayerInteractEntityC2SPacket;
 import net.minecraft.server.network.packet.PlayerInteractItemC2SPacket;
-import net.minecraft.server.network.packet.PlayerLookC2SPacket;
 import net.minecraft.server.network.packet.PlayerMoveServerMessage;
 import net.minecraft.server.network.packet.QueryBlockNbtC2SPacket;
 import net.minecraft.server.network.packet.QueryEntityNbtC2SPacket;
@@ -117,9 +119,7 @@ import net.minecraft.util.ChatUtil;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.IntHashMap;
 import net.minecraft.util.SystemUtil;
-import net.minecraft.util.Tickable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -134,7 +134,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Tickable {
+public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public final ClientConnection client;
 	private final MinecraftServer server;
@@ -145,7 +145,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	private long keepAliveId;
 	private int messageCooldown;
 	private int creativeItemDropThreshold;
-	private final IntHashMap<Short> transactions = new IntHashMap<>();
+	private final Int2ShortMap transactions = new Int2ShortOpenHashMap();
 	private double lastTickX;
 	private double lastTickY;
 	private double lastTickZ;
@@ -177,8 +177,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 		serverPlayerEntity.networkHandler = this;
 	}
 
-	@Override
-	public void tick() {
+	public void method_18784() {
 		this.syncWithPlayerPosition();
 		this.player.method_14226();
 		this.player.setPositionAnglesAndUpdate(this.lastTickX, this.lastTickY, this.lastTickZ, this.player.yaw, this.player.pitch);
@@ -268,9 +267,10 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	}
 
 	@Override
-	public void onPlayerLook(PlayerLookC2SPacket playerLookC2SPacket) {
-		NetworkThreadUtils.forceMainThread(playerLookC2SPacket, this, this.player.getServerWorld());
-		this.player.method_14218(playerLookC2SPacket.getYaw(), playerLookC2SPacket.getPitch(), playerLookC2SPacket.isJumping(), playerLookC2SPacket.isSneaking());
+	public void method_12067(PlayerInputC2SPacket playerInputC2SPacket) {
+		NetworkThreadUtils.forceMainThread(playerInputC2SPacket, this, this.player.getServerWorld());
+		this.player
+			.method_14218(playerInputC2SPacket.getSideways(), playerInputC2SPacket.getForward(), playerInputC2SPacket.isJumping(), playerInputC2SPacket.isSneaking());
 	}
 
 	private static boolean validatePlayerMove(PlayerMoveServerMessage playerMoveServerMessage) {
@@ -348,7 +348,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 					return;
 				}
 
-				this.server.getPlayerManager().method_14575(this.player);
+				this.player.getServerWorld().method_14178().addOrRemovePlayer(this.player);
 				this.player.method_7282(this.player.x - d, this.player.y - e, this.player.z - f);
 				this.ridingEntity = m >= -0.03125
 					&& !this.server.isFlightEnabled()
@@ -646,7 +646,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 						ItemStack itemStack3 = new ItemStack(Items.field_8360);
 						CompoundTag compoundTag = itemStack2.getTag();
 						if (compoundTag != null) {
-							itemStack3.setTag(compoundTag.copy());
+							itemStack3.setTag(compoundTag.method_10553());
 						}
 
 						itemStack3.setChildTag("author", new StringTag(this.player.getName().getString()));
@@ -716,7 +716,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 							.setPositionAnglesAndUpdate(
 								this.player.x, this.player.y, this.player.z, playerMoveServerMessage.getYaw(this.player.yaw), playerMoveServerMessage.getPitch(this.player.pitch)
 							);
-						this.server.getPlayerManager().method_14575(this.player);
+						this.player.getServerWorld().method_14178().addOrRemovePlayer(this.player);
 					} else {
 						double d = this.player.x;
 						double e = this.player.y;
@@ -802,7 +802,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 								&& !this.player.isFallFlying()
 								&& !serverWorld.isAreaNotEmpty(this.player.getBoundingBox().expand(0.0625).stretch(0.0, -0.55, 0.0));
 							this.player.onGround = playerMoveServerMessage.isOnGround();
-							this.server.getPlayerManager().method_14575(this.player);
+							this.player.getServerWorld().method_14178().addOrRemovePlayer(this.player);
 							this.player.method_14207(this.player.y - g, playerMoveServerMessage.isOnGround());
 							this.updatedX = this.player.x;
 							this.updatedY = this.player.y;
@@ -946,7 +946,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 			for (ServerWorld serverWorld : this.server.getWorlds()) {
 				Entity entity = spectatorTeleportC2SPacket.getTarget(serverWorld);
 				if (entity != null) {
-					this.player.method_14251((ServerWorld)entity.world, entity.x, entity.y, entity.z, entity.yaw, entity.pitch);
+					this.player.method_14251(serverWorld, entity.x, entity.y, entity.z, entity.yaw, entity.pitch);
 					return;
 				}
 			}
@@ -988,12 +988,12 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	public void sendPacket(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> genericFutureListener) {
 		if (packet instanceof ChatMessageS2CPacket) {
 			ChatMessageS2CPacket chatMessageS2CPacket = (ChatMessageS2CPacket)packet;
-			PlayerEntity.ChatVisibility chatVisibility = this.player.getClientChatVisibility();
-			if (chatVisibility == PlayerEntity.ChatVisibility.HIDDEN && chatMessageS2CPacket.getLocation() != ChatMessageType.field_11733) {
+			ChatVisibility chatVisibility = this.player.getClientChatVisibility();
+			if (chatVisibility == ChatVisibility.HIDDEN && chatMessageS2CPacket.getLocation() != ChatMessageType.field_11733) {
 				return;
 			}
 
-			if (chatVisibility == PlayerEntity.ChatVisibility.COMMANDS && !chatMessageS2CPacket.isNonChat()) {
+			if (chatVisibility == ChatVisibility.COMMANDS && !chatMessageS2CPacket.isNonChat()) {
 				return;
 			}
 		}
@@ -1022,7 +1022,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	@Override
 	public void onChatMessage(ChatMessageC2SPacket chatMessageC2SPacket) {
 		NetworkThreadUtils.forceMainThread(chatMessageC2SPacket, this, this.player.getServerWorld());
-		if (this.player.getClientChatVisibility() == PlayerEntity.ChatVisibility.HIDDEN) {
+		if (this.player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
 			this.sendPacket(new ChatMessageS2CPacket(new TranslatableTextComponent("chat.cannotSend").applyFormat(TextFormat.field_1061)));
 		} else {
 			this.player.updateLastActionTime();
@@ -1293,10 +1293,9 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener, Ticka
 	@Override
 	public void onConfirmTransaction(GuiActionConfirmC2SPacket guiActionConfirmC2SPacket) {
 		NetworkThreadUtils.forceMainThread(guiActionConfirmC2SPacket, this, this.player.getServerWorld());
-		Short short_ = this.transactions.get(this.player.container.syncId);
-		if (short_ != null
-			&& guiActionConfirmC2SPacket.getSyncId() == short_
-			&& this.player.container.syncId == guiActionConfirmC2SPacket.getWindowId()
+		int i = this.player.container.syncId;
+		if (i == guiActionConfirmC2SPacket.getWindowId()
+			&& this.transactions.getOrDefault(i, (short)(guiActionConfirmC2SPacket.getSyncId() + 1)) == guiActionConfirmC2SPacket.getSyncId()
 			&& !this.player.container.isRestricted(this.player)
 			&& !this.player.isSpectator()) {
 			this.player.container.setPlayerRestriction(this.player, true);

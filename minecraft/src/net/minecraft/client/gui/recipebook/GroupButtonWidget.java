@@ -20,8 +20,8 @@ public class GroupButtonWidget extends ToggleButtonWidget {
 	private final RecipeBookGroup category;
 	private float bounce;
 
-	public GroupButtonWidget(int i, RecipeBookGroup recipeBookGroup) {
-		super(i, 0, 0, 35, 27, false);
+	public GroupButtonWidget(RecipeBookGroup recipeBookGroup) {
+		super(0, 0, 35, 27, false);
 		this.category = recipeBookGroup;
 		this.setTextureUV(153, 2, 35, 0, RecipeBookGui.TEXTURE);
 	}

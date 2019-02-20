@@ -6,6 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -15,6 +16,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.item.HorseArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.SpawnEggItem;
@@ -30,7 +32,6 @@ import net.minecraft.world.World;
 public class HorseEntity extends HorseBaseEntity {
 	private static final UUID field_6985 = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F295");
 	private static final TrackedData<Integer> VARIANT = DataTracker.registerData(HorseEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final TrackedData<Integer> ARMOR_TYPE = DataTracker.registerData(HorseEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final String[] HORSE_TEX = new String[]{
 		"textures/entity/horse/horse_white.png",
 		"textures/entity/horse/horse_creamy.png",
@@ -50,17 +51,16 @@ public class HorseEntity extends HorseBaseEntity {
 	};
 	private static final String[] HORSE_MARKING_TEX_ID = new String[]{"", "wo_", "wmo", "wdo", "bdo"};
 	private String textureLocation;
-	private final String[] textureLayers = new String[3];
+	private final String[] textureLayers = new String[2];
 
-	public HorseEntity(World world) {
-		super(EntityType.HORSE, world);
+	public HorseEntity(EntityType<? extends HorseEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
 		this.dataTracker.startTracking(VARIANT, 0);
-		this.dataTracker.startTracking(ARMOR_TYPE, HorseArmorType.NONE.getOrdinal());
 	}
 
 	@Override
@@ -72,13 +72,21 @@ public class HorseEntity extends HorseBaseEntity {
 		}
 	}
 
+	public ItemStack getArmorType() {
+		return this.getEquippedStack(EquipmentSlot.CHEST);
+	}
+
+	private void method_18445(ItemStack itemStack) {
+		this.setEquippedStack(EquipmentSlot.CHEST, itemStack);
+	}
+
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
 		this.setVariant(compoundTag.getInt("Variant"));
 		if (compoundTag.containsKey("ArmorItem", 10)) {
 			ItemStack itemStack = ItemStack.fromTag(compoundTag.getCompound("ArmorItem"));
-			if (!itemStack.isEmpty() && HorseArmorType.isHorseArmor(itemStack.getItem())) {
+			if (!itemStack.isEmpty() && this.method_6773(itemStack)) {
 				this.decorationItem.setInvStack(1, itemStack);
 			}
 		}
@@ -104,11 +112,9 @@ public class HorseEntity extends HorseBaseEntity {
 		int i = this.getVariant();
 		int j = (i & 0xFF) % 7;
 		int k = ((i & 0xFF00) >> 8) % 5;
-		HorseArmorType horseArmorType = this.getArmorType();
 		this.textureLayers[0] = HORSE_TEX[j];
 		this.textureLayers[1] = HORSE_MARKING_TEX[k];
-		this.textureLayers[2] = horseArmorType.getTexturePath();
-		this.textureLocation = "horse/" + HORSE_TEX_ID[j] + HORSE_MARKING_TEX_ID[k] + horseArmorType.getId();
+		this.textureLocation = "horse/" + HORSE_TEX_ID[j] + HORSE_MARKING_TEX_ID[k];
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -135,30 +141,26 @@ public class HorseEntity extends HorseBaseEntity {
 		this.setArmorTypeFromStack(this.decorationItem.getInvStack(1));
 	}
 
-	public void setArmorTypeFromStack(ItemStack itemStack) {
-		HorseArmorType horseArmorType = HorseArmorType.getByStack(itemStack);
-		this.dataTracker.set(ARMOR_TYPE, horseArmorType.getOrdinal());
-		this.clearTextureInfo();
+	private void setArmorTypeFromStack(ItemStack itemStack) {
+		this.method_18445(itemStack);
 		if (!this.world.isClient) {
 			this.getAttributeInstance(EntityAttributes.ARMOR).removeModifier(field_6985);
-			int i = horseArmorType.getProtectionAmount();
-			if (i != 0) {
-				this.getAttributeInstance(EntityAttributes.ARMOR)
-					.addModifier(new EntityAttributeModifier(field_6985, "Horse armor bonus", (double)i, EntityAttributeModifier.Operation.field_6328).setSerialize(false));
+			if (this.method_6773(itemStack)) {
+				int i = ((HorseArmorItem)itemStack.getItem()).method_18455();
+				if (i != 0) {
+					this.getAttributeInstance(EntityAttributes.ARMOR)
+						.addModifier(new EntityAttributeModifier(field_6985, "Horse armor bonus", (double)i, EntityAttributeModifier.Operation.field_6328).setSerialize(false));
+				}
 			}
 		}
 	}
 
-	public HorseArmorType getArmorType() {
-		return HorseArmorType.getByOrdinal(this.dataTracker.get(ARMOR_TYPE));
-	}
-
 	@Override
 	public void onInvChange(Inventory inventory) {
-		HorseArmorType horseArmorType = this.getArmorType();
+		ItemStack itemStack = this.getArmorType();
 		super.onInvChange(inventory);
-		HorseArmorType horseArmorType2 = this.getArmorType();
-		if (this.age > 20 && horseArmorType != horseArmorType2 && horseArmorType2 != HorseArmorType.NONE) {
+		ItemStack itemStack2 = this.getArmorType();
+		if (this.age > 20 && this.method_6773(itemStack2) && itemStack != itemStack2) {
 			this.playSound(SoundEvents.field_15141, 0.5F, 1.0F);
 		}
 	}
@@ -248,9 +250,8 @@ public class HorseEntity extends HorseBaseEntity {
 					return true;
 				}
 
-				boolean bl2 = HorseArmorType.getByStack(itemStack) != HorseArmorType.NONE;
-				boolean bl3 = !this.isChild() && !this.isSaddled() && itemStack.getItem() == Items.field_8175;
-				if (bl2 || bl3) {
+				boolean bl2 = !this.isChild() && !this.isSaddled() && itemStack.getItem() == Items.field_8175;
+				if (this.method_6773(itemStack) || bl2) {
 					this.method_6722(playerEntity);
 					return true;
 				}
@@ -280,10 +281,10 @@ public class HorseEntity extends HorseBaseEntity {
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
 		HorseBaseEntity horseBaseEntity;
 		if (passiveEntity instanceof DonkeyEntity) {
-			horseBaseEntity = new MuleEntity(this.world);
+			horseBaseEntity = EntityType.MULE.create(this.world);
 		} else {
 			HorseEntity horseEntity = (HorseEntity)passiveEntity;
-			horseBaseEntity = new HorseEntity(this.world);
+			horseBaseEntity = EntityType.HORSE.create(this.world);
 			int i = this.random.nextInt(9);
 			int j;
 			if (i < 4) {
@@ -317,7 +318,7 @@ public class HorseEntity extends HorseBaseEntity {
 
 	@Override
 	public boolean method_6773(ItemStack itemStack) {
-		return HorseArmorType.isHorseArmor(itemStack.getItem());
+		return itemStack.getItem() instanceof HorseArmorItem;
 	}
 
 	@Nullable

@@ -101,7 +101,7 @@ public class class_860 implements DebugRenderer.DebugRenderer {
 			int i = (int)clientPlayerEntity.x >> 4;
 			int j = (int)clientPlayerEntity.z >> 4;
 			Builder<ChunkPos, String> builder = ImmutableMap.builder();
-			ClientChunkManager clientChunkManager = clientWorld.getChunkProvider();
+			ClientChunkManager clientChunkManager = clientWorld.method_2935();
 
 			for (int k = i - 12; k <= i + 12; k++) {
 				for (int l = j - 12; l <= j + 12; l++) {
@@ -123,7 +123,7 @@ public class class_860 implements DebugRenderer.DebugRenderer {
 			this.field_4515 = builder.build();
 			this.field_4514 = integratedServer.executeFuture(() -> {
 				Builder<ChunkPos, String> builderx = ImmutableMap.builder();
-				ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
+				ServerChunkManager serverChunkManager = serverWorld.method_14178();
 
 				for (int kx = i - 12; kx <= i + 12; kx++) {
 					for (int lx = j - 12; lx <= j + 12; lx++) {

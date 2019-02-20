@@ -7,6 +7,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
@@ -63,7 +65,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 		}
 	};
 
-	protected AbstractSkeletonEntity(EntityType<?> entityType, World world) {
+	protected AbstractSkeletonEntity(EntityType<? extends AbstractSkeletonEntity> entityType, World world) {
 		super(entityType, world);
 		this.method_6997();
 	}
@@ -221,7 +223,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	}
 
 	@Override
-	public float getEyeHeight() {
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
 		return 1.74F;
 	}
 

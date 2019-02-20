@@ -6,7 +6,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.render.block.BlockColorMap;
 import net.minecraft.client.render.block.GrassColorHandler;
-import net.minecraft.item.DyeableArmorItem;
+import net.minecraft.item.DyeableItem;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemProvider;
@@ -26,11 +26,12 @@ public class ItemColorMap {
 	public static ItemColorMap create(BlockColorMap blockColorMap) {
 		ItemColorMap itemColorMap = new ItemColorMap();
 		itemColorMap.register(
-			(itemStack, i) -> i > 0 ? -1 : ((DyeableArmorItem)itemStack.getItem()).getColor(itemStack),
+			(itemStack, i) -> i > 0 ? -1 : ((DyeableItem)itemStack.getItem()).getColor(itemStack),
 			Items.field_8267,
 			Items.field_8577,
 			Items.field_8570,
-			Items.field_8370
+			Items.field_8370,
+			Items.field_18138
 		);
 		itemColorMap.register((itemStack, i) -> GrassColorHandler.getColor(0.5, 1.0), Blocks.field_10214, Blocks.field_10313);
 		itemColorMap.register((itemStack, i) -> {

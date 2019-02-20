@@ -56,7 +56,7 @@ public class ChanneledLightningCriterion implements Criterion<ChanneledLightning
 		this.field_9500.remove(playerAdvancementTracker);
 	}
 
-	public ChanneledLightningCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public ChanneledLightningCriterion.Conditions method_8801(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		EntityPredicate[] entityPredicates = EntityPredicate.deserializeAll(jsonObject.get("victims"));
 		return new ChanneledLightningCriterion.Conditions(entityPredicates);
 	}

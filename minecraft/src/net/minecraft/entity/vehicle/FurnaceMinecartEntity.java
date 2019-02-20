@@ -27,8 +27,8 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	public double pushZ;
 	private static final Ingredient field_7738 = Ingredient.ofItems(Items.field_8713, Items.field_8665);
 
-	public FurnaceMinecartEntity(World world) {
-		super(EntityType.FURNACE_MINECART, world);
+	public FurnaceMinecartEntity(EntityType<? extends FurnaceMinecartEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public FurnaceMinecartEntity(World world, double d, double e, double f) {

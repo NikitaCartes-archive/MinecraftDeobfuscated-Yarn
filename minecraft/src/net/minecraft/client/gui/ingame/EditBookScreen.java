@@ -59,7 +59,7 @@ public class EditBookScreen extends Screen {
 		this.hand = hand;
 		CompoundTag compoundTag = itemStack.getTag();
 		if (compoundTag != null) {
-			ListTag listTag = compoundTag.getList("pages", 8).copy();
+			ListTag listTag = compoundTag.getList("pages", 8).method_10612();
 
 			for (int i = 0; i < listTag.size(); i++) {
 				this.pages.add(listTag.getString(i));
@@ -84,21 +84,21 @@ public class EditBookScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.buttonSign = this.addButton(new ButtonWidget(3, this.width / 2 - 100, 196, 98, 20, I18n.translate("book.signButton")) {
+		this.buttonSign = this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, I18n.translate("book.signButton")) {
 			@Override
 			public void onPressed(double d, double e) {
 				EditBookScreen.this.signing = true;
 				EditBookScreen.this.updateButtons();
 			}
 		});
-		this.buttonDone = this.addButton(new ButtonWidget(0, this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.done")) {
+		this.buttonDone = this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
 				EditBookScreen.this.client.openScreen(null);
 				EditBookScreen.this.finalizeBook(false);
 			}
 		});
-		this.buttonFinalize = this.addButton(new ButtonWidget(5, this.width / 2 - 100, 196, 98, 20, I18n.translate("book.finalizeButton")) {
+		this.buttonFinalize = this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, I18n.translate("book.finalizeButton")) {
 			@Override
 			public void onPressed(double d, double e) {
 				if (EditBookScreen.this.signing) {
@@ -107,7 +107,7 @@ public class EditBookScreen extends Screen {
 				}
 			}
 		});
-		this.buttonCancel = this.addButton(new ButtonWidget(4, this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.cancel")) {
+		this.buttonCancel = this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.cancel")) {
 			@Override
 			public void onPressed(double d, double e) {
 				if (EditBookScreen.this.signing) {
@@ -119,7 +119,7 @@ public class EditBookScreen extends Screen {
 		});
 		int i = (this.width - 192) / 2;
 		int j = 2;
-		this.buttonPreviousPage = this.addButton(new BookPageButtonWidget(1, i + 116, 159, true) {
+		this.buttonPreviousPage = this.addButton(new BookPageButtonWidget(i + 116, 159, true) {
 			@Override
 			public void onPressed(double d, double e) {
 				EditBookScreen.this.openNextPage();
@@ -130,7 +130,7 @@ public class EditBookScreen extends Screen {
 				EditBookScreen.this.playPageTurnSound();
 			}
 		});
-		this.buttonNextPage = this.addButton(new BookPageButtonWidget(2, i + 43, 159, false) {
+		this.buttonNextPage = this.addButton(new BookPageButtonWidget(i + 43, 159, false) {
 			@Override
 			public void onPressed(double d, double e) {
 				EditBookScreen.this.openPreviousPage();
@@ -498,7 +498,7 @@ public class EditBookScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(WrittenBookScreen.BOOK_TEXTURE);
 		int k = (this.width - 192) / 2;
@@ -545,7 +545,7 @@ public class EditBookScreen extends Screen {
 			}
 		}
 
-		super.draw(i, j, f);
+		super.method_18326(i, j, f);
 	}
 
 	private int getStringWidth(String string) {

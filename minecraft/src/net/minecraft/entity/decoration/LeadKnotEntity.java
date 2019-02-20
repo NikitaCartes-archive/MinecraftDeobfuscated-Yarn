@@ -4,6 +4,8 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -21,8 +23,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class LeadKnotEntity extends AbstractDecorationEntity {
-	public LeadKnotEntity(World world) {
-		super(EntityType.LEASH_KNOT, world);
+	public LeadKnotEntity(EntityType<? extends LeadKnotEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public LeadKnotEntity(World world, BlockPos blockPos) {
@@ -62,7 +64,7 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public float getEyeHeight() {
+	protected float method_18378(class_4050 arg, class_4048 arg2) {
 		return -0.0625F;
 	}
 
@@ -93,7 +95,7 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 			boolean bl = false;
 			double d = 7.0;
 			List<MobEntity> list = this.world
-				.getVisibleEntities(MobEntity.class, new BoundingBox(this.x - 7.0, this.y - 7.0, this.z - 7.0, this.x + 7.0, this.y + 7.0, this.z + 7.0));
+				.method_18467(MobEntity.class, new BoundingBox(this.x - 7.0, this.y - 7.0, this.z - 7.0, this.x + 7.0, this.y + 7.0, this.z + 7.0));
 
 			for (MobEntity mobEntity : list) {
 				if (mobEntity.isLeashed() && mobEntity.getHoldingEntity() == playerEntity) {
@@ -127,7 +129,7 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 		int j = blockPos.getY();
 		int k = blockPos.getZ();
 
-		for (LeadKnotEntity leadKnotEntity : world.getVisibleEntities(
+		for (LeadKnotEntity leadKnotEntity : world.method_18467(
 			LeadKnotEntity.class, new BoundingBox((double)i - 1.0, (double)j - 1.0, (double)k - 1.0, (double)i + 1.0, (double)j + 1.0, (double)k + 1.0)
 		)) {
 			if (leadKnotEntity.getDecorationBlockPos().equals(blockPos)) {

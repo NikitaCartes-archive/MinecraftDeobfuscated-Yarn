@@ -82,7 +82,7 @@ public class DedicatedServerGui extends JComponent {
 		this.stopTasks.add(runnable);
 	}
 
-	private JComponent createStatsPanel() throws Exception {
+	private JComponent createStatsPanel() {
 		JPanel jPanel = new JPanel(new BorderLayout());
 		PlayerStatsGui playerStatsGui = new PlayerStatsGui(this.server);
 		this.stopTasks.add(playerStatsGui::stop);
@@ -92,14 +92,14 @@ public class DedicatedServerGui extends JComponent {
 		return jPanel;
 	}
 
-	private JComponent createPlaysPanel() throws Exception {
+	private JComponent createPlaysPanel() {
 		JList<?> jList = new PlayerListGui(this.server);
 		JScrollPane jScrollPane = new JScrollPane(jList, 22, 30);
 		jScrollPane.setBorder(new TitledBorder(new EtchedBorder(), "Players"));
 		return jScrollPane;
 	}
 
-	private JComponent createLogPanel() throws Exception {
+	private JComponent createLogPanel() {
 		JPanel jPanel = new JPanel(new BorderLayout());
 		JTextArea jTextArea = new JTextArea();
 		JScrollPane jScrollPane = new JScrollPane(jTextArea, 22, 30);

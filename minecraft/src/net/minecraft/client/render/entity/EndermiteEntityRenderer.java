@@ -18,7 +18,7 @@ public class EndermiteEntityRenderer extends MobEntityRenderer<EndermiteEntity, 
 		return 180.0F;
 	}
 
-	protected Identifier getTexture(EndermiteEntity endermiteEntity) {
+	protected Identifier method_3920(EndermiteEntity endermiteEntity) {
 		return SKIN;
 	}
 }

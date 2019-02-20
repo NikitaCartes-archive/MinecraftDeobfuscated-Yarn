@@ -47,7 +47,7 @@ public class SelectorTextComponent extends AbstractTextComponent implements clas
 		return this.pattern;
 	}
 
-	public SelectorTextComponent getTextComponent() {
+	public SelectorTextComponent method_10931() {
 		return new SelectorTextComponent(this.pattern);
 	}
 

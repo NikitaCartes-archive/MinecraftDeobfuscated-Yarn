@@ -69,7 +69,7 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 		if (villageProperties != null) {
 			List<RaiderEntity> list = this.owner
 				.world
-				.getEntities(
+				.method_8390(
 					RaiderEntity.class,
 					boundingBox == null ? this.owner.getBoundingBox().expand(16.0) : boundingBox,
 					raiderEntityx -> !raiderEntityx.hasActiveRaid() && RaidManager.isValidRaiderFor(raiderEntityx, raid)

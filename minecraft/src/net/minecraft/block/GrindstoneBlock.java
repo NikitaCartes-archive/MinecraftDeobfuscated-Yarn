@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.client.network.ClientDummyContainerProvider;
-import net.minecraft.container.ContainerWorldContext;
+import net.minecraft.container.BlockContext;
 import net.minecraft.container.GrindstoneContainer;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.VerticalEntityPosition;
@@ -154,7 +154,7 @@ public class GrindstoneBlock extends WallMountedBlock {
 	@Override
 	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
 		return new ClientDummyContainerProvider(
-			(i, playerInventory, playerEntity) -> new GrindstoneContainer(i, playerInventory, ContainerWorldContext.create(world, blockPos)), CONTAINER_NAME
+			(i, playerInventory, playerEntity) -> new GrindstoneContainer(i, playerInventory, BlockContext.create(world, blockPos)), CONTAINER_NAME
 		);
 	}
 

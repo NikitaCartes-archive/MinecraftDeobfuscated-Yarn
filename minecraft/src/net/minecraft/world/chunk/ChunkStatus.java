@@ -33,9 +33,7 @@ public class ChunkStatus {
 		(chunkStatus, world, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> {
 			if (!chunk.getStatus().isAfter(getLightStatus()) || !chunk.isLightOn()) {
 				ChunkPos chunkPos = chunk.getPos();
-				int i = chunkPos.x;
-				int j = chunkPos.z;
-				serverLightingProvider.method_15557(i, j, true);
+				serverLightingProvider.method_15557(chunkPos, true);
 			}
 
 			if (!chunk.getStatus().isAfter(chunkStatus)) {
@@ -110,15 +108,12 @@ public class ChunkStatus {
 		ChunkStatus.ChunkType.PROTOCHUNK,
 		(chunkStatus, world, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> {
 			chunk.setLightingProvider(serverLightingProvider);
-			ChunkPos chunkPos = chunk.getPos();
-			int i = chunkPos.x;
-			int j = chunkPos.z;
 			boolean bl = chunk.getStatus().isAfter(chunkStatus) && chunk.isLightOn();
 			if (!chunk.getStatus().isAfter(chunkStatus)) {
 				((ProtoChunk)chunk).setStatus(chunkStatus);
 			}
 
-			return serverLightingProvider.light(chunk, i, j, bl);
+			return serverLightingProvider.light(chunk, bl);
 		}
 	);
 	public static final ChunkStatus SPAWN = register(

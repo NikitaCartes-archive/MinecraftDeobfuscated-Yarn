@@ -2,6 +2,7 @@ package net.minecraft.container;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
@@ -15,6 +16,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class GrindstoneContainer extends Container {
@@ -26,15 +28,15 @@ public class GrindstoneContainer extends Container {
 			GrindstoneContainer.this.onContentChanged(this);
 		}
 	};
-	private final ContainerWorldContext context;
+	private final BlockContext context;
 
 	public GrindstoneContainer(int i, PlayerInventory playerInventory) {
-		this(i, playerInventory, ContainerWorldContext.NO_OP_CONTEXT);
+		this(i, playerInventory, BlockContext.EMPTY);
 	}
 
-	public GrindstoneContainer(int i, PlayerInventory playerInventory, ContainerWorldContext containerWorldContext) {
+	public GrindstoneContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
 		super(ContainerType.GRINDSTONE, i);
-		this.context = containerWorldContext;
+		this.context = blockContext;
 		this.addSlot(new Slot(this.craftingInventory, 0, 49, 19) {
 			@Override
 			public boolean canInsert(ItemStack itemStack) {
@@ -55,7 +57,7 @@ public class GrindstoneContainer extends Container {
 
 			@Override
 			public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
-				containerWorldContext.run((world, blockPos) -> {
+				blockContext.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 					int i = this.method_17416(world);
 
 					while (i > 0) {
@@ -65,7 +67,7 @@ public class GrindstoneContainer extends Container {
 					}
 
 					world.playEvent(1042, blockPos, 0);
-				});
+				}));
 				GrindstoneContainer.this.craftingInventory.setInvStack(0, ItemStack.EMPTY);
 				GrindstoneContainer.this.craftingInventory.setInvStack(1, ItemStack.EMPTY);
 				return itemStack;
@@ -191,7 +193,7 @@ public class GrindstoneContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.context.run((world, blockPos) -> this.dropInventory(playerEntity, world, this.craftingInventory));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(playerEntity, world, this.craftingInventory)));
 	}
 
 	@Override

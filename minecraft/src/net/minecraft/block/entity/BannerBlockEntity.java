@@ -41,7 +41,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 		this.patternListTag = null;
 		CompoundTag compoundTag = itemStack.getSubCompoundTag("BlockEntityTag");
 		if (compoundTag != null && compoundTag.containsKey("Patterns", 9)) {
-			this.patternListTag = compoundTag.getList("Patterns", 10).copy();
+			this.patternListTag = compoundTag.getList("Patterns", 10).method_10612();
 		}
 
 		this.baseColor = dyeColor;
@@ -184,7 +184,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	public ItemStack getPickStack(BlockState blockState) {
 		ItemStack itemStack = new ItemStack(StandingBannerBlock.method_9398(this.getColorForState(() -> blockState)));
 		if (this.patternListTag != null && !this.patternListTag.isEmpty()) {
-			itemStack.getOrCreateSubCompoundTag("BlockEntityTag").put("Patterns", this.patternListTag.copy());
+			itemStack.getOrCreateSubCompoundTag("BlockEntityTag").put("Patterns", this.patternListTag.method_10612());
 		}
 
 		if (this.customName != null) {

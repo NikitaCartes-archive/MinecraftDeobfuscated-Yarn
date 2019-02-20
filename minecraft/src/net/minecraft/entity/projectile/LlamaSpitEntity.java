@@ -24,12 +24,12 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 	public LlamaEntity owner;
 	private CompoundTag field_7623;
 
-	public LlamaSpitEntity(World world) {
-		super(EntityType.LLAMA_SPIT, world);
+	public LlamaSpitEntity(EntityType<? extends LlamaSpitEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public LlamaSpitEntity(World world, LlamaEntity llamaEntity) {
-		this(world);
+		this(EntityType.LLAMA_SPIT, world);
 		this.owner = llamaEntity;
 		this.setPosition(
 			llamaEntity.x - (double)(llamaEntity.getWidth() + 1.0F) * 0.5 * (double)MathHelper.sin(llamaEntity.field_6283 * (float) (Math.PI / 180.0)),
@@ -40,7 +40,7 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 
 	@Environment(EnvType.CLIENT)
 	public LlamaSpitEntity(World world, double d, double e, double f, double g, double h, double i) {
-		this(world);
+		this(EntityType.LLAMA_SPIT, world);
 		this.setPosition(d, e, f);
 
 		for (int j = 0; j < 7; j++) {
@@ -186,7 +186,7 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 		if (this.field_7623 != null && this.field_7623.hasUuid("OwnerUUID")) {
 			UUID uUID = this.field_7623.getUuid("OwnerUUID");
 
-			for (LlamaEntity llamaEntity : this.world.getVisibleEntities(LlamaEntity.class, this.getBoundingBox().expand(15.0))) {
+			for (LlamaEntity llamaEntity : this.world.method_18467(LlamaEntity.class, this.getBoundingBox().expand(15.0))) {
 				if (llamaEntity.getUuid().equals(uUID)) {
 					this.owner = llamaEntity;
 					break;

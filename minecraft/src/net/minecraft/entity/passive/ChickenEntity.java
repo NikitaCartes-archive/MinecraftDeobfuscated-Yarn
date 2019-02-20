@@ -1,6 +1,8 @@
 package net.minecraft.entity.passive;
 
 import net.minecraft.class_1394;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -36,8 +38,8 @@ public class ChickenEntity extends AnimalEntity {
 	public int eggLayTime = this.random.nextInt(6000) + 6000;
 	public boolean jockey;
 
-	public ChickenEntity(World world) {
-		super(EntityType.CHICKEN, world);
+	public ChickenEntity(EntityType<? extends ChickenEntity> entityType, World world) {
+		super(entityType, world);
 		this.setPathNodeTypeWeight(PathNodeType.field_18, 0.0F);
 	}
 
@@ -54,8 +56,8 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	public float getEyeHeight() {
-		return this.getHeight();
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
+		return arg2.field_18068;
 	}
 
 	@Override
@@ -113,8 +115,8 @@ public class ChickenEntity extends AnimalEntity {
 		this.playSound(SoundEvents.field_14685, 0.15F, 1.0F);
 	}
 
-	public ChickenEntity createChild(PassiveEntity passiveEntity) {
-		return new ChickenEntity(this.world);
+	public ChickenEntity method_6471(PassiveEntity passiveEntity) {
+		return EntityType.CHICKEN.create(this.world);
 	}
 
 	@Override

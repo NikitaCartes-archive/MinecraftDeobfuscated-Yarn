@@ -69,7 +69,7 @@ public class PlacedBlockCriterion implements Criterion<PlacedBlockCriterion.Cond
 		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public PlacedBlockCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public PlacedBlockCriterion.Conditions method_9088(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		Block block = null;
 		if (jsonObject.has("block")) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));

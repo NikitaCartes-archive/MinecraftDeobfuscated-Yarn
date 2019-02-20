@@ -9,10 +9,12 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public abstract class RealmsButton {
 	protected static final Identifier WIDGETS_LOCATION = new Identifier("textures/gui/widgets.png");
+	private final int field_18237;
 	private final RealmsButtonWidget proxy;
 
 	public RealmsButton(int i, int j, int k, String string) {
-		this.proxy = new RealmsButtonWidget(this, i, j, k, string) {
+		this.field_18237 = i;
+		this.proxy = new RealmsButtonWidget(this, j, k, string) {
 			@Override
 			public void onPressed(double d, double e) {
 				RealmsButton.this.onClick(d, e);
@@ -21,7 +23,8 @@ public abstract class RealmsButton {
 	}
 
 	public RealmsButton(int i, int j, int k, int l, int m, String string) {
-		this.proxy = new RealmsButtonWidget(this, i, j, k, string, l, m) {
+		this.field_18237 = i;
+		this.proxy = new RealmsButtonWidget(this, j, k, string, l, m) {
 			@Override
 			public void onPressed(double d, double e) {
 				RealmsButton.this.onClick(d, e);
@@ -34,7 +37,7 @@ public abstract class RealmsButton {
 	}
 
 	public int method_10253() {
-		return this.proxy.getId();
+		return this.field_18237;
 	}
 
 	public boolean active() {
@@ -62,7 +65,7 @@ public abstract class RealmsButton {
 	}
 
 	public void render(int i, int j, float f) {
-		this.proxy.render(i, j, f);
+		this.proxy.method_18326(i, j, f);
 	}
 
 	public void blit(int i, int j, int k, int l, int m, int n) {

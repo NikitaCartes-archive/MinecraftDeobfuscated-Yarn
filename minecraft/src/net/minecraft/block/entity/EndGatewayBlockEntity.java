@@ -82,7 +82,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 		if (bl2) {
 			this.teleportCooldown--;
 		} else if (!this.world.isClient) {
-			List<Entity> list = this.world.getVisibleEntities(Entity.class, new BoundingBox(this.getPos()));
+			List<Entity> list = this.world.method_18467(Entity.class, new BoundingBox(this.getPos()));
 			if (!list.isEmpty()) {
 				this.tryTeleportingEntity((Entity)list.get(0));
 			}
@@ -225,7 +225,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	}
 
 	private static WorldChunk getChunk(World world, Vec3d vec3d) {
-		return world.getWorldChunk(MathHelper.floor(vec3d.x / 16.0), MathHelper.floor(vec3d.z / 16.0));
+		return world.method_8497(MathHelper.floor(vec3d.x / 16.0), MathHelper.floor(vec3d.z / 16.0));
 	}
 
 	@Nullable

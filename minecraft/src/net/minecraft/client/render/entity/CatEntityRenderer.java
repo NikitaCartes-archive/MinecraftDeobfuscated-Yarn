@@ -38,7 +38,7 @@ public class CatEntityRenderer extends MobEntityRenderer<CatEntity, CatEntityMod
 			GlStateManager.rotatef(MathHelper.method_17821(i, 0.0F, 90.0F), 0.0F, 0.0F, 1.0F);
 			BlockPos blockPos = new BlockPos(catEntity);
 
-			for (PlayerEntity playerEntity : catEntity.world.getVisibleEntities(PlayerEntity.class, new BoundingBox(blockPos).expand(2.0, 2.0, 2.0))) {
+			for (PlayerEntity playerEntity : catEntity.world.method_18467(PlayerEntity.class, new BoundingBox(blockPos).expand(2.0, 2.0, 2.0))) {
 				if (playerEntity.isSleeping()) {
 					GlStateManager.translatef(0.15F * i, 0.0F, 0.0F);
 					break;

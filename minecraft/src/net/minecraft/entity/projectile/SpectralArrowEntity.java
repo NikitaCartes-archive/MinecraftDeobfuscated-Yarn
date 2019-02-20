@@ -13,8 +13,8 @@ import net.minecraft.world.World;
 public class SpectralArrowEntity extends ProjectileEntity {
 	private int duration = 200;
 
-	public SpectralArrowEntity(World world) {
-		super(EntityType.SPECTRAL_ARROW, world);
+	public SpectralArrowEntity(EntityType<? extends SpectralArrowEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public SpectralArrowEntity(World world, LivingEntity livingEntity) {

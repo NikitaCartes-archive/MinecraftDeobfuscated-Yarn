@@ -11,10 +11,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class MobEntityWithAi extends MobEntity {
-	private BlockPos aiHome = BlockPos.ORIGIN;
-	private float aiRadius = -1.0F;
-
-	protected MobEntityWithAi(EntityType<?> entityType, World world) {
+	protected MobEntityWithAi(EntityType<? extends MobEntityWithAi> entityType, World world) {
 		super(entityType, world);
 	}
 
@@ -35,41 +32,12 @@ public abstract class MobEntityWithAi extends MobEntity {
 		return !this.getNavigation().isIdle();
 	}
 
-	public boolean isInAiRange() {
-		return this.isInAiRange(new BlockPos(this));
-	}
-
-	public boolean isInAiRange(BlockPos blockPos) {
-		return this.aiRadius == -1.0F ? true : this.aiHome.squaredDistanceTo(blockPos) < (double)(this.aiRadius * this.aiRadius);
-	}
-
-	public void setAiHome(BlockPos blockPos, int i) {
-		this.aiHome = blockPos;
-		this.aiRadius = (float)i;
-	}
-
-	public BlockPos getAiHome() {
-		return this.aiHome;
-	}
-
-	public float getAiRadius() {
-		return this.aiRadius;
-	}
-
-	public void setAiRangeUnlimited() {
-		this.aiRadius = -1.0F;
-	}
-
-	public boolean hasLimitedAiRange() {
-		return this.aiRadius != -1.0F;
-	}
-
 	@Override
 	protected void method_5995() {
 		super.method_5995();
 		if (this.isLeashed() && this.getHoldingEntity() != null && this.getHoldingEntity().world == this.world) {
 			Entity entity = this.getHoldingEntity();
-			this.setAiHome(new BlockPos((int)entity.x, (int)entity.y, (int)entity.z), 5);
+			this.method_18408(new BlockPos((int)entity.x, (int)entity.y, (int)entity.z), 5);
 			float f = this.distanceTo(entity);
 			if (this instanceof TameableEntity && ((TameableEntity)this).isSitting()) {
 				if (f > 10.0F) {

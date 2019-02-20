@@ -35,12 +35,12 @@ public class ItemEntity extends Entity {
 	private UUID owner;
 	public final float hoverHeight = (float)(Math.random() * Math.PI * 2.0);
 
-	public ItemEntity(World world) {
-		super(EntityType.ITEM, world);
+	public ItemEntity(EntityType<? extends ItemEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public ItemEntity(World world, double d, double e, double f) {
-		this(world);
+		this(EntityType.ITEM, world);
 		this.setPosition(d, e, f);
 		this.yaw = (float)(Math.random() * 360.0);
 		this.velocityX = (double)((float)(Math.random() * 0.2F - 0.1F));
@@ -152,7 +152,7 @@ public class ItemEntity extends Entity {
 	}
 
 	private void tryMerge() {
-		List<ItemEntity> list = this.world.getVisibleEntities(ItemEntity.class, this.getBoundingBox().expand(0.5, 0.0, 0.5));
+		List<ItemEntity> list = this.world.method_18467(ItemEntity.class, this.getBoundingBox().expand(0.5, 0.0, 0.5));
 		if (!list.isEmpty()) {
 			for (ItemEntity itemEntity : list) {
 				this.tryMerge(itemEntity);

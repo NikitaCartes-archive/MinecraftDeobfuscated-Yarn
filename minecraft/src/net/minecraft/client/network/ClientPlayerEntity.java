@@ -54,7 +54,7 @@ import net.minecraft.server.network.packet.ClientStatusC2SPacket;
 import net.minecraft.server.network.packet.GuiCloseC2SPacket;
 import net.minecraft.server.network.packet.HandSwingC2SPacket;
 import net.minecraft.server.network.packet.PlayerActionC2SPacket;
-import net.minecraft.server.network.packet.PlayerLookC2SPacket;
+import net.minecraft.server.network.packet.PlayerInputC2SPacket;
 import net.minecraft.server.network.packet.PlayerMoveServerMessage;
 import net.minecraft.server.network.packet.RecipeBookDataC2SPacket;
 import net.minecraft.server.network.packet.UpdatePlayerAbilitiesC2SPacket;
@@ -180,7 +180,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			super.update();
 			if (this.hasVehicle()) {
 				this.networkHandler.sendPacket(new PlayerMoveServerMessage.LookOnly(this.yaw, this.pitch, this.onGround));
-				this.networkHandler.sendPacket(new PlayerLookC2SPacket(this.field_6212, this.field_6250, this.input.jumping, this.input.sneaking));
+				this.networkHandler.sendPacket(new PlayerInputC2SPacket(this.movementInputSideways, this.movementInputForward, this.input.jumping, this.input.sneaking));
 				Entity entity = this.getTopmostRiddenEntity();
 				if (entity != this && entity.method_5787()) {
 					this.networkHandler.sendPacket(new VehicleMoveC2SPacket(entity));
@@ -573,16 +573,15 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public boolean isSneaking() {
-		boolean bl = this.input != null && this.input.sneaking;
-		return bl && !this.sleeping;
+		return this.input != null && this.input.sneaking;
 	}
 
 	@Override
 	public void method_6023() {
 		super.method_6023();
 		if (this.method_3134()) {
-			this.field_6212 = this.input.field_3907;
-			this.field_6250 = this.input.field_3905;
+			this.movementInputSideways = this.input.movementSideways;
+			this.movementInputForward = this.input.movementForward;
 			this.field_6282 = this.input.jumping;
 			this.field_3931 = this.field_3932;
 			this.field_3914 = this.field_3916;
@@ -602,54 +601,16 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			this.field_3935--;
 		}
 
-		this.field_3911 = this.field_3929;
-		if (this.inPortal) {
-			if (this.client.currentScreen != null && !this.client.currentScreen.isPauseScreen()) {
-				if (this.client.currentScreen instanceof ContainerScreen) {
-					this.closeGui();
-				}
-
-				this.client.openScreen(null);
-			}
-
-			if (this.field_3929 == 0.0F) {
-				this.client.getSoundLoader().play(PositionedSoundInstance.master(SoundEvents.field_14669, this.random.nextFloat() * 0.4F + 0.8F));
-			}
-
-			this.field_3929 += 0.0125F;
-			if (this.field_3929 >= 1.0F) {
-				this.field_3929 = 1.0F;
-			}
-
-			this.inPortal = false;
-		} else if (this.hasPotionEffect(StatusEffects.field_5916) && this.getPotionEffect(StatusEffects.field_5916).getDuration() > 60) {
-			this.field_3929 += 0.006666667F;
-			if (this.field_3929 > 1.0F) {
-				this.field_3929 = 1.0F;
-			}
-		} else {
-			if (this.field_3929 > 0.0F) {
-				this.field_3929 -= 0.05F;
-			}
-
-			if (this.field_3929 < 0.0F) {
-				this.field_3929 = 0.0F;
-			}
-		}
-
-		if (this.portalCooldown > 0) {
-			this.portalCooldown--;
-		}
-
+		this.method_18654();
 		boolean bl = this.input.jumping;
 		boolean bl2 = this.input.sneaking;
 		float f = 0.8F;
-		boolean bl3 = this.input.field_3905 >= 0.8F;
+		boolean bl3 = this.input.movementForward >= 0.8F;
 		this.input.tick();
 		this.client.getTutorialManager().method_4909(this.input);
 		if (this.isUsingItem() && !this.hasVehicle()) {
-			this.input.field_3907 *= 0.2F;
-			this.input.field_3905 *= 0.2F;
+			this.input.movementSideways *= 0.2F;
+			this.input.movementForward *= 0.2F;
 			this.field_3935 = 0;
 		}
 
@@ -672,7 +633,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		if ((this.onGround || this.isInWater())
 			&& !bl2
 			&& !bl3
-			&& this.input.field_3905 >= 0.8F
+			&& this.input.movementForward >= 0.8F
 			&& !this.isSprinting()
 			&& bl5
 			&& !this.isUsingItem()
@@ -686,7 +647,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 		if (!this.isSprinting()
 			&& (!this.isInsideWater() || this.isInWater())
-			&& this.input.field_3905 >= 0.8F
+			&& this.input.movementForward >= 0.8F
 			&& bl5
 			&& !this.isUsingItem()
 			&& !this.hasPotionEffect(StatusEffects.field_5919)
@@ -695,7 +656,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		if (this.isSprinting()) {
-			boolean bl6 = this.input.field_3905 < 0.8F || !bl5;
+			boolean bl6 = this.input.movementForward < 0.8F || !bl5;
 			boolean bl7 = bl6 || this.horizontalCollision || this.isInsideWater() && !this.isInWater();
 			if (this.isSwimming()) {
 				if (!this.onGround && !this.input.sneaking && bl6 || !this.isInsideWater()) {
@@ -745,8 +706,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 		if (this.abilities.flying && this.method_3134()) {
 			if (this.input.sneaking) {
-				this.input.field_3907 = (float)((double)this.input.field_3907 / 0.3);
-				this.input.field_3905 = (float)((double)this.input.field_3905 / 0.3);
+				this.input.movementSideways = (float)((double)this.input.movementSideways / 0.3);
+				this.input.movementForward = (float)((double)this.input.movementForward / 0.3);
 				this.velocityY = this.velocityY - (double)(this.abilities.getFlySpeed() * 3.0F);
 			}
 
@@ -790,14 +751,53 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 	}
 
+	private void method_18654() {
+		this.field_3911 = this.field_3929;
+		if (this.inPortal) {
+			if (this.client.currentScreen != null && !this.client.currentScreen.isPauseScreen()) {
+				if (this.client.currentScreen instanceof ContainerScreen) {
+					this.closeGui();
+				}
+
+				this.client.openScreen(null);
+			}
+
+			if (this.field_3929 == 0.0F) {
+				this.client.getSoundLoader().play(PositionedSoundInstance.master(SoundEvents.field_14669, this.random.nextFloat() * 0.4F + 0.8F));
+			}
+
+			this.field_3929 += 0.0125F;
+			if (this.field_3929 >= 1.0F) {
+				this.field_3929 = 1.0F;
+			}
+
+			this.inPortal = false;
+		} else if (this.hasPotionEffect(StatusEffects.field_5916) && this.getPotionEffect(StatusEffects.field_5916).getDuration() > 60) {
+			this.field_3929 += 0.006666667F;
+			if (this.field_3929 > 1.0F) {
+				this.field_3929 = 1.0F;
+			}
+		} else {
+			if (this.field_3929 > 0.0F) {
+				this.field_3929 -= 0.05F;
+			}
+
+			if (this.field_3929 < 0.0F) {
+				this.field_3929 = 0.0F;
+			}
+		}
+
+		this.updatePortalCooldown();
+	}
+
 	@Override
 	public void updateRiding() {
 		super.updateRiding();
 		this.field_3942 = false;
 		if (this.getRiddenEntity() instanceof BoatEntity) {
 			BoatEntity boatEntity = (BoatEntity)this.getRiddenEntity();
-			boatEntity.method_7535(this.input.left, this.input.right, this.input.forward, this.input.back);
-			this.field_3942 = this.field_3942 | (this.input.left || this.input.right || this.input.forward || this.input.back);
+			boatEntity.method_7535(this.input.pressingLeft, this.input.pressingRight, this.input.pressingForward, this.input.pressingBack);
+			this.field_3942 = this.field_3942 | (this.input.pressingLeft || this.input.pressingRight || this.input.pressingForward || this.input.pressingBack);
 		}
 	}
 
@@ -831,12 +831,12 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	protected void method_3148(float f, float g) {
 		if (this.method_3149()) {
 			if (this.field_3934 <= 0 && this.onGround && !this.isSneaking() && !this.hasVehicle()) {
-				Vec2f vec2f = this.input.method_3128();
+				Vec2f vec2f = this.input.getMovementInput();
 				if (vec2f.x != 0.0F || vec2f.y != 0.0F) {
 					Vec3d vec3d = new Vec3d(this.x, this.getBoundingBox().minY, this.z);
 					Vec3d vec3d2 = new Vec3d(this.x + (double)f, this.getBoundingBox().minY, this.z + (double)g);
 					Vec3d vec3d3 = new Vec3d((double)f, 0.0, (double)g);
-					float h = this.method_6029();
+					float h = this.getMovementSpeed();
 					float i = (float)vec3d3.lengthSquared();
 					if (i <= 0.001F) {
 						float j = h * vec2f.x;

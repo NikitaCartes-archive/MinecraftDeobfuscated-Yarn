@@ -2,26 +2,23 @@ package net.minecraft.client.gui.widget;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.options.DoubleGameOption;
+import net.minecraft.client.options.GameOption;
 import net.minecraft.client.options.GameOptions;
 
 @Environment(EnvType.CLIENT)
 public class GameOptionSliderWidget extends SliderWidget {
-	private final GameOptions.Option option;
+	private final DoubleGameOption option;
 
-	public GameOptionSliderWidget(MinecraftClient minecraftClient, int i, int j, int k, GameOptions.Option option) {
-		this(minecraftClient, i, j, k, 150, 20, option);
-	}
-
-	public GameOptionSliderWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m, GameOptions.Option option) {
-		super(i, j, k, l, m, minecraftClient, (float)option.method_1651(minecraftClient.options.getDouble(option)));
-		this.option = option;
+	public GameOptionSliderWidget(GameOptions gameOptions, int i, int j, int k, int l, DoubleGameOption doubleGameOption) {
+		super(gameOptions, i, j, k, l, (float)doubleGameOption.method_18611(doubleGameOption.method_18613(gameOptions)));
+		this.option = doubleGameOption;
 		this.updateText();
 	}
 
 	@Override
 	public void draw(int i, int j, float f) {
-		if (this.option == GameOptions.Option.FULLSCREEN_RESOLUTION) {
+		if (this.option == GameOption.FULLSCREEN_RESOLUTION) {
 			this.updateText();
 		}
 
@@ -30,13 +27,12 @@ public class GameOptionSliderWidget extends SliderWidget {
 
 	@Override
 	protected void onProgressChanged() {
-		GameOptions gameOptions = this.client.options;
-		gameOptions.setDouble(this.option, this.option.progressToValue(this.progress));
-		gameOptions.write();
+		this.option.method_18614(this.field_18211, this.option.method_18616(this.progress));
+		this.field_18211.write();
 	}
 
 	@Override
 	protected void updateText() {
-		this.setText(this.client.options.getTranslatedName(this.option));
+		this.setText(this.option.method_18619(this.field_18211));
 	}
 }

@@ -89,7 +89,7 @@ public class WrittenBookScreen extends Screen {
 	}
 
 	protected void addCloseButton() {
-		this.addButton(new ButtonWidget(0, this.width / 2 - 100, 196, 200, 20, I18n.translate("gui.done")) {
+		this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 200, 20, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
 				WrittenBookScreen.this.client.openScreen(null);
@@ -100,7 +100,7 @@ public class WrittenBookScreen extends Screen {
 	protected void addPageButtons() {
 		int i = (this.width - 192) / 2;
 		int j = 2;
-		this.lastPageButton = this.addButton(new BookPageButtonWidget(1, i + 116, 159, true) {
+		this.lastPageButton = this.addButton(new BookPageButtonWidget(i + 116, 159, true) {
 			@Override
 			public void onPressed(double d, double e) {
 				WrittenBookScreen.this.goToNextPage();
@@ -111,7 +111,7 @@ public class WrittenBookScreen extends Screen {
 				WrittenBookScreen.this.playPageTurnSound();
 			}
 		});
-		this.nextPageButton = this.addButton(new BookPageButtonWidget(2, i + 43, 159, false) {
+		this.nextPageButton = this.addButton(new BookPageButtonWidget(i + 43, 159, false) {
 			@Override
 			public void onPressed(double d, double e) {
 				WrittenBookScreen.this.goToPreviousPage();
@@ -169,7 +169,7 @@ public class WrittenBookScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(BOOK_TEXTURE);
 		int k = (this.width - 192) / 2;
@@ -196,7 +196,7 @@ public class WrittenBookScreen extends Screen {
 			this.drawTextComponentHover(textComponent3, i, j);
 		}
 
-		super.draw(i, j, f);
+		super.method_18326(i, j, f);
 	}
 
 	private int getStringWidth(String string) {
@@ -275,7 +275,7 @@ public class WrittenBookScreen extends Screen {
 	}
 
 	public static List<String> getLines(CompoundTag compoundTag) {
-		ListTag listTag = compoundTag.getList("pages", 8).copy();
+		ListTag listTag = compoundTag.getList("pages", 8).method_10612();
 		Builder<String> builder = ImmutableList.builder();
 
 		for (int i = 0; i < listTag.size(); i++) {

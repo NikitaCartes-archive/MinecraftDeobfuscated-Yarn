@@ -24,8 +24,8 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 	private boolean field_7005;
 	private int field_7004;
 
-	public SkeletonHorseEntity(World world) {
-		super(EntityType.SKELETON_HORSE, world);
+	public SkeletonHorseEntity(EntityType<? extends SkeletonHorseEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override
@@ -156,7 +156,7 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 	@Nullable
 	@Override
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
-		return new SkeletonHorseEntity(this.world);
+		return EntityType.SKELETON_HORSE.create(this.world);
 	}
 
 	@Override

@@ -12,23 +12,20 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4080;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloadListener;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.Tickable;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.io.IOUtils;
@@ -36,7 +33,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class SoundLoader implements Tickable, ResourceReloadListener {
+public class SoundLoader extends class_4080<SoundLoader.class_4009> {
 	public static final Sound SOUND_MISSING = new Sound("meta:missing_sound", 1.0F, 1.0F, 1, Sound.RegistrationType.FILE, false, false, 16);
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Gson GSON = new GsonBuilder()
@@ -63,68 +60,65 @@ public class SoundLoader implements Tickable, ResourceReloadListener {
 		this.soundManager = new SoundManager(this, gameOptions);
 	}
 
-	@Override
-	public CompletableFuture<Void> apply(
-		ResourceReloadListener.Helper helper, ResourceManager resourceManager, Profiler profiler, Profiler profiler2, Executor executor, Executor executor2
-	) {
-		return CompletableFuture.supplyAsync(() -> {
-			SoundLoader.class_4009 lv = new SoundLoader.class_4009();
-			profiler.startTick();
+	protected SoundLoader.class_4009 method_18180(ResourceManager resourceManager, Profiler profiler) {
+		SoundLoader.class_4009 lv = new SoundLoader.class_4009();
+		profiler.startTick();
 
-			for (String string : resourceManager.getAllNamespaces()) {
-				profiler.push(string);
+		for (String string : resourceManager.getAllNamespaces()) {
+			profiler.push(string);
 
-				try {
-					for (Resource resource : resourceManager.getAllResources(new Identifier(string, "sounds.json"))) {
-						profiler.push(resource.getResourcePackName());
+			try {
+				for (Resource resource : resourceManager.getAllResources(new Identifier(string, "sounds.json"))) {
+					profiler.push(resource.getResourcePackName());
 
-						try {
-							profiler.push("parse");
-							Map<String, SoundEntry> map = readSounds(resource.getInputStream());
-							profiler.swap("register");
+					try {
+						profiler.push("parse");
+						Map<String, SoundEntry> map = readSounds(resource.getInputStream());
+						profiler.swap("register");
 
-							for (Entry<String, SoundEntry> entry : map.entrySet()) {
-								lv.method_18187(new Identifier(string, (String)entry.getKey()), (SoundEntry)entry.getValue(), resourceManager);
-							}
-
-							profiler.pop();
-						} catch (RuntimeException var11) {
-							LOGGER.warn("Invalid sounds.json in resourcepack: '{}'", resource.getResourcePackName(), var11);
+						for (Entry<String, SoundEntry> entry : map.entrySet()) {
+							lv.method_18187(new Identifier(string, (String)entry.getKey()), (SoundEntry)entry.getValue(), resourceManager);
 						}
 
 						profiler.pop();
+					} catch (RuntimeException var12) {
+						LOGGER.warn("Invalid sounds.json in resourcepack: '{}'", resource.getResourcePackName(), var12);
 					}
-				} catch (IOException var12) {
-				}
 
-				profiler.pop();
+					profiler.pop();
+				}
+			} catch (IOException var13) {
 			}
 
-			profiler.endTick();
-			return lv;
-		}, executor).thenCompose(helper::waitForAll).thenAcceptAsync(arg -> {
-			arg.method_18186(this.sounds, this.soundManager);
+			profiler.pop();
+		}
 
-			for (Identifier identifier : this.sounds.keySet()) {
-				WeightedSoundSet weightedSoundSet = (WeightedSoundSet)this.sounds.get(identifier);
-				if (weightedSoundSet.getSubtitle() instanceof TranslatableTextComponent) {
-					String string = ((TranslatableTextComponent)weightedSoundSet.getSubtitle()).getKey();
-					if (!I18n.hasTranslation(string)) {
-						LOGGER.debug("Missing subtitle {} for event: {}", string, identifier);
-					}
+		profiler.endTick();
+		return lv;
+	}
+
+	protected void method_18182(SoundLoader.class_4009 arg, ResourceManager resourceManager, Profiler profiler) {
+		arg.method_18186(this.sounds, this.soundManager);
+
+		for (Identifier identifier : this.sounds.keySet()) {
+			WeightedSoundSet weightedSoundSet = (WeightedSoundSet)this.sounds.get(identifier);
+			if (weightedSoundSet.getSubtitle() instanceof TranslatableTextComponent) {
+				String string = ((TranslatableTextComponent)weightedSoundSet.getSubtitle()).getKey();
+				if (!I18n.hasTranslation(string)) {
+					LOGGER.debug("Missing subtitle {} for event: {}", string, identifier);
 				}
 			}
+		}
 
-			if (LOGGER.isDebugEnabled()) {
-				for (Identifier identifierx : this.sounds.keySet()) {
-					if (!Registry.SOUND_EVENT.containsId(identifierx)) {
-						LOGGER.debug("Not having sound event for: {}", identifierx);
-					}
+		if (LOGGER.isDebugEnabled()) {
+			for (Identifier identifierx : this.sounds.keySet()) {
+				if (!Registry.SOUND_EVENT.containsId(identifierx)) {
+					LOGGER.debug("Not having sound event for: {}", identifierx);
 				}
 			}
+		}
 
-			this.soundManager.reloadSounds();
-		}, executor2);
+		this.soundManager.reloadSounds();
 	}
 
 	@Nullable
@@ -182,8 +176,7 @@ public class SoundLoader implements Tickable, ResourceReloadListener {
 		this.soundManager.deinitialize();
 	}
 
-	@Override
-	public void tick() {
+	public void method_18670() {
 		this.soundManager.update();
 	}
 
@@ -257,12 +250,12 @@ public class SoundLoader implements Tickable, ResourceReloadListener {
 								return weightedSoundSet == null ? 0 : weightedSoundSet.getWeight();
 							}
 
-							public Sound getSound() {
+							public Sound method_4883() {
 								WeightedSoundSet weightedSoundSet = (WeightedSoundSet)class_4009.this.field_17908.get(identifier2);
 								if (weightedSoundSet == null) {
 									return SoundLoader.SOUND_MISSING;
 								} else {
-									Sound sound = weightedSoundSet.getSound();
+									Sound sound = weightedSoundSet.method_4887();
 									return new Sound(
 										sound.getIdentifier().toString(),
 										sound.getVolume() * sound.getVolume(),

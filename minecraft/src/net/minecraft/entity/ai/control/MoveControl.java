@@ -78,7 +78,7 @@ public class MoveControl {
 				}
 			}
 
-			this.entity.method_6125(g);
+			this.entity.setMovementSpeed(g);
 			this.entity.method_5930(this.field_6368);
 			this.entity.method_5938(this.field_6373);
 			this.state = MoveControl.State.field_6377;
@@ -95,13 +95,13 @@ public class MoveControl {
 
 			float n = (float)(MathHelper.atan2(e, d) * 180.0F / (float)Math.PI) - 90.0F;
 			this.entity.yaw = this.method_6238(this.entity.yaw, n, 90.0F);
-			this.entity.method_6125((float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()));
+			this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()));
 			if (o > (double)this.entity.stepHeight && d * d + e * e < (double)Math.max(1.0F, this.entity.getWidth())) {
 				this.entity.getJumpControl().setActive();
 				this.state = MoveControl.State.field_6379;
 			}
 		} else if (this.state == MoveControl.State.field_6379) {
-			this.entity.method_6125((float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()));
+			this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()));
 			if (this.entity.onGround) {
 				this.state = MoveControl.State.field_6377;
 			}

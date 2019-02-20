@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_4076;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
@@ -106,11 +107,13 @@ public class ChunkSerializer {
 
 			if (bl) {
 				if (compoundTag3.containsKey("BlockLight", 7)) {
-					chunkManager.getLightingProvider().setSection(LightType.BLOCK, chunkPos.x, m, chunkPos.z, new ChunkNibbleArray(compoundTag3.getByteArray("BlockLight")));
+					chunkManager.getLightingProvider()
+						.setSection(LightType.BLOCK, class_4076.method_18681(chunkPos, m), new ChunkNibbleArray(compoundTag3.getByteArray("BlockLight")));
 				}
 
 				if (bl2 && compoundTag3.containsKey("SkyLight", 7)) {
-					chunkManager.getLightingProvider().setSection(LightType.SKY, chunkPos.x, m, chunkPos.z, new ChunkNibbleArray(compoundTag3.getByteArray("SkyLight")));
+					chunkManager.getLightingProvider()
+						.setSection(LightType.SKY, class_4076.method_18681(chunkPos, m), new ChunkNibbleArray(compoundTag3.getByteArray("SkyLight")));
 				}
 			}
 		}
@@ -242,8 +245,8 @@ public class ChunkSerializer {
 				.filter(chunkSectionx -> chunkSectionx != null && chunkSectionx.getYOffset() >> 4 == j)
 				.findFirst()
 				.orElse(WorldChunk.EMPTY_SECTION);
-			ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.BLOCK).getChunkLightArray(chunkPos.x, j, chunkPos.z);
-			ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.SKY).getChunkLightArray(chunkPos.x, j, chunkPos.z);
+			ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.BLOCK).getChunkLightArray(class_4076.method_18681(chunkPos, j));
+			ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.SKY).getChunkLightArray(class_4076.method_18681(chunkPos, j));
 			if (chunkSection != WorldChunk.EMPTY_SECTION || chunkNibbleArray != null || chunkNibbleArray2 != null) {
 				CompoundTag compoundTag3 = new CompoundTag();
 				compoundTag3.putByte("Y", (byte)(j & 0xFF));

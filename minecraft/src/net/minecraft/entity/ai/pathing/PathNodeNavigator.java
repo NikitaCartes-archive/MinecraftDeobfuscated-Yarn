@@ -3,9 +3,7 @@ package net.minecraft.entity.ai.pathing;
 import com.google.common.collect.Sets;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 
 public class PathNodeNavigator {
@@ -19,19 +17,7 @@ public class PathNodeNavigator {
 	}
 
 	@Nullable
-	public Path pathfind(BlockView blockView, MobEntity mobEntity, Entity entity, float f) {
-		return this.pathfind(blockView, mobEntity, entity.x, entity.getBoundingBox().minY, entity.z, f);
-	}
-
-	@Nullable
-	public Path pathfind(BlockView blockView, MobEntity mobEntity, BlockPos blockPos, float f) {
-		return this.pathfind(
-			blockView, mobEntity, (double)((float)blockPos.getX() + 0.5F), (double)((float)blockPos.getY() + 0.5F), (double)((float)blockPos.getZ() + 0.5F), f
-		);
-	}
-
-	@Nullable
-	private Path pathfind(BlockView blockView, MobEntity mobEntity, double d, double e, double f, float g) {
+	public Path pathfind(BlockView blockView, MobEntity mobEntity, double d, double e, double f, float g) {
 		this.minHeap.clear();
 		this.field_61.init(blockView, mobEntity);
 		PathNode pathNode = this.field_61.getStart();

@@ -16,9 +16,9 @@ import net.minecraft.block.StainedGlassBlock;
 import net.minecraft.block.StainedGlassPaneBlock;
 import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.container.BeaconContainer;
+import net.minecraft.container.BlockContext;
 import net.minecraft.container.Container;
 import net.minecraft.container.ContainerLock;
-import net.minecraft.container.ContainerWorldContext;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.container.PropertyDelegate;
 import net.minecraft.entity.effect.StatusEffect;
@@ -144,7 +144,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 			BoundingBox boundingBox = new BoundingBox((double)k, (double)l, (double)m, (double)(k + 1), (double)(l + 1), (double)(m + 1))
 				.expand(d)
 				.stretch(0.0, (double)this.world.getHeight(), 0.0);
-			List<PlayerEntity> list = this.world.getVisibleEntities(PlayerEntity.class, boundingBox);
+			List<PlayerEntity> list = this.world.method_18467(PlayerEntity.class, boundingBox);
 
 			for (PlayerEntity playerEntity : list) {
 				playerEntity.addPotionEffect(new StatusEffectInstance(this.primary, j, i, true, true));
@@ -237,9 +237,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 
 		if (!this.world.isClient && l < this.levels) {
 			for (ServerPlayerEntity serverPlayerEntity : this.world
-				.getVisibleEntities(
-					ServerPlayerEntity.class, new BoundingBox((double)i, (double)j, (double)k, (double)i, (double)(j - 4), (double)k).expand(10.0, 5.0, 10.0)
-				)) {
+				.method_18467(ServerPlayerEntity.class, new BoundingBox((double)i, (double)j, (double)k, (double)i, (double)(j - 4), (double)k).expand(10.0, 5.0, 10.0))) {
 				Criterions.CONSTRUCT_BEACON.handle(serverPlayerEntity, this);
 			}
 		}
@@ -345,7 +343,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 	@Override
 	public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
 		return LockableContainerBlockEntity.checkUnlocked(playerEntity, this.lock, this.getDisplayName())
-			? new BeaconContainer(i, playerInventory, this.propertyDelegate, ContainerWorldContext.create(this.world, this.getPos()))
+			? new BeaconContainer(i, playerInventory, this.propertyDelegate, BlockContext.create(this.world, this.getPos()))
 			: null;
 	}
 

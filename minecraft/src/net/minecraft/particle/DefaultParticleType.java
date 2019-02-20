@@ -7,11 +7,11 @@ import net.minecraft.util.registry.Registry;
 
 public class DefaultParticleType extends ParticleType<DefaultParticleType> implements ParticleParameters {
 	private static final ParticleParameters.Factory<DefaultParticleType> PARAMETER_FACTORY = new ParticleParameters.Factory<DefaultParticleType>() {
-		public DefaultParticleType read(ParticleType<DefaultParticleType> particleType, StringReader stringReader) throws CommandSyntaxException {
+		public DefaultParticleType method_10307(ParticleType<DefaultParticleType> particleType, StringReader stringReader) throws CommandSyntaxException {
 			return (DefaultParticleType)particleType;
 		}
 
-		public DefaultParticleType read(ParticleType<DefaultParticleType> particleType, PacketByteBuf packetByteBuf) {
+		public DefaultParticleType method_10306(ParticleType<DefaultParticleType> particleType, PacketByteBuf packetByteBuf) {
 			return (DefaultParticleType)particleType;
 		}
 	};

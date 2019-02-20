@@ -1,6 +1,8 @@
 package net.minecraft.entity.passive;
 
 import net.minecraft.class_1378;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
@@ -34,14 +36,14 @@ import net.minecraft.world.World;
 public abstract class FishEntity extends WaterCreatureEntity {
 	private static final TrackedData<Boolean> FROM_BUCKET = DataTracker.registerData(FishEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
-	public FishEntity(EntityType<?> entityType, World world) {
+	public FishEntity(EntityType<? extends FishEntity> entityType, World world) {
 		super(entityType, world);
 		this.moveControl = new FishEntity.FishMoveControl(this);
 	}
 
 	@Override
-	public float getEyeHeight() {
-		return this.getHeight() * 0.65F;
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
+		return arg2.field_18068 * 0.65F;
 	}
 
 	@Override
@@ -103,7 +105,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 	protected void initGoals() {
 		super.initGoals();
 		this.goalSelector.add(0, new EscapeDangerGoal(this, 1.25));
-		this.goalSelector.add(2, new FleeEntityGoal(this, PlayerEntity.class, 8.0F, 1.6, 1.4, EntityPredicates.EXCEPT_SPECTATOR));
+		this.goalSelector.add(2, new FleeEntityGoal(this, PlayerEntity.class, 8.0F, 1.6, 1.4, EntityPredicates.EXCEPT_SPECTATOR::test));
 		this.goalSelector.add(4, new FishEntity.SwimToRandomPlaceGoal(this));
 	}
 
@@ -113,9 +115,9 @@ public abstract class FishEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public void method_6091(float f, float g, float h) {
+	public void travel(float f, float g, float h) {
 		if (this.method_6034() && this.isInsideWater()) {
-			this.method_5724(f, g, h, 0.01F);
+			this.updateVelocity(f, g, h, 0.01F);
 			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 			this.velocityX *= 0.9F;
 			this.velocityY *= 0.9F;
@@ -124,7 +126,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 				this.velocityY -= 0.005;
 			}
 		} else {
-			super.method_6091(f, g, h);
+			super.travel(f, g, h);
 		}
 	}
 
@@ -210,10 +212,10 @@ public abstract class FishEntity extends WaterCreatureEntity {
 				this.fish.yaw = this.method_6238(this.fish.yaw, h, 90.0F);
 				this.fish.field_6283 = this.fish.yaw;
 				float i = (float)(this.speed * this.fish.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
-				this.fish.method_6125(MathHelper.lerp(0.125F, this.fish.method_6029(), i));
-				this.fish.velocityY = this.fish.velocityY + (double)this.fish.method_6029() * e * 0.1;
+				this.fish.setMovementSpeed(MathHelper.lerp(0.125F, this.fish.getMovementSpeed(), i));
+				this.fish.velocityY = this.fish.velocityY + (double)this.fish.getMovementSpeed() * e * 0.1;
 			} else {
-				this.fish.method_6125(0.0F);
+				this.fish.setMovementSpeed(0.0F);
 			}
 		}
 	}

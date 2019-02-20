@@ -36,7 +36,8 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 		this.field_17937 = thread;
 	}
 
-	public void load(ResourcePack resourcePack) {
+	@Override
+	public void method_14475(ResourcePack resourcePack) {
 		for (String string : resourcePack.getNamespaces(this.type)) {
 			this.namespaces.add(string);
 			NamespaceResourceManager namespaceResourceManager = (NamespaceResourceManager)this.namespaceManagers.get(string);
@@ -45,7 +46,7 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 				this.namespaceManagers.put(string, namespaceResourceManager);
 			}
 
-			namespaceResourceManager.add(resourcePack);
+			namespaceResourceManager.method_14475(resourcePack);
 		}
 	}
 
@@ -102,14 +103,7 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 
 	@Override
 	public CompletableFuture<Void> reload(Executor executor, Executor executor2, List<ResourcePack> list, CompletableFuture<Void> completableFuture) {
-		this.clear();
-		LOGGER.info("Reloading ResourceManager: {}", list.stream().map(ResourcePack::getName).collect(Collectors.joining(", ")));
-
-		for (ResourcePack resourcePack : list) {
-			this.load(resourcePack);
-		}
-
-		ResourceReloadHandler resourceReloadHandler = this.method_18232(executor, executor2, completableFuture);
+		ResourceReloadHandler resourceReloadHandler = this.method_18232(executor, executor2, completableFuture, list);
 		return resourceReloadHandler.whenComplete();
 	}
 
@@ -139,7 +133,15 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 		return this.createReloadManager(executor, executor2, this.field_17936, completableFuture);
 	}
 
-	public ResourceReloadHandler method_18232(Executor executor, Executor executor2, CompletableFuture<Void> completableFuture) {
+	@Override
+	public ResourceReloadHandler method_18232(Executor executor, Executor executor2, CompletableFuture<Void> completableFuture, List<ResourcePack> list) {
+		this.clear();
+		LOGGER.info("Reloading ResourceManager: {}", list.stream().map(ResourcePack::getName).collect(Collectors.joining(", ")));
+
+		for (ResourcePack resourcePack : list) {
+			this.method_14475(resourcePack);
+		}
+
 		return this.createReloadManager(executor, executor2, this.field_17935, completableFuture);
 	}
 }

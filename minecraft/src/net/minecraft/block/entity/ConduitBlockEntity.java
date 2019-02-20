@@ -156,7 +156,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 		BoundingBox boundingBox = new BoundingBox((double)k, (double)l, (double)m, (double)(k + 1), (double)(l + 1), (double)(m + 1))
 			.expand((double)j)
 			.stretch(0.0, (double)this.world.getHeight(), 0.0);
-		List<PlayerEntity> list = this.world.getVisibleEntities(PlayerEntity.class, boundingBox);
+		List<PlayerEntity> list = this.world.method_18467(PlayerEntity.class, boundingBox);
 		if (!list.isEmpty()) {
 			for (PlayerEntity playerEntity : list) {
 				if (this.pos.distanceTo(new BlockPos(playerEntity)) <= (double)j && playerEntity.isInsideWaterOrRain()) {
@@ -176,7 +176,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 			this.targetUuid = null;
 		} else if (this.targetEntity == null) {
 			List<LivingEntity> list = this.world
-				.getEntities(LivingEntity.class, this.getAttackZone(), livingEntityx -> livingEntityx instanceof Monster && livingEntityx.isInsideWaterOrRain());
+				.method_8390(LivingEntity.class, this.getAttackZone(), livingEntityx -> livingEntityx instanceof Monster && livingEntityx.isInsideWaterOrRain());
 			if (!list.isEmpty()) {
 				this.targetEntity = (LivingEntity)list.get(this.world.random.nextInt(list.size()));
 			}
@@ -215,7 +215,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 
 	@Nullable
 	private LivingEntity findTargetEntity() {
-		List<LivingEntity> list = this.world.getEntities(LivingEntity.class, this.getAttackZone(), livingEntity -> livingEntity.getUuid().equals(this.targetUuid));
+		List<LivingEntity> list = this.world.method_8390(LivingEntity.class, this.getAttackZone(), livingEntity -> livingEntity.getUuid().equals(this.targetUuid));
 		return list.size() == 1 ? (LivingEntity)list.get(0) : null;
 	}
 

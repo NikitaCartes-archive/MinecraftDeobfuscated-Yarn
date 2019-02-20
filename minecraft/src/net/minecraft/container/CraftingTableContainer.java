@@ -1,6 +1,7 @@
 package net.minecraft.container;
 
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
@@ -16,21 +17,22 @@ import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.crafting.CraftingRecipe;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class CraftingTableContainer extends CraftingContainer<CraftingInventory> {
 	private final CraftingInventory craftingInv = new CraftingInventory(this, 3, 3);
 	private final CraftingResultInventory resultInv = new CraftingResultInventory();
-	private final ContainerWorldContext context;
+	private final BlockContext context;
 	private final PlayerEntity player;
 
 	public CraftingTableContainer(int i, PlayerInventory playerInventory) {
-		this(i, playerInventory, ContainerWorldContext.NO_OP_CONTEXT);
+		this(i, playerInventory, BlockContext.EMPTY);
 	}
 
-	public CraftingTableContainer(int i, PlayerInventory playerInventory, ContainerWorldContext containerWorldContext) {
+	public CraftingTableContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
 		super(ContainerType.CRAFTING, i);
-		this.context = containerWorldContext;
+		this.context = blockContext;
 		this.player = playerInventory.player;
 		this.addSlot(new CraftingResultSlot(playerInventory.player, this.craftingInv, this.resultInv, 0, 124, 35));
 
@@ -72,7 +74,7 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
-		this.context.run((world, blockPos) -> method_17399(this.syncId, world, this.player, this.craftingInv, this.resultInv));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> method_17399(this.syncId, world, this.player, this.craftingInv, this.resultInv)));
 	}
 
 	@Override
@@ -94,7 +96,7 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.context.run((world, blockPos) -> this.dropInventory(playerEntity, world, this.craftingInv));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(playerEntity, world, this.craftingInv)));
 	}
 
 	@Override
@@ -110,7 +112,7 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
 			if (i == 0) {
-				this.context.run((world, blockPos) -> itemStack2.getItem().onCrafted(itemStack2, world, playerEntity));
+				this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> itemStack2.getItem().onCrafted(itemStack2, world, playerEntity)));
 				if (!this.insertItem(itemStack2, 10, 46, true)) {
 					return ItemStack.EMPTY;
 				}

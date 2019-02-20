@@ -3,6 +3,7 @@ package net.minecraft.world.gen;
 import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.PhantomEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -34,7 +35,7 @@ public class PhantomSpawner {
 				} else {
 					int i = 0;
 
-					for (PlayerEntity playerEntity : world.players) {
+					for (PlayerEntity playerEntity : world.method_18456()) {
 						if (!playerEntity.isSpectator()) {
 							BlockPos blockPos = new BlockPos(playerEntity);
 							if (!world.dimension.hasSkyLight() || blockPos.getY() >= world.getSeaLevel() && world.isSkyVisible(blockPos)) {
@@ -52,7 +53,7 @@ public class PhantomSpawner {
 											int l = 1 + random.nextInt(localDifficulty.method_5454().getId() + 1);
 
 											for (int m = 0; m < l; m++) {
-												PhantomEntity phantomEntity = new PhantomEntity(world);
+												PhantomEntity phantomEntity = EntityType.PHANTOM.create(world);
 												phantomEntity.setPositionAndAngles(blockPos2, 0.0F, 0.0F);
 												entityData = phantomEntity.prepareEntityData(world, localDifficulty, SpawnType.field_16459, entityData, null);
 												world.spawnEntity(phantomEntity);

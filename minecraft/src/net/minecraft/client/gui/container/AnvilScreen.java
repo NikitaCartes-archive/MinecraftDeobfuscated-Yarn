@@ -39,7 +39,7 @@ public class AnvilScreen extends ContainerScreen<AnvilContainer> implements Cont
 		this.client.keyboard.enableRepeatEvents(true);
 		int i = (this.width - this.containerWidth) / 2;
 		int j = (this.height - this.containerHeight) / 2;
-		this.nameField = new TextFieldWidget(0, this.fontRenderer, i + 62, j + 24, 103, 12);
+		this.nameField = new TextFieldWidget(this.fontRenderer, i + 62, j + 24, 103, 12);
 		this.nameField.method_1868(-1);
 		this.nameField.method_1860(-1);
 		this.nameField.setHasBorder(false);
@@ -93,7 +93,7 @@ public class AnvilScreen extends ContainerScreen<AnvilContainer> implements Cont
 		GlStateManager.enableLighting();
 	}
 
-	private void onRenamed(int i, String string) {
+	private void onRenamed(String string) {
 		if (!string.isEmpty()) {
 			String string2 = string;
 			Slot slot = this.container.getSlot(0);
@@ -107,13 +107,13 @@ public class AnvilScreen extends ContainerScreen<AnvilContainer> implements Cont
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		this.drawBackground();
-		super.draw(i, j, f);
+		super.method_18326(i, j, f);
 		this.drawMouseoverTooltip(i, j);
 		GlStateManager.disableLighting();
 		GlStateManager.disableBlend();
-		this.nameField.render(i, j, f);
+		this.nameField.method_18326(i, j, f);
 	}
 
 	@Override

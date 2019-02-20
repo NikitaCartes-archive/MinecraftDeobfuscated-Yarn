@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1399;
+import net.minecraft.class_4051;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -42,8 +43,8 @@ public class VexEntity extends HostileEntity {
 	private boolean alive;
 	private int lifeTicks;
 
-	public VexEntity(World world) {
-		super(EntityType.VEX, world);
+	public VexEntity(EntityType<? extends VexEntity> entityType, World world) {
+		super(entityType, world);
 		this.fireImmune = true;
 		this.moveControl = new VexEntity.VexMoveControl(this);
 		this.experiencePoints = 3;
@@ -293,13 +294,15 @@ public class VexEntity extends HostileEntity {
 	}
 
 	class TrackOwnerTargetGoal extends TrackTargetGoal {
+		private final class_4051 field_18132 = new class_4051().method_18422().method_18424();
+
 		public TrackOwnerTargetGoal(MobEntityWithAi mobEntityWithAi) {
 			super(mobEntityWithAi, false);
 		}
 
 		@Override
 		public boolean canStart() {
-			return VexEntity.this.owner != null && VexEntity.this.owner.getTarget() != null && this.canTrack(VexEntity.this.owner.getTarget(), false);
+			return VexEntity.this.owner != null && VexEntity.this.owner.getTarget() != null && this.canTrack(VexEntity.this.owner.getTarget(), this.field_18132);
 		}
 
 		@Override

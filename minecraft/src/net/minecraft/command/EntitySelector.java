@@ -183,7 +183,7 @@ public class EntitySelector {
 			} else {
 				List<ServerPlayerEntity> list;
 				if (this.method_9821()) {
-					list = serverCommandSource.getWorld().getPlayers(ServerPlayerEntity.class, predicate::test);
+					list = serverCommandSource.getWorld().method_18766(predicate::test);
 				} else {
 					list = Lists.<ServerPlayerEntity>newArrayList();
 

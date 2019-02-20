@@ -45,8 +45,8 @@ public class RavagerEntity extends RaiderEntity {
 	private int stunTick;
 	private int roarTick;
 
-	public RavagerEntity(World world) {
-		super(EntityType.ILLAGER_BEAST, world);
+	public RavagerEntity(EntityType<? extends RavagerEntity> entityType, World world) {
+		super(entityType, world);
 		this.stepHeight = 1.0F;
 		this.experiencePoints = 20;
 	}
@@ -211,7 +211,7 @@ public class RavagerEntity extends RaiderEntity {
 
 	private void method_7071() {
 		if (this.isValid()) {
-			for (Entity entity : this.world.getEntities(LivingEntity.class, this.getBoundingBox().expand(4.0), field_7301)) {
+			for (Entity entity : this.world.method_8390(LivingEntity.class, this.getBoundingBox().expand(4.0), field_7301)) {
 				if (!(entity instanceof IllagerEntity)) {
 					entity.damage(DamageSource.mob(this), 6.0F);
 				}

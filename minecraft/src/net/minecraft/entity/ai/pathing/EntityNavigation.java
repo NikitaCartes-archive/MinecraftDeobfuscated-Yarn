@@ -82,42 +82,37 @@ public abstract class EntityNavigation {
 
 	@Nullable
 	public Path findPathTo(BlockPos blockPos) {
+		float f = (float)blockPos.getX() + 0.5F;
+		float g = (float)blockPos.getY() + 0.5F;
+		float h = (float)blockPos.getZ() + 0.5F;
+		return this.method_18416(blockPos, (double)f, (double)g, (double)h, 8, false);
+	}
+
+	@Nullable
+	public Path findPathTo(Entity entity) {
+		BlockPos blockPos = new BlockPos(entity);
+		double d = entity.x;
+		double e = entity.getBoundingBox().minY;
+		double f = entity.z;
+		return this.method_18416(blockPos, d, e, f, 16, true);
+	}
+
+	@Nullable
+	protected Path method_18416(BlockPos blockPos, double d, double e, double f, int i, boolean bl) {
 		if (!this.isAtValidPosition()) {
 			return null;
 		} else if (this.currentPath != null && !this.currentPath.isFinished() && blockPos.equals(this.targetPos)) {
 			return this.currentPath;
 		} else {
 			this.targetPos = blockPos;
-			float f = this.getFollowRange();
+			float g = this.getFollowRange();
 			this.world.getProfiler().push("pathfind");
-			BlockPos blockPos2 = new BlockPos(this.entity);
-			int i = (int)(f + 8.0F);
-			BlockView blockView = new ChunkCache(this.world, blockPos2.add(-i, -i, -i), blockPos2.add(i, i, i), 0);
-			Path path = this.pathNodeNavigator.pathfind(blockView, this.entity, this.targetPos, f);
+			BlockPos blockPos2 = bl ? new BlockPos(this.entity).up() : new BlockPos(this.entity);
+			int j = (int)(g + (float)i);
+			BlockView blockView = new ChunkCache(this.world, blockPos2.add(-j, -j, -j), blockPos2.add(j, j, j));
+			Path path = this.pathNodeNavigator.pathfind(blockView, this.entity, d, e, f, g);
 			this.world.getProfiler().pop();
 			return path;
-		}
-	}
-
-	@Nullable
-	public Path findPathTo(Entity entity) {
-		if (!this.isAtValidPosition()) {
-			return null;
-		} else {
-			BlockPos blockPos = new BlockPos(entity);
-			if (this.currentPath != null && !this.currentPath.isFinished() && blockPos.equals(this.targetPos)) {
-				return this.currentPath;
-			} else {
-				this.targetPos = blockPos;
-				float f = this.getFollowRange();
-				this.world.getProfiler().push("pathfind");
-				BlockPos blockPos2 = new BlockPos(this.entity).up();
-				int i = (int)(f + 16.0F);
-				BlockView blockView = new ChunkCache(this.world, blockPos2.add(-i, -i, -i), blockPos2.add(i, i, i), 0);
-				Path path = this.pathNodeNavigator.pathfind(blockView, this.entity, entity, f);
-				this.world.getProfiler().pop();
-				return path;
-			}
 		}
 	}
 
@@ -241,7 +236,7 @@ public abstract class EntityNavigation {
 			} else {
 				this.field_6680 = vec3d2;
 				double d = vec3d.distanceTo(this.field_6680);
-				this.field_6682 = this.entity.method_6029() > 0.0F ? d / (double)this.entity.method_6029() * 1000.0 : 0.0;
+				this.field_6682 = this.entity.getMovementSpeed() > 0.0F ? d / (double)this.entity.getMovementSpeed() * 1000.0 : 0.0;
 			}
 
 			if (this.field_6682 > 0.0 && (double)this.field_6670 > this.field_6682 * 3.0) {

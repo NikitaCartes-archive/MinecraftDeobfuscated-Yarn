@@ -23,6 +23,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_300;
+import net.minecraft.class_4076;
 import net.minecraft.class_452;
 import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.block.Block;
@@ -129,7 +130,6 @@ import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
 import net.minecraft.client.network.packet.PlayerRespawnS2CPacket;
 import net.minecraft.client.network.packet.PlayerSpawnPositionS2CPacket;
 import net.minecraft.client.network.packet.PlayerSpawnS2CPacket;
-import net.minecraft.client.network.packet.PlayerUseBedS2CPacket;
 import net.minecraft.client.network.packet.RemoveEntityEffectS2CPacket;
 import net.minecraft.client.network.packet.ResourcePackSendS2CPacket;
 import net.minecraft.client.network.packet.ScoreboardDisplayS2CPacket;
@@ -184,6 +184,8 @@ import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.boss.dragon.EnderDragonEntity;
+import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.decoration.EnderCrystalEntity;
@@ -478,15 +480,6 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			entity.method_18003(d, e, f);
 			entity.pitch = (float)(entitySpawnS2CPacket.getPitch() * 360) / 256.0F;
 			entity.yaw = (float)(entitySpawnS2CPacket.getYaw() * 360) / 256.0F;
-			Entity[] entitys = entity.getParts();
-			if (entitys != null) {
-				int j = i - entity.getEntityId();
-
-				for (Entity entity3 : entitys) {
-					entity3.setEntityId(entity3.getEntityId() + j);
-				}
-			}
-
 			entity.setEntityId(i);
 			entity.setUuid(entitySpawnS2CPacket.getUuid());
 			this.world.method_2942(i, entity);
@@ -626,13 +619,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			entity.field_6001 = entity.field_6001 + (long)entityS2CPacket.getDeltaXShort();
 			entity.field_6023 = entity.field_6023 + (long)entityS2CPacket.getDeltaYShort();
 			entity.field_5954 = entity.field_5954 + (long)entityS2CPacket.getDeltaZShort();
-			double d = (double)entity.field_6001 / 4096.0;
-			double e = (double)entity.field_6023 / 4096.0;
-			double f = (double)entity.field_5954 / 4096.0;
+			Vec3d vec3d = EntityS2CPacket.method_18695(entity.field_6001, entity.field_6023, entity.field_5954);
 			if (!entity.method_5787()) {
-				float g = entityS2CPacket.hasRotation() ? (float)(entityS2CPacket.getYaw() * 360) / 256.0F : entity.yaw;
-				float h = entityS2CPacket.hasRotation() ? (float)(entityS2CPacket.getPitch() * 360) / 256.0F : entity.pitch;
-				entity.setPositionAndRotations(d, e, f, g, h, 3, false);
+				float f = entityS2CPacket.hasRotation() ? (float)(entityS2CPacket.getYaw() * 360) / 256.0F : entity.yaw;
+				float g = entityS2CPacket.hasRotation() ? (float)(entityS2CPacket.getPitch() * 360) / 256.0F : entity.pitch;
+				entity.setPositionAndRotations(vec3d.x, vec3d.y, vec3d.z, f, g, 3, false);
 				entity.onGround = entityS2CPacket.isOnGround();
 			}
 		}
@@ -728,7 +719,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		int i = chunkDataS2CPacket.getX();
 		int j = chunkDataS2CPacket.getZ();
 		WorldChunk worldChunk = this.world
-			.getChunkProvider()
+			.method_2935()
 			.loadChunkFromPacket(
 				this.world,
 				i,
@@ -760,7 +751,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(unloadChunkS2CPacket, this, this.client);
 		int i = unloadChunkS2CPacket.getX();
 		int j = unloadChunkS2CPacket.getZ();
-		this.world.getChunkProvider().unload(i, j);
+		this.world.method_2935().unload(i, j);
 
 		for (int k = 0; k < 16; k++) {
 			this.world.method_18113(i, k, j);
@@ -872,12 +863,6 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void onPlayerUseBed(PlayerUseBedS2CPacket playerUseBedS2CPacket) {
-		NetworkThreadUtils.forceMainThread(playerUseBedS2CPacket, this, this.client);
-		playerUseBedS2CPacket.getPlayer(this.world).trySleep(playerUseBedS2CPacket.getBedHeadPos());
-	}
-
-	@Override
 	public void onMobSpawn(MobSpawnS2CPacket mobSpawnS2CPacket) {
 		NetworkThreadUtils.forceMainThread(mobSpawnS2CPacket, this, this.client);
 		double d = mobSpawnS2CPacket.getX();
@@ -890,12 +875,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			livingEntity.method_18003(d, e, f);
 			livingEntity.field_6283 = (float)(mobSpawnS2CPacket.getVelocityZ() * 360) / 256.0F;
 			livingEntity.headYaw = (float)(mobSpawnS2CPacket.getVelocityZ() * 360) / 256.0F;
-			Entity[] entitys = livingEntity.getParts();
-			if (entitys != null) {
-				int i = mobSpawnS2CPacket.getId() - livingEntity.getEntityId();
+			if (livingEntity instanceof EnderDragonEntity) {
+				EnderDragonPart[] enderDragonParts = ((EnderDragonEntity)livingEntity).method_5690();
 
-				for (Entity entity : entitys) {
-					entity.setEntityId(entity.getEntityId() + i);
+				for (int i = 0; i < enderDragonParts.length; i++) {
+					enderDragonParts[i].setEntityId(i + mobSpawnS2CPacket.getId());
 				}
 			}
 
@@ -2069,7 +2053,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(lightUpdateS2CPacket, this, this.client);
 		int i = lightUpdateS2CPacket.method_11558();
 		int j = lightUpdateS2CPacket.method_11554();
-		LightingProvider lightingProvider = this.world.getChunkProvider().getLightingProvider();
+		LightingProvider lightingProvider = this.world.method_2935().getLightingProvider();
 		int k = lightUpdateS2CPacket.method_11556();
 		int l = lightUpdateS2CPacket.method_16124();
 		Iterator<byte[]> iterator = lightUpdateS2CPacket.method_11555().iterator();
@@ -2095,7 +2079,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			boolean bl = (k & 1 << m) != 0;
 			boolean bl2 = (l & 1 << m) != 0;
 			if (bl || bl2) {
-				lightingProvider.setSection(lightType, i, n, j, bl ? new ChunkNibbleArray((byte[])((byte[])iterator.next()).clone()) : new ChunkNibbleArray());
+				lightingProvider.setSection(
+					lightType, class_4076.method_18676(i, n, j), bl ? new ChunkNibbleArray((byte[])((byte[])iterator.next()).clone()) : new ChunkNibbleArray()
+				);
 				this.world.method_18113(i, n, j);
 			}
 		}

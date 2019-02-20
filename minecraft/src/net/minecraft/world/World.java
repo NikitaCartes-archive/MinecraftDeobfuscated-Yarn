@@ -1,20 +1,15 @@
 package net.minecraft.world;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
 import java.util.function.BiFunction;
-import java.util.function.BooleanSupplier;
-import java.util.function.Function;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -23,6 +18,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -34,7 +30,6 @@ import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleParameters;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.MinecraftServer;
@@ -55,7 +50,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.border.WorldBorder;
@@ -73,13 +67,13 @@ import net.minecraft.world.level.LevelProperties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class World implements ExtendedBlockView, EntityView, IWorld, AutoCloseable {
+public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable {
 	protected static final Logger LOGGER = LogManager.getLogger();
 	private static final Direction[] DIRECTIONS = Direction.values();
 	public final List<BlockEntity> blockEntities = Lists.<BlockEntity>newArrayList();
 	public final List<BlockEntity> tickingBlockEntities = Lists.<BlockEntity>newArrayList();
 	protected final List<BlockEntity> pendingBlockEntities = Lists.<BlockEntity>newArrayList();
-	public final List<PlayerEntity> players = Lists.<PlayerEntity>newArrayList();
+	protected final List<BlockEntity> field_18139 = Lists.<BlockEntity>newArrayList();
 	private final long unusedWhite = 16777215L;
 	private final Thread thread;
 	private int ambientDarkness;
@@ -100,7 +94,6 @@ public abstract class World implements ExtendedBlockView, EntityView, IWorld, Au
 	public final boolean isClient;
 	protected boolean iteratingTickingBlockEntities;
 	private final WorldBorder border;
-	private final WanderingTraderManager wanderingTraderManager;
 
 	protected World(
 		LevelProperties levelProperties, DimensionType dimensionType, BiFunction<World, Dimension, ChunkManager> biFunction, Profiler profiler, boolean bl
@@ -112,7 +105,6 @@ public abstract class World implements ExtendedBlockView, EntityView, IWorld, Au
 		this.isClient = bl;
 		this.border = this.dimension.createWorldBorder();
 		this.thread = Thread.currentThread();
-		this.wanderingTraderManager = dimensionType == DimensionType.field_13072 ? new WanderingTraderManager(this) : null;
 	}
 
 	@Override
@@ -165,10 +157,10 @@ public abstract class World implements ExtendedBlockView, EntityView, IWorld, Au
 	}
 
 	public WorldChunk getWorldChunk(BlockPos blockPos) {
-		return this.getWorldChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4);
+		return this.method_8497(blockPos.getX() >> 4, blockPos.getZ() >> 4);
 	}
 
-	public WorldChunk getWorldChunk(int i, int j) {
+	public WorldChunk method_8497(int i, int j) {
 		return (WorldChunk)this.getChunk(i, j, ChunkStatus.FULL);
 	}
 
@@ -355,7 +347,7 @@ public abstract class World implements ExtendedBlockView, EntityView, IWorld, Au
 		int k;
 		if (i >= -30000000 && j >= -30000000 && i < 30000000 && j < 30000000) {
 			if (this.isChunkLoaded(i >> 4, j >> 4)) {
-				k = this.getWorldChunk(i >> 4, j >> 4).sampleHeightmap(type, i & 15, j & 15) + 1;
+				k = this.method_8497(i >> 4, j >> 4).sampleHeightmap(type, i & 15, j & 15) + 1;
 			} else {
 				k = 0;
 			}
@@ -376,7 +368,7 @@ public abstract class World implements ExtendedBlockView, EntityView, IWorld, Au
 		if (isHeightInvalid(blockPos)) {
 			return Blocks.field_10243.getDefaultState();
 		} else {
-			WorldChunk worldChunk = this.getWorldChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4);
+			WorldChunk worldChunk = this.method_8497(blockPos.getX() >> 4, blockPos.getZ() >> 4);
 			return worldChunk.getBlockState(blockPos);
 		}
 	}
@@ -574,60 +566,79 @@ public abstract class World implements ExtendedBlockView, EntityView, IWorld, Au
 		}
 	}
 
-	public void tickEntity(Entity entity) {
-		if (entity instanceof PlayerEntity || this.getChunkManager().isEntityInLoadedChunk(entity)) {
-			entity.prevRenderX = entity.x;
-			entity.prevRenderY = entity.y;
-			entity.prevRenderZ = entity.z;
-			entity.prevYaw = entity.yaw;
-			entity.prevPitch = entity.pitch;
-			if (entity.field_6016) {
-				entity.age++;
-				if (entity.hasVehicle()) {
-					entity.updateRiding();
-				} else {
-					this.profiler.push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()));
-					entity.update();
-					this.profiler.pop();
-				}
-			}
+	public void method_18471() {
+		Profiler profiler = this.getProfiler();
+		profiler.push("blockEntities");
+		if (!this.field_18139.isEmpty()) {
+			this.tickingBlockEntities.removeAll(this.field_18139);
+			this.blockEntities.removeAll(this.field_18139);
+			this.field_18139.clear();
+		}
 
-			this.updateChunkEntities(entity);
-			if (entity.field_6016) {
-				for (Entity entity2 : entity.getPassengerList()) {
-					if (!entity2.invalid && entity2.getRiddenEntity() == entity) {
-						this.tickEntity(entity2);
-					} else {
-						entity2.stopRiding();
+		this.iteratingTickingBlockEntities = true;
+		Iterator<BlockEntity> iterator = this.tickingBlockEntities.iterator();
+
+		while (iterator.hasNext()) {
+			BlockEntity blockEntity = (BlockEntity)iterator.next();
+			if (!blockEntity.isInvalid() && blockEntity.hasWorld()) {
+				BlockPos blockPos = blockEntity.getPos();
+				if (this.isBlockLoaded(blockPos) && this.getWorldBorder().contains(blockPos)) {
+					try {
+						profiler.push((Supplier<String>)(() -> String.valueOf(BlockEntityType.getId(blockEntity.getType()))));
+						((Tickable)blockEntity).tick();
+						profiler.pop();
+					} catch (Throwable var8) {
+						CrashReport crashReport = CrashReport.create(var8, "Ticking block entity");
+						CrashReportSection crashReportSection = crashReport.addElement("Block entity being ticked");
+						blockEntity.populateCrashReport(crashReportSection);
+						throw new CrashException(crashReport);
 					}
 				}
 			}
-		}
-	}
 
-	public void updateChunkEntities(Entity entity) {
-		this.profiler.push("chunkCheck");
-		int i = MathHelper.floor(entity.x / 16.0);
-		int j = MathHelper.floor(entity.y / 16.0);
-		int k = MathHelper.floor(entity.z / 16.0);
-		if (!entity.field_6016 || entity.chunkX != i || entity.chunkY != j || entity.chunkZ != k) {
-			if (entity.field_6016 && this.isChunkLoaded(entity.chunkX, entity.chunkZ)) {
-				this.getWorldChunk(entity.chunkX, entity.chunkZ).remove(entity, entity.chunkY);
-			}
-
-			if (!entity.method_5754() && !this.isChunkLoaded(i, k)) {
-				entity.field_6016 = false;
-			} else {
-				this.getWorldChunk(i, k).addEntity(entity);
+			if (blockEntity.isInvalid()) {
+				iterator.remove();
+				this.blockEntities.remove(blockEntity);
+				if (this.isBlockLoaded(blockEntity.getPos())) {
+					this.getWorldChunk(blockEntity.getPos()).removeBlockEntity(blockEntity.getPos());
+				}
 			}
 		}
 
-		this.profiler.pop();
+		this.iteratingTickingBlockEntities = false;
+		profiler.swap("pendingBlockEntities");
+		if (!this.pendingBlockEntities.isEmpty()) {
+			for (int i = 0; i < this.pendingBlockEntities.size(); i++) {
+				BlockEntity blockEntity2 = (BlockEntity)this.pendingBlockEntities.get(i);
+				if (!blockEntity2.isInvalid()) {
+					if (!this.blockEntities.contains(blockEntity2)) {
+						this.addBlockEntity(blockEntity2);
+					}
+
+					if (this.isBlockLoaded(blockEntity2.getPos())) {
+						WorldChunk worldChunk = this.getWorldChunk(blockEntity2.getPos());
+						BlockState blockState = worldChunk.getBlockState(blockEntity2.getPos());
+						worldChunk.setBlockEntity(blockEntity2.getPos(), blockEntity2);
+						this.updateListeners(blockEntity2.getPos(), blockState, blockState, 3);
+					}
+				}
+			}
+
+			this.pendingBlockEntities.clear();
+		}
+
+		profiler.pop();
 	}
 
-	@Override
-	public boolean method_8611(@Nullable Entity entity, VoxelShape voxelShape) {
-		return EntityView.super.method_8611(entity, voxelShape);
+	public void method_18472(Consumer<Entity> consumer, Entity entity) {
+		try {
+			consumer.accept(entity);
+		} catch (Throwable var6) {
+			CrashReport crashReport = CrashReport.create(var6, "Ticking entity");
+			CrashReportSection crashReportSection = crashReport.addElement("Entity being ticked");
+			entity.populateCrashReport(crashReportSection);
+			throw new CrashException(crashReport);
+		}
 	}
 
 	public boolean isAreaNotEmpty(BoundingBox boundingBox) {
@@ -642,7 +653,7 @@ public abstract class World implements ExtendedBlockView, EntityView, IWorld, Au
 			for (int o = i; o < j; o++) {
 				for (int p = k; p < l; p++) {
 					for (int q = m; q < n; q++) {
-						BlockState blockState = this.getBlockState(pooledMutable.set(o, p, q));
+						BlockState blockState = this.getBlockState(pooledMutable.method_10113(o, p, q));
 						if (!blockState.isAir()) {
 							return true;
 						}
@@ -666,7 +677,7 @@ public abstract class World implements ExtendedBlockView, EntityView, IWorld, Au
 				for (int o = i; o < j; o++) {
 					for (int p = k; p < l; p++) {
 						for (int q = m; q < n; q++) {
-							Block block = this.getBlockState(pooledMutable.set(o, p, q)).getBlock();
+							Block block = this.getBlockState(pooledMutable.method_10113(o, p, q)).getBlock();
 							if (block == Blocks.field_10036 || block == Blocks.field_10164) {
 								return true;
 							}
@@ -692,7 +703,7 @@ public abstract class World implements ExtendedBlockView, EntityView, IWorld, Au
 				for (int o = i; o < j; o++) {
 					for (int p = k; p < l; p++) {
 						for (int q = m; q < n; q++) {
-							BlockState blockState = this.getBlockState(pooledMutable.set(o, p, q));
+							BlockState blockState = this.getBlockState(pooledMutable.method_10113(o, p, q));
 							if (blockState.getBlock() == block) {
 								return blockState;
 							}
@@ -861,15 +872,6 @@ public abstract class World implements ExtendedBlockView, EntityView, IWorld, Au
 		this.getChunkManager().setMobSpawnOptions(bl, bl2);
 	}
 
-	public void tick(BooleanSupplier booleanSupplier) {
-		this.border.update();
-		if (!this.isClient() && this.wanderingTraderManager != null) {
-			this.wanderingTraderManager.method_18015();
-		}
-
-		this.updateWeather();
-	}
-
 	protected void initWeatherGradients() {
 		if (this.properties.isRaining()) {
 			this.rainGradient = 1.0F;
@@ -883,72 +885,6 @@ public abstract class World implements ExtendedBlockView, EntityView, IWorld, Au
 		this.chunkManager.close();
 	}
 
-	protected void updateWeather() {
-		if (this.dimension.hasSkyLight()) {
-			if (!this.isClient) {
-				boolean bl = this.getGameRules().getBoolean("doWeatherCycle");
-				if (bl) {
-					int i = this.properties.getClearWeatherTime();
-					if (i > 0) {
-						this.properties.setClearWeatherTime(--i);
-						this.properties.setThunderTime(this.properties.isThundering() ? 1 : 2);
-						this.properties.setRainTime(this.properties.isRaining() ? 1 : 2);
-					}
-
-					int j = this.properties.getThunderTime();
-					if (j <= 0) {
-						if (this.properties.isThundering()) {
-							this.properties.setThunderTime(this.random.nextInt(12000) + 3600);
-						} else {
-							this.properties.setThunderTime(this.random.nextInt(168000) + 12000);
-						}
-					} else {
-						this.properties.setThunderTime(--j);
-						if (j <= 0) {
-							this.properties.setThundering(!this.properties.isThundering());
-						}
-					}
-
-					int k = this.properties.getRainTime();
-					if (k <= 0) {
-						if (this.properties.isRaining()) {
-							this.properties.setRainTime(this.random.nextInt(12000) + 12000);
-						} else {
-							this.properties.setRainTime(this.random.nextInt(168000) + 12000);
-						}
-					} else {
-						this.properties.setRainTime(--k);
-						if (k <= 0) {
-							this.properties.setRaining(!this.properties.isRaining());
-						}
-					}
-				}
-
-				this.thunderGradientPrev = this.thunderGradient;
-				if (this.properties.isThundering()) {
-					this.thunderGradient = (float)((double)this.thunderGradient + 0.01);
-				} else {
-					this.thunderGradient = (float)((double)this.thunderGradient - 0.01);
-				}
-
-				this.thunderGradient = MathHelper.clamp(this.thunderGradient, 0.0F, 1.0F);
-				this.rainGradientPrev = this.rainGradient;
-				if (this.properties.isRaining()) {
-					this.rainGradient = (float)((double)this.rainGradient + 0.01);
-				} else {
-					this.rainGradient = (float)((double)this.rainGradient - 0.01);
-				}
-
-				this.rainGradient = MathHelper.clamp(this.rainGradient, 0.0F, 1.0F);
-			}
-		}
-	}
-
-	@Override
-	public Stream<VoxelShape> getCollidingEntityBoundingBoxesForEntity(@Nullable Entity entity, VoxelShape voxelShape, Set<Entity> set) {
-		return EntityView.super.getCollidingEntityBoundingBoxesForEntity(entity, voxelShape, set);
-	}
-
 	@Override
 	public List<Entity> getEntities(@Nullable Entity entity, BoundingBox boundingBox, @Nullable Predicate<? super Entity> predicate) {
 		List<Entity> list = Lists.<Entity>newArrayList();
@@ -960,7 +896,7 @@ public abstract class World implements ExtendedBlockView, EntityView, IWorld, Au
 		for (int m = i; m <= j; m++) {
 			for (int n = k; n <= l; n++) {
 				if (this.isChunkLoaded(m, n)) {
-					this.getWorldChunk(m, n).appendEntities(entity, boundingBox, list, predicate);
+					this.method_8497(m, n).appendEntities(entity, boundingBox, list, predicate);
 				}
 			}
 		}
@@ -987,20 +923,8 @@ public abstract class World implements ExtendedBlockView, EntityView, IWorld, Au
 		return list;
 	}
 
-	public <T extends Entity> List<T> getPlayers(Class<? extends T> class_, Predicate<? super T> predicate) {
-		List<T> list = Lists.<T>newArrayList();
-
-		for (Entity entity : this.players) {
-			if (class_.isAssignableFrom(entity.getClass()) && predicate.test(entity)) {
-				list.add(entity);
-			}
-		}
-
-		return list;
-	}
-
 	@Override
-	public <T extends Entity> List<T> getEntities(Class<? extends T> class_, BoundingBox boundingBox, @Nullable Predicate<? super T> predicate) {
+	public <T extends Entity> List<T> method_8390(Class<? extends T> class_, BoundingBox boundingBox, @Nullable Predicate<? super T> predicate) {
 		int i = MathHelper.floor((boundingBox.minX - 2.0) / 16.0);
 		int j = MathHelper.ceil((boundingBox.maxX + 2.0) / 16.0);
 		int k = MathHelper.floor((boundingBox.minZ - 2.0) / 16.0);
@@ -1017,26 +941,6 @@ public abstract class World implements ExtendedBlockView, EntityView, IWorld, Au
 		}
 
 		return list;
-	}
-
-	@Nullable
-	public <T extends Entity> T getClosestVisibleEntityTo(Class<? extends T> class_, BoundingBox boundingBox, T entity) {
-		List<T> list = this.getVisibleEntities(class_, boundingBox);
-		T entity2 = null;
-		double d = Double.MAX_VALUE;
-
-		for (int i = 0; i < list.size(); i++) {
-			T entity3 = (T)list.get(i);
-			if (entity3 != entity && EntityPredicates.EXCEPT_SPECTATOR.test(entity3)) {
-				double e = entity.squaredDistanceTo(entity3);
-				if (!(e > d)) {
-					entity2 = entity3;
-					d = e;
-				}
-			}
-		}
-
-		return entity2;
 	}
 
 	@Nullable
@@ -1138,155 +1042,6 @@ public abstract class World implements ExtendedBlockView, EntityView, IWorld, Au
 		}
 
 		return i;
-	}
-
-	@Nullable
-	@Override
-	public PlayerEntity getClosestPlayer(double d, double e, double f, double g, Predicate<Entity> predicate) {
-		double h = -1.0;
-		PlayerEntity playerEntity = null;
-
-		for (int i = 0; i < this.players.size(); i++) {
-			PlayerEntity playerEntity2 = (PlayerEntity)this.players.get(i);
-			if (predicate.test(playerEntity2)) {
-				double j = playerEntity2.squaredDistanceTo(d, e, f);
-				if ((g < 0.0 || j < g * g) && (h == -1.0 || j < h)) {
-					h = j;
-					playerEntity = playerEntity2;
-				}
-			}
-		}
-
-		return playerEntity;
-	}
-
-	public boolean containsVisiblePlayer(double d, double e, double f, double g) {
-		for (int i = 0; i < this.players.size(); i++) {
-			PlayerEntity playerEntity = (PlayerEntity)this.players.get(i);
-			if (EntityPredicates.EXCEPT_SPECTATOR.test(playerEntity)) {
-				double h = playerEntity.squaredDistanceTo(d, e, f);
-				if (g < 0.0 || h < g * g) {
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
-	public boolean findVisiblePlayer(double d, double e, double f, double g) {
-		for (PlayerEntity playerEntity : this.players) {
-			if (EntityPredicates.EXCEPT_SPECTATOR.test(playerEntity) && EntityPredicates.VALID_ENTITY_LIVING.test(playerEntity)) {
-				double h = playerEntity.squaredDistanceTo(d, e, f);
-				if (g < 0.0 || h < g * g) {
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
-	@Nullable
-	public PlayerEntity findClosestVisiblePlayer(double d, double e, double f) {
-		double g = -1.0;
-		PlayerEntity playerEntity = null;
-
-		for (int i = 0; i < this.players.size(); i++) {
-			PlayerEntity playerEntity2 = (PlayerEntity)this.players.get(i);
-			if (EntityPredicates.EXCEPT_SPECTATOR.test(playerEntity2)) {
-				double h = playerEntity2.squaredDistanceTo(d, playerEntity2.y, e);
-				if ((f < 0.0 || h < f * f) && (g == -1.0 || h < g)) {
-					g = h;
-					playerEntity = playerEntity2;
-				}
-			}
-		}
-
-		return playerEntity;
-	}
-
-	@Nullable
-	public PlayerEntity findMobAttackTarget(Entity entity, double d, double e) {
-		return this.findMobAttackTarget(entity.x, entity.y, entity.z, d, e, null, null);
-	}
-
-	@Nullable
-	public PlayerEntity findMobAttackTarget(BlockPos blockPos, double d, double e) {
-		return this.findMobAttackTarget(
-			(double)((float)blockPos.getX() + 0.5F), (double)((float)blockPos.getY() + 0.5F), (double)((float)blockPos.getZ() + 0.5F), d, e, null, null
-		);
-	}
-
-	@Nullable
-	public PlayerEntity findMobAttackTarget(
-		double d, double e, double f, double g, double h, @Nullable Function<PlayerEntity, Double> function, @Nullable Predicate<PlayerEntity> predicate
-	) {
-		double i = -1.0;
-		PlayerEntity playerEntity = null;
-
-		for (int j = 0; j < this.players.size(); j++) {
-			PlayerEntity playerEntity2 = (PlayerEntity)this.players.get(j);
-			if (!playerEntity2.abilities.invulnerable && playerEntity2.isValid() && !playerEntity2.isSpectator() && (predicate == null || predicate.test(playerEntity2))
-				)
-			 {
-				double k = playerEntity2.squaredDistanceTo(d, playerEntity2.y, f);
-				double l = g;
-				if (playerEntity2.isSneaking()) {
-					l = g * 0.8F;
-				}
-
-				if (playerEntity2.isInvisible()) {
-					float m = playerEntity2.getWornArmorRatio();
-					if (m < 0.1F) {
-						m = 0.1F;
-					}
-
-					l *= (double)(0.7F * m);
-				}
-
-				if (function != null) {
-					l *= MoreObjects.firstNonNull(function.apply(playerEntity2), 1.0);
-				}
-
-				if ((h < 0.0 || Math.abs(playerEntity2.y - e) < h * h) && (g < 0.0 || k < l * l) && (i == -1.0 || k < i)) {
-					i = k;
-					playerEntity = playerEntity2;
-				}
-			}
-		}
-
-		return playerEntity;
-	}
-
-	@Nullable
-	public PlayerEntity getPlayerByName(String string) {
-		for (int i = 0; i < this.players.size(); i++) {
-			PlayerEntity playerEntity = (PlayerEntity)this.players.get(i);
-			if (string.equals(playerEntity.getName().getString())) {
-				return playerEntity;
-			}
-		}
-
-		return null;
-	}
-
-	@Nullable
-	public PlayerEntity getPlayerByUuid(UUID uUID) {
-		for (int i = 0; i < this.players.size(); i++) {
-			PlayerEntity playerEntity = (PlayerEntity)this.players.get(i);
-			if (uUID.equals(playerEntity.getUuid())) {
-				return playerEntity;
-			}
-		}
-
-		return null;
-	}
-
-	@Nullable
-	public PlayerEntity getRandomPlayer() {
-		List<PlayerEntity> list = this.getPlayers(PlayerEntity.class, playerEntity -> playerEntity.isValid());
-		return list.isEmpty() ? null : (PlayerEntity)list.get(this.random.nextInt(list.size()));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -1433,7 +1188,7 @@ public abstract class World implements ExtendedBlockView, EntityView, IWorld, Au
 	public CrashReportSection addDetailsToCrashReport(CrashReport crashReport) {
 		CrashReportSection crashReportSection = crashReport.addElement("Affected level", 1);
 		crashReportSection.add("Level name", this.properties == null ? "????" : this.properties.getLevelName());
-		crashReportSection.add("All players", (ICrashCallable<String>)(() -> this.players.size() + " total; " + this.players));
+		crashReportSection.add("All players", (ICrashCallable<String>)(() -> this.method_18456().size() + " total; " + this.method_18456()));
 		crashReportSection.add("Chunk stats", (ICrashCallable<String>)(() -> this.chunkManager.getStatus()));
 
 		try {
@@ -1534,7 +1289,7 @@ public abstract class World implements ExtendedBlockView, EntityView, IWorld, Au
 	}
 
 	@Override
-	public boolean test(BlockPos blockPos, Predicate<BlockState> predicate) {
+	public boolean testBlockState(BlockPos blockPos, Predicate<BlockState> predicate) {
 		return predicate.test(this.getBlockState(blockPos));
 	}
 

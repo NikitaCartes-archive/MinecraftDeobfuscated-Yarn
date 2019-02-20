@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.goal;
 
+import net.minecraft.class_4051;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.util.math.BlockPos;
@@ -7,6 +8,7 @@ import net.minecraft.village.VillageProperties;
 import net.minecraft.world.World;
 
 public class VillagerBreedGoal extends Goal {
+	private static final class_4051 field_18088 = new class_4051().method_18418(8.0).method_18421().method_18417();
 	private final VillagerEntity owner;
 	private VillagerEntity mate;
 	private final World world;
@@ -30,7 +32,8 @@ public class VillagerBreedGoal extends Goal {
 			if (this.foundVillage == null) {
 				return false;
 			} else if (this.needsMoreVillager() && this.owner.isWillingToMate(true)) {
-				Entity entity = this.world.getClosestVisibleEntityTo(VillagerEntity.class, this.owner.getBoundingBox().expand(8.0, 3.0, 8.0), this.owner);
+				Entity entity = this.world
+					.method_18465(VillagerEntity.class, field_18088, this.owner, this.owner.x, this.owner.y, this.owner.z, this.owner.getBoundingBox().expand(8.0, 3.0, 8.0));
 				if (entity == null) {
 					return false;
 				} else {
@@ -86,7 +89,7 @@ public class VillagerBreedGoal extends Goal {
 	}
 
 	private void spawnBabyVillager() {
-		VillagerEntity villagerEntity = this.owner.createChild(this.mate);
+		VillagerEntity villagerEntity = this.owner.method_7225(this.mate);
 		if (villagerEntity != null) {
 			this.mate.setBreedingAge(6000);
 			this.owner.setBreedingAge(6000);

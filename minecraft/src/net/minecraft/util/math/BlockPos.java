@@ -9,12 +9,10 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.concurrent.Immutable;
 import net.minecraft.entity.Entity;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.minecraft.sortme.CuboidBlockIterator;
 
 @Immutable
 public class BlockPos extends Vec3i {
-	private static final Logger LOGGER = LogManager.getLogger();
 	public static final BlockPos ORIGIN = new BlockPos(0, 0, 0);
 	private static final int SIZE_BITS_X = 1 + MathHelper.log2(MathHelper.smallestEncompassingPowerOfTwo(30000000));
 	private static final int SIZE_BITS_Z = SIZE_BITS_X;
@@ -24,7 +22,6 @@ public class BlockPos extends Vec3i {
 	private static final long BITS_Z = (1L << SIZE_BITS_Z) - 1L;
 	private static final int BIT_SHIFT_Z = SIZE_BITS_Y;
 	private static final int BIT_SHIFT_X = SIZE_BITS_Y + SIZE_BITS_Z;
-	private static final long BIT_MASK_CHUNK_SECTION = 15L << BIT_SHIFT_X | 15L | 15L << BIT_SHIFT_Z;
 
 	public BlockPos(int i, int j, int k) {
 		super(i, j, k);
@@ -44,10 +41,6 @@ public class BlockPos extends Vec3i {
 
 	public BlockPos(Vec3i vec3i) {
 		this(vec3i.getX(), vec3i.getY(), vec3i.getZ());
-	}
-
-	public static long toChunkSectionOrigin(long l) {
-		return l & ~BIT_MASK_CHUNK_SECTION;
 	}
 
 	public static long offset(long l, Direction direction) {
@@ -88,10 +81,6 @@ public class BlockPos extends Vec3i {
 
 	public static long removeChunkSectionLocalY(long l) {
 		return l & -16L;
-	}
-
-	public static long removeY(long l) {
-		return l & ~(BITS_Y << 0);
 	}
 
 	public long asLong() {
@@ -186,7 +175,7 @@ public class BlockPos extends Vec3i {
 		}
 	}
 
-	public BlockPos crossProduct(Vec3i vec3i) {
+	public BlockPos method_10075(Vec3i vec3i) {
 		return new BlockPos(
 			this.getY() * vec3i.getZ() - this.getZ() * vec3i.getY(),
 			this.getZ() * vec3i.getX() - this.getX() * vec3i.getZ(),
@@ -211,11 +200,12 @@ public class BlockPos extends Vec3i {
 
 	public static Stream<BlockPos> getBlocksInCuboid(int i, int j, int k, int l, int m, int n) {
 		return StreamSupport.stream(new AbstractSpliterator<BlockPos>((long)((l - i + 1) * (m - j + 1) * (n - k + 1)), 64) {
-			final BlockPos.CuboidBlockIterator connector = new BlockPos.CuboidBlockIterator(i, j, k, l, m, n);
+			final CuboidBlockIterator connector = new CuboidBlockIterator(i, j, k, l, m, n);
+			final BlockPos.Mutable field_18231 = new BlockPos.Mutable();
 
 			public boolean tryAdvance(Consumer<? super BlockPos> consumer) {
 				if (this.connector.step()) {
-					consumer.accept(this.connector.position);
+					consumer.accept(this.field_18231.set(this.connector.method_18671(), this.connector.method_18672(), this.connector.method_18673()));
 					return true;
 				} else {
 					return false;
@@ -226,53 +216,15 @@ public class BlockPos extends Vec3i {
 
 	public static Iterable<BlockPos> iterateBoxPositions(int i, int j, int k, int l, int m, int n) {
 		return () -> new AbstractIterator<BlockPos>() {
-				final BlockPos.CuboidBlockIterator field_17596 = new BlockPos.CuboidBlockIterator(i, j, k, l, m, n);
+				final CuboidBlockIterator field_17596 = new CuboidBlockIterator(i, j, k, l, m, n);
+				final BlockPos.Mutable field_18232 = new BlockPos.Mutable();
 
 				protected BlockPos method_10106() {
-					return (BlockPos)(this.field_17596.step() ? this.field_17596.position : this.endOfData());
+					return (BlockPos)(this.field_17596.step()
+						? this.field_18232.set(this.field_17596.method_18671(), this.field_17596.method_18672(), this.field_17596.method_18673())
+						: this.endOfData());
 				}
 			};
-	}
-
-	static class CuboidBlockIterator {
-		private final int startX;
-		private final int startY;
-		private final int startZ;
-		private final int endX;
-		private final int endY;
-		private final int endZ;
-		private BlockPos.Mutable position;
-
-		public CuboidBlockIterator(int i, int j, int k, int l, int m, int n) {
-			this.startX = i;
-			this.startY = j;
-			this.startZ = k;
-			this.endX = l;
-			this.endY = m;
-			this.endZ = n;
-		}
-
-		public boolean step() {
-			if (this.position == null) {
-				this.position = new BlockPos.Mutable(this.startX, this.startY, this.startZ);
-				return true;
-			} else if (this.position.x == this.endX && this.position.y == this.endY && this.position.z == this.endZ) {
-				return false;
-			} else {
-				if (this.position.x < this.endX) {
-					this.position.x++;
-				} else if (this.position.y < this.endY) {
-					this.position.x = this.startX;
-					this.position.y++;
-				} else if (this.position.z < this.endZ) {
-					this.position.x = this.startX;
-					this.position.y = this.startY;
-					this.position.z++;
-				}
-
-				return true;
-			}
-		}
 	}
 
 	public static class Mutable extends BlockPos {
@@ -411,7 +363,7 @@ public class BlockPos extends Vec3i {
 					BlockPos.PooledMutable pooledMutable = (BlockPos.PooledMutable)POOL.remove(POOL.size() - 1);
 					if (pooledMutable != null && pooledMutable.field_11004) {
 						pooledMutable.field_11004 = false;
-						pooledMutable.set(i, j, k);
+						pooledMutable.method_10113(i, j, k);
 						return pooledMutable;
 					}
 				}
@@ -420,31 +372,31 @@ public class BlockPos extends Vec3i {
 			return new BlockPos.PooledMutable(i, j, k);
 		}
 
-		public BlockPos.PooledMutable set(int i, int j, int k) {
+		public BlockPos.PooledMutable method_10113(int i, int j, int k) {
 			return (BlockPos.PooledMutable)super.set(i, j, k);
 		}
 
-		public BlockPos.PooledMutable set(Entity entity) {
+		public BlockPos.PooledMutable method_10110(Entity entity) {
 			return (BlockPos.PooledMutable)super.set(entity);
 		}
 
-		public BlockPos.PooledMutable set(double d, double e, double f) {
+		public BlockPos.PooledMutable method_10112(double d, double e, double f) {
 			return (BlockPos.PooledMutable)super.set(d, e, f);
 		}
 
-		public BlockPos.PooledMutable set(Vec3i vec3i) {
+		public BlockPos.PooledMutable method_10114(Vec3i vec3i) {
 			return (BlockPos.PooledMutable)super.set(vec3i);
 		}
 
-		public BlockPos.PooledMutable setOffset(Direction direction) {
+		public BlockPos.PooledMutable method_10118(Direction direction) {
 			return (BlockPos.PooledMutable)super.setOffset(direction);
 		}
 
-		public BlockPos.PooledMutable setOffset(Direction direction, int i) {
+		public BlockPos.PooledMutable method_10116(Direction direction, int i) {
 			return (BlockPos.PooledMutable)super.setOffset(direction, i);
 		}
 
-		public BlockPos.PooledMutable setOffset(int i, int j, int k) {
+		public BlockPos.PooledMutable method_10108(int i, int j, int k) {
 			return (BlockPos.PooledMutable)super.setOffset(i, j, k);
 		}
 

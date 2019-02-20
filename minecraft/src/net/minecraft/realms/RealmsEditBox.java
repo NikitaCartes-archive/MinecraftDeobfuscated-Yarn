@@ -11,7 +11,7 @@ public class RealmsEditBox extends RealmsGuiEventListener {
 	private final TextFieldWidget editBox;
 
 	public RealmsEditBox(int i, int j, int k, int l, int m) {
-		this.editBox = new TextFieldWidget(i, MinecraftClient.getInstance().textRenderer, j, k, l, m);
+		this.editBox = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, j, k, l, m);
 	}
 
 	public String getValue() {
@@ -66,7 +66,7 @@ public class RealmsEditBox extends RealmsGuiEventListener {
 	}
 
 	public void render(int i, int j, float f) {
-		this.editBox.render(i, j, f);
+		this.editBox.method_18326(i, j, f);
 	}
 
 	public void setMaxLength(int i) {

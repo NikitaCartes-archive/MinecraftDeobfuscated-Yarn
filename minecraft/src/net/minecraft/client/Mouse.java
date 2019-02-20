@@ -67,25 +67,27 @@ public class Mouse {
 			}
 
 			boolean[] bls = new boolean[]{false};
-			if (this.client.currentScreen == null) {
-				if (!this.isCursorLocked && bl) {
-					this.lockCursor();
-				}
-			} else {
-				double d = this.x * (double)this.client.window.getScaledWidth() / (double)this.client.window.getWidth();
-				double e = this.y * (double)this.client.window.getScaledHeight() / (double)this.client.window.getHeight();
-				if (bl) {
-					Screen.method_2217(
-						() -> bls[0] = this.client.currentScreen.mouseClicked(d, e, m), "mouseClicked event handler", this.client.currentScreen.getClass().getCanonicalName()
-					);
+			if (this.client.field_18175 == null) {
+				if (this.client.currentScreen == null) {
+					if (!this.isCursorLocked && bl) {
+						this.lockCursor();
+					}
 				} else {
-					Screen.method_2217(
-						() -> bls[0] = this.client.currentScreen.mouseReleased(d, e, m), "mouseReleased event handler", this.client.currentScreen.getClass().getCanonicalName()
-					);
+					double d = this.x * (double)this.client.window.getScaledWidth() / (double)this.client.window.getWidth();
+					double e = this.y * (double)this.client.window.getScaledHeight() / (double)this.client.window.getHeight();
+					if (bl) {
+						Screen.method_2217(
+							() -> bls[0] = this.client.currentScreen.mouseClicked(d, e, m), "mouseClicked event handler", this.client.currentScreen.getClass().getCanonicalName()
+						);
+					} else {
+						Screen.method_2217(
+							() -> bls[0] = this.client.currentScreen.mouseReleased(d, e, m), "mouseReleased event handler", this.client.currentScreen.getClass().getCanonicalName()
+						);
+					}
 				}
 			}
 
-			if (!bls[0] && (this.client.currentScreen == null || this.client.currentScreen.field_2558)) {
+			if (!bls[0] && (this.client.currentScreen == null || this.client.currentScreen.field_2558) && this.client.field_18175 == null) {
 				if (m == 0) {
 					this.field_1791 = bl;
 				} else if (m == 2) {
@@ -109,29 +111,31 @@ public class Mouse {
 	private void onMouseScroll(long l, double d, double e) {
 		if (l == MinecraftClient.getInstance().window.getHandle()) {
 			double f = e * this.client.options.mouseWheelSensitivity;
-			if (this.client.currentScreen != null) {
-				this.client.currentScreen.mouseScrolled(f);
-			} else if (this.client.player != null) {
-				if (this.eventDeltaWheel != 0.0 && Math.signum(f) != Math.signum(this.eventDeltaWheel)) {
-					this.eventDeltaWheel = 0.0;
-				}
-
-				this.eventDeltaWheel += f;
-				double g = (double)((int)this.eventDeltaWheel);
-				if (g == 0.0) {
-					return;
-				}
-
-				this.eventDeltaWheel -= g;
-				if (this.client.player.isSpectator()) {
-					if (this.client.inGameHud.getSpectatorWidget().method_1980()) {
-						this.client.inGameHud.getSpectatorWidget().method_1976(-g);
-					} else {
-						double h = MathHelper.clamp((double)this.client.player.abilities.getFlySpeed() + g * 0.005F, 0.0, 0.2F);
-						this.client.player.abilities.setFlySpeed(h);
+			if (this.client.field_18175 == null) {
+				if (this.client.currentScreen != null) {
+					this.client.currentScreen.mouseScrolled(f);
+				} else if (this.client.player != null) {
+					if (this.eventDeltaWheel != 0.0 && Math.signum(f) != Math.signum(this.eventDeltaWheel)) {
+						this.eventDeltaWheel = 0.0;
 					}
-				} else {
-					this.client.player.inventory.method_7373(g);
+
+					this.eventDeltaWheel += f;
+					double g = (double)((int)this.eventDeltaWheel);
+					if (g == 0.0) {
+						return;
+					}
+
+					this.eventDeltaWheel -= g;
+					if (this.client.player.isSpectator()) {
+						if (this.client.inGameHud.getSpectatorWidget().method_1980()) {
+							this.client.inGameHud.getSpectatorWidget().method_1976(-g);
+						} else {
+							double h = MathHelper.clamp((double)this.client.player.abilities.getFlySpeed() + g * 0.005F, 0.0, 0.2F);
+							this.client.player.abilities.setFlySpeed(h);
+						}
+					} else {
+						this.client.player.inventory.method_7373(g);
+					}
 				}
 			}
 		}
@@ -150,7 +154,7 @@ public class Mouse {
 			}
 
 			GuiEventListener guiEventListener = this.client.currentScreen;
-			if (guiEventListener != null) {
+			if (guiEventListener != null && this.client.field_18175 == null) {
 				double f = d * (double)this.client.window.getScaledWidth() / (double)this.client.window.getWidth();
 				double g = e * (double)this.client.window.getScaledHeight() / (double)this.client.window.getHeight();
 				Screen.method_2217(() -> guiEventListener.mouseMoved(f, g), "mouseMoved event handler", guiEventListener.getClass().getCanonicalName());

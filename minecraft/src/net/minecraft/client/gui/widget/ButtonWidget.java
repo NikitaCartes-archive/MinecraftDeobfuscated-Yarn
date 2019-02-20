@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4068;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.audio.PositionedSoundInstance;
 import net.minecraft.client.audio.SoundLoader;
@@ -20,14 +21,13 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public abstract class ButtonWidget extends Drawable implements GuiEventListener {
+public abstract class ButtonWidget extends Drawable implements class_4068, GuiEventListener {
 	public static final Identifier WIDGET_TEX = new Identifier("textures/gui/widgets.png");
 	protected int width;
 	protected int height;
 	public int x;
 	public int y;
 	private String text;
-	public final int id;
 	private boolean hovered;
 	public boolean enabled = true;
 	public boolean visible = true;
@@ -35,16 +35,15 @@ public abstract class ButtonWidget extends Drawable implements GuiEventListener 
 	protected float opacity = 1.0F;
 	protected long nextNarrationTime = Long.MAX_VALUE;
 
-	public ButtonWidget(int i, int j, int k, String string) {
-		this(i, j, k, 200, 20, string);
+	public ButtonWidget(int i, int j, String string) {
+		this(i, j, 200, 20, string);
 	}
 
-	public ButtonWidget(int i, int j, int k, int l, int m, String string) {
-		this.id = i;
-		this.x = j;
-		this.y = k;
-		this.width = l;
-		this.height = m;
+	public ButtonWidget(int i, int j, int k, int l, String string) {
+		this.x = i;
+		this.y = j;
+		this.width = k;
+		this.height = l;
 		this.text = string;
 	}
 
@@ -59,7 +58,8 @@ public abstract class ButtonWidget extends Drawable implements GuiEventListener 
 		return i;
 	}
 
-	public void render(int i, int j, float f) {
+	@Override
+	public void method_18326(int i, int j, float f) {
 		if (this.visible) {
 			boolean bl = this.hovered;
 			this.hovered = i >= this.x && j >= this.y && i < this.x + this.width && j < this.y + this.height;

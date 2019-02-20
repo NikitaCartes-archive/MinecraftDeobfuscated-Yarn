@@ -48,11 +48,11 @@ public class class_1414 {
 		EntityNavigation entityNavigation = mobEntityWithAi.getNavigation();
 		Random random = mobEntityWithAi.getRand();
 		boolean bl2;
-		if (mobEntityWithAi.hasLimitedAiRange()) {
-			double e = mobEntityWithAi.getAiHome()
+		if (mobEntityWithAi.method_18410()) {
+			double e = mobEntityWithAi.method_18412()
 					.squaredDistanceTo((double)MathHelper.floor(mobEntityWithAi.x), (double)MathHelper.floor(mobEntityWithAi.y), (double)MathHelper.floor(mobEntityWithAi.z))
 				+ 4.0;
-			double f = (double)(mobEntityWithAi.getAiRadius() + (float)i);
+			double f = (double)(mobEntityWithAi.method_18413() + (float)i);
 			bl2 = e < f * f;
 		} else {
 			bl2 = false;
@@ -70,8 +70,8 @@ public class class_1414 {
 				int o = blockPos.getX();
 				int p = blockPos.getY();
 				int q = blockPos.getZ();
-				if (mobEntityWithAi.hasLimitedAiRange() && i > 1) {
-					BlockPos blockPos2 = mobEntityWithAi.getAiHome();
+				if (mobEntityWithAi.method_18410() && i > 1) {
+					BlockPos blockPos2 = mobEntityWithAi.method_18412();
 					if (mobEntityWithAi.x > (double)blockPos2.getX()) {
 						o -= random.nextInt(i / 2);
 					} else {
@@ -86,7 +86,7 @@ public class class_1414 {
 				}
 
 				BlockPos blockPos2x = new BlockPos((double)o + mobEntityWithAi.x, (double)p + mobEntityWithAi.y, (double)q + mobEntityWithAi.z);
-				if ((!bl2 || mobEntityWithAi.isInAiRange(blockPos2x)) && entityNavigation.isValidPosition(blockPos2x)) {
+				if ((!bl2 || mobEntityWithAi.method_18407(blockPos2x)) && entityNavigation.isValidPosition(blockPos2x)) {
 					if (!bl) {
 						blockPos2x = method_6372(blockPos2x, mobEntityWithAi);
 						if (method_6380(blockPos2x, mobEntityWithAi)) {

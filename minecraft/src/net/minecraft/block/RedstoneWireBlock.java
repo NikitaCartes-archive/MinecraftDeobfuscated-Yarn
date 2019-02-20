@@ -139,8 +139,8 @@ public class RedstoneWireBlock extends Block {
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 			for (Direction direction : Direction.Type.HORIZONTAL) {
 				WireConnection wireConnection = blockState.get((Property<WireConnection>)DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction));
-				if (wireConnection != WireConnection.field_12687 && iWorld.getBlockState(pooledMutable.set(blockPos).setOffset(direction)).getBlock() != this) {
-					pooledMutable.setOffset(Direction.DOWN);
+				if (wireConnection != WireConnection.field_12687 && iWorld.getBlockState(pooledMutable.method_10114(blockPos).method_10118(direction)).getBlock() != this) {
+					pooledMutable.method_10118(Direction.DOWN);
 					BlockState blockState2 = iWorld.getBlockState(pooledMutable);
 					if (blockState2.getBlock() != Blocks.field_10282) {
 						BlockPos blockPos2 = pooledMutable.offset(direction.getOpposite());
@@ -148,7 +148,7 @@ public class RedstoneWireBlock extends Block {
 						replaceBlock(blockState2, blockState3, iWorld, pooledMutable, i);
 					}
 
-					pooledMutable.set(blockPos).setOffset(direction).setOffset(Direction.UP);
+					pooledMutable.method_10114(blockPos).method_10118(direction).method_10118(Direction.UP);
 					BlockState blockState4 = iWorld.getBlockState(pooledMutable);
 					if (blockState4.getBlock() != Blocks.field_10282) {
 						BlockPos blockPos3 = pooledMutable.offset(direction.getOpposite());

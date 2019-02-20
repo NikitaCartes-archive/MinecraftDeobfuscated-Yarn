@@ -27,14 +27,13 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.world.DummyClientTickScheduler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.parts.EntityPart;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.boss.dragon.EnderDragonEntity;
+import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ChunkHolder;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.TypeFilterableList;
@@ -136,8 +135,8 @@ public class WorldChunk implements Chunk {
 			protoChunk.getPos(),
 			protoChunk.getBiomeArray(),
 			protoChunk.getUpgradeData(),
-			protoChunk.getBlockTickScheduler(),
-			protoChunk.getFluidTickScheduler(),
+			protoChunk.method_12303(),
+			protoChunk.method_12313(),
 			protoChunk.getInhabitedTime(),
 			protoChunk.getSectionArray(),
 			null
@@ -463,14 +462,6 @@ public class WorldChunk implements Chunk {
 			this.loadToWorldConsumer.accept(this);
 			this.loadToWorldConsumer = null;
 		}
-
-		this.loadedToWorld = true;
-		this.world.addBlockEntities(this.blockEntityMap.values());
-		if (this.world instanceof ServerWorld) {
-			for (TypeFilterableList<Entity> typeFilterableList : this.entitySections) {
-				typeFilterableList.stream().filter(entity -> !(entity instanceof PlayerEntity)).forEach(entity -> ((ServerWorld)this.world).method_18197(entity, false));
-			}
-		}
 	}
 
 	public void markDirty() {
@@ -491,11 +482,10 @@ public class WorldChunk implements Chunk {
 							list.add(entity2);
 						}
 
-						EntityPart[] entityParts = entity2.getParts();
-						if (entityParts != null) {
-							for (EntityPart entityPart : entityParts) {
-								if (entityPart != entity && entityPart.getBoundingBox().intersects(boundingBox) && (predicate == null || predicate.test(entityPart))) {
-									list.add(entityPart);
+						if (entity2 instanceof EnderDragonEntity) {
+							for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity2).method_5690()) {
+								if (enderDragonPart != entity && enderDragonPart.getBoundingBox().intersects(boundingBox) && (predicate == null || predicate.test(enderDragonPart))) {
+									list.add(enderDragonPart);
 								}
 							}
 						}
@@ -542,24 +532,6 @@ public class WorldChunk implements Chunk {
 	@Override
 	public ChunkPos getPos() {
 		return this.pos;
-	}
-
-	public boolean areSectionsEmpty(int i, int j) {
-		if (i < 0) {
-			i = 0;
-		}
-
-		if (j >= 256) {
-			j = 255;
-		}
-
-		for (int k = i; k <= j; k += 16) {
-			if (!ChunkSection.isEmpty(this.sections[k >> 4])) {
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	@Environment(EnvType.CLIENT)

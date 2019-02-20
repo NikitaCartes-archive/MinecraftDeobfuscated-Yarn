@@ -7,8 +7,8 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 
 public class MuleEntity extends AbstractDonkeyEntity {
-	public MuleEntity(World world) {
-		super(EntityType.MULE, world);
+	public MuleEntity(EntityType<? extends MuleEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override

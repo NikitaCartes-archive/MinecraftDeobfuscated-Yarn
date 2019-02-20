@@ -1,9 +1,11 @@
 package net.minecraft.world;
 
+import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PortalBlock;
@@ -14,8 +16,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.ChunkPos;
-import net.minecraft.world.dimension.DimensionType;
 
 public class PortalForcer {
 	private static final PortalBlock PORTAL_BLOCK = (PortalBlock)Blocks.field_10316;
@@ -28,58 +30,49 @@ public class PortalForcer {
 		this.random = new Random(serverWorld.getSeed());
 	}
 
-	public void method_8655(Entity entity, float f) {
-		if (this.world.dimension.getType() != DimensionType.field_13078) {
-			if (!this.method_8653(entity, f)) {
-				this.method_8654(entity);
-				this.method_8653(entity, f);
-			}
+	public boolean method_8653(Entity entity, float f) {
+		Vec3d vec3d = entity.method_5656();
+		Direction direction = entity.method_5843();
+		long l = ChunkPos.toLong(MathHelper.floor(entity.x), MathHelper.floor(entity.z));
+		Pair<Vec3d, Pair<Vec3d, Integer>> pair = this.method_18475(
+			new BlockPos(entity), new Vec3d(entity.velocityX, entity.velocityY, entity.velocityZ), l, direction, vec3d.x, vec3d.y
+		);
+		if (pair == null) {
+			return false;
 		} else {
-			int i = MathHelper.floor(entity.x);
-			int j = MathHelper.floor(entity.y) - 1;
-			int k = MathHelper.floor(entity.z);
-			int l = 1;
-			int m = 0;
-
-			for (int n = -2; n <= 2; n++) {
-				for (int o = -2; o <= 2; o++) {
-					for (int p = -1; p < 3; p++) {
-						int q = i + o * 1 + n * 0;
-						int r = j + p;
-						int s = k + o * 0 - n * 1;
-						boolean bl = p < 0;
-						this.world.setBlockState(new BlockPos(q, r, s), bl ? Blocks.field_10540.getDefaultState() : Blocks.field_10124.getDefaultState());
-					}
-				}
+			Vec3d vec3d2 = pair.getFirst();
+			Vec3d vec3d3 = pair.getSecond().getFirst();
+			entity.velocityX = vec3d3.x;
+			entity.velocityY = vec3d3.y;
+			entity.velocityZ = vec3d3.z;
+			entity.yaw = f + (float)pair.getSecond().getSecond().intValue();
+			if (entity instanceof ServerPlayerEntity) {
+				((ServerPlayerEntity)entity).networkHandler.teleportRequest(vec3d2.x, vec3d2.y, vec3d2.z, entity.yaw, entity.pitch);
+				((ServerPlayerEntity)entity).networkHandler.syncWithPlayerPosition();
+			} else {
+				entity.setPositionAndAngles(vec3d2.x, vec3d2.y, vec3d2.z, entity.yaw, entity.pitch);
 			}
 
-			entity.setPositionAndAngles((double)i, (double)j, (double)k, entity.yaw, 0.0F);
-			entity.velocityX = 0.0;
-			entity.velocityY = 0.0;
-			entity.velocityZ = 0.0;
+			return true;
 		}
 	}
 
-	public boolean method_8653(Entity entity, float f) {
+	@Nullable
+	public Pair<Vec3d, Pair<Vec3d, Integer>> method_18475(BlockPos blockPos, Vec3d vec3d, long l, Direction direction, double d, double e) {
 		int i = 128;
-		double d = -1.0;
-		int j = MathHelper.floor(entity.x);
-		int k = MathHelper.floor(entity.z);
 		boolean bl = true;
-		BlockPos blockPos = BlockPos.ORIGIN;
-		long l = ChunkPos.toLong(j, k);
+		BlockPos blockPos2 = null;
 		if (this.field_9287.containsKey(l)) {
 			PortalForcer.class_1947 lv = this.field_9287.get(l);
-			d = 0.0;
-			blockPos = lv;
+			blockPos2 = lv;
 			lv.field_9290 = this.world.getTime();
 			bl = false;
 		} else {
-			BlockPos blockPos2 = new BlockPos(entity);
+			double f = Double.MAX_VALUE;
 
-			for (int m = -128; m <= 128; m++) {
-				for (int n = -128; n <= 128; n++) {
-					BlockPos blockPos3 = blockPos2.add(m, this.world.getEffectiveHeight() - 1 - blockPos2.getY(), n);
+			for (int j = -128; j <= 128; j++) {
+				for (int k = -128; k <= 128; k++) {
+					BlockPos blockPos3 = blockPos.add(j, this.world.getEffectiveHeight() - 1 - blockPos.getY(), k);
 
 					while (blockPos3.getY() >= 0) {
 						BlockPos blockPos4 = blockPos3.down();
@@ -88,10 +81,10 @@ public class PortalForcer {
 								blockPos3 = blockPos4;
 							}
 
-							double e = blockPos3.squaredDistanceTo(blockPos2);
-							if (d < 0.0 || e < d) {
-								d = e;
-								blockPos = blockPos3;
+							double g = blockPos3.squaredDistanceTo(blockPos);
+							if (f < 0.0 || g < f) {
+								f = g;
+								blockPos2 = blockPos3;
 							}
 						}
 
@@ -101,60 +94,15 @@ public class PortalForcer {
 			}
 		}
 
-		if (d >= 0.0) {
-			if (bl) {
-				this.field_9287.put(l, new PortalForcer.class_1947(blockPos, this.world.getTime()));
-			}
-
-			double g = (double)blockPos.getX() + 0.5;
-			double h = (double)blockPos.getZ() + 0.5;
-			BlockPattern.Result result = PORTAL_BLOCK.method_10350(this.world, blockPos);
-			boolean bl2 = result.getForwards().rotateYClockwise().getDirection() == Direction.AxisDirection.NEGATIVE;
-			double o = result.getForwards().getAxis() == Direction.Axis.X ? (double)result.getFrontTopLeft().getZ() : (double)result.getFrontTopLeft().getX();
-			double p = (double)(result.getFrontTopLeft().getY() + 1) - entity.method_5656().y * (double)result.getHeight();
-			if (bl2) {
-				o++;
-			}
-
-			if (result.getForwards().getAxis() == Direction.Axis.X) {
-				h = o + (1.0 - entity.method_5656().x) * (double)result.getWidth() * (double)result.getForwards().rotateYClockwise().getDirection().offset();
-			} else {
-				g = o + (1.0 - entity.method_5656().x) * (double)result.getWidth() * (double)result.getForwards().rotateYClockwise().getDirection().offset();
-			}
-
-			float q = 0.0F;
-			float r = 0.0F;
-			float s = 0.0F;
-			float t = 0.0F;
-			if (result.getForwards().getOpposite() == entity.method_5843()) {
-				q = 1.0F;
-				r = 1.0F;
-			} else if (result.getForwards().getOpposite() == entity.method_5843().getOpposite()) {
-				q = -1.0F;
-				r = -1.0F;
-			} else if (result.getForwards().getOpposite() == entity.method_5843().rotateYClockwise()) {
-				s = 1.0F;
-				t = -1.0F;
-			} else {
-				s = -1.0F;
-				t = 1.0F;
-			}
-
-			double u = entity.velocityX;
-			double v = entity.velocityZ;
-			entity.velocityX = u * (double)q + v * (double)t;
-			entity.velocityZ = u * (double)s + v * (double)r;
-			entity.yaw = f - (float)(entity.method_5843().getOpposite().getHorizontal() * 90) + (float)(result.getForwards().getHorizontal() * 90);
-			if (entity instanceof ServerPlayerEntity) {
-				((ServerPlayerEntity)entity).networkHandler.teleportRequest(g, p, h, entity.yaw, entity.pitch);
-				((ServerPlayerEntity)entity).networkHandler.syncWithPlayerPosition();
-			} else {
-				entity.setPositionAndAngles(g, p, h, entity.yaw, entity.pitch);
-			}
-
-			return true;
+		if (blockPos2 == null) {
+			return null;
 		} else {
-			return false;
+			if (bl) {
+				this.field_9287.put(l, new PortalForcer.class_1947(blockPos2, this.world.getTime()));
+			}
+
+			BlockPattern.Result result = PORTAL_BLOCK.method_10350(this.world, blockPos2);
+			return result.method_18478(direction, blockPos2, e, vec3d, d);
 		}
 	}
 

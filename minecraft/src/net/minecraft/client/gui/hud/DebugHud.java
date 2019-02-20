@@ -322,7 +322,7 @@ public class DebugHud extends Drawable {
 
 	private WorldChunk getClientChunk() {
 		if (this.chunk == null) {
-			this.chunk = this.client.world.getWorldChunk(this.pos.x, this.pos.z);
+			this.chunk = this.client.world.method_8497(this.pos.x, this.pos.z);
 		}
 
 		return this.chunk;

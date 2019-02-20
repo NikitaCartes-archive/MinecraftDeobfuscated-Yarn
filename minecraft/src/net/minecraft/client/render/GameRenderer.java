@@ -11,8 +11,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1675;
 import net.minecraft.class_295;
-import net.minecraft.block.BedBlock;
-import net.minecraft.block.Block;
+import net.minecraft.class_4063;
+import net.minecraft.class_4066;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -423,11 +423,9 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			g = (float)((double)g + 1.0);
 			GlStateManager.translatef(0.0F, 0.3F, 0.0F);
 			if (!this.client.options.field_1821) {
-				BlockPos blockPos = new BlockPos(entity);
-				BlockState blockState = this.client.world.getBlockState(blockPos);
-				Block block = blockState.getBlock();
-				if (block instanceof BedBlock) {
-					GlStateManager.rotatef(((Direction)blockState.get(BedBlock.field_11177)).asRotation(), 0.0F, 1.0F, 0.0F);
+				Direction direction = ((LivingEntity)entity).method_18401();
+				if (direction != null) {
+					GlStateManager.rotatef(direction.asRotation(), 0.0F, 1.0F, 0.0F);
 				}
 
 				GlStateManager.rotatef(MathHelper.lerp(f, entity.prevYaw, entity.yaw) + 180.0F, 0.0F, -1.0F, 0.0F);
@@ -650,11 +648,22 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				this.client.window.method_4493(MinecraftClient.IS_SYSTEM_MAC);
 			}
 
-			if (this.client.currentScreen != null) {
+			if (this.client.field_18175 != null) {
 				GlStateManager.clear(256, MinecraftClient.IS_SYSTEM_MAC);
 
 				try {
-					this.client.currentScreen.draw(i, j, this.client.getLastFrameDuration());
+					this.client.field_18175.method_18326(i, j, this.client.getLastFrameDuration());
+				} catch (Throwable var14) {
+					CrashReport crashReport = CrashReport.create(var14, "Rendering overlay");
+					CrashReportSection crashReportSection = crashReport.addElement("Overlay render details");
+					crashReportSection.add("Overlay name", (ICrashCallable<String>)(() -> this.client.field_18175.getClass().getCanonicalName()));
+					throw new CrashException(crashReport);
+				}
+			} else if (this.client.currentScreen != null) {
+				GlStateManager.clear(256, MinecraftClient.IS_SYSTEM_MAC);
+
+				try {
+					this.client.currentScreen.method_18326(i, j, this.client.getLastFrameDuration());
 				} catch (Throwable var13) {
 					CrashReport crashReport = CrashReport.create(var13, "Rendering screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen render details");
@@ -820,7 +829,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 		GuiLighting.disable();
 		this.client.getProfiler().swap("terrain_setup");
-		this.client.world.getChunkProvider().getLightingProvider().doLightUpdates(Integer.MAX_VALUE, true, true);
+		this.client.world.method_2935().getLightingProvider().doLightUpdates(Integer.MAX_VALUE, true, true);
 		worldRenderer.setUpTerrain(entity, f, visibleRegion, this.field_4021++, this.client.player.isSpectator());
 		this.client.getProfiler().swap("updatechunks");
 		this.client.worldRenderer.updateChunks(l);
@@ -908,7 +917,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	}
 
 	private void method_3206(WorldRenderer worldRenderer, float f, double d, double e, double g) {
-		if (this.client.options.getCloudRenderMode() != 0) {
+		if (this.client.options.getCloudRenderMode() != class_4063.field_18162) {
 			this.client.getProfiler().swap("clouds");
 			GlStateManager.matrixMode(5889);
 			GlStateManager.loadIdentity();
@@ -957,9 +966,9 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			double g = 0.0;
 			int j = 0;
 			int k = (int)(100.0F * f * f);
-			if (this.client.options.particles == 1) {
+			if (this.client.options.particles == class_4066.field_18198) {
 				k >>= 1;
-			} else if (this.client.options.particles == 2) {
+			} else if (this.client.options.particles == class_4066.field_18199) {
 				k = 0;
 			}
 

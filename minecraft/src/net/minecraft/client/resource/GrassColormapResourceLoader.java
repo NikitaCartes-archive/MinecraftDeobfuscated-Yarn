@@ -1,31 +1,28 @@
 package net.minecraft.client.resource;
 
 import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_3685;
+import net.minecraft.class_4080;
 import net.minecraft.client.render.block.GrassColorHandler;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
 @Environment(EnvType.CLIENT)
-public class GrassColormapResourceLoader implements ResourceReloadListener {
+public class GrassColormapResourceLoader extends class_4080<int[]> {
 	private static final Identifier GRASS_COLORMAP_LOC = new Identifier("textures/colormap/grass.png");
 
-	@Override
-	public CompletableFuture<Void> apply(
-		ResourceReloadListener.Helper helper, ResourceManager resourceManager, Profiler profiler, Profiler profiler2, Executor executor, Executor executor2
-	) {
-		return CompletableFuture.supplyAsync(() -> {
-			try {
-				return class_3685.method_16049(resourceManager, GRASS_COLORMAP_LOC);
-			} catch (IOException var2) {
-				return null;
-			}
-		}, executor).thenCompose(helper::waitForAll).thenAcceptAsync(GrassColorHandler::setColorMap, executor2);
+	protected int[] method_18662(ResourceManager resourceManager, Profiler profiler) {
+		try {
+			return class_3685.method_16049(resourceManager, GRASS_COLORMAP_LOC);
+		} catch (IOException var4) {
+			throw new IllegalStateException("Failed to load grass color texture", var4);
+		}
+	}
+
+	protected void method_18661(int[] is, ResourceManager resourceManager, Profiler profiler) {
+		GrassColorHandler.setColorMap(is);
 	}
 }

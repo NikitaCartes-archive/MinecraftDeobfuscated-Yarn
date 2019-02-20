@@ -3,7 +3,6 @@ package net.minecraft.entity.boss.dragon.phase;
 import javax.annotation.Nullable;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.decoration.EnderCrystalEntity;
-import net.minecraft.entity.parts.EntityPart;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -30,5 +29,5 @@ public interface Phase {
 	@Nullable
 	Vec3d getTarget();
 
-	float modifyDamageTaken(EntityPart entityPart, DamageSource damageSource, float f);
+	float modifyDamageTaken(DamageSource damageSource, float f);
 }

@@ -139,12 +139,12 @@ public class LootPool {
 			return this;
 		}
 
-		public LootPool.Builder withCondition(LootCondition.Builder builder) {
+		public LootPool.Builder method_356(LootCondition.Builder builder) {
 			this.conditions.add(builder.build());
 			return this;
 		}
 
-		public LootPool.Builder withFunction(LootFunction.Builder builder) {
+		public LootPool.Builder method_353(LootFunction.Builder builder) {
 			this.functions.add(builder.build());
 			return this;
 		}

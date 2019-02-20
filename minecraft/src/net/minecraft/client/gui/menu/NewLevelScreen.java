@@ -90,19 +90,19 @@ public class NewLevelScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.buttonCreateLevel = this.addButton(new ButtonWidget(0, this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("selectWorld.create")) {
+		this.buttonCreateLevel = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("selectWorld.create")) {
 			@Override
 			public void onPressed(double d, double e) {
 				NewLevelScreen.this.createLevel();
 			}
 		});
-		this.addButton(new ButtonWidget(1, this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel")) {
+		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel")) {
 			@Override
 			public void onPressed(double d, double e) {
 				NewLevelScreen.this.client.openScreen(NewLevelScreen.this.parent);
 			}
 		});
-		this.buttonGameModeSwitch = this.addButton(new ButtonWidget(2, this.width / 2 - 75, 115, 150, 20, I18n.translate("selectWorld.gameMode")) {
+		this.buttonGameModeSwitch = this.addButton(new ButtonWidget(this.width / 2 - 75, 115, 150, 20, I18n.translate("selectWorld.gameMode")) {
 			@Override
 			public void onPressed(double d, double e) {
 				if ("survival".equals(NewLevelScreen.this.gameMode)) {
@@ -142,13 +142,13 @@ public class NewLevelScreen extends Screen {
 				NewLevelScreen.this.method_2722();
 			}
 		});
-		this.buttonMoreOptions = this.addButton(new ButtonWidget(3, this.width / 2 - 75, 187, 150, 20, I18n.translate("selectWorld.moreWorldOptions")) {
+		this.buttonMoreOptions = this.addButton(new ButtonWidget(this.width / 2 - 75, 187, 150, 20, I18n.translate("selectWorld.moreWorldOptions")) {
 			@Override
 			public void onPressed(double d, double e) {
 				NewLevelScreen.this.method_2721();
 			}
 		});
-		this.buttonGenerateStructures = this.addButton(new ButtonWidget(4, this.width / 2 - 155, 100, 150, 20, I18n.translate("selectWorld.mapFeatures")) {
+		this.buttonGenerateStructures = this.addButton(new ButtonWidget(this.width / 2 - 155, 100, 150, 20, I18n.translate("selectWorld.mapFeatures")) {
 			@Override
 			public void onPressed(double d, double e) {
 				NewLevelScreen.this.structures = !NewLevelScreen.this.structures;
@@ -156,7 +156,7 @@ public class NewLevelScreen extends Screen {
 			}
 		});
 		this.buttonGenerateStructures.visible = false;
-		this.buttonGenerateBonusItems = this.addButton(new ButtonWidget(7, this.width / 2 + 5, 151, 150, 20, I18n.translate("selectWorld.bonusItems")) {
+		this.buttonGenerateBonusItems = this.addButton(new ButtonWidget(this.width / 2 + 5, 151, 150, 20, I18n.translate("selectWorld.bonusItems")) {
 			@Override
 			public void onPressed(double d, double e) {
 				NewLevelScreen.this.enableBonusItems = !NewLevelScreen.this.enableBonusItems;
@@ -164,7 +164,7 @@ public class NewLevelScreen extends Screen {
 			}
 		});
 		this.buttonGenerateBonusItems.visible = false;
-		this.buttonMapTypeSwitch = this.addButton(new ButtonWidget(5, this.width / 2 + 5, 100, 150, 20, I18n.translate("selectWorld.mapType")) {
+		this.buttonMapTypeSwitch = this.addButton(new ButtonWidget(this.width / 2 + 5, 100, 150, 20, I18n.translate("selectWorld.mapType")) {
 			@Override
 			public void onPressed(double d, double e) {
 				NewLevelScreen.this.generatorType++;
@@ -185,7 +185,7 @@ public class NewLevelScreen extends Screen {
 			}
 		});
 		this.buttonMapTypeSwitch.visible = false;
-		this.buttonCommandsAllowed = this.addButton(new ButtonWidget(6, this.width / 2 - 155, 151, 150, 20, I18n.translate("selectWorld.allowCommands")) {
+		this.buttonCommandsAllowed = this.addButton(new ButtonWidget(this.width / 2 - 155, 151, 150, 20, I18n.translate("selectWorld.allowCommands")) {
 			@Override
 			public void onPressed(double d, double e) {
 				NewLevelScreen.this.field_3179 = true;
@@ -194,7 +194,7 @@ public class NewLevelScreen extends Screen {
 			}
 		});
 		this.buttonCommandsAllowed.visible = false;
-		this.buttonCustomizeType = this.addButton(new ButtonWidget(8, this.width / 2 + 5, 120, 150, 20, I18n.translate("selectWorld.customizeType")) {
+		this.buttonCustomizeType = this.addButton(new ButtonWidget(this.width / 2 + 5, 120, 150, 20, I18n.translate("selectWorld.customizeType")) {
 			@Override
 			public void onPressed(double d, double e) {
 				if (LevelGeneratorType.TYPES[NewLevelScreen.this.generatorType] == LevelGeneratorType.FLAT) {
@@ -207,10 +207,10 @@ public class NewLevelScreen extends Screen {
 			}
 		});
 		this.buttonCustomizeType.visible = false;
-		this.textFieldLevelName = new TextFieldWidget(9, this.fontRenderer, this.width / 2 - 100, 60, 200, 20);
+		this.textFieldLevelName = new TextFieldWidget(this.fontRenderer, this.width / 2 - 100, 60, 200, 20);
 		this.textFieldLevelName.setFocused(true);
 		this.textFieldLevelName.setText(this.levelName);
-		this.textFieldSeed = new TextFieldWidget(10, this.fontRenderer, this.width / 2 - 100, 60, 200, 20);
+		this.textFieldSeed = new TextFieldWidget(this.fontRenderer, this.width / 2 - 100, 60, 200, 20);
 		this.textFieldSeed.setText(this.seed);
 		this.method_2710(this.field_3202);
 		this.method_2727();
@@ -393,7 +393,7 @@ public class NewLevelScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, I18n.translate("selectWorld.create"), this.width / 2, 20, -1);
 		if (this.field_3202) {
@@ -407,7 +407,7 @@ public class NewLevelScreen extends Screen {
 				this.drawString(this.fontRenderer, I18n.translate("selectWorld.allowCommands.info"), this.width / 2 - 150, 172, -6250336);
 			}
 
-			this.textFieldSeed.render(i, j, f);
+			this.textFieldSeed.method_18326(i, j, f);
 			if (LevelGeneratorType.TYPES[this.generatorType].hasInfo()) {
 				this.fontRenderer
 					.drawStringBounded(
@@ -421,12 +421,12 @@ public class NewLevelScreen extends Screen {
 		} else {
 			this.drawString(this.fontRenderer, I18n.translate("selectWorld.enterName"), this.width / 2 - 100, 47, -6250336);
 			this.drawString(this.fontRenderer, I18n.translate("selectWorld.resultFolder") + " " + this.field_3196, this.width / 2 - 100, 85, -6250336);
-			this.textFieldLevelName.render(i, j, f);
+			this.textFieldLevelName.method_18326(i, j, f);
 			this.drawStringCentered(this.fontRenderer, this.field_3194, this.width / 2, 137, -6250336);
 			this.drawStringCentered(this.fontRenderer, this.field_3199, this.width / 2, 149, -6250336);
 		}
 
-		super.draw(i, j, f);
+		super.method_18326(i, j, f);
 	}
 
 	public void recreateLevel(LevelProperties levelProperties) {

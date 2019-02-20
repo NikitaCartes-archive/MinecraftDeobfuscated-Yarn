@@ -24,12 +24,12 @@ public class EvokerFangsEntity extends Entity {
 	private LivingEntity owner;
 	private UUID ownerUuid;
 
-	public EvokerFangsEntity(World world) {
-		super(EntityType.EVOKER_FANGS, world);
+	public EvokerFangsEntity(EntityType<? extends EvokerFangsEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public EvokerFangsEntity(World world, double d, double e, double f, float g, int i, LivingEntity livingEntity) {
-		this(world);
+		this(EntityType.EVOKER_FANGS, world);
 		this.warmup = i;
 		this.setOwner(livingEntity);
 		this.yaw = g * (180.0F / (float)Math.PI);
@@ -93,7 +93,7 @@ public class EvokerFangsEntity extends Entity {
 			}
 		} else if (--this.warmup < 0) {
 			if (this.warmup == -8) {
-				for (LivingEntity livingEntity : this.world.getVisibleEntities(LivingEntity.class, this.getBoundingBox().expand(0.2, 0.0, 0.2))) {
+				for (LivingEntity livingEntity : this.world.method_18467(LivingEntity.class, this.getBoundingBox().expand(0.2, 0.0, 0.2))) {
 					this.method_7471(livingEntity);
 				}
 			}

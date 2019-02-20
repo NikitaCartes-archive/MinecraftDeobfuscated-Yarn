@@ -18,7 +18,7 @@ public class DonkeyEntityRenderer<T extends AbstractDonkeyEntity> extends HorseB
 	);
 
 	public DonkeyEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, float f) {
-		super(entityRenderDispatcher, new DonkeyEntityModel<>(), f);
+		super(entityRenderDispatcher, new DonkeyEntityModel<>(0.0F), f);
 	}
 
 	protected Identifier method_3894(T abstractDonkeyEntity) {

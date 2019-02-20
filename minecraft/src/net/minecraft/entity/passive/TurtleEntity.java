@@ -7,12 +7,12 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.class_1414;
 import net.minecraft.class_15;
+import net.minecraft.class_4051;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.TurtleEggBlock;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
@@ -63,12 +63,10 @@ public class TurtleEntity extends AnimalEntity {
 	private static final TrackedData<Boolean> field_6924 = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> field_6925 = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private int field_6918;
-	public static final Predicate<Entity> BABY_TURTLE_ON_LAND_FILTER = entity -> !(entity instanceof LivingEntity)
-			? false
-			: ((LivingEntity)entity).isChild() && !entity.isInsideWater();
+	public static final Predicate<LivingEntity> BABY_TURTLE_ON_LAND_FILTER = livingEntity -> livingEntity.isChild() && !livingEntity.isInsideWater();
 
-	public TurtleEntity(World world) {
-		super(EntityType.TURTLE, world);
+	public TurtleEntity(EntityType<? extends TurtleEntity> entityType, World world) {
+		super(entityType, world);
 		this.moveControl = new TurtleEntity.TurtleMoveControl(this);
 		this.spawningGround = Blocks.field_10102;
 		this.stepHeight = 1.0F;
@@ -273,7 +271,7 @@ public class TurtleEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
-		return new TurtleEntity(this.world);
+		return EntityType.TURTLE.create(this.world);
 	}
 
 	@Override
@@ -308,9 +306,9 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void method_6091(float f, float g, float h) {
+	public void travel(float f, float g, float h) {
 		if (this.method_6034() && this.isInsideWater()) {
-			this.method_5724(f, g, h, 0.1F);
+			this.updateVelocity(f, g, h, 0.1F);
 			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 			this.velocityX *= 0.9F;
 			this.velocityY *= 0.9F;
@@ -319,7 +317,7 @@ public class TurtleEntity extends AnimalEntity {
 				this.velocityY -= 0.005;
 			}
 		} else {
-			super.method_6091(f, g, h);
+			super.travel(f, g, h);
 		}
 	}
 
@@ -380,14 +378,14 @@ public class TurtleEntity extends AnimalEntity {
 			if (this.turtle.isInsideWater()) {
 				this.turtle.velocityY += 0.005;
 				if (this.turtle.squaredDistanceTo(this.turtle.getHomePos()) > 256.0) {
-					this.turtle.method_6125(Math.max(this.turtle.method_6029() / 2.0F, 0.08F));
+					this.turtle.setMovementSpeed(Math.max(this.turtle.getMovementSpeed() / 2.0F, 0.08F));
 				}
 
 				if (this.turtle.isChild()) {
-					this.turtle.method_6125(Math.max(this.turtle.method_6029() / 3.0F, 0.06F));
+					this.turtle.setMovementSpeed(Math.max(this.turtle.getMovementSpeed() / 3.0F, 0.06F));
 				}
 			} else if (this.turtle.onGround) {
-				this.turtle.method_6125(Math.max(this.turtle.method_6029() / 2.0F, 0.06F));
+				this.turtle.setMovementSpeed(Math.max(this.turtle.getMovementSpeed() / 2.0F, 0.06F));
 			}
 		}
 
@@ -404,10 +402,10 @@ public class TurtleEntity extends AnimalEntity {
 				this.turtle.yaw = this.method_6238(this.turtle.yaw, h, 90.0F);
 				this.turtle.field_6283 = this.turtle.yaw;
 				float i = (float)(this.speed * this.turtle.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
-				this.turtle.method_6125(MathHelper.lerp(0.125F, this.turtle.method_6029(), i));
-				this.turtle.velocityY = this.turtle.velocityY + (double)this.turtle.method_6029() * e * 0.1;
+				this.turtle.setMovementSpeed(MathHelper.lerp(0.125F, this.turtle.getMovementSpeed(), i));
+				this.turtle.velocityY = this.turtle.velocityY + (double)this.turtle.getMovementSpeed() * e * 0.1;
 			} else {
-				this.turtle.method_6125(0.0F);
+				this.turtle.setMovementSpeed(0.0F);
 			}
 		}
 	}
@@ -635,6 +633,7 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	static class class_1490 extends Goal {
+		private static final class_4051 field_18117 = new class_4051().method_18418(10.0).method_18421().method_18417();
 		private final TurtleEntity field_6938;
 		private final double field_6935;
 		private PlayerEntity field_6939;
@@ -654,7 +653,7 @@ public class TurtleEntity extends AnimalEntity {
 				this.field_6936--;
 				return false;
 			} else {
-				this.field_6939 = this.field_6938.world.getClosestPlayer(this.field_6938, 10.0);
+				this.field_6939 = this.field_6938.world.method_18462(field_18117, this.field_6938);
 				return this.field_6939 == null ? false : this.method_6701(this.field_6939.getMainHandStack()) || this.method_6701(this.field_6939.getOffHandStack());
 			}
 		}

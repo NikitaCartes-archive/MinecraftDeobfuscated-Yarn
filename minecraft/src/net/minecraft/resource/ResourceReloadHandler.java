@@ -10,4 +10,10 @@ public interface ResourceReloadHandler {
 
 	@Environment(EnvType.CLIENT)
 	float getProgress();
+
+	@Environment(EnvType.CLIENT)
+	boolean method_18786();
+
+	@Environment(EnvType.CLIENT)
+	boolean method_18787();
 }

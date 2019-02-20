@@ -9,7 +9,7 @@ import net.minecraft.class_520;
 import net.minecraft.class_522;
 import net.minecraft.class_523;
 import net.minecraft.client.gui.Screen;
-import net.minecraft.client.gui.widget.OptionButtonWidget;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.ClientResourcePackContainer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.resource.ResourcePackContainerManager;
@@ -28,19 +28,19 @@ public class ResourcePackSettingsScreen extends Screen {
 
 	@Override
 	protected void onInitialized() {
-		this.addButton(new OptionButtonWidget(2, this.width / 2 - 154, this.height - 48, I18n.translate("resourcePack.openFolder")) {
+		this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 48, 150, 20, I18n.translate("resourcePack.openFolder")) {
 			@Override
 			public void onPressed(double d, double e) {
 				SystemUtil.getOperatingSystem().open(ResourcePackSettingsScreen.this.client.getResourcePackDir());
 			}
 		});
-		this.addButton(new OptionButtonWidget(1, this.width / 2 + 4, this.height - 48, I18n.translate("gui.done")) {
+		this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 48, 150, 20, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
 				if (ResourcePackSettingsScreen.this.field_3155) {
 					List<ClientResourcePackContainer> list = Lists.<ClientResourcePackContainer>newArrayList();
 
-					for (class_520 lv : ResourcePackSettingsScreen.this.field_3154.getEntries()) {
+					for (class_520 lv : ResourcePackSettingsScreen.this.field_3154.method_1968()) {
 						list.add(lv.method_2681());
 					}
 
@@ -59,10 +59,11 @@ public class ResourcePackSettingsScreen extends Screen {
 					}
 
 					ResourcePackSettingsScreen.this.client.options.write();
+					ResourcePackSettingsScreen.this.client.openScreen(ResourcePackSettingsScreen.this.parent);
 					ResourcePackSettingsScreen.this.client.reloadResources();
+				} else {
+					ResourcePackSettingsScreen.this.client.openScreen(ResourcePackSettingsScreen.this.parent);
 				}
-
-				ResourcePackSettingsScreen.this.client.openScreen(ResourcePackSettingsScreen.this.parent);
 			}
 		});
 		class_522 lv = this.field_3157;
@@ -70,20 +71,20 @@ public class ResourcePackSettingsScreen extends Screen {
 		this.field_3157 = new class_522(this.client, 200, this.height);
 		this.field_3157.setX(this.width / 2 - 4 - 200);
 		if (lv != null) {
-			this.field_3157.getEntries().addAll(lv.getEntries());
+			this.field_3157.method_1968().addAll(lv.method_1968());
 		}
 
 		this.listeners.add(this.field_3157);
 		this.field_3154 = new class_523(this.client, 200, this.height);
 		this.field_3154.setX(this.width / 2 + 4);
 		if (lv2 != null) {
-			this.field_3154.getEntries().addAll(lv2.getEntries());
+			this.field_3154.method_1968().addAll(lv2.method_1968());
 		}
 
 		this.listeners.add(this.field_3154);
 		if (!this.field_3155) {
-			this.field_3157.getEntries().clear();
-			this.field_3154.getEntries().clear();
+			this.field_3157.method_1968().clear();
+			this.field_3154.method_1968().clear();
 			ResourcePackContainerManager<ClientResourcePackContainer> resourcePackContainerManager = this.client.method_1520();
 			resourcePackContainerManager.callCreators();
 			List<ClientResourcePackContainer> list = Lists.<ClientResourcePackContainer>newArrayList(resourcePackContainerManager.getAlphabeticallyOrderedContainers());
@@ -102,36 +103,36 @@ public class ResourcePackSettingsScreen extends Screen {
 	@Override
 	public void mouseMoved(double d, double e) {
 		if (this.field_3157.isSelected(d, e)) {
-			this.setFocused(this.field_3157);
+			this.method_1967(this.field_3157);
 		} else if (this.field_3154.isSelected(d, e)) {
-			this.setFocused(this.field_3154);
+			this.method_1967(this.field_3154);
 		}
 	}
 
 	public void method_2674(class_520 arg) {
-		this.field_3157.getEntries().remove(arg);
+		this.field_3157.method_1968().remove(arg);
 		arg.method_2686(this.field_3154);
 		this.method_2660();
 	}
 
 	public void method_2663(class_520 arg) {
-		this.field_3154.getEntries().remove(arg);
+		this.field_3154.method_1968().remove(arg);
 		this.field_3157.method_2690(arg);
 		this.method_2660();
 	}
 
 	public boolean method_2669(class_520 arg) {
-		return this.field_3154.getEntries().contains(arg);
+		return this.field_3154.method_1968().contains(arg);
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		this.drawTextureBackground(0);
-		this.field_3157.draw(i, j, f);
-		this.field_3154.draw(i, j, f);
+		this.field_3157.method_18326(i, j, f);
+		this.field_3154.method_18326(i, j, f);
 		this.drawStringCentered(this.fontRenderer, I18n.translate("resourcePack.title"), this.width / 2, 16, 16777215);
 		this.drawStringCentered(this.fontRenderer, I18n.translate("resourcePack.folderInfo"), this.width / 2 - 77, this.height - 26, 8421504);
-		super.draw(i, j, f);
+		super.method_18326(i, j, f);
 	}
 
 	public void method_2660() {

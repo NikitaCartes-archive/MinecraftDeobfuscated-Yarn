@@ -24,15 +24,15 @@ import net.minecraft.world.World;
 public abstract class class_3855 extends ExplosiveProjectileEntity implements FlyingItemEntity {
 	private static final TrackedData<ItemStack> field_17081 = DataTracker.registerData(class_3855.class, TrackedDataHandlerRegistry.ITEM_STACK);
 
-	public class_3855(EntityType<?> entityType, World world) {
+	public class_3855(EntityType<? extends class_3855> entityType, World world) {
 		super(entityType, world);
 	}
 
-	public class_3855(EntityType<?> entityType, double d, double e, double f, double g, double h, double i, World world) {
+	public class_3855(EntityType<? extends class_3855> entityType, double d, double e, double f, double g, double h, double i, World world) {
 		super(entityType, d, e, f, g, h, i, world);
 	}
 
-	public class_3855(EntityType<?> entityType, LivingEntity livingEntity, double d, double e, double f, World world) {
+	public class_3855(EntityType<? extends class_3855> entityType, LivingEntity livingEntity, double d, double e, double f, World world) {
 		super(entityType, livingEntity, d, e, f, world);
 	}
 

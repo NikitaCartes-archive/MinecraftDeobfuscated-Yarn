@@ -80,7 +80,7 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 		return stringBuilder.append(']').toString();
 	}
 
-	public LongArrayTag copy() {
+	public LongArrayTag method_10618() {
 		long[] ls = new long[this.value.length];
 		System.arraycopy(this.value, 0, ls, 0, this.value.length);
 		return new LongArrayTag(ls);

@@ -1,6 +1,8 @@
 package net.minecraft.entity.passive;
 
 import net.minecraft.class_1394;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
@@ -23,12 +25,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class CowEntity extends AnimalEntity {
-	protected CowEntity(EntityType<?> entityType, World world) {
+	public CowEntity(EntityType<? extends CowEntity> entityType, World world) {
 		super(entityType, world);
-	}
-
-	public CowEntity(World world) {
-		this(EntityType.COW, world);
 	}
 
 	@Override
@@ -93,12 +91,12 @@ public class CowEntity extends AnimalEntity {
 		}
 	}
 
-	public CowEntity createChild(PassiveEntity passiveEntity) {
-		return new CowEntity(this.world);
+	public CowEntity method_6483(PassiveEntity passiveEntity) {
+		return EntityType.COW.create(this.world);
 	}
 
 	@Override
-	public float getEyeHeight() {
-		return this.isChild() ? this.getHeight() : 1.3F;
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
+		return this.isChild() ? arg2.field_18068 : 1.3F;
 	}
 }

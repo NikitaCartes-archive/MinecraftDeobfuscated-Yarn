@@ -10,6 +10,8 @@ import net.minecraft.class_1394;
 import net.minecraft.class_1399;
 import net.minecraft.class_1403;
 import net.minecraft.class_1404;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -54,7 +56,10 @@ public class WolfEntity extends TameableEntity {
 	private static final TrackedData<Float> WOLF_HEALTH = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Boolean> field_6946 = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> COLLAR_COLOR = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	public static final Predicate<Entity> field_18004 = entity -> entity instanceof SheepEntity || entity instanceof RabbitEntity || entity instanceof FoxEntity;
+	public static final Predicate<LivingEntity> field_18004 = livingEntity -> {
+		EntityType<?> entityType = livingEntity.getType();
+		return entityType == EntityType.SHEEP || entityType == EntityType.RABBIT || entityType == EntityType.field_17943;
+	};
 	private float field_6952;
 	private float field_6949;
 	private boolean field_6944;
@@ -62,8 +67,8 @@ public class WolfEntity extends TameableEntity {
 	private float field_6947;
 	private float field_6945;
 
-	public WolfEntity(World world) {
-		super(EntityType.WOLF, world);
+	public WolfEntity(EntityType<? extends WolfEntity> entityType, World world) {
+		super(entityType, world);
 		this.setTamed(false);
 	}
 
@@ -258,8 +263,8 @@ public class WolfEntity extends TameableEntity {
 	}
 
 	@Override
-	public float getEyeHeight() {
-		return this.getHeight() * 0.8F;
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
+		return arg2.field_18068 * 0.8F;
 	}
 
 	@Override
@@ -421,9 +426,9 @@ public class WolfEntity extends TameableEntity {
 		this.dataTracker.set(COLLAR_COLOR, dyeColor.getId());
 	}
 
-	public WolfEntity createChild(PassiveEntity passiveEntity) {
-		WolfEntity wolfEntity = new WolfEntity(this.world);
-		UUID uUID = this.getOwnerUuid();
+	public WolfEntity method_6717(PassiveEntity passiveEntity) {
+		WolfEntity wolfEntity = EntityType.WOLF.create(this.world);
+		UUID uUID = this.method_6139();
 		if (uUID != null) {
 			wolfEntity.setOwnerUuid(uUID);
 			wolfEntity.setTamed(true);
@@ -483,7 +488,7 @@ public class WolfEntity extends TameableEntity {
 		return !this.isAngry() && super.canBeLeashedBy(playerEntity);
 	}
 
-	class WolfFleeGoal<T extends Entity> extends FleeEntityGoal<T> {
+	class WolfFleeGoal<T extends LivingEntity> extends FleeEntityGoal<T> {
 		private final WolfEntity field_6954;
 
 		public WolfFleeGoal(WolfEntity wolfEntity2, Class<T> class_, float f, double d, double e) {

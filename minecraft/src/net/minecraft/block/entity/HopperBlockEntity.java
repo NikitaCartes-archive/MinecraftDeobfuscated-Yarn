@@ -327,7 +327,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 			.stream()
 			.flatMap(
 				boundingBox -> hopper.getWorld()
-						.getEntities(
+						.method_8390(
 							ItemEntity.class, boundingBox.offset(hopper.getHopperX() - 0.5, hopper.getHopperY() - 0.5, hopper.getHopperZ() - 0.5), EntityPredicates.VALID_ENTITY
 						)
 						.stream()

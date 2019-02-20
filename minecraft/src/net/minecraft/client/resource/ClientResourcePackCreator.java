@@ -190,7 +190,7 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 		}
 	}
 
-	public CompletableFuture<Object> loadServerPack(File file) {
+	public CompletableFuture<Void> loadServerPack(File file) {
 		PackResourceMetadata packResourceMetadata = null;
 		NativeImage nativeImage = null;
 
@@ -245,7 +245,7 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 		}
 
 		if (packResourceMetadata == null) {
-			CompletableFuture<Object> completableFuture = new CompletableFuture();
+			CompletableFuture<Void> completableFuture = new CompletableFuture();
 			completableFuture.completeExceptionally(new RuntimeException("Invalid resourcepack"));
 			return completableFuture;
 		} else {

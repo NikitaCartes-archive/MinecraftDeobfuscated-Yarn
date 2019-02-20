@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.ParsedCommandNode;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.tree.CommandNode;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class HelpCommand {
 									throw FAILED_EXCEPTION.create();
 								} else {
 									Map<CommandNode<ServerCommandSource>, String> map = commandDispatcher.getSmartUsage(
-										Iterables.getLast(parseResults.getContext().getNodes().keySet()), commandContext.getSource()
+										Iterables.<ParsedCommandNode<ServerCommandSource>>getLast(parseResults.getContext().getNodes()).getNode(), commandContext.getSource()
 									);
 
 									for (String string : map.values()) {

@@ -221,7 +221,7 @@ public class ChorusFlowerBlock extends Block {
 	@Override
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
 		if (!world.isClient()) {
-			List<? extends Entity> list = world.getVisibleEntities(ProjectileEntity.class, blockState.getOutlineShape(world, blockPos).getBoundingBox().offset(blockPos));
+			List<? extends Entity> list = world.method_18467(ProjectileEntity.class, blockState.getOutlineShape(world, blockPos).getBoundingBox().offset(blockPos));
 			if (!list.isEmpty()) {
 				dropStack(world, blockPos, new ItemStack(this));
 				world.breakBlock(blockPos, true);

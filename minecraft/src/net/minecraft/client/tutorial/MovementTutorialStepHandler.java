@@ -108,7 +108,7 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 
 	@Override
 	public void method_4903(Input input) {
-		if (input.forward || input.back || input.left || input.right || input.jumping) {
+		if (input.pressingForward || input.pressingBack || input.pressingLeft || input.pressingRight || input.jumping) {
 			this.field_5620 = true;
 		}
 	}

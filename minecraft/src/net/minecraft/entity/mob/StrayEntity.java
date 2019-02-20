@@ -14,8 +14,8 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class StrayEntity extends AbstractSkeletonEntity {
-	public StrayEntity(World world) {
-		super(EntityType.STRAY, world);
+	public StrayEntity(EntityType<? extends StrayEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override

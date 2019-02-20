@@ -59,7 +59,7 @@ public class FishingRodHookedCriterion implements Criterion<FishingRodHookedCrit
 		this.field_9618.remove(playerAdvancementTracker);
 	}
 
-	public FishingRodHookedCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public FishingRodHookedCriterion.Conditions method_8941(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("rod"));
 		EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("entity"));
 		ItemPredicate itemPredicate2 = ItemPredicate.deserialize(jsonObject.get("item"));

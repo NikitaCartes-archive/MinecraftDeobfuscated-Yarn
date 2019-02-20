@@ -20,10 +20,10 @@ public class class_1370 extends Goal {
 
 	@Override
 	public boolean canStart() {
-		if (this.field_6536.isInAiRange()) {
+		if (this.field_6536.method_18411()) {
 			return false;
 		} else {
-			BlockPos blockPos = this.field_6536.getAiHome();
+			BlockPos blockPos = this.field_6536.method_18412();
 			Vec3d vec3d = class_1414.method_6373(this.field_6536, 16, 7, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
 			if (vec3d == null) {
 				return false;

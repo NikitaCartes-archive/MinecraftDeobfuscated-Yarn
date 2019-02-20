@@ -25,7 +25,7 @@ public class PlayerMoveServerMessage implements Packet<ServerPlayPacketListener>
 		this.onGround = bl;
 	}
 
-	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+	public void method_12272(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onPlayerMove(this);
 	}
 

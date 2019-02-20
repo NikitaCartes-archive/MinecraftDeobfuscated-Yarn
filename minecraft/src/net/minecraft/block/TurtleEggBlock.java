@@ -4,6 +4,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.mob.ZombieEntity;
@@ -81,7 +82,7 @@ public class TurtleEggBlock extends Block {
 				if (!world.isClient) {
 					for (int j = 0; j < blockState.get(field_11710); j++) {
 						world.playEvent(2001, blockPos, Block.getRawIdFromState(blockState));
-						TurtleEntity turtleEntity = new TurtleEntity(world);
+						TurtleEntity turtleEntity = EntityType.TURTLE.create(world);
 						turtleEntity.setBreedingAge(-24000);
 						turtleEntity.setHomePos(blockPos);
 						turtleEntity.setPositionAndAngles((double)blockPos.getX() + 0.3 + (double)j * 0.2, (double)blockPos.getY(), (double)blockPos.getZ() + 0.3, 0.0F, 0.0F);

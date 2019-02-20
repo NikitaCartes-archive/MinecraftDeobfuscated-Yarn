@@ -5,17 +5,18 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.audio.SoundLoader;
+import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public abstract class SliderWidget extends ButtonWidget {
-	protected final MinecraftClient client;
+	protected final GameOptions field_18211;
 	protected double progress;
 
-	protected SliderWidget(int i, int j, int k, int l, int m, MinecraftClient minecraftClient, float f) {
-		super(i, j, k, l, m, "");
-		this.client = minecraftClient;
+	protected SliderWidget(GameOptions gameOptions, int i, int j, int k, int l, float f) {
+		super(i, j, k, l, "");
+		this.field_18211 = gameOptions;
 		this.progress = (double)f;
 	}
 
@@ -64,7 +65,7 @@ public abstract class SliderWidget extends ButtonWidget {
 
 	@Override
 	public void onReleased(double d, double e) {
-		super.playPressedSound(this.client.getSoundLoader());
+		super.playPressedSound(MinecraftClient.getInstance().getSoundLoader());
 	}
 
 	protected abstract void updateText();

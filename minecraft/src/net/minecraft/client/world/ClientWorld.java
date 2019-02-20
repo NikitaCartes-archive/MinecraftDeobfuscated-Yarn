@@ -7,12 +7,10 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -20,8 +18,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.audio.EntityTrackingSoundInstance;
 import net.minecraft.client.audio.PositionedSoundInstance;
@@ -48,7 +44,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.TagManager;
 import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.util.Tickable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -57,6 +52,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
@@ -73,10 +69,10 @@ import net.minecraft.world.level.LevelProperties;
 public class ClientWorld extends World {
 	private final List<Entity> globalEntities = Lists.<Entity>newArrayList();
 	private final Int2ObjectMap<Entity> regularEntities = new Int2ObjectOpenHashMap<>();
-	private final List<BlockEntity> field_17779 = Lists.<BlockEntity>newArrayList();
 	private final ClientPlayNetworkHandler netHandler;
 	private final WorldRenderer worldRenderer;
 	private final MinecraftClient client = MinecraftClient.getInstance();
+	private final List<AbstractClientPlayerEntity> field_18226 = Lists.<AbstractClientPlayerEntity>newArrayList();
 	private int field_3732;
 	private int field_3731;
 	private int ticksSinceLightingClient = this.random.nextInt(12000);
@@ -100,9 +96,8 @@ public class ClientWorld extends World {
 		this.initWeatherGradients();
 	}
 
-	@Override
-	public void tick(BooleanSupplier booleanSupplier) {
-		super.tick(booleanSupplier);
+	public void method_8441(BooleanSupplier booleanSupplier) {
+		this.getWorldBorder().update();
 		this.tickTime();
 		this.getProfiler().swap("blocks");
 		this.chunkManager.tick(booleanSupplier);
@@ -121,7 +116,7 @@ public class ClientWorld extends World {
 
 		for (int i = 0; i < this.globalEntities.size(); i++) {
 			Entity entity = (Entity)this.globalEntities.get(i);
-			this.method_18111(entityx -> {
+			this.method_18472(entityx -> {
 				entityx.age++;
 				entityx.update();
 			}, entity);
@@ -139,7 +134,7 @@ public class ClientWorld extends World {
 			if (!entity2.hasVehicle()) {
 				profiler.push("tick");
 				if (!entity2.invalid) {
-					this.method_18111(this::tickEntity, entity2);
+					this.method_18472(this::method_18646, entity2);
 				}
 
 				profiler.pop();
@@ -154,88 +149,78 @@ public class ClientWorld extends World {
 		}
 
 		profiler.pop();
-		this.method_18118();
+		this.method_18471();
 		profiler.pop();
 	}
 
-	public void method_18118() {
-		Profiler profiler = this.getProfiler();
-		profiler.push("blockEntities");
-		if (!this.field_17779.isEmpty()) {
-			this.tickingBlockEntities.removeAll(this.field_17779);
-			this.blockEntities.removeAll(this.field_17779);
-			this.field_17779.clear();
-		}
-
-		this.iteratingTickingBlockEntities = true;
-		Iterator<BlockEntity> iterator = this.tickingBlockEntities.iterator();
-
-		while (iterator.hasNext()) {
-			BlockEntity blockEntity = (BlockEntity)iterator.next();
-			if (!blockEntity.isInvalid() && blockEntity.hasWorld()) {
-				BlockPos blockPos = blockEntity.getPos();
-				if (this.isBlockLoaded(blockPos) && this.getWorldBorder().contains(blockPos)) {
-					try {
-						profiler.push((Supplier<String>)(() -> String.valueOf(BlockEntityType.getId(blockEntity.getType()))));
-						((Tickable)blockEntity).tick();
-						profiler.pop();
-					} catch (Throwable var8) {
-						CrashReport crashReport = CrashReport.create(var8, "Ticking block entity");
-						CrashReportSection crashReportSection = crashReport.addElement("Block entity being ticked");
-						blockEntity.populateCrashReport(crashReportSection);
-						throw new CrashException(crashReport);
-					}
-				}
+	public void method_18646(Entity entity) {
+		if (entity instanceof PlayerEntity || this.method_2935().isEntityInLoadedChunk(entity)) {
+			entity.prevRenderX = entity.x;
+			entity.prevRenderY = entity.y;
+			entity.prevRenderZ = entity.z;
+			entity.prevYaw = entity.yaw;
+			entity.prevPitch = entity.pitch;
+			if (entity.field_6016) {
+				entity.age++;
+				this.getProfiler().push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()));
+				entity.update();
+				this.getProfiler().pop();
 			}
 
-			if (blockEntity.isInvalid()) {
-				iterator.remove();
-				this.blockEntities.remove(blockEntity);
-				if (this.isBlockLoaded(blockEntity.getPos())) {
-					this.getWorldChunk(blockEntity.getPos()).removeBlockEntity(blockEntity.getPos());
+			this.method_18648(entity);
+			if (entity.field_6016) {
+				for (Entity entity2 : entity.getPassengerList()) {
+					this.method_18647(entity, entity2);
 				}
 			}
 		}
-
-		this.iteratingTickingBlockEntities = false;
-		profiler.swap("pendingBlockEntities");
-		if (!this.pendingBlockEntities.isEmpty()) {
-			for (int i = 0; i < this.pendingBlockEntities.size(); i++) {
-				BlockEntity blockEntity2 = (BlockEntity)this.pendingBlockEntities.get(i);
-				if (!blockEntity2.isInvalid()) {
-					if (!this.blockEntities.contains(blockEntity2)) {
-						this.addBlockEntity(blockEntity2);
-					}
-
-					if (this.isBlockLoaded(blockEntity2.getPos())) {
-						WorldChunk worldChunk = this.getWorldChunk(blockEntity2.getPos());
-						BlockState blockState = worldChunk.getBlockState(blockEntity2.getPos());
-						worldChunk.setBlockEntity(blockEntity2.getPos(), blockEntity2);
-						this.updateListeners(blockEntity2.getPos(), blockState, blockState, 3);
-					}
-				}
-			}
-
-			this.pendingBlockEntities.clear();
-		}
-
-		profiler.pop();
 	}
 
-	public void method_18111(Consumer<Entity> consumer, Entity entity) {
-		try {
-			consumer.accept(entity);
-		} catch (Throwable var6) {
-			CrashReport crashReport = CrashReport.create(var6, "Ticking entity");
-			CrashReportSection crashReportSection = crashReport.addElement("Entity being ticked");
-			entity.populateCrashReport(crashReportSection);
-			throw new CrashException(crashReport);
+	public void method_18647(Entity entity, Entity entity2) {
+		if (entity2.invalid || entity2.getRiddenEntity() != entity) {
+			entity2.stopRiding();
+		} else if (entity2 instanceof PlayerEntity || this.method_2935().isEntityInLoadedChunk(entity2)) {
+			entity2.prevRenderX = entity2.x;
+			entity2.prevRenderY = entity2.y;
+			entity2.prevRenderZ = entity2.z;
+			entity2.prevYaw = entity2.yaw;
+			entity2.prevPitch = entity2.pitch;
+			if (entity2.field_6016) {
+				entity2.age++;
+				entity2.updateRiding();
+			}
+
+			this.method_18648(entity2);
+			if (entity2.field_6016) {
+				for (Entity entity3 : entity2.getPassengerList()) {
+					this.method_18647(entity2, entity3);
+				}
+			}
 		}
+	}
+
+	public void method_18648(Entity entity) {
+		this.getProfiler().push("chunkCheck");
+		int i = MathHelper.floor(entity.x / 16.0);
+		int j = MathHelper.floor(entity.y / 16.0);
+		int k = MathHelper.floor(entity.z / 16.0);
+		if (!entity.field_6016 || entity.chunkX != i || entity.chunkY != j || entity.chunkZ != k) {
+			if (entity.field_6016 && this.isChunkLoaded(entity.chunkX, entity.chunkZ)) {
+				this.method_8497(entity.chunkX, entity.chunkZ).remove(entity, entity.chunkY);
+			}
+
+			if (!entity.method_5754() && !this.isChunkLoaded(i, k)) {
+				entity.field_6016 = false;
+			} else {
+				this.method_8497(i, k).addEntity(entity);
+			}
+		}
+
+		this.getProfiler().pop();
 	}
 
 	public void method_18110(WorldChunk worldChunk) {
-		worldChunk.setLoadedToWorld(false);
-		this.field_17779.addAll(worldChunk.getBlockEntityMap().values());
+		this.field_18139.addAll(worldChunk.getBlockEntityMap().values());
 	}
 
 	@Override
@@ -264,7 +249,7 @@ public class ClientWorld extends World {
 					}
 				}
 
-				WorldChunk worldChunk = this.getWorldChunk(m, n);
+				WorldChunk worldChunk = this.method_8497(m, n);
 				this.lcgBlockSeed = this.lcgBlockSeed * 3 + 1013904223;
 				int q = this.lcgBlockSeed >> 2;
 				int r = q & 15;
@@ -304,7 +289,7 @@ public class ClientWorld extends World {
 
 	public void method_18107(int i, AbstractClientPlayerEntity abstractClientPlayerEntity) {
 		this.method_18114(i, abstractClientPlayerEntity);
-		this.players.add(abstractClientPlayerEntity);
+		this.field_18226.add(abstractClientPlayerEntity);
 	}
 
 	public void method_2942(int i, Entity entity) {
@@ -314,7 +299,7 @@ public class ClientWorld extends World {
 	private void method_18114(int i, Entity entity) {
 		this.method_2945(i);
 		this.regularEntities.put(i, entity);
-		this.getChunkProvider().getChunk(MathHelper.floor(entity.x / 16.0), MathHelper.floor(entity.z / 16.0), ChunkStatus.FULL, true).addEntity(entity);
+		this.method_2935().method_2857(MathHelper.floor(entity.x / 16.0), MathHelper.floor(entity.z / 16.0), ChunkStatus.FULL, true).addEntity(entity);
 	}
 
 	public void method_2945(int i) {
@@ -326,19 +311,12 @@ public class ClientWorld extends World {
 	}
 
 	private void method_18117(Entity entity) {
-		if (entity.hasPassengers()) {
-			entity.removeAllPassengers();
-		}
-
-		if (entity.hasVehicle()) {
-			entity.stopRiding();
-		}
-
+		entity.method_18375();
 		if (entity.field_6016) {
-			this.getWorldChunk(entity.chunkX, entity.chunkZ).remove(entity);
+			this.method_8497(entity.chunkX, entity.chunkZ).remove(entity);
 		}
 
-		this.players.remove(entity);
+		this.field_18226.remove(entity);
 	}
 
 	public void method_18115(WorldChunk worldChunk) {
@@ -365,10 +343,6 @@ public class ClientWorld extends World {
 	@Override
 	public void disconnect() {
 		this.netHandler.getClientConnection().disconnect(new TranslatableTextComponent("multiplayer.status.quitting"));
-	}
-
-	@Override
-	protected void updateWeather() {
 	}
 
 	public void doRandomBlockDisplayTicks(int i, int j, int k) {
@@ -550,7 +524,7 @@ public class ClientWorld extends World {
 		return DummyClientTickScheduler.get();
 	}
 
-	public ClientChunkManager getChunkProvider() {
+	public ClientChunkManager method_2935() {
 		return (ClientChunkManager)super.getChunkManager();
 	}
 
@@ -637,5 +611,10 @@ public class ClientWorld extends World {
 	@Override
 	public void addImportantParticle(ParticleParameters particleParameters, boolean bl, double d, double e, double f, double g, double h, double i) {
 		this.worldRenderer.addParticle(particleParameters, particleParameters.getType().shouldAlwaysSpawn() || bl, true, d, e, f, g, h, i);
+	}
+
+	@Override
+	public List<AbstractClientPlayerEntity> method_18456() {
+		return this.field_18226;
 	}
 }

@@ -45,8 +45,8 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 	private int field_7296;
 	private final Vec3d[][] field_7297;
 
-	public IllusionerEntity(World world) {
-		super(EntityType.ILLUSIONER, world);
+	public IllusionerEntity(EntityType<? extends IllusionerEntity> entityType, World world) {
+		super(entityType, world);
 		this.experiencePoints = 5;
 		this.field_7297 = new Vec3d[2][4];
 

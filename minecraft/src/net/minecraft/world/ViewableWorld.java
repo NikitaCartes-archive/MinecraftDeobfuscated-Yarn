@@ -9,8 +9,6 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.VerticalEntityPosition;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
@@ -68,25 +66,6 @@ public interface ViewableWorld extends ExtendedBlockView {
 	default float getBrightness(BlockPos blockPos) {
 		return this.getDimension().getLightLevelToBrightness()[this.getLightLevel(blockPos)];
 	}
-
-	@Nullable
-	default PlayerEntity getClosestPlayer(Entity entity, double d) {
-		return this.getClosestPlayer(entity.x, entity.y, entity.z, d, false);
-	}
-
-	@Nullable
-	default PlayerEntity getClosestSurvivalPlayer(Entity entity, double d) {
-		return this.getClosestPlayer(entity.x, entity.y, entity.z, d, true);
-	}
-
-	@Nullable
-	default PlayerEntity getClosestPlayer(double d, double e, double f, double g, boolean bl) {
-		Predicate<Entity> predicate = bl ? EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR : EntityPredicates.EXCEPT_SPECTATOR;
-		return this.getClosestPlayer(d, e, f, g, predicate);
-	}
-
-	@Nullable
-	PlayerEntity getClosestPlayer(double d, double e, double f, double g, Predicate<Entity> predicate);
 
 	int getAmbientDarkness();
 
@@ -229,7 +208,7 @@ public interface ViewableWorld extends ExtendedBlockView {
 			for (int o = i; o < j; o++) {
 				for (int p = k; p < l; p++) {
 					for (int q = m; q < n; q++) {
-						BlockState blockState = this.getBlockState(pooledMutable.set(o, p, q));
+						BlockState blockState = this.getBlockState(pooledMutable.method_10113(o, p, q));
 						if (!blockState.getFluidState().isEmpty()) {
 							return true;
 						}

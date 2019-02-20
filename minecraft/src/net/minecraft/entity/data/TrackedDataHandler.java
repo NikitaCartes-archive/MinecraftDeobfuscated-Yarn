@@ -7,7 +7,9 @@ public interface TrackedDataHandler<T> {
 
 	T read(PacketByteBuf packetByteBuf);
 
-	TrackedData<T> create(int i);
+	default TrackedData<T> create(int i) {
+		return new TrackedData<>(i, this);
+	}
 
 	T copy(T object);
 }

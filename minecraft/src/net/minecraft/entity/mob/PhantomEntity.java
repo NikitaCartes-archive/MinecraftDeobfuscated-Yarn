@@ -4,6 +4,9 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
+import net.minecraft.class_4051;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
@@ -13,7 +16,6 @@ import net.minecraft.entity.ai.control.BodyControl;
 import net.minecraft.entity.ai.control.LookControl;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.goal.TrackTargetGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -28,7 +30,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
@@ -43,8 +44,8 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	private BlockPos field_7312 = BlockPos.ORIGIN;
 	private PhantomEntity.class_1594 field_7315 = PhantomEntity.class_1594.field_7318;
 
-	public PhantomEntity(World world) {
-		super(EntityType.PHANTOM, world);
+	public PhantomEntity(EntityType<? extends PhantomEntity> entityType, World world) {
+		super(entityType, world);
 		this.experiencePoints = 5;
 		this.moveControl = new PhantomEntity.PhantomMoveControl(this);
 		this.lookControl = new PhantomEntity.PhantomLookControl(this);
@@ -77,16 +78,11 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 	public void setSize(int i) {
 		this.dataTracker.set(SIZE, MathHelper.clamp(i, 0, 64));
-		this.method_7097();
 	}
 
-	public void method_7097() {
-		int i = this.dataTracker.get(SIZE);
-		EntityType<?> entityType = this.getType();
-		float f = entityType.getWidth();
-		float g = f + 0.2F * (float)i;
-		this.setSize(g, g / f * entityType.getHeight());
-		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue((double)(6 + i));
+	private void method_7097() {
+		this.method_18382();
+		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue((double)(6 + this.getSize()));
 	}
 
 	public int getSize() {
@@ -94,8 +90,8 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public float getEyeHeight() {
-		return this.getHeight() * 0.35F;
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
+		return arg2.field_18068 * 0.35F;
 	}
 
 	@Override
@@ -219,8 +215,16 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public boolean canTrack(Class<? extends LivingEntity> class_) {
+	public boolean method_5973(EntityType<?> entityType) {
 		return true;
+	}
+
+	@Override
+	public class_4048 method_18377(class_4050 arg) {
+		int i = this.getSize();
+		class_4048 lv = super.method_18377(arg);
+		float f = (lv.field_18067 + 0.2F * (float)i) / lv.field_18067;
+		return lv.method_18383(f);
 	}
 
 	class PhantomLookControl extends LookControl {
@@ -286,6 +290,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	class class_1595 extends Goal {
+		private final class_4051 field_18130 = new class_4051().method_18418(64.0);
 		private int field_7320 = 20;
 
 		private class_1595() {
@@ -298,13 +303,13 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 				return false;
 			} else {
 				this.field_7320 = 60;
-				BoundingBox boundingBox = PhantomEntity.this.getBoundingBox().expand(16.0, 64.0, 16.0);
-				List<PlayerEntity> list = PhantomEntity.this.world.getVisibleEntities(PlayerEntity.class, boundingBox);
+				List<PlayerEntity> list = PhantomEntity.this.world
+					.method_18464(this.field_18130, PhantomEntity.this, PhantomEntity.this.getBoundingBox().expand(16.0, 64.0, 16.0));
 				if (!list.isEmpty()) {
 					list.sort((playerEntityx, playerEntity2) -> playerEntityx.y > playerEntity2.y ? -1 : 1);
 
 					for (PlayerEntity playerEntity : list) {
-						if (TrackTargetGoal.canTrack(PhantomEntity.this, playerEntity, false, false)) {
+						if (PhantomEntity.this.method_18391(playerEntity, class_4051.field_18092)) {
 							PhantomEntity.this.setTarget(playerEntity);
 							return true;
 						}
@@ -317,7 +322,8 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 		@Override
 		public boolean shouldContinue() {
-			return TrackTargetGoal.canTrack(PhantomEntity.this, PhantomEntity.this.getTarget(), false, false);
+			LivingEntity livingEntity = PhantomEntity.this.getTarget();
+			return livingEntity != null ? PhantomEntity.this.method_18391(livingEntity, class_4051.field_18092) : false;
 		}
 	}
 
@@ -329,7 +335,8 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 		@Override
 		public boolean canStart() {
-			return TrackTargetGoal.canTrack(PhantomEntity.this, PhantomEntity.this.getTarget(), false, false);
+			LivingEntity livingEntity = PhantomEntity.this.getTarget();
+			return livingEntity != null ? PhantomEntity.this.method_18391(PhantomEntity.this.getTarget(), class_4051.field_18092) : false;
 		}
 
 		@Override
@@ -484,7 +491,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 				} else {
 					if (PhantomEntity.this.age % 20 == 0) {
 						List<CatEntity> list = PhantomEntity.this.world
-							.getEntities(CatEntity.class, PhantomEntity.this.getBoundingBox().expand(16.0), EntityPredicates.VALID_ENTITY);
+							.method_8390(CatEntity.class, PhantomEntity.this.getBoundingBox().expand(16.0), EntityPredicates.VALID_ENTITY);
 						if (!list.isEmpty()) {
 							for (CatEntity catEntity : list) {
 								catEntity.method_16089();

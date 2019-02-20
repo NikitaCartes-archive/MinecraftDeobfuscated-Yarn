@@ -1,6 +1,7 @@
 package net.minecraft.entity.boss.dragon.phase;
 
 import javax.annotation.Nullable;
+import net.minecraft.class_4051;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -13,6 +14,7 @@ import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.feature.EndPortalFeature;
 
 public class HoldingPatternPhase extends AbstractPhase {
+	private static final class_4051 field_18121 = new class_4051().method_18418(64.0);
 	private Path field_7043;
 	private Vec3d field_7045;
 	private boolean field_7044;
@@ -56,7 +58,7 @@ public class HoldingPatternPhase extends AbstractPhase {
 			}
 
 			double d = 64.0;
-			PlayerEntity playerEntity = this.dragon.world.findMobAttackTarget(blockPos, d, d);
+			PlayerEntity playerEntity = this.dragon.world.method_18461(field_18121, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 			if (playerEntity != null) {
 				d = playerEntity.squaredDistanceToCenter(blockPos) / 512.0;
 			}

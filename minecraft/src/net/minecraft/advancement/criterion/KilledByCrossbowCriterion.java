@@ -59,7 +59,7 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 		this.field_9656.remove(playerAdvancementTracker);
 	}
 
-	public KilledByCrossbowCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public KilledByCrossbowCriterion.Conditions method_8979(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		EntityPredicate[] entityPredicates = EntityPredicate.deserializeAll(jsonObject.get("victims"));
 		NumberRange.Integer integer = NumberRange.Integer.fromJson(jsonObject.get("unique_entity_types"));
 		return new KilledByCrossbowCriterion.Conditions(entityPredicates, integer);

@@ -57,7 +57,7 @@ public class VillagerTradeCriterion implements Criterion<VillagerTradeCriterion.
 		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public VillagerTradeCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public VillagerTradeCriterion.Conditions method_9148(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("villager"));
 		ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("item"));
 		return new VillagerTradeCriterion.Conditions(entityPredicate, itemPredicate);

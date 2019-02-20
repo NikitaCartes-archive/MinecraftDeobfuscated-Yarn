@@ -5,8 +5,10 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.Collection;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4074;
 import net.minecraft.client.gui.ContainerScreen;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.container.Container;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -39,8 +41,8 @@ public abstract class AbstractPlayerInventoryScreen<T extends Container> extends
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
-		super.draw(i, j, f);
+	public void method_18326(int i, int j, float f) {
+		super.method_18326(i, j, f);
 		if (this.offsetGuiForEffects) {
 			this.drawPotionEffects();
 		}
@@ -48,37 +50,58 @@ public abstract class AbstractPlayerInventoryScreen<T extends Container> extends
 
 	private void drawPotionEffects() {
 		int i = this.left - 124;
-		int j = this.top;
-		int k = 166;
 		Collection<StatusEffectInstance> collection = this.client.player.getPotionEffects();
 		if (!collection.isEmpty()) {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.disableLighting();
-			int l = 33;
+			int j = 33;
 			if (collection.size() > 5) {
-				l = 132 / (collection.size() - 1);
+				j = 132 / (collection.size() - 1);
 			}
 
-			for (StatusEffectInstance statusEffectInstance : Ordering.natural().sortedCopy(collection)) {
-				StatusEffect statusEffect = statusEffectInstance.getEffectType();
-				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-				this.client.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
-				this.drawTexturedRect(i, j, 0, 166, 140, 32);
-				if (statusEffect.hasIcon()) {
-					int m = statusEffect.getIconIndex();
-					this.drawTexturedRect(i + 6, j + 7, m % 12 * 18, 198 + m / 12 * 18, 18, 18);
-				}
+			Iterable<StatusEffectInstance> iterable = Ordering.natural().sortedCopy(collection);
+			this.method_18642(i, j, iterable);
+			this.method_18643(i, j, iterable);
+			this.method_18644(i, j, iterable);
+		}
+	}
 
-				String string = I18n.translate(statusEffect.getTranslationKey());
-				if (statusEffectInstance.getAmplifier() >= 1 && statusEffectInstance.getAmplifier() <= 9) {
-					string = string + ' ' + I18n.translate("enchantment.level." + (statusEffectInstance.getAmplifier() + 1));
-				}
+	private void method_18642(int i, int j, Iterable<StatusEffectInstance> iterable) {
+		this.client.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
+		int k = this.top;
 
-				this.fontRenderer.drawWithShadow(string, (float)(i + 10 + 18), (float)(j + 6), 16777215);
-				String string2 = StatusEffectUtil.durationToString(statusEffectInstance, 1.0F);
-				this.fontRenderer.drawWithShadow(string2, (float)(i + 10 + 18), (float)(j + 6 + 10), 8355711);
-				j += l;
+		for (StatusEffectInstance statusEffectInstance : iterable) {
+			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			this.drawTexturedRect(i, k, 0, 166, 140, 32);
+			k += j;
+		}
+	}
+
+	private void method_18643(int i, int j, Iterable<StatusEffectInstance> iterable) {
+		this.client.getTextureManager().bindTexture(SpriteAtlasTexture.field_18229);
+		class_4074 lv = this.client.method_18505();
+		int k = this.top;
+
+		for (StatusEffectInstance statusEffectInstance : iterable) {
+			StatusEffect statusEffect = statusEffectInstance.getEffectType();
+			this.drawTexturedRect(i + 6, k + 7, lv.method_18663(statusEffect), 18, 18);
+			k += j;
+		}
+	}
+
+	private void method_18644(int i, int j, Iterable<StatusEffectInstance> iterable) {
+		int k = this.top;
+
+		for (StatusEffectInstance statusEffectInstance : iterable) {
+			String string = I18n.translate(statusEffectInstance.getEffectType().getTranslationKey());
+			if (statusEffectInstance.getAmplifier() >= 1 && statusEffectInstance.getAmplifier() <= 9) {
+				string = string + ' ' + I18n.translate("enchantment.level." + (statusEffectInstance.getAmplifier() + 1));
 			}
+
+			this.fontRenderer.drawWithShadow(string, (float)(i + 10 + 18), (float)(k + 6), 16777215);
+			String string2 = StatusEffectUtil.durationToString(statusEffectInstance, 1.0F);
+			this.fontRenderer.drawWithShadow(string2, (float)(i + 10 + 18), (float)(k + 6 + 10), 8355711);
+			k += j;
 		}
 	}
 }

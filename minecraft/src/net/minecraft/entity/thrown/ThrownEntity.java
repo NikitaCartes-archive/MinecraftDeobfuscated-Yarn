@@ -34,16 +34,16 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 	private Entity field_7637;
 	private int field_7638;
 
-	protected ThrownEntity(EntityType<?> entityType, World world) {
+	protected ThrownEntity(EntityType<? extends ThrownEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
-	protected ThrownEntity(EntityType<?> entityType, double d, double e, double f, World world) {
+	protected ThrownEntity(EntityType<? extends ThrownEntity> entityType, double d, double e, double f, World world) {
 		this(entityType, world);
 		this.setPosition(d, e, f);
 	}
 
-	protected ThrownEntity(EntityType<?> entityType, LivingEntity livingEntity, World world) {
+	protected ThrownEntity(EntityType<? extends ThrownEntity> entityType, LivingEntity livingEntity, World world) {
 		this(entityType, livingEntity.x, livingEntity.y + (double)livingEntity.getEyeHeight() - 0.1F, livingEntity.z, world);
 		this.owner = livingEntity;
 		this.field_7644 = livingEntity.getUuid();

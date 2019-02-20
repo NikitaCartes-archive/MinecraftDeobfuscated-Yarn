@@ -132,7 +132,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 			m = 0;
 			float f = 5.0F;
 
-			for (PlayerEntity playerEntity : world.getVisibleEntities(
+			for (PlayerEntity playerEntity : world.method_18467(
 				PlayerEntity.class,
 				new BoundingBox(
 					(double)((float)j - 5.0F),

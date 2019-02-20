@@ -27,8 +27,8 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 	private final CommandBlockExecutor commandExecutor = new CommandBlockMinecartEntity.class_1698();
 	private int field_7742;
 
-	public CommandBlockMinecartEntity(World world) {
-		super(EntityType.COMMAND_BLOCK_MINECART, world);
+	public CommandBlockMinecartEntity(EntityType<? extends CommandBlockMinecartEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public CommandBlockMinecartEntity(World world, double d, double e, double f) {

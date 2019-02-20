@@ -18,7 +18,7 @@ public class FormCaravanGoal extends Goal {
 	@Override
 	public boolean canStart() {
 		if (!this.owner.isLeashed() && !this.owner.isFollowing()) {
-			List<LlamaEntity> list = this.owner.world.getVisibleEntities(this.owner.getClass(), this.owner.getBoundingBox().expand(9.0, 4.0, 9.0));
+			List<LlamaEntity> list = this.owner.world.method_18467(this.owner.getClass(), this.owner.getBoundingBox().expand(9.0, 4.0, 9.0));
 			LlamaEntity llamaEntity = null;
 			double d = Double.MAX_VALUE;
 

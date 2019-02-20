@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.goal;
 
+import net.minecraft.class_4051;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
@@ -24,11 +25,11 @@ public class TrackIronGolemTargetGoal extends TrackTargetGoal {
 			this.target = villageProperties.getNearestAttacker(this.ironGolem);
 			if (this.target instanceof CreeperEntity) {
 				return false;
-			} else if (this.canTrack(this.target, false)) {
+			} else if (this.canTrack(this.target, class_4051.field_18092)) {
 				return true;
 			} else if (this.entity.getRand().nextInt(20) == 0) {
 				this.target = villageProperties.getNearestUnpopularPlayer(this.ironGolem);
-				return this.canTrack(this.target, false);
+				return this.canTrack(this.target, class_4051.field_18092);
 			} else {
 				return false;
 			}

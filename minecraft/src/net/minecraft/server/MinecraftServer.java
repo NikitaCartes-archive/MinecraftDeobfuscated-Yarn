@@ -85,7 +85,6 @@ import net.minecraft.util.MetricsData;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.ThreadTaskQueue;
-import net.minecraft.util.Tickable;
 import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.crash.CrashException;
@@ -127,7 +126,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<ServerTask> implem
 	private final LevelStorage levelStorage;
 	private final Snooper snooper = new Snooper("server", this, SystemUtil.getMeasuringTimeMs());
 	private final File gameDir;
-	private final List<Tickable> tickables = Lists.<Tickable>newArrayList();
+	private final List<Runnable> tickables = Lists.<Runnable>newArrayList();
 	private final DisableableProfiler profiler = new DisableableProfiler(this::getTicks);
 	private final ServerNetworkIO networkIO;
 	protected final WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory;
@@ -440,19 +439,19 @@ public abstract class MinecraftServer extends ThreadTaskQueue<ServerTask> implem
 		LOGGER.info("Preparing start region for dimension " + DimensionType.getId(serverWorld.dimension.getType()));
 		BlockPos blockPos = serverWorld.getSpawnPos();
 		worldGenerationProgressListener.start(new ChunkPos(blockPos));
-		ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
-		serverChunkManager.getLightingProvider().method_17304(500);
+		ServerChunkManager serverChunkManager = serverWorld.method_14178();
+		serverChunkManager.method_17293().method_17304(500);
 		this.timeReference = SystemUtil.getMeasuringTimeMs();
 		serverChunkManager.addTicket(ChunkTicketType.START, new ChunkPos(blockPos), 11, net.minecraft.util.Void.INSTANCE);
 
 		while (serverChunkManager.getTotalChunksLoadedCount() != 441) {
 			this.timeReference += 100L;
-			serverChunkManager.getLightingProvider().tick();
+			serverChunkManager.method_17293().tick();
 			this.method_16208();
 		}
 
 		this.timeReference += 100L;
-		serverChunkManager.getLightingProvider().tick();
+		serverChunkManager.method_17293().tick();
 		this.method_16208();
 
 		for (DimensionType dimensionType : DimensionType.getAll()) {
@@ -464,16 +463,16 @@ public abstract class MinecraftServer extends ThreadTaskQueue<ServerTask> implem
 				while (longIterator.hasNext()) {
 					long l = longIterator.nextLong();
 					ChunkPos chunkPos = new ChunkPos(l);
-					serverWorld2.getChunkManager().setChunkForced(chunkPos, true);
+					serverWorld2.method_14178().setChunkForced(chunkPos, true);
 				}
 			}
 		}
 
 		this.timeReference += 100L;
-		serverChunkManager.getLightingProvider().tick();
+		serverChunkManager.method_17293().tick();
 		this.method_16208();
 		worldGenerationProgressListener.stop();
-		serverChunkManager.getLightingProvider().method_17304(5);
+		serverChunkManager.method_17293().method_17304(5);
 	}
 
 	protected void method_3861(String string, WorldSaveHandler worldSaveHandler) {
@@ -670,7 +669,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<ServerTask> implem
 		} while (bl || this.shouldKeepTicking());
 	}
 
-	protected ServerTask createTask(Runnable runnable) {
+	protected ServerTask method_16209(Runnable runnable) {
 		return new ServerTask(this.ticks, runnable);
 	}
 
@@ -692,7 +691,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<ServerTask> implem
 	public boolean executeQueuedTask() {
 		if (this.shouldKeepTicking()) {
 			for (ServerWorld serverWorld : this.getWorlds()) {
-				if (serverWorld.getChunkManager().executeQueuedTask()) {
+				if (serverWorld.method_14178().executeQueuedTask()) {
 					return true;
 				}
 			}
@@ -804,7 +803,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<ServerTask> implem
 
 	protected void tick(BooleanSupplier booleanSupplier) {
 		this.profiler.push("commandFunctions");
-		this.getCommandFunctionManager().tick();
+		this.getCommandFunctionManager().method_18699();
 		this.profiler.swap("levels");
 
 		for (ServerWorld serverWorld : this.getWorlds()) {
@@ -825,24 +824,13 @@ public abstract class MinecraftServer extends ThreadTaskQueue<ServerTask> implem
 				this.profiler.push("tick");
 
 				try {
-					serverWorld.tick(booleanSupplier);
-				} catch (Throwable var9) {
-					CrashReport crashReport = CrashReport.create(var9, "Exception ticking world");
-					serverWorld.addDetailsToCrashReport(crashReport);
-					throw new CrashException(crashReport);
-				}
-
-				try {
-					serverWorld.tickEntities();
+					serverWorld.method_18765(booleanSupplier);
 				} catch (Throwable var8) {
-					CrashReport crashReport = CrashReport.create(var8, "Exception ticking world entities");
+					CrashReport crashReport = CrashReport.create(var8, "Exception ticking world");
 					serverWorld.addDetailsToCrashReport(crashReport);
 					throw new CrashException(crashReport);
 				}
 
-				this.profiler.pop();
-				this.profiler.push("tracker");
-				serverWorld.getEntityTracker().method_14078();
 				this.profiler.pop();
 				this.profiler.pop();
 			}
@@ -855,10 +843,10 @@ public abstract class MinecraftServer extends ThreadTaskQueue<ServerTask> implem
 		this.getNetworkIO().tick();
 		this.profiler.swap("players");
 		this.playerManager.updatePlayerLatency();
-		this.profiler.swap("tickables");
+		this.profiler.swap("server gui refresh");
 
 		for (int i = 0; i < this.tickables.size(); i++) {
-			((Tickable)this.tickables.get(i)).tick();
+			((Runnable)this.tickables.get(i)).run();
 		}
 
 		this.profiler.pop();
@@ -868,8 +856,8 @@ public abstract class MinecraftServer extends ThreadTaskQueue<ServerTask> implem
 		return true;
 	}
 
-	public void registerTickable(Tickable tickable) {
-		this.tickables.add(tickable);
+	public void registerTickable(Runnable runnable) {
+		this.tickables.add(runnable);
 	}
 
 	public static void main(String[] strings) {
@@ -1184,7 +1172,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<ServerTask> implem
 				snooper.addInfo("world[" + i + "][generator_name]", levelProperties.getGeneratorType().getName());
 				snooper.addInfo("world[" + i + "][generator_version]", levelProperties.getGeneratorType().getVersion());
 				snooper.addInfo("world[" + i + "][height]", this.worldHeight);
-				snooper.addInfo("world[" + i + "][chunks_loaded]", serverWorld.getChunkManager().getLoadedChunkCount());
+				snooper.addInfo("world[" + i + "][chunks_loaded]", serverWorld.method_14178().getLoadedChunkCount());
 				i++;
 			}
 		}

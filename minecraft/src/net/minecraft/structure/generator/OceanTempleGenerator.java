@@ -8,6 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.fluid.FluidState;
@@ -257,7 +258,7 @@ public class OceanTempleGenerator {
 					((ChestBlockEntity)blockEntity).setLootTable(this.large ? LootTables.field_300 : LootTables.field_397, random.nextLong());
 				}
 			} else if ("drowned".equals(string)) {
-				DrownedEntity drownedEntity = new DrownedEntity(iWorld.getWorld());
+				DrownedEntity drownedEntity = EntityType.DROWNED.create(iWorld.getWorld());
 				drownedEntity.setPersistent();
 				drownedEntity.setPositionAndAngles(blockPos, 0.0F, 0.0F);
 				drownedEntity.prepareEntityData(iWorld, iWorld.getLocalDifficulty(blockPos), SpawnType.field_16474, null, null);

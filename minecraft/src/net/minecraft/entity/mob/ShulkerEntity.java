@@ -7,6 +7,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1399;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PistonBlock;
@@ -63,8 +65,8 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	private BlockPos field_7345;
 	private int field_7340;
 
-	public ShulkerEntity(World world) {
-		super(EntityType.SHULKER, world);
+	public ShulkerEntity(EntityType<? extends ShulkerEntity> entityType, World world) {
+		super(entityType, world);
 		this.field_6220 = 180.0F;
 		this.field_6283 = 180.0F;
 		this.fireImmune = true;
@@ -494,7 +496,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	@Override
-	public float getEyeHeight() {
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
 		return 0.5F;
 	}
 

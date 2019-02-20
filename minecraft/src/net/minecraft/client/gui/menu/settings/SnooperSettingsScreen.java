@@ -10,6 +10,7 @@ import net.minecraft.client.gui.GuiEventListener;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.AbstractListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.options.GameOption;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
 
@@ -47,16 +48,17 @@ public class SnooperSettingsScreen extends Screen {
 		this.description = (String[])list.toArray(new String[list.size()]);
 		this.field_2569.clear();
 		this.field_2567.clear();
-		ButtonWidget buttonWidget = new ButtonWidget(1, this.width / 2 - 152, this.height - 30, 150, 20, this.settings.getTranslatedName(GameOptions.Option.SNOOPER)) {
+		ButtonWidget buttonWidget = new ButtonWidget(this.width / 2 - 152, this.height - 30, 150, 20, GameOption.SNOOPER.method_18495(this.settings)) {
 			@Override
 			public void onPressed(double d, double e) {
-				SnooperSettingsScreen.this.settings.setInteger(GameOptions.Option.SNOOPER, 1);
-				SnooperSettingsScreen.this.allowSnooperButton.setText(SnooperSettingsScreen.this.settings.getTranslatedName(GameOptions.Option.SNOOPER));
+				GameOption.SNOOPER.method_18491(SnooperSettingsScreen.this.settings);
+				SnooperSettingsScreen.this.settings.write();
+				SnooperSettingsScreen.this.allowSnooperButton.setText(GameOption.SNOOPER.method_18495(SnooperSettingsScreen.this.settings));
 			}
 		};
 		buttonWidget.enabled = false;
 		this.allowSnooperButton = this.addButton(buttonWidget);
-		this.addButton(new ButtonWidget(2, this.width / 2 + 2, this.height - 30, 150, 20, I18n.translate("gui.done")) {
+		this.addButton(new ButtonWidget(this.width / 2 + 2, this.height - 30, 150, 20, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
 				SnooperSettingsScreen.this.settings.write();
@@ -83,9 +85,9 @@ public class SnooperSettingsScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		this.drawBackground();
-		this.snooperInfoList.draw(i, j, f);
+		this.snooperInfoList.method_18326(i, j, f);
 		this.drawStringCentered(this.fontRenderer, this.title, this.width / 2, 8, 16777215);
 		int k = 22;
 
@@ -94,7 +96,7 @@ public class SnooperSettingsScreen extends Screen {
 			k += 9;
 		}
 
-		super.draw(i, j, f);
+		super.method_18326(i, j, f);
 	}
 
 	@Environment(EnvType.CLIENT)

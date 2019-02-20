@@ -11,6 +11,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
@@ -48,8 +49,8 @@ public class OcelotEntity extends AnimalEntity {
 	private OcelotEntity.OcelotFleeGoal<PlayerEntity> field_16300;
 	private OcelotEntity.class_3703 field_16302;
 
-	public OcelotEntity(World world) {
-		super(EntityType.OCELOT, world);
+	public OcelotEntity(EntityType<? extends OcelotEntity> entityType, World world) {
+		super(entityType, world);
 		this.method_16103();
 	}
 
@@ -233,7 +234,7 @@ public class OcelotEntity extends AnimalEntity {
 	}
 
 	public OcelotEntity method_16104(PassiveEntity passiveEntity) {
-		return new OcelotEntity(this.world);
+		return EntityType.OCELOT.create(this.world);
 	}
 
 	@Override
@@ -266,7 +267,7 @@ public class OcelotEntity extends AnimalEntity {
 
 	protected void method_16105() {
 		for (int i = 0; i < 2; i++) {
-			OcelotEntity ocelotEntity = new OcelotEntity(this.world);
+			OcelotEntity ocelotEntity = EntityType.OCELOT.create(this.world);
 			ocelotEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0F);
 			ocelotEntity.setBreedingAge(-24000);
 			this.world.spawnEntity(ocelotEntity);
@@ -286,11 +287,11 @@ public class OcelotEntity extends AnimalEntity {
 		return entityData;
 	}
 
-	static class OcelotFleeGoal<T extends Entity> extends FleeEntityGoal<T> {
+	static class OcelotFleeGoal<T extends LivingEntity> extends FleeEntityGoal<T> {
 		private final OcelotEntity field_16303;
 
 		public OcelotFleeGoal(OcelotEntity ocelotEntity, Class<T> class_, float f, double d, double e) {
-			super(ocelotEntity, class_, f, d, e, EntityPredicates.EXCEPT_SPECTATOR);
+			super(ocelotEntity, class_, f, d, e, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR::test);
 			this.field_16303 = ocelotEntity;
 		}
 

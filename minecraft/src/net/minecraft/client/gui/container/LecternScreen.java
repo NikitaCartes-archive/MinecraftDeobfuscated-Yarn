@@ -40,7 +40,7 @@ public class LecternScreen extends WrittenBookScreen implements ContainerProvide
 		this.lecternContainer = lecternContainer;
 	}
 
-	public LecternContainer getContainer() {
+	public LecternContainer method_17573() {
 		return this.lecternContainer;
 	}
 
@@ -65,13 +65,13 @@ public class LecternScreen extends WrittenBookScreen implements ContainerProvide
 	@Override
 	protected void addCloseButton() {
 		if (this.client.player.canModifyWorld()) {
-			this.addButton(new ButtonWidget(0, this.width / 2 - 100, 196, 98, 20, I18n.translate("gui.done")) {
+			this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, I18n.translate("gui.done")) {
 				@Override
 				public void onPressed(double d, double e) {
 					LecternScreen.this.client.openScreen(null);
 				}
 			});
-			this.addButton(new ButtonWidget(3, this.width / 2 + 2, 196, 98, 20, I18n.translate("lectern.take_book")) {
+			this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, I18n.translate("lectern.take_book")) {
 				@Override
 				public void onPressed(double d, double e) {
 					LecternScreen.this.sendButtonPressPacket(3);

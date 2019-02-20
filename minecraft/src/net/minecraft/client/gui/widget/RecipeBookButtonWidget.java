@@ -13,11 +13,11 @@ public abstract class RecipeBookButtonWidget extends ButtonWidget {
 	private final int v;
 	private final int hoverVOffset;
 
-	public RecipeBookButtonWidget(int i, int j, int k, int l, int m, int n, int o, int p, Identifier identifier) {
-		super(i, j, k, l, m, "");
-		this.u = n;
-		this.v = o;
-		this.hoverVOffset = p;
+	public RecipeBookButtonWidget(int i, int j, int k, int l, int m, int n, int o, Identifier identifier) {
+		super(i, j, k, l, "");
+		this.u = m;
+		this.v = n;
+		this.hoverVOffset = o;
 		this.texture = identifier;
 	}
 

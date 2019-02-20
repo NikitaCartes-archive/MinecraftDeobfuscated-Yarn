@@ -35,7 +35,7 @@ public class UpdateWorldScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
-		this.addButton(new ButtonWidget(0, this.width / 2 - 100, this.height / 4 + 150, I18n.translate("gui.cancel")) {
+		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 150, I18n.translate("gui.cancel")) {
 			@Override
 			public void onPressed(double d, double e) {
 				UpdateWorldScreen.this.updater.cancel();
@@ -57,7 +57,7 @@ public class UpdateWorldScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, I18n.translate("optimizeWorld.title", this.updater.getLevelName()), this.width / 2, 20, 16777215);
 		int k = this.width / 2 - 150;
@@ -83,6 +83,6 @@ public class UpdateWorldScreen extends Screen {
 			this.drawStringCentered(this.fontRenderer, MathHelper.floor(this.updater.getProgress() * 100.0F) + "%", this.width / 2, m + (n - m) / 2 - 9 / 2, 10526880);
 		}
 
-		super.draw(i, j, f);
+		super.method_18326(i, j, f);
 	}
 }

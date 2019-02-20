@@ -16,12 +16,12 @@ public class IntegratedPlayerManager extends PlayerManager {
 
 	public IntegratedPlayerManager(IntegratedServer integratedServer) {
 		super(integratedServer, 8);
-		this.setViewDistance(10);
+		this.setViewDistance(10, 8);
 	}
 
 	@Override
 	protected void savePlayerData(ServerPlayerEntity serverPlayerEntity) {
-		if (serverPlayerEntity.getName().getString().equals(this.getServer().getUserName())) {
+		if (serverPlayerEntity.getName().getString().equals(this.method_4811().getUserName())) {
 			this.userData = serverPlayerEntity.toTag(new CompoundTag());
 		}
 
@@ -30,12 +30,12 @@ public class IntegratedPlayerManager extends PlayerManager {
 
 	@Override
 	public TextComponent checkCanJoin(SocketAddress socketAddress, GameProfile gameProfile) {
-		return (TextComponent)(gameProfile.getName().equalsIgnoreCase(this.getServer().getUserName()) && this.getPlayer(gameProfile.getName()) != null
+		return (TextComponent)(gameProfile.getName().equalsIgnoreCase(this.method_4811().getUserName()) && this.getPlayer(gameProfile.getName()) != null
 			? new TranslatableTextComponent("multiplayer.disconnect.name_taken")
 			: super.checkCanJoin(socketAddress, gameProfile));
 	}
 
-	public IntegratedServer getServer() {
+	public IntegratedServer method_4811() {
 		return (IntegratedServer)super.getServer();
 	}
 

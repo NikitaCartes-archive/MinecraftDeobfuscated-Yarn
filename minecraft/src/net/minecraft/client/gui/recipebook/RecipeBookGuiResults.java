@@ -43,9 +43,9 @@ public class RecipeBookGuiResults {
 			((AnimatedResultButton)this.resultButtons.get(k)).setPos(i + 11 + 25 * (k % 5), j + 31 + 25 * (k / 5));
 		}
 
-		this.nextPageButton = new ToggleButtonWidget(0, i + 93, j + 137, 12, 17, false);
+		this.nextPageButton = new ToggleButtonWidget(i + 93, j + 137, 12, 17, false);
 		this.nextPageButton.setTextureUV(1, 208, 13, 18, RecipeBookGui.TEXTURE);
-		this.prevPageButton = new ToggleButtonWidget(0, i + 38, j + 137, 12, 17, true);
+		this.prevPageButton = new ToggleButtonWidget(i + 38, j + 137, 12, 17, true);
 		this.prevPageButton.setTextureUV(1, 208, 13, 18, RecipeBookGui.TEXTURE);
 	}
 
@@ -97,15 +97,15 @@ public class RecipeBookGuiResults {
 		this.hoveredResultButton = null;
 
 		for (AnimatedResultButton animatedResultButton : this.resultButtons) {
-			animatedResultButton.render(k, l, f);
+			animatedResultButton.method_18326(k, l, f);
 			if (animatedResultButton.visible && animatedResultButton.isHovered()) {
 				this.hoveredResultButton = animatedResultButton;
 			}
 		}
 
-		this.prevPageButton.render(k, l, f);
-		this.nextPageButton.render(k, l, f);
-		this.alternatesWidget.draw(k, l, f);
+		this.prevPageButton.method_18326(k, l, f);
+		this.nextPageButton.method_18326(k, l, f);
+		this.alternatesWidget.method_18326(k, l, f);
 	}
 
 	public void drawTooltip(int i, int j) {

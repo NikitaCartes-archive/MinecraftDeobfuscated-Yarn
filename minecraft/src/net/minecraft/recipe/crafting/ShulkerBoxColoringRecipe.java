@@ -62,7 +62,7 @@ public class ShulkerBoxColoringRecipe extends SpecialCraftingRecipe {
 
 		ItemStack itemStack3 = ShulkerBoxBlock.getItemStack(dyeItem.getColor());
 		if (itemStack.hasTag()) {
-			itemStack3.setTag(itemStack.getTag().copy());
+			itemStack3.setTag(itemStack.getTag().method_10553());
 		}
 
 		return itemStack3;

@@ -43,7 +43,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	}
 
 	@Override
-	public <V extends T> V set(Identifier identifier, V object) {
+	public <V extends T> V add(Identifier identifier, V object) {
 		return this.set(this.nextId, identifier, object);
 	}
 

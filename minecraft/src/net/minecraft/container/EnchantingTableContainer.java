@@ -2,6 +2,7 @@ package net.minecraft.container;
 
 import java.util.List;
 import java.util.Random;
+import java.util.function.BiConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criterions;
@@ -19,7 +20,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
 
 public class EnchantingTableContainer extends Container {
 	private final Inventory inventory = new BasicInventory(2) {
@@ -29,7 +32,7 @@ public class EnchantingTableContainer extends Container {
 			EnchantingTableContainer.this.onContentChanged(this);
 		}
 	};
-	private final ContainerWorldContext context;
+	private final BlockContext context;
 	private final Random random = new Random();
 	private final Property seed = Property.create();
 	public final int[] enchantmentPower = new int[3];
@@ -37,12 +40,12 @@ public class EnchantingTableContainer extends Container {
 	public final int[] enchantmentLevel = new int[]{-1, -1, -1};
 
 	public EnchantingTableContainer(int i, PlayerInventory playerInventory) {
-		this(i, playerInventory, ContainerWorldContext.NO_OP_CONTEXT);
+		this(i, playerInventory, BlockContext.EMPTY);
 	}
 
-	public EnchantingTableContainer(int i, PlayerInventory playerInventory, ContainerWorldContext containerWorldContext) {
+	public EnchantingTableContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
 		super(ContainerType.ENCHANTMENT, i);
-		this.context = containerWorldContext;
+		this.context = blockContext;
 		this.addSlot(new Slot(this.inventory, 0, 15, 47) {
 			@Override
 			public boolean canInsert(ItemStack itemStack) {
@@ -88,7 +91,7 @@ public class EnchantingTableContainer extends Container {
 		if (inventory == this.inventory) {
 			ItemStack itemStack = inventory.getInvStack(0);
 			if (!itemStack.isEmpty() && itemStack.isEnchantable()) {
-				this.context.run((world, blockPos) -> {
+				this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 					int ix = 0;
 
 					for (int j = -1; j <= 1; j++) {
@@ -146,7 +149,7 @@ public class EnchantingTableContainer extends Container {
 					}
 
 					this.sendContentUpdates();
-				});
+				}));
 			} else {
 				for (int i = 0; i < 3; i++) {
 					this.enchantmentPower[i] = 0;
@@ -169,7 +172,7 @@ public class EnchantingTableContainer extends Container {
 			|| (playerEntity.experience < j || playerEntity.experience < this.enchantmentPower[i]) && !playerEntity.abilities.creativeMode) {
 			return false;
 		} else {
-			this.context.run((world, blockPos) -> {
+			this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 				ItemStack itemStack3 = itemStack;
 				List<InfoEnchantment> list = this.getRandomEnchantments(itemStack, i, this.enchantmentPower[i]);
 				if (!list.isEmpty()) {
@@ -206,7 +209,7 @@ public class EnchantingTableContainer extends Container {
 					this.onContentChanged(this.inventory);
 					world.playSound(null, blockPos, SoundEvents.field_15119, SoundCategory.field_15245, 1.0F, world.random.nextFloat() * 0.1F + 0.9F);
 				}
-			});
+			}));
 			return true;
 		}
 	}
@@ -235,7 +238,7 @@ public class EnchantingTableContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.context.run((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.inventory));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.inventory)));
 	}
 
 	@Override

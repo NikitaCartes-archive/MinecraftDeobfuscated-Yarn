@@ -26,7 +26,6 @@ public class StatusEffect {
 	private final int color;
 	@Nullable
 	private String translationKey;
-	private int iconIndex = -1;
 	private double field_5888;
 	private boolean field_5882;
 
@@ -48,11 +47,6 @@ public class StatusEffect {
 		}
 
 		this.color = i;
-	}
-
-	protected StatusEffect setIcon(int i, int j) {
-		this.iconIndex = i + j * 12;
-		return this;
 	}
 
 	public void applyUpdateEffect(LivingEntity livingEntity, int i) {
@@ -132,16 +126,6 @@ public class StatusEffect {
 
 	public TextComponent method_5560() {
 		return new TranslatableTextComponent(this.getTranslationKey());
-	}
-
-	@Environment(EnvType.CLIENT)
-	public boolean hasIcon() {
-		return this.iconIndex >= 0;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public int getIconIndex() {
-		return this.iconIndex;
 	}
 
 	@Environment(EnvType.CLIENT)

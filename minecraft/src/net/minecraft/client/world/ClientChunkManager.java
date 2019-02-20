@@ -5,6 +5,7 @@ import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4076;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.PacketByteBuf;
@@ -52,11 +53,13 @@ public class ClientChunkManager extends ChunkManager {
 	}
 
 	public void unload(int i, int j) {
-		this.chunks.unload(i, j);
+		if (this.chunks.hasChunk(i, j)) {
+			this.chunks.unload(this.chunks.index(i, j), null);
+		}
 	}
 
 	@Nullable
-	public WorldChunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl) {
+	public WorldChunk method_2857(int i, int j, ChunkStatus chunkStatus, boolean bl) {
 		WorldChunk worldChunk = this.chunks.getChunk(i, j);
 		if (worldChunk != null) {
 			return worldChunk;
@@ -80,21 +83,25 @@ public class ClientChunkManager extends ChunkManager {
 			int l = this.chunks.index(i, j);
 			WorldChunk worldChunk = (WorldChunk)this.chunks.chunks.get(l);
 			if (worldChunk == null) {
+				if (!bl) {
+					LOGGER.warn("Ignoring chunk since we don't have complete data: {}, {}", i, j);
+					return null;
+				}
+
 				worldChunk = new WorldChunk(world, new ChunkPos(i, j), new Biome[256]);
 				worldChunk.loadFromPacket(packetByteBuf, compoundTag, k, bl);
-				this.chunks.chunks.set(l, worldChunk);
+				this.chunks.unload(l, worldChunk);
 				this.loadedChunkCount++;
 			} else {
 				worldChunk.loadFromPacket(packetByteBuf, compoundTag, k, bl);
 			}
 
-			worldChunk.setLoadedToWorld(true);
 			ChunkSection[] chunkSections = worldChunk.getSectionArray();
 			LightingProvider lightingProvider = this.getLightingProvider();
 
 			for (int m = 0; m < chunkSections.length; m++) {
 				ChunkSection chunkSection = chunkSections[m];
-				lightingProvider.scheduleChunkLightUpdate(i, m, j, ChunkSection.isEmpty(chunkSection));
+				lightingProvider.scheduleChunkLightUpdate(class_4076.method_18676(i, m, j), ChunkSection.isEmpty(chunkSection));
 			}
 
 			return worldChunk;
@@ -134,7 +141,7 @@ public class ClientChunkManager extends ChunkManager {
 			for (int lx = this.playerChunkZ - j; lx <= this.playerChunkZ + j; lx++) {
 				for (int n = this.playerChunkX - j; n <= this.playerChunkX + j; n++) {
 					if (!isWithinDistance(n, lx, m, k, j)) {
-						this.chunks.chunks.set(this.chunks.index(n, lx), null);
+						this.chunks.unload(this.chunks.index(n, lx), null);
 					}
 				}
 			}
@@ -155,8 +162,8 @@ public class ClientChunkManager extends ChunkManager {
 	}
 
 	@Override
-	public void onLightUpdate(LightType lightType, int i, int j, int k) {
-		MinecraftClient.getInstance().worldRenderer.method_8571(i, j, k);
+	public void onLightUpdate(LightType lightType, class_4076 arg) {
+		MinecraftClient.getInstance().worldRenderer.method_8571(arg.method_18674(), arg.method_18683(), arg.method_18687());
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -175,13 +182,11 @@ public class ClientChunkManager extends ChunkManager {
 			return Math.floorMod(j, this.loadDiameter) * this.loadDiameter + Math.floorMod(i, this.loadDiameter);
 		}
 
-		protected void unload(int i, int j) {
-			if (this.hasChunk(i, j)) {
-				WorldChunk worldChunk = (WorldChunk)this.chunks.getAndSet(this.index(i, j), null);
-				if (worldChunk != null) {
-					ClientChunkManager.this.loadedChunkCount--;
-					ClientChunkManager.this.world.method_18110(worldChunk);
-				}
+		protected void unload(int i, @Nullable WorldChunk worldChunk) {
+			WorldChunk worldChunk2 = (WorldChunk)this.chunks.getAndSet(i, worldChunk);
+			if (worldChunk2 != null) {
+				ClientChunkManager.this.loadedChunkCount--;
+				ClientChunkManager.this.world.method_18110(worldChunk2);
 			}
 		}
 
@@ -191,14 +196,7 @@ public class ClientChunkManager extends ChunkManager {
 
 		@Nullable
 		protected WorldChunk getChunk(int i, int j) {
-			if (this.hasChunk(i, j)) {
-				WorldChunk worldChunk = (WorldChunk)this.chunks.get(this.index(i, j));
-				if (worldChunk != null) {
-					return worldChunk;
-				}
-			}
-
-			return null;
+			return this.hasChunk(i, j) ? (WorldChunk)this.chunks.get(this.index(i, j)) : null;
 		}
 	}
 }

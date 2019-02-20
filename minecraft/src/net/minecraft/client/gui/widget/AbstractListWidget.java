@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4068;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableContainer;
@@ -15,7 +16,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public abstract class AbstractListWidget extends DrawableContainer {
+public abstract class AbstractListWidget extends DrawableContainer implements class_4068 {
 	protected final MinecraftClient client;
 	protected int width;
 	protected int height;
@@ -27,8 +28,6 @@ public abstract class AbstractListWidget extends DrawableContainer {
 	protected boolean field_2173 = true;
 	protected int field_2178 = -2;
 	protected double scrollY;
-	protected int field_2176;
-	protected long field_2177 = Long.MIN_VALUE;
 	protected boolean visible = true;
 	protected boolean field_2171 = true;
 	protected boolean field_2170;
@@ -73,11 +72,8 @@ public abstract class AbstractListWidget extends DrawableContainer {
 
 	protected abstract int getEntryCount();
 
-	public void method_1946(int i) {
-	}
-
 	@Override
-	protected List<? extends GuiEventListener> getEntries() {
+	public List<? extends GuiEventListener> method_1968() {
 		return Collections.emptyList();
 	}
 
@@ -137,7 +133,8 @@ public abstract class AbstractListWidget extends DrawableContainer {
 		this.field_2178 = -2;
 	}
 
-	public void draw(int i, int j, float f) {
+	@Override
+	public void method_18326(int i, int j, float f) {
 		if (this.visible) {
 			this.drawBackground();
 			int k = this.getScrollbarPosition();
@@ -248,12 +245,11 @@ public abstract class AbstractListWidget extends DrawableContainer {
 				this.method_1929((int)(d - (double)(this.x1 + this.width / 2 - this.getEntryWidth() / 2)), (int)(e - (double)this.y1) + (int)this.scrollY - 4);
 				return true;
 			} else if (j != -1 && this.selectEntry(j, i, d, e)) {
-				if (this.getEntries().size() > j) {
-					this.setFocused((GuiEventListener)this.getEntries().get(j));
+				if (this.method_1968().size() > j) {
+					this.method_1967((GuiEventListener)this.method_1968().get(j));
 				}
 
-				this.setActive(true);
-				this.method_1946(j);
+				this.method_1966(true);
 				return true;
 			} else {
 				return this.field_2169;
@@ -269,7 +265,6 @@ public abstract class AbstractListWidget extends DrawableContainer {
 			this.getFocused().mouseReleased(d, e, i);
 		}
 
-		this.getEntries().forEach(guiEventListener -> guiEventListener.mouseReleased(d, e, i));
 		return false;
 	}
 

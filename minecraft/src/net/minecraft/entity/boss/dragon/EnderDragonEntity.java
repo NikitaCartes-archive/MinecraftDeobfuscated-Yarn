@@ -4,6 +4,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4051;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
@@ -28,8 +29,6 @@ import net.minecraft.entity.decoration.EnderCrystalEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.Monster;
-import net.minecraft.entity.parts.EntityPart;
-import net.minecraft.entity.parts.IEntityPartDamageDelegate;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
@@ -48,20 +47,21 @@ import net.minecraft.world.gen.feature.EndPortalFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDelegate, Monster {
+public class EnderDragonEntity extends MobEntity implements Monster {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final TrackedData<Integer> PHASE_TYPE = DataTracker.registerData(EnderDragonEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final class_4051 field_18120 = new class_4051().method_18418(64.0);
 	public final double[][] field_7026 = new double[64][3];
 	public int field_7010 = -1;
-	public final EntityPart[] parts;
-	public final EntityPart partHead;
-	public final EntityPart partNeck;
-	public final EntityPart partBody;
-	public final EntityPart partTail1;
-	public final EntityPart partTail2;
-	public final EntityPart partTail3;
-	public final EntityPart partWingRight;
-	public final EntityPart partWingLeft;
+	public final EnderDragonPart[] parts;
+	public final EnderDragonPart partHead;
+	public final EnderDragonPart partNeck;
+	public final EnderDragonPart partBody;
+	public final EnderDragonPart partTail1;
+	public final EnderDragonPart partTail2;
+	public final EnderDragonPart partTail3;
+	public final EnderDragonPart partWingRight;
+	public final EnderDragonPart partWingLeft;
 	public float field_7019;
 	public float field_7030;
 	public boolean field_7027;
@@ -75,17 +75,17 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 	private final int[] field_7025 = new int[24];
 	private final PathMinHeap field_7008 = new PathMinHeap();
 
-	public EnderDragonEntity(World world) {
+	public EnderDragonEntity(EntityType<? extends EnderDragonEntity> entityType, World world) {
 		super(EntityType.ENDER_DRAGON, world);
-		this.partHead = new EntityPart(this, "head", 1.0F, 1.0F);
-		this.partNeck = new EntityPart(this, "neck", 3.0F, 3.0F);
-		this.partBody = new EntityPart(this, "body", 5.0F, 3.0F);
-		this.partTail1 = new EntityPart(this, "tail", 2.0F, 2.0F);
-		this.partTail2 = new EntityPart(this, "tail", 2.0F, 2.0F);
-		this.partTail3 = new EntityPart(this, "tail", 2.0F, 2.0F);
-		this.partWingRight = new EntityPart(this, "wing", 4.0F, 2.0F);
-		this.partWingLeft = new EntityPart(this, "wing", 4.0F, 2.0F);
-		this.parts = new EntityPart[]{
+		this.partHead = new EnderDragonPart(this, "head", 1.0F, 1.0F);
+		this.partNeck = new EnderDragonPart(this, "neck", 3.0F, 3.0F);
+		this.partBody = new EnderDragonPart(this, "body", 5.0F, 3.0F);
+		this.partTail1 = new EnderDragonPart(this, "tail", 2.0F, 2.0F);
+		this.partTail2 = new EnderDragonPart(this, "tail", 2.0F, 2.0F);
+		this.partTail3 = new EnderDragonPart(this, "tail", 2.0F, 2.0F);
+		this.partWingRight = new EnderDragonPart(this, "wing", 4.0F, 2.0F);
+		this.partWingLeft = new EnderDragonPart(this, "wing", 4.0F, 2.0F);
+		this.parts = new EnderDragonPart[]{
 			this.partHead, this.partNeck, this.partBody, this.partTail1, this.partTail2, this.partTail3, this.partWingRight, this.partWingLeft
 		};
 		this.setHealth(this.getHealthMaximum());
@@ -229,7 +229,7 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 						this.yaw = this.yaw + this.field_6267 * 0.1F;
 						float p = (float)(2.0 / (l + 1.0));
 						float q = 0.06F;
-						this.method_5724(0.0F, 0.0F, -1.0F, 0.06F * (o * p + (1.0F - p)));
+						this.updateVelocity(0.0F, 0.0F, -1.0F, 0.06F * (o * p + (1.0F - p)));
 						if (this.field_7027) {
 							this.move(MovementType.field_6308, this.velocityX * 0.8F, this.velocityY * 0.8F, this.velocityZ * 0.8F);
 						} else {
@@ -281,17 +281,17 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 				this.partNeck.setPositionAndAngles(this.x + (double)(y * 5.5F * t), this.y + (double)m + (double)(u * 5.5F), this.z - (double)(z * 5.5F * t), 0.0F, 0.0F);
 
 				for (int aa = 0; aa < 3; aa++) {
-					EntityPart entityPart = null;
+					EnderDragonPart enderDragonPart = null;
 					if (aa == 0) {
-						entityPart = this.partTail1;
+						enderDragonPart = this.partTail1;
 					}
 
 					if (aa == 1) {
-						entityPart = this.partTail2;
+						enderDragonPart = this.partTail2;
 					}
 
 					if (aa == 2) {
-						entityPart = this.partTail3;
+						enderDragonPart = this.partTail3;
 					}
 
 					double[] es = this.method_6817(12 + aa * 2, 1.0F);
@@ -300,8 +300,8 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 					float ad = MathHelper.cos(ab);
 					float ae = 1.5F;
 					float o = (float)(aa + 1) * 2.0F;
-					entityPart.update();
-					entityPart.setPositionAndAngles(
+					enderDragonPart.update();
+					enderDragonPart.setPositionAndAngles(
 						this.x - (double)((w * 1.5F + ac * o) * t),
 						this.y + (es[1] - ds[1]) - (double)((o + 1.5F) * u) + 1.5,
 						this.z + (double)((x * 1.5F + ad * o) * t),
@@ -351,7 +351,7 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 		}
 
 		if (this.random.nextInt(10) == 0) {
-			List<EnderCrystalEntity> list = this.world.getVisibleEntities(EnderCrystalEntity.class, this.getBoundingBox().expand(32.0));
+			List<EnderCrystalEntity> list = this.world.method_18467(EnderCrystalEntity.class, this.getBoundingBox().expand(32.0));
 			EnderCrystalEntity enderCrystalEntity = null;
 			double d = Double.MAX_VALUE;
 
@@ -436,10 +436,9 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 		return bl;
 	}
 
-	@Override
-	public boolean damage(EntityPart entityPart, DamageSource damageSource, float f) {
-		f = this.phaseManager.getCurrent().modifyDamageTaken(entityPart, damageSource, f);
-		if (entityPart != this.partHead) {
+	public boolean damagePart(EnderDragonPart enderDragonPart, DamageSource damageSource, float f) {
+		f = this.phaseManager.getCurrent().modifyDamageTaken(damageSource, f);
+		if (enderDragonPart != this.partHead) {
 			f = f / 4.0F + Math.min(f, 1.0F);
 		}
 
@@ -470,7 +469,7 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 	@Override
 	public boolean damage(DamageSource damageSource, float f) {
 		if (damageSource instanceof EntityDamageSource && ((EntityDamageSource)damageSource).method_5549()) {
-			this.damage(this.partBody, damageSource, f);
+			this.damagePart(this.partBody, damageSource, f);
 		}
 
 		return false;
@@ -739,19 +738,13 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 	protected void checkDespawn() {
 	}
 
-	@Override
-	public EntityPart[] getParts() {
+	public EnderDragonPart[] method_5690() {
 		return this.parts;
 	}
 
 	@Override
 	public boolean doesCollide() {
 		return false;
-	}
-
-	@Override
-	public World getPartDamageWorld() {
-		return this.world;
 	}
 
 	@Override
@@ -825,11 +818,11 @@ public class EnderDragonEntity extends MobEntity implements IEntityPartDamageDel
 		if (damageSource.getAttacker() instanceof PlayerEntity) {
 			playerEntity = (PlayerEntity)damageSource.getAttacker();
 		} else {
-			playerEntity = this.world.findMobAttackTarget(blockPos, 64.0, 64.0);
+			playerEntity = this.world.method_18461(field_18120, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 		}
 
 		if (enderCrystalEntity == this.field_7024) {
-			this.damage(this.partHead, DamageSource.explosion(playerEntity), 10.0F);
+			this.damagePart(this.partHead, DamageSource.explosion(playerEntity), 10.0F);
 		}
 
 		this.phaseManager.getCurrent().crystalDestroyed(enderCrystalEntity, blockPos, damageSource, playerEntity);

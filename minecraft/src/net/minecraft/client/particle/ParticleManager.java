@@ -16,8 +16,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -26,6 +24,7 @@ import net.minecraft.class_3937;
 import net.minecraft.class_3999;
 import net.minecraft.class_4001;
 import net.minecraft.class_4002;
+import net.minecraft.class_4075;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.BufferBuilder;
@@ -38,8 +37,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -48,13 +45,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class ParticleManager implements ResourceReloadListener {
+public class ParticleManager extends class_4075 {
 	private static final List<class_3999> field_17820 = ImmutableList.of(
 		class_3999.field_17827, class_3999.field_17828, class_3999.field_17830, class_3999.field_17829, class_3999.field_17831
 	);
@@ -65,7 +61,6 @@ public class ParticleManager implements ResourceReloadListener {
 	private final Random random = new Random();
 	private final Int2ObjectMap<ParticleFactory<?>> factories = new Int2ObjectOpenHashMap<>();
 	private final Queue<Particle> newParticles = Queues.<Particle>newArrayDeque();
-	private final SpriteAtlasTexture field_17821;
 	private final Set<Identifier> field_17822 = Sets.<Identifier>newHashSet();
 
 	private class_4002 method_18127(Collection<Identifier> collection) {
@@ -75,12 +70,12 @@ public class ParticleManager implements ResourceReloadListener {
 			return new class_4002() {
 				@Override
 				public Sprite method_18138(int i, int j) {
-					return ParticleManager.this.field_17821.getSprite(identifier);
+					return ParticleManager.this.method_18667(identifier);
 				}
 
 				@Override
 				public Sprite method_18139(Random random) {
-					return ParticleManager.this.field_17821.getSprite(identifier);
+					return ParticleManager.this.method_18667(identifier);
 				}
 			};
 		} else {
@@ -89,23 +84,22 @@ public class ParticleManager implements ResourceReloadListener {
 				@Override
 				public Sprite method_18138(int i, int j) {
 					Identifier identifier = (Identifier)list.get(i * (list.size() - 1) / j);
-					return ParticleManager.this.field_17821.getSprite(identifier);
+					return ParticleManager.this.method_18667(identifier);
 				}
 
 				@Override
 				public Sprite method_18139(Random random) {
 					Identifier identifier = (Identifier)list.get(random.nextInt(list.size()));
-					return ParticleManager.this.field_17821.getSprite(identifier);
+					return ParticleManager.this.method_18667(identifier);
 				}
 			};
 		}
 	}
 
 	public ParticleManager(World world, TextureManager textureManager) {
+		super(textureManager, SpriteAtlasTexture.PARTICLE_ATLAS_TEX, "textures/particle");
 		this.world = world;
 		this.textureManager = textureManager;
-		this.field_17821 = new SpriteAtlasTexture("textures/particle");
-		textureManager.registerTextureUpdateable(SpriteAtlasTexture.PARTICLE_ATLAS_TEX, this.field_17821);
 		this.registerDefaultFactories(collection -> {
 			this.field_17822.addAll(collection);
 			return this.method_18127(collection);
@@ -113,23 +107,8 @@ public class ParticleManager implements ResourceReloadListener {
 	}
 
 	@Override
-	public CompletableFuture<Void> apply(
-		ResourceReloadListener.Helper helper, ResourceManager resourceManager, Profiler profiler, Profiler profiler2, Executor executor, Executor executor2
-	) {
-		return CompletableFuture.supplyAsync(() -> {
-			profiler.startTick();
-			profiler.push("particle_stitching");
-			SpriteAtlasTexture.Data data = this.field_17821.stitch(resourceManager, this.field_17822, profiler);
-			profiler.pop();
-			profiler.endTick();
-			return data;
-		}, executor).thenCompose(helper::waitForAll).thenAcceptAsync(data -> {
-			profiler2.startTick();
-			profiler2.push("particle_upload");
-			this.field_17821.upload(data);
-			profiler2.pop();
-			profiler2.endTick();
-		}, executor2);
+	protected Iterable<Identifier> method_18665() {
+		return this.field_17822;
 	}
 
 	private void registerDefaultFactories(class_4001 arg) {

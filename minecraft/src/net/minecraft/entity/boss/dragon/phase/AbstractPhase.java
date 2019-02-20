@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.decoration.EnderCrystalEntity;
-import net.minecraft.entity.parts.EntityPart;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -54,7 +53,7 @@ public abstract class AbstractPhase implements Phase {
 	}
 
 	@Override
-	public float modifyDamageTaken(EntityPart entityPart, DamageSource damageSource, float f) {
+	public float modifyDamageTaken(DamageSource damageSource, float f) {
 		return f;
 	}
 

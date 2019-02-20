@@ -25,8 +25,6 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
@@ -35,7 +33,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 
 public abstract class AbstractMinecartEntity extends Entity {
 	private static final TrackedData<Integer> field_7663 = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -204,44 +201,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 			this.destroy();
 		}
 
-		if (!this.world.isClient && this.world instanceof ServerWorld) {
-			this.world.getProfiler().push("portal");
-			MinecraftServer minecraftServer = this.world.getServer();
-			int i = this.getMaxPortalTime();
-			if (this.inPortal) {
-				if (minecraftServer.isNetherAllowed()) {
-					if (!this.hasVehicle() && this.portalTime++ >= i) {
-						this.portalTime = i;
-						this.portalCooldown = this.getDefaultPortalCooldown();
-						DimensionType dimensionType;
-						if (this.world.dimension.getType() == DimensionType.field_13076) {
-							dimensionType = DimensionType.field_13072;
-						} else {
-							dimensionType = DimensionType.field_13076;
-						}
-
-						this.changeDimension(dimensionType);
-					}
-
-					this.inPortal = false;
-				}
-			} else {
-				if (this.portalTime > 0) {
-					this.portalTime -= 4;
-				}
-
-				if (this.portalTime < 0) {
-					this.portalTime = 0;
-				}
-			}
-
-			if (this.portalCooldown > 0) {
-				this.portalCooldown--;
-			}
-
-			this.world.getProfiler().pop();
-		}
-
+		this.method_18379();
 		if (this.world.isClient) {
 			if (this.field_7669 > 0) {
 				double d = this.x + (this.field_7665 - this.x) / (double)this.field_7669;
@@ -265,19 +225,19 @@ public abstract class AbstractMinecartEntity extends Entity {
 				this.velocityY -= 0.04F;
 			}
 
-			int j = MathHelper.floor(this.x);
-			int ix = MathHelper.floor(this.y);
+			int i = MathHelper.floor(this.x);
+			int j = MathHelper.floor(this.y);
 			int k = MathHelper.floor(this.z);
-			if (this.world.getBlockState(new BlockPos(j, ix - 1, k)).matches(BlockTags.field_15463)) {
-				ix--;
+			if (this.world.getBlockState(new BlockPos(i, j - 1, k)).matches(BlockTags.field_15463)) {
+				j--;
 			}
 
-			BlockPos blockPos = new BlockPos(j, ix, k);
+			BlockPos blockPos = new BlockPos(i, j, k);
 			BlockState blockState = this.world.getBlockState(blockPos);
 			if (blockState.matches(BlockTags.field_15463)) {
 				this.method_7513(blockPos, blockState);
 				if (blockState.getBlock() == Blocks.field_10546) {
-					this.onActivatorRail(j, ix, k, (Boolean)blockState.get(PoweredRailBlock.POWERED));
+					this.onActivatorRail(i, j, k, (Boolean)blockState.get(PoweredRailBlock.POWERED));
 				}
 			} else {
 				this.method_7512();
@@ -405,7 +365,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 		this.velocityZ = i * f / g;
 		Entity entity = this.getPassengerList().isEmpty() ? null : (Entity)this.getPassengerList().get(0);
 		if (entity instanceof PlayerEntity) {
-			double j = (double)((PlayerEntity)entity).field_6250;
+			double j = (double)((PlayerEntity)entity).movementInputForward;
 			if (j > 0.0) {
 				double k = -Math.sin((double)(entity.yaw * (float) (Math.PI / 180.0)));
 				double l = Math.cos((double)(entity.yaw * (float) (Math.PI / 180.0)));

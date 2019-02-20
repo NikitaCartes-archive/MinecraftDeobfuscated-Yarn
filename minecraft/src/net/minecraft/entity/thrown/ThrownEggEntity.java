@@ -16,8 +16,8 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 
 public class ThrownEggEntity extends class_3857 {
-	public ThrownEggEntity(World world) {
-		super(EntityType.EGG, world);
+	public ThrownEggEntity(EntityType<? extends ThrownEggEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public ThrownEggEntity(World world, LivingEntity livingEntity) {
@@ -63,7 +63,7 @@ public class ThrownEggEntity extends class_3857 {
 				}
 
 				for (int j = 0; j < i; j++) {
-					ChickenEntity chickenEntity = new ChickenEntity(this.world);
+					ChickenEntity chickenEntity = EntityType.CHICKEN.create(this.world);
 					chickenEntity.setBreedingAge(-24000);
 					chickenEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0F);
 					this.world.spawnEntity(chickenEntity);

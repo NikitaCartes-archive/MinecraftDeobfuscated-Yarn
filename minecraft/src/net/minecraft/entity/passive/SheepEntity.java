@@ -9,6 +9,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1394;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.container.Container;
@@ -93,8 +95,8 @@ public class SheepEntity extends AnimalEntity {
 		return (float[])COLORS.get(dyeColor);
 	}
 
-	public SheepEntity(World world) {
-		super(EntityType.SHEEP, world);
+	public SheepEntity(EntityType<? extends SheepEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override
@@ -313,9 +315,9 @@ public class SheepEntity extends AnimalEntity {
 		}
 	}
 
-	public SheepEntity createChild(PassiveEntity passiveEntity) {
+	public SheepEntity method_6640(PassiveEntity passiveEntity) {
 		SheepEntity sheepEntity = (SheepEntity)passiveEntity;
-		SheepEntity sheepEntity2 = new SheepEntity(this.world);
+		SheepEntity sheepEntity2 = EntityType.SHEEP.create(this.world);
 		sheepEntity2.setColor(this.getChildColor(this, sheepEntity));
 		return sheepEntity2;
 	}
@@ -366,7 +368,7 @@ public class SheepEntity extends AnimalEntity {
 	}
 
 	@Override
-	public float getEyeHeight() {
-		return 0.95F * this.getHeight();
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
+		return 0.95F * arg2.field_18068;
 	}
 }

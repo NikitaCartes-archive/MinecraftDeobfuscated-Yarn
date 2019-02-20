@@ -4,10 +4,7 @@ import com.google.common.base.Predicates;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.decoration.ArmorStandEntity;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -85,14 +82,7 @@ public final class EntityPredicates {
 				return false;
 			} else {
 				LivingEntity livingEntity = (LivingEntity)entity;
-				EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(this.itemstack);
-				if (!livingEntity.getEquippedStack(equipmentSlot).isEmpty()) {
-					return false;
-				} else if (livingEntity instanceof MobEntity) {
-					return ((MobEntity)livingEntity).canPickUpLoot();
-				} else {
-					return livingEntity instanceof ArmorStandEntity ? !((ArmorStandEntity)livingEntity).method_6915(equipmentSlot) : livingEntity instanceof PlayerEntity;
-				}
+				return livingEntity.method_18397(this.itemstack);
 			}
 		}
 	}

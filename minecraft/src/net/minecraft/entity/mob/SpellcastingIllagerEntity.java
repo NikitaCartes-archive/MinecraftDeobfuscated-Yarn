@@ -19,7 +19,7 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 	protected int spellTicks;
 	private SpellcastingIllagerEntity.class_1618 field_7371 = SpellcastingIllagerEntity.class_1618.field_7377;
 
-	protected SpellcastingIllagerEntity(EntityType<?> entityType, World world) {
+	protected SpellcastingIllagerEntity(EntityType<? extends SpellcastingIllagerEntity> entityType, World world) {
 		super(entityType, world);
 	}
 

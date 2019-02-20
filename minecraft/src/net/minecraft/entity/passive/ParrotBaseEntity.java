@@ -8,7 +8,7 @@ import net.minecraft.world.World;
 public abstract class ParrotBaseEntity extends TameableEntity {
 	private int field_6864;
 
-	protected ParrotBaseEntity(EntityType<?> entityType, World world) {
+	protected ParrotBaseEntity(EntityType<? extends ParrotBaseEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
@@ -17,7 +17,7 @@ public abstract class ParrotBaseEntity extends TameableEntity {
 		compoundTag.putString("id", this.getSavedEntityId());
 		this.toTag(compoundTag);
 		if (serverPlayerEntity.method_7298(compoundTag)) {
-			serverPlayerEntity.getServerWorld().method_18216(this);
+			this.invalidate();
 			return true;
 		} else {
 			return false;

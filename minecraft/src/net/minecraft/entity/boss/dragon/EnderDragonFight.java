@@ -20,6 +20,7 @@ import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.pattern.BlockPatternBuilder;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.boss.dragon.phase.PhaseType;
@@ -151,7 +152,7 @@ public class EnderDragonFight {
 		}
 
 		if (!this.bossBar.getPlayers().isEmpty()) {
-			this.world.getChunkManager().addTicket(ChunkTicketType.DRAGON, new ChunkPos(0, 0), 8, Void.INSTANCE);
+			this.world.method_14178().addTicket(ChunkTicketType.DRAGON, new ChunkPos(0, 0), 8, Void.INSTANCE);
 			boolean bl = this.loadChunks();
 			if (this.doLegacyCheck && bl) {
 				this.convertFromLegacy();
@@ -179,7 +180,7 @@ public class EnderDragonFight {
 				}
 			}
 		} else {
-			this.world.getChunkManager().removeTicket(ChunkTicketType.DRAGON, new ChunkPos(0, 0), 8, Void.INSTANCE);
+			this.world.method_14178().removeTicket(ChunkTicketType.DRAGON, new ChunkPos(0, 0), 8, Void.INSTANCE);
 		}
 	}
 
@@ -195,7 +196,7 @@ public class EnderDragonFight {
 			this.generateEndPortal(false);
 		}
 
-		List<EnderDragonEntity> list = this.world.method_18205(EnderDragonEntity.class, EntityPredicates.VALID_ENTITY);
+		List<EnderDragonEntity> list = this.world.method_18776();
 		if (list.isEmpty()) {
 			this.dragonKilled = true;
 		} else {
@@ -216,7 +217,7 @@ public class EnderDragonFight {
 	}
 
 	private void checkDragonSeen() {
-		List<EnderDragonEntity> list = this.world.method_18205(EnderDragonEntity.class, EntityPredicates.VALID_ENTITY);
+		List<EnderDragonEntity> list = this.world.method_18776();
 		if (list.isEmpty()) {
 			LOGGER.debug("Haven't seen the dragon, respawning it");
 			this.createDragon();
@@ -248,7 +249,7 @@ public class EnderDragonFight {
 	private boolean worldContainsEndPortal() {
 		for (int i = -8; i <= 8; i++) {
 			for (int j = -8; j <= 8; j++) {
-				WorldChunk worldChunk = this.world.getWorldChunk(i, j);
+				WorldChunk worldChunk = this.world.method_8497(i, j);
 
 				for (BlockEntity blockEntity : worldChunk.getBlockEntityMap().values()) {
 					if (blockEntity instanceof EndPortalBlockEntity) {
@@ -265,7 +266,7 @@ public class EnderDragonFight {
 	private BlockPattern.Result findEndPortal() {
 		for (int i = -8; i <= 8; i++) {
 			for (int j = -8; j <= 8; j++) {
-				WorldChunk worldChunk = this.world.getWorldChunk(i, j);
+				WorldChunk worldChunk = this.world.method_8497(i, j);
 
 				for (BlockEntity blockEntity : worldChunk.getBlockEntityMap().values()) {
 					if (blockEntity instanceof EndPortalBlockEntity) {
@@ -321,7 +322,7 @@ public class EnderDragonFight {
 	private void updatePlayers() {
 		Set<ServerPlayerEntity> set = Sets.<ServerPlayerEntity>newHashSet();
 
-		for (ServerPlayerEntity serverPlayerEntity : this.world.getPlayers(ServerPlayerEntity.class, VALID_ENTITY)) {
+		for (ServerPlayerEntity serverPlayerEntity : this.world.method_18766(VALID_ENTITY)) {
 			this.bossBar.addPlayer(serverPlayerEntity);
 			set.add(serverPlayerEntity);
 		}
@@ -339,7 +340,7 @@ public class EnderDragonFight {
 		this.endCrystalsAlive = 0;
 
 		for (EndSpikeFeature.Spike spike : EndSpikeFeature.getSpikes(this.world)) {
-			this.endCrystalsAlive = this.endCrystalsAlive + this.world.getVisibleEntities(EnderCrystalEntity.class, spike.getBoundingBox()).size();
+			this.endCrystalsAlive = this.endCrystalsAlive + this.world.method_18467(EnderCrystalEntity.class, spike.getBoundingBox()).size();
 		}
 
 		LOGGER.debug("Found {} end crystals still alive", this.endCrystalsAlive);
@@ -374,7 +375,7 @@ public class EnderDragonFight {
 		Feature.field_13564
 			.generate(
 				this.world,
-				(ChunkGenerator<? extends ChunkGeneratorConfig>)this.world.getChunkManager().getChunkGenerator(),
+				(ChunkGenerator<? extends ChunkGeneratorConfig>)this.world.method_14178().getChunkGenerator(),
 				new Random(),
 				blockPos,
 				EndGatewayFeatureConfig.createConfig()
@@ -393,7 +394,7 @@ public class EnderDragonFight {
 
 		endPortalFeature.method_13163(
 			this.world,
-			(ChunkGenerator<? extends ChunkGeneratorConfig>)this.world.getChunkManager().getChunkGenerator(),
+			(ChunkGenerator<? extends ChunkGeneratorConfig>)this.world.method_14178().getChunkGenerator(),
 			new Random(),
 			this.exitPortalLocation,
 			FeatureConfig.DEFAULT
@@ -402,7 +403,7 @@ public class EnderDragonFight {
 
 	private EnderDragonEntity createDragon() {
 		this.world.getWorldChunk(new BlockPos(0, 128, 0));
-		EnderDragonEntity enderDragonEntity = new EnderDragonEntity(this.world);
+		EnderDragonEntity enderDragonEntity = EntityType.ENDER_DRAGON.create(this.world);
 		enderDragonEntity.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
 		enderDragonEntity.setPositionAndAngles(0.0, 128.0, 0.0, this.world.random.nextFloat() * 360.0F, 0.0F);
 		this.world.spawnEntity(enderDragonEntity);
@@ -464,7 +465,7 @@ public class EnderDragonFight {
 			BlockPos blockPos2 = blockPos.up(1);
 
 			for (Direction direction : Direction.Type.HORIZONTAL) {
-				List<EnderCrystalEntity> list2 = this.world.getVisibleEntities(EnderCrystalEntity.class, new BoundingBox(blockPos2.offset(direction, 2)));
+				List<EnderCrystalEntity> list2 = this.world.method_18467(EnderCrystalEntity.class, new BoundingBox(blockPos2.offset(direction, 2)));
 				if (list2.isEmpty()) {
 					return;
 				}
@@ -501,7 +502,7 @@ public class EnderDragonFight {
 
 	public void resetEndCrystals() {
 		for (EndSpikeFeature.Spike spike : EndSpikeFeature.getSpikes(this.world)) {
-			for (EnderCrystalEntity enderCrystalEntity : this.world.getVisibleEntities(EnderCrystalEntity.class, spike.getBoundingBox())) {
+			for (EnderCrystalEntity enderCrystalEntity : this.world.method_18467(EnderCrystalEntity.class, spike.getBoundingBox())) {
 				enderCrystalEntity.setInvulnerable(false);
 				enderCrystalEntity.setBeamTarget(null);
 			}

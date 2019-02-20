@@ -14,6 +14,7 @@ import java.util.Locale;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4068;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.ingame.ConfirmChatLinkScreen;
@@ -44,7 +45,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public abstract class Screen extends DrawableContainer implements YesNoCallback {
+public abstract class Screen extends DrawableContainer implements class_4068, YesNoCallback {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Set<String> PROTOCOLS = Sets.<String>newHashSet("http", "https");
 	protected final List<GuiEventListener> listeners = Lists.<GuiEventListener>newArrayList();
@@ -58,13 +59,14 @@ public abstract class Screen extends DrawableContainer implements YesNoCallback 
 	public TextRenderer fontRenderer;
 	private URI uri;
 
-	public void draw(int i, int j, float f) {
+	@Override
+	public void method_18326(int i, int j, float f) {
 		for (int k = 0; k < this.buttons.size(); k++) {
-			((ButtonWidget)this.buttons.get(k)).render(i, j, f);
+			((ButtonWidget)this.buttons.get(k)).method_18326(i, j, f);
 		}
 
 		for (int k = 0; k < this.labelWidgets.size(); k++) {
-			((LabelWidget)this.labelWidgets.get(k)).draw(i, j, f);
+			((LabelWidget)this.labelWidgets.get(k)).method_18326(i, j, f);
 		}
 	}
 
@@ -305,7 +307,7 @@ public abstract class Screen extends DrawableContainer implements YesNoCallback 
 	}
 
 	@Override
-	public List<? extends GuiEventListener> getEntries() {
+	public List<? extends GuiEventListener> method_1968() {
 		return this.listeners;
 	}
 

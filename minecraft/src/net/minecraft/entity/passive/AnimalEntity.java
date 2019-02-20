@@ -27,7 +27,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 	private int loveTicks;
 	private UUID lovingPlayer;
 
-	protected AnimalEntity(EntityType<?> entityType, World world) {
+	protected AnimalEntity(EntityType<? extends AnimalEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
@@ -179,7 +179,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 		if (this.lovingPlayer == null) {
 			return null;
 		} else {
-			PlayerEntity playerEntity = this.world.getPlayerByUuid(this.lovingPlayer);
+			PlayerEntity playerEntity = this.world.method_18470(this.lovingPlayer);
 			return playerEntity instanceof ServerPlayerEntity ? (ServerPlayerEntity)playerEntity : null;
 		}
 	}

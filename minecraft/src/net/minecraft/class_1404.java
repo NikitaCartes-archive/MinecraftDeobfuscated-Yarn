@@ -9,7 +9,7 @@ import net.minecraft.entity.passive.TameableEntity;
 public class class_1404<T extends LivingEntity> extends FollowTargetGoal<T> {
 	private final TameableEntity field_6656;
 
-	public class_1404(TameableEntity tameableEntity, Class<T> class_, boolean bl, @Nullable Predicate<? super T> predicate) {
+	public class_1404(TameableEntity tameableEntity, Class<T> class_, boolean bl, @Nullable Predicate<LivingEntity> predicate) {
 		super(tameableEntity, class_, 10, bl, false, predicate);
 		this.field_6656 = tameableEntity;
 	}
@@ -21,6 +21,6 @@ public class class_1404<T extends LivingEntity> extends FollowTargetGoal<T> {
 
 	@Override
 	public boolean shouldContinue() {
-		return this.field_6642 != null ? this.field_6642.test(this.field_6644) : super.shouldContinue();
+		return this.field_6642 != null ? this.field_6642.method_18419(this.entity, this.field_6644) : super.shouldContinue();
 	}
 }

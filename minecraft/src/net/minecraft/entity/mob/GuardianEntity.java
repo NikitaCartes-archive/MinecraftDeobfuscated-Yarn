@@ -5,6 +5,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1370;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
@@ -52,16 +54,12 @@ public class GuardianEntity extends HostileEntity {
 	private boolean flopping;
 	protected WanderAroundGoal field_7289;
 
-	protected GuardianEntity(EntityType<?> entityType, World world) {
+	public GuardianEntity(EntityType<? extends GuardianEntity> entityType, World world) {
 		super(entityType, world);
 		this.experiencePoints = 10;
 		this.moveControl = new GuardianEntity.GuardianMoveControl(this);
 		this.spikesExtension = this.random.nextFloat();
 		this.prevSpikesExtension = this.spikesExtension;
-	}
-
-	public GuardianEntity(World world) {
-		this(EntityType.GUARDIAN, world);
 	}
 
 	@Override
@@ -186,8 +184,8 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	public float getEyeHeight() {
-		return this.getHeight() * 0.5F;
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
+		return arg2.field_18068 * 0.5F;
 	}
 
 	@Override
@@ -345,9 +343,9 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	public void method_6091(float f, float g, float h) {
+	public void travel(float f, float g, float h) {
 		if (this.method_6034() && this.isInsideWater()) {
-			this.method_5724(f, g, h, 0.1F);
+			this.updateVelocity(f, g, h, 0.1F);
 			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 			this.velocityX *= 0.9F;
 			this.velocityY *= 0.9F;
@@ -356,7 +354,7 @@ public class GuardianEntity extends HostileEntity {
 				this.velocityY -= 0.005;
 			}
 		} else {
-			super.method_6091(f, g, h);
+			super.travel(f, g, h);
 		}
 	}
 
@@ -449,7 +447,7 @@ public class GuardianEntity extends HostileEntity {
 				this.guardian.yaw = this.method_6238(this.guardian.yaw, h, 90.0F);
 				this.guardian.field_6283 = this.guardian.yaw;
 				float i = (float)(this.speed * this.guardian.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
-				this.guardian.method_6125(MathHelper.lerp(0.125F, this.guardian.method_6029(), i));
+				this.guardian.setMovementSpeed(MathHelper.lerp(0.125F, this.guardian.getMovementSpeed(), i));
 				double j = Math.sin((double)(this.guardian.age + this.guardian.getEntityId()) * 0.5) * 0.05;
 				double k = Math.cos((double)(this.guardian.yaw * (float) (Math.PI / 180.0)));
 				double l = Math.sin((double)(this.guardian.yaw * (float) (Math.PI / 180.0)));
@@ -457,7 +455,7 @@ public class GuardianEntity extends HostileEntity {
 				this.guardian.velocityZ += j * l;
 				j = Math.sin((double)(this.guardian.age + this.guardian.getEntityId()) * 0.75) * 0.05;
 				this.guardian.velocityY += j * (l + k) * 0.25;
-				this.guardian.velocityY = this.guardian.velocityY + (double)this.guardian.method_6029() * e * 0.1;
+				this.guardian.velocityY = this.guardian.velocityY + (double)this.guardian.getMovementSpeed() * e * 0.1;
 				LookControl lookControl = this.guardian.getLookControl();
 				double m = this.guardian.x + d / g * 2.0;
 				double n = (double)this.guardian.getEyeHeight() + this.guardian.y + e / g;
@@ -474,7 +472,7 @@ public class GuardianEntity extends HostileEntity {
 				this.guardian.getLookControl().lookAt(MathHelper.lerp(0.125, p, m), MathHelper.lerp(0.125, q, n), MathHelper.lerp(0.125, r, o), 10.0F, 40.0F);
 				this.guardian.setSpikesRetracted(true);
 			} else {
-				this.guardian.method_6125(0.0F);
+				this.guardian.setMovementSpeed(0.0F);
 				this.guardian.setSpikesRetracted(false);
 			}
 		}

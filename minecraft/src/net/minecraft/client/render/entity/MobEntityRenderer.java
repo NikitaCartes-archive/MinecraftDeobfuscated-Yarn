@@ -20,7 +20,7 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 	}
 
 	protected boolean method_4071(T mobEntity) {
-		return super.shouldRenderName(mobEntity) && (mobEntity.shouldRenderName() || mobEntity.hasCustomName() && mobEntity == this.renderManager.field_4678);
+		return super.method_4055(mobEntity) && (mobEntity.shouldRenderName() || mobEntity.hasCustomName() && mobEntity == this.renderManager.field_4678);
 	}
 
 	public boolean method_4068(T mobEntity, VisibleRegion visibleRegion, double d, double e, double f) {

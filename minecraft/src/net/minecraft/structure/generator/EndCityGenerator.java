@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.item.ItemStack;
@@ -324,7 +325,7 @@ public class EndCityGenerator {
 					LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos2, LootTables.CHEST_END_CITY_TREASURE);
 				}
 			} else if (string.startsWith("Sentry")) {
-				ShulkerEntity shulkerEntity = new ShulkerEntity(iWorld.getWorld());
+				ShulkerEntity shulkerEntity = EntityType.SHULKER.create(iWorld.getWorld());
 				shulkerEntity.setPosition((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
 				shulkerEntity.setAttachedBlock(blockPos);
 				iWorld.spawnEntity(shulkerEntity);

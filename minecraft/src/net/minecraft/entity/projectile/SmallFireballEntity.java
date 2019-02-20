@@ -14,8 +14,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class SmallFireballEntity extends class_3855 {
-	public SmallFireballEntity(World world) {
-		super(EntityType.SMALL_FIREBALL, world);
+	public SmallFireballEntity(EntityType<? extends SmallFireballEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public SmallFireballEntity(World world, LivingEntity livingEntity, double d, double e, double f) {

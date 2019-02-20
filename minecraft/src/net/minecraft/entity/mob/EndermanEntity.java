@@ -3,9 +3,13 @@ package net.minecraft.entity.mob;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
+import net.minecraft.class_4051;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -55,11 +59,13 @@ public class EndermanEntity extends HostileEntity {
 		EndermanEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_STATE
 	);
 	private static final TrackedData<Boolean> ANGRY = DataTracker.registerData(EndermanEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final Predicate<LivingEntity> field_18126 = livingEntity -> livingEntity instanceof EndermiteEntity
+			&& ((EndermiteEntity)livingEntity).method_7023();
 	private int field_7253;
 	private int ageWhenTargetSet;
 
-	public EndermanEntity(World world) {
-		super(EntityType.ENDERMAN, world);
+	public EndermanEntity(EntityType<? extends EndermanEntity> entityType, World world) {
+		super(entityType, world);
 		this.stepHeight = 1.0F;
 		this.setPathNodeTypeWeight(PathNodeType.field_18, -1.0F);
 	}
@@ -75,7 +81,7 @@ public class EndermanEntity extends HostileEntity {
 		this.goalSelector.add(11, new EndermanEntity.PickUpBlockGoal(this));
 		this.targetSelector.add(1, new EndermanEntity.class_1562(this));
 		this.targetSelector.add(2, new class_1399(this));
-		this.targetSelector.add(3, new FollowTargetGoal(this, EndermiteEntity.class, 10, true, false, EndermiteEntity::method_7023));
+		this.targetSelector.add(3, new FollowTargetGoal(this, EndermiteEntity.class, 10, true, false, field_18126));
 	}
 
 	@Override
@@ -171,7 +177,7 @@ public class EndermanEntity extends HostileEntity {
 	}
 
 	@Override
-	public float getEyeHeight() {
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
 		return 2.55F;
 	}
 
@@ -386,20 +392,17 @@ public class EndermanEntity extends HostileEntity {
 		private PlayerEntity field_7259;
 		private int field_7262;
 		private int field_7261;
+		private final class_4051 field_18127;
 
 		public class_1562(EndermanEntity endermanEntity) {
 			super(endermanEntity, PlayerEntity.class, false);
 			this.field_7260 = endermanEntity;
+			this.field_18127 = new class_4051().method_18418(this.getFollowRange()).method_18420(livingEntity -> endermanEntity.method_7026((PlayerEntity)livingEntity));
 		}
 
 		@Override
 		public boolean canStart() {
-			double d = this.getFollowRange();
-			this.field_7259 = this.field_7260
-				.world
-				.findMobAttackTarget(
-					this.field_7260.x, this.field_7260.y, this.field_7260.z, d, d, null, playerEntity -> playerEntity != null && this.field_7260.method_7026(playerEntity)
-				);
+			this.field_7259 = this.field_7260.world.method_18462(this.field_18127, this.field_7260);
 			return this.field_7259 != null;
 		}
 
@@ -439,7 +442,7 @@ public class EndermanEntity extends HostileEntity {
 				}
 			} else {
 				if (this.field_6644 != null) {
-					if (this.field_7260.method_7026(this.field_6644)) {
+					if (this.field_7260.method_7026((PlayerEntity)this.field_6644)) {
 						if (this.field_6644.squaredDistanceTo(this.field_7260) < 16.0) {
 							this.field_7260.method_7029();
 						}

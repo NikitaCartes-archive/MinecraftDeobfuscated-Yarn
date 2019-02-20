@@ -41,7 +41,7 @@ public class SetTagLootFunction extends ConditionalLootFunction {
 			jsonObject.addProperty("tag", setTagLootFunction.tag.toString());
 		}
 
-		public SetTagLootFunction deserialize(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public SetTagLootFunction method_679(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			try {
 				CompoundTag compoundTag = JsonLikeTagParser.parse(JsonHelper.getString(jsonObject, "tag"));
 				return new SetTagLootFunction(lootConditions, compoundTag);

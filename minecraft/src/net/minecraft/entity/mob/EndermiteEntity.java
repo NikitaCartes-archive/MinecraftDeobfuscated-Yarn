@@ -2,6 +2,9 @@ package net.minecraft.entity.mob;
 
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
+import net.minecraft.class_4051;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
@@ -23,11 +26,12 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class EndermiteEntity extends HostileEntity {
+	private static final class_4051 field_18128 = new class_4051().method_18418(5.0).method_18424();
 	private int lifeTime;
 	private boolean playerSpawned;
 
-	public EndermiteEntity(World world) {
-		super(EntityType.ENDERMITE, world);
+	public EndermiteEntity(EntityType<? extends EndermiteEntity> entityType, World world) {
+		super(entityType, world);
 		this.experiencePoints = 3;
 	}
 
@@ -43,7 +47,7 @@ public class EndermiteEntity extends HostileEntity {
 	}
 
 	@Override
-	public float getEyeHeight() {
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
 		return 0.1F;
 	}
 
@@ -154,7 +158,7 @@ public class EndermiteEntity extends HostileEntity {
 	@Override
 	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
 		if (super.canSpawn(iWorld, spawnType)) {
-			PlayerEntity playerEntity = iWorld.getClosestPlayer(this, 5.0);
+			PlayerEntity playerEntity = this.world.method_18462(field_18128, this);
 			return playerEntity == null;
 		} else {
 			return false;

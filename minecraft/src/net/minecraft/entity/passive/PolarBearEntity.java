@@ -24,7 +24,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -44,13 +44,13 @@ public class PolarBearEntity extends AnimalEntity {
 	private float field_6837;
 	private int field_6839;
 
-	public PolarBearEntity(World world) {
-		super(EntityType.POLAR_BEAR, world);
+	public PolarBearEntity(EntityType<? extends PolarBearEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
-		return new PolarBearEntity(this.world);
+		return EntityType.POLAR_BEAR.create(this.world);
 	}
 
 	@Override
@@ -198,7 +198,7 @@ public class PolarBearEntity extends AnimalEntity {
 			} else {
 				if (super.canStart()) {
 					for (PolarBearEntity polarBearEntity : PolarBearEntity.this.world
-						.getVisibleEntities(PolarBearEntity.class, PolarBearEntity.this.getBoundingBox().expand(8.0, 4.0, 8.0))) {
+						.method_18467(PolarBearEntity.class, PolarBearEntity.this.getBoundingBox().expand(8.0, 4.0, 8.0))) {
 						if (polarBearEntity.isChild()) {
 							return true;
 						}
@@ -236,9 +236,9 @@ public class PolarBearEntity extends AnimalEntity {
 		}
 
 		@Override
-		protected void method_6319(MobEntityWithAi mobEntityWithAi, LivingEntity livingEntity) {
-			if (mobEntityWithAi instanceof PolarBearEntity && !mobEntityWithAi.isChild()) {
-				super.method_6319(mobEntityWithAi, livingEntity);
+		protected void method_6319(MobEntity mobEntity, LivingEntity livingEntity) {
+			if (mobEntity instanceof PolarBearEntity && !mobEntity.isChild()) {
+				super.method_6319(mobEntity, livingEntity);
 			}
 		}
 	}

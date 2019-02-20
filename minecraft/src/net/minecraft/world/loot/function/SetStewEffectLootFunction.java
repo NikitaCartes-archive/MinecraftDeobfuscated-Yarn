@@ -54,7 +54,7 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 	public static class Builder extends ConditionalLootFunction.Builder<SetStewEffectLootFunction.Builder> {
 		private final Map<StatusEffect, UniformLootTableRange> map = Maps.<StatusEffect, UniformLootTableRange>newHashMap();
 
-		protected SetStewEffectLootFunction.Builder create() {
+		protected SetStewEffectLootFunction.Builder method_639() {
 			return this;
 		}
 

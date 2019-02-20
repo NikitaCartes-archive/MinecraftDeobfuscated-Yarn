@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.class_4050;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
@@ -26,13 +27,8 @@ public class TrackedDataHandlerRegistry {
 			packetByteBuf.writeByte(byte_);
 		}
 
-		public Byte read(PacketByteBuf packetByteBuf) {
+		public Byte method_12740(PacketByteBuf packetByteBuf) {
 			return packetByteBuf.readByte();
-		}
-
-		@Override
-		public TrackedData<Byte> create(int i) {
-			return new TrackedData<>(i, this);
 		}
 
 		public Byte method_12742(Byte byte_) {
@@ -44,13 +40,8 @@ public class TrackedDataHandlerRegistry {
 			packetByteBuf.writeVarInt(integer);
 		}
 
-		public Integer read(PacketByteBuf packetByteBuf) {
+		public Integer method_12765(PacketByteBuf packetByteBuf) {
 			return packetByteBuf.readVarInt();
-		}
-
-		@Override
-		public TrackedData<Integer> create(int i) {
-			return new TrackedData<>(i, this);
 		}
 
 		public Integer method_12767(Integer integer) {
@@ -62,13 +53,8 @@ public class TrackedDataHandlerRegistry {
 			packetByteBuf.writeFloat(float_);
 		}
 
-		public Float read(PacketByteBuf packetByteBuf) {
+		public Float method_12768(PacketByteBuf packetByteBuf) {
 			return packetByteBuf.readFloat();
-		}
-
-		@Override
-		public TrackedData<Float> create(int i) {
-			return new TrackedData<>(i, this);
 		}
 
 		public Float method_12770(Float float_) {
@@ -80,13 +66,8 @@ public class TrackedDataHandlerRegistry {
 			packetByteBuf.writeString(string);
 		}
 
-		public String read(PacketByteBuf packetByteBuf) {
+		public String method_12722(PacketByteBuf packetByteBuf) {
 			return packetByteBuf.readString(32767);
-		}
-
-		@Override
-		public TrackedData<String> create(int i) {
-			return new TrackedData<>(i, this);
 		}
 
 		public String method_12724(String string) {
@@ -98,13 +79,8 @@ public class TrackedDataHandlerRegistry {
 			packetByteBuf.writeTextComponent(textComponent);
 		}
 
-		public TextComponent read(PacketByteBuf packetByteBuf) {
+		public TextComponent method_12725(PacketByteBuf packetByteBuf) {
 			return packetByteBuf.readTextComponent();
-		}
-
-		@Override
-		public TrackedData<TextComponent> create(int i) {
-			return new TrackedData<>(i, this);
 		}
 
 		public TextComponent method_12726(TextComponent textComponent) {
@@ -121,13 +97,8 @@ public class TrackedDataHandlerRegistry {
 			}
 		}
 
-		public Optional<TextComponent> read(PacketByteBuf packetByteBuf) {
+		public Optional<TextComponent> method_12729(PacketByteBuf packetByteBuf) {
 			return packetByteBuf.readBoolean() ? Optional.of(packetByteBuf.readTextComponent()) : Optional.empty();
-		}
-
-		@Override
-		public TrackedData<Optional<TextComponent>> create(int i) {
-			return new TrackedData<>(i, this);
 		}
 
 		public Optional<TextComponent> method_12730(Optional<TextComponent> optional) {
@@ -139,13 +110,8 @@ public class TrackedDataHandlerRegistry {
 			packetByteBuf.writeItemStack(itemStack);
 		}
 
-		public ItemStack read(PacketByteBuf packetByteBuf) {
+		public ItemStack method_12733(PacketByteBuf packetByteBuf) {
 			return packetByteBuf.readItemStack();
-		}
-
-		@Override
-		public TrackedData<ItemStack> create(int i) {
-			return new TrackedData<>(i, this);
 		}
 
 		public ItemStack method_12732(ItemStack itemStack) {
@@ -161,14 +127,9 @@ public class TrackedDataHandlerRegistry {
 			}
 		}
 
-		public Optional<BlockState> read(PacketByteBuf packetByteBuf) {
+		public Optional<BlockState> method_12735(PacketByteBuf packetByteBuf) {
 			int i = packetByteBuf.readVarInt();
 			return i == 0 ? Optional.empty() : Optional.of(Block.getStateFromRawId(i));
-		}
-
-		@Override
-		public TrackedData<Optional<BlockState>> create(int i) {
-			return new TrackedData<>(i, this);
 		}
 
 		public Optional<BlockState> method_12736(Optional<BlockState> optional) {
@@ -180,13 +141,8 @@ public class TrackedDataHandlerRegistry {
 			packetByteBuf.writeBoolean(boolean_);
 		}
 
-		public Boolean read(PacketByteBuf packetByteBuf) {
+		public Boolean method_12737(PacketByteBuf packetByteBuf) {
 			return packetByteBuf.readBoolean();
-		}
-
-		@Override
-		public TrackedData<Boolean> create(int i) {
-			return new TrackedData<>(i, this);
 		}
 
 		public Boolean method_12739(Boolean boolean_) {
@@ -199,17 +155,12 @@ public class TrackedDataHandlerRegistry {
 			particleParameters.write(packetByteBuf);
 		}
 
-		public ParticleParameters read(PacketByteBuf packetByteBuf) {
+		public ParticleParameters method_12743(PacketByteBuf packetByteBuf) {
 			return this.method_12744(packetByteBuf, Registry.PARTICLE_TYPE.get(packetByteBuf.readVarInt()));
 		}
 
 		private <T extends ParticleParameters> T method_12744(PacketByteBuf packetByteBuf, ParticleType<T> particleType) {
 			return particleType.getParametersFactory().read(particleType, packetByteBuf);
-		}
-
-		@Override
-		public TrackedData<ParticleParameters> create(int i) {
-			return new TrackedData<>(i, this);
 		}
 
 		public ParticleParameters method_12745(ParticleParameters particleParameters) {
@@ -223,13 +174,8 @@ public class TrackedDataHandlerRegistry {
 			packetByteBuf.writeFloat(rotation.getZ());
 		}
 
-		public Rotation read(PacketByteBuf packetByteBuf) {
+		public Rotation method_12748(PacketByteBuf packetByteBuf) {
 			return new Rotation(packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat());
-		}
-
-		@Override
-		public TrackedData<Rotation> create(int i) {
-			return new TrackedData<>(i, this);
 		}
 
 		public Rotation method_12749(Rotation rotation) {
@@ -241,13 +187,8 @@ public class TrackedDataHandlerRegistry {
 			packetByteBuf.writeBlockPos(blockPos);
 		}
 
-		public BlockPos read(PacketByteBuf packetByteBuf) {
+		public BlockPos method_12750(PacketByteBuf packetByteBuf) {
 			return packetByteBuf.readBlockPos();
-		}
-
-		@Override
-		public TrackedData<BlockPos> create(int i) {
-			return new TrackedData<>(i, this);
 		}
 
 		public BlockPos method_12752(BlockPos blockPos) {
@@ -262,13 +203,8 @@ public class TrackedDataHandlerRegistry {
 			}
 		}
 
-		public Optional<BlockPos> read(PacketByteBuf packetByteBuf) {
+		public Optional<BlockPos> method_12754(PacketByteBuf packetByteBuf) {
 			return !packetByteBuf.readBoolean() ? Optional.empty() : Optional.of(packetByteBuf.readBlockPos());
-		}
-
-		@Override
-		public TrackedData<Optional<BlockPos>> create(int i) {
-			return new TrackedData<>(i, this);
 		}
 
 		public Optional<BlockPos> method_12755(Optional<BlockPos> optional) {
@@ -280,13 +216,8 @@ public class TrackedDataHandlerRegistry {
 			packetByteBuf.writeEnumConstant(direction);
 		}
 
-		public Direction read(PacketByteBuf packetByteBuf) {
+		public Direction method_12756(PacketByteBuf packetByteBuf) {
 			return packetByteBuf.readEnumConstant(Direction.class);
-		}
-
-		@Override
-		public TrackedData<Direction> create(int i) {
-			return new TrackedData<>(i, this);
 		}
 
 		public Direction method_12758(Direction direction) {
@@ -301,13 +232,8 @@ public class TrackedDataHandlerRegistry {
 			}
 		}
 
-		public Optional<UUID> read(PacketByteBuf packetByteBuf) {
+		public Optional<UUID> method_12760(PacketByteBuf packetByteBuf) {
 			return !packetByteBuf.readBoolean() ? Optional.empty() : Optional.of(packetByteBuf.readUuid());
-		}
-
-		@Override
-		public TrackedData<Optional<UUID>> create(int i) {
-			return new TrackedData<>(i, this);
 		}
 
 		public Optional<UUID> method_12761(Optional<UUID> optional) {
@@ -319,17 +245,12 @@ public class TrackedDataHandlerRegistry {
 			packetByteBuf.writeCompoundTag(compoundTag);
 		}
 
-		public CompoundTag read(PacketByteBuf packetByteBuf) {
+		public CompoundTag method_12764(PacketByteBuf packetByteBuf) {
 			return packetByteBuf.readCompoundTag();
 		}
 
-		@Override
-		public TrackedData<CompoundTag> create(int i) {
-			return new TrackedData<>(i, this);
-		}
-
 		public CompoundTag method_12762(CompoundTag compoundTag) {
-			return compoundTag.copy();
+			return compoundTag.method_10553();
 		}
 	};
 	public static final TrackedDataHandler<VillagerData> VILLAGER_DATA = new TrackedDataHandler<VillagerData>() {
@@ -343,11 +264,6 @@ public class TrackedDataHandlerRegistry {
 			return new VillagerData(
 				Registry.VILLAGER_TYPE.get(packetByteBuf.readVarInt()), Registry.VILLAGER_PROFESSION.get(packetByteBuf.readVarInt()), packetByteBuf.readVarInt()
 			);
-		}
-
-		@Override
-		public TrackedData<VillagerData> create(int i) {
-			return new TrackedData<>(i, this);
 		}
 
 		public VillagerData method_17196(VillagerData villagerData) {
@@ -364,13 +280,21 @@ public class TrackedDataHandlerRegistry {
 			return i == 0 ? OptionalInt.empty() : OptionalInt.of(i - 1);
 		}
 
-		@Override
-		public TrackedData<OptionalInt> create(int i) {
-			return new TrackedData<>(i, this);
-		}
-
 		public OptionalInt method_18190(OptionalInt optionalInt) {
 			return optionalInt;
+		}
+	};
+	public static final TrackedDataHandler<class_4050> field_18238 = new TrackedDataHandler<class_4050>() {
+		public void method_18697(PacketByteBuf packetByteBuf, class_4050 arg) {
+			packetByteBuf.writeEnumConstant(arg);
+		}
+
+		public class_4050 method_18698(PacketByteBuf packetByteBuf) {
+			return packetByteBuf.readEnumConstant(class_4050.class);
+		}
+
+		public class_4050 method_18696(class_4050 arg) {
+			return arg;
 		}
 	};
 
@@ -406,5 +330,6 @@ public class TrackedDataHandlerRegistry {
 		register(PARTICLE);
 		register(VILLAGER_DATA);
 		register(field_17910);
+		register(field_18238);
 	}
 }

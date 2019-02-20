@@ -28,7 +28,7 @@ public class FrostedIceBlock extends IceBlock {
 			&& this.increaseAge(blockState, world, blockPos)) {
 			try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 				for (Direction direction : Direction.values()) {
-					pooledMutable.set(blockPos).setOffset(direction);
+					pooledMutable.method_10114(blockPos).method_10118(direction);
 					BlockState blockState2 = world.getBlockState(pooledMutable);
 					if (blockState2.getBlock() == this && !this.increaseAge(blockState2, world, pooledMutable)) {
 						world.getBlockTickScheduler().schedule(pooledMutable, this, MathHelper.nextInt(random, 20, 40));
@@ -65,7 +65,7 @@ public class FrostedIceBlock extends IceBlock {
 
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 			for (Direction direction : Direction.values()) {
-				pooledMutable.set(blockPos).setOffset(direction);
+				pooledMutable.method_10114(blockPos).method_10118(direction);
 				if (blockView.getBlockState(pooledMutable).getBlock() == this) {
 					if (++j >= i) {
 						return false;

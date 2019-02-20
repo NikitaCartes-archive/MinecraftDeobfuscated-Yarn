@@ -1,6 +1,7 @@
 package net.minecraft.entity.ai.goal;
 
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.SpawnType;
@@ -22,7 +23,7 @@ public class SkeletonHorseGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		return this.owner.world.containsVisiblePlayer(this.owner.x, this.owner.y, this.owner.z, 10.0);
+		return this.owner.world.method_18458(this.owner.x, this.owner.y, this.owner.z, 10.0);
 	}
 
 	@Override
@@ -44,7 +45,7 @@ public class SkeletonHorseGoal extends Goal {
 	}
 
 	private HorseBaseEntity method_6810(LocalDifficulty localDifficulty) {
-		SkeletonHorseEntity skeletonHorseEntity = new SkeletonHorseEntity(this.owner.world);
+		SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this.owner.world);
 		skeletonHorseEntity.prepareEntityData(this.owner.world, localDifficulty, SpawnType.field_16461, null, null);
 		skeletonHorseEntity.setPosition(this.owner.x, this.owner.y, this.owner.z);
 		skeletonHorseEntity.field_6008 = 60;
@@ -56,7 +57,7 @@ public class SkeletonHorseGoal extends Goal {
 	}
 
 	private SkeletonEntity method_6811(LocalDifficulty localDifficulty, HorseBaseEntity horseBaseEntity) {
-		SkeletonEntity skeletonEntity = new SkeletonEntity(horseBaseEntity.world);
+		SkeletonEntity skeletonEntity = EntityType.SKELETON.create(horseBaseEntity.world);
 		skeletonEntity.prepareEntityData(horseBaseEntity.world, localDifficulty, SpawnType.field_16461, null, null);
 		skeletonEntity.setPosition(horseBaseEntity.x, horseBaseEntity.y, horseBaseEntity.z);
 		skeletonEntity.field_6008 = 60;

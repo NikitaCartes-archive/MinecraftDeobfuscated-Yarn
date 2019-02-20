@@ -388,7 +388,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 				for (int l = -1; l <= 1; l++) {
 					for (int m = -1; m <= 1; m++) {
 						if (l != 0 || m != 0) {
-							Block block = blockView.getBlockState(pooledMutable.set(l + i, j, m + k)).getBlock();
+							Block block = blockView.getBlockState(pooledMutable.method_10113(l + i, j, m + k)).getBlock();
 							if (block == Blocks.field_10029) {
 								pathNodeType = PathNodeType.field_20;
 							} else if (block == Blocks.field_10036) {

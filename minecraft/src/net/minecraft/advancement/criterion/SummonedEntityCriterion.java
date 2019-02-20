@@ -55,7 +55,7 @@ public class SummonedEntityCriterion implements Criterion<SummonedEntityCriterio
 		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public SummonedEntityCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public SummonedEntityCriterion.Conditions method_9123(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("entity"));
 		return new SummonedEntityCriterion.Conditions(entityPredicate);
 	}

@@ -37,7 +37,7 @@ public class DeathScreen extends Screen {
 			string2 = I18n.translate("deathScreen.titleScreen");
 		}
 
-		this.addButton(new ButtonWidget(0, this.width / 2 - 100, this.height / 4 + 72, string) {
+		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 72, string) {
 			@Override
 			public void onPressed(double d, double e) {
 				DeathScreen.this.client.player.requestRespawn();
@@ -45,7 +45,7 @@ public class DeathScreen extends Screen {
 			}
 		});
 		ButtonWidget buttonWidget = this.addButton(
-			new ButtonWidget(1, this.width / 2 - 100, this.height / 4 + 96, string2) {
+			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96, string2) {
 				@Override
 				public void onPressed(double d, double e) {
 					if (DeathScreen.this.client.world.getLevelProperties().isHardcore()) {
@@ -92,7 +92,7 @@ public class DeathScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		boolean bl = this.client.world.getLevelProperties().isHardcore();
 		this.drawGradientRect(0, 0, this.width, this.height, 1615855616, -1602211792);
 		GlStateManager.pushMatrix();
@@ -113,7 +113,7 @@ public class DeathScreen extends Screen {
 			}
 		}
 
-		super.draw(i, j, f);
+		super.method_18326(i, j, f);
 	}
 
 	@Nullable

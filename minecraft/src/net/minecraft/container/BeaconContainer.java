@@ -28,18 +28,18 @@ public class BeaconContainer extends Container {
 		}
 	};
 	private final BeaconContainer.SlotPayment paymentSlot;
-	private final ContainerWorldContext context;
+	private final BlockContext context;
 	private final PropertyDelegate propertyDelegate;
 
 	public BeaconContainer(int i, Inventory inventory) {
-		this(i, inventory, new ArrayPropertyDelegate(3), ContainerWorldContext.NO_OP_CONTEXT);
+		this(i, inventory, new ArrayPropertyDelegate(3), BlockContext.EMPTY);
 	}
 
-	public BeaconContainer(int i, Inventory inventory, PropertyDelegate propertyDelegate, ContainerWorldContext containerWorldContext) {
+	public BeaconContainer(int i, Inventory inventory, PropertyDelegate propertyDelegate, BlockContext blockContext) {
 		super(ContainerType.BEACON, i);
 		checkContainerDataCount(propertyDelegate, 3);
 		this.propertyDelegate = propertyDelegate;
-		this.context = containerWorldContext;
+		this.context = blockContext;
 		this.paymentSlot = new BeaconContainer.SlotPayment(this.paymentInv, 0, 136, 110);
 		this.addSlot(this.paymentSlot);
 		this.addProperties(propertyDelegate);

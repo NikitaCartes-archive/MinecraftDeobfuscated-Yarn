@@ -5,6 +5,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.block.enums.StairShape;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.passive.CatEntity;
@@ -90,7 +91,7 @@ public class SwampHutGenerator extends StructurePieceWithDimensions {
 				int k = this.applyZTransform(2, 5);
 				if (mutableIntBoundingBox.contains(new BlockPos(i, j, k))) {
 					this.hasWitch = true;
-					WitchEntity witchEntity = new WitchEntity(iWorld.getWorld());
+					WitchEntity witchEntity = EntityType.WITCH.create(iWorld.getWorld());
 					witchEntity.setPersistent();
 					witchEntity.setPositionAndAngles((double)i + 0.5, (double)j, (double)k + 0.5, 0.0F, 0.0F);
 					witchEntity.prepareEntityData(iWorld, iWorld.getLocalDifficulty(new BlockPos(i, j, k)), SpawnType.field_16474, null, null);
@@ -110,7 +111,7 @@ public class SwampHutGenerator extends StructurePieceWithDimensions {
 			int k = this.applyZTransform(2, 5);
 			if (mutableIntBoundingBox.contains(new BlockPos(i, j, k))) {
 				this.hasCat = true;
-				CatEntity catEntity = new CatEntity(iWorld.getWorld());
+				CatEntity catEntity = EntityType.CAT.create(iWorld.getWorld());
 				catEntity.setPersistent();
 				catEntity.setPositionAndAngles((double)i + 0.5, (double)j, (double)k + 0.5, 0.0F, 0.0F);
 				catEntity.prepareEntityData(iWorld, iWorld.getLocalDifficulty(new BlockPos(i, j, k)), SpawnType.field_16474, null, null);

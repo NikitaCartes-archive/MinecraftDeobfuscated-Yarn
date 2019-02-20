@@ -234,7 +234,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		if (this.client.interactionManager.hasCreativeInventory()) {
 			super.onInitialized();
 			this.client.keyboard.enableRepeatEvents(true);
-			this.searchBox = new TextFieldWidget(0, this.fontRenderer, this.left + 82, this.top + 6, 80, 9);
+			this.searchBox = new TextFieldWidget(this.fontRenderer, this.left + 82, this.top + 6, 80, 9);
 			this.searchBox.setMaxLength(50);
 			this.searchBox.setHasBorder(false);
 			this.searchBox.setVisible(false);
@@ -564,9 +564,9 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		this.drawBackground();
-		super.draw(i, j, f);
+		super.method_18326(i, j, f);
 
 		for (ItemGroup itemGroup : ItemGroup.GROUPS) {
 			if (this.method_2471(itemGroup, i, j)) {
@@ -651,7 +651,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 
 		this.client.getTextureManager().bindTexture(new Identifier("textures/gui/container/creative_inventory/tab_" + itemGroup.getTexture()));
 		this.drawTexturedRect(this.left, this.top, 0, 0, this.containerWidth, this.containerHeight);
-		this.searchBox.render(i, j, f);
+		this.searchBox.method_18326(i, j, f);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		int k = this.left + 175;
 		int l = this.top + 18;

@@ -28,7 +28,7 @@ public class AnimatedResultButton extends ButtonWidget {
 	private int currentResultIndex;
 
 	public AnimatedResultButton() {
-		super(0, 0, 0, 25, 25, "");
+		super(0, 0, 25, 25, "");
 	}
 
 	public void showResultCollection(RecipeResultCollection recipeResultCollection, RecipeBookGuiResults recipeBookGuiResults) {

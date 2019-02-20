@@ -69,7 +69,7 @@ public class class_1419 {
 	}
 
 	private boolean method_6446() {
-		for (PlayerEntity playerEntity : this.field_6727.players) {
+		for (PlayerEntity playerEntity : this.field_6727.method_18456()) {
 			if (!playerEntity.isSpectator()) {
 				this.field_6726 = this.field_6727.getVillageManager().getNearestVillage(new BlockPos(playerEntity), 1);
 				if (this.field_6726 != null && this.field_6726.getDoorCount() >= 10 && this.field_6726.getStableTicks() >= 20 && this.field_6726.getPopulationSize() >= 20) {
@@ -130,7 +130,7 @@ public class class_1419 {
 			zombieEntity.setPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, this.field_6727.random.nextFloat() * 360.0F, 0.0F);
 			this.field_6727.spawnEntity(zombieEntity);
 			BlockPos blockPos = this.field_6726.getCenter();
-			zombieEntity.setAiHome(blockPos, this.field_6726.getRadius());
+			zombieEntity.method_18408(blockPos, this.field_6726.getRadius());
 			return true;
 		}
 	}

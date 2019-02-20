@@ -57,7 +57,7 @@ public class NetherTravelCriterion implements Criterion<NetherTravelCriterion.Co
 		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public NetherTravelCriterion.Conditions deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public NetherTravelCriterion.Conditions method_9078(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		LocationPredicate locationPredicate = LocationPredicate.deserialize(jsonObject.get("entered"));
 		LocationPredicate locationPredicate2 = LocationPredicate.deserialize(jsonObject.get("exited"));
 		DistancePredicate distancePredicate = DistancePredicate.deserialize(jsonObject.get("distance"));

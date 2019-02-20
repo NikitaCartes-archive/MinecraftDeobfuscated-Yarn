@@ -38,7 +38,7 @@ public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 		super.onInitialized();
 		int i = (this.width - this.containerWidth) / 2;
 		int j = (this.height - this.containerHeight) / 2;
-		this.buttonPageNext = this.addButton(new VillagerScreen.WidgetButtonPage(1, i + 120 + 27, j + 24 - 1, true) {
+		this.buttonPageNext = this.addButton(new VillagerScreen.WidgetButtonPage(i + 120 + 27, j + 24 - 1, true) {
 			@Override
 			public void onPressed(double d, double e) {
 				VillagerScreen.this.recipeIndex++;
@@ -50,7 +50,7 @@ public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 				VillagerScreen.this.syncRecipeIndex();
 			}
 		});
-		this.buttonPagePrevious = this.addButton(new VillagerScreen.WidgetButtonPage(2, i + 36 - 19, j + 24 - 1, false) {
+		this.buttonPagePrevious = this.addButton(new VillagerScreen.WidgetButtonPage(i + 36 - 19, j + 24 - 1, false) {
 			@Override
 			public void onPressed(double d, double e) {
 				VillagerScreen.this.recipeIndex--;
@@ -106,9 +106,9 @@ public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void method_18326(int i, int j, float f) {
 		this.drawBackground();
-		super.draw(i, j, f);
+		super.method_18326(i, j, f);
 		TraderRecipeList traderRecipeList = this.container.method_17438();
 		if (!traderRecipeList.isEmpty()) {
 			int k = (this.width - this.containerWidth) / 2;
@@ -160,8 +160,8 @@ public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 	abstract static class WidgetButtonPage extends ButtonWidget {
 		private final boolean next;
 
-		public WidgetButtonPage(int i, int j, int k, boolean bl) {
-			super(i, j, k, 12, 19, "");
+		public WidgetButtonPage(int i, int j, boolean bl) {
+			super(i, j, 12, 19, "");
 			this.next = bl;
 		}
 

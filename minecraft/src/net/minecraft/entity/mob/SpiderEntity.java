@@ -4,6 +4,8 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
@@ -42,12 +44,8 @@ import net.minecraft.world.World;
 public class SpiderEntity extends HostileEntity {
 	private static final TrackedData<Byte> SPIDER_FLAGS = DataTracker.registerData(SpiderEntity.class, TrackedDataHandlerRegistry.BYTE);
 
-	protected SpiderEntity(EntityType<?> entityType, World world) {
+	public SpiderEntity(EntityType<? extends SpiderEntity> entityType, World world) {
 		super(entityType, world);
-	}
-
-	public SpiderEntity(World world) {
-		this(EntityType.SPIDER, world);
 	}
 
 	@Override
@@ -158,7 +156,7 @@ public class SpiderEntity extends HostileEntity {
 	) {
 		entityData = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		if (iWorld.getRandom().nextInt(100) == 0) {
-			SkeletonEntity skeletonEntity = new SkeletonEntity(this.world);
+			SkeletonEntity skeletonEntity = EntityType.SKELETON.create(this.world);
 			skeletonEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0F);
 			skeletonEntity.prepareEntityData(iWorld, localDifficulty, spawnType, null, null);
 			iWorld.spawnEntity(skeletonEntity);
@@ -183,7 +181,7 @@ public class SpiderEntity extends HostileEntity {
 	}
 
 	@Override
-	public float getEyeHeight() {
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
 		return 0.65F;
 	}
 

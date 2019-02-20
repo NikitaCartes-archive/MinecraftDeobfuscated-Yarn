@@ -42,7 +42,7 @@ public class CloudParticle extends class_4003 {
 
 	@Override
 	public class_3999 method_18122() {
-		return class_3999.field_17828;
+		return class_3999.field_17829;
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class CloudParticle extends class_4003 {
 			this.velocityX *= 0.96F;
 			this.velocityY *= 0.96F;
 			this.velocityZ *= 0.96F;
-			PlayerEntity playerEntity = this.world.getClosestPlayer(this.posX, this.posY, this.posZ, 2.0, false);
+			PlayerEntity playerEntity = this.world.method_18459(this.posX, this.posY, this.posZ, 2.0, false);
 			if (playerEntity != null) {
 				BoundingBox boundingBox = playerEntity.getBoundingBox();
 				if (this.posY > boundingBox.minY) {

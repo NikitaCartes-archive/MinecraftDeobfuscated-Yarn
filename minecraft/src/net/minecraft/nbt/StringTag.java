@@ -38,10 +38,10 @@ public class StringTag implements Tag {
 
 	@Override
 	public String toString() {
-		return escape(this.value, true);
+		return escape(this.value);
 	}
 
-	public StringTag copy() {
+	public StringTag method_10705() {
 		return new StringTag(this.value);
 	}
 
@@ -60,29 +60,39 @@ public class StringTag implements Tag {
 
 	@Override
 	public TextComponent toTextComponent(String string, int i) {
-		TextComponent textComponent = new StringTextComponent(escape(this.value, false)).applyFormat(GREEN);
-		return new StringTextComponent("\"").append(textComponent).append("\"");
+		String string2 = escape(this.value);
+		String string3 = string2.substring(0, 1);
+		TextComponent textComponent = new StringTextComponent(string2.substring(1, string2.length() - 1)).applyFormat(GREEN);
+		return new StringTextComponent(string3).append(textComponent).append(string3);
 	}
 
-	public static String escape(String string, boolean bl) {
-		StringBuilder stringBuilder = new StringBuilder();
-		if (bl) {
-			stringBuilder.append('"');
-		}
+	public static String escape(String string) {
+		StringBuilder stringBuilder = new StringBuilder(" ");
+		char c = 0;
 
 		for (int i = 0; i < string.length(); i++) {
-			char c = string.charAt(i);
-			if (c == '\\' || c == '"') {
+			char d = string.charAt(i);
+			if (d == '\\') {
 				stringBuilder.append('\\');
+			} else if (d == '"' || d == '\'') {
+				if (c == 0) {
+					c = (char)(d == '"' ? 39 : 34);
+				}
+
+				if (c == d) {
+					stringBuilder.append('\\');
+				}
 			}
 
-			stringBuilder.append(c);
+			stringBuilder.append(d);
 		}
 
-		if (bl) {
-			stringBuilder.append('"');
+		if (c == 0) {
+			c = '"';
 		}
 
+		stringBuilder.setCharAt(0, c);
+		stringBuilder.append(c);
 		return stringBuilder.toString();
 	}
 }

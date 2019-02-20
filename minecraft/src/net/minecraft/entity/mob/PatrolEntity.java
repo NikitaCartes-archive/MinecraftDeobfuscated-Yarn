@@ -23,7 +23,7 @@ public abstract class PatrolEntity extends HostileEntity {
 	private boolean patrolLeader;
 	private boolean patrolling;
 
-	protected PatrolEntity(EntityType<?> entityType, World world) {
+	protected PatrolEntity(EntityType<? extends PatrolEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
@@ -171,7 +171,7 @@ public abstract class PatrolEntity extends HostileEntity {
 					} else if (bl) {
 						for (PatrolEntity patrolEntity : this.field_16481
 							.world
-							.getEntities(
+							.method_8390(
 								PatrolEntity.class, this.field_16481.getBoundingBox().expand(16.0), patrolEntityx -> !patrolEntityx.isPatrolLeader() && patrolEntityx.hasNoRaid()
 							)) {
 							patrolEntity.setRaidCenter(blockPos);

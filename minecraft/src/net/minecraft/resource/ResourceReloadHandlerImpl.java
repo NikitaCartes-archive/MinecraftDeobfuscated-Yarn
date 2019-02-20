@@ -102,6 +102,18 @@ public class ResourceReloadHandlerImpl<S> implements ResourceReloadHandler {
 		return f / g;
 	}
 
+	@Environment(EnvType.CLIENT)
+	@Override
+	public boolean method_18786() {
+		return this.allLoadedFuture.isDone();
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public boolean method_18787() {
+		return this.completionFuture.isDone();
+	}
+
 	public interface class_4047<S> {
 		CompletableFuture<S> create(
 			ResourceReloadListener.Helper helper, ResourceManager resourceManager, ResourceReloadListener resourceReloadListener, Executor executor, Executor executor2

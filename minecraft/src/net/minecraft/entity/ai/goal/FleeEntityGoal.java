@@ -1,22 +1,16 @@
 package net.minecraft.entity.ai.goal;
 
-import java.util.List;
 import java.util.function.Predicate;
-import javax.annotation.Nullable;
 import net.minecraft.class_1414;
-import net.minecraft.entity.Entity;
+import net.minecraft.class_4051;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.math.Vec3d;
 
-public class FleeEntityGoal<T extends Entity> extends Goal {
-	protected final Predicate<Entity> field_6389 = new Predicate<Entity>() {
-		public boolean method_6248(@Nullable Entity entity) {
-			return entity.isValid() && FleeEntityGoal.this.field_6391.getVisibilityCache().canSee(entity) && !FleeEntityGoal.this.field_6391.isTeammate(entity);
-		}
-	};
+public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 	protected final MobEntityWithAi field_6391;
 	private final double field_6385;
 	private final double field_6395;
@@ -25,15 +19,16 @@ public class FleeEntityGoal<T extends Entity> extends Goal {
 	protected Path field_6387;
 	protected final EntityNavigation field_6394;
 	protected final Class<T> field_6392;
-	protected final Predicate<? super Entity> field_6393;
-	protected final Predicate<? super Entity> field_6388;
+	protected final Predicate<LivingEntity> field_6393;
+	protected final Predicate<LivingEntity> field_6388;
+	private final class_4051 field_18084;
 
 	public FleeEntityGoal(MobEntityWithAi mobEntityWithAi, Class<T> class_, float f, double d, double e) {
-		this(mobEntityWithAi, class_, entity -> true, f, d, e, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR);
+		this(mobEntityWithAi, class_, livingEntity -> true, f, d, e, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR::test);
 	}
 
 	public FleeEntityGoal(
-		MobEntityWithAi mobEntityWithAi, Class<T> class_, Predicate<? super Entity> predicate, float f, double d, double e, Predicate<Entity> predicate2
+		MobEntityWithAi mobEntityWithAi, Class<T> class_, Predicate<LivingEntity> predicate, float f, double d, double e, Predicate<LivingEntity> predicate2
 	) {
 		this.field_6391 = mobEntityWithAi;
 		this.field_6392 = class_;
@@ -44,25 +39,29 @@ public class FleeEntityGoal<T extends Entity> extends Goal {
 		this.field_6388 = predicate2;
 		this.field_6394 = mobEntityWithAi.getNavigation();
 		this.setControlBits(1);
+		this.field_18084 = new class_4051().method_18418((double)f).method_18420(predicate2.and(predicate));
 	}
 
-	public FleeEntityGoal(MobEntityWithAi mobEntityWithAi, Class<T> class_, float f, double d, double e, Predicate<Entity> predicate) {
-		this(mobEntityWithAi, class_, entity -> true, f, d, e, predicate);
+	public FleeEntityGoal(MobEntityWithAi mobEntityWithAi, Class<T> class_, float f, double d, double e, Predicate<LivingEntity> predicate) {
+		this(mobEntityWithAi, class_, livingEntity -> true, f, d, e, predicate);
 	}
 
 	@Override
 	public boolean canStart() {
-		List<T> list = this.field_6391
+		this.field_6390 = this.field_6391
 			.world
-			.getEntities(
+			.method_18465(
 				this.field_6392,
-				this.field_6391.getBoundingBox().expand((double)this.field_6386, 3.0, (double)this.field_6386),
-				entity -> this.field_6388.test(entity) && this.field_6389.test(entity) && this.field_6393.test(entity)
+				this.field_18084,
+				this.field_6391,
+				this.field_6391.x,
+				this.field_6391.y,
+				this.field_6391.z,
+				this.field_6391.getBoundingBox().expand((double)this.field_6386, 3.0, (double)this.field_6386)
 			);
-		if (list.isEmpty()) {
+		if (this.field_6390 == null) {
 			return false;
 		} else {
-			this.field_6390 = (T)list.get(0);
 			Vec3d vec3d = class_1414.method_6379(this.field_6391, 16, 7, new Vec3d(this.field_6390.x, this.field_6390.y, this.field_6390.z));
 			if (vec3d == null) {
 				return false;

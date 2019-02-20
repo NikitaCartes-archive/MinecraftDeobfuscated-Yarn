@@ -1115,9 +1115,14 @@ public class Items {
 	public static final Item field_8073 = register("rabbit_foot", new Item(new Item.Settings().itemGroup(ItemGroup.BREWING)));
 	public static final Item field_8245 = register("rabbit_hide", new Item(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8694 = register("armor_stand", new ArmorStandItem(new Item.Settings().stackSize(16).itemGroup(ItemGroup.DECORATIONS)));
-	public static final Item field_8578 = register("iron_horse_armor", new Item(new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC)));
-	public static final Item field_8560 = register("golden_horse_armor", new Item(new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC)));
-	public static final Item field_8807 = register("diamond_horse_armor", new Item(new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC)));
+	public static final Item field_8578 = register("iron_horse_armor", new HorseArmorItem(5, "iron", new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC)));
+	public static final Item field_8560 = register("golden_horse_armor", new HorseArmorItem(7, "gold", new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC)));
+	public static final Item field_8807 = register(
+		"diamond_horse_armor", new HorseArmorItem(11, "diamond", new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC))
+	);
+	public static final Item field_18138 = register(
+		"leather_horse_armor", new DyeableHorseArmorItem(3, "leather", new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC))
+	);
 	public static final Item field_8719 = register("lead", new LeashItem(new Item.Settings().itemGroup(ItemGroup.TOOLS)));
 	public static final Item field_8448 = register("name_tag", new NameTagItem(new Item.Settings().itemGroup(ItemGroup.TOOLS)));
 	public static final Item field_8220 = register(

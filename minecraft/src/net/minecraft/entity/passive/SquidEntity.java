@@ -2,6 +2,8 @@ package net.minecraft.entity.passive;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -40,8 +42,8 @@ public class SquidEntity extends WaterCreatureEntity {
 	private float field_6911;
 	private float field_6909;
 
-	public SquidEntity(World world) {
-		super(EntityType.SQUID, world);
+	public SquidEntity(EntityType<? extends SquidEntity> entityType, World world) {
+		super(entityType, world);
 		this.random.setSeed((long)this.getEntityId());
 		this.field_6912 = 1.0F / (this.random.nextFloat() + 1.0F) * 0.2F;
 	}
@@ -59,8 +61,8 @@ public class SquidEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public float getEyeHeight() {
-		return this.getHeight() * 0.5F;
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
+		return arg2.field_18068 * 0.5F;
 	}
 
 	@Override
@@ -181,7 +183,7 @@ public class SquidEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public void method_6091(float f, float g, float h) {
+	public void travel(float f, float g, float h) {
 		this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 	}
 

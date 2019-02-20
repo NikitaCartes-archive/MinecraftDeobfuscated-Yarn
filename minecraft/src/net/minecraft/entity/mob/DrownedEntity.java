@@ -1,7 +1,6 @@
 package net.minecraft.entity.mob;
 
 import java.util.Random;
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.class_1396;
 import net.minecraft.class_1399;
@@ -21,7 +20,6 @@ import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
 import net.minecraft.entity.ai.goal.ProjectileAttackGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.ai.pathing.EntityMobNavigation;
-import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.ai.pathing.PathNodeType;
@@ -54,8 +52,8 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 	protected final SwimNavigation field_7234;
 	protected final EntityMobNavigation field_7232;
 
-	public DrownedEntity(World world) {
-		super(EntityType.DROWNED, world);
+	public DrownedEntity(EntityType<? extends DrownedEntity> entityType, World world) {
+		super(entityType, world);
 		this.stepHeight = 1.0F;
 		this.moveControl = new DrownedEntity.DrownedMoveControl(this);
 		this.setPathNodeTypeWeight(PathNodeType.field_18, 0.0F);
@@ -72,15 +70,10 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 		this.goalSelector.add(6, new DrownedEntity.class_1557(this, 1.0, this.world.getSeaLevel()));
 		this.goalSelector.add(7, new WanderAroundGoal(this, 1.0));
 		this.targetSelector.add(1, new class_1399(this, DrownedEntity.class).method_6318(PigZombieEntity.class));
-		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, new DrownedEntity.class_1553(this)));
+		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, this::method_7012));
 		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractTraderEntity.class, false));
 		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, true));
 		this.targetSelector.add(5, new FollowTargetGoal(this, TurtleEntity.class, 10, true, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
-	}
-
-	@Override
-	protected EntityNavigation createNavigation(World world) {
-		return super.createNavigation(world);
 	}
 
 	@Override
@@ -195,15 +188,15 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 	}
 
 	@Override
-	public void method_6091(float f, float g, float h) {
+	public void travel(float f, float g, float h) {
 		if (this.method_6034() && this.isInsideWater() && this.method_7018()) {
-			this.method_5724(f, g, h, 0.01F);
+			this.updateVelocity(f, g, h, 0.01F);
 			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
 			this.velocityX *= 0.9F;
 			this.velocityY *= 0.9F;
 			this.velocityZ *= 0.9F;
 		} else {
-			super.method_6091(f, g, h);
+			super.travel(f, g, h);
 		}
 	}
 
@@ -268,7 +261,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 				}
 
 				if (this.state != MoveControl.State.field_6378 || this.drowned.getNavigation().isIdle()) {
-					this.drowned.method_6125(0.0F);
+					this.drowned.setMovementSpeed(0.0F);
 					return;
 				}
 
@@ -281,10 +274,10 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 				this.drowned.yaw = this.method_6238(this.drowned.yaw, h, 90.0F);
 				this.drowned.field_6283 = this.drowned.yaw;
 				float i = (float)(this.speed * this.drowned.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
-				this.drowned.method_6125(MathHelper.lerp(0.125F, this.drowned.method_6029(), i));
-				this.drowned.velocityY = this.drowned.velocityY + (double)this.drowned.method_6029() * e * 0.1;
-				this.drowned.velocityX = this.drowned.velocityX + (double)this.drowned.method_6029() * d * 0.005;
-				this.drowned.velocityZ = this.drowned.velocityZ + (double)this.drowned.method_6029() * f * 0.005;
+				this.drowned.setMovementSpeed(MathHelper.lerp(0.125F, this.drowned.getMovementSpeed(), i));
+				this.drowned.velocityY = this.drowned.velocityY + (double)this.drowned.getMovementSpeed() * e * 0.1;
+				this.drowned.velocityX = this.drowned.velocityX + (double)this.drowned.getMovementSpeed() * d * 0.005;
+				this.drowned.velocityZ = this.drowned.velocityZ + (double)this.drowned.getMovementSpeed() * f * 0.005;
 			} else {
 				if (!this.drowned.onGround) {
 					this.drowned.velocityY -= 0.008;
@@ -311,18 +304,6 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 		@Override
 		public boolean shouldContinue() {
 			return super.shouldContinue() && this.field_7235.method_7012(this.field_7235.getTarget());
-		}
-	}
-
-	static class class_1553 implements Predicate<PlayerEntity> {
-		private final DrownedEntity field_7236;
-
-		public class_1553(DrownedEntity drownedEntity) {
-			this.field_7236 = drownedEntity;
-		}
-
-		public boolean method_7020(@Nullable PlayerEntity playerEntity) {
-			return this.field_7236.method_7012(playerEntity);
 		}
 	}
 

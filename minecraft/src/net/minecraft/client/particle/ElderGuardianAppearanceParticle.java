@@ -9,6 +9,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.ElderGuardianEntity;
 import net.minecraft.particle.DefaultParticleType;
@@ -34,7 +35,7 @@ public class ElderGuardianAppearanceParticle extends Particle {
 	public void update() {
 		super.update();
 		if (this.guardian == null) {
-			ElderGuardianEntity elderGuardianEntity = new ElderGuardianEntity(this.world);
+			ElderGuardianEntity elderGuardianEntity = EntityType.ELDER_GUARDIAN.create(this.world);
 			elderGuardianEntity.method_7010();
 			this.guardian = elderGuardianEntity;
 		}

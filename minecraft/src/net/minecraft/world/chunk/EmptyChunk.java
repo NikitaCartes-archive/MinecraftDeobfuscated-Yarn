@@ -74,10 +74,6 @@ public class EmptyChunk extends WorldChunk {
 	}
 
 	@Override
-	public void loadToWorld() {
-	}
-
-	@Override
 	public void markDirty() {
 	}
 
@@ -95,7 +91,7 @@ public class EmptyChunk extends WorldChunk {
 	}
 
 	@Override
-	public boolean areSectionsEmpty(int i, int j) {
+	public boolean method_12228(int i, int j) {
 		return true;
 	}
 

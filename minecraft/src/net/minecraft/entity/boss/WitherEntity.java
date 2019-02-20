@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
+import net.minecraft.class_4051;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
@@ -20,7 +21,6 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.ProjectileAttackGoal;
-import net.minecraft.entity.ai.pathing.EntityMobNavigation;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -36,7 +36,6 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -54,6 +53,7 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 	private static final TrackedData<Integer> TRACKED_ENTITY_ID_3 = DataTracker.registerData(WitherEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final List<TrackedData<Integer>> field_7087 = ImmutableList.of(TRACKED_ENTITY_ID_1, TRACKED_ENTITY_ID_2, TRACKED_ENTITY_ID_3);
 	private static final TrackedData<Integer> INVUL_TIMER = DataTracker.registerData(WitherEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final class_4051 field_18125 = new class_4051().method_18418(20.0);
 	private final float[] field_7084 = new float[2];
 	private final float[] field_7083 = new float[2];
 	private final float[] field_7095 = new float[2];
@@ -63,15 +63,13 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 	private int field_7082;
 	private final ServerBossBar field_7093 = (ServerBossBar)new ServerBossBar(this.getDisplayName(), BossBar.Color.field_5783, BossBar.Overlay.field_5795)
 		.setDarkenSky(true);
-	private static final Predicate<Entity> field_7086 = entity -> entity instanceof LivingEntity
-			&& ((LivingEntity)entity).getGroup() != EntityGroup.UNDEAD
-			&& ((LivingEntity)entity).method_6102();
+	private static final Predicate<LivingEntity> field_7086 = livingEntity -> livingEntity.getGroup() != EntityGroup.UNDEAD && livingEntity.method_6102();
 
-	public WitherEntity(World world) {
-		super(EntityType.WITHER, world);
+	public WitherEntity(EntityType<? extends WitherEntity> entityType, World world) {
+		super(entityType, world);
 		this.setHealth(this.getHealthMaximum());
 		this.fireImmune = true;
-		((EntityMobNavigation)this.getNavigation()).setCanSwim(true);
+		this.getNavigation().setCanSwim(true);
 		this.experiencePoints = 50;
 	}
 
@@ -279,8 +277,7 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 							this.field_7092[ix - 1] = 0;
 						}
 					} else {
-						List<LivingEntity> list = this.world
-							.getEntities(LivingEntity.class, this.getBoundingBox().expand(20.0, 8.0, 20.0), field_7086.and(EntityPredicates.EXCEPT_SPECTATOR));
+						List<LivingEntity> list = this.world.method_18466(LivingEntity.class, field_18125, this, this.getBoundingBox().expand(20.0, 8.0, 20.0));
 
 						for (int k = 0; k < 10 && !list.isEmpty(); k++) {
 							LivingEntity livingEntity = (LivingEntity)list.get(this.random.nextInt(list.size()));

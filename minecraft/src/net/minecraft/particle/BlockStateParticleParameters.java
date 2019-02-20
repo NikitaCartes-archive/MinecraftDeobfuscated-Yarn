@@ -12,12 +12,12 @@ import net.minecraft.util.registry.Registry;
 
 public class BlockStateParticleParameters implements ParticleParameters {
 	public static final ParticleParameters.Factory<BlockStateParticleParameters> PARAMETERS_FACTORY = new ParticleParameters.Factory<BlockStateParticleParameters>() {
-		public BlockStateParticleParameters read(ParticleType<BlockStateParticleParameters> particleType, StringReader stringReader) throws CommandSyntaxException {
+		public BlockStateParticleParameters method_10279(ParticleType<BlockStateParticleParameters> particleType, StringReader stringReader) throws CommandSyntaxException {
 			stringReader.expect(' ');
 			return new BlockStateParticleParameters(particleType, new BlockArgumentParser(stringReader, false).parse(false).getBlockState());
 		}
 
-		public BlockStateParticleParameters read(ParticleType<BlockStateParticleParameters> particleType, PacketByteBuf packetByteBuf) {
+		public BlockStateParticleParameters method_10280(ParticleType<BlockStateParticleParameters> particleType, PacketByteBuf packetByteBuf) {
 			return new BlockStateParticleParameters(particleType, Block.STATE_IDS.get(packetByteBuf.readVarInt()));
 		}
 	};

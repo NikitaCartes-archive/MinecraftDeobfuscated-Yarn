@@ -6,7 +6,10 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.EnvironmentInterface;
 import net.fabricmc.api.EnvironmentInterfaces;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.CampfireBlock;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -45,8 +48,8 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final Predicate<LivingEntity> field_7653 = ThrownPotionEntity::doesWaterHurt;
 
-	public ThrownPotionEntity(World world) {
-		super(EntityType.POTION, world);
+	public ThrownPotionEntity(EntityType<? extends ThrownPotionEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public ThrownPotionEntity(World world, LivingEntity livingEntity) {
@@ -95,7 +98,12 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 			if (hitResult.getType() == HitResult.Type.BLOCK && bl) {
 				BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 				Direction direction = blockHitResult.getSide();
-				BlockPos blockPos = blockHitResult.getBlockPos().offset(direction);
+				BlockPos blockPos = blockHitResult.getBlockPos();
+				BlockState blockState = this.world.getBlockState(blockPos);
+				if (blockState.getBlock() == Blocks.field_10036) {
+					blockPos = blockPos.offset(direction);
+				}
+
 				this.extinguishFire(blockPos, direction);
 
 				for (Direction direction2 : Direction.Type.HORIZONTAL) {
@@ -121,7 +129,7 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 
 	private void method_7500() {
 		BoundingBox boundingBox = this.getBoundingBox().expand(4.0, 2.0, 4.0);
-		List<LivingEntity> list = this.world.getEntities(LivingEntity.class, boundingBox, field_7653);
+		List<LivingEntity> list = this.world.method_8390(LivingEntity.class, boundingBox, field_7653);
 		if (!list.isEmpty()) {
 			for (LivingEntity livingEntity : list) {
 				double d = this.squaredDistanceTo(livingEntity);
@@ -134,7 +142,7 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 
 	private void method_7498(List<StatusEffectInstance> list, @Nullable Entity entity) {
 		BoundingBox boundingBox = this.getBoundingBox().expand(4.0, 2.0, 4.0);
-		List<LivingEntity> list2 = this.world.getVisibleEntities(LivingEntity.class, boundingBox);
+		List<LivingEntity> list2 = this.world.method_18467(LivingEntity.class, boundingBox);
 		if (!list2.isEmpty()) {
 			for (LivingEntity livingEntity : list2) {
 				if (livingEntity.method_6086()) {
@@ -192,8 +200,13 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 	}
 
 	private void extinguishFire(BlockPos blockPos, Direction direction) {
-		if (this.world.getBlockState(blockPos).getBlock() == Blocks.field_10036) {
+		BlockState blockState = this.world.getBlockState(blockPos);
+		Block block = blockState.getBlock();
+		if (block == Blocks.field_10036) {
 			this.world.method_8506(null, blockPos.offset(direction), direction.getOpposite());
+		} else if (block == Blocks.field_17350 && (Boolean)blockState.get(CampfireBlock.LIT)) {
+			this.world.playEvent(null, 1009, blockPos, 0);
+			this.world.setBlockState(blockPos, blockState.with(CampfireBlock.LIT, Boolean.valueOf(false)));
 		}
 	}
 

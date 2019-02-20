@@ -59,11 +59,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 	@Nullable
 	private LlamaEntity field_6997;
 
-	public LlamaEntity(World world) {
-		super(EntityType.LLAMA, world);
-	}
-
-	protected LlamaEntity(EntityType<?> entityType, World world) {
+	public LlamaEntity(EntityType<? extends LlamaEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
@@ -358,7 +354,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 		return animalEntity != this && animalEntity instanceof LlamaEntity && this.method_6734() && ((LlamaEntity)animalEntity).method_6734();
 	}
 
-	public LlamaEntity createChild(PassiveEntity passiveEntity) {
+	public LlamaEntity method_6804(PassiveEntity passiveEntity) {
 		LlamaEntity llamaEntity = this.createChild();
 		this.method_6743(passiveEntity, llamaEntity);
 		LlamaEntity llamaEntity2 = (LlamaEntity)passiveEntity;
@@ -373,7 +369,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 	}
 
 	protected LlamaEntity createChild() {
-		return new LlamaEntity(this.world);
+		return EntityType.LLAMA.create(this.world);
 	}
 
 	private void method_6792(LivingEntity livingEntity) {
@@ -486,17 +482,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 
 	static class class_1502 extends FollowTargetGoal<WolfEntity> {
 		public class_1502(LlamaEntity llamaEntity) {
-			super(llamaEntity, WolfEntity.class, 16, false, true, null);
-		}
-
-		@Override
-		public boolean canStart() {
-			if (super.canStart() && this.field_6644 != null && !this.field_6644.isTamed()) {
-				return true;
-			} else {
-				this.entity.setTarget(null);
-				return false;
-			}
+			super(llamaEntity, WolfEntity.class, 16, false, true, livingEntity -> ((WolfEntity)livingEntity).isTamed());
 		}
 
 		@Override

@@ -33,7 +33,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 	private boolean hasRaidGoal;
 	private int outOfRaidCounter;
 
-	protected RaiderEntity(EntityType<?> entityType, World world) {
+	protected RaiderEntity(EntityType<? extends RaiderEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
@@ -240,7 +240,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			} else {
 				List<ItemEntity> list = this.field_16603
 					.world
-					.getEntities(ItemEntity.class, this.field_16603.getBoundingBox().expand(16.0, 8.0, 16.0), RaiderEntity.OBTAINABLE_ILLAGER_BANNER_ITEM);
+					.method_8390(ItemEntity.class, this.field_16603.getBoundingBox().expand(16.0, 8.0, 16.0), RaiderEntity.OBTAINABLE_ILLAGER_BANNER_ITEM);
 				if (!list.isEmpty()) {
 					this.field_16603.getNavigation().startMovingTo((Entity)list.get(0), 1.2F);
 				}
@@ -254,7 +254,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			if (this.field_16603.squaredDistanceTo(this.field_16603.getNavigation().getTargetPos()) < 2.0) {
 				List<ItemEntity> list = this.field_16603
 					.world
-					.getEntities(ItemEntity.class, this.field_16603.getBoundingBox().expand(4.0, 4.0, 4.0), RaiderEntity.OBTAINABLE_ILLAGER_BANNER_ITEM);
+					.method_8390(ItemEntity.class, this.field_16603.getBoundingBox().expand(4.0, 4.0, 4.0), RaiderEntity.OBTAINABLE_ILLAGER_BANNER_ITEM);
 				if (!list.isEmpty()) {
 					this.field_16603.pickupItem((ItemEntity)list.get(0));
 				}

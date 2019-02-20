@@ -19,7 +19,7 @@ public class FollowParentGoal extends Goal {
 		if (this.owner.getBreedingAge() >= 0) {
 			return false;
 		} else {
-			List<AnimalEntity> list = this.owner.world.getVisibleEntities(this.owner.getClass(), this.owner.getBoundingBox().expand(8.0, 4.0, 8.0));
+			List<AnimalEntity> list = this.owner.world.method_18467(this.owner.getClass(), this.owner.getBoundingBox().expand(8.0, 4.0, 8.0));
 			AnimalEntity animalEntity = null;
 			double d = Double.MAX_VALUE;
 

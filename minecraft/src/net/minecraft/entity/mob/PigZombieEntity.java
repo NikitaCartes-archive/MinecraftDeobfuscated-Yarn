@@ -38,8 +38,8 @@ public class PigZombieEntity extends ZombieEntity {
 	private int field_7308;
 	private UUID angerTarget;
 
-	public PigZombieEntity(World world) {
-		super(EntityType.ZOMBIE_PIGMAN, world);
+	public PigZombieEntity(EntityType<? extends PigZombieEntity> entityType, World world) {
+		super(entityType, world);
 		this.fireImmune = true;
 	}
 
@@ -90,7 +90,7 @@ public class PigZombieEntity extends ZombieEntity {
 		}
 
 		if (this.anger > 0 && this.angerTarget != null && this.getAttacker() == null) {
-			PlayerEntity playerEntity = this.world.getPlayerByUuid(this.angerTarget);
+			PlayerEntity playerEntity = this.world.method_18470(this.angerTarget);
 			this.setAttacker(playerEntity);
 			this.field_6258 = playerEntity;
 			this.playerHitTimer = this.getLastAttackedTime();
@@ -127,7 +127,7 @@ public class PigZombieEntity extends ZombieEntity {
 		String string = compoundTag.getString("HurtBy");
 		if (!string.isEmpty()) {
 			this.angerTarget = UUID.fromString(string);
-			PlayerEntity playerEntity = this.world.getPlayerByUuid(this.angerTarget);
+			PlayerEntity playerEntity = this.world.method_18470(this.angerTarget);
 			this.setAttacker(playerEntity);
 			if (playerEntity != null) {
 				this.field_6258 = playerEntity;
@@ -215,10 +215,10 @@ public class PigZombieEntity extends ZombieEntity {
 		}
 
 		@Override
-		protected void method_6319(MobEntityWithAi mobEntityWithAi, LivingEntity livingEntity) {
-			super.method_6319(mobEntityWithAi, livingEntity);
-			if (mobEntityWithAi instanceof PigZombieEntity) {
-				((PigZombieEntity)mobEntityWithAi).copyEntityData(livingEntity);
+		protected void method_6319(MobEntity mobEntity, LivingEntity livingEntity) {
+			super.method_6319(mobEntity, livingEntity);
+			if (mobEntity instanceof PigZombieEntity) {
+				((PigZombieEntity)mobEntity).copyEntityData(livingEntity);
 			}
 		}
 	}

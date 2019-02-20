@@ -9,8 +9,8 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 
 public class CodEntity extends SchoolingFishEntity {
-	public CodEntity(World world) {
-		super(EntityType.COD, world);
+	public CodEntity(EntityType<? extends CodEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override

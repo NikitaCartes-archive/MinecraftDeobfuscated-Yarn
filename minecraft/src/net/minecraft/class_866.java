@@ -41,7 +41,7 @@ public class class_866 implements DebugRenderer.DebugRenderer {
 			int i = world.getLightLevel(LightType.SKY, blockPos2);
 			float h = (float)(15 - i) / 15.0F * 0.5F + 0.16F;
 			int j = MathHelper.hsvToRgb(h, 0.9F, 0.9F);
-			long m = BlockPos.toChunkSectionOrigin(blockPos2.asLong());
+			long m = class_4076.method_18691(blockPos2.asLong());
 			if (longSet.add(m)) {
 				DebugRenderer.method_3712(
 					world.getChunkManager().getLightingProvider().method_15564(LightType.SKY, BlockPos.fromLong(m)),

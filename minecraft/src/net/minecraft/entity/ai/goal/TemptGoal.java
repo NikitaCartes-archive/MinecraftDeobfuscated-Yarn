@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.goal;
 
+import net.minecraft.class_4051;
 import net.minecraft.entity.ai.pathing.EntityMobNavigation;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.player.PlayerEntity;
@@ -7,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 
 public class TemptGoal extends Goal {
+	private static final class_4051 field_18090 = new class_4051().method_18418(10.0).method_18417().method_18421();
 	protected final MobEntityWithAi field_6616;
 	private final double field_6615;
 	private double field_6614;
@@ -41,7 +43,7 @@ public class TemptGoal extends Goal {
 			this.field_6612--;
 			return false;
 		} else {
-			this.field_6617 = this.field_6616.world.getClosestPlayer(this.field_6616, 10.0);
+			this.field_6617 = this.field_6616.world.method_18462(field_18090, this.field_6616);
 			return this.field_6617 == null ? false : this.method_6312(this.field_6617.getMainHandStack()) || this.method_6312(this.field_6617.getOffHandStack());
 		}
 	}

@@ -155,7 +155,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 	}
 
 	private void tryPowerWithProjectiles(BlockState blockState, World world, BlockPos blockPos) {
-		List<? extends Entity> list = world.getVisibleEntities(ProjectileEntity.class, blockState.getOutlineShape(world, blockPos).getBoundingBox().offset(blockPos));
+		List<? extends Entity> list = world.method_18467(ProjectileEntity.class, blockState.getOutlineShape(world, blockPos).getBoundingBox().offset(blockPos));
 		boolean bl = !list.isEmpty();
 		boolean bl2 = (Boolean)blockState.get(POWERED);
 		if (bl != bl2) {

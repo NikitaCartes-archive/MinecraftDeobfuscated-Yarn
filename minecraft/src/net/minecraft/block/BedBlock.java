@@ -24,6 +24,7 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
@@ -58,6 +59,13 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		return blockState.get(PART) == BedPart.field_12557 ? this.color.getMaterialColor() : MaterialColor.WEB;
 	}
 
+	@Nullable
+	@Environment(EnvType.CLIENT)
+	public static Direction method_18476(BlockView blockView, BlockPos blockPos) {
+		BlockState blockState = blockView.getBlockState(blockPos);
+		return blockState.getBlock() instanceof BedBlock ? blockState.get(field_11177) : null;
+	}
+
 	@Override
 	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (world.isClient) {
@@ -73,8 +81,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 
 			if (world.dimension.canPlayersSleep() && world.getBiome(blockPos) != Biomes.field_9461) {
 				if ((Boolean)blockState.get(OCCUPIED)) {
-					PlayerEntity playerEntity2 = this.getPlayerInBed(world, blockPos);
-					if (playerEntity2 != null) {
+					if (!this.method_18477(world, blockPos)) {
 						playerEntity.addChatMessage(new TranslatableTextComponent("block.minecraft.bed.occupied"), true);
 						return true;
 					}
@@ -85,8 +92,6 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 
 				PlayerEntity.SleepResult sleepResult = playerEntity.trySleep(blockPos);
 				if (sleepResult == PlayerEntity.SleepResult.SUCCESS) {
-					blockState = blockState.with(OCCUPIED, Boolean.valueOf(true));
-					world.setBlockState(blockPos, blockState, 4);
 					return true;
 				} else {
 					if (sleepResult == PlayerEntity.SleepResult.WRONG_TIME) {
@@ -114,15 +119,20 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		}
 	}
 
-	@Nullable
-	private PlayerEntity getPlayerInBed(World world, BlockPos blockPos) {
-		for (PlayerEntity playerEntity : world.players) {
-			if (playerEntity.isSleeping() && playerEntity.sleepingPos.equals(blockPos)) {
-				return playerEntity;
-			}
-		}
-
-		return null;
+	private boolean method_18477(World world, BlockPos blockPos) {
+		return world.method_8390(
+				LivingEntity.class,
+				new BoundingBox(
+					(double)blockPos.getX(),
+					(double)blockPos.getY(),
+					(double)blockPos.getZ(),
+					(double)(blockPos.getX() + 1),
+					(double)(blockPos.getY() + 2),
+					(double)(blockPos.getZ() + 1)
+				),
+				LivingEntity::isSleeping
+			)
+			.isEmpty();
 	}
 
 	@Override

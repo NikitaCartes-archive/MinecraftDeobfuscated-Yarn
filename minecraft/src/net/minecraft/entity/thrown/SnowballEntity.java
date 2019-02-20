@@ -19,8 +19,8 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 
 public class SnowballEntity extends class_3857 {
-	public SnowballEntity(World world) {
-		super(EntityType.SNOWBALL, world);
+	public SnowballEntity(EntityType<? extends SnowballEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public SnowballEntity(World world, LivingEntity livingEntity) {

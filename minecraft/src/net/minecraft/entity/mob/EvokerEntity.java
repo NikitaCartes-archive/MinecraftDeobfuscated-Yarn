@@ -1,9 +1,9 @@
 package net.minecraft.entity.mob;
 
 import java.util.List;
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.class_1399;
+import net.minecraft.class_4051;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
@@ -34,8 +34,8 @@ import net.minecraft.world.World;
 public class EvokerEntity extends SpellcastingIllagerEntity {
 	private SheepEntity wololoTarget;
 
-	public EvokerEntity(World world) {
-		super(EntityType.EVOKER, world);
+	public EvokerEntity(EntityType<? extends EvokerEntity> entityType, World world) {
+		super(entityType, world);
 		this.experiencePoints = 10;
 	}
 
@@ -233,6 +233,8 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 	}
 
 	class SummonVexGoal extends SpellcastingIllagerEntity.CastSpellGoal {
+		private final class_4051 field_18129 = new class_4051().method_18418(16.0).method_18422().method_18424().method_18417().method_18421();
+
 		private SummonVexGoal() {
 		}
 
@@ -241,7 +243,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 			if (!super.canStart()) {
 				return false;
 			} else {
-				int i = EvokerEntity.this.world.getVisibleEntities(VexEntity.class, EvokerEntity.this.getBoundingBox().expand(16.0)).size();
+				int i = EvokerEntity.this.world.method_18466(VexEntity.class, this.field_18129, EvokerEntity.this, EvokerEntity.this.getBoundingBox().expand(16.0)).size();
 				return EvokerEntity.this.random.nextInt(8) + 1 > i;
 			}
 		}
@@ -260,7 +262,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		protected void castSpell() {
 			for (int i = 0; i < 3; i++) {
 				BlockPos blockPos = new BlockPos(EvokerEntity.this).add(-2 + EvokerEntity.this.random.nextInt(5), 1, -2 + EvokerEntity.this.random.nextInt(5));
-				VexEntity vexEntity = new VexEntity(EvokerEntity.this.world);
+				VexEntity vexEntity = EntityType.VEX.create(EvokerEntity.this.world);
 				vexEntity.setPositionAndAngles(blockPos, 0.0F, 0.0F);
 				vexEntity.prepareEntityData(EvokerEntity.this.world, EvokerEntity.this.world.getLocalDifficulty(blockPos), SpawnType.field_16471, null, null);
 				vexEntity.setOwner(EvokerEntity.this);
@@ -282,7 +284,10 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 	}
 
 	public class WololoGoal extends SpellcastingIllagerEntity.CastSpellGoal {
-		private final Predicate<SheepEntity> purpleSheepPredicate = sheepEntity -> sheepEntity.getColor() == DyeColor.field_7966;
+		private final class_4051 purpleSheepPredicate = new class_4051()
+			.method_18418(16.0)
+			.method_18417()
+			.method_18420(livingEntity -> ((SheepEntity)livingEntity).getColor() == DyeColor.field_7966);
 
 		@Override
 		public boolean canStart() {
@@ -296,7 +301,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 				return false;
 			} else {
 				List<SheepEntity> list = EvokerEntity.this.world
-					.getEntities(SheepEntity.class, EvokerEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0), this.purpleSheepPredicate);
+					.method_18466(SheepEntity.class, this.purpleSheepPredicate, EvokerEntity.this, EvokerEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0));
 				if (list.isEmpty()) {
 					return false;
 				} else {

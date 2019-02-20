@@ -1,6 +1,8 @@
 package net.minecraft.entity;
 
 import javax.annotation.Nullable;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -16,14 +18,14 @@ public class PrimedTntEntity extends Entity {
 	private LivingEntity causingEntity;
 	private int fuseTimer = 80;
 
-	public PrimedTntEntity(World world) {
-		super(EntityType.TNT, world);
+	public PrimedTntEntity(EntityType<? extends PrimedTntEntity> entityType, World world) {
+		super(entityType, world);
 		this.field_6033 = true;
 		this.fireImmune = true;
 	}
 
 	public PrimedTntEntity(World world, double d, double e, double f, @Nullable LivingEntity livingEntity) {
-		this(world);
+		this(EntityType.TNT, world);
 		this.setPosition(d, e, f);
 		float g = (float)(Math.random() * (float) (Math.PI * 2));
 		this.velocityX = (double)(-((float)Math.sin((double)g)) * 0.02F);
@@ -103,7 +105,7 @@ public class PrimedTntEntity extends Entity {
 	}
 
 	@Override
-	public float getEyeHeight() {
+	protected float method_18378(class_4050 arg, class_4048 arg2) {
 		return 0.0F;
 	}
 

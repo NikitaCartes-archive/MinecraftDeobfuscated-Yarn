@@ -51,7 +51,7 @@ public class MeleeAttackGoal extends Goal {
 		} else if (!this.field_6502) {
 			return !this.entity.getNavigation().isIdle();
 		} else {
-			return !this.entity.isInAiRange(new BlockPos(livingEntity))
+			return !this.entity.method_18407(new BlockPos(livingEntity))
 				? false
 				: !(livingEntity instanceof PlayerEntity) || !((PlayerEntity)livingEntity).isSpectator() && !((PlayerEntity)livingEntity).isCreative();
 		}

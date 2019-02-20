@@ -31,12 +31,12 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 	private int field_7620;
 	private boolean field_7621;
 
-	public EnderEyeEntity(World world) {
-		super(EntityType.EYE_OF_ENDER, world);
+	public EnderEyeEntity(EntityType<? extends EnderEyeEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public EnderEyeEntity(World world, double d, double e, double f) {
-		this(world);
+		this(EntityType.EYE_OF_ENDER, world);
 		this.field_7620 = 0;
 		this.setPosition(d, e, f);
 	}

@@ -15,8 +15,8 @@ import net.minecraft.world.World;
 public class FireballEntity extends class_3855 {
 	public int explosionPower = 1;
 
-	public FireballEntity(World world) {
-		super(EntityType.FIREBALL, world);
+	public FireballEntity(EntityType<? extends FireballEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Environment(EnvType.CLIENT)

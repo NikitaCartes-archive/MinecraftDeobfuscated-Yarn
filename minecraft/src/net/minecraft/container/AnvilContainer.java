@@ -1,6 +1,7 @@
 package net.minecraft.container;
 
 import java.util.Map;
+import java.util.function.BiConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.AnvilBlock;
@@ -17,6 +18,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.text.StringTextComponent;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,18 +35,18 @@ public class AnvilContainer extends Container {
 		}
 	};
 	private final Property levelCost = Property.create();
-	private final ContainerWorldContext context;
+	private final BlockContext context;
 	private int field_7776;
 	private String newItemName;
 	private final PlayerEntity player;
 
 	public AnvilContainer(int i, PlayerInventory playerInventory) {
-		this(i, playerInventory, ContainerWorldContext.NO_OP_CONTEXT);
+		this(i, playerInventory, BlockContext.EMPTY);
 	}
 
-	public AnvilContainer(int i, PlayerInventory playerInventory, ContainerWorldContext containerWorldContext) {
+	public AnvilContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
 		super(ContainerType.ANVIL, i);
-		this.context = containerWorldContext;
+		this.context = blockContext;
 		this.player = playerInventory.player;
 		this.addProperty(this.levelCost);
 		this.addSlot(new Slot(this.inventory, 0, 27, 47));
@@ -82,7 +85,7 @@ public class AnvilContainer extends Container {
 					}
 
 					AnvilContainer.this.levelCost.set(0);
-					containerWorldContext.run((world, blockPos) -> {
+					blockContext.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 						BlockState blockState = world.getBlockState(blockPos);
 						if (!playerEntity.abilities.creativeMode && blockState.matches(BlockTags.field_15486) && playerEntity.getRand().nextFloat() < 0.12F) {
 							BlockState blockState2 = AnvilBlock.getLandingState(blockState);
@@ -96,7 +99,7 @@ public class AnvilContainer extends Container {
 						} else {
 							world.playEvent(1030, blockPos, 0);
 						}
-					});
+					}));
 					return itemStack;
 				}
 			}
@@ -290,13 +293,13 @@ public class AnvilContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.context.run((world, blockPos) -> this.dropInventory(playerEntity, world, this.inventory));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(playerEntity, world, this.inventory)));
 	}
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
 		return this.context
-			.apply(
+			.run(
 				(world, blockPos) -> !world.getBlockState(blockPos).matches(BlockTags.field_15486)
 						? false
 						: playerEntity.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) <= 64.0,

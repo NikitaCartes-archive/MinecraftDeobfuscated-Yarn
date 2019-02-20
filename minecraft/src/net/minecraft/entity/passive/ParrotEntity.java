@@ -16,6 +16,8 @@ import net.minecraft.class_1386;
 import net.minecraft.class_1395;
 import net.minecraft.class_1407;
 import net.minecraft.class_1432;
+import net.minecraft.class_4048;
+import net.minecraft.class_4050;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -105,8 +107,8 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 	private boolean field_6823;
 	private BlockPos field_6820;
 
-	public ParrotEntity(World world) {
-		super(EntityType.PARROT, world);
+	public ParrotEntity(EntityType<? extends ParrotEntity> entityType, World world) {
+		super(entityType, world);
 		this.moveControl = new ParrotMoveControl(this);
 	}
 
@@ -151,8 +153,8 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 	}
 
 	@Override
-	public float getEyeHeight() {
-		return this.getHeight() * 0.6F;
+	protected float method_18394(class_4050 arg, class_4048 arg2) {
+		return arg2.field_18068 * 0.6F;
 	}
 
 	@Override
@@ -200,7 +202,7 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 
 	private static boolean method_6587(World world, Entity entity) {
 		if (!entity.isSilent() && world.random.nextInt(50) == 0) {
-			List<MobEntity> list = world.getEntities(MobEntity.class, entity.getBoundingBox().expand(20.0), field_6821);
+			List<MobEntity> list = world.method_8390(MobEntity.class, entity.getBoundingBox().expand(20.0), field_6821);
 			if (!list.isEmpty()) {
 				MobEntity mobEntity = (MobEntity)list.get(world.random.nextInt(list.size()));
 				if (!mobEntity.isSilent()) {
