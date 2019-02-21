@@ -214,11 +214,11 @@ public class LootContext {
 		}
 
 		public static class Serializer extends TypeAdapter<LootContext.EntityTarget> {
-			public void serialize(JsonWriter jsonWriter, LootContext.EntityTarget entityTarget) throws IOException {
+			public void method_318(JsonWriter jsonWriter, LootContext.EntityTarget entityTarget) throws IOException {
 				jsonWriter.value(entityTarget.type);
 			}
 
-			public LootContext.EntityTarget deserialize(JsonReader jsonReader) throws IOException {
+			public LootContext.EntityTarget method_317(JsonReader jsonReader) throws IOException {
 				return LootContext.EntityTarget.fromString(jsonReader.nextString());
 			}
 		}

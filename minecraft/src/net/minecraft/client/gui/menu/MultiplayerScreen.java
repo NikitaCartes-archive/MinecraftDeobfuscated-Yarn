@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EntryListWidget;
@@ -47,7 +47,7 @@ public class MultiplayerScreen extends Screen {
 	}
 
 	@Override
-	public GuiEventListener getFocused() {
+	public InputListener getFocused() {
 		return this.field_3043;
 	}
 
@@ -56,7 +56,7 @@ public class MultiplayerScreen extends Screen {
 		super.onInitialized();
 		this.client.keyboard.enableRepeatEvents(true);
 		if (this.field_3048) {
-			this.field_3043.method_1953(this.width, this.height, 32, this.height - 64);
+			this.field_3043.method_1953(this.screenWidth, this.screenHeight, 32, this.screenHeight - 64);
 		} else {
 			this.field_3048 = true;
 			this.field_3040 = new ServerList(this.client);
@@ -70,7 +70,7 @@ public class MultiplayerScreen extends Screen {
 				LOGGER.warn("Unable to start LAN server detection: {}", var2.getMessage());
 			}
 
-			this.field_3043 = new ServerListWidget(this, this.client, this.width, this.height, 32, this.height - 64, 36);
+			this.field_3043 = new ServerListWidget(this, this.client, this.screenWidth, this.screenHeight, 32, this.screenHeight - 64, 36);
 			this.field_3043.setUserServers(this.field_3040);
 		}
 
@@ -79,12 +79,12 @@ public class MultiplayerScreen extends Screen {
 
 	public void method_2540() {
 		this.field_3041 = this.addButton(
-			new ButtonWidget(this.width / 2 - 154, this.height - 28, 70, 20, I18n.translate("selectServer.edit")) {
+			new ButtonWidget(this.screenWidth / 2 - 154, this.screenHeight - 28, 70, 20, I18n.translate("selectServer.edit")) {
 				@Override
 				public void onPressed(double d, double e) {
 					EntryListWidget.Entry<?> entry = MultiplayerScreen.this.field_3043.getIndex() < 0
 						? null
-						: (EntryListWidget.Entry)MultiplayerScreen.this.field_3043.method_1968().get(MultiplayerScreen.this.field_3043.getIndex());
+						: (EntryListWidget.Entry)MultiplayerScreen.this.field_3043.getInputListeners().get(MultiplayerScreen.this.field_3043.getIndex());
 					MultiplayerScreen.this.field_3036 = true;
 					if (entry instanceof RemoteServerListEntry) {
 						ServerEntry serverEntry = ((RemoteServerListEntry)entry).getServerEntry();
@@ -96,12 +96,12 @@ public class MultiplayerScreen extends Screen {
 			}
 		);
 		this.field_3047 = this.addButton(
-			new ButtonWidget(this.width / 2 - 74, this.height - 28, 70, 20, I18n.translate("selectServer.delete")) {
+			new ButtonWidget(this.screenWidth / 2 - 74, this.screenHeight - 28, 70, 20, I18n.translate("selectServer.delete")) {
 				@Override
 				public void onPressed(double d, double e) {
 					EntryListWidget.Entry<?> entry = MultiplayerScreen.this.field_3043.getIndex() < 0
 						? null
-						: (EntryListWidget.Entry)MultiplayerScreen.this.field_3043.method_1968().get(MultiplayerScreen.this.field_3043.getIndex());
+						: (EntryListWidget.Entry)MultiplayerScreen.this.field_3043.getInputListeners().get(MultiplayerScreen.this.field_3043.getIndex());
 					if (entry instanceof RemoteServerListEntry) {
 						String string = ((RemoteServerListEntry)entry).getServerEntry().name;
 						if (string != null) {
@@ -117,13 +117,13 @@ public class MultiplayerScreen extends Screen {
 				}
 			}
 		);
-		this.field_3050 = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 52, 100, 20, I18n.translate("selectServer.select")) {
+		this.field_3050 = this.addButton(new ButtonWidget(this.screenWidth / 2 - 154, this.screenHeight - 52, 100, 20, I18n.translate("selectServer.select")) {
 			@Override
 			public void onPressed(double d, double e) {
 				MultiplayerScreen.this.method_2536();
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 - 50, this.height - 52, 100, 20, I18n.translate("selectServer.direct")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 50, this.screenHeight - 52, 100, 20, I18n.translate("selectServer.direct")) {
 			@Override
 			public void onPressed(double d, double e) {
 				MultiplayerScreen.this.field_3035 = true;
@@ -131,7 +131,7 @@ public class MultiplayerScreen extends Screen {
 				MultiplayerScreen.this.client.openScreen(new DirectConnectServerScreen(MultiplayerScreen.this, MultiplayerScreen.this.field_3051));
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 + 4 + 50, this.height - 52, 100, 20, I18n.translate("selectServer.add")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 4 + 50, this.screenHeight - 52, 100, 20, I18n.translate("selectServer.add")) {
 			@Override
 			public void onPressed(double d, double e) {
 				MultiplayerScreen.this.field_3038 = true;
@@ -139,13 +139,13 @@ public class MultiplayerScreen extends Screen {
 				MultiplayerScreen.this.client.openScreen(new AddServerScreen(MultiplayerScreen.this, MultiplayerScreen.this.field_3051));
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 28, 70, 20, I18n.translate("selectServer.refresh")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 4, this.screenHeight - 28, 70, 20, I18n.translate("selectServer.refresh")) {
 			@Override
 			public void onPressed(double d, double e) {
 				MultiplayerScreen.this.method_2534();
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 + 4 + 76, this.height - 28, 75, 20, I18n.translate("gui.cancel")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 4 + 76, this.screenHeight - 28, 75, 20, I18n.translate("gui.cancel")) {
 			@Override
 			public void onPressed(double d, double e) {
 				MultiplayerScreen.this.client.openScreen(MultiplayerScreen.this.parent);
@@ -184,7 +184,9 @@ public class MultiplayerScreen extends Screen {
 
 	@Override
 	public void confirmResult(boolean bl, int i) {
-		EntryListWidget.Entry<?> entry = this.field_3043.getIndex() < 0 ? null : (EntryListWidget.Entry)this.field_3043.method_1968().get(this.field_3043.getIndex());
+		EntryListWidget.Entry<?> entry = this.field_3043.getIndex() < 0
+			? null
+			: (EntryListWidget.Entry)this.field_3043.getInputListeners().get(this.field_3043.getIndex());
 		if (this.field_3039) {
 			this.field_3039 = false;
 			if (bl && entry instanceof RemoteServerListEntry) {
@@ -230,7 +232,7 @@ public class MultiplayerScreen extends Screen {
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
 		int l = this.field_3043.getIndex();
-		EntryListWidget.Entry<?> entry = l < 0 ? null : (EntryListWidget.Entry)this.field_3043.method_1968().get(l);
+		EntryListWidget.Entry<?> entry = l < 0 ? null : (EntryListWidget.Entry)this.field_3043.getInputListeners().get(l);
 		if (i == 294) {
 			this.method_2534();
 			return true;
@@ -247,9 +249,9 @@ public class MultiplayerScreen extends Screen {
 					} else if (l > 0) {
 						this.setIndex(this.field_3043.getIndex() - 1);
 						this.field_3043.scroll(-this.field_3043.getEntryHeight());
-						if (this.field_3043.method_1968().get(this.field_3043.getIndex()) instanceof LocalScanProgressListEntry) {
+						if (this.field_3043.getInputListeners().get(this.field_3043.getIndex()) instanceof LocalScanProgressListEntry) {
 							if (this.field_3043.getIndex() > 0) {
-								this.setIndex(this.field_3043.method_1968().size() - 1);
+								this.setIndex(this.field_3043.getInputListeners().size() - 1);
 								this.field_3043.scroll(-this.field_3043.getEntryHeight());
 							} else {
 								this.setIndex(-1);
@@ -270,12 +272,12 @@ public class MultiplayerScreen extends Screen {
 							this.field_3043.scroll(this.field_3043.getEntryHeight());
 							this.field_3043.setUserServers(this.field_3040);
 						}
-					} else if (l < this.field_3043.method_1968().size()) {
+					} else if (l < this.field_3043.getInputListeners().size()) {
 						this.setIndex(this.field_3043.getIndex() + 1);
 						this.field_3043.scroll(this.field_3043.getEntryHeight());
-						if (this.field_3043.method_1968().get(this.field_3043.getIndex()) instanceof LocalScanProgressListEntry) {
-							if (this.field_3043.getIndex() < this.field_3043.method_1968().size() - 1) {
-								this.setIndex(this.field_3043.method_1968().size() + 1);
+						if (this.field_3043.getInputListeners().get(this.field_3043.getIndex()) instanceof LocalScanProgressListEntry) {
+							if (this.field_3043.getIndex() < this.field_3043.getInputListeners().size() - 1) {
+								this.setIndex(this.field_3043.getInputListeners().size() + 1);
 								this.field_3043.scroll(this.field_3043.getEntryHeight());
 							} else {
 								this.setIndex(-1);
@@ -299,19 +301,21 @@ public class MultiplayerScreen extends Screen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.field_3042 = null;
 		this.drawBackground();
-		this.field_3043.method_18326(i, j, f);
-		this.drawStringCentered(this.fontRenderer, I18n.translate("multiplayer.title"), this.width / 2, 20, 16777215);
-		super.method_18326(i, j, f);
+		this.field_3043.draw(i, j, f);
+		this.drawStringCentered(this.fontRenderer, I18n.translate("multiplayer.title"), this.screenWidth / 2, 20, 16777215);
+		super.draw(i, j, f);
 		if (this.field_3042 != null) {
 			this.drawTooltip(Lists.<String>newArrayList(Splitter.on("\n").split(this.field_3042)), i, j);
 		}
 	}
 
 	public void method_2536() {
-		EntryListWidget.Entry<?> entry = this.field_3043.getIndex() < 0 ? null : (EntryListWidget.Entry)this.field_3043.method_1968().get(this.field_3043.getIndex());
+		EntryListWidget.Entry<?> entry = this.field_3043.getIndex() < 0
+			? null
+			: (EntryListWidget.Entry)this.field_3043.getInputListeners().get(this.field_3043.getIndex());
 		if (entry instanceof RemoteServerListEntry) {
 			this.method_2548(((RemoteServerListEntry)entry).getServerEntry());
 		} else if (entry instanceof LocalServerListEntry) {
@@ -326,7 +330,7 @@ public class MultiplayerScreen extends Screen {
 
 	public void setIndex(int i) {
 		this.field_3043.setIndex(i);
-		EntryListWidget.Entry<?> entry = i < 0 ? null : (EntryListWidget.Entry)this.field_3043.method_1968().get(i);
+		EntryListWidget.Entry<?> entry = i < 0 ? null : (EntryListWidget.Entry)this.field_3043.getInputListeners().get(i);
 		this.field_3050.enabled = false;
 		this.field_3041.enabled = false;
 		this.field_3047.enabled = false;

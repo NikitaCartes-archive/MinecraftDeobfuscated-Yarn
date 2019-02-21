@@ -60,7 +60,6 @@ import net.minecraft.item.WritableBookItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.ButtonClickServerPacket;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
@@ -267,7 +266,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void method_12067(PlayerInputC2SPacket playerInputC2SPacket) {
+	public void onPlayerInput(PlayerInputC2SPacket playerInputC2SPacket) {
 		NetworkThreadUtils.forceMainThread(playerInputC2SPacket, this, this.player.getServerWorld());
 		this.player
 			.method_14218(playerInputC2SPacket.getSideways(), playerInputC2SPacket.getForward(), playerInputC2SPacket.isJumping(), playerInputC2SPacket.isSneaking());
@@ -313,7 +312,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				double l = g - this.lastTickRiddenX;
 				double m = h - this.lastTickRiddenY;
 				double n = i - this.lastTickRiddenZ;
-				double o = entity.velocityX * entity.velocityX + entity.velocityY * entity.velocityY + entity.velocityZ * entity.velocityZ;
+				double o = entity.getVelocity().lengthSquared();
 				double p = l * l + m * m + n * n;
 				if (p - o > 100.0 && (!this.server.isSinglePlayer() || !this.server.getUserName().equals(entity.getName().getString()))) {
 					LOGGER.warn("{} (vehicle of {}) moved too quickly! {},{},{}", entity.getName().getString(), this.player.getName().getString(), l, m, n);
@@ -325,7 +324,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				l = g - this.updatedRiddenX;
 				m = h - this.updatedRiddenY - 1.0E-6;
 				n = i - this.updatedRiddenZ;
-				entity.move(MovementType.field_6305, l, m, n);
+				entity.move(MovementType.field_6305, new Vec3d(l, m, n));
 				l = g - entity.x;
 				m = h - entity.y;
 				if (m > -0.5 || m < 0.5) {
@@ -427,7 +426,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(updateCommandBlockC2SPacket, this, this.player.getServerWorld());
 		if (!this.server.areCommandBlocksEnabled()) {
 			this.player.appendCommandFeedback(new TranslatableTextComponent("advMode.notEnabled"));
-		} else if (!this.player.method_7338()) {
+		} else if (!this.player.isCreativeLevelTwoOp()) {
 			this.player.appendCommandFeedback(new TranslatableTextComponent("advMode.notAllowed"));
 		} else {
 			CommandBlockExecutor commandBlockExecutor = null;
@@ -501,7 +500,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(updateCommandBlockMinecartC2SPacket, this, this.player.getServerWorld());
 		if (!this.server.areCommandBlocksEnabled()) {
 			this.player.appendCommandFeedback(new TranslatableTextComponent("advMode.notEnabled"));
-		} else if (!this.player.method_7338()) {
+		} else if (!this.player.isCreativeLevelTwoOp()) {
 			this.player.appendCommandFeedback(new TranslatableTextComponent("advMode.notAllowed"));
 		} else {
 			CommandBlockExecutor commandBlockExecutor = updateCommandBlockMinecartC2SPacket.getMinecartCommandExecutor(this.player.world);
@@ -554,7 +553,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	@Override
 	public void onStructureBlockUpdate(UpdateStructureBlockC2SPacket updateStructureBlockC2SPacket) {
 		NetworkThreadUtils.forceMainThread(updateStructureBlockC2SPacket, this, this.player.getServerWorld());
-		if (this.player.method_7338()) {
+		if (this.player.isCreativeLevelTwoOp()) {
 			BlockPos blockPos = updateStructureBlockC2SPacket.getPos();
 			BlockState blockState = this.player.world.getBlockState(blockPos);
 			BlockEntity blockEntity = this.player.world.getBlockEntity(blockPos);
@@ -610,7 +609,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	@Override
 	public void onJigsawUpdate(UpdateJigsawC2SPacket updateJigsawC2SPacket) {
 		NetworkThreadUtils.forceMainThread(updateJigsawC2SPacket, this, this.player.getServerWorld());
-		if (this.player.method_7338()) {
+		if (this.player.isCreativeLevelTwoOp()) {
 			BlockPos blockPos = updateJigsawC2SPacket.getPos();
 			BlockState blockState = this.player.world.getBlockState(blockPos);
 			BlockEntity blockEntity = this.player.world.getBlockEntity(blockPos);
@@ -657,7 +656,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 							String string = listTag.getString(i);
 							TextComponent textComponent = new StringTextComponent(string);
 							string = TextComponent.Serializer.toJsonString(textComponent);
-							listTag.set(i, (Tag)(new StringTag(string)));
+							listTag.method_10606(i, new StringTag(string));
 						}
 
 						itemStack3.setChildTag("pages", listTag);
@@ -730,7 +729,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 						double m = h - this.lastTickX;
 						double n = i - this.lastTickY;
 						double o = j - this.lastTickZ;
-						double p = this.player.velocityX * this.player.velocityX + this.player.velocityY * this.player.velocityY + this.player.velocityZ * this.player.velocityZ;
+						double p = this.player.getVelocity().lengthSquared();
 						double q = m * m + n * n + o * o;
 						if (this.player.isSleeping()) {
 							if (q > 1.0) {
@@ -764,7 +763,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 								this.player.jump();
 							}
 
-							this.player.move(MovementType.field_6305, m, n, o);
+							this.player.move(MovementType.field_6305, new Vec3d(m, n, o));
 							this.player.onGround = playerMoveServerMessage.isOnGround();
 							m = h - this.player.x;
 							n = i - this.player.y;
@@ -1105,7 +1104,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				}
 				break;
 			case field_12982:
-				if (!this.player.onGround && this.player.velocityY < 0.0 && !this.player.isFallFlying() && !this.player.isInsideWater()) {
+				if (!this.player.onGround && this.player.getVelocity().y < 0.0 && !this.player.isFallFlying() && !this.player.isInsideWater()) {
 					ItemStack itemStack = this.player.getEquippedStack(EquipmentSlot.CHEST);
 					if (itemStack.getItem() == Items.field_8833 && ElytraItem.isUsable(itemStack)) {
 						this.player.method_14243();

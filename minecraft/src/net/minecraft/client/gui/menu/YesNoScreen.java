@@ -41,34 +41,34 @@ public class YesNoScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
-		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 96, 150, 20, this.yesTranslated) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight / 6 + 96, 150, 20, this.yesTranslated) {
 			@Override
 			public void onPressed(double d, double e) {
 				YesNoScreen.this.callback.confirmResult(true, YesNoScreen.this.callbackId);
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height / 6 + 96, 150, 20, this.noTranslated) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155 + 160, this.screenHeight / 6 + 96, 150, 20, this.noTranslated) {
 			@Override
 			public void onPressed(double d, double e) {
 				YesNoScreen.this.callback.confirmResult(false, YesNoScreen.this.callbackId);
 			}
 		});
 		this.messageSplit.clear();
-		this.messageSplit.addAll(this.fontRenderer.wrapStringToWidthAsList(this.message, this.width - 50));
+		this.messageSplit.addAll(this.fontRenderer.wrapStringToWidthAsList(this.message, this.screenWidth - 50));
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, this.title, this.width / 2, 70, 16777215);
+		this.drawStringCentered(this.fontRenderer, this.title, this.screenWidth / 2, 70, 16777215);
 		int k = 90;
 
 		for (String string : this.messageSplit) {
-			this.drawStringCentered(this.fontRenderer, string, this.width / 2, k, 16777215);
+			this.drawStringCentered(this.fontRenderer, string, this.screenWidth / 2, k, 16777215);
 			k += 9;
 		}
 
-		super.method_18326(i, j, f);
+		super.draw(i, j, f);
 	}
 
 	public void disableButtons(int i) {

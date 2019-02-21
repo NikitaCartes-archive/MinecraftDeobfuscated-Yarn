@@ -1,10 +1,10 @@
 package net.minecraft.entity.passive;
 
 import net.minecraft.class_1378;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnType;
@@ -30,6 +30,7 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
@@ -42,8 +43,8 @@ public abstract class FishEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	protected float method_18394(class_4050 arg, class_4048 arg2) {
-		return arg2.field_18068 * 0.65F;
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+		return entitySize.height * 0.65F;
 	}
 
 	@Override
@@ -115,27 +116,25 @@ public abstract class FishEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public void travel(float f, float g, float h) {
+	public void travel(Vec3d vec3d) {
 		if (this.method_6034() && this.isInsideWater()) {
-			this.updateVelocity(f, g, h, 0.01F);
-			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
-			this.velocityX *= 0.9F;
-			this.velocityY *= 0.9F;
-			this.velocityZ *= 0.9F;
+			this.updateVelocity(0.01F, vec3d);
+			this.move(MovementType.field_6308, this.getVelocity());
+			this.setVelocity(this.getVelocity().multiply(0.9));
 			if (this.getTarget() == null) {
-				this.velocityY -= 0.005;
+				this.setVelocity(this.getVelocity().add(0.0, -0.005, 0.0));
 			}
 		} else {
-			super.travel(f, g, h);
+			super.travel(vec3d);
 		}
 	}
 
 	@Override
 	public void updateMovement() {
 		if (!this.isInsideWater() && this.onGround && this.verticalCollision) {
-			this.velocityY += 0.4F;
-			this.velocityX = this.velocityX + (double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.05F);
-			this.velocityZ = this.velocityZ + (double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.05F);
+			this.setVelocity(
+				this.getVelocity().add((double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.05F), 0.4F, (double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.05F))
+			);
 			this.onGround = false;
 			this.velocityDirty = true;
 			this.playSound(this.getFlopSound(), this.getSoundVolume(), this.getSoundPitch());
@@ -199,7 +198,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 		@Override
 		public void tick() {
 			if (this.fish.isInFluid(FluidTags.field_15517)) {
-				this.fish.velocityY += 0.005;
+				this.fish.setVelocity(this.fish.getVelocity().add(0.0, 0.005, 0.0));
 			}
 
 			if (this.state == MoveControl.State.field_6378 && !this.fish.getNavigation().isIdle()) {
@@ -213,7 +212,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 				this.fish.field_6283 = this.fish.yaw;
 				float i = (float)(this.speed * this.fish.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
 				this.fish.setMovementSpeed(MathHelper.lerp(0.125F, this.fish.getMovementSpeed(), i));
-				this.fish.velocityY = this.fish.velocityY + (double)this.fish.getMovementSpeed() * e * 0.1;
+				this.fish.setVelocity(this.fish.getVelocity().add(0.0, (double)this.fish.getMovementSpeed() * e * 0.1, 0.0));
 			} else {
 				this.fish.setMovementSpeed(0.0F);
 			}

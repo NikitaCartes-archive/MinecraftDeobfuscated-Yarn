@@ -10,10 +10,10 @@ import net.minecraft.class_1394;
 import net.minecraft.class_1399;
 import net.minecraft.class_1403;
 import net.minecraft.class_1404;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
@@ -50,6 +50,7 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class WolfEntity extends TameableEntity {
@@ -224,12 +225,12 @@ public class WolfEntity extends TameableEntity {
 			if (this.field_6947 > 0.4F) {
 				float f = (float)this.getBoundingBox().minY;
 				int i = (int)(MathHelper.sin((this.field_6947 - 0.4F) * (float) Math.PI) * 7.0F);
+				Vec3d vec3d = this.getVelocity();
 
 				for (int j = 0; j < i; j++) {
 					float g = (this.random.nextFloat() * 2.0F - 1.0F) * this.getWidth() * 0.5F;
 					float h = (this.random.nextFloat() * 2.0F - 1.0F) * this.getWidth() * 0.5F;
-					this.world
-						.addParticle(ParticleTypes.field_11202, this.x + (double)g, (double)(f + 0.8F), this.z + (double)h, this.velocityX, this.velocityY, this.velocityZ);
+					this.world.addParticle(ParticleTypes.field_11202, this.x + (double)g, (double)(f + 0.8F), this.z + (double)h, vec3d.x, vec3d.y, vec3d.z);
 				}
 			}
 		}
@@ -263,8 +264,8 @@ public class WolfEntity extends TameableEntity {
 	}
 
 	@Override
-	protected float method_18394(class_4050 arg, class_4048 arg2) {
-		return arg2.field_18068 * 0.8F;
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+		return entitySize.height * 0.8F;
 	}
 
 	@Override

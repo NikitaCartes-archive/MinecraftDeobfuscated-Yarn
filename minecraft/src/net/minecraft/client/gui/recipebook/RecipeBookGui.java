@@ -10,10 +10,10 @@ import java.util.Locale;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4068;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.RecipeBookGhostSlots;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -38,7 +38,7 @@ import net.minecraft.server.network.packet.RecipeBookDataC2SPacket;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class RecipeBookGui extends Drawable implements class_4068, GuiEventListener, RecipeDisplayListener, RecipeGridAligner<Ingredient> {
+public class RecipeBookGui extends DrawableHelper implements Drawable, InputListener, RecipeDisplayListener, RecipeGridAligner<Ingredient> {
 	protected static final Identifier TEXTURE = new Identifier("textures/gui/recipe_book.png");
 	private int leftOffset;
 	private int parentWidth;
@@ -220,7 +220,7 @@ public class RecipeBookGui extends Drawable implements class_4068, GuiEventListe
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		if (this.isOpen()) {
 			GuiLighting.enableForItems();
 			GlStateManager.disableLighting();
@@ -231,14 +231,14 @@ public class RecipeBookGui extends Drawable implements class_4068, GuiEventListe
 			int k = (this.parentWidth - 147) / 2 - this.leftOffset;
 			int l = (this.parentHeight - 166) / 2;
 			this.drawTexturedRect(k, l, 1, 1, 147, 166);
-			this.searchField.method_18326(i, j, f);
+			this.searchField.draw(i, j, f);
 			GuiLighting.disable();
 
 			for (GroupButtonWidget groupButtonWidget : this.tabButtons) {
-				groupButtonWidget.method_18326(i, j, f);
+				groupButtonWidget.draw(i, j, f);
 			}
 
-			this.toggleCraftableButton.method_18326(i, j, f);
+			this.toggleCraftableButton.draw(i, j, f);
 			this.recipesArea.draw(k, l, i, j, f);
 			GlStateManager.popMatrix();
 		}
@@ -370,7 +370,7 @@ public class RecipeBookGui extends Drawable implements class_4068, GuiEventListe
 	@Override
 	public boolean keyReleased(int i, int j, int k) {
 		this.field_3087 = false;
-		return GuiEventListener.super.keyReleased(i, j, k);
+		return InputListener.super.keyReleased(i, j, k);
 	}
 
 	@Override
@@ -383,7 +383,7 @@ public class RecipeBookGui extends Drawable implements class_4068, GuiEventListe
 			this.refreshSearchResults();
 			return true;
 		} else {
-			return GuiEventListener.super.charTyped(c, i);
+			return InputListener.super.charTyped(c, i);
 		}
 	}
 
@@ -400,7 +400,7 @@ public class RecipeBookGui extends Drawable implements class_4068, GuiEventListe
 		if ("excitedze".equals(string)) {
 			LanguageManager languageManager = this.client.getLanguageManager();
 			LanguageDefinition languageDefinition = languageManager.method_4668("en_pt");
-			if (languageManager.getLanguage().compareTo(languageDefinition) == 0) {
+			if (languageManager.getLanguage().method_4673(languageDefinition) == 0) {
 				return;
 			}
 

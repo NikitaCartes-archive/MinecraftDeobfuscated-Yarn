@@ -67,7 +67,7 @@ public class BambooSaplingBlock extends Block implements Fertilizable {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
-		return new ItemStack(Items.field_8648);
+		return new ItemStack(Items.BAMBOO);
 	}
 
 	@Override

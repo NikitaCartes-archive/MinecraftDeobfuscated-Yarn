@@ -12,12 +12,10 @@ import net.minecraft.util.SystemUtil;
 
 @Environment(EnvType.CLIENT)
 public class MooshroomEntityRenderer extends MobEntityRenderer<MooshroomEntity, CowEntityModel<MooshroomEntity>> {
-	private static final Map<MooshroomEntity.class_4053, Identifier> SKIN = SystemUtil.consume(
-		Maps.<MooshroomEntity.class_4053, Identifier>newHashMap(), hashMap -> {
-			hashMap.put(MooshroomEntity.class_4053.field_18110, new Identifier("textures/entity/cow/brown_mooshroom.png"));
-			hashMap.put(MooshroomEntity.class_4053.field_18109, new Identifier("textures/entity/cow/red_mooshroom.png"));
-		}
-	);
+	private static final Map<MooshroomEntity.Type, Identifier> SKIN = SystemUtil.consume(Maps.<MooshroomEntity.Type, Identifier>newHashMap(), hashMap -> {
+		hashMap.put(MooshroomEntity.Type.field_18110, new Identifier("textures/entity/cow/brown_mooshroom.png"));
+		hashMap.put(MooshroomEntity.Type.field_18109, new Identifier("textures/entity/cow/red_mooshroom.png"));
+	});
 
 	public MooshroomEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new CowEntityModel<>(), 0.7F);
@@ -25,6 +23,6 @@ public class MooshroomEntityRenderer extends MobEntityRenderer<MooshroomEntity, 
 	}
 
 	protected Identifier method_4066(MooshroomEntity mooshroomEntity) {
-		return (Identifier)SKIN.get(mooshroomEntity.method_18435());
+		return (Identifier)SKIN.get(mooshroomEntity.getType());
 	}
 }

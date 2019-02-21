@@ -16,14 +16,14 @@ import net.minecraft.class_1386;
 import net.minecraft.class_1395;
 import net.minecraft.class_1407;
 import net.minecraft.class_1432;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LogBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.control.ParrotMoveControl;
@@ -54,6 +54,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -153,8 +154,8 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 	}
 
 	@Override
-	protected float method_18394(class_4050 arg, class_4048 arg2) {
-		return arg2.field_18068 * 0.6F;
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+		return entitySize.height * 0.6F;
 	}
 
 	@Override
@@ -193,8 +194,9 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 		}
 
 		this.field_6824 = (float)((double)this.field_6824 * 0.9);
-		if (!this.onGround && this.velocityY < 0.0) {
-			this.velocityY *= 0.6;
+		Vec3d vec3d = this.getVelocity();
+		if (!this.onGround && vec3d.y < 0.0) {
+			this.setVelocity(vec3d.multiply(1.0, 0.6, 1.0));
 		}
 
 		this.field_6818 = this.field_6818 + this.field_6824 * 2.0F;

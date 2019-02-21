@@ -30,15 +30,15 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
-		super.method_18326(i, j, f);
+	public void draw(int i, int j, float f) {
+		super.draw(i, j, f);
 		this.drawMouseoverTooltip(i, j);
 	}
 
 	@Override
 	protected void drawForeground(int i, int j) {
 		this.fontRenderer.draw(this.name.getFormattedText(), 8.0F, 4.0F, 4210752);
-		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.containerHeight - 94), 4210752);
+		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.height - 94), 4210752);
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
 		this.client.getTextureManager().bindTexture(TEXTURE);
 		int k = this.left;
 		int l = this.top;
-		this.drawTexturedRect(k, l, 0, 0, this.containerWidth, this.containerHeight);
+		this.drawTexturedRect(k, l, 0, 0, this.width, this.height);
 		int m = (int)(41.0F * this.scrollAmount);
 		this.drawTexturedRect(k + 119, l + 15 + m, 176 + (this.shouldScroll() ? 0 : 12), 0, 12, 15);
 		int n = this.left + 52;
@@ -64,7 +64,7 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
 			int p = k + o % 4 * 16;
 			int q = o / 4;
 			int r = l + q * 18 + 2;
-			int s = this.containerHeight;
+			int s = this.height;
 			if (n == this.container.getSelectedRecipe()) {
 				s += 18;
 			} else if (i >= p && j >= r && i < p + 16 && j < r + 18) {

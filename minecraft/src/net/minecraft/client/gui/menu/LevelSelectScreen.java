@@ -45,15 +45,17 @@ public class LevelSelectScreen extends Screen {
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
 		this.title = I18n.translate("selectWorld.title");
-		this.searchBox = new TextFieldWidget(this.fontRenderer, this.width / 2 - 100, 22, 200, 20, this.searchBox) {
+		this.searchBox = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 100, 22, 200, 20, this.searchBox) {
 			@Override
 			public void setFocused(boolean bl) {
 				super.setFocused(true);
 			}
 		};
 		this.searchBox.setChangedListener(string -> this.levelList.filter(() -> string, false));
-		this.levelList = new LevelListWidget(this, this.client, this.width, this.height, 48, this.height - 64, 36, () -> this.searchBox.getText(), this.levelList);
-		this.selectButton = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 52, 150, 20, I18n.translate("selectWorld.select")) {
+		this.levelList = new LevelListWidget(
+			this, this.client, this.screenWidth, this.screenHeight, 48, this.screenHeight - 64, 36, () -> this.searchBox.getText(), this.levelList
+		);
+		this.selectButton = this.addButton(new ButtonWidget(this.screenWidth / 2 - 154, this.screenHeight - 52, 150, 20, I18n.translate("selectWorld.select")) {
 			@Override
 			public void onPressed(double d, double e) {
 				LevelSelectEntryWidget levelSelectEntryWidget = LevelSelectScreen.this.levelList.method_2753();
@@ -62,13 +64,13 @@ public class LevelSelectScreen extends Screen {
 				}
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 52, 150, 20, I18n.translate("selectWorld.create")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 4, this.screenHeight - 52, 150, 20, I18n.translate("selectWorld.create")) {
 			@Override
 			public void onPressed(double d, double e) {
 				LevelSelectScreen.this.client.openScreen(new NewLevelScreen(LevelSelectScreen.this));
 			}
 		});
-		this.editButton = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 28, 72, 20, I18n.translate("selectWorld.edit")) {
+		this.editButton = this.addButton(new ButtonWidget(this.screenWidth / 2 - 154, this.screenHeight - 28, 72, 20, I18n.translate("selectWorld.edit")) {
 			@Override
 			public void onPressed(double d, double e) {
 				LevelSelectEntryWidget levelSelectEntryWidget = LevelSelectScreen.this.levelList.method_2753();
@@ -77,7 +79,7 @@ public class LevelSelectScreen extends Screen {
 				}
 			}
 		});
-		this.deleteButton = this.addButton(new ButtonWidget(this.width / 2 - 76, this.height - 28, 72, 20, I18n.translate("selectWorld.delete")) {
+		this.deleteButton = this.addButton(new ButtonWidget(this.screenWidth / 2 - 76, this.screenHeight - 28, 72, 20, I18n.translate("selectWorld.delete")) {
 			@Override
 			public void onPressed(double d, double e) {
 				LevelSelectEntryWidget levelSelectEntryWidget = LevelSelectScreen.this.levelList.method_2753();
@@ -86,7 +88,7 @@ public class LevelSelectScreen extends Screen {
 				}
 			}
 		});
-		this.recreateButton = this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 28, 72, 20, I18n.translate("selectWorld.recreate")) {
+		this.recreateButton = this.addButton(new ButtonWidget(this.screenWidth / 2 + 4, this.screenHeight - 28, 72, 20, I18n.translate("selectWorld.recreate")) {
 			@Override
 			public void onPressed(double d, double e) {
 				LevelSelectEntryWidget levelSelectEntryWidget = LevelSelectScreen.this.levelList.method_2753();
@@ -95,7 +97,7 @@ public class LevelSelectScreen extends Screen {
 				}
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 + 82, this.height - 28, 72, 20, I18n.translate("gui.cancel")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 82, this.screenHeight - 28, 72, 20, I18n.translate("gui.cancel")) {
 			@Override
 			public void onPressed(double d, double e) {
 				LevelSelectScreen.this.client.openScreen(LevelSelectScreen.this.parent);
@@ -122,12 +124,12 @@ public class LevelSelectScreen extends Screen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.field_3222 = null;
-		this.levelList.method_18326(i, j, f);
-		this.searchBox.method_18326(i, j, f);
-		this.drawStringCentered(this.fontRenderer, this.title, this.width / 2, 8, 16777215);
-		super.method_18326(i, j, f);
+		this.levelList.draw(i, j, f);
+		this.searchBox.draw(i, j, f);
+		this.drawStringCentered(this.fontRenderer, this.title, this.screenWidth / 2, 8, 16777215);
+		super.draw(i, j, f);
 		if (this.field_3222 != null) {
 			this.drawTooltip(Lists.<String>newArrayList(Splitter.on("\n").split(this.field_3222)), i, j);
 		}
@@ -148,7 +150,7 @@ public class LevelSelectScreen extends Screen {
 	@Override
 	public void onClosed() {
 		if (this.levelList != null) {
-			this.levelList.method_1968().forEach(LevelSelectEntryWidget::close);
+			this.levelList.getInputListeners().forEach(LevelSelectEntryWidget::close);
 		}
 	}
 }

@@ -32,7 +32,7 @@ public class EditSignScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120, I18n.translate("gui.done")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 120, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
 				EditSignScreen.this.method_2526();
@@ -97,12 +97,12 @@ public class EditSignScreen extends Screen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, I18n.translate("sign.edit"), this.width / 2, 40, 16777215);
+		this.drawStringCentered(this.fontRenderer, I18n.translate("sign.edit"), this.screenWidth / 2, 40, 16777215);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.pushMatrix();
-		GlStateManager.translatef((float)(this.width / 2), 0.0F, 50.0F);
+		GlStateManager.translatef((float)(this.screenWidth / 2), 0.0F, 50.0F);
 		float g = 93.75F;
 		GlStateManager.scalef(-93.75F, -93.75F, -93.75F);
 		GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
@@ -121,6 +121,6 @@ public class EditSignScreen extends Screen {
 		BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.sign, -0.5, -0.75, -0.5, 0.0F);
 		this.sign.resetSelectionState();
 		GlStateManager.popMatrix();
-		super.method_18326(i, j, f);
+		super.draw(i, j, f);
 	}
 }

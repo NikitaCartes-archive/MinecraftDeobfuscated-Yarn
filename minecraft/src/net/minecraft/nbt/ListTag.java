@@ -80,7 +80,7 @@ public class ListTag extends AbstractListTag<Tag> {
 	}
 
 	@Override
-	public Tag remove(int i) {
+	public Tag method_10536(int i) {
 		Tag tag = (Tag)this.value.remove(i);
 		this.method_17809();
 		return tag;
@@ -180,13 +180,13 @@ public class ListTag extends AbstractListTag<Tag> {
 		return this.value.size();
 	}
 
-	public Tag get(int i) {
+	public Tag method_10534(int i) {
 		return (Tag)this.value.get(i);
 	}
 
 	@Override
-	public Tag set(int i, Tag tag) {
-		Tag tag2 = this.get(i);
+	public Tag method_10606(int i, Tag tag) {
+		Tag tag2 = this.method_10534(i);
 		if (!this.setTag(i, tag)) {
 			throw new UnsupportedOperationException(String.format("Trying to add tag of type %d to list of %d", tag.getType(), this.type));
 		} else {
@@ -195,7 +195,7 @@ public class ListTag extends AbstractListTag<Tag> {
 	}
 
 	@Override
-	public void add(int i, Tag tag) {
+	public void method_10531(int i, Tag tag) {
 		if (!this.addTag(i, tag)) {
 			throw new UnsupportedOperationException(String.format("Trying to add tag of type %d to list of %d", tag.getType(), this.type));
 		}

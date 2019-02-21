@@ -47,7 +47,7 @@ public class CartographyTableContainer extends Container {
 			@Override
 			public boolean canInsert(ItemStack itemStack) {
 				Item item = itemStack.getItem();
-				return item == Items.field_8407 || item == Items.field_8895 || item == Items.field_8141;
+				return item == Items.field_8407 || item == Items.field_8895 || item == Items.GLASS_PANE;
 			}
 		});
 		this.addSlot(
@@ -60,7 +60,7 @@ public class CartographyTableContainer extends Container {
 				@Override
 				public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
 					ItemStack itemStack2 = (ItemStack)blockContext.run((BiFunction)((world, blockPos) -> {
-						if (!CartographyTableContainer.this.field_17295 && CartographyTableContainer.this.inventory.getInvStack(1).getItem() == Items.field_8141) {
+						if (!CartographyTableContainer.this.field_17295 && CartographyTableContainer.this.inventory.getInvStack(1).getItem() == Items.GLASS_PANE) {
 							ItemStack itemStack2x = FilledMapItem.method_17442(world, CartographyTableContainer.this.field_17296);
 							if (itemStack2x != null) {
 								itemStack2x.setAmount(1);
@@ -128,7 +128,7 @@ public class CartographyTableContainer extends Container {
 					itemStack4 = itemStack.copy();
 					itemStack4.setAmount(1);
 					itemStack4.getOrCreateTag().putInt("map_scale_direction", 1);
-				} else if (item == Items.field_8141 && !mapState.field_17403) {
+				} else if (item == Items.GLASS_PANE && !mapState.field_17403) {
 					itemStack4 = itemStack.copy();
 					itemStack4.setAmount(1);
 				} else {
@@ -160,7 +160,7 @@ public class CartographyTableContainer extends Container {
 			Item item = itemStack2.getItem();
 			itemStack = itemStack2.copy();
 			if (i == 2) {
-				if (this.inventory.getInvStack(1).getItem() == Items.field_8141) {
+				if (this.inventory.getInvStack(1).getItem() == Items.GLASS_PANE) {
 					itemStack3 = (ItemStack)this.context.run((BiFunction)((world, blockPos) -> {
 						ItemStack itemStack2x = FilledMapItem.method_17442(world, this.field_17296);
 						return itemStack2x != null ? itemStack2x : itemStack2;
@@ -178,7 +178,7 @@ public class CartographyTableContainer extends Container {
 					if (!this.insertItem(itemStack2, 0, 1, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (item != Items.field_8407 && item != Items.field_8895 && item != Items.field_8141) {
+				} else if (item != Items.field_8407 && item != Items.field_8895 && item != Items.GLASS_PANE) {
 					if (i >= 3 && i < 30) {
 						if (!this.insertItem(itemStack2, 30, 39, false)) {
 							return ItemStack.EMPTY;

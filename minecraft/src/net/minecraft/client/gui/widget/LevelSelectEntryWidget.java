@@ -15,7 +15,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.class_403;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.audio.PositionedSoundInstance;
-import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.menu.BackupLevelScreen;
 import net.minecraft.client.gui.menu.BackupPromptScreen;
 import net.minecraft.client.gui.menu.LevelSelectScreen;
@@ -111,25 +111,25 @@ public final class LevelSelectEntryWidget extends EntryListWidget.Entry<LevelSel
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(this.levelIcon != null ? this.iconLocation : UNKNOWN_SERVER_TEX);
 		GlStateManager.enableBlend();
-		Drawable.drawTexturedRect(n, m, 0.0F, 0.0F, 32, 32, 32.0F, 32.0F);
+		DrawableHelper.drawTexturedRect(n, m, 0.0F, 0.0F, 32, 32, 32.0F, 32.0F);
 		GlStateManager.disableBlend();
 		if (this.client.options.touchscreen || bl) {
 			this.client.getTextureManager().bindTexture(WORLD_SELECTION_TEX);
-			Drawable.drawRect(n, m, n + 32, m + 32, -1601138544);
+			DrawableHelper.drawRect(n, m, n + 32, m + 32, -1601138544);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			int o = k - n;
 			int p = o < 32 ? 32 : 0;
 			if (this.levelSummary.isDifferentVersion()) {
-				Drawable.drawTexturedRect(n, m, 32.0F, (float)p, 32, 32, 256.0F, 256.0F);
+				DrawableHelper.drawTexturedRect(n, m, 32.0F, (float)p, 32, 32, 256.0F, 256.0F);
 				if (this.levelSummary.isLegacyCustomizedWorld()) {
-					Drawable.drawTexturedRect(n, m, 96.0F, (float)p, 32, 32, 256.0F, 256.0F);
+					DrawableHelper.drawTexturedRect(n, m, 96.0F, (float)p, 32, 32, 256.0F, 256.0F);
 					if (o < 32) {
 						TextComponent textComponent = new TranslatableTextComponent("selectWorld.tooltip.unsupported", this.levelSummary.getVersionTextComponent())
 							.applyFormat(TextFormat.field_1061);
 						this.guiLevelSelect.method_2739(this.client.textRenderer.wrapStringToWidth(textComponent.getFormattedText(), 175));
 					}
 				} else if (this.levelSummary.isFutureLevel()) {
-					Drawable.drawTexturedRect(n, m, 96.0F, (float)p, 32, 32, 256.0F, 256.0F);
+					DrawableHelper.drawTexturedRect(n, m, 96.0F, (float)p, 32, 32, 256.0F, 256.0F);
 					if (o < 32) {
 						this.guiLevelSelect
 							.method_2739(
@@ -141,7 +141,7 @@ public final class LevelSelectEntryWidget extends EntryListWidget.Entry<LevelSel
 							);
 					}
 				} else if (!SharedConstants.getGameVersion().isStable()) {
-					Drawable.drawTexturedRect(n, m, 64.0F, (float)p, 32, 32, 256.0F, 256.0F);
+					DrawableHelper.drawTexturedRect(n, m, 64.0F, (float)p, 32, 32, 256.0F, 256.0F);
 					if (o < 32) {
 						this.guiLevelSelect
 							.method_2739(
@@ -154,7 +154,7 @@ public final class LevelSelectEntryWidget extends EntryListWidget.Entry<LevelSel
 					}
 				}
 			} else {
-				Drawable.drawTexturedRect(n, m, 0.0F, (float)p, 32, 32, 256.0F, 256.0F);
+				DrawableHelper.drawTexturedRect(n, m, 0.0F, (float)p, 32, 32, 256.0F, 256.0F);
 			}
 		}
 	}

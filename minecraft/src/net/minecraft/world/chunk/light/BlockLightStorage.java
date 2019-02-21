@@ -1,8 +1,8 @@
 package net.minecraft.world.chunk.light;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import net.minecraft.class_4076;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkProvider;
@@ -15,12 +15,14 @@ public class BlockLightStorage extends LightStorage<BlockLightStorage.Data> {
 
 	@Override
 	protected int getLight(long l) {
-		long m = class_4076.method_18691(l);
+		long m = ChunkSectionPos.toChunkLong(l);
 		ChunkNibbleArray chunkNibbleArray = this.getDataForChunk(m, false);
 		return chunkNibbleArray == null
 			? 0
 			: chunkNibbleArray.get(
-				class_4076.method_18684(BlockPos.unpackLongX(l)), class_4076.method_18684(BlockPos.unpackLongY(l)), class_4076.method_18684(BlockPos.unpackLongZ(l))
+				ChunkSectionPos.toLocalCoord(BlockPos.unpackLongX(l)),
+				ChunkSectionPos.toLocalCoord(BlockPos.unpackLongY(l)),
+				ChunkSectionPos.toLocalCoord(BlockPos.unpackLongZ(l))
 			);
 	}
 

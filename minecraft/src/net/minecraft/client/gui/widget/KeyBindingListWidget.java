@@ -17,7 +17,7 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 	private int field_2733;
 
 	public KeyBindingListWidget(ControlsSettingsScreen controlsSettingsScreen, MinecraftClient minecraftClient) {
-		super(minecraftClient, controlsSettingsScreen.width + 45, controlsSettingsScreen.height, 63, controlsSettingsScreen.height - 32, 20);
+		super(minecraftClient, controlsSettingsScreen.screenWidth + 45, controlsSettingsScreen.screenHeight, 63, controlsSettingsScreen.screenHeight - 32, 20);
 		this.gui = controlsSettingsScreen;
 		this.client = minecraftClient;
 		KeyBinding[] keyBindings = ArrayUtils.clone(minecraftClient.options.keysAll);
@@ -64,7 +64,7 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 		public void draw(int i, int j, int k, int l, boolean bl, float f) {
 			KeyBindingListWidget.this.client
 				.textRenderer
-				.draw(this.name, (float)(KeyBindingListWidget.this.client.currentScreen.width / 2 - this.nameWidth / 2), (float)(this.getY() + j - 9 - 1), 16777215);
+				.draw(this.name, (float)(KeyBindingListWidget.this.client.currentScreen.screenWidth / 2 - this.nameWidth / 2), (float)(this.getY() + j - 9 - 1), 16777215);
 		}
 	}
 
@@ -108,7 +108,7 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 			this.resetButton.x = n + 190;
 			this.resetButton.y = m;
 			this.resetButton.enabled = !this.binding.isDefault();
-			this.resetButton.method_18326(k, l, f);
+			this.resetButton.draw(k, l, f);
 			this.editButton.x = n + 105;
 			this.editButton.y = m;
 			this.editButton.setText(this.binding.getLocalizedName());
@@ -128,7 +128,7 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 				this.editButton.setText(TextFormat.field_1061 + this.editButton.getText());
 			}
 
-			this.editButton.method_18326(k, l, f);
+			this.editButton.draw(k, l, f);
 		}
 
 		@Override

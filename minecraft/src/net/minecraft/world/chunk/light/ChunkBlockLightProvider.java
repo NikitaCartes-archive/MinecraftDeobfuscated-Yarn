@@ -1,7 +1,7 @@
 package net.minecraft.world.chunk.light;
 
-import net.minecraft.class_4076;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
@@ -37,11 +37,11 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 
 	@Override
 	protected void processLevelAt(long l, int i, boolean bl) {
-		long m = class_4076.method_18691(l);
+		long m = ChunkSectionPos.toChunkLong(l);
 
 		for (Direction direction : DIRECTIONS_BLOCKLIGHT) {
 			long n = BlockPos.offset(l, direction);
-			long o = class_4076.method_18691(n);
+			long o = ChunkSectionPos.toChunkLong(n);
 			if (m == o || this.lightStorage.hasChunk(o)) {
 				this.scheduleUpdateRecursively(l, n, i, bl);
 			}
@@ -62,13 +62,13 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 			}
 		}
 
-		long n = class_4076.method_18691(l);
+		long n = ChunkSectionPos.toChunkLong(l);
 		ChunkNibbleArray chunkNibbleArray = this.lightStorage.getDataForChunk(n, true);
 
 		for (Direction direction : DIRECTIONS_BLOCKLIGHT) {
 			long o = BlockPos.offset(l, direction);
 			if (o != m) {
-				long p = class_4076.method_18691(o);
+				long p = ChunkSectionPos.toChunkLong(o);
 				ChunkNibbleArray chunkNibbleArray2;
 				if (n == p) {
 					chunkNibbleArray2 = chunkNibbleArray;

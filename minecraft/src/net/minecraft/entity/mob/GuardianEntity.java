@@ -5,10 +5,10 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1370;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
@@ -184,8 +184,8 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	protected float method_18394(class_4050 arg, class_4048 arg2) {
-		return arg2.field_18068 * 0.5F;
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+		return entitySize.height * 0.5F;
 	}
 
 	@Override
@@ -201,11 +201,12 @@ public class GuardianEntity extends HostileEntity {
 			this.prevSpikesExtension = this.spikesExtension;
 			if (!this.isInsideWater()) {
 				this.spikesExtensionRate = 2.0F;
-				if (this.velocityY > 0.0 && this.flopping && !this.isSilent()) {
+				Vec3d vec3d = this.getVelocity();
+				if (vec3d.y > 0.0 && this.flopping && !this.isSilent()) {
 					this.world.playSound(this.x, this.y, this.z, this.method_7062(), this.getSoundCategory(), 1.0F, 1.0F, false);
 				}
 
-				this.flopping = this.velocityY < 0.0 && this.world.doesBlockHaveSolidTopSurface(new BlockPos(this).down());
+				this.flopping = vec3d.y < 0.0 && this.world.doesBlockHaveSolidTopSurface(new BlockPos(this).down());
 			} else if (this.areSpikesRetracted()) {
 				if (this.spikesExtensionRate < 0.5F) {
 					this.spikesExtensionRate = 4.0F;
@@ -254,7 +255,7 @@ public class GuardianEntity extends HostileEntity {
 					this.getLookControl().tick();
 					double d = (double)this.getBeamProgress(0.0F);
 					double e = livingEntity.x - this.x;
-					double f = livingEntity.y + (double)(livingEntity.getHeight() * 0.5F) - (this.y + (double)this.getEyeHeight());
+					double f = livingEntity.y + (double)(livingEntity.getHeight() * 0.5F) - (this.y + (double)this.getStandingEyeHeight());
 					double g = livingEntity.z - this.z;
 					double h = Math.sqrt(e * e + f * f + g * g);
 					e /= h;
@@ -264,7 +265,7 @@ public class GuardianEntity extends HostileEntity {
 
 					while (j < h) {
 						j += 1.8 - d + this.random.nextDouble() * (1.7 - d);
-						this.world.addParticle(ParticleTypes.field_11247, this.x + e * j, this.y + f * j + (double)this.getEyeHeight(), this.z + g * j, 0.0, 0.0, 0.0);
+						this.world.addParticle(ParticleTypes.field_11247, this.x + e * j, this.y + f * j + (double)this.getStandingEyeHeight(), this.z + g * j, 0.0, 0.0, 0.0);
 					}
 				}
 			}
@@ -273,9 +274,9 @@ public class GuardianEntity extends HostileEntity {
 		if (this.isInsideWaterOrBubbleColumn()) {
 			this.setBreath(300);
 		} else if (this.onGround) {
-			this.velocityY += 0.5;
-			this.velocityX = this.velocityX + (double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.4F);
-			this.velocityZ = this.velocityZ + (double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.4F);
+			this.setVelocity(
+				this.getVelocity().add((double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.4F), 0.5, (double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.4F))
+			);
 			this.yaw = this.random.nextFloat() * 360.0F;
 			this.onGround = false;
 			this.velocityDirty = true;
@@ -343,18 +344,16 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	public void travel(float f, float g, float h) {
+	public void travel(Vec3d vec3d) {
 		if (this.method_6034() && this.isInsideWater()) {
-			this.updateVelocity(f, g, h, 0.1F);
-			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
-			this.velocityX *= 0.9F;
-			this.velocityY *= 0.9F;
-			this.velocityZ *= 0.9F;
+			this.updateVelocity(0.1F, vec3d);
+			this.move(MovementType.field_6308, this.getVelocity());
+			this.setVelocity(this.getVelocity().multiply(0.9));
 			if (!this.areSpikesRetracted() && this.getTarget() == null) {
-				this.velocityY -= 0.005;
+				this.setVelocity(this.getVelocity().add(0.0, -0.005, 0.0));
 			}
 		} else {
-			super.travel(f, g, h);
+			super.travel(vec3d);
 		}
 	}
 
@@ -438,38 +437,36 @@ public class GuardianEntity extends HostileEntity {
 		@Override
 		public void tick() {
 			if (this.state == MoveControl.State.field_6378 && !this.guardian.getNavigation().isIdle()) {
-				double d = this.targetX - this.guardian.x;
-				double e = this.targetY - this.guardian.y;
-				double f = this.targetZ - this.guardian.z;
-				double g = (double)MathHelper.sqrt(d * d + e * e + f * f);
-				e /= g;
-				float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;
+				Vec3d vec3d = new Vec3d(this.targetX - this.guardian.x, this.targetY - this.guardian.y, this.targetZ - this.guardian.z);
+				double d = vec3d.length();
+				double e = vec3d.x / d;
+				double f = vec3d.y / d;
+				double g = vec3d.z / d;
+				float h = (float)(MathHelper.atan2(vec3d.z, vec3d.x) * 180.0F / (float)Math.PI) - 90.0F;
 				this.guardian.yaw = this.method_6238(this.guardian.yaw, h, 90.0F);
 				this.guardian.field_6283 = this.guardian.yaw;
 				float i = (float)(this.speed * this.guardian.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
-				this.guardian.setMovementSpeed(MathHelper.lerp(0.125F, this.guardian.getMovementSpeed(), i));
-				double j = Math.sin((double)(this.guardian.age + this.guardian.getEntityId()) * 0.5) * 0.05;
-				double k = Math.cos((double)(this.guardian.yaw * (float) (Math.PI / 180.0)));
-				double l = Math.sin((double)(this.guardian.yaw * (float) (Math.PI / 180.0)));
-				this.guardian.velocityX += j * k;
-				this.guardian.velocityZ += j * l;
-				j = Math.sin((double)(this.guardian.age + this.guardian.getEntityId()) * 0.75) * 0.05;
-				this.guardian.velocityY += j * (l + k) * 0.25;
-				this.guardian.velocityY = this.guardian.velocityY + (double)this.guardian.getMovementSpeed() * e * 0.1;
+				float j = MathHelper.lerp(0.125F, this.guardian.getMovementSpeed(), i);
+				this.guardian.setMovementSpeed(j);
+				double k = Math.sin((double)(this.guardian.age + this.guardian.getEntityId()) * 0.5) * 0.05;
+				double l = Math.cos((double)(this.guardian.yaw * (float) (Math.PI / 180.0)));
+				double m = Math.sin((double)(this.guardian.yaw * (float) (Math.PI / 180.0)));
+				double n = Math.sin((double)(this.guardian.age + this.guardian.getEntityId()) * 0.75) * 0.05;
+				this.guardian.setVelocity(this.guardian.getVelocity().add(k * l, n * (m + l) * 0.25 + (double)j * f * 0.1, k * m));
 				LookControl lookControl = this.guardian.getLookControl();
-				double m = this.guardian.x + d / g * 2.0;
-				double n = (double)this.guardian.getEyeHeight() + this.guardian.y + e / g;
-				double o = this.guardian.z + f / g * 2.0;
-				double p = lookControl.getLookX();
-				double q = lookControl.getLookY();
-				double r = lookControl.getLookZ();
+				double o = this.guardian.x + e * 2.0;
+				double p = (double)this.guardian.getStandingEyeHeight() + this.guardian.y + f / d;
+				double q = this.guardian.z + g * 2.0;
+				double r = lookControl.getLookX();
+				double s = lookControl.getLookY();
+				double t = lookControl.getLookZ();
 				if (!lookControl.isActive()) {
-					p = m;
-					q = n;
 					r = o;
+					s = p;
+					t = q;
 				}
 
-				this.guardian.getLookControl().lookAt(MathHelper.lerp(0.125, p, m), MathHelper.lerp(0.125, q, n), MathHelper.lerp(0.125, r, o), 10.0F, 40.0F);
+				this.guardian.getLookControl().lookAt(MathHelper.lerp(0.125, r, o), MathHelper.lerp(0.125, s, p), MathHelper.lerp(0.125, t, q), 10.0F, 40.0F);
 				this.guardian.setSpikesRetracted(true);
 			} else {
 				this.guardian.setMovementSpeed(0.0F);
@@ -485,7 +482,7 @@ public class GuardianEntity extends HostileEntity {
 			this.owner = guardianEntity;
 		}
 
-		public boolean test(@Nullable LivingEntity livingEntity) {
+		public boolean method_7064(@Nullable LivingEntity livingEntity) {
 			return (livingEntity instanceof PlayerEntity || livingEntity instanceof SquidEntity) && livingEntity.squaredDistanceTo(this.owner) > 9.0;
 		}
 	}

@@ -38,10 +38,10 @@ public class WorldGenerationProgressScreen extends Screen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		int k = this.width / 2;
-		int l = this.height / 2;
+		int k = this.screenWidth / 2;
+		int l = this.screenHeight / 2;
 		int m = 30;
 		drawChunkMap(this.progressProvider, k, l + 30, 2, 0);
 		this.drawStringCentered(this.fontRenderer, MathHelper.clamp(this.progressProvider.getProgressPercentage(), 0, 100) + "%", k, l - 9 / 2 - 30, 16777215);

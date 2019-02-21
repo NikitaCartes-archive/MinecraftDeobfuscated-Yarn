@@ -23,7 +23,7 @@ public interface EntityView {
 
 	<T extends Entity> List<T> method_8390(Class<? extends T> class_, BoundingBox boundingBox, @Nullable Predicate<? super T> predicate);
 
-	List<? extends PlayerEntity> method_18456();
+	List<? extends PlayerEntity> getPlayers();
 
 	default List<Entity> getVisibleEntities(@Nullable Entity entity, BoundingBox boundingBox) {
 		return this.getEntities(entity, boundingBox, EntityPredicates.EXCEPT_SPECTATOR);
@@ -64,7 +64,7 @@ public interface EntityView {
 		double h = -1.0;
 		PlayerEntity playerEntity = null;
 
-		for (PlayerEntity playerEntity2 : this.method_18456()) {
+		for (PlayerEntity playerEntity2 : this.getPlayers()) {
 			if (predicate == null || predicate.test(playerEntity2)) {
 				double i = playerEntity2.squaredDistanceTo(d, e, f);
 				if ((g < 0.0 || i < g * g) && (h == -1.0 || i < h)) {
@@ -93,7 +93,7 @@ public interface EntityView {
 		double g = -1.0;
 		PlayerEntity playerEntity = null;
 
-		for (PlayerEntity playerEntity2 : this.method_18456()) {
+		for (PlayerEntity playerEntity2 : this.getPlayers()) {
 			if (EntityPredicates.EXCEPT_SPECTATOR.test(playerEntity2)) {
 				double h = playerEntity2.squaredDistanceTo(d, playerEntity2.y, e);
 				if ((f < 0.0 || h < f * f) && (g == -1.0 || h < g)) {
@@ -107,7 +107,7 @@ public interface EntityView {
 	}
 
 	default boolean method_18458(double d, double e, double f, double g) {
-		for (PlayerEntity playerEntity : this.method_18456()) {
+		for (PlayerEntity playerEntity : this.getPlayers()) {
 			if (EntityPredicates.EXCEPT_SPECTATOR.test(playerEntity) && EntityPredicates.VALID_ENTITY_LIVING.test(playerEntity)) {
 				double h = playerEntity.squaredDistanceTo(d, e, f);
 				if (g < 0.0 || h < g * g) {
@@ -121,17 +121,17 @@ public interface EntityView {
 
 	@Nullable
 	default PlayerEntity method_18462(class_4051 arg, LivingEntity livingEntity) {
-		return this.method_18468(this.method_18456(), arg, livingEntity, livingEntity.x, livingEntity.y, livingEntity.z);
+		return this.method_18468(this.getPlayers(), arg, livingEntity, livingEntity.x, livingEntity.y, livingEntity.z);
 	}
 
 	@Nullable
 	default PlayerEntity method_18463(class_4051 arg, LivingEntity livingEntity, double d, double e, double f) {
-		return this.method_18468(this.method_18456(), arg, livingEntity, d, e, f);
+		return this.method_18468(this.getPlayers(), arg, livingEntity, d, e, f);
 	}
 
 	@Nullable
 	default PlayerEntity method_18461(class_4051 arg, double d, double e, double f) {
-		return this.method_18468(this.method_18456(), arg, null, d, e, f);
+		return this.method_18468(this.getPlayers(), arg, null, d, e, f);
 	}
 
 	@Nullable
@@ -162,7 +162,7 @@ public interface EntityView {
 	default List<PlayerEntity> method_18464(class_4051 arg, LivingEntity livingEntity, BoundingBox boundingBox) {
 		List<PlayerEntity> list = Lists.<PlayerEntity>newArrayList();
 
-		for (PlayerEntity playerEntity : this.method_18456()) {
+		for (PlayerEntity playerEntity : this.getPlayers()) {
 			if (boundingBox.contains(playerEntity.x, playerEntity.y, playerEntity.z) && arg.method_18419(livingEntity, playerEntity)) {
 				list.add(playerEntity);
 			}
@@ -186,8 +186,8 @@ public interface EntityView {
 
 	@Nullable
 	default PlayerEntity method_18469(String string) {
-		for (int i = 0; i < this.method_18456().size(); i++) {
-			PlayerEntity playerEntity = (PlayerEntity)this.method_18456().get(i);
+		for (int i = 0; i < this.getPlayers().size(); i++) {
+			PlayerEntity playerEntity = (PlayerEntity)this.getPlayers().get(i);
 			if (string.equals(playerEntity.getName().getString())) {
 				return playerEntity;
 			}
@@ -198,8 +198,8 @@ public interface EntityView {
 
 	@Nullable
 	default PlayerEntity method_18470(UUID uUID) {
-		for (int i = 0; i < this.method_18456().size(); i++) {
-			PlayerEntity playerEntity = (PlayerEntity)this.method_18456().get(i);
+		for (int i = 0; i < this.getPlayers().size(); i++) {
+			PlayerEntity playerEntity = (PlayerEntity)this.getPlayers().get(i);
 			if (uUID.equals(playerEntity.getUuid())) {
 				return playerEntity;
 			}

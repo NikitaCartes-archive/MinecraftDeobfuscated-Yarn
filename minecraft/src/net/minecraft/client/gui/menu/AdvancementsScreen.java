@@ -55,8 +55,8 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
 		if (i == 0) {
-			int j = (this.width - 252) / 2;
-			int k = (this.height - 140) / 2;
+			int j = (this.screenWidth - 252) / 2;
+			int k = (this.screenHeight - 140) / 2;
 
 			for (AdvancementTreeWidget advancementTreeWidget : this.widgetMap.values()) {
 				if (advancementTreeWidget.method_2316(j, k, d, e)) {
@@ -81,9 +81,9 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
-		int k = (this.width - 252) / 2;
-		int l = (this.height - 140) / 2;
+	public void draw(int i, int j, float f) {
+		int k = (this.screenWidth - 252) / 2;
+		int l = (this.screenHeight - 140) / 2;
 		this.drawBackground();
 		this.drawAdvancementTree(i, j, k, l);
 		this.drawWidgets(k, l);

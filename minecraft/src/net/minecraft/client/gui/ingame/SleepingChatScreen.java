@@ -12,7 +12,7 @@ public class SleepingChatScreen extends ChatScreen {
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 40, I18n.translate("multiplayer.stopSleeping")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight - 40, I18n.translate("multiplayer.stopSleeping")) {
 			@Override
 			public void onPressed(double d, double e) {
 				SleepingChatScreen.this.stopSleeping();

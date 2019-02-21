@@ -30,7 +30,7 @@ public class LowercaseMap<V> implements Map<String, V> {
 		return (V)this.delegate.get(object.toString().toLowerCase(Locale.ROOT));
 	}
 
-	public V putLowercased(String string, V object) {
+	public V method_15304(String string, V object) {
 		return (V)this.delegate.put(string.toLowerCase(Locale.ROOT), object);
 	}
 
@@ -40,7 +40,7 @@ public class LowercaseMap<V> implements Map<String, V> {
 
 	public void putAll(Map<? extends String, ? extends V> map) {
 		for (Entry<? extends String, ? extends V> entry : map.entrySet()) {
-			this.putLowercased((String)entry.getKey(), (V)entry.getValue());
+			this.method_15304((String)entry.getKey(), (V)entry.getValue());
 		}
 	}
 

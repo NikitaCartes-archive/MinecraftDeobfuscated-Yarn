@@ -6,7 +6,7 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.InputListener;
 
 @Environment(EnvType.CLIENT)
 public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extends AbstractListWidget {
@@ -41,7 +41,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	}
 
 	@Override
-	public final List<E> method_1968() {
+	public final List<E> getInputListeners() {
 		return this.entries;
 	}
 
@@ -50,7 +50,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	}
 
 	private E getEntry(int i) {
-		return (E)this.method_1968().get(i);
+		return (E)this.getInputListeners().get(i);
 	}
 
 	protected final void addEntry(E entry) {
@@ -59,7 +59,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 
 	@Override
 	protected final int getEntryCount() {
-		return this.method_1968().size();
+		return this.getInputListeners().size();
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -108,7 +108,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	}
 
 	@Environment(EnvType.CLIENT)
-	public abstract static class Entry<E extends EntryListWidget.Entry<E>> implements GuiEventListener {
+	public abstract static class Entry<E extends EntryListWidget.Entry<E>> implements InputListener {
 		protected EntryListWidget<E> parent;
 		protected int field_2143;
 

@@ -9,7 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.AbstractListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -67,7 +67,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 		this.field_2424 = new CustomizeFlatLevelScreen.class_414();
 		this.listeners.add(this.field_2424);
 		this.widgetButtonAddLayer = this.addButton(
-			new ButtonWidget(this.width / 2 - 154, this.height - 52, 100, 20, I18n.translate("createWorld.customize.flat.addLayer") + " (NYI)") {
+			new ButtonWidget(this.screenWidth / 2 - 154, this.screenHeight - 52, 100, 20, I18n.translate("createWorld.customize.flat.addLayer") + " (NYI)") {
 				@Override
 				public void onPressed(double d, double e) {
 					CustomizeFlatLevelScreen.this.config.updateLayerBlocks();
@@ -76,7 +76,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 			}
 		);
 		this.widgetButtonEditLayer = this.addButton(
-			new ButtonWidget(this.width / 2 - 50, this.height - 52, 100, 20, I18n.translate("createWorld.customize.flat.editLayer") + " (NYI)") {
+			new ButtonWidget(this.screenWidth / 2 - 50, this.screenHeight - 52, 100, 20, I18n.translate("createWorld.customize.flat.editLayer") + " (NYI)") {
 				@Override
 				public void onPressed(double d, double e) {
 					CustomizeFlatLevelScreen.this.config.updateLayerBlocks();
@@ -85,7 +85,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 			}
 		);
 		this.widgetButtonRemoveLayer = this.addButton(
-			new ButtonWidget(this.width / 2 - 155, this.height - 52, 150, 20, I18n.translate("createWorld.customize.flat.removeLayer")) {
+			new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight - 52, 150, 20, I18n.translate("createWorld.customize.flat.removeLayer")) {
 				@Override
 				public void onPressed(double d, double e) {
 					if (CustomizeFlatLevelScreen.this.method_2147()) {
@@ -99,7 +99,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 				}
 			}
 		);
-		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("gui.done")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight - 28, 150, 20, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
 				CustomizeFlatLevelScreen.this.parent.field_3200 = CustomizeFlatLevelScreen.this.method_2140();
@@ -108,7 +108,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 				CustomizeFlatLevelScreen.this.method_2145();
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 52, 150, 20, I18n.translate("createWorld.customize.presets")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight - 52, 150, 20, I18n.translate("createWorld.customize.presets")) {
 			@Override
 			public void onPressed(double d, double e) {
 				CustomizeFlatLevelScreen.this.client.openScreen(new NewLevelPresetsScreen(CustomizeFlatLevelScreen.this));
@@ -116,7 +116,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 				CustomizeFlatLevelScreen.this.method_2145();
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight - 28, 150, 20, I18n.translate("gui.cancel")) {
 			@Override
 			public void onPressed(double d, double e) {
 				CustomizeFlatLevelScreen.this.client.openScreen(CustomizeFlatLevelScreen.this.parent);
@@ -144,19 +144,19 @@ public class CustomizeFlatLevelScreen extends Screen {
 
 	@Nullable
 	@Override
-	public GuiEventListener getFocused() {
+	public InputListener getFocused() {
 		return this.field_2424;
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		this.field_2424.method_18326(i, j, f);
-		this.drawStringCentered(this.fontRenderer, this.titleText, this.width / 2, 8, 16777215);
-		int k = this.width / 2 - 92 - 16;
+		this.field_2424.draw(i, j, f);
+		this.drawStringCentered(this.fontRenderer, this.titleText, this.screenWidth / 2, 8, 16777215);
+		int k = this.screenWidth / 2 - 92 - 16;
 		this.drawString(this.fontRenderer, this.tileText, k, 32, 16777215);
 		this.drawString(this.fontRenderer, this.heightText, k + 2 + 213 - this.fontRenderer.getStringWidth(this.heightText), 32, 16777215);
-		super.method_18326(i, j, f);
+		super.draw(i, j, f);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -166,10 +166,10 @@ public class CustomizeFlatLevelScreen extends Screen {
 		public class_414() {
 			super(
 				CustomizeFlatLevelScreen.this.client,
-				CustomizeFlatLevelScreen.this.width,
-				CustomizeFlatLevelScreen.this.height,
+				CustomizeFlatLevelScreen.this.screenWidth,
+				CustomizeFlatLevelScreen.this.screenHeight,
 				43,
-				CustomizeFlatLevelScreen.this.height - 60,
+				CustomizeFlatLevelScreen.this.screenHeight - 60,
 				24
 			);
 		}

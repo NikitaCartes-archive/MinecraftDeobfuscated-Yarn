@@ -180,12 +180,12 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends EntityMode
 	}
 
 	@Override
-	public Cuboid method_2838() {
+	public Cuboid getHead() {
 		return this.field_3422;
 	}
 
 	@Override
 	public void method_2803(float f, OptionMainHand optionMainHand) {
-		this.method_2813(optionMainHand).method_2847(0.0625F);
+		this.method_2813(optionMainHand).applyTransform(0.0625F);
 	}
 }

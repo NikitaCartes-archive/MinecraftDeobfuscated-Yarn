@@ -21,9 +21,9 @@ public class ChatSettingsScreen extends Screen {
 		GameOption.CHAT_HEIGHT_FOCUSED,
 		GameOption.SATURATION,
 		GameOption.CHAT_WIDTH,
-		GameOption.field_18187,
+		GameOption.REDUCED_DEBUG_INFO,
 		GameOption.field_18194,
-		GameOption.field_18196
+		GameOption.AUTO_SUGGESTIONS
 	};
 	private final Screen parent;
 	private final GameOptions settings;
@@ -41,9 +41,9 @@ public class ChatSettingsScreen extends Screen {
 		int i = 0;
 
 		for (GameOption gameOption : SETTINGS) {
-			int j = this.width / 2 - 155 + i % 2 * 160;
-			int k = this.height / 6 + 24 * (i >> 1);
-			ButtonWidget buttonWidget = gameOption.method_18520(this.client.options, j, k, 150);
+			int j = this.screenWidth / 2 - 155 + i % 2 * 160;
+			int k = this.screenHeight / 6 + 24 * (i >> 1);
+			ButtonWidget buttonWidget = gameOption.createOptionButton(this.client.options, j, k, 150);
 			this.addButton(buttonWidget);
 			if (gameOption == GameOption.field_18194) {
 				this.field_2355 = buttonWidget;
@@ -53,7 +53,7 @@ public class ChatSettingsScreen extends Screen {
 			i++;
 		}
 
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 144, I18n.translate("gui.done")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 6 + 144, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
 				ChatSettingsScreen.this.client.openScreen(ChatSettingsScreen.this.parent);
@@ -67,10 +67,10 @@ public class ChatSettingsScreen extends Screen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, this.field_2353, this.width / 2, 20, 16777215);
-		super.method_18326(i, j, f);
+		this.drawStringCentered(this.fontRenderer, this.field_2353, this.screenWidth / 2, 20, 16777215);
+		super.draw(i, j, f);
 	}
 
 	public void method_2096() {

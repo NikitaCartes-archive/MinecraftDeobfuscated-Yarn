@@ -166,9 +166,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 			f += (float)i * 0.001F;
 		}
 
-		this.velocityX *= (double)f;
-		this.velocityY *= 0.0;
-		this.velocityZ *= (double)f;
+		this.setVelocity(this.getVelocity().multiply((double)f, 0.0, (double)f));
 	}
 
 	public void method_7563(@Nullable PlayerEntity playerEntity) {

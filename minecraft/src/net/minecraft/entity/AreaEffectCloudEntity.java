@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.command.arguments.ParticleArgumentType;
@@ -80,11 +78,11 @@ public class AreaEffectCloudEntity extends Entity {
 	}
 
 	@Override
-	public void method_18382() {
+	public void refreshSize() {
 		double d = this.x;
 		double e = this.y;
 		double f = this.z;
-		super.method_18382();
+		super.refreshSize();
 		this.setPosition(d, e, f);
 	}
 
@@ -421,7 +419,7 @@ public class AreaEffectCloudEntity extends Entity {
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
 		if (RADIUS.equals(trackedData)) {
-			this.method_18382();
+			this.refreshSize();
 		}
 
 		super.onTrackedDataSet(trackedData);
@@ -438,7 +436,7 @@ public class AreaEffectCloudEntity extends Entity {
 	}
 
 	@Override
-	public class_4048 method_18377(class_4050 arg) {
-		return class_4048.method_18384(this.getRadius() * 2.0F, 0.5F);
+	public EntitySize getSize(EntityPose entityPose) {
+		return EntitySize.resizeable(this.getRadius() * 2.0F, 0.5F);
 	}
 }

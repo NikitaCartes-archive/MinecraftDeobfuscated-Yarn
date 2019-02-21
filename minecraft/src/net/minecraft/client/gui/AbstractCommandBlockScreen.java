@@ -19,12 +19,12 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_768;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.ingame.ChatScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.Rect2i;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.sortme.CommandBlockExecutor;
 import net.minecraft.text.TextFormat;
@@ -60,19 +60,19 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.doneButton = this.addButton(new ButtonWidget(this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20, I18n.translate("gui.done")) {
+		this.doneButton = this.addButton(new ButtonWidget(this.screenWidth / 2 - 4 - 150, this.screenHeight / 4 + 120 + 12, 150, 20, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
 				AbstractCommandBlockScreen.this.method_2359();
 			}
 		});
-		this.cancelButton = this.addButton(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20, I18n.translate("gui.cancel")) {
+		this.cancelButton = this.addButton(new ButtonWidget(this.screenWidth / 2 + 4, this.screenHeight / 4 + 120 + 12, 150, 20, I18n.translate("gui.cancel")) {
 			@Override
 			public void onPressed(double d, double e) {
 				AbstractCommandBlockScreen.this.method_2358();
 			}
 		});
-		this.toggleTrackingOutputButton = this.addButton(new ButtonWidget(this.width / 2 + 150 - 20, this.method_2364(), 20, 20, "O") {
+		this.toggleTrackingOutputButton = this.addButton(new ButtonWidget(this.screenWidth / 2 + 150 - 20, this.method_2364(), 20, 20, "O") {
 			@Override
 			public void onPressed(double d, double e) {
 				CommandBlockExecutor commandBlockExecutor = AbstractCommandBlockScreen.this.getCommandExecutor();
@@ -80,7 +80,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 				AbstractCommandBlockScreen.this.updateTrackedOutput();
 			}
 		});
-		this.consoleCommandTextField = new TextFieldWidget(this.fontRenderer, this.width / 2 - 150, 50, 300, 20) {
+		this.consoleCommandTextField = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 150, 50, 300, 20) {
 			@Override
 			public void setFocused(boolean bl) {
 				super.setFocused(bl);
@@ -93,7 +93,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.consoleCommandTextField.setRenderTextProvider(this::method_2348);
 		this.consoleCommandTextField.setChangedListener(this::onCommandChanged);
 		this.listeners.add(this.consoleCommandTextField);
-		this.previousOutputTextField = new TextFieldWidget(this.fontRenderer, this.width / 2 - 150, this.method_2364(), 276, 20) {
+		this.previousOutputTextField = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 150, this.method_2364(), 276, 20) {
 			@Override
 			public void setFocused(boolean bl) {
 				super.setFocused(bl);
@@ -107,7 +107,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.previousOutputTextField.setText("-");
 		this.listeners.add(this.previousOutputTextField);
 		this.consoleCommandTextField.setFocused(true);
-		this.method_1967(this.consoleCommandTextField);
+		this.setFocused(this.consoleCommandTextField);
 		this.updateCommand();
 	}
 
@@ -241,7 +241,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		}
 
 		this.field_2757 = 0;
-		this.field_2756 = this.width;
+		this.field_2756 = this.screenWidth;
 		if (this.field_2761.isEmpty()) {
 			this.method_2356(TextFormat.field_1080);
 		}
@@ -286,19 +286,19 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, I18n.translate("advMode.setCommand"), this.width / 2, 20, 16777215);
-		this.drawString(this.fontRenderer, I18n.translate("advMode.command"), this.width / 2 - 150, 40, 10526880);
-		this.consoleCommandTextField.method_18326(i, j, f);
+		this.drawStringCentered(this.fontRenderer, I18n.translate("advMode.setCommand"), this.screenWidth / 2, 20, 16777215);
+		this.drawString(this.fontRenderer, I18n.translate("advMode.command"), this.screenWidth / 2 - 150, 40, 10526880);
+		this.consoleCommandTextField.draw(i, j, f);
 		int k = 75;
 		if (!this.previousOutputTextField.getText().isEmpty()) {
 			k += 5 * 9 + 1 + this.method_2364() - 135;
-			this.drawString(this.fontRenderer, I18n.translate("advMode.previousOutput"), this.width / 2 - 150, k + 4, 10526880);
-			this.previousOutputTextField.method_18326(i, j, f);
+			this.drawString(this.fontRenderer, I18n.translate("advMode.previousOutput"), this.screenWidth / 2 - 150, k + 4, 10526880);
+			this.previousOutputTextField.draw(i, j, f);
 		}
 
-		super.method_18326(i, j, f);
+		super.draw(i, j, f);
 		if (this.field_2759 != null) {
 			this.field_2759.method_2373(i, j);
 		} else {
@@ -343,7 +343,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 	@Environment(EnvType.CLIENT)
 	class class_464 {
-		private final class_768 field_2771;
+		private final Rect2i field_2771;
 		private final Suggestions field_2764;
 		private final String field_2768;
 		private int field_2769;
@@ -352,7 +352,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		private boolean field_2765;
 
 		private class_464(int i, int j, int k, Suggestions suggestions) {
-			this.field_2771 = new class_768(i - 1, j, k + 1, Math.min(suggestions.getList().size(), 7) * 12);
+			this.field_2771 = new Rect2i(i - 1, j, k + 1, Math.min(suggestions.getList().size(), 7) * 12);
 			this.field_2764 = suggestions;
 			this.field_2768 = AbstractCommandBlockScreen.this.consoleCommandTextField.getText();
 			this.method_2374(0);
@@ -371,38 +371,32 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 			}
 
 			if (bl3) {
-				Drawable.drawRect(
-					this.field_2771.method_3321(),
-					this.field_2771.method_3322() - 1,
-					this.field_2771.method_3321() + this.field_2771.method_3319(),
-					this.field_2771.method_3322(),
-					Integer.MIN_VALUE
+				DrawableHelper.drawRect(
+					this.field_2771.getX(), this.field_2771.getY() - 1, this.field_2771.getX() + this.field_2771.getWidth(), this.field_2771.getY(), Integer.MIN_VALUE
 				);
-				Drawable.drawRect(
-					this.field_2771.method_3321(),
-					this.field_2771.method_3322() + this.field_2771.method_3320(),
-					this.field_2771.method_3321() + this.field_2771.method_3319(),
-					this.field_2771.method_3322() + this.field_2771.method_3320() + 1,
+				DrawableHelper.drawRect(
+					this.field_2771.getX(),
+					this.field_2771.getY() + this.field_2771.getHeight(),
+					this.field_2771.getX() + this.field_2771.getWidth(),
+					this.field_2771.getY() + this.field_2771.getHeight() + 1,
 					Integer.MIN_VALUE
 				);
 				if (bl) {
-					for (int n = 0; n < this.field_2771.method_3319(); n++) {
+					for (int n = 0; n < this.field_2771.getWidth(); n++) {
 						if (n % 2 == 0) {
-							Drawable.drawRect(
-								this.field_2771.method_3321() + n, this.field_2771.method_3322() - 1, this.field_2771.method_3321() + n + 1, this.field_2771.method_3322(), -1
-							);
+							DrawableHelper.drawRect(this.field_2771.getX() + n, this.field_2771.getY() - 1, this.field_2771.getX() + n + 1, this.field_2771.getY(), -1);
 						}
 					}
 				}
 
 				if (bl2) {
-					for (int nx = 0; nx < this.field_2771.method_3319(); nx++) {
+					for (int nx = 0; nx < this.field_2771.getWidth(); nx++) {
 						if (nx % 2 == 0) {
-							Drawable.drawRect(
-								this.field_2771.method_3321() + nx,
-								this.field_2771.method_3322() + this.field_2771.method_3320(),
-								this.field_2771.method_3321() + nx + 1,
-								this.field_2771.method_3322() + this.field_2771.method_3320() + 1,
+							DrawableHelper.drawRect(
+								this.field_2771.getX() + nx,
+								this.field_2771.getY() + this.field_2771.getHeight(),
+								this.field_2771.getX() + nx + 1,
+								this.field_2771.getY() + this.field_2771.getHeight() + 1,
 								-1
 							);
 						}
@@ -414,17 +408,17 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 			for (int o = 0; o < k; o++) {
 				Suggestion suggestion = (Suggestion)this.field_2764.getList().get(o + this.field_2769);
-				Drawable.drawRect(
-					this.field_2771.method_3321(),
-					this.field_2771.method_3322() + 12 * o,
-					this.field_2771.method_3321() + this.field_2771.method_3319(),
-					this.field_2771.method_3322() + 12 * o + 12,
+				DrawableHelper.drawRect(
+					this.field_2771.getX(),
+					this.field_2771.getY() + 12 * o,
+					this.field_2771.getX() + this.field_2771.getWidth(),
+					this.field_2771.getY() + 12 * o + 12,
 					Integer.MIN_VALUE
 				);
-				if (i > this.field_2771.method_3321()
-					&& i < this.field_2771.method_3321() + this.field_2771.method_3319()
-					&& j > this.field_2771.method_3322() + 12 * o
-					&& j < this.field_2771.method_3322() + 12 * o + 12) {
+				if (i > this.field_2771.getX()
+					&& i < this.field_2771.getX() + this.field_2771.getWidth()
+					&& j > this.field_2771.getY() + 12 * o
+					&& j < this.field_2771.getY() + 12 * o + 12) {
 					if (bl4) {
 						this.method_2374(o + this.field_2769);
 					}
@@ -435,8 +429,8 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 				AbstractCommandBlockScreen.this.fontRenderer
 					.drawWithShadow(
 						suggestion.getText(),
-						(float)(this.field_2771.method_3321() + 1),
-						(float)(this.field_2771.method_3322() + 2 + 12 * o),
+						(float)(this.field_2771.getX() + 1),
+						(float)(this.field_2771.getY() + 2 + 12 * o),
 						o + this.field_2769 == this.field_2766 ? -256 : -5592406
 					);
 			}
@@ -450,10 +444,10 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		}
 
 		public boolean method_2372(int i, int j, int k) {
-			if (!this.field_2771.method_3318(i, j)) {
+			if (!this.field_2771.contains(i, j)) {
 				return false;
 			} else {
-				int l = (j - this.field_2771.method_3322()) / 12 + this.field_2769;
+				int l = (j - this.field_2771.getY()) / 12 + this.field_2769;
 				if (l >= 0 && l < this.field_2764.getList().size()) {
 					this.method_2374(l);
 					this.method_2375();
@@ -474,7 +468,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 					* (double)AbstractCommandBlockScreen.this.client.window.getScaledHeight()
 					/ (double)AbstractCommandBlockScreen.this.client.window.getHeight()
 			);
-			if (this.field_2771.method_3318(i, j)) {
+			if (this.field_2771.contains(i, j)) {
 				this.field_2769 = MathHelper.clamp((int)((double)this.field_2769 - d), 0, Math.max(this.field_2764.getList().size() - 7, 0));
 				return true;
 			} else {

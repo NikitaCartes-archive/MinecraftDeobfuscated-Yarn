@@ -20,6 +20,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
@@ -44,7 +45,7 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 	}
 
 	protected ThrownEntity(EntityType<? extends ThrownEntity> entityType, LivingEntity livingEntity, World world) {
-		this(entityType, livingEntity.x, livingEntity.y + (double)livingEntity.getEyeHeight() - 0.1F, livingEntity.z, world);
+		this(entityType, livingEntity.x, livingEntity.y + (double)livingEntity.getStandingEyeHeight() - 0.1F, livingEntity.z, world);
 		this.owner = livingEntity;
 		this.field_7644 = livingEntity.getUuid();
 	}
@@ -66,31 +67,20 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 		float l = -MathHelper.sin((f + h) * (float) (Math.PI / 180.0));
 		float m = MathHelper.cos(g * (float) (Math.PI / 180.0)) * MathHelper.cos(f * (float) (Math.PI / 180.0));
 		this.setVelocity((double)k, (double)l, (double)m, i, j);
-		this.velocityX = this.velocityX + entity.velocityX;
-		this.velocityZ = this.velocityZ + entity.velocityZ;
-		if (!entity.onGround) {
-			this.velocityY = this.velocityY + entity.velocityY;
-		}
+		Vec3d vec3d = entity.getVelocity();
+		this.setVelocity(this.getVelocity().add(vec3d.x, entity.onGround ? 0.0 : vec3d.y, vec3d.z));
 	}
 
 	@Override
 	public void setVelocity(double d, double e, double f, float g, float h) {
-		float i = MathHelper.sqrt(d * d + e * e + f * f);
-		d /= (double)i;
-		e /= (double)i;
-		f /= (double)i;
-		d += this.random.nextGaussian() * 0.0075F * (double)h;
-		e += this.random.nextGaussian() * 0.0075F * (double)h;
-		f += this.random.nextGaussian() * 0.0075F * (double)h;
-		d *= (double)g;
-		e *= (double)g;
-		f *= (double)g;
-		this.velocityX = d;
-		this.velocityY = e;
-		this.velocityZ = f;
-		float j = MathHelper.sqrt(d * d + f * f);
-		this.yaw = (float)(MathHelper.atan2(d, f) * 180.0F / (float)Math.PI);
-		this.pitch = (float)(MathHelper.atan2(e, (double)j) * 180.0F / (float)Math.PI);
+		Vec3d vec3d = new Vec3d(d, e, f)
+			.normalize()
+			.add(this.random.nextGaussian() * 0.0075F * (double)h, this.random.nextGaussian() * 0.0075F * (double)h, this.random.nextGaussian() * 0.0075F * (double)h)
+			.multiply((double)g);
+		this.setVelocity(vec3d);
+		float i = MathHelper.sqrt(squaredHorizontalLength(vec3d));
+		this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
+		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)i) * 180.0F / (float)Math.PI);
 		this.prevYaw = this.yaw;
 		this.prevPitch = this.pitch;
 	}
@@ -98,9 +88,7 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void setVelocityClient(double d, double e, double f) {
-		this.velocityX = d;
-		this.velocityY = e;
-		this.velocityZ = f;
+		this.setVelocity(d, e, f);
 		if (this.prevPitch == 0.0F && this.prevYaw == 0.0F) {
 			float g = MathHelper.sqrt(d * d + f * f);
 			this.yaw = (float)(MathHelper.atan2(d, f) * 180.0F / (float)Math.PI);
@@ -122,12 +110,12 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 
 		if (this.inGround) {
 			this.inGround = false;
-			this.velocityX = this.velocityX * (double)(this.random.nextFloat() * 0.2F);
-			this.velocityY = this.velocityY * (double)(this.random.nextFloat() * 0.2F);
-			this.velocityZ = this.velocityZ * (double)(this.random.nextFloat() * 0.2F);
+			this.setVelocity(
+				this.getVelocity().multiply((double)(this.random.nextFloat() * 0.2F), (double)(this.random.nextFloat() * 0.2F), (double)(this.random.nextFloat() * 0.2F))
+			);
 		}
 
-		BoundingBox boundingBox = this.getBoundingBox().stretch(this.velocityX, this.velocityY, this.velocityZ).expand(1.0);
+		BoundingBox boundingBox = this.getBoundingBox().method_18804(this.getVelocity()).expand(1.0);
 
 		for (Entity entity : this.world.getEntities(this, boundingBox, entityx -> !entityx.isSpectator() && entityx.doesCollide())) {
 			if (entity == this.field_7637) {
@@ -157,12 +145,13 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 			}
 		}
 
-		this.x = this.x + this.velocityX;
-		this.y = this.y + this.velocityY;
-		this.z = this.z + this.velocityZ;
-		float f = MathHelper.sqrt(this.velocityX * this.velocityX + this.velocityZ * this.velocityZ);
-		this.yaw = (float)(MathHelper.atan2(this.velocityX, this.velocityZ) * 180.0F / (float)Math.PI);
-		this.pitch = (float)(MathHelper.atan2(this.velocityY, (double)f) * 180.0F / (float)Math.PI);
+		Vec3d vec3d = this.getVelocity();
+		this.x = this.x + vec3d.x;
+		this.y = this.y + vec3d.y;
+		this.z = this.z + vec3d.z;
+		float f = MathHelper.sqrt(squaredHorizontalLength(vec3d));
+		this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
+		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI);
 
 		while (this.pitch - this.prevPitch < -180.0F) {
 			this.prevPitch -= 360.0F;
@@ -182,31 +171,22 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 
 		this.pitch = MathHelper.lerp(0.2F, this.prevPitch, this.pitch);
 		this.yaw = MathHelper.lerp(0.2F, this.prevYaw, this.yaw);
-		float g = 0.99F;
-		float h = this.getGravity();
+		float h;
 		if (this.isInsideWater()) {
 			for (int i = 0; i < 4; i++) {
-				float j = 0.25F;
-				this.world
-					.addParticle(
-						ParticleTypes.field_11247,
-						this.x - this.velocityX * 0.25,
-						this.y - this.velocityY * 0.25,
-						this.z - this.velocityZ * 0.25,
-						this.velocityX,
-						this.velocityY,
-						this.velocityZ
-					);
+				float g = 0.25F;
+				this.world.addParticle(ParticleTypes.field_11247, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
 			}
 
-			g = 0.8F;
+			h = 0.8F;
+		} else {
+			h = 0.99F;
 		}
 
-		this.velocityX *= (double)g;
-		this.velocityY *= (double)g;
-		this.velocityZ *= (double)g;
+		this.setVelocity(vec3d.multiply((double)h));
 		if (!this.isUnaffectedByGravity()) {
-			this.velocityY -= (double)h;
+			Vec3d vec3d2 = this.getVelocity();
+			this.setVelocity(vec3d2.x, vec3d2.y - (double)this.getGravity(), vec3d2.z);
 		}
 
 		this.setPosition(this.x, this.y, this.z);

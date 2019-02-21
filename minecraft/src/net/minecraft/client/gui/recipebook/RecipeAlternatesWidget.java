@@ -7,10 +7,10 @@ import java.util.Iterator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4068;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.recipe.book.RecipeResultCollection;
 import net.minecraft.client.render.GuiLighting;
@@ -24,7 +24,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class RecipeAlternatesWidget extends Drawable implements class_4068, GuiEventListener {
+public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, InputListener {
 	private static final Identifier BG_TEX = new Identifier("textures/gui/recipe_book.png");
 	private final List<RecipeAlternatesWidget.AlternateButtonWidget> alternateButtons = Lists.<RecipeAlternatesWidget.AlternateButtonWidget>newArrayList();
 	private boolean visible;
@@ -114,7 +114,7 @@ public class RecipeAlternatesWidget extends Drawable implements class_4068, GuiE
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		if (this.visible) {
 			this.time += f;
 			GuiLighting.enableForItems();
@@ -135,7 +135,7 @@ public class RecipeAlternatesWidget extends Drawable implements class_4068, GuiE
 			GuiLighting.disable();
 
 			for (RecipeAlternatesWidget.AlternateButtonWidget alternateButtonWidget : this.alternateButtons) {
-				alternateButtonWidget.method_18326(i, j, f);
+				alternateButtonWidget.draw(i, j, f);
 			}
 
 			GlStateManager.popMatrix();
@@ -209,7 +209,7 @@ public class RecipeAlternatesWidget extends Drawable implements class_4068, GuiE
 		}
 
 		@Override
-		public void draw(int i, int j, float f) {
+		public void drawButton(int i, int j, float f) {
 			GuiLighting.enableForItems();
 			GlStateManager.enableAlphaTest();
 			RecipeAlternatesWidget.this.client.getTextureManager().bindTexture(RecipeAlternatesWidget.BG_TEX);

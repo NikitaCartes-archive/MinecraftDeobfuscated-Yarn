@@ -35,7 +35,7 @@ public class PhantomSpawner {
 				} else {
 					int i = 0;
 
-					for (PlayerEntity playerEntity : world.method_18456()) {
+					for (PlayerEntity playerEntity : world.getPlayers()) {
 						if (!playerEntity.isSpectator()) {
 							BlockPos blockPos = new BlockPos(playerEntity);
 							if (!world.dimension.hasSkyLight() || blockPos.getY() >= world.getSeaLevel() && world.isSkyVisible(blockPos)) {

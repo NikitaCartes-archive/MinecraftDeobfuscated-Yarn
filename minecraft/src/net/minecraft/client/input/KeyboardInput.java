@@ -14,36 +14,12 @@ public class KeyboardInput extends Input {
 
 	@Override
 	public void tick() {
-		this.movementSideways = 0.0F;
-		this.movementForward = 0.0F;
-		if (this.settings.keyForward.isPressed()) {
-			this.movementForward++;
-			this.pressingForward = true;
-		} else {
-			this.pressingForward = false;
-		}
-
-		if (this.settings.keyBack.isPressed()) {
-			this.movementForward--;
-			this.pressingBack = true;
-		} else {
-			this.pressingBack = false;
-		}
-
-		if (this.settings.keyLeft.isPressed()) {
-			this.movementSideways++;
-			this.pressingLeft = true;
-		} else {
-			this.pressingLeft = false;
-		}
-
-		if (this.settings.keyRight.isPressed()) {
-			this.movementSideways--;
-			this.pressingRight = true;
-		} else {
-			this.pressingRight = false;
-		}
-
+		this.pressingForward = this.settings.keyForward.isPressed();
+		this.pressingBack = this.settings.keyBack.isPressed();
+		this.pressingLeft = this.settings.keyLeft.isPressed();
+		this.pressingRight = this.settings.keyRight.isPressed();
+		this.movementForward = this.pressingForward == this.pressingBack ? 0.0F : (float)(this.pressingForward ? 1 : -1);
+		this.movementSideways = this.pressingLeft == this.pressingRight ? 0.0F : (float)(this.pressingLeft ? 1 : -1);
 		this.jumping = this.settings.keyJump.isPressed();
 		this.sneaking = this.settings.keySneak.isPressed();
 		if (this.sneaking) {

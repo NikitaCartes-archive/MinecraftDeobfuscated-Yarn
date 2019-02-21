@@ -124,7 +124,7 @@ public class GlDebug {
 					KHRDebug.glDebugMessageControl(4352, 4352, (Integer)KHR_VERBOSITY_LEVELS.get(j), (int[])null, bl2);
 				}
 
-				KHRDebug.glDebugMessageCallback(GLX.make(GLDebugMessageCallback.create(GlDebug::info), class_301::method_1406), 0L);
+				KHRDebug.glDebugMessageCallback(GLX.make(GLDebugMessageCallback.create(GlDebug::info), class_301::untrack), 0L);
 			} else if (gLCapabilities.GL_ARB_debug_output) {
 				if (bl) {
 					GL11.glEnable(33346);
@@ -135,7 +135,7 @@ public class GlDebug {
 					ARBDebugOutput.glDebugMessageControlARB(4352, 4352, (Integer)ARB_VERBOSITY_LEVELS.get(j), (int[])null, bl2);
 				}
 
-				ARBDebugOutput.glDebugMessageCallbackARB(GLX.make(GLDebugMessageARBCallback.create(GlDebug::info), class_301::method_1406), 0L);
+				ARBDebugOutput.glDebugMessageCallbackARB(GLX.make(GLDebugMessageARBCallback.create(GlDebug::info), class_301::untrack), 0L);
 			}
 		}
 	}

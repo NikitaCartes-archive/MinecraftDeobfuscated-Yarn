@@ -5,10 +5,10 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.Collection;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4074;
 import net.minecraft.client.gui.ContainerScreen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.texture.StatusEffectSpriteManager;
 import net.minecraft.container.Container;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -32,17 +32,17 @@ public abstract class AbstractPlayerInventoryScreen<T extends Container> extends
 
 	protected void method_2476() {
 		if (this.client.player.getPotionEffects().isEmpty()) {
-			this.left = (this.width - this.containerWidth) / 2;
+			this.left = (this.screenWidth - this.width) / 2;
 			this.offsetGuiForEffects = false;
 		} else {
-			this.left = 160 + (this.width - this.containerWidth - 200) / 2;
+			this.left = 160 + (this.screenWidth - this.width - 200) / 2;
 			this.offsetGuiForEffects = true;
 		}
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
-		super.method_18326(i, j, f);
+	public void draw(int i, int j, float f) {
+		super.draw(i, j, f);
 		if (this.offsetGuiForEffects) {
 			this.drawPotionEffects();
 		}
@@ -78,13 +78,13 @@ public abstract class AbstractPlayerInventoryScreen<T extends Container> extends
 	}
 
 	private void method_18643(int i, int j, Iterable<StatusEffectInstance> iterable) {
-		this.client.getTextureManager().bindTexture(SpriteAtlasTexture.field_18229);
-		class_4074 lv = this.client.method_18505();
+		this.client.getTextureManager().bindTexture(SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX);
+		StatusEffectSpriteManager statusEffectSpriteManager = this.client.method_18505();
 		int k = this.top;
 
 		for (StatusEffectInstance statusEffectInstance : iterable) {
 			StatusEffect statusEffect = statusEffectInstance.getEffectType();
-			this.drawTexturedRect(i + 6, k + 7, lv.method_18663(statusEffect), 18, 18);
+			this.drawTexturedRect(i + 6, k + 7, statusEffectSpriteManager.getSprite(statusEffect), 18, 18);
 			k += j;
 		}
 	}

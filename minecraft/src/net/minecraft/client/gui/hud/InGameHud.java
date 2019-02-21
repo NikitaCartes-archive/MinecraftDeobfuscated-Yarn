@@ -14,13 +14,12 @@ import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_336;
-import net.minecraft.class_4061;
-import net.minecraft.class_4074;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.ContainerScreen;
-import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.options.AttackIndicator;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GuiLighting;
@@ -31,6 +30,7 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sortme.ClientChatListener;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.texture.StatusEffectSpriteManager;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.Entity;
@@ -66,7 +66,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
 
 @Environment(EnvType.CLIENT)
-public class InGameHud extends Drawable {
+public class InGameHud extends DrawableHelper {
 	private static final Identifier VIGNETTE_TEX = new Identifier("textures/misc/vignette.png");
 	private static final Identifier WIDGETS_TEX = new Identifier("textures/gui/widgets.png");
 	private static final Identifier PUMPKIN_BLUR = new Identifier("textures/misc/pumpkinblur.png");
@@ -352,7 +352,7 @@ public class InGameHud extends Drawable {
 					);
 					int i = 15;
 					this.drawTexturedRect((float)this.scaledWidth / 2.0F - 7.5F, (float)this.scaledHeight / 2.0F - 7.5F, 0, 0, 15, 15);
-					if (this.client.options.attackIndicator == class_4061.field_18152) {
+					if (this.client.options.attackIndicator == AttackIndicator.field_18152) {
 						float g = this.client.player.method_7261(0.0F);
 						boolean bl = false;
 						if (this.client.targetedEntity != null && this.client.targetedEntity instanceof LivingEntity && g >= 1.0F) {
@@ -395,7 +395,7 @@ public class InGameHud extends Drawable {
 			GlStateManager.enableBlend();
 			int i = 0;
 			int j = 0;
-			class_4074 lv = this.client.method_18505();
+			StatusEffectSpriteManager statusEffectSpriteManager = this.client.method_18505();
 			List<Runnable> list = Lists.<Runnable>newArrayListWithExpectedSize(collection.size());
 			this.client.getTextureManager().bindTexture(ContainerScreen.BACKGROUND_TEXTURE);
 
@@ -430,7 +430,7 @@ public class InGameHud extends Drawable {
 						}
 					}
 
-					Sprite sprite = lv.method_18663(statusEffect);
+					Sprite sprite = statusEffectSpriteManager.getSprite(statusEffect);
 					int n = k;
 					int o = l;
 					float g = f;
@@ -441,7 +441,7 @@ public class InGameHud extends Drawable {
 				}
 			}
 
-			this.client.getTextureManager().bindTexture(SpriteAtlasTexture.field_18229);
+			this.client.getTextureManager().bindTexture(SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX);
 			list.forEach(Runnable::run);
 		}
 	}
@@ -491,7 +491,7 @@ public class InGameHud extends Drawable {
 				}
 			}
 
-			if (this.client.options.attackIndicator == class_4061.field_18153) {
+			if (this.client.options.attackIndicator == AttackIndicator.field_18153) {
 				float h = this.client.player.method_7261(0.0F);
 				if (h < 1.0F) {
 					int m = this.scaledHeight - 20;
@@ -500,7 +500,7 @@ public class InGameHud extends Drawable {
 						n = i - 91 - 22;
 					}
 
-					this.client.getTextureManager().bindTexture(Drawable.ICONS);
+					this.client.getTextureManager().bindTexture(DrawableHelper.ICONS);
 					int o = (int)(h * 19.0F);
 					GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 					this.drawTexturedRect(n, m, 0, 94, 18, 18);
@@ -516,7 +516,7 @@ public class InGameHud extends Drawable {
 
 	public void renderMountJumpBar(int i) {
 		this.client.getProfiler().push("jumpBar");
-		this.client.getTextureManager().bindTexture(Drawable.ICONS);
+		this.client.getTextureManager().bindTexture(DrawableHelper.ICONS);
 		float f = this.client.player.method_3151();
 		int j = 182;
 		int k = (int)(f * 183.0F);
@@ -531,7 +531,7 @@ public class InGameHud extends Drawable {
 
 	public void renderExperienceBar(int i) {
 		this.client.getProfiler().push("expBar");
-		this.client.getTextureManager().bindTexture(Drawable.ICONS);
+		this.client.getTextureManager().bindTexture(DrawableHelper.ICONS);
 		int j = this.client.player.method_7349();
 		if (j > 0) {
 			int k = 182;

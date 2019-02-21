@@ -2,11 +2,9 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3999;
 import net.minecraft.class_4000;
 import net.minecraft.class_4001;
 import net.minecraft.class_4002;
-import net.minecraft.class_4003;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -17,7 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class BlockLeakParticle extends class_4003 {
+public class BlockLeakParticle extends SpriteBillboardParticle {
 	private final Fluid field_3789;
 	private int slowedTimer;
 	private final class_4002 field_17795;
@@ -39,7 +37,7 @@ public class BlockLeakParticle extends class_4003 {
 			this.colorBlue = 0.0F;
 		}
 
-		this.method_18141(arg2.method_18139(this.random));
+		this.setSprite(arg2.getSprite(this.random));
 		this.setBoundingBoxSpacing(0.01F, 0.01F);
 		this.gravityStrength = 0.06F;
 		this.field_3789 = fluid;
@@ -51,8 +49,8 @@ public class BlockLeakParticle extends class_4003 {
 	}
 
 	@Override
-	public class_3999 method_18122() {
-		return class_3999.field_17828;
+	public ParticleTextureSheet getTextureSheet() {
+		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
 	@Override
@@ -83,9 +81,9 @@ public class BlockLeakParticle extends class_4003 {
 				this.velocityX *= 0.02;
 				this.velocityY *= 0.02;
 				this.velocityZ *= 0.02;
-				this.method_18141(this.field_17796.method_18139(this.random));
+				this.setSprite(this.field_17796.getSprite(this.random));
 			} else {
-				this.method_18141(this.field_17795.method_18139(this.random));
+				this.setSprite(this.field_17795.getSprite(this.random));
 			}
 
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
@@ -97,7 +95,7 @@ public class BlockLeakParticle extends class_4003 {
 					this.markDead();
 					this.world.addParticle(ParticleTypes.field_11202, this.posX, this.posY, this.posZ, 0.0, 0.0, 0.0);
 				} else {
-					this.method_18141(this.field_17797.method_18139(this.random));
+					this.setSprite(this.field_17797.getSprite(this.random));
 				}
 
 				this.velocityX *= 0.7F;

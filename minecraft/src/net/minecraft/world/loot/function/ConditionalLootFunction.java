@@ -29,7 +29,7 @@ public abstract class ConditionalLootFunction implements LootFunction {
 		this.predicate = LootConditions.joinAnd(lootConditions);
 	}
 
-	public final ItemStack apply(ItemStack itemStack, LootContext lootContext) {
+	public final ItemStack method_521(ItemStack itemStack, LootContext lootContext) {
 		return this.predicate.test(lootContext) ? this.process(itemStack, lootContext) : itemStack;
 	}
 

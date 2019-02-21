@@ -8,9 +8,9 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import javax.annotation.Nullable;
-import net.minecraft.class_4076;
 import net.minecraft.class_4079;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.ChunkNibbleArray;
@@ -59,28 +59,33 @@ public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends clas
 	protected abstract int getLight(long l);
 
 	protected int get(long l) {
-		long m = class_4076.method_18691(l);
+		long m = ChunkSectionPos.toChunkLong(l);
 		ChunkNibbleArray chunkNibbleArray = this.getDataForChunk(m, true);
 		return chunkNibbleArray.get(
-			class_4076.method_18684(BlockPos.unpackLongX(l)), class_4076.method_18684(BlockPos.unpackLongY(l)), class_4076.method_18684(BlockPos.unpackLongZ(l))
+			ChunkSectionPos.toLocalCoord(BlockPos.unpackLongX(l)),
+			ChunkSectionPos.toLocalCoord(BlockPos.unpackLongY(l)),
+			ChunkSectionPos.toLocalCoord(BlockPos.unpackLongZ(l))
 		);
 	}
 
 	protected void set(long l, int i) {
-		long m = class_4076.method_18691(l);
+		long m = ChunkSectionPos.toChunkLong(l);
 		if (this.field_15802.add(m)) {
 			this.dataStorage.cloneChunkData(m);
 		}
 
 		ChunkNibbleArray chunkNibbleArray = this.getDataForChunk(m, true);
 		chunkNibbleArray.set(
-			class_4076.method_18684(BlockPos.unpackLongX(l)), class_4076.method_18684(BlockPos.unpackLongY(l)), class_4076.method_18684(BlockPos.unpackLongZ(l)), i
+			ChunkSectionPos.toLocalCoord(BlockPos.unpackLongX(l)),
+			ChunkSectionPos.toLocalCoord(BlockPos.unpackLongY(l)),
+			ChunkSectionPos.toLocalCoord(BlockPos.unpackLongZ(l)),
+			i
 		);
 
 		for (int j = -1; j <= 1; j++) {
 			for (int k = -1; k <= 1; k++) {
 				for (int n = -1; n <= 1; n++) {
-					this.toNotify.add(class_4076.method_18691(BlockPos.add(l, k, n, j)));
+					this.toNotify.add(ChunkSectionPos.toChunkLong(BlockPos.add(l, k, n, j)));
 				}
 			}
 		}
@@ -130,7 +135,7 @@ public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends clas
 				for (int k = -1; k <= 1; k++) {
 					for (int m = -1; m <= 1; m++) {
 						for (int n = -1; n <= 1; n++) {
-							this.toNotify.add(class_4076.method_18691(BlockPos.add(l, m, n, k)));
+							this.toNotify.add(ChunkSectionPos.toChunkLong(BlockPos.add(l, m, n, k)));
 						}
 					}
 				}
@@ -150,9 +155,9 @@ public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends clas
 	}
 
 	protected void removeChunkData(ChunkLightProvider<?, ?> chunkLightProvider, long l) {
-		int i = class_4076.method_18688(class_4076.method_18686(l));
-		int j = class_4076.method_18688(class_4076.method_18689(l));
-		int k = class_4076.method_18688(class_4076.method_18690(l));
+		int i = ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongX(l));
+		int j = ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongY(l));
+		int k = ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongZ(l));
 
 		for (int m = 0; m < 16; m++) {
 			for (int n = 0; n < 16; n++) {
@@ -209,12 +214,12 @@ public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends clas
 				while (objectIterator.hasNext()) {
 					long l = (Long)objectIterator.next();
 					if (this.hasChunk(l)) {
-						int i = class_4076.method_18688(class_4076.method_18686(l));
-						int j = class_4076.method_18688(class_4076.method_18689(l));
-						int k = class_4076.method_18688(class_4076.method_18690(l));
+						int i = ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongX(l));
+						int j = ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongY(l));
+						int k = ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongZ(l));
 
 						for (Direction direction : DIRECTIONS) {
-							long n = class_4076.method_18679(l, direction);
+							long n = ChunkSectionPos.offsetPacked(l, direction);
 							if (!this.toUpdate.containsKey(n) && this.hasChunk(n)) {
 								for (int o = 0; o < 16; o++) {
 									for (int p = 0; p < 16; p++) {
@@ -313,7 +318,7 @@ public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends clas
 
 			while (longIterator.hasNext()) {
 				long l = longIterator.nextLong();
-				this.chunkProvider.onLightUpdate(this.lightType, class_4076.method_18677(l));
+				this.chunkProvider.onLightUpdate(this.lightType, ChunkSectionPos.from(l));
 			}
 
 			this.toNotify.clear();

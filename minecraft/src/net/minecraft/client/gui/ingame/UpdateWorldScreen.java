@@ -35,7 +35,7 @@ public class UpdateWorldScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 150, I18n.translate("gui.cancel")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 150, I18n.translate("gui.cancel")) {
 			@Override
 			public void onPressed(double d, double e) {
 				UpdateWorldScreen.this.updater.cancel();
@@ -57,14 +57,14 @@ public class UpdateWorldScreen extends Screen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, I18n.translate("optimizeWorld.title", this.updater.getLevelName()), this.width / 2, 20, 16777215);
-		int k = this.width / 2 - 150;
-		int l = this.width / 2 + 150;
-		int m = this.height / 4 + 100;
+		this.drawStringCentered(this.fontRenderer, I18n.translate("optimizeWorld.title", this.updater.getLevelName()), this.screenWidth / 2, 20, 16777215);
+		int k = this.screenWidth / 2 - 150;
+		int l = this.screenWidth / 2 + 150;
+		int m = this.screenHeight / 4 + 100;
 		int n = m + 10;
-		this.drawStringCentered(this.fontRenderer, this.updater.getStatus().getFormattedText(), this.width / 2, m - 9 - 2, 10526880);
+		this.drawStringCentered(this.fontRenderer, this.updater.getStatus().getFormattedText(), this.screenWidth / 2, m - 9 - 2, 10526880);
 		if (this.updater.getTotalChunkCount() > 0) {
 			drawRect(k - 1, m - 1, l + 1, n + 1, -16777216);
 			this.drawString(this.fontRenderer, I18n.translate("optimizeWorld.info.converted", this.updater.getUpgradedChunkCount()), k, 40, 10526880);
@@ -79,10 +79,12 @@ public class UpdateWorldScreen extends Screen {
 			}
 
 			int q = this.updater.getUpgradedChunkCount() + this.updater.getSkippedChunkCount();
-			this.drawStringCentered(this.fontRenderer, q + " / " + this.updater.getTotalChunkCount(), this.width / 2, m + 2 * 9 + 2, 10526880);
-			this.drawStringCentered(this.fontRenderer, MathHelper.floor(this.updater.getProgress() * 100.0F) + "%", this.width / 2, m + (n - m) / 2 - 9 / 2, 10526880);
+			this.drawStringCentered(this.fontRenderer, q + " / " + this.updater.getTotalChunkCount(), this.screenWidth / 2, m + 2 * 9 + 2, 10526880);
+			this.drawStringCentered(
+				this.fontRenderer, MathHelper.floor(this.updater.getProgress() * 100.0F) + "%", this.screenWidth / 2, m + (n - m) / 2 - 9 / 2, 10526880
+			);
 		}
 
-		super.method_18326(i, j, f);
+		super.draw(i, j, f);
 	}
 }

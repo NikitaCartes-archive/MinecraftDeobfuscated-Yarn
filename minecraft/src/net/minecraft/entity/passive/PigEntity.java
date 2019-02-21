@@ -30,6 +30,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class PigEntity extends AnimalEntity {
@@ -193,7 +194,7 @@ public class PigEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void travel(float f, float g, float h) {
+	public void travel(Vec3d vec3d) {
 		Entity entity = this.getPassengerList().isEmpty() ? null : (Entity)this.getPassengerList().get(0);
 		if (this.hasPassengers() && this.method_5956()) {
 			this.yaw = entity.yaw;
@@ -209,33 +210,31 @@ public class PigEntity extends AnimalEntity {
 			}
 
 			if (this.method_5787()) {
-				float i = (float)this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue() * 0.225F;
+				float f = (float)this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue() * 0.225F;
 				if (this.field_6814) {
-					i += i * 1.15F * MathHelper.sin((float)this.field_6812 / (float)this.field_6813 * (float) Math.PI);
+					f += f * 1.15F * MathHelper.sin((float)this.field_6812 / (float)this.field_6813 * (float) Math.PI);
 				}
 
-				this.setMovementSpeed(i);
-				super.travel(0.0F, 0.0F, 1.0F);
+				this.setMovementSpeed(f);
+				super.travel(new Vec3d(0.0, 0.0, 1.0));
 			} else {
-				this.velocityX = 0.0;
-				this.velocityY = 0.0;
-				this.velocityZ = 0.0;
+				this.setVelocity(Vec3d.ZERO);
 			}
 
 			this.field_6211 = this.field_6225;
 			double d = this.x - this.prevX;
 			double e = this.z - this.prevZ;
-			float j = MathHelper.sqrt(d * d + e * e) * 4.0F;
-			if (j > 1.0F) {
-				j = 1.0F;
+			float g = MathHelper.sqrt(d * d + e * e) * 4.0F;
+			if (g > 1.0F) {
+				g = 1.0F;
 			}
 
-			this.field_6225 = this.field_6225 + (j - this.field_6225) * 0.4F;
+			this.field_6225 = this.field_6225 + (g - this.field_6225) * 0.4F;
 			this.field_6249 = this.field_6249 + this.field_6225;
 		} else {
 			this.stepHeight = 0.5F;
 			this.field_6281 = 0.02F;
-			super.travel(f, g, h);
+			super.travel(vec3d);
 		}
 	}
 
@@ -257,6 +256,6 @@ public class PigEntity extends AnimalEntity {
 
 	@Override
 	public boolean isBreedingItem(ItemStack itemStack) {
-		return BREEDING_INGREDIENT.matches(itemStack);
+		return BREEDING_INGREDIENT.method_8093(itemStack);
 	}
 }

@@ -173,7 +173,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 	}
 
 	public boolean interact(PlayerEntity playerEntity) {
-		if (!playerEntity.method_7338()) {
+		if (!playerEntity.isCreativeLevelTwoOp()) {
 			return false;
 		} else {
 			if (playerEntity.getEntityWorld().isClient) {

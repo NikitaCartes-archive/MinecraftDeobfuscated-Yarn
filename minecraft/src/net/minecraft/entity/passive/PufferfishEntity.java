@@ -2,10 +2,10 @@ package net.minecraft.entity.passive;
 
 import java.util.List;
 import java.util.function.Predicate;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
 import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
@@ -60,7 +60,7 @@ public class PufferfishEntity extends FishEntity {
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
 		if (field_6835.equals(trackedData)) {
-			this.method_18382();
+			this.refreshSize();
 		}
 
 		super.onTrackedDataSet(trackedData);
@@ -168,8 +168,8 @@ public class PufferfishEntity extends FishEntity {
 	}
 
 	@Override
-	public class_4048 method_18377(class_4050 arg) {
-		return super.method_18377(arg).method_18383(method_6592(this.method_6594()));
+	public EntitySize getSize(EntityPose entityPose) {
+		return super.getSize(entityPose).scaled(method_6592(this.method_6594()));
 	}
 
 	private static float method_6592(int i) {

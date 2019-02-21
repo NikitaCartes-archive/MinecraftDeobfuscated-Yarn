@@ -137,11 +137,11 @@ public final class TagHelper {
 				return listTag2.isEmpty();
 			} else {
 				for (int i = 0; i < listTag.size(); i++) {
-					Tag tag4 = listTag.get(i);
+					Tag tag4 = listTag.method_10534(i);
 					boolean bl2 = false;
 
 					for (int j = 0; j < listTag2.size(); j++) {
-						if (areTagsEqual(tag4, listTag2.get(j), bl)) {
+						if (areTagsEqual(tag4, listTag2.method_10534(j), bl)) {
 							bl2 = true;
 							break;
 						}

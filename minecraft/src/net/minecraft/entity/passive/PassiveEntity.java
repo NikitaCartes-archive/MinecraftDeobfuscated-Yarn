@@ -123,7 +123,7 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
 		if (CHILD.equals(trackedData)) {
-			this.method_18382();
+			this.refreshSize();
 		}
 
 		super.onTrackedDataSet(trackedData);

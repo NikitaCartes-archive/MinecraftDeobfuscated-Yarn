@@ -2,7 +2,7 @@ package net.minecraft.client.gui.widget;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.item.ItemStack;
 
@@ -31,7 +31,7 @@ enum AdvancementTabType {
 		return this.field_2669;
 	}
 
-	public void drawBackground(Drawable drawable, int i, int j, boolean bl, int k) {
+	public void drawBackground(DrawableHelper drawableHelper, int i, int j, boolean bl, int k) {
 		int l = this.field_2674;
 		if (k > 0) {
 			l += this.field_2671;
@@ -42,7 +42,7 @@ enum AdvancementTabType {
 		}
 
 		int m = bl ? this.field_2672 + this.field_2670 : this.field_2672;
-		drawable.drawTexturedRect(i + this.method_2302(k), j + this.method_2305(k), l, m, this.field_2671, this.field_2670);
+		drawableHelper.drawTexturedRect(i + this.method_2302(k), j + this.method_2305(k), l, m, this.field_2671, this.field_2670);
 	}
 
 	public void drawIcon(int i, int j, int k, ItemRenderer itemRenderer, ItemStack itemStack) {

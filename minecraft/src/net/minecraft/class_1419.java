@@ -69,7 +69,7 @@ public class class_1419 {
 	}
 
 	private boolean method_6446() {
-		for (PlayerEntity playerEntity : this.field_6727.method_18456()) {
+		for (PlayerEntity playerEntity : this.field_6727.getPlayers()) {
 			if (!playerEntity.isSpectator()) {
 				this.field_6726 = this.field_6727.getVillageManager().getNearestVillage(new BlockPos(playerEntity), 1);
 				if (this.field_6726 != null && this.field_6726.getDoorCount() >= 10 && this.field_6726.getStableTicks() >= 20 && this.field_6726.getPopulationSize() >= 20) {

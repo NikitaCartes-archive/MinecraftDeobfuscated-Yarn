@@ -229,7 +229,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			boolean bl3 = d * d + e * e + f * f > 9.0E-4 || this.field_3923 >= 20;
 			boolean bl4 = g != 0.0 || h != 0.0;
 			if (this.hasVehicle()) {
-				this.networkHandler.sendPacket(new PlayerMoveServerMessage.Both(this.velocityX, -999.0, this.velocityZ, this.yaw, this.pitch, this.onGround));
+				Vec3d vec3d = this.getVelocity();
+				this.networkHandler.sendPacket(new PlayerMoveServerMessage.Both(vec3d.x, -999.0, vec3d.z, this.yaw, this.pitch, this.onGround));
 				bl3 = false;
 			} else if (bl3 && bl4) {
 				this.networkHandler.sendPacket(new PlayerMoveServerMessage.Both(this.x, boundingBox.minY, this.z, this.yaw, this.pitch, this.onGround));
@@ -411,22 +412,28 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 				i = 5;
 			}
 
-			float k = 0.1F;
+			Vec3d vec3d = this.getVelocity();
+			double k = vec3d.x;
+			double l = vec3d.y;
+			double m = vec3d.z;
+			float n = 0.1F;
 			if (i == 0) {
-				this.velocityX = -0.1F;
+				k = -0.1F;
 			}
 
 			if (i == 1) {
-				this.velocityX = 0.1F;
+				k = 0.1F;
 			}
 
 			if (i == 4) {
-				this.velocityZ = -0.1F;
+				m = -0.1F;
 			}
 
 			if (i == 5) {
-				this.velocityZ = 0.1F;
+				m = 0.1F;
 			}
+
+			this.setVelocity(k, l, m);
 		}
 	}
 
@@ -684,7 +691,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			}
 		}
 
-		if (this.input.jumping && !bl && !this.onGround && this.velocityY < 0.0 && !this.isFallFlying() && !this.abilities.flying) {
+		if (this.input.jumping && !bl && !this.onGround && this.getVelocity().y < 0.0 && !this.isFallFlying() && !this.abilities.flying) {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
 			if (itemStack.getItem() == Items.field_8833 && ElytraItem.isUsable(itemStack)) {
 				this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.field_12982));
@@ -705,14 +712,19 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		if (this.abilities.flying && this.method_3134()) {
+			int i = 0;
 			if (this.input.sneaking) {
 				this.input.movementSideways = (float)((double)this.input.movementSideways / 0.3);
 				this.input.movementForward = (float)((double)this.input.movementForward / 0.3);
-				this.velocityY = this.velocityY - (double)(this.abilities.getFlySpeed() * 3.0F);
+				i--;
 			}
 
 			if (this.input.jumping) {
-				this.velocityY = this.velocityY + (double)(this.abilities.getFlySpeed() * 3.0F);
+				i++;
+			}
+
+			if (i != 0) {
+				this.setVelocity(this.getVelocity().add(0.0, (double)((float)i * this.abilities.getFlySpeed() * 3.0F), 0.0));
 			}
 		}
 
@@ -817,11 +829,11 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void move(MovementType movementType, double d, double e, double f) {
-		double g = this.x;
-		double h = this.z;
-		super.move(movementType, d, e, f);
-		this.method_3148((float)(this.x - g), (float)(this.z - h));
+	public void move(MovementType movementType, Vec3d vec3d) {
+		double d = this.x;
+		double e = this.z;
+		super.move(movementType, vec3d);
+		this.method_3148((float)(this.x - d), (float)(this.z - e));
 	}
 
 	public boolean method_3149() {

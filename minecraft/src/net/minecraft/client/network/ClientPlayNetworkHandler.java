@@ -23,7 +23,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_300;
-import net.minecraft.class_4076;
 import net.minecraft.class_452;
 import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.block.Block;
@@ -270,6 +269,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.MutableIntBoundingBox;
@@ -657,12 +657,16 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		double f = playerPositionLookS2CPacket.getZ();
 		float g = playerPositionLookS2CPacket.getYaw();
 		float h = playerPositionLookS2CPacket.getPitch();
+		Vec3d vec3d = playerEntity.getVelocity();
+		double i = vec3d.x;
+		double j = vec3d.y;
+		double k = vec3d.z;
 		if (playerPositionLookS2CPacket.getFlags().contains(PlayerPositionLookS2CPacket.Flag.X)) {
 			playerEntity.prevRenderX += d;
 			d += playerEntity.x;
 		} else {
 			playerEntity.prevRenderX = d;
-			playerEntity.velocityX = 0.0;
+			i = 0.0;
 		}
 
 		if (playerPositionLookS2CPacket.getFlags().contains(PlayerPositionLookS2CPacket.Flag.Y)) {
@@ -670,7 +674,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			e += playerEntity.y;
 		} else {
 			playerEntity.prevRenderY = e;
-			playerEntity.velocityY = 0.0;
+			j = 0.0;
 		}
 
 		if (playerPositionLookS2CPacket.getFlags().contains(PlayerPositionLookS2CPacket.Flag.Z)) {
@@ -678,9 +682,10 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			f += playerEntity.z;
 		} else {
 			playerEntity.prevRenderZ = f;
-			playerEntity.velocityZ = 0.0;
+			k = 0.0;
 		}
 
+		playerEntity.setVelocity(i, j, k);
 		if (playerPositionLookS2CPacket.getFlags().contains(PlayerPositionLookS2CPacket.Flag.X_ROT)) {
 			h += playerEntity.pitch;
 		}
@@ -886,9 +891,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			livingEntity.setEntityId(mobSpawnS2CPacket.getId());
 			livingEntity.setUuid(mobSpawnS2CPacket.getUuid());
 			livingEntity.setPositionAnglesAndUpdate(d, e, f, g, h);
-			livingEntity.velocityX = (double)((float)mobSpawnS2CPacket.getYaw() / 8000.0F);
-			livingEntity.velocityY = (double)((float)mobSpawnS2CPacket.getPitch() / 8000.0F);
-			livingEntity.velocityZ = (double)((float)mobSpawnS2CPacket.getHeadPitch() / 8000.0F);
+			livingEntity.setVelocity(
+				(double)((float)mobSpawnS2CPacket.getYaw() / 8000.0F),
+				(double)((float)mobSpawnS2CPacket.getPitch() / 8000.0F),
+				(double)((float)mobSpawnS2CPacket.getHeadPitch() / 8000.0F)
+			);
 			this.world.method_2942(mobSpawnS2CPacket.getId(), livingEntity);
 			List<DataTracker.Entry<?>> list = mobSpawnS2CPacket.getTrackedValues();
 			if (list != null) {
@@ -1048,9 +1055,14 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			explosionS2CPacket.getAffectedBlocks()
 		);
 		explosion.affectWorld(true);
-		this.client.player.velocityX = this.client.player.velocityX + (double)explosionS2CPacket.getPlayerVelocityX();
-		this.client.player.velocityY = this.client.player.velocityY + (double)explosionS2CPacket.getPlayerVelocityY();
-		this.client.player.velocityZ = this.client.player.velocityZ + (double)explosionS2CPacket.getPlayerVelocityZ();
+		this.client
+			.player
+			.setVelocity(
+				this.client
+					.player
+					.getVelocity()
+					.add((double)explosionS2CPacket.getPlayerVelocityX(), (double)explosionS2CPacket.getPlayerVelocityY(), (double)explosionS2CPacket.getPlayerVelocityZ())
+			);
 	}
 
 	@Override
@@ -1274,7 +1286,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				.playSound(
 					playerEntity,
 					playerEntity.x,
-					playerEntity.y + (double)playerEntity.getEyeHeight(),
+					playerEntity.y + (double)playerEntity.getStandingEyeHeight(),
 					playerEntity.z,
 					SoundEvents.field_15224,
 					SoundCategory.field_15248,
@@ -1613,7 +1625,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		playerEntity.abilities.creativeMode = playerAbilitiesS2CPacket.isCreativeMode();
 		playerEntity.abilities.invulnerable = playerAbilitiesS2CPacket.isInvulnerable();
 		playerEntity.abilities.allowFlying = playerAbilitiesS2CPacket.allowFlying();
-		playerEntity.abilities.setFlySpeed((double)playerAbilitiesS2CPacket.getFlySpeed());
+		playerEntity.abilities.setFlySpeed(playerAbilitiesS2CPacket.getFlySpeed());
 		playerEntity.abilities.setWalkSpeed(playerAbilitiesS2CPacket.getFovModifier());
 	}
 
@@ -2080,7 +2092,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			boolean bl2 = (l & 1 << m) != 0;
 			if (bl || bl2) {
 				lightingProvider.setSection(
-					lightType, class_4076.method_18676(i, n, j), bl ? new ChunkNibbleArray((byte[])((byte[])iterator.next()).clone()) : new ChunkNibbleArray()
+					lightType, ChunkSectionPos.from(i, n, j), bl ? new ChunkNibbleArray((byte[])((byte[])iterator.next()).clone()) : new ChunkNibbleArray()
 				);
 				this.world.method_18113(i, n, j);
 			}

@@ -25,12 +25,12 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_768;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.util.Rect2i;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormat;
@@ -63,7 +63,7 @@ public class ChatScreen extends Screen {
 
 	@Nullable
 	@Override
-	public GuiEventListener getFocused() {
+	public InputListener getFocused() {
 		return this.chatField;
 	}
 
@@ -71,7 +71,7 @@ public class ChatScreen extends Screen {
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
 		this.field_2387 = this.client.inGameHud.getChatHud().method_1809().size();
-		this.chatField = new TextFieldWidget(this.fontRenderer, 4, this.height - 12, this.width - 4, 12);
+		this.chatField = new TextFieldWidget(this.fontRenderer, 4, this.screenHeight - 12, this.screenWidth - 4, 12);
 		this.chatField.setMaxLength(256);
 		this.chatField.setHasBorder(false);
 		this.chatField.setFocused(true);
@@ -154,8 +154,8 @@ public class ChatScreen extends Screen {
 					i = Math.max(i, this.fontRenderer.getStringWidth(suggestion.getText()));
 				}
 
-				int j = MathHelper.clamp(this.chatField.method_1889(suggestions.getRange().getStart()), 0, this.width - i);
-				this.suggestionsWindow = new ChatScreen.SuggestionWindow(j, this.height - 12, i, suggestions);
+				int j = MathHelper.clamp(this.chatField.method_1889(suggestions.getRange().getStart()), 0, this.screenWidth - i);
+				this.suggestionsWindow = new ChatScreen.SuggestionWindow(j, this.screenHeight - 12, i, suggestions);
 			}
 		}
 	}
@@ -232,7 +232,7 @@ public class ChatScreen extends Screen {
 		}
 
 		this.commandExceptionsX = 0;
-		this.commandExceptionsWidth = this.width;
+		this.commandExceptionsWidth = this.screenWidth;
 		if (this.commandExceptions.isEmpty()) {
 			this.method_2107(TextFormat.field_1080);
 		}
@@ -361,9 +361,9 @@ public class ChatScreen extends Screen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
-		drawRect(2, this.height - 14, this.width - 2, this.height - 2, Integer.MIN_VALUE);
-		this.chatField.method_18326(i, j, f);
+	public void draw(int i, int j, float f) {
+		drawRect(2, this.screenHeight - 14, this.screenWidth - 2, this.screenHeight - 2, Integer.MIN_VALUE);
+		this.chatField.draw(i, j, f);
 		if (this.suggestionsWindow != null) {
 			this.suggestionsWindow.draw(i, j);
 		} else {
@@ -372,12 +372,12 @@ public class ChatScreen extends Screen {
 			for (String string : this.commandExceptions) {
 				drawRect(
 					this.commandExceptionsX - 1,
-					this.height - 14 - 13 - 12 * k,
+					this.screenHeight - 14 - 13 - 12 * k,
 					this.commandExceptionsX + this.commandExceptionsWidth + 1,
-					this.height - 2 - 13 - 12 * k,
+					this.screenHeight - 2 - 13 - 12 * k,
 					-16777216
 				);
-				this.fontRenderer.drawWithShadow(string, (float)this.commandExceptionsX, (float)(this.height - 14 - 13 + 2 - 12 * k), -1);
+				this.fontRenderer.drawWithShadow(string, (float)this.commandExceptionsX, (float)(this.screenHeight - 14 - 13 + 2 - 12 * k), -1);
 				k++;
 			}
 		}
@@ -387,7 +387,7 @@ public class ChatScreen extends Screen {
 			this.drawTextComponentHover(textComponent, i, j);
 		}
 
-		super.method_18326(i, j, f);
+		super.draw(i, j, f);
 	}
 
 	@Override
@@ -415,7 +415,7 @@ public class ChatScreen extends Screen {
 
 		if (!list.isEmpty()) {
 			this.commandExceptions.addAll(list);
-			this.commandExceptionsX = MathHelper.clamp(this.chatField.method_1889(suggestionContext.startPos), 0, this.width - i);
+			this.commandExceptionsX = MathHelper.clamp(this.chatField.method_1889(suggestionContext.startPos), 0, this.screenWidth - i);
 			this.commandExceptionsWidth = i;
 		}
 	}
@@ -431,7 +431,7 @@ public class ChatScreen extends Screen {
 
 	@Environment(EnvType.CLIENT)
 	class SuggestionWindow {
-		private final class_768 field_2396;
+		private final Rect2i field_2396;
 		private final Suggestions suggestions;
 		private final String typedText;
 		private int field_2395;
@@ -440,7 +440,7 @@ public class ChatScreen extends Screen {
 		private boolean field_2391;
 
 		private SuggestionWindow(int i, int j, int k, Suggestions suggestions) {
-			this.field_2396 = new class_768(i - 1, j - 3 - Math.min(suggestions.getList().size(), 10) * 12, k + 1, Math.min(suggestions.getList().size(), 10) * 12);
+			this.field_2396 = new Rect2i(i - 1, j - 3 - Math.min(suggestions.getList().size(), 10) * 12, k + 1, Math.min(suggestions.getList().size(), 10) * 12);
 			this.suggestions = suggestions;
 			this.typedText = ChatScreen.this.chatField.getText();
 			this.setSelectedSuggestionIndex(0);
@@ -458,38 +458,32 @@ public class ChatScreen extends Screen {
 			}
 
 			if (bl3) {
-				Drawable.drawRect(
-					this.field_2396.method_3321(),
-					this.field_2396.method_3322() - 1,
-					this.field_2396.method_3321() + this.field_2396.method_3319(),
-					this.field_2396.method_3322(),
-					-805306368
+				DrawableHelper.drawRect(
+					this.field_2396.getX(), this.field_2396.getY() - 1, this.field_2396.getX() + this.field_2396.getWidth(), this.field_2396.getY(), -805306368
 				);
-				Drawable.drawRect(
-					this.field_2396.method_3321(),
-					this.field_2396.method_3322() + this.field_2396.method_3320(),
-					this.field_2396.method_3321() + this.field_2396.method_3319(),
-					this.field_2396.method_3322() + this.field_2396.method_3320() + 1,
+				DrawableHelper.drawRect(
+					this.field_2396.getX(),
+					this.field_2396.getY() + this.field_2396.getHeight(),
+					this.field_2396.getX() + this.field_2396.getWidth(),
+					this.field_2396.getY() + this.field_2396.getHeight() + 1,
 					-805306368
 				);
 				if (bl) {
-					for (int m = 0; m < this.field_2396.method_3319(); m++) {
+					for (int m = 0; m < this.field_2396.getWidth(); m++) {
 						if (m % 2 == 0) {
-							Drawable.drawRect(
-								this.field_2396.method_3321() + m, this.field_2396.method_3322() - 1, this.field_2396.method_3321() + m + 1, this.field_2396.method_3322(), -1
-							);
+							DrawableHelper.drawRect(this.field_2396.getX() + m, this.field_2396.getY() - 1, this.field_2396.getX() + m + 1, this.field_2396.getY(), -1);
 						}
 					}
 				}
 
 				if (bl2) {
-					for (int mx = 0; mx < this.field_2396.method_3319(); mx++) {
+					for (int mx = 0; mx < this.field_2396.getWidth(); mx++) {
 						if (mx % 2 == 0) {
-							Drawable.drawRect(
-								this.field_2396.method_3321() + mx,
-								this.field_2396.method_3322() + this.field_2396.method_3320(),
-								this.field_2396.method_3321() + mx + 1,
-								this.field_2396.method_3322() + this.field_2396.method_3320() + 1,
+							DrawableHelper.drawRect(
+								this.field_2396.getX() + mx,
+								this.field_2396.getY() + this.field_2396.getHeight(),
+								this.field_2396.getX() + mx + 1,
+								this.field_2396.getY() + this.field_2396.getHeight() + 1,
 								-1
 							);
 						}
@@ -501,17 +495,17 @@ public class ChatScreen extends Screen {
 
 			for (int n = 0; n < k; n++) {
 				Suggestion suggestion = (Suggestion)this.suggestions.getList().get(n + this.field_2395);
-				Drawable.drawRect(
-					this.field_2396.method_3321(),
-					this.field_2396.method_3322() + 12 * n,
-					this.field_2396.method_3321() + this.field_2396.method_3319(),
-					this.field_2396.method_3322() + 12 * n + 12,
+				DrawableHelper.drawRect(
+					this.field_2396.getX(),
+					this.field_2396.getY() + 12 * n,
+					this.field_2396.getX() + this.field_2396.getWidth(),
+					this.field_2396.getY() + 12 * n + 12,
 					-805306368
 				);
-				if (i > this.field_2396.method_3321()
-					&& i < this.field_2396.method_3321() + this.field_2396.method_3319()
-					&& j > this.field_2396.method_3322() + 12 * n
-					&& j < this.field_2396.method_3322() + 12 * n + 12) {
+				if (i > this.field_2396.getX()
+					&& i < this.field_2396.getX() + this.field_2396.getWidth()
+					&& j > this.field_2396.getY() + 12 * n
+					&& j < this.field_2396.getY() + 12 * n + 12) {
 					if (bl4) {
 						this.setSelectedSuggestionIndex(n + this.field_2395);
 					}
@@ -522,8 +516,8 @@ public class ChatScreen extends Screen {
 				ChatScreen.this.fontRenderer
 					.drawWithShadow(
 						suggestion.getText(),
-						(float)(this.field_2396.method_3321() + 1),
-						(float)(this.field_2396.method_3322() + 2 + 12 * n),
+						(float)(this.field_2396.getX() + 1),
+						(float)(this.field_2396.getY() + 2 + 12 * n),
 						n + this.field_2395 == this.selectedSuggestionIndex ? -256 : -5592406
 					);
 			}
@@ -537,10 +531,10 @@ public class ChatScreen extends Screen {
 		}
 
 		public boolean method_2119(int i, int j, int k) {
-			if (!this.field_2396.method_3318(i, j)) {
+			if (!this.field_2396.contains(i, j)) {
 				return false;
 			} else {
-				int l = (j - this.field_2396.method_3322()) / 12 + this.field_2395;
+				int l = (j - this.field_2396.getY()) / 12 + this.field_2395;
 				if (l >= 0 && l < this.suggestions.getList().size()) {
 					this.setSelectedSuggestionIndex(l);
 					this.useSuggestion();
@@ -557,7 +551,7 @@ public class ChatScreen extends Screen {
 			int j = (int)(
 				ChatScreen.this.client.mouse.getY() * (double)ChatScreen.this.client.window.getScaledHeight() / (double)ChatScreen.this.client.window.getHeight()
 			);
-			if (this.field_2396.method_3318(i, j)) {
+			if (this.field_2396.contains(i, j)) {
 				this.field_2395 = MathHelper.clamp((int)((double)this.field_2395 - d), 0, Math.max(this.suggestions.getList().size() - 10, 0));
 				return true;
 			} else {

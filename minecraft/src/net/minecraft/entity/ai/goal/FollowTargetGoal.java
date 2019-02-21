@@ -54,14 +54,14 @@ public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 					this.field_6642,
 					this.entity,
 					this.entity.x,
-					this.entity.y + (double)this.entity.getEyeHeight(),
+					this.entity.y + (double)this.entity.getStandingEyeHeight(),
 					this.entity.z,
 					this.getSearchBox(this.getFollowRange())
 				);
 		} else {
 			this.field_6644 = this.entity
 				.world
-				.method_18463(this.field_6642, this.entity, this.entity.x, this.entity.y + (double)this.entity.getEyeHeight(), this.entity.z);
+				.method_18463(this.field_6642, this.entity, this.entity.x, this.entity.y + (double)this.entity.getStandingEyeHeight(), this.entity.z);
 		}
 	}
 

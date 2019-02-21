@@ -288,7 +288,7 @@ public class TeleportCommand {
 		}
 
 		if (!(entity instanceof LivingEntity) || !((LivingEntity)entity).isFallFlying()) {
-			entity.velocityY = 0.0;
+			entity.setVelocity(entity.getVelocity().multiply(1.0, 0.0, 1.0));
 			entity.onGround = true;
 		}
 	}

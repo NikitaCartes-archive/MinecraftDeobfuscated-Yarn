@@ -109,7 +109,7 @@ public class ClientPlayerInteractionManager {
 			return false;
 		} else {
 			Block block = blockState.getBlock();
-			if ((block instanceof CommandBlock || block instanceof StructureBlock || block instanceof JigsawBlock) && !this.client.player.method_7338()) {
+			if ((block instanceof CommandBlock || block instanceof StructureBlock || block instanceof JigsawBlock) && !this.client.player.isCreativeLevelTwoOp()) {
 				return false;
 			} else if (blockState.isAir()) {
 				return false;

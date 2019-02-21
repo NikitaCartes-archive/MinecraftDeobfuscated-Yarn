@@ -44,22 +44,24 @@ public class BackupLevelScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
-		ButtonWidget buttonWidget = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 24 + 5, I18n.translate("selectWorld.edit.resetIcon")) {
-			@Override
-			public void onPressed(double d, double e) {
-				LevelStorage levelStorage = BackupLevelScreen.this.client.getLevelStorage();
-				FileUtils.deleteQuietly(levelStorage.resolveFile(BackupLevelScreen.this.levelName, "icon.png"));
-				this.enabled = false;
+		ButtonWidget buttonWidget = this.addButton(
+			new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 24 + 5, I18n.translate("selectWorld.edit.resetIcon")) {
+				@Override
+				public void onPressed(double d, double e) {
+					LevelStorage levelStorage = BackupLevelScreen.this.client.getLevelStorage();
+					FileUtils.deleteQuietly(levelStorage.resolveFile(BackupLevelScreen.this.levelName, "icon.png"));
+					this.enabled = false;
+				}
 			}
-		});
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 48 + 5, I18n.translate("selectWorld.edit.openFolder")) {
+		);
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 48 + 5, I18n.translate("selectWorld.edit.openFolder")) {
 			@Override
 			public void onPressed(double d, double e) {
 				LevelStorage levelStorage = BackupLevelScreen.this.client.getLevelStorage();
 				SystemUtil.getOperatingSystem().open(levelStorage.resolveFile(BackupLevelScreen.this.levelName, "icon.png").getParentFile());
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 72 + 5, I18n.translate("selectWorld.edit.backup")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 72 + 5, I18n.translate("selectWorld.edit.backup")) {
 			@Override
 			public void onPressed(double d, double e) {
 				LevelStorage levelStorage = BackupLevelScreen.this.client.getLevelStorage();
@@ -67,7 +69,7 @@ public class BackupLevelScreen extends Screen {
 				BackupLevelScreen.this.callback.confirmResult(false, 0);
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 5, I18n.translate("selectWorld.edit.backupFolder")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 96 + 5, I18n.translate("selectWorld.edit.backupFolder")) {
 			@Override
 			public void onPressed(double d, double e) {
 				LevelStorage levelStorage = BackupLevelScreen.this.client.getLevelStorage();
@@ -83,7 +85,7 @@ public class BackupLevelScreen extends Screen {
 			}
 		});
 		this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 5, I18n.translate("selectWorld.edit.optimize")) {
+			new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 120 + 5, I18n.translate("selectWorld.edit.optimize")) {
 				@Override
 				public void onPressed(double d, double e) {
 					BackupLevelScreen.this.client
@@ -105,13 +107,15 @@ public class BackupLevelScreen extends Screen {
 				}
 			}
 		);
-		this.saveButton = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 144 + 5, 98, 20, I18n.translate("selectWorld.edit.save")) {
-			@Override
-			public void onPressed(double d, double e) {
-				BackupLevelScreen.this.commit();
+		this.saveButton = this.addButton(
+			new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 144 + 5, 98, 20, I18n.translate("selectWorld.edit.save")) {
+				@Override
+				public void onPressed(double d, double e) {
+					BackupLevelScreen.this.commit();
+				}
 			}
-		});
-		this.addButton(new ButtonWidget(this.width / 2 + 2, this.height / 4 + 144 + 5, 98, 20, I18n.translate("gui.cancel")) {
+		);
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 2, this.screenHeight / 4 + 144 + 5, 98, 20, I18n.translate("gui.cancel")) {
 			@Override
 			public void onPressed(double d, double e) {
 				BackupLevelScreen.this.callback.confirmResult(false, 0);
@@ -121,7 +125,7 @@ public class BackupLevelScreen extends Screen {
 		LevelStorage levelStorage = this.client.getLevelStorage();
 		LevelProperties levelProperties = levelStorage.getLevelProperties(this.levelName);
 		String string = levelProperties == null ? "" : levelProperties.getLevelName();
-		this.field_3170 = new TextFieldWidget(this.fontRenderer, this.width / 2 - 100, 53, 200, 20);
+		this.field_3170 = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 100, 53, 200, 20);
 		this.field_3170.setFocused(true);
 		this.field_3170.setText(string);
 		this.listeners.add(this.field_3170);
@@ -193,11 +197,11 @@ public class BackupLevelScreen extends Screen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, I18n.translate("selectWorld.edit.title"), this.width / 2, 20, 16777215);
-		this.drawString(this.fontRenderer, I18n.translate("selectWorld.enterName"), this.width / 2 - 100, 40, 10526880);
-		this.field_3170.method_18326(i, j, f);
-		super.method_18326(i, j, f);
+		this.drawStringCentered(this.fontRenderer, I18n.translate("selectWorld.edit.title"), this.screenWidth / 2, 20, 16777215);
+		this.drawString(this.fontRenderer, I18n.translate("selectWorld.enterName"), this.screenWidth / 2 - 100, 40, 10526880);
+		this.field_3170.draw(i, j, f);
+		super.draw(i, j, f);
 	}
 }

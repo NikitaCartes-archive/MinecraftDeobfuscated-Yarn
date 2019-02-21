@@ -36,7 +36,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 	public static final Identifier BLOCK_ATLAS_TEX = new Identifier("textures/atlas/blocks.png");
 	public static final Identifier PARTICLE_ATLAS_TEX = new Identifier("textures/atlas/particles.png");
 	public static final Identifier PAINTING_ATLAS_TEX = new Identifier("textures/atlas/paintings.png");
-	public static final Identifier field_18229 = new Identifier("textures/atlas/mob_effects.png");
+	public static final Identifier STATUS_EFFECT_ATLAS_TEX = new Identifier("textures/atlas/mob_effects.png");
 	private final List<Sprite> animatedSprites = Lists.<Sprite>newArrayList();
 	private final Set<Identifier> spritesToLoad = Sets.<Identifier>newHashSet();
 	private final Map<Identifier, Sprite> sprites = Maps.<Identifier, Sprite>newHashMap();

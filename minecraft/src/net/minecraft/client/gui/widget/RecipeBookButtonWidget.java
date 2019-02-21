@@ -27,7 +27,7 @@ public abstract class RecipeBookButtonWidget extends ButtonWidget {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void drawButton(int i, int j, float f) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		minecraftClient.getTextureManager().bindTexture(this.texture);
 		GlStateManager.disableDepthTest();

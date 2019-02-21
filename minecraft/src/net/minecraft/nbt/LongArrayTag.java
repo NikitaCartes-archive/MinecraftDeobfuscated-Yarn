@@ -119,7 +119,7 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 		return this.value.length;
 	}
 
-	public LongTag getRaw(int i) {
+	public LongTag method_10616(int i) {
 		return new LongTag(this.value[i]);
 	}
 

@@ -15,12 +15,12 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4080;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceSupplier;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
@@ -33,7 +33,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class SoundLoader extends class_4080<SoundLoader.class_4009> {
+public class SoundLoader extends ResourceSupplier<SoundLoader.Result> {
 	public static final Sound SOUND_MISSING = new Sound("meta:missing_sound", 1.0F, 1.0F, 1, Sound.RegistrationType.FILE, false, false, 16);
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Gson GSON = new GsonBuilder()
@@ -60,8 +60,8 @@ public class SoundLoader extends class_4080<SoundLoader.class_4009> {
 		this.soundManager = new SoundManager(this, gameOptions);
 	}
 
-	protected SoundLoader.class_4009 method_18180(ResourceManager resourceManager, Profiler profiler) {
-		SoundLoader.class_4009 lv = new SoundLoader.class_4009();
+	protected SoundLoader.Result method_18180(ResourceManager resourceManager, Profiler profiler) {
+		SoundLoader.Result result = new SoundLoader.Result();
 		profiler.startTick();
 
 		for (String string : resourceManager.getAllNamespaces()) {
@@ -77,7 +77,7 @@ public class SoundLoader extends class_4080<SoundLoader.class_4009> {
 						profiler.swap("register");
 
 						for (Entry<String, SoundEntry> entry : map.entrySet()) {
-							lv.method_18187(new Identifier(string, (String)entry.getKey()), (SoundEntry)entry.getValue(), resourceManager);
+							result.method_18187(new Identifier(string, (String)entry.getKey()), (SoundEntry)entry.getValue(), resourceManager);
 						}
 
 						profiler.pop();
@@ -94,11 +94,11 @@ public class SoundLoader extends class_4080<SoundLoader.class_4009> {
 		}
 
 		profiler.endTick();
-		return lv;
+		return result;
 	}
 
-	protected void method_18182(SoundLoader.class_4009 arg, ResourceManager resourceManager, Profiler profiler) {
-		arg.method_18186(this.sounds, this.soundManager);
+	protected void method_18182(SoundLoader.Result result, ResourceManager resourceManager, Profiler profiler) {
+		result.addTo(this.sounds, this.soundManager);
 
 		for (Identifier identifier : this.sounds.keySet()) {
 			WeightedSoundSet weightedSoundSet = (WeightedSoundSet)this.sounds.get(identifier);
@@ -176,7 +176,7 @@ public class SoundLoader extends class_4080<SoundLoader.class_4009> {
 		this.soundManager.deinitialize();
 	}
 
-	public void method_18670() {
+	public void update() {
 		this.soundManager.update();
 	}
 
@@ -213,14 +213,14 @@ public class SoundLoader extends class_4080<SoundLoader.class_4009> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class class_4009 {
-		private final Map<Identifier, WeightedSoundSet> field_17908 = Maps.<Identifier, WeightedSoundSet>newHashMap();
+	public static class Result {
+		private final Map<Identifier, WeightedSoundSet> loadedSounds = Maps.<Identifier, WeightedSoundSet>newHashMap();
 
-		protected class_4009() {
+		protected Result() {
 		}
 
 		private void method_18187(Identifier identifier, SoundEntry soundEntry, ResourceManager resourceManager) {
-			WeightedSoundSet weightedSoundSet = (WeightedSoundSet)this.field_17908.get(identifier);
+			WeightedSoundSet weightedSoundSet = (WeightedSoundSet)this.loadedSounds.get(identifier);
 			boolean bl = weightedSoundSet == null;
 			if (bl || soundEntry.isReplaceable()) {
 				if (!bl) {
@@ -228,7 +228,7 @@ public class SoundLoader extends class_4080<SoundLoader.class_4009> {
 				}
 
 				weightedSoundSet = new WeightedSoundSet(identifier, soundEntry.getSubtitle());
-				this.field_17908.put(identifier, weightedSoundSet);
+				this.loadedSounds.put(identifier, weightedSoundSet);
 			}
 
 			for (final Sound sound : soundEntry.getSounds()) {
@@ -246,12 +246,12 @@ public class SoundLoader extends class_4080<SoundLoader.class_4009> {
 						soundContainer = new SoundContainer<Sound>() {
 							@Override
 							public int getWeight() {
-								WeightedSoundSet weightedSoundSet = (WeightedSoundSet)class_4009.this.field_17908.get(identifier2);
+								WeightedSoundSet weightedSoundSet = (WeightedSoundSet)Result.this.loadedSounds.get(identifier2);
 								return weightedSoundSet == null ? 0 : weightedSoundSet.getWeight();
 							}
 
 							public Sound method_4883() {
-								WeightedSoundSet weightedSoundSet = (WeightedSoundSet)class_4009.this.field_17908.get(identifier2);
+								WeightedSoundSet weightedSoundSet = (WeightedSoundSet)Result.this.loadedSounds.get(identifier2);
 								if (weightedSoundSet == null) {
 									return SoundLoader.SOUND_MISSING;
 								} else {
@@ -271,7 +271,7 @@ public class SoundLoader extends class_4080<SoundLoader.class_4009> {
 
 							@Override
 							public void method_18188(SoundManager soundManager) {
-								WeightedSoundSet weightedSoundSet = (WeightedSoundSet)class_4009.this.field_17908.get(identifier2);
+								WeightedSoundSet weightedSoundSet = (WeightedSoundSet)Result.this.loadedSounds.get(identifier2);
 								if (weightedSoundSet != null) {
 									weightedSoundSet.method_18188(soundManager);
 								}
@@ -286,10 +286,10 @@ public class SoundLoader extends class_4080<SoundLoader.class_4009> {
 			}
 		}
 
-		public void method_18186(Map<Identifier, WeightedSoundSet> map, SoundManager soundManager) {
+		public void addTo(Map<Identifier, WeightedSoundSet> map, SoundManager soundManager) {
 			map.clear();
 
-			for (Entry<Identifier, WeightedSoundSet> entry : this.field_17908.entrySet()) {
+			for (Entry<Identifier, WeightedSoundSet> entry : this.loadedSounds.entrySet()) {
 				map.put(entry.getKey(), entry.getValue());
 				((WeightedSoundSet)entry.getValue()).method_18188(soundManager);
 			}

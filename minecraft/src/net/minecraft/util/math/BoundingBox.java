@@ -115,6 +115,10 @@ public class BoundingBox {
 		return new BoundingBox(g, h, i, j, k, l);
 	}
 
+	public BoundingBox method_18804(Vec3d vec3d) {
+		return this.stretch(vec3d.x, vec3d.y, vec3d.z);
+	}
+
 	public BoundingBox stretch(double d, double e, double f) {
 		double g = this.minX;
 		double h = this.minY;

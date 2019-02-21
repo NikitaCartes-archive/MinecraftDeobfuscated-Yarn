@@ -32,7 +32,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4076;
 import net.minecraft.client.network.packet.ChunkDataS2CPacket;
 import net.minecraft.client.network.packet.EntityAttachS2CPacket;
 import net.minecraft.client.network.packet.EntityPassengersSetS2CPacket;
@@ -58,6 +57,7 @@ import net.minecraft.util.TypeFilterableList;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.ChunkSerializer;
@@ -151,7 +151,7 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 		int i;
 		int j;
 		if (bl) {
-			ChunkPos chunkPos2 = serverPlayerEntity.getChunkPos().method_18692();
+			ChunkPos chunkPos2 = serverPlayerEntity.getChunkPos().toChunkPos();
 			i = chunkPos2.x;
 			j = chunkPos2.z;
 		} else {
@@ -327,7 +327,7 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 							this.save(chunk);
 
 							for (int ix = 0; ix < 16; ix++) {
-								this.serverLightingProvider.scheduleChunkLightUpdate(class_4076.method_18681(chunk.getPos(), ix), true);
+								this.serverLightingProvider.scheduleChunkLightUpdate(ChunkSectionPos.from(chunk.getPos(), ix), true);
 							}
 
 							this.serverLightingProvider.tick();
@@ -594,13 +594,13 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 		if (bl) {
 			this.field_18241.add(ChunkPos.toLong(i, j), serverPlayerEntity, bl2);
 			if (!bl2) {
-				this.ticketManager.method_14048(class_4076.method_18680(serverPlayerEntity), serverPlayerEntity);
+				this.ticketManager.method_14048(ChunkSectionPos.from(serverPlayerEntity), serverPlayerEntity);
 			}
 		} else {
-			class_4076 lv = serverPlayerEntity.getChunkPos();
-			this.field_18241.remove(lv.method_18692().toLong(), serverPlayerEntity);
+			ChunkSectionPos chunkSectionPos = serverPlayerEntity.getChunkPos();
+			this.field_18241.remove(chunkSectionPos.toChunkPos().toLong(), serverPlayerEntity);
 			if (!bl2) {
-				this.ticketManager.method_14051(lv, serverPlayerEntity);
+				this.ticketManager.method_14051(chunkSectionPos, serverPlayerEntity);
 			}
 		}
 
@@ -615,7 +615,7 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 	public void method_18713(ServerPlayerEntity serverPlayerEntity) {
 		for (ThreadedAnvilChunkStorage.EntityTracker entityTracker : this.field_18242.values()) {
 			if (entityTracker.field_18247 == serverPlayerEntity) {
-				entityTracker.method_18729(this.world.method_18456());
+				entityTracker.method_18729(this.world.getPlayers());
 			} else {
 				entityTracker.method_18736(serverPlayerEntity);
 			}
@@ -623,20 +623,20 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 
 		int i = MathHelper.floor(serverPlayerEntity.x) >> 4;
 		int j = MathHelper.floor(serverPlayerEntity.z) >> 4;
-		class_4076 lv = serverPlayerEntity.getChunkPos();
-		class_4076 lv2 = class_4076.method_18680(serverPlayerEntity);
-		long l = lv.method_18692().toLong();
-		long m = lv2.method_18692().toLong();
+		ChunkSectionPos chunkSectionPos = serverPlayerEntity.getChunkPos();
+		ChunkSectionPos chunkSectionPos2 = ChunkSectionPos.from(serverPlayerEntity);
+		long l = chunkSectionPos.toChunkPos().toLong();
+		long m = chunkSectionPos2.toChunkPos().toLong();
 		boolean bl = this.field_18241.isWatchDisabled(serverPlayerEntity);
 		boolean bl2 = this.method_18722(serverPlayerEntity);
-		boolean bl3 = lv.method_18694() != lv2.method_18694();
+		boolean bl3 = chunkSectionPos.asLong() != chunkSectionPos2.asLong();
 		if (bl3 || bl != bl2) {
 			if (!bl && bl2 || bl3) {
-				this.ticketManager.method_14051(lv, serverPlayerEntity);
+				this.ticketManager.method_14051(chunkSectionPos, serverPlayerEntity);
 			}
 
 			if (bl && !bl2 || bl3) {
-				this.ticketManager.method_14048(lv2, serverPlayerEntity);
+				this.ticketManager.method_14048(chunkSectionPos2, serverPlayerEntity);
 			}
 
 			if (!bl && bl2) {
@@ -651,8 +651,8 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 				this.field_18241.movePlayer(l, m, serverPlayerEntity);
 			}
 
-			int k = lv.method_18674();
-			int n = lv.method_18687();
+			int k = chunkSectionPos.getChunkX();
+			int n = chunkSectionPos.getChunkZ();
 			int o = Math.min(i, k) - this.field_18243;
 			int p = Math.min(j, n) - this.field_18243;
 			int q = Math.max(i, k) + this.field_18243;
@@ -688,7 +688,7 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 				} else {
 					ThreadedAnvilChunkStorage.EntityTracker entityTracker = new ThreadedAnvilChunkStorage.EntityTracker(entity, i, j, entityType.method_18389());
 					this.field_18242.put(entity.getEntityId(), entityTracker);
-					entityTracker.method_18729(this.world.method_18456());
+					entityTracker.method_18729(this.world.getPlayers());
 					if (entity instanceof ServerPlayerEntity) {
 						ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
 						this.method_18714(serverPlayerEntity, true);
@@ -722,19 +722,19 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 
 	protected void method_18727() {
 		List<ServerPlayerEntity> list = Lists.<ServerPlayerEntity>newArrayList();
-		List<ServerPlayerEntity> list2 = this.world.method_18456();
+		List<ServerPlayerEntity> list2 = this.world.getPlayers();
 
 		for (ThreadedAnvilChunkStorage.EntityTracker entityTracker : this.field_18242.values()) {
-			class_4076 lv = entityTracker.field_18249;
-			class_4076 lv2 = class_4076.method_18680(entityTracker.field_18247);
-			if (!Objects.equals(lv, lv2)) {
+			ChunkSectionPos chunkSectionPos = entityTracker.field_18249;
+			ChunkSectionPos chunkSectionPos2 = ChunkSectionPos.from(entityTracker.field_18247);
+			if (!Objects.equals(chunkSectionPos, chunkSectionPos2)) {
 				entityTracker.method_18729(list2);
 				Entity entity = entityTracker.field_18247;
 				if (entity instanceof ServerPlayerEntity) {
 					list.add((ServerPlayerEntity)entity);
 				}
 
-				entityTracker.field_18249 = lv2;
+				entityTracker.field_18249 = chunkSectionPos2;
 			}
 
 			entityTracker.field_18246.method_18756();
@@ -800,14 +800,14 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 		private final EntityTrackerEntry field_18246;
 		private final Entity field_18247;
 		private final int field_18248;
-		private class_4076 field_18249;
+		private ChunkSectionPos field_18249;
 		private final Set<ServerPlayerEntity> field_18250 = Sets.<ServerPlayerEntity>newHashSet();
 
 		public EntityTracker(Entity entity, int i, int j, boolean bl) {
 			this.field_18246 = new EntityTrackerEntry(ThreadedAnvilChunkStorage.this.world, entity, j, bl, this::method_18730);
 			this.field_18247 = entity;
 			this.field_18248 = i;
-			this.field_18249 = class_4076.method_18680(entity);
+			this.field_18249 = ChunkSectionPos.from(entity);
 		}
 
 		public boolean equals(Object object) {

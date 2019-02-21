@@ -1,11 +1,13 @@
 package net.minecraft.entity.ai.goal;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.DolphinEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 
 public class DolphinJumpGoal extends DiveJumpingGoal {
 	private static final int[] field_6474 = new int[]{0, 1, 4, 5, 6, 7};
@@ -49,13 +51,8 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 
 	@Override
 	public boolean shouldContinue() {
-		return (
-				!(this.dolphin.velocityY * this.dolphin.velocityY < 0.03F)
-					|| this.dolphin.pitch == 0.0F
-					|| !(Math.abs(this.dolphin.pitch) < 10.0F)
-					|| !this.dolphin.isInsideWater()
-			)
-			&& !this.dolphin.onGround;
+		double d = this.dolphin.getVelocity().y;
+		return (!(d * d < 0.03F) || this.dolphin.pitch == 0.0F || !(Math.abs(this.dolphin.pitch) < 10.0F) || !this.dolphin.isInsideWater()) && !this.dolphin.onGround;
 	}
 
 	@Override
@@ -66,9 +63,7 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 	@Override
 	public void start() {
 		Direction direction = this.dolphin.getMovementDirection();
-		this.dolphin.velocityX = this.dolphin.velocityX + (double)direction.getOffsetX() * 0.6;
-		this.dolphin.velocityY += 0.7;
-		this.dolphin.velocityZ = this.dolphin.velocityZ + (double)direction.getOffsetZ() * 0.6;
+		this.dolphin.setVelocity(this.dolphin.getVelocity().add((double)direction.getOffsetX() * 0.6, 0.7, (double)direction.getOffsetZ() * 0.6));
 		this.dolphin.getNavigation().stop();
 	}
 
@@ -89,15 +84,13 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 			this.dolphin.playSound(SoundEvents.field_14707, 1.0F, 1.0F);
 		}
 
-		if (this.dolphin.velocityY * this.dolphin.velocityY < 0.03F && this.dolphin.pitch != 0.0F) {
+		Vec3d vec3d = this.dolphin.getVelocity();
+		if (vec3d.y * vec3d.y < 0.03F && this.dolphin.pitch != 0.0F) {
 			this.dolphin.pitch = this.updatePitch(this.dolphin.pitch, 0.0F, 0.2F);
 		} else {
-			double d = Math.sqrt(
-				this.dolphin.velocityX * this.dolphin.velocityX + this.dolphin.velocityY * this.dolphin.velocityY + this.dolphin.velocityZ * this.dolphin.velocityZ
-			);
-			double e = Math.sqrt(this.dolphin.velocityX * this.dolphin.velocityX + this.dolphin.velocityZ * this.dolphin.velocityZ);
-			double f = Math.signum(-this.dolphin.velocityY) * Math.acos(e / d) * 180.0F / (float)Math.PI;
-			this.dolphin.pitch = (float)f;
+			double d = Math.sqrt(Entity.squaredHorizontalLength(vec3d));
+			double e = Math.signum(-vec3d.y) * Math.acos(d / vec3d.length()) * 180.0F / (float)Math.PI;
+			this.dolphin.pitch = (float)e;
 		}
 	}
 }

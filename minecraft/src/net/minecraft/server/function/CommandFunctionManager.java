@@ -151,7 +151,7 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 			LOGGER.info("Loaded {} custom command functions", this.idMap.size());
 		}
 
-		this.tags.applyReload((Map<Identifier, Tag.Builder<CommandFunction>>)this.tags.prepareReload(resourceManager, this.server.method_17191()).join());
+		this.tags.applyReload((Map<Identifier, Tag.Builder<CommandFunction>>)this.tags.prepareReload(resourceManager, this.server.getWorkerExecutor()).join());
 		this.tickFunctions.addAll(this.tags.getOrCreate(TICK_FUNCTION).values());
 		this.justLoaded = true;
 	}

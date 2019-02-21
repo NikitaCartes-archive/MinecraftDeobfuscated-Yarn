@@ -2,8 +2,8 @@ package net.minecraft.world.chunk.light;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4076;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.ChunkNibbleArray;
@@ -45,17 +45,17 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 
 	@Override
 	protected void processLevelAt(long l, int i, boolean bl) {
-		long m = class_4076.method_18691(l);
+		long m = ChunkSectionPos.toChunkLong(l);
 		int j = BlockPos.unpackLongY(l);
-		int k = class_4076.method_18684(j);
-		int n = class_4076.method_18675(j);
+		int k = ChunkSectionPos.toLocalCoord(j);
+		int n = ChunkSectionPos.toChunkCoord(j);
 		int o;
 		if (k != 0) {
 			o = 0;
 		} else {
 			int p = 0;
 
-			while (!this.lightStorage.hasChunk(class_4076.method_18678(m, 0, -p - 1, 0)) && this.lightStorage.isAboveMinimumHeight(n - p - 1)) {
+			while (!this.lightStorage.hasChunk(ChunkSectionPos.offsetPacked(m, 0, -p - 1, 0)) && this.lightStorage.isAboveMinimumHeight(n - p - 1)) {
 				p++;
 			}
 
@@ -63,13 +63,13 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 		}
 
 		long q = BlockPos.add(l, 0, -1 - o * 16, 0);
-		long r = class_4076.method_18691(q);
+		long r = ChunkSectionPos.toChunkLong(q);
 		if (m == r || this.lightStorage.hasChunk(r)) {
 			this.scheduleUpdateRecursively(l, q, i, bl);
 		}
 
 		long s = BlockPos.offset(l, Direction.UP);
-		long t = class_4076.method_18691(s);
+		long t = ChunkSectionPos.toChunkLong(s);
 		if (m == t || this.lightStorage.hasChunk(t)) {
 			this.scheduleUpdateRecursively(l, s, i, bl);
 		}
@@ -79,7 +79,7 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 
 			do {
 				long v = BlockPos.add(l, direction.getOffsetX(), -u, direction.getOffsetZ());
-				long w = class_4076.method_18691(v);
+				long w = ChunkSectionPos.toChunkLong(v);
 				if (m == w) {
 					this.scheduleUpdateRecursively(l, v, i, bl);
 					break;
@@ -106,12 +106,12 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 			}
 		}
 
-		long n = class_4076.method_18691(l);
+		long n = ChunkSectionPos.toChunkLong(l);
 		ChunkNibbleArray chunkNibbleArray = this.lightStorage.getDataForChunk(n, true);
 
 		for (Direction direction : DIRECTIONS_SKYLIGHT) {
 			long o = BlockPos.offset(l, direction);
-			long p = class_4076.method_18691(o);
+			long p = ChunkSectionPos.toChunkLong(o);
 			ChunkNibbleArray chunkNibbleArray2;
 			if (n == p) {
 				chunkNibbleArray2 = chunkNibbleArray;
@@ -132,7 +132,7 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 				}
 			} else if (direction != Direction.DOWN) {
 				for (o = BlockPos.removeChunkSectionLocalY(o); !this.lightStorage.hasChunk(p) && !this.lightStorage.method_15568(p); o = BlockPos.add(o, 0, 16, 0)) {
-					p = class_4076.method_18679(p, Direction.UP);
+					p = ChunkSectionPos.offsetPacked(p, Direction.UP);
 				}
 
 				ChunkNibbleArray chunkNibbleArray3 = this.lightStorage.getDataForChunk(p, true);
@@ -161,12 +161,12 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 	@Override
 	protected void scheduleNewUpdate(long l) {
 		this.lightStorage.updateAll();
-		long m = class_4076.method_18691(l);
+		long m = ChunkSectionPos.toChunkLong(l);
 		if (this.lightStorage.hasChunk(m)) {
 			super.scheduleNewUpdate(l);
 		} else {
 			for (l = BlockPos.removeChunkSectionLocalY(l); !this.lightStorage.hasChunk(m) && !this.lightStorage.method_15568(m); l = BlockPos.add(l, 0, 16, 0)) {
-				m = class_4076.method_18679(m, Direction.UP);
+				m = ChunkSectionPos.offsetPacked(m, Direction.UP);
 			}
 
 			if (this.lightStorage.hasChunk(m)) {

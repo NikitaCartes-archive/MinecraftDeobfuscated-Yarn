@@ -4,11 +4,11 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.class_4051;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
@@ -76,22 +76,22 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		this.dataTracker.startTracking(SIZE, 0);
 	}
 
-	public void setSize(int i) {
+	public void setPhantomSize(int i) {
 		this.dataTracker.set(SIZE, MathHelper.clamp(i, 0, 64));
 	}
 
 	private void method_7097() {
-		this.method_18382();
-		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue((double)(6 + this.getSize()));
+		this.refreshSize();
+		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue((double)(6 + this.getPhantomSize()));
 	}
 
-	public int getSize() {
+	public int getPhantomSize() {
 		return this.dataTracker.get(SIZE);
 	}
 
 	@Override
-	protected float method_18394(class_4050 arg, class_4048 arg2) {
-		return arg2.field_18068 * 0.35F;
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+		return entitySize.height * 0.35F;
 	}
 
 	@Override
@@ -123,7 +123,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 					);
 			}
 
-			int i = this.getSize();
+			int i = this.getPhantomSize();
 			float h = MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)) * (1.3F + 0.21F * (float)i);
 			float j = MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)) * (1.3F + 0.21F * (float)i);
 			float k = (0.3F + f * 0.45F) * ((float)i * 0.2F + 1.0F);
@@ -155,7 +155,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		this.field_7312 = new BlockPos(this).up(5);
-		this.setSize(0);
+		this.setPhantomSize(0);
 		return super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
@@ -166,7 +166,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 			this.field_7312 = new BlockPos(compoundTag.getInt("AX"), compoundTag.getInt("AY"), compoundTag.getInt("AZ"));
 		}
 
-		this.setSize(compoundTag.getInt("Size"));
+		this.setPhantomSize(compoundTag.getInt("Size"));
 	}
 
 	@Override
@@ -175,7 +175,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		compoundTag.putInt("AX", this.field_7312.getX());
 		compoundTag.putInt("AY", this.field_7312.getY());
 		compoundTag.putInt("AZ", this.field_7312.getZ());
-		compoundTag.putInt("Size", this.getSize());
+		compoundTag.putInt("Size", this.getPhantomSize());
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -220,11 +220,11 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public class_4048 method_18377(class_4050 arg) {
-		int i = this.getSize();
-		class_4048 lv = super.method_18377(arg);
-		float f = (lv.field_18067 + 0.2F * (float)i) / lv.field_18067;
-		return lv.method_18383(f);
+	public EntitySize getSize(EntityPose entityPose) {
+		int i = this.getPhantomSize();
+		EntitySize entitySize = super.getSize(entityPose);
+		float f = (entitySize.width + 0.2F * (float)i) / entitySize.width;
+		return entitySize.scaled(f);
 	}
 
 	class PhantomLookControl extends LookControl {
@@ -278,9 +278,8 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 			double p = (double)(this.field_7331 * MathHelper.cos(o * (float) (Math.PI / 180.0))) * Math.abs((double)f / i);
 			double q = (double)(this.field_7331 * MathHelper.sin(o * (float) (Math.PI / 180.0))) * Math.abs((double)h / i);
 			double r = (double)(this.field_7331 * MathHelper.sin(n * (float) (Math.PI / 180.0))) * Math.abs((double)g / i);
-			PhantomEntity.this.velocityX = PhantomEntity.this.velocityX + (p - PhantomEntity.this.velocityX) * 0.2;
-			PhantomEntity.this.velocityY = PhantomEntity.this.velocityY + (r - PhantomEntity.this.velocityY) * 0.2;
-			PhantomEntity.this.velocityZ = PhantomEntity.this.velocityZ + (q - PhantomEntity.this.velocityZ) * 0.2;
+			Vec3d vec3d = PhantomEntity.this.getVelocity();
+			PhantomEntity.this.setVelocity(vec3d.add(new Vec3d(p, r, q).subtract(vec3d).multiply(0.2)));
 		}
 	}
 

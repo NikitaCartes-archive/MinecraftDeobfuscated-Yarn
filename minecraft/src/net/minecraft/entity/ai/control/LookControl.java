@@ -21,7 +21,7 @@ public class LookControl {
 	public void lookAt(Entity entity, float f, float g) {
 		this.lookX = entity.x;
 		if (entity instanceof LivingEntity) {
-			this.lookY = entity.y + (double)entity.getEyeHeight();
+			this.lookY = entity.y + (double)entity.getStandingEyeHeight();
 		} else {
 			this.lookY = (entity.getBoundingBox().minY + entity.getBoundingBox().maxY) / 2.0;
 		}
@@ -46,7 +46,7 @@ public class LookControl {
 		if (this.active) {
 			this.active = false;
 			double d = this.lookX - this.entity.x;
-			double e = this.lookY - (this.entity.y + (double)this.entity.getEyeHeight());
+			double e = this.lookY - (this.entity.y + (double)this.entity.getStandingEyeHeight());
 			double f = this.lookZ - this.entity.z;
 			double g = (double)MathHelper.sqrt(d * d + f * f);
 			float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;

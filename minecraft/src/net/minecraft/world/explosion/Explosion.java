@@ -172,7 +172,7 @@ public class Explosion {
 				double x = entity.distanceTo(this.x, this.y, this.z) / (double)r;
 				if (x <= 1.0) {
 					double y = entity.x - this.x;
-					double z = entity.y + (double)entity.getEyeHeight() - this.y;
+					double z = entity.y + (double)entity.getStandingEyeHeight() - this.y;
 					double aa = entity.z - this.z;
 					double ab = (double)MathHelper.sqrt(y * y + z * z + aa * aa);
 					if (ab != 0.0) {
@@ -187,9 +187,7 @@ public class Explosion {
 							ae = ProtectionEnchantment.method_8237((LivingEntity)entity, ad);
 						}
 
-						entity.velocityX += y * ae;
-						entity.velocityY += z * ae;
-						entity.velocityZ += aa * ae;
+						entity.setVelocity(entity.getVelocity().add(y * ae, z * ae, aa * ae));
 						if (entity instanceof PlayerEntity) {
 							PlayerEntity playerEntity = (PlayerEntity)entity;
 							if (!playerEntity.isSpectator() && (!playerEntity.isCreative() || !playerEntity.abilities.flying)) {

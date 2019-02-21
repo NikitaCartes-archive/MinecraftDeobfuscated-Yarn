@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.OptionalInt;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_4076;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
@@ -104,6 +103,7 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.TraderRecipeList;
@@ -145,7 +145,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	private boolean field_13964;
 	@Nullable
 	private Vec3d enteredNetherPos;
-	private class_4076 chunkPos = class_4076.method_18676(0, 0, 0);
+	private ChunkSectionPos chunkPos = ChunkSectionPos.from(0, 0, 0);
 	private int containerSyncId;
 	public boolean field_13991;
 	public int field_13967;
@@ -485,7 +485,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 				}
 
 				if (!bl2) {
-					ItemEntity itemEntity = new ItemEntity(this.world, this.x, this.y, this.z, new ItemStack(Items.field_17515));
+					ItemEntity itemEntity = new ItemEntity(this.world, this.x, this.y, this.z, new ItemStack(Items.WITHER_ROSE));
 					this.world.spawnEntity(itemEntity);
 				}
 			}
@@ -651,9 +651,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 				}
 
 				this.setPositionAndAngles((double)o, (double)p, (double)q, h, 0.0F);
-				this.velocityX = 0.0;
-				this.velocityY = 0.0;
-				this.velocityZ = 0.0;
+				this.setVelocity(Vec3d.ZERO);
 			} else if (!serverWorld2.getPortalForcer().method_8653(this, j)) {
 				serverWorld2.getPortalForcer().method_8654(this);
 				serverWorld2.getPortalForcer().method_8653(this, j);
@@ -1318,12 +1316,12 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		this.networkHandler.sendPacket(new UnloadChunkS2CPacket(chunkPos.x, chunkPos.z));
 	}
 
-	public class_4076 getChunkPos() {
+	public ChunkSectionPos getChunkPos() {
 		return this.chunkPos;
 	}
 
-	public void setChunkPos(class_4076 arg) {
-		this.chunkPos = arg;
+	public void setChunkPos(ChunkSectionPos chunkSectionPos) {
+		this.chunkPos = chunkSectionPos;
 	}
 
 	@Override

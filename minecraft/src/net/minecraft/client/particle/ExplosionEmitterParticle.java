@@ -2,13 +2,12 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3998;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class ExplosionEmitterParticle extends class_3998 {
+public class ExplosionEmitterParticle extends NoRenderParticle {
 	private int age_;
 	private final int maxAge_ = 8;
 

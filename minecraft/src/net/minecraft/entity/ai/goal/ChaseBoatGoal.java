@@ -1,7 +1,6 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.List;
-import net.minecraft.class_1340;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.mob.MobEntityWithAi;
@@ -9,12 +8,13 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 public class ChaseBoatGoal extends Goal {
 	private int field_6428;
 	private final MobEntityWithAi owner;
 	private LivingEntity passenger;
-	private class_1340 state;
+	private ChaseBoatState state;
 
 	public ChaseBoatGoal(MobEntityWithAi mobEntityWithAi) {
 		this.owner = mobEntityWithAi;
@@ -62,7 +62,7 @@ public class ChaseBoatGoal extends Goal {
 		}
 
 		this.field_6428 = 0;
-		this.state = class_1340.field_6401;
+		this.state = ChaseBoatState.field_6401;
 	}
 
 	@Override
@@ -73,26 +73,27 @@ public class ChaseBoatGoal extends Goal {
 	@Override
 	public void tick() {
 		boolean bl = MathHelper.abs(this.passenger.movementInputSideways) > 0.0F || MathHelper.abs(this.passenger.movementInputForward) > 0.0F;
-		float f = this.state == class_1340.field_6400 ? (bl ? 0.17999999F : 0.0F) : 0.135F;
-		this.owner.updateVelocity(this.owner.movementInputSideways, this.owner.movementInputUp, this.owner.movementInputForward, f);
-		this.owner.move(MovementType.field_6308, this.owner.velocityX, this.owner.velocityY, this.owner.velocityZ);
+		float f = this.state == ChaseBoatState.field_6400 ? (bl ? 0.17999999F : 0.0F) : 0.135F;
+		this.owner
+			.updateVelocity(f, new Vec3d((double)this.owner.movementInputSideways, (double)this.owner.movementInputUp, (double)this.owner.movementInputForward));
+		this.owner.move(MovementType.field_6308, this.owner.getVelocity());
 		if (--this.field_6428 <= 0) {
 			this.field_6428 = 10;
-			if (this.state == class_1340.field_6401) {
+			if (this.state == ChaseBoatState.field_6401) {
 				BlockPos blockPos = new BlockPos(this.passenger).offset(this.passenger.getHorizontalFacing().getOpposite());
 				blockPos = blockPos.add(0, -1, 0);
 				this.owner.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0);
 				if (this.owner.distanceTo(this.passenger) < 4.0F) {
 					this.field_6428 = 0;
-					this.state = class_1340.field_6400;
+					this.state = ChaseBoatState.field_6400;
 				}
-			} else if (this.state == class_1340.field_6400) {
+			} else if (this.state == ChaseBoatState.field_6400) {
 				Direction direction = this.passenger.getMovementDirection();
 				BlockPos blockPos2 = new BlockPos(this.passenger).offset(direction, 10);
 				this.owner.getNavigation().startMovingTo((double)blockPos2.getX(), (double)(blockPos2.getY() - 1), (double)blockPos2.getZ(), 1.0);
 				if (this.owner.distanceTo(this.passenger) > 12.0F) {
 					this.field_6428 = 0;
-					this.state = class_1340.field_6401;
+					this.state = ChaseBoatState.field_6401;
 				}
 			}
 		}

@@ -9,11 +9,11 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_4068;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
@@ -21,7 +21,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class TextFieldWidget extends Drawable implements class_4068, GuiEventListener {
+public class TextFieldWidget extends DrawableHelper implements Drawable, InputListener {
 	private final TextRenderer fontRenderer;
 	private int x;
 	private int y;
@@ -363,7 +363,7 @@ public class TextFieldWidget extends Drawable implements class_4068, GuiEventLis
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		if (this.isVisible()) {
 			if (this.hasBorder()) {
 				drawRect(this.x - 1, this.y - 1, this.x + this.width + 1, this.y + this.height + 1, -6250336);
@@ -407,7 +407,7 @@ public class TextFieldWidget extends Drawable implements class_4068, GuiEventLis
 
 			if (bl2) {
 				if (bl3) {
-					Drawable.drawRect(q, o - 1, q + 1, o + 1 + 9, -3092272);
+					DrawableHelper.drawRect(q, o - 1, q + 1, o + 1 + 9, -3092272);
 				} else {
 					this.fontRenderer.drawWithShadow("_", (float)q, (float)o, k);
 				}

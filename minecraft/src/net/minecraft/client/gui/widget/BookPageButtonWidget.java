@@ -16,7 +16,7 @@ public abstract class BookPageButtonWidget extends ButtonWidget {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void drawButton(int i, int j, float f) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		MinecraftClient.getInstance().getTextureManager().bindTexture(WrittenBookScreen.BOOK_TEXTURE);
 		int k = 0;

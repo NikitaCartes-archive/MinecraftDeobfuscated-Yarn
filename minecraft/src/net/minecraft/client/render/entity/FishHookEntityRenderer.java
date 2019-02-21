@@ -85,10 +85,10 @@ public class FishHookEntityRenderer extends EntityRenderer<FishHookEntity> {
 				t = MathHelper.lerp((double)h, playerEntity.prevX, playerEntity.x) + vec3d.x;
 				u = MathHelper.lerp((double)h, playerEntity.prevY, playerEntity.y) + vec3d.y;
 				v = MathHelper.lerp((double)h, playerEntity.prevZ, playerEntity.z) + vec3d.z;
-				w = (double)playerEntity.getEyeHeight();
+				w = (double)playerEntity.getStandingEyeHeight();
 			} else {
 				t = MathHelper.lerp((double)h, playerEntity.prevX, playerEntity.x) - q * r - p * 0.8;
-				u = playerEntity.prevY + (double)playerEntity.getEyeHeight() + (playerEntity.y - playerEntity.prevY) * (double)h - 0.45;
+				u = playerEntity.prevY + (double)playerEntity.getStandingEyeHeight() + (playerEntity.y - playerEntity.prevY) * (double)h - 0.45;
 				v = MathHelper.lerp((double)h, playerEntity.prevZ, playerEntity.z) - p * r + q * 0.8;
 				w = playerEntity.isSneaking() ? -0.1875 : 0.0;
 			}

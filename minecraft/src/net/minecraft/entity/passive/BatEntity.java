@@ -3,11 +3,11 @@ package net.minecraft.entity.passive;
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
 import javax.annotation.Nullable;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.class_4051;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -21,6 +21,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
@@ -102,12 +103,10 @@ public class BatEntity extends AmbientEntity {
 	public void update() {
 		super.update();
 		if (this.isRoosting()) {
-			this.velocityX = 0.0;
-			this.velocityY = 0.0;
-			this.velocityZ = 0.0;
+			this.setVelocity(Vec3d.ZERO);
 			this.y = (double)MathHelper.floor(this.y) + 1.0 - (double)this.getHeight();
 		} else {
-			this.velocityY *= 0.6F;
+			this.setVelocity(this.getVelocity().multiply(1.0, 0.6, 1.0));
 		}
 	}
 
@@ -148,10 +147,10 @@ public class BatEntity extends AmbientEntity {
 			double d = (double)this.field_6729.getX() + 0.5 - this.x;
 			double e = (double)this.field_6729.getY() + 0.1 - this.y;
 			double f = (double)this.field_6729.getZ() + 0.5 - this.z;
-			this.velocityX = this.velocityX + (Math.signum(d) * 0.5 - this.velocityX) * 0.1F;
-			this.velocityY = this.velocityY + (Math.signum(e) * 0.7F - this.velocityY) * 0.1F;
-			this.velocityZ = this.velocityZ + (Math.signum(f) * 0.5 - this.velocityZ) * 0.1F;
-			float g = (float)(MathHelper.atan2(this.velocityZ, this.velocityX) * 180.0F / (float)Math.PI) - 90.0F;
+			Vec3d vec3d = this.getVelocity();
+			Vec3d vec3d2 = vec3d.add((Math.signum(d) * 0.5 - vec3d.x) * 0.1F, (Math.signum(e) * 0.7F - vec3d.y) * 0.1F, (Math.signum(f) * 0.5 - vec3d.z) * 0.1F);
+			this.setVelocity(vec3d2);
+			float g = (float)(MathHelper.atan2(vec3d2.z, vec3d2.x) * 180.0F / (float)Math.PI) - 90.0F;
 			float h = MathHelper.wrapDegrees(g - this.yaw);
 			this.movementInputForward = 0.5F;
 			this.yaw += h;
@@ -230,7 +229,7 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	@Override
-	protected float method_18394(class_4050 arg, class_4048 arg2) {
-		return arg2.field_18068 / 2.0F;
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+		return entitySize.height / 2.0F;
 	}
 }

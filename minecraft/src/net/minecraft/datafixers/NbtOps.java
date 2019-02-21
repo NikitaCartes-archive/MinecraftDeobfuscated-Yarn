@@ -42,11 +42,11 @@ public class NbtOps implements DynamicOps<Tag> {
 	protected NbtOps() {
 	}
 
-	public Tag empty() {
+	public Tag method_10668() {
 		return new EndTag();
 	}
 
-	public Type<?> getType(Tag tag) {
+	public Type<?> method_10642(Tag tag) {
 		switch (tag.getType()) {
 			case 0:
 				return DSL.nilType();
@@ -79,47 +79,47 @@ public class NbtOps implements DynamicOps<Tag> {
 		}
 	}
 
-	public Optional<Number> getNumberValue(Tag tag) {
+	public Optional<Number> method_10645(Tag tag) {
 		return tag instanceof AbstractNumberTag ? Optional.of(((AbstractNumberTag)tag).getNumber()) : Optional.empty();
 	}
 
-	public Tag createNumeric(Number number) {
+	public Tag method_10660(Number number) {
 		return new DoubleTag(number.doubleValue());
 	}
 
-	public Tag createByte(byte b) {
+	public Tag method_10640(byte b) {
 		return new ByteTag(b);
 	}
 
-	public Tag createShort(short s) {
+	public Tag method_10635(short s) {
 		return new ShortTag(s);
 	}
 
-	public Tag createInt(int i) {
+	public Tag method_10661(int i) {
 		return new IntTag(i);
 	}
 
-	public Tag createLong(long l) {
+	public Tag method_10654(long l) {
 		return new LongTag(l);
 	}
 
-	public Tag createFloat(float f) {
+	public Tag method_10662(float f) {
 		return new FloatTag(f);
 	}
 
-	public Tag createDouble(double d) {
+	public Tag method_10652(double d) {
 		return new DoubleTag(d);
 	}
 
-	public Optional<String> getStringValue(Tag tag) {
+	public Optional<String> method_10656(Tag tag) {
 		return tag instanceof StringTag ? Optional.of(tag.asString()) : Optional.empty();
 	}
 
-	public Tag createString(String string) {
+	public Tag method_10639(String string) {
 		return new StringTag(string);
 	}
 
-	public Tag mergeInfo(Tag tag, Tag tag2) {
+	public Tag method_10653(Tag tag, Tag tag2) {
 		if (tag2 instanceof EndTag) {
 			return tag;
 		} else if (!(tag instanceof CompoundTag)) {
@@ -154,7 +154,7 @@ public class NbtOps implements DynamicOps<Tag> {
 		}
 	}
 
-	public Tag mergeInto(Tag tag, Tag tag2, Tag tag3) {
+	public Tag method_10644(Tag tag, Tag tag2, Tag tag3) {
 		CompoundTag compoundTag;
 		if (tag instanceof EndTag) {
 			compoundTag = new CompoundTag();
@@ -172,7 +172,7 @@ public class NbtOps implements DynamicOps<Tag> {
 		return compoundTag;
 	}
 
-	public Tag merge(Tag tag, Tag tag2) {
+	public Tag method_10647(Tag tag, Tag tag2) {
 		if (tag instanceof EndTag) {
 			return tag2;
 		} else if (tag2 instanceof EndTag) {
@@ -197,13 +197,13 @@ public class NbtOps implements DynamicOps<Tag> {
 		}
 	}
 
-	public Optional<Map<Tag, Tag>> getMapValues(Tag tag) {
+	public Optional<Map<Tag, Tag>> method_10669(Tag tag) {
 		if (tag instanceof CompoundTag) {
 			CompoundTag compoundTag = (CompoundTag)tag;
 			return Optional.of(
 				compoundTag.getKeys()
 					.stream()
-					.map(string -> Pair.of(this.createString(string), compoundTag.getTag(string)))
+					.map(string -> Pair.of(this.method_10639(string), compoundTag.getTag(string)))
 					.collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))
 			);
 		} else {
@@ -211,7 +211,7 @@ public class NbtOps implements DynamicOps<Tag> {
 		}
 	}
 
-	public Tag createMap(Map<Tag, Tag> map) {
+	public Tag method_10655(Map<Tag, Tag> map) {
 		CompoundTag compoundTag = new CompoundTag();
 
 		for (Entry<Tag, Tag> entry : map.entrySet()) {
@@ -221,35 +221,35 @@ public class NbtOps implements DynamicOps<Tag> {
 		return compoundTag;
 	}
 
-	public Optional<Stream<Tag>> getStream(Tag tag) {
+	public Optional<Stream<Tag>> method_10664(Tag tag) {
 		return tag instanceof AbstractListTag ? Optional.of(((AbstractListTag)tag).stream().map(tagx -> tagx)) : Optional.empty();
 	}
 
-	public Optional<ByteBuffer> getByteBuffer(Tag tag) {
+	public Optional<ByteBuffer> method_10646(Tag tag) {
 		return tag instanceof ByteArrayTag ? Optional.of(ByteBuffer.wrap(((ByteArrayTag)tag).getByteArray())) : DynamicOps.super.getByteBuffer(tag);
 	}
 
-	public Tag createByteList(ByteBuffer byteBuffer) {
+	public Tag method_10657(ByteBuffer byteBuffer) {
 		return new ByteArrayTag(DataFixUtils.toArray(byteBuffer));
 	}
 
-	public Optional<IntStream> createIntList(Tag tag) {
+	public Optional<IntStream> method_10651(Tag tag) {
 		return tag instanceof IntArrayTag ? Optional.of(Arrays.stream(((IntArrayTag)tag).getIntArray())) : DynamicOps.super.getIntStream(tag);
 	}
 
-	public Tag createIntList(IntStream intStream) {
+	public Tag method_10663(IntStream intStream) {
 		return new IntArrayTag(intStream.toArray());
 	}
 
-	public Optional<LongStream> getLongStream(Tag tag) {
+	public Optional<LongStream> method_10637(Tag tag) {
 		return tag instanceof LongArrayTag ? Optional.of(Arrays.stream(((LongArrayTag)tag).getLongArray())) : DynamicOps.super.getLongStream(tag);
 	}
 
-	public Tag createLongList(LongStream longStream) {
+	public Tag method_10643(LongStream longStream) {
 		return new LongArrayTag(longStream.toArray());
 	}
 
-	public Tag createList(Stream<Tag> stream) {
+	public Tag method_10665(Stream<Tag> stream) {
 		PeekingIterator<Tag> peekingIterator = Iterators.peekingIterator(stream.iterator());
 		if (!peekingIterator.hasNext()) {
 			return new ListTag();
@@ -279,7 +279,7 @@ public class NbtOps implements DynamicOps<Tag> {
 		}
 	}
 
-	public Tag remove(Tag tag, String string) {
+	public Tag method_10648(Tag tag, String string) {
 		if (tag instanceof CompoundTag) {
 			CompoundTag compoundTag = (CompoundTag)tag;
 			CompoundTag compoundTag2 = new CompoundTag();

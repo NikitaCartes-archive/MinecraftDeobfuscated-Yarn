@@ -48,7 +48,9 @@ public class LookAtEntityGoal extends Goal {
 			}
 
 			if (this.targetType == PlayerEntity.class) {
-				this.target = this.owner.world.method_18463(this.field_18087, this.owner, this.owner.x, this.owner.y + (double)this.owner.getEyeHeight(), this.owner.z);
+				this.target = this.owner
+					.world
+					.method_18463(this.field_18087, this.owner, this.owner.x, this.owner.y + (double)this.owner.getStandingEyeHeight(), this.owner.z);
 			} else {
 				this.target = this.owner
 					.world
@@ -57,7 +59,7 @@ public class LookAtEntityGoal extends Goal {
 						this.field_18087,
 						this.owner,
 						this.owner.x,
-						this.owner.y + (double)this.owner.getEyeHeight(),
+						this.owner.y + (double)this.owner.getStandingEyeHeight(),
 						this.owner.z,
 						this.owner.getBoundingBox().expand((double)this.range, 3.0, (double)this.range)
 					);
@@ -90,7 +92,9 @@ public class LookAtEntityGoal extends Goal {
 	public void tick() {
 		this.owner
 			.getLookControl()
-			.lookAt(this.target.x, this.target.y + (double)this.target.getEyeHeight(), this.target.z, (float)this.owner.method_5986(), (float)this.owner.method_5978());
+			.lookAt(
+				this.target.x, this.target.y + (double)this.target.getStandingEyeHeight(), this.target.z, (float)this.owner.method_5986(), (float)this.owner.method_5978()
+			);
 		this.lookTime--;
 	}
 }

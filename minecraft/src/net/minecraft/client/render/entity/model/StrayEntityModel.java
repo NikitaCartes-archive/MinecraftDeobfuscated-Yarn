@@ -80,7 +80,7 @@ public class StrayEntityModel<T extends LivingEntity & RangedAttacker> extends B
 		float g = optionMainHand == OptionMainHand.field_6183 ? 1.0F : -1.0F;
 		Cuboid cuboid = this.getArm(optionMainHand);
 		cuboid.rotationPointX += g;
-		cuboid.method_2847(f);
+		cuboid.applyTransform(f);
 		cuboid.rotationPointX -= g;
 	}
 }

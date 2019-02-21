@@ -24,12 +24,12 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import javax.annotation.Nullable;
-import net.minecraft.class_4076;
 import net.minecraft.class_4079;
 import net.minecraft.entity.player.ChunkTicketType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Actor;
 import net.minecraft.util.MailboxProcessor;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
@@ -204,24 +204,24 @@ public abstract class ChunkTicketManager {
 		return 16 - this.field_18254;
 	}
 
-	public void method_14048(class_4076 arg, ServerPlayerEntity serverPlayerEntity) {
-		long l = arg.method_18692().toLong();
-		serverPlayerEntity.setChunkPos(arg);
-		this.field_18251.computeIfAbsent(arg.method_18694(), lx -> new ObjectOpenHashSet()).add(serverPlayerEntity);
+	public void method_14048(ChunkSectionPos chunkSectionPos, ServerPlayerEntity serverPlayerEntity) {
+		long l = chunkSectionPos.toChunkPos().toLong();
+		serverPlayerEntity.setChunkPos(chunkSectionPos);
+		this.field_18251.computeIfAbsent(chunkSectionPos.asLong(), lx -> new ObjectOpenHashSet()).add(serverPlayerEntity);
 		this.field_17453.computeIfAbsent(l, lx -> new ObjectOpenHashSet()).add(serverPlayerEntity);
 		this.field_17454.scheduleNewLevelUpdate(l, 0, true);
 		this.field_17455.scheduleNewLevelUpdate(l, 0, true);
-		this.field_18253.method_18750(arg.method_18694(), this.method_18742(), true);
+		this.field_18253.method_18750(chunkSectionPos.asLong(), this.method_18742(), true);
 	}
 
-	public void method_14051(class_4076 arg, ServerPlayerEntity serverPlayerEntity) {
-		long l = arg.method_18692().toLong();
-		ObjectSet<ServerPlayerEntity> objectSet = this.field_18251.get(arg.method_18694());
+	public void method_14051(ChunkSectionPos chunkSectionPos, ServerPlayerEntity serverPlayerEntity) {
+		long l = chunkSectionPos.toChunkPos().toLong();
+		ObjectSet<ServerPlayerEntity> objectSet = this.field_18251.get(chunkSectionPos.asLong());
 		if (objectSet != null) {
 			objectSet.remove(serverPlayerEntity);
 			if (objectSet.isEmpty()) {
-				this.field_18251.remove(arg.method_18694());
-				this.field_18253.method_18750(arg.method_18694(), Integer.MAX_VALUE, false);
+				this.field_18251.remove(chunkSectionPos.asLong());
+				this.field_18253.method_18750(chunkSectionPos.asLong(), Integer.MAX_VALUE, false);
 			}
 
 			ObjectSet<ServerPlayerEntity> objectSet2 = this.field_17453.get(l);
@@ -243,8 +243,8 @@ public abstract class ChunkTicketManager {
 		return this.field_17454.currentLevels.size();
 	}
 
-	public boolean method_18739(class_4076 arg) {
-		return this.field_18253.getCurrentLevelFor(arg.method_18694()) <= 16;
+	public boolean method_18739(ChunkSectionPos chunkSectionPos) {
+		return this.field_18253.getCurrentLevelFor(chunkSectionPos.asLong()) <= 16;
 	}
 
 	class class_3205 extends ChunkLevelIndexedProcessor {

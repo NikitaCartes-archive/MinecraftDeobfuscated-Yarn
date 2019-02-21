@@ -5,10 +5,10 @@ import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4076;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.PacketByteBuf;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
@@ -101,7 +101,7 @@ public class ClientChunkManager extends ChunkManager {
 
 			for (int m = 0; m < chunkSections.length; m++) {
 				ChunkSection chunkSection = chunkSections[m];
-				lightingProvider.scheduleChunkLightUpdate(class_4076.method_18676(i, m, j), ChunkSection.isEmpty(chunkSection));
+				lightingProvider.scheduleChunkLightUpdate(ChunkSectionPos.from(i, m, j), ChunkSection.isEmpty(chunkSection));
 			}
 
 			return worldChunk;
@@ -162,8 +162,8 @@ public class ClientChunkManager extends ChunkManager {
 	}
 
 	@Override
-	public void onLightUpdate(LightType lightType, class_4076 arg) {
-		MinecraftClient.getInstance().worldRenderer.method_8571(arg.method_18674(), arg.method_18683(), arg.method_18687());
+	public void onLightUpdate(LightType lightType, ChunkSectionPos chunkSectionPos) {
+		MinecraftClient.getInstance().worldRenderer.method_8571(chunkSectionPos.getChunkX(), chunkSectionPos.getChunkY(), chunkSectionPos.getChunkZ());
 	}
 
 	@Environment(EnvType.CLIENT)

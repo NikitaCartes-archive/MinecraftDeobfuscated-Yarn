@@ -2,7 +2,7 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.InputListener;
 
 @Environment(EnvType.CLIENT)
 public abstract class RealmsGuiEventListener {
@@ -34,5 +34,5 @@ public abstract class RealmsGuiEventListener {
 		return false;
 	}
 
-	public abstract GuiEventListener getProxy();
+	public abstract InputListener getProxy();
 }

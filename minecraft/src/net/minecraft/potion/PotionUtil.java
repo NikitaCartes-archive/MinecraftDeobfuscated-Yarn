@@ -178,7 +178,7 @@ public class PotionUtil {
 					textComponent.append(" (").append(StatusEffectUtil.durationToString(statusEffectInstance, f)).append(")");
 				}
 
-				list.add(textComponent.applyFormat(statusEffect.isNegative() ? TextFormat.field_1061 : TextFormat.field_1078));
+				list.add(textComponent.applyFormat(statusEffect.method_18792().getFormatting()));
 			}
 		}
 

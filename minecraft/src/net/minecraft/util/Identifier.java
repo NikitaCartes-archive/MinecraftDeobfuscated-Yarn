@@ -91,7 +91,7 @@ public class Identifier implements Comparable<Identifier> {
 		return 31 * this.namespace.hashCode() + this.path.hashCode();
 	}
 
-	public int compareTo(Identifier identifier) {
+	public int method_12833(Identifier identifier) {
 		int i = this.path.compareTo(identifier.path);
 		if (i == 0) {
 			i = this.namespace.compareTo(identifier.namespace);

@@ -1,10 +1,10 @@
 package net.minecraft.entity.passive;
 
 import net.minecraft.class_1394;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
@@ -26,6 +26,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class ChickenEntity extends AnimalEntity {
@@ -56,8 +57,8 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected float method_18394(class_4050 arg, class_4048 arg2) {
-		return arg2.field_18068;
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+		return entitySize.height;
 	}
 
 	@Override
@@ -79,8 +80,9 @@ public class ChickenEntity extends AnimalEntity {
 		}
 
 		this.field_6737 = (float)((double)this.field_6737 * 0.9);
-		if (!this.onGround && this.velocityY < 0.0) {
-			this.velocityY *= 0.6;
+		Vec3d vec3d = this.getVelocity();
+		if (!this.onGround && vec3d.y < 0.0) {
+			this.setVelocity(vec3d.multiply(1.0, 0.6, 1.0));
 		}
 
 		this.field_6741 = this.field_6741 + this.field_6737 * 2.0F;
@@ -121,7 +123,7 @@ public class ChickenEntity extends AnimalEntity {
 
 	@Override
 	public boolean isBreedingItem(ItemStack itemStack) {
-		return BREEDING_INGREDIENT.matches(itemStack);
+		return BREEDING_INGREDIENT.method_8093(itemStack);
 	}
 
 	@Override

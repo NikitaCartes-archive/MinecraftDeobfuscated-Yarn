@@ -34,9 +34,7 @@ public class BoatItem extends Item {
 		} else {
 			Vec3d vec3d = playerEntity.getRotationVec(1.0F);
 			double d = 5.0;
-			List<Entity> list = world.getEntities(
-				playerEntity, playerEntity.getBoundingBox().stretch(vec3d.x * 5.0, vec3d.y * 5.0, vec3d.z * 5.0).expand(1.0), field_17497
-			);
+			List<Entity> list = world.getEntities(playerEntity, playerEntity.getBoundingBox().method_18804(vec3d.multiply(5.0)).expand(1.0), field_17497);
 			if (!list.isEmpty()) {
 				Vec3d vec3d2 = playerEntity.getCameraPosVec(1.0F);
 

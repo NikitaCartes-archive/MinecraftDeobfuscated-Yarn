@@ -3,11 +3,9 @@ package net.minecraft.client.particle;
 import com.google.common.collect.Lists;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3999;
 import net.minecraft.class_4000;
 import net.minecraft.class_4001;
 import net.minecraft.class_4002;
-import net.minecraft.class_4003;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.Identifier;
@@ -16,7 +14,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class CloudParticle extends class_4003 {
+public class CloudParticle extends SpriteBillboardParticle {
 	private final class_4002 field_17862;
 
 	private CloudParticle(World world, double d, double e, double f, double g, double h, double i, class_4002 arg) {
@@ -41,8 +39,8 @@ public class CloudParticle extends class_4003 {
 	}
 
 	@Override
-	public class_3999 method_18122() {
-		return class_3999.field_17829;
+	public ParticleTextureSheet getTextureSheet() {
+		return ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;
 	}
 
 	@Override
@@ -68,7 +66,7 @@ public class CloudParticle extends class_4003 {
 				BoundingBox boundingBox = playerEntity.getBoundingBox();
 				if (this.posY > boundingBox.minY) {
 					this.posY = this.posY + (boundingBox.minY - this.posY) * 0.2;
-					this.velocityY = this.velocityY + (playerEntity.velocityY - this.velocityY) * 0.2;
+					this.velocityY = this.velocityY + (playerEntity.getVelocity().y - this.velocityY) * 0.2;
 					this.setPos(this.posX, this.posY, this.posZ);
 				}
 			}

@@ -42,7 +42,7 @@ public class GroupButtonWidget extends ToggleButtonWidget {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void drawButton(int i, int j, float f) {
 		if (this.bounce > 0.0F) {
 			float g = 1.0F + 0.1F * (float)Math.sin((double)(this.bounce / 15.0F * (float) Math.PI));
 			GlStateManager.pushMatrix();

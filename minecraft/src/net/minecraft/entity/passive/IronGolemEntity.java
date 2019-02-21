@@ -127,7 +127,7 @@ public class IronGolemEntity extends GolemEntity {
 			this.field_6759--;
 		}
 
-		if (this.velocityX * this.velocityX + this.velocityZ * this.velocityZ > 2.5000003E-7F && this.random.nextInt(5) == 0) {
+		if (squaredHorizontalLength(this.getVelocity()) > 2.5000003E-7F && this.random.nextInt(5) == 0) {
 			int i = MathHelper.floor(this.x);
 			int j = MathHelper.floor(this.y - 0.2F);
 			int k = MathHelper.floor(this.z);
@@ -174,7 +174,7 @@ public class IronGolemEntity extends GolemEntity {
 		this.world.summonParticle(this, (byte)4);
 		boolean bl = entity.damage(DamageSource.mob(this), (float)(7 + this.random.nextInt(15)));
 		if (bl) {
-			entity.velocityY += 0.4F;
+			entity.setVelocity(entity.getVelocity().add(0.0, 0.4F, 0.0));
 			this.dealDamage(this, entity);
 		}
 

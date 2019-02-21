@@ -23,6 +23,7 @@ import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -42,10 +43,8 @@ public class ItemEntity extends Entity {
 	public ItemEntity(World world, double d, double e, double f) {
 		this(EntityType.ITEM, world);
 		this.setPosition(d, e, f);
-		this.yaw = (float)(Math.random() * 360.0);
-		this.velocityX = (double)((float)(Math.random() * 0.2F - 0.1F));
-		this.velocityY = 0.2F;
-		this.velocityZ = (double)((float)(Math.random() * 0.2F - 0.1F));
+		this.yaw = this.random.nextFloat() * 360.0F;
+		this.setVelocity(this.random.nextDouble() * 0.2 - 0.1, 0.2, this.random.nextDouble() * 0.2 - 0.1);
 	}
 
 	public ItemEntity(World world, double d, double e, double f, ItemStack itemStack) {
@@ -76,13 +75,11 @@ public class ItemEntity extends Entity {
 			this.prevX = this.x;
 			this.prevY = this.y;
 			this.prevZ = this.z;
-			double d = this.velocityX;
-			double e = this.velocityY;
-			double f = this.velocityZ;
+			Vec3d vec3d = this.getVelocity();
 			if (this.isInFluid(FluidTags.field_15517)) {
 				this.method_6974();
 			} else if (!this.isUnaffectedByGravity()) {
-				this.velocityY -= 0.04F;
+				this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
 			}
 
 			if (this.world.isClient) {
@@ -94,13 +91,13 @@ public class ItemEntity extends Entity {
 				}
 			}
 
-			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
+			this.move(MovementType.field_6308, this.getVelocity());
 			boolean bl = (int)this.prevX != (int)this.x || (int)this.prevY != (int)this.y || (int)this.prevZ != (int)this.z;
 			if (bl || this.age % 25 == 0) {
 				if (this.world.getFluidState(new BlockPos(this)).matches(FluidTags.field_15518)) {
-					this.velocityY = 0.2F;
-					this.velocityX = (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F);
-					this.velocityZ = (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F);
+					this.setVelocity(
+						(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F), 0.2F, (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F)
+					);
 					this.playSound(SoundEvents.field_14821, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
 				}
 
@@ -109,16 +106,14 @@ public class ItemEntity extends Entity {
 				}
 			}
 
-			float g = 0.98F;
+			float f = 0.98F;
 			if (this.onGround) {
-				g = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getFrictionCoefficient() * 0.98F;
+				f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getFrictionCoefficient() * 0.98F;
 			}
 
-			this.velocityX *= (double)g;
-			this.velocityY *= 0.98F;
-			this.velocityZ *= (double)g;
+			this.setVelocity(this.getVelocity().multiply((double)f, 0.98, (double)f));
 			if (this.onGround) {
-				this.velocityY *= -0.5;
+				this.setVelocity(this.getVelocity().multiply(1.0, -0.5, 1.0));
 			}
 
 			if (this.age != -32768) {
@@ -127,11 +122,8 @@ public class ItemEntity extends Entity {
 
 			this.velocityDirty = this.velocityDirty | this.method_5713();
 			if (!this.world.isClient) {
-				double h = this.velocityX - d;
-				double i = this.velocityY - e;
-				double j = this.velocityZ - f;
-				double k = h * h + i * i + j * j;
-				if (k > 0.01) {
+				double d = this.getVelocity().subtract(vec3d).lengthSquared();
+				if (d > 0.01) {
 					this.velocityDirty = true;
 				}
 			}
@@ -143,12 +135,8 @@ public class ItemEntity extends Entity {
 	}
 
 	private void method_6974() {
-		if (this.velocityY < 0.06F) {
-			this.velocityY += 5.0E-4F;
-		}
-
-		this.velocityX *= 0.99F;
-		this.velocityZ *= 0.99F;
+		Vec3d vec3d = this.getVelocity();
+		this.setVelocity(vec3d.x * 0.99F, vec3d.y + (double)(vec3d.y < 0.06F ? 5.0E-4F : 0.0F), vec3d.z * 0.99F);
 	}
 
 	private void tryMerge() {

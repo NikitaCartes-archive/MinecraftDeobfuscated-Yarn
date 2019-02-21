@@ -17,6 +17,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
@@ -33,7 +34,7 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 		this.owner = llamaEntity;
 		this.setPosition(
 			llamaEntity.x - (double)(llamaEntity.getWidth() + 1.0F) * 0.5 * (double)MathHelper.sin(llamaEntity.field_6283 * (float) (Math.PI / 180.0)),
-			llamaEntity.y + (double)llamaEntity.getEyeHeight() - 0.1F,
+			llamaEntity.y + (double)llamaEntity.getStandingEyeHeight() - 0.1F,
 			llamaEntity.z + (double)(llamaEntity.getWidth() + 1.0F) * 0.5 * (double)MathHelper.cos(llamaEntity.field_6283 * (float) (Math.PI / 180.0))
 		);
 	}
@@ -48,9 +49,7 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 			world.addParticle(ParticleTypes.field_11228, d, e, f, g * k, h, i * k);
 		}
 
-		this.velocityX = g;
-		this.velocityY = h;
-		this.velocityZ = i;
+		this.setVelocity(g, h, i);
 	}
 
 	@Override
@@ -60,9 +59,10 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 			this.method_7479();
 		}
 
+		Vec3d vec3d = this.getVelocity();
 		HitResult hitResult = class_1675.method_18074(
 			this,
-			this.getBoundingBox().stretch(this.velocityX, this.velocityY, this.velocityZ).expand(1.0),
+			this.getBoundingBox().method_18804(vec3d).expand(1.0),
 			entity -> !entity.isSpectator() && entity != this.owner,
 			RayTraceContext.ShapeType.field_17559,
 			true
@@ -71,12 +71,12 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 			this.method_7481(hitResult);
 		}
 
-		this.x = this.x + this.velocityX;
-		this.y = this.y + this.velocityY;
-		this.z = this.z + this.velocityZ;
-		float f = MathHelper.sqrt(this.velocityX * this.velocityX + this.velocityZ * this.velocityZ);
-		this.yaw = (float)(MathHelper.atan2(this.velocityX, this.velocityZ) * 180.0F / (float)Math.PI);
-		this.pitch = (float)(MathHelper.atan2(this.velocityY, (double)f) * 180.0F / (float)Math.PI);
+		this.x = this.x + vec3d.x;
+		this.y = this.y + vec3d.y;
+		this.z = this.z + vec3d.z;
+		float f = MathHelper.sqrt(squaredHorizontalLength(vec3d));
+		this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
+		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI);
 
 		while (this.pitch - this.prevPitch < -180.0F) {
 			this.prevPitch -= 360.0F;
@@ -103,11 +103,9 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 		} else if (this.isInsideWaterOrBubbleColumn()) {
 			this.invalidate();
 		} else {
-			this.velocityX *= 0.99F;
-			this.velocityY *= 0.99F;
-			this.velocityZ *= 0.99F;
+			this.setVelocity(vec3d.multiply(0.99F));
 			if (!this.isUnaffectedByGravity()) {
-				this.velocityY -= 0.06F;
+				this.setVelocity(this.getVelocity().add(0.0, -0.06F, 0.0));
 			}
 
 			this.setPosition(this.x, this.y, this.z);
@@ -117,9 +115,7 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void setVelocityClient(double d, double e, double f) {
-		this.velocityX = d;
-		this.velocityY = e;
-		this.velocityZ = f;
+		this.setVelocity(d, e, f);
 		if (this.prevPitch == 0.0F && this.prevYaw == 0.0F) {
 			float g = MathHelper.sqrt(d * d + f * f);
 			this.pitch = (float)(MathHelper.atan2(e, (double)g) * 180.0F / (float)Math.PI);
@@ -132,22 +128,14 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 
 	@Override
 	public void setVelocity(double d, double e, double f, float g, float h) {
-		float i = MathHelper.sqrt(d * d + e * e + f * f);
-		d /= (double)i;
-		e /= (double)i;
-		f /= (double)i;
-		d += this.random.nextGaussian() * 0.0075F * (double)h;
-		e += this.random.nextGaussian() * 0.0075F * (double)h;
-		f += this.random.nextGaussian() * 0.0075F * (double)h;
-		d *= (double)g;
-		e *= (double)g;
-		f *= (double)g;
-		this.velocityX = d;
-		this.velocityY = e;
-		this.velocityZ = f;
-		float j = MathHelper.sqrt(d * d + f * f);
-		this.yaw = (float)(MathHelper.atan2(d, f) * 180.0F / (float)Math.PI);
-		this.pitch = (float)(MathHelper.atan2(e, (double)j) * 180.0F / (float)Math.PI);
+		Vec3d vec3d = new Vec3d(d, e, f)
+			.normalize()
+			.add(this.random.nextGaussian() * 0.0075F * (double)h, this.random.nextGaussian() * 0.0075F * (double)h, this.random.nextGaussian() * 0.0075F * (double)h)
+			.multiply((double)g);
+		this.setVelocity(vec3d);
+		float i = MathHelper.sqrt(squaredHorizontalLength(vec3d));
+		this.yaw = (float)(MathHelper.atan2(vec3d.x, f) * 180.0F / (float)Math.PI);
+		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)i) * 180.0F / (float)Math.PI);
 		this.prevYaw = this.yaw;
 		this.prevPitch = this.pitch;
 	}

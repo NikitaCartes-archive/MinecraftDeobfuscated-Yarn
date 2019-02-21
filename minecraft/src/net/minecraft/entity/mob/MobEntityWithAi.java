@@ -55,9 +55,7 @@ public abstract class MobEntityWithAi extends MobEntity {
 				double d = (entity.x - this.x) / (double)f;
 				double e = (entity.y - this.y) / (double)f;
 				double g = (entity.z - this.z) / (double)f;
-				this.velocityX = this.velocityX + d * Math.abs(d) * 0.4;
-				this.velocityY = this.velocityY + e * Math.abs(e) * 0.4;
-				this.velocityZ = this.velocityZ + g * Math.abs(g) * 0.4;
+				this.setVelocity(this.getVelocity().add(Math.copySign(d * d * 0.4, d), Math.copySign(e * e * 0.4, e), Math.copySign(g * g * 0.4, g)));
 			} else {
 				this.goalSelector.removeBits(1);
 				float h = 2.0F;

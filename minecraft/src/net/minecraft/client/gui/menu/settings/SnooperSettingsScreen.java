@@ -6,7 +6,7 @@ import java.util.TreeMap;
 import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.AbstractListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -31,7 +31,7 @@ public class SnooperSettingsScreen extends Screen {
 	}
 
 	@Override
-	public GuiEventListener getFocused() {
+	public InputListener getFocused() {
 		return this.snooperInfoList;
 	}
 
@@ -41,14 +41,14 @@ public class SnooperSettingsScreen extends Screen {
 		String string = I18n.translate("options.snooper.desc");
 		List<String> list = Lists.<String>newArrayList();
 
-		for (String string2 : this.fontRenderer.wrapStringToWidthAsList(string, this.width - 30)) {
+		for (String string2 : this.fontRenderer.wrapStringToWidthAsList(string, this.screenWidth - 30)) {
 			list.add(string2);
 		}
 
 		this.description = (String[])list.toArray(new String[list.size()]);
 		this.field_2569.clear();
 		this.field_2567.clear();
-		ButtonWidget buttonWidget = new ButtonWidget(this.width / 2 - 152, this.height - 30, 150, 20, GameOption.SNOOPER.method_18495(this.settings)) {
+		ButtonWidget buttonWidget = new ButtonWidget(this.screenWidth / 2 - 152, this.screenHeight - 30, 150, 20, GameOption.SNOOPER.method_18495(this.settings)) {
 			@Override
 			public void onPressed(double d, double e) {
 				GameOption.SNOOPER.method_18491(SnooperSettingsScreen.this.settings);
@@ -58,7 +58,7 @@ public class SnooperSettingsScreen extends Screen {
 		};
 		buttonWidget.enabled = false;
 		this.allowSnooperButton = this.addButton(buttonWidget);
-		this.addButton(new ButtonWidget(this.width / 2 + 2, this.height - 30, 150, 20, I18n.translate("gui.done")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 2, this.screenHeight - 30, 150, 20, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
 				SnooperSettingsScreen.this.settings.write();
@@ -70,13 +70,13 @@ public class SnooperSettingsScreen extends Screen {
 
 		for (Entry<String, String> entry : new TreeMap(this.client.getSnooper().getEntryListClient()).entrySet()) {
 			this.field_2569.add((bl ? "C " : "") + (String)entry.getKey());
-			this.field_2567.add(this.fontRenderer.trimToWidth((String)entry.getValue(), this.width - 220));
+			this.field_2567.add(this.fontRenderer.trimToWidth((String)entry.getValue(), this.screenWidth - 220));
 		}
 
 		if (bl) {
 			for (Entry<String, String> entry : new TreeMap(this.client.getServer().getSnooper().getEntryListClient()).entrySet()) {
 				this.field_2569.add("S " + (String)entry.getKey());
-				this.field_2567.add(this.fontRenderer.trimToWidth((String)entry.getValue(), this.width - 220));
+				this.field_2567.add(this.fontRenderer.trimToWidth((String)entry.getValue(), this.screenWidth - 220));
 			}
 		}
 
@@ -85,25 +85,30 @@ public class SnooperSettingsScreen extends Screen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		this.snooperInfoList.method_18326(i, j, f);
-		this.drawStringCentered(this.fontRenderer, this.title, this.width / 2, 8, 16777215);
+		this.snooperInfoList.draw(i, j, f);
+		this.drawStringCentered(this.fontRenderer, this.title, this.screenWidth / 2, 8, 16777215);
 		int k = 22;
 
 		for (String string : this.description) {
-			this.drawStringCentered(this.fontRenderer, string, this.width / 2, k, 8421504);
+			this.drawStringCentered(this.fontRenderer, string, this.screenWidth / 2, k, 8421504);
 			k += 9;
 		}
 
-		super.method_18326(i, j, f);
+		super.draw(i, j, f);
 	}
 
 	@Environment(EnvType.CLIENT)
 	class SnooperInfoList extends AbstractListWidget {
 		public SnooperInfoList() {
 			super(
-				SnooperSettingsScreen.this.client, SnooperSettingsScreen.this.width, SnooperSettingsScreen.this.height, 80, SnooperSettingsScreen.this.height - 40, 9 + 1
+				SnooperSettingsScreen.this.client,
+				SnooperSettingsScreen.this.screenWidth,
+				SnooperSettingsScreen.this.screenHeight,
+				80,
+				SnooperSettingsScreen.this.screenHeight - 40,
+				9 + 1
 			);
 		}
 

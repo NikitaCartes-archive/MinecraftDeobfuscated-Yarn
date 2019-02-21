@@ -6,7 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.menu.settings.ChatSettingsScreen;
@@ -284,11 +284,11 @@ public class Keyboard {
 				this.debugCrashElapsedTime = 0L;
 			}
 
-			GuiEventListener guiEventListener = this.client.currentScreen;
+			InputListener inputListener = this.client.currentScreen;
 			if (k == 1
 				&& (
 					!(this.client.currentScreen instanceof ControlsSettingsScreen)
-						|| ((ControlsSettingsScreen)guiEventListener).field_2723 <= SystemUtil.getMeasuringTimeMs() - 20L
+						|| ((ControlsSettingsScreen)inputListener).field_2723 <= SystemUtil.getMeasuringTimeMs() - 20L
 				)) {
 				if (this.client.options.keyFullscreen.matchesKey(i, j)) {
 					this.client.window.toggleFullscreen();
@@ -313,22 +313,22 @@ public class Keyboard {
 
 			if (k != 0 && i == 66 && Screen.isControlPressed()) {
 				GameOption.field_18194.method_18500(this.client.options, 1);
-				if (guiEventListener instanceof ChatSettingsScreen) {
-					((ChatSettingsScreen)guiEventListener).method_2096();
+				if (inputListener instanceof ChatSettingsScreen) {
+					((ChatSettingsScreen)inputListener).method_2096();
 				}
 			}
 
-			if (guiEventListener != null) {
+			if (inputListener != null) {
 				boolean[] bls = new boolean[]{false};
 				Screen.method_2217(() -> {
 					if (k != 1 && (k != 2 || !this.repeatEvents)) {
 						if (k == 0) {
-							bls[0] = guiEventListener.keyReleased(i, j, m);
+							bls[0] = inputListener.keyReleased(i, j, m);
 						}
 					} else {
-						bls[0] = guiEventListener.keyPressed(i, j, m);
+						bls[0] = inputListener.keyPressed(i, j, m);
 					}
-				}, "keyPressed event handler", guiEventListener.getClass().getCanonicalName());
+				}, "keyPressed event handler", inputListener.getClass().getCanonicalName());
 				if (bls[0]) {
 					return;
 				}
@@ -390,13 +390,13 @@ public class Keyboard {
 
 	private void onChar(long l, int i, int j) {
 		if (l == this.client.window.getHandle()) {
-			GuiEventListener guiEventListener = this.client.currentScreen;
-			if (guiEventListener != null && this.client.method_18506() == null) {
+			InputListener inputListener = this.client.currentScreen;
+			if (inputListener != null && this.client.method_18506() == null) {
 				if (Character.charCount(i) == 1) {
-					Screen.method_2217(() -> guiEventListener.charTyped((char)i, j), "charTyped event handler", guiEventListener.getClass().getCanonicalName());
+					Screen.method_2217(() -> inputListener.charTyped((char)i, j), "charTyped event handler", inputListener.getClass().getCanonicalName());
 				} else {
 					for (char c : Character.toChars(i)) {
-						Screen.method_2217(() -> guiEventListener.charTyped(c, j), "charTyped event handler", guiEventListener.getClass().getCanonicalName());
+						Screen.method_2217(() -> inputListener.charTyped(c, j), "charTyped event handler", inputListener.getClass().getCanonicalName());
 					}
 				}
 			}

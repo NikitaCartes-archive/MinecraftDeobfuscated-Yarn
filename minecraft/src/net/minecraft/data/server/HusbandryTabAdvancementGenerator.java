@@ -81,7 +81,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Simpl
 		Items.field_8551
 	};
 
-	public void accept(Consumer<SimpleAdvancement> consumer) {
+	public void method_10338(Consumer<SimpleAdvancement> consumer) {
 		SimpleAdvancement simpleAdvancement = SimpleAdvancement.Builder.create()
 			.display(
 				Blocks.field_10359,

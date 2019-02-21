@@ -9,8 +9,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1675;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
@@ -18,6 +16,8 @@ import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
@@ -82,7 +82,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	}
 
 	protected ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, LivingEntity livingEntity, World world) {
-		this(entityType, livingEntity.x, livingEntity.y + (double)livingEntity.getEyeHeight() - 0.1F, livingEntity.z, world);
+		this(entityType, livingEntity.x, livingEntity.y + (double)livingEntity.getStandingEyeHeight() - 0.1F, livingEntity.z, world);
 		this.setOwner(livingEntity);
 		if (livingEntity instanceof PlayerEntity) {
 			this.pickupType = ProjectileEntity.PickupType.PICKUP;
@@ -117,31 +117,19 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 		float l = -MathHelper.sin(f * (float) (Math.PI / 180.0));
 		float m = MathHelper.cos(g * (float) (Math.PI / 180.0)) * MathHelper.cos(f * (float) (Math.PI / 180.0));
 		this.setVelocity((double)k, (double)l, (double)m, i, j);
-		this.velocityX = this.velocityX + entity.velocityX;
-		this.velocityZ = this.velocityZ + entity.velocityZ;
-		if (!entity.onGround) {
-			this.velocityY = this.velocityY + entity.velocityY;
-		}
+		this.setVelocity(this.getVelocity().add(entity.getVelocity().x, entity.onGround ? 0.0 : entity.getVelocity().y, entity.getVelocity().z));
 	}
 
 	@Override
 	public void setVelocity(double d, double e, double f, float g, float h) {
-		float i = MathHelper.sqrt(d * d + e * e + f * f);
-		d /= (double)i;
-		e /= (double)i;
-		f /= (double)i;
-		d += this.random.nextGaussian() * 0.0075F * (double)h;
-		e += this.random.nextGaussian() * 0.0075F * (double)h;
-		f += this.random.nextGaussian() * 0.0075F * (double)h;
-		d *= (double)g;
-		e *= (double)g;
-		f *= (double)g;
-		this.velocityX = d;
-		this.velocityY = e;
-		this.velocityZ = f;
-		float j = MathHelper.sqrt(d * d + f * f);
-		this.yaw = (float)(MathHelper.atan2(d, f) * 180.0F / (float)Math.PI);
-		this.pitch = (float)(MathHelper.atan2(e, (double)j) * 180.0F / (float)Math.PI);
+		Vec3d vec3d = new Vec3d(d, e, f)
+			.normalize()
+			.add(this.random.nextGaussian() * 0.0075F * (double)h, this.random.nextGaussian() * 0.0075F * (double)h, this.random.nextGaussian() * 0.0075F * (double)h)
+			.multiply((double)g);
+		this.setVelocity(vec3d);
+		float i = MathHelper.sqrt(squaredHorizontalLength(vec3d));
+		this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
+		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)i) * 180.0F / (float)Math.PI);
 		this.prevYaw = this.yaw;
 		this.prevPitch = this.pitch;
 		this.life = 0;
@@ -157,9 +145,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void setVelocityClient(double d, double e, double f) {
-		this.velocityX = d;
-		this.velocityY = e;
-		this.velocityZ = f;
+		this.setVelocity(d, e, f);
 		if (this.prevPitch == 0.0F && this.prevYaw == 0.0F) {
 			float g = MathHelper.sqrt(d * d + f * f);
 			this.pitch = (float)(MathHelper.atan2(e, (double)g) * 180.0F / (float)Math.PI);
@@ -175,10 +161,11 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	public void update() {
 		super.update();
 		boolean bl = this.isNoClip();
+		Vec3d vec3d = this.getVelocity();
 		if (this.prevPitch == 0.0F && this.prevYaw == 0.0F) {
-			float f = MathHelper.sqrt(this.velocityX * this.velocityX + this.velocityZ * this.velocityZ);
-			this.yaw = (float)(MathHelper.atan2(this.velocityX, this.velocityZ) * 180.0F / (float)Math.PI);
-			this.pitch = (float)(MathHelper.atan2(this.velocityY, (double)f) * 180.0F / (float)Math.PI);
+			float f = MathHelper.sqrt(squaredHorizontalLength(vec3d));
+			this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
+			this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI);
 			this.prevYaw = this.yaw;
 			this.prevPitch = this.pitch;
 		}
@@ -208,9 +195,9 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 		if (this.inGround && !bl) {
 			if (this.inBlockState != blockState && this.world.method_18026(this.getBoundingBox().expand(0.05))) {
 				this.inGround = false;
-				this.velocityX = this.velocityX * (double)(this.random.nextFloat() * 0.2F);
-				this.velocityY = this.velocityY * (double)(this.random.nextFloat() * 0.2F);
-				this.velocityZ = this.velocityZ * (double)(this.random.nextFloat() * 0.2F);
+				this.setVelocity(
+					vec3d.multiply((double)(this.random.nextFloat() * 0.2F), (double)(this.random.nextFloat() * 0.2F), (double)(this.random.nextFloat() * 0.2F))
+				);
 				this.life = 0;
 				this.field_7577 = 0;
 			} else {
@@ -221,18 +208,16 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 		} else {
 			this.field_7576 = 0;
 			this.field_7577++;
-			Vec3d vec3d = new Vec3d(this.x, this.y, this.z);
-			Vec3d vec3d2 = new Vec3d(this.x + this.velocityX, this.y + this.velocityY, this.z + this.velocityZ);
+			Vec3d vec3d2 = new Vec3d(this.x, this.y, this.z);
+			Vec3d vec3d3 = vec3d2.add(vec3d);
 			HitResult hitResult = this.world
-				.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.NONE, this));
-			vec3d = new Vec3d(this.x, this.y, this.z);
-			vec3d2 = new Vec3d(this.x + this.velocityX, this.y + this.velocityY, this.z + this.velocityZ);
+				.rayTrace(new RayTraceContext(vec3d2, vec3d3, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.NONE, this));
 			if (hitResult.getType() != HitResult.Type.NONE) {
-				vec3d2 = hitResult.getPos();
+				vec3d3 = hitResult.getPos();
 			}
 
 			while (!this.invalid) {
-				EntityHitResult entityHitResult = this.method_7434(vec3d, vec3d2);
+				EntityHitResult entityHitResult = this.method_7434(vec3d2, vec3d3);
 				if (entityHitResult != null) {
 					hitResult = entityHitResult;
 				}
@@ -257,32 +242,27 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 				hitResult = null;
 			}
 
+			double d = vec3d.x;
+			double e = vec3d.y;
+			double g = vec3d.z;
 			if (this.method_7443()) {
 				for (int i = 0; i < 4; i++) {
 					this.world
-						.addParticle(
-							ParticleTypes.field_11205,
-							this.x + this.velocityX * (double)i / 4.0,
-							this.y + this.velocityY * (double)i / 4.0,
-							this.z + this.velocityZ * (double)i / 4.0,
-							-this.velocityX,
-							-this.velocityY + 0.2,
-							-this.velocityZ
-						);
+						.addParticle(ParticleTypes.field_11205, this.x + d * (double)i / 4.0, this.y + e * (double)i / 4.0, this.z + g * (double)i / 4.0, -d, -e + 0.2, -g);
 				}
 			}
 
-			this.x = this.x + this.velocityX;
-			this.y = this.y + this.velocityY;
-			this.z = this.z + this.velocityZ;
-			float g = MathHelper.sqrt(this.velocityX * this.velocityX + this.velocityZ * this.velocityZ);
+			this.x += d;
+			this.y += e;
+			this.z += g;
+			float h = MathHelper.sqrt(squaredHorizontalLength(vec3d));
 			if (bl) {
-				this.yaw = (float)(MathHelper.atan2(-this.velocityX, -this.velocityZ) * 180.0F / (float)Math.PI);
+				this.yaw = (float)(MathHelper.atan2(-d, -g) * 180.0F / (float)Math.PI);
 			} else {
-				this.yaw = (float)(MathHelper.atan2(this.velocityX, this.velocityZ) * 180.0F / (float)Math.PI);
+				this.yaw = (float)(MathHelper.atan2(d, g) * 180.0F / (float)Math.PI);
 			}
 
-			this.pitch = (float)(MathHelper.atan2(this.velocityY, (double)g) * 180.0F / (float)Math.PI);
+			this.pitch = (float)(MathHelper.atan2(e, (double)h) * 180.0F / (float)Math.PI);
 
 			while (this.pitch - this.prevPitch < -180.0F) {
 				this.prevPitch -= 360.0F;
@@ -302,31 +282,21 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 
 			this.pitch = MathHelper.lerp(0.2F, this.prevPitch, this.pitch);
 			this.yaw = MathHelper.lerp(0.2F, this.prevYaw, this.yaw);
-			float h = 0.99F;
-			float j = 0.05F;
+			float j = 0.99F;
+			float k = 0.05F;
 			if (this.isInsideWater()) {
-				for (int k = 0; k < 4; k++) {
-					float l = 0.25F;
-					this.world
-						.addParticle(
-							ParticleTypes.field_11247,
-							this.x - this.velocityX * 0.25,
-							this.y - this.velocityY * 0.25,
-							this.z - this.velocityZ * 0.25,
-							this.velocityX,
-							this.velocityY,
-							this.velocityZ
-						);
+				for (int l = 0; l < 4; l++) {
+					float m = 0.25F;
+					this.world.addParticle(ParticleTypes.field_11247, this.x - d * 0.25, this.y - e * 0.25, this.z - g * 0.25, d, e, g);
 				}
 
-				h = this.method_7436();
+				j = this.method_7436();
 			}
 
-			this.velocityX *= (double)h;
-			this.velocityY *= (double)h;
-			this.velocityZ *= (double)h;
+			this.setVelocity(vec3d.multiply((double)j));
 			if (!this.isUnaffectedByGravity() && !bl) {
-				this.velocityY -= 0.05F;
+				Vec3d vec3d4 = this.getVelocity();
+				this.setVelocity(vec3d4.x, vec3d4.y - 0.05F, vec3d4.z);
 			}
 
 			this.setPosition(this.x, this.y, this.z);
@@ -353,14 +323,12 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 			this.zTIle = blockPos.getZ();
 			BlockState blockState = this.world.getBlockState(blockPos);
 			this.inBlockState = blockState;
-			Vec3d vec3d = blockHitResult.getPos();
-			this.velocityX = (double)((float)(vec3d.x - this.x));
-			this.velocityY = (double)((float)(vec3d.y - this.y));
-			this.velocityZ = (double)((float)(vec3d.z - this.z));
-			float f = MathHelper.sqrt(this.velocityX * this.velocityX + this.velocityY * this.velocityY + this.velocityZ * this.velocityZ) * 20.0F;
-			this.x = this.x - this.velocityX / (double)f;
-			this.y = this.y - this.velocityY / (double)f;
-			this.z = this.z - this.velocityZ / (double)f;
+			Vec3d vec3d = blockHitResult.getPos().subtract(this.x, this.y, this.z);
+			this.setVelocity(vec3d);
+			Vec3d vec3d2 = vec3d.normalize().multiply(0.05F);
+			this.x = this.x - vec3d2.x;
+			this.y = this.y - vec3d2.y;
+			this.z = this.z - vec3d2.z;
 			this.playSound(this.getSound(), 1.0F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
 			this.inGround = true;
 			this.shake = 7;
@@ -387,7 +355,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 
 	protected void method_7454(EntityHitResult entityHitResult) {
 		Entity entity = entityHitResult.getEntity();
-		float f = MathHelper.sqrt(this.velocityX * this.velocityX + this.velocityY * this.velocityY + this.velocityZ * this.velocityZ);
+		float f = (float)this.getVelocity().length();
 		int i = MathHelper.ceil((double)f * this.damage);
 		if (this.getPierceLevel() > 0) {
 			if (this.field_7590 == null) {
@@ -430,9 +398,9 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 				}
 
 				if (this.field_7575 > 0) {
-					float g = MathHelper.sqrt(this.velocityX * this.velocityX + this.velocityZ * this.velocityZ);
-					if (g > 0.0F) {
-						livingEntity.addVelocity(this.velocityX * (double)this.field_7575 * 0.6F / (double)g, 0.1, this.velocityZ * (double)this.field_7575 * 0.6F / (double)g);
+					Vec3d vec3d = this.getVelocity().multiply(1.0, 0.0, 1.0).normalize().multiply((double)this.field_7575 * 0.6);
+					if (vec3d.lengthSquared() > 0.0) {
+						livingEntity.addVelocity(vec3d.x, 0.1, vec3d.z);
 					}
 				}
 
@@ -462,13 +430,11 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 				this.invalidate();
 			}
 		} else {
-			this.velocityX *= -0.1F;
-			this.velocityY *= -0.1F;
-			this.velocityZ *= -0.1F;
+			this.setVelocity(this.getVelocity().multiply(-0.1));
 			this.yaw += 180.0F;
 			this.prevYaw += 180.0F;
 			this.field_7577 = 0;
-			if (!this.world.isClient && this.velocityX * this.velocityX + this.velocityY * this.velocityY + this.velocityZ * this.velocityZ < 0.001F) {
+			if (!this.world.isClient && this.getVelocity().lengthSquared() < 1.0E-7) {
 				if (this.pickupType == ProjectileEntity.PickupType.PICKUP) {
 					this.dropStack(this.asItemStack(), 0.1F);
 				}
@@ -483,8 +449,8 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	}
 
 	@Override
-	public void move(MovementType movementType, double d, double e, double f) {
-		super.move(movementType, d, e, f);
+	public void move(MovementType movementType, Vec3d vec3d) {
+		super.move(movementType, vec3d);
 		if (this.inGround) {
 			this.xTile = MathHelper.floor(this.x);
 			this.yTile = MathHelper.floor(this.y);
@@ -502,7 +468,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 			this,
 			vec3d,
 			vec3d2,
-			this.getBoundingBox().stretch(this.velocityX, this.velocityY, this.velocityZ).expand(1.0),
+			this.getBoundingBox().method_18804(this.getVelocity()).expand(1.0),
 			entity -> !entity.isSpectator()
 					&& entity.isValid()
 					&& entity.doesCollide()
@@ -624,7 +590,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	}
 
 	@Override
-	protected float method_18378(class_4050 arg, class_4048 arg2) {
+	protected float getEyeHeight(EntityPose entityPose, EntitySize entitySize) {
 		return 0.0F;
 	}
 

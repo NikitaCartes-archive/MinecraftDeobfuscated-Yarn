@@ -97,15 +97,15 @@ public class RecipeBookGuiResults {
 		this.hoveredResultButton = null;
 
 		for (AnimatedResultButton animatedResultButton : this.resultButtons) {
-			animatedResultButton.method_18326(k, l, f);
+			animatedResultButton.draw(k, l, f);
 			if (animatedResultButton.visible && animatedResultButton.isHovered()) {
 				this.hoveredResultButton = animatedResultButton;
 			}
 		}
 
-		this.prevPageButton.method_18326(k, l, f);
-		this.nextPageButton.method_18326(k, l, f);
-		this.alternatesWidget.method_18326(k, l, f);
+		this.prevPageButton.draw(k, l, f);
+		this.nextPageButton.draw(k, l, f);
+		this.alternatesWidget.draw(k, l, f);
 	}
 
 	public void drawTooltip(int i, int j) {

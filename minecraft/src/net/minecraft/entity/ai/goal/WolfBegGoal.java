@@ -55,7 +55,7 @@ public class WolfBegGoal extends Goal {
 	public void tick() {
 		this.owner
 			.getLookControl()
-			.lookAt(this.begFrom.x, this.begFrom.y + (double)this.begFrom.getEyeHeight(), this.begFrom.z, 10.0F, (float)this.owner.method_5978());
+			.lookAt(this.begFrom.x, this.begFrom.y + (double)this.begFrom.getStandingEyeHeight(), this.begFrom.z, 10.0F, (float)this.owner.method_5978());
 		this.timer--;
 	}
 

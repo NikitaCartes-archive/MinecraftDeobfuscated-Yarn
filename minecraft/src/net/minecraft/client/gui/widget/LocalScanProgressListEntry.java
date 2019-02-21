@@ -17,7 +17,7 @@ public class LocalScanProgressListEntry extends ServerListWidget.Entry {
 			.textRenderer
 			.draw(
 				I18n.translate("lanServer.scanning"),
-				(float)(this.client.currentScreen.width / 2 - this.client.textRenderer.getStringWidth(I18n.translate("lanServer.scanning")) / 2),
+				(float)(this.client.currentScreen.screenWidth / 2 - this.client.textRenderer.getStringWidth(I18n.translate("lanServer.scanning")) / 2),
 				(float)m,
 				16777215
 			);
@@ -37,6 +37,6 @@ public class LocalScanProgressListEntry extends ServerListWidget.Entry {
 
 		this.client
 			.textRenderer
-			.draw(string, (float)(this.client.currentScreen.width / 2 - this.client.textRenderer.getStringWidth(string) / 2), (float)(m + 9), 8421504);
+			.draw(string, (float)(this.client.currentScreen.screenWidth / 2 - this.client.textRenderer.getStringWidth(string) / 2), (float)(m + 9), 8421504);
 	}
 }

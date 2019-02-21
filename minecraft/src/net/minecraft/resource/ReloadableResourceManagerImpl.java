@@ -25,8 +25,8 @@ import org.apache.logging.log4j.Logger;
 public class ReloadableResourceManagerImpl implements ReloadableResourceManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Map<String, NamespaceResourceManager> namespaceManagers = Maps.<String, NamespaceResourceManager>newHashMap();
-	private final List<ResourceReloadListener> field_17935 = Lists.<ResourceReloadListener>newArrayList();
-	private final List<ResourceReloadListener> field_17936 = Lists.<ResourceReloadListener>newArrayList();
+	private final List<ResourceReloadListener> listeners = Lists.<ResourceReloadListener>newArrayList();
+	private final List<ResourceReloadListener> initialListeners = Lists.<ResourceReloadListener>newArrayList();
 	private final Set<String> namespaces = Sets.<String>newLinkedHashSet();
 	private final ResourceType type;
 	private final Thread field_17937;
@@ -37,7 +37,7 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 	}
 
 	@Override
-	public void method_14475(ResourcePack resourcePack) {
+	public void addPack(ResourcePack resourcePack) {
 		for (String string : resourcePack.getNamespaces(this.type)) {
 			this.namespaces.add(string);
 			NamespaceResourceManager namespaceResourceManager = (NamespaceResourceManager)this.namespaceManagers.get(string);
@@ -46,7 +46,7 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 				this.namespaceManagers.put(string, namespaceResourceManager);
 			}
 
-			namespaceResourceManager.method_14475(resourcePack);
+			namespaceResourceManager.addPack(resourcePack);
 		}
 	}
 
@@ -102,46 +102,46 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 	}
 
 	@Override
-	public CompletableFuture<Void> reload(Executor executor, Executor executor2, List<ResourcePack> list, CompletableFuture<Void> completableFuture) {
-		ResourceReloadHandler resourceReloadHandler = this.method_18232(executor, executor2, completableFuture, list);
-		return resourceReloadHandler.whenComplete();
+	public CompletableFuture<Void> beginReload(Executor executor, Executor executor2, List<ResourcePack> list, CompletableFuture<Void> completableFuture) {
+		ResourceReloadMonitor resourceReloadMonitor = this.beginMonitoredReload(executor, executor2, completableFuture, list);
+		return resourceReloadMonitor.whenComplete();
 	}
 
 	@Override
 	public void registerListener(ResourceReloadListener resourceReloadListener) {
-		this.field_17935.add(resourceReloadListener);
-		this.field_17936.add(resourceReloadListener);
+		this.listeners.add(resourceReloadListener);
+		this.initialListeners.add(resourceReloadListener);
 	}
 
-	protected ResourceReloadHandler createReloadManager(
+	protected ResourceReloadMonitor beginReloadInner(
 		Executor executor, Executor executor2, List<ResourceReloadListener> list, CompletableFuture<Void> completableFuture
 	) {
-		ResourceReloadHandler resourceReloadHandler;
+		ResourceReloadMonitor resourceReloadMonitor;
 		if (LOGGER.isDebugEnabled()) {
-			resourceReloadHandler = new ProfilingResourceReloadHandlerImpl(this, new ArrayList(list), executor, executor2, completableFuture);
+			resourceReloadMonitor = new ProfilingResourceReloadHandler(this, new ArrayList(list), executor, executor2, completableFuture);
 		} else {
-			resourceReloadHandler = ResourceReloadHandlerImpl.create(this, new ArrayList(list), executor, executor2, completableFuture);
+			resourceReloadMonitor = ResourceReloadHandler.create(this, new ArrayList(list), executor, executor2, completableFuture);
 		}
 
-		this.field_17936.clear();
-		return resourceReloadHandler;
+		this.initialListeners.clear();
+		return resourceReloadMonitor;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ResourceReloadHandler createReloadHandler(Executor executor, Executor executor2, CompletableFuture<Void> completableFuture) {
-		return this.createReloadManager(executor, executor2, this.field_17936, completableFuture);
+	public ResourceReloadMonitor beginInitialMonitoredReload(Executor executor, Executor executor2, CompletableFuture<Void> completableFuture) {
+		return this.beginReloadInner(executor, executor2, this.initialListeners, completableFuture);
 	}
 
 	@Override
-	public ResourceReloadHandler method_18232(Executor executor, Executor executor2, CompletableFuture<Void> completableFuture, List<ResourcePack> list) {
+	public ResourceReloadMonitor beginMonitoredReload(Executor executor, Executor executor2, CompletableFuture<Void> completableFuture, List<ResourcePack> list) {
 		this.clear();
 		LOGGER.info("Reloading ResourceManager: {}", list.stream().map(ResourcePack::getName).collect(Collectors.joining(", ")));
 
 		for (ResourcePack resourcePack : list) {
-			this.method_14475(resourcePack);
+			this.addPack(resourcePack);
 		}
 
-		return this.createReloadManager(executor, executor2, this.field_17935, completableFuture);
+		return this.beginReloadInner(executor, executor2, this.listeners, completableFuture);
 	}
 }

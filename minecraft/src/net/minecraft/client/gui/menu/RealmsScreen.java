@@ -7,7 +7,7 @@ import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.RealmsButtonWidget;
@@ -81,7 +81,7 @@ public class RealmsScreen extends Screen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.realmsScreen.render(i, j, f);
 	}
 
@@ -157,7 +157,7 @@ public class RealmsScreen extends Screen {
 	}
 
 	public void clearWidgets() {
-		Set<GuiEventListener> set = Sets.<GuiEventListener>newHashSet(this.buttons);
+		Set<InputListener> set = Sets.<InputListener>newHashSet(this.buttons);
 		this.listeners.removeIf(set::contains);
 		this.buttons.clear();
 	}

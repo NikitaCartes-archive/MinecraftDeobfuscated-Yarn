@@ -22,12 +22,10 @@ import net.minecraft.util.registry.Registry;
 
 public class StatusEffect {
 	private final Map<EntityAttribute, EntityAttributeModifier> attributes = Maps.<EntityAttribute, EntityAttributeModifier>newHashMap();
-	private final boolean negative;
+	private final StatusEffectType field_18270;
 	private final int color;
 	@Nullable
 	private String translationKey;
-	private double field_5888;
-	private boolean field_5882;
 
 	@Nullable
 	public static StatusEffect byRawId(int i) {
@@ -38,14 +36,8 @@ public class StatusEffect {
 		return Registry.STATUS_EFFECT.getRawId(statusEffect);
 	}
 
-	protected StatusEffect(boolean bl, int i) {
-		this.negative = bl;
-		if (bl) {
-			this.field_5888 = 0.5;
-		} else {
-			this.field_5888 = 1.0;
-		}
-
+	protected StatusEffect(StatusEffectType statusEffectType, int i) {
+		this.field_18270 = statusEffectType;
 		this.color = i;
 	}
 
@@ -129,13 +121,8 @@ public class StatusEffect {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean isNegative() {
-		return this.negative;
-	}
-
-	protected StatusEffect method_5571(double d) {
-		this.field_5888 = d;
-		return this;
+	public StatusEffectType method_18792() {
+		return this.field_18270;
 	}
 
 	public int getColor() {
@@ -183,11 +170,6 @@ public class StatusEffect {
 
 	@Environment(EnvType.CLIENT)
 	public boolean method_5573() {
-		return this.field_5882;
-	}
-
-	public StatusEffect method_5557() {
-		this.field_5882 = true;
-		return this;
+		return this.field_18270 == StatusEffectType.field_18271;
 	}
 }

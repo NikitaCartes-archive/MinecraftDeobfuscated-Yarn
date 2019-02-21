@@ -24,10 +24,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.class_4060;
-import net.minecraft.class_4061;
-import net.minecraft.class_4063;
-import net.minecraft.class_4065;
-import net.minecraft.class_4066;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.resource.ClientResourcePackContainer;
@@ -68,7 +64,7 @@ public class GameOptions {
 	public double mouseSensitivity = 0.5;
 	public int viewDistance = -1;
 	public int maxFps = 120;
-	public class_4063 cloudRenderMode = class_4063.field_18164;
+	public CloudRenderMode cloudRenderMode = CloudRenderMode.field_18164;
 	public boolean fancyGraphics = true;
 	public class_4060 ao = class_4060.field_18146;
 	public List<String> resourcePacks = Lists.<String>newArrayList();
@@ -92,7 +88,7 @@ public class GameOptions {
 	public int mipmapLevels = 4;
 	private final Map<SoundCategory, Float> soundVolumeLevels = Maps.newEnumMap(SoundCategory.class);
 	public boolean useNativeTransport = true;
-	public class_4061 attackIndicator = class_4061.field_18152;
+	public AttackIndicator attackIndicator = AttackIndicator.field_18152;
 	public TutorialStep tutorialStep = TutorialStep.MOVEMENT;
 	public int biomeBlendRadius = 2;
 	public double mouseWheelSensitivity = 1.0;
@@ -191,8 +187,8 @@ public class GameOptions {
 	public double fov = 70.0;
 	public double gamma;
 	public int guiScale;
-	public class_4066 particles;
-	public class_4065 narrator;
+	public ParticlesOption particles = ParticlesOption.field_18197;
+	public NarratorOption narrator = NarratorOption.field_18176;
 	public String language = "en_us";
 
 	public GameOptions(MinecraftClient minecraftClient, File file) {
@@ -239,11 +235,11 @@ public class GameOptions {
 
 				try {
 					if ("autoJump".equals(string)) {
-						GameOption.field_18195.method_18492(this, string2);
+						GameOption.AUTO_JUMP.method_18492(this, string2);
 					}
 
 					if ("autoSuggestions".equals(string)) {
-						GameOption.field_18196.method_18492(this, string2);
+						GameOption.AUTO_SUGGESTIONS.method_18492(this, string2);
 					}
 
 					if ("chatColors".equals(string)) {
@@ -263,11 +259,11 @@ public class GameOptions {
 					}
 
 					if ("entityShadows".equals(string)) {
-						GameOption.field_18184.method_18492(this, string2);
+						GameOption.ENTITY_SHADOWS.method_18492(this, string2);
 					}
 
 					if ("forceUnicodeFont".equals(string)) {
-						GameOption.field_18185.method_18492(this, string2);
+						GameOption.FORCE_UNICODE_FONT.method_18492(this, string2);
 					}
 
 					if ("invertYMouse".equals(string)) {
@@ -275,15 +271,15 @@ public class GameOptions {
 					}
 
 					if ("realmsNotifications".equals(string)) {
-						GameOption.field_18186.method_18492(this, string2);
+						GameOption.REALMS_NOTIFICATIONS.method_18492(this, string2);
 					}
 
 					if ("reducedDebugInfo".equals(string)) {
-						GameOption.field_18187.method_18492(this, string2);
+						GameOption.REDUCED_DEBUG_INFO.method_18492(this, string2);
 					}
 
 					if ("showSubtitles".equals(string)) {
-						GameOption.field_18188.method_18492(this, string2);
+						GameOption.SUBTITLES.method_18492(this, string2);
 					}
 
 					if ("snooperEnabled".equals(string)) {
@@ -323,7 +319,7 @@ public class GameOptions {
 					}
 
 					if ("particles".equals(string)) {
-						this.particles = class_4066.method_18608(Integer.parseInt(string2));
+						this.particles = ParticlesOption.byId(Integer.parseInt(string2));
 					}
 
 					if ("maxFps".equals(string)) {
@@ -355,16 +351,16 @@ public class GameOptions {
 
 					if ("renderClouds".equals(string)) {
 						if ("true".equals(string2)) {
-							this.cloudRenderMode = class_4063.field_18164;
+							this.cloudRenderMode = CloudRenderMode.field_18164;
 						} else if ("false".equals(string2)) {
-							this.cloudRenderMode = class_4063.field_18162;
+							this.cloudRenderMode = CloudRenderMode.field_18162;
 						} else if ("fast".equals(string2)) {
-							this.cloudRenderMode = class_4063.field_18163;
+							this.cloudRenderMode = CloudRenderMode.field_18163;
 						}
 					}
 
 					if ("attackIndicator".equals(string)) {
-						this.attackIndicator = class_4061.method_18488(Integer.parseInt(string2));
+						this.attackIndicator = AttackIndicator.byId(Integer.parseInt(string2));
 					}
 
 					if ("resourcePacks".equals(string)) {
@@ -454,7 +450,7 @@ public class GameOptions {
 					}
 
 					if ("narrator".equals(string)) {
-						this.narrator = class_4065.method_18510(Integer.parseInt(string2));
+						this.narrator = NarratorOption.byId(Integer.parseInt(string2));
 					}
 
 					if ("biomeBlendRadius".equals(string)) {
@@ -523,19 +519,19 @@ public class GameOptions {
 
 			try {
 				printWriter.println("version:" + SharedConstants.getGameVersion().getWorldVersion());
-				printWriter.println("autoJump:" + GameOption.field_18195.method_18494(this));
-				printWriter.println("autoSuggestions:" + GameOption.field_18196.method_18494(this));
+				printWriter.println("autoJump:" + GameOption.AUTO_JUMP.method_18494(this));
+				printWriter.println("autoSuggestions:" + GameOption.AUTO_SUGGESTIONS.method_18494(this));
 				printWriter.println("chatColors:" + GameOption.CHAT_COLOR.method_18494(this));
 				printWriter.println("chatLinks:" + GameOption.CHAT_LINKS.method_18494(this));
 				printWriter.println("chatLinksPrompt:" + GameOption.CHAT_LINKS_PROMPT.method_18494(this));
 				printWriter.println("enableVsync:" + GameOption.VSYNC.method_18494(this));
-				printWriter.println("entityShadows:" + GameOption.field_18184.method_18494(this));
-				printWriter.println("forceUnicodeFont:" + GameOption.field_18185.method_18494(this));
+				printWriter.println("entityShadows:" + GameOption.ENTITY_SHADOWS.method_18494(this));
+				printWriter.println("forceUnicodeFont:" + GameOption.FORCE_UNICODE_FONT.method_18494(this));
 				printWriter.println("invertYMouse:" + GameOption.INVERT_MOUSE.method_18494(this));
-				printWriter.println("realmsNotifications:" + GameOption.field_18186.method_18494(this));
-				printWriter.println("reducedDebugInfo:" + GameOption.field_18187.method_18494(this));
+				printWriter.println("realmsNotifications:" + GameOption.REALMS_NOTIFICATIONS.method_18494(this));
+				printWriter.println("reducedDebugInfo:" + GameOption.REDUCED_DEBUG_INFO.method_18494(this));
 				printWriter.println("snooperEnabled:" + GameOption.SNOOPER.method_18494(this));
-				printWriter.println("showSubtitles:" + GameOption.field_18188.method_18494(this));
+				printWriter.println("showSubtitles:" + GameOption.SUBTITLES.method_18494(this));
 				printWriter.println("touchscreen:" + GameOption.TOUCHSCREEN.method_18494(this));
 				printWriter.println("fullscreen:" + GameOption.FULLSCREEN.method_18494(this));
 				printWriter.println("bobView:" + GameOption.VIEW_BOBBING.method_18494(this));
@@ -544,7 +540,7 @@ public class GameOptions {
 				printWriter.println("gamma:" + this.gamma);
 				printWriter.println("renderDistance:" + this.viewDistance);
 				printWriter.println("guiScale:" + this.guiScale);
-				printWriter.println("particles:" + this.particles.method_18609());
+				printWriter.println("particles:" + this.particles.getId());
 				printWriter.println("maxFps:" + this.maxFps);
 				printWriter.println("difficulty:" + this.difficulty.getId());
 				printWriter.println("fancyGraphics:" + this.fancyGraphics);
@@ -584,8 +580,8 @@ public class GameOptions {
 				printWriter.println("mipmapLevels:" + this.mipmapLevels);
 				printWriter.println("useNativeTransport:" + this.useNativeTransport);
 				printWriter.println("mainHand:" + (this.mainHand == OptionMainHand.field_6182 ? "left" : "right"));
-				printWriter.println("attackIndicator:" + this.attackIndicator.method_18487());
-				printWriter.println("narrator:" + this.narrator.method_18509());
+				printWriter.println("attackIndicator:" + this.attackIndicator.getId());
+				printWriter.println("narrator:" + this.narrator.getId());
 				printWriter.println("tutorialStep:" + this.tutorialStep.getName());
 				printWriter.println("mouseWheelSensitivity:" + this.mouseWheelSensitivity);
 				printWriter.println("glDebugVerbosity:" + this.glDebugVerbosity);
@@ -672,8 +668,8 @@ public class GameOptions {
 		this.onPlayerModelPartChange();
 	}
 
-	public class_4063 getCloudRenderMode() {
-		return this.viewDistance >= 4 ? this.cloudRenderMode : class_4063.field_18162;
+	public CloudRenderMode getCloudRenderMode() {
+		return this.viewDistance >= 4 ? this.cloudRenderMode : CloudRenderMode.field_18162;
 	}
 
 	public boolean shouldUseNativeTransport() {

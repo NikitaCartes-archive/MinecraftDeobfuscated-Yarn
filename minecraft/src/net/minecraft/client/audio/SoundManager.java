@@ -436,7 +436,7 @@ public class SoundManager {
 			float g = MathHelper.lerp(f, playerEntity.prevPitch, playerEntity.pitch);
 			float h = MathHelper.lerp(f, playerEntity.prevYaw, playerEntity.yaw);
 			double d = MathHelper.lerp((double)f, playerEntity.prevX, playerEntity.x);
-			double e = MathHelper.lerp((double)f, playerEntity.prevY, playerEntity.y) + (double)playerEntity.getEyeHeight();
+			double e = MathHelper.lerp((double)f, playerEntity.prevY, playerEntity.y) + (double)playerEntity.getStandingEyeHeight();
 			double i = MathHelper.lerp((double)f, playerEntity.prevZ, playerEntity.z);
 			float j = MathHelper.cos((h + 90.0F) * (float) (Math.PI / 180.0));
 			float k = MathHelper.sin((h + 90.0F) * (float) (Math.PI / 180.0));

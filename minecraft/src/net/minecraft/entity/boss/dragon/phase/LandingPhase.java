@@ -1,6 +1,8 @@
 package net.minecraft.entity.boss.dragon.phase;
 
+import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.MathHelper;
@@ -24,20 +26,12 @@ public class LandingPhase extends AbstractPhase {
 		double f = this.dragon.partHead.z;
 
 		for (int i = 0; i < 8; i++) {
-			double g = d + this.dragon.getRand().nextGaussian() / 2.0;
-			double h = e + this.dragon.getRand().nextGaussian() / 2.0;
-			double j = f + this.dragon.getRand().nextGaussian() / 2.0;
-			this.dragon
-				.world
-				.addParticle(
-					ParticleTypes.field_11216,
-					g,
-					h,
-					j,
-					-vec3d.x * 0.08F + this.dragon.velocityX,
-					-vec3d.y * 0.3F + this.dragon.velocityY,
-					-vec3d.z * 0.08F + this.dragon.velocityZ
-				);
+			Random random = this.dragon.getRand();
+			double g = d + random.nextGaussian() / 2.0;
+			double h = e + random.nextGaussian() / 2.0;
+			double j = f + random.nextGaussian() / 2.0;
+			Vec3d vec3d2 = this.dragon.getVelocity();
+			this.dragon.world.addParticle(ParticleTypes.field_11216, g, h, j, -vec3d.x * 0.08F + vec3d2.x, -vec3d.y * 0.3F + vec3d2.y, -vec3d.z * 0.08F + vec3d2.z);
 			vec3d.rotateY((float) (Math.PI / 16));
 		}
 	}
@@ -61,7 +55,7 @@ public class LandingPhase extends AbstractPhase {
 
 	@Override
 	public float method_6847() {
-		float f = MathHelper.sqrt(this.dragon.velocityX * this.dragon.velocityX + this.dragon.velocityZ * this.dragon.velocityZ) + 1.0F;
+		float f = MathHelper.sqrt(Entity.squaredHorizontalLength(this.dragon.getVelocity())) + 1.0F;
 		float g = Math.min(f, 40.0F);
 		return g / f;
 	}

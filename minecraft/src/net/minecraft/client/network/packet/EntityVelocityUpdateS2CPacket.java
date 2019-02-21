@@ -7,6 +7,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.PacketByteBuf;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 public class EntityVelocityUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	private int id;
@@ -18,39 +20,18 @@ public class EntityVelocityUpdateS2CPacket implements Packet<ClientPlayPacketLis
 	}
 
 	public EntityVelocityUpdateS2CPacket(Entity entity) {
-		this(entity.getEntityId(), entity.velocityX, entity.velocityY, entity.velocityZ);
+		this(entity.getEntityId(), entity.getVelocity());
 	}
 
-	public EntityVelocityUpdateS2CPacket(int i, double d, double e, double f) {
+	public EntityVelocityUpdateS2CPacket(int i, Vec3d vec3d) {
 		this.id = i;
-		double g = 3.9;
-		if (d < -3.9) {
-			d = -3.9;
-		}
-
-		if (e < -3.9) {
-			e = -3.9;
-		}
-
-		if (f < -3.9) {
-			f = -3.9;
-		}
-
-		if (d > 3.9) {
-			d = 3.9;
-		}
-
-		if (e > 3.9) {
-			e = 3.9;
-		}
-
-		if (f > 3.9) {
-			f = 3.9;
-		}
-
-		this.velocityX = (int)(d * 8000.0);
-		this.velocityY = (int)(e * 8000.0);
-		this.velocityZ = (int)(f * 8000.0);
+		double d = 3.9;
+		double e = MathHelper.clamp(vec3d.x, -3.9, 3.9);
+		double f = MathHelper.clamp(vec3d.y, -3.9, 3.9);
+		double g = MathHelper.clamp(vec3d.z, -3.9, 3.9);
+		this.velocityX = (int)(e * 8000.0);
+		this.velocityY = (int)(f * 8000.0);
+		this.velocityZ = (int)(g * 8000.0);
 	}
 
 	@Override

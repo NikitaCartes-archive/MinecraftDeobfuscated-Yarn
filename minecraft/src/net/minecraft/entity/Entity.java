@@ -19,8 +19,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -122,9 +120,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public double x;
 	public double y;
 	public double z;
-	public double velocityX;
-	public double velocityY;
-	public double velocityZ;
+	private Vec3d velocity = Vec3d.ZERO;
 	public float yaw;
 	public float pitch;
 	public float prevYaw;
@@ -135,8 +131,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public boolean verticalCollision;
 	public boolean collided;
 	public boolean velocityModified;
-	protected boolean applyMovementMultiplier;
-	protected Vec3d movementMultiplier;
+	protected Vec3d movementMultiplier = Vec3d.ZERO;
 	public boolean invalid;
 	public float field_6039;
 	public float field_5973;
@@ -168,7 +163,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	private static final TrackedData<Boolean> NAME_VISIBLE = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> SILENT = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> NO_GRAVITY = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final TrackedData<class_4050> field_18064 = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.field_18238);
+	private static final TrackedData<EntityPose> POSE = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.ENTITY_POSE);
 	public boolean field_6016;
 	public int chunkX;
 	public int chunkY;
@@ -196,13 +191,13 @@ public abstract class Entity implements Nameable, CommandOutput {
 	private boolean field_5966;
 	private final double[] pistonMovementDelta = new double[]{0.0, 0.0, 0.0};
 	private long pistonMovementTick;
-	private class_4048 field_18065;
-	private float field_18066;
+	private EntitySize size;
+	private float standingEyeHeight;
 
 	public Entity(EntityType<?> entityType, World world) {
 		this.type = entityType;
 		this.world = world;
-		this.field_18065 = entityType.method_18386();
+		this.size = entityType.getDefaultSize();
 		this.setPosition(0.0, 0.0, 0.0);
 		if (world != null) {
 			this.dimension = world.dimension.getType();
@@ -215,9 +210,9 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.dataTracker.startTracking(CUSTOM_NAME, Optional.empty());
 		this.dataTracker.startTracking(SILENT, false);
 		this.dataTracker.startTracking(NO_GRAVITY, false);
-		this.dataTracker.startTracking(field_18064, class_4050.field_18076);
+		this.dataTracker.startTracking(POSE, EntityPose.field_18076);
 		this.initDataTracker();
-		this.field_18066 = this.method_18378(class_4050.field_18076, this.field_18065);
+		this.standingEyeHeight = this.getEyeHeight(EntityPose.field_18076, this.size);
 	}
 
 	public boolean isSpectator() {
@@ -295,9 +290,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 				this.y++;
 			}
 
-			this.velocityX = 0.0;
-			this.velocityY = 0.0;
-			this.velocityZ = 0.0;
+			this.setVelocity(Vec3d.ZERO);
 			this.pitch = 0.0F;
 		}
 	}
@@ -306,12 +299,12 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.invalid = true;
 	}
 
-	protected void method_18380(class_4050 arg) {
-		this.dataTracker.set(field_18064, arg);
+	protected void setPose(EntityPose entityPose) {
+		this.dataTracker.set(POSE, entityPose);
 	}
 
-	public class_4050 method_18376() {
-		return this.dataTracker.get(field_18064);
+	public EntityPose getPose() {
+		return this.dataTracker.get(POSE);
 	}
 
 	protected void setRotation(float f, float g) {
@@ -323,8 +316,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.x = d;
 		this.y = e;
 		this.z = f;
-		float g = this.field_18065.field_18067 / 2.0F;
-		float h = this.field_18065.field_18068;
+		float g = this.size.width / 2.0F;
+		float h = this.size.height;
 		this.setBoundingBox(new BoundingBox(d - (double)g, e, f - (double)g, d + (double)g, e + (double)h, f + (double)g));
 	}
 
@@ -448,125 +441,42 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return this.world.isEntityColliding(this, boundingBox) && !this.world.isInFluid(boundingBox);
 	}
 
-	public void move(MovementType movementType, double d, double e, double f) {
+	public void move(MovementType movementType, Vec3d vec3d) {
 		if (this.noClip) {
-			this.setBoundingBox(this.getBoundingBox().offset(d, e, f));
+			this.setBoundingBox(this.getBoundingBox().offset(vec3d));
 			this.moveToBoundingBoxCenter();
 		} else {
 			if (movementType == MovementType.field_6310) {
-				long l = this.world.getTime();
-				if (l != this.pistonMovementTick) {
-					Arrays.fill(this.pistonMovementDelta, 0.0);
-					this.pistonMovementTick = l;
-				}
-
-				if (d != 0.0) {
-					int i = Direction.Axis.X.ordinal();
-					double g = MathHelper.clamp(d + this.pistonMovementDelta[i], -0.51, 0.51);
-					d = g - this.pistonMovementDelta[i];
-					this.pistonMovementDelta[i] = g;
-					if (Math.abs(d) <= 1.0E-5F) {
-						return;
-					}
-				} else if (e != 0.0) {
-					int i = Direction.Axis.Y.ordinal();
-					double g = MathHelper.clamp(e + this.pistonMovementDelta[i], -0.51, 0.51);
-					e = g - this.pistonMovementDelta[i];
-					this.pistonMovementDelta[i] = g;
-					if (Math.abs(e) <= 1.0E-5F) {
-						return;
-					}
-				} else {
-					if (f == 0.0) {
-						return;
-					}
-
-					int i = Direction.Axis.Z.ordinal();
-					double g = MathHelper.clamp(f + this.pistonMovementDelta[i], -0.51, 0.51);
-					f = g - this.pistonMovementDelta[i];
-					this.pistonMovementDelta[i] = g;
-					if (Math.abs(f) <= 1.0E-5F) {
-						return;
-					}
+				vec3d = this.method_18794(vec3d);
+				if (vec3d.equals(Vec3d.ZERO)) {
+					return;
 				}
 			}
 
 			this.world.getProfiler().push("move");
-			double h = this.x;
-			double j = this.y;
-			double k = this.z;
-			if (this.applyMovementMultiplier) {
-				this.applyMovementMultiplier = false;
-				d *= this.movementMultiplier.x;
-				e *= this.movementMultiplier.y;
-				f *= this.movementMultiplier.z;
-				this.velocityX = 0.0;
-				this.velocityY = 0.0;
-				this.velocityZ = 0.0;
+			if (this.movementMultiplier.lengthSquared() > 1.0E-7) {
+				vec3d = vec3d.multiply(this.movementMultiplier);
+				this.movementMultiplier = Vec3d.ZERO;
+				this.setVelocity(Vec3d.ZERO);
 			}
 
-			if ((movementType == MovementType.field_6308 || movementType == MovementType.field_6305)
-				&& this.onGround
-				&& this.isSneaking()
-				&& this instanceof PlayerEntity) {
-				double m = 0.05;
-
-				while (d != 0.0 && this.world.isEntityColliding(this, this.getBoundingBox().offset(d, (double)(-this.stepHeight), 0.0))) {
-					if (d < 0.05 && d >= -0.05) {
-						d = 0.0;
-					} else if (d > 0.0) {
-						d -= 0.05;
-					} else {
-						d += 0.05;
-					}
-				}
-
-				while (f != 0.0 && this.world.isEntityColliding(this, this.getBoundingBox().offset(0.0, (double)(-this.stepHeight), f))) {
-					if (f < 0.05 && f >= -0.05) {
-						f = 0.0;
-					} else if (f > 0.0) {
-						f -= 0.05;
-					} else {
-						f += 0.05;
-					}
-				}
-
-				while (d != 0.0 && f != 0.0 && this.world.isEntityColliding(this, this.getBoundingBox().offset(d, (double)(-this.stepHeight), f))) {
-					if (d < 0.05 && d >= -0.05) {
-						d = 0.0;
-					} else if (d > 0.0) {
-						d -= 0.05;
-					} else {
-						d += 0.05;
-					}
-
-					if (f < 0.05 && f >= -0.05) {
-						f = 0.0;
-					} else if (f > 0.0) {
-						f -= 0.05;
-					} else {
-						f += 0.05;
-					}
-				}
-			}
-
-			Vec3d vec3d = new Vec3d(d, e, f);
+			vec3d = this.method_18796(vec3d, movementType);
 			Vec3d vec3d2 = this.method_17835(vec3d);
-			if (vec3d2.lengthSquared() != 0.0) {
+			if (vec3d2.lengthSquared() > 1.0E-7) {
 				this.setBoundingBox(this.getBoundingBox().offset(vec3d2));
+				this.moveToBoundingBoxCenter();
 			}
 
 			this.world.getProfiler().pop();
 			this.world.getProfiler().push("rest");
-			this.moveToBoundingBoxCenter();
 			this.horizontalCollision = vec3d.x != vec3d2.x || vec3d.z != vec3d2.z;
 			this.verticalCollision = vec3d.y != vec3d2.y;
 			this.onGround = this.verticalCollision && vec3d.y < 0.0;
 			this.collided = this.horizontalCollision || this.verticalCollision;
-			int n = MathHelper.floor(this.x);
-			int o = MathHelper.floor(this.y - 0.2F);
-			int p = MathHelper.floor(this.z);
-			BlockPos blockPos = new BlockPos(n, o, p);
+			int i = MathHelper.floor(this.x);
+			int j = MathHelper.floor(this.y - 0.2F);
+			int k = MathHelper.floor(this.z);
+			BlockPos blockPos = new BlockPos(i, j, k);
 			BlockState blockState = this.world.getBlockState(blockPos);
 			if (blockState.isAir()) {
 				BlockPos blockPos2 = blockPos.down();
@@ -579,12 +489,13 @@ public abstract class Entity implements Nameable, CommandOutput {
 			}
 
 			this.method_5623(vec3d2.y, this.onGround, blockState, blockPos);
+			Vec3d vec3d3 = this.getVelocity();
 			if (vec3d.x != vec3d2.x) {
-				this.velocityX = 0.0;
+				this.setVelocity(0.0, vec3d3.y, vec3d3.z);
 			}
 
 			if (vec3d.z != vec3d2.z) {
-				this.velocityZ = 0.0;
+				this.setVelocity(vec3d3.x, vec3d3.y, 0.0);
 			}
 
 			Block block2 = blockState.getBlock();
@@ -593,31 +504,31 @@ public abstract class Entity implements Nameable, CommandOutput {
 			}
 
 			if (this.method_5658() && (!this.onGround || !this.isSneaking() || !(this instanceof PlayerEntity)) && !this.hasVehicle()) {
-				double q = this.x - h;
-				double r = this.y - j;
-				double s = this.z - k;
+				double d = vec3d2.x;
+				double e = vec3d2.y;
+				double f = vec3d2.z;
 				if (block2 != Blocks.field_9983 && block2 != Blocks.field_16492) {
-					r = 0.0;
+					e = 0.0;
 				}
 
-				if (block2 != null && this.onGround) {
+				if (this.onGround) {
 					block2.onSteppedOn(this.world, blockPos, this);
 				}
 
-				this.field_5973 = (float)((double)this.field_5973 + (double)MathHelper.sqrt(q * q + s * s) * 0.6);
-				this.field_5994 = (float)((double)this.field_5994 + (double)MathHelper.sqrt(q * q + r * r + s * s) * 0.6);
+				this.field_5973 = (float)((double)this.field_5973 + (double)MathHelper.sqrt(squaredHorizontalLength(vec3d2)) * 0.6);
+				this.field_5994 = (float)((double)this.field_5994 + (double)MathHelper.sqrt(d * d + e * e + f * f) * 0.6);
 				if (this.field_5994 > this.field_6003 && !blockState.isAir()) {
 					this.field_6003 = this.method_5867();
 					if (this.isInsideWater()) {
 						Entity entity = this.hasPassengers() && this.getPrimaryPassenger() != null ? this.getPrimaryPassenger() : this;
-						float t = entity == this ? 0.35F : 0.4F;
-						float u = MathHelper.sqrt(entity.velocityX * entity.velocityX * 0.2F + entity.velocityY * entity.velocityY + entity.velocityZ * entity.velocityZ * 0.2F)
-							* t;
-						if (u > 1.0F) {
-							u = 1.0F;
+						float g = entity == this ? 0.35F : 0.4F;
+						Vec3d vec3d4 = entity.getVelocity();
+						float h = MathHelper.sqrt(vec3d4.x * vec3d4.x * 0.2F + vec3d4.y * vec3d4.y + vec3d4.z * vec3d4.z * 0.2F) * g;
+						if (h > 1.0F) {
+							h = 1.0F;
 						}
 
-						this.method_5734(u);
+						this.method_5734(h);
 					} else {
 						this.playStepSound(blockPos, blockState);
 					}
@@ -628,8 +539,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 			try {
 				this.checkBlockCollision();
-			} catch (Throwable var31) {
-				CrashReport crashReport = CrashReport.create(var31, "Checking entity block collision");
+			} catch (Throwable var21) {
+				CrashReport crashReport = CrashReport.create(var21, "Checking entity block collision");
 				CrashReportSection crashReportSection = crashReport.addElement("Entity being checked for collision");
 				this.populateCrashReport(crashReportSection);
 				throw new CrashException(crashReport);
@@ -658,6 +569,92 @@ public abstract class Entity implements Nameable, CommandOutput {
 		}
 	}
 
+	protected Vec3d method_18796(Vec3d vec3d, MovementType movementType) {
+		if (this instanceof PlayerEntity
+			&& (movementType == MovementType.field_6308 || movementType == MovementType.field_6305)
+			&& this.onGround
+			&& this.isSneaking()) {
+			double d = vec3d.x;
+			double e = vec3d.z;
+			double f = 0.05;
+
+			while (d != 0.0 && this.world.isEntityColliding(this, this.getBoundingBox().offset(d, (double)(-this.stepHeight), 0.0))) {
+				if (d < 0.05 && d >= -0.05) {
+					d = 0.0;
+				} else if (d > 0.0) {
+					d -= 0.05;
+				} else {
+					d += 0.05;
+				}
+			}
+
+			while (e != 0.0 && this.world.isEntityColliding(this, this.getBoundingBox().offset(0.0, (double)(-this.stepHeight), e))) {
+				if (e < 0.05 && e >= -0.05) {
+					e = 0.0;
+				} else if (e > 0.0) {
+					e -= 0.05;
+				} else {
+					e += 0.05;
+				}
+			}
+
+			while (d != 0.0 && e != 0.0 && this.world.isEntityColliding(this, this.getBoundingBox().offset(d, (double)(-this.stepHeight), e))) {
+				if (d < 0.05 && d >= -0.05) {
+					d = 0.0;
+				} else if (d > 0.0) {
+					d -= 0.05;
+				} else {
+					d += 0.05;
+				}
+
+				if (e < 0.05 && e >= -0.05) {
+					e = 0.0;
+				} else if (e > 0.0) {
+					e -= 0.05;
+				} else {
+					e += 0.05;
+				}
+			}
+
+			vec3d = new Vec3d(d, vec3d.y, e);
+		}
+
+		return vec3d;
+	}
+
+	protected Vec3d method_18794(Vec3d vec3d) {
+		if (vec3d.lengthSquared() <= 1.0E-7) {
+			return vec3d;
+		} else {
+			long l = this.world.getTime();
+			if (l != this.pistonMovementTick) {
+				Arrays.fill(this.pistonMovementDelta, 0.0);
+				this.pistonMovementTick = l;
+			}
+
+			if (vec3d.x != 0.0) {
+				double d = this.method_18797(Direction.Axis.X, vec3d.x);
+				return Math.abs(d) <= 1.0E-5F ? Vec3d.ZERO : new Vec3d(d, 0.0, 0.0);
+			} else if (vec3d.y != 0.0) {
+				double d = this.method_18797(Direction.Axis.Y, vec3d.y);
+				return Math.abs(d) <= 1.0E-5F ? Vec3d.ZERO : new Vec3d(0.0, d, 0.0);
+			} else if (vec3d.z != 0.0) {
+				double d = this.method_18797(Direction.Axis.Z, vec3d.z);
+				return Math.abs(d) <= 1.0E-5F ? Vec3d.ZERO : new Vec3d(0.0, 0.0, d);
+			} else {
+				return Vec3d.ZERO;
+			}
+		}
+	}
+
+	private double method_18797(Direction.Axis axis, double d) {
+		int i = axis.ordinal();
+		double e = MathHelper.clamp(d + this.pistonMovementDelta[i], -0.51, 0.51);
+		d = e - this.pistonMovementDelta[i];
+		this.pistonMovementDelta[i] = e;
+		return d;
+	}
+
 	private Vec3d method_17835(Vec3d vec3d) {
 		BoundingBox boundingBox = this.getBoundingBox();
 		VerticalEntityPosition verticalEntityPosition = VerticalEntityPosition.fromEntity(this);
@@ -665,7 +662,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		Stream<VoxelShape> stream = VoxelShapes.compareShapes(voxelShape, VoxelShapes.cube(boundingBox.contract(1.0E-7)), BooleanBiFunction.AND)
 			? Stream.empty()
 			: Stream.of(voxelShape);
-		BoundingBox boundingBox2 = boundingBox.stretch(vec3d.x, vec3d.y, vec3d.z).expand(1.0E-7);
+		BoundingBox boundingBox2 = boundingBox.method_18804(vec3d).expand(1.0E-7);
 		Stream<VoxelShape> stream2 = this.world
 			.getVisibleEntities(this, boundingBox2)
 			.stream()
@@ -687,12 +684,12 @@ public abstract class Entity implements Nameable, CommandOutput {
 			);
 			if (vec3d4.y < (double)this.stepHeight) {
 				Vec3d vec3d5 = method_17833(new Vec3d(vec3d.x, 0.0, vec3d.z), boundingBox.offset(vec3d4), this.world, verticalEntityPosition, loopingStream).add(vec3d4);
-				if (method_17996(vec3d5) > method_17996(vec3d3)) {
+				if (squaredHorizontalLength(vec3d5) > squaredHorizontalLength(vec3d3)) {
 					vec3d3 = vec3d5;
 				}
 			}
 
-			if (method_17996(vec3d3) > method_17996(vec3d2)) {
+			if (squaredHorizontalLength(vec3d3) > squaredHorizontalLength(vec3d2)) {
 				return vec3d3.add(method_17833(new Vec3d(0.0, -vec3d3.y + vec3d.y, 0.0), boundingBox.offset(vec3d3), this.world, verticalEntityPosition, loopingStream));
 			}
 		}
@@ -700,7 +697,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return vec3d2;
 	}
 
-	private static double method_17996(Vec3d vec3d) {
+	public static double squaredHorizontalLength(Vec3d vec3d) {
 		return vec3d.x * vec3d.x + vec3d.z * vec3d.z;
 	}
 
@@ -884,7 +881,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	private boolean isBeingRainedOn() {
 		boolean var3;
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.getEntityPos(this)) {
-			var3 = this.world.hasRain(pooledMutable) || this.world.hasRain(pooledMutable.method_10112(this.x, this.y + (double)this.field_18065.field_18068, this.z));
+			var3 = this.world.hasRain(pooledMutable) || this.world.hasRain(pooledMutable.method_10112(this.x, this.y + (double)this.size.height, this.z));
 		}
 
 		return var3;
@@ -949,7 +946,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 	protected void onSwimmingStart() {
 		Entity entity = this.hasPassengers() && this.getPrimaryPassenger() != null ? this.getPrimaryPassenger() : this;
 		float f = entity == this ? 0.2F : 0.9F;
-		float g = MathHelper.sqrt(entity.velocityX * entity.velocityX * 0.2F + entity.velocityY * entity.velocityY + entity.velocityZ * entity.velocityZ * 0.2F) * f;
+		Vec3d vec3d = entity.getVelocity();
+		float g = MathHelper.sqrt(vec3d.x * vec3d.x * 0.2F + vec3d.y * vec3d.y + vec3d.z * vec3d.z * 0.2F) * f;
 		if (g > 1.0F) {
 			g = 1.0F;
 		}
@@ -962,26 +960,25 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 		float h = (float)MathHelper.floor(this.getBoundingBox().minY);
 
-		for (int i = 0; (float)i < 1.0F + this.field_18065.field_18067 * 20.0F; i++) {
-			float j = (this.random.nextFloat() * 2.0F - 1.0F) * this.field_18065.field_18067;
-			float k = (this.random.nextFloat() * 2.0F - 1.0F) * this.field_18065.field_18067;
+		for (int i = 0; (float)i < 1.0F + this.size.width * 20.0F; i++) {
+			float j = (this.random.nextFloat() * 2.0F - 1.0F) * this.size.width;
+			float k = (this.random.nextFloat() * 2.0F - 1.0F) * this.size.width;
 			this.world
 				.addParticle(
 					ParticleTypes.field_11247,
 					this.x + (double)j,
 					(double)(h + 1.0F),
 					this.z + (double)k,
-					this.velocityX,
-					this.velocityY - (double)(this.random.nextFloat() * 0.2F),
-					this.velocityZ
+					vec3d.x,
+					vec3d.y - (double)(this.random.nextFloat() * 0.2F),
+					vec3d.z
 				);
 		}
 
-		for (int i = 0; (float)i < 1.0F + this.field_18065.field_18067 * 20.0F; i++) {
-			float j = (this.random.nextFloat() * 2.0F - 1.0F) * this.field_18065.field_18067;
-			float k = (this.random.nextFloat() * 2.0F - 1.0F) * this.field_18065.field_18067;
-			this.world
-				.addParticle(ParticleTypes.field_11202, this.x + (double)j, (double)(h + 1.0F), this.z + (double)k, this.velocityX, this.velocityY, this.velocityZ);
+		for (int i = 0; (float)i < 1.0F + this.size.width * 20.0F; i++) {
+			float j = (this.random.nextFloat() * 2.0F - 1.0F) * this.size.width;
+			float k = (this.random.nextFloat() * 2.0F - 1.0F) * this.size.width;
+			this.world.addParticle(ParticleTypes.field_11202, this.x + (double)j, (double)(h + 1.0F), this.z + (double)k, vec3d.x, vec3d.y, vec3d.z);
 		}
 	}
 
@@ -998,15 +995,16 @@ public abstract class Entity implements Nameable, CommandOutput {
 		BlockPos blockPos = new BlockPos(i, j, k);
 		BlockState blockState = this.world.getBlockState(blockPos);
 		if (blockState.getRenderType() != BlockRenderType.field_11455) {
+			Vec3d vec3d = this.getVelocity();
 			this.world
 				.addParticle(
 					new BlockStateParticleParameters(ParticleTypes.field_11217, blockState),
-					this.x + ((double)this.random.nextFloat() - 0.5) * (double)this.field_18065.field_18067,
-					this.getBoundingBox().minY + 0.1,
-					this.z + ((double)this.random.nextFloat() - 0.5) * (double)this.field_18065.field_18067,
-					-this.velocityX * 4.0,
+					this.x + ((double)this.random.nextFloat() - 0.5) * (double)this.size.width,
+					this.y + 0.1,
+					this.z + ((double)this.random.nextFloat() - 0.5) * (double)this.size.width,
+					vec3d.x * -4.0,
 					1.5,
-					-this.velocityZ * 4.0
+					vec3d.z * -4.0
 				);
 		}
 	}
@@ -1019,7 +1017,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		if (this.getRiddenEntity() instanceof BoatEntity) {
 			return false;
 		} else {
-			double d = this.y + (double)this.getEyeHeight();
+			double d = this.y + (double)this.getStandingEyeHeight();
 			BlockPos blockPos = new BlockPos(this.x, d, this.z);
 			if (bl && !this.world.isChunkLoaded(blockPos.getX() >> 4, blockPos.getZ() >> 4)) {
 				return false;
@@ -1034,36 +1032,33 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return this.world.containsBlockWithMaterial(this.getBoundingBox().contract(0.1F, 0.4F, 0.1F), Material.LAVA);
 	}
 
-	public void updateVelocity(float f, float g, float h, float i) {
-		float j = f * f + g * g + h * h;
-		if (!(j < 1.0E-4F)) {
-			j = MathHelper.sqrt(j);
-			if (j < 1.0F) {
-				j = 1.0F;
-			}
+	public void updateVelocity(float f, Vec3d vec3d) {
+		Vec3d vec3d2 = movementInputToVelocity(vec3d, f, this.yaw);
+		this.setVelocity(this.getVelocity().add(vec3d2));
+	}
 
-			j = i / j;
-			f *= j;
-			g *= j;
-			h *= j;
-			float k = MathHelper.sin(this.yaw * (float) (Math.PI / 180.0));
-			float l = MathHelper.cos(this.yaw * (float) (Math.PI / 180.0));
-			this.velocityX += (double)(f * l - h * k);
-			this.velocityY += (double)g;
-			this.velocityZ += (double)(h * l + f * k);
+	protected static Vec3d movementInputToVelocity(Vec3d vec3d, float f, float g) {
+		double d = vec3d.lengthSquared();
+		if (d < 1.0E-7) {
+			return Vec3d.ZERO;
+		} else {
+			Vec3d vec3d2 = (d > 1.0 ? vec3d.normalize() : vec3d).multiply((double)f);
+			float h = MathHelper.sin(g * (float) (Math.PI / 180.0));
+			float i = MathHelper.cos(g * (float) (Math.PI / 180.0));
+			return new Vec3d(vec3d2.x * (double)i - vec3d2.z * (double)h, vec3d2.y, vec3d2.z * (double)i + vec3d2.x * (double)h);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public int getLightmapCoordinates() {
-		BlockPos blockPos = new BlockPos(this.x, this.y + (double)this.getEyeHeight(), this.z);
+		BlockPos blockPos = new BlockPos(this.x, this.y + (double)this.getStandingEyeHeight(), this.z);
 		return this.world.isBlockLoaded(blockPos) ? this.world.getLightmapIndex(blockPos, 0) : 0;
 	}
 
 	public float method_5718() {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(MathHelper.floor(this.x), 0, MathHelper.floor(this.z));
 		if (this.world.isBlockLoaded(mutable)) {
-			mutable.setY(MathHelper.floor(this.y + (double)this.getEyeHeight()));
+			mutable.setY(MathHelper.floor(this.y + (double)this.getStandingEyeHeight()));
 			return this.world.getBrightness(mutable);
 		} else {
 			return 0.0F;
@@ -1198,9 +1193,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void addVelocity(double d, double e, double f) {
-		this.velocityX += d;
-		this.velocityY += e;
-		this.velocityZ += f;
+		this.setVelocity(this.getVelocity().add(d, e, f));
 		this.velocityDirty = true;
 	}
 
@@ -1241,10 +1234,10 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 	public Vec3d getCameraPosVec(float f) {
 		if (f == 1.0F) {
-			return new Vec3d(this.x, this.y + (double)this.getEyeHeight(), this.z);
+			return new Vec3d(this.x, this.y + (double)this.getStandingEyeHeight(), this.z);
 		} else {
 			double d = MathHelper.lerp((double)f, this.prevX, this.x);
-			double e = MathHelper.lerp((double)f, this.prevY, this.y) + (double)this.getEyeHeight();
+			double e = MathHelper.lerp((double)f, this.prevY, this.y) + (double)this.getStandingEyeHeight();
 			double g = MathHelper.lerp((double)f, this.prevZ, this.z);
 			return new Vec3d(d, e, g);
 		}
@@ -1315,7 +1308,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public CompoundTag toTag(CompoundTag compoundTag) {
 		try {
 			compoundTag.put("Pos", this.toListTag(this.x, this.y, this.z));
-			compoundTag.put("Motion", this.toListTag(this.velocityX, this.velocityY, this.velocityZ));
+			Vec3d vec3d = this.getVelocity();
+			compoundTag.put("Motion", this.toListTag(vec3d.x, vec3d.y, vec3d.z));
 			compoundTag.put("Rotation", this.toListTag(this.yaw, this.pitch));
 			compoundTag.putFloat("FallDistance", this.fallDistance);
 			compoundTag.putShort("Fire", (short)this.fireTimer);
@@ -1373,8 +1367,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 			}
 
 			return compoundTag;
-		} catch (Throwable var7) {
-			CrashReport crashReport = CrashReport.create(var7, "Saving entity NBT");
+		} catch (Throwable var8) {
+			CrashReport crashReport = CrashReport.create(var8, "Saving entity NBT");
 			CrashReportSection crashReportSection = crashReport.addElement("Entity being saved");
 			this.populateCrashReport(crashReportSection);
 			throw new CrashException(crashReport);
@@ -1386,21 +1380,10 @@ public abstract class Entity implements Nameable, CommandOutput {
 			ListTag listTag = compoundTag.getList("Pos", 6);
 			ListTag listTag2 = compoundTag.getList("Motion", 6);
 			ListTag listTag3 = compoundTag.getList("Rotation", 5);
-			this.velocityX = listTag2.getDouble(0);
-			this.velocityY = listTag2.getDouble(1);
-			this.velocityZ = listTag2.getDouble(2);
-			if (Math.abs(this.velocityX) > 10.0) {
-				this.velocityX = 0.0;
-			}
-
-			if (Math.abs(this.velocityY) > 10.0) {
-				this.velocityY = 0.0;
-			}
-
-			if (Math.abs(this.velocityZ) > 10.0) {
-				this.velocityZ = 0.0;
-			}
-
+			double d = listTag2.getDouble(0);
+			double e = listTag2.getDouble(1);
+			double f = listTag2.getDouble(2);
+			this.setVelocity(Math.abs(d) > 10.0 ? 0.0 : d, Math.abs(e) > 10.0 ? 0.0 : e, Math.abs(f) > 10.0 ? 0.0 : f);
 			this.x = listTag.getDouble(0);
 			this.y = listTag.getDouble(1);
 			this.z = listTag.getDouble(2);
@@ -1455,8 +1438,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 			if (this.shouldSetPositionOnLoad()) {
 				this.setPosition(this.x, this.y, this.z);
 			}
-		} catch (Throwable var8) {
-			CrashReport crashReport = CrashReport.create(var8, "Loading entity NBT");
+		} catch (Throwable var14) {
+			CrashReport crashReport = CrashReport.create(var14, "Loading entity NBT");
 			CrashReportSection crashReportSection = crashReport.addElement("Entity being loaded");
 			this.populateCrashReport(crashReportSection);
 			throw new CrashException(crashReport);
@@ -1537,9 +1520,9 @@ public abstract class Entity implements Nameable, CommandOutput {
 		} else {
 			try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 				for (int i = 0; i < 8; i++) {
-					int j = MathHelper.floor(this.y + (double)(((float)((i >> 0) % 2) - 0.5F) * 0.1F) + (double)this.field_18066);
-					int k = MathHelper.floor(this.x + (double)(((float)((i >> 1) % 2) - 0.5F) * this.field_18065.field_18067 * 0.8F));
-					int l = MathHelper.floor(this.z + (double)(((float)((i >> 2) % 2) - 0.5F) * this.field_18065.field_18067 * 0.8F));
+					int j = MathHelper.floor(this.y + (double)(((float)((i >> 0) % 2) - 0.5F) * 0.1F) + (double)this.standingEyeHeight);
+					int k = MathHelper.floor(this.x + (double)(((float)((i >> 1) % 2) - 0.5F) * this.size.width * 0.8F));
+					int l = MathHelper.floor(this.z + (double)(((float)((i >> 2) % 2) - 0.5F) * this.size.width * 0.8F));
 					if (pooledMutable.getX() != k || pooledMutable.getY() != j || pooledMutable.getZ() != l) {
 						pooledMutable.method_10113(k, j, l);
 						if (this.world.getBlockState(pooledMutable).canSuffocate(this.world, pooledMutable)) {
@@ -1563,9 +1546,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void updateRiding() {
-		this.velocityX = 0.0;
-		this.velocityY = 0.0;
-		this.velocityZ = 0.0;
+		this.setVelocity(Vec3d.ZERO);
 		this.update();
 		if (this.hasVehicle()) {
 			this.getRiddenEntity().method_5865(this);
@@ -1587,7 +1568,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public double getMountedHeightOffset() {
-		return (double)this.field_18065.field_18068 * 0.75;
+		return (double)this.size.height * 0.75;
 	}
 
 	public boolean startRiding(Entity entity) {
@@ -1748,9 +1729,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 	@Environment(EnvType.CLIENT)
 	public void setVelocityClient(double d, double e, double f) {
-		this.velocityX = d;
-		this.velocityY = e;
-		this.velocityZ = f;
+		this.setVelocity(d, e, f);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -1899,20 +1878,27 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void method_5700(boolean bl) {
+		Vec3d vec3d = this.getVelocity();
+		double d;
 		if (bl) {
-			this.velocityY = Math.max(-0.9, this.velocityY - 0.03);
+			d = Math.max(-0.9, vec3d.y - 0.03);
 		} else {
-			this.velocityY = Math.min(1.8, this.velocityY + 0.1);
+			d = Math.min(1.8, vec3d.y + 0.1);
 		}
+
+		this.setVelocity(vec3d.x, d, vec3d.z);
 	}
 
 	public void method_5764(boolean bl) {
+		Vec3d vec3d = this.getVelocity();
+		double d;
 		if (bl) {
-			this.velocityY = Math.max(-0.3, this.velocityY - 0.03);
+			d = Math.max(-0.3, vec3d.y - 0.03);
 		} else {
-			this.velocityY = Math.min(0.7, this.velocityY + 0.06);
+			d = Math.min(0.7, vec3d.y + 0.06);
 		}
 
+		this.setVelocity(vec3d.x, d, vec3d.z);
 		this.fallDistance = 0.0F;
 	}
 
@@ -1929,7 +1915,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		for (Direction direction2 : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.UP}) {
 			mutable.set(blockPos).setOffset(direction2);
 			if (!Block.isShapeFullCube(this.world.getBlockState(mutable).getCollisionShape(this.world, mutable))) {
-				double h = vec3d.method_18043(direction2.getAxis());
+				double h = vec3d.getComponentAlongAxis(direction2.getAxis());
 				double i = direction2.getDirection() == Direction.AxisDirection.POSITIVE ? 1.0 - h : h;
 				if (i < g) {
 					g = i;
@@ -1941,24 +1927,18 @@ public abstract class Entity implements Nameable, CommandOutput {
 		if (g != Double.MAX_VALUE) {
 			float j = this.random.nextFloat() * 0.2F + 0.1F;
 			float k = (float)direction.getDirection().offset();
+			Vec3d vec3d2 = this.getVelocity().multiply(0.75);
 			if (direction.getAxis() == Direction.Axis.X) {
-				this.velocityX = (double)(k * j);
-				this.velocityY *= 0.75;
-				this.velocityZ *= 0.75;
+				this.setVelocity((double)(k * j), vec3d2.y, vec3d2.z);
 			} else if (direction.getAxis() == Direction.Axis.Y) {
-				this.velocityX *= 0.75;
-				this.velocityY = (double)(k * j);
-				this.velocityZ *= 0.75;
+				this.setVelocity(vec3d2.x, (double)(k * j), vec3d2.z);
 			} else if (direction.getAxis() == Direction.Axis.Z) {
-				this.velocityX *= 0.75;
-				this.velocityY *= 0.75;
-				this.velocityZ = (double)(k * j);
+				this.setVelocity(vec3d2.x, vec3d2.y, (double)(k * j));
 			}
 		}
 	}
 
 	public void slowMovement(BlockState blockState, Vec3d vec3d) {
-		this.applyMovementMultiplier = true;
 		this.fallDistance = 0.0F;
 		this.movementMultiplier = vec3d;
 	}
@@ -2052,7 +2032,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			this.dimension = dimensionType;
 			this.method_18375();
 			this.world.getProfiler().push("reposition");
-			Vec3d vec3d = new Vec3d(this.velocityX, this.velocityY, this.velocityZ);
+			Vec3d vec3d = this.getVelocity();
 			float f = 0.0F;
 			BlockPos blockPos;
 			if (dimensionType2 == DimensionType.field_13078 && dimensionType == DimensionType.field_13072) {
@@ -2080,8 +2060,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 				Vec3d vec3d2 = this.method_5656();
 				long l = ChunkPos.toLong(MathHelper.floor(d), MathHelper.floor(e));
 				blockPos = new BlockPos(d, this.y, e);
-				Pair<Vec3d, Pair<Vec3d, Integer>> pair = serverWorld2.getPortalForcer()
-					.method_18475(blockPos, new Vec3d(this.velocityX, this.velocityY, this.velocityZ), l, this.method_5843(), vec3d2.x, vec3d2.y);
+				Pair<Vec3d, Pair<Vec3d, Integer>> pair = serverWorld2.getPortalForcer().method_18475(blockPos, vec3d, l, this.method_5843(), vec3d2.x, vec3d2.y);
 				if (pair != null) {
 					blockPos = new BlockPos(pair.getFirst());
 					vec3d = pair.getSecond().getFirst();
@@ -2094,9 +2073,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			if (entity != null) {
 				entity.method_5878(this);
 				entity.setPositionAndAngles(blockPos, entity.yaw + f, entity.pitch);
-				entity.velocityX = vec3d.x;
-				entity.velocityY = vec3d.y;
-				entity.velocityZ = vec3d.z;
+				this.setVelocity(vec3d);
 				serverWorld2.method_18769(entity);
 			}
 
@@ -2149,7 +2126,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 		crashReportSection.add(
 			"Entity's Block location", CrashReportSection.createPositionString(MathHelper.floor(this.x), MathHelper.floor(this.y), MathHelper.floor(this.z))
 		);
-		crashReportSection.add("Entity's Momentum", String.format(Locale.ROOT, "%.2f, %.2f, %.2f", this.velocityX, this.velocityY, this.velocityZ));
+		Vec3d vec3d = this.getVelocity();
+		crashReportSection.add("Entity's Momentum", String.format(Locale.ROOT, "%.2f, %.2f, %.2f", vec3d.x, vec3d.y, vec3d.z));
 		crashReportSection.add("Entity's Passengers", (ICrashCallable<String>)(() -> this.getPassengerList().toString()));
 		crashReportSection.add("Entity's Vehicle", (ICrashCallable<String>)(() -> this.getRiddenEntity().toString()));
 	}
@@ -2233,20 +2211,20 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
-		if (field_18064.equals(trackedData)) {
-			this.method_18382();
+		if (POSE.equals(trackedData)) {
+			this.refreshSize();
 		}
 	}
 
-	public void method_18382() {
-		class_4048 lv = this.field_18065;
-		class_4050 lv2 = this.method_18376();
-		class_4048 lv3 = this.method_18377(lv2);
-		this.field_18065 = lv3;
-		this.field_18066 = this.method_18378(lv2, lv3);
-		if (lv3.field_18067 < lv.field_18067) {
-			double d = (double)lv3.field_18067 / 2.0;
-			this.setBoundingBox(new BoundingBox(this.x - d, this.y, this.z - d, this.x + d, this.y + (double)lv3.field_18068, this.z + d));
+	public void refreshSize() {
+		EntitySize entitySize = this.size;
+		EntityPose entityPose = this.getPose();
+		EntitySize entitySize2 = this.getSize(entityPose);
+		this.size = entitySize2;
+		this.standingEyeHeight = this.getEyeHeight(entityPose, entitySize2);
+		if (entitySize2.width < entitySize.width) {
+			double d = (double)entitySize2.width / 2.0;
+			this.setBoundingBox(new BoundingBox(this.x - d, this.y, this.z - d, this.x + d, this.y + (double)entitySize2.height, this.z + d));
 		} else {
 			BoundingBox boundingBox = this.getBoundingBox();
 			this.setBoundingBox(
@@ -2254,14 +2232,14 @@ public abstract class Entity implements Nameable, CommandOutput {
 					boundingBox.minX,
 					boundingBox.minY,
 					boundingBox.minZ,
-					boundingBox.minX + (double)lv3.field_18067,
-					boundingBox.minY + (double)lv3.field_18068,
-					boundingBox.minZ + (double)lv3.field_18067
+					boundingBox.minX + (double)entitySize2.width,
+					boundingBox.minY + (double)entitySize2.height,
+					boundingBox.minZ + (double)entitySize2.width
 				)
 			);
-			if (lv3.field_18067 > lv.field_18067 && !this.field_5953 && !this.world.isClient) {
-				float f = lv.field_18067 - lv3.field_18067;
-				this.move(MovementType.field_6308, (double)f, 0.0, (double)f);
+			if (entitySize2.width > entitySize.width && !this.field_5953 && !this.world.isClient) {
+				float f = entitySize.width - entitySize2.width;
+				this.move(MovementType.field_6308, new Vec3d((double)f, 0.0, (double)f));
 			}
 		}
 	}
@@ -2303,17 +2281,17 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.boundingBox = boundingBox;
 	}
 
-	protected float method_18378(class_4050 arg, class_4048 arg2) {
-		return arg2.field_18068 * 0.85F;
+	protected float getEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+		return entitySize.height * 0.85F;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_18381(class_4050 arg) {
-		return this.method_18378(arg, this.method_18377(arg));
+	public float getEyeHeight(EntityPose entityPose) {
+		return this.getEyeHeight(entityPose, this.getSize(entityPose));
 	}
 
-	public final float getEyeHeight() {
-		return this.field_18066;
+	public final float getStandingEyeHeight() {
+		return this.standingEyeHeight;
 	}
 
 	public boolean method_5758(int i, ItemStack itemStack) {
@@ -2608,10 +2586,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 					vec3d = vec3d.normalize();
 				}
 
-				double f = 0.014;
-				this.velocityX = this.velocityX + vec3d.x * 0.014;
-				this.velocityY = this.velocityY + vec3d.y * 0.014;
-				this.velocityZ = this.velocityZ + vec3d.z * 0.014;
+				this.setVelocity(this.getVelocity().add(vec3d.multiply(0.014)));
 			}
 
 			this.field_5964 = d;
@@ -2624,16 +2599,28 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public final float getWidth() {
-		return this.field_18065.field_18067;
+		return this.size.width;
 	}
 
 	public final float getHeight() {
-		return this.field_18065.field_18068;
+		return this.size.height;
 	}
 
 	public abstract Packet<?> createSpawnPacket();
 
-	public class_4048 method_18377(class_4050 arg) {
-		return this.type.method_18386();
+	public EntitySize getSize(EntityPose entityPose) {
+		return this.type.getDefaultSize();
+	}
+
+	public Vec3d getVelocity() {
+		return this.velocity;
+	}
+
+	public void setVelocity(Vec3d vec3d) {
+		this.velocity = vec3d;
+	}
+
+	public void setVelocity(double d, double e, double f) {
+		this.setVelocity(new Vec3d(d, e, f));
 	}
 }

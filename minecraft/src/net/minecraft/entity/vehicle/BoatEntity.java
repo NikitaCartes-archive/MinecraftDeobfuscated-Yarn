@@ -84,9 +84,7 @@ public class BoatEntity extends Entity {
 	public BoatEntity(World world, double d, double e, double f) {
 		this(EntityType.BOAT, world);
 		this.setPosition(d, e, f);
-		this.velocityX = 0.0;
-		this.velocityY = 0.0;
-		this.velocityZ = 0.0;
+		this.setVelocity(Vec3d.ZERO);
 		this.prevX = d;
 		this.prevY = e;
 		this.prevZ = f;
@@ -269,11 +267,9 @@ public class BoatEntity extends Entity {
 				this.world.sendPacket(new BoatPaddleStateC2SPacket(this.getPaddleState(0), this.getPaddleState(1)));
 			}
 
-			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
+			this.move(MovementType.field_6308, this.getVelocity());
 		} else {
-			this.velocityX = 0.0;
-			this.velocityY = 0.0;
-			this.velocityZ = 0.0;
+			this.setVelocity(Vec3d.ZERO);
 		}
 
 		this.method_7550();
@@ -345,11 +341,12 @@ public class BoatEntity extends Entity {
 				int j = 60 - i - 1;
 				if (j > 0 && i == 0) {
 					this.method_7531(0);
+					Vec3d vec3d = this.getVelocity();
 					if (this.field_7703) {
-						this.velocityY -= 0.7;
+						this.setVelocity(vec3d.add(0.0, -0.7, 0.0));
 						this.removeAllPassengers();
 					} else {
-						this.velocityY = this.method_5703(PlayerEntity.class) ? 2.7 : 0.6;
+						this.setVelocity(vec3d.x, this.method_5703(PlayerEntity.class) ? 2.7 : 0.6, vec3d.z);
 					}
 				}
 
@@ -572,7 +569,7 @@ public class BoatEntity extends Entity {
 		 {
 			this.field_7697 = this.getBoundingBox().minY + (double)this.getHeight();
 			this.setPosition(this.x, (double)(this.method_7544() - this.getHeight()) + 0.101, this.z);
-			this.velocityY = 0.0;
+			this.setVelocity(this.getVelocity().multiply(1.0, 0.0, 1.0));
 			this.field_7696 = 0.0;
 			this.location = BoatEntity.Location.field_7718;
 		} else {
@@ -594,15 +591,12 @@ public class BoatEntity extends Entity {
 				}
 			}
 
-			this.velocityX = this.velocityX * (double)this.field_7692;
-			this.velocityZ = this.velocityZ * (double)this.field_7692;
+			Vec3d vec3d = this.getVelocity();
+			this.setVelocity(vec3d.x * (double)this.field_7692, vec3d.y + e, vec3d.z * (double)this.field_7692);
 			this.field_7690 = this.field_7690 * this.field_7692;
-			this.velocityY += e;
 			if (f > 0.0) {
-				double g = 0.65;
-				this.velocityY += f * 0.06153846016296973;
-				double h = 0.75;
-				this.velocityY *= 0.75;
+				Vec3d vec3d2 = this.getVelocity();
+				this.setVelocity(vec3d2.x, (vec3d2.y + f * 0.06153846016296973) * 0.75, vec3d2.z);
 			}
 		}
 	}
@@ -611,7 +605,7 @@ public class BoatEntity extends Entity {
 		if (this.hasPassengers()) {
 			float f = 0.0F;
 			if (this.field_7710) {
-				this.field_7690 += -1.0F;
+				this.field_7690--;
 			}
 
 			if (this.field_7695) {
@@ -631,8 +625,10 @@ public class BoatEntity extends Entity {
 				f -= 0.005F;
 			}
 
-			this.velocityX = this.velocityX + (double)(MathHelper.sin(-this.yaw * (float) (Math.PI / 180.0)) * f);
-			this.velocityZ = this.velocityZ + (double)(MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)) * f);
+			this.setVelocity(
+				this.getVelocity()
+					.add((double)(MathHelper.sin(-this.yaw * (float) (Math.PI / 180.0)) * f), 0.0, (double)(MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)) * f))
+			);
 			this.setPaddleState(this.field_7695 && !this.field_7710 || this.field_7709, this.field_7710 && !this.field_7695 || this.field_7709);
 		}
 	}
@@ -710,7 +706,7 @@ public class BoatEntity extends Entity {
 
 	@Override
 	protected void method_5623(double d, boolean bl, BlockState blockState, BlockPos blockPos) {
-		this.field_7696 = this.velocityY;
+		this.field_7696 = this.getVelocity().y;
 		if (!this.hasVehicle()) {
 			if (bl) {
 				if (this.fallDistance > 3.0F) {

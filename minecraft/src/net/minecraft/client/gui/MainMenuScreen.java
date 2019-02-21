@@ -108,31 +108,31 @@ public class MainMenuScreen extends Screen {
 
 	@Override
 	protected void onInitialized() {
-		this.splashText = this.client.getSplashTextLoader().get();
+		this.splashText = this.client.method_18095().get();
 		this.field_2584 = this.fontRenderer.getStringWidth("Copyright Mojang AB. Do not distribute!");
-		this.field_2606 = this.width - this.field_2584 - 2;
+		this.field_2606 = this.screenWidth - this.field_2584 - 2;
 		int i = 24;
-		int j = this.height / 4 + 48;
+		int j = this.screenHeight / 4 + 48;
 		if (this.client.isDemo()) {
 			this.initWidgetsDemo(j, 24);
 		} else {
 			this.initWidgetsNormal(j, 24);
 		}
 
-		this.field_2602 = this.addButton(new ButtonWidget(this.width / 2 - 100, j + 72 + 12, 98, 20, I18n.translate("menu.options")) {
+		this.field_2602 = this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, j + 72 + 12, 98, 20, I18n.translate("menu.options")) {
 			@Override
 			public void onPressed(double d, double e) {
 				MainMenuScreen.this.client.openScreen(new SettingsScreen(MainMenuScreen.this, MainMenuScreen.this.client.options));
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 + 2, j + 72 + 12, 98, 20, I18n.translate("menu.quit")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 2, j + 72 + 12, 98, 20, I18n.translate("menu.quit")) {
 			@Override
 			public void onPressed(double d, double e) {
 				MainMenuScreen.this.client.scheduleStop();
 			}
 		});
 		this.addButton(
-			new LanguageButtonWidget(this.width / 2 - 124, j + 72 + 12) {
+			new LanguageButtonWidget(this.screenWidth / 2 - 124, j + 72 + 12) {
 				@Override
 				public void onPressed(double d, double e) {
 					MainMenuScreen.this.client
@@ -144,7 +144,7 @@ public class MainMenuScreen extends Screen {
 			this.warningTitleWidth = this.fontRenderer.getStringWidth(this.warningTitle);
 			this.warningTextWidth = this.fontRenderer.getStringWidth(this.warningText);
 			int k = Math.max(this.warningTitleWidth, this.warningTextWidth);
-			this.warningAlignLeft = (this.width - k) / 2;
+			this.warningAlignLeft = (this.screenWidth - k) / 2;
 			this.warningAlignTop = j - 24;
 			this.warningAlignRight = this.warningAlignLeft + k;
 			this.warningAlignBottom = this.warningAlignTop + 24;
@@ -158,24 +158,24 @@ public class MainMenuScreen extends Screen {
 		}
 
 		if (this.areRealmsNotificationsEnabled()) {
-			this.realmsNotificationGui.initialize(this.client, this.width, this.height);
+			this.realmsNotificationGui.initialize(this.client, this.screenWidth, this.screenHeight);
 		}
 	}
 
 	private void initWidgetsNormal(int i, int j) {
-		this.addButton(new ButtonWidget(this.width / 2 - 100, i, I18n.translate("menu.singleplayer")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, i, I18n.translate("menu.singleplayer")) {
 			@Override
 			public void onPressed(double d, double e) {
 				MainMenuScreen.this.client.openScreen(new LevelSelectScreen(MainMenuScreen.this));
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 - 100, i + j * 1, I18n.translate("menu.multiplayer")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, i + j * 1, I18n.translate("menu.multiplayer")) {
 			@Override
 			public void onPressed(double d, double e) {
 				MainMenuScreen.this.client.openScreen(new MultiplayerScreen(MainMenuScreen.this));
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 - 100, i + j * 2, I18n.translate("menu.online")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, i + j * 2, I18n.translate("menu.online")) {
 			@Override
 			public void onPressed(double d, double e) {
 				MainMenuScreen.this.switchToRealms();
@@ -184,14 +184,14 @@ public class MainMenuScreen extends Screen {
 	}
 
 	private void initWidgetsDemo(int i, int j) {
-		this.addButton(new ButtonWidget(this.width / 2 - 100, i, I18n.translate("menu.playdemo")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, i, I18n.translate("menu.playdemo")) {
 			@Override
 			public void onPressed(double d, double e) {
 				MainMenuScreen.this.client.startIntegratedServer("Demo_World", "Demo_World", MinecraftServer.field_17704);
 			}
 		});
 		this.buttonResetDemo = this.addButton(
-			new ButtonWidget(this.width / 2 - 100, i + j * 1, I18n.translate("menu.resetdemo")) {
+			new ButtonWidget(this.screenWidth / 2 - 100, i + j * 1, I18n.translate("menu.resetdemo")) {
 				@Override
 				public void onPressed(double d, double e) {
 					LevelStorage levelStorage = MainMenuScreen.this.client.getLevelStorage();
@@ -242,22 +242,22 @@ public class MainMenuScreen extends Screen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		if (this.field_17772 == 0L && this.field_18222) {
 			this.field_17772 = SystemUtil.getMeasuringTimeMs();
 		}
 
 		float g = this.field_18222 ? (float)(SystemUtil.getMeasuringTimeMs() - this.field_17772) / 1000.0F : 1.0F;
-		drawRect(0, 0, this.width, this.height, -1);
+		drawRect(0, 0, this.screenWidth, this.screenHeight, -1);
 		this.field_2585.method_3317(f, MathHelper.clamp(g, 0.0F, 1.0F));
 		int k = 274;
-		int l = this.width / 2 - 137;
+		int l = this.screenWidth / 2 - 137;
 		int m = 30;
 		this.client.getTextureManager().bindTexture(field_17775);
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, this.field_18222 ? (float)MathHelper.ceil(MathHelper.clamp(g, 0.0F, 1.0F)) : 1.0F);
-		drawTexturedRect(0, 0, 0.0F, 0.0F, 16, 128, this.width, this.height, 16.0F, 128.0F);
+		drawTexturedRect(0, 0, 0.0F, 0.0F, 16, 128, this.screenWidth, this.screenHeight, 16.0F, 128.0F);
 		float h = this.field_18222 ? MathHelper.clamp(g - 1.0F, 0.0F, 1.0F) : 1.0F;
 		int n = MathHelper.ceil(h * 255.0F) << 24;
 		if ((n & -67108864) != 0) {
@@ -277,7 +277,7 @@ public class MainMenuScreen extends Screen {
 			this.client.getTextureManager().bindTexture(EDITION_TITLE_TEXTURE);
 			drawTexturedRect(l + 88, 67, 0.0F, 0.0F, 98, 14, 128.0F, 16.0F);
 			GlStateManager.pushMatrix();
-			GlStateManager.translatef((float)(this.width / 2 + 90), 70.0F, 0.0F);
+			GlStateManager.translatef((float)(this.screenWidth / 2 + 90), 70.0F, 0.0F);
 			GlStateManager.rotatef(-20.0F, 0.0F, 0.0F, 1.0F);
 			float o = 1.8F - MathHelper.abs(MathHelper.sin((float)(SystemUtil.getMeasuringTimeMs() % 1000L) / 1000.0F * (float) (Math.PI * 2)) * 0.1F);
 			o = o * 100.0F / (float)(this.fontRenderer.getStringWidth(this.splashText) + 32);
@@ -291,25 +291,25 @@ public class MainMenuScreen extends Screen {
 				string = string + ("release".equalsIgnoreCase(this.client.getVersionType()) ? "" : "/" + this.client.getVersionType());
 			}
 
-			this.drawString(this.fontRenderer, string, 2, this.height - 10, 16777215 | n);
-			this.drawString(this.fontRenderer, "Copyright Mojang AB. Do not distribute!", this.field_2606, this.height - 10, 16777215 | n);
-			if (i > this.field_2606 && i < this.field_2606 + this.field_2584 && j > this.height - 10 && j < this.height) {
-				drawRect(this.field_2606, this.height - 1, this.field_2606 + this.field_2584, this.height, 16777215 | n);
+			this.drawString(this.fontRenderer, string, 2, this.screenHeight - 10, 16777215 | n);
+			this.drawString(this.fontRenderer, "Copyright Mojang AB. Do not distribute!", this.field_2606, this.screenHeight - 10, 16777215 | n);
+			if (i > this.field_2606 && i < this.field_2606 + this.field_2584 && j > this.screenHeight - 10 && j < this.screenHeight) {
+				drawRect(this.field_2606, this.screenHeight - 1, this.field_2606 + this.field_2584, this.screenHeight, 16777215 | n);
 			}
 
 			if (this.warningTitle != null && !this.warningTitle.isEmpty()) {
 				drawRect(this.warningAlignLeft - 2, this.warningAlignTop - 2, this.warningAlignRight + 2, this.warningAlignBottom - 1, 1428160512);
 				this.drawString(this.fontRenderer, this.warningTitle, this.warningAlignLeft, this.warningAlignTop, 16777215 | n);
-				this.drawString(this.fontRenderer, this.warningText, (this.width - this.warningTextWidth) / 2, this.warningAlignTop + 12, 16777215 | n);
+				this.drawString(this.fontRenderer, this.warningText, (this.screenWidth - this.warningTextWidth) / 2, this.warningAlignTop + 12, 16777215 | n);
 			}
 
 			for (ButtonWidget buttonWidget : this.buttons) {
 				buttonWidget.setOpacity(h);
 			}
 
-			super.method_18326(i, j, f);
+			super.draw(i, j, f);
 			if (this.areRealmsNotificationsEnabled() && h >= 1.0F) {
-				this.realmsNotificationGui.method_18326(i, j, f);
+				this.realmsNotificationGui.draw(i, j, f);
 			}
 		}
 	}
@@ -335,7 +335,9 @@ public class MainMenuScreen extends Screen {
 			if (this.areRealmsNotificationsEnabled() && this.realmsNotificationGui.mouseClicked(d, e, i)) {
 				return true;
 			} else {
-				if (d > (double)this.field_2606 && d < (double)(this.field_2606 + this.field_2584) && e > (double)(this.height - 10) && e < (double)this.height) {
+				if (d > (double)this.field_2606 && d < (double)(this.field_2606 + this.field_2584) && e > (double)(this.screenHeight - 10) && e < (double)this.screenHeight
+					)
+				 {
 					this.client.openScreen(new EndCreditsScreen(false, Runnables.doNothing()));
 				}
 

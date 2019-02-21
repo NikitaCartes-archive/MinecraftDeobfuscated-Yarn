@@ -16,7 +16,7 @@ public class DolphinLookControl extends LookControl {
 		if (this.active) {
 			this.active = false;
 			double d = this.lookX - this.entity.x;
-			double e = this.lookY - (this.entity.y + (double)this.entity.getEyeHeight());
+			double e = this.lookY - (this.entity.y + (double)this.entity.getStandingEyeHeight());
 			double f = this.lookZ - this.entity.z;
 			double g = (double)MathHelper.sqrt(d * d + f * f);
 			float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F + 20.0F;

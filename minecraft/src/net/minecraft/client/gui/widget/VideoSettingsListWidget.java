@@ -5,9 +5,9 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4069;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.InputListener;
+import net.minecraft.client.gui.MultiInputListener;
 import net.minecraft.client.options.GameOption;
 import net.minecraft.client.options.GameOptions;
 
@@ -39,9 +39,9 @@ public class VideoSettingsListWidget extends EntryListWidget<VideoSettingsListWi
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class class_354 extends EntryListWidget.Entry<VideoSettingsListWidget.class_354> implements class_4069 {
+	public static class class_354 extends EntryListWidget.Entry<VideoSettingsListWidget.class_354> implements MultiInputListener {
 		private boolean field_18212;
-		private GuiEventListener field_18213;
+		private InputListener field_18213;
 		private List<ButtonWidget> field_18214;
 
 		private class_354(List<ButtonWidget> list) {
@@ -49,23 +49,25 @@ public class VideoSettingsListWidget extends EntryListWidget<VideoSettingsListWi
 		}
 
 		public class_354(GameOptions gameOptions, int i, GameOption gameOption) {
-			this(ImmutableList.of(gameOption.method_18520(gameOptions, i / 2 - 155, 0, 310)));
+			this(ImmutableList.of(gameOption.createOptionButton(gameOptions, i / 2 - 155, 0, 310)));
 		}
 
 		public class_354(GameOptions gameOptions, int i, GameOption gameOption, GameOption gameOption2) {
-			this(ImmutableList.of(gameOption.method_18520(gameOptions, i / 2 - 155, 0, 150), gameOption2.method_18520(gameOptions, i / 2 - 155 + 160, 0, 150)));
+			this(
+				ImmutableList.of(gameOption.createOptionButton(gameOptions, i / 2 - 155, 0, 150), gameOption2.createOptionButton(gameOptions, i / 2 - 155 + 160, 0, 150))
+			);
 		}
 
 		@Override
 		public void draw(int i, int j, int k, int l, boolean bl, float f) {
 			this.field_18214.forEach(buttonWidget -> {
 				buttonWidget.y = this.getY();
-				buttonWidget.method_18326(k, l, f);
+				buttonWidget.draw(k, l, f);
 			});
 		}
 
 		@Override
-		public List<? extends GuiEventListener> method_1968() {
+		public List<? extends InputListener> getInputListeners() {
 			return this.field_18214;
 		}
 
@@ -80,13 +82,13 @@ public class VideoSettingsListWidget extends EntryListWidget<VideoSettingsListWi
 		}
 
 		@Override
-		public void method_1967(@Nullable GuiEventListener guiEventListener) {
-			this.field_18213 = guiEventListener;
+		public void setFocused(@Nullable InputListener inputListener) {
+			this.field_18213 = inputListener;
 		}
 
 		@Nullable
 		@Override
-		public GuiEventListener getFocused() {
+		public InputListener getFocused() {
 			return this.field_18213;
 		}
 

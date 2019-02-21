@@ -14,6 +14,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
@@ -86,14 +87,16 @@ public class MagmaCubeEntity extends SlimeEntity {
 
 	@Override
 	protected void jump() {
-		this.velocityY = (double)(0.42F + (float)this.getSize() * 0.1F);
+		Vec3d vec3d = this.getVelocity();
+		this.setVelocity(vec3d.x, (double)(0.42F + (float)this.getSize() * 0.1F), vec3d.z);
 		this.velocityDirty = true;
 	}
 
 	@Override
 	protected void method_6010(Tag<Fluid> tag) {
 		if (tag == FluidTags.field_15518) {
-			this.velocityY = (double)(0.22F + (float)this.getSize() * 0.05F);
+			Vec3d vec3d = this.getVelocity();
+			this.setVelocity(vec3d.x, (double)(0.22F + (float)this.getSize() * 0.05F), vec3d.z);
 			this.velocityDirty = true;
 		} else {
 			super.method_6010(tag);

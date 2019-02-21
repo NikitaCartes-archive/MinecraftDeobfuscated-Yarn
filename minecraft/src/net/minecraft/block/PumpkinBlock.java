@@ -33,9 +33,9 @@ public class PumpkinBlock extends GourdBlock {
 					(double)blockPos.getZ() + 0.5 + (double)direction2.getOffsetZ() * 0.65,
 					new ItemStack(Items.field_8706, 4)
 				);
-				itemEntity.velocityX = 0.05 * (double)direction2.getOffsetX() + world.random.nextDouble() * 0.02;
-				itemEntity.velocityY = 0.05;
-				itemEntity.velocityZ = 0.05 * (double)direction2.getOffsetZ() + world.random.nextDouble() * 0.02;
+				itemEntity.setVelocity(
+					0.05 * (double)direction2.getOffsetX() + world.random.nextDouble() * 0.02, 0.05, 0.05 * (double)direction2.getOffsetZ() + world.random.nextDouble() * 0.02
+				);
 				world.spawnEntity(itemEntity);
 				itemStack.applyDamage(1, playerEntity);
 			}

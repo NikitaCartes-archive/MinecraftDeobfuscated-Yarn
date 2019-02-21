@@ -113,7 +113,7 @@ public class IntArrayTag extends AbstractListTag<IntTag> {
 		return this.value.length;
 	}
 
-	public IntTag getRaw(int i) {
+	public IntTag method_10589(int i) {
 		return new IntTag(this.value[i]);
 	}
 

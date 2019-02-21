@@ -188,15 +188,13 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 	}
 
 	@Override
-	public void travel(float f, float g, float h) {
+	public void travel(Vec3d vec3d) {
 		if (this.method_6034() && this.isInsideWater() && this.method_7018()) {
-			this.updateVelocity(f, g, h, 0.01F);
-			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
-			this.velocityX *= 0.9F;
-			this.velocityY *= 0.9F;
-			this.velocityZ *= 0.9F;
+			this.updateVelocity(0.01F, vec3d);
+			this.move(MovementType.field_6308, this.getVelocity());
+			this.setVelocity(this.getVelocity().multiply(0.9));
 		} else {
-			super.travel(f, g, h);
+			super.travel(vec3d);
 		}
 	}
 
@@ -257,7 +255,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 			LivingEntity livingEntity = this.drowned.getTarget();
 			if (this.drowned.method_7018() && this.drowned.isInsideWater()) {
 				if (livingEntity != null && livingEntity.y > this.drowned.y || this.drowned.field_7233) {
-					this.drowned.velocityY += 0.002;
+					this.drowned.setVelocity(this.drowned.getVelocity().add(0.0, 0.002, 0.0));
 				}
 
 				if (this.state != MoveControl.State.field_6378 || this.drowned.getNavigation().isIdle()) {
@@ -274,13 +272,12 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 				this.drowned.yaw = this.method_6238(this.drowned.yaw, h, 90.0F);
 				this.drowned.field_6283 = this.drowned.yaw;
 				float i = (float)(this.speed * this.drowned.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
-				this.drowned.setMovementSpeed(MathHelper.lerp(0.125F, this.drowned.getMovementSpeed(), i));
-				this.drowned.velocityY = this.drowned.velocityY + (double)this.drowned.getMovementSpeed() * e * 0.1;
-				this.drowned.velocityX = this.drowned.velocityX + (double)this.drowned.getMovementSpeed() * d * 0.005;
-				this.drowned.velocityZ = this.drowned.velocityZ + (double)this.drowned.getMovementSpeed() * f * 0.005;
+				float j = MathHelper.lerp(0.125F, this.drowned.getMovementSpeed(), i);
+				this.drowned.setMovementSpeed(j);
+				this.drowned.setVelocity(this.drowned.getVelocity().add((double)j * d * 0.005, (double)j * e * 0.1, (double)j * f * 0.005));
 			} else {
 				if (!this.drowned.onGround) {
-					this.drowned.velocityY -= 0.008;
+					this.drowned.setVelocity(this.drowned.getVelocity().add(0.0, -0.008, 0.0));
 				}
 
 				super.tick();

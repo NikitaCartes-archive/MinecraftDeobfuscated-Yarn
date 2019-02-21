@@ -65,25 +65,24 @@ public class SwimNavigation extends EntityNavigation {
 	protected void method_6339() {
 		if (this.currentPath != null) {
 			Vec3d vec3d = this.method_6347();
-			float f = this.entity.getWidth() > 0.75F ? this.entity.getWidth() / 2.0F : 0.75F - this.entity.getWidth() / 2.0F;
-			if ((double)MathHelper.abs((float)this.entity.velocityX) > 0.2 || (double)MathHelper.abs((float)this.entity.velocityZ) > 0.2) {
-				f *= MathHelper.sqrt(
-						this.entity.velocityX * this.entity.velocityX + this.entity.velocityY * this.entity.velocityY + this.entity.velocityZ * this.entity.velocityZ
-					)
-					* 6.0F;
+			float f = this.entity.getWidth();
+			float g = f > 0.75F ? f / 2.0F : 0.75F - f / 2.0F;
+			Vec3d vec3d2 = this.entity.getVelocity();
+			if (Math.abs(vec3d2.x) > 0.2 || Math.abs(vec3d2.z) > 0.2) {
+				g = (float)((double)g * vec3d2.length() * 6.0);
 			}
 
 			int i = 6;
-			Vec3d vec3d2 = this.currentPath.getCurrentPosition();
-			if (MathHelper.abs((float)(this.entity.x - (vec3d2.x + 0.5))) < f
-				&& MathHelper.abs((float)(this.entity.z - (vec3d2.z + 0.5))) < f
-				&& Math.abs(this.entity.y - vec3d2.y) < (double)(f * 2.0F)) {
+			Vec3d vec3d3 = this.currentPath.getCurrentPosition();
+			if (Math.abs(this.entity.x - (vec3d3.x + 0.5)) < (double)g
+				&& Math.abs(this.entity.z - (vec3d3.z + 0.5)) < (double)g
+				&& Math.abs(this.entity.y - vec3d3.y) < (double)(g * 2.0F)) {
 				this.currentPath.next();
 			}
 
 			for (int j = Math.min(this.currentPath.getCurrentNodeIndex() + 6, this.currentPath.getLength() - 1); j > this.currentPath.getCurrentNodeIndex(); j--) {
-				vec3d2 = this.currentPath.getNodePosition(this.entity, j);
-				if (!(vec3d2.squaredDistanceTo(vec3d) > 36.0) && this.canPathDirectlyThrough(vec3d, vec3d2, 0, 0, 0)) {
+				vec3d3 = this.currentPath.getNodePosition(this.entity, j);
+				if (!(vec3d3.squaredDistanceTo(vec3d) > 36.0) && this.canPathDirectlyThrough(vec3d, vec3d3, 0, 0, 0)) {
 					this.currentPath.setCurrentNodeIndex(j);
 					break;
 				}

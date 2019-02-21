@@ -2,7 +2,7 @@ package net.minecraft.client;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.GlfwUtil;
@@ -120,21 +120,21 @@ public class Mouse {
 					}
 
 					this.eventDeltaWheel += f;
-					double g = (double)((int)this.eventDeltaWheel);
-					if (g == 0.0) {
+					float g = (float)((int)this.eventDeltaWheel);
+					if (g == 0.0F) {
 						return;
 					}
 
-					this.eventDeltaWheel -= g;
+					this.eventDeltaWheel -= (double)g;
 					if (this.client.player.isSpectator()) {
 						if (this.client.inGameHud.getSpectatorWidget().method_1980()) {
-							this.client.inGameHud.getSpectatorWidget().method_1976(-g);
+							this.client.inGameHud.getSpectatorWidget().method_1976((double)(-g));
 						} else {
-							double h = MathHelper.clamp((double)this.client.player.abilities.getFlySpeed() + g * 0.005F, 0.0, 0.2F);
+							float h = MathHelper.clamp(this.client.player.abilities.getFlySpeed() + g * 0.005F, 0.0F, 0.2F);
 							this.client.player.abilities.setFlySpeed(h);
 						}
 					} else {
-						this.client.player.inventory.method_7373(g);
+						this.client.player.inventory.method_7373((double)g);
 					}
 				}
 			}
@@ -153,16 +153,16 @@ public class Mouse {
 				this.hasResolutionChanged = false;
 			}
 
-			GuiEventListener guiEventListener = this.client.currentScreen;
-			if (guiEventListener != null && this.client.field_18175 == null) {
+			InputListener inputListener = this.client.currentScreen;
+			if (inputListener != null && this.client.field_18175 == null) {
 				double f = d * (double)this.client.window.getScaledWidth() / (double)this.client.window.getWidth();
 				double g = e * (double)this.client.window.getScaledHeight() / (double)this.client.window.getHeight();
-				Screen.method_2217(() -> guiEventListener.mouseMoved(f, g), "mouseMoved event handler", guiEventListener.getClass().getCanonicalName());
+				Screen.method_2217(() -> inputListener.mouseMoved(f, g), "mouseMoved event handler", inputListener.getClass().getCanonicalName());
 				if (this.activeButton != -1 && this.glfwTime > 0.0) {
 					double h = (d - this.x) * (double)this.client.window.getScaledWidth() / (double)this.client.window.getWidth();
 					double i = (e - this.y) * (double)this.client.window.getScaledHeight() / (double)this.client.window.getHeight();
 					Screen.method_2217(
-						() -> guiEventListener.mouseDragged(f, g, this.activeButton, h, i), "mouseDragged event handler", guiEventListener.getClass().getCanonicalName()
+						() -> inputListener.mouseDragged(f, g, this.activeButton, h, i), "mouseDragged event handler", inputListener.getClass().getCanonicalName()
 					);
 				}
 			}

@@ -31,7 +31,7 @@ public class WitchHeldItemFeatureRenderer<T extends LivingEntity> extends Featur
 				GlStateManager.scalef(0.5F, 0.5F, 0.5F);
 			}
 
-			this.getModel().method_2839().method_2847(0.0625F);
+			this.getModel().method_2839().applyTransform(0.0625F);
 			GlStateManager.translatef(-0.0625F, 0.53125F, 0.21875F);
 			Item item = itemStack.getItem();
 			if (Block.getBlockFromItem(item).getDefaultState().getRenderType() == BlockRenderType.field_11456) {

@@ -17,9 +17,9 @@ public class CloseWorldScreen extends Screen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawTextureBackground(0);
-		this.drawStringCentered(this.fontRenderer, this.message, this.width / 2, 70, 16777215);
-		super.method_18326(i, j, f);
+		this.drawStringCentered(this.fontRenderer, this.message, this.screenWidth / 2, 70, 16777215);
+		super.draw(i, j, f);
 	}
 }

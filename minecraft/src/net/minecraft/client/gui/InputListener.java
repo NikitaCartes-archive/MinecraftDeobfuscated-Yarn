@@ -1,46 +1,45 @@
 package net.minecraft.client.gui;
 
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
-public interface InputListener extends GuiEventListener {
-	@Nullable
-	GuiEventListener getFocused();
+public interface InputListener {
+	default void mouseMoved(double d, double e) {
+	}
 
-	@Override
 	default boolean mouseClicked(double d, double e, int i) {
-		return this.getFocused() != null && this.getFocused().mouseClicked(d, e, i);
+		return false;
 	}
 
-	@Override
 	default boolean mouseReleased(double d, double e, int i) {
-		return this.getFocused() != null && this.getFocused().mouseReleased(d, e, i);
+		return false;
 	}
 
-	@Override
 	default boolean mouseDragged(double d, double e, int i, double f, double g) {
-		return this.getFocused() != null && this.getFocused().mouseDragged(d, e, i, f, g);
+		return false;
 	}
 
-	@Override
 	default boolean mouseScrolled(double d) {
-		return this.getFocused() != null && this.getFocused().mouseScrolled(d);
+		return false;
 	}
 
-	@Override
 	default boolean keyPressed(int i, int j, int k) {
-		return this.getFocused() != null && this.getFocused().keyPressed(i, j, k);
+		return false;
 	}
 
-	@Override
 	default boolean keyReleased(int i, int j, int k) {
-		return this.getFocused() != null && this.getFocused().keyReleased(i, j, k);
+		return false;
 	}
 
-	@Override
 	default boolean charTyped(char c, int i) {
-		return this.getFocused() != null && this.getFocused().charTyped(c, i);
+		return false;
+	}
+
+	default void setHasFocus(boolean bl) {
+	}
+
+	default boolean hasFocus() {
+		return false;
 	}
 }

@@ -128,7 +128,7 @@ public class ServerWorld extends World {
 	private final Int2ObjectMap<Entity> entitiesById = new Int2ObjectOpenHashMap<>();
 	private final Map<UUID, Entity> entitiesByUuid = Maps.<UUID, Entity>newHashMap();
 	private final Queue<Entity> field_18260 = Queues.<Entity>newArrayDeque();
-	private final List<ServerPlayerEntity> field_18261 = Lists.<ServerPlayerEntity>newArrayList();
+	private final List<ServerPlayerEntity> players = Lists.<ServerPlayerEntity>newArrayList();
 	boolean field_18264;
 	private final MinecraftServer server;
 	private final WorldSaveHandler worldSaveHandler;
@@ -147,7 +147,7 @@ public class ServerWorld extends World {
 	private final ObjectLinkedOpenHashSet<BlockAction> pendingBlockActions = new ObjectLinkedOpenHashSet<>();
 	private boolean insideTick;
 	@Nullable
-	private final WanderingTraderManager field_18263;
+	private final WanderingTraderManager wanderingTraderManager;
 
 	public ServerWorld(
 		MinecraftServer minecraftServer,
@@ -193,7 +193,7 @@ public class ServerWorld extends World {
 			this.getLevelProperties().setGameMode(minecraftServer.getDefaultGameMode());
 		}
 
-		this.field_18263 = this.dimension.getType() == DimensionType.field_13072 ? new WanderingTraderManager(this) : null;
+		this.wanderingTraderManager = this.dimension.getType() == DimensionType.field_13072 ? new WanderingTraderManager(this) : null;
 	}
 
 	public void method_18765(BooleanSupplier booleanSupplier) {
@@ -283,14 +283,14 @@ public class ServerWorld extends World {
 		}
 
 		if (this.allPlayersSleeping
-			&& this.field_18261.stream().noneMatch(serverPlayerEntity -> !serverPlayerEntity.isSpectator() && !serverPlayerEntity.isSleepingLongEnough())) {
+			&& this.players.stream().noneMatch(serverPlayerEntity -> !serverPlayerEntity.isSpectator() && !serverPlayerEntity.isSleepingLongEnough())) {
 			this.allPlayersSleeping = false;
 			if (this.getGameRules().getBoolean("doDaylightCycle")) {
 				long l = this.properties.getTimeOfDay() + 24000L;
 				this.setTimeOfDay(l - l % 24000L);
 			}
 
-			this.field_18261.stream().filter(LivingEntity::isSleeping).forEach(serverPlayerEntity -> serverPlayerEntity.wakeUp(false, false, true));
+			this.players.stream().filter(LivingEntity::isSleeping).forEach(serverPlayerEntity -> serverPlayerEntity.wakeUp(false, false, true));
 			if (this.getGameRules().getBoolean("doWeatherCycle")) {
 				this.resetWeather();
 			}
@@ -317,15 +317,15 @@ public class ServerWorld extends World {
 		this.portalForcer.tick(this.getTime());
 		profiler.swap("raid");
 		this.raidManager.tick();
-		if (this.field_18263 != null) {
-			this.field_18263.method_18015();
+		if (this.wanderingTraderManager != null) {
+			this.wanderingTraderManager.tick();
 		}
 
 		profiler.swap("blockEvents");
 		this.sendBlockActions();
 		this.insideTick = false;
 		profiler.swap("entities");
-		boolean bl2 = !this.field_18261.isEmpty() || !this.getForcedChunks().isEmpty();
+		boolean bl2 = !this.players.isEmpty() || !this.getForcedChunks().isEmpty();
 		if (bl2) {
 			this.resetIdleTimeout();
 		}
@@ -492,11 +492,11 @@ public class ServerWorld extends World {
 
 	public void updatePlayersSleeping() {
 		this.allPlayersSleeping = false;
-		if (!this.field_18261.isEmpty()) {
+		if (!this.players.isEmpty()) {
 			int i = 0;
 			int j = 0;
 
-			for (ServerPlayerEntity serverPlayerEntity : this.field_18261) {
+			for (ServerPlayerEntity serverPlayerEntity : this.players) {
 				if (serverPlayerEntity.isSpectator()) {
 					i++;
 				} else if (serverPlayerEntity.isSleeping()) {
@@ -504,7 +504,7 @@ public class ServerWorld extends World {
 				}
 			}
 
-			this.allPlayersSleeping = j > 0 && j >= this.field_18261.size() - i;
+			this.allPlayersSleeping = j > 0 && j >= this.players.size() - i;
 		}
 	}
 
@@ -756,7 +756,7 @@ public class ServerWorld extends World {
 	public List<ServerPlayerEntity> method_18766(Predicate<? super ServerPlayerEntity> predicate) {
 		List<ServerPlayerEntity> list = Lists.<ServerPlayerEntity>newArrayList();
 
-		for (ServerPlayerEntity serverPlayerEntity : this.field_18261) {
+		for (ServerPlayerEntity serverPlayerEntity : this.players) {
 			if (predicate.test(serverPlayerEntity)) {
 				list.add(serverPlayerEntity);
 			}
@@ -829,7 +829,7 @@ public class ServerWorld extends World {
 			this.method_18770((ServerPlayerEntity)entity);
 		}
 
-		this.field_18261.add(serverPlayerEntity);
+		this.players.add(serverPlayerEntity);
 		this.updatePlayersSleeping();
 		Chunk chunk = this.getChunk(MathHelper.floor(serverPlayerEntity.x / 16.0), MathHelper.floor(serverPlayerEntity.z / 16.0), ChunkStatus.FULL, true);
 		if (chunk instanceof WorldChunk) {
@@ -903,7 +903,7 @@ public class ServerWorld extends World {
 		this.method_14178().method_18753(entity);
 		if (entity instanceof ServerPlayerEntity) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
-			this.field_18261.remove(serverPlayerEntity);
+			this.players.remove(serverPlayerEntity);
 		}
 
 		this.method_14170().resetEntityScore(entity);
@@ -1064,7 +1064,7 @@ public class ServerWorld extends World {
 			explosion.clearAffectedBlocks();
 		}
 
-		for (ServerPlayerEntity serverPlayerEntity : this.field_18261) {
+		for (ServerPlayerEntity serverPlayerEntity : this.players) {
 			if (serverPlayerEntity.squaredDistanceTo(d, e, f) < 4096.0) {
 				serverPlayerEntity.networkHandler
 					.sendPacket(new ExplosionS2CPacket(d, e, f, g, explosion.getAffectedBlocks(), (Vec3d)explosion.getAffectedPlayers().get(serverPlayerEntity)));
@@ -1139,8 +1139,8 @@ public class ServerWorld extends World {
 		);
 		int l = 0;
 
-		for (int m = 0; m < this.field_18261.size(); m++) {
-			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.field_18261.get(m);
+		for (int m = 0; m < this.players.size(); m++) {
+			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.players.get(m);
 			if (this.method_14191(serverPlayerEntity, false, d, e, f, particleS2CPacket)) {
 				l++;
 			}
@@ -1277,7 +1277,7 @@ public class ServerWorld extends World {
 	}
 
 	@Override
-	public List<ServerPlayerEntity> method_18456() {
-		return this.field_18261;
+	public List<ServerPlayerEntity> getPlayers() {
+		return this.players;
 	}
 }

@@ -25,6 +25,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class BlazeEntity extends HostileEntity {
@@ -95,8 +96,8 @@ public class BlazeEntity extends HostileEntity {
 
 	@Override
 	public void updateMovement() {
-		if (!this.onGround && this.velocityY < 0.0) {
-			this.velocityY *= 0.6;
+		if (!this.onGround && this.getVelocity().y < 0.0) {
+			this.setVelocity(this.getVelocity().multiply(1.0, 0.6, 1.0));
 		}
 
 		if (this.world.isClient) {
@@ -144,8 +145,10 @@ public class BlazeEntity extends HostileEntity {
 		}
 
 		LivingEntity livingEntity = this.getTarget();
-		if (livingEntity != null && livingEntity.y + (double)livingEntity.getEyeHeight() > this.y + (double)this.getEyeHeight() + (double)this.field_7214) {
-			this.velocityY = this.velocityY + (0.3F - this.velocityY) * 0.3F;
+		if (livingEntity != null
+			&& livingEntity.y + (double)livingEntity.getStandingEyeHeight() > this.y + (double)this.getStandingEyeHeight() + (double)this.field_7214) {
+			Vec3d vec3d = this.getVelocity();
+			this.setVelocity(this.getVelocity().add(0.0, (0.3F - vec3d.y) * 0.3F, 0.0));
 			this.velocityDirty = true;
 		}
 

@@ -18,7 +18,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4076;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.player.ChunkTicketType;
@@ -29,6 +28,7 @@ import net.minecraft.server.world.chunk.light.ServerLightingProvider;
 import net.minecraft.sortme.SpawnHelper;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
@@ -225,7 +225,7 @@ public class ServerChunkManager extends ChunkManager {
 
 	@Override
 	public boolean isEntityInLoadedChunk(Entity entity) {
-		if (!this.ticketManager.method_18739(class_4076.method_18680(entity))) {
+		if (!this.ticketManager.method_18739(ChunkSectionPos.from(entity))) {
 			return false;
 		} else {
 			ChunkHolder chunkHolder = this.getChunkHolder(ChunkPos.toLong(MathHelper.floor(entity.x) >> 4, MathHelper.floor(entity.z) >> 4));
@@ -345,11 +345,11 @@ public class ServerChunkManager extends ChunkManager {
 	}
 
 	@Override
-	public void onLightUpdate(LightType lightType, class_4076 arg) {
+	public void onLightUpdate(LightType lightType, ChunkSectionPos chunkSectionPos) {
 		this.taskQueue.add((Runnable)() -> {
-			ChunkHolder chunkHolder = this.getChunkHolder(arg.method_18692().toLong());
+			ChunkHolder chunkHolder = this.getChunkHolder(chunkSectionPos.toChunkPos().toLong());
 			if (chunkHolder != null) {
-				chunkHolder.method_14012(lightType, arg.method_18683());
+				chunkHolder.method_14012(lightType, chunkSectionPos.getChunkY());
 			}
 		});
 	}

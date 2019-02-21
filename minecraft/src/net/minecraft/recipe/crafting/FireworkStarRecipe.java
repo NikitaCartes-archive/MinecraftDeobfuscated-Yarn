@@ -24,12 +24,12 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 		Items.field_8814,
 		Items.field_8153,
 		Items.field_8397,
-		Items.field_8398,
-		Items.field_8791,
-		Items.field_8681,
-		Items.field_8575,
-		Items.field_8712,
-		Items.field_8470
+		Items.SKELETON_SKULL,
+		Items.WITHER_SKELETON_SKULL,
+		Items.CREEPER_HEAD,
+		Items.PLAYER_HEAD,
+		Items.DRAGON_HEAD,
+		Items.ZOMBIE_HEAD
 	);
 	private static final Ingredient field_9010 = Ingredient.ofItems(Items.field_8477);
 	private static final Ingredient field_9014 = Ingredient.ofItems(Items.field_8601);
@@ -37,12 +37,12 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 		hashMap.put(Items.field_8814, FireworksItem.Type.field_7977);
 		hashMap.put(Items.field_8153, FireworksItem.Type.field_7970);
 		hashMap.put(Items.field_8397, FireworksItem.Type.field_7973);
-		hashMap.put(Items.field_8398, FireworksItem.Type.field_7974);
-		hashMap.put(Items.field_8791, FireworksItem.Type.field_7974);
-		hashMap.put(Items.field_8681, FireworksItem.Type.field_7974);
-		hashMap.put(Items.field_8575, FireworksItem.Type.field_7974);
-		hashMap.put(Items.field_8712, FireworksItem.Type.field_7974);
-		hashMap.put(Items.field_8470, FireworksItem.Type.field_7974);
+		hashMap.put(Items.SKELETON_SKULL, FireworksItem.Type.field_7974);
+		hashMap.put(Items.WITHER_SKELETON_SKULL, FireworksItem.Type.field_7974);
+		hashMap.put(Items.CREEPER_HEAD, FireworksItem.Type.field_7974);
+		hashMap.put(Items.PLAYER_HEAD, FireworksItem.Type.field_7974);
+		hashMap.put(Items.DRAGON_HEAD, FireworksItem.Type.field_7974);
+		hashMap.put(Items.ZOMBIE_HEAD, FireworksItem.Type.field_7974);
 	});
 	private static final Ingredient field_9012 = Ingredient.ofItems(Items.field_8054);
 
@@ -60,25 +60,25 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
 			ItemStack itemStack = craftingInventory.getInvStack(i);
 			if (!itemStack.isEmpty()) {
-				if (field_9011.matches(itemStack)) {
+				if (field_9011.method_8093(itemStack)) {
 					if (bl3) {
 						return false;
 					}
 
 					bl3 = true;
-				} else if (field_9014.matches(itemStack)) {
+				} else if (field_9014.method_8093(itemStack)) {
 					if (bl5) {
 						return false;
 					}
 
 					bl5 = true;
-				} else if (field_9010.matches(itemStack)) {
+				} else if (field_9010.method_8093(itemStack)) {
 					if (bl4) {
 						return false;
 					}
 
 					bl4 = true;
-				} else if (field_9012.matches(itemStack)) {
+				} else if (field_9012.method_8093(itemStack)) {
 					if (bl) {
 						return false;
 					}
@@ -106,11 +106,11 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
 			ItemStack itemStack2 = craftingInventory.getInvStack(i);
 			if (!itemStack2.isEmpty()) {
-				if (field_9011.matches(itemStack2)) {
+				if (field_9011.method_8093(itemStack2)) {
 					type = (FireworksItem.Type)field_9013.get(itemStack2.getItem());
-				} else if (field_9014.matches(itemStack2)) {
+				} else if (field_9014.method_8093(itemStack2)) {
 					compoundTag.putBoolean("Flicker", true);
-				} else if (field_9010.matches(itemStack2)) {
+				} else if (field_9010.method_8093(itemStack2)) {
 					compoundTag.putBoolean("Trail", true);
 				} else if (itemStack2.getItem() instanceof DyeItem) {
 					list.add(((DyeItem)itemStack2.getItem()).getColor().getFireworkColor());

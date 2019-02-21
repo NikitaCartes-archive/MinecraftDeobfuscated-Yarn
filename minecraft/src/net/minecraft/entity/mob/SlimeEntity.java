@@ -1,10 +1,10 @@
 package net.minecraft.entity.mob;
 
 import javax.annotation.Nullable;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
@@ -27,6 +27,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
@@ -154,7 +155,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
 		if (SLIME_SIZE.equals(trackedData)) {
-			this.method_18382();
+			this.refreshSize();
 			this.yaw = this.headYaw;
 			this.field_6283 = this.headYaw;
 			if (this.isInsideWater() && this.random.nextInt(20) == 0) {
@@ -223,8 +224,8 @@ public class SlimeEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	protected float method_18394(class_4050 arg, class_4048 arg2) {
-		return 0.625F * arg2.field_18068;
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+		return 0.625F * entitySize.height;
 	}
 
 	protected boolean method_7163() {
@@ -298,7 +299,8 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 	@Override
 	protected void jump() {
-		this.velocityY = 0.42F;
+		Vec3d vec3d = this.getVelocity();
+		this.setVelocity(vec3d.x, 0.42F, vec3d.z);
 		this.velocityDirty = true;
 	}
 
@@ -322,8 +324,8 @@ public class SlimeEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	public class_4048 method_18377(class_4050 arg) {
-		return super.method_18377(arg).method_18383(0.255F * (float)this.getSize());
+	public EntitySize getSize(EntityPose entityPose) {
+		return super.getSize(entityPose).scaled(0.255F * (float)this.getSize());
 	}
 
 	static class SlimeMoveControl extends MoveControl {

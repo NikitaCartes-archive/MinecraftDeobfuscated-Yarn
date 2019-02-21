@@ -11,7 +11,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_4048;
 import net.minecraft.datafixers.Schemas;
 import net.minecraft.datafixers.TypeReferences;
 import net.minecraft.entity.boss.WitherEntity;
@@ -435,7 +434,7 @@ public class EntityType<T extends Entity> {
 	private Identifier lootTableId;
 	@Nullable
 	private final Type<?> dataFixerType;
-	private final class_4048 field_18070;
+	private final EntitySize size;
 
 	private static <T extends Entity> EntityType<T> register(String string, EntityType.Builder<T> builder) {
 		return Registry.register(Registry.ENTITY_TYPE, string, builder.build(string));
@@ -449,13 +448,13 @@ public class EntityType<T extends Entity> {
 		return Registry.ENTITY_TYPE.getOrEmpty(Identifier.create(string));
 	}
 
-	public EntityType(EntityType.class_4049<T> arg, EntityCategory entityCategory, boolean bl, boolean bl2, @Nullable Type<?> type, class_4048 arg2) {
+	public EntityType(EntityType.class_4049<T> arg, EntityCategory entityCategory, boolean bl, boolean bl2, @Nullable Type<?> type, EntitySize entitySize) {
 		this.factory = arg;
 		this.category = entityCategory;
 		this.saveable = bl;
 		this.summonable = bl2;
 		this.dataFixerType = type;
-		this.field_18070 = arg2;
+		this.size = entitySize;
 	}
 
 	@Nullable
@@ -596,11 +595,11 @@ public class EntityType<T extends Entity> {
 	}
 
 	public float getWidth() {
-		return this.field_18070.field_18067;
+		return this.size.width;
 	}
 
 	public float getHeight() {
-		return this.field_18070.field_18068;
+		return this.size.height;
 	}
 
 	@Nullable
@@ -633,8 +632,8 @@ public class EntityType<T extends Entity> {
 		return new BoundingBox(d - (double)g, e, f - (double)g, d + (double)g, e + (double)this.getHeight(), f + (double)g);
 	}
 
-	public class_4048 method_18386() {
-		return this.field_18070;
+	public EntitySize getDefaultSize() {
+		return this.size;
 	}
 
 	public static Optional<EntityType<?>> fromTag(CompoundTag compoundTag) {
@@ -751,7 +750,7 @@ public class EntityType<T extends Entity> {
 		private final EntityCategory entityClass;
 		private boolean saveable = true;
 		private boolean summonable = true;
-		private class_4048 field_18071 = class_4048.method_18384(0.6F, 1.8F);
+		private EntitySize field_18071 = EntitySize.resizeable(0.6F, 1.8F);
 
 		private Builder(EntityType.class_4049<T> arg, EntityCategory entityCategory) {
 			this.function = arg;
@@ -767,7 +766,7 @@ public class EntityType<T extends Entity> {
 		}
 
 		public EntityType.Builder<T> setSize(float f, float g) {
-			this.field_18071 = class_4048.method_18384(f, g);
+			this.field_18071 = EntitySize.resizeable(f, g);
 			return this;
 		}
 

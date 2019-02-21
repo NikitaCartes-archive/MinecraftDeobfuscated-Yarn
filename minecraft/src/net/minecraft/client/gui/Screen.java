@@ -14,7 +14,6 @@ import java.util.Locale;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4068;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.ingame.ConfirmChatLinkScreen;
@@ -45,14 +44,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public abstract class Screen extends DrawableContainer implements class_4068, YesNoCallback {
+public abstract class Screen extends ScreenComponent implements Drawable, YesNoCallback {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Set<String> PROTOCOLS = Sets.<String>newHashSet("http", "https");
-	protected final List<GuiEventListener> listeners = Lists.<GuiEventListener>newArrayList();
+	protected final List<InputListener> listeners = Lists.<InputListener>newArrayList();
 	public MinecraftClient client;
 	public ItemRenderer itemRenderer;
-	public int width;
-	public int height;
+	public int screenWidth;
+	public int screenHeight;
 	protected final List<ButtonWidget> buttons = Lists.<ButtonWidget>newArrayList();
 	protected final List<LabelWidget> labelWidgets = Lists.<LabelWidget>newArrayList();
 	public boolean field_2558;
@@ -60,13 +59,13 @@ public abstract class Screen extends DrawableContainer implements class_4068, Ye
 	private URI uri;
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		for (int k = 0; k < this.buttons.size(); k++) {
-			((ButtonWidget)this.buttons.get(k)).method_18326(i, j, f);
+			((ButtonWidget)this.buttons.get(k)).draw(i, j, f);
 		}
 
 		for (int k = 0; k < this.labelWidgets.size(); k++) {
-			((LabelWidget)this.labelWidgets.get(k)).method_18326(i, j, f);
+			((LabelWidget)this.labelWidgets.get(k)).draw(i, j, f);
 		}
 	}
 
@@ -137,12 +136,12 @@ public abstract class Screen extends DrawableContainer implements class_4068, Ye
 				o += 2 + (list.size() - 1) * 10;
 			}
 
-			if (m + k > this.width) {
+			if (m + k > this.screenWidth) {
 				m -= 28 + k;
 			}
 
-			if (n + o + 6 > this.height) {
-				n = this.height - o - 6;
+			if (n + o + 6 > this.screenHeight) {
+				n = this.screenHeight - o - 6;
 			}
 
 			this.zOffset = 300.0F;
@@ -220,7 +219,7 @@ public abstract class Screen extends DrawableContainer implements class_4068, Ye
 					}
 				}
 			} else if (hoverEvent.getAction() == HoverEvent.Action.SHOW_TEXT) {
-				this.drawTooltip(this.client.textRenderer.wrapStringToWidthAsList(hoverEvent.getValue().getFormattedText(), Math.max(this.width / 2, 200)), i, j);
+				this.drawTooltip(this.client.textRenderer.wrapStringToWidthAsList(hoverEvent.getValue().getFormattedText(), Math.max(this.screenWidth / 2, 200)), i, j);
 			}
 
 			GlStateManager.disableLighting();
@@ -299,15 +298,15 @@ public abstract class Screen extends DrawableContainer implements class_4068, Ye
 		this.client = minecraftClient;
 		this.itemRenderer = minecraftClient.getItemRenderer();
 		this.fontRenderer = minecraftClient.textRenderer;
-		this.width = i;
-		this.height = j;
+		this.screenWidth = i;
+		this.screenHeight = j;
 		this.buttons.clear();
 		this.listeners.clear();
 		this.onInitialized();
 	}
 
 	@Override
-	public List<? extends GuiEventListener> method_1968() {
+	public List<? extends InputListener> getInputListeners() {
 		return this.listeners;
 	}
 
@@ -327,7 +326,7 @@ public abstract class Screen extends DrawableContainer implements class_4068, Ye
 
 	public void drawBackground(int i) {
 		if (this.client.world != null) {
-			this.drawGradientRect(0, 0, this.width, this.height, -1072689136, -804253680);
+			this.drawGradientRect(0, 0, this.screenWidth, this.screenHeight, -1072689136, -804253680);
 		} else {
 			this.drawTextureBackground(i);
 		}
@@ -342,12 +341,12 @@ public abstract class Screen extends DrawableContainer implements class_4068, Ye
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
 		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-		bufferBuilder.vertex(0.0, (double)this.height, 0.0).texture(0.0, (double)((float)this.height / 32.0F + (float)i)).color(64, 64, 64, 255).next();
-		bufferBuilder.vertex((double)this.width, (double)this.height, 0.0)
-			.texture((double)((float)this.width / 32.0F), (double)((float)this.height / 32.0F + (float)i))
+		bufferBuilder.vertex(0.0, (double)this.screenHeight, 0.0).texture(0.0, (double)((float)this.screenHeight / 32.0F + (float)i)).color(64, 64, 64, 255).next();
+		bufferBuilder.vertex((double)this.screenWidth, (double)this.screenHeight, 0.0)
+			.texture((double)((float)this.screenWidth / 32.0F), (double)((float)this.screenHeight / 32.0F + (float)i))
 			.color(64, 64, 64, 255)
 			.next();
-		bufferBuilder.vertex((double)this.width, 0.0, 0.0).texture((double)((float)this.width / 32.0F), (double)i).color(64, 64, 64, 255).next();
+		bufferBuilder.vertex((double)this.screenWidth, 0.0, 0.0).texture((double)((float)this.screenWidth / 32.0F), (double)i).color(64, 64, 64, 255).next();
 		bufferBuilder.vertex(0.0, 0.0, 0.0).texture(0.0, (double)i).color(64, 64, 64, 255).next();
 		tessellator.draw();
 	}

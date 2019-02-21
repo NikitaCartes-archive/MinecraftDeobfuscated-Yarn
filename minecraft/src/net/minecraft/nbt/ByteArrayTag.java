@@ -109,7 +109,7 @@ public class ByteArrayTag extends AbstractListTag<ByteTag> {
 		return this.value.length;
 	}
 
-	public ByteTag getRaw(int i) {
+	public ByteTag method_10523(int i) {
 		return new ByteTag(this.value[i]);
 	}
 

@@ -7,14 +7,14 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1399;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PistonBlock;
 import net.minecraft.block.PistonHeadBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
@@ -43,6 +43,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
@@ -273,43 +274,20 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 			this.prevRenderZ = this.z;
 			double d = 0.5 - (double)MathHelper.sin((0.5F + this.field_7337) * (float) Math.PI) * 0.5;
 			double e = 0.5 - (double)MathHelper.sin((0.5F + this.field_7339) * (float) Math.PI) * 0.5;
+			Direction direction3 = this.getAttachedFace().getOpposite();
+			this.setBoundingBox(
+				new BoundingBox(this.x - 0.5, this.y, this.z - 0.5, this.x + 0.5, this.y + 1.0, this.z + 0.5)
+					.stretch((double)direction3.getOffsetX() * d, (double)direction3.getOffsetY() * d, (double)direction3.getOffsetZ() * d)
+			);
 			double g = d - e;
-			double h = 0.0;
-			double i = 0.0;
-			double j = 0.0;
-			Direction direction3 = this.getAttachedFace();
-			switch (direction3) {
-				case DOWN:
-					this.setBoundingBox(new BoundingBox(this.x - 0.5, this.y, this.z - 0.5, this.x + 0.5, this.y + 1.0 + d, this.z + 0.5));
-					i = g;
-					break;
-				case UP:
-					this.setBoundingBox(new BoundingBox(this.x - 0.5, this.y - d, this.z - 0.5, this.x + 0.5, this.y + 1.0, this.z + 0.5));
-					i = -g;
-					break;
-				case NORTH:
-					this.setBoundingBox(new BoundingBox(this.x - 0.5, this.y, this.z - 0.5, this.x + 0.5, this.y + 1.0, this.z + 0.5 + d));
-					j = g;
-					break;
-				case SOUTH:
-					this.setBoundingBox(new BoundingBox(this.x - 0.5, this.y, this.z - 0.5 - d, this.x + 0.5, this.y + 1.0, this.z + 0.5));
-					j = -g;
-					break;
-				case WEST:
-					this.setBoundingBox(new BoundingBox(this.x - 0.5, this.y, this.z - 0.5, this.x + 0.5 + d, this.y + 1.0, this.z + 0.5));
-					h = g;
-					break;
-				case EAST:
-					this.setBoundingBox(new BoundingBox(this.x - 0.5 - d, this.y, this.z - 0.5, this.x + 0.5, this.y + 1.0, this.z + 0.5));
-					h = -g;
-			}
-
 			if (g > 0.0) {
 				List<Entity> list = this.world.getVisibleEntities(this, this.getBoundingBox());
 				if (!list.isEmpty()) {
 					for (Entity entity : list) {
 						if (!(entity instanceof ShulkerEntity) && !entity.noClip) {
-							entity.move(MovementType.field_6309, h, i, j);
+							entity.move(
+								MovementType.field_6309, new Vec3d(g * (double)direction3.getOffsetX(), g * (double)direction3.getOffsetY(), g * (double)direction3.getOffsetZ())
+							);
 						}
 					}
 				}
@@ -318,11 +296,11 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	@Override
-	public void move(MovementType movementType, double d, double e, double f) {
+	public void move(MovementType movementType, Vec3d vec3d) {
 		if (movementType == MovementType.field_6306) {
 			this.method_7127();
 		} else {
-			super.move(movementType, d, e, f);
+			super.move(movementType, vec3d);
 		}
 	}
 
@@ -379,9 +357,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	@Override
 	public void updateMovement() {
 		super.updateMovement();
-		this.velocityX = 0.0;
-		this.velocityY = 0.0;
-		this.velocityZ = 0.0;
+		this.setVelocity(Vec3d.ZERO);
 		this.field_6220 = 180.0F;
 		this.field_6283 = 180.0F;
 		this.yaw = 180.0F;
@@ -496,7 +472,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	@Override
-	protected float method_18394(class_4050 arg, class_4048 arg2) {
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
 		return 0.5F;
 	}
 

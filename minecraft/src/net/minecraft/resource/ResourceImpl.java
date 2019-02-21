@@ -53,7 +53,7 @@ public class ResourceImpl implements Resource {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_14484() {
+	public boolean hasMetadata() {
 		return this.metadataInputStream != null;
 	}
 
@@ -61,7 +61,7 @@ public class ResourceImpl implements Resource {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public <T> T getMetadata(ResourceMetadataReader<T> resourceMetadataReader) {
-		if (!this.method_14484()) {
+		if (!this.hasMetadata()) {
 			return null;
 		} else {
 			if (this.metadata == null && !this.readMetadata) {

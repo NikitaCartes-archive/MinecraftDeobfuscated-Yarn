@@ -2,7 +2,7 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.gui.ScrolledSelectionList;
 
 @Environment(EnvType.CLIENT)
@@ -14,7 +14,7 @@ public abstract class RealmsScrolledSelectionList extends RealmsGuiEventListener
 	}
 
 	public void render(int i, int j, float f) {
-		this.proxy.method_18326(i, j, f);
+		this.proxy.draw(i, j, f);
 	}
 
 	public int width() {
@@ -63,7 +63,7 @@ public abstract class RealmsScrolledSelectionList extends RealmsGuiEventListener
 	}
 
 	@Override
-	public GuiEventListener getProxy() {
+	public InputListener getProxy() {
 		return this.proxy;
 	}
 }

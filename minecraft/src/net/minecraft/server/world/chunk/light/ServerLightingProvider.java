@@ -6,12 +6,12 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.IntSupplier;
-import net.minecraft.class_4076;
 import net.minecraft.server.world.ChunkTaskPrioritySystem;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.util.Actor;
 import net.minecraft.util.MailboxProcessor;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkNibbleArray;
@@ -62,8 +62,14 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	@Override
-	public void scheduleChunkLightUpdate(class_4076 arg, boolean bl) {
-		this.method_17307(arg.getX(), arg.getZ(), () -> 0, ServerLightingProvider.class_3901.field_17261, () -> super.scheduleChunkLightUpdate(arg, bl));
+	public void scheduleChunkLightUpdate(ChunkSectionPos chunkSectionPos, boolean bl) {
+		this.method_17307(
+			chunkSectionPos.getX(),
+			chunkSectionPos.getZ(),
+			() -> 0,
+			ServerLightingProvider.class_3901.field_17261,
+			() -> super.scheduleChunkLightUpdate(chunkSectionPos, bl)
+		);
 	}
 
 	@Override
@@ -72,8 +78,13 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	@Override
-	public void setSection(LightType lightType, class_4076 arg, ChunkNibbleArray chunkNibbleArray) {
-		this.method_17308(arg.getX(), arg.getZ(), ServerLightingProvider.class_3901.field_17261, () -> super.setSection(lightType, arg, chunkNibbleArray));
+	public void setSection(LightType lightType, ChunkSectionPos chunkSectionPos, ChunkNibbleArray chunkNibbleArray) {
+		this.method_17308(
+			chunkSectionPos.getX(),
+			chunkSectionPos.getZ(),
+			ServerLightingProvider.class_3901.field_17261,
+			() -> super.setSection(lightType, chunkSectionPos, chunkNibbleArray)
+		);
 	}
 
 	private void method_17308(int i, int j, ServerLightingProvider.class_3901 arg, Runnable runnable) {
@@ -101,7 +112,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			for (int i = 0; i < 16; i++) {
 				ChunkSection chunkSection = chunkSections[i];
 				if (!ChunkSection.isEmpty(chunkSection)) {
-					super.scheduleChunkLightUpdate(class_4076.method_18681(chunkPos, i), false);
+					super.scheduleChunkLightUpdate(ChunkSectionPos.from(chunkPos, i), false);
 				}
 			}
 
@@ -121,7 +132,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	private void method_14277() {
-		if (!this.field_17256.isEmpty() || super.method_15561()) {
+		if (!this.field_17256.isEmpty() || super.hasUpdates()) {
 			int i = Math.min(this.field_17256.size(), this.field_17260);
 			ObjectListIterator<Pair<ServerLightingProvider.class_3901, Runnable>> objectListIterator = this.field_17256.iterator();
 

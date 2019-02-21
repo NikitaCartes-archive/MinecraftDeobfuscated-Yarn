@@ -5,18 +5,18 @@ import java.util.Collections;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4068;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.DrawableContainer;
-import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.InputListener;
+import net.minecraft.client.gui.ScreenComponent;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public abstract class AbstractListWidget extends DrawableContainer implements class_4068 {
+public abstract class AbstractListWidget extends ScreenComponent implements Drawable {
 	protected final MinecraftClient client;
 	protected int width;
 	protected int height;
@@ -73,7 +73,7 @@ public abstract class AbstractListWidget extends DrawableContainer implements cl
 	protected abstract int getEntryCount();
 
 	@Override
-	public List<? extends GuiEventListener> method_1968() {
+	public List<? extends InputListener> getInputListeners() {
 		return Collections.emptyList();
 	}
 
@@ -134,7 +134,7 @@ public abstract class AbstractListWidget extends DrawableContainer implements cl
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		if (this.visible) {
 			this.drawBackground();
 			int k = this.getScrollbarPosition();
@@ -144,7 +144,7 @@ public abstract class AbstractListWidget extends DrawableContainer implements cl
 			GlStateManager.disableFog();
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-			this.client.getTextureManager().bindTexture(Drawable.OPTIONS_BG);
+			this.client.getTextureManager().bindTexture(DrawableHelper.OPTIONS_BG);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			float g = 32.0F;
 			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
@@ -245,8 +245,8 @@ public abstract class AbstractListWidget extends DrawableContainer implements cl
 				this.method_1929((int)(d - (double)(this.x1 + this.width / 2 - this.getEntryWidth() / 2)), (int)(e - (double)this.y1) + (int)this.scrollY - 4);
 				return true;
 			} else if (j != -1 && this.selectEntry(j, i, d, e)) {
-				if (this.method_1968().size() > j) {
-					this.method_1967((GuiEventListener)this.method_1968().get(j));
+				if (this.getInputListeners().size() > j) {
+					this.setFocused((InputListener)this.getInputListeners().get(j));
 				}
 
 				this.method_1966(true);
@@ -365,7 +365,7 @@ public abstract class AbstractListWidget extends DrawableContainer implements cl
 	protected void renderCoverBackground(int i, int j, int k, int l) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		this.client.getTextureManager().bindTexture(Drawable.OPTIONS_BG);
+		this.client.getTextureManager().bindTexture(DrawableHelper.OPTIONS_BG);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
 		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);

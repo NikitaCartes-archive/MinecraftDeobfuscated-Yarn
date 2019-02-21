@@ -10,7 +10,7 @@ public class PlayerAbilities {
 	public boolean allowFlying;
 	public boolean creativeMode;
 	public boolean allowModifyWorld = true;
-	private double flySpeed = 0.05F;
+	private float flySpeed = 0.05F;
 	private float walkSpeed = 0.1F;
 
 	public void serialize(CompoundTag compoundTag) {
@@ -20,7 +20,7 @@ public class PlayerAbilities {
 		compoundTag2.putBoolean("mayfly", this.allowFlying);
 		compoundTag2.putBoolean("instabuild", this.creativeMode);
 		compoundTag2.putBoolean("mayBuild", this.allowModifyWorld);
-		compoundTag2.putFloat("flySpeed", (float)this.flySpeed);
+		compoundTag2.putFloat("flySpeed", this.flySpeed);
 		compoundTag2.putFloat("walkSpeed", this.walkSpeed);
 		compoundTag.put("abilities", compoundTag2);
 	}
@@ -33,7 +33,7 @@ public class PlayerAbilities {
 			this.allowFlying = compoundTag2.getBoolean("mayfly");
 			this.creativeMode = compoundTag2.getBoolean("instabuild");
 			if (compoundTag2.containsKey("flySpeed", 99)) {
-				this.flySpeed = (double)compoundTag2.getFloat("flySpeed");
+				this.flySpeed = compoundTag2.getFloat("flySpeed");
 				this.walkSpeed = compoundTag2.getFloat("walkSpeed");
 			}
 
@@ -44,12 +44,12 @@ public class PlayerAbilities {
 	}
 
 	public float getFlySpeed() {
-		return (float)this.flySpeed;
+		return this.flySpeed;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void setFlySpeed(double d) {
-		this.flySpeed = d;
+	public void setFlySpeed(float f) {
+		this.flySpeed = f;
 	}
 
 	public float getWalkSpeed() {

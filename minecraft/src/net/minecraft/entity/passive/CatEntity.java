@@ -7,22 +7,22 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1371;
-import net.minecraft.class_1373;
 import net.minecraft.class_1386;
 import net.minecraft.class_1394;
 import net.minecraft.class_1404;
 import net.minecraft.class_3697;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
+import net.minecraft.entity.ai.goal.CatSitOnBlockGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.FollowOwnerGoal;
 import net.minecraft.entity.ai.goal.Goal;
@@ -112,7 +112,7 @@ public class CatEntity extends TameableEntity {
 		this.goalSelector.add(3, this.field_6810);
 		this.goalSelector.add(5, new class_3697(this, 1.1, 8));
 		this.goalSelector.add(6, new FollowOwnerGoal(this, 1.0, 10.0F, 5.0F));
-		this.goalSelector.add(7, new class_1373(this, 0.8));
+		this.goalSelector.add(7, new CatSitOnBlockGoal(this, 0.8));
 		this.goalSelector.add(8, new PounceAtTargetGoal(this, 0.3F));
 		this.goalSelector.add(9, new class_1371(this));
 		this.goalSelector.add(10, new AnimalMateGoal(this, 0.8));
@@ -423,12 +423,12 @@ public class CatEntity extends TameableEntity {
 
 	@Override
 	public boolean isBreedingItem(ItemStack itemStack) {
-		return TAMING_INGREDIENT.matches(itemStack);
+		return TAMING_INGREDIENT.method_8093(itemStack);
 	}
 
 	@Override
-	protected float method_18394(class_4050 arg, class_4048 arg2) {
-		return arg2.field_18068 * 0.5F;
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+		return entitySize.height * 0.5F;
 	}
 
 	@Override

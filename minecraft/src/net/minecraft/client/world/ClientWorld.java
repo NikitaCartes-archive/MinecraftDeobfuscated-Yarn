@@ -72,7 +72,7 @@ public class ClientWorld extends World {
 	private final ClientPlayNetworkHandler netHandler;
 	private final WorldRenderer worldRenderer;
 	private final MinecraftClient client = MinecraftClient.getInstance();
-	private final List<AbstractClientPlayerEntity> field_18226 = Lists.<AbstractClientPlayerEntity>newArrayList();
+	private final List<AbstractClientPlayerEntity> players = Lists.<AbstractClientPlayerEntity>newArrayList();
 	private int field_3732;
 	private int field_3731;
 	private int ticksSinceLightingClient = this.random.nextInt(12000);
@@ -289,7 +289,7 @@ public class ClientWorld extends World {
 
 	public void method_18107(int i, AbstractClientPlayerEntity abstractClientPlayerEntity) {
 		this.method_18114(i, abstractClientPlayerEntity);
-		this.field_18226.add(abstractClientPlayerEntity);
+		this.players.add(abstractClientPlayerEntity);
 	}
 
 	public void method_2942(int i, Entity entity) {
@@ -316,7 +316,7 @@ public class ClientWorld extends World {
 			this.method_8497(entity.chunkX, entity.chunkZ).remove(entity);
 		}
 
-		this.field_18226.remove(entity);
+		this.players.remove(entity);
 	}
 
 	public void method_18115(WorldChunk worldChunk) {
@@ -614,7 +614,7 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public List<AbstractClientPlayerEntity> method_18456() {
-		return this.field_18226;
+	public List<AbstractClientPlayerEntity> getPlayers() {
+		return this.players;
 	}
 }

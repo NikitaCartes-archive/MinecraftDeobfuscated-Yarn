@@ -8,13 +8,13 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class ToastManager extends Drawable {
+public class ToastManager extends DrawableHelper {
 	private final MinecraftClient client;
 	private final ToastManager.Entry<?>[] visibleEntries = new ToastManager.Entry[5];
 	private final Deque<Toast> toastQueue = Queues.<Toast>newArrayDeque();

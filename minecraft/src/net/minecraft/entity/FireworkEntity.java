@@ -72,9 +72,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity {
 			i += itemStack.getOrCreateSubCompoundTag("Fireworks").getByte("Flight");
 		}
 
-		this.velocityX = this.random.nextGaussian() * 0.001;
-		this.velocityZ = this.random.nextGaussian() * 0.001;
-		this.velocityY = 0.05;
+		this.setVelocity(this.random.nextGaussian() * 0.001, 0.05, this.random.nextGaussian() * 0.001);
 		this.field_7612 = 10 * i + this.random.nextInt(6) + this.random.nextInt(7);
 	}
 
@@ -92,9 +90,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void setVelocityClient(double d, double e, double f) {
-		this.velocityX = d;
-		this.velocityY = e;
-		this.velocityZ = f;
+		this.setVelocity(d, e, f);
 		if (this.prevPitch == 0.0F && this.prevYaw == 0.0F) {
 			float g = MathHelper.sqrt(d * d + f * f);
 			this.yaw = (float)(MathHelper.atan2(d, f) * 180.0F / (float)Math.PI);
@@ -105,28 +101,20 @@ public class FireworkEntity extends Entity implements FlyingItemEntity {
 	}
 
 	public void method_7474(Entity entity, float f, float g) {
-		float h = -MathHelper.sin(f * (float) (Math.PI / 180.0)) * MathHelper.cos(entity.pitch * (float) (Math.PI / 180.0));
-		float i = -MathHelper.sin(entity.pitch * (float) (Math.PI / 180.0));
-		float j = MathHelper.cos(f * (float) (Math.PI / 180.0)) * MathHelper.cos(entity.pitch * (float) (Math.PI / 180.0));
-		float k = MathHelper.sqrt(h * h + i * i + j * j);
-		h /= k;
-		i /= k;
-		j /= k;
-		h = (float)((double)h + this.random.nextGaussian() * 0.0075F * (double)g);
-		i = (float)((double)i + this.random.nextGaussian() * 0.0075F * (double)g);
-		j = (float)((double)j + this.random.nextGaussian() * 0.0075F * (double)g);
-		this.velocityX = (double)h;
-		this.velocityY = (double)i;
-		this.velocityZ = (double)j;
-		float l = MathHelper.sqrt(h * h + j * j);
-		this.yaw = (float)(MathHelper.atan2((double)h, (double)j) * 180.0F / (float)Math.PI);
-		this.pitch = (float)(MathHelper.atan2((double)i, (double)l) * 180.0F / (float)Math.PI);
+		Vec3d vec3d = new Vec3d(
+				(double)(-MathHelper.sin(f * (float) (Math.PI / 180.0)) * MathHelper.cos(entity.pitch * (float) (Math.PI / 180.0))),
+				(double)(-MathHelper.sin(entity.pitch * (float) (Math.PI / 180.0))),
+				(double)(MathHelper.cos(f * (float) (Math.PI / 180.0)) * MathHelper.cos(entity.pitch * (float) (Math.PI / 180.0)))
+			)
+			.normalize()
+			.add(this.random.nextGaussian() * 0.0075F * (double)g, this.random.nextGaussian() * 0.0075F * (double)g, this.random.nextGaussian() * 0.0075F * (double)g);
+		float h = MathHelper.sqrt(squaredHorizontalLength(vec3d));
+		this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
+		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)h) * 180.0F / (float)Math.PI);
 		this.prevYaw = this.yaw;
 		this.prevPitch = this.pitch;
 		this.field_7613 = 0;
-		this.velocityX = this.velocityX + entity.velocityX;
-		this.velocityY = this.velocityY + entity.velocityY;
-		this.velocityZ = this.velocityZ + entity.velocityZ;
+		this.setVelocity(vec3d.add(entity.getVelocity()));
 	}
 
 	@Override
@@ -150,29 +138,30 @@ public class FireworkEntity extends Entity implements FlyingItemEntity {
 					Vec3d vec3d = this.field_7616.method_5720();
 					double d = 1.5;
 					double e = 0.1;
-					this.field_7616.velocityX = this.field_7616.velocityX + vec3d.x * 0.1 + (vec3d.x * 1.5 - this.field_7616.velocityX) * 0.5;
-					this.field_7616.velocityY = this.field_7616.velocityY + vec3d.y * 0.1 + (vec3d.y * 1.5 - this.field_7616.velocityY) * 0.5;
-					this.field_7616.velocityZ = this.field_7616.velocityZ + vec3d.z * 0.1 + (vec3d.z * 1.5 - this.field_7616.velocityZ) * 0.5;
+					Vec3d vec3d2 = this.field_7616.getVelocity();
+					this.field_7616
+						.setVelocity(
+							vec3d2.add(
+								vec3d.x * 0.1 + (vec3d.x * 1.5 - vec3d2.x) * 0.5, vec3d.y * 0.1 + (vec3d.y * 1.5 - vec3d2.y) * 0.5, vec3d.z * 0.1 + (vec3d.z * 1.5 - vec3d2.z) * 0.5
+							)
+						);
 				}
 
 				this.setPosition(this.field_7616.x, this.field_7616.y, this.field_7616.z);
-				this.velocityX = this.field_7616.velocityX;
-				this.velocityY = this.field_7616.velocityY;
-				this.velocityZ = this.field_7616.velocityZ;
+				this.setVelocity(this.field_7616.getVelocity());
 			}
 		} else {
 			if (!this.method_7477()) {
-				this.velocityX *= 1.15;
-				this.velocityZ *= 1.15;
-				this.velocityY += 0.04;
+				this.setVelocity(this.getVelocity().multiply(1.15, 1.0, 1.15).add(0.0, 0.04, 0.0));
 			}
 
-			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
+			this.move(MovementType.field_6308, this.getVelocity());
 		}
 
+		Vec3d vec3d = this.getVelocity();
 		HitResult hitResult = class_1675.method_18074(
 			this,
-			this.getBoundingBox().stretch(this.velocityX, this.velocityY, this.velocityZ).expand(1.0),
+			this.getBoundingBox().method_18804(vec3d).expand(1.0),
 			entity -> !entity.isSpectator() && entity.isValid() && entity.doesCollide(),
 			RayTraceContext.ShapeType.field_17558,
 			true
@@ -182,9 +171,9 @@ public class FireworkEntity extends Entity implements FlyingItemEntity {
 			this.velocityDirty = true;
 		}
 
-		float f = MathHelper.sqrt(this.velocityX * this.velocityX + this.velocityZ * this.velocityZ);
-		this.yaw = (float)(MathHelper.atan2(this.velocityX, this.velocityZ) * 180.0F / (float)Math.PI);
-		this.pitch = (float)(MathHelper.atan2(this.velocityY, (double)f) * 180.0F / (float)Math.PI);
+		float f = MathHelper.sqrt(squaredHorizontalLength(vec3d));
+		this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
+		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI);
 
 		while (this.pitch - this.prevPitch < -180.0F) {
 			this.prevPitch -= 360.0F;
@@ -212,7 +201,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity {
 		if (this.world.isClient && this.field_7613 % 2 < 2) {
 			this.world
 				.addParticle(
-					ParticleTypes.field_11248, this.x, this.y - 0.3, this.z, this.random.nextGaussian() * 0.05, -this.velocityY * 0.5, this.random.nextGaussian() * 0.05
+					ParticleTypes.field_11248, this.x, this.y - 0.3, this.z, this.random.nextGaussian() * 0.05, -this.getVelocity().y * 0.5, this.random.nextGaussian() * 0.05
 				);
 		}
 
@@ -297,7 +286,8 @@ public class FireworkEntity extends Entity implements FlyingItemEntity {
 		if (b == 17 && this.world.isClient) {
 			ItemStack itemStack = this.dataTracker.get(ITEM_STACK);
 			CompoundTag compoundTag = itemStack.isEmpty() ? null : itemStack.getSubCompoundTag("Fireworks");
-			this.world.addFireworkParticle(this.x, this.y, this.z, this.velocityX, this.velocityY, this.velocityZ, compoundTag);
+			Vec3d vec3d = this.getVelocity();
+			this.world.addFireworkParticle(this.x, this.y, this.z, vec3d.x, vec3d.y, vec3d.z, compoundTag);
 		}
 
 		super.method_5711(b);

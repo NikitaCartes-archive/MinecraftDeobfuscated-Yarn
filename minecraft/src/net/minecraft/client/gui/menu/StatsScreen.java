@@ -14,7 +14,7 @@ import net.minecraft.class_452;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.audio.PositionedSoundInstance;
-import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.FocusedInputListener;
 import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.AbstractListWidget;
@@ -58,7 +58,7 @@ public class StatsScreen extends Screen implements class_452 {
 	}
 
 	@Override
-	public GuiEventListener getFocused() {
+	public InputListener getFocused() {
 		return this.field_2643;
 	}
 
@@ -76,25 +76,25 @@ public class StatsScreen extends Screen implements class_452 {
 	}
 
 	public void method_2267() {
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 28, I18n.translate("gui.done")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight - 28, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
 				StatsScreen.this.client.openScreen(StatsScreen.this.field_2648);
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 - 120, this.height - 52, 80, 20, I18n.translate("stat.generalButton")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 120, this.screenHeight - 52, 80, 20, I18n.translate("stat.generalButton")) {
 			@Override
 			public void onPressed(double d, double e) {
 				StatsScreen.this.field_2643 = StatsScreen.this.field_2644;
 			}
 		});
-		ButtonWidget buttonWidget = this.addButton(new ButtonWidget(this.width / 2 - 40, this.height - 52, 80, 20, I18n.translate("stat.itemsButton")) {
+		ButtonWidget buttonWidget = this.addButton(new ButtonWidget(this.screenWidth / 2 - 40, this.screenHeight - 52, 80, 20, I18n.translate("stat.itemsButton")) {
 			@Override
 			public void onPressed(double d, double e) {
 				StatsScreen.this.field_2643 = StatsScreen.this.field_2642;
 			}
 		});
-		ButtonWidget buttonWidget2 = this.addButton(new ButtonWidget(this.width / 2 + 40, this.height - 52, 80, 20, I18n.translate("stat.mobsButton")) {
+		ButtonWidget buttonWidget2 = this.addButton(new ButtonWidget(this.screenWidth / 2 + 40, this.screenHeight - 52, 80, 20, I18n.translate("stat.mobsButton")) {
 			@Override
 			public void onPressed(double d, double e) {
 				StatsScreen.this.field_2643 = StatsScreen.this.field_2646;
@@ -108,21 +108,25 @@ public class StatsScreen extends Screen implements class_452 {
 			buttonWidget2.enabled = false;
 		}
 
-		this.listeners.add((InputListener)() -> this.field_2643);
+		this.listeners.add((FocusedInputListener)() -> this.field_2643);
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		if (this.field_2645) {
 			this.drawBackground();
-			this.drawStringCentered(this.fontRenderer, I18n.translate("multiplayer.downloadingStats"), this.width / 2, this.height / 2, 16777215);
+			this.drawStringCentered(this.fontRenderer, I18n.translate("multiplayer.downloadingStats"), this.screenWidth / 2, this.screenHeight / 2, 16777215);
 			this.drawStringCentered(
-				this.fontRenderer, field_2668[(int)(SystemUtil.getMeasuringTimeMs() / 150L % (long)field_2668.length)], this.width / 2, this.height / 2 + 9 * 2, 16777215
+				this.fontRenderer,
+				field_2668[(int)(SystemUtil.getMeasuringTimeMs() / 150L % (long)field_2668.length)],
+				this.screenWidth / 2,
+				this.screenHeight / 2 + 9 * 2,
+				16777215
 			);
 		} else {
-			this.field_2643.method_18326(i, j, f);
-			this.drawStringCentered(this.fontRenderer, this.field_2649, this.width / 2, 20, 16777215);
-			super.method_18326(i, j, f);
+			this.field_2643.draw(i, j, f);
+			this.drawStringCentered(this.fontRenderer, this.field_2649, this.screenWidth / 2, 20, 16777215);
+			super.draw(i, j, f);
 		}
 	}
 
@@ -188,7 +192,7 @@ public class StatsScreen extends Screen implements class_452 {
 		private Iterator<Stat<Identifier>> field_2650;
 
 		public class_448(MinecraftClient minecraftClient) {
-			super(minecraftClient, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 10);
+			super(minecraftClient, StatsScreen.this.screenWidth, StatsScreen.this.screenHeight, 32, StatsScreen.this.screenHeight - 64, 10);
 			this.method_1943(false);
 		}
 
@@ -241,7 +245,7 @@ public class StatsScreen extends Screen implements class_452 {
 		protected int field_2657;
 
 		public class_449(MinecraftClient minecraftClient) {
-			super(minecraftClient, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 20);
+			super(minecraftClient, StatsScreen.this.screenWidth, StatsScreen.this.screenHeight, 32, StatsScreen.this.screenHeight - 64, 20);
 			this.field_2656 = Lists.<StatType<Block>>newArrayList();
 			this.field_2656.add(Stats.field_15427);
 			this.field_2655 = Lists.<StatType<Item>>newArrayList(Stats.field_15383, Stats.field_15370, Stats.field_15372, Stats.field_15392, Stats.field_15405);
@@ -481,7 +485,7 @@ public class StatsScreen extends Screen implements class_452 {
 		private final List<EntityType<?>> field_2664 = Lists.<EntityType<?>>newArrayList();
 
 		public class_451(MinecraftClient minecraftClient) {
-			super(minecraftClient, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 9 * 4);
+			super(minecraftClient, StatsScreen.this.screenWidth, StatsScreen.this.screenHeight, 32, StatsScreen.this.screenHeight - 64, 9 * 4);
 			this.method_1943(false);
 
 			for (EntityType<?> entityType : Registry.ENTITY_TYPE) {

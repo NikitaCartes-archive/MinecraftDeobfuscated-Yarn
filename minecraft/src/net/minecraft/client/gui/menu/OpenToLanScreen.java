@@ -24,7 +24,7 @@ public class OpenToLanScreen extends Screen {
 
 	@Override
 	protected void onInitialized() {
-		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("lanServer.start")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight - 28, 150, 20, I18n.translate("lanServer.start")) {
 			@Override
 			public void onPressed(double d, double e) {
 				OpenToLanScreen.this.client.openScreen(null);
@@ -39,13 +39,13 @@ public class OpenToLanScreen extends Screen {
 				OpenToLanScreen.this.client.inGameHud.getChatHud().addMessage(textComponent);
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight - 28, 150, 20, I18n.translate("gui.cancel")) {
 			@Override
 			public void onPressed(double d, double e) {
 				OpenToLanScreen.this.client.openScreen(OpenToLanScreen.this.parent);
 			}
 		});
-		this.buttonGameMode = this.addButton(new ButtonWidget(this.width / 2 - 155, 100, 150, 20, I18n.translate("selectWorld.gameMode")) {
+		this.buttonGameMode = this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, 100, 150, 20, I18n.translate("selectWorld.gameMode")) {
 			@Override
 			public void onPressed(double d, double e) {
 				if ("spectator".equals(OpenToLanScreen.this.gameMode)) {
@@ -61,7 +61,7 @@ public class OpenToLanScreen extends Screen {
 				OpenToLanScreen.this.updateButtonText();
 			}
 		});
-		this.buttonAllowCommands = this.addButton(new ButtonWidget(this.width / 2 + 5, 100, 150, 20, I18n.translate("selectWorld.allowCommands")) {
+		this.buttonAllowCommands = this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, 100, 150, 20, I18n.translate("selectWorld.allowCommands")) {
 			@Override
 			public void onPressed(double d, double e) {
 				OpenToLanScreen.this.allowCommands = !OpenToLanScreen.this.allowCommands;
@@ -77,10 +77,10 @@ public class OpenToLanScreen extends Screen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, I18n.translate("lanServer.title"), this.width / 2, 50, 16777215);
-		this.drawStringCentered(this.fontRenderer, I18n.translate("lanServer.otherPlayers"), this.width / 2, 82, 16777215);
-		super.method_18326(i, j, f);
+		this.drawStringCentered(this.fontRenderer, I18n.translate("lanServer.title"), this.screenWidth / 2, 50, 16777215);
+		this.drawStringCentered(this.fontRenderer, I18n.translate("lanServer.otherPlayers"), this.screenWidth / 2, 82, 16777215);
+		super.draw(i, j, f);
 	}
 }

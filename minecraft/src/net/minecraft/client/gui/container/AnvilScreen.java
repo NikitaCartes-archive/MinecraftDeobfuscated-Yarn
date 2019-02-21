@@ -5,7 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.ContainerScreen;
-import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.container.AnvilContainer;
@@ -29,7 +29,7 @@ public class AnvilScreen extends ContainerScreen<AnvilContainer> implements Cont
 	}
 
 	@Override
-	public GuiEventListener getFocused() {
+	public InputListener getFocused() {
 		return this.nameField.isFocused() ? this.nameField : null;
 	}
 
@@ -37,8 +37,8 @@ public class AnvilScreen extends ContainerScreen<AnvilContainer> implements Cont
 	protected void onInitialized() {
 		super.onInitialized();
 		this.client.keyboard.enableRepeatEvents(true);
-		int i = (this.width - this.containerWidth) / 2;
-		int j = (this.height - this.containerHeight) / 2;
+		int i = (this.screenWidth - this.width) / 2;
+		int j = (this.screenHeight - this.height) / 2;
 		this.nameField = new TextFieldWidget(this.fontRenderer, i + 62, j + 24, 103, 12);
 		this.nameField.method_1868(-1);
 		this.nameField.method_1860(-1);
@@ -83,9 +83,9 @@ public class AnvilScreen extends ContainerScreen<AnvilContainer> implements Cont
 			}
 
 			if (bl) {
-				int m = this.containerWidth - 8 - this.fontRenderer.getStringWidth(string) - 2;
+				int m = this.width - 8 - this.fontRenderer.getStringWidth(string) - 2;
 				int n = 69;
-				drawRect(m - 2, 67, this.containerWidth - 8, 79, 1325400064);
+				drawRect(m - 2, 67, this.width - 8, 79, 1325400064);
 				this.fontRenderer.drawWithShadow(string, (float)m, 69.0F, l);
 			}
 		}
@@ -107,25 +107,25 @@ public class AnvilScreen extends ContainerScreen<AnvilContainer> implements Cont
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		super.method_18326(i, j, f);
+		super.draw(i, j, f);
 		this.drawMouseoverTooltip(i, j);
 		GlStateManager.disableLighting();
 		GlStateManager.disableBlend();
-		this.nameField.method_18326(i, j, f);
+		this.nameField.draw(i, j, f);
 	}
 
 	@Override
 	protected void drawBackground(float f, int i, int j) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(BG_TEX);
-		int k = (this.width - this.containerWidth) / 2;
-		int l = (this.height - this.containerHeight) / 2;
-		this.drawTexturedRect(k, l, 0, 0, this.containerWidth, this.containerHeight);
-		this.drawTexturedRect(k + 59, l + 20, 0, this.containerHeight + (this.container.getSlot(0).hasStack() ? 0 : 16), 110, 16);
+		int k = (this.screenWidth - this.width) / 2;
+		int l = (this.screenHeight - this.height) / 2;
+		this.drawTexturedRect(k, l, 0, 0, this.width, this.height);
+		this.drawTexturedRect(k + 59, l + 20, 0, this.height + (this.container.getSlot(0).hasStack() ? 0 : 16), 110, 16);
 		if ((this.container.getSlot(0).hasStack() || this.container.getSlot(1).hasStack()) && !this.container.getSlot(2).hasStack()) {
-			this.drawTexturedRect(k + 99, l + 45, this.containerWidth, 0, 28, 21);
+			this.drawTexturedRect(k + 99, l + 45, this.width, 0, 28, 21);
 		}
 	}
 

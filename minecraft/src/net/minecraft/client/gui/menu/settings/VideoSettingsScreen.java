@@ -3,7 +3,7 @@ package net.minecraft.client.gui.menu.settings;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.VideoSettingsListWidget;
@@ -31,8 +31,8 @@ public class VideoSettingsScreen extends Screen {
 		GameOption.FULLSCREEN,
 		GameOption.PARTICLES,
 		GameOption.field_18190,
-		GameOption.field_18184,
-		GameOption.field_18189
+		GameOption.ENTITY_SHADOWS,
+		GameOption.BIOME_BLEND_RADIUS
 	};
 
 	public VideoSettingsScreen(Screen screen, GameOptions gameOptions) {
@@ -42,14 +42,14 @@ public class VideoSettingsScreen extends Screen {
 
 	@Nullable
 	@Override
-	public GuiEventListener getFocused() {
+	public InputListener getFocused() {
 		return this.field_2639;
 	}
 
 	@Override
 	protected void onInitialized() {
 		this.title = I18n.translate("options.videoTitle");
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, I18n.translate("gui.done")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight - 27, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
 				VideoSettingsScreen.this.client.options.write();
@@ -57,7 +57,7 @@ public class VideoSettingsScreen extends Screen {
 				VideoSettingsScreen.this.client.openScreen(VideoSettingsScreen.this.parent);
 			}
 		});
-		this.field_2639 = new VideoSettingsListWidget(this.client, this.width, this.height, 32, this.height - 32, 25, MENU_OPTIONS);
+		this.field_2639 = new VideoSettingsListWidget(this.client, this.screenWidth, this.screenHeight, 32, this.screenHeight - 32, 25, MENU_OPTIONS);
 		this.listeners.add(this.field_2639);
 	}
 
@@ -97,10 +97,10 @@ public class VideoSettingsScreen extends Screen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		this.field_2639.method_18326(i, j, f);
-		this.drawStringCentered(this.fontRenderer, this.title, this.width / 2, 5, 16777215);
-		super.method_18326(i, j, f);
+		this.field_2639.draw(i, j, f);
+		this.drawStringCentered(this.fontRenderer, this.title, this.screenWidth / 2, 5, 16777215);
+		super.draw(i, j, f);
 	}
 }

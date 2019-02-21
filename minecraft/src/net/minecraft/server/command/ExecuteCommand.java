@@ -21,11 +21,11 @@ import java.util.OptionalInt;
 import java.util.function.BiPredicate;
 import java.util.function.BinaryOperator;
 import java.util.function.IntFunction;
-import net.minecraft.class_3162;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
+import net.minecraft.command.DataCommandObject;
 import net.minecraft.command.arguments.BlockPosArgumentType;
 import net.minecraft.command.arguments.BlockPredicateArgumentType;
 import net.minecraft.command.arguments.DimensionArgumentType;
@@ -184,7 +184,7 @@ public class ExecuteCommand {
 								.redirect(
 									literalCommandNode,
 									commandContext -> commandContext.getSource()
-											.withPosition(commandContext.getSource().getPosition().method_1032(SwizzleArgumentType.getSwizzleArgument(commandContext, "axes")))
+											.withPosition(commandContext.getSource().getPosition().floorAlongAxes(SwizzleArgumentType.getSwizzleArgument(commandContext, "axes")))
 								)
 						)
 				)
@@ -383,14 +383,14 @@ public class ExecuteCommand {
 	}
 
 	private static ServerCommandSource method_13265(
-		ServerCommandSource serverCommandSource, class_3162 arg, NbtPathArgumentType.class_2209 arg2, IntFunction<Tag> intFunction, boolean bl
+		ServerCommandSource serverCommandSource, DataCommandObject dataCommandObject, NbtPathArgumentType.class_2209 arg, IntFunction<Tag> intFunction, boolean bl
 	) {
 		return serverCommandSource.mergeConsumers((commandContext, bl2, i) -> {
 			try {
-				CompoundTag compoundTag = arg.method_13881();
+				CompoundTag compoundTag = dataCommandObject.method_13881();
 				int j = bl ? i : (bl2 ? 1 : 0);
-				arg2.method_9368(compoundTag, () -> (Tag)intFunction.apply(j));
-				arg.method_13880(compoundTag);
+				arg.method_9368(compoundTag, () -> (Tag)intFunction.apply(j));
+				dataCommandObject.method_13880(compoundTag);
 			} catch (CommandSyntaxException var9) {
 			}
 		}, field_13634);
@@ -574,8 +574,8 @@ public class ExecuteCommand {
 		};
 	}
 
-	private static int method_13303(class_3162 arg, NbtPathArgumentType.class_2209 arg2) throws CommandSyntaxException {
-		return arg2.method_9374(arg.method_13881());
+	private static int method_13303(DataCommandObject dataCommandObject, NbtPathArgumentType.class_2209 arg) throws CommandSyntaxException {
+		return arg.method_9374(dataCommandObject.method_13881());
 	}
 
 	private static boolean method_13263(CommandContext<ServerCommandSource> commandContext, BiPredicate<Integer, Integer> biPredicate) throws CommandSyntaxException {

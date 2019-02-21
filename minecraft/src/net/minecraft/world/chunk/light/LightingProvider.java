@@ -3,8 +3,8 @@ package net.minecraft.world.chunk.light;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4076;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkPos;
@@ -37,10 +37,8 @@ public class LightingProvider implements LightingView {
 		}
 	}
 
-	public boolean method_15561() {
-		return this.skyLightProvider != null && this.skyLightProvider.method_15518()
-			? true
-			: this.blockLightProvider != null && this.blockLightProvider.method_15518();
+	public boolean hasUpdates() {
+		return this.skyLightProvider != null && this.skyLightProvider.hasUpdates() ? true : this.blockLightProvider != null && this.blockLightProvider.hasUpdates();
 	}
 
 	public int doLightUpdates(int i, boolean bl, boolean bl2) {
@@ -58,13 +56,13 @@ public class LightingProvider implements LightingView {
 	}
 
 	@Override
-	public void scheduleChunkLightUpdate(class_4076 arg, boolean bl) {
+	public void scheduleChunkLightUpdate(ChunkSectionPos chunkSectionPos, boolean bl) {
 		if (this.blockLightProvider != null) {
-			this.blockLightProvider.scheduleChunkLightUpdate(arg, bl);
+			this.blockLightProvider.scheduleChunkLightUpdate(chunkSectionPos, bl);
 		}
 
 		if (this.skyLightProvider != null) {
-			this.skyLightProvider.scheduleChunkLightUpdate(arg, bl);
+			this.skyLightProvider.scheduleChunkLightUpdate(chunkSectionPos, bl);
 		}
 	}
 
@@ -90,22 +88,22 @@ public class LightingProvider implements LightingView {
 	public String method_15564(LightType lightType, BlockPos blockPos) {
 		if (lightType == LightType.BLOCK) {
 			if (this.blockLightProvider != null) {
-				return this.blockLightProvider.method_15520(class_4076.method_18691(blockPos.asLong()));
+				return this.blockLightProvider.method_15520(ChunkSectionPos.toChunkLong(blockPos.asLong()));
 			}
 		} else if (this.skyLightProvider != null) {
-			return this.skyLightProvider.method_15520(class_4076.method_18691(blockPos.asLong()));
+			return this.skyLightProvider.method_15520(ChunkSectionPos.toChunkLong(blockPos.asLong()));
 		}
 
 		return "n/a";
 	}
 
-	public void setSection(LightType lightType, class_4076 arg, ChunkNibbleArray chunkNibbleArray) {
+	public void setSection(LightType lightType, ChunkSectionPos chunkSectionPos, ChunkNibbleArray chunkNibbleArray) {
 		if (lightType == LightType.BLOCK) {
 			if (this.blockLightProvider != null) {
-				this.blockLightProvider.setSection(arg.method_18694(), chunkNibbleArray);
+				this.blockLightProvider.setSection(chunkSectionPos.asLong(), chunkNibbleArray);
 			}
 		} else if (this.skyLightProvider != null) {
-			this.skyLightProvider.setSection(arg.method_18694(), chunkNibbleArray);
+			this.skyLightProvider.setSection(chunkSectionPos.asLong(), chunkNibbleArray);
 		}
 	}
 }

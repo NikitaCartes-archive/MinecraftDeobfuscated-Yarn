@@ -15,8 +15,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -36,6 +34,8 @@ import net.minecraft.container.PlayerContainer;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
@@ -104,15 +104,15 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 
 public abstract class PlayerEntity extends LivingEntity {
-	public static final class_4048 field_18135 = class_4048.method_18384(0.6F, 1.8F);
-	private static final Map<class_4050, class_4048> field_18134 = ImmutableMap.<class_4050, class_4048>builder()
-		.put(class_4050.field_18076, field_18135)
-		.put(class_4050.field_18078, field_18072)
-		.put(class_4050.field_18077, class_4048.method_18384(0.6F, 0.6F))
-		.put(class_4050.field_18079, class_4048.method_18384(0.6F, 0.6F))
-		.put(class_4050.field_18080, class_4048.method_18384(0.6F, 0.6F))
-		.put(class_4050.field_18081, class_4048.method_18384(0.6F, 1.65F))
-		.put(class_4050.field_18082, class_4048.method_18385(0.2F, 0.2F))
+	public static final EntitySize STANDING_SIZE = EntitySize.resizeable(0.6F, 1.8F);
+	private static final Map<EntityPose, EntitySize> SIZES = ImmutableMap.<EntityPose, EntitySize>builder()
+		.put(EntityPose.field_18076, STANDING_SIZE)
+		.put(EntityPose.field_18078, SLEEPING_SIZE)
+		.put(EntityPose.field_18077, EntitySize.resizeable(0.6F, 0.6F))
+		.put(EntityPose.field_18079, EntitySize.resizeable(0.6F, 0.6F))
+		.put(EntityPose.field_18080, EntitySize.resizeable(0.6F, 0.6F))
+		.put(EntityPose.field_18081, EntitySize.resizeable(0.6F, 1.65F))
+		.put(EntityPose.field_18082, EntitySize.constant(0.2F, 0.2F))
 		.build();
 	private static final TrackedData<Float> ABSORPTION_AMOUNT = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Integer> SCORE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -342,35 +342,35 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	protected void updateSize() {
-		class_4050 lv;
+		EntityPose entityPose;
 		if (this.isFallFlying()) {
-			lv = class_4050.field_18077;
+			entityPose = EntityPose.field_18077;
 		} else if (this.isSleeping()) {
-			lv = class_4050.field_18078;
+			entityPose = EntityPose.field_18078;
 		} else if (this.isSwimming()) {
-			lv = class_4050.field_18079;
+			entityPose = EntityPose.field_18079;
 		} else if (this.isUsingRiptide()) {
-			lv = class_4050.field_18080;
+			entityPose = EntityPose.field_18080;
 		} else if (this.isSneaking()) {
-			lv = class_4050.field_18081;
+			entityPose = EntityPose.field_18081;
 		} else {
-			lv = class_4050.field_18076;
+			entityPose = EntityPose.field_18076;
 		}
 
-		class_4050 lv2 = this.method_18376();
-		if (lv2 != lv) {
-			class_4048 lv3 = this.method_18377(lv);
+		EntityPose entityPose2 = this.getPose();
+		if (entityPose2 != entityPose) {
+			EntitySize entitySize = this.getSize(entityPose);
 			BoundingBox boundingBox = this.getBoundingBox();
 			boundingBox = new BoundingBox(
 				boundingBox.minX,
 				boundingBox.minY,
 				boundingBox.minZ,
-				boundingBox.minX + (double)lv3.field_18067,
-				boundingBox.minY + (double)lv3.field_18068,
-				boundingBox.minZ + (double)lv3.field_18067
+				boundingBox.minX + (double)entitySize.width,
+				boundingBox.minY + (double)entitySize.height,
+				boundingBox.minZ + (double)entitySize.width
 			);
 			if (this.world.isEntityColliding(this, boundingBox)) {
-				this.method_18380(lv);
+				this.setPose(entityPose);
 			}
 		}
 	}
@@ -483,7 +483,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void method_5823() {
-		this.method_18380(class_4050.field_18076);
+		this.setPose(EntityPose.field_18076);
 		super.method_5823();
 		this.setHealth(this.getHealthMaximum());
 		this.deathCounter = 0;
@@ -526,17 +526,17 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 
 		this.setMovementSpeed((float)entityAttributeInstance.getValue());
-		float f = MathHelper.sqrt(this.velocityX * this.velocityX + this.velocityZ * this.velocityZ);
-		float g = (float)(Math.atan(-this.velocityY * 0.2F) * 15.0);
-		if (f > 0.1F) {
-			f = 0.1F;
-		}
-
-		if (!this.onGround || this.getHealth() <= 0.0F || this.isSwimming()) {
+		float f;
+		if (this.onGround && !(this.getHealth() <= 0.0F) && !this.isSwimming()) {
+			f = Math.min(0.1F, MathHelper.sqrt(squaredHorizontalLength(this.getVelocity())));
+		} else {
 			f = 0.0F;
 		}
 
-		if (this.onGround || this.getHealth() <= 0.0F) {
+		float g;
+		if (!this.onGround && !(this.getHealth() <= 0.0F)) {
+			g = (float)(Math.atan(-this.getVelocity().y * 0.2F) * 15.0);
+		} else {
 			g = 0.0F;
 		}
 
@@ -595,7 +595,6 @@ public abstract class PlayerEntity extends LivingEntity {
 	public void onDeath(DamageSource damageSource) {
 		super.onDeath(damageSource);
 		this.setPosition(this.x, this.y, this.z);
-		this.velocityY = 0.1F;
 		if ("Notch".equals(this.getName().getString())) {
 			this.dropItem(new ItemStack(Items.field_8279), true, false);
 		}
@@ -605,11 +604,13 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 
 		if (damageSource != null) {
-			this.velocityX = (double)(-MathHelper.cos((this.field_6271 + this.yaw) * (float) (Math.PI / 180.0)) * 0.1F);
-			this.velocityZ = (double)(-MathHelper.sin((this.field_6271 + this.yaw) * (float) (Math.PI / 180.0)) * 0.1F);
+			this.setVelocity(
+				(double)(-MathHelper.cos((this.field_6271 + this.yaw) * (float) (Math.PI / 180.0)) * 0.1F),
+				0.1F,
+				(double)(-MathHelper.sin((this.field_6271 + this.yaw) * (float) (Math.PI / 180.0)) * 0.1F)
+			);
 		} else {
-			this.velocityX = 0.0;
-			this.velocityZ = 0.0;
+			this.setVelocity(0.0, 0.1, 0.0);
 		}
 
 		this.increaseStat(Stats.field_15421);
@@ -673,7 +674,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		if (itemStack.isEmpty()) {
 			return null;
 		} else {
-			double d = this.y - 0.3F + (double)this.getEyeHeight();
+			double d = this.y - 0.3F + (double)this.getStandingEyeHeight();
 			ItemEntity itemEntity = new ItemEntity(this.world, this.x, d, this.z, itemStack);
 			itemEntity.setPickupDelay(40);
 			if (bl2) {
@@ -683,19 +684,20 @@ public abstract class PlayerEntity extends LivingEntity {
 			if (bl) {
 				float f = this.random.nextFloat() * 0.5F;
 				float g = this.random.nextFloat() * (float) (Math.PI * 2);
-				itemEntity.velocityX = (double)(-MathHelper.sin(g) * f);
-				itemEntity.velocityZ = (double)(MathHelper.cos(g) * f);
-				itemEntity.velocityY = 0.2F;
+				this.setVelocity((double)(-MathHelper.sin(g) * f), 0.2F, (double)(MathHelper.cos(g) * f));
 			} else {
 				float f = 0.3F;
-				itemEntity.velocityX = (double)(-MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)) * MathHelper.cos(this.pitch * (float) (Math.PI / 180.0)) * f);
-				itemEntity.velocityZ = (double)(MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)) * MathHelper.cos(this.pitch * (float) (Math.PI / 180.0)) * f);
-				itemEntity.velocityY = (double)(-MathHelper.sin(this.pitch * (float) (Math.PI / 180.0)) * f + 0.1F);
-				float g = this.random.nextFloat() * (float) (Math.PI * 2);
-				f = 0.02F * this.random.nextFloat();
-				itemEntity.velocityX = itemEntity.velocityX + Math.cos((double)g) * (double)f;
-				itemEntity.velocityY = itemEntity.velocityY + (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.1F);
-				itemEntity.velocityZ = itemEntity.velocityZ + Math.sin((double)g) * (double)f;
+				float g = MathHelper.sin(this.pitch * (float) (Math.PI / 180.0));
+				float h = MathHelper.cos(this.pitch * (float) (Math.PI / 180.0));
+				float i = MathHelper.sin(this.yaw * (float) (Math.PI / 180.0));
+				float j = MathHelper.cos(this.yaw * (float) (Math.PI / 180.0));
+				float k = this.random.nextFloat() * (float) (Math.PI * 2);
+				float l = 0.02F * this.random.nextFloat();
+				itemEntity.setVelocity(
+					(double)(-i * h * 0.3F) + Math.cos((double)k) * (double)l,
+					(double)(-g * 0.3F + 0.1F + (this.random.nextFloat() - this.random.nextFloat()) * 0.1F),
+					(double)(j * h * 0.3F) + Math.sin((double)k) * (double)l
+				);
 			}
 
 			return itemEntity;
@@ -793,7 +795,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			}
 
 			if (this.isSleeping()) {
-				this.method_18400();
+				this.wakeUp();
 			}
 		}
 	}
@@ -1061,9 +1063,7 @@ public abstract class PlayerEntity extends LivingEntity {
 						}
 					}
 
-					double e = entity.velocityX;
-					double l = entity.velocityY;
-					double m = entity.velocityZ;
+					Vec3d vec3d = entity.getVelocity();
 					boolean bl6 = entity.damage(DamageSource.player(this), f);
 					if (bl6) {
 						if (i > 0) {
@@ -1080,13 +1080,12 @@ public abstract class PlayerEntity extends LivingEntity {
 								);
 							}
 
-							this.velocityX *= 0.6;
-							this.velocityZ *= 0.6;
+							this.setVelocity(this.getVelocity().multiply(0.6, 1.0, 0.6));
 							this.setSprinting(false);
 						}
 
 						if (bl4) {
-							float n = 1.0F + EnchantmentHelper.getSweepingMultiplier(this) * f;
+							float l = 1.0F + EnchantmentHelper.getSweepingMultiplier(this) * f;
 
 							for (LivingEntity livingEntity : this.world.method_18467(LivingEntity.class, entity.getBoundingBox().expand(1.0, 0.25, 1.0))) {
 								if (livingEntity != this
@@ -1097,7 +1096,7 @@ public abstract class PlayerEntity extends LivingEntity {
 									livingEntity.method_6005(
 										this, 0.4F, (double)MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)), (double)(-MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)))
 									);
-									livingEntity.damage(DamageSource.player(this), n);
+									livingEntity.damage(DamageSource.player(this), l);
 								}
 							}
 
@@ -1108,9 +1107,7 @@ public abstract class PlayerEntity extends LivingEntity {
 						if (entity instanceof ServerPlayerEntity && entity.velocityModified) {
 							((ServerPlayerEntity)entity).networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(entity));
 							entity.velocityModified = false;
-							entity.velocityX = e;
-							entity.velocityY = l;
-							entity.velocityZ = m;
+							entity.setVelocity(vec3d);
 						}
 
 						if (bl3) {
@@ -1150,16 +1147,16 @@ public abstract class PlayerEntity extends LivingEntity {
 						}
 
 						if (entity instanceof LivingEntity) {
-							float o = j - ((LivingEntity)entity).getHealth();
-							this.method_7339(Stats.field_15399, Math.round(o * 10.0F));
+							float m = j - ((LivingEntity)entity).getHealth();
+							this.method_7339(Stats.field_15399, Math.round(m * 10.0F));
 							if (k > 0) {
 								entity.setOnFireFor(k * 4);
 							}
 
-							if (this.world instanceof ServerWorld && o > 2.0F) {
-								int p = (int)((double)o * 0.5);
+							if (this.world instanceof ServerWorld && m > 2.0F) {
+								int n = (int)((double)m * 0.5);
 								((ServerWorld)this.world)
-									.method_14199(ParticleTypes.field_11209, entity.x, entity.y + (double)(entity.getHeight() * 0.5F), entity.z, p, 0.1, 0.0, 0.1, 0.2);
+									.method_14199(ParticleTypes.field_11209, entity.x, entity.y + (double)(entity.getHeight() * 0.5F), entity.z, n, 0.1, 0.0, 0.1, 0.2);
 							}
 						}
 
@@ -1269,7 +1266,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			}
 		}
 
-		this.method_18403(blockPos);
+		this.sleep(blockPos);
 		this.sleepTimer = 0;
 		if (this.world instanceof ServerWorld) {
 			((ServerWorld)this.world).updatePlayersSleeping();
@@ -1279,10 +1276,10 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public void method_18403(BlockPos blockPos) {
+	public void sleep(BlockPos blockPos) {
 		this.resetStat(Stats.field_15419.getOrCreateStat(Stats.field_15429));
 		this.dropShoulderEntities();
-		super.method_18403(blockPos);
+		super.sleep(blockPos);
 	}
 
 	private boolean isWithinSleepingRange(BlockPos blockPos, Direction direction) {
@@ -1299,8 +1296,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public void wakeUp(boolean bl, boolean bl2, boolean bl3) {
-		Optional<BlockPos> optional = this.method_18398();
-		super.method_18400();
+		Optional<BlockPos> optional = this.getSleepingPosition();
+		super.wakeUp();
 		if (this.world instanceof ServerWorld && bl2) {
 			((ServerWorld)this.world).updatePlayersSleeping();
 		}
@@ -1312,7 +1309,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public void method_18400() {
+	public void wakeUp() {
 		this.wakeUp(true, true, false);
 	}
 
@@ -1402,32 +1399,34 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public void travel(float f, float g, float h) {
+	public void travel(Vec3d vec3d) {
 		double d = this.x;
 		double e = this.y;
-		double i = this.z;
+		double f = this.z;
 		if (this.isSwimming() && !this.hasVehicle()) {
-			double j = this.method_5720().y;
-			double k = j < -0.2 ? 0.085 : 0.06;
-			if (j <= 0.0 || this.field_6282 || !this.world.getBlockState(new BlockPos(this.x, this.y + 1.0 - 0.1, this.z)).getFluidState().isEmpty()) {
-				this.velocityY = this.velocityY + (j - this.velocityY) * k;
+			double g = this.method_5720().y;
+			double h = g < -0.2 ? 0.085 : 0.06;
+			if (g <= 0.0 || this.field_6282 || !this.world.getBlockState(new BlockPos(this.x, this.y + 1.0 - 0.1, this.z)).getFluidState().isEmpty()) {
+				Vec3d vec3d2 = this.getVelocity();
+				this.setVelocity(vec3d2.add(0.0, (g - vec3d2.y) * h, 0.0));
 			}
 		}
 
 		if (this.abilities.flying && !this.hasVehicle()) {
-			double j = this.velocityY;
-			float l = this.field_6281;
+			double g = this.getVelocity().y;
+			float i = this.field_6281;
 			this.field_6281 = this.abilities.getFlySpeed() * (float)(this.isSprinting() ? 2 : 1);
-			super.travel(f, g, h);
-			this.velocityY = j * 0.6;
-			this.field_6281 = l;
+			super.travel(vec3d);
+			Vec3d vec3d3 = this.getVelocity();
+			this.setVelocity(vec3d3.x, g * 0.6, vec3d3.z);
+			this.field_6281 = i;
 			this.fallDistance = 0.0F;
 			this.setEntityFlag(7, false);
 		} else {
-			super.travel(f, g, h);
+			super.travel(vec3d);
 		}
 
-		this.method_7282(this.x - d, this.y - e, this.z - i);
+		this.method_7282(this.x - d, this.y - e, this.z - f);
 	}
 
 	@Override
@@ -1827,8 +1826,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public float method_18394(class_4050 arg, class_4048 arg2) {
-		switch (arg) {
+	public float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+		switch (entityPose) {
 			case field_18079:
 				return 0.4F;
 			case field_18077:
@@ -1977,7 +1976,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		return (float)this.getAttributeInstance(EntityAttributes.LUCK).getValue();
 	}
 
-	public boolean method_7338() {
+	public boolean isCreativeLevelTwoOp() {
 		return this.abilities.creativeMode && this.getPermissionLevel() >= 2;
 	}
 
@@ -1998,14 +1997,14 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public boolean method_18397(ItemStack itemStack) {
+	public boolean canPickUp(ItemStack itemStack) {
 		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
 		return this.getEquippedStack(equipmentSlot).isEmpty();
 	}
 
 	@Override
-	public class_4048 method_18377(class_4050 arg) {
-		return (class_4048)field_18134.getOrDefault(arg, field_18135);
+	public EntitySize getSize(EntityPose entityPose) {
+		return (EntitySize)SIZES.getOrDefault(entityPose, STANDING_SIZE);
 	}
 
 	public static enum SleepResult {

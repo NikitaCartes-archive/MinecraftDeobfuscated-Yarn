@@ -6,8 +6,8 @@ import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import java.util.Arrays;
-import net.minecraft.class_4076;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.ChunkNibbleArray;
@@ -28,15 +28,15 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 
 	@Override
 	protected int getLight(long l) {
-		long m = class_4076.method_18691(l);
-		int i = class_4076.method_18689(m);
+		long m = ChunkSectionPos.toChunkLong(l);
+		int i = ChunkSectionPos.unpackLongY(m);
 		SkyLightStorage.Data data = this.dataStorageUncached;
-		int j = data.heightMap.get(class_4076.method_18693(m));
+		int j = data.heightMap.get(ChunkSectionPos.method_18693(m));
 		if (j != data.defaultHeight && i < j) {
 			ChunkNibbleArray chunkNibbleArray = this.getDataForChunk(data, m);
 			if (chunkNibbleArray == null) {
 				for (l = BlockPos.removeChunkSectionLocalY(l); chunkNibbleArray == null; chunkNibbleArray = this.getDataForChunk(data, m)) {
-					m = class_4076.method_18679(m, Direction.UP);
+					m = ChunkSectionPos.offsetPacked(m, Direction.UP);
 					if (++i >= j) {
 						return 15;
 					}
@@ -46,7 +46,9 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 			}
 
 			return chunkNibbleArray.get(
-				class_4076.method_18684(BlockPos.unpackLongX(l)), class_4076.method_18684(BlockPos.unpackLongY(l)), class_4076.method_18684(BlockPos.unpackLongZ(l))
+				ChunkSectionPos.toLocalCoord(BlockPos.unpackLongX(l)),
+				ChunkSectionPos.toLocalCoord(BlockPos.unpackLongY(l)),
+				ChunkSectionPos.toLocalCoord(BlockPos.unpackLongZ(l))
 			);
 		} else {
 			return 15;
@@ -55,13 +57,13 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 
 	@Override
 	protected void method_15523(long l) {
-		int i = class_4076.method_18689(l);
+		int i = ChunkSectionPos.unpackLongY(l);
 		if (this.dataStorage.defaultHeight > i) {
 			this.dataStorage.defaultHeight = i;
 			this.dataStorage.heightMap.defaultReturnValue(this.dataStorage.defaultHeight);
 		}
 
-		long m = class_4076.method_18693(l);
+		long m = ChunkSectionPos.method_18693(l);
 		int j = this.dataStorage.heightMap.get(m);
 		if (j < i + 1) {
 			this.dataStorage.heightMap.put(m, i + 1);
@@ -69,7 +71,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 				this.field_15815.add(l);
 				this.field_15816.remove(l);
 				if (j > this.dataStorage.defaultHeight) {
-					long n = class_4076.method_18685(class_4076.method_18686(l), j - 1, class_4076.method_18690(l));
+					long n = ChunkSectionPos.asLong(ChunkSectionPos.unpackLongX(l), j - 1, ChunkSectionPos.unpackLongZ(l));
 					this.field_15815.remove(n);
 					this.field_15816.add(n);
 				}
@@ -85,17 +87,17 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 
 	@Override
 	protected void onChunkRemoved(long l) {
-		long m = class_4076.method_18693(l);
+		long m = ChunkSectionPos.method_18693(l);
 		boolean bl = this.field_15817.contains(m);
 		if (!bl) {
 			this.field_15816.add(l);
 			this.field_15815.remove(l);
 		}
 
-		int i = class_4076.method_18689(l);
+		int i = ChunkSectionPos.unpackLongY(l);
 		if (this.dataStorage.heightMap.get(m) == i + 1) {
 			long n;
-			for (n = l; !this.hasChunk(n) && this.isAboveMinimumHeight(i); n = class_4076.method_18679(n, Direction.DOWN)) {
+			for (n = l; !this.hasChunk(n) && this.isAboveMinimumHeight(i); n = ChunkSectionPos.offsetPacked(n, Direction.DOWN)) {
 				i--;
 			}
 
@@ -120,7 +122,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 		if (bl && this.field_15817.add(l)) {
 			int i = this.dataStorage.heightMap.get(l);
 			if (i != this.dataStorage.defaultHeight) {
-				long m = class_4076.method_18685(class_4076.method_18686(l), i - 1, class_4076.method_18690(l));
+				long m = ChunkSectionPos.asLong(ChunkSectionPos.unpackLongX(l), i - 1, ChunkSectionPos.unpackLongZ(l));
 				this.field_15816.add(m);
 				this.field_15815.remove(m);
 				this.checkForUpdates();
@@ -128,7 +130,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 		} else if (!bl && this.field_15817.remove(l)) {
 			int i = this.dataStorage.heightMap.get(l);
 			if (i != this.dataStorage.defaultHeight) {
-				long m = class_4076.method_18685(class_4076.method_18686(l), i - 1, class_4076.method_18690(l));
+				long m = ChunkSectionPos.asLong(ChunkSectionPos.unpackLongX(l), i - 1, ChunkSectionPos.unpackLongZ(l));
 				this.field_15815.add(m);
 				this.field_15816.remove(m);
 				this.checkForUpdates();
@@ -159,12 +161,12 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 							}
 
 							Arrays.fill(this.getDataForChunk(l, true).asByteArray(), (byte)-1);
-							int j = class_4076.method_18688(class_4076.method_18686(l));
-							int k = class_4076.method_18688(class_4076.method_18689(l));
-							int m = class_4076.method_18688(class_4076.method_18690(l));
+							int j = ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongX(l));
+							int k = ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongY(l));
+							int m = ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongZ(l));
 
 							for (Direction direction : DIRECTIONS_SKYLIGHT) {
-								long n = class_4076.method_18679(l, direction);
+								long n = ChunkSectionPos.offsetPacked(l, direction);
 								if ((this.field_15816.contains(n) || !this.field_15820.contains(n) && !this.field_15815.contains(n)) && this.hasChunk(n)) {
 									for (int o = 0; o < 16; o++) {
 										for (int p = 0; p < 16; p++) {
@@ -197,14 +199,14 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 							for (int s = 0; s < 16; s++) {
 								for (int t = 0; t < 16; t++) {
 									long u = BlockPos.asLong(
-										class_4076.method_18688(class_4076.method_18686(l)) + s,
-										class_4076.method_18688(class_4076.method_18689(l)),
-										class_4076.method_18688(class_4076.method_18690(l)) + t
+										ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongX(l)) + s,
+										ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongY(l)),
+										ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongZ(l)) + t
 									);
 									long n = BlockPos.asLong(
-										class_4076.method_18688(class_4076.method_18686(l)) + s,
-										class_4076.method_18688(class_4076.method_18689(l)) - 1,
-										class_4076.method_18688(class_4076.method_18690(l)) + t
+										ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongX(l)) + s,
+										ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongY(l)) - 1,
+										ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongZ(l)) + t
 									);
 									chunkLightProvider.scheduleNewLevelUpdate(u, n, chunkLightProvider.getBaseLevelFor(u, n, 0), true);
 								}
@@ -213,9 +215,9 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 							for (int j = 0; j < 16; j++) {
 								for (int k = 0; k < 16; k++) {
 									long v = BlockPos.asLong(
-										class_4076.method_18688(class_4076.method_18686(l)) + j,
-										class_4076.method_18688(class_4076.method_18689(l)) + 16 - 1,
-										class_4076.method_18688(class_4076.method_18690(l)) + k
+										ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongX(l)) + j,
+										ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongY(l)) + 16 - 1,
+										ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongZ(l)) + k
 									);
 									chunkLightProvider.scheduleNewLevelUpdate(Long.MAX_VALUE, v, 0, true);
 								}
@@ -235,9 +237,9 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 						for (int i = 0; i < 16; i++) {
 							for (int j = 0; j < 16; j++) {
 								long w = BlockPos.asLong(
-									class_4076.method_18688(class_4076.method_18686(l)) + i,
-									class_4076.method_18688(class_4076.method_18689(l)) + 16 - 1,
-									class_4076.method_18688(class_4076.method_18690(l)) + j
+									ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongX(l)) + i,
+									ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongY(l)) + 16 - 1,
+									ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongZ(l)) + j
 								);
 								chunkLightProvider.scheduleNewLevelUpdate(Long.MAX_VALUE, w, 15, false);
 							}
@@ -260,25 +262,25 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 		if ((i & 15) != 15) {
 			return false;
 		} else {
-			long m = class_4076.method_18691(l);
-			long n = class_4076.method_18693(m);
+			long m = ChunkSectionPos.toChunkLong(l);
+			long n = ChunkSectionPos.method_18693(m);
 			if (this.field_15817.contains(n)) {
 				return false;
 			} else {
 				int j = this.dataStorage.heightMap.get(n);
-				return class_4076.method_18688(j) == i + 16;
+				return ChunkSectionPos.fromChunkCoord(j) == i + 16;
 			}
 		}
 	}
 
 	protected boolean method_15568(long l) {
-		long m = class_4076.method_18693(l);
+		long m = ChunkSectionPos.method_18693(l);
 		int i = this.dataStorage.heightMap.get(m);
-		return i == this.dataStorage.defaultHeight || class_4076.method_18689(l) >= i;
+		return i == this.dataStorage.defaultHeight || ChunkSectionPos.unpackLongY(l) >= i;
 	}
 
 	protected boolean method_15566(long l) {
-		long m = class_4076.method_18693(l);
+		long m = ChunkSectionPos.method_18693(l);
 		return this.field_15817.contains(m);
 	}
 

@@ -2,9 +2,9 @@ package net.minecraft.entity.passive;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
@@ -61,8 +61,8 @@ public class SquidEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	protected float method_18394(class_4050 arg, class_4048 arg2) {
-		return arg2.field_18068 * 0.5F;
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+		return entitySize.height * 0.5F;
 	}
 
 	@Override
@@ -128,28 +128,26 @@ public class SquidEntity extends WaterCreatureEntity {
 			}
 
 			if (!this.world.isClient) {
-				this.velocityX = (double)(this.field_6910 * this.field_6901);
-				this.velocityY = (double)(this.field_6911 * this.field_6901);
-				this.velocityZ = (double)(this.field_6909 * this.field_6901);
+				this.setVelocity((double)(this.field_6910 * this.field_6901), (double)(this.field_6911 * this.field_6901), (double)(this.field_6909 * this.field_6901));
 			}
 
-			float f = MathHelper.sqrt(this.velocityX * this.velocityX + this.velocityZ * this.velocityZ);
-			this.field_6283 = this.field_6283 + (-((float)MathHelper.atan2(this.velocityX, this.velocityZ)) * (180.0F / (float)Math.PI) - this.field_6283) * 0.1F;
+			Vec3d vec3d = this.getVelocity();
+			float g = MathHelper.sqrt(squaredHorizontalLength(vec3d));
+			this.field_6283 = this.field_6283 + (-((float)MathHelper.atan2(vec3d.x, vec3d.z)) * (180.0F / (float)Math.PI) - this.field_6283) * 0.1F;
 			this.yaw = this.field_6283;
 			this.field_6903 = (float)((double)this.field_6903 + Math.PI * (double)this.field_6913 * 1.5);
-			this.field_6907 = this.field_6907 + (-((float)MathHelper.atan2((double)f, this.velocityY)) * (180.0F / (float)Math.PI) - this.field_6907) * 0.1F;
+			this.field_6907 = this.field_6907 + (-((float)MathHelper.atan2((double)g, vec3d.y)) * (180.0F / (float)Math.PI) - this.field_6907) * 0.1F;
 		} else {
 			this.field_6904 = MathHelper.abs(MathHelper.sin(this.field_6908)) * (float) Math.PI * 0.25F;
 			if (!this.world.isClient) {
-				this.velocityX = 0.0;
-				this.velocityZ = 0.0;
+				double d = this.getVelocity().y;
 				if (this.hasPotionEffect(StatusEffects.field_5902)) {
-					this.velocityY = this.velocityY + (0.05 * (double)(this.getPotionEffect(StatusEffects.field_5902).getAmplifier() + 1) - this.velocityY);
+					d = 0.05 * (double)(this.getPotionEffect(StatusEffects.field_5902).getAmplifier() + 1);
 				} else if (!this.isUnaffectedByGravity()) {
-					this.velocityY -= 0.08;
+					d -= 0.08;
 				}
 
-				this.velocityY *= 0.98F;
+				this.setVelocity(0.0, d * 0.98F, 0.0);
 			}
 
 			this.field_6907 = (float)((double)this.field_6907 + (double)(-90.0F - this.field_6907) * 0.02);
@@ -183,8 +181,8 @@ public class SquidEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public void travel(float f, float g, float h) {
-		this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
+	public void travel(Vec3d vec3d) {
+		this.move(MovementType.field_6308, this.getVelocity());
 	}
 
 	@Override

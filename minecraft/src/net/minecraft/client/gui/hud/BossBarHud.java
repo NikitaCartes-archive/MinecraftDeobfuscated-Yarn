@@ -7,13 +7,13 @@ import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.network.packet.BossBarS2CPacket;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class BossBarHud extends Drawable {
+public class BossBarHud extends DrawableHelper {
 	private static final Identifier BAR_TEX = new Identifier("textures/gui/bars.png");
 	private final MinecraftClient client;
 	private final Map<UUID, ClientBossBar> bossBars = Maps.<UUID, ClientBossBar>newLinkedHashMap();

@@ -15,6 +15,7 @@ import net.minecraft.client.render.entity.feature.StuckArrowsFeatureRenderer;
 import net.minecraft.client.render.entity.feature.TridentRiptideFeatureRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -196,12 +197,12 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			}
 
 			Vec3d vec3d = abstractClientPlayerEntity.getRotationVec(h);
-			double d = abstractClientPlayerEntity.velocityX * abstractClientPlayerEntity.velocityX
-				+ abstractClientPlayerEntity.velocityZ * abstractClientPlayerEntity.velocityZ;
-			double e = vec3d.x * vec3d.x + vec3d.z * vec3d.z;
+			Vec3d vec3d2 = abstractClientPlayerEntity.getVelocity();
+			double d = Entity.squaredHorizontalLength(vec3d2);
+			double e = Entity.squaredHorizontalLength(vec3d);
 			if (d > 0.0 && e > 0.0) {
-				double l = (abstractClientPlayerEntity.velocityX * vec3d.x + abstractClientPlayerEntity.velocityZ * vec3d.z) / (Math.sqrt(d) * Math.sqrt(e));
-				double m = abstractClientPlayerEntity.velocityX * vec3d.z - abstractClientPlayerEntity.velocityZ * vec3d.x;
+				double l = (vec3d2.x * vec3d.x + vec3d2.z * vec3d.z) / (Math.sqrt(d) * Math.sqrt(e));
+				double m = vec3d2.x * vec3d.z - vec3d2.z * vec3d.x;
 				GlStateManager.rotatef((float)(Math.signum(m) * Math.acos(l)) * 180.0F / (float) Math.PI, 0.0F, 1.0F, 0.0F);
 			}
 		} else if (i > 0.0F) {

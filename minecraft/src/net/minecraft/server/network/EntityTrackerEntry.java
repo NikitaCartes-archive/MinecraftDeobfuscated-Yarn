@@ -47,9 +47,7 @@ public class EntityTrackerEntry {
 	private int lastYaw;
 	private int lastPitch;
 	private int lastHeadPitch;
-	private double lastVelocityX;
-	private double lastVelocityY;
-	private double lastVelocityZ;
+	private Vec3d field_18278 = Vec3d.ZERO;
 	private int field_14040;
 	private int field_14043;
 	private List<Entity> lastPassengers = Collections.emptyList();
@@ -82,7 +80,7 @@ public class EntityTrackerEntry {
 			if (itemStack.getItem() instanceof FilledMapItem) {
 				MapState mapState = FilledMapItem.method_8001(itemStack, this.field_18258);
 
-				for (ServerPlayerEntity serverPlayerEntity : this.field_18258.method_18456()) {
+				for (ServerPlayerEntity serverPlayerEntity : this.field_18258.getPlayers()) {
 					mapState.method_102(serverPlayerEntity, itemStack);
 					Packet<?> packet = ((FilledMapItem)itemStack.getItem()).createMapPacket(itemStack, this.field_18258, serverPlayerEntity);
 					if (packet != null) {
@@ -143,16 +141,11 @@ public class EntityTrackerEntry {
 
 				if ((this.alwaysUpdateVelocity || this.entity.velocityDirty || this.entity instanceof LivingEntity && ((LivingEntity)this.entity).isFallFlying())
 					&& this.field_14040 > 0) {
-					double d = this.entity.velocityX - this.lastVelocityX;
-					double e = this.entity.velocityY - this.lastVelocityY;
-					double f = this.entity.velocityZ - this.lastVelocityZ;
-					double g = 0.02;
-					double h = d * d + e * e + f * f;
-					if (h > 4.0E-4 || h > 0.0 && this.entity.velocityX == 0.0 && this.entity.velocityY == 0.0 && this.entity.velocityZ == 0.0) {
-						this.lastVelocityX = this.entity.velocityX;
-						this.lastVelocityY = this.entity.velocityY;
-						this.lastVelocityZ = this.entity.velocityZ;
-						this.field_18259.accept(new EntityVelocityUpdateS2CPacket(this.entity.getEntityId(), this.lastVelocityX, this.lastVelocityY, this.lastVelocityZ));
+					Vec3d vec3d2 = this.entity.getVelocity();
+					double d = vec3d2.squaredDistanceTo(this.field_18278);
+					if (d > 1.0E-7 || d > 0.0 && vec3d2.lengthSquared() == 0.0) {
+						this.field_18278 = vec3d2;
+						this.field_18259.accept(new EntityVelocityUpdateS2CPacket(this.entity.getEntityId(), this.field_18278));
 					}
 				}
 
@@ -225,11 +218,9 @@ public class EntityTrackerEntry {
 			}
 		}
 
-		this.lastVelocityX = this.entity.velocityX;
-		this.lastVelocityY = this.entity.velocityY;
-		this.lastVelocityZ = this.entity.velocityZ;
+		this.field_18278 = this.entity.getVelocity();
 		if (bl && !(packet instanceof MobSpawnS2CPacket)) {
-			consumer.accept(new EntityVelocityUpdateS2CPacket(this.entity.getEntityId(), this.entity.velocityX, this.entity.velocityY, this.entity.velocityZ));
+			consumer.accept(new EntityVelocityUpdateS2CPacket(this.entity.getEntityId(), this.field_18278));
 		}
 
 		if (this.entity instanceof LivingEntity) {

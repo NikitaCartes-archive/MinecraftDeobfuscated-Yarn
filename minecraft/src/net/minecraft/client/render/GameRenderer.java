@@ -11,8 +11,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1675;
 import net.minecraft.class_295;
-import net.minecraft.class_4063;
-import net.minecraft.class_4066;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -24,6 +22,8 @@ import net.minecraft.client.gl.GlProgramManager;
 import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.gui.MapRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.options.CloudRenderMode;
+import net.minecraft.client.options.ParticlesOption;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.NativeImage;
@@ -246,7 +246,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		}
 
 		this.field_4022 = this.field_4002;
-		this.field_4002 = this.field_4002 + (this.client.getCameraEntity().getEyeHeight() - this.field_4002) * 0.5F;
+		this.field_4002 = this.field_4002 + (this.client.getCameraEntity().getStandingEyeHeight() - this.field_4002) * 0.5F;
 		this.field_4027++;
 		this.firstPersonRenderer.updateHeldItems();
 		this.method_3177();
@@ -313,7 +313,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				net.minecraft.util.math.Vec3d vec3d2 = entity.getRotationVec(1.0F);
 				net.minecraft.util.math.Vec3d vec3d3 = vec3d.add(vec3d2.x * d, vec3d2.y * d, vec3d2.z * d);
 				float g = 1.0F;
-				BoundingBox boundingBox = entity.getBoundingBox().stretch(vec3d2.x * d, vec3d2.y * d, vec3d2.z * d).expand(1.0, 1.0, 1.0);
+				BoundingBox boundingBox = entity.getBoundingBox().method_18804(vec3d2.multiply(d)).expand(1.0, 1.0, 1.0);
 				EntityHitResult entityHitResult = class_1675.method_18075(entity, vec3d, vec3d3, boundingBox, entityx -> !entityx.isSpectator() && entityx.doesCollide(), e);
 				if (entityHitResult != null) {
 					Entity entity2 = entityHitResult.getEntity();
@@ -417,7 +417,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		Entity entity = this.client.getCameraEntity();
 		float g = MathHelper.lerp(f, this.field_4022, this.field_4002);
 		double d = MathHelper.lerp((double)f, entity.prevX, entity.x);
-		double e = MathHelper.lerp((double)f, entity.prevY, entity.y) + (double)entity.getEyeHeight();
+		double e = MathHelper.lerp((double)f, entity.prevY, entity.y) + (double)entity.getStandingEyeHeight();
 		double h = MathHelper.lerp((double)f, entity.prevZ, entity.z);
 		if (entity instanceof LivingEntity && ((LivingEntity)entity).isSleeping()) {
 			g = (float)((double)g + 1.0);
@@ -652,7 +652,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				GlStateManager.clear(256, MinecraftClient.IS_SYSTEM_MAC);
 
 				try {
-					this.client.field_18175.method_18326(i, j, this.client.getLastFrameDuration());
+					this.client.field_18175.draw(i, j, this.client.getLastFrameDuration());
 				} catch (Throwable var14) {
 					CrashReport crashReport = CrashReport.create(var14, "Rendering overlay");
 					CrashReportSection crashReportSection = crashReport.addElement("Overlay render details");
@@ -663,7 +663,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				GlStateManager.clear(256, MinecraftClient.IS_SYSTEM_MAC);
 
 				try {
-					this.client.currentScreen.method_18326(i, j, this.client.getLastFrameDuration());
+					this.client.currentScreen.draw(i, j, this.client.getLastFrameDuration());
 				} catch (Throwable var13) {
 					CrashReport crashReport = CrashReport.create(var13, "Rendering screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen render details");
@@ -820,7 +820,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 
 		this.backgroundRenderer.applyFog(0, f);
 		GlStateManager.shadeModel(7425);
-		if (entity.y + (double)entity.getEyeHeight() < 128.0) {
+		if (entity.y + (double)entity.getStandingEyeHeight() < 128.0) {
 			this.method_3206(worldRenderer, f, d, e, g);
 		}
 
@@ -904,7 +904,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		GlStateManager.enableCull();
 		GlStateManager.disableBlend();
 		GlStateManager.disableFog();
-		if (entity.y + (double)entity.getEyeHeight() >= 128.0) {
+		if (entity.y + (double)entity.getStandingEyeHeight() >= 128.0) {
 			this.client.getProfiler().swap("aboveClouds");
 			this.method_3206(worldRenderer, f, d, e, g);
 		}
@@ -917,7 +917,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	}
 
 	private void method_3206(WorldRenderer worldRenderer, float f, double d, double e, double g) {
-		if (this.client.options.getCloudRenderMode() != class_4063.field_18162) {
+		if (this.client.options.getCloudRenderMode() != CloudRenderMode.field_18162) {
 			this.client.getProfiler().swap("clouds");
 			GlStateManager.matrixMode(5889);
 			GlStateManager.loadIdentity();
@@ -966,9 +966,9 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			double g = 0.0;
 			int j = 0;
 			int k = (int)(100.0F * f * f);
-			if (this.client.options.particles == class_4066.field_18198) {
+			if (this.client.options.particles == ParticlesOption.field_18198) {
 				k >>= 1;
-			} else if (this.client.options.particles == class_4066.field_18199) {
+			} else if (this.client.options.particles == ParticlesOption.field_18199) {
 				k = 0;
 			}
 

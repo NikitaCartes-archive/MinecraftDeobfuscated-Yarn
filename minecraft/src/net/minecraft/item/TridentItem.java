@@ -24,6 +24,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class TridentItem extends Item {
@@ -97,7 +98,7 @@ public class TridentItem extends Item {
 						playerEntity.method_6018(20);
 						if (playerEntity.onGround) {
 							float p = 1.1999999F;
-							playerEntity.move(MovementType.field_6308, 0.0, 1.1999999F, 0.0);
+							playerEntity.move(MovementType.field_6308, new Vec3d(0.0, 1.1999999F, 0.0));
 						}
 
 						SoundEvent soundEvent;

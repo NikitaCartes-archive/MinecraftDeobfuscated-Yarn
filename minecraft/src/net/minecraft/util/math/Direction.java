@@ -42,7 +42,7 @@ public enum Direction implements StringRepresentable {
 		.filter(direction -> direction.getAxis().isHorizontal())
 		.sorted(Comparator.comparingInt(direction -> direction.idHorizontal))
 		.toArray(Direction[]::new);
-	private static final Long2ObjectMap<Direction> field_16542 = (Long2ObjectMap<Direction>)Arrays.stream(ALL)
+	private static final Long2ObjectMap<Direction> VECTOR_TO_DIRECTION = (Long2ObjectMap<Direction>)Arrays.stream(ALL)
 		.collect(Collectors.toMap(direction -> new BlockPos(direction.getVector()).asLong(), direction -> direction, (direction, direction2) -> {
 			throw new IllegalArgumentException("Duplicate keys");
 		}, Long2ObjectOpenHashMap::new));
@@ -234,8 +234,8 @@ public enum Direction implements StringRepresentable {
 	}
 
 	@Nullable
-	public static Direction method_16365(BlockPos blockPos) {
-		return field_16542.get(blockPos.asLong());
+	public static Direction fromVector(BlockPos blockPos) {
+		return VECTOR_TO_DIRECTION.get(blockPos.asLong());
 	}
 
 	public static Direction fromRotation(double d) {
@@ -373,7 +373,7 @@ public enum Direction implements StringRepresentable {
 			return values()[random.nextInt(values().length)];
 		}
 
-		public boolean contains(@Nullable Direction direction) {
+		public boolean method_10176(@Nullable Direction direction) {
 			return direction != null && direction.getAxis() == this;
 		}
 
@@ -436,7 +436,7 @@ public enum Direction implements StringRepresentable {
 			return this.facingArray[random.nextInt(this.facingArray.length)];
 		}
 
-		public boolean contains(@Nullable Direction direction) {
+		public boolean method_10182(@Nullable Direction direction) {
 			return direction != null && direction.getAxis().method_10180() == this;
 		}
 

@@ -20,12 +20,12 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4080;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloadListener;
+import net.minecraft.resource.ResourceSupplier;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.profiler.DummyProfiler;
@@ -41,7 +41,7 @@ public class FontManager implements AutoCloseable {
 	private final Set<Font> fonts = Sets.<Font>newHashSet();
 	private final TextureManager textureManager;
 	private boolean forceUnicodeFont;
-	private final ResourceReloadListener field_18215 = new class_4080<Map<Identifier, List<Font>>>() {
+	private final ResourceReloadListener field_18215 = new ResourceSupplier<Map<Identifier, List<Font>>>() {
 		protected Map<Identifier, List<Font>> method_18638(ResourceManager resourceManager, Profiler profiler) {
 			profiler.startTick();
 			Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();

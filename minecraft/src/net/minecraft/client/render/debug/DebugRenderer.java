@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_860;
-import net.minecraft.class_866;
 import net.minecraft.class_871;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -22,7 +21,7 @@ public class DebugRenderer {
 	public final net.minecraft.client.render.debug.DebugRenderer.DebugRenderer neighborUpdateDebugRenderer;
 	public final CaveDebugRenderer caveDebugRenderer;
 	public final StructureDebugRenderer structureDebugRenderer;
-	public final net.minecraft.client.render.debug.DebugRenderer.DebugRenderer field_4536;
+	public final net.minecraft.client.render.debug.DebugRenderer.DebugRenderer skyLightDebugRenderer;
 	public final net.minecraft.client.render.debug.DebugRenderer.DebugRenderer worldGenAttemptDebugRenderer;
 	public final net.minecraft.client.render.debug.DebugRenderer.DebugRenderer field_4517;
 	public final net.minecraft.client.render.debug.DebugRenderer.DebugRenderer field_4533;
@@ -34,7 +33,7 @@ public class DebugRenderer {
 	private boolean showNeighborUpdates;
 	private boolean showCaves;
 	private boolean showStructures;
-	private boolean field_4520;
+	private boolean showSkyLight;
 	private boolean showWorldGenAttempts;
 	private boolean field_4518;
 
@@ -47,7 +46,7 @@ public class DebugRenderer {
 		this.neighborUpdateDebugRenderer = new NeighborUpdateDebugRenderer(minecraftClient);
 		this.caveDebugRenderer = new CaveDebugRenderer(minecraftClient);
 		this.structureDebugRenderer = new StructureDebugRenderer(minecraftClient);
-		this.field_4536 = new class_866(minecraftClient);
+		this.skyLightDebugRenderer = new SkyLightDebugRenderer(minecraftClient);
 		this.worldGenAttemptDebugRenderer = new WorldGenAttemptDebugRenderer(minecraftClient);
 		this.field_4517 = new class_871(minecraftClient);
 		this.field_4533 = new class_860(minecraftClient);
@@ -60,7 +59,7 @@ public class DebugRenderer {
 			|| this.showHeightmap
 			|| this.showVoxels
 			|| this.showNeighborUpdates
-			|| this.field_4520
+			|| this.showSkyLight
 			|| this.showWorldGenAttempts
 			|| this.field_4518;
 	}
@@ -103,8 +102,8 @@ public class DebugRenderer {
 			this.structureDebugRenderer.render(f, l);
 		}
 
-		if (this.field_4520) {
-			this.field_4536.render(f, l);
+		if (this.showSkyLight) {
+			this.skyLightDebugRenderer.render(f, l);
 		}
 
 		if (this.showWorldGenAttempts) {

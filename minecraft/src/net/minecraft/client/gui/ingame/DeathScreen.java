@@ -37,7 +37,7 @@ public class DeathScreen extends Screen {
 			string2 = I18n.translate("deathScreen.titleScreen");
 		}
 
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 72, string) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 72, string) {
 			@Override
 			public void onPressed(double d, double e) {
 				DeathScreen.this.client.player.requestRespawn();
@@ -45,7 +45,7 @@ public class DeathScreen extends Screen {
 			}
 		});
 		ButtonWidget buttonWidget = this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96, string2) {
+			new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 96, string2) {
 				@Override
 				public void onPressed(double d, double e) {
 					if (DeathScreen.this.client.world.getLevelProperties().isHardcore()) {
@@ -92,19 +92,19 @@ public class DeathScreen extends Screen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		boolean bl = this.client.world.getLevelProperties().isHardcore();
-		this.drawGradientRect(0, 0, this.width, this.height, 1615855616, -1602211792);
+		this.drawGradientRect(0, 0, this.screenWidth, this.screenHeight, 1615855616, -1602211792);
 		GlStateManager.pushMatrix();
 		GlStateManager.scalef(2.0F, 2.0F, 2.0F);
-		this.drawStringCentered(this.fontRenderer, I18n.translate(bl ? "deathScreen.title.hardcore" : "deathScreen.title"), this.width / 2 / 2, 30, 16777215);
+		this.drawStringCentered(this.fontRenderer, I18n.translate(bl ? "deathScreen.title.hardcore" : "deathScreen.title"), this.screenWidth / 2 / 2, 30, 16777215);
 		GlStateManager.popMatrix();
 		if (this.msg != null) {
-			this.drawStringCentered(this.fontRenderer, this.msg.getFormattedText(), this.width / 2, 85, 16777215);
+			this.drawStringCentered(this.fontRenderer, this.msg.getFormattedText(), this.screenWidth / 2, 85, 16777215);
 		}
 
 		this.drawStringCentered(
-			this.fontRenderer, I18n.translate("deathScreen.score") + ": " + TextFormat.field_1054 + this.client.player.getScore(), this.width / 2, 100, 16777215
+			this.fontRenderer, I18n.translate("deathScreen.score") + ": " + TextFormat.field_1054 + this.client.player.getScore(), this.screenWidth / 2, 100, 16777215
 		);
 		if (this.msg != null && j > 85 && j < 85 + 9) {
 			TextComponent textComponent = this.method_2164(i);
@@ -113,7 +113,7 @@ public class DeathScreen extends Screen {
 			}
 		}
 
-		super.method_18326(i, j, f);
+		super.draw(i, j, f);
 	}
 
 	@Nullable
@@ -122,8 +122,8 @@ public class DeathScreen extends Screen {
 			return null;
 		} else {
 			int j = this.client.textRenderer.getStringWidth(this.msg.getFormattedText());
-			int k = this.width / 2 - j / 2;
-			int l = this.width / 2 + j / 2;
+			int k = this.screenWidth / 2 - j / 2;
+			int l = this.screenWidth / 2 + j / 2;
 			int m = k;
 			if (i >= k && i <= l) {
 				for (TextComponent textComponent : this.msg) {

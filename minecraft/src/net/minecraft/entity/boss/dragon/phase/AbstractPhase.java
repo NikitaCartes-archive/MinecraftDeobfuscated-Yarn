@@ -1,6 +1,7 @@
 package net.minecraft.entity.boss.dragon.phase;
 
 import javax.annotation.Nullable;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.decoration.EnderCrystalEntity;
@@ -59,7 +60,7 @@ public abstract class AbstractPhase implements Phase {
 
 	@Override
 	public float method_6847() {
-		float f = MathHelper.sqrt(this.dragon.velocityX * this.dragon.velocityX + this.dragon.velocityZ * this.dragon.velocityZ) + 1.0F;
+		float f = MathHelper.sqrt(Entity.squaredHorizontalLength(this.dragon.getVelocity())) + 1.0F;
 		float g = Math.min(f, 40.0F);
 		return 0.7F / g / f;
 	}

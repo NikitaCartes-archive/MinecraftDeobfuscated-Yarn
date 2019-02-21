@@ -101,7 +101,7 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 		}
 	}
 
-	public EntitySelector parse(StringReader stringReader) throws CommandSyntaxException {
+	public EntitySelector method_9318(StringReader stringReader) throws CommandSyntaxException {
 		int i = 0;
 		EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
 		EntitySelector entitySelector = entitySelectorReader.read();

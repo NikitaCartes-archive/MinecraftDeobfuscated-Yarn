@@ -29,7 +29,7 @@ public final class class_1675 {
 			shapeType,
 			true,
 			entity2x -> !entity2x.isSpectator() && entity2x.doesCollide() && (bl2 || !entity2x.isPartOf(entity2)) && !entity2x.noClip,
-			entity.getBoundingBox().stretch(entity.velocityX, entity.velocityY, entity.velocityZ).expand(1.0)
+			entity.getBoundingBox().method_18804(entity.getVelocity()).expand(1.0)
 		);
 	}
 
@@ -55,22 +55,20 @@ public final class class_1675 {
 		double d = entity.x;
 		double e = entity.y;
 		double f = entity.z;
-		double g = entity.velocityX;
-		double h = entity.velocityY;
-		double i = entity.velocityZ;
+		Vec3d vec3d = entity.getVelocity();
 		World world = entity.world;
-		Vec3d vec3d = new Vec3d(d, e, f);
+		Vec3d vec3d2 = new Vec3d(d, e, f);
 		if (bl3 && !world.isEntityColliding(entity, entity.getBoundingBox(), (Set<Entity>)(!bl2 && entity2 != null ? method_7483(entity2) : ImmutableSet.of()))) {
-			return new BlockHitResult(vec3d, Direction.getFacing(g, h, i), new BlockPos(entity), false);
+			return new BlockHitResult(vec3d2, Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), new BlockPos(entity), false);
 		} else {
-			Vec3d vec3d2 = new Vec3d(d + g, e + h, f + i);
-			HitResult hitResult = world.rayTrace(new RayTraceContext(vec3d, vec3d2, shapeType, RayTraceContext.FluidHandling.NONE, entity));
+			Vec3d vec3d3 = vec3d2.add(vec3d);
+			HitResult hitResult = world.rayTrace(new RayTraceContext(vec3d2, vec3d3, shapeType, RayTraceContext.FluidHandling.NONE, entity));
 			if (bl) {
 				if (hitResult.getType() != HitResult.Type.NONE) {
-					vec3d2 = hitResult.getPos();
+					vec3d3 = hitResult.getPos();
 				}
 
-				HitResult hitResult2 = method_18077(world, entity, vec3d, vec3d2, boundingBox, predicate);
+				HitResult hitResult2 = method_18077(world, entity, vec3d2, vec3d3, boundingBox, predicate);
 				if (hitResult2 != null) {
 					hitResult = hitResult2;
 				}
@@ -146,12 +144,10 @@ public final class class_1675 {
 	}
 
 	public static final void method_7484(Entity entity, float f) {
-		double d = entity.velocityX;
-		double e = entity.velocityY;
-		double g = entity.velocityZ;
-		float h = MathHelper.sqrt(d * d + g * g);
-		entity.yaw = (float)(MathHelper.atan2(g, d) * 180.0F / (float)Math.PI) + 90.0F;
-		entity.pitch = (float)(MathHelper.atan2((double)h, e) * 180.0F / (float)Math.PI) - 90.0F;
+		Vec3d vec3d = entity.getVelocity();
+		float g = MathHelper.sqrt(Entity.squaredHorizontalLength(vec3d));
+		entity.yaw = (float)(MathHelper.atan2(vec3d.z, vec3d.x) * 180.0F / (float)Math.PI) + 90.0F;
+		entity.pitch = (float)(MathHelper.atan2((double)g, vec3d.y) * 180.0F / (float)Math.PI) - 90.0F;
 
 		while (entity.pitch - entity.prevPitch < -180.0F) {
 			entity.prevPitch -= 360.0F;

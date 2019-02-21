@@ -1,8 +1,6 @@
 package net.minecraft.entity;
 
 import javax.annotation.Nullable;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -27,10 +25,8 @@ public class PrimedTntEntity extends Entity {
 	public PrimedTntEntity(World world, double d, double e, double f, @Nullable LivingEntity livingEntity) {
 		this(EntityType.TNT, world);
 		this.setPosition(d, e, f);
-		float g = (float)(Math.random() * (float) (Math.PI * 2));
-		this.velocityX = (double)(-((float)Math.sin((double)g)) * 0.02F);
-		this.velocityY = 0.2F;
-		this.velocityZ = (double)(-((float)Math.cos((double)g)) * 0.02F);
+		double g = world.random.nextDouble() * (float) (Math.PI * 2);
+		this.setVelocity(-Math.sin(g) * 0.02, 0.2F, -Math.cos(g) * 0.02);
 		this.setFuse(80);
 		this.prevX = d;
 		this.prevY = e;
@@ -59,17 +55,13 @@ public class PrimedTntEntity extends Entity {
 		this.prevY = this.y;
 		this.prevZ = this.z;
 		if (!this.isUnaffectedByGravity()) {
-			this.velocityY -= 0.04F;
+			this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
 		}
 
-		this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
-		this.velocityX *= 0.98F;
-		this.velocityY *= 0.98F;
-		this.velocityZ *= 0.98F;
+		this.move(MovementType.field_6308, this.getVelocity());
+		this.setVelocity(this.getVelocity().multiply(0.98));
 		if (this.onGround) {
-			this.velocityX *= 0.7F;
-			this.velocityZ *= 0.7F;
-			this.velocityY *= -0.5;
+			this.setVelocity(this.getVelocity().multiply(0.7, -0.5, 0.7));
 		}
 
 		this.fuseTimer--;
@@ -105,7 +97,7 @@ public class PrimedTntEntity extends Entity {
 	}
 
 	@Override
-	protected float method_18378(class_4050 arg, class_4048 arg2) {
+	protected float getEyeHeight(EntityPose entityPose, EntitySize entitySize) {
 		return 0.0F;
 	}
 

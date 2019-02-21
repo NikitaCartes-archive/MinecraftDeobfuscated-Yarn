@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3999;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -27,8 +26,8 @@ public class ElderGuardianAppearanceParticle extends Particle {
 	}
 
 	@Override
-	public class_3999 method_18122() {
-		return class_3999.field_17831;
+	public ParticleTextureSheet getTextureSheet() {
+		return ParticleTextureSheet.CUSTOM;
 	}
 
 	@Override

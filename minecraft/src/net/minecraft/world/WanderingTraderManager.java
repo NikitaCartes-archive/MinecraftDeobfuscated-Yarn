@@ -36,7 +36,7 @@ public class WanderingTraderManager {
 		}
 	}
 
-	public void method_18015() {
+	public void tick() {
 		if (--this.field_17728 <= 0) {
 			this.field_17728 = 1200;
 			LevelProperties levelProperties = this.world.getLevelProperties();

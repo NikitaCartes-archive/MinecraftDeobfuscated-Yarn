@@ -27,6 +27,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -144,10 +145,11 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	public void onEntityLand(BlockView blockView, Entity entity) {
 		if (entity.isSneaking()) {
 			super.onEntityLand(blockView, entity);
-		} else if (entity.velocityY < 0.0) {
-			entity.velocityY = -entity.velocityY * 0.66F;
-			if (!(entity instanceof LivingEntity)) {
-				entity.velocityY *= 0.8;
+		} else {
+			Vec3d vec3d = entity.getVelocity();
+			if (vec3d.y < 0.0) {
+				double d = entity instanceof LivingEntity ? 1.0 : 0.8;
+				entity.setVelocity(vec3d.x, -vec3d.y * 0.66F * d, vec3d.z);
 			}
 		}
 	}

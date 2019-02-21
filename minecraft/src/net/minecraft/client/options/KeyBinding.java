@@ -118,7 +118,7 @@ public class KeyBinding implements Comparable<KeyBinding> {
 		this.keyCode = keyCode;
 	}
 
-	public int compareTo(KeyBinding keyBinding) {
+	public int method_1430(KeyBinding keyBinding) {
 		return this.category.equals(keyBinding.category)
 			? I18n.translate(this.id).compareTo(I18n.translate(keyBinding.id))
 			: ((Integer)categoryOrderMap.get(this.category)).compareTo((Integer)categoryOrderMap.get(keyBinding.category));

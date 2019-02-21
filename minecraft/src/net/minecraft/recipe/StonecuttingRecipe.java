@@ -15,7 +15,7 @@ public class StonecuttingRecipe extends CuttingRecipe {
 
 	@Override
 	public boolean matches(Inventory inventory, World world) {
-		return this.ingredient.matches(inventory.getInvStack(0));
+		return this.ingredient.method_8093(inventory.getInvStack(0));
 	}
 
 	@Environment(EnvType.CLIENT)

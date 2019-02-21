@@ -184,7 +184,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<ServerTask> implem
 	@Environment(EnvType.CLIENT)
 	private boolean iconFilePresent;
 	private final ReloadableResourceManager dataManager = new ReloadableResourceManagerImpl(ResourceType.DATA, this.serverThread);
-	private final ResourcePackContainerManager<ResourcePackContainer> field_4595 = new ResourcePackContainerManager<>(ResourcePackContainer::new);
+	private final ResourcePackContainerManager<ResourcePackContainer> resourcePackContainerManager = new ResourcePackContainerManager<>(ResourcePackContainer::new);
 	@Nullable
 	private FileResourcePackCreator field_4553;
 	private final ServerCommandManager commandManager;
@@ -195,11 +195,11 @@ public abstract class MinecraftServer extends ThreadTaskQueue<ServerTask> implem
 	private final LootManager lootManager = new LootManager();
 	private final ServerAdvancementLoader advancementManager = new ServerAdvancementLoader();
 	private final CommandFunctionManager commandFunctionManager = new CommandFunctionManager(this);
-	private final MetricsData field_16205 = new MetricsData();
+	private final MetricsData metricsData = new MetricsData();
 	private boolean field_4570;
 	private boolean forceWorldUpgrade;
 	private float tickTime;
-	private final Executor field_17200;
+	private final Executor workerExecutor;
 	@Nullable
 	private String field_17601;
 	private boolean field_18036;
@@ -232,7 +232,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<ServerTask> implem
 		this.dataManager.registerListener(this.lootManager);
 		this.dataManager.registerListener(this.commandFunctionManager);
 		this.dataManager.registerListener(this.advancementManager);
-		this.field_17200 = SystemUtil.getServerWorkerExecutor();
+		this.workerExecutor = SystemUtil.getServerWorkerExecutor();
 		this.levelName = string;
 	}
 
@@ -355,7 +355,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<ServerTask> implem
 		}
 
 		ServerWorld serverWorld = new ServerWorld(
-			this, this.field_17200, worldSaveHandler, levelProperties, DimensionType.field_13072, this.profiler, worldGenerationProgressListener
+			this, this.workerExecutor, worldSaveHandler, levelProperties, DimensionType.field_13072, this.profiler, worldGenerationProgressListener
 		);
 		this.worlds.put(DimensionType.field_13072, serverWorld);
 		this.method_17976(serverWorld.getPersistentStateManager());
@@ -393,7 +393,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<ServerTask> implem
 				this.worlds
 					.put(
 						dimensionType,
-						new SecondaryServerWorld(serverWorld2, this, this.field_17200, worldSaveHandler, dimensionType, this.profiler, worldGenerationProgressListener)
+						new SecondaryServerWorld(serverWorld2, this, this.workerExecutor, worldSaveHandler, dimensionType, this.profiler, worldGenerationProgressListener)
 					);
 			}
 		}
@@ -414,14 +414,14 @@ public abstract class MinecraftServer extends ThreadTaskQueue<ServerTask> implem
 	}
 
 	protected void method_3800(File file, LevelProperties levelProperties) {
-		this.field_4595.addCreator(new DefaultResourcePackCreator());
+		this.resourcePackContainerManager.addCreator(new DefaultResourcePackCreator());
 		this.field_4553 = new FileResourcePackCreator(new File(file, "datapacks"));
-		this.field_4595.addCreator(this.field_4553);
-		this.field_4595.callCreators();
+		this.resourcePackContainerManager.addCreator(this.field_4553);
+		this.resourcePackContainerManager.callCreators();
 		List<ResourcePackContainer> list = Lists.<ResourcePackContainer>newArrayList();
 
 		for (String string : levelProperties.getEnabledDataPacks()) {
-			ResourcePackContainer resourcePackContainer = this.field_4595.getContainer(string);
+			ResourcePackContainer resourcePackContainer = this.resourcePackContainerManager.getContainer(string);
 			if (resourcePackContainer != null) {
 				list.add(resourcePackContainer);
 			} else {
@@ -429,7 +429,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<ServerTask> implem
 			}
 		}
 
-		this.field_4595.setEnabled(list);
+		this.resourcePackContainerManager.setEnabled(list);
 		this.reloadDataPacks(levelProperties);
 	}
 
@@ -797,7 +797,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<ServerTask> implem
 		long m = this.lastTickLengths[this.ticks % 100] = SystemUtil.getMeasuringTimeNano() - l;
 		this.tickTime = this.tickTime * 0.8F + (float)m / 1000000.0F * 0.19999999F;
 		long n = SystemUtil.getMeasuringTimeNano();
-		this.field_16205.pushSample(n - l);
+		this.metricsData.pushSample(n - l);
 		this.profiler.pop();
 	}
 
@@ -1027,7 +1027,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<ServerTask> implem
 		crashReport.getSystemDetailsSection().add("Data Packs", (ICrashCallable<String>)(() -> {
 			StringBuilder stringBuilder = new StringBuilder();
 
-			for (ResourcePackContainer resourcePackContainer : this.field_4595.getEnabledContainers()) {
+			for (ResourcePackContainer resourcePackContainer : this.resourcePackContainerManager.getEnabledContainers()) {
 				if (stringBuilder.length() > 0) {
 					stringBuilder.append(", ");
 				}
@@ -1390,31 +1390,33 @@ public abstract class MinecraftServer extends ThreadTaskQueue<ServerTask> implem
 			this.execute(this::reload);
 		} else {
 			this.getPlayerManager().saveAllPlayerData();
-			this.field_4595.callCreators();
+			this.resourcePackContainerManager.callCreators();
 			this.reloadDataPacks(this.getWorld(DimensionType.field_13072).getLevelProperties());
 			this.getPlayerManager().onDataPacksReloaded();
 		}
 	}
 
 	private void reloadDataPacks(LevelProperties levelProperties) {
-		List<ResourcePackContainer> list = Lists.<ResourcePackContainer>newArrayList(this.field_4595.getEnabledContainers());
+		List<ResourcePackContainer> list = Lists.<ResourcePackContainer>newArrayList(this.resourcePackContainerManager.getEnabledContainers());
 
-		for (ResourcePackContainer resourcePackContainer : this.field_4595.getAlphabeticallyOrderedContainers()) {
+		for (ResourcePackContainer resourcePackContainer : this.resourcePackContainerManager.getAlphabeticallyOrderedContainers()) {
 			if (!levelProperties.getDisabledDataPacks().contains(resourcePackContainer.getName()) && !list.contains(resourcePackContainer)) {
 				LOGGER.info("Found new data pack {}, loading it automatically", resourcePackContainer.getName());
 				resourcePackContainer.getSortingDirection().locate(list, resourcePackContainer, resourcePackContainerx -> resourcePackContainerx, false);
 			}
 		}
 
-		this.field_4595.setEnabled(list);
+		this.resourcePackContainerManager.setEnabled(list);
 		List<ResourcePack> list2 = Lists.<ResourcePack>newArrayList();
-		this.field_4595.getEnabledContainers().forEach(resourcePackContainerx -> list2.add(resourcePackContainerx.createResourcePack()));
-		this.method_18248(this.dataManager.reload(this.field_17200, this, list2, CompletableFuture.completedFuture(net.minecraft.util.Void.INSTANCE)));
+		this.resourcePackContainerManager.getEnabledContainers().forEach(resourcePackContainerx -> list2.add(resourcePackContainerx.createResourcePack()));
+		this.method_18248(this.dataManager.beginReload(this.workerExecutor, this, list2, CompletableFuture.completedFuture(net.minecraft.util.Void.INSTANCE)));
 		levelProperties.getEnabledDataPacks().clear();
 		levelProperties.getDisabledDataPacks().clear();
-		this.field_4595.getEnabledContainers().forEach(resourcePackContainerx -> levelProperties.getEnabledDataPacks().add(resourcePackContainerx.getName()));
-		this.field_4595.getAlphabeticallyOrderedContainers().forEach(resourcePackContainerx -> {
-			if (!this.field_4595.getEnabledContainers().contains(resourcePackContainerx)) {
+		this.resourcePackContainerManager
+			.getEnabledContainers()
+			.forEach(resourcePackContainerx -> levelProperties.getEnabledDataPacks().add(resourcePackContainerx.getName()));
+		this.resourcePackContainerManager.getAlphabeticallyOrderedContainers().forEach(resourcePackContainerx -> {
+			if (!this.resourcePackContainerManager.getEnabledContainers().contains(resourcePackContainerx)) {
 				levelProperties.getDisabledDataPacks().add(resourcePackContainerx.getName());
 			}
 		});
@@ -1439,7 +1441,7 @@ public abstract class MinecraftServer extends ThreadTaskQueue<ServerTask> implem
 	}
 
 	public ResourcePackContainerManager<ResourcePackContainer> method_3836() {
-		return this.field_4595;
+		return this.resourcePackContainerManager;
 	}
 
 	public ServerCommandManager getCommandManager() {
@@ -1528,14 +1530,14 @@ public abstract class MinecraftServer extends ThreadTaskQueue<ServerTask> implem
 
 	@Environment(EnvType.CLIENT)
 	public MetricsData getMetricsData() {
-		return this.field_16205;
+		return this.metricsData;
 	}
 
 	public DisableableProfiler getProfiler() {
 		return this.profiler;
 	}
 
-	public Executor method_17191() {
-		return this.field_17200;
+	public Executor getWorkerExecutor() {
+		return this.workerExecutor;
 	}
 }

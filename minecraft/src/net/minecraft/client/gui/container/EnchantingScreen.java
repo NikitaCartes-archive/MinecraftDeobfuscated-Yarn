@@ -45,7 +45,7 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 	@Override
 	protected void drawForeground(int i, int j) {
 		this.fontRenderer.draw(this.name.getFormattedText(), 12.0F, 5.0F, 4210752);
-		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
+		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
 	}
 
 	@Override
@@ -56,8 +56,8 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
-		int j = (this.width - this.containerWidth) / 2;
-		int k = (this.height - this.containerHeight) / 2;
+		int j = (this.screenWidth - this.width) / 2;
+		int k = (this.screenHeight - this.height) / 2;
 
 		for (int l = 0; l < 3; l++) {
 			double f = d - (double)(j + 60);
@@ -75,15 +75,15 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 	protected void drawBackground(float f, int i, int j) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(TEXTURE);
-		int k = (this.width - this.containerWidth) / 2;
-		int l = (this.height - this.containerHeight) / 2;
-		this.drawTexturedRect(k, l, 0, 0, this.containerWidth, this.containerHeight);
+		int k = (this.screenWidth - this.width) / 2;
+		int l = (this.screenHeight - this.height) / 2;
+		this.drawTexturedRect(k, l, 0, 0, this.width, this.height);
 		GlStateManager.pushMatrix();
 		GlStateManager.matrixMode(5889);
 		GlStateManager.pushMatrix();
 		GlStateManager.loadIdentity();
 		int m = (int)this.client.window.getScaleFactor();
-		GlStateManager.viewport((this.width - 320) / 2 * m, (this.height - 240) / 2 * m, 320 * m, 240 * m);
+		GlStateManager.viewport((this.screenWidth - 320) / 2 * m, (this.screenHeight - 240) / 2 * m, 320 * m, 240 * m);
 		GlStateManager.translatef(-0.34F, 0.23F, 0.0F);
 		GlStateManager.multMatrix(Matrix4f.method_4929(90.0, 1.3333334F, 9.0F, 80.0F));
 		float g = 1.0F;
@@ -177,10 +177,10 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		f = this.client.getTickDelta();
 		this.drawBackground();
-		super.method_18326(i, j, f);
+		super.draw(i, j, f);
 		this.drawMouseoverTooltip(i, j);
 		boolean bl = this.client.player.abilities.creativeMode;
 		int k = this.container.method_7638();

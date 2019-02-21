@@ -40,15 +40,17 @@ public class SettingsScreen extends Screen {
 		int i = 0;
 
 		for (GameOption gameOption : field_2504) {
-			int j = this.width / 2 - 155 + i % 2 * 160;
-			int k = this.height / 6 - 12 + 24 * (i >> 1);
-			this.addButton(gameOption.method_18520(this.client.options, j, k, 150));
+			int j = this.screenWidth / 2 - 155 + i % 2 * 160;
+			int k = this.screenHeight / 6 - 12 + 24 * (i >> 1);
+			this.addButton(gameOption.createOptionButton(this.client.options, j, k, 150));
 			i++;
 		}
 
 		if (this.client.world != null) {
 			Difficulty difficulty = this.client.world.getDifficulty();
-			this.difficultyButton = new ButtonWidget(this.width / 2 - 155 + i % 2 * 160, this.height / 6 - 12 + 24 * (i >> 1), 150, 20, this.method_2189(difficulty)) {
+			this.difficultyButton = new ButtonWidget(
+				this.screenWidth / 2 - 155 + i % 2 * 160, this.screenHeight / 6 - 12 + 24 * (i >> 1), 150, 20, this.method_2189(difficulty)
+			) {
 				@Override
 				public void onPressed(double d, double e) {
 					SettingsScreen.this.client
@@ -88,49 +90,49 @@ public class SettingsScreen extends Screen {
 		} else {
 			this.addButton(
 				new OptionButtonWidget(
-					this.width / 2 - 155 + i % 2 * 160,
-					this.height / 6 - 12 + 24 * (i >> 1),
+					this.screenWidth / 2 - 155 + i % 2 * 160,
+					this.screenHeight / 6 - 12 + 24 * (i >> 1),
 					150,
 					20,
-					GameOption.field_18186,
-					GameOption.field_18186.method_18495(this.settings)
+					GameOption.REALMS_NOTIFICATIONS,
+					GameOption.REALMS_NOTIFICATIONS.method_18495(this.settings)
 				) {
 					@Override
 					public void onPressed(double d, double e) {
-						GameOption.field_18186.method_18491(SettingsScreen.this.settings);
+						GameOption.REALMS_NOTIFICATIONS.method_18491(SettingsScreen.this.settings);
 						SettingsScreen.this.settings.write();
-						this.setText(GameOption.field_18186.method_18495(SettingsScreen.this.settings));
+						this.setText(GameOption.REALMS_NOTIFICATIONS.method_18495(SettingsScreen.this.settings));
 					}
 				}
 			);
 		}
 
-		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 48 - 6, 150, 20, I18n.translate("options.skinCustomisation")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight / 6 + 48 - 6, 150, 20, I18n.translate("options.skinCustomisation")) {
 			@Override
 			public void onPressed(double d, double e) {
 				SettingsScreen.this.client.openScreen(new SkinSettingsScreen(SettingsScreen.this));
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 48 - 6, 150, 20, I18n.translate("options.sounds")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight / 6 + 48 - 6, 150, 20, I18n.translate("options.sounds")) {
 			@Override
 			public void onPressed(double d, double e) {
 				SettingsScreen.this.client.openScreen(new AudioSettingsScreen(SettingsScreen.this, SettingsScreen.this.settings));
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 72 - 6, 150, 20, I18n.translate("options.video")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight / 6 + 72 - 6, 150, 20, I18n.translate("options.video")) {
 			@Override
 			public void onPressed(double d, double e) {
 				SettingsScreen.this.client.openScreen(new VideoSettingsScreen(SettingsScreen.this, SettingsScreen.this.settings));
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 72 - 6, 150, 20, I18n.translate("options.controls")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight / 6 + 72 - 6, 150, 20, I18n.translate("options.controls")) {
 			@Override
 			public void onPressed(double d, double e) {
 				SettingsScreen.this.client.openScreen(new ControlsSettingsScreen(SettingsScreen.this, SettingsScreen.this.settings));
 			}
 		});
 		this.addButton(
-			new ButtonWidget(this.width / 2 - 155, this.height / 6 + 96 - 6, 150, 20, I18n.translate("options.language")) {
+			new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight / 6 + 96 - 6, 150, 20, I18n.translate("options.language")) {
 				@Override
 				public void onPressed(double d, double e) {
 					SettingsScreen.this.client
@@ -138,25 +140,25 @@ public class SettingsScreen extends Screen {
 				}
 			}
 		);
-		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 96 - 6, 150, 20, I18n.translate("options.chat.title")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight / 6 + 96 - 6, 150, 20, I18n.translate("options.chat.title")) {
 			@Override
 			public void onPressed(double d, double e) {
 				SettingsScreen.this.client.openScreen(new ChatSettingsScreen(SettingsScreen.this, SettingsScreen.this.settings));
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 120 - 6, 150, 20, I18n.translate("options.resourcepack")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight / 6 + 120 - 6, 150, 20, I18n.translate("options.resourcepack")) {
 			@Override
 			public void onPressed(double d, double e) {
 				SettingsScreen.this.client.openScreen(new ResourcePackSettingsScreen(SettingsScreen.this));
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 120 - 6, 150, 20, I18n.translate("options.snooper.view")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight / 6 + 120 - 6, 150, 20, I18n.translate("options.snooper.view")) {
 			@Override
 			public void onPressed(double d, double e) {
 				SettingsScreen.this.client.openScreen(new SnooperSettingsScreen(SettingsScreen.this, SettingsScreen.this.settings));
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, I18n.translate("gui.done")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 6 + 168, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
 				SettingsScreen.this.client.openScreen(SettingsScreen.this.parent);
@@ -185,9 +187,9 @@ public class SettingsScreen extends Screen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, this.title, this.width / 2, 15, 16777215);
-		super.method_18326(i, j, f);
+		this.drawStringCentered(this.fontRenderer, this.title, this.screenWidth / 2, 15, 16777215);
+		super.draw(i, j, f);
 	}
 }

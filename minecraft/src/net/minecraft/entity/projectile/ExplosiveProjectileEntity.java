@@ -51,9 +51,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 		this.owner = livingEntity;
 		this.setPositionAndAngles(livingEntity.x, livingEntity.y, livingEntity.z, livingEntity.yaw, livingEntity.pitch);
 		this.setPosition(this.x, this.y, this.z);
-		this.velocityX = 0.0;
-		this.velocityY = 0.0;
-		this.velocityZ = 0.0;
+		this.setVelocity(Vec3d.ZERO);
 		d += this.random.nextGaussian() * 0.4;
 		e += this.random.nextGaussian() * 0.4;
 		f += this.random.nextGaussian() * 0.4;
@@ -93,35 +91,22 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 				this.onCollision(hitResult);
 			}
 
-			this.x = this.x + this.velocityX;
-			this.y = this.y + this.velocityY;
-			this.z = this.z + this.velocityZ;
+			Vec3d vec3d = this.getVelocity();
+			this.x = this.x + vec3d.x;
+			this.y = this.y + vec3d.y;
+			this.z = this.z + vec3d.z;
 			class_1675.method_7484(this, 0.2F);
 			float f = this.method_7466();
 			if (this.isInsideWater()) {
 				for (int i = 0; i < 4; i++) {
 					float g = 0.25F;
-					this.world
-						.addParticle(
-							ParticleTypes.field_11247,
-							this.x - this.velocityX * 0.25,
-							this.y - this.velocityY * 0.25,
-							this.z - this.velocityZ * 0.25,
-							this.velocityX,
-							this.velocityY,
-							this.velocityZ
-						);
+					this.world.addParticle(ParticleTypes.field_11247, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
 				}
 
 				f = 0.8F;
 			}
 
-			this.velocityX = this.velocityX + this.field_7601;
-			this.velocityY = this.velocityY + this.field_7600;
-			this.velocityZ = this.velocityZ + this.field_7599;
-			this.velocityX *= (double)f;
-			this.velocityY *= (double)f;
-			this.velocityZ *= (double)f;
+			this.setVelocity(vec3d.add(this.field_7601, this.field_7600, this.field_7599).multiply((double)f));
 			this.world.addParticle(this.getParticleType(), this.x, this.y + 0.5, this.z, 0.0, 0.0, 0.0);
 			this.setPosition(this.x, this.y, this.z);
 		} else {
@@ -145,7 +130,8 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		compoundTag.put("direction", this.toListTag(new double[]{this.velocityX, this.velocityY, this.velocityZ}));
+		Vec3d vec3d = this.getVelocity();
+		compoundTag.put("direction", this.toListTag(new double[]{vec3d.x, vec3d.y, vec3d.z}));
 		compoundTag.put("power", this.toListTag(new double[]{this.field_7601, this.field_7600, this.field_7599}));
 		compoundTag.putInt("life", this.field_7603);
 	}
@@ -164,9 +150,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 		this.field_7603 = compoundTag.getInt("life");
 		if (compoundTag.containsKey("direction", 9) && compoundTag.getList("direction", 6).size() == 3) {
 			ListTag listTag = compoundTag.getList("direction", 6);
-			this.velocityX = listTag.getDouble(0);
-			this.velocityY = listTag.getDouble(1);
-			this.velocityZ = listTag.getDouble(2);
+			this.setVelocity(listTag.getDouble(0), listTag.getDouble(1), listTag.getDouble(2));
 		} else {
 			this.invalidate();
 		}
@@ -190,15 +174,10 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 			this.scheduleVelocityUpdate();
 			if (damageSource.getAttacker() != null) {
 				Vec3d vec3d = damageSource.getAttacker().method_5720();
-				if (vec3d != null) {
-					this.velocityX = vec3d.x;
-					this.velocityY = vec3d.y;
-					this.velocityZ = vec3d.z;
-					this.field_7601 = this.velocityX * 0.1;
-					this.field_7600 = this.velocityY * 0.1;
-					this.field_7599 = this.velocityZ * 0.1;
-				}
-
+				this.setVelocity(vec3d);
+				this.field_7601 = vec3d.x * 0.1;
+				this.field_7600 = vec3d.y * 0.1;
+				this.field_7599 = vec3d.z * 0.1;
 				if (damageSource.getAttacker() instanceof LivingEntity) {
 					this.owner = (LivingEntity)damageSource.getAttacker();
 				}
@@ -225,7 +204,16 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 	public Packet<?> createSpawnPacket() {
 		int i = this.owner == null ? 0 : this.owner.getEntityId();
 		return new EntitySpawnS2CPacket(
-			this.getEntityId(), this.getUuid(), this.x, this.y, this.z, this.pitch, this.yaw, this.getType(), i, this.field_7601, this.field_7600, this.field_7599
+			this.getEntityId(),
+			this.getUuid(),
+			this.x,
+			this.y,
+			this.z,
+			this.pitch,
+			this.yaw,
+			this.getType(),
+			i,
+			new Vec3d(this.field_7601, this.field_7600, this.field_7599)
 		);
 	}
 }

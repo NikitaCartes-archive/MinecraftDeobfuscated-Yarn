@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
@@ -46,8 +46,8 @@ public class EndCreditsScreen extends Screen {
 	@Override
 	public void update() {
 		this.client.getMusicTracker().method_18669();
-		this.client.getSoundLoader().method_18670();
-		float f = (float)(this.field_2629 + this.height + this.height + 24) / this.field_2635;
+		this.client.getSoundLoader().update();
+		float f = (float)(this.field_2629 + this.screenHeight + this.screenHeight + 24) / this.field_2635;
 		if (this.field_2628 > f) {
 			this.method_2257();
 		}
@@ -124,14 +124,14 @@ public class EndCreditsScreen extends Screen {
 	private void method_2258(int i, int j, float f) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		this.client.getTextureManager().bindTexture(Drawable.OPTIONS_BG);
+		this.client.getTextureManager().bindTexture(DrawableHelper.OPTIONS_BG);
 		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-		int k = this.width;
+		int k = this.screenWidth;
 		float g = -this.field_2628 * 0.5F * this.field_2635;
-		float h = (float)this.height - this.field_2628 * 0.5F * this.field_2635;
+		float h = (float)this.screenHeight - this.field_2628 * 0.5F * this.field_2635;
 		float l = 0.015625F;
 		float m = this.field_2628 * 0.02F;
-		float n = (float)(this.field_2629 + this.height + this.height + 24) / this.field_2635;
+		float n = (float)(this.field_2629 + this.screenHeight + this.screenHeight + 24) / this.field_2635;
 		float o = (n - 20.0F - this.field_2628) * 0.005F;
 		if (o < m) {
 			m = o;
@@ -143,8 +143,8 @@ public class EndCreditsScreen extends Screen {
 
 		m *= m;
 		m = m * 96.0F / 255.0F;
-		bufferBuilder.vertex(0.0, (double)this.height, (double)this.zOffset).texture(0.0, (double)(g * 0.015625F)).color(m, m, m, 1.0F).next();
-		bufferBuilder.vertex((double)k, (double)this.height, (double)this.zOffset)
+		bufferBuilder.vertex(0.0, (double)this.screenHeight, (double)this.zOffset).texture(0.0, (double)(g * 0.015625F)).color(m, m, m, 1.0F).next();
+		bufferBuilder.vertex((double)k, (double)this.screenHeight, (double)this.zOffset)
 			.texture((double)((float)k * 0.015625F), (double)(g * 0.015625F))
 			.color(m, m, m, 1.0F)
 			.next();
@@ -154,13 +154,13 @@ public class EndCreditsScreen extends Screen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.method_2258(i, j, f);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		int k = 274;
-		int l = this.width / 2 - 137;
-		int m = this.height + 50;
+		int l = this.screenWidth / 2 - 137;
+		int m = this.screenHeight + 50;
 		this.field_2628 += f;
 		float g = -this.field_2628 * this.field_2635;
 		GlStateManager.pushMatrix();
@@ -177,13 +177,13 @@ public class EndCreditsScreen extends Screen {
 
 		for (int o = 0; o < this.field_2634.size(); o++) {
 			if (o == this.field_2634.size() - 1) {
-				float h = (float)n + g - (float)(this.height / 2 - 6);
+				float h = (float)n + g - (float)(this.screenHeight / 2 - 6);
 				if (h < 0.0F) {
 					GlStateManager.translatef(0.0F, -h, 0.0F);
 				}
 			}
 
-			if ((float)n + g + 12.0F + 8.0F > 0.0F && (float)n + g < (float)this.height) {
+			if ((float)n + g + 12.0F + 8.0F > 0.0F && (float)n + g < (float)this.screenHeight) {
 				String string = (String)this.field_2634.get(o);
 				if (string.startsWith("[C]")) {
 					this.fontRenderer.drawWithShadow(string.substring(3), (float)(l + (274 - this.fontRenderer.getStringWidth(string.substring(3))) / 2), (float)n, 16777215);
@@ -200,8 +200,8 @@ public class EndCreditsScreen extends Screen {
 		this.client.getTextureManager().bindTexture(VIGNETTE_TEXTURE);
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR);
-		int o = this.width;
-		int p = this.height;
+		int o = this.screenWidth;
+		int p = this.screenHeight;
 		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 		bufferBuilder.vertex(0.0, (double)p, (double)this.zOffset).texture(0.0, 1.0).color(1.0F, 1.0F, 1.0F, 1.0F).next();
 		bufferBuilder.vertex((double)o, (double)p, (double)this.zOffset).texture(1.0, 1.0).color(1.0F, 1.0F, 1.0F, 1.0F).next();
@@ -209,6 +209,6 @@ public class EndCreditsScreen extends Screen {
 		bufferBuilder.vertex(0.0, 0.0, (double)this.zOffset).texture(0.0, 0.0).color(1.0F, 1.0F, 1.0F, 1.0F).next();
 		tessellator.draw();
 		GlStateManager.disableBlend();
-		super.method_18326(i, j, f);
+		super.draw(i, j, f);
 	}
 }

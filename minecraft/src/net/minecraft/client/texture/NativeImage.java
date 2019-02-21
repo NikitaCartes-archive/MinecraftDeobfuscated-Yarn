@@ -451,7 +451,7 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	public void method_4302() {
-		class_301.method_1407(this.pointer);
+		class_301.untrack(this.pointer);
 	}
 
 	public static NativeImage fromBase64(String string) throws IOException {

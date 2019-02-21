@@ -10,7 +10,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.audio.PositionedSoundInstance;
 import net.minecraft.client.audio.SoundLoader;
-import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.WrittenBookScreen;
 import net.minecraft.client.gui.widget.BookPageButtonWidget;
@@ -84,21 +84,21 @@ public class EditBookScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.buttonSign = this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, I18n.translate("book.signButton")) {
+		this.buttonSign = this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, 196, 98, 20, I18n.translate("book.signButton")) {
 			@Override
 			public void onPressed(double d, double e) {
 				EditBookScreen.this.signing = true;
 				EditBookScreen.this.updateButtons();
 			}
 		});
-		this.buttonDone = this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.done")) {
+		this.buttonDone = this.addButton(new ButtonWidget(this.screenWidth / 2 + 2, 196, 98, 20, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
 				EditBookScreen.this.client.openScreen(null);
 				EditBookScreen.this.finalizeBook(false);
 			}
 		});
-		this.buttonFinalize = this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, I18n.translate("book.finalizeButton")) {
+		this.buttonFinalize = this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, 196, 98, 20, I18n.translate("book.finalizeButton")) {
 			@Override
 			public void onPressed(double d, double e) {
 				if (EditBookScreen.this.signing) {
@@ -107,7 +107,7 @@ public class EditBookScreen extends Screen {
 				}
 			}
 		});
-		this.buttonCancel = this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.cancel")) {
+		this.buttonCancel = this.addButton(new ButtonWidget(this.screenWidth / 2 + 2, 196, 98, 20, I18n.translate("gui.cancel")) {
 			@Override
 			public void onPressed(double d, double e) {
 				if (EditBookScreen.this.signing) {
@@ -117,7 +117,7 @@ public class EditBookScreen extends Screen {
 				EditBookScreen.this.updateButtons();
 			}
 		});
-		int i = (this.width - 192) / 2;
+		int i = (this.screenWidth - 192) / 2;
 		int j = 2;
 		this.buttonPreviousPage = this.addButton(new BookPageButtonWidget(i + 116, 159, true) {
 			@Override
@@ -498,10 +498,10 @@ public class EditBookScreen extends Screen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(WrittenBookScreen.BOOK_TEXTURE);
-		int k = (this.width - 192) / 2;
+		int k = (this.screenWidth - 192) / 2;
 		int l = 2;
 		this.drawTexturedRect(k, 2, 0, 0, 192, 192);
 		if (this.signing) {
@@ -538,14 +538,14 @@ public class EditBookScreen extends Screen {
 
 				this.translateRelativePositionToGlPosition(position);
 				if (this.cursorIndex < string2.length()) {
-					Drawable.drawRect(position.x, position.y - 1, position.x + 1, position.y + 9, -16777216);
+					DrawableHelper.drawRect(position.x, position.y - 1, position.x + 1, position.y + 9, -16777216);
 				} else {
 					this.fontRenderer.draw("_", (float)position.x, (float)position.y, 0);
 				}
 			}
 		}
 
-		super.method_18326(i, j, f);
+		super.draw(i, j, f);
 	}
 
 	private int getStringWidth(String string) {
@@ -662,12 +662,12 @@ public class EditBookScreen extends Screen {
 	}
 
 	private void translateGlPositionToRelativePosition(EditBookScreen.Position position) {
-		position.x = position.x - (this.width - 192) / 2 - 36;
+		position.x = position.x - (this.screenWidth - 192) / 2 - 36;
 		position.y = position.y - 32;
 	}
 
 	private void translateRelativePositionToGlPosition(EditBookScreen.Position position) {
-		position.x = position.x + (this.width - 192) / 2 + 36;
+		position.x = position.x + (this.screenWidth - 192) / 2 + 36;
 		position.y = position.y + 32;
 	}
 

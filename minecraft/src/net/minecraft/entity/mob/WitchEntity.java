@@ -8,8 +8,8 @@ import net.minecraft.class_1394;
 import net.minecraft.class_1399;
 import net.minecraft.class_3760;
 import net.minecraft.class_3909;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -40,6 +40,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class WitchEntity extends RaiderEntity implements RangedAttacker {
@@ -208,11 +209,11 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 	@Override
 	public void attack(LivingEntity livingEntity, float f) {
 		if (!this.isDrinking()) {
-			double d = livingEntity.y + (double)livingEntity.getEyeHeight() - 1.1F;
-			double e = livingEntity.x + livingEntity.velocityX - this.x;
-			double g = d - this.y;
-			double h = livingEntity.z + livingEntity.velocityZ - this.z;
-			float i = MathHelper.sqrt(e * e + h * h);
+			Vec3d vec3d = livingEntity.getVelocity();
+			double d = livingEntity.x + vec3d.x - this.x;
+			double e = livingEntity.y + (double)livingEntity.getStandingEyeHeight() - 1.1F - this.y;
+			double g = livingEntity.z + vec3d.z - this.z;
+			float h = MathHelper.sqrt(d * d + g * g);
 			Potion potion = Potions.field_9004;
 			if (livingEntity instanceof RaiderEntity) {
 				if (livingEntity.getHealth() <= 4.0F) {
@@ -222,25 +223,25 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 				}
 
 				this.setTarget(null);
-			} else if (i >= 8.0F && !livingEntity.hasPotionEffect(StatusEffects.field_5909)) {
+			} else if (h >= 8.0F && !livingEntity.hasPotionEffect(StatusEffects.field_5909)) {
 				potion = Potions.field_8996;
 			} else if (livingEntity.getHealth() >= 8.0F && !livingEntity.hasPotionEffect(StatusEffects.field_5899)) {
 				potion = Potions.field_8982;
-			} else if (i <= 3.0F && !livingEntity.hasPotionEffect(StatusEffects.field_5911) && this.random.nextFloat() < 0.25F) {
+			} else if (h <= 3.0F && !livingEntity.hasPotionEffect(StatusEffects.field_5911) && this.random.nextFloat() < 0.25F) {
 				potion = Potions.field_8975;
 			}
 
 			ThrownPotionEntity thrownPotionEntity = new ThrownPotionEntity(this.world, this);
 			thrownPotionEntity.setItemStack(PotionUtil.setPotion(new ItemStack(Items.field_8436), potion));
 			thrownPotionEntity.pitch -= -20.0F;
-			thrownPotionEntity.setVelocity(e, g + (double)(i * 0.2F), h, 0.75F, 8.0F);
+			thrownPotionEntity.setVelocity(d, e + (double)(h * 0.2F), g, 0.75F, 8.0F);
 			this.world.playSound(null, this.x, this.y, this.z, SoundEvents.field_15067, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
 			this.world.spawnEntity(thrownPotionEntity);
 		}
 	}
 
 	@Override
-	protected float method_18394(class_4050 arg, class_4048 arg2) {
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
 		return 1.62F;
 	}
 

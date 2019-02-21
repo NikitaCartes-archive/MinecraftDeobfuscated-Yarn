@@ -32,28 +32,28 @@ public class class_403 extends Screen {
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, this.field_2349) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 6 + 168, this.field_2349) {
 			@Override
 			public void onPressed(double d, double e) {
 				class_403.this.field_2345.run();
 			}
 		});
 		this.field_2348.clear();
-		this.field_2348.addAll(this.fontRenderer.wrapStringToWidthAsList(this.field_2346.getFormattedText(), this.width - 50));
+		this.field_2348.addAll(this.fontRenderer.wrapStringToWidthAsList(this.field_2346.getFormattedText(), this.screenWidth - 50));
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, this.field_2350.getFormattedText(), this.width / 2, 70, 16777215);
+		this.drawStringCentered(this.fontRenderer, this.field_2350.getFormattedText(), this.screenWidth / 2, 70, 16777215);
 		int k = 90;
 
 		for (String string : this.field_2348) {
-			this.drawStringCentered(this.fontRenderer, string, this.width / 2, k, 16777215);
+			this.drawStringCentered(this.fontRenderer, string, this.screenWidth / 2, k, 16777215);
 			k += 9;
 		}
 
-		super.method_18326(i, j, f);
+		super.draw(i, j, f);
 	}
 
 	@Override

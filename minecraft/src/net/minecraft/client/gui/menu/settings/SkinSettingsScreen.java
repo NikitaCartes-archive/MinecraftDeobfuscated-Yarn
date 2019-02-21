@@ -24,14 +24,14 @@ public class SkinSettingsScreen extends Screen {
 		this.title = I18n.translate("options.skinCustomisation.title");
 
 		for (PlayerModelPart playerModelPart : PlayerModelPart.values()) {
-			this.addButton(new SkinSettingsScreen.class_441(this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), 150, 20, playerModelPart));
+			this.addButton(new SkinSettingsScreen.class_441(this.screenWidth / 2 - 155 + i % 2 * 160, this.screenHeight / 6 + 24 * (i >> 1), 150, 20, playerModelPart));
 			i++;
 		}
 
 		this.addButton(
 			new OptionButtonWidget(
-				this.width / 2 - 155 + i % 2 * 160,
-				this.height / 6 + 24 * (i >> 1),
+				this.screenWidth / 2 - 155 + i % 2 * 160,
+				this.screenHeight / 6 + 24 * (i >> 1),
 				150,
 				20,
 				GameOption.field_18193,
@@ -50,7 +50,7 @@ public class SkinSettingsScreen extends Screen {
 			i++;
 		}
 
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 24 * (i >> 1), I18n.translate("gui.done")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 6 + 24 * (i >> 1), I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
 				SkinSettingsScreen.this.client.openScreen(SkinSettingsScreen.this.parent);
@@ -64,10 +64,10 @@ public class SkinSettingsScreen extends Screen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, this.title, this.width / 2, 20, 16777215);
-		super.method_18326(i, j, f);
+		this.drawStringCentered(this.fontRenderer, this.title, this.screenWidth / 2, 20, 16777215);
+		super.draw(i, j, f);
 	}
 
 	private String method_2248(PlayerModelPart playerModelPart) {

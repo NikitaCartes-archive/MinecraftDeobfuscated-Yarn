@@ -371,7 +371,7 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public List<PlayerEntity> method_18456() {
+	public List<PlayerEntity> getPlayers() {
 		return Collections.emptyList();
 	}
 

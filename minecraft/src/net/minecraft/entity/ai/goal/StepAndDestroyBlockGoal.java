@@ -11,6 +11,7 @@ import net.minecraft.particle.ItemStackParticleParameters;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
@@ -73,7 +74,8 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 		Random random = this.owner.getRand();
 		if (this.hasReached() && blockPos2 != null) {
 			if (this.counter > 0) {
-				this.owner.velocityY = 0.3;
+				Vec3d vec3d = this.owner.getVelocity();
+				this.owner.setVelocity(vec3d.x, 0.3, vec3d.z);
 				if (!world.isClient) {
 					double d = 0.08;
 					((ServerWorld)world)
@@ -92,7 +94,8 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 			}
 
 			if (this.counter % 2 == 0) {
-				this.owner.velocityY = -0.3;
+				Vec3d vec3d = this.owner.getVelocity();
+				this.owner.setVelocity(vec3d.x, -0.3, vec3d.z);
 				if (this.counter % 6 == 0) {
 					this.tickStepping(world, this.targetPos);
 				}
@@ -102,11 +105,11 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 				world.clearBlockState(blockPos2);
 				if (!world.isClient) {
 					for (int i = 0; i < 20; i++) {
+						double d = random.nextGaussian() * 0.02;
 						double e = random.nextGaussian() * 0.02;
 						double f = random.nextGaussian() * 0.02;
-						double g = random.nextGaussian() * 0.02;
 						((ServerWorld)world)
-							.method_14199(ParticleTypes.field_11203, (double)blockPos2.getX() + 0.5, (double)blockPos2.getY(), (double)blockPos2.getZ() + 0.5, 1, e, f, g, 0.15F);
+							.method_14199(ParticleTypes.field_11203, (double)blockPos2.getX() + 0.5, (double)blockPos2.getY(), (double)blockPos2.getZ() + 0.5, 1, d, e, f, 0.15F);
 					}
 
 					this.onDestroyBlock(world, this.targetPos);

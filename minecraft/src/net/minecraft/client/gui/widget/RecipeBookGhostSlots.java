@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -62,16 +62,16 @@ public class RecipeBookGhostSlots {
 			int l = ghostInputSlot.getX() + i;
 			int m = ghostInputSlot.getY() + j;
 			if (k == 0 && bl) {
-				Drawable.drawRect(l - 4, m - 4, l + 20, m + 20, 822018048);
+				DrawableHelper.drawRect(l - 4, m - 4, l + 20, m + 20, 822018048);
 			} else {
-				Drawable.drawRect(l, m, l + 16, m + 16, 822018048);
+				DrawableHelper.drawRect(l, m, l + 16, m + 16, 822018048);
 			}
 
 			ItemStack itemStack = ghostInputSlot.getCurrentItemStack();
 			ItemRenderer itemRenderer = minecraftClient.getItemRenderer();
 			itemRenderer.renderGuiItem(minecraftClient.player, itemStack, l, m);
 			GlStateManager.depthFunc(516);
-			Drawable.drawRect(l, m, l + 16, m + 16, 822083583);
+			DrawableHelper.drawRect(l, m, l + 16, m + 16, 822083583);
 			GlStateManager.depthFunc(515);
 			if (k == 0) {
 				itemRenderer.renderGuiItemOverlay(minecraftClient.textRenderer, itemStack, l, m);

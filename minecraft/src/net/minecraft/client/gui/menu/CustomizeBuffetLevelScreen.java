@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.AbstractListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -99,7 +99,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 
 	@Nullable
 	@Override
-	public GuiEventListener getFocused() {
+	public InputListener getFocused() {
 		return this.field_2441;
 	}
 
@@ -111,7 +111,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		this.listeners.add(this.field_2441);
 		this.addButton(
 			new ButtonWidget(
-				(this.width - 200) / 2,
+				(this.screenWidth - 200) / 2,
 				40,
 				200,
 				20,
@@ -136,14 +136,14 @@ public class CustomizeBuffetLevelScreen extends Screen {
 				}
 			}
 		);
-		this.field_2438 = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("gui.done")) {
+		this.field_2438 = this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight - 28, 150, 20, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
 				CustomizeBuffetLevelScreen.this.field_2437.field_3200 = CustomizeBuffetLevelScreen.this.method_2153();
 				CustomizeBuffetLevelScreen.this.client.openScreen(CustomizeBuffetLevelScreen.this.field_2437);
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight - 28, 150, 20, I18n.translate("gui.cancel")) {
 			@Override
 			public void onPressed(double d, double e) {
 				CustomizeBuffetLevelScreen.this.client.openScreen(CustomizeBuffetLevelScreen.this.field_2437);
@@ -157,13 +157,13 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawTextureBackground(0);
-		this.field_2441.method_18326(i, j, f);
-		this.drawStringCentered(this.fontRenderer, this.field_2442, this.width / 2, 8, 16777215);
-		this.drawStringCentered(this.fontRenderer, I18n.translate("createWorld.customize.buffet.generator"), this.width / 2, 30, 10526880);
-		this.drawStringCentered(this.fontRenderer, I18n.translate("createWorld.customize.buffet.biome"), this.width / 2, 68, 10526880);
-		super.method_18326(i, j, f);
+		this.field_2441.draw(i, j, f);
+		this.drawStringCentered(this.fontRenderer, this.field_2442, this.screenWidth / 2, 8, 16777215);
+		this.drawStringCentered(this.fontRenderer, I18n.translate("createWorld.customize.buffet.generator"), this.screenWidth / 2, 30, 10526880);
+		this.drawStringCentered(this.fontRenderer, I18n.translate("createWorld.customize.buffet.biome"), this.screenWidth / 2, 68, 10526880);
+		super.draw(i, j, f);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -171,10 +171,10 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		private class_416() {
 			super(
 				CustomizeBuffetLevelScreen.this.client,
-				CustomizeBuffetLevelScreen.this.width,
-				CustomizeBuffetLevelScreen.this.height,
+				CustomizeBuffetLevelScreen.this.screenWidth,
+				CustomizeBuffetLevelScreen.this.screenHeight,
 				80,
-				CustomizeBuffetLevelScreen.this.height - 37,
+				CustomizeBuffetLevelScreen.this.screenHeight - 37,
 				16
 			);
 		}

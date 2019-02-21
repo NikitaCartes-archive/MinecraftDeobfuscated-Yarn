@@ -12,11 +12,11 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.class_2291;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.sortme.ItemStringReader;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
@@ -33,18 +33,20 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 	}
 
 	public ItemPredicateArgumentType.ItemPredicateFactory method_9800(StringReader stringReader) throws CommandSyntaxException {
-		class_2291 lv = new class_2291(stringReader, true).method_9789();
-		if (lv.method_9786() != null) {
-			ItemPredicateArgumentType.ItemPredicate itemPredicate = new ItemPredicateArgumentType.ItemPredicate(lv.method_9786(), lv.method_9797());
+		ItemStringReader itemStringReader = new ItemStringReader(stringReader, true).consume();
+		if (itemStringReader.getItem() != null) {
+			ItemPredicateArgumentType.ItemPredicate itemPredicate = new ItemPredicateArgumentType.ItemPredicate(
+				itemStringReader.getItem(), itemStringReader.method_9797()
+			);
 			return commandContext -> itemPredicate;
 		} else {
-			Identifier identifier = lv.method_9790();
+			Identifier identifier = itemStringReader.method_9790();
 			return commandContext -> {
 				Tag<Item> tag = commandContext.getSource().getMinecraftServer().getTagManager().items().get(identifier);
 				if (tag == null) {
 					throw UNKNOWN_TAG_EXCEPTION.create(identifier.toString());
 				} else {
-					return new ItemPredicateArgumentType.TagPredicate(tag, lv.method_9797());
+					return new ItemPredicateArgumentType.TagPredicate(tag, itemStringReader.method_9797());
 				}
 			};
 		}
@@ -59,14 +61,14 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
 		StringReader stringReader = new StringReader(suggestionsBuilder.getInput());
 		stringReader.setCursor(suggestionsBuilder.getStart());
-		class_2291 lv = new class_2291(stringReader, true);
+		ItemStringReader itemStringReader = new ItemStringReader(stringReader, true);
 
 		try {
-			lv.method_9789();
+			itemStringReader.consume();
 		} catch (CommandSyntaxException var6) {
 		}
 
-		return lv.method_9793(suggestionsBuilder);
+		return itemStringReader.method_9793(suggestionsBuilder);
 	}
 
 	@Override

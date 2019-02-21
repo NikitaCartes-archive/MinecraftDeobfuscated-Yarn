@@ -69,17 +69,14 @@ public class TridentEntity extends ProjectileEntity {
 				this.invalidate();
 			} else if (i > 0) {
 				this.setNoClip(true);
-				Vec3d vec3d = new Vec3d(entity.x - this.x, entity.y + (double)entity.getEyeHeight() - this.y, entity.z - this.z);
+				Vec3d vec3d = new Vec3d(entity.x - this.x, entity.y + (double)entity.getStandingEyeHeight() - this.y, entity.z - this.z);
 				this.y = this.y + vec3d.y * 0.015 * (double)i;
 				if (this.world.isClient) {
 					this.prevRenderY = this.y;
 				}
 
-				vec3d = vec3d.normalize();
 				double d = 0.05 * (double)i;
-				this.velocityX = this.velocityX + (vec3d.x * d - this.velocityX * 0.05);
-				this.velocityY = this.velocityY + (vec3d.y * d - this.velocityY * 0.05);
-				this.velocityZ = this.velocityZ + (vec3d.z * d - this.velocityZ * 0.05);
+				this.setVelocity(this.getVelocity().multiply(0.95).add(vec3d.normalize().multiply(d)));
 				if (this.field_7649 == 0) {
 					this.playSound(SoundEvents.field_14698, 10.0F, 1.0F);
 				}
@@ -130,9 +127,7 @@ public class TridentEntity extends ProjectileEntity {
 			this.onHit(livingEntity2);
 		}
 
-		this.velocityX *= -0.01F;
-		this.velocityY *= -0.1F;
-		this.velocityZ *= -0.01F;
+		this.setVelocity(this.getVelocity().multiply(-0.01, -0.1, -0.01));
 		float g = 1.0F;
 		if (this.world instanceof ServerWorld && this.world.isThundering() && EnchantmentHelper.hasChanneling(this.tridentStack)) {
 			BlockPos blockPos = entity.getPos();

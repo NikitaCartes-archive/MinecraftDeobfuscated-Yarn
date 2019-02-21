@@ -43,7 +43,7 @@ public abstract class EntityRenderer<T extends Entity> {
 		this.renderOutlines = bl;
 	}
 
-	public boolean method_3933(T entity, VisibleRegion visibleRegion, double d, double e, double f) {
+	public boolean isVisible(T entity, VisibleRegion visibleRegion, double d, double e, double f) {
 		if (!entity.shouldRenderFrom(d, e, f)) {
 			return false;
 		} else if (entity.ignoreCameraFrustum) {

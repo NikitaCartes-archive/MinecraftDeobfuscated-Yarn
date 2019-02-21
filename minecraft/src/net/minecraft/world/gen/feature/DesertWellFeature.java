@@ -31,7 +31,7 @@ public class DesertWellFeature extends Feature<DefaultFeatureConfig> {
 			blockPos = blockPos.down();
 		}
 
-		if (!CAN_GENERATE.apply(iWorld.getBlockState(blockPos))) {
+		if (!CAN_GENERATE.method_11760(iWorld.getBlockState(blockPos))) {
 			return false;
 		} else {
 			for (int i = -2; i <= 2; i++) {

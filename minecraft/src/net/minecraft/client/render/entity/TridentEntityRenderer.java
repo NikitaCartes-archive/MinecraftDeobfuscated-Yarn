@@ -50,7 +50,7 @@ public class TridentEntityRenderer extends EntityRenderer<TridentEntity> {
 			double j = Math.cos(i);
 			double k = Math.sin(i);
 			double l = MathHelper.lerp((double)h, entity.prevX, entity.x);
-			double m = MathHelper.lerp((double)h, entity.prevY + (double)entity.getEyeHeight() * 0.8, entity.y + (double)entity.getEyeHeight() * 0.8);
+			double m = MathHelper.lerp((double)h, entity.prevY + (double)entity.getStandingEyeHeight() * 0.8, entity.y + (double)entity.getStandingEyeHeight() * 0.8);
 			double n = MathHelper.lerp((double)h, entity.prevZ, entity.z);
 			double o = j - k;
 			double p = k + j;

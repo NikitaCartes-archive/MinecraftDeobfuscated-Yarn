@@ -19,7 +19,7 @@ public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowmanEntity
 	public void method_4201(SnowmanEntity snowmanEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (!snowmanEntity.isInvisible() && snowmanEntity.hasPumpkin()) {
 			GlStateManager.pushMatrix();
-			this.getModel().method_2834().method_2847(0.0625F);
+			this.getModel().method_2834().applyTransform(0.0625F);
 			float m = 0.625F;
 			GlStateManager.translatef(0.0F, -0.34375F, 0.0F);
 			GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);

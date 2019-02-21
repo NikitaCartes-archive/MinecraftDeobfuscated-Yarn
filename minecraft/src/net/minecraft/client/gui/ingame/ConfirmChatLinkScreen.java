@@ -29,20 +29,20 @@ public class ConfirmChatLinkScreen extends YesNoScreen {
 		super.onInitialized();
 		this.buttons.clear();
 		this.listeners.clear();
-		this.addButton(new ButtonWidget(this.width / 2 - 50 - 105, this.height / 6 + 96, 100, 20, this.yesTranslated) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 50 - 105, this.screenHeight / 6 + 96, 100, 20, this.yesTranslated) {
 			@Override
 			public void onPressed(double d, double e) {
 				ConfirmChatLinkScreen.this.callback.confirmResult(true, ConfirmChatLinkScreen.this.callbackId);
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 - 50, this.height / 6 + 96, 100, 20, this.copy) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 50, this.screenHeight / 6 + 96, 100, 20, this.copy) {
 			@Override
 			public void onPressed(double d, double e) {
 				ConfirmChatLinkScreen.this.copyToClipboard();
 				ConfirmChatLinkScreen.this.callback.confirmResult(false, ConfirmChatLinkScreen.this.callbackId);
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 - 50 + 105, this.height / 6 + 96, 100, 20, this.noTranslated) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 50 + 105, this.screenHeight / 6 + 96, 100, 20, this.noTranslated) {
 			@Override
 			public void onPressed(double d, double e) {
 				ConfirmChatLinkScreen.this.callback.confirmResult(false, ConfirmChatLinkScreen.this.callbackId);
@@ -55,10 +55,10 @@ public class ConfirmChatLinkScreen extends YesNoScreen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
-		super.method_18326(i, j, f);
+	public void draw(int i, int j, float f) {
+		super.draw(i, j, f);
 		if (this.drawWarning) {
-			this.drawStringCentered(this.fontRenderer, this.warning, this.width / 2, 110, 16764108);
+			this.drawStringCentered(this.fontRenderer, this.warning, this.screenWidth / 2, 110, 16764108);
 		}
 	}
 }

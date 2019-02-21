@@ -9,7 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.AdvancementDisplay;
 import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.menu.AdvancementsScreen;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.texture.TextureManager;
@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class AdvancementTreeWidget extends Drawable {
+public class AdvancementTreeWidget extends DrawableHelper {
 	private final MinecraftClient client;
 	private final AdvancementsScreen field_2687;
 	private final AdvancementTabType tabType;

@@ -20,6 +20,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -118,35 +119,43 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 					Entity entity = (Entity)list2.get(i);
 					if (entity.getPistonBehavior() != PistonBehavior.field_15975) {
 						if (bl) {
+							Vec3d vec3d = entity.getVelocity();
+							double e = vec3d.x;
+							double g = vec3d.y;
+							double h = vec3d.z;
 							switch (direction.getAxis()) {
 								case X:
-									entity.velocityX = (double)direction.getOffsetX();
+									e = (double)direction.getOffsetX();
 									break;
 								case Y:
-									entity.velocityY = (double)direction.getOffsetY();
+									g = (double)direction.getOffsetY();
 									break;
 								case Z:
-									entity.velocityZ = (double)direction.getOffsetZ();
+									h = (double)direction.getOffsetZ();
 							}
+
+							entity.setVelocity(e, g, h);
 						}
 
-						double e = 0.0;
+						double j = 0.0;
 
-						for (int j = 0; j < list.size(); j++) {
-							BoundingBox boundingBox2 = this.method_11502(this.method_11500((BoundingBox)list.get(j)), direction, d);
+						for (int k = 0; k < list.size(); k++) {
+							BoundingBox boundingBox2 = this.method_11502(this.method_11500((BoundingBox)list.get(k)), direction, d);
 							BoundingBox boundingBox3 = entity.getBoundingBox();
 							if (boundingBox2.intersects(boundingBox3)) {
-								e = Math.max(e, this.method_11497(boundingBox2, direction, boundingBox3));
-								if (e >= d) {
+								j = Math.max(j, this.method_11497(boundingBox2, direction, boundingBox3));
+								if (j >= d) {
 									break;
 								}
 							}
 						}
 
-						if (!(e <= 0.0)) {
-							e = Math.min(e, d) + 0.01;
+						if (!(j <= 0.0)) {
+							j = Math.min(j, d) + 0.01;
 							field_12205.set(direction);
-							entity.move(MovementType.field_6310, e * (double)direction.getOffsetX(), e * (double)direction.getOffsetY(), e * (double)direction.getOffsetZ());
+							entity.move(
+								MovementType.field_6310, new Vec3d(j * (double)direction.getOffsetX(), j * (double)direction.getOffsetY(), j * (double)direction.getOffsetZ())
+							);
 							field_12205.set(null);
 							if (!this.extending && this.source) {
 								this.method_11514(entity, direction, d);
@@ -234,7 +243,9 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 			if (Math.abs(e - f) < 0.01) {
 				e = Math.min(e, d) + 0.01;
 				field_12205.set(direction);
-				entity.move(MovementType.field_6310, e * (double)direction2.getOffsetX(), e * (double)direction2.getOffsetY(), e * (double)direction2.getOffsetZ());
+				entity.move(
+					MovementType.field_6310, new Vec3d(e * (double)direction2.getOffsetX(), e * (double)direction2.getOffsetY(), e * (double)direction2.getOffsetZ())
+				);
 				field_12205.set(null);
 			}
 		}

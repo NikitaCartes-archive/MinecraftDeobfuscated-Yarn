@@ -1188,7 +1188,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 	public CrashReportSection addDetailsToCrashReport(CrashReport crashReport) {
 		CrashReportSection crashReportSection = crashReport.addElement("Affected level", 1);
 		crashReportSection.add("Level name", this.properties == null ? "????" : this.properties.getLevelName());
-		crashReportSection.add("All players", (ICrashCallable<String>)(() -> this.method_18456().size() + " total; " + this.method_18456()));
+		crashReportSection.add("All players", (ICrashCallable<String>)(() -> this.getPlayers().size() + " total; " + this.getPlayers()));
 		crashReportSection.add("Chunk stats", (ICrashCallable<String>)(() -> this.chunkManager.getStatus()));
 
 		try {

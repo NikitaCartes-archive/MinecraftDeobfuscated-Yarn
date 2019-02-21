@@ -104,7 +104,7 @@ public class ShapedRecipe implements CraftingRecipe {
 					}
 				}
 
-				if (!ingredient.matches(craftingInventory.getInvStack(k + l * craftingInventory.getWidth()))) {
+				if (!ingredient.method_8093(craftingInventory.getInvStack(k + l * craftingInventory.getWidth()))) {
 					return false;
 				}
 			}

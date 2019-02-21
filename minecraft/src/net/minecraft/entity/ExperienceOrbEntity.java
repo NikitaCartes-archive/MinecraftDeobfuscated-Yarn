@@ -14,6 +14,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class ExperienceOrbEntity extends Entity {
@@ -28,10 +29,8 @@ public class ExperienceOrbEntity extends Entity {
 	public ExperienceOrbEntity(World world, double d, double e, double f, int i) {
 		this(EntityType.EXPERIENCE_ORB, world);
 		this.setPosition(d, e, f);
-		this.yaw = (float)(Math.random() * 360.0);
-		this.velocityX = (double)((float)(Math.random() * 0.2F - 0.1F) * 2.0F);
-		this.velocityY = (double)((float)(Math.random() * 0.2) * 2.0F);
-		this.velocityZ = (double)((float)(Math.random() * 0.2F - 0.1F) * 2.0F);
+		this.yaw = (float)(this.random.nextDouble() * 360.0);
+		this.setVelocity((this.random.nextDouble() * 0.2F - 0.1F) * 2.0, this.random.nextDouble() * 0.2 * 2.0, (this.random.nextDouble() * 0.2F - 0.1F) * 2.0);
 		this.amount = i;
 	}
 
@@ -77,13 +76,13 @@ public class ExperienceOrbEntity extends Entity {
 		if (this.isInFluid(FluidTags.field_15517)) {
 			this.method_5921();
 		} else if (!this.isUnaffectedByGravity()) {
-			this.velocityY -= 0.03F;
+			this.setVelocity(this.getVelocity().add(0.0, -0.03, 0.0));
 		}
 
 		if (this.world.getFluidState(new BlockPos(this)).matches(FluidTags.field_15518)) {
-			this.velocityY = 0.2F;
-			this.velocityX = (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F);
-			this.velocityZ = (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F);
+			this.setVelocity(
+				(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F), 0.2F, (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F)
+			);
 			this.playSound(SoundEvents.field_14821, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
 		}
 
@@ -105,30 +104,25 @@ public class ExperienceOrbEntity extends Entity {
 		}
 
 		if (this.field_6162 != null) {
-			double e = (this.field_6162.x - this.x) / 8.0;
-			double f = (this.field_6162.y + (double)this.field_6162.getEyeHeight() / 2.0 - this.y) / 8.0;
-			double g = (this.field_6162.z - this.z) / 8.0;
-			double h = Math.sqrt(e * e + f * f + g * g);
-			double i = 1.0 - h;
-			if (i > 0.0) {
-				i *= i;
-				this.velocityX += e / h * i * 0.1;
-				this.velocityY += f / h * i * 0.1;
-				this.velocityZ += g / h * i * 0.1;
+			Vec3d vec3d = new Vec3d(
+				this.field_6162.x - this.x, this.field_6162.y + (double)this.field_6162.getStandingEyeHeight() / 2.0 - this.y, this.field_6162.z - this.z
+			);
+			double e = vec3d.lengthSquared();
+			if (e < 64.0) {
+				double f = 1.0 - Math.sqrt(e) / 8.0;
+				this.setVelocity(this.getVelocity().add(vec3d.normalize().multiply(f * f * 0.1)));
 			}
 		}
 
-		this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
-		float j = 0.98F;
+		this.move(MovementType.field_6308, this.getVelocity());
+		float g = 0.98F;
 		if (this.onGround) {
-			j = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getFrictionCoefficient() * 0.98F;
+			g = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getFrictionCoefficient() * 0.98F;
 		}
 
-		this.velocityX *= (double)j;
-		this.velocityY *= 0.98F;
-		this.velocityZ *= (double)j;
+		this.setVelocity(this.getVelocity().multiply((double)g, 0.98, (double)g));
 		if (this.onGround) {
-			this.velocityY *= -0.9F;
+			this.setVelocity(this.getVelocity().multiply(1.0, -0.9, 1.0));
 		}
 
 		this.field_6165++;
@@ -139,10 +133,8 @@ public class ExperienceOrbEntity extends Entity {
 	}
 
 	private void method_5921() {
-		this.velocityY += 5.0E-4F;
-		this.velocityY = Math.min(this.velocityY, 0.06F);
-		this.velocityX *= 0.99F;
-		this.velocityZ *= 0.99F;
+		Vec3d vec3d = this.getVelocity();
+		this.setVelocity(vec3d.x * 0.99F, Math.min(vec3d.y + 5.0E-4F, 0.06F), vec3d.z * 0.99F);
 	}
 
 	@Override

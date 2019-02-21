@@ -6,7 +6,7 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.SpectatorHud;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TextComponent;
@@ -135,9 +135,9 @@ public class SpectatorMenu {
 		public void renderIcon(float f, int i) {
 			MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
 			if (this.direction < 0) {
-				Drawable.drawTexturedRect(0, 0, 144.0F, 0.0F, 16, 16, 256.0F, 256.0F);
+				DrawableHelper.drawTexturedRect(0, 0, 144.0F, 0.0F, 16, 16, 256.0F, 256.0F);
 			} else {
-				Drawable.drawTexturedRect(0, 0, 160.0F, 0.0F, 16, 16, 256.0F, 256.0F);
+				DrawableHelper.drawTexturedRect(0, 0, 160.0F, 0.0F, 16, 16, 256.0F, 256.0F);
 			}
 		}
 
@@ -165,7 +165,7 @@ public class SpectatorMenu {
 		@Override
 		public void renderIcon(float f, int i) {
 			MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
-			Drawable.drawTexturedRect(0, 0, 128.0F, 0.0F, 16, 16, 256.0F, 256.0F);
+			DrawableHelper.drawTexturedRect(0, 0, 128.0F, 0.0F, 16, 16, 256.0F, 256.0F);
 		}
 
 		@Override

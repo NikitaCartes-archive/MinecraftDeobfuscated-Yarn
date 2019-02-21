@@ -5,6 +5,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public abstract class FlyingEntity extends MobEntity {
@@ -21,47 +22,41 @@ public abstract class FlyingEntity extends MobEntity {
 	}
 
 	@Override
-	public void travel(float f, float g, float h) {
+	public void travel(Vec3d vec3d) {
 		if (this.isInsideWater()) {
-			this.updateVelocity(f, g, h, 0.02F);
-			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
-			this.velocityX *= 0.8F;
-			this.velocityY *= 0.8F;
-			this.velocityZ *= 0.8F;
+			this.updateVelocity(0.02F, vec3d);
+			this.move(MovementType.field_6308, this.getVelocity());
+			this.setVelocity(this.getVelocity().multiply(0.8F));
 		} else if (this.isTouchingLava()) {
-			this.updateVelocity(f, g, h, 0.02F);
-			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
-			this.velocityX *= 0.5;
-			this.velocityY *= 0.5;
-			this.velocityZ *= 0.5;
+			this.updateVelocity(0.02F, vec3d);
+			this.move(MovementType.field_6308, this.getVelocity());
+			this.setVelocity(this.getVelocity().multiply(0.5));
 		} else {
-			float i = 0.91F;
+			float f = 0.91F;
 			if (this.onGround) {
-				i = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getFrictionCoefficient() * 0.91F;
+				f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getFrictionCoefficient() * 0.91F;
 			}
 
-			float j = 0.16277137F / (i * i * i);
-			this.updateVelocity(f, g, h, this.onGround ? 0.1F * j : 0.02F);
-			i = 0.91F;
+			float g = 0.16277137F / (f * f * f);
+			f = 0.91F;
 			if (this.onGround) {
-				i = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getFrictionCoefficient() * 0.91F;
+				f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getFrictionCoefficient() * 0.91F;
 			}
 
-			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
-			this.velocityX *= (double)i;
-			this.velocityY *= (double)i;
-			this.velocityZ *= (double)i;
+			this.updateVelocity(this.onGround ? 0.1F * g : 0.02F, vec3d);
+			this.move(MovementType.field_6308, this.getVelocity());
+			this.setVelocity(this.getVelocity().multiply((double)f));
 		}
 
 		this.field_6211 = this.field_6225;
 		double d = this.x - this.prevX;
 		double e = this.z - this.prevZ;
-		float k = MathHelper.sqrt(d * d + e * e) * 4.0F;
-		if (k > 1.0F) {
-			k = 1.0F;
+		float h = MathHelper.sqrt(d * d + e * e) * 4.0F;
+		if (h > 1.0F) {
+			h = 1.0F;
 		}
 
-		this.field_6225 = this.field_6225 + (k - this.field_6225) * 0.4F;
+		this.field_6225 = this.field_6225 + (h - this.field_6225) * 0.4F;
 		this.field_6249 = this.field_6249 + this.field_6225;
 	}
 

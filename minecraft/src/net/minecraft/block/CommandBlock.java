@@ -114,7 +114,7 @@ public class CommandBlock extends BlockWithEntity {
 	@Override
 	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
-		if (blockEntity instanceof CommandBlockBlockEntity && playerEntity.method_7338()) {
+		if (blockEntity instanceof CommandBlockBlockEntity && playerEntity.isCreativeLevelTwoOp()) {
 			playerEntity.openCommandBlockScreen((CommandBlockBlockEntity)blockEntity);
 			return true;
 		} else {

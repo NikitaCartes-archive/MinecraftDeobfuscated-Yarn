@@ -25,8 +25,8 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public abstract class ContainerScreen<T extends Container> extends Screen implements ContainerProvider<T> {
 	public static final Identifier BACKGROUND_TEXTURE = new Identifier("textures/gui/container/inventory.png");
-	public int containerWidth = 176;
-	protected int containerHeight = 166;
+	public int width = 176;
+	protected int height = 166;
 	public final T container;
 	protected final PlayerInventory playerInventory;
 	protected final TextComponent name;
@@ -65,12 +65,12 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
-		this.left = (this.width - this.containerWidth) / 2;
-		this.top = (this.height - this.containerHeight) / 2;
+		this.left = (this.screenWidth - this.width) / 2;
+		this.top = (this.screenHeight - this.height) / 2;
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		int k = this.left;
 		int l = this.top;
 		this.drawBackground(f, i, j);
@@ -78,7 +78,7 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 		GuiLighting.disable();
 		GlStateManager.disableLighting();
 		GlStateManager.disableDepthTest();
-		super.method_18326(i, j, f);
+		super.draw(i, j, f);
 		GuiLighting.enableForItems();
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef((float)k, (float)l, 0.0F);
@@ -351,7 +351,7 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 	}
 
 	protected boolean isClickOutsideBounds(double d, double e, int i, int j, int k) {
-		return d < (double)i || e < (double)j || d >= (double)(i + this.containerWidth) || e >= (double)(j + this.containerHeight);
+		return d < (double)i || e < (double)j || d >= (double)(i + this.width) || e >= (double)(j + this.height);
 	}
 
 	@Override

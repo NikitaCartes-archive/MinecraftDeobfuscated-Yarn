@@ -7,8 +7,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1394;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.class_4051;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
@@ -16,6 +14,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.LivingEntity;
@@ -54,6 +54,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -665,7 +666,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	}
 
 	@Override
-	public void travel(float f, float g, float h) {
+	public void travel(Vec3d vec3d) {
 		if (this.hasPassengers() && this.method_5956() && this.isSaddled()) {
 			LivingEntity livingEntity = (LivingEntity)this.getPrimaryPassenger();
 			this.yaw = livingEntity.yaw;
@@ -674,31 +675,35 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 			this.setRotation(this.yaw, this.pitch);
 			this.field_6283 = this.yaw;
 			this.headYaw = this.field_6283;
-			f = livingEntity.movementInputSideways * 0.5F;
-			h = livingEntity.movementInputForward;
-			if (h <= 0.0F) {
-				h *= 0.25F;
+			float f = livingEntity.movementInputSideways * 0.5F;
+			float g = livingEntity.movementInputForward;
+			if (g <= 0.0F) {
+				g *= 0.25F;
 				this.field_6975 = 0;
 			}
 
 			if (this.onGround && this.field_6976 == 0.0F && this.method_6736() && !this.field_6960) {
 				f = 0.0F;
-				h = 0.0F;
+				g = 0.0F;
 			}
 
 			if (this.field_6976 > 0.0F && !this.method_6763() && this.onGround) {
-				this.velocityY = this.method_6771() * (double)this.field_6976;
+				double d = this.method_6771() * (double)this.field_6976;
+				double e;
 				if (this.hasPotionEffect(StatusEffects.field_5913)) {
-					this.velocityY = this.velocityY + (double)((float)(this.getPotionEffect(StatusEffects.field_5913).getAmplifier() + 1) * 0.1F);
+					e = d + (double)((float)(this.getPotionEffect(StatusEffects.field_5913).getAmplifier() + 1) * 0.1F);
+				} else {
+					e = d;
 				}
 
+				Vec3d vec3d2 = this.getVelocity();
+				this.setVelocity(vec3d2.x, e, vec3d2.z);
 				this.method_6758(true);
 				this.velocityDirty = true;
-				if (h > 0.0F) {
-					float i = MathHelper.sin(this.yaw * (float) (Math.PI / 180.0));
-					float j = MathHelper.cos(this.yaw * (float) (Math.PI / 180.0));
-					this.velocityX = this.velocityX + (double)(-0.4F * i * this.field_6976);
-					this.velocityZ = this.velocityZ + (double)(0.4F * j * this.field_6976);
+				if (g > 0.0F) {
+					float h = MathHelper.sin(this.yaw * (float) (Math.PI / 180.0));
+					float i = MathHelper.cos(this.yaw * (float) (Math.PI / 180.0));
+					this.setVelocity(this.getVelocity().add((double)(-0.4F * h * this.field_6976), 0.0, (double)(0.4F * i * this.field_6976)));
 					this.method_6723();
 				}
 
@@ -708,11 +713,9 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 			this.field_6281 = this.getMovementSpeed() * 0.1F;
 			if (this.method_5787()) {
 				this.setMovementSpeed((float)this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
-				super.travel(f, g, h);
+				super.travel(new Vec3d((double)f, vec3d.y, (double)g));
 			} else if (livingEntity instanceof PlayerEntity) {
-				this.velocityX = 0.0;
-				this.velocityY = 0.0;
-				this.velocityZ = 0.0;
+				this.setVelocity(Vec3d.ZERO);
 			}
 
 			if (this.onGround) {
@@ -721,18 +724,18 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 			}
 
 			this.field_6211 = this.field_6225;
-			double d = this.x - this.prevX;
-			double e = this.z - this.prevZ;
-			float k = MathHelper.sqrt(d * d + e * e) * 4.0F;
-			if (k > 1.0F) {
-				k = 1.0F;
+			double dx = this.x - this.prevX;
+			double ex = this.z - this.prevZ;
+			float j = MathHelper.sqrt(dx * dx + ex * ex) * 4.0F;
+			if (j > 1.0F) {
+				j = 1.0F;
 			}
 
-			this.field_6225 = this.field_6225 + (k - this.field_6225) * 0.4F;
+			this.field_6225 = this.field_6225 + (j - this.field_6225) * 0.4F;
 			this.field_6249 = this.field_6249 + this.field_6225;
 		} else {
 			this.field_6281 = 0.02F;
-			super.travel(f, g, h);
+			super.travel(vec3d);
 		}
 	}
 
@@ -945,8 +948,8 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	}
 
 	@Override
-	protected float method_18394(class_4050 arg, class_4048 arg2) {
-		return arg2.field_18068;
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+		return entitySize.height;
 	}
 
 	public boolean method_6735() {

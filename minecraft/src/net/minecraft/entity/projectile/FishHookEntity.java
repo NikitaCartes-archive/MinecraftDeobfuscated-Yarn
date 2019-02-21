@@ -35,6 +35,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 import net.minecraft.world.loot.LootSupplier;
@@ -85,19 +86,19 @@ public class FishHookEntity extends Entity {
 		float l = -MathHelper.cos(-f * (float) (Math.PI / 180.0));
 		float m = MathHelper.sin(-f * (float) (Math.PI / 180.0));
 		double d = this.owner.x - (double)k * 0.3;
-		double e = this.owner.y + (double)this.owner.getEyeHeight();
+		double e = this.owner.y + (double)this.owner.getStandingEyeHeight();
 		double n = this.owner.z - (double)h * 0.3;
 		this.setPositionAndAngles(d, e, n, g, f);
-		this.velocityX = (double)(-k);
-		this.velocityY = (double)MathHelper.clamp(-(m / l), -5.0F, 5.0F);
-		this.velocityZ = (double)(-h);
-		float o = MathHelper.sqrt(this.velocityX * this.velocityX + this.velocityY * this.velocityY + this.velocityZ * this.velocityZ);
-		this.velocityX = this.velocityX * (0.6 / (double)o + 0.5 + this.random.nextGaussian() * 0.0045);
-		this.velocityY = this.velocityY * (0.6 / (double)o + 0.5 + this.random.nextGaussian() * 0.0045);
-		this.velocityZ = this.velocityZ * (0.6 / (double)o + 0.5 + this.random.nextGaussian() * 0.0045);
-		float p = MathHelper.sqrt(this.velocityX * this.velocityX + this.velocityZ * this.velocityZ);
-		this.yaw = (float)(MathHelper.atan2(this.velocityX, this.velocityZ) * 180.0F / (float)Math.PI);
-		this.pitch = (float)(MathHelper.atan2(this.velocityY, (double)p) * 180.0F / (float)Math.PI);
+		Vec3d vec3d = new Vec3d((double)(-k), (double)MathHelper.clamp(-(m / l), -5.0F, 5.0F), (double)(-h));
+		double o = vec3d.length();
+		vec3d = vec3d.multiply(
+			0.6 / o + 0.5 + this.random.nextGaussian() * 0.0045,
+			0.6 / o + 0.5 + this.random.nextGaussian() * 0.0045,
+			0.6 / o + 0.5 + this.random.nextGaussian() * 0.0045
+		);
+		this.setVelocity(vec3d);
+		this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
+		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)MathHelper.sqrt(squaredHorizontalLength(vec3d))) * 180.0F / (float)Math.PI);
 		this.prevYaw = this.yaw;
 		this.prevPitch = this.pitch;
 	}
@@ -152,17 +153,13 @@ public class FishHookEntity extends Entity {
 
 			if (this.state == FishHookEntity.State.field_7180) {
 				if (this.hookedEntity != null) {
-					this.velocityX = 0.0;
-					this.velocityY = 0.0;
-					this.velocityZ = 0.0;
+					this.setVelocity(Vec3d.ZERO);
 					this.state = FishHookEntity.State.field_7178;
 					return;
 				}
 
 				if (f > 0.0F) {
-					this.velocityX *= 0.3;
-					this.velocityY *= 0.2;
-					this.velocityZ *= 0.3;
+					this.setVelocity(this.getVelocity().multiply(0.3, 0.2, 0.3));
 					this.state = FishHookEntity.State.field_7179;
 					return;
 				}
@@ -175,9 +172,7 @@ public class FishHookEntity extends Entity {
 					this.field_7166++;
 				} else {
 					this.field_7166 = 0;
-					this.velocityX = 0.0;
-					this.velocityY = 0.0;
-					this.velocityZ = 0.0;
+					this.setVelocity(Vec3d.ZERO);
 				}
 			} else {
 				if (this.state == FishHookEntity.State.field_7178) {
@@ -197,14 +192,13 @@ public class FishHookEntity extends Entity {
 				}
 
 				if (this.state == FishHookEntity.State.field_7179) {
-					this.velocityX *= 0.9;
-					this.velocityZ *= 0.9;
-					double d = this.y + this.velocityY - (double)blockPos.getY() - (double)f;
+					Vec3d vec3d = this.getVelocity();
+					double d = this.y + vec3d.y - (double)blockPos.getY() - (double)f;
 					if (Math.abs(d) < 0.01) {
 						d += Math.signum(d) * 0.1;
 					}
 
-					this.velocityY = this.velocityY - d * (double)this.random.nextFloat() * 0.2;
+					this.setVelocity(vec3d.x * 0.9, vec3d.y - d * (double)this.random.nextFloat() * 0.2, vec3d.z * 0.9);
 					if (!this.world.isClient && f > 0.0F) {
 						this.method_6949(blockPos);
 					}
@@ -212,15 +206,13 @@ public class FishHookEntity extends Entity {
 			}
 
 			if (!fluidState.matches(FluidTags.field_15517)) {
-				this.velocityY -= 0.03;
+				this.setVelocity(this.getVelocity().add(0.0, -0.03, 0.0));
 			}
 
-			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
+			this.move(MovementType.field_6308, this.getVelocity());
 			this.method_6952();
-			double dx = 0.92;
-			this.velocityX *= 0.92;
-			this.velocityY *= 0.92;
-			this.velocityZ *= 0.92;
+			double e = 0.92;
+			this.setVelocity(this.getVelocity().multiply(0.92));
 			this.setPosition(this.x, this.y, this.z);
 		}
 	}
@@ -239,9 +231,10 @@ public class FishHookEntity extends Entity {
 	}
 
 	private void method_6952() {
-		float f = MathHelper.sqrt(this.velocityX * this.velocityX + this.velocityZ * this.velocityZ);
-		this.yaw = (float)(MathHelper.atan2(this.velocityX, this.velocityZ) * 180.0F / (float)Math.PI);
-		this.pitch = (float)(MathHelper.atan2(this.velocityY, (double)f) * 180.0F / (float)Math.PI);
+		Vec3d vec3d = this.getVelocity();
+		float f = MathHelper.sqrt(squaredHorizontalLength(vec3d));
+		this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
+		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI);
 
 		while (this.pitch - this.prevPitch < -180.0F) {
 			this.prevPitch -= 360.0F;
@@ -266,7 +259,7 @@ public class FishHookEntity extends Entity {
 	private void method_6958() {
 		HitResult hitResult = class_1675.method_18074(
 			this,
-			this.getBoundingBox().stretch(this.velocityX, this.velocityY, this.velocityZ).expand(1.0),
+			this.getBoundingBox().method_18804(this.getVelocity()).expand(1.0),
 			entity -> !entity.isSpectator() && (entity.doesCollide() || entity instanceof ItemEntity) && (entity != this.owner || this.field_7166 >= 5),
 			RayTraceContext.ShapeType.field_17558,
 			true
@@ -303,7 +296,7 @@ public class FishHookEntity extends Entity {
 				this.field_7174 = 0;
 				this.field_7172 = 0;
 			} else {
-				this.velocityY = this.velocityY - 0.2 * (double)this.random.nextFloat() * (double)this.random.nextFloat();
+				this.setVelocity(this.getVelocity().add(0.0, -0.2 * (double)this.random.nextFloat() * (double)this.random.nextFloat(), 0.0));
 			}
 		} else if (this.field_7172 > 0) {
 			this.field_7172 -= i;
@@ -327,7 +320,8 @@ public class FishHookEntity extends Entity {
 					serverWorld.method_14199(ParticleTypes.field_11244, d, e, j, 0, (double)(-l), 0.01, (double)k, 1.0);
 				}
 			} else {
-				this.velocityY = (double)(-0.4F * MathHelper.nextFloat(this.random, 0.6F, 1.0F));
+				Vec3d vec3d = this.getVelocity();
+				this.setVelocity(vec3d.x, (double)(-0.4F * MathHelper.nextFloat(this.random, 0.6F, 1.0F)), vec3d.z);
 				this.playSound(SoundEvents.field_14660, 0.25F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
 				double m = this.getBoundingBox().minY + 0.5;
 				serverWorld.method_14199(
@@ -402,11 +396,8 @@ public class FishHookEntity extends Entity {
 					double d = this.owner.x - this.x;
 					double e = this.owner.y - this.y;
 					double f = this.owner.z - this.z;
-					double g = (double)MathHelper.sqrt(d * d + e * e + f * f);
-					double h = 0.1;
-					itemEntity.velocityX = d * 0.1;
-					itemEntity.velocityY = e * 0.1 + (double)MathHelper.sqrt(g) * 0.08;
-					itemEntity.velocityZ = f * 0.1;
+					double g = 0.1;
+					itemEntity.setVelocity(d * 0.1, e * 0.1 + Math.sqrt(Math.sqrt(d * d + e * e + f * f)) * 0.08, f * 0.1);
 					this.world.spawnEntity(itemEntity);
 					this.owner.world.spawnEntity(new ExperienceOrbEntity(this.owner.world, this.owner.x, this.owner.y + 0.5, this.owner.z + 0.5, this.random.nextInt(6) + 1));
 					if (itemStack2.getItem().matches(ItemTags.field_15527)) {
@@ -440,13 +431,8 @@ public class FishHookEntity extends Entity {
 
 	protected void method_6954() {
 		if (this.owner != null) {
-			double d = this.owner.x - this.x;
-			double e = this.owner.y - this.y;
-			double f = this.owner.z - this.z;
-			double g = 0.1;
-			this.hookedEntity.velocityX += d * 0.1;
-			this.hookedEntity.velocityY += e * 0.1;
-			this.hookedEntity.velocityZ += f * 0.1;
+			Vec3d vec3d = new Vec3d(this.owner.x - this.x, this.owner.y - this.y, this.owner.z - this.z).multiply(0.1);
+			this.hookedEntity.setVelocity(this.hookedEntity.getVelocity().add(vec3d));
 		}
 	}
 

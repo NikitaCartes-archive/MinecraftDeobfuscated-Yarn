@@ -28,17 +28,17 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 		for (int j = 0; j < craftingInventory.getInvSize(); j++) {
 			ItemStack itemStack = craftingInventory.getInvStack(j);
 			if (!itemStack.isEmpty()) {
-				if (field_9007.matches(itemStack)) {
+				if (field_9007.method_8093(itemStack)) {
 					if (bl) {
 						return false;
 					}
 
 					bl = true;
-				} else if (field_9006.matches(itemStack)) {
+				} else if (field_9006.method_8093(itemStack)) {
 					if (++i > 3) {
 						return false;
 					}
-				} else if (!field_9008.matches(itemStack)) {
+				} else if (!field_9008.method_8093(itemStack)) {
 					return false;
 				}
 			}
@@ -56,9 +56,9 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 		for (int j = 0; j < craftingInventory.getInvSize(); j++) {
 			ItemStack itemStack2 = craftingInventory.getInvStack(j);
 			if (!itemStack2.isEmpty()) {
-				if (field_9006.matches(itemStack2)) {
+				if (field_9006.method_8093(itemStack2)) {
 					i++;
-				} else if (field_9008.matches(itemStack2)) {
+				} else if (field_9008.method_8093(itemStack2)) {
 					CompoundTag compoundTag2 = itemStack2.getSubCompoundTag("Explosion");
 					if (compoundTag2 != null) {
 						listTag.add(compoundTag2);

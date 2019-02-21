@@ -22,7 +22,7 @@ public abstract class LockButtonWidget extends ButtonWidget {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void drawButton(int i, int j, float f) {
 		MinecraftClient.getInstance().getTextureManager().bindTexture(ButtonWidget.WIDGET_TEX);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		LockButtonWidget.IconLocation iconLocation;

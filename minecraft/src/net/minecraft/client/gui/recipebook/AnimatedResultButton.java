@@ -56,7 +56,7 @@ public class AnimatedResultButton extends ButtonWidget {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void drawButton(int i, int j, float f) {
 		if (!Screen.isControlPressed()) {
 			this.time += f;
 		}

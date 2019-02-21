@@ -21,16 +21,15 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_295;
 import net.minecraft.class_3937;
-import net.minecraft.class_3999;
 import net.minecraft.class_4001;
 import net.minecraft.class_4002;
-import net.minecraft.class_4075;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasHolder;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.entity.Entity;
@@ -50,18 +49,22 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class ParticleManager extends class_4075 {
-	private static final List<class_3999> field_17820 = ImmutableList.of(
-		class_3999.field_17827, class_3999.field_17828, class_3999.field_17830, class_3999.field_17829, class_3999.field_17831
+public class ParticleManager extends SpriteAtlasHolder {
+	private static final List<ParticleTextureSheet> field_17820 = ImmutableList.of(
+		ParticleTextureSheet.TERRAIN_SHEET,
+		ParticleTextureSheet.PARTICLE_SHEET_OPAQUE,
+		ParticleTextureSheet.PARTICLE_SHEET_LIT,
+		ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT,
+		ParticleTextureSheet.CUSTOM
 	);
 	protected World world;
-	private final Map<class_3999, Queue<Particle>> particleQueues = Maps.<class_3999, Queue<Particle>>newIdentityHashMap();
+	private final Map<ParticleTextureSheet, Queue<Particle>> particleQueues = Maps.<ParticleTextureSheet, Queue<Particle>>newIdentityHashMap();
 	private final Queue<EmitterParticle> newEmitterParticles = Queues.<EmitterParticle>newArrayDeque();
 	private final TextureManager textureManager;
 	private final Random random = new Random();
 	private final Int2ObjectMap<ParticleFactory<?>> factories = new Int2ObjectOpenHashMap<>();
 	private final Queue<Particle> newParticles = Queues.<Particle>newArrayDeque();
-	private final Set<Identifier> field_17822 = Sets.<Identifier>newHashSet();
+	private final Set<Identifier> sprites = Sets.<Identifier>newHashSet();
 
 	private class_4002 method_18127(Collection<Identifier> collection) {
 		if (collection.size() <= 1) {
@@ -69,28 +72,28 @@ public class ParticleManager extends class_4075 {
 			final Identifier identifier = iterator.hasNext() ? (Identifier)iterator.next() : MissingSprite.getMissingSpriteId();
 			return new class_4002() {
 				@Override
-				public Sprite method_18138(int i, int j) {
-					return ParticleManager.this.method_18667(identifier);
+				public Sprite getSprite(int i, int j) {
+					return ParticleManager.this.getSprite(identifier);
 				}
 
 				@Override
-				public Sprite method_18139(Random random) {
-					return ParticleManager.this.method_18667(identifier);
+				public Sprite getSprite(Random random) {
+					return ParticleManager.this.getSprite(identifier);
 				}
 			};
 		} else {
 			final List<Identifier> list = ImmutableList.copyOf(collection);
 			return new class_4002() {
 				@Override
-				public Sprite method_18138(int i, int j) {
+				public Sprite getSprite(int i, int j) {
 					Identifier identifier = (Identifier)list.get(i * (list.size() - 1) / j);
-					return ParticleManager.this.method_18667(identifier);
+					return ParticleManager.this.getSprite(identifier);
 				}
 
 				@Override
-				public Sprite method_18139(Random random) {
+				public Sprite getSprite(Random random) {
 					Identifier identifier = (Identifier)list.get(random.nextInt(list.size()));
-					return ParticleManager.this.method_18667(identifier);
+					return ParticleManager.this.getSprite(identifier);
 				}
 			};
 		}
@@ -101,14 +104,14 @@ public class ParticleManager extends class_4075 {
 		this.world = world;
 		this.textureManager = textureManager;
 		this.registerDefaultFactories(collection -> {
-			this.field_17822.addAll(collection);
+			this.sprites.addAll(collection);
 			return this.method_18127(collection);
 		});
 	}
 
 	@Override
-	protected Iterable<Identifier> method_18665() {
-		return this.field_17822;
+	protected Iterable<Identifier> getSprites() {
+		return this.sprites;
 	}
 
 	private void registerDefaultFactories(class_4001 arg) {
@@ -204,8 +207,8 @@ public class ParticleManager extends class_4075 {
 	}
 
 	public void tick() {
-		this.particleQueues.forEach((arg, queue) -> {
-			this.world.getProfiler().push(arg.toString());
+		this.particleQueues.forEach((particleTextureSheet, queue) -> {
+			this.world.getProfiler().push(particleTextureSheet.toString());
 			this.updateParticleQueue(queue);
 			this.world.getProfiler().pop();
 		});
@@ -225,7 +228,7 @@ public class ParticleManager extends class_4075 {
 		Particle particle;
 		if (!this.newParticles.isEmpty()) {
 			while ((particle = (Particle)this.newParticles.poll()) != null) {
-				((Queue)this.particleQueues.computeIfAbsent(particle.method_18122(), arg -> EvictingQueue.create(16384))).add(particle);
+				((Queue)this.particleQueues.computeIfAbsent(particle.getTextureSheet(), particleTextureSheet -> EvictingQueue.create(16384))).add(particle);
 			}
 		}
 	}
@@ -251,7 +254,7 @@ public class ParticleManager extends class_4075 {
 			CrashReport crashReport = CrashReport.create(var5, "Ticking Particle");
 			CrashReportSection crashReportSection = crashReport.addElement("Particle being ticked");
 			crashReportSection.add("Particle", particle::toString);
-			crashReportSection.add("Particle Type", particle.method_18122()::toString);
+			crashReportSection.add("Particle Type", particle.getTextureSheet()::toString);
 			throw new CrashException(crashReport);
 		}
 	}
@@ -267,13 +270,13 @@ public class ParticleManager extends class_4075 {
 		Particle.cameraZ = MathHelper.lerp((double)f, entity.prevRenderZ, entity.z);
 		Particle.cameraRotation = entity.getRotationVec(f);
 
-		for (class_3999 lv : field_17820) {
-			Iterable<Particle> iterable = (Iterable<Particle>)this.particleQueues.get(lv);
+		for (ParticleTextureSheet particleTextureSheet : field_17820) {
+			Iterable<Particle> iterable = (Iterable<Particle>)this.particleQueues.get(particleTextureSheet);
 			if (iterable != null) {
 				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				Tessellator tessellator = Tessellator.getInstance();
 				BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-				lv.method_18130(bufferBuilder, this.textureManager);
+				particleTextureSheet.begin(bufferBuilder, this.textureManager);
 
 				for (Particle particle : iterable) {
 					try {
@@ -282,12 +285,12 @@ public class ParticleManager extends class_4075 {
 						CrashReport crashReport = CrashReport.create(var18, "Rendering Particle");
 						CrashReportSection crashReportSection = crashReport.addElement("Particle being rendered");
 						crashReportSection.add("Particle", particle::toString);
-						crashReportSection.add("Particle Type", lv::toString);
+						crashReportSection.add("Particle Type", particleTextureSheet::toString);
 						throw new CrashException(crashReport);
 					}
 				}
 
-				lv.method_18131(tessellator);
+				particleTextureSheet.draw(tessellator);
 			}
 		}
 

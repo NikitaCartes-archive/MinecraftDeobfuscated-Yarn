@@ -11,14 +11,14 @@ import net.minecraft.class_1370;
 import net.minecraft.class_1394;
 import net.minecraft.class_1396;
 import net.minecraft.class_1399;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -189,7 +189,7 @@ public class ZombieEntity extends HostileEntity {
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
 		if (BABY.equals(trackedData)) {
-			this.method_18382();
+			this.refreshSize();
 		}
 
 		super.onTrackedDataSet(trackedData);
@@ -447,7 +447,7 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	protected float method_18394(class_4050 arg, class_4048 arg2) {
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
 		return this.isChild() ? 0.93F : 1.74F;
 	}
 
@@ -548,7 +548,7 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	protected ItemStack getSkull() {
-		return new ItemStack(Items.field_8470);
+		return new ItemStack(Items.ZOMBIE_HEAD);
 	}
 
 	class DestroyEggGoal extends StepAndDestroyBlockGoal {

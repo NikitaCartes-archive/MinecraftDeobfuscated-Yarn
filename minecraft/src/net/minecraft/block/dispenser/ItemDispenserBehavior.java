@@ -37,12 +37,11 @@ public class ItemDispenserBehavior implements DispenserBehavior {
 
 		ItemEntity itemEntity = new ItemEntity(world, d, e, f, itemStack);
 		double g = world.random.nextDouble() * 0.1 + 0.2;
-		itemEntity.velocityX = (double)direction.getOffsetX() * g;
-		itemEntity.velocityY = 0.2F;
-		itemEntity.velocityZ = (double)direction.getOffsetZ() * g;
-		itemEntity.velocityX = itemEntity.velocityX + world.random.nextGaussian() * 0.0075F * (double)i;
-		itemEntity.velocityY = itemEntity.velocityY + world.random.nextGaussian() * 0.0075F * (double)i;
-		itemEntity.velocityZ = itemEntity.velocityZ + world.random.nextGaussian() * 0.0075F * (double)i;
+		itemEntity.setVelocity(
+			world.random.nextGaussian() * 0.0075F * (double)i + (double)direction.getOffsetX() * g,
+			world.random.nextGaussian() * 0.0075F * (double)i + 0.2F,
+			world.random.nextGaussian() * 0.0075F * (double)i + (double)direction.getOffsetZ() * g
+		);
 		world.spawnEntity(itemEntity);
 	}
 

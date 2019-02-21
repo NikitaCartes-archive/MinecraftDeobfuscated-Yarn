@@ -3,8 +3,8 @@ package net.minecraft.entity.mob;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
@@ -145,7 +145,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	protected float method_18394(class_4050 arg, class_4048 arg2) {
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
 		return 2.6F;
 	}
 
@@ -198,17 +198,13 @@ public class GhastEntity extends FlyingEntity implements Monster {
 		@Override
 		public void tick() {
 			if (this.state == MoveControl.State.field_6378) {
-				double d = this.targetX - this.ghast.x;
-				double e = this.targetY - this.ghast.y;
-				double f = this.targetZ - this.ghast.z;
-				double g = d * d + e * e + f * f;
 				if (this.field_7276-- <= 0) {
 					this.field_7276 = this.field_7276 + this.ghast.getRand().nextInt(5) + 2;
-					g = (double)MathHelper.sqrt(g);
-					if (this.method_7051(this.targetX, this.targetY, this.targetZ, g)) {
-						this.ghast.velocityX += d / g * 0.1;
-						this.ghast.velocityY += e / g * 0.1;
-						this.ghast.velocityZ += f / g * 0.1;
+					Vec3d vec3d = new Vec3d(this.targetX - this.ghast.x, this.targetY - this.ghast.y, this.targetZ - this.ghast.z);
+					double d = vec3d.length();
+					vec3d = vec3d.normalize();
+					if (this.method_7051(vec3d, MathHelper.ceil(d))) {
+						this.ghast.setVelocity(this.ghast.getVelocity().add(vec3d.multiply(0.1)));
 					} else {
 						this.state = MoveControl.State.field_6377;
 					}
@@ -216,14 +212,11 @@ public class GhastEntity extends FlyingEntity implements Monster {
 			}
 		}
 
-		private boolean method_7051(double d, double e, double f, double g) {
-			double h = (d - this.ghast.x) / g;
-			double i = (e - this.ghast.y) / g;
-			double j = (f - this.ghast.z) / g;
+		private boolean method_7051(Vec3d vec3d, int i) {
 			BoundingBox boundingBox = this.ghast.getBoundingBox();
 
-			for (int k = 1; (double)k < g; k++) {
-				boundingBox = boundingBox.offset(h, i, j);
+			for (int j = 1; j < i; j++) {
+				boundingBox = boundingBox.offset(vec3d);
 				if (!this.ghast.world.isEntityColliding(this.ghast, boundingBox)) {
 					return false;
 				}
@@ -306,7 +299,8 @@ public class GhastEntity extends FlyingEntity implements Monster {
 		@Override
 		public void tick() {
 			if (this.field_7274.getTarget() == null) {
-				this.field_7274.yaw = -((float)MathHelper.atan2(this.field_7274.velocityX, this.field_7274.velocityZ)) * (180.0F / (float)Math.PI);
+				Vec3d vec3d = this.field_7274.getVelocity();
+				this.field_7274.yaw = -((float)MathHelper.atan2(vec3d.x, vec3d.z)) * (180.0F / (float)Math.PI);
 				this.field_7274.field_6283 = this.field_7274.yaw;
 			} else {
 				LivingEntity livingEntity = this.field_7274.getTarget();

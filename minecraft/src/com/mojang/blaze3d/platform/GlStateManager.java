@@ -19,10 +19,8 @@ import org.lwjgl.system.MemoryUtil;
 public class GlStateManager {
 	private static final int LIGHT_COUNT = 8;
 	private static final int TEXTURE_COUNT = 8;
-	private static final FloatBuffer MATRIX_BUFFER = GLX.make(
-		MemoryUtil.memAllocFloat(16), floatBuffer -> class_301.method_1407(MemoryUtil.memAddress(floatBuffer))
-	);
-	private static final FloatBuffer COLOR_BUFFER = GLX.make(MemoryUtil.memAllocFloat(4), floatBuffer -> class_301.method_1407(MemoryUtil.memAddress(floatBuffer)));
+	private static final FloatBuffer MATRIX_BUFFER = GLX.make(MemoryUtil.memAllocFloat(16), floatBuffer -> class_301.untrack(MemoryUtil.memAddress(floatBuffer)));
+	private static final FloatBuffer COLOR_BUFFER = GLX.make(MemoryUtil.memAllocFloat(4), floatBuffer -> class_301.untrack(MemoryUtil.memAddress(floatBuffer)));
 	private static final GlStateManager.AlphaTestState ALPHA_TEST = new GlStateManager.AlphaTestState();
 	private static final GlStateManager.CapabilityTracker LIGHTING = new GlStateManager.CapabilityTracker(2896);
 	private static final GlStateManager.CapabilityTracker[] LIGHT_ENABLE = (GlStateManager.CapabilityTracker[])IntStream.range(0, 8)

@@ -3,8 +3,8 @@ package net.minecraft.client.render.entity;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4004;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
+import net.minecraft.client.render.entity.feature.VillagerHeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.VillagerEntityModel;
 import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.util.Identifier;
@@ -16,7 +16,7 @@ public class WanderingTraderEntityRenderer extends MobEntityRenderer<WanderingTr
 	public WanderingTraderEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new VillagerEntityModel<>(0.0F), 0.5F);
 		this.addFeature(new HeadFeatureRenderer<>(this));
-		this.addFeature(new class_4004<>(this));
+		this.addFeature(new VillagerHeldItemFeatureRenderer<>(this));
 	}
 
 	protected Identifier method_18045(WanderingTraderEntity wanderingTraderEntity) {

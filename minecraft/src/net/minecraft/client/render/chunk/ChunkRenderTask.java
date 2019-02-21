@@ -116,7 +116,7 @@ public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
 		return this.cancelled;
 	}
 
-	public int compareTo(ChunkRenderTask chunkRenderTask) {
+	public int method_3601(ChunkRenderTask chunkRenderTask) {
 		return Doubles.compare(this.distanceToPlayerSquared, chunkRenderTask.distanceToPlayerSquared);
 	}
 

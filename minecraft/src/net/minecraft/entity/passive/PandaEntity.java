@@ -64,12 +64,11 @@ public class PandaEntity extends AnimalEntity {
 	private static final TrackedData<Integer> field_6780 = DataTracker.registerData(PandaEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Byte> MAIN_GENE = DataTracker.registerData(PandaEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Byte> HIDDEN_GENE = DataTracker.registerData(PandaEntity.class, TrackedDataHandlerRegistry.BYTE);
-	private static final TrackedData<Byte> field_6768 = DataTracker.registerData(PandaEntity.class, TrackedDataHandlerRegistry.BYTE);
+	private static final TrackedData<Byte> FLAGS = DataTracker.registerData(PandaEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private boolean field_6769;
 	private boolean field_6770;
 	public int field_6767;
-	private double field_6776;
-	private double field_6778;
+	private Vec3d field_18277;
 	private float field_6777;
 	private float field_6779;
 	private float field_6774;
@@ -90,9 +89,9 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean method_18397(ItemStack itemStack) {
+	public boolean canPickUp(ItemStack itemStack) {
 		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
-		return !this.getEquippedStack(equipmentSlot).isEmpty() ? false : equipmentSlot == EquipmentSlot.HAND_MAIN && super.method_18397(itemStack);
+		return !this.getEquippedStack(equipmentSlot).isEmpty() ? false : equipmentSlot == EquipmentSlot.HAND_MAIN && super.canPickUp(itemStack);
 	}
 
 	public int method_6521() {
@@ -104,23 +103,23 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	public boolean method_6545() {
-		return this.method_6533(2);
+		return this.hasFlag(2);
 	}
 
 	public boolean method_6535() {
-		return this.method_6533(8);
+		return this.hasFlag(8);
 	}
 
 	public void method_6513(boolean bl) {
-		this.method_6557(8, bl);
+		this.setFlag(8, bl);
 	}
 
 	public boolean method_6514() {
-		return this.method_6533(16);
+		return this.hasFlag(16);
 	}
 
 	public void method_6505(boolean bl) {
-		this.method_6557(16, bl);
+		this.setFlag(16, bl);
 	}
 
 	public boolean method_6527() {
@@ -140,7 +139,7 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	public void method_6546(boolean bl) {
-		this.method_6557(2, bl);
+		this.setFlag(2, bl);
 		if (!bl) {
 			this.method_6539(0);
 		}
@@ -179,11 +178,11 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	public boolean method_6526() {
-		return this.method_6533(4);
+		return this.hasFlag(4);
 	}
 
 	public void method_6541(boolean bl) {
-		this.method_6557(4, bl);
+		this.setFlag(4, bl);
 	}
 
 	@Override
@@ -193,20 +192,20 @@ public class PandaEntity extends AnimalEntity {
 		this.dataTracker.startTracking(field_6771, 0);
 		this.dataTracker.startTracking(MAIN_GENE, (byte)0);
 		this.dataTracker.startTracking(HIDDEN_GENE, (byte)0);
-		this.dataTracker.startTracking(field_6768, (byte)0);
+		this.dataTracker.startTracking(FLAGS, (byte)0);
 		this.dataTracker.startTracking(field_6780, 0);
 	}
 
-	private boolean method_6533(int i) {
-		return (this.dataTracker.get(field_6768) & i) != 0;
+	private boolean hasFlag(int i) {
+		return (this.dataTracker.get(FLAGS) & i) != 0;
 	}
 
-	private void method_6557(int i, boolean bl) {
-		byte b = this.dataTracker.get(field_6768);
+	private void setFlag(int i, boolean bl) {
+		byte b = this.dataTracker.get(FLAGS);
 		if (bl) {
-			this.dataTracker.set(field_6768, (byte)(b | i));
+			this.dataTracker.set(FLAGS, (byte)(b | i));
 		} else {
-			this.dataTracker.set(field_6768, (byte)(b & ~i));
+			this.dataTracker.set(FLAGS, (byte)(b & ~i));
 		}
 	}
 
@@ -229,17 +228,17 @@ public class PandaEntity extends AnimalEntity {
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
 		PandaEntity pandaEntity = EntityType.PANDA.create(this.world);
 		if (passiveEntity instanceof PandaEntity) {
-			pandaEntity.method_6515(this, (PandaEntity)passiveEntity);
+			pandaEntity.initGenes(this, (PandaEntity)passiveEntity);
 		}
 
-		pandaEntity.method_6538();
+		pandaEntity.resetAttributes();
 		return pandaEntity;
 	}
 
 	@Override
 	protected void initGoals() {
 		this.goalSelector.add(0, new SwimGoal(this));
-		this.goalSelector.add(2, new PandaEntity.class_1447(this, 2.0));
+		this.goalSelector.add(2, new PandaEntity.ExtinguishFireGoal(this, 2.0));
 		this.goalSelector.add(2, new PandaEntity.PandaMateGoal(this, 1.0));
 		this.goalSelector.add(3, new PandaEntity.class_4054(this, 1.2F, true));
 		this.goalSelector.add(4, new TemptGoal(this, 1.0, Ingredient.ofItems(Blocks.field_10211.getItem()), false));
@@ -335,7 +334,7 @@ public class PandaEntity extends AnimalEntity {
 			this.method_6539(this.method_6532() + 1);
 			if (this.method_6532() > 20) {
 				this.method_6546(false);
-				this.method_6548();
+				this.sneeze();
 			} else if (this.method_6532() == 1) {
 				this.playSound(SoundEvents.field_14997, 1.0F, 1.0F);
 			}
@@ -402,7 +401,7 @@ public class PandaEntity extends AnimalEntity {
 				double d = (double)(-this.random.nextFloat()) * 0.6 - 0.3;
 				Vec3d vec3d2 = new Vec3d(((double)this.random.nextFloat() - 0.5) * 0.8, d, 1.0 + ((double)this.random.nextFloat() - 0.5) * 0.4);
 				vec3d2 = vec3d2.rotateY(-this.field_6283 * (float) (Math.PI / 180.0));
-				vec3d2 = vec3d2.add(this.x, this.y + (double)this.getEyeHeight() + 1.0, this.z);
+				vec3d2 = vec3d2.add(this.x, this.y + (double)this.getStandingEyeHeight() + 1.0, this.z);
 				this.world
 					.addParticle(
 						new ItemStackParticleParameters(ParticleTypes.field_11218, this.getEquippedStack(EquipmentSlot.HAND_MAIN)),
@@ -465,39 +464,32 @@ public class PandaEntity extends AnimalEntity {
 			this.method_6541(false);
 		} else {
 			if (!this.world.isClient) {
+				Vec3d vec3d = this.getVelocity();
 				if (this.field_6767 == 1) {
-					this.velocityY = 0.27F;
 					float f = this.yaw * (float) (Math.PI / 180.0);
 					float g = this.isChild() ? 0.1F : 0.2F;
-					this.velocityX = this.velocityX - (double)(MathHelper.sin(f) * g);
-					this.velocityZ = this.velocityZ + (double)(MathHelper.cos(f) * g);
-					this.field_6776 = this.velocityX;
-					this.field_6778 = this.velocityZ;
+					this.field_18277 = new Vec3d(vec3d.x + (double)(-MathHelper.sin(f) * g), 0.0, vec3d.z + (double)(MathHelper.cos(f) * g));
+					this.setVelocity(this.field_18277.add(0.0, 0.27, 0.0));
 				} else if ((float)this.field_6767 != 7.0F && (float)this.field_6767 != 15.0F && (float)this.field_6767 != 23.0F) {
-					this.velocityX = this.field_6776;
-					this.velocityZ = this.field_6778;
+					this.setVelocity(this.field_18277.x, vec3d.y, this.field_18277.z);
 				} else {
-					if (this.onGround) {
-						this.velocityY = 0.27F;
-					}
-
-					this.velocityX = 0.0;
-					this.velocityZ = 0.0;
+					this.setVelocity(0.0, this.onGround ? 0.27 : vec3d.y, 0.0);
 				}
 			}
 		}
 	}
 
-	private void method_6548() {
+	private void sneeze() {
+		Vec3d vec3d = this.getVelocity();
 		this.world
 			.addParticle(
 				ParticleTypes.field_11234,
 				this.x - (double)(this.getWidth() + 1.0F) * 0.5 * (double)MathHelper.sin(this.field_6283 * (float) (Math.PI / 180.0)),
-				this.y + (double)this.getEyeHeight() - 0.1F,
+				this.y + (double)this.getStandingEyeHeight() - 0.1F,
 				this.z + (double)(this.getWidth() + 1.0F) * 0.5 * (double)MathHelper.cos(this.field_6283 * (float) (Math.PI / 180.0)),
-				this.velocityX,
+				vec3d.x,
 				0.0,
-				this.velocityZ
+				vec3d.z
 			);
 		this.playSound(SoundEvents.field_15076, 1.0F, 1.0F);
 
@@ -537,33 +529,33 @@ public class PandaEntity extends AnimalEntity {
 		entityData = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		this.setMainGene(PandaEntity.Gene.createRandom(this.random));
 		this.setHiddenGene(PandaEntity.Gene.createRandom(this.random));
-		this.method_6538();
-		if (entityData instanceof PandaEntity.class_4055) {
+		this.resetAttributes();
+		if (entityData instanceof PandaEntity.SpawnData) {
 			if (this.random.nextInt(5) == 0) {
 				this.setBreedingAge(-24000);
 			}
 		} else {
-			entityData = new PandaEntity.class_4055();
+			entityData = new PandaEntity.SpawnData();
 		}
 
 		return entityData;
 	}
 
-	public void method_6515(PandaEntity pandaEntity, @Nullable PandaEntity pandaEntity2) {
+	public void initGenes(PandaEntity pandaEntity, @Nullable PandaEntity pandaEntity2) {
 		if (pandaEntity2 == null) {
 			if (this.random.nextBoolean()) {
-				this.setMainGene(pandaEntity.method_6519());
+				this.setMainGene(pandaEntity.getRandomGene());
 				this.setHiddenGene(PandaEntity.Gene.createRandom(this.random));
 			} else {
 				this.setMainGene(PandaEntity.Gene.createRandom(this.random));
-				this.setHiddenGene(pandaEntity.method_6519());
+				this.setHiddenGene(pandaEntity.getRandomGene());
 			}
 		} else if (this.random.nextBoolean()) {
-			this.setMainGene(pandaEntity.method_6519());
-			this.setHiddenGene(pandaEntity2.method_6519());
+			this.setMainGene(pandaEntity.getRandomGene());
+			this.setHiddenGene(pandaEntity2.getRandomGene());
 		} else {
-			this.setMainGene(pandaEntity2.method_6519());
-			this.setHiddenGene(pandaEntity.method_6519());
+			this.setMainGene(pandaEntity2.getRandomGene());
+			this.setHiddenGene(pandaEntity.getRandomGene());
 		}
 
 		if (this.random.nextInt(32) == 0) {
@@ -575,11 +567,11 @@ public class PandaEntity extends AnimalEntity {
 		}
 	}
 
-	private PandaEntity.Gene method_6519() {
+	private PandaEntity.Gene getRandomGene() {
 		return this.random.nextBoolean() ? this.getMainGene() : this.getHiddenGene();
 	}
 
-	public void method_6538() {
+	public void resetAttributes() {
 		if (this.isWeak()) {
 			this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(10.0);
 		}
@@ -678,6 +670,42 @@ public class PandaEntity extends AnimalEntity {
 
 	public boolean method_18442() {
 		return !this.method_6514() && !this.method_6524() && !this.method_6527() && !this.method_6526() && !this.method_6535();
+	}
+
+	static class ExtinguishFireGoal extends EscapeDangerGoal {
+		private final PandaEntity field_6802;
+
+		public ExtinguishFireGoal(PandaEntity pandaEntity, double d) {
+			super(pandaEntity, d);
+			this.field_6802 = pandaEntity;
+		}
+
+		@Override
+		public boolean canStart() {
+			if (!this.field_6802.isOnFire()) {
+				return false;
+			} else {
+				BlockPos blockPos = this.locateClosestWater(this.owner.world, this.owner, 5, 4);
+				if (blockPos != null) {
+					this.targetX = (double)blockPos.getX();
+					this.targetY = (double)blockPos.getY();
+					this.targetZ = (double)blockPos.getZ();
+					return true;
+				} else {
+					return this.method_6301();
+				}
+			}
+		}
+
+		@Override
+		public boolean shouldContinue() {
+			if (this.field_6802.method_6535()) {
+				this.field_6802.getNavigation().stop();
+				return false;
+			} else {
+				return super.shouldContinue();
+			}
+		}
 	}
 
 	public static enum Gene {
@@ -839,6 +867,11 @@ public class PandaEntity extends AnimalEntity {
 		}
 	}
 
+	static class SpawnData implements EntityData {
+		private SpawnData() {
+		}
+	}
+
 	static class class_1444 extends class_1399 {
 		private final PandaEntity field_6798;
 
@@ -895,42 +928,6 @@ public class PandaEntity extends AnimalEntity {
 		public void onRemove() {
 			this.field_6800.method_6505(false);
 			this.field_6799 = this.field_6800.age + 200;
-		}
-	}
-
-	static class class_1447 extends EscapeDangerGoal {
-		private final PandaEntity field_6802;
-
-		public class_1447(PandaEntity pandaEntity, double d) {
-			super(pandaEntity, d);
-			this.field_6802 = pandaEntity;
-		}
-
-		@Override
-		public boolean canStart() {
-			if (!this.field_6802.isOnFire()) {
-				return false;
-			} else {
-				BlockPos blockPos = this.locateClosestWater(this.owner.world, this.owner, 5, 4);
-				if (blockPos != null) {
-					this.targetX = (double)blockPos.getX();
-					this.targetY = (double)blockPos.getY();
-					this.targetZ = (double)blockPos.getZ();
-					return true;
-				} else {
-					return this.method_6301();
-				}
-			}
-		}
-
-		@Override
-		public boolean shouldContinue() {
-			if (this.field_6802.method_6535()) {
-				this.field_6802.getNavigation().stop();
-				return false;
-			} else {
-				return super.shouldContinue();
-			}
 		}
 	}
 
@@ -1089,11 +1086,6 @@ public class PandaEntity extends AnimalEntity {
 		@Override
 		public boolean canStart() {
 			return this.field_18114.method_18442() && super.canStart();
-		}
-	}
-
-	static class class_4055 implements EntityData {
-		private class_4055() {
 		}
 	}
 

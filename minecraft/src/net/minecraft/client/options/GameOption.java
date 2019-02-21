@@ -3,11 +3,6 @@ package net.minecraft.client.options;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_4060;
-import net.minecraft.class_4061;
-import net.minecraft.class_4063;
-import net.minecraft.class_4064;
-import net.minecraft.class_4065;
-import net.minecraft.class_4066;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -19,7 +14,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public abstract class GameOption {
-	public static final DoubleGameOption field_18189 = new DoubleGameOption(
+	public static final DoubleGameOption BIOME_BLEND_RADIUS = new DoubleGameOption(
 		"options.biomeBlendRadius", 0.0, 7.0, 1.0F, gameOptions -> (double)gameOptions.biomeBlendRadius, (gameOptions, double_) -> {
 			gameOptions.biomeBlendRadius = MathHelper.clamp((int)double_.doubleValue(), 0, 7);
 			MinecraftClient.getInstance().worldRenderer.reload();
@@ -148,7 +143,7 @@ public abstract class GameOption {
 			return d == 0.0 ? string + I18n.translate("options.off") : string + (int)d;
 		}
 	);
-	public static final DoubleGameOption field_18191 = new DoubleGameOption(
+	public static final DoubleGameOption MOUSE_WHEEL_SENSITIVITY = new DoubleGameOption(
 		"options.mouseWheelSensitivity",
 		1.0,
 		10.0,
@@ -187,71 +182,72 @@ public abstract class GameOption {
 			}
 		}
 	);
-	public static final class_4064 AO = new class_4064("options.ao", (gameOptions, integer) -> {
+	public static final StringGameOption AO = new StringGameOption("options.ao", (gameOptions, integer) -> {
 		gameOptions.ao = class_4060.method_18484(gameOptions.ao.method_18483() + integer);
 		MinecraftClient.getInstance().worldRenderer.reload();
-	}, (gameOptions, arg) -> arg.method_18518() + I18n.translate(gameOptions.ao.method_18485()));
-	public static final class_4064 field_18192 = new class_4064(
+	}, (gameOptions, stringGameOption) -> stringGameOption.method_18518() + I18n.translate(gameOptions.ao.method_18485()));
+	public static final StringGameOption field_18192 = new StringGameOption(
 		"options.attackIndicator",
-		(gameOptions, integer) -> gameOptions.attackIndicator = class_4061.method_18488(gameOptions.attackIndicator.method_18487() + integer),
-		(gameOptions, arg) -> arg.method_18518() + I18n.translate(gameOptions.attackIndicator.method_18489())
+		(gameOptions, integer) -> gameOptions.attackIndicator = AttackIndicator.byId(gameOptions.attackIndicator.getId() + integer),
+		(gameOptions, stringGameOption) -> stringGameOption.method_18518() + I18n.translate(gameOptions.attackIndicator.getTranslationKey())
 	);
-	public static final class_4064 VISIBILITY = new class_4064(
+	public static final StringGameOption VISIBILITY = new StringGameOption(
 		"options.chat.visibility",
 		(gameOptions, integer) -> gameOptions.chatVisibility = ChatVisibility.byId((gameOptions.chatVisibility.getId() + integer) % 3),
-		(gameOptions, arg) -> arg.method_18518() + I18n.translate(gameOptions.chatVisibility.getTranslationKey())
+		(gameOptions, stringGameOption) -> stringGameOption.method_18518() + I18n.translate(gameOptions.chatVisibility.getTranslationKey())
 	);
-	public static final class_4064 GRAPHICS = new class_4064(
+	public static final StringGameOption GRAPHICS = new StringGameOption(
 		"options.graphics",
 		(gameOptions, integer) -> {
 			gameOptions.fancyGraphics = !gameOptions.fancyGraphics;
 			MinecraftClient.getInstance().worldRenderer.reload();
 		},
-		(gameOptions, arg) -> gameOptions.fancyGraphics
-				? arg.method_18518() + I18n.translate("options.graphics.fancy")
-				: arg.method_18518() + I18n.translate("options.graphics.fast")
+		(gameOptions, stringGameOption) -> gameOptions.fancyGraphics
+				? stringGameOption.method_18518() + I18n.translate("options.graphics.fancy")
+				: stringGameOption.method_18518() + I18n.translate("options.graphics.fast")
 	);
-	public static final class_4064 GUI_SCALE = new class_4064(
+	public static final StringGameOption GUI_SCALE = new StringGameOption(
 		"options.guiScale",
 		(gameOptions, integer) -> gameOptions.guiScale = Integer.remainderUnsigned(
 				gameOptions.guiScale + integer, MinecraftClient.getInstance().window.calculateScaleFactor(0, MinecraftClient.getInstance().forcesUnicodeFont()) + 1
 			),
-		(gameOptions, arg) -> arg.method_18518() + (gameOptions.guiScale == 0 ? I18n.translate("options.guiScale.auto") : gameOptions.guiScale)
+		(gameOptions, stringGameOption) -> stringGameOption.method_18518()
+				+ (gameOptions.guiScale == 0 ? I18n.translate("options.guiScale.auto") : gameOptions.guiScale)
 	);
-	public static final class_4064 field_18193 = new class_4064(
+	public static final StringGameOption field_18193 = new StringGameOption(
 		"options.mainHand",
 		(gameOptions, integer) -> gameOptions.mainHand = gameOptions.mainHand.getOpposite(),
-		(gameOptions, arg) -> arg.method_18518() + gameOptions.mainHand
+		(gameOptions, stringGameOption) -> stringGameOption.method_18518() + gameOptions.mainHand
 	);
-	public static final class_4064 field_18194 = new class_4064(
+	public static final StringGameOption field_18194 = new StringGameOption(
 		"options.narrator",
 		(gameOptions, integer) -> {
 			if (NarratorManager.INSTANCE.isActive()) {
-				gameOptions.narrator = class_4065.method_18510(gameOptions.narrator.method_18509() + integer);
+				gameOptions.narrator = NarratorOption.byId(gameOptions.narrator.getId() + integer);
 			} else {
-				gameOptions.narrator = class_4065.field_18176;
+				gameOptions.narrator = NarratorOption.field_18176;
 			}
 
 			NarratorManager.INSTANCE.addToast(gameOptions.narrator);
 		},
-		(gameOptions, arg) -> NarratorManager.INSTANCE.isActive()
-				? arg.method_18518() + I18n.translate(gameOptions.narrator.method_18511())
-				: arg.method_18518() + I18n.translate("options.narrator.notavailable")
+		(gameOptions, stringGameOption) -> NarratorManager.INSTANCE.isActive()
+				? stringGameOption.method_18518() + I18n.translate(gameOptions.narrator.getTranslationKey())
+				: stringGameOption.method_18518() + I18n.translate("options.narrator.notavailable")
 	);
-	public static final class_4064 PARTICLES = new class_4064(
+	public static final StringGameOption PARTICLES = new StringGameOption(
 		"options.particles",
-		(gameOptions, integer) -> gameOptions.particles = class_4066.method_18608(gameOptions.particles.method_18609() + integer),
-		(gameOptions, arg) -> arg.method_18518() + I18n.translate(gameOptions.particles.method_18607())
+		(gameOptions, integer) -> gameOptions.particles = ParticlesOption.byId(gameOptions.particles.getId() + integer),
+		(gameOptions, stringGameOption) -> stringGameOption.method_18518() + I18n.translate(gameOptions.particles.getTranslationKey())
 	);
-	public static final class_4064 RENDER_CLOUDS = new class_4064(
+	public static final StringGameOption RENDER_CLOUDS = new StringGameOption(
 		"options.renderClouds",
-		(gameOptions, integer) -> gameOptions.cloudRenderMode = class_4063.method_18497(gameOptions.cloudRenderMode.method_18496() + integer),
-		(gameOptions, arg) -> arg.method_18518() + I18n.translate(gameOptions.cloudRenderMode.method_18498())
+		(gameOptions, integer) -> gameOptions.cloudRenderMode = CloudRenderMode.method_18497(gameOptions.cloudRenderMode.method_18496() + integer),
+		(gameOptions, stringGameOption) -> stringGameOption.method_18518() + I18n.translate(gameOptions.cloudRenderMode.method_18498())
 	);
-	public static final BooleanGameOption field_18195 = new BooleanGameOption(
+	public static final BooleanGameOption AUTO_JUMP = new BooleanGameOption(
 		"options.autoJump", gameOptions -> gameOptions.autoJump, (gameOptions, boolean_) -> gameOptions.autoJump = boolean_
 	);
-	public static final BooleanGameOption field_18196 = new BooleanGameOption(
+	public static final BooleanGameOption AUTO_SUGGESTIONS = new BooleanGameOption(
 		"options.autoSuggestCommands", gameOptions -> gameOptions.autoSuggestions, (gameOptions, boolean_) -> gameOptions.autoSuggestions = boolean_
 	);
 	public static final BooleanGameOption CHAT_COLOR = new BooleanGameOption(
@@ -267,10 +263,10 @@ public abstract class GameOption {
 		gameOptions.enableVsync = boolean_;
 		MinecraftClient.getInstance().window.setVsync(gameOptions.enableVsync);
 	});
-	public static final BooleanGameOption field_18184 = new BooleanGameOption(
+	public static final BooleanGameOption ENTITY_SHADOWS = new BooleanGameOption(
 		"options.entityShadows", gameOptions -> gameOptions.entityShadows, (gameOptions, boolean_) -> gameOptions.entityShadows = boolean_
 	);
-	public static final BooleanGameOption field_18185 = new BooleanGameOption(
+	public static final BooleanGameOption FORCE_UNICODE_FONT = new BooleanGameOption(
 		"options.forceUnicodeFont", gameOptions -> gameOptions.forceUnicodeFont, (gameOptions, boolean_) -> {
 			gameOptions.forceUnicodeFont = boolean_;
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
@@ -280,13 +276,13 @@ public abstract class GameOption {
 	public static final BooleanGameOption INVERT_MOUSE = new BooleanGameOption(
 		"options.invertMouse", gameOptions -> gameOptions.invertYMouse, (gameOptions, boolean_) -> gameOptions.invertYMouse = boolean_
 	);
-	public static final BooleanGameOption field_18186 = new BooleanGameOption(
+	public static final BooleanGameOption REALMS_NOTIFICATIONS = new BooleanGameOption(
 		"options.realmsNotifications", gameOptions -> gameOptions.realmsNotifications, (gameOptions, boolean_) -> gameOptions.realmsNotifications = boolean_
 	);
-	public static final BooleanGameOption field_18187 = new BooleanGameOption(
+	public static final BooleanGameOption REDUCED_DEBUG_INFO = new BooleanGameOption(
 		"options.reducedDebugInfo", gameOptions -> gameOptions.reducedDebugInfo, (gameOptions, boolean_) -> gameOptions.reducedDebugInfo = boolean_
 	);
-	public static final BooleanGameOption field_18188 = new BooleanGameOption(
+	public static final BooleanGameOption SUBTITLES = new BooleanGameOption(
 		"options.showSubtitles", gameOptions -> gameOptions.showSubtitles, (gameOptions, boolean_) -> gameOptions.showSubtitles = boolean_
 	);
 	public static final BooleanGameOption SNOOPER = new BooleanGameOption("options.snooper", gameOptions -> {
@@ -317,7 +313,7 @@ public abstract class GameOption {
 		this.key = string;
 	}
 
-	public abstract ButtonWidget method_18520(GameOptions gameOptions, int i, int j, int k);
+	public abstract ButtonWidget createOptionButton(GameOptions gameOptions, int i, int j, int k);
 
 	public String method_18518() {
 		return I18n.translate(this.key) + ": ";

@@ -3,18 +3,16 @@ package net.minecraft.client.particle;
 import com.google.common.collect.Lists;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3999;
 import net.minecraft.class_4000;
 import net.minecraft.class_4001;
 import net.minecraft.class_4002;
-import net.minecraft.class_4003;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class FireSmokeParticle extends class_4003 {
+public class FireSmokeParticle extends SpriteBillboardParticle {
 	private final class_4002 field_17868;
 
 	protected FireSmokeParticle(World world, double d, double e, double f, double g, double h, double i, float j, class_4002 arg) {
@@ -38,8 +36,8 @@ public class FireSmokeParticle extends class_4003 {
 	}
 
 	@Override
-	public class_3999 method_18122() {
-		return class_3999.field_17828;
+	public ParticleTextureSheet getTextureSheet() {
+		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
 	@Override

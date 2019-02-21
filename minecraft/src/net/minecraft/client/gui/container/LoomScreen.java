@@ -62,15 +62,15 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
-		super.method_18326(i, j, f);
+	public void draw(int i, int j, float f) {
+		super.draw(i, j, f);
 		this.drawMouseoverTooltip(i, j);
 	}
 
 	@Override
 	protected void drawForeground(int i, int j) {
 		this.fontRenderer.draw(this.name.getFormattedText(), 8.0F, 4.0F, 4210752);
-		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
+		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
 	}
 
 	@Override
@@ -80,21 +80,21 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 		this.client.getTextureManager().bindTexture(TEXTURE);
 		int k = this.left;
 		int l = this.top;
-		this.drawTexturedRect(k, l, 0, 0, this.containerWidth, this.containerHeight);
+		this.drawTexturedRect(k, l, 0, 0, this.width, this.height);
 		Slot slot = this.container.getBannerSlot();
 		Slot slot2 = this.container.getDyeSlot();
 		Slot slot3 = this.container.getPatternSlot();
 		Slot slot4 = this.container.getOutputSlot();
 		if (!slot.hasStack()) {
-			this.drawTexturedRect(k + slot.xPosition, l + slot.yPosition, this.containerWidth, 0, 16, 16);
+			this.drawTexturedRect(k + slot.xPosition, l + slot.yPosition, this.width, 0, 16, 16);
 		}
 
 		if (!slot2.hasStack()) {
-			this.drawTexturedRect(k + slot2.xPosition, l + slot2.yPosition, this.containerWidth + 16, 0, 16, 16);
+			this.drawTexturedRect(k + slot2.xPosition, l + slot2.yPosition, this.width + 16, 0, 16, 16);
 		}
 
 		if (!slot3.hasStack()) {
-			this.drawTexturedRect(k + slot3.xPosition, l + slot3.yPosition, this.containerWidth + 32, 0, 16, 16);
+			this.drawTexturedRect(k + slot3.xPosition, l + slot3.yPosition, this.width + 32, 0, 16, 16);
 		}
 
 		int m = (int)(41.0F * this.scrollPosition);
@@ -103,7 +103,7 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 			this.client.getTextureManager().bindTexture(this.output);
 			drawTexturedRect(k + 141, l + 8, 1.0F, 1.0F, 20, 40, 20, 40, 64.0F, 64.0F);
 		} else if (this.hasTooManyPatterns) {
-			this.drawTexturedRect(k + slot4.xPosition - 2, l + slot4.yPosition - 2, this.containerWidth, 17, 17, 16);
+			this.drawTexturedRect(k + slot4.xPosition - 2, l + slot4.yPosition - 2, this.width, 17, 17, 16);
 		}
 
 		if (this.canApplyDyePattern) {
@@ -116,7 +116,7 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 				int s = n + r % 4 * 14;
 				int t = o + r / 4 * 14;
 				this.client.getTextureManager().bindTexture(TEXTURE);
-				int u = this.containerHeight;
+				int u = this.height;
 				if (q == this.container.getSelectedPattern()) {
 					u += 14;
 				} else if (i >= s && j >= t && i < s + 14 && j < t + 14) {
@@ -133,7 +133,7 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 			int n = k + 60;
 			int o = l + 13;
 			this.client.getTextureManager().bindTexture(TEXTURE);
-			this.drawTexturedRect(n, o, 0, this.containerHeight, 14, 14);
+			this.drawTexturedRect(n, o, 0, this.height, 14, 14);
 			int p = this.container.getSelectedPattern();
 			if (this.patternButtonTextureIds[p] != null) {
 				this.client.getTextureManager().bindTexture(this.patternButtonTextureIds[p]);
@@ -205,7 +205,7 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 
 	@Override
 	protected boolean isClickOutsideBounds(double d, double e, int i, int j, int k) {
-		return d < (double)i || e < (double)j || d >= (double)(i + this.containerWidth) || e >= (double)(j + this.containerHeight);
+		return d < (double)i || e < (double)j || d >= (double)(i + this.width) || e >= (double)(j + this.height);
 	}
 
 	private void onInventoryChanged() {

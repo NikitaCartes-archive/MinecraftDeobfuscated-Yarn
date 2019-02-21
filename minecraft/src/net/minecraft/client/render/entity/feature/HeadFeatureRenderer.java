@@ -47,7 +47,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 				GlStateManager.translatef(0.0F, 16.0F * l, 0.0F);
 			}
 
-			this.getModel().method_17148(0.0625F);
+			this.getModel().applyHeadTransform(0.0625F);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			if (item instanceof BlockItem && ((BlockItem)item).getBlock() instanceof AbstractSkullBlock) {
 				float m = 1.1875F;

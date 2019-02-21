@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.class_1414;
-import net.minecraft.class_15;
 import net.minecraft.class_4051;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
@@ -28,6 +27,7 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
+import net.minecraft.entity.ai.pathing.AmphibiousPathNodeMaker;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.ai.pathing.SwimNavigation;
@@ -306,18 +306,16 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void travel(float f, float g, float h) {
+	public void travel(Vec3d vec3d) {
 		if (this.method_6034() && this.isInsideWater()) {
-			this.updateVelocity(f, g, h, 0.1F);
-			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
-			this.velocityX *= 0.9F;
-			this.velocityY *= 0.9F;
-			this.velocityZ *= 0.9F;
+			this.updateVelocity(0.1F, vec3d);
+			this.move(MovementType.field_6308, this.getVelocity());
+			this.setVelocity(this.getVelocity().multiply(0.9));
 			if (this.getTarget() == null && (!this.method_6684() || !(this.squaredDistanceTo(this.getHomePos()) < 400.0))) {
-				this.velocityY -= 0.005;
+				this.setVelocity(this.getVelocity().add(0.0, -0.005, 0.0));
 			}
 		} else {
-			super.travel(f, g, h);
+			super.travel(vec3d);
 		}
 	}
 
@@ -376,7 +374,7 @@ public class TurtleEntity extends AnimalEntity {
 
 		private void method_6700() {
 			if (this.turtle.isInsideWater()) {
-				this.turtle.velocityY += 0.005;
+				this.turtle.setVelocity(this.turtle.getVelocity().add(0.0, 0.005, 0.0));
 				if (this.turtle.squaredDistanceTo(this.turtle.getHomePos()) > 256.0) {
 					this.turtle.setMovementSpeed(Math.max(this.turtle.getMovementSpeed() / 2.0F, 0.08F));
 				}
@@ -403,7 +401,7 @@ public class TurtleEntity extends AnimalEntity {
 				this.turtle.field_6283 = this.turtle.yaw;
 				float i = (float)(this.speed * this.turtle.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
 				this.turtle.setMovementSpeed(MathHelper.lerp(0.125F, this.turtle.getMovementSpeed(), i));
-				this.turtle.velocityY = this.turtle.velocityY + (double)this.turtle.getMovementSpeed() * e * 0.1;
+				this.turtle.setVelocity(this.turtle.getVelocity().add(0.0, (double)this.turtle.getMovementSpeed() * e * 0.1, 0.0));
 			} else {
 				this.turtle.setMovementSpeed(0.0F);
 			}
@@ -422,7 +420,7 @@ public class TurtleEntity extends AnimalEntity {
 
 		@Override
 		protected PathNodeNavigator createPathNodeNavigator() {
-			return new PathNodeNavigator(new class_15());
+			return new PathNodeNavigator(new AmphibiousPathNodeMaker());
 		}
 
 		@Override

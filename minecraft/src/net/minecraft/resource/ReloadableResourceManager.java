@@ -8,13 +8,13 @@ import net.fabricmc.api.Environment;
 import net.minecraft.util.Void;
 
 public interface ReloadableResourceManager extends ResourceManager {
-	CompletableFuture<Void> reload(Executor executor, Executor executor2, List<ResourcePack> list, CompletableFuture<Void> completableFuture);
+	CompletableFuture<Void> beginReload(Executor executor, Executor executor2, List<ResourcePack> list, CompletableFuture<Void> completableFuture);
 
 	@Environment(EnvType.CLIENT)
-	ResourceReloadHandler createReloadHandler(Executor executor, Executor executor2, CompletableFuture<Void> completableFuture);
+	ResourceReloadMonitor beginInitialMonitoredReload(Executor executor, Executor executor2, CompletableFuture<Void> completableFuture);
 
 	@Environment(EnvType.CLIENT)
-	ResourceReloadHandler method_18232(Executor executor, Executor executor2, CompletableFuture<Void> completableFuture, List<ResourcePack> list);
+	ResourceReloadMonitor beginMonitoredReload(Executor executor, Executor executor2, CompletableFuture<Void> completableFuture, List<ResourcePack> list);
 
 	void registerListener(ResourceReloadListener resourceReloadListener);
 }

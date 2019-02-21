@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3679;
 import org.apache.commons.lang3.StringUtils;
 
 @Environment(EnvType.CLIENT)
@@ -24,9 +23,9 @@ public class GlShader {
 		this.name = string;
 	}
 
-	public void attachTo(class_3679 arg) {
+	public void attachTo(GlProgram glProgram) {
 		this.refCount++;
-		GLX.glAttachShader(arg.method_1270(), this.shaderRef);
+		GLX.glAttachShader(glProgram.getProgramRef(), this.shaderRef);
 	}
 
 	public void method_1282() {

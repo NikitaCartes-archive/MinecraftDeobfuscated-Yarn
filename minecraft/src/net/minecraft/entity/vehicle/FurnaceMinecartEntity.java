@@ -18,6 +18,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class FurnaceMinecartEntity extends AbstractMinecartEntity {
@@ -81,11 +82,12 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	protected void method_7513(BlockPos blockPos, BlockState blockState) {
 		super.method_7513(blockPos, blockState);
 		double d = this.pushX * this.pushX + this.pushZ * this.pushZ;
-		if (d > 1.0E-4 && this.velocityX * this.velocityX + this.velocityZ * this.velocityZ > 0.001) {
+		Vec3d vec3d = this.getVelocity();
+		if (d > 1.0E-4 && squaredHorizontalLength(vec3d) > 0.001) {
 			d = (double)MathHelper.sqrt(d);
 			this.pushX /= d;
 			this.pushZ /= d;
-			if (this.pushX * this.velocityX + this.pushZ * this.velocityZ < 0.0) {
+			if (this.pushX * vec3d.x + this.pushZ * vec3d.z < 0.0) {
 				this.pushX = 0.0;
 				this.pushZ = 0.0;
 			} else {
@@ -99,20 +101,13 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	@Override
 	protected void method_7525() {
 		double d = this.pushX * this.pushX + this.pushZ * this.pushZ;
-		if (d > 1.0E-4) {
+		if (d > 1.0E-7) {
 			d = (double)MathHelper.sqrt(d);
 			this.pushX /= d;
 			this.pushZ /= d;
-			double e = 1.0;
-			this.velocityX *= 0.8F;
-			this.velocityY *= 0.0;
-			this.velocityZ *= 0.8F;
-			this.velocityX = this.velocityX + this.pushX * 1.0;
-			this.velocityZ = this.velocityZ + this.pushZ * 1.0;
+			this.setVelocity(this.getVelocity().multiply(0.8, 0.0, 0.8).add(this.pushX, 0.0, this.pushZ));
 		} else {
-			this.velocityX *= 0.98F;
-			this.velocityY *= 0.0;
-			this.velocityZ *= 0.98F;
+			this.setVelocity(this.getVelocity().multiply(0.98, 0.0, 0.98));
 		}
 
 		super.method_7525();
@@ -121,7 +116,7 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	@Override
 	public boolean interact(PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (field_7738.matches(itemStack) && this.fuel + 3600 <= 32000) {
+		if (field_7738.method_8093(itemStack) && this.fuel + 3600 <= 32000) {
 			if (!playerEntity.abilities.creativeMode) {
 				itemStack.subtractAmount(1);
 			}

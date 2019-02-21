@@ -1,6 +1,7 @@
 package net.minecraft;
 
 import net.minecraft.util.LevelIndexedProcessor;
+import net.minecraft.util.math.ChunkSectionPos;
 
 public abstract class class_4079 extends LevelIndexedProcessor {
 	protected class_4079(int i, int j, int k) {
@@ -17,7 +18,7 @@ public abstract class class_4079 extends LevelIndexedProcessor {
 		for (int j = -1; j <= 1; j++) {
 			for (int k = -1; k <= 1; k++) {
 				for (int m = -1; m <= 1; m++) {
-					long n = class_4076.method_18678(l, j, k, m);
+					long n = ChunkSectionPos.offsetPacked(l, j, k, m);
 					if (n != l) {
 						this.scheduleUpdateRecursively(l, n, i, bl);
 					}
@@ -33,7 +34,7 @@ public abstract class class_4079 extends LevelIndexedProcessor {
 		for (int k = -1; k <= 1; k++) {
 			for (int n = -1; n <= 1; n++) {
 				for (int o = -1; o <= 1; o++) {
-					long p = class_4076.method_18678(l, k, n, o);
+					long p = ChunkSectionPos.offsetPacked(l, k, n, o);
 					if (p == l) {
 						p = Long.MAX_VALUE;
 					}

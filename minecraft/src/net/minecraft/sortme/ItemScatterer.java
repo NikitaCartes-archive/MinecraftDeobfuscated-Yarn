@@ -42,9 +42,7 @@ public class ItemScatterer {
 		while (!itemStack.isEmpty()) {
 			ItemEntity itemEntity = new ItemEntity(world, j, k, l, itemStack.split(RANDOM.nextInt(21) + 10));
 			float m = 0.05F;
-			itemEntity.velocityX = RANDOM.nextGaussian() * 0.05F;
-			itemEntity.velocityY = RANDOM.nextGaussian() * 0.05F + 0.2F;
-			itemEntity.velocityZ = RANDOM.nextGaussian() * 0.05F;
+			itemEntity.setVelocity(RANDOM.nextGaussian() * 0.05F, RANDOM.nextGaussian() * 0.05F + 0.2F, RANDOM.nextGaussian() * 0.05F);
 			world.spawnEntity(itemEntity);
 		}
 	}

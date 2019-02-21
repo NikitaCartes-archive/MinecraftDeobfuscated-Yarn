@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.text.TextComponent;
 import net.minecraft.util.math.MathHelper;
 
@@ -40,7 +40,7 @@ public class TutorialToast implements Toast {
 		}
 
 		if (this.field_2222) {
-			Drawable.drawRect(3, 28, 157, 29, -1);
+			DrawableHelper.drawRect(3, 28, 157, 29, -1);
 			float f = (float)MathHelper.lerpClamped((double)this.field_2229, (double)this.field_2228, (double)((float)(l - this.field_2223) / 100.0F));
 			int i;
 			if (this.field_2228 >= this.field_2229) {
@@ -49,7 +49,7 @@ public class TutorialToast implements Toast {
 				i = -11206656;
 			}
 
-			Drawable.drawRect(3, 28, (int)(3.0F + 154.0F * f), 29, i);
+			DrawableHelper.drawRect(3, 28, (int)(3.0F + 154.0F * f), 29, i);
 			this.field_2229 = f;
 			this.field_2223 = l;
 		}
@@ -81,9 +81,9 @@ public class TutorialToast implements Toast {
 			this.textureSlotY = k;
 		}
 
-		public void drawIcon(Drawable drawable, int i, int j) {
+		public void drawIcon(DrawableHelper drawableHelper, int i, int j) {
 			GlStateManager.enableBlend();
-			drawable.drawTexturedRect(i, j, 176 + this.textureSlotX * 20, this.textureSlotY * 20, 20, 20);
+			drawableHelper.drawTexturedRect(i, j, 176 + this.textureSlotX * 20, this.textureSlotY * 20, 20, 20);
 			GlStateManager.enableBlend();
 		}
 	}

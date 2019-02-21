@@ -51,8 +51,8 @@ public class VexEntity extends HostileEntity {
 	}
 
 	@Override
-	public void move(MovementType movementType, double d, double e, double f) {
-		super.move(movementType, d, e, f);
+	public void move(MovementType movementType, Vec3d vec3d) {
+		super.move(movementType, vec3d);
 		this.checkBlockCollision();
 	}
 
@@ -320,27 +320,21 @@ public class VexEntity extends HostileEntity {
 		@Override
 		public void tick() {
 			if (this.state == MoveControl.State.field_6378) {
-				double d = this.targetX - VexEntity.this.x;
-				double e = this.targetY - VexEntity.this.y;
-				double f = this.targetZ - VexEntity.this.z;
-				double g = d * d + e * e + f * f;
-				g = (double)MathHelper.sqrt(g);
-				if (g < VexEntity.this.getBoundingBox().averageDimension()) {
+				Vec3d vec3d = new Vec3d(this.targetX - VexEntity.this.x, this.targetY - VexEntity.this.y, this.targetZ - VexEntity.this.z);
+				double d = vec3d.length();
+				if (d < VexEntity.this.getBoundingBox().averageDimension()) {
 					this.state = MoveControl.State.field_6377;
-					VexEntity.this.velocityX *= 0.5;
-					VexEntity.this.velocityY *= 0.5;
-					VexEntity.this.velocityZ *= 0.5;
+					VexEntity.this.setVelocity(VexEntity.this.getVelocity().multiply(0.5));
 				} else {
-					VexEntity.this.velocityX = VexEntity.this.velocityX + d / g * 0.05 * this.speed;
-					VexEntity.this.velocityY = VexEntity.this.velocityY + e / g * 0.05 * this.speed;
-					VexEntity.this.velocityZ = VexEntity.this.velocityZ + f / g * 0.05 * this.speed;
+					VexEntity.this.setVelocity(VexEntity.this.getVelocity().add(vec3d.multiply(this.speed * 0.05 / d)));
 					if (VexEntity.this.getTarget() == null) {
-						VexEntity.this.yaw = -((float)MathHelper.atan2(VexEntity.this.velocityX, VexEntity.this.velocityZ)) * (180.0F / (float)Math.PI);
+						Vec3d vec3d2 = VexEntity.this.getVelocity();
+						VexEntity.this.yaw = -((float)MathHelper.atan2(vec3d2.x, vec3d2.z)) * (180.0F / (float)Math.PI);
 						VexEntity.this.field_6283 = VexEntity.this.yaw;
 					} else {
-						double h = VexEntity.this.getTarget().x - VexEntity.this.x;
-						double i = VexEntity.this.getTarget().z - VexEntity.this.z;
-						VexEntity.this.yaw = -((float)MathHelper.atan2(h, i)) * (180.0F / (float)Math.PI);
+						double e = VexEntity.this.getTarget().x - VexEntity.this.x;
+						double f = VexEntity.this.getTarget().z - VexEntity.this.z;
+						VexEntity.this.yaw = -((float)MathHelper.atan2(e, f)) * (180.0F / (float)Math.PI);
 						VexEntity.this.field_6283 = VexEntity.this.yaw;
 					}
 				}

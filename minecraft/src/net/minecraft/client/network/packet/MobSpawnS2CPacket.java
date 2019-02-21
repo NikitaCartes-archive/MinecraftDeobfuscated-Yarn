@@ -11,6 +11,8 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.PacketByteBuf;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 
 public class MobSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -43,33 +45,10 @@ public class MobSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.velocityY = (byte)((int)(livingEntity.pitch * 256.0F / 360.0F));
 		this.velocityZ = (byte)((int)(livingEntity.headYaw * 256.0F / 360.0F));
 		double d = 3.9;
-		double e = livingEntity.velocityX;
-		double f = livingEntity.velocityY;
-		double g = livingEntity.velocityZ;
-		if (e < -3.9) {
-			e = -3.9;
-		}
-
-		if (f < -3.9) {
-			f = -3.9;
-		}
-
-		if (g < -3.9) {
-			g = -3.9;
-		}
-
-		if (e > 3.9) {
-			e = 3.9;
-		}
-
-		if (f > 3.9) {
-			f = 3.9;
-		}
-
-		if (g > 3.9) {
-			g = 3.9;
-		}
-
+		Vec3d vec3d = livingEntity.getVelocity();
+		double e = MathHelper.clamp(vec3d.x, -3.9, 3.9);
+		double f = MathHelper.clamp(vec3d.y, -3.9, 3.9);
+		double g = MathHelper.clamp(vec3d.z, -3.9, 3.9);
 		this.yaw = (int)(e * 8000.0);
 		this.pitch = (int)(f * 8000.0);
 		this.headPitch = (int)(g * 8000.0);

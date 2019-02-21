@@ -33,20 +33,20 @@ public class BackupPromptScreen extends Screen {
 	protected void onInitialized() {
 		super.onInitialized();
 		this.wrappedText.clear();
-		this.wrappedText.addAll(this.fontRenderer.wrapStringToWidthAsList(this.subtitle, this.width - 50));
-		this.addButton(new ButtonWidget(this.width / 2 - 155, 100 + (this.wrappedText.size() + 1) * 9, 150, 20, this.confirmText) {
+		this.wrappedText.addAll(this.fontRenderer.wrapStringToWidthAsList(this.subtitle, this.screenWidth - 50));
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, 100 + (this.wrappedText.size() + 1) * 9, 150, 20, this.confirmText) {
 			@Override
 			public void onPressed(double d, double e) {
 				BackupPromptScreen.this.callback.proceed(true);
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, 100 + (this.wrappedText.size() + 1) * 9, 150, 20, this.skipText) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155 + 160, 100 + (this.wrappedText.size() + 1) * 9, 150, 20, this.skipText) {
 			@Override
 			public void onPressed(double d, double e) {
 				BackupPromptScreen.this.callback.proceed(false);
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 - 155 + 80, 124 + (this.wrappedText.size() + 1) * 9, 150, 20, this.cancelText) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155 + 80, 124 + (this.wrappedText.size() + 1) * 9, 150, 20, this.cancelText) {
 			@Override
 			public void onPressed(double d, double e) {
 				BackupPromptScreen.this.client.openScreen(BackupPromptScreen.this.parent);
@@ -55,17 +55,17 @@ public class BackupPromptScreen extends Screen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, this.title, this.width / 2, 70, 16777215);
+		this.drawStringCentered(this.fontRenderer, this.title, this.screenWidth / 2, 70, 16777215);
 		int k = 90;
 
 		for (String string : this.wrappedText) {
-			this.drawStringCentered(this.fontRenderer, string, this.width / 2, k, 16777215);
+			this.drawStringCentered(this.fontRenderer, string, this.screenWidth / 2, k, 16777215);
 			k += 9;
 		}
 
-		super.method_18326(i, j, f);
+		super.draw(i, j, f);
 	}
 
 	@Override

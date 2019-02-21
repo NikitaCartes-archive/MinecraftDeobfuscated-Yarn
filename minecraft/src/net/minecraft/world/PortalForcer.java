@@ -34,17 +34,13 @@ public class PortalForcer {
 		Vec3d vec3d = entity.method_5656();
 		Direction direction = entity.method_5843();
 		long l = ChunkPos.toLong(MathHelper.floor(entity.x), MathHelper.floor(entity.z));
-		Pair<Vec3d, Pair<Vec3d, Integer>> pair = this.method_18475(
-			new BlockPos(entity), new Vec3d(entity.velocityX, entity.velocityY, entity.velocityZ), l, direction, vec3d.x, vec3d.y
-		);
+		Pair<Vec3d, Pair<Vec3d, Integer>> pair = this.method_18475(new BlockPos(entity), entity.getVelocity(), l, direction, vec3d.x, vec3d.y);
 		if (pair == null) {
 			return false;
 		} else {
 			Vec3d vec3d2 = pair.getFirst();
 			Vec3d vec3d3 = pair.getSecond().getFirst();
-			entity.velocityX = vec3d3.x;
-			entity.velocityY = vec3d3.y;
-			entity.velocityZ = vec3d3.z;
+			entity.setVelocity(vec3d3);
 			entity.yaw = f + (float)pair.getSecond().getSecond().intValue();
 			if (entity instanceof ServerPlayerEntity) {
 				((ServerPlayerEntity)entity).networkHandler.teleportRequest(vec3d2.x, vec3d2.y, vec3d2.z, entity.yaw, entity.pitch);

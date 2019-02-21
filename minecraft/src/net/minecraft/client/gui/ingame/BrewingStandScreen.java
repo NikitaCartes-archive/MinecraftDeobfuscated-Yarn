@@ -20,26 +20,26 @@ public class BrewingStandScreen extends ContainerScreen<BrewingStandContainer> {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		super.method_18326(i, j, f);
+		super.draw(i, j, f);
 		this.drawMouseoverTooltip(i, j);
 	}
 
 	@Override
 	protected void drawForeground(int i, int j) {
 		this.fontRenderer
-			.draw(this.name.getFormattedText(), (float)(this.containerWidth / 2 - this.fontRenderer.getStringWidth(this.name.getFormattedText()) / 2), 6.0F, 4210752);
-		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
+			.draw(this.name.getFormattedText(), (float)(this.width / 2 - this.fontRenderer.getStringWidth(this.name.getFormattedText()) / 2), 6.0F, 4210752);
+		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
 	}
 
 	@Override
 	protected void drawBackground(float f, int i, int j) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(TEXTURE);
-		int k = (this.width - this.containerWidth) / 2;
-		int l = (this.height - this.containerHeight) / 2;
-		this.drawTexturedRect(k, l, 0, 0, this.containerWidth, this.containerHeight);
+		int k = (this.screenWidth - this.width) / 2;
+		int l = (this.screenHeight - this.height) / 2;
+		this.drawTexturedRect(k, l, 0, 0, this.width, this.height);
 		int m = this.container.method_17377();
 		int n = MathHelper.clamp((18 * m + 20 - 1) / 20, 0, 18);
 		if (n > 0) {

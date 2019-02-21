@@ -17,6 +17,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 @EnvironmentInterfaces({@EnvironmentInterface(
@@ -98,9 +99,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void setVelocityClient(double d, double e, double f) {
-		this.velocityX = d;
-		this.velocityY = e;
-		this.velocityZ = f;
+		this.setVelocity(d, e, f);
 		if (this.prevPitch == 0.0F && this.prevYaw == 0.0F) {
 			float g = MathHelper.sqrt(d * d + f * f);
 			this.yaw = (float)(MathHelper.atan2(d, f) * 180.0F / (float)Math.PI);
@@ -116,12 +115,13 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 		this.prevRenderY = this.y;
 		this.prevRenderZ = this.z;
 		super.update();
-		this.x = this.x + this.velocityX;
-		this.y = this.y + this.velocityY;
-		this.z = this.z + this.velocityZ;
-		float f = MathHelper.sqrt(this.velocityX * this.velocityX + this.velocityZ * this.velocityZ);
-		this.yaw = (float)(MathHelper.atan2(this.velocityX, this.velocityZ) * 180.0F / (float)Math.PI);
-		this.pitch = (float)(MathHelper.atan2(this.velocityY, (double)f) * 180.0F / (float)Math.PI);
+		Vec3d vec3d = this.getVelocity();
+		this.x = this.x + vec3d.x;
+		this.y = this.y + vec3d.y;
+		this.z = this.z + vec3d.z;
+		float f = MathHelper.sqrt(squaredHorizontalLength(vec3d));
+		this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
+		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI);
 
 		while (this.pitch - this.prevPitch < -180.0F) {
 			this.prevPitch -= 360.0F;
@@ -147,44 +147,32 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 			float g = (float)Math.sqrt(d * d + e * e);
 			float h = (float)MathHelper.atan2(e, d);
 			double i = MathHelper.lerp(0.0025, (double)f, (double)g);
+			double j = vec3d.y;
 			if (g < 1.0F) {
 				i *= 0.8;
-				this.velocityY *= 0.8;
+				j *= 0.8;
 			}
 
-			this.velocityX = Math.cos((double)h) * i;
-			this.velocityZ = Math.sin((double)h) * i;
-			if (this.y < this.field_7618) {
-				this.velocityY = this.velocityY + (1.0 - this.velocityY) * 0.015F;
-			} else {
-				this.velocityY = this.velocityY + (-1.0 - this.velocityY) * 0.015F;
-			}
+			int k = this.y < this.field_7618 ? 1 : -1;
+			vec3d = new Vec3d(Math.cos((double)h) * i, j + ((double)k - j) * 0.015F, Math.sin((double)h) * i);
+			this.setVelocity(vec3d);
 		}
 
-		float j = 0.25F;
+		float l = 0.25F;
 		if (this.isInsideWater()) {
-			for (int k = 0; k < 4; k++) {
-				this.world
-					.addParticle(
-						ParticleTypes.field_11247,
-						this.x - this.velocityX * 0.25,
-						this.y - this.velocityY * 0.25,
-						this.z - this.velocityZ * 0.25,
-						this.velocityX,
-						this.velocityY,
-						this.velocityZ
-					);
+			for (int m = 0; m < 4; m++) {
+				this.world.addParticle(ParticleTypes.field_11247, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
 			}
 		} else {
 			this.world
 				.addParticle(
 					ParticleTypes.field_11214,
-					this.x - this.velocityX * 0.25 + this.random.nextDouble() * 0.6 - 0.3,
-					this.y - this.velocityY * 0.25 - 0.5,
-					this.z - this.velocityZ * 0.25 + this.random.nextDouble() * 0.6 - 0.3,
-					this.velocityX,
-					this.velocityY,
-					this.velocityZ
+					this.x - vec3d.x * 0.25 + this.random.nextDouble() * 0.6 - 0.3,
+					this.y - vec3d.y * 0.25 - 0.5,
+					this.z - vec3d.z * 0.25 + this.random.nextDouble() * 0.6 - 0.3,
+					vec3d.x,
+					vec3d.y,
+					vec3d.z
 				);
 		}
 

@@ -55,7 +55,7 @@ public class DebugStickItem extends Item {
 	}
 
 	private void method_7759(PlayerEntity playerEntity, BlockState blockState, IWorld iWorld, BlockPos blockPos, boolean bl, ItemStack itemStack) {
-		if (playerEntity.method_7338()) {
+		if (playerEntity.isCreativeLevelTwoOp()) {
 			Block block = blockState.getBlock();
 			StateFactory<Block, BlockState> stateFactory = block.getStateFactory();
 			Collection<Property<?>> collection = stateFactory.getProperties();

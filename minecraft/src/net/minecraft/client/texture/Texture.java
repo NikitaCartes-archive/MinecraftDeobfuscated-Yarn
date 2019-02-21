@@ -22,7 +22,7 @@ public interface Texture {
 		GlStateManager.bindTexture(this.getGlId());
 	}
 
-	default void method_18169(TextureManager textureManager, ResourceManager resourceManager, Identifier identifier, Executor executor) {
+	default void registerTexture(TextureManager textureManager, ResourceManager resourceManager, Identifier identifier, Executor executor) {
 		textureManager.registerTexture(identifier, this);
 	}
 }

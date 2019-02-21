@@ -2,7 +2,6 @@ package net.minecraft.entity.thrown;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3857;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -18,7 +17,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 
-public class SnowballEntity extends class_3857 {
+public class SnowballEntity extends ThrownItemEntity {
 	public SnowballEntity(EntityType<? extends SnowballEntity> entityType, World world) {
 		super(entityType, world);
 	}

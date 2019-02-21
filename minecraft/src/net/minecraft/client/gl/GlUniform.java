@@ -5,7 +5,6 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3679;
 import net.minecraft.client.util.math.Matrix4f;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,13 +20,13 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	private final FloatBuffer floatData;
 	private final String name;
 	private boolean stateDirty;
-	private final class_3679 program;
+	private final GlProgram program;
 
-	public GlUniform(String string, int i, int j, class_3679 arg) {
+	public GlUniform(String string, int i, int j, GlProgram glProgram) {
 		this.name = string;
 		this.count = j;
 		this.dataType = i;
-		this.program = arg;
+		this.program = glProgram;
 		if (i <= 3) {
 			this.intData = MemoryUtil.memAllocInt(j);
 			this.floatData = null;
@@ -53,7 +52,7 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	private void markStateDirty() {
 		this.stateDirty = true;
 		if (this.program != null) {
-			this.program.method_1279();
+			this.program.markUniformsDirty();
 		}
 	}
 

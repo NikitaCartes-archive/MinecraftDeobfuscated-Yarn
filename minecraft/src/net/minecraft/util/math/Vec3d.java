@@ -75,7 +75,15 @@ public class Vec3d {
 	}
 
 	public Vec3d multiply(double d) {
-		return new Vec3d(this.x * d, this.y * d, this.z * d);
+		return this.multiply(d, d, d);
+	}
+
+	public Vec3d multiply(Vec3d vec3d) {
+		return this.multiply(vec3d.x, vec3d.y, vec3d.z);
+	}
+
+	public Vec3d multiply(double d, double e, double f) {
+		return new Vec3d(this.x * d, this.y * e, this.z * f);
 	}
 
 	public double length() {
@@ -146,14 +154,14 @@ public class Vec3d {
 		return new Vec3d((double)(i * j), (double)k, (double)(h * j));
 	}
 
-	public Vec3d method_1032(EnumSet<Direction.Axis> enumSet) {
+	public Vec3d floorAlongAxes(EnumSet<Direction.Axis> enumSet) {
 		double d = enumSet.contains(Direction.Axis.X) ? (double)MathHelper.floor(this.x) : this.x;
 		double e = enumSet.contains(Direction.Axis.Y) ? (double)MathHelper.floor(this.y) : this.y;
 		double f = enumSet.contains(Direction.Axis.Z) ? (double)MathHelper.floor(this.z) : this.z;
 		return new Vec3d(d, e, f);
 	}
 
-	public double method_18043(Direction.Axis axis) {
+	public double getComponentAlongAxis(Direction.Axis axis) {
 		return axis.choose(this.x, this.y, this.z);
 	}
 }

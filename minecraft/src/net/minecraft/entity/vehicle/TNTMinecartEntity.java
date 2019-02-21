@@ -47,11 +47,11 @@ public class TNTMinecartEntity extends AbstractMinecartEntity {
 			this.fuseTicks--;
 			this.world.addParticle(ParticleTypes.field_11251, this.x, this.y + 0.5, this.z, 0.0, 0.0, 0.0);
 		} else if (this.fuseTicks == 0) {
-			this.explode(this.velocityX * this.velocityX + this.velocityZ * this.velocityZ);
+			this.explode(squaredHorizontalLength(this.getVelocity()));
 		}
 
 		if (this.horizontalCollision) {
-			double d = this.velocityX * this.velocityX + this.velocityZ * this.velocityZ;
+			double d = squaredHorizontalLength(this.getVelocity());
 			if (d >= 0.01F) {
 				this.explode(d);
 			}
@@ -64,11 +64,7 @@ public class TNTMinecartEntity extends AbstractMinecartEntity {
 		if (entity instanceof ProjectileEntity) {
 			ProjectileEntity projectileEntity = (ProjectileEntity)entity;
 			if (projectileEntity.isOnFire()) {
-				this.explode(
-					projectileEntity.velocityX * projectileEntity.velocityX
-						+ projectileEntity.velocityY * projectileEntity.velocityY
-						+ projectileEntity.velocityZ * projectileEntity.velocityZ
-				);
+				this.explode(projectileEntity.getVelocity().lengthSquared());
 			}
 		}
 
@@ -77,7 +73,7 @@ public class TNTMinecartEntity extends AbstractMinecartEntity {
 
 	@Override
 	public void dropItems(DamageSource damageSource) {
-		double d = this.velocityX * this.velocityX + this.velocityZ * this.velocityZ;
+		double d = squaredHorizontalLength(this.getVelocity());
 		if (!damageSource.isFire() && !damageSource.isExplosive() && !(d >= 0.01F)) {
 			super.dropItems(damageSource);
 			if (!damageSource.isExplosive() && this.world.getGameRules().getBoolean("doEntityDrops")) {

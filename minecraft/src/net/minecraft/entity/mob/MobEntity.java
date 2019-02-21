@@ -628,9 +628,9 @@ public abstract class MobEntity extends LivingEntity {
 		double h;
 		if (entity instanceof LivingEntity) {
 			LivingEntity livingEntity = (LivingEntity)entity;
-			h = livingEntity.y + (double)livingEntity.getEyeHeight() - (this.y + (double)this.getEyeHeight());
+			h = livingEntity.y + (double)livingEntity.getStandingEyeHeight() - (this.y + (double)this.getStandingEyeHeight());
 		} else {
-			h = (entity.getBoundingBox().minY + entity.getBoundingBox().maxY) / 2.0 - (this.y + (double)this.getEyeHeight());
+			h = (entity.getBoundingBox().minY + entity.getBoundingBox().maxY) / 2.0 - (this.y + (double)this.getStandingEyeHeight());
 		}
 
 		double i = (double)MathHelper.sqrt(d * d + e * e);
@@ -919,7 +919,7 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	@Override
-	public boolean method_18397(ItemStack itemStack) {
+	public boolean canPickUp(ItemStack itemStack) {
 		EquipmentSlot equipmentSlot = getPreferredEquipmentSlot(itemStack);
 		return this.getEquippedStack(equipmentSlot).isEmpty() && this.canPickUpLoot();
 	}
@@ -1162,8 +1162,7 @@ public abstract class MobEntity extends LivingEntity {
 			if (g > 0.0F && entity instanceof LivingEntity) {
 				((LivingEntity)entity)
 					.method_6005(this, g * 0.5F, (double)MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)), (double)(-MathHelper.cos(this.yaw * (float) (Math.PI / 180.0))));
-				this.velocityX *= 0.6;
-				this.velocityZ *= 0.6;
+				this.setVelocity(this.getVelocity().multiply(0.6, 1.0, 0.6));
 			}
 
 			int i = EnchantmentHelper.getFireAspect(this);
@@ -1209,7 +1208,7 @@ public abstract class MobEntity extends LivingEntity {
 		if (this.getNavigation().canSwim()) {
 			super.method_6010(tag);
 		} else {
-			this.velocityY += 0.3F;
+			this.setVelocity(this.getVelocity().add(0.0, 0.3, 0.0));
 		}
 	}
 }

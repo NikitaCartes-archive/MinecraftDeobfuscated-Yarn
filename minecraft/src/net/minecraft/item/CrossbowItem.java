@@ -221,7 +221,7 @@ public class CrossbowItem extends BaseBowItem {
 		} else if (!itemStack2.isEmpty()) {
 			if (!world.isClient) {
 				FireworkEntity fireworkEntity = new FireworkEntity(
-					world, itemStack2, playerEntity.x, playerEntity.y + (double)playerEntity.getEyeHeight() - 0.15F, playerEntity.z, true
+					world, itemStack2, playerEntity.x, playerEntity.y + (double)playerEntity.getStandingEyeHeight() - 0.15F, playerEntity.z, true
 				);
 				fireworkEntity.method_7474(playerEntity, f, 1.0F);
 				itemStack.applyDamage(3, playerEntity);

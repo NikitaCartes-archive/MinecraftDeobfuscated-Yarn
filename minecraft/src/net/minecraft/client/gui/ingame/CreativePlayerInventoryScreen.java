@@ -67,8 +67,8 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		super(new CreativePlayerInventoryScreen.CreativeContainer(playerEntity), playerEntity.inventory, new StringTextComponent(""));
 		playerEntity.container = this.container;
 		this.field_2558 = true;
-		this.containerHeight = 136;
-		this.containerWidth = 195;
+		this.height = 136;
+		this.width = 195;
 	}
 
 	@Override
@@ -534,7 +534,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 
 	@Override
 	protected boolean isClickOutsideBounds(double d, double e, int i, int j, int k) {
-		boolean bl = d < (double)i || e < (double)j || d >= (double)(i + this.containerWidth) || e >= (double)(j + this.containerHeight);
+		boolean bl = d < (double)i || e < (double)j || d >= (double)(i + this.width) || e >= (double)(j + this.height);
 		this.field_2887 = bl && !this.isClickInTab(ItemGroup.GROUPS[selectedTab], d, e);
 		return this.field_2887;
 	}
@@ -564,9 +564,9 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		super.method_18326(i, j, f);
+		super.draw(i, j, f);
 
 		for (ItemGroup itemGroup : ItemGroup.GROUPS) {
 			if (this.method_2471(itemGroup, i, j)) {
@@ -650,8 +650,8 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		}
 
 		this.client.getTextureManager().bindTexture(new Identifier("textures/gui/container/creative_inventory/tab_" + itemGroup.getTexture()));
-		this.drawTexturedRect(this.left, this.top, 0, 0, this.containerWidth, this.containerHeight);
-		this.searchBox.method_18326(i, j, f);
+		this.drawTexturedRect(this.left, this.top, 0, 0, this.width, this.height);
+		this.searchBox.draw(i, j, f);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		int k = this.left + 175;
 		int l = this.top + 18;
@@ -672,7 +672,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		int j = 28 * i;
 		int k = 0;
 		if (itemGroup.isSpecial()) {
-			j = this.containerWidth - 28 * (6 - i) + 2;
+			j = this.width - 28 * (6 - i) + 2;
 		} else if (i > 0) {
 			j += i;
 		}
@@ -680,7 +680,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		if (itemGroup.isTopRow()) {
 			k -= 32;
 		} else {
-			k += this.containerHeight;
+			k += this.height;
 		}
 
 		return d >= (double)j && d <= (double)(j + 28) && e >= (double)k && e <= (double)(k + 32);
@@ -691,7 +691,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		int l = 28 * k;
 		int m = 0;
 		if (itemGroup.isSpecial()) {
-			l = this.containerWidth - 28 * (6 - k) + 2;
+			l = this.width - 28 * (6 - k) + 2;
 		} else if (k > 0) {
 			l += k;
 		}
@@ -699,7 +699,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		if (itemGroup.isTopRow()) {
 			m -= 32;
 		} else {
-			m += this.containerHeight;
+			m += this.height;
 		}
 
 		if (this.isPointWithinBounds(l + 3, m + 3, 23, 27, (double)i, (double)j)) {
@@ -724,7 +724,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		}
 
 		if (itemGroup.isSpecial()) {
-			l = this.left + this.containerWidth - 28 * (6 - i);
+			l = this.left + this.width - 28 * (6 - i);
 		} else if (i > 0) {
 			l += i;
 		}
@@ -733,7 +733,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 			m -= 28;
 		} else {
 			k += 64;
-			m += this.containerHeight - 4;
+			m += this.height - 4;
 		}
 
 		GlStateManager.disableLighting();

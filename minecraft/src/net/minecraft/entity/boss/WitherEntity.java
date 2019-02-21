@@ -131,31 +131,28 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 
 	@Override
 	public void updateMovement() {
-		this.velocityY *= 0.6F;
+		Vec3d vec3d = this.getVelocity().multiply(1.0, 0.6, 1.0);
 		if (!this.world.isClient && this.getTrackedEntityId(0) > 0) {
 			Entity entity = this.world.getEntityById(this.getTrackedEntityId(0));
 			if (entity != null) {
+				double d = vec3d.y;
 				if (this.y < entity.y || !this.isAtHalfHealth() && this.y < entity.y + 5.0) {
-					if (this.velocityY < 0.0) {
-						this.velocityY = 0.0;
-					}
-
-					this.velocityY = this.velocityY + (0.5 - this.velocityY) * 0.6F;
+					d = Math.max(0.0, d);
+					d += 0.3 - d * 0.6F;
 				}
 
-				double d = entity.x - this.x;
-				double e = entity.z - this.z;
-				double f = d * d + e * e;
-				if (f > 9.0) {
-					double g = (double)MathHelper.sqrt(f);
-					this.velocityX = this.velocityX + (d / g * 0.5 - this.velocityX) * 0.6F;
-					this.velocityZ = this.velocityZ + (e / g * 0.5 - this.velocityZ) * 0.6F;
+				vec3d = new Vec3d(vec3d.x, d, vec3d.z);
+				Vec3d vec3d2 = new Vec3d(entity.x - this.x, 0.0, entity.z - this.z);
+				if (squaredHorizontalLength(vec3d2) > 9.0) {
+					Vec3d vec3d3 = vec3d2.normalize();
+					vec3d = vec3d.add(vec3d3.x * 0.3 - vec3d.x * 0.6, 0.0, vec3d3.z * 0.3 - vec3d.z * 0.6);
 				}
 			}
 		}
 
-		if (this.velocityX * this.velocityX + this.velocityZ * this.velocityZ > 0.05F) {
-			this.yaw = (float)MathHelper.atan2(this.velocityZ, this.velocityX) * (180.0F / (float)Math.PI) - 90.0F;
+		this.setVelocity(vec3d);
+		if (squaredHorizontalLength(vec3d) > 0.05) {
+			this.yaw = (float)MathHelper.atan2(vec3d.z, vec3d.x) * (180.0F / (float)Math.PI) - 90.0F;
 		}
 
 		super.updateMovement();
@@ -177,7 +174,7 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 				double f = this.method_6880(i + 1);
 				double g = this.method_6881(i + 1);
 				double h = entity2.x - e;
-				double k = entity2.y + (double)entity2.getEyeHeight() - f;
+				double k = entity2.y + (double)entity2.getStandingEyeHeight() - f;
 				double l = entity2.z - g;
 				double m = (double)MathHelper.sqrt(h * h + l * l);
 				float n = (float)(MathHelper.atan2(l, h) * 180.0F / (float)Math.PI) - 90.0F;
@@ -240,7 +237,8 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 		if (this.getInvulTimer() > 0) {
 			int i = this.getInvulTimer() - 1;
 			if (i <= 0) {
-				this.world.createExplosion(this, this.x, this.y + (double)this.getEyeHeight(), this.z, 7.0F, false, this.world.getGameRules().getBoolean("mobGriefing"));
+				this.world
+					.createExplosion(this, this.x, this.y + (double)this.getStandingEyeHeight(), this.z, 7.0F, false, this.world.getGameRules().getBoolean("mobGriefing"));
 				this.world.playGlobalEvent(1023, new BlockPos(this), 0);
 			}
 
@@ -404,7 +402,9 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 	}
 
 	private void method_6878(int i, LivingEntity livingEntity) {
-		this.method_6877(i, livingEntity.x, livingEntity.y + (double)livingEntity.getEyeHeight() * 0.5, livingEntity.z, i == 0 && this.random.nextFloat() < 0.001F);
+		this.method_6877(
+			i, livingEntity.x, livingEntity.y + (double)livingEntity.getStandingEyeHeight() * 0.5, livingEntity.z, i == 0 && this.random.nextFloat() < 0.001F
+		);
 	}
 
 	private void method_6877(int i, double d, double e, double f, boolean bl) {

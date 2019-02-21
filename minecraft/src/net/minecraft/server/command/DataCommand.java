@@ -17,9 +17,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import net.minecraft.class_3161;
-import net.minecraft.class_3162;
-import net.minecraft.class_3169;
+import net.minecraft.command.BlockDataObject;
+import net.minecraft.command.DataCommandObject;
+import net.minecraft.command.EntityDataObject;
 import net.minecraft.command.arguments.NbtCompoundTagArgumentType;
 import net.minecraft.command.arguments.NbtPathArgumentType;
 import net.minecraft.command.arguments.NbtTagArgumentType;
@@ -45,7 +45,7 @@ public class DataCommand {
 	private static final SimpleCommandExceptionType GET_MULTIPLE_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableTextComponent("commands.data.get.multiple")
 	);
-	private static final DynamicCommandExceptionType MODIFY_EXPECTELIST_EXCEPTION = new DynamicCommandExceptionType(
+	private static final DynamicCommandExceptionType MODIFY_EXPECTED_LIST_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableTextComponent("commands.data.modify.expected_list", object)
 	);
 	private static final DynamicCommandExceptionType MODIFY_EXPECTEDOBJECT_EXCEPTION = new DynamicCommandExceptionType(
@@ -54,11 +54,11 @@ public class DataCommand {
 	private static final DynamicCommandExceptionType field_17441 = new DynamicCommandExceptionType(
 		object -> new TranslatableTextComponent("commands.data.modify.invalid_index", object)
 	);
-	public static final List<Function<String, DataCommand.class_3167>> field_13790 = ImmutableList.of(class_3169.field_13800, class_3161.field_13786);
-	public static final List<DataCommand.class_3167> field_13798 = (List<DataCommand.class_3167>)field_13790.stream()
+	public static final List<Function<String, DataCommand.class_3167>> OBJECTS = ImmutableList.of(EntityDataObject.field_13800, BlockDataObject.field_13786);
+	public static final List<DataCommand.class_3167> field_13798 = (List<DataCommand.class_3167>)OBJECTS.stream()
 		.map(function -> (DataCommand.class_3167)function.apply("target"))
 		.collect(ImmutableList.toImmutableList());
-	public static final List<DataCommand.class_3167> field_13792 = (List<DataCommand.class_3167>)field_13790.stream()
+	public static final List<DataCommand.class_3167> field_13792 = (List<DataCommand.class_3167>)OBJECTS.stream()
 		.map(function -> (DataCommand.class_3167)function.apply("source"))
 		.collect(ImmutableList.toImmutableList());
 
@@ -169,7 +169,7 @@ public class DataCommand {
 
 		for (Tag tag : collection) {
 			if (!(tag instanceof AbstractListTag)) {
-				throw MODIFY_EXPECTELIST_EXCEPTION.create(tag);
+				throw MODIFY_EXPECTED_LIST_EXCEPTION.create(tag);
 			}
 
 			boolean bl = false;
@@ -209,9 +209,9 @@ public class DataCommand {
 										List<Tag> list = Collections.singletonList(lvx.method_13924(commandContext).method_13881());
 										return method_13920(commandContext, lv, arg3, list);
 									}).then(ServerCommandManager.argument("sourcePath", NbtPathArgumentType.create()).executes(commandContext -> {
-										class_3162 lvxx = lvx.method_13924(commandContext);
-										NbtPathArgumentType.class_2209 lv2 = NbtPathArgumentType.method_9358(commandContext, "sourcePath");
-										List<Tag> list = lv2.method_9366(lvxx.method_13881());
+										DataCommandObject dataCommandObject = lvx.method_13924(commandContext);
+										NbtPathArgumentType.class_2209 lvxx = NbtPathArgumentType.method_9358(commandContext, "sourcePath");
+										List<Tag> list = lvxx.method_9366(dataCommandObject.method_13881());
 										return method_13920(commandContext, lv, arg3, list);
 									})))
 						);
@@ -234,33 +234,33 @@ public class DataCommand {
 	}
 
 	private static int method_13920(CommandContext<ServerCommandSource> commandContext, DataCommand.class_3167 arg, DataCommand.class_3165 arg2, List<Tag> list) throws CommandSyntaxException {
-		class_3162 lv = arg.method_13924(commandContext);
-		NbtPathArgumentType.class_2209 lv2 = NbtPathArgumentType.method_9358(commandContext, "targetPath");
-		CompoundTag compoundTag = lv.method_13881();
-		int i = arg2.modify(commandContext, compoundTag, lv2, list);
+		DataCommandObject dataCommandObject = arg.method_13924(commandContext);
+		NbtPathArgumentType.class_2209 lv = NbtPathArgumentType.method_9358(commandContext, "targetPath");
+		CompoundTag compoundTag = dataCommandObject.method_13881();
+		int i = arg2.modify(commandContext, compoundTag, lv, list);
 		if (i == 0) {
 			throw MERGE_FAILED_EXCEPTION.create();
 		} else {
-			lv.method_13880(compoundTag);
-			commandContext.getSource().sendFeedback(lv.method_13883(), true);
+			dataCommandObject.method_13880(compoundTag);
+			commandContext.getSource().sendFeedback(dataCommandObject.method_13883(), true);
 			return i;
 		}
 	}
 
-	private static int method_13885(ServerCommandSource serverCommandSource, class_3162 arg, NbtPathArgumentType.class_2209 arg2) throws CommandSyntaxException {
-		CompoundTag compoundTag = arg.method_13881();
-		int i = arg2.method_9372(compoundTag);
+	private static int method_13885(ServerCommandSource serverCommandSource, DataCommandObject dataCommandObject, NbtPathArgumentType.class_2209 arg) throws CommandSyntaxException {
+		CompoundTag compoundTag = dataCommandObject.method_13881();
+		int i = arg.method_9372(compoundTag);
 		if (i == 0) {
 			throw MERGE_FAILED_EXCEPTION.create();
 		} else {
-			arg.method_13880(compoundTag);
-			serverCommandSource.sendFeedback(arg.method_13883(), true);
+			dataCommandObject.method_13880(compoundTag);
+			serverCommandSource.sendFeedback(dataCommandObject.method_13883(), true);
 			return i;
 		}
 	}
 
-	private static Tag method_13921(NbtPathArgumentType.class_2209 arg, class_3162 arg2) throws CommandSyntaxException {
-		Collection<Tag> collection = arg.method_9366(arg2.method_13881());
+	private static Tag method_13921(NbtPathArgumentType.class_2209 arg, DataCommandObject dataCommandObject) throws CommandSyntaxException {
+		Collection<Tag> collection = arg.method_9366(dataCommandObject.method_13881());
 		Iterator<Tag> iterator = collection.iterator();
 		Tag tag = (Tag)iterator.next();
 		if (iterator.hasNext()) {
@@ -270,8 +270,8 @@ public class DataCommand {
 		}
 	}
 
-	private static int method_13916(ServerCommandSource serverCommandSource, class_3162 arg, NbtPathArgumentType.class_2209 arg2) throws CommandSyntaxException {
-		Tag tag = method_13921(arg2, arg);
+	private static int method_13916(ServerCommandSource serverCommandSource, DataCommandObject dataCommandObject, NbtPathArgumentType.class_2209 arg) throws CommandSyntaxException {
+		Tag tag = method_13921(arg, dataCommandObject);
 		int i;
 		if (tag instanceof AbstractNumberTag) {
 			i = MathHelper.floor(((AbstractNumberTag)tag).getDouble());
@@ -281,40 +281,40 @@ public class DataCommand {
 			i = ((CompoundTag)tag).getSize();
 		} else {
 			if (!(tag instanceof StringTag)) {
-				throw GET_UNKNOWN_EXCEPTION.create(arg2.toString());
+				throw GET_UNKNOWN_EXCEPTION.create(arg.toString());
 			}
 
 			i = tag.asString().length();
 		}
 
-		serverCommandSource.sendFeedback(arg.method_13882(tag), false);
+		serverCommandSource.sendFeedback(dataCommandObject.method_13882(tag), false);
 		return i;
 	}
 
-	private static int method_13903(ServerCommandSource serverCommandSource, class_3162 arg, NbtPathArgumentType.class_2209 arg2, double d) throws CommandSyntaxException {
-		Tag tag = method_13921(arg2, arg);
+	private static int method_13903(ServerCommandSource serverCommandSource, DataCommandObject dataCommandObject, NbtPathArgumentType.class_2209 arg, double d) throws CommandSyntaxException {
+		Tag tag = method_13921(arg, dataCommandObject);
 		if (!(tag instanceof AbstractNumberTag)) {
-			throw GET_INVALID_EXCEPTION.create(arg2.toString());
+			throw GET_INVALID_EXCEPTION.create(arg.toString());
 		} else {
 			int i = MathHelper.floor(((AbstractNumberTag)tag).getDouble() * d);
-			serverCommandSource.sendFeedback(arg.method_13879(arg2, d, i), false);
+			serverCommandSource.sendFeedback(dataCommandObject.method_13879(arg, d, i), false);
 			return i;
 		}
 	}
 
-	private static int method_13908(ServerCommandSource serverCommandSource, class_3162 arg) throws CommandSyntaxException {
-		serverCommandSource.sendFeedback(arg.method_13882(arg.method_13881()), false);
+	private static int method_13908(ServerCommandSource serverCommandSource, DataCommandObject dataCommandObject) throws CommandSyntaxException {
+		serverCommandSource.sendFeedback(dataCommandObject.method_13882(dataCommandObject.method_13881()), false);
 		return 1;
 	}
 
-	private static int method_13901(ServerCommandSource serverCommandSource, class_3162 arg, CompoundTag compoundTag) throws CommandSyntaxException {
-		CompoundTag compoundTag2 = arg.method_13881();
+	private static int method_13901(ServerCommandSource serverCommandSource, DataCommandObject dataCommandObject, CompoundTag compoundTag) throws CommandSyntaxException {
+		CompoundTag compoundTag2 = dataCommandObject.method_13881();
 		CompoundTag compoundTag3 = compoundTag2.method_10553().copyFrom(compoundTag);
 		if (compoundTag2.equals(compoundTag3)) {
 			throw MERGE_FAILED_EXCEPTION.create();
 		} else {
-			arg.method_13880(compoundTag3);
-			serverCommandSource.sendFeedback(arg.method_13883(), true);
+			dataCommandObject.method_13880(compoundTag3);
+			serverCommandSource.sendFeedback(dataCommandObject.method_13883(), true);
 			return 1;
 		}
 	}
@@ -328,7 +328,7 @@ public class DataCommand {
 	}
 
 	public interface class_3167 {
-		class_3162 method_13924(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException;
+		DataCommandObject method_13924(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException;
 
 		ArgumentBuilder<ServerCommandSource, ?> method_13925(
 			ArgumentBuilder<ServerCommandSource, ?> argumentBuilder, Function<ArgumentBuilder<ServerCommandSource, ?>, ArgumentBuilder<ServerCommandSource, ?>> function

@@ -14,13 +14,13 @@ import net.minecraft.advancement.AdvancementDisplay;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class AdvancementWidget extends Drawable {
+public class AdvancementWidget extends DrawableHelper {
 	private static final Identifier WIDGETS_TEX = new Identifier("textures/gui/advancements/widgets.png");
 	private static final Pattern field_2708 = Pattern.compile("(.+) \\S+");
 	private final AdvancementTreeWidget tree;
@@ -162,7 +162,7 @@ public class AdvancementWidget extends Drawable {
 	}
 
 	public void method_2331(int i, int j, float f, int k, int l) {
-		boolean bl = k + i + this.xPos + this.field_2715 + 26 >= this.tree.method_2312().width;
+		boolean bl = k + i + this.xPos + this.field_2715 + 26 >= this.tree.method_2312().screenWidth;
 		String string = this.field_2714 == null ? null : this.field_2714.getProgressBarFraction();
 		int m = string == null ? 0 : this.client.textRenderer.getStringWidth(string);
 		boolean bl2 = 113 - j - this.yPos - 26 <= 6 + this.field_2705.size() * 9;

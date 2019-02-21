@@ -12,7 +12,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4005;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.MainMenuScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -104,9 +103,9 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 
 	public CompletableFuture<Void> method_18168(Identifier identifier, Executor executor) {
 		if (!this.textures.containsKey(identifier)) {
-			class_4005 lv = new class_4005(this.resourceContainer, identifier, executor);
-			this.textures.put(identifier, lv);
-			return lv.method_18148().thenRunAsync(() -> this.registerTexture(identifier, lv), MinecraftClient.getInstance());
+			AsyncTexture asyncTexture = new AsyncTexture(this.resourceContainer, identifier, executor);
+			this.textures.put(identifier, asyncTexture);
+			return asyncTexture.method_18148().thenRunAsync(() -> this.registerTexture(identifier, asyncTexture), MinecraftClient.getInstance());
 		} else {
 			return CompletableFuture.completedFuture(null);
 		}
@@ -143,7 +142,7 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 					if (texture == MissingSprite.getMissingSpriteTexture() && !identifier.equals(MissingSprite.getMissingSpriteId())) {
 						iterator.remove();
 					} else {
-						texture.method_18169(this, resourceManager, identifier, executor2);
+						texture.registerTexture(this, resourceManager, identifier, executor2);
 					}
 				}
 			}, executor2);

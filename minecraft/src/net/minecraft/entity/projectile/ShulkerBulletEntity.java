@@ -28,6 +28,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
@@ -57,9 +58,7 @@ public class ShulkerBulletEntity extends Entity {
 	public ShulkerBulletEntity(World world, double d, double e, double f, double g, double h, double i) {
 		this(EntityType.SHULKER_BULLET, world);
 		this.setPositionAndAngles(d, e, f, this.yaw, this.pitch);
-		this.velocityX = g;
-		this.velocityY = h;
-		this.velocityZ = i;
+		this.setVelocity(g, h, i);
 	}
 
 	public ShulkerBulletEntity(World world, LivingEntity livingEntity, Entity entity, Direction.Axis axis) {
@@ -248,15 +247,14 @@ public class ShulkerBulletEntity extends Entity {
 
 				if (this.field_7626 == null || !this.field_7626.isValid() || this.field_7626 instanceof PlayerEntity && ((PlayerEntity)this.field_7626).isSpectator()) {
 					if (!this.isUnaffectedByGravity()) {
-						this.velocityY -= 0.04;
+						this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
 					}
 				} else {
 					this.field_7635 = MathHelper.clamp(this.field_7635 * 1.025, -1.0, 1.0);
 					this.field_7633 = MathHelper.clamp(this.field_7633 * 1.025, -1.0, 1.0);
 					this.field_7625 = MathHelper.clamp(this.field_7625 * 1.025, -1.0, 1.0);
-					this.velocityX = this.velocityX + (this.field_7635 - this.velocityX) * 0.2;
-					this.velocityY = this.velocityY + (this.field_7633 - this.velocityY) * 0.2;
-					this.velocityZ = this.velocityZ + (this.field_7625 - this.velocityZ) * 0.2;
+					Vec3d vec3d = this.getVelocity();
+					this.setVelocity(vec3d.add((this.field_7635 - vec3d.x) * 0.2, (this.field_7633 - vec3d.y) * 0.2, (this.field_7625 - vec3d.z) * 0.2));
 				}
 
 				HitResult hitResult = class_1675.method_18076(this, true, false, this.field_7630, RayTraceContext.ShapeType.field_17558);
@@ -265,10 +263,11 @@ public class ShulkerBulletEntity extends Entity {
 				}
 			}
 
-			this.setPosition(this.x + this.velocityX, this.y + this.velocityY, this.z + this.velocityZ);
+			Vec3d vec3d = this.getVelocity();
+			this.setPosition(this.x + vec3d.x, this.y + vec3d.y, this.z + vec3d.z);
 			class_1675.method_7484(this, 0.5F);
 			if (this.world.isClient) {
-				this.world.addParticle(ParticleTypes.field_11207, this.x - this.velocityX, this.y - this.velocityY + 0.15, this.z - this.velocityZ, 0.0, 0.0, 0.0);
+				this.world.addParticle(ParticleTypes.field_11207, this.x - vec3d.x, this.y - vec3d.y + 0.15, this.z - vec3d.z, 0.0, 0.0, 0.0);
 			} else if (this.field_7626 != null && !this.field_7626.invalid) {
 				if (this.field_7627 > 0) {
 					this.field_7627--;

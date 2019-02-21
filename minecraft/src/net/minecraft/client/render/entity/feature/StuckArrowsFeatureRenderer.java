@@ -35,7 +35,7 @@ public class StuckArrowsFeatureRenderer<T extends LivingEntity, M extends Entity
 				GlStateManager.pushMatrix();
 				Cuboid cuboid = this.getModel().getRandomCuboid(random);
 				Box box = (Box)cuboid.boxes.get(random.nextInt(cuboid.boxes.size()));
-				cuboid.method_2847(0.0625F);
+				cuboid.applyTransform(0.0625F);
 				float o = random.nextFloat();
 				float p = random.nextFloat();
 				float q = random.nextFloat();

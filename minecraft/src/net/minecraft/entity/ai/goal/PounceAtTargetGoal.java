@@ -2,7 +2,7 @@ package net.minecraft.entity.ai.goal;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 public class PounceAtTargetGoal extends Goal {
 	private final MobEntity owner;
@@ -41,14 +41,12 @@ public class PounceAtTargetGoal extends Goal {
 
 	@Override
 	public void start() {
-		double d = this.target.x - this.owner.x;
-		double e = this.target.z - this.owner.z;
-		float f = MathHelper.sqrt(d * d + e * e);
-		if ((double)f >= 1.0E-4) {
-			this.owner.velocityX = this.owner.velocityX + d / (double)f * 0.5 * 0.8F + this.owner.velocityX * 0.2F;
-			this.owner.velocityZ = this.owner.velocityZ + e / (double)f * 0.5 * 0.8F + this.owner.velocityZ * 0.2F;
+		Vec3d vec3d = this.owner.getVelocity();
+		Vec3d vec3d2 = new Vec3d(this.target.x - this.owner.x, 0.0, this.target.z - this.owner.z);
+		if (vec3d2.lengthSquared() > 1.0E-7) {
+			vec3d2 = vec3d2.normalize().multiply(0.4).add(vec3d.multiply(0.2));
 		}
 
-		this.owner.velocityY = (double)this.field_6475;
+		this.owner.setVelocity(vec3d2.x, (double)this.field_6475, vec3d2.y);
 	}
 }
