@@ -3,9 +3,9 @@ package net.minecraft.entity.passive;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Npc;
 import net.minecraft.entity.player.PlayerEntity;
@@ -35,7 +35,7 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	}
 
 	@Override
-	protected float method_18394(class_4050 arg, class_4048 arg2) {
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
 		return this.isChild() ? 0.81F : 1.62F;
 	}
 

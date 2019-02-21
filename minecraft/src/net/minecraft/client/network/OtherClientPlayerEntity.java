@@ -68,17 +68,17 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 
 		this.field_7505 = this.field_7483;
 		this.method_6119();
-		float g = MathHelper.sqrt(this.velocityX * this.velocityX + this.velocityZ * this.velocityZ);
-		float h = (float)Math.atan(-this.velocityY * 0.2F) * 15.0F;
-		if (g > 0.1F) {
-			g = 0.1F;
-		}
-
-		if (!this.onGround || this.getHealth() <= 0.0F) {
+		float g;
+		if (this.onGround && !(this.getHealth() <= 0.0F)) {
+			g = Math.min(0.1F, MathHelper.sqrt(squaredHorizontalLength(this.getVelocity())));
+		} else {
 			g = 0.0F;
 		}
 
-		if (this.onGround || this.getHealth() <= 0.0F) {
+		float h;
+		if (!this.onGround && !(this.getHealth() <= 0.0F)) {
+			h = (float)Math.atan(-this.getVelocity().y * 0.2F) * 15.0F;
+		} else {
 			h = 0.0F;
 		}
 

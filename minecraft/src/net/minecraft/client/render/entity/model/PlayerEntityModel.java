@@ -137,10 +137,10 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 		if (this.thinArms) {
 			float g = 0.5F * (float)(optionMainHand == OptionMainHand.field_6183 ? 1 : -1);
 			cuboid.rotationPointX += g;
-			cuboid.method_2847(f);
+			cuboid.applyTransform(f);
 			cuboid.rotationPointX -= g;
 		} else {
-			cuboid.method_2847(f);
+			cuboid.applyTransform(f);
 		}
 	}
 }

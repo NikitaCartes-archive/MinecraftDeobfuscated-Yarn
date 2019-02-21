@@ -21,7 +21,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.network.ClientConnection;
@@ -47,7 +47,7 @@ import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.DimensionType;
 
 @Environment(EnvType.CLIENT)
-public class DebugHud extends Drawable {
+public class DebugHud extends DrawableHelper {
 	private final MinecraftClient client;
 	private final TextRenderer fontRenderer;
 	private HitResult blockHit;

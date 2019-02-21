@@ -19,6 +19,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.Validate;
 
@@ -159,8 +160,8 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public void move(MovementType movementType, double d, double e, double f) {
-		if (!this.world.isClient && !this.invalid && d * d + e * e + f * f > 0.0) {
+	public void move(MovementType movementType, Vec3d vec3d) {
+		if (!this.world.isClient && !this.invalid && vec3d.lengthSquared() > 0.0) {
 			this.invalidate();
 			this.copyEntityData(null);
 		}
@@ -265,6 +266,6 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public void method_18382() {
+	public void refreshSize() {
 	}
 }

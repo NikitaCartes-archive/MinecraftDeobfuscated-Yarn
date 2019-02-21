@@ -87,12 +87,12 @@ public class VillagerEntityModel<T extends Entity> extends EntityModel<T> implem
 	}
 
 	@Override
-	public Cuboid method_2838() {
+	public Cuboid getHead() {
 		return this.head;
 	}
 
 	@Override
-	public void method_17150(boolean bl) {
+	public void setHeadVisible(boolean bl) {
 		this.head.visible = bl;
 		this.field_17141.visible = bl;
 		this.field_17142.visible = bl;

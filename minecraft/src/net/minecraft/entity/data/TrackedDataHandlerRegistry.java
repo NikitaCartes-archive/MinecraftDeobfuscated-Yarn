@@ -4,9 +4,9 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.minecraft.class_4050;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleParameters;
@@ -284,17 +284,17 @@ public class TrackedDataHandlerRegistry {
 			return optionalInt;
 		}
 	};
-	public static final TrackedDataHandler<class_4050> field_18238 = new TrackedDataHandler<class_4050>() {
-		public void method_18697(PacketByteBuf packetByteBuf, class_4050 arg) {
-			packetByteBuf.writeEnumConstant(arg);
+	public static final TrackedDataHandler<EntityPose> ENTITY_POSE = new TrackedDataHandler<EntityPose>() {
+		public void method_18697(PacketByteBuf packetByteBuf, EntityPose entityPose) {
+			packetByteBuf.writeEnumConstant(entityPose);
 		}
 
-		public class_4050 method_18698(PacketByteBuf packetByteBuf) {
-			return packetByteBuf.readEnumConstant(class_4050.class);
+		public EntityPose method_18698(PacketByteBuf packetByteBuf) {
+			return packetByteBuf.readEnumConstant(EntityPose.class);
 		}
 
-		public class_4050 method_18696(class_4050 arg) {
-			return arg;
+		public EntityPose method_18696(EntityPose entityPose) {
+			return entityPose;
 		}
 	};
 
@@ -330,6 +330,6 @@ public class TrackedDataHandlerRegistry {
 		register(PARTICLE);
 		register(VILLAGER_DATA);
 		register(field_17910);
-		register(field_18238);
+		register(ENTITY_POSE);
 	}
 }

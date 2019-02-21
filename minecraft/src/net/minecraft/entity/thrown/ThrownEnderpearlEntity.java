@@ -3,7 +3,6 @@ package net.minecraft.entity.thrown;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3857;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EndGatewayBlockEntity;
@@ -24,7 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
-public class ThrownEnderpearlEntity extends class_3857 {
+public class ThrownEnderpearlEntity extends ThrownItemEntity {
 	private LivingEntity owner;
 
 	public ThrownEnderpearlEntity(EntityType<? extends ThrownEnderpearlEntity> entityType, World world) {

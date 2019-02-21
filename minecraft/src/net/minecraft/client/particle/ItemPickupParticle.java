@@ -4,12 +4,12 @@ import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3999;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
@@ -22,7 +22,11 @@ public class ItemPickupParticle extends Particle {
 	private final EntityRenderDispatcher field_3824 = MinecraftClient.getInstance().getEntityRenderManager();
 
 	public ItemPickupParticle(World world, Entity entity, Entity entity2, float f) {
-		super(world, entity.x, entity.y, entity.z, entity.velocityX, entity.velocityY, entity.velocityZ);
+		this(world, entity, entity2, f, entity.getVelocity());
+	}
+
+	private ItemPickupParticle(World world, Entity entity, Entity entity2, float f, Vec3d vec3d) {
+		super(world, entity.x, entity.y, entity.z, vec3d.x, vec3d.y, vec3d.z);
 		this.field_3823 = entity;
 		this.field_3821 = entity2;
 		this.field_3825 = 3;
@@ -30,8 +34,8 @@ public class ItemPickupParticle extends Particle {
 	}
 
 	@Override
-	public class_3999 method_18122() {
-		return class_3999.field_17831;
+	public ParticleTextureSheet getTextureSheet() {
+		return ParticleTextureSheet.CUSTOM;
 	}
 
 	@Override

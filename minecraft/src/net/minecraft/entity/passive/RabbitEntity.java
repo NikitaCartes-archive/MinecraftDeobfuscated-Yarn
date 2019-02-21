@@ -105,9 +105,9 @@ public class RabbitEntity extends AnimalEntity {
 		super.jump();
 		double d = this.moveControl.getSpeed();
 		if (d > 0.0) {
-			double e = this.velocityX * this.velocityX + this.velocityZ * this.velocityZ;
-			if (e < 0.010000000000000002) {
-				this.updateVelocity(0.0F, 0.0F, 1.0F, 0.1F);
+			double e = squaredHorizontalLength(this.getVelocity());
+			if (e < 0.01) {
+				this.updateVelocity(0.1F, new Vec3d(0.0, 0.0, 1.0));
 			}
 		}
 

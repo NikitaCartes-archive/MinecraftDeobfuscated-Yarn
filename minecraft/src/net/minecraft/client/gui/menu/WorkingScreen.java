@@ -48,19 +48,19 @@ public class WorkingScreen extends Screen implements ProgressListener {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		if (this.done) {
 			if (!this.client.isConnectedToRealms()) {
 				this.client.openScreen(null);
 			}
 		} else {
 			this.drawBackground();
-			this.drawStringCentered(this.fontRenderer, this.title, this.width / 2, 70, 16777215);
+			this.drawStringCentered(this.fontRenderer, this.title, this.screenWidth / 2, 70, 16777215);
 			if (!Objects.equals(this.task, "") && this.progress != 0) {
-				this.drawStringCentered(this.fontRenderer, this.task + " " + this.progress + "%", this.width / 2, 90, 16777215);
+				this.drawStringCentered(this.fontRenderer, this.task + " " + this.progress + "%", this.screenWidth / 2, 90, 16777215);
 			}
 
-			super.method_18326(i, j, f);
+			super.draw(i, j, f);
 		}
 	}
 }

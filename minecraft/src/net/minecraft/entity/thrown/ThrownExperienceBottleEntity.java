@@ -1,6 +1,5 @@
 package net.minecraft.entity.thrown;
 
-import net.minecraft.class_3857;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.LivingEntity;
@@ -12,7 +11,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class ThrownExperienceBottleEntity extends class_3857 {
+public class ThrownExperienceBottleEntity extends ThrownItemEntity {
 	public ThrownExperienceBottleEntity(EntityType<? extends ThrownExperienceBottleEntity> entityType, World world) {
 		super(entityType, world);
 	}

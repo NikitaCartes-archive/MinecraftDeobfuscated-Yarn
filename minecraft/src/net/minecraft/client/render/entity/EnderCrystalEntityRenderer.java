@@ -78,6 +78,6 @@ public class EnderCrystalEntityRenderer extends EntityRenderer<EnderCrystalEntit
 	}
 
 	public boolean method_3907(EnderCrystalEntity enderCrystalEntity, VisibleRegion visibleRegion, double d, double e, double f) {
-		return super.method_3933(enderCrystalEntity, visibleRegion, d, e, f) || enderCrystalEntity.getBeamTarget() != null;
+		return super.isVisible(enderCrystalEntity, visibleRegion, d, e, f) || enderCrystalEntity.getBeamTarget() != null;
 	}
 }

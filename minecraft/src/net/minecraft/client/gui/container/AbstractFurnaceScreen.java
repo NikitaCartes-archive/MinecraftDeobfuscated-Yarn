@@ -30,18 +30,18 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 	@Override
 	public void onInitialized() {
 		super.onInitialized();
-		this.narrow = this.width < 379;
-		this.recipeBook.initialize(this.width, this.height, this.client, this.narrow, this.container);
-		this.left = this.recipeBook.findLeftEdge(this.narrow, this.width, this.containerWidth);
+		this.narrow = this.screenWidth < 379;
+		this.recipeBook.initialize(this.screenWidth, this.screenHeight, this.client, this.narrow, this.container);
+		this.left = this.recipeBook.findLeftEdge(this.narrow, this.screenWidth, this.width);
 		this.addButton(
-			new RecipeBookButtonWidget(this.left + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE) {
+			new RecipeBookButtonWidget(this.left + 20, this.screenHeight / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE) {
 				@Override
 				public void onPressed(double d, double e) {
 					AbstractFurnaceScreen.this.recipeBook.reset(AbstractFurnaceScreen.this.narrow);
 					AbstractFurnaceScreen.this.recipeBook.toggleOpen();
 					AbstractFurnaceScreen.this.left = AbstractFurnaceScreen.this.recipeBook
-						.findLeftEdge(AbstractFurnaceScreen.this.narrow, AbstractFurnaceScreen.this.width, AbstractFurnaceScreen.this.containerWidth);
-					this.setPos(AbstractFurnaceScreen.this.left + 20, AbstractFurnaceScreen.this.height / 2 - 49);
+						.findLeftEdge(AbstractFurnaceScreen.this.narrow, AbstractFurnaceScreen.this.screenWidth, AbstractFurnaceScreen.this.width);
+					this.setPos(AbstractFurnaceScreen.this.left + 20, AbstractFurnaceScreen.this.screenHeight / 2 - 49);
 				}
 			}
 		);
@@ -56,14 +56,14 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawBackground();
 		if (this.recipeBook.isOpen() && this.narrow) {
 			this.drawBackground(f, i, j);
-			this.recipeBook.method_18326(i, j, f);
+			this.recipeBook.draw(i, j, f);
 		} else {
-			this.recipeBook.method_18326(i, j, f);
-			super.method_18326(i, j, f);
+			this.recipeBook.draw(i, j, f);
+			super.draw(i, j, f);
 			this.recipeBook.drawGhostSlots(this.left, this.top, true, f);
 		}
 
@@ -74,8 +74,8 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 	@Override
 	protected void drawForeground(int i, int j) {
 		String string = this.name.getFormattedText();
-		this.fontRenderer.draw(string, (float)(this.containerWidth / 2 - this.fontRenderer.getStringWidth(string) / 2), 6.0F, 4210752);
-		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
+		this.fontRenderer.draw(string, (float)(this.width / 2 - this.fontRenderer.getStringWidth(string) / 2), 6.0F, 4210752);
+		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 		this.client.getTextureManager().bindTexture(this.getBackgroundTexture());
 		int k = this.left;
 		int l = this.top;
-		this.drawTexturedRect(k, l, 0, 0, this.containerWidth, this.containerHeight);
+		this.drawTexturedRect(k, l, 0, 0, this.width, this.height);
 		if (this.container.isBurning()) {
 			int m = this.container.getFuelProgress();
 			this.drawTexturedRect(k + 56, l + 36 + 12 - m, 176, 12 - m, 14, m + 1);
@@ -116,8 +116,8 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 
 	@Override
 	protected boolean isClickOutsideBounds(double d, double e, int i, int j, int k) {
-		boolean bl = d < (double)i || e < (double)j || d >= (double)(i + this.containerWidth) || e >= (double)(j + this.containerHeight);
-		return this.recipeBook.isClickOutsideBounds(d, e, this.left, this.top, this.containerWidth, this.containerHeight, k) && bl;
+		boolean bl = d < (double)i || e < (double)j || d >= (double)(i + this.width) || e >= (double)(j + this.height);
+		return this.recipeBook.isClickOutsideBounds(d, e, this.left, this.top, this.width, this.height, k) && bl;
 	}
 
 	@Override

@@ -11,7 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.menu.MultiplayerScreen;
 import net.minecraft.client.options.ServerEntry;
@@ -125,8 +125,8 @@ public class RemoteServerListEntry extends ServerListWidget.Entry {
 		}
 
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.getTextureManager().bindTexture(Drawable.ICONS);
-		Drawable.drawTexturedRect(n + i - 15, m, (float)(q * 10), (float)(176 + r * 8), 10, 8, 256.0F, 256.0F);
+		this.client.getTextureManager().bindTexture(DrawableHelper.ICONS);
+		DrawableHelper.drawTexturedRect(n + i - 15, m, (float)(q * 10), (float)(176 + r * 8), 10, 8, 256.0F, 256.0F);
 		if (this.serverEntry.getIcon() != null && !this.serverEntry.getIcon().equals(this.field_3062)) {
 			this.field_3062 = this.serverEntry.getIcon();
 			this.method_2554();
@@ -149,31 +149,31 @@ public class RemoteServerListEntry extends ServerListWidget.Entry {
 
 		if (this.client.options.touchscreen || bl) {
 			this.client.getTextureManager().bindTexture(SERVER_SELECTION);
-			Drawable.drawRect(n, m, n + 32, m + 32, -1601138544);
+			DrawableHelper.drawRect(n, m, n + 32, m + 32, -1601138544);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			int u = k - n;
 			int v = l - m;
 			if (this.method_2558()) {
 				if (u < 32 && u > 16) {
-					Drawable.drawTexturedRect(n, m, 0.0F, 32.0F, 32, 32, 256.0F, 256.0F);
+					DrawableHelper.drawTexturedRect(n, m, 0.0F, 32.0F, 32, 32, 256.0F, 256.0F);
 				} else {
-					Drawable.drawTexturedRect(n, m, 0.0F, 0.0F, 32, 32, 256.0F, 256.0F);
+					DrawableHelper.drawTexturedRect(n, m, 0.0F, 0.0F, 32, 32, 256.0F, 256.0F);
 				}
 			}
 
 			if (this.guiMultiplayer.method_2533(this, this.method_1908())) {
 				if (u < 16 && v < 16) {
-					Drawable.drawTexturedRect(n, m, 96.0F, 32.0F, 32, 32, 256.0F, 256.0F);
+					DrawableHelper.drawTexturedRect(n, m, 96.0F, 32.0F, 32, 32, 256.0F, 256.0F);
 				} else {
-					Drawable.drawTexturedRect(n, m, 96.0F, 0.0F, 32, 32, 256.0F, 256.0F);
+					DrawableHelper.drawTexturedRect(n, m, 96.0F, 0.0F, 32, 32, 256.0F, 256.0F);
 				}
 			}
 
 			if (this.guiMultiplayer.method_2547(this, this.method_1908())) {
 				if (u < 16 && v > 16) {
-					Drawable.drawTexturedRect(n, m, 64.0F, 32.0F, 32, 32, 256.0F, 256.0F);
+					DrawableHelper.drawTexturedRect(n, m, 64.0F, 32.0F, 32, 32, 256.0F, 256.0F);
 				} else {
-					Drawable.drawTexturedRect(n, m, 64.0F, 0.0F, 32, 32, 256.0F, 256.0F);
+					DrawableHelper.drawTexturedRect(n, m, 64.0F, 0.0F, 32, 32, 256.0F, 256.0F);
 				}
 			}
 		}
@@ -182,7 +182,7 @@ public class RemoteServerListEntry extends ServerListWidget.Entry {
 	protected void drawIcon(int i, int j, Identifier identifier) {
 		this.client.getTextureManager().bindTexture(identifier);
 		GlStateManager.enableBlend();
-		Drawable.drawTexturedRect(i, j, 0.0F, 0.0F, 32, 32, 32.0F, 32.0F);
+		DrawableHelper.drawTexturedRect(i, j, 0.0F, 0.0F, 32, 32, 32.0F, 32.0F);
 		GlStateManager.disableBlend();
 	}
 

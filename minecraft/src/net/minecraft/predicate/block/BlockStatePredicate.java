@@ -23,7 +23,7 @@ public class BlockStatePredicate implements Predicate<BlockState> {
 		return new BlockStatePredicate(block.getStateFactory());
 	}
 
-	public boolean apply(@Nullable BlockState blockState) {
+	public boolean method_11760(@Nullable BlockState blockState) {
 		if (blockState != null && blockState.getBlock().equals(this.factory.getBaseObject())) {
 			if (this.propertyTests.isEmpty()) {
 				return true;

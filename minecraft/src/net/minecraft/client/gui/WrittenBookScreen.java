@@ -89,7 +89,7 @@ public class WrittenBookScreen extends Screen {
 	}
 
 	protected void addCloseButton() {
-		this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 200, 20, I18n.translate("gui.done")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, 196, 200, 20, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
 				WrittenBookScreen.this.client.openScreen(null);
@@ -98,7 +98,7 @@ public class WrittenBookScreen extends Screen {
 	}
 
 	protected void addPageButtons() {
-		int i = (this.width - 192) / 2;
+		int i = (this.screenWidth - 192) / 2;
 		int j = 2;
 		this.lastPageButton = this.addButton(new BookPageButtonWidget(i + 116, 159, true) {
 			@Override
@@ -169,10 +169,10 @@ public class WrittenBookScreen extends Screen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(BOOK_TEXTURE);
-		int k = (this.width - 192) / 2;
+		int k = (this.screenWidth - 192) / 2;
 		int l = 2;
 		this.drawTexturedRect(k, 2, 0, 0, 192, 192);
 		String string = I18n.translate("book.pageIndicator", this.pageIndex + 1, Math.max(this.getPageCount(), 1));
@@ -196,7 +196,7 @@ public class WrittenBookScreen extends Screen {
 			this.drawTextComponentHover(textComponent3, i, j);
 		}
 
-		super.method_18326(i, j, f);
+		super.draw(i, j, f);
 	}
 
 	private int getStringWidth(String string) {
@@ -244,7 +244,7 @@ public class WrittenBookScreen extends Screen {
 		if (this.cachedPage == null) {
 			return null;
 		} else {
-			int i = MathHelper.floor(d - (double)((this.width - 192) / 2) - 36.0);
+			int i = MathHelper.floor(d - (double)((this.screenWidth - 192) / 2) - 36.0);
 			int j = MathHelper.floor(e - 2.0 - 30.0);
 			if (i >= 0 && j >= 0) {
 				int k = Math.min(128 / 9, this.cachedPage.size());

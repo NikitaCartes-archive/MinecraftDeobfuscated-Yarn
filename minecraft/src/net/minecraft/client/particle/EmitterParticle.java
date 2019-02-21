@@ -2,13 +2,13 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3998;
 import net.minecraft.entity.Entity;
 import net.minecraft.particle.ParticleParameters;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class EmitterParticle extends class_3998 {
+public class EmitterParticle extends NoRenderParticle {
 	private final Entity entity;
 	private int emitterAge;
 	private final int maxEmitterAge;
@@ -19,7 +19,11 @@ public class EmitterParticle extends class_3998 {
 	}
 
 	public EmitterParticle(World world, Entity entity, ParticleParameters particleParameters, int i) {
-		super(world, entity.x, entity.getBoundingBox().minY + (double)(entity.getHeight() / 2.0F), entity.z, entity.velocityX, entity.velocityY, entity.velocityZ);
+		this(world, entity, particleParameters, i, entity.getVelocity());
+	}
+
+	private EmitterParticle(World world, Entity entity, ParticleParameters particleParameters, int i, Vec3d vec3d) {
+		super(world, entity.x, entity.getBoundingBox().minY + (double)(entity.getHeight() / 2.0F), entity.z, vec3d.x, vec3d.y, vec3d.z);
 		this.entity = entity;
 		this.maxEmitterAge = i;
 		this.parameters = particleParameters;

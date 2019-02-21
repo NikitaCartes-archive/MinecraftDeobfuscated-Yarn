@@ -36,7 +36,7 @@ public class ScheduledTick<T> implements Comparable<ScheduledTick<?>> {
 		return this.pos.hashCode();
 	}
 
-	public int compareTo(ScheduledTick<?> scheduledTick) {
+	public int method_8682(ScheduledTick<?> scheduledTick) {
 		int i = Long.compare(this.time, scheduledTick.time);
 		if (i != 0) {
 			return i;

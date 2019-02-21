@@ -7,7 +7,6 @@ import java.nio.FloatBuffer;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4050;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
@@ -15,6 +14,7 @@ import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.GlAllocationUtils;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.AbstractScoreboardTeam;
@@ -320,10 +320,10 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	}
 
 	protected void method_4048(T livingEntity, double d, double e, double f) {
-		if (livingEntity.method_18376() == class_4050.field_18078) {
+		if (livingEntity.getPose() == EntityPose.field_18078) {
 			Direction direction = livingEntity.method_18401();
 			if (direction != null) {
-				float g = livingEntity.method_18381(class_4050.field_18076) - 0.1F;
+				float g = livingEntity.getEyeHeight(EntityPose.field_18076) - 0.1F;
 				GlStateManager.translatef((float)d - (float)direction.getOffsetX() * g, (float)e, (float)f - (float)direction.getOffsetZ() * g);
 				return;
 			}
@@ -348,8 +348,8 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	}
 
 	protected void setupTransforms(T livingEntity, float f, float g, float h) {
-		class_4050 lv = livingEntity.method_18376();
-		if (lv != class_4050.field_18078) {
+		EntityPose entityPose = livingEntity.getPose();
+		if (entityPose != EntityPose.field_18078) {
 			GlStateManager.rotatef(180.0F - g, 0.0F, 1.0F, 0.0F);
 		}
 
@@ -364,7 +364,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		} else if (livingEntity.isUsingRiptide()) {
 			GlStateManager.rotatef(-90.0F - livingEntity.pitch, 1.0F, 0.0F, 0.0F);
 			GlStateManager.rotatef(((float)livingEntity.age + h) * -75.0F, 0.0F, 1.0F, 0.0F);
-		} else if (lv == class_4050.field_18078) {
+		} else if (entityPose == EntityPose.field_18078) {
 			Direction direction = livingEntity.method_18401();
 			GlStateManager.rotatef(direction != null ? method_18656(direction) : g, 0.0F, 1.0F, 0.0F);
 			GlStateManager.rotatef(this.getLyingAngle(livingEntity), 0.0F, 0.0F, 1.0F);

@@ -29,6 +29,7 @@ import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShapes;
 
 public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implements SidedInventory, Tickable {
@@ -151,7 +152,9 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 								f += 0.01;
 						}
 
-						entity.move(MovementType.field_6306, d * (double)direction.getOffsetX(), e * (double)direction.getOffsetY(), f * (double)direction.getOffsetZ());
+						entity.move(
+							MovementType.field_6306, new Vec3d(d * (double)direction.getOffsetX(), e * (double)direction.getOffsetY(), f * (double)direction.getOffsetZ())
+						);
 					}
 				}
 			}

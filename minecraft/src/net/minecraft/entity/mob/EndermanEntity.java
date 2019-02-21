@@ -7,13 +7,13 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.class_4051;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
@@ -121,7 +121,7 @@ public class EndermanEntity extends HostileEntity {
 		if (this.age >= this.field_7253 + 400) {
 			this.field_7253 = this.age;
 			if (!this.isSilent()) {
-				this.world.playSound(this.x, this.y + (double)this.getEyeHeight(), this.z, SoundEvents.field_14967, this.getSoundCategory(), 2.5F, 1.0F, false);
+				this.world.playSound(this.x, this.y + (double)this.getStandingEyeHeight(), this.z, SoundEvents.field_14967, this.getSoundCategory(), 2.5F, 1.0F, false);
 			}
 		}
 	}
@@ -166,7 +166,7 @@ public class EndermanEntity extends HostileEntity {
 			Vec3d vec3d = playerEntity.getRotationVec(1.0F).normalize();
 			Vec3d vec3d2 = new Vec3d(
 				this.x - playerEntity.x,
-				this.getBoundingBox().minY + (double)this.getEyeHeight() - (playerEntity.y + (double)playerEntity.getEyeHeight()),
+				this.getBoundingBox().minY + (double)this.getStandingEyeHeight() - (playerEntity.y + (double)playerEntity.getStandingEyeHeight()),
 				this.z - playerEntity.z
 			);
 			double d = vec3d2.length();
@@ -177,7 +177,7 @@ public class EndermanEntity extends HostileEntity {
 	}
 
 	@Override
-	protected float method_18394(class_4050 arg, class_4048 arg2) {
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
 		return 2.55F;
 	}
 
@@ -228,7 +228,7 @@ public class EndermanEntity extends HostileEntity {
 
 	protected boolean method_7025(Entity entity) {
 		Vec3d vec3d = new Vec3d(
-			this.x - entity.x, this.getBoundingBox().minY + (double)(this.getHeight() / 2.0F) - entity.y + (double)entity.getEyeHeight(), this.z - entity.z
+			this.x - entity.x, this.getBoundingBox().minY + (double)(this.getHeight() / 2.0F) - entity.y + (double)entity.getStandingEyeHeight(), this.z - entity.z
 		);
 		vec3d = vec3d.normalize();
 		double d = 16.0;

@@ -1,8 +1,8 @@
 package net.minecraft.entity.boss.dragon;
 
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
@@ -10,12 +10,12 @@ import net.minecraft.network.Packet;
 public class EnderDragonPart extends Entity {
 	public final EnderDragonEntity owner;
 	public final String name;
-	private final class_4048 field_18119;
+	private final EntitySize field_18119;
 
 	public EnderDragonPart(EnderDragonEntity enderDragonEntity, String string, float f, float g) {
 		super(enderDragonEntity.getType(), enderDragonEntity.world);
-		this.field_18119 = class_4048.method_18384(f, g);
-		this.method_18382();
+		this.field_18119 = EntitySize.resizeable(f, g);
+		this.refreshSize();
 		this.owner = enderDragonEntity;
 		this.name = string;
 	}
@@ -53,7 +53,7 @@ public class EnderDragonPart extends Entity {
 	}
 
 	@Override
-	public class_4048 method_18377(class_4050 arg) {
+	public EntitySize getSize(EntityPose entityPose) {
 		return this.field_18119;
 	}
 }

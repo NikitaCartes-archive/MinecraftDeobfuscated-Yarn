@@ -59,34 +59,34 @@ public class JigsawBlockScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.addButton(new ButtonWidget(this.width / 2 - 4 - 150, 210, 150, 20, I18n.translate("gui.done")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 4 - 150, 210, 150, 20, I18n.translate("gui.done")) {
 			@Override
 			public void onPressed(double d, double e) {
 				JigsawBlockScreen.this.onDone();
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 + 4, 210, 150, 20, I18n.translate("gui.cancel")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 4, 210, 150, 20, I18n.translate("gui.cancel")) {
 			@Override
 			public void onPressed(double d, double e) {
 				JigsawBlockScreen.this.onCancel();
 			}
 		});
 		this.textFields.clear();
-		this.targetPoolField = new TextFieldWidget(this.fontRenderer, this.width / 2 - 152, 40, 300, 20);
+		this.targetPoolField = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 152, 40, 300, 20);
 		this.targetPoolField.setMaxLength(128);
 		this.targetPoolField.setText(this.jigsaw.getTargetPool().toString());
 		this.textFields.add(this.targetPoolField);
-		this.attachmentTypeField = new TextFieldWidget(this.fontRenderer, this.width / 2 - 152, 80, 300, 20);
+		this.attachmentTypeField = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 152, 80, 300, 20);
 		this.attachmentTypeField.setMaxLength(128);
 		this.attachmentTypeField.setText(this.jigsaw.getAttachmentType().toString());
 		this.textFields.add(this.attachmentTypeField);
-		this.finalStateField = new TextFieldWidget(this.fontRenderer, this.width / 2 - 152, 120, 300, 20);
+		this.finalStateField = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 152, 120, 300, 20);
 		this.finalStateField.setMaxLength(256);
 		this.finalStateField.setText(this.jigsaw.getFinalState());
 		this.textFields.add(this.finalStateField);
 		this.listeners.addAll(this.textFields);
 		this.attachmentTypeField.setFocused(true);
-		this.method_1967(this.attachmentTypeField);
+		this.setFocused(this.attachmentTypeField);
 	}
 
 	@Override
@@ -154,7 +154,7 @@ public class JigsawBlockScreen extends Screen {
 			if (textFieldWidget2 != null && textFieldWidget2 != textFieldWidget) {
 				textFieldWidget.setFocused(false);
 				textFieldWidget2.setFocused(true);
-				this.method_1967(textFieldWidget2);
+				this.setFocused(textFieldWidget2);
 			}
 
 			return true;
@@ -162,14 +162,14 @@ public class JigsawBlockScreen extends Screen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		this.drawString(this.fontRenderer, I18n.translate("jigsaw_block.target_pool"), this.width / 2 - 153, 30, 10526880);
-		this.targetPoolField.method_18326(i, j, f);
-		this.drawString(this.fontRenderer, I18n.translate("jigsaw_block.attachement_type"), this.width / 2 - 153, 70, 10526880);
-		this.attachmentTypeField.method_18326(i, j, f);
-		this.drawString(this.fontRenderer, I18n.translate("jigsaw_block.final_state"), this.width / 2 - 153, 110, 10526880);
-		this.finalStateField.method_18326(i, j, f);
-		super.method_18326(i, j, f);
+		this.drawString(this.fontRenderer, I18n.translate("jigsaw_block.target_pool"), this.screenWidth / 2 - 153, 30, 10526880);
+		this.targetPoolField.draw(i, j, f);
+		this.drawString(this.fontRenderer, I18n.translate("jigsaw_block.attachement_type"), this.screenWidth / 2 - 153, 70, 10526880);
+		this.attachmentTypeField.draw(i, j, f);
+		this.drawString(this.fontRenderer, I18n.translate("jigsaw_block.final_state"), this.screenWidth / 2 - 153, 110, 10526880);
+		this.finalStateField.draw(i, j, f);
+		super.draw(i, j, f);
 	}
 }

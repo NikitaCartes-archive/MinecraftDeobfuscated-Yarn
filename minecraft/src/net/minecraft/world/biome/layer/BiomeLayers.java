@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import java.util.function.LongFunction;
 import net.minecraft.class_3639;
 import net.minecraft.class_3651;
-import net.minecraft.class_3657;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeGroupToBiomeLayer;
@@ -100,7 +99,7 @@ public class BiomeLayers {
 		layerFactory4 = SmoothenShorelineLayer.field_16171.create((LayerSampleContext)longFunction.apply(1000L), layerFactory4);
 		layerFactory4 = AddRiversLayer.field_16161.create((LayerSampleContext)longFunction.apply(100L), layerFactory4, layerFactory3);
 		layerFactory4 = ApplyOceanTemperatureLayer.field_16121.create((LayerSampleContext<T>)longFunction.apply(100L), layerFactory4, layerFactory2);
-		LayerFactory<T> layerFactory7 = class_3657.field_16200.create((LayerSampleContext<T>)longFunction.apply(10L), layerFactory4);
+		LayerFactory<T> layerFactory7 = CellScaleLayer.field_16200.create((LayerSampleContext<T>)longFunction.apply(10L), layerFactory4);
 		return ImmutableList.of(layerFactory4, layerFactory7, layerFactory4);
 	}
 

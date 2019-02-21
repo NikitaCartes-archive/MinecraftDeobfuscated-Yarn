@@ -2,16 +2,14 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3999;
 import net.minecraft.class_4000;
 import net.minecraft.class_4001;
 import net.minecraft.class_4002;
-import net.minecraft.class_4003;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class ExplosionLargeParticle extends class_4003 {
+public class ExplosionLargeParticle extends SpriteBillboardParticle {
 	private final class_4002 field_17815;
 
 	private ExplosionLargeParticle(World world, double d, double e, double f, double g, class_4002 arg) {
@@ -44,8 +42,8 @@ public class ExplosionLargeParticle extends class_4003 {
 	}
 
 	@Override
-	public class_3999 method_18122() {
-		return class_3999.field_17830;
+	public ParticleTextureSheet getTextureSheet() {
+		return ParticleTextureSheet.PARTICLE_SHEET_LIT;
 	}
 
 	@Environment(EnvType.CLIENT)

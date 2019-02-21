@@ -22,7 +22,7 @@ public class PhantomEntityRenderer extends MobEntityRenderer<PhantomEntity, Phan
 	}
 
 	protected void method_4088(PhantomEntity phantomEntity, float f) {
-		int i = phantomEntity.getSize();
+		int i = phantomEntity.getPhantomSize();
 		float g = 1.0F + 0.15F * (float)i;
 		GlStateManager.scalef(g, g, g);
 		GlStateManager.translatef(0.0F, 1.3125F, 0.1875F);

@@ -33,7 +33,7 @@ public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		if (itemStack.getItem() == Items.field_8575) {
+		if (itemStack.getItem() == Items.PLAYER_HEAD) {
 			Entity entity = lootContext.get(this.entity.getIdentifier());
 			if (entity instanceof PlayerEntity) {
 				GameProfile gameProfile = ((PlayerEntity)entity).getGameProfile();

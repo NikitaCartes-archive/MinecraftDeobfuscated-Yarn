@@ -19,7 +19,7 @@ public class SkullItem extends WallStandingBlockItem {
 
 	@Override
 	public TextComponent getTranslatedNameTrimmed(ItemStack itemStack) {
-		if (itemStack.getItem() == Items.field_8575 && itemStack.hasTag()) {
+		if (itemStack.getItem() == Items.PLAYER_HEAD && itemStack.hasTag()) {
 			String string = null;
 			CompoundTag compoundTag = itemStack.getTag();
 			if (compoundTag.containsKey("SkullOwner", 8)) {

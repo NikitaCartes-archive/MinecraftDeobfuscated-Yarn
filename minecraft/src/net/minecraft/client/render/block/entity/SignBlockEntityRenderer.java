@@ -11,7 +11,7 @@ import net.minecraft.block.StandingSignBlock;
 import net.minecraft.block.WallSignBlock;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
@@ -85,7 +85,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 						int p = l * 10 - signBlockEntity.text.length * 5;
 						if (signBlockEntity.isCaretVisible()) {
 							if (signBlockEntity.getSelectionStart() < string.length()) {
-								Drawable.drawRect(o, p - 1, o + 1, p + 9, 0xFF000000 | k);
+								DrawableHelper.drawRect(o, p - 1, o + 1, p + 9, 0xFF000000 | k);
 							} else {
 								textRenderer.draw("_", (float)o, (float)p, k);
 							}

@@ -18,7 +18,7 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 
 	public void method_4195(T mooshroomEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (!mooshroomEntity.isChild() && !mooshroomEntity.isInvisible()) {
-			BlockState blockState = mooshroomEntity.method_18435().method_18437();
+			BlockState blockState = mooshroomEntity.getType().getMushroomState();
 			this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 			GlStateManager.enableCull();
 			GlStateManager.cullFace(GlStateManager.FaceSides.field_5068);
@@ -39,7 +39,7 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 			GlStateManager.popMatrix();
 			GlStateManager.popMatrix();
 			GlStateManager.pushMatrix();
-			this.getModel().method_2800().method_2847(0.0625F);
+			this.getModel().method_2800().applyTransform(0.0625F);
 			GlStateManager.scalef(1.0F, -1.0F, 1.0F);
 			GlStateManager.translatef(0.0F, 0.7F, -0.2F);
 			GlStateManager.rotatef(12.0F, 0.0F, 1.0F, 0.0F);

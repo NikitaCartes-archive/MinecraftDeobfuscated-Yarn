@@ -2,7 +2,6 @@ package net.minecraft.entity.thrown;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3857;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -15,7 +14,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 
-public class ThrownEggEntity extends class_3857 {
+public class ThrownEggEntity extends ThrownItemEntity {
 	public ThrownEggEntity(EntityType<? extends ThrownEggEntity> entityType, World world) {
 		super(entityType, world);
 	}

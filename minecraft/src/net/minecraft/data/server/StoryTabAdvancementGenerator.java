@@ -21,7 +21,7 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.feature.Feature;
 
 public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdvancement>> {
-	public void accept(Consumer<SimpleAdvancement> consumer) {
+	public void method_10347(Consumer<SimpleAdvancement> consumer) {
 		SimpleAdvancement simpleAdvancement = SimpleAdvancement.Builder.create()
 			.display(
 				Blocks.field_10219,

@@ -3,10 +3,10 @@ package net.minecraft.client.render.entity;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3969;
 import net.minecraft.client.render.entity.feature.ArmorBipedFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.entity.model.GiantEntityModel;
 import net.minecraft.entity.mob.GiantEntity;
 import net.minecraft.util.Identifier;
 
@@ -16,10 +16,10 @@ public class GiantEntityRenderer extends MobEntityRenderer<GiantEntity, BipedEnt
 	private final float field_4711;
 
 	public GiantEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, float f) {
-		super(entityRenderDispatcher, new class_3969(), 0.5F * f);
+		super(entityRenderDispatcher, new GiantEntityModel(), 0.5F * f);
 		this.field_4711 = f;
 		this.addFeature(new HeldItemFeatureRenderer<>(this));
-		this.addFeature(new ArmorBipedFeatureRenderer<>(this, new class_3969(0.5F, true), new class_3969(1.0F, true)));
+		this.addFeature(new ArmorBipedFeatureRenderer<>(this, new GiantEntityModel(0.5F, true), new GiantEntityModel(1.0F, true)));
 	}
 
 	protected void method_3980(GiantEntity giantEntity, float f) {

@@ -4,13 +4,13 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4068;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.audio.PositionedSoundInstance;
 import net.minecraft.client.audio.SoundLoader;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.sortme.ChatMessageType;
@@ -21,7 +21,7 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public abstract class ButtonWidget extends Drawable implements class_4068, GuiEventListener {
+public abstract class ButtonWidget extends DrawableHelper implements Drawable, InputListener {
 	public static final Identifier WIDGET_TEX = new Identifier("textures/gui/widgets.png");
 	protected int width;
 	protected int height;
@@ -59,7 +59,7 @@ public abstract class ButtonWidget extends Drawable implements class_4068, GuiEv
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		if (this.visible) {
 			boolean bl = this.hovered;
 			this.hovered = i >= this.x && j >= this.y && i < this.x + this.width && j < this.y + this.height;
@@ -68,7 +68,7 @@ public abstract class ButtonWidget extends Drawable implements class_4068, GuiEv
 			}
 
 			if (this.visible) {
-				this.draw(i, j, f);
+				this.drawButton(i, j, f);
 			}
 
 			this.narrateIfNecessary();
@@ -99,7 +99,7 @@ public abstract class ButtonWidget extends Drawable implements class_4068, GuiEv
 		}
 	}
 
-	public void draw(int i, int j, float f) {
+	public void drawButton(int i, int j, float f) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		TextRenderer textRenderer = minecraftClient.textRenderer;
 		minecraftClient.getTextureManager().bindTexture(WIDGET_TEX);

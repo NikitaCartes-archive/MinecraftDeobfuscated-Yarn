@@ -423,7 +423,7 @@ public class WorldChunk implements Chunk {
 
 	public void addBlockEntity(BlockEntity blockEntity) {
 		this.setBlockEntity(blockEntity.getPos(), blockEntity);
-		if (this.loadedToWorld) {
+		if (this.loadedToWorld || this.world.isClient()) {
 			this.world.addBlockEntity(blockEntity);
 		}
 	}
@@ -449,7 +449,7 @@ public class WorldChunk implements Chunk {
 
 	@Override
 	public void removeBlockEntity(BlockPos blockPos) {
-		if (this.loadedToWorld) {
+		if (this.loadedToWorld || this.world.isClient()) {
 			BlockEntity blockEntity = (BlockEntity)this.blockEntityMap.remove(blockPos);
 			if (blockEntity != null) {
 				blockEntity.invalidate();

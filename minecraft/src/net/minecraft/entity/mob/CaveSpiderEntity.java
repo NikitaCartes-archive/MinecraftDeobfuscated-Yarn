@@ -1,10 +1,10 @@
 package net.minecraft.entity.mob;
 
 import javax.annotation.Nullable;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
@@ -59,7 +59,7 @@ public class CaveSpiderEntity extends SpiderEntity {
 	}
 
 	@Override
-	protected float method_18394(class_4050 arg, class_4048 arg2) {
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
 		return 0.45F;
 	}
 }

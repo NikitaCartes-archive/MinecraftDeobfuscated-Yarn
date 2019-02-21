@@ -53,7 +53,7 @@ public class TemptGoal extends Goal {
 	}
 
 	protected boolean method_6312(ItemStack itemStack) {
-		return this.field_6622.matches(itemStack);
+		return this.field_6622.method_8093(itemStack);
 	}
 
 	@Override

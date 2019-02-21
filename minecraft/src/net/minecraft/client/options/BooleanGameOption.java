@@ -37,7 +37,7 @@ public class BooleanGameOption extends GameOption {
 	}
 
 	@Override
-	public ButtonWidget method_18520(GameOptions gameOptions, int i, int j, int k) {
+	public ButtonWidget createOptionButton(GameOptions gameOptions, int i, int j, int k) {
 		return new OptionButtonWidget(i, j, k, 20, this, this.method_18495(gameOptions)) {
 			@Override
 			public void onPressed(double d, double e) {

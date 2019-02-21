@@ -3,8 +3,6 @@ package net.minecraft.client.particle;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3999;
-import net.minecraft.class_4003;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -14,7 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class BlockCrackParticle extends class_4003 {
+public class BlockCrackParticle extends SpriteBillboardParticle {
 	private final BlockState block;
 	private BlockPos blockPos;
 	private final float field_17884;
@@ -23,7 +21,7 @@ public class BlockCrackParticle extends class_4003 {
 	public BlockCrackParticle(World world, double d, double e, double f, double g, double h, double i, BlockState blockState) {
 		super(world, d, e, f, g, h, i);
 		this.block = blockState;
-		this.method_18141(MinecraftClient.getInstance().getBlockRenderManager().getModels().getSprite(blockState));
+		this.setSprite(MinecraftClient.getInstance().getBlockRenderManager().getModels().getSprite(blockState));
 		this.gravityStrength = 1.0F;
 		this.colorRed = 0.6F;
 		this.colorGreen = 0.6F;
@@ -34,8 +32,8 @@ public class BlockCrackParticle extends class_4003 {
 	}
 
 	@Override
-	public class_3999 method_18122() {
-		return class_3999.field_17827;
+	public ParticleTextureSheet getTextureSheet() {
+		return ParticleTextureSheet.TERRAIN_SHEET;
 	}
 
 	public BlockCrackParticle setBlockPos(BlockPos blockPos) {
@@ -67,23 +65,23 @@ public class BlockCrackParticle extends class_4003 {
 	}
 
 	@Override
-	protected float method_18133() {
-		return this.field_17886.getU((double)((this.field_17884 + 1.0F) / 4.0F * 16.0F));
+	protected float getMinU() {
+		return this.sprite.getU((double)((this.field_17884 + 1.0F) / 4.0F * 16.0F));
 	}
 
 	@Override
-	protected float method_18134() {
-		return this.field_17886.getU((double)(this.field_17884 / 4.0F * 16.0F));
+	protected float getMaxU() {
+		return this.sprite.getU((double)(this.field_17884 / 4.0F * 16.0F));
 	}
 
 	@Override
-	protected float method_18135() {
-		return this.field_17886.getV((double)(this.field_17885 / 4.0F * 16.0F));
+	protected float getMinV() {
+		return this.sprite.getV((double)(this.field_17885 / 4.0F * 16.0F));
 	}
 
 	@Override
-	protected float method_18136() {
-		return this.field_17886.getV((double)((this.field_17885 + 1.0F) / 4.0F * 16.0F));
+	protected float getMaxV() {
+		return this.sprite.getV((double)((this.field_17885 + 1.0F) / 4.0F * 16.0F));
 	}
 
 	@Override

@@ -31,7 +31,7 @@ public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
 				if (itemStack.getItem() instanceof DyeItem) {
 					bl = true;
 				} else {
-					if (!field_9015.matches(itemStack)) {
+					if (!field_9015.method_8093(itemStack)) {
 						return false;
 					}
 
@@ -56,7 +56,7 @@ public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
 			Item item = itemStack2.getItem();
 			if (item instanceof DyeItem) {
 				list.add(((DyeItem)item).getColor().getFireworkColor());
-			} else if (field_9015.matches(itemStack2)) {
+			} else if (field_9015.method_8093(itemStack2)) {
 				itemStack = itemStack2.copy();
 				itemStack.setAmount(1);
 			}

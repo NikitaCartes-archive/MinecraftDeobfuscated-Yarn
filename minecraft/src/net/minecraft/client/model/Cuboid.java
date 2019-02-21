@@ -192,7 +192,7 @@ public class Cuboid {
 		}
 	}
 
-	public void method_2847(float f) {
+	public void applyTransform(float f) {
 		if (!this.field_3664) {
 			if (this.visible) {
 				if (!this.compiled) {

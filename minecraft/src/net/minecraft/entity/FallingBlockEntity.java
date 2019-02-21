@@ -57,9 +57,7 @@ public class FallingBlockEntity extends Entity {
 		this.block = blockState;
 		this.field_6033 = true;
 		this.setPosition(d, e + (double)((1.0F - this.getHeight()) / 2.0F), f);
-		this.velocityX = 0.0;
-		this.velocityY = 0.0;
-		this.velocityZ = 0.0;
+		this.setVelocity(Vec3d.ZERO);
 		this.prevX = d;
 		this.prevY = e;
 		this.prevZ = f;
@@ -115,15 +113,15 @@ public class FallingBlockEntity extends Entity {
 			}
 
 			if (!this.isUnaffectedByGravity()) {
-				this.velocityY -= 0.04F;
+				this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
 			}
 
-			this.move(MovementType.field_6308, this.velocityX, this.velocityY, this.velocityZ);
+			this.move(MovementType.field_6308, this.getVelocity());
 			if (!this.world.isClient) {
 				BlockPos blockPos = new BlockPos(this);
 				boolean bl = this.block.getBlock() instanceof ConcretePowderBlock;
 				boolean bl2 = bl && this.world.getFluidState(blockPos).matches(FluidTags.field_15517);
-				double d = this.velocityX * this.velocityX + this.velocityY * this.velocityY + this.velocityZ * this.velocityZ;
+				double d = this.getVelocity().lengthSquared();
 				if (bl && d > 1.0) {
 					BlockHitResult blockHitResult = this.world
 						.rayTrace(
@@ -143,9 +141,7 @@ public class FallingBlockEntity extends Entity {
 
 				if (this.onGround || bl2) {
 					BlockState blockState = this.world.getBlockState(blockPos);
-					this.velocityX *= 0.7F;
-					this.velocityZ *= 0.7F;
-					this.velocityY *= -0.5;
+					this.setVelocity(this.getVelocity().multiply(0.7, -0.5, 0.7));
 					if (blockState.getBlock() != Blocks.field_10008) {
 						this.invalidate();
 						if (!this.destroyedOnLanding) {
@@ -196,9 +192,7 @@ public class FallingBlockEntity extends Entity {
 				}
 			}
 
-			this.velocityX *= 0.98F;
-			this.velocityY *= 0.98F;
-			this.velocityZ *= 0.98F;
+			this.setVelocity(this.getVelocity().multiply(0.98));
 		}
 	}
 

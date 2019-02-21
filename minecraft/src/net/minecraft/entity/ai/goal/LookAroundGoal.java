@@ -38,7 +38,7 @@ public class LookAroundGoal extends Goal {
 			.getLookControl()
 			.lookAt(
 				this.owner.x + this.deltaX,
-				this.owner.y + (double)this.owner.getEyeHeight(),
+				this.owner.y + (double)this.owner.getStandingEyeHeight(),
 				this.owner.z + this.deltaZ,
 				(float)this.owner.method_5986(),
 				(float)this.owner.method_5978()

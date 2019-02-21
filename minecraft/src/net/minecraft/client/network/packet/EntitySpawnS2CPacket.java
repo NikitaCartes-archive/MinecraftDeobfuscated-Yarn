@@ -11,6 +11,7 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 
 public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -30,7 +31,7 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	public EntitySpawnS2CPacket() {
 	}
 
-	public EntitySpawnS2CPacket(int i, UUID uUID, double d, double e, double f, float g, float h, EntityType<?> entityType, int j, double k, double l, double m) {
+	public EntitySpawnS2CPacket(int i, UUID uUID, double d, double e, double f, float g, float h, EntityType<?> entityType, int j, Vec3d vec3d) {
 		this.id = i;
 		this.uuid = uUID;
 		this.x = d;
@@ -40,9 +41,9 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.yaw = MathHelper.floor(h * 256.0F / 360.0F);
 		this.entityTypeId = entityType;
 		this.entityData = j;
-		this.velocityX = (int)(MathHelper.clamp(k, -3.9, 3.9) * 8000.0);
-		this.velocityY = (int)(MathHelper.clamp(l, -3.9, 3.9) * 8000.0);
-		this.velocityZ = (int)(MathHelper.clamp(m, -3.9, 3.9) * 8000.0);
+		this.velocityX = (int)(MathHelper.clamp(vec3d.x, -3.9, 3.9) * 8000.0);
+		this.velocityY = (int)(MathHelper.clamp(vec3d.y, -3.9, 3.9) * 8000.0);
+		this.velocityZ = (int)(MathHelper.clamp(vec3d.z, -3.9, 3.9) * 8000.0);
 	}
 
 	public EntitySpawnS2CPacket(Entity entity) {
@@ -50,20 +51,7 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public EntitySpawnS2CPacket(Entity entity, int i) {
-		this(
-			entity.getEntityId(),
-			entity.getUuid(),
-			entity.x,
-			entity.y,
-			entity.z,
-			entity.pitch,
-			entity.yaw,
-			entity.getType(),
-			i,
-			entity.velocityX,
-			entity.velocityY,
-			entity.velocityZ
-		);
+		this(entity.getEntityId(), entity.getUuid(), entity.x, entity.y, entity.z, entity.pitch, entity.yaw, entity.getType(), i, entity.getVelocity());
 	}
 
 	public EntitySpawnS2CPacket(Entity entity, EntityType<?> entityType, int i, BlockPos blockPos) {
@@ -77,9 +65,7 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 			entity.yaw,
 			entityType,
 			i,
-			entity.velocityX,
-			entity.velocityY,
-			entity.velocityZ
+			entity.getVelocity()
 		);
 	}
 

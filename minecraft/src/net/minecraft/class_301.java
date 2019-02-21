@@ -14,7 +14,7 @@ import org.lwjgl.system.Pointer;
 @Environment(EnvType.CLIENT)
 public class class_301 {
 	@Nullable
-	private static final MethodHandle field_1643 = GLX.make(() -> {
+	private static final MethodHandle UNTRACK_HANDLE = GLX.make(() -> {
 		try {
 			Lookup lookup = MethodHandles.lookup();
 			Class<?> class_ = Class.forName("org.lwjgl.system.MemoryManage$DebugAllocator");
@@ -29,17 +29,17 @@ public class class_301 {
 		}
 	});
 
-	public static void method_1407(long l) {
-		if (field_1643 != null) {
+	public static void untrack(long l) {
+		if (UNTRACK_HANDLE != null) {
 			try {
-				field_1643.invoke(l);
+				UNTRACK_HANDLE.invoke(l);
 			} catch (Throwable var3) {
 				throw new RuntimeException(var3);
 			}
 		}
 	}
 
-	public static void method_1406(Pointer pointer) {
-		method_1407(pointer.address());
+	public static void untrack(Pointer pointer) {
+		untrack(pointer.address());
 	}
 }

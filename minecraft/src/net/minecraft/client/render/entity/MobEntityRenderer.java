@@ -24,7 +24,7 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 	}
 
 	public boolean method_4068(T mobEntity, VisibleRegion visibleRegion, double d, double e, double f) {
-		if (super.method_3933(mobEntity, visibleRegion, d, e, f)) {
+		if (super.isVisible(mobEntity, visibleRegion, d, e, f)) {
 			return true;
 		} else if (mobEntity.isLeashed() && mobEntity.getHoldingEntity() != null) {
 			Entity entity = mobEntity.getHoldingEntity();
@@ -60,7 +60,9 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 
 			double n = Math.cos(j);
 			double o = MathHelper.lerp((double)h, entity.prevX, entity.x) - k * 0.7 - l * 0.5 * n;
-			double p = MathHelper.lerp((double)h, entity.prevY + (double)entity.getEyeHeight() * 0.7, entity.y + (double)entity.getEyeHeight() * 0.7) - m * 0.5 - 0.25;
+			double p = MathHelper.lerp((double)h, entity.prevY + (double)entity.getStandingEyeHeight() * 0.7, entity.y + (double)entity.getStandingEyeHeight() * 0.7)
+				- m * 0.5
+				- 0.25;
 			double q = MathHelper.lerp((double)h, entity.prevZ, entity.z) - l * 0.7 + k * 0.5 * n;
 			double r = (double)(MathHelper.lerp(h, mobEntity.field_6283, mobEntity.field_6220) * (float) (Math.PI / 180.0)) + (Math.PI / 2);
 			k = Math.cos(r) * (double)mobEntity.getWidth() * 0.4;

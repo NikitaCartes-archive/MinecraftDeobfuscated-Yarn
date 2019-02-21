@@ -58,14 +58,16 @@ public class VillagerBreedingGoal extends class_1358 {
 					}
 
 					if (!itemStack2.isEmpty()) {
-						double d = this.villager.y - 0.3F + (double)this.villager.getEyeHeight();
+						double d = this.villager.y - 0.3F + (double)this.villager.getStandingEyeHeight();
 						ItemEntity itemEntity = new ItemEntity(this.villager.world, this.villager.x, d, this.villager.z, itemStack2);
 						float f = 0.3F;
 						float g = this.villager.headYaw;
 						float h = this.villager.pitch;
-						itemEntity.velocityX = (double)(-MathHelper.sin(g * (float) (Math.PI / 180.0)) * MathHelper.cos(h * (float) (Math.PI / 180.0)) * 0.3F);
-						itemEntity.velocityZ = (double)(MathHelper.cos(g * (float) (Math.PI / 180.0)) * MathHelper.cos(h * (float) (Math.PI / 180.0)) * 0.3F);
-						itemEntity.velocityY = (double)(-MathHelper.sin(h * (float) (Math.PI / 180.0)) * 0.3F + 0.1F);
+						itemEntity.setVelocity(
+							(double)(0.3F * -MathHelper.sin(g * (float) (Math.PI / 180.0)) * MathHelper.cos(h * (float) (Math.PI / 180.0))),
+							(double)(0.3F * -MathHelper.sin(h * (float) (Math.PI / 180.0)) + 0.1F),
+							(double)(0.3F * MathHelper.cos(g * (float) (Math.PI / 180.0)) * MathHelper.cos(h * (float) (Math.PI / 180.0)))
+						);
 						itemEntity.setToDefaultPickupDelay();
 						this.villager.world.spawnEntity(itemEntity);
 						break;

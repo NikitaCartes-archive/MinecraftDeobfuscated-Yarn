@@ -103,7 +103,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Simpl
 		EntityType.ILLAGER_BEAST
 	};
 
-	public void accept(Consumer<SimpleAdvancement> consumer) {
+	public void method_10335(Consumer<SimpleAdvancement> consumer) {
 		SimpleAdvancement simpleAdvancement = SimpleAdvancement.Builder.create()
 			.display(
 				Items.field_8895,

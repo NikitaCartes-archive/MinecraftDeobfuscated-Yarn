@@ -684,7 +684,7 @@ public class Block implements ItemProvider {
 	}
 
 	public void onEntityLand(BlockView blockView, Entity entity) {
-		entity.velocityY = 0.0;
+		entity.setVelocity(entity.getVelocity().multiply(1.0, 0.0, 1.0));
 	}
 
 	@Environment(EnvType.CLIENT)

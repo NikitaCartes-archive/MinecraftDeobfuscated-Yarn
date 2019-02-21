@@ -4,7 +4,6 @@ import java.util.Random;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3999;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.VerticalEntityPosition;
@@ -122,7 +121,7 @@ public abstract class Particle {
 
 	public abstract void buildGeometry(BufferBuilder bufferBuilder, Entity entity, float f, float g, float h, float i, float j, float k);
 
-	public abstract class_3999 method_18122();
+	public abstract ParticleTextureSheet getTextureSheet();
 
 	public String toString() {
 		return this.getClass().getSimpleName()

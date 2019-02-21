@@ -359,13 +359,13 @@ public interface DispenserBehavior {
 				return itemStack;
 			}
 		};
-		DispenserBlock.registerBehavior(Items.field_8681, dispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.field_8470, dispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.field_8712, dispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.field_8398, dispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.field_8575, dispenserBehavior2);
+		DispenserBlock.registerBehavior(Items.CREEPER_HEAD, dispenserBehavior2);
+		DispenserBlock.registerBehavior(Items.ZOMBIE_HEAD, dispenserBehavior2);
+		DispenserBlock.registerBehavior(Items.DRAGON_HEAD, dispenserBehavior2);
+		DispenserBlock.registerBehavior(Items.SKELETON_SKULL, dispenserBehavior2);
+		DispenserBlock.registerBehavior(Items.PLAYER_HEAD, dispenserBehavior2);
 		DispenserBlock.registerBehavior(
-			Items.field_8791,
+			Items.WITHER_SKELETON_SKULL,
 			new class_2969() {
 				@Override
 				protected ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {

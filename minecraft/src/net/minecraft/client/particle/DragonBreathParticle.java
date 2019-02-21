@@ -2,17 +2,15 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3999;
 import net.minecraft.class_4000;
 import net.minecraft.class_4001;
 import net.minecraft.class_4002;
-import net.minecraft.class_4003;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class DragonBreathParticle extends class_4003 {
+public class DragonBreathParticle extends SpriteBillboardParticle {
 	private boolean field_3792;
 	private final class_4002 field_17793;
 
@@ -65,8 +63,8 @@ public class DragonBreathParticle extends class_4003 {
 	}
 
 	@Override
-	public class_3999 method_18122() {
-		return class_3999.field_17828;
+	public ParticleTextureSheet getTextureSheet() {
+		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
 	@Override

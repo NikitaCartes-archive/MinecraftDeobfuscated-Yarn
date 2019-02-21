@@ -151,7 +151,7 @@ public class BlockItem extends Item {
 			if (compoundTag != null) {
 				BlockEntity blockEntity = world.getBlockEntity(blockPos);
 				if (blockEntity != null) {
-					if (!world.isClient && blockEntity.shouldNotCopyTagFromItem() && (playerEntity == null || !playerEntity.method_7338())) {
+					if (!world.isClient && blockEntity.shouldNotCopyTagFromItem() && (playerEntity == null || !playerEntity.isCreativeLevelTwoOp())) {
 						return false;
 					}
 

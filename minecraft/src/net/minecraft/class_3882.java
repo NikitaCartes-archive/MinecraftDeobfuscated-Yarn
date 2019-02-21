@@ -6,9 +6,9 @@ import net.minecraft.client.model.Cuboid;
 
 @Environment(EnvType.CLIENT)
 public interface class_3882 {
-	Cuboid method_2838();
+	Cuboid getHead();
 
-	default void method_17148(float f) {
-		this.method_2838().method_2847(f);
+	default void applyHeadTransform(float f) {
+		this.getHead().applyTransform(f);
 	}
 }

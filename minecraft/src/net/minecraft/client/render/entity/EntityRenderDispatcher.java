@@ -339,7 +339,7 @@ public class EntityRenderDispatcher {
 
 	public boolean method_3950(Entity entity, VisibleRegion visibleRegion, double d, double e, double f) {
 		EntityRenderer<Entity> entityRenderer = this.getRenderer(entity);
-		return entityRenderer != null && entityRenderer.method_3933(entity, visibleRegion, d, e, f);
+		return entityRenderer != null && entityRenderer.isVisible(entity, visibleRegion, d, e, f);
 	}
 
 	public void render(Entity entity, float f, boolean bl) {
@@ -478,10 +478,10 @@ public class EntityRenderDispatcher {
 			float m = 0.01F;
 			WorldRenderer.drawBoxOutline(
 				d - (double)i,
-				e + (double)entity.getEyeHeight() - 0.01F,
+				e + (double)entity.getStandingEyeHeight() - 0.01F,
 				f - (double)i,
 				d + (double)i,
-				e + (double)entity.getEyeHeight() + 0.01F,
+				e + (double)entity.getStandingEyeHeight() + 0.01F,
 				f + (double)i,
 				1.0F,
 				0.0F,
@@ -494,8 +494,8 @@ public class EntityRenderDispatcher {
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		Vec3d vec3d = entity.getRotationVec(h);
 		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
-		bufferBuilder.vertex(d, e + (double)entity.getEyeHeight(), f).color(0, 0, 255, 255).next();
-		bufferBuilder.vertex(d + vec3d.x * 2.0, e + (double)entity.getEyeHeight() + vec3d.y * 2.0, f + vec3d.z * 2.0).color(0, 0, 255, 255).next();
+		bufferBuilder.vertex(d, e + (double)entity.getStandingEyeHeight(), f).color(0, 0, 255, 255).next();
+		bufferBuilder.vertex(d + vec3d.x * 2.0, e + (double)entity.getStandingEyeHeight() + vec3d.y * 2.0, f + vec3d.z * 2.0).color(0, 0, 255, 255).next();
 		tessellator.draw();
 		GlStateManager.enableTexture();
 		GlStateManager.enableLighting();

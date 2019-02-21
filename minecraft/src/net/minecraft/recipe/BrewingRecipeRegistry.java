@@ -18,7 +18,7 @@ public class BrewingRecipeRegistry {
 	private static final List<Ingredient> POTION_TYPES = Lists.<Ingredient>newArrayList();
 	private static final Predicate<ItemStack> POTION_TYPE_PREDICATE = itemStack -> {
 		for(Ingredient ingredient : POTION_TYPES) {
-			if (ingredient.matches(itemStack)) {
+			if (ingredient.method_8093(itemStack)) {
 				return true;
 			}
 		}
@@ -34,7 +34,7 @@ public class BrewingRecipeRegistry {
 		int i = 0;
 
 		for(int j = ITEM_RECIPES.size(); i < j; ++i) {
-			if (((BrewingRecipeRegistry.Recipe)ITEM_RECIPES.get(i)).ingredient.matches(itemStack)) {
+			if (((BrewingRecipeRegistry.Recipe)ITEM_RECIPES.get(i)).ingredient.method_8093(itemStack)) {
 				return true;
 			}
 		}
@@ -46,7 +46,7 @@ public class BrewingRecipeRegistry {
 		int i = 0;
 
 		for(int j = POTION_RECIPES.size(); i < j; ++i) {
-			if (((BrewingRecipeRegistry.Recipe)POTION_RECIPES.get(i)).ingredient.matches(itemStack)) {
+			if (((BrewingRecipeRegistry.Recipe)POTION_RECIPES.get(i)).ingredient.method_8093(itemStack)) {
 				return true;
 			}
 		}
@@ -68,7 +68,7 @@ public class BrewingRecipeRegistry {
 
 		for(int j = ITEM_RECIPES.size(); i < j; ++i) {
 			BrewingRecipeRegistry.Recipe<Item> recipe = (BrewingRecipeRegistry.Recipe)ITEM_RECIPES.get(i);
-			if (recipe.input == item && recipe.ingredient.matches(itemStack2)) {
+			if (recipe.input == item && recipe.ingredient.method_8093(itemStack2)) {
 				return true;
 			}
 		}
@@ -82,7 +82,7 @@ public class BrewingRecipeRegistry {
 
 		for(int j = POTION_RECIPES.size(); i < j; ++i) {
 			BrewingRecipeRegistry.Recipe<Potion> recipe = (BrewingRecipeRegistry.Recipe)POTION_RECIPES.get(i);
-			if (recipe.input == potion && recipe.ingredient.matches(itemStack2)) {
+			if (recipe.input == potion && recipe.ingredient.method_8093(itemStack2)) {
 				return true;
 			}
 		}
@@ -98,7 +98,7 @@ public class BrewingRecipeRegistry {
 
 			for(int j = ITEM_RECIPES.size(); i < j; ++i) {
 				BrewingRecipeRegistry.Recipe<Item> recipe = (BrewingRecipeRegistry.Recipe)ITEM_RECIPES.get(i);
-				if (recipe.input == item && recipe.ingredient.matches(itemStack)) {
+				if (recipe.input == item && recipe.ingredient.method_8093(itemStack)) {
 					return PotionUtil.setPotion(new ItemStack(recipe.output), potion);
 				}
 			}
@@ -107,7 +107,7 @@ public class BrewingRecipeRegistry {
 
 			for(int j = POTION_RECIPES.size(); i < j; ++i) {
 				BrewingRecipeRegistry.Recipe<Potion> recipe = (BrewingRecipeRegistry.Recipe)POTION_RECIPES.get(i);
-				if (recipe.input == potion && recipe.ingredient.matches(itemStack)) {
+				if (recipe.input == potion && recipe.ingredient.method_8093(itemStack)) {
 					return PotionUtil.setPotion(new ItemStack(item), recipe.output);
 				}
 			}

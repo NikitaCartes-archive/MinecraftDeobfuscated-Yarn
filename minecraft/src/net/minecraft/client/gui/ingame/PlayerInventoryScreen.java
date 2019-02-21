@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.gui.recipebook.RecipeBookGui;
 import net.minecraft.client.gui.widget.RecipeBookButtonWidget;
 import net.minecraft.client.render.GuiLighting;
@@ -49,20 +49,20 @@ public class PlayerInventoryScreen extends AbstractPlayerInventoryScreen<PlayerC
 			this.client.openScreen(new CreativePlayerInventoryScreen(this.client.player));
 		} else {
 			super.onInitialized();
-			this.isNarrow = this.width < 379;
-			this.recipeBook.initialize(this.width, this.height, this.client, this.isNarrow, this.container);
+			this.isNarrow = this.screenWidth < 379;
+			this.recipeBook.initialize(this.screenWidth, this.screenHeight, this.client, this.isNarrow, this.container);
 			this.isOpen = true;
-			this.left = this.recipeBook.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
+			this.left = this.recipeBook.findLeftEdge(this.isNarrow, this.screenWidth, this.width);
 			this.listeners.add(this.recipeBook);
 			this.addButton(
-				new RecipeBookButtonWidget(this.left + 104, this.height / 2 - 22, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX) {
+				new RecipeBookButtonWidget(this.left + 104, this.screenHeight / 2 - 22, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX) {
 					@Override
 					public void onPressed(double d, double e) {
 						PlayerInventoryScreen.this.recipeBook.reset(PlayerInventoryScreen.this.isNarrow);
 						PlayerInventoryScreen.this.recipeBook.toggleOpen();
 						PlayerInventoryScreen.this.left = PlayerInventoryScreen.this.recipeBook
-							.findLeftEdge(PlayerInventoryScreen.this.isNarrow, PlayerInventoryScreen.this.width, PlayerInventoryScreen.this.containerWidth);
-						this.setPos(PlayerInventoryScreen.this.left + 104, PlayerInventoryScreen.this.height / 2 - 22);
+							.findLeftEdge(PlayerInventoryScreen.this.isNarrow, PlayerInventoryScreen.this.screenWidth, PlayerInventoryScreen.this.width);
+						this.setPos(PlayerInventoryScreen.this.left + 104, PlayerInventoryScreen.this.screenHeight / 2 - 22);
 						PlayerInventoryScreen.this.isMouseDown = true;
 					}
 				}
@@ -72,7 +72,7 @@ public class PlayerInventoryScreen extends AbstractPlayerInventoryScreen<PlayerC
 
 	@Nullable
 	@Override
-	public GuiEventListener getFocused() {
+	public InputListener getFocused() {
 		return this.recipeBook;
 	}
 
@@ -82,15 +82,15 @@ public class PlayerInventoryScreen extends AbstractPlayerInventoryScreen<PlayerC
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawBackground();
 		this.offsetGuiForEffects = !this.recipeBook.isOpen();
 		if (this.recipeBook.isOpen() && this.isNarrow) {
 			this.drawBackground(f, i, j);
-			this.recipeBook.method_18326(i, j, f);
+			this.recipeBook.draw(i, j, f);
 		} else {
-			this.recipeBook.method_18326(i, j, f);
-			super.method_18326(i, j, f);
+			this.recipeBook.draw(i, j, f);
+			super.draw(i, j, f);
 			this.recipeBook.drawGhostSlots(this.left, this.top, false, f);
 		}
 
@@ -106,7 +106,7 @@ public class PlayerInventoryScreen extends AbstractPlayerInventoryScreen<PlayerC
 		this.client.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
 		int k = this.left;
 		int l = this.top;
-		this.drawTexturedRect(k, l, 0, 0, this.containerWidth, this.containerHeight);
+		this.drawTexturedRect(k, l, 0, 0, this.width, this.height);
 		drawEntity(k + 51, l + 75, 30, (float)(k + 51) - this.mouseX, (float)(l + 75 - 50) - this.mouseY, this.client.player);
 	}
 
@@ -175,8 +175,8 @@ public class PlayerInventoryScreen extends AbstractPlayerInventoryScreen<PlayerC
 
 	@Override
 	protected boolean isClickOutsideBounds(double d, double e, int i, int j, int k) {
-		boolean bl = d < (double)i || e < (double)j || d >= (double)(i + this.containerWidth) || e >= (double)(j + this.containerHeight);
-		return this.recipeBook.isClickOutsideBounds(d, e, this.left, this.top, this.containerWidth, this.containerHeight, k) && bl;
+		boolean bl = d < (double)i || e < (double)j || d >= (double)(i + this.width) || e >= (double)(j + this.height);
+		return this.recipeBook.isClickOutsideBounds(d, e, this.left, this.top, this.width, this.height, k) && bl;
 	}
 
 	@Override

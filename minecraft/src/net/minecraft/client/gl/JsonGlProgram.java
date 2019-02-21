@@ -15,7 +15,6 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3679;
 import net.minecraft.client.texture.Texture;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
@@ -26,7 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class JsonGlProgram implements class_3679, AutoCloseable {
+public class JsonGlProgram implements GlProgram, AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Uniform dummyUniform = new Uniform();
 	private static JsonGlProgram activeProgram;
@@ -134,7 +133,7 @@ public class JsonGlProgram implements class_3679, AutoCloseable {
 			IOUtils.closeQuietly(resource);
 		}
 
-		this.method_1279();
+		this.markUniformsDirty();
 	}
 
 	public static GlShader getShader(ResourceManager resourceManager, GlShader.Type type, String string) throws IOException {
@@ -274,7 +273,7 @@ public class JsonGlProgram implements class_3679, AutoCloseable {
 	}
 
 	@Override
-	public void method_1279() {
+	public void markUniformsDirty() {
 		this.uniformStateDirty = true;
 	}
 
@@ -336,7 +335,7 @@ public class JsonGlProgram implements class_3679, AutoCloseable {
 		}
 
 		this.samplerBinds.put(string, object);
-		this.method_1279();
+		this.markUniformsDirty();
 	}
 
 	private void addUniform(JsonElement jsonElement) throws ShaderParseException {
@@ -385,17 +384,17 @@ public class JsonGlProgram implements class_3679, AutoCloseable {
 	}
 
 	@Override
-	public GlShader method_1274() {
+	public GlShader getVertexShader() {
 		return this.vertexShader;
 	}
 
 	@Override
-	public GlShader method_1278() {
+	public GlShader getFragmentShader() {
 		return this.fragmentShader;
 	}
 
 	@Override
-	public int method_1270() {
+	public int getProgramRef() {
 		return this.programRef;
 	}
 }

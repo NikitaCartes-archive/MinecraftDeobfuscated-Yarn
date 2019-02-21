@@ -199,8 +199,8 @@ public abstract class EntityNavigation {
 
 		this.field_6683 = this.entity.getWidth() > 0.75F ? this.entity.getWidth() / 2.0F : 0.75F - this.entity.getWidth() / 2.0F;
 		Vec3d vec3d2 = this.currentPath.getCurrentPosition();
-		if (MathHelper.abs((float)(this.entity.x - (vec3d2.x + 0.5))) < this.field_6683
-			&& MathHelper.abs((float)(this.entity.z - (vec3d2.z + 0.5))) < this.field_6683
+		if (Math.abs(this.entity.x - (vec3d2.x + 0.5)) < (double)this.field_6683
+			&& Math.abs(this.entity.z - (vec3d2.z + 0.5)) < (double)this.field_6683
 			&& Math.abs(this.entity.y - vec3d2.y) < 1.0) {
 			this.currentPath.setCurrentNodeIndex(this.currentPath.getCurrentNodeIndex() + 1);
 		}

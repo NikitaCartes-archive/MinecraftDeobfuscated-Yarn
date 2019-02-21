@@ -5,8 +5,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.class_370;
-import net.minecraft.class_4065;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.options.NarratorOption;
 import net.minecraft.client.sortme.ClientChatListener;
 import net.minecraft.client.toast.ToastManager;
 import net.minecraft.sortme.ChatMessageType;
@@ -23,11 +23,11 @@ public class NarratorManager implements ClientChatListener {
 
 	@Override
 	public void onChatMessage(ChatMessageType chatMessageType, TextComponent textComponent) {
-		class_4065 lv = MinecraftClient.getInstance().options.narrator;
-		if (lv != class_4065.field_18176 && this.narrator.active()) {
-			if (lv == class_4065.field_18177
-				|| lv == class_4065.field_18178 && chatMessageType == ChatMessageType.field_11737
-				|| lv == class_4065.field_18179 && chatMessageType == ChatMessageType.field_11735) {
+		NarratorOption narratorOption = MinecraftClient.getInstance().options.narrator;
+		if (narratorOption != NarratorOption.field_18176 && this.narrator.active()) {
+			if (narratorOption == NarratorOption.field_18177
+				|| narratorOption == NarratorOption.field_18178 && chatMessageType == ChatMessageType.field_11737
+				|| narratorOption == NarratorOption.field_18179 && chatMessageType == ChatMessageType.field_11735) {
 				if (textComponent instanceof TranslatableTextComponent && "chat.type.text".equals(((TranslatableTextComponent)textComponent).getKey())) {
 					this.method_18621(new TranslatableTextComponent("chat.type.text.narrate", ((TranslatableTextComponent)textComponent).getParams()));
 				} else {
@@ -45,16 +45,20 @@ public class NarratorManager implements ClientChatListener {
 		this.narrator.say(textComponent.getString());
 	}
 
-	public void addToast(class_4065 arg) {
+	public void addToast(NarratorOption narratorOption) {
 		this.narrator.clear();
-		this.narrator.say(new TranslatableTextComponent("options.narrator").getString() + " : " + new TranslatableTextComponent(arg.method_18511()).getString());
+		this.narrator
+			.say(new TranslatableTextComponent("options.narrator").getString() + " : " + new TranslatableTextComponent(narratorOption.getTranslationKey()).getString());
 		ToastManager toastManager = MinecraftClient.getInstance().getToastManager();
 		if (this.narrator.active()) {
-			if (arg == class_4065.field_18176) {
+			if (narratorOption == NarratorOption.field_18176) {
 				class_370.method_1990(toastManager, class_370.class_371.field_2219, new TranslatableTextComponent("narrator.toast.disabled"), null);
 			} else {
 				class_370.method_1990(
-					toastManager, class_370.class_371.field_2219, new TranslatableTextComponent("narrator.toast.enabled"), new TranslatableTextComponent(arg.method_18511())
+					toastManager,
+					class_370.class_371.field_2219,
+					new TranslatableTextComponent("narrator.toast.enabled"),
+					new TranslatableTextComponent(narratorOption.getTranslationKey())
 				);
 			}
 		} else {

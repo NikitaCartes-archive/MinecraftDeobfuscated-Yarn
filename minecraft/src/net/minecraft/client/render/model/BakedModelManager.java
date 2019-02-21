@@ -3,16 +3,16 @@ package net.minecraft.client.render.model;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4080;
 import net.minecraft.client.render.block.BlockModels;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceSupplier;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
 @Environment(EnvType.CLIENT)
-public class BakedModelManager extends class_4080<ModelLoader> {
+public class BakedModelManager extends ResourceSupplier<ModelLoader> {
 	private Map<Identifier, BakedModel> modelMap;
 	private final SpriteAtlasTexture spriteAtlas;
 	private final BlockModels blockStateMaps;

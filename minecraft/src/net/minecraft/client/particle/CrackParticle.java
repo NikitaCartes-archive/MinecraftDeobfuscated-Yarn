@@ -2,8 +2,6 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3999;
-import net.minecraft.class_4003;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -12,7 +10,7 @@ import net.minecraft.particle.ItemStackParticleParameters;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class CrackParticle extends class_4003 {
+public class CrackParticle extends SpriteBillboardParticle {
 	private final float field_17783;
 	private final float field_17784;
 
@@ -27,13 +25,13 @@ public class CrackParticle extends class_4003 {
 	}
 
 	@Override
-	public class_3999 method_18122() {
-		return class_3999.field_17827;
+	public ParticleTextureSheet getTextureSheet() {
+		return ParticleTextureSheet.TERRAIN_SHEET;
 	}
 
 	protected CrackParticle(World world, double d, double e, double f, ItemStack itemStack) {
 		super(world, d, e, f, 0.0, 0.0, 0.0);
-		this.method_18141(MinecraftClient.getInstance().getItemRenderer().getHeldItemModel(itemStack, world, null).getSprite());
+		this.setSprite(MinecraftClient.getInstance().getItemRenderer().getHeldItemModel(itemStack, world, null).getSprite());
 		this.gravityStrength = 1.0F;
 		this.field_17867 /= 2.0F;
 		this.field_17783 = this.random.nextFloat() * 3.0F;
@@ -41,23 +39,23 @@ public class CrackParticle extends class_4003 {
 	}
 
 	@Override
-	protected float method_18133() {
-		return this.field_17886.getU((double)((this.field_17783 + 1.0F) / 4.0F * 16.0F));
+	protected float getMinU() {
+		return this.sprite.getU((double)((this.field_17783 + 1.0F) / 4.0F * 16.0F));
 	}
 
 	@Override
-	protected float method_18134() {
-		return this.field_17886.getU((double)(this.field_17783 / 4.0F * 16.0F));
+	protected float getMaxU() {
+		return this.sprite.getU((double)(this.field_17783 / 4.0F * 16.0F));
 	}
 
 	@Override
-	protected float method_18135() {
-		return this.field_17886.getV((double)(this.field_17784 / 4.0F * 16.0F));
+	protected float getMinV() {
+		return this.sprite.getV((double)(this.field_17784 / 4.0F * 16.0F));
 	}
 
 	@Override
-	protected float method_18136() {
-		return this.field_17886.getV((double)((this.field_17784 + 1.0F) / 4.0F * 16.0F));
+	protected float getMaxV() {
+		return this.sprite.getV((double)((this.field_17784 + 1.0F) / 4.0F * 16.0F));
 	}
 
 	@Environment(EnvType.CLIENT)

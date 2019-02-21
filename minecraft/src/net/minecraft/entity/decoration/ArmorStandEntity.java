@@ -5,12 +5,12 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LightningEntity;
@@ -80,11 +80,11 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public void method_18382() {
+	public void refreshSize() {
 		double d = this.x;
 		double e = this.y;
 		double f = this.z;
-		super.method_18382();
+		super.refreshSize();
 		this.setPosition(d, e, f);
 	}
 
@@ -174,7 +174,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public boolean method_18397(ItemStack itemStack) {
+	public boolean canPickUp(ItemStack itemStack) {
 		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
 		return this.getEquippedStack(equipmentSlot).isEmpty() && !this.method_6915(equipmentSlot);
 	}
@@ -532,8 +532,8 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	protected float method_18394(class_4050 arg, class_4048 arg2) {
-		return arg2.field_18068 * (this.isChild() ? 0.5F : 0.9F);
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+		return entitySize.height * (this.isChild() ? 0.5F : 0.9F);
 	}
 
 	@Override
@@ -542,9 +542,9 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public void travel(float f, float g, float h) {
+	public void travel(Vec3d vec3d) {
 		if (this.method_18059()) {
-			super.travel(f, g, h);
+			super.travel(vec3d);
 		}
 	}
 
@@ -764,7 +764,7 @@ public class ArmorStandEntity extends LivingEntity {
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
 		if (ARMOR_STAND_FLAGS.equals(trackedData)) {
-			this.method_18382();
+			this.refreshSize();
 			this.field_6033 = !this.isMarker();
 		}
 
@@ -777,8 +777,8 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public class_4048 method_18377(class_4050 arg) {
+	public EntitySize getSize(EntityPose entityPose) {
 		float f = this.isMarker() ? 0.0F : (this.isChild() ? 0.5F : 1.0F);
-		return this.getType().method_18386().method_18383(f);
+		return this.getType().getDefaultSize().scaled(f);
 	}
 }

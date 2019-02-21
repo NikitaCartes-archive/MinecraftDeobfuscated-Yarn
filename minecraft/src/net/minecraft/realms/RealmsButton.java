@@ -65,7 +65,7 @@ public abstract class RealmsButton {
 	}
 
 	public void render(int i, int j, float f) {
-		this.proxy.method_18326(i, j, f);
+		this.proxy.draw(i, j, f);
 	}
 
 	public void blit(int i, int j, int k, int l, int m, int n) {

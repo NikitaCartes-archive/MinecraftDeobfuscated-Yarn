@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ScoreboardEntry;
 import net.minecraft.client.render.entity.PlayerModelPart;
@@ -27,7 +27,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
-public class ScoreboardHud extends Drawable {
+public class ScoreboardHud extends DrawableHelper {
 	private static final Ordering<ScoreboardEntry> ENTRY_ORDERING = Ordering.from(new ScoreboardHud.EntryOrderComparator());
 	private final MinecraftClient client;
 	private final InGameHud inGameHud;
@@ -150,11 +150,11 @@ public class ScoreboardHud extends Drawable {
 					this.client.getTextureManager().bindTexture(scoreboardEntry2.getSkinTexture());
 					int y = 8 + (bl2 ? 8 : 0);
 					int z = 8 * (bl2 ? -1 : 1);
-					Drawable.drawTexturedRect(w, x, 8.0F, (float)y, 8, z, 8, 8, 64.0F, 64.0F);
+					DrawableHelper.drawTexturedRect(w, x, 8.0F, (float)y, 8, z, 8, 8, 64.0F, 64.0F);
 					if (playerEntity != null && playerEntity.isSkinOverlayVisible(PlayerModelPart.HEAD)) {
 						int aa = 8 + (bl2 ? 8 : 0);
 						int ab = 8 * (bl2 ? -1 : 1);
-						Drawable.drawTexturedRect(w, x, 40.0F, (float)aa, 8, ab, 8, 8, 64.0F, 64.0F);
+						DrawableHelper.drawTexturedRect(w, x, 40.0F, (float)aa, 8, ab, 8, 8, 64.0F, 64.0F);
 					}
 
 					w += 9;

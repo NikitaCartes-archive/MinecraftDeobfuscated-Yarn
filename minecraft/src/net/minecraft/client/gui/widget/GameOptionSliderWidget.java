@@ -17,22 +17,22 @@ public class GameOptionSliderWidget extends SliderWidget {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void drawButton(int i, int j, float f) {
 		if (this.option == GameOption.FULLSCREEN_RESOLUTION) {
 			this.updateText();
 		}
 
-		super.draw(i, j, f);
+		super.drawButton(i, j, f);
 	}
 
 	@Override
 	protected void onProgressChanged() {
-		this.option.method_18614(this.field_18211, this.option.method_18616(this.progress));
-		this.field_18211.write();
+		this.option.method_18614(this.gameOptions, this.option.method_18616(this.progress));
+		this.gameOptions.write();
 	}
 
 	@Override
 	protected void updateText() {
-		this.setText(this.option.method_18619(this.field_18211));
+		this.setText(this.option.method_18619(this.gameOptions));
 	}
 }

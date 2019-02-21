@@ -11,12 +11,12 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public abstract class SliderWidget extends ButtonWidget {
-	protected final GameOptions field_18211;
+	protected final GameOptions gameOptions;
 	protected double progress;
 
 	protected SliderWidget(GameOptions gameOptions, int i, int j, int k, int l, float f) {
 		super(i, j, k, l, "");
-		this.field_18211 = gameOptions;
+		this.gameOptions = gameOptions;
 		this.progress = (double)f;
 	}
 

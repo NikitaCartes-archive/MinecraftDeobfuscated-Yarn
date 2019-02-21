@@ -2,18 +2,16 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3999;
 import net.minecraft.class_4000;
 import net.minecraft.class_4001;
 import net.minecraft.class_4002;
-import net.minecraft.class_4003;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class WaterSuspendParticle extends class_4003 {
+public class WaterSuspendParticle extends SpriteBillboardParticle {
 	private WaterSuspendParticle(World world, double d, double e, double f) {
 		super(world, d, e - 0.125, f);
 		this.colorRed = 0.4F;
@@ -25,8 +23,8 @@ public class WaterSuspendParticle extends class_4003 {
 	}
 
 	@Override
-	public class_3999 method_18122() {
-		return class_3999.field_17828;
+	public ParticleTextureSheet getTextureSheet() {
+		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
 	@Override

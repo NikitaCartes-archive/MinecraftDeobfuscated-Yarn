@@ -28,8 +28,7 @@ public class SoulSandBlock extends Block {
 
 	@Override
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-		entity.velocityX *= 0.4;
-		entity.velocityZ *= 0.4;
+		entity.setVelocity(entity.getVelocity().multiply(0.4, 1.0, 0.4));
 	}
 
 	@Override

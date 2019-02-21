@@ -2,11 +2,11 @@ package net.minecraft.entity.mob;
 
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.class_4051;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
@@ -47,7 +47,7 @@ public class EndermiteEntity extends HostileEntity {
 	}
 
 	@Override
-	protected float method_18394(class_4050 arg, class_4048 arg2) {
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
 		return 0.1F;
 	}
 

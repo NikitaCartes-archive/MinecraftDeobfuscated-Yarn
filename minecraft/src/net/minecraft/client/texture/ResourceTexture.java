@@ -24,68 +24,68 @@ public class ResourceTexture extends AbstractTexture {
 
 	@Override
 	public void load(ResourceManager resourceManager) throws IOException {
-		ResourceTexture.class_4006 lv = this.method_18153(resourceManager);
+		ResourceTexture.TextureData textureData = this.loadTextureData(resourceManager);
 		Throwable var3 = null;
 
 		try {
 			boolean bl = false;
 			boolean bl2 = false;
-			lv.method_18158();
-			TextureResourceMetadata textureResourceMetadata = lv.method_18155();
+			textureData.checkException();
+			TextureResourceMetadata textureResourceMetadata = textureData.getMetadata();
 			if (textureResourceMetadata != null) {
 				bl = textureResourceMetadata.shouldBlur();
 				bl2 = textureResourceMetadata.shouldClamp();
 			}
 
 			this.bindTexture();
-			TextureUtil.prepareImage(this.getGlId(), 0, lv.method_18157().getWidth(), lv.method_18157().getHeight());
-			lv.method_18157().upload(0, 0, 0, 0, 0, lv.method_18157().getWidth(), lv.method_18157().getHeight(), bl, bl2, false);
+			TextureUtil.prepareImage(this.getGlId(), 0, textureData.getImage().getWidth(), textureData.getImage().getHeight());
+			textureData.getImage().upload(0, 0, 0, 0, 0, textureData.getImage().getWidth(), textureData.getImage().getHeight(), bl, bl2, false);
 		} catch (Throwable var14) {
 			var3 = var14;
 			throw var14;
 		} finally {
-			if (lv != null) {
+			if (textureData != null) {
 				if (var3 != null) {
 					try {
-						lv.close();
+						textureData.close();
 					} catch (Throwable var13) {
 						var3.addSuppressed(var13);
 					}
 				} else {
-					lv.close();
+					textureData.close();
 				}
 			}
 		}
 	}
 
-	protected ResourceTexture.class_4006 method_18153(ResourceManager resourceManager) {
-		return ResourceTexture.class_4006.method_18156(resourceManager, this.location);
+	protected ResourceTexture.TextureData loadTextureData(ResourceManager resourceManager) {
+		return ResourceTexture.TextureData.load(resourceManager, this.location);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class class_4006 implements Closeable {
-		private final TextureResourceMetadata field_17895;
-		private final NativeImage field_17896;
-		private final IOException field_17897;
+	public static class TextureData implements Closeable {
+		private final TextureResourceMetadata metadata;
+		private final NativeImage image;
+		private final IOException exception;
 
-		public class_4006(IOException iOException) {
-			this.field_17897 = iOException;
-			this.field_17895 = null;
-			this.field_17896 = null;
+		public TextureData(IOException iOException) {
+			this.exception = iOException;
+			this.metadata = null;
+			this.image = null;
 		}
 
-		public class_4006(@Nullable TextureResourceMetadata textureResourceMetadata, NativeImage nativeImage) {
-			this.field_17897 = null;
-			this.field_17895 = textureResourceMetadata;
-			this.field_17896 = nativeImage;
+		public TextureData(@Nullable TextureResourceMetadata textureResourceMetadata, NativeImage nativeImage) {
+			this.exception = null;
+			this.metadata = textureResourceMetadata;
+			this.image = nativeImage;
 		}
 
-		public static ResourceTexture.class_4006 method_18156(ResourceManager resourceManager, Identifier identifier) {
+		public static ResourceTexture.TextureData load(ResourceManager resourceManager, Identifier identifier) {
 			try {
 				Resource resource = resourceManager.getResource(identifier);
 				Throwable var3 = null;
 
-				ResourceTexture.class_4006 runtimeException;
+				ResourceTexture.TextureData runtimeException;
 				try {
 					NativeImage nativeImage = NativeImage.fromInputStream(resource.getInputStream());
 					TextureResourceMetadata textureResourceMetadata = null;
@@ -96,7 +96,7 @@ public class ResourceTexture extends AbstractTexture {
 						ResourceTexture.LOGGER.warn("Failed reading metadata of: {}", identifier, var17);
 					}
 
-					runtimeException = new ResourceTexture.class_4006(textureResourceMetadata, nativeImage);
+					runtimeException = new ResourceTexture.TextureData(textureResourceMetadata, nativeImage);
 				} catch (Throwable var18) {
 					var3 = var18;
 					throw var18;
@@ -116,32 +116,32 @@ public class ResourceTexture extends AbstractTexture {
 
 				return runtimeException;
 			} catch (IOException var20) {
-				return new ResourceTexture.class_4006(var20);
+				return new ResourceTexture.TextureData(var20);
 			}
 		}
 
 		@Nullable
-		public TextureResourceMetadata method_18155() {
-			return this.field_17895;
+		public TextureResourceMetadata getMetadata() {
+			return this.metadata;
 		}
 
-		public NativeImage method_18157() throws IOException {
-			if (this.field_17897 != null) {
-				throw this.field_17897;
+		public NativeImage getImage() throws IOException {
+			if (this.exception != null) {
+				throw this.exception;
 			} else {
-				return this.field_17896;
+				return this.image;
 			}
 		}
 
 		public void close() {
-			if (this.field_17896 != null) {
-				this.field_17896.close();
+			if (this.image != null) {
+				this.image.close();
 			}
 		}
 
-		public void method_18158() throws IOException {
-			if (this.field_17897 != null) {
-				throw this.field_17897;
+		public void checkException() throws IOException {
+			if (this.exception != null) {
+				throw this.exception;
 			}
 		}
 	}

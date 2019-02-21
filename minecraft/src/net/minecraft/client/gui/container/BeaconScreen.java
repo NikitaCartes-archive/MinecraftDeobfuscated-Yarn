@@ -35,8 +35,8 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 
 	public BeaconScreen(BeaconContainer beaconContainer, PlayerInventory playerInventory, TextComponent textComponent) {
 		super(beaconContainer, playerInventory, textComponent);
-		this.containerWidth = 230;
-		this.containerHeight = 219;
+		this.width = 230;
+		this.height = 219;
 		beaconContainer.addListener(new ContainerListener() {
 			@Override
 			public void onContainerRegistered(Container container, DefaultedList<ItemStack> defaultedList) {
@@ -143,9 +143,9 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 	protected void drawBackground(float f, int i, int j) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(BG_TEX);
-		int k = (this.width - this.containerWidth) / 2;
-		int l = (this.height - this.containerHeight) / 2;
-		this.drawTexturedRect(k, l, 0, 0, this.containerWidth, this.containerHeight);
+		int k = (this.screenWidth - this.width) / 2;
+		int l = (this.screenHeight - this.height) / 2;
+		this.drawTexturedRect(k, l, 0, 0, this.width, this.height);
 		this.itemRenderer.zOffset = 100.0F;
 		this.itemRenderer.renderGuiItem(new ItemStack(Items.field_8687), k + 42, l + 109);
 		this.itemRenderer.renderGuiItem(new ItemStack(Items.field_8477), k + 42 + 22, l + 109);
@@ -155,9 +155,9 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		super.method_18326(i, j, f);
+		super.draw(i, j, f);
 		this.drawMouseoverTooltip(i, j);
 	}
 
@@ -170,7 +170,7 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 		}
 
 		@Override
-		public void draw(int i, int j, float f) {
+		public void drawButton(int i, int j, float f) {
 			MinecraftClient.getInstance().getTextureManager().bindTexture(BeaconScreen.BG_TEX);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			int k = 219;
@@ -246,7 +246,7 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 		public WidgetButtonIconEffect(int i, int j, StatusEffect statusEffect, boolean bl) {
 			super(i, j);
 			this.effect = statusEffect;
-			this.field_18223 = MinecraftClient.getInstance().method_18505().method_18663(statusEffect);
+			this.field_18223 = MinecraftClient.getInstance().method_18505().getSprite(statusEffect);
 			this.primary = bl;
 		}
 
@@ -278,7 +278,7 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 
 		@Override
 		protected void method_18641() {
-			MinecraftClient.getInstance().getTextureManager().bindTexture(SpriteAtlasTexture.field_18229);
+			MinecraftClient.getInstance().getTextureManager().bindTexture(SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX);
 			this.drawTexturedRect(this.x + 2, this.y + 2, this.field_18223, 18, 18);
 		}
 	}

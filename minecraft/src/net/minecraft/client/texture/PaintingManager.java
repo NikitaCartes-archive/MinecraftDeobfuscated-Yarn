@@ -4,13 +4,12 @@ import com.google.common.collect.Iterables;
 import java.util.Collections;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4075;
 import net.minecraft.entity.decoration.painting.PaintingMotive;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 @Environment(EnvType.CLIENT)
-public class PaintingManager extends class_4075 {
+public class PaintingManager extends SpriteAtlasHolder {
 	private static final Identifier PAINTING_BACK_ID = new Identifier("back");
 
 	public PaintingManager(TextureManager textureManager) {
@@ -18,15 +17,15 @@ public class PaintingManager extends class_4075 {
 	}
 
 	@Override
-	protected Iterable<Identifier> method_18665() {
+	protected Iterable<Identifier> getSprites() {
 		return Iterables.concat(Registry.MOTIVE.getIds(), Collections.singleton(PAINTING_BACK_ID));
 	}
 
 	public Sprite getPaintingSprite(PaintingMotive paintingMotive) {
-		return this.method_18667(Registry.MOTIVE.getId(paintingMotive));
+		return this.getSprite(Registry.MOTIVE.getId(paintingMotive));
 	}
 
 	public Sprite getBackSprite() {
-		return this.method_18667(PAINTING_BACK_ID);
+		return this.getSprite(PAINTING_BACK_ID);
 	}
 }

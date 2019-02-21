@@ -110,7 +110,7 @@ public class LootConditions {
 	}
 
 	public static class Factory implements JsonDeserializer<LootCondition>, JsonSerializer<LootCondition> {
-		public LootCondition fromJson(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public LootCondition method_930(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "condition");
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "condition"));
 
@@ -124,7 +124,7 @@ public class LootConditions {
 			return factory.fromJson(jsonObject, jsonDeserializationContext);
 		}
 
-		public JsonElement toJson(LootCondition lootCondition, Type type, JsonSerializationContext jsonSerializationContext) {
+		public JsonElement method_931(LootCondition lootCondition, Type type, JsonSerializationContext jsonSerializationContext) {
 			LootCondition.Factory<LootCondition> factory = LootConditions.getFactory(lootCondition);
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.addProperty("condition", factory.getId().toString());

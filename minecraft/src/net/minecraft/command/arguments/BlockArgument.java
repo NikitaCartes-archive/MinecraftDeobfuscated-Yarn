@@ -28,7 +28,7 @@ public class BlockArgument implements Predicate<CachedBlockPosition> {
 		return this.state;
 	}
 
-	public boolean test(CachedBlockPosition cachedBlockPosition) {
+	public boolean method_9493(CachedBlockPosition cachedBlockPosition) {
 		BlockState blockState = cachedBlockPosition.getBlockState();
 		if (blockState.getBlock() != this.state.getBlock()) {
 			return false;

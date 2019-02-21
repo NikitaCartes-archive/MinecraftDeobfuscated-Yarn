@@ -4,13 +4,13 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4068;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.InputListener;
 
 @Environment(EnvType.CLIENT)
-public class LabelWidget extends Drawable implements class_4068, GuiEventListener {
+public class LabelWidget extends DrawableHelper implements Drawable, InputListener {
 	protected int field_2114;
 	protected int field_2112;
 	public final int field_2111;
@@ -27,7 +27,7 @@ public class LabelWidget extends Drawable implements class_4068, GuiEventListene
 	private int field_2118;
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		if (this.field_2117) {
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(

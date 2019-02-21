@@ -4,10 +4,10 @@ import java.util.Arrays;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4076;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.LevelIndexedProcessor;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -41,7 +41,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 	@Override
 	protected void scheduleNewUpdate(long l) {
 		this.lightStorage.updateAll();
-		if (this.lightStorage.hasChunk(class_4076.method_18691(l))) {
+		if (this.lightStorage.hasChunk(ChunkSectionPos.toChunkLong(l))) {
 			super.scheduleNewUpdate(l);
 		}
 	}
@@ -78,10 +78,10 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 		if (!BlockPos.isHeightInvalid(l) && !BlockPos.isHeightInvalid(m)) {
 			this.srcMutablePos.setFromLong(l);
 			this.destMutablePos.setFromLong(m);
-			int i = class_4076.method_18675(this.srcMutablePos.getX());
-			int j = class_4076.method_18675(this.srcMutablePos.getZ());
-			int k = class_4076.method_18675(this.destMutablePos.getX());
-			int n = class_4076.method_18675(this.destMutablePos.getZ());
+			int i = ChunkSectionPos.toChunkCoord(this.srcMutablePos.getX());
+			int j = ChunkSectionPos.toChunkCoord(this.srcMutablePos.getZ());
+			int k = ChunkSectionPos.toChunkCoord(this.destMutablePos.getX());
+			int n = ChunkSectionPos.toChunkCoord(this.destMutablePos.getZ());
 			BlockView blockView = this.method_17529(k, n);
 			if (blockView == null) {
 				return 16;
@@ -105,7 +105,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 						int p = Integer.signum(this.destMutablePos.getX() - this.srcMutablePos.getX());
 						int q = Integer.signum(this.destMutablePos.getY() - this.srcMutablePos.getY());
 						int r = Integer.signum(this.destMutablePos.getZ() - this.srcMutablePos.getZ());
-						Direction direction = Direction.method_16365(this.mutablePosGetLightBlockedBetween.set(p, q, r));
+						Direction direction = Direction.fromVector(this.mutablePosGetLightBlockedBetween.set(p, q, r));
 						if (direction == null) {
 							return 16;
 						} else {
@@ -146,7 +146,9 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 	protected int getCurrentLevelFromArray(ChunkNibbleArray chunkNibbleArray, long l) {
 		return 15
 			- chunkNibbleArray.get(
-				class_4076.method_18684(BlockPos.unpackLongX(l)), class_4076.method_18684(BlockPos.unpackLongY(l)), class_4076.method_18684(BlockPos.unpackLongZ(l))
+				ChunkSectionPos.toLocalCoord(BlockPos.unpackLongX(l)),
+				ChunkSectionPos.toLocalCoord(BlockPos.unpackLongY(l)),
+				ChunkSectionPos.toLocalCoord(BlockPos.unpackLongZ(l))
 			);
 	}
 
@@ -160,7 +162,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 		return 0;
 	}
 
-	public boolean method_15518() {
+	public boolean hasUpdates() {
 		return this.hasLevelUpdates() || this.lightStorage.hasLevelUpdates() || this.lightStorage.hasLightUpdates();
 	}
 
@@ -196,8 +198,8 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 
 	@Nullable
 	@Override
-	public ChunkNibbleArray getChunkLightArray(class_4076 arg) {
-		return this.lightStorage.getDataForChunk(arg.method_18694(), false);
+	public ChunkNibbleArray getChunkLightArray(ChunkSectionPos chunkSectionPos) {
+		return this.lightStorage.getDataForChunk(chunkSectionPos.asLong(), false);
 	}
 
 	@Override
@@ -223,12 +225,12 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 	}
 
 	@Override
-	public void scheduleChunkLightUpdate(class_4076 arg, boolean bl) {
-		this.lightStorage.scheduleChunkLightUpdate(arg.method_18694(), bl);
+	public void scheduleChunkLightUpdate(ChunkSectionPos chunkSectionPos, boolean bl) {
+		this.lightStorage.scheduleChunkLightUpdate(chunkSectionPos.asLong(), bl);
 	}
 
 	public void method_15512(ChunkPos chunkPos, boolean bl) {
-		long l = class_4076.method_18693(class_4076.method_18685(chunkPos.x, 0, chunkPos.z));
+		long l = ChunkSectionPos.method_18693(ChunkSectionPos.asLong(chunkPos.x, 0, chunkPos.z));
 		this.lightStorage.method_15535(l, bl);
 	}
 }

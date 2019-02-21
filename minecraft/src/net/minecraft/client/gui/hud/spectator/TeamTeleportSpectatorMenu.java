@@ -7,7 +7,7 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.SpectatorHud;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ScoreboardEntry;
@@ -53,7 +53,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 	@Override
 	public void renderIcon(float f, int i) {
 		MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
-		Drawable.drawTexturedRect(0, 0, 16.0F, 0.0F, 16, 16, 256.0F, 256.0F);
+		DrawableHelper.drawTexturedRect(0, 0, 16.0F, 0.0F, 16, 16, 256.0F, 256.0F);
 	}
 
 	@Override
@@ -110,13 +110,13 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 				float g = (float)(integer >> 16 & 0xFF) / 255.0F;
 				float h = (float)(integer >> 8 & 0xFF) / 255.0F;
 				float j = (float)(integer & 0xFF) / 255.0F;
-				Drawable.drawRect(1, 1, 15, 15, MathHelper.packRgb(g * f, h * f, j * f) | i << 24);
+				DrawableHelper.drawRect(1, 1, 15, 15, MathHelper.packRgb(g * f, h * f, j * f) | i << 24);
 			}
 
 			MinecraftClient.getInstance().getTextureManager().bindTexture(this.skinId);
 			GlStateManager.color4f(f, f, f, (float)i / 255.0F);
-			Drawable.drawTexturedRect(2, 2, 8.0F, 8.0F, 8, 8, 12, 12, 64.0F, 64.0F);
-			Drawable.drawTexturedRect(2, 2, 40.0F, 8.0F, 8, 8, 12, 12, 64.0F, 64.0F);
+			DrawableHelper.drawTexturedRect(2, 2, 8.0F, 8.0F, 8, 8, 12, 12, 64.0F, 64.0F);
+			DrawableHelper.drawTexturedRect(2, 2, 40.0F, 8.0F, 8, 8, 12, 12, 64.0F, 64.0F);
 		}
 
 		@Override

@@ -239,7 +239,7 @@ public class OcelotEntity extends AnimalEntity {
 
 	@Override
 	public boolean isBreedingItem(ItemStack itemStack) {
-		return TAMING_INGREDIENT.matches(itemStack);
+		return TAMING_INGREDIENT.method_8093(itemStack);
 	}
 
 	@Override

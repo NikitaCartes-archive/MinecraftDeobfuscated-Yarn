@@ -10,13 +10,13 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1394;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.container.Container;
 import net.minecraft.container.ContainerType;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.SpawnType;
@@ -236,9 +236,14 @@ public class SheepEntity extends AnimalEntity {
 			for(int j = 0; j < i; ++j) {
 				ItemEntity itemEntity = this.dropItem((ItemProvider)DROPS.get(this.getColor()), 1);
 				if (itemEntity != null) {
-					itemEntity.velocityY += (double)(this.random.nextFloat() * 0.05F);
-					itemEntity.velocityX += (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.1F);
-					itemEntity.velocityZ += (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.1F);
+					itemEntity.setVelocity(
+						itemEntity.getVelocity()
+							.add(
+								(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.1F),
+								(double)(this.random.nextFloat() * 0.05F),
+								(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.1F)
+							)
+					);
 				}
 			}
 		}
@@ -370,7 +375,7 @@ public class SheepEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected float method_18394(class_4050 arg, class_4048 arg2) {
-		return 0.95F * arg2.field_18068;
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+		return 0.95F * entitySize.height;
 	}
 }

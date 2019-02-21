@@ -91,7 +91,7 @@ public class LevelListWidget extends EntryListWidget<LevelSelectEntryWidget> {
 
 	@Nullable
 	public LevelSelectEntryWidget method_2753() {
-		return this.field_3236 >= 0 && this.field_3236 < this.getEntryCount() ? (LevelSelectEntryWidget)this.method_1968().get(this.field_3236) : null;
+		return this.field_3236 >= 0 && this.field_3236 < this.getEntryCount() ? (LevelSelectEntryWidget)this.getInputListeners().get(this.field_3236) : null;
 	}
 
 	public LevelSelectScreen method_2752() {

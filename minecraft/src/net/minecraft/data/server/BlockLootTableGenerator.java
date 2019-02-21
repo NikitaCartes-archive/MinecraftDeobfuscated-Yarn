@@ -878,7 +878,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.method_16293(
 			Blocks.field_17563,
 			blockx -> LootSupplier.create()
-					.withPool(LootPool.create().withEntry(method_10393(blockx, ItemEntry.builder(Items.field_17530))))
+					.withPool(LootPool.create().withEntry(method_10393(blockx, ItemEntry.builder(Items.COMPOSTER))))
 					.withPool(
 						LootPool.create()
 							.withEntry(ItemEntry.builder(Items.field_8324))

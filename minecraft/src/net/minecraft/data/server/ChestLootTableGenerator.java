@@ -21,7 +21,7 @@ import net.minecraft.world.loot.function.SetCountLootFunction;
 import net.minecraft.world.loot.function.SetStewEffectLootFunction;
 
 public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, LootSupplier.Builder>> {
-	public void accept(BiConsumer<Identifier, LootSupplier.Builder> biConsumer) {
+	public void method_10399(BiConsumer<Identifier, LootSupplier.Builder> biConsumer) {
 		biConsumer.accept(
 			LootTables.CHEST_ABANDONED_MINESHAFT,
 			LootSupplier.create()
@@ -296,7 +296,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						.withEntry(ItemEntry.builder(Items.field_8287).setWeight(7))
 						.withEntry(ItemEntry.builder(Items.field_8276).setWeight(4).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 6.0F))))
 						.withEntry(ItemEntry.builder(Items.field_8107).setWeight(4).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 7.0F))))
-						.withEntry(ItemEntry.builder(Items.field_8366).setWeight(3).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F))))
+						.withEntry(ItemEntry.builder(Items.TRIPWIRE_HOOK).setWeight(3).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F))))
 						.withEntry(ItemEntry.builder(Items.field_8620).setWeight(3).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F))))
 						.withEntry(ItemEntry.builder(Items.field_8529).setWeight(1).method_438(EnchantRandomlyLootFunction.method_489()))
 				)
@@ -630,7 +630,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					LootPool.create()
 						.withRolls(UniformLootTableRange.between(1.0F, 5.0F))
 						.withEntry(ItemEntry.builder(Items.field_8696).setWeight(1).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F))))
-						.withEntry(ItemEntry.builder(Items.field_8074).setWeight(1))
+						.withEntry(ItemEntry.builder(Items.FLOWER_POT).setWeight(1))
 						.withEntry(ItemEntry.builder(Blocks.field_10340).setWeight(2))
 						.withEntry(ItemEntry.builder(Blocks.field_10056).setWeight(2))
 						.withEntry(ItemEntry.builder(Items.field_8229).setWeight(4).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 4.0F))))
@@ -705,7 +705,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						.withEntry(ItemEntry.builder(Items.field_8429).setWeight(2).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F))))
 						.withEntry(ItemEntry.builder(Items.field_8209).setWeight(1).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F))))
 						.withEntry(ItemEntry.builder(Items.field_8705).setWeight(1).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F))))
-						.withEntry(ItemEntry.builder(Items.field_16307).setWeight(1).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F))))
+						.withEntry(ItemEntry.builder(Items.BARREL).setWeight(1).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F))))
 						.withEntry(ItemEntry.builder(Items.field_8317).setWeight(3).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F))))
 						.withEntry(ItemEntry.builder(Items.field_8713).setWeight(2).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F))))
 				)
@@ -747,8 +747,8 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					LootPool.create()
 						.withRolls(UniformLootTableRange.between(3.0F, 8.0F))
 						.withEntry(ItemEntry.builder(Items.field_8397).setWeight(1).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F))))
-						.withEntry(ItemEntry.builder(Items.field_8491).setWeight(2))
-						.withEntry(ItemEntry.builder(Items.field_8880).setWeight(1))
+						.withEntry(ItemEntry.builder(Items.DANDELION).setWeight(2))
+						.withEntry(ItemEntry.builder(Items.POPPY).setWeight(1))
 						.withEntry(ItemEntry.builder(Items.field_8567).setWeight(10).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 7.0F))))
 						.withEntry(ItemEntry.builder(Items.field_8229).setWeight(10).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 4.0F))))
 						.withEntry(ItemEntry.builder(Items.field_8279).setWeight(10).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 5.0F))))
@@ -765,8 +765,8 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					LootPool.create()
 						.withRolls(UniformLootTableRange.between(3.0F, 8.0F))
 						.withEntry(ItemEntry.builder(Items.field_8675).setWeight(1).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 5.0F))))
-						.withEntry(ItemEntry.builder(Items.field_8471).setWeight(2))
-						.withEntry(ItemEntry.builder(Items.field_8561).setWeight(2))
+						.withEntry(ItemEntry.builder(Items.FERN).setWeight(2))
+						.withEntry(ItemEntry.builder(Items.LARGE_FERN).setWeight(2))
 						.withEntry(ItemEntry.builder(Items.field_8567).setWeight(10).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 7.0F))))
 						.withEntry(ItemEntry.builder(Items.field_16998).setWeight(5).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 7.0F))))
 						.withEntry(ItemEntry.builder(Items.field_8229).setWeight(10).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 4.0F))))
@@ -775,7 +775,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						.withEntry(ItemEntry.builder(Items.field_8687).setWeight(2).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 4.0F))))
 						.withEntry(ItemEntry.builder(Blocks.field_10217).setWeight(5).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 5.0F))))
 						.withEntry(ItemEntry.builder(Items.field_8111).setWeight(1))
-						.withEntry(ItemEntry.builder(Items.field_8684).setWeight(10).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 5.0F))))
+						.withEntry(ItemEntry.builder(Items.SPRUCE_LOG).setWeight(10).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 5.0F))))
 				)
 		);
 		biConsumer.accept(
@@ -785,8 +785,8 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					LootPool.create()
 						.withRolls(UniformLootTableRange.between(3.0F, 8.0F))
 						.withEntry(ItemEntry.builder(Items.field_8397).setWeight(1).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F))))
-						.withEntry(ItemEntry.builder(Items.field_8602).setWeight(5))
-						.withEntry(ItemEntry.builder(Items.field_8256).setWeight(5))
+						.withEntry(ItemEntry.builder(Items.GRASS).setWeight(5))
+						.withEntry(ItemEntry.builder(Items.TALL_GRASS).setWeight(5))
 						.withEntry(ItemEntry.builder(Items.field_8229).setWeight(10).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 4.0F))))
 						.withEntry(ItemEntry.builder(Items.field_8317).setWeight(10).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 5.0F))))
 						.withEntry(ItemEntry.builder(Items.field_8687).setWeight(2).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 4.0F))))
@@ -808,7 +808,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						.withEntry(ItemEntry.builder(Items.field_8229).setWeight(10).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 4.0F))))
 						.withEntry(ItemEntry.builder(Items.field_8309).setWeight(10).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 5.0F))))
 						.withEntry(ItemEntry.builder(Items.field_8515).setWeight(1))
-						.withEntry(ItemEntry.builder(Items.field_8732).setWeight(1))
+						.withEntry(ItemEntry.builder(Items.FURNACE).setWeight(1))
 						.withEntry(ItemEntry.builder(Items.field_8687).setWeight(1).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 4.0F))))
 						.withEntry(ItemEntry.builder(Items.field_8543).setWeight(10).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 7.0F))))
 						.withEntry(ItemEntry.builder(Items.field_8713).setWeight(5).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 4.0F))))

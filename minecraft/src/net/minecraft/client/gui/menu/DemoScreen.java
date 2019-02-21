@@ -17,14 +17,14 @@ public class DemoScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		int i = -16;
-		this.addButton(new ButtonWidget(this.width / 2 - 116, this.height / 2 + 62 + -16, 114, 20, I18n.translate("demo.help.buy")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 116, this.screenHeight / 2 + 62 + -16, 114, 20, I18n.translate("demo.help.buy")) {
 			@Override
 			public void onPressed(double d, double e) {
 				this.enabled = false;
 				SystemUtil.getOperatingSystem().open("http://www.minecraft.net/store?source=demo");
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 + 2, this.height / 2 + 62 + -16, 114, 20, I18n.translate("demo.help.later")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 2, this.screenHeight / 2 + 62 + -16, 114, 20, I18n.translate("demo.help.later")) {
 			@Override
 			public void onPressed(double d, double e) {
 				DemoScreen.this.client.openScreen(null);
@@ -38,16 +38,16 @@ public class DemoScreen extends Screen {
 		super.drawBackground();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(DEMO_BG);
-		int i = (this.width - 248) / 2;
-		int j = (this.height - 166) / 2;
+		int i = (this.screenWidth - 248) / 2;
+		int j = (this.screenHeight - 166) / 2;
 		this.drawTexturedRect(i, j, 0, 0, 248, 166);
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		int k = (this.width - 248) / 2 + 10;
-		int l = (this.height - 166) / 2 + 8;
+		int k = (this.screenWidth - 248) / 2 + 10;
+		int l = (this.screenHeight - 166) / 2 + 8;
 		this.fontRenderer.draw(I18n.translate("demo.help.title"), (float)k, (float)l, 2039583);
 		l += 12;
 		GameOptions gameOptions = this.client.options;
@@ -68,6 +68,6 @@ public class DemoScreen extends Screen {
 		this.fontRenderer.draw(I18n.translate("demo.help.jump", gameOptions.keyJump.getLocalizedName()), (float)k, (float)(l + 24), 5197647);
 		this.fontRenderer.draw(I18n.translate("demo.help.inventory", gameOptions.keyInventory.getLocalizedName()), (float)k, (float)(l + 36), 5197647);
 		this.fontRenderer.drawStringBounded(I18n.translate("demo.help.fullWrapped"), k, l + 68, 218, 2039583);
-		super.method_18326(i, j, f);
+		super.draw(i, j, f);
 	}
 }

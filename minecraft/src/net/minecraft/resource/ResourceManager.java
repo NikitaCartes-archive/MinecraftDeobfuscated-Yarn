@@ -23,5 +23,5 @@ public interface ResourceManager {
 	Collection<Identifier> findResources(String string, Predicate<String> predicate);
 
 	@Environment(EnvType.CLIENT)
-	void method_14475(ResourcePack resourcePack);
+	void addPack(ResourcePack resourcePack);
 }

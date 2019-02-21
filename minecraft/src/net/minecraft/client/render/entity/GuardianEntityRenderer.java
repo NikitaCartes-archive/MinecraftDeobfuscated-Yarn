@@ -33,7 +33,7 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 				LivingEntity livingEntity = guardianEntity.getBeamTarget();
 				if (livingEntity != null) {
 					Vec3d vec3d = this.method_3979(livingEntity, (double)livingEntity.getHeight() * 0.5, 1.0F);
-					Vec3d vec3d2 = this.method_3979(guardianEntity, (double)guardianEntity.getEyeHeight(), 1.0F);
+					Vec3d vec3d2 = this.method_3979(guardianEntity, (double)guardianEntity.getStandingEyeHeight(), 1.0F);
 					if (visibleRegion.intersects(new BoundingBox(vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y, vec3d.z))) {
 						return true;
 					}
@@ -72,7 +72,7 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 			);
 			float k = (float)guardianEntity.world.getTime() + h;
 			float l = k * 0.5F % 1.0F;
-			float m = guardianEntity.getEyeHeight();
+			float m = guardianEntity.getStandingEyeHeight();
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef((float)d, (float)e + m, (float)f);
 			Vec3d vec3d = this.method_3979(livingEntity, (double)livingEntity.getHeight() * 0.5, h);

@@ -4,10 +4,10 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1394;
-import net.minecraft.class_4048;
-import net.minecraft.class_4050;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.RangedAttacker;
@@ -115,7 +115,7 @@ public class SnowmanEntity extends GolemEntity implements RangedAttacker {
 	@Override
 	public void attack(LivingEntity livingEntity, float f) {
 		SnowballEntity snowballEntity = new SnowballEntity(this.world, this);
-		double d = livingEntity.y + (double)livingEntity.getEyeHeight() - 1.1F;
+		double d = livingEntity.y + (double)livingEntity.getStandingEyeHeight() - 1.1F;
 		double e = livingEntity.x - this.x;
 		double g = d - snowballEntity.y;
 		double h = livingEntity.z - this.z;
@@ -126,7 +126,7 @@ public class SnowmanEntity extends GolemEntity implements RangedAttacker {
 	}
 
 	@Override
-	protected float method_18394(class_4050 arg, class_4048 arg2) {
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
 		return 1.7F;
 	}
 

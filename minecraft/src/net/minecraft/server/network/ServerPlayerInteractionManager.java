@@ -195,7 +195,7 @@ public class ServerPlayerInteractionManager {
 		} else {
 			BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
 			Block block = blockState.getBlock();
-			if ((block instanceof CommandBlock || block instanceof StructureBlock || block instanceof JigsawBlock) && !this.player.method_7338()) {
+			if ((block instanceof CommandBlock || block instanceof StructureBlock || block instanceof JigsawBlock) && !this.player.isCreativeLevelTwoOp()) {
 				this.world.updateListeners(blockPos, blockState, blockState, 3);
 				return false;
 			} else {

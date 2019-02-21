@@ -5,7 +5,7 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.DefaultSkinHelper;
@@ -62,11 +62,11 @@ public abstract class RealmsScreen extends RealmsGuiEventListener {
 	}
 
 	public static void blit(int i, int j, float f, float g, int k, int l, int m, int n, float h, float o) {
-		Drawable.drawTexturedRect(i, j, f, g, k, l, m, n, h, o);
+		DrawableHelper.drawTexturedRect(i, j, f, g, k, l, m, n, h, o);
 	}
 
 	public static void blit(int i, int j, float f, float g, int k, int l, float h, float m) {
-		Drawable.drawTexturedRect(i, j, f, g, k, l, h, m);
+		DrawableHelper.drawTexturedRect(i, j, f, g, k, l, h, m);
 	}
 
 	public void fillGradient(int i, int j, int k, int l, int m, int n) {
@@ -122,11 +122,11 @@ public abstract class RealmsScreen extends RealmsGuiEventListener {
 	}
 
 	public int width() {
-		return this.proxy.width;
+		return this.proxy.screenWidth;
 	}
 
 	public int height() {
-		return this.proxy.height;
+		return this.proxy.screenHeight;
 	}
 
 	public int fontLineHeight() {
@@ -174,11 +174,11 @@ public abstract class RealmsScreen extends RealmsGuiEventListener {
 	}
 
 	protected void focusOn(RealmsGuiEventListener realmsGuiEventListener) {
-		this.proxy.method_18624(realmsGuiEventListener.getProxy());
+		this.proxy.focusOn(realmsGuiEventListener.getProxy());
 	}
 
 	public void focusNext() {
-		this.proxy.method_18626();
+		this.proxy.focusNext();
 	}
 
 	public RealmsEditBox newEditBox(int i, int j, int k, int l, int m) {

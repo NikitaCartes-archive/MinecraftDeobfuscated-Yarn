@@ -128,7 +128,7 @@ public class ResourcePackContainer implements AutoCloseable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent displayName() {
+	public TextComponent getDisplayName() {
 		return this.displayName;
 	}
 

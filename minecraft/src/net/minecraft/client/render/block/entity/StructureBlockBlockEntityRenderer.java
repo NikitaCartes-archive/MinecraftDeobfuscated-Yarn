@@ -18,7 +18,7 @@ import net.minecraft.world.BlockView;
 @Environment(EnvType.CLIENT)
 public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<StructureBlockBlockEntity> {
 	public void method_3587(StructureBlockBlockEntity structureBlockBlockEntity, double d, double e, double f, float g, int i) {
-		if (MinecraftClient.getInstance().player.method_7338() || MinecraftClient.getInstance().player.isSpectator()) {
+		if (MinecraftClient.getInstance().player.isCreativeLevelTwoOp() || MinecraftClient.getInstance().player.isSpectator()) {
 			super.render(structureBlockBlockEntity, d, e, f, g, i);
 			BlockPos blockPos = structureBlockBlockEntity.getOffset();
 			BlockPos blockPos2 = structureBlockBlockEntity.getSize();

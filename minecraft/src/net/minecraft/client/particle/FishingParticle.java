@@ -2,16 +2,14 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3999;
 import net.minecraft.class_4000;
 import net.minecraft.class_4001;
 import net.minecraft.class_4002;
-import net.minecraft.class_4003;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class FishingParticle extends class_4003 {
+public class FishingParticle extends SpriteBillboardParticle {
 	private final class_4002 field_17888;
 
 	private FishingParticle(World world, double d, double e, double f, double g, double h, double i, class_4002 arg) {
@@ -30,8 +28,8 @@ public class FishingParticle extends class_4003 {
 	}
 
 	@Override
-	public class_3999 method_18122() {
-		return class_3999.field_17828;
+	public ParticleTextureSheet getTextureSheet() {
+		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
 	@Override
@@ -50,7 +48,7 @@ public class FishingParticle extends class_4003 {
 			this.velocityZ *= 0.98F;
 			float f = (float)i * 0.001F;
 			this.setBoundingBoxSpacing(f, f);
-			this.method_18141(this.field_17888.method_18138(i % 4, 4));
+			this.setSprite(this.field_17888.getSprite(i % 4, 4));
 		}
 	}
 

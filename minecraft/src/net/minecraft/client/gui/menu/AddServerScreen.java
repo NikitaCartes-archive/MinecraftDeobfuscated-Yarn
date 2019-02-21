@@ -5,7 +5,7 @@ import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -51,20 +51,20 @@ public class AddServerScreen extends Screen {
 	}
 
 	@Override
-	public GuiEventListener getFocused() {
+	public InputListener getFocused() {
 		return this.addressField.isFocused() ? this.addressField : this.serverNameField;
 	}
 
 	@Override
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.buttonAdd = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 18, I18n.translate("addServer.add")) {
+		this.buttonAdd = this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 96 + 18, I18n.translate("addServer.add")) {
 			@Override
 			public void onPressed(double d, double e) {
 				AddServerScreen.this.addAndClose();
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 18, I18n.translate("gui.cancel")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 120 + 18, I18n.translate("gui.cancel")) {
 			@Override
 			public void onPressed(double d, double e) {
 				AddServerScreen.this.parent.confirmResult(false, 0);
@@ -72,8 +72,8 @@ public class AddServerScreen extends Screen {
 		});
 		this.resourcePackOptionButton = this.addButton(
 			new ButtonWidget(
-				this.width / 2 - 100,
-				this.height / 4 + 72,
+				this.screenWidth / 2 - 100,
+				this.screenHeight / 4 + 72,
 				I18n.translate("addServer.resourcePack") + ": " + this.serverEntry.getResourcePack().getComponent().getFormattedText()
 			) {
 				@Override
@@ -88,7 +88,7 @@ public class AddServerScreen extends Screen {
 				}
 			}
 		);
-		this.addressField = new TextFieldWidget(this.fontRenderer, this.width / 2 - 100, 106, 200, 20) {
+		this.addressField = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 100, 106, 200, 20) {
 			@Override
 			public void setFocused(boolean bl) {
 				super.setFocused(bl);
@@ -102,7 +102,7 @@ public class AddServerScreen extends Screen {
 		this.addressField.method_1890(this.field_2475);
 		this.addressField.setChangedListener(this::method_2171);
 		this.listeners.add(this.addressField);
-		this.serverNameField = new TextFieldWidget(this.fontRenderer, this.width / 2 - 100, 66, 200, 20) {
+		this.serverNameField = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 100, 66, 200, 20) {
 			@Override
 			public void setFocused(boolean bl) {
 				super.setFocused(bl);
@@ -168,13 +168,13 @@ public class AddServerScreen extends Screen {
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, I18n.translate("addServer.title"), this.width / 2, 17, 16777215);
-		this.drawString(this.fontRenderer, I18n.translate("addServer.enterName"), this.width / 2 - 100, 53, 10526880);
-		this.drawString(this.fontRenderer, I18n.translate("addServer.enterIp"), this.width / 2 - 100, 94, 10526880);
-		this.serverNameField.method_18326(i, j, f);
-		this.addressField.method_18326(i, j, f);
-		super.method_18326(i, j, f);
+		this.drawStringCentered(this.fontRenderer, I18n.translate("addServer.title"), this.screenWidth / 2, 17, 16777215);
+		this.drawString(this.fontRenderer, I18n.translate("addServer.enterName"), this.screenWidth / 2 - 100, 53, 10526880);
+		this.drawString(this.fontRenderer, I18n.translate("addServer.enterIp"), this.screenWidth / 2 - 100, 94, 10526880);
+		this.serverNameField.draw(i, j, f);
+		this.addressField.draw(i, j, f);
+		super.draw(i, j, f);
 	}
 }

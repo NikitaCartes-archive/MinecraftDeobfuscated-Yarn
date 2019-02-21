@@ -7,6 +7,7 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.ViewableWorld;
 
 public class BreatheAirGoal extends Goal {
@@ -65,8 +66,9 @@ public class BreatheAirGoal extends Goal {
 	@Override
 	public void tick() {
 		this.moveToAir();
-		this.owner.updateVelocity(this.owner.movementInputSideways, this.owner.movementInputUp, this.owner.movementInputForward, 0.02F);
-		this.owner.move(MovementType.field_6308, this.owner.velocityX, this.owner.velocityY, this.owner.velocityZ);
+		this.owner
+			.updateVelocity(0.02F, new Vec3d((double)this.owner.movementInputSideways, (double)this.owner.movementInputUp, (double)this.owner.movementInputForward));
+		this.owner.move(MovementType.field_6308, this.owner.getVelocity());
 	}
 
 	private boolean isAirPos(ViewableWorld viewableWorld, BlockPos blockPos) {

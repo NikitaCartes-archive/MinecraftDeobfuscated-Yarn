@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenu;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuCloseCallback;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommand;
@@ -15,7 +15,7 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class SpectatorHud extends Drawable implements SpectatorMenuCloseCallback {
+public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCallback {
 	private static final Identifier WIDGETS_TEX = new Identifier("textures/gui/widgets.png");
 	public static final Identifier SPECTATOR_TEX = new Identifier("textures/gui/spectator_widgets.png");
 	private final MinecraftClient client;

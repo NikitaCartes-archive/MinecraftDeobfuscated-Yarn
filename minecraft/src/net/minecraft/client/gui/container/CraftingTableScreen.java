@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.ContainerScreen;
-import net.minecraft.client.gui.GuiEventListener;
+import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.gui.ingame.RecipeBookProvider;
 import net.minecraft.client.gui.recipebook.RecipeBookGui;
 import net.minecraft.client.gui.widget.RecipeBookButtonWidget;
@@ -30,19 +30,19 @@ public class CraftingTableScreen extends ContainerScreen<CraftingTableContainer>
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
-		this.isNarrow = this.width < 379;
-		this.recipeBookGui.initialize(this.width, this.height, this.client, this.isNarrow, this.container);
-		this.left = this.recipeBookGui.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
+		this.isNarrow = this.screenWidth < 379;
+		this.recipeBookGui.initialize(this.screenWidth, this.screenHeight, this.client, this.isNarrow, this.container);
+		this.left = this.recipeBookGui.findLeftEdge(this.isNarrow, this.screenWidth, this.width);
 		this.listeners.add(this.recipeBookGui);
 		this.addButton(
-			new RecipeBookButtonWidget(this.left + 5, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX) {
+			new RecipeBookButtonWidget(this.left + 5, this.screenHeight / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX) {
 				@Override
 				public void onPressed(double d, double e) {
 					CraftingTableScreen.this.recipeBookGui.reset(CraftingTableScreen.this.isNarrow);
 					CraftingTableScreen.this.recipeBookGui.toggleOpen();
 					CraftingTableScreen.this.left = CraftingTableScreen.this.recipeBookGui
-						.findLeftEdge(CraftingTableScreen.this.isNarrow, CraftingTableScreen.this.width, CraftingTableScreen.this.containerWidth);
-					this.setPos(CraftingTableScreen.this.left + 5, CraftingTableScreen.this.height / 2 - 49);
+						.findLeftEdge(CraftingTableScreen.this.isNarrow, CraftingTableScreen.this.screenWidth, CraftingTableScreen.this.width);
+					this.setPos(CraftingTableScreen.this.left + 5, CraftingTableScreen.this.screenHeight / 2 - 49);
 				}
 			}
 		);
@@ -50,7 +50,7 @@ public class CraftingTableScreen extends ContainerScreen<CraftingTableContainer>
 
 	@Nullable
 	@Override
-	public GuiEventListener getFocused() {
+	public InputListener getFocused() {
 		return this.recipeBookGui;
 	}
 
@@ -61,14 +61,14 @@ public class CraftingTableScreen extends ContainerScreen<CraftingTableContainer>
 	}
 
 	@Override
-	public void method_18326(int i, int j, float f) {
+	public void draw(int i, int j, float f) {
 		this.drawBackground();
 		if (this.recipeBookGui.isOpen() && this.isNarrow) {
 			this.drawBackground(f, i, j);
-			this.recipeBookGui.method_18326(i, j, f);
+			this.recipeBookGui.draw(i, j, f);
 		} else {
-			this.recipeBookGui.method_18326(i, j, f);
-			super.method_18326(i, j, f);
+			this.recipeBookGui.draw(i, j, f);
+			super.draw(i, j, f);
 			this.recipeBookGui.drawGhostSlots(this.left, this.top, true, f);
 		}
 
@@ -79,7 +79,7 @@ public class CraftingTableScreen extends ContainerScreen<CraftingTableContainer>
 	@Override
 	protected void drawForeground(int i, int j) {
 		this.fontRenderer.draw(this.name.getFormattedText(), 28.0F, 6.0F, 4210752);
-		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
+		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
 	}
 
 	@Override
@@ -87,8 +87,8 @@ public class CraftingTableScreen extends ContainerScreen<CraftingTableContainer>
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(BG_TEX);
 		int k = this.left;
-		int l = (this.height - this.containerHeight) / 2;
-		this.drawTexturedRect(k, l, 0, 0, this.containerWidth, this.containerHeight);
+		int l = (this.screenHeight - this.height) / 2;
+		this.drawTexturedRect(k, l, 0, 0, this.width, this.height);
 	}
 
 	@Override
@@ -107,8 +107,8 @@ public class CraftingTableScreen extends ContainerScreen<CraftingTableContainer>
 
 	@Override
 	protected boolean isClickOutsideBounds(double d, double e, int i, int j, int k) {
-		boolean bl = d < (double)i || e < (double)j || d >= (double)(i + this.containerWidth) || e >= (double)(j + this.containerHeight);
-		return this.recipeBookGui.isClickOutsideBounds(d, e, this.left, this.top, this.containerWidth, this.containerHeight, k) && bl;
+		boolean bl = d < (double)i || e < (double)j || d >= (double)(i + this.width) || e >= (double)(j + this.height);
+		return this.recipeBookGui.isClickOutsideBounds(d, e, this.left, this.top, this.width, this.height, k) && bl;
 	}
 
 	@Override

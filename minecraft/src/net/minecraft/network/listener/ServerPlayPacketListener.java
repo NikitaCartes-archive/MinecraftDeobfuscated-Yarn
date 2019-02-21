@@ -77,7 +77,7 @@ public interface ServerPlayPacketListener extends PacketListener {
 
 	void onClientCommand(ClientCommandC2SPacket clientCommandC2SPacket);
 
-	void method_12067(PlayerInputC2SPacket playerInputC2SPacket);
+	void onPlayerInput(PlayerInputC2SPacket playerInputC2SPacket);
 
 	void onUpdateSelectedSlot(UpdateSelectedSlotC2SPacket updateSelectedSlotC2SPacket);
 

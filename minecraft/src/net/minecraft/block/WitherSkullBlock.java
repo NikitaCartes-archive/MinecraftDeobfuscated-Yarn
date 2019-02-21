@@ -94,7 +94,7 @@ public class WitherSkullBlock extends SkullBlock {
 	}
 
 	public static boolean canDispense(World world, BlockPos blockPos, ItemStack itemStack) {
-		if (itemStack.getItem() == Items.field_8791 && blockPos.getY() >= 2 && world.getDifficulty() != Difficulty.PEACEFUL && !world.isClient) {
+		if (itemStack.getItem() == Items.WITHER_SKELETON_SKULL && blockPos.getY() >= 2 && world.getDifficulty() != Difficulty.PEACEFUL && !world.isClient) {
 			return getWitherDispenserPattern().searchAround(world, blockPos) != null;
 		} else {
 			return false;

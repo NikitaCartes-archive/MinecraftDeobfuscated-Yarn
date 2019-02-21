@@ -98,7 +98,7 @@ public class LootFunctions {
 	}
 
 	public static class Factory implements JsonDeserializer<LootFunction>, JsonSerializer<LootFunction> {
-		public LootFunction deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public LootFunction method_596(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "function");
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "function"));
 
@@ -112,7 +112,7 @@ public class LootFunctions {
 			return factory.fromJson(jsonObject, jsonDeserializationContext);
 		}
 
-		public JsonElement serialize(LootFunction lootFunction, Type type, JsonSerializationContext jsonSerializationContext) {
+		public JsonElement method_597(LootFunction lootFunction, Type type, JsonSerializationContext jsonSerializationContext) {
 			LootFunction.Factory<LootFunction> factory = LootFunctions.getFactory(lootFunction);
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.addProperty("function", factory.getId().toString());

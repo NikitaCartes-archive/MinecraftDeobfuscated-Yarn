@@ -92,7 +92,9 @@ public class FirstPersonRenderer {
 		int i = this.client
 			.world
 			.getLightmapIndex(
-				new BlockPos(abstractClientPlayerEntity.x, abstractClientPlayerEntity.y + (double)abstractClientPlayerEntity.getEyeHeight(), abstractClientPlayerEntity.z),
+				new BlockPos(
+					abstractClientPlayerEntity.x, abstractClientPlayerEntity.y + (double)abstractClientPlayerEntity.getStandingEyeHeight(), abstractClientPlayerEntity.z
+				),
 				0
 			);
 		float f = (float)(i & 65535);
@@ -466,7 +468,7 @@ public class FirstPersonRenderer {
 				double d = playerEntity.x + (double)(((float)((i >> 0) % 2) - 0.5F) * playerEntity.getWidth() * 0.8F);
 				double e = playerEntity.y + (double)(((float)((i >> 1) % 2) - 0.5F) * 0.1F);
 				double g = playerEntity.z + (double)(((float)((i >> 2) % 2) - 0.5F) * playerEntity.getWidth() * 0.8F);
-				BlockPos blockPos = new BlockPos(d, e + (double)playerEntity.getEyeHeight(), g);
+				BlockPos blockPos = new BlockPos(d, e + (double)playerEntity.getStandingEyeHeight(), g);
 				BlockState blockState2 = this.client.world.getBlockState(blockPos);
 				if (blockState2.canSuffocate(this.client.world, blockPos)) {
 					blockState = blockState2;

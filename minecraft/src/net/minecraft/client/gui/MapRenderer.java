@@ -149,7 +149,7 @@ public class MapRenderer implements AutoCloseable {
 						GlStateManager.pushMatrix();
 						GlStateManager.translatef(0.0F + (float)mapIcon.getX() / 2.0F + 64.0F - o * p / 2.0F, 0.0F + (float)mapIcon.getZ() / 2.0F + 64.0F + 4.0F, -0.025F);
 						GlStateManager.scalef(p, p, 1.0F);
-						Drawable.drawRect(-1, -1, (int)o, 9 - 1, Integer.MIN_VALUE);
+						DrawableHelper.drawRect(-1, -1, (int)o, 9 - 1, Integer.MIN_VALUE);
 						GlStateManager.translatef(0.0F, 0.0F, -0.1F);
 						textRenderer.draw(string, 0.0F, 0.0F, -1);
 						GlStateManager.popMatrix();

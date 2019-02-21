@@ -20,7 +20,7 @@ public class InvertedLootCondition implements LootCondition {
 		this.term = lootCondition;
 	}
 
-	public final boolean test(LootContext lootContext) {
+	public final boolean method_888(LootContext lootContext) {
 		return !this.term.test(lootContext);
 	}
 

@@ -70,7 +70,7 @@ public class TextureFont implements Font {
 						int l = string.length();
 						int m = ((String)list.get(0)).length();
 						if (l != m) {
-							throw new JsonParseException("Elements of chars have to be the same lenght (found: " + l + ", expected: " + m + "), pad with space or \\u0000");
+							throw new JsonParseException("Elements of chars have to be the same length (found: " + l + ", expected: " + m + "), pad with space or \\u0000");
 						}
 					}
 

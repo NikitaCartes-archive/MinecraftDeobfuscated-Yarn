@@ -10,13 +10,13 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.audio.ListenerSoundInstance;
 import net.minecraft.client.audio.SoundInstance;
 import net.minecraft.client.audio.WeightedSoundSet;
-import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
-public class SubtitlesHud extends Drawable implements ListenerSoundInstance {
+public class SubtitlesHud extends DrawableHelper implements ListenerSoundInstance {
 	private final MinecraftClient client;
 	private final List<SubtitlesHud.SubtitleEntry> entries = Lists.<SubtitlesHud.SubtitleEntry>newArrayList();
 	private boolean enabled;
@@ -40,7 +40,7 @@ public class SubtitlesHud extends Drawable implements ListenerSoundInstance {
 			GlStateManager.blendFuncSeparate(
 				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
-			Vec3d vec3d = new Vec3d(this.client.player.x, this.client.player.y + (double)this.client.player.getEyeHeight(), this.client.player.z);
+			Vec3d vec3d = new Vec3d(this.client.player.x, this.client.player.y + (double)this.client.player.getStandingEyeHeight(), this.client.player.z);
 			Vec3d vec3d2 = new Vec3d(0.0, 0.0, -1.0)
 				.rotateX(-this.client.player.pitch * (float) (Math.PI / 180.0))
 				.rotateY(-this.client.player.yaw * (float) (Math.PI / 180.0));

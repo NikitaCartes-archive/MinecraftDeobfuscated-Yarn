@@ -9,7 +9,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEntityModel<T> implements class_3884 {
-	private Cuboid field_17144;
+	private Cuboid hat;
 
 	public ZombieVillagerEntityModel() {
 		this(0.0F, false);
@@ -35,10 +35,10 @@ public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEnti
 			this.head.setTextureOffset(24, 0).addBox(-1.0F, -3.0F, -6.0F, 2, 4, 2, f);
 			this.headwear = new Cuboid(this, 32, 0);
 			this.headwear.addBox(-4.0F, -10.0F, -4.0F, 8, 10, 8, f + 0.5F);
-			this.field_17144 = new Cuboid(this);
-			this.field_17144.setTextureOffset(30, 47).addBox(-8.0F, -8.0F, -6.0F, 16, 16, 1, f);
-			this.field_17144.pitch = (float) (-Math.PI / 2);
-			this.headwear.addChild(this.field_17144);
+			this.hat = new Cuboid(this);
+			this.hat.setTextureOffset(30, 47).addBox(-8.0F, -8.0F, -6.0F, 16, 16, 1, f);
+			this.hat.pitch = (float) (-Math.PI / 2);
+			this.headwear.addChild(this.hat);
 			this.body = new Cuboid(this, 16, 20);
 			this.body.addBox(-4.0F, 0.0F, -3.0F, 8, 12, 6, f);
 			this.body.setTextureOffset(0, 38).addBox(-4.0F, 0.0F, -3.0F, 8, 18, 6, f + 0.05F);
@@ -79,9 +79,9 @@ public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEnti
 	}
 
 	@Override
-	public void method_17150(boolean bl) {
+	public void setHeadVisible(boolean bl) {
 		this.head.visible = bl;
 		this.headwear.visible = bl;
-		this.field_17144.visible = bl;
+		this.hat.visible = bl;
 	}
 }
