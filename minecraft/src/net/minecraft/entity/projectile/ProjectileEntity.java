@@ -112,7 +112,8 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 		this.dataTracker.startTracking(PIERCE_LEVEL, (byte)0);
 	}
 
-	public void method_7437(Entity entity, float f, float g, float h, float i, float j) {
+	@Override
+	public void method_7474(Entity entity, float f, float g, float h, float i, float j) {
 		float k = -MathHelper.sin(g * (float) (Math.PI / 180.0)) * MathHelper.cos(f * (float) (Math.PI / 180.0));
 		float l = -MathHelper.sin(f * (float) (Math.PI / 180.0));
 		float m = MathHelper.cos(g * (float) (Math.PI / 180.0)) * MathHelper.cos(f * (float) (Math.PI / 180.0));

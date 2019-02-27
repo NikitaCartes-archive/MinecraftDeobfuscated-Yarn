@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1399;
+import net.minecraft.class_1675;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityGroup;
@@ -24,7 +25,6 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -202,7 +202,7 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 
 	@Override
 	public void attack(LivingEntity livingEntity, float f) {
-		ProjectileEntity projectileEntity = this.method_7066(f);
+		ProjectileEntity projectileEntity = class_1675.method_18813(this, this.method_18808(), f);
 		double d = livingEntity.x - this.x;
 		double e = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0F) - projectileEntity.y;
 		double g = livingEntity.z - this.z;
@@ -210,12 +210,6 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 		projectileEntity.setVelocity(d, e + h * 0.2F, g, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
 		this.playSound(SoundEvents.field_14633, 1.0F, 1.0F / (this.getRand().nextFloat() * 0.4F + 0.8F));
 		this.world.spawnEntity(projectileEntity);
-	}
-
-	protected ProjectileEntity method_7066(float f) {
-		ArrowEntity arrowEntity = new ArrowEntity(this.world, this);
-		arrowEntity.method_7435(this, f);
-		return arrowEntity;
 	}
 
 	@Environment(EnvType.CLIENT)

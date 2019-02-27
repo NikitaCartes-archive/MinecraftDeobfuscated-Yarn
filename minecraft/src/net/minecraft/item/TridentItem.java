@@ -69,7 +69,7 @@ public class TridentItem extends Item {
 						itemStack.applyDamage(1, playerEntity);
 						if (k == 0) {
 							TridentEntity tridentEntity = new TridentEntity(world, playerEntity, itemStack);
-							tridentEntity.method_7437(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 2.5F + (float)k * 0.5F, 1.0F);
+							tridentEntity.method_7474(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 2.5F + (float)k * 0.5F, 1.0F);
 							if (playerEntity.abilities.creativeMode) {
 								tridentEntity.pickupType = ProjectileEntity.PickupType.CREATIVE_PICKUP;
 							}

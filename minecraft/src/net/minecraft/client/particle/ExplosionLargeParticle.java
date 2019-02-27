@@ -2,8 +2,6 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4000;
-import net.minecraft.class_4001;
 import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.world.World;
@@ -19,7 +17,7 @@ public class ExplosionLargeParticle extends SpriteBillboardParticle {
 		this.colorRed = h;
 		this.colorGreen = h;
 		this.colorBlue = h;
-		this.field_17867 = 2.0F * (1.0F - (float)g * 0.5F);
+		this.scale = 2.0F * (1.0F - (float)g * 0.5F);
 		this.field_17815 = arg;
 		this.method_18142(arg);
 	}
@@ -50,8 +48,8 @@ public class ExplosionLargeParticle extends SpriteBillboardParticle {
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17816;
 
-		public Factory(class_4001 arg) {
-			this.field_17816 = arg.register(class_4000.field_17849);
+		public Factory(class_4002 arg) {
+			this.field_17816 = arg;
 		}
 
 		public Particle method_3038(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

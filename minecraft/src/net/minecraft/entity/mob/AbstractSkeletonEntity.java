@@ -7,6 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1394;
 import net.minecraft.class_1399;
+import net.minecraft.class_1675;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
@@ -34,8 +35,8 @@ import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.item.BaseBowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -175,7 +176,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 		if (this.world != null && !this.world.isClient) {
 			this.goalSelector.remove(this.field_7221);
 			this.goalSelector.remove(this.field_7220);
-			ItemStack itemStack = this.getMainHandStack();
+			ItemStack itemStack = this.getStackInHand(class_1675.method_18812(this, Items.field_8102));
 			if (itemStack.getItem() == Items.field_8102) {
 				int i = 20;
 				if (this.world.getDifficulty() != Difficulty.HARD) {
@@ -192,7 +193,8 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 
 	@Override
 	public void attack(LivingEntity livingEntity, float f) {
-		ProjectileEntity projectileEntity = this.method_6996(f);
+		ItemStack itemStack = this.method_18808();
+		ProjectileEntity projectileEntity = this.method_6996(itemStack, f);
 		double d = livingEntity.x - this.x;
 		double e = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0F) - projectileEntity.y;
 		double g = livingEntity.z - this.z;
@@ -202,10 +204,8 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 		this.world.spawnEntity(projectileEntity);
 	}
 
-	protected ProjectileEntity method_6996(float f) {
-		ArrowEntity arrowEntity = new ArrowEntity(this.world, this);
-		arrowEntity.method_7435(this, f);
-		return arrowEntity;
+	protected ProjectileEntity method_6996(ItemStack itemStack, float f) {
+		return class_1675.method_18813(this, itemStack, f);
 	}
 
 	@Override
@@ -217,7 +217,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	@Override
 	public void setEquippedStack(EquipmentSlot equipmentSlot, ItemStack itemStack) {
 		super.setEquippedStack(equipmentSlot, itemStack);
-		if (!this.world.isClient && equipmentSlot == EquipmentSlot.HAND_MAIN) {
+		if (!this.world.isClient) {
 			this.method_6997();
 		}
 	}
@@ -241,5 +241,11 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	@Override
 	public void setArmsRaised(boolean bl) {
 		this.dataTracker.set(AIMING, bl);
+	}
+
+	@Override
+	public ItemStack method_18808() {
+		ItemStack itemStack = BaseBowItem.method_18815(this, BaseBowItem.field_18281);
+		return itemStack.isEmpty() ? new ItemStack(Items.field_8107) : itemStack;
 	}
 }

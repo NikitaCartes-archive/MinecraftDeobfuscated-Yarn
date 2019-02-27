@@ -10,9 +10,9 @@ import java.util.concurrent.CancellationException;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_295;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.CameraHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.math.Vec3d;
@@ -77,7 +77,7 @@ public class ChunkRenderWorker implements Runnable {
 			chunkRenderTask.cancel();
 		} else {
 			chunkRenderTask.setBufferBuilders(this.getBufferBuilders());
-			Vec3d vec3d = class_295.method_1379(entity, 1.0);
+			Vec3d vec3d = CameraHelper.interpolateEntityPos(entity, 1.0);
 			float f = (float)vec3d.x;
 			float g = (float)vec3d.y;
 			float h = (float)vec3d.z;

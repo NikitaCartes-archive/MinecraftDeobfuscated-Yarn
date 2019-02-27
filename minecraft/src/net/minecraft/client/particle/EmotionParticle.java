@@ -2,8 +2,6 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4000;
-import net.minecraft.class_4001;
 import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
@@ -17,7 +15,7 @@ public class EmotionParticle extends SpriteBillboardParticle {
 		this.velocityY *= 0.01F;
 		this.velocityZ *= 0.01F;
 		this.velocityY += 0.1;
-		this.field_17867 *= 1.5F;
+		this.scale *= 1.5F;
 		this.maxAge = 16;
 		this.collidesWithWorld = false;
 	}
@@ -29,7 +27,7 @@ public class EmotionParticle extends SpriteBillboardParticle {
 
 	@Override
 	public float method_18132(float f) {
-		return this.field_17867 * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
+		return this.scale * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
 	}
 
 	@Override
@@ -60,8 +58,8 @@ public class EmotionParticle extends SpriteBillboardParticle {
 	public static class AngryVillagerFactory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17813;
 
-		public AngryVillagerFactory(class_4001 arg) {
-			this.field_17813 = arg.method_18137(class_4000.field_17836);
+		public AngryVillagerFactory(class_4002 arg) {
+			this.field_17813 = arg;
 		}
 
 		public Particle method_3034(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -76,8 +74,8 @@ public class EmotionParticle extends SpriteBillboardParticle {
 	public static class HeartFactory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17814;
 
-		public HeartFactory(class_4001 arg) {
-			this.field_17814 = arg.method_18137(class_4000.field_17855);
+		public HeartFactory(class_4002 arg) {
+			this.field_17814 = arg;
 		}
 
 		public Particle method_3035(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

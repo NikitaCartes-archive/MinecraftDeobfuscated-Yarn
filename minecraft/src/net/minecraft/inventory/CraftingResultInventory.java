@@ -6,7 +6,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeUnlocker;
 import net.minecraft.util.DefaultedList;
-import net.minecraft.util.InventoryUtil;
 
 public class CraftingResultInventory implements Inventory, RecipeUnlocker {
 	private final DefaultedList<ItemStack> stack = DefaultedList.create(1, ItemStack.EMPTY);
@@ -35,12 +34,12 @@ public class CraftingResultInventory implements Inventory, RecipeUnlocker {
 
 	@Override
 	public ItemStack takeInvStack(int i, int j) {
-		return InventoryUtil.removeStack(this.stack, 0);
+		return Inventories.removeStack(this.stack, 0);
 	}
 
 	@Override
 	public ItemStack removeInvStack(int i) {
-		return InventoryUtil.removeStack(this.stack, 0);
+		return Inventories.removeStack(this.stack, 0);
 	}
 
 	@Override

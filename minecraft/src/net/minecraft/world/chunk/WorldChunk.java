@@ -578,10 +578,6 @@ public class WorldChunk implements Chunk {
 		return this.biomeArray;
 	}
 
-	public boolean isLoadedToWorld() {
-		return this.loadedToWorld;
-	}
-
 	public void setLoadedToWorld(boolean bl) {
 		this.loadedToWorld = bl;
 	}

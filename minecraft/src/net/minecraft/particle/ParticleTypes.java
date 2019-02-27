@@ -13,7 +13,10 @@ public class ParticleTypes {
 	public static final DefaultParticleType field_11209 = register("damage_indicator", true);
 	public static final DefaultParticleType field_11216 = register("dragon_breath", false);
 	public static final DefaultParticleType field_11223 = register("dripping_lava", false);
+	public static final DefaultParticleType field_18304 = register("falling_lava", false);
+	public static final DefaultParticleType field_18305 = register("landing_lava", false);
 	public static final DefaultParticleType field_11232 = register("dripping_water", false);
+	public static final DefaultParticleType field_18306 = register("falling_water", false);
 	public static final ParticleType<DustParticleParameters> field_11212 = register("dust", DustParticleParameters.PARAMETERS_FACTORY);
 	public static final DefaultParticleType field_11245 = register("effect", false);
 	public static final DefaultParticleType field_11250 = register("elder_guardian", true);

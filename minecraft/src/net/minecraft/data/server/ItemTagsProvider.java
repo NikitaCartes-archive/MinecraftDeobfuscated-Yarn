@@ -95,6 +95,7 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 				Items.field_8806
 			);
 		this.method_10512(ItemTags.field_17487).add(Items.field_8713, Items.field_8665);
+		this.method_10512(ItemTags.field_18317).add(Items.field_8107, Items.field_8087, Items.field_8236);
 	}
 
 	protected void copy(Tag<Block> tag, Tag<Item> tag2) {

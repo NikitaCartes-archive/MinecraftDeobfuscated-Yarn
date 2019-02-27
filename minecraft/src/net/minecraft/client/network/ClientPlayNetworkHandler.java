@@ -946,13 +946,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onEntityAttach(EntityAttachS2CPacket entityAttachS2CPacket) {
 		NetworkThreadUtils.forceMainThread(entityAttachS2CPacket, this, this.client);
 		Entity entity = this.world.getEntityById(entityAttachS2CPacket.getAttachedEntityId());
-		Entity entity2 = this.world.getEntityById(entityAttachS2CPacket.getHoldingEntityId());
 		if (entity instanceof MobEntity) {
-			if (entity2 != null) {
-				((MobEntity)entity).attachLeash(entity2, false);
-			} else {
-				((MobEntity)entity).detachLeash(false, false);
-			}
+			((MobEntity)entity).method_18810(entityAttachS2CPacket.getHoldingEntityId());
 		}
 	}
 

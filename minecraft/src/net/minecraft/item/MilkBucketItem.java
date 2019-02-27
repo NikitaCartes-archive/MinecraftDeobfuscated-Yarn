@@ -11,8 +11,8 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 
-public class BucketMilkItem extends Item {
-	public BucketMilkItem(Item.Settings settings) {
+public class MilkBucketItem extends Item {
+	public MilkBucketItem(Item.Settings settings) {
 		super(settings);
 	}
 

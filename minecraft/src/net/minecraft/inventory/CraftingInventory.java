@@ -6,7 +6,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeInputProvider;
 import net.minecraft.util.DefaultedList;
-import net.minecraft.util.InventoryUtil;
 
 public class CraftingInventory implements Inventory, RecipeInputProvider {
 	private final DefaultedList<ItemStack> stacks;
@@ -44,12 +43,12 @@ public class CraftingInventory implements Inventory, RecipeInputProvider {
 
 	@Override
 	public ItemStack removeInvStack(int i) {
-		return InventoryUtil.removeStack(this.stacks, i);
+		return Inventories.removeStack(this.stacks, i);
 	}
 
 	@Override
 	public ItemStack takeInvStack(int i, int j) {
-		ItemStack itemStack = InventoryUtil.splitStack(this.stacks, i, j);
+		ItemStack itemStack = Inventories.splitStack(this.stacks, i, j);
 		if (!itemStack.isEmpty()) {
 			this.container.onContentChanged(this);
 		}

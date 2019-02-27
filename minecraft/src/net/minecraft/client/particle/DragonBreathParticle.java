@@ -2,8 +2,6 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4000;
-import net.minecraft.class_4001;
 import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
@@ -22,7 +20,7 @@ public class DragonBreathParticle extends SpriteBillboardParticle {
 		this.colorRed = MathHelper.nextFloat(this.random, 0.7176471F, 0.8745098F);
 		this.colorGreen = MathHelper.nextFloat(this.random, 0.0F, 0.0F);
 		this.colorBlue = MathHelper.nextFloat(this.random, 0.8235294F, 0.9764706F);
-		this.field_17867 *= 0.75F;
+		this.scale *= 0.75F;
 		this.maxAge = (int)(20.0 / ((double)this.random.nextFloat() * 0.8 + 0.2));
 		this.field_3792 = false;
 		this.collidesWithWorld = false;
@@ -69,15 +67,15 @@ public class DragonBreathParticle extends SpriteBillboardParticle {
 
 	@Override
 	public float method_18132(float f) {
-		return this.field_17867 * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
+		return this.scale * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17794;
 
-		public Factory(class_4001 arg) {
-			this.field_17794 = arg.register(class_4000.field_17839);
+		public Factory(class_4002 arg) {
+			this.field_17794 = arg;
 		}
 
 		public Particle method_3019(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

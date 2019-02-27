@@ -114,6 +114,14 @@ public class ResourceReloadHandler<S> implements ResourceReloadMonitor {
 		return this.applyStageFuture.isDone();
 	}
 
+	@Environment(EnvType.CLIENT)
+	@Override
+	public void method_18849() {
+		if (this.applyStageFuture.isCompletedExceptionally()) {
+			this.applyStageFuture.join();
+		}
+	}
+
 	public interface class_4047<S> {
 		CompletableFuture<S> create(
 			ResourceReloadListener.Helper helper, ResourceManager resourceManager, ResourceReloadListener resourceReloadListener, Executor executor, Executor executor2

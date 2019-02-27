@@ -19,7 +19,13 @@ public enum Instrument implements StringRepresentable {
 	field_12644("bell", SoundEvents.field_14793),
 	field_12654("guitar", SoundEvents.field_14903),
 	field_12647("chime", SoundEvents.field_14725),
-	field_12655("xylophone", SoundEvents.field_14776);
+	field_12655("xylophone", SoundEvents.field_14776),
+	field_18284("iron_xylophone", SoundEvents.field_18308),
+	field_18285("cow_bell", SoundEvents.field_18309),
+	field_18286("didgeridoo", SoundEvents.field_18310),
+	field_18287("bit", SoundEvents.field_18311),
+	field_18288("banjo", SoundEvents.field_18312),
+	field_18289("pling", SoundEvents.field_14622);
 
 	private final String name;
 	private final SoundEvent sound;
@@ -50,6 +56,18 @@ public enum Instrument implements StringRepresentable {
 			return field_12647;
 		} else if (block == Blocks.field_10166) {
 			return field_12655;
+		} else if (block == Blocks.field_10085) {
+			return field_18284;
+		} else if (block == Blocks.field_10114) {
+			return field_18285;
+		} else if (block == Blocks.field_10261) {
+			return field_18286;
+		} else if (block == Blocks.field_10234) {
+			return field_18287;
+		} else if (block == Blocks.field_10359) {
+			return field_18288;
+		} else if (block == Blocks.field_10171) {
+			return field_18289;
 		} else {
 			Material material = blockState.getMaterial();
 			if (material == Material.STONE) {

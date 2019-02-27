@@ -31,15 +31,15 @@ import net.minecraft.world.World;
 
 public class SpawnEggItem extends Item {
 	private static final Map<EntityType<?>, SpawnEggItem> SPAWN_EGGS = Maps.<EntityType<?>, SpawnEggItem>newIdentityHashMap();
-	private final int field_8916;
-	private final int field_8915;
-	private final EntityType<?> field_8917;
+	private final int primaryColor;
+	private final int secondaryColor;
+	private final EntityType<?> type;
 
 	public SpawnEggItem(EntityType<?> entityType, int i, int j, Item.Settings settings) {
 		super(settings);
-		this.field_8917 = entityType;
-		this.field_8916 = i;
-		this.field_8915 = j;
+		this.type = entityType;
+		this.primaryColor = i;
+		this.secondaryColor = j;
 		SPAWN_EGGS.put(entityType, this);
 	}
 
@@ -58,7 +58,7 @@ public class SpawnEggItem extends Item {
 				BlockEntity blockEntity = world.getBlockEntity(blockPos);
 				if (blockEntity instanceof MobSpawnerBlockEntity) {
 					MobSpawnerLogic mobSpawnerLogic = ((MobSpawnerBlockEntity)blockEntity).getLogic();
-					EntityType<?> entityType = this.method_8015(itemStack.getTag());
+					EntityType<?> entityType = this.entityTypeFromTag(itemStack.getTag());
 					mobSpawnerLogic.method_8274(entityType);
 					blockEntity.markDirty();
 					world.updateListeners(blockPos, blockState, blockState, 3);
@@ -74,7 +74,7 @@ public class SpawnEggItem extends Item {
 				blockPos2 = blockPos.offset(direction);
 			}
 
-			EntityType<?> entityType2 = this.method_8015(itemStack.getTag());
+			EntityType<?> entityType2 = this.entityTypeFromTag(itemStack.getTag());
 			if (entityType2.spawnFromItemStack(
 					world, itemStack, itemUsageContext.getPlayer(), blockPos2, SpawnType.field_16465, true, !Objects.equals(blockPos, blockPos2) && direction == Direction.UP
 				)
@@ -101,7 +101,7 @@ public class SpawnEggItem extends Item {
 				if (!(world.getBlockState(blockPos).getBlock() instanceof FluidBlock)) {
 					return new TypedActionResult<>(ActionResult.PASS, itemStack);
 				} else if (world.canPlayerModifyAt(playerEntity, blockPos) && playerEntity.canPlaceBlock(blockPos, blockHitResult.getSide(), itemStack)) {
-					EntityType<?> entityType = this.method_8015(itemStack.getTag());
+					EntityType<?> entityType = this.entityTypeFromTag(itemStack.getTag());
 					if (entityType.spawnFromItemStack(world, itemStack, playerEntity, blockPos, SpawnType.field_16465, false, false) == null) {
 						return new TypedActionResult<>(ActionResult.PASS, itemStack);
 					} else {
@@ -120,12 +120,12 @@ public class SpawnEggItem extends Item {
 	}
 
 	public boolean method_8018(@Nullable CompoundTag compoundTag, EntityType<?> entityType) {
-		return Objects.equals(this.method_8015(compoundTag), entityType);
+		return Objects.equals(this.entityTypeFromTag(compoundTag), entityType);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_8016(int i) {
-		return i == 0 ? this.field_8916 : this.field_8915;
+	public int getColor(int i) {
+		return i == 0 ? this.primaryColor : this.secondaryColor;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -137,14 +137,14 @@ public class SpawnEggItem extends Item {
 		return Iterables.unmodifiableIterable(SPAWN_EGGS.values());
 	}
 
-	public EntityType<?> method_8015(@Nullable CompoundTag compoundTag) {
+	public EntityType<?> entityTypeFromTag(@Nullable CompoundTag compoundTag) {
 		if (compoundTag != null && compoundTag.containsKey("EntityTag", 10)) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("EntityTag");
 			if (compoundTag2.containsKey("id", 8)) {
-				return (EntityType<?>)EntityType.get(compoundTag2.getString("id")).orElse(this.field_8917);
+				return (EntityType<?>)EntityType.get(compoundTag2.getString("id")).orElse(this.type);
 			}
 		}
 
-		return this.field_8917;
+		return this.type;
 	}
 }

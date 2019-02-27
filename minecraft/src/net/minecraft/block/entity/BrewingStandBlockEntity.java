@@ -9,6 +9,7 @@ import net.minecraft.container.Container;
 import net.minecraft.container.PropertyDelegate;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -19,7 +20,6 @@ import net.minecraft.sortme.ItemScatterer;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.DefaultedList;
-import net.minecraft.util.InventoryUtil;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -194,7 +194,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	public void fromTag(CompoundTag compoundTag) {
 		super.fromTag(compoundTag);
 		this.inventory = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
-		InventoryUtil.deserialize(compoundTag, this.inventory);
+		Inventories.fromTag(compoundTag, this.inventory);
 		this.brewTime = compoundTag.getShort("BrewTime");
 		this.fuel = compoundTag.getByte("Fuel");
 	}
@@ -203,7 +203,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	public CompoundTag toTag(CompoundTag compoundTag) {
 		super.toTag(compoundTag);
 		compoundTag.putShort("BrewTime", (short)this.brewTime);
-		InventoryUtil.serialize(compoundTag, this.inventory);
+		Inventories.toTag(compoundTag, this.inventory);
 		compoundTag.putByte("Fuel", (byte)this.fuel);
 		return compoundTag;
 	}
@@ -215,12 +215,12 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 
 	@Override
 	public ItemStack takeInvStack(int i, int j) {
-		return InventoryUtil.splitStack(this.inventory, i, j);
+		return Inventories.splitStack(this.inventory, i, j);
 	}
 
 	@Override
 	public ItemStack removeInvStack(int i) {
-		return InventoryUtil.removeStack(this.inventory, i);
+		return Inventories.removeStack(this.inventory, i);
 	}
 
 	@Override

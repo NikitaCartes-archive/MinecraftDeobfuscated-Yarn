@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.inventory.BasicInventory;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -15,7 +16,6 @@ import net.minecraft.recipe.cooking.CampfireCookingRecipe;
 import net.minecraft.sortme.ItemScatterer;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.DefaultedList;
-import net.minecraft.util.InventoryUtil;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -116,7 +116,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 	public void fromTag(CompoundTag compoundTag) {
 		super.fromTag(compoundTag);
 		this.itemsBeingCooked.clear();
-		InventoryUtil.deserialize(compoundTag, this.itemsBeingCooked);
+		Inventories.fromTag(compoundTag, this.itemsBeingCooked);
 		if (compoundTag.containsKey("CookingTimes", 11)) {
 			int[] is = compoundTag.getIntArray("CookingTimes");
 			System.arraycopy(is, 0, this.cookingTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
@@ -138,7 +138,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 
 	private CompoundTag saveInitialChunkData(CompoundTag compoundTag) {
 		super.toTag(compoundTag);
-		InventoryUtil.serialize(compoundTag, this.itemsBeingCooked, true);
+		Inventories.toTag(compoundTag, this.itemsBeingCooked, true);
 		return compoundTag;
 	}
 

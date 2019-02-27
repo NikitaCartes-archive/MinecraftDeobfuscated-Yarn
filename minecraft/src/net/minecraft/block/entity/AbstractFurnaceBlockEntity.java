@@ -11,6 +11,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.container.PropertyDelegate;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemProvider;
@@ -27,7 +28,6 @@ import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.InventoryUtil;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -171,7 +171,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	public void fromTag(CompoundTag compoundTag) {
 		super.fromTag(compoundTag);
 		this.inventory = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
-		InventoryUtil.deserialize(compoundTag, this.inventory);
+		Inventories.fromTag(compoundTag, this.inventory);
 		this.burnTime = compoundTag.getShort("BurnTime");
 		this.cookTime = compoundTag.getShort("CookTime");
 		this.cookTimeTotal = compoundTag.getShort("CookTimeTotal");
@@ -191,7 +191,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		compoundTag.putShort("BurnTime", (short)this.burnTime);
 		compoundTag.putShort("CookTime", (short)this.cookTime);
 		compoundTag.putShort("CookTimeTotal", (short)this.cookTimeTotal);
-		InventoryUtil.serialize(compoundTag, this.inventory);
+		Inventories.toTag(compoundTag, this.inventory);
 		compoundTag.putShort("RecipesUsedSize", (short)this.recipesUsed.size());
 		int i = 0;
 
@@ -369,12 +369,12 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 
 	@Override
 	public ItemStack takeInvStack(int i, int j) {
-		return InventoryUtil.splitStack(this.inventory, i, j);
+		return Inventories.splitStack(this.inventory, i, j);
 	}
 
 	@Override
 	public ItemStack removeInvStack(int i) {
-		return InventoryUtil.removeStack(this.inventory, i);
+		return Inventories.removeStack(this.inventory, i);
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import java.nio.FloatBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_295;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.util.GlAllocationUtils;
@@ -47,7 +46,7 @@ public class BackgroundRenderer {
 	public void renderBackground(float f) {
 		World world = this.client.world;
 		Entity entity = this.client.getCameraEntity();
-		FluidState fluidState = class_295.method_1374(this.client.world, entity, f);
+		FluidState fluidState = CameraHelper.method_1374(this.client.world, entity, f);
 		if (fluidState.matches(FluidTags.field_15517)) {
 			this.updateColorInWater(entity, world, f);
 		} else if (fluidState.matches(FluidTags.field_15518)) {
@@ -179,7 +178,7 @@ public class BackgroundRenderer {
 
 	private void updateColorInWater(Entity entity, ViewableWorld viewableWorld, float f) {
 		long l = SystemUtil.getMeasuringTimeMs();
-		int i = viewableWorld.getBiome(new BlockPos(class_295.method_1379(entity, (double)f))).getWaterFogColor();
+		int i = viewableWorld.getBiome(new BlockPos(CameraHelper.interpolateEntityPos(entity, (double)f))).getWaterFogColor();
 		if (this.lastWaterFogColorUpdateTime < 0L) {
 			this.waterFogColor = i;
 			this.nextWaterFogColor = i;
@@ -211,7 +210,7 @@ public class BackgroundRenderer {
 		this.updateFogColor(false);
 		GlStateManager.normal3f(0.0F, -1.0F, 0.0F);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		FluidState fluidState = class_295.method_1374(this.client.world, entity, f);
+		FluidState fluidState = CameraHelper.method_1374(this.client.world, entity, f);
 		if (entity instanceof LivingEntity && ((LivingEntity)entity).hasPotionEffect(StatusEffects.field_5919)) {
 			float g = 5.0F;
 			int j = ((LivingEntity)entity).getPotionEffect(StatusEffects.field_5919).getDuration();

@@ -6,12 +6,12 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.block.GrassColorHandler;
 import net.minecraft.client.util.RawTextureDataLoader;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceSupplier;
+import net.minecraft.resource.SupplyingResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
 @Environment(EnvType.CLIENT)
-public class GrassColormapResourceSupplier extends ResourceSupplier<int[]> {
+public class GrassColormapResourceSupplier extends SupplyingResourceReloadListener<int[]> {
 	private static final Identifier GRASS_COLORMAP_LOC = new Identifier("textures/colormap/grass.png");
 
 	protected int[] method_18662(ResourceManager resourceManager, Profiler profiler) {

@@ -2,12 +2,7 @@ package net.minecraft.entity.mob;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.projectile.ArrowEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.entity.projectile.SpectralArrowEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -48,23 +43,6 @@ public class SkeletonEntity extends AbstractSkeletonEntity {
 				creeperEntity.method_7002();
 				this.dropItem(Items.SKELETON_SKULL);
 			}
-		}
-	}
-
-	@Override
-	protected ProjectileEntity method_6996(float f) {
-		ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HAND_OFF);
-		if (itemStack.getItem() == Items.field_8236) {
-			SpectralArrowEntity spectralArrowEntity = new SpectralArrowEntity(this.world, this);
-			spectralArrowEntity.method_7435(this, f);
-			return spectralArrowEntity;
-		} else {
-			ProjectileEntity projectileEntity = super.method_6996(f);
-			if (itemStack.getItem() == Items.field_8087 && projectileEntity instanceof ArrowEntity) {
-				((ArrowEntity)projectileEntity).initFromStack(itemStack);
-			}
-
-			return projectileEntity;
 		}
 	}
 }

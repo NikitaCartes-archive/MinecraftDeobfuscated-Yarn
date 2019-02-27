@@ -2,8 +2,6 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4000;
-import net.minecraft.class_4001;
 import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.world.World;
@@ -24,8 +22,8 @@ public class WaterSplashParticle extends RainSplashParticle {
 	public static class SplashFactory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17877;
 
-		public SplashFactory(class_4001 arg) {
-			this.field_17877 = arg.register(class_4000.field_17835);
+		public SplashFactory(class_4002 arg) {
+			this.field_17877 = arg;
 		}
 
 		public Particle method_3102(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

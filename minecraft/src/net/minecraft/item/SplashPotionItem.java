@@ -25,7 +25,7 @@ public class SplashPotionItem extends PotionItem {
 		if (!world.isClient) {
 			ThrownPotionEntity thrownPotionEntity = new ThrownPotionEntity(world, playerEntity);
 			thrownPotionEntity.setItemStack(itemStack2);
-			thrownPotionEntity.calculateVelocity(playerEntity, playerEntity.pitch, playerEntity.yaw, -20.0F, 0.5F, 1.0F);
+			thrownPotionEntity.method_7474(playerEntity, playerEntity.pitch, playerEntity.yaw, -20.0F, 0.5F, 1.0F);
 			world.spawnEntity(thrownPotionEntity);
 		}
 

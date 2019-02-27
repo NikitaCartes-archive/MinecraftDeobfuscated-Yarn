@@ -1,13 +1,9 @@
 package net.minecraft.client.particle;
 
-import com.google.common.collect.Lists;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4000;
-import net.minecraft.class_4001;
 import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -15,10 +11,10 @@ import net.minecraft.world.World;
 public class SquidInkParticle extends AnimatedParticle {
 	private SquidInkParticle(World world, double d, double e, double f, double g, double h, double i, class_4002 arg) {
 		super(world, d, e, f, arg, 0.0F);
-		this.field_17867 = 0.5F;
+		this.scale = 0.5F;
 		this.setColorAlpha(1.0F);
 		this.setColor(0.0F, 0.0F, 0.0F);
-		this.maxAge = (int)((double)(this.field_17867 * 12.0F) / (Math.random() * 0.8F + 0.2F));
+		this.maxAge = (int)((double)(this.scale * 12.0F) / (Math.random() * 0.8F + 0.2F));
 		this.method_18142(arg);
 		this.collidesWithWorld = false;
 		this.velocityX = g;
@@ -59,8 +55,8 @@ public class SquidInkParticle extends AnimatedParticle {
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17878;
 
-		public Factory(class_4001 arg) {
-			this.field_17878 = arg.register(Lists.<Identifier>reverse(class_4000.field_17850));
+		public Factory(class_4002 arg) {
+			this.field_17878 = arg;
 		}
 
 		public Particle method_3105(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

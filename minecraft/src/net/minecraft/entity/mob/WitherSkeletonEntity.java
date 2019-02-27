@@ -101,8 +101,8 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	protected ProjectileEntity method_6996(float f) {
-		ProjectileEntity projectileEntity = super.method_6996(f);
+	protected ProjectileEntity method_6996(ItemStack itemStack, float f) {
+		ProjectileEntity projectileEntity = super.method_6996(itemStack, f);
 		projectileEntity.setOnFireFor(100);
 		return projectileEntity;
 	}

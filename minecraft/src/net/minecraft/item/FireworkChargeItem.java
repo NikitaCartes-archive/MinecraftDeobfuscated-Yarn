@@ -29,7 +29,7 @@ public class FireworkChargeItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	public static void buildTooltip(CompoundTag compoundTag, List<TextComponent> list) {
-		FireworksItem.Type type = FireworksItem.Type.fromId(compoundTag.getByte("Type"));
+		FireworkItem.Type type = FireworkItem.Type.fromId(compoundTag.getByte("Type"));
 		list.add(new TranslatableTextComponent("item.minecraft.firework_star.shape." + type.getName()).applyFormat(TextFormat.field_1080));
 		int[] is = compoundTag.getIntArray("Colors");
 		if (is.length > 0) {

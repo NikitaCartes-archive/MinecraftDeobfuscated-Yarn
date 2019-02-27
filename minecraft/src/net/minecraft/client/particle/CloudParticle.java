@@ -1,14 +1,10 @@
 package net.minecraft.client.particle;
 
-import com.google.common.collect.Lists;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4000;
-import net.minecraft.class_4001;
 import net.minecraft.class_4002;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -31,7 +27,7 @@ public class CloudParticle extends SpriteBillboardParticle {
 		this.colorRed = k;
 		this.colorGreen = k;
 		this.colorBlue = k;
-		this.field_17867 *= 1.875F;
+		this.scale *= 1.875F;
 		int l = (int)(8.0 / (Math.random() * 0.8 + 0.3));
 		this.maxAge = (int)Math.max((float)l * 2.5F, 1.0F);
 		this.collidesWithWorld = false;
@@ -45,7 +41,7 @@ public class CloudParticle extends SpriteBillboardParticle {
 
 	@Override
 	public float method_18132(float f) {
-		return this.field_17867 * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
+		return this.scale * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
 	}
 
 	@Override
@@ -82,8 +78,8 @@ public class CloudParticle extends SpriteBillboardParticle {
 	public static class CloudFactory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17863;
 
-		public CloudFactory(class_4001 arg) {
-			this.field_17863 = arg.register(Lists.<Identifier>reverse(class_4000.field_17850));
+		public CloudFactory(class_4002 arg) {
+			this.field_17863 = arg;
 		}
 
 		public Particle method_3088(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -95,8 +91,8 @@ public class CloudParticle extends SpriteBillboardParticle {
 	public static class SneezeFactory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17864;
 
-		public SneezeFactory(class_4001 arg) {
-			this.field_17864 = arg.register(Lists.<Identifier>reverse(class_4000.field_17850));
+		public SneezeFactory(class_4002 arg) {
+			this.field_17864 = arg;
 		}
 
 		public Particle method_3089(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

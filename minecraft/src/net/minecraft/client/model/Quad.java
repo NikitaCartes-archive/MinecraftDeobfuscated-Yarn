@@ -8,17 +8,17 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
-public class Polygon {
+public class Quad {
 	public Vertex[] vertices;
 	public final int vertexCount;
-	private boolean field_3501;
+	private boolean flipNormals;
 
-	public Polygon(Vertex[] vertexs) {
+	public Quad(Vertex[] vertexs) {
 		this.vertices = vertexs;
 		this.vertexCount = vertexs.length;
 	}
 
-	public Polygon(Vertex[] vertexs, int i, int j, int k, int l, float f, float g) {
+	public Quad(Vertex[] vertexs, int i, int j, int k, int l, float f, float g) {
 		this(vertexs);
 		float h = 0.0F / f;
 		float m = 0.0F / g;
@@ -45,7 +45,7 @@ public class Polygon {
 		float g = (float)vec3d3.x;
 		float h = (float)vec3d3.y;
 		float i = (float)vec3d3.z;
-		if (this.field_3501) {
+		if (this.flipNormals) {
 			g = -g;
 			h = -h;
 			i = -i;

@@ -229,7 +229,7 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 
 		if (!ItemStack.areEqual(itemStack2, this.banner) || !ItemStack.areEqual(itemStack3, this.dye) || !ItemStack.areEqual(itemStack4, this.pattern)) {
 			this.canApplyDyePattern = !itemStack2.isEmpty() && !itemStack3.isEmpty() && itemStack4.isEmpty() && !this.hasTooManyPatterns;
-			this.canApplySpecialPattern = !itemStack4.isEmpty() && !this.hasTooManyPatterns;
+			this.canApplySpecialPattern = !this.hasTooManyPatterns && !itemStack4.isEmpty() && !itemStack2.isEmpty() && !itemStack3.isEmpty();
 		}
 
 		this.banner = itemStack2.copy();

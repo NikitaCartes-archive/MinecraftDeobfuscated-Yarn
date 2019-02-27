@@ -3,6 +3,7 @@ package net.minecraft.item;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.passive.FoxEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -38,20 +39,31 @@ public class FoodItem extends Item {
 			world.playSound(
 				null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_14990, SoundCategory.field_15248, 0.5F, world.random.nextFloat() * 0.1F + 0.9F
 			);
-			this.onConsumed(itemStack, world, playerEntity);
 			playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 			if (playerEntity instanceof ServerPlayerEntity) {
 				Criterions.CONSUME_ITEM.handle((ServerPlayerEntity)playerEntity, itemStack);
 			}
+		} else if (livingEntity instanceof FoxEntity) {
+			world.playSound(
+				null,
+				livingEntity.x,
+				livingEntity.y,
+				livingEntity.z,
+				SoundEvents.field_18060,
+				SoundCategory.field_15254,
+				1.0F,
+				1.0F + (world.random.nextFloat() - world.random.nextFloat()) * 0.4F
+			);
 		}
 
+		this.onConsumed(itemStack, world, livingEntity);
 		itemStack.subtractAmount(1);
 		return itemStack;
 	}
 
-	protected void onConsumed(ItemStack itemStack, World world, PlayerEntity playerEntity) {
+	protected void onConsumed(ItemStack itemStack, World world, LivingEntity livingEntity) {
 		if (!world.isClient && this.statusEffect != null && world.random.nextFloat() < this.statusEffectChance) {
-			playerEntity.addPotionEffect(new StatusEffectInstance(this.statusEffect));
+			livingEntity.addPotionEffect(new StatusEffectInstance(this.statusEffect));
 		}
 	}
 

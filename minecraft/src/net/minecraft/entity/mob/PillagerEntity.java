@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1399;
+import net.minecraft.class_1675;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
@@ -34,9 +35,9 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ArrowEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.sortme.Projectile;
 import net.minecraft.inventory.BasicInventory;
+import net.minecraft.item.BaseBowItem;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -129,9 +130,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 		} else if (this.isCharging()) {
 			return IllagerEntity.State.field_7210;
 		} else {
-			return !this.getMainHandStack().isEmpty() && this.getMainHandStack().getItem() == Items.field_8399
-				? IllagerEntity.State.field_7213
-				: IllagerEntity.State.field_7207;
+			return this.method_18809(Items.field_8399) ? IllagerEntity.State.field_7213 : IllagerEntity.State.field_7207;
 		}
 	}
 
@@ -221,24 +220,23 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 
 	@Override
 	public void attack(LivingEntity livingEntity, float f) {
-		ProjectileEntity projectileEntity = this.method_7107(f);
-		double d = livingEntity.x - this.x;
-		double e = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0F) - projectileEntity.y;
-		double g = livingEntity.z - this.z;
-		double h = (double)MathHelper.sqrt(d * d + g * g);
-		projectileEntity.setVelocity(d, e + h * 0.2F, g, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
-		this.playSound(SoundEvents.field_15187, 1.0F, 1.0F / (this.getRand().nextFloat() * 0.4F + 0.8F));
-		this.world.spawnEntity(projectileEntity);
+		ItemStack itemStack = this.getStackInHand(class_1675.method_18812(this, Items.field_8399));
+		if (this.method_18809(Items.field_8399)) {
+			CrossbowItem.shootAllProjectiles(this.world, this, itemStack, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
+		}
+
 		this.despawnCounter = 0;
-		CrossbowItem.setCharged(this.getMainHandStack(), false);
 	}
 
-	protected ProjectileEntity method_7107(float f) {
-		ArrowEntity arrowEntity = new ArrowEntity(this.world, this);
-		arrowEntity.setShotFromCrossbow(true);
-		arrowEntity.setSound(SoundEvents.field_14636);
-		arrowEntity.method_7435(this, f);
-		return arrowEntity;
+	@Override
+	public void method_18811(LivingEntity livingEntity, ItemStack itemStack, Projectile projectile) {
+		Entity entity = (Entity)projectile;
+		double d = livingEntity.x - this.x;
+		double e = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0F) - entity.y;
+		double f = livingEntity.z - this.z;
+		double g = (double)MathHelper.sqrt(d * d + f * f);
+		projectile.setVelocity(d, e + g * 0.2F, f, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
+		this.playSound(SoundEvents.field_15187, 1.0F, 1.0F / (this.getRand().nextFloat() * 0.4F + 0.8F));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -314,5 +312,11 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 	@Override
 	public boolean canImmediatelyDespawn(double d) {
 		return super.canImmediatelyDespawn(d) && this.getInventory().isInvEmpty();
+	}
+
+	@Override
+	public ItemStack method_18808() {
+		ItemStack itemStack = BaseBowItem.method_18815(this, BaseBowItem.field_18282);
+		return itemStack.isEmpty() ? new ItemStack(Items.field_8107) : itemStack;
 	}
 }

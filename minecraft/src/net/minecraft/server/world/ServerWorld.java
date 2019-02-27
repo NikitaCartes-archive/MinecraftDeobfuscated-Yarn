@@ -399,7 +399,7 @@ public class ServerWorld extends World {
 		profiler.pop();
 	}
 
-	public void method_18203(WorldChunk worldChunk, int i) {
+	public void tickChunk(WorldChunk worldChunk, int i) {
 		ChunkPos chunkPos = worldChunk.getPos();
 		boolean bl = this.isRaining();
 		int j = chunkPos.getStartX();

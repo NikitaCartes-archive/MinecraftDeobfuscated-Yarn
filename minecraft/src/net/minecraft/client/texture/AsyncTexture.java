@@ -6,6 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.SystemUtil;
 
 @Environment(EnvType.CLIENT)
 public class AsyncTexture extends ResourceTexture {
@@ -33,7 +34,7 @@ public class AsyncTexture extends ResourceTexture {
 
 	@Override
 	public void registerTexture(TextureManager textureManager, ResourceManager resourceManager, Identifier identifier, Executor executor) {
-		this.future = CompletableFuture.supplyAsync(() -> ResourceTexture.TextureData.load(resourceManager, this.location));
+		this.future = CompletableFuture.supplyAsync(() -> ResourceTexture.TextureData.load(resourceManager, this.location), SystemUtil.getServerWorkerExecutor());
 		this.future.thenRunAsync(() -> textureManager.registerTexture(this.location, this), executor);
 	}
 }

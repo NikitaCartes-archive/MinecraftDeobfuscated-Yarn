@@ -357,11 +357,7 @@ public class FilledMapItem extends MapItem {
 		if (mapState != null) {
 			ItemStack itemStack2 = itemStack.copy();
 			MapState mapState2 = method_8000(itemStack2, world, 0, 0, mapState.scale, mapState.showIcons, mapState.unlimitedTracking, mapState.dimension);
-			mapState2.xCenter = mapState.xCenter;
-			mapState2.zCenter = mapState.zCenter;
-			mapState2.field_17403 = true;
-			mapState2.markDirty();
-			System.arraycopy(mapState.colorArray, 0, mapState2.colorArray, 0, mapState.colorArray.length);
+			mapState2.method_18818(mapState);
 			return itemStack2;
 		} else {
 			return null;

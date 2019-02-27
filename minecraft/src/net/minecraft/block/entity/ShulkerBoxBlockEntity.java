@@ -15,6 +15,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -24,7 +25,6 @@ import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.DyeColor;
-import net.minecraft.util.InventoryUtil;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
@@ -230,13 +230,13 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	public void method_11319(CompoundTag compoundTag) {
 		this.inventory = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
 		if (!this.deserializeLootTable(compoundTag) && compoundTag.containsKey("Items", 9)) {
-			InventoryUtil.deserialize(compoundTag, this.inventory);
+			Inventories.fromTag(compoundTag, this.inventory);
 		}
 	}
 
 	public CompoundTag method_11317(CompoundTag compoundTag) {
 		if (!this.serializeLootTable(compoundTag)) {
-			InventoryUtil.serialize(compoundTag, this.inventory, false);
+			Inventories.toTag(compoundTag, this.inventory, false);
 		}
 
 		return compoundTag;

@@ -2,10 +2,10 @@ package net.minecraft.village;
 
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DefaultedList;
-import net.minecraft.util.InventoryUtil;
 
 public class TraderInventory implements Inventory {
 	private final Trader trader;
@@ -43,9 +43,9 @@ public class TraderInventory implements Inventory {
 	public ItemStack takeInvStack(int i, int j) {
 		ItemStack itemStack = this.inventory.get(i);
 		if (i == 2 && !itemStack.isEmpty()) {
-			return InventoryUtil.splitStack(this.inventory, i, itemStack.getAmount());
+			return Inventories.splitStack(this.inventory, i, itemStack.getAmount());
 		} else {
-			ItemStack itemStack2 = InventoryUtil.splitStack(this.inventory, i, j);
+			ItemStack itemStack2 = Inventories.splitStack(this.inventory, i, j);
 			if (!itemStack2.isEmpty() && this.needRecipeUpdate(i)) {
 				this.updateRecipes();
 			}
@@ -60,7 +60,7 @@ public class TraderInventory implements Inventory {
 
 	@Override
 	public ItemStack removeInvStack(int i) {
-		return InventoryUtil.removeStack(this.inventory, i);
+		return Inventories.removeStack(this.inventory, i);
 	}
 
 	@Override

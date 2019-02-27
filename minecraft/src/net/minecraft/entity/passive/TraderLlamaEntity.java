@@ -68,7 +68,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 	@Override
 	protected void method_6726(PlayerEntity playerEntity) {
 		Entity entity = this.getHoldingEntity();
-		if (!this.isLeashed() || !(entity instanceof WanderingTraderEntity)) {
+		if (!(entity instanceof WanderingTraderEntity)) {
 			super.method_6726(playerEntity);
 		}
 	}
@@ -76,7 +76,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 	@Override
 	public void update() {
 		super.update();
-		if (this.despawnDelay > 0 && --this.despawnDelay == 0 && this.isLeashed() && this.getHoldingEntity() instanceof WanderingTraderEntity) {
+		if (this.despawnDelay > 0 && --this.despawnDelay == 0 && this.getHoldingEntity() instanceof WanderingTraderEntity) {
 			WanderingTraderEntity wanderingTraderEntity = (WanderingTraderEntity)this.getHoldingEntity();
 			int i = wanderingTraderEntity.getDespawnDelay();
 			if (i > 0) {
@@ -132,7 +132,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 		public void start() {
 			this.entity.setTarget(this.offender);
 			Entity entity = this.field_17718.getHoldingEntity();
-			if (TraderLlamaEntity.this.isLeashed() && entity instanceof WanderingTraderEntity) {
+			if (entity instanceof WanderingTraderEntity) {
 				this.traderLastAttackedTime = ((WanderingTraderEntity)entity).getLastAttackedTime();
 			}
 

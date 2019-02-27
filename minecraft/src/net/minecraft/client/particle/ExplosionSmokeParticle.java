@@ -1,13 +1,9 @@
 package net.minecraft.client.particle;
 
-import com.google.common.collect.Lists;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4000;
-import net.minecraft.class_4001;
 import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
@@ -24,7 +20,7 @@ public class ExplosionSmokeParticle extends SpriteBillboardParticle {
 		this.colorRed = j;
 		this.colorGreen = j;
 		this.colorBlue = j;
-		this.field_17867 = 0.1F * (this.random.nextFloat() * this.random.nextFloat() * 6.0F + 1.0F);
+		this.scale = 0.1F * (this.random.nextFloat() * this.random.nextFloat() * 6.0F + 1.0F);
 		this.maxAge = (int)(16.0 / ((double)this.random.nextFloat() * 0.8 + 0.2)) + 2;
 		this.method_18142(arg);
 	}
@@ -59,8 +55,8 @@ public class ExplosionSmokeParticle extends SpriteBillboardParticle {
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17807;
 
-		public Factory(class_4001 arg) {
-			this.field_17807 = arg.register(Lists.<Identifier>reverse(class_4000.field_17850));
+		public Factory(class_4002 arg) {
+			this.field_17807 = arg;
 		}
 
 		public Particle method_3023(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

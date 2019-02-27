@@ -33,7 +33,7 @@ public class CrackParticle extends SpriteBillboardParticle {
 		super(world, d, e, f, 0.0, 0.0, 0.0);
 		this.setSprite(MinecraftClient.getInstance().getItemRenderer().getHeldItemModel(itemStack, world, null).getSprite());
 		this.gravityStrength = 1.0F;
-		this.field_17867 /= 2.0F;
+		this.scale /= 2.0F;
 		this.field_17783 = this.random.nextFloat() * 3.0F;
 		this.field_17784 = this.random.nextFloat() * 3.0F;
 	}

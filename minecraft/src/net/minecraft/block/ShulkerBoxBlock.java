@@ -13,6 +13,7 @@ import net.minecraft.container.Container;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
@@ -29,7 +30,6 @@ import net.minecraft.util.DefaultedList;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.InventoryUtil;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.hit.BlockHitResult;
@@ -179,7 +179,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 			if (compoundTag.containsKey("Items", 9)) {
 				DefaultedList<ItemStack> defaultedList = DefaultedList.create(27, ItemStack.EMPTY);
-				InventoryUtil.deserialize(compoundTag, defaultedList);
+				Inventories.fromTag(compoundTag, defaultedList);
 				int i = 0;
 				int j = 0;
 

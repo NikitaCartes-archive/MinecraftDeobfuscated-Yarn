@@ -6,6 +6,7 @@ import net.minecraft.container.Container;
 import net.minecraft.container.GenericContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
@@ -14,7 +15,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.DefaultedList;
-import net.minecraft.util.InventoryUtil;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
@@ -36,7 +36,7 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity implements T
 	public CompoundTag toTag(CompoundTag compoundTag) {
 		super.toTag(compoundTag);
 		if (!this.serializeLootTable(compoundTag)) {
-			InventoryUtil.serialize(compoundTag, this.inventory);
+			Inventories.toTag(compoundTag, this.inventory);
 		}
 
 		return compoundTag;
@@ -47,7 +47,7 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity implements T
 		super.fromTag(compoundTag);
 		this.inventory = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
 		if (!this.deserializeLootTable(compoundTag)) {
-			InventoryUtil.deserialize(compoundTag, this.inventory);
+			Inventories.fromTag(compoundTag, this.inventory);
 		}
 	}
 
@@ -74,12 +74,12 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity implements T
 
 	@Override
 	public ItemStack takeInvStack(int i, int j) {
-		return InventoryUtil.splitStack(this.inventory, i, j);
+		return Inventories.splitStack(this.inventory, i, j);
 	}
 
 	@Override
 	public ItemStack removeInvStack(int i) {
-		return InventoryUtil.removeStack(this.inventory, i);
+		return Inventories.removeStack(this.inventory, i);
 	}
 
 	@Override

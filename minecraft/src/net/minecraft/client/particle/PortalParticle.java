@@ -2,8 +2,6 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4000;
-import net.minecraft.class_4001;
 import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.world.World;
@@ -25,7 +23,7 @@ public class PortalParticle extends SpriteBillboardParticle {
 		this.startX = this.posX;
 		this.startY = this.posY;
 		this.startZ = this.posZ;
-		this.field_17867 = 0.1F * (this.random.nextFloat() * 0.2F + 0.5F);
+		this.scale = 0.1F * (this.random.nextFloat() * 0.2F + 0.5F);
 		float j = this.random.nextFloat() * 0.6F + 0.4F;
 		this.colorRed = j * 0.9F;
 		this.colorGreen = j * 0.3F;
@@ -50,7 +48,7 @@ public class PortalParticle extends SpriteBillboardParticle {
 		g = 1.0F - g;
 		g *= g;
 		g = 1.0F - g;
-		return this.field_17867 * g;
+		return this.scale * g;
 	}
 
 	@Override
@@ -90,8 +88,8 @@ public class PortalParticle extends SpriteBillboardParticle {
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17865;
 
-		public Factory(class_4001 arg) {
-			this.field_17865 = arg.register(class_4000.field_17850);
+		public Factory(class_4002 arg) {
+			this.field_17865 = arg;
 		}
 
 		public Particle method_3094(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

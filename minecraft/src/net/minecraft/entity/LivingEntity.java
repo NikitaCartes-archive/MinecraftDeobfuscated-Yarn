@@ -1110,7 +1110,7 @@ public abstract class LivingEntity extends Entity {
 
 		boolean bl = this.playerHitTimer > 0;
 		if (this.canDropLootAndXp() && this.world.getGameRules().getBoolean("doMobLoot")) {
-			this.method_16077(damageSource, bl);
+			this.dropLoot(damageSource, bl);
 			this.dropEquipment(damageSource, i, bl);
 		}
 
@@ -1127,7 +1127,7 @@ public abstract class LivingEntity extends Entity {
 		return this.getType().getLootTableId();
 	}
 
-	protected void method_16077(DamageSource damageSource, boolean bl) {
+	protected void dropLoot(DamageSource damageSource, boolean bl) {
 		Identifier identifier = this.method_5989();
 		LootSupplier lootSupplier = this.world.getServer().getLootManager().getSupplier(identifier);
 		LootContext.Builder builder = this.method_16079(bl, damageSource);
@@ -1170,6 +1170,10 @@ public abstract class LivingEntity extends Entity {
 
 	protected SoundEvent getFallSound(int i) {
 		return i > 4 ? SoundEvents.field_14928 : SoundEvents.field_15018;
+	}
+
+	protected SoundEvent method_18807(ItemStack itemStack) {
+		return SoundEvents.field_14643;
 	}
 
 	public boolean canClimb() {
@@ -2394,7 +2398,7 @@ public abstract class LivingEntity extends Entity {
 	protected void method_6098(ItemStack itemStack, int i) {
 		if (!itemStack.isEmpty() && this.isUsingItem()) {
 			if (itemStack.getUseAction() == UseAction.field_8946) {
-				this.playSound(SoundEvents.field_14643, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
+				this.playSound(this.method_18807(itemStack), 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 			}
 
 			if (itemStack.getUseAction() == UseAction.field_8950) {
@@ -2644,5 +2648,9 @@ public abstract class LivingEntity extends Entity {
 
 	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
 		return super.getEyeHeight(entityPose, entitySize);
+	}
+
+	public ItemStack method_18808() {
+		return ItemStack.EMPTY;
 	}
 }

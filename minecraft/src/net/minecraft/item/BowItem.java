@@ -36,7 +36,7 @@ public class BowItem extends BaseBowItem {
 		if (livingEntity instanceof PlayerEntity) {
 			PlayerEntity playerEntity = (PlayerEntity)livingEntity;
 			boolean bl = playerEntity.abilities.creativeMode || EnchantmentHelper.getLevel(Enchantments.field_9125, itemStack) > 0;
-			ItemStack itemStack2 = this.findArrowStack(playerEntity);
+			ItemStack itemStack2 = playerEntity.method_18808();
 			if (!itemStack2.isEmpty() || bl) {
 				if (itemStack2.isEmpty()) {
 					itemStack2 = new ItemStack(Items.field_8107);
@@ -49,7 +49,7 @@ public class BowItem extends BaseBowItem {
 					if (!world.isClient) {
 						ArrowItem arrowItem = (ArrowItem)(itemStack2.getItem() instanceof ArrowItem ? itemStack2.getItem() : Items.field_8107);
 						ProjectileEntity projectileEntity = arrowItem.createEntityArrow(world, itemStack2, playerEntity);
-						projectileEntity.method_7437(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, f * 3.0F, 1.0F);
+						projectileEntity.method_7474(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, f * 3.0F, 1.0F);
 						if (f == 1.0F) {
 							projectileEntity.setCritical(true);
 						}
@@ -122,7 +122,7 @@ public class BowItem extends BaseBowItem {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		boolean bl = !this.findArrowStack(playerEntity).isEmpty();
+		boolean bl = !playerEntity.method_18808().isEmpty();
 		if (playerEntity.abilities.creativeMode || bl) {
 			playerEntity.setCurrentHand(hand);
 			return new TypedActionResult<>(ActionResult.field_5812, itemStack);

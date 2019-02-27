@@ -134,6 +134,16 @@ public class MapState extends PersistentState {
 		return compoundTag;
 	}
 
+	public void method_18818(MapState mapState) {
+		this.field_17403 = true;
+		this.xCenter = mapState.xCenter;
+		this.zCenter = mapState.zCenter;
+		this.field_123.putAll(mapState.field_123);
+		this.icons.putAll(mapState.icons);
+		System.arraycopy(mapState.colorArray, 0, this.colorArray, 0, mapState.colorArray.length);
+		this.markDirty();
+	}
+
 	public void method_102(PlayerEntity playerEntity, ItemStack itemStack) {
 		if (!this.field_120.containsKey(playerEntity)) {
 			MapState.class_23 lv = new MapState.class_23(playerEntity);
