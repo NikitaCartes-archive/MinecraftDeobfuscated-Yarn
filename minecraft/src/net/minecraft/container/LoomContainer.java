@@ -82,7 +82,10 @@ public class LoomContainer extends Container {
 				public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
 					LoomContainer.this.bannerSlot.takeStack(1);
 					LoomContainer.this.dyeSlot.takeStack(1);
-					LoomContainer.this.selectedPattern.set(0);
+					if (!LoomContainer.this.bannerSlot.hasStack() || !LoomContainer.this.dyeSlot.hasStack()) {
+						LoomContainer.this.selectedPattern.set(0);
+					}
+
 					blockContext.run(
 						(BiConsumer<World, BlockPos>)((world, blockPos) -> world.playSound(null, blockPos, SoundEvents.field_15096, SoundCategory.field_15245, 1.0F, 1.0F))
 					);
@@ -116,9 +119,13 @@ public class LoomContainer extends Container {
 
 	@Override
 	public boolean onButtonClick(PlayerEntity playerEntity, int i) {
-		this.selectedPattern.set(i);
-		this.updateOutputSlot();
-		return true;
+		if (i > 0 && i <= BannerPattern.field_18283) {
+			this.selectedPattern.set(i);
+			this.updateOutputSlot();
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -215,36 +222,34 @@ public class LoomContainer extends Container {
 	}
 
 	private void updateOutputSlot() {
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
-			if (this.selectedPattern.get() > 0) {
-				ItemStack itemStack = this.bannerSlot.getStack();
-				ItemStack itemStack2 = this.dyeSlot.getStack();
-				ItemStack itemStack3 = ItemStack.EMPTY;
-				if (!itemStack.isEmpty() && !itemStack2.isEmpty()) {
-					itemStack3 = itemStack.copy();
-					itemStack3.setAmount(1);
-					BannerPattern bannerPattern = BannerPattern.values()[this.selectedPattern.get()];
-					DyeColor dyeColor = ((DyeItem)itemStack2.getItem()).getColor();
-					CompoundTag compoundTag = itemStack3.getOrCreateSubCompoundTag("BlockEntityTag");
-					ListTag listTag;
-					if (compoundTag.containsKey("Patterns", 9)) {
-						listTag = compoundTag.getList("Patterns", 10);
-					} else {
-						listTag = new ListTag();
-						compoundTag.put("Patterns", listTag);
-					}
-
-					CompoundTag compoundTag2 = new CompoundTag();
-					compoundTag2.putString("Pattern", bannerPattern.getId());
-					compoundTag2.putInt("Color", dyeColor.getId());
-					listTag.add(compoundTag2);
+		if (this.selectedPattern.get() > 0) {
+			ItemStack itemStack = this.bannerSlot.getStack();
+			ItemStack itemStack2 = this.dyeSlot.getStack();
+			ItemStack itemStack3 = ItemStack.EMPTY;
+			if (!itemStack.isEmpty() && !itemStack2.isEmpty()) {
+				itemStack3 = itemStack.copy();
+				itemStack3.setAmount(1);
+				BannerPattern bannerPattern = BannerPattern.values()[this.selectedPattern.get()];
+				DyeColor dyeColor = ((DyeItem)itemStack2.getItem()).getColor();
+				CompoundTag compoundTag = itemStack3.getOrCreateSubCompoundTag("BlockEntityTag");
+				ListTag listTag;
+				if (compoundTag.containsKey("Patterns", 9)) {
+					listTag = compoundTag.getList("Patterns", 10);
+				} else {
+					listTag = new ListTag();
+					compoundTag.put("Patterns", listTag);
 				}
 
-				if (!ItemStack.areEqual(itemStack3, this.outputSlot.getStack())) {
-					this.outputSlot.setStack(itemStack3);
-				}
+				CompoundTag compoundTag2 = new CompoundTag();
+				compoundTag2.putString("Pattern", bannerPattern.getId());
+				compoundTag2.putInt("Color", dyeColor.getId());
+				listTag.add(compoundTag2);
 			}
-		}));
+
+			if (!ItemStack.areEqual(itemStack3, this.outputSlot.getStack())) {
+				this.outputSlot.setStack(itemStack3);
+			}
+		}
 	}
 
 	@Environment(EnvType.CLIENT)

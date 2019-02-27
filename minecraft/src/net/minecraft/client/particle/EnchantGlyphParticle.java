@@ -2,8 +2,6 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4000;
-import net.minecraft.class_4001;
 import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.world.World;
@@ -28,7 +26,7 @@ public class EnchantGlyphParticle extends SpriteBillboardParticle {
 		this.posX = this.prevPosX;
 		this.posY = this.prevPosY;
 		this.posZ = this.prevPosZ;
-		this.field_17867 = 0.1F * (this.random.nextFloat() * 0.5F + 0.2F);
+		this.scale = 0.1F * (this.random.nextFloat() * 0.5F + 0.2F);
 		float j = this.random.nextFloat() * 0.6F + 0.4F;
 		this.colorRed = 0.9F * j;
 		this.colorGreen = 0.9F * j;
@@ -87,8 +85,8 @@ public class EnchantGlyphParticle extends SpriteBillboardParticle {
 	public static class EnchantFactory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17803;
 
-		public EnchantFactory(class_4001 arg) {
-			this.field_17803 = arg.method_18137(class_4000.field_17857);
+		public EnchantFactory(class_4002 arg) {
+			this.field_17803 = arg;
 		}
 
 		public Particle method_3021(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -102,8 +100,8 @@ public class EnchantGlyphParticle extends SpriteBillboardParticle {
 	public static class NautilusFactory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17804;
 
-		public NautilusFactory(class_4001 arg) {
-			this.field_17804 = arg.register(class_4000.field_17859);
+		public NautilusFactory(class_4002 arg) {
+			this.field_17804 = arg;
 		}
 
 		public Particle method_3020(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

@@ -24,6 +24,7 @@ import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.entity.mob.VindicatorEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -60,11 +61,17 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 				new class_3993<>(
 					this,
 					PotionUtil.setPotion(new ItemStack(Items.field_8574), Potions.field_8997),
+					SoundEvents.field_18315,
 					wanderingTraderEntity -> !this.world.isDaylight() && !wanderingTraderEntity.isInvisible()
 				)
 			);
 		this.goalSelector
-			.add(0, new class_3993<>(this, new ItemStack(Items.field_8103), wanderingTraderEntity -> this.world.isDaylight() && wanderingTraderEntity.isInvisible()));
+			.add(
+				0,
+				new class_3993<>(
+					this, new ItemStack(Items.field_8103), SoundEvents.field_18314, wanderingTraderEntity -> this.world.isDaylight() && wanderingTraderEntity.isInvisible()
+				)
+			);
 		this.goalSelector.add(1, new class_1390(this));
 		this.goalSelector.add(1, new FleeEntityGoal(this, ZombieEntity.class, 8.0F, 0.5, 0.5));
 		this.goalSelector.add(1, new FleeEntityGoal(this, EvokerEntity.class, 12.0F, 0.5, 0.5));
@@ -195,6 +202,12 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 	@Override
 	protected SoundEvent getDeathSound() {
 		return SoundEvents.field_17748;
+	}
+
+	@Override
+	protected SoundEvent method_18807(ItemStack itemStack) {
+		Item item = itemStack.getItem();
+		return item == Items.field_8103 ? SoundEvents.field_18316 : SoundEvents.field_18313;
 	}
 
 	@Override

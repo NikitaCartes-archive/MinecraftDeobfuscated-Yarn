@@ -2,8 +2,6 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4000;
-import net.minecraft.class_4001;
 import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.world.World;
@@ -17,7 +15,7 @@ public class SuspendParticle extends SpriteBillboardParticle {
 		this.colorGreen = j;
 		this.colorBlue = j;
 		this.setBoundingBoxSpacing(0.02F, 0.02F);
-		this.field_17867 = this.field_17867 * (this.random.nextFloat() * 0.6F + 0.5F);
+		this.scale = this.scale * (this.random.nextFloat() * 0.6F + 0.5F);
 		this.velocityX *= 0.02F;
 		this.velocityY *= 0.02F;
 		this.velocityZ *= 0.02F;
@@ -54,8 +52,8 @@ public class SuspendParticle extends SpriteBillboardParticle {
 	public static class DolphinFactory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17881;
 
-		public DolphinFactory(class_4001 arg) {
-			this.field_17881 = arg.method_18137(class_4000.field_17844);
+		public DolphinFactory(class_4002 arg) {
+			this.field_17881 = arg;
 		}
 
 		public Particle method_3110(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -72,8 +70,8 @@ public class SuspendParticle extends SpriteBillboardParticle {
 	public static class HappyVillagerFactory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17882;
 
-		public HappyVillagerFactory(class_4001 arg) {
-			this.field_17882 = arg.method_18137(class_4000.field_17853);
+		public HappyVillagerFactory(class_4002 arg) {
+			this.field_17882 = arg;
 		}
 
 		public Particle method_3111(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -88,8 +86,8 @@ public class SuspendParticle extends SpriteBillboardParticle {
 	public static class MyceliumFactory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17883;
 
-		public MyceliumFactory(class_4001 arg) {
-			this.field_17883 = arg.method_18137(class_4000.field_17844);
+		public MyceliumFactory(class_4002 arg) {
+			this.field_17883 = arg;
 		}
 
 		public Particle method_3112(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -103,8 +101,8 @@ public class SuspendParticle extends SpriteBillboardParticle {
 	public static class class_3991 implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17880;
 
-		public class_3991(class_4001 arg) {
-			this.field_17880 = arg.method_18137(class_4000.field_17853);
+		public class_3991(class_4002 arg) {
+			this.field_17880 = arg;
 		}
 
 		public Particle method_18044(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

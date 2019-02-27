@@ -8,7 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.DyeItem;
-import net.minecraft.item.FireworksItem;
+import net.minecraft.item.FireworkItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -33,16 +33,16 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 	);
 	private static final Ingredient field_9010 = Ingredient.ofItems(Items.field_8477);
 	private static final Ingredient field_9014 = Ingredient.ofItems(Items.field_8601);
-	private static final Map<Item, FireworksItem.Type> field_9013 = SystemUtil.consume(Maps.<Item, FireworksItem.Type>newHashMap(), hashMap -> {
-		hashMap.put(Items.field_8814, FireworksItem.Type.field_7977);
-		hashMap.put(Items.field_8153, FireworksItem.Type.field_7970);
-		hashMap.put(Items.field_8397, FireworksItem.Type.field_7973);
-		hashMap.put(Items.SKELETON_SKULL, FireworksItem.Type.field_7974);
-		hashMap.put(Items.WITHER_SKELETON_SKULL, FireworksItem.Type.field_7974);
-		hashMap.put(Items.CREEPER_HEAD, FireworksItem.Type.field_7974);
-		hashMap.put(Items.PLAYER_HEAD, FireworksItem.Type.field_7974);
-		hashMap.put(Items.DRAGON_HEAD, FireworksItem.Type.field_7974);
-		hashMap.put(Items.ZOMBIE_HEAD, FireworksItem.Type.field_7974);
+	private static final Map<Item, FireworkItem.Type> field_9013 = SystemUtil.consume(Maps.<Item, FireworkItem.Type>newHashMap(), hashMap -> {
+		hashMap.put(Items.field_8814, FireworkItem.Type.field_7977);
+		hashMap.put(Items.field_8153, FireworkItem.Type.field_7970);
+		hashMap.put(Items.field_8397, FireworkItem.Type.field_7973);
+		hashMap.put(Items.SKELETON_SKULL, FireworkItem.Type.field_7974);
+		hashMap.put(Items.WITHER_SKELETON_SKULL, FireworkItem.Type.field_7974);
+		hashMap.put(Items.CREEPER_HEAD, FireworkItem.Type.field_7974);
+		hashMap.put(Items.PLAYER_HEAD, FireworkItem.Type.field_7974);
+		hashMap.put(Items.DRAGON_HEAD, FireworkItem.Type.field_7974);
+		hashMap.put(Items.ZOMBIE_HEAD, FireworkItem.Type.field_7974);
 	});
 	private static final Ingredient field_9012 = Ingredient.ofItems(Items.field_8054);
 
@@ -100,14 +100,14 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 	public ItemStack method_17712(CraftingInventory craftingInventory) {
 		ItemStack itemStack = new ItemStack(Items.field_8450);
 		CompoundTag compoundTag = itemStack.getOrCreateSubCompoundTag("Explosion");
-		FireworksItem.Type type = FireworksItem.Type.field_7976;
+		FireworkItem.Type type = FireworkItem.Type.field_7976;
 		List<Integer> list = Lists.<Integer>newArrayList();
 
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
 			ItemStack itemStack2 = craftingInventory.getInvStack(i);
 			if (!itemStack2.isEmpty()) {
 				if (field_9011.method_8093(itemStack2)) {
-					type = (FireworksItem.Type)field_9013.get(itemStack2.getItem());
+					type = (FireworkItem.Type)field_9013.get(itemStack2.getItem());
 				} else if (field_9014.method_8093(itemStack2)) {
 					compoundTag.putBoolean("Flicker", true);
 				} else if (field_9010.method_8093(itemStack2)) {

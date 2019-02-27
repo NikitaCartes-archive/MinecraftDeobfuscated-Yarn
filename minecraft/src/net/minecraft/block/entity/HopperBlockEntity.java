@@ -15,6 +15,7 @@ import net.minecraft.container.HopperContainer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
@@ -25,7 +26,6 @@ import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.DefaultedList;
-import net.minecraft.util.InventoryUtil;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
@@ -47,7 +47,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		super.fromTag(compoundTag);
 		this.inventory = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
 		if (!this.deserializeLootTable(compoundTag)) {
-			InventoryUtil.deserialize(compoundTag, this.inventory);
+			Inventories.fromTag(compoundTag, this.inventory);
 		}
 
 		this.transferCooldown = compoundTag.getInt("TransferCooldown");
@@ -57,7 +57,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	public CompoundTag toTag(CompoundTag compoundTag) {
 		super.toTag(compoundTag);
 		if (!this.serializeLootTable(compoundTag)) {
-			InventoryUtil.serialize(compoundTag, this.inventory);
+			Inventories.toTag(compoundTag, this.inventory);
 		}
 
 		compoundTag.putInt("TransferCooldown", this.transferCooldown);
@@ -72,7 +72,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	@Override
 	public ItemStack takeInvStack(int i, int j) {
 		this.checkLootInteraction(null);
-		return InventoryUtil.splitStack(this.getInvStackList(), i, j);
+		return Inventories.splitStack(this.getInvStackList(), i, j);
 	}
 
 	@Override

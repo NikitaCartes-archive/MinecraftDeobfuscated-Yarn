@@ -2170,7 +2170,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					if (particle != null) {
 						float z = 0.75F + random.nextFloat() * 0.25F;
 						particle.setColor(w * z, x * z, y * z);
-						particle.method_3075((float)g);
+						particle.move((float)g);
 					}
 				}
 
@@ -2221,7 +2221,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 						ParticleTypes.field_11216, false, (double)blockPos.getX() + ac * 0.1, (double)blockPos.getY() + 0.3, (double)blockPos.getZ() + ag * 0.1, ac, ad, ag
 					);
 					if (particle2 != null) {
-						particle2.method_3075(ae);
+						particle2.move(ae);
 					}
 				}
 

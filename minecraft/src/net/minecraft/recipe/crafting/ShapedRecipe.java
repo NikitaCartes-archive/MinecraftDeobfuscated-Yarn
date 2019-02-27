@@ -125,7 +125,7 @@ public class ShapedRecipe implements CraftingRecipe {
 		return this.height;
 	}
 
-	private static DefaultedList<Ingredient> method_8148(String[] strings, Map<String, Ingredient> map, int i, int j) {
+	private static DefaultedList<Ingredient> getIngredients(String[] strings, Map<String, Ingredient> map, int i, int j) {
 		DefaultedList<Ingredient> defaultedList = DefaultedList.create(i * j, Ingredient.EMPTY);
 		Set<String> set = Sets.<String>newHashSet(map.keySet());
 		set.remove(" ");
@@ -151,7 +151,7 @@ public class ShapedRecipe implements CraftingRecipe {
 	}
 
 	@VisibleForTesting
-	static String[] method_8146(String... strings) {
+	static String[] combinePattern(String... strings) {
 		int i = Integer.MAX_VALUE;
 		int j = 0;
 		int k = 0;
@@ -159,8 +159,8 @@ public class ShapedRecipe implements CraftingRecipe {
 
 		for (int m = 0; m < strings.length; m++) {
 			String string = strings[m];
-			i = Math.min(i, method_8151(string));
-			int n = method_8153(string);
+			i = Math.min(i, findNextIngredient(string));
+			int n = findNextIngredientReverse(string);
 			j = Math.max(j, n);
 			if (n < 0) {
 				if (k == m) {
@@ -186,7 +186,7 @@ public class ShapedRecipe implements CraftingRecipe {
 		}
 	}
 
-	private static int method_8151(String string) {
+	private static int findNextIngredient(String string) {
 		int i = 0;
 
 		while (i < string.length() && string.charAt(i) == ' ') {
@@ -196,7 +196,7 @@ public class ShapedRecipe implements CraftingRecipe {
 		return i;
 	}
 
-	private static int method_8153(String string) {
+	private static int findNextIngredientReverse(String string) {
 		int i = string.length() - 1;
 
 		while (i >= 0 && string.charAt(i) == ' ') {
@@ -206,7 +206,7 @@ public class ShapedRecipe implements CraftingRecipe {
 		return i;
 	}
 
-	private static String[] deserializePattern(JsonArray jsonArray) {
+	private static String[] getPattern(JsonArray jsonArray) {
 		String[] strings = new String[jsonArray.size()];
 		if (strings.length > 3) {
 			throw new JsonSyntaxException("Invalid pattern: too many rows, 3 is maximum");
@@ -230,7 +230,7 @@ public class ShapedRecipe implements CraftingRecipe {
 		}
 	}
 
-	private static Map<String, Ingredient> deserializeComponents(JsonObject jsonObject) {
+	private static Map<String, Ingredient> getComponents(JsonObject jsonObject) {
 		Map<String, Ingredient> map = Maps.<String, Ingredient>newHashMap();
 
 		for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
@@ -249,7 +249,7 @@ public class ShapedRecipe implements CraftingRecipe {
 		return map;
 	}
 
-	public static ItemStack deserializeItemStack(JsonObject jsonObject) {
+	public static ItemStack getItemStack(JsonObject jsonObject) {
 		String string = JsonHelper.getString(jsonObject, "item");
 		Item item = (Item)Registry.ITEM.getOrEmpty(new Identifier(string)).orElseThrow(() -> new JsonSyntaxException("Unknown item '" + string + "'"));
 		if (jsonObject.has("data")) {
@@ -263,12 +263,12 @@ public class ShapedRecipe implements CraftingRecipe {
 	public static class Serializer implements RecipeSerializer<ShapedRecipe> {
 		public ShapedRecipe method_8164(Identifier identifier, JsonObject jsonObject) {
 			String string = JsonHelper.getString(jsonObject, "group", "");
-			Map<String, Ingredient> map = ShapedRecipe.deserializeComponents(JsonHelper.getObject(jsonObject, "key"));
-			String[] strings = ShapedRecipe.method_8146(ShapedRecipe.deserializePattern(JsonHelper.getArray(jsonObject, "pattern")));
+			Map<String, Ingredient> map = ShapedRecipe.getComponents(JsonHelper.getObject(jsonObject, "key"));
+			String[] strings = ShapedRecipe.combinePattern(ShapedRecipe.getPattern(JsonHelper.getArray(jsonObject, "pattern")));
 			int i = strings[0].length();
 			int j = strings.length;
-			DefaultedList<Ingredient> defaultedList = ShapedRecipe.method_8148(strings, map, i, j);
-			ItemStack itemStack = ShapedRecipe.deserializeItemStack(JsonHelper.getObject(jsonObject, "result"));
+			DefaultedList<Ingredient> defaultedList = ShapedRecipe.getIngredients(strings, map, i, j);
+			ItemStack itemStack = ShapedRecipe.getItemStack(JsonHelper.getObject(jsonObject, "result"));
 			return new ShapedRecipe(identifier, string, i, j, defaultedList, itemStack);
 		}
 

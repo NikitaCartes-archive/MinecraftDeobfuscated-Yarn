@@ -20,6 +20,7 @@ import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -177,7 +178,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 					}
 
 					concurrentLinkedQueue.add(sprite);
-				}));
+				}, SystemUtil.getServerWorkerExecutor()));
 			}
 		}
 
@@ -197,7 +198,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 					if (this.loadSprite(resourceManager, sprite)) {
 						concurrentLinkedQueue.add(sprite);
 					}
-				}));
+				}, SystemUtil.getServerWorkerExecutor()));
 			}
 		}
 

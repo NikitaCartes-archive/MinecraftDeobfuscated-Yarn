@@ -1,12 +1,13 @@
 package net.minecraft.entity.ai.goal;
 
+import net.minecraft.class_1675;
 import net.minecraft.entity.CrossbowUser;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.RangedAttacker;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.item.CrossbowItem;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.Hand;
 
 public class CrossbowAttackGoal<T extends HostileEntity & RangedAttacker & CrossbowUser> extends Goal {
 	private final T entity;
@@ -29,7 +30,7 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttacker & Cross
 	}
 
 	private boolean isEntityHoldingCrossbow() {
-		return !this.entity.getMainHandStack().isEmpty() && this.entity.getMainHandStack().getItem() == Items.field_8399;
+		return this.entity.method_18809(Items.field_8399);
 	}
 
 	@Override
@@ -70,14 +71,14 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttacker & Cross
 			this.entity.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
 			if (this.stage == CrossbowAttackGoal.Stage.field_16534) {
 				if (!bl3) {
-					this.entity.setCurrentHand(Hand.MAIN);
+					this.entity.setCurrentHand(class_1675.method_18812(this.entity, Items.field_8399));
 					this.stage = CrossbowAttackGoal.Stage.field_16530;
 					this.entity.setCharging(true);
 				}
 			} else if (this.stage == CrossbowAttackGoal.Stage.field_16530) {
 				int i = this.entity.method_6048();
-				if (i >= CrossbowItem.getPullTime(this.entity.getMainHandStack())) {
-					CrossbowItem.setCharged(this.entity.getMainHandStack(), true);
+				ItemStack itemStack = this.entity.getActiveItem();
+				if (i >= CrossbowItem.getPullTime(itemStack)) {
 					this.entity.method_6075();
 					this.stage = CrossbowAttackGoal.Stage.field_16532;
 					this.field_16529 = 20 + this.entity.getRand().nextInt(20);
@@ -90,7 +91,8 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttacker & Cross
 				}
 			} else if (this.stage == CrossbowAttackGoal.Stage.field_16533 && bl) {
 				this.entity.attack(livingEntity, 1.0F);
-				CrossbowItem.setCharged(this.entity.getMainHandStack(), false);
+				ItemStack itemStack2 = this.entity.getStackInHand(class_1675.method_18812(this.entity, Items.field_8399));
+				CrossbowItem.setCharged(itemStack2, false);
 				this.stage = CrossbowAttackGoal.Stage.field_16534;
 			}
 		}

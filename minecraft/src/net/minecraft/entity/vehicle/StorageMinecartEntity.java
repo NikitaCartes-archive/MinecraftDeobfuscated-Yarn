@@ -8,6 +8,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -16,7 +17,6 @@ import net.minecraft.sortme.ItemScatterer;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.InventoryUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
@@ -68,7 +68,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	@Override
 	public ItemStack takeInvStack(int i, int j) {
 		this.method_7563(null);
-		return InventoryUtil.splitStack(this.inventory, i, j);
+		return Inventories.splitStack(this.inventory, i, j);
 	}
 
 	@Override
@@ -136,7 +136,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 				compoundTag.putLong("LootTableSeed", this.lootSeed);
 			}
 		} else {
-			InventoryUtil.serialize(compoundTag, this.inventory);
+			Inventories.toTag(compoundTag, this.inventory);
 		}
 	}
 
@@ -148,7 +148,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 			this.lootTableId = new Identifier(compoundTag.getString("LootTable"));
 			this.lootSeed = compoundTag.getLong("LootTableSeed");
 		} else {
-			InventoryUtil.deserialize(compoundTag, this.inventory);
+			Inventories.fromTag(compoundTag, this.inventory);
 		}
 	}
 

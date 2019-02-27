@@ -2,8 +2,6 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4000;
-import net.minecraft.class_4001;
 import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
@@ -20,7 +18,7 @@ public class NoteParticle extends SpriteBillboardParticle {
 		this.colorRed = MathHelper.sin(((float)g + 0.0F) * (float) (Math.PI * 2)) * 0.65F + 0.35F;
 		this.colorGreen = MathHelper.sin(((float)g + 0.33333334F) * (float) (Math.PI * 2)) * 0.65F + 0.35F;
 		this.colorBlue = MathHelper.sin(((float)g + 0.6666667F) * (float) (Math.PI * 2)) * 0.65F + 0.35F;
-		this.field_17867 *= 1.5F;
+		this.scale *= 1.5F;
 		this.maxAge = 6;
 	}
 
@@ -31,7 +29,7 @@ public class NoteParticle extends SpriteBillboardParticle {
 
 	@Override
 	public float method_18132(float f) {
-		return this.field_17867 * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
+		return this.scale * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
 	}
 
 	@Override
@@ -62,8 +60,8 @@ public class NoteParticle extends SpriteBillboardParticle {
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17819;
 
-		public Factory(class_4001 arg) {
-			this.field_17819 = arg.method_18137(class_4000.field_17858);
+		public Factory(class_4002 arg) {
+			this.field_17819 = arg;
 		}
 
 		public Particle method_3041(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

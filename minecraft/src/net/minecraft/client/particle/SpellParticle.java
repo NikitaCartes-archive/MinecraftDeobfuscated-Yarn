@@ -1,14 +1,10 @@
 package net.minecraft.client.particle;
 
-import com.google.common.collect.Lists;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4000;
-import net.minecraft.class_4001;
 import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
@@ -25,7 +21,7 @@ public class SpellParticle extends SpriteBillboardParticle {
 			this.velocityZ *= 0.1F;
 		}
 
-		this.field_17867 *= 0.75F;
+		this.scale *= 0.75F;
 		this.maxAge = (int)(8.0 / (Math.random() * 0.8 + 0.2));
 		this.collidesWithWorld = false;
 		this.method_18142(arg);
@@ -66,8 +62,8 @@ public class SpellParticle extends SpriteBillboardParticle {
 	public static class DefaultFactory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17874;
 
-		public DefaultFactory(class_4001 arg) {
-			this.field_17874 = arg.register(Lists.<Identifier>reverse(class_4000.field_17848));
+		public DefaultFactory(class_4002 arg) {
+			this.field_17874 = arg;
 		}
 
 		public Particle method_3099(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -79,8 +75,8 @@ public class SpellParticle extends SpriteBillboardParticle {
 	public static class EntityAmbientFactory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17871;
 
-		public EntityAmbientFactory(class_4001 arg) {
-			this.field_17871 = arg.register(Lists.<Identifier>reverse(class_4000.field_17848));
+		public EntityAmbientFactory(class_4002 arg) {
+			this.field_17871 = arg;
 		}
 
 		public Particle method_3096(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -95,8 +91,8 @@ public class SpellParticle extends SpriteBillboardParticle {
 	public static class EntityFactory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17873;
 
-		public EntityFactory(class_4001 arg) {
-			this.field_17873 = arg.register(Lists.<Identifier>reverse(class_4000.field_17848));
+		public EntityFactory(class_4002 arg) {
+			this.field_17873 = arg;
 		}
 
 		public Particle method_3098(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -110,8 +106,8 @@ public class SpellParticle extends SpriteBillboardParticle {
 	public static class InstantFactory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17872;
 
-		public InstantFactory(class_4001 arg) {
-			this.field_17872 = arg.register(Lists.<Identifier>reverse(class_4000.field_17833));
+		public InstantFactory(class_4002 arg) {
+			this.field_17872 = arg;
 		}
 
 		public Particle method_3097(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -123,8 +119,8 @@ public class SpellParticle extends SpriteBillboardParticle {
 	public static class WitchFactory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17875;
 
-		public WitchFactory(class_4001 arg) {
-			this.field_17875 = arg.register(Lists.<Identifier>reverse(class_4000.field_17833));
+		public WitchFactory(class_4002 arg) {
+			this.field_17875 = arg;
 		}
 
 		public Particle method_3100(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

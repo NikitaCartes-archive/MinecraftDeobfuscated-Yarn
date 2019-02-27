@@ -1,13 +1,9 @@
 package net.minecraft.client.particle;
 
-import com.google.common.collect.Lists;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4000;
-import net.minecraft.class_4001;
 import net.minecraft.class_4002;
 import net.minecraft.particle.DustParticleParameters;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
@@ -25,7 +21,7 @@ public class RedDustParticle extends SpriteBillboardParticle {
 		this.colorRed = ((float)(Math.random() * 0.2F) + 0.8F) * dustParticleParameters.getRed() * j;
 		this.colorGreen = ((float)(Math.random() * 0.2F) + 0.8F) * dustParticleParameters.getGreen() * j;
 		this.colorBlue = ((float)(Math.random() * 0.2F) + 0.8F) * dustParticleParameters.getBlue() * j;
-		this.field_17867 = this.field_17867 * 0.75F * dustParticleParameters.getAlpha();
+		this.scale = this.scale * 0.75F * dustParticleParameters.getAlpha();
 		int k = (int)(8.0 / (Math.random() * 0.8 + 0.2));
 		this.maxAge = (int)Math.max((float)k * dustParticleParameters.getAlpha(), 1.0F);
 		this.method_18142(arg);
@@ -38,7 +34,7 @@ public class RedDustParticle extends SpriteBillboardParticle {
 
 	@Override
 	public float method_18132(float f) {
-		return this.field_17867 * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
+		return this.scale * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
 	}
 
 	@Override
@@ -70,8 +66,8 @@ public class RedDustParticle extends SpriteBillboardParticle {
 	public static class Factory implements ParticleFactory<DustParticleParameters> {
 		private final class_4002 field_17802;
 
-		public Factory(class_4001 arg) {
-			this.field_17802 = arg.register(Lists.<Identifier>reverse(class_4000.field_17850));
+		public Factory(class_4002 arg) {
+			this.field_17802 = arg;
 		}
 
 		public Particle method_3022(DustParticleParameters dustParticleParameters, World world, double d, double e, double f, double g, double h, double i) {

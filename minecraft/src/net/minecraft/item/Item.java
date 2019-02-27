@@ -95,7 +95,7 @@ public class Item implements ItemProvider {
 		}
 	}
 
-	public void method_7852(World world, LivingEntity livingEntity, ItemStack itemStack, int i) {
+	public void onUsingTick(World world, LivingEntity livingEntity, ItemStack itemStack, int i) {
 	}
 
 	@Nullable

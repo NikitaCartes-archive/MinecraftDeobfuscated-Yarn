@@ -1,8 +1,8 @@
 package net.minecraft.item;
 
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 
 public class FishItem extends FoodItem {
@@ -27,15 +27,15 @@ public class FishItem extends FoodItem {
 	}
 
 	@Override
-	protected void onConsumed(ItemStack itemStack, World world, PlayerEntity playerEntity) {
+	protected void onConsumed(ItemStack itemStack, World world, LivingEntity livingEntity) {
 		FishItem.Type type = FishItem.Type.fromStack(itemStack);
-		if (type == FishItem.Type.PUFFERFISH) {
-			playerEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5899, 1200, 3));
-			playerEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5903, 300, 2));
-			playerEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5916, 300, 1));
+		if (!world.isClient && type == FishItem.Type.PUFFERFISH) {
+			livingEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5899, 1200, 3));
+			livingEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5903, 300, 2));
+			livingEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5916, 300, 1));
 		}
 
-		super.onConsumed(itemStack, world, playerEntity);
+		super.onConsumed(itemStack, world, livingEntity);
 	}
 
 	public static enum Type {

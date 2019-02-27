@@ -87,8 +87,10 @@ public abstract class MobEntity extends LivingEntity {
 	private final Map<PathNodeType, Float> pathNodeTypeWeights = Maps.newEnumMap(PathNodeType.class);
 	private Identifier lootTable;
 	private long lootTableSeed;
-	private boolean leashed;
+	@Nullable
 	private Entity holdingEntity;
+	private int field_18279;
+	@Nullable
 	private CompoundTag leashTag;
 	private BlockPos field_18074 = BlockPos.ORIGIN;
 	private float field_18075 = -1.0F;
@@ -348,7 +350,6 @@ public abstract class MobEntity extends LivingEntity {
 		}
 
 		compoundTag.put("HandDropChances", listTag4);
-		compoundTag.putBoolean("Leashed", this.leashed);
 		if (this.holdingEntity != null) {
 			CompoundTag compoundTag3 = new CompoundTag();
 			if (this.holdingEntity instanceof LivingEntity) {
@@ -417,8 +418,7 @@ public abstract class MobEntity extends LivingEntity {
 			}
 		}
 
-		this.leashed = compoundTag.getBoolean("Leashed");
-		if (this.leashed && compoundTag.containsKey("Leash", 10)) {
+		if (compoundTag.containsKey("Leash", 10)) {
 			this.leashTag = compoundTag.getCompound("Leash");
 		}
 
@@ -432,8 +432,8 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	@Override
-	protected void method_16077(DamageSource damageSource, boolean bl) {
-		super.method_16077(damageSource, bl);
+	protected void dropLoot(DamageSource damageSource, boolean bl) {
+		super.dropLoot(damageSource, bl);
 		this.lootTable = null;
 	}
 
@@ -930,7 +930,7 @@ public abstract class MobEntity extends LivingEntity {
 
 	@Override
 	public final boolean interact(PlayerEntity playerEntity, Hand hand) {
-		if (this.isLeashed() && this.getHoldingEntity() == playerEntity) {
+		if (this.getHoldingEntity() == playerEntity) {
 			this.detachLeash(true, !playerEntity.abilities.creativeMode);
 			return true;
 		} else {
@@ -983,20 +983,15 @@ public abstract class MobEntity extends LivingEntity {
 			this.deserializeLeashTag();
 		}
 
-		if (this.leashed) {
-			if (!this.isValid()) {
-				this.detachLeash(true, true);
-			}
-
-			if (this.holdingEntity == null || this.holdingEntity.invalid) {
+		if (this.holdingEntity != null) {
+			if (!this.isValid() || !this.holdingEntity.isValid()) {
 				this.detachLeash(true, true);
 			}
 		}
 	}
 
 	public void detachLeash(boolean bl, boolean bl2) {
-		if (this.leashed) {
-			this.leashed = false;
+		if (this.holdingEntity != null) {
 			this.teleporting = false;
 			if (!(this.holdingEntity instanceof PlayerEntity)) {
 				this.holdingEntity.teleporting = false;
@@ -1018,15 +1013,19 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	public boolean isLeashed() {
-		return this.leashed;
+		return this.holdingEntity != null;
 	}
 
+	@Nullable
 	public Entity getHoldingEntity() {
+		if (this.holdingEntity == null && this.field_18279 != 0 && this.world.isClient) {
+			this.holdingEntity = this.world.getEntityById(this.field_18279);
+		}
+
 		return this.holdingEntity;
 	}
 
 	public void attachLeash(Entity entity, boolean bl) {
-		this.leashed = true;
 		this.holdingEntity = entity;
 		this.teleporting = true;
 		if (!(this.holdingEntity instanceof PlayerEntity)) {
@@ -1042,6 +1041,12 @@ public abstract class MobEntity extends LivingEntity {
 		}
 	}
 
+	@Environment(EnvType.CLIENT)
+	public void method_18810(int i) {
+		this.field_18279 = i;
+		this.detachLeash(false, false);
+	}
+
 	@Override
 	public boolean startRiding(Entity entity, boolean bl) {
 		boolean bl2 = super.startRiding(entity, bl);
@@ -1053,15 +1058,12 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	private void deserializeLeashTag() {
-		if (this.leashed && this.leashTag != null) {
+		if (this.leashTag != null && this.world instanceof ServerWorld) {
 			if (this.leashTag.hasUuid("UUID")) {
 				UUID uUID = this.leashTag.getUuid("UUID");
-
-				for (LivingEntity livingEntity : this.world.method_18467(LivingEntity.class, this.getBoundingBox().expand(10.0))) {
-					if (livingEntity.getUuid().equals(uUID)) {
-						this.attachLeash(livingEntity, true);
-						break;
-					}
+				Entity entity = ((ServerWorld)this.world).getEntity(uUID);
+				if (entity != null) {
+					this.attachLeash(entity, true);
 				}
 			} else if (this.leashTag.containsKey("X", 99) && this.leashTag.containsKey("Y", 99) && this.leashTag.containsKey("Z", 99)) {
 				BlockPos blockPos = new BlockPos(this.leashTag.getInt("X"), this.leashTag.getInt("Y"), this.leashTag.getInt("Z"));
@@ -1069,9 +1071,9 @@ public abstract class MobEntity extends LivingEntity {
 			} else {
 				this.detachLeash(false, true);
 			}
-		}
 
-		this.leashTag = null;
+			this.leashTag = null;
+		}
 	}
 
 	@Override
@@ -1157,17 +1159,17 @@ public abstract class MobEntity extends LivingEntity {
 			g += (float)EnchantmentHelper.getKnockback(this);
 		}
 
+		int i = EnchantmentHelper.getFireAspect(this);
+		if (i > 0) {
+			entity.setOnFireFor(i * 4);
+		}
+
 		boolean bl = entity.damage(DamageSource.mob(this), f);
 		if (bl) {
 			if (g > 0.0F && entity instanceof LivingEntity) {
 				((LivingEntity)entity)
 					.method_6005(this, g * 0.5F, (double)MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)), (double)(-MathHelper.cos(this.yaw * (float) (Math.PI / 180.0))));
 				this.setVelocity(this.getVelocity().multiply(0.6, 1.0, 0.6));
-			}
-
-			int i = EnchantmentHelper.getFireAspect(this);
-			if (i > 0) {
-				entity.setOnFireFor(i * 4);
 			}
 
 			if (entity instanceof PlayerEntity) {
@@ -1210,5 +1212,9 @@ public abstract class MobEntity extends LivingEntity {
 		} else {
 			this.setVelocity(this.getVelocity().add(0.0, 0.3, 0.0));
 		}
+	}
+
+	public boolean method_18809(Item item) {
+		return this.getMainHandStack().getItem() == item || this.getOffHandStack().getItem() == item;
 	}
 }

@@ -1,32 +1,24 @@
 package net.minecraft.item;
 
-import net.minecraft.entity.player.PlayerEntity;
+import java.util.function.Predicate;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Hand;
 
 public class BaseBowItem extends Item {
+	public static final Predicate<ItemStack> field_18281 = itemStack -> itemStack.getItem().matches(ItemTags.field_18317);
+	public static final Predicate<ItemStack> field_18282 = field_18281.or(itemStack -> itemStack.getItem() == Items.field_8639);
+
 	public BaseBowItem(Item.Settings settings) {
 		super(settings);
 	}
 
-	protected ItemStack findArrowStack(PlayerEntity playerEntity) {
-		if (this.isArrow(playerEntity.getStackInHand(Hand.OFF))) {
-			return playerEntity.getStackInHand(Hand.OFF);
-		} else if (this.isArrow(playerEntity.getStackInHand(Hand.MAIN))) {
-			return playerEntity.getStackInHand(Hand.MAIN);
+	public static ItemStack method_18815(LivingEntity livingEntity, Predicate<ItemStack> predicate) {
+		if (predicate.test(livingEntity.getStackInHand(Hand.OFF))) {
+			return livingEntity.getStackInHand(Hand.OFF);
 		} else {
-			for (int i = 0; i < playerEntity.inventory.getInvSize(); i++) {
-				ItemStack itemStack = playerEntity.inventory.getInvStack(i);
-				if (this.isArrow(itemStack)) {
-					return itemStack;
-				}
-			}
-
-			return ItemStack.EMPTY;
+			return predicate.test(livingEntity.getStackInHand(Hand.MAIN)) ? livingEntity.getStackInHand(Hand.MAIN) : ItemStack.EMPTY;
 		}
-	}
-
-	protected boolean isArrow(ItemStack itemStack) {
-		return itemStack.getItem() instanceof ArrowItem;
 	}
 
 	@Override

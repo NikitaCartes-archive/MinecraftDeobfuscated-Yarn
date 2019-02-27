@@ -8,6 +8,14 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.projectile.ArrowEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.item.ArrowItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -167,5 +175,24 @@ public final class class_1675 {
 
 		entity.pitch = MathHelper.lerp(f, entity.prevPitch, entity.pitch);
 		entity.yaw = MathHelper.lerp(f, entity.prevYaw, entity.yaw);
+	}
+
+	public static Hand method_18812(LivingEntity livingEntity, Item item) {
+		return livingEntity.getMainHandStack().getItem() == item ? Hand.MAIN : Hand.OFF;
+	}
+
+	public static ProjectileEntity method_18813(LivingEntity livingEntity, ItemStack itemStack, float f) {
+		ArrowItem arrowItem = (ArrowItem)(itemStack.getItem() instanceof ArrowItem ? itemStack.getItem() : Items.field_8107);
+		ProjectileEntity projectileEntity = arrowItem.createEntityArrow(livingEntity.world, itemStack, livingEntity);
+		if (itemStack.getItem() == Items.field_8236) {
+			projectileEntity.method_7435(livingEntity, f);
+			return projectileEntity;
+		} else {
+			if (itemStack.getItem() == Items.field_8087 && projectileEntity instanceof ArrowEntity) {
+				((ArrowEntity)projectileEntity).initFromStack(itemStack);
+			}
+
+			return projectileEntity;
+		}
 	}
 }

@@ -33,25 +33,25 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 	public int left;
 	protected int top;
 	protected Slot focusedSlot;
-	private Slot field_2777;
-	private boolean field_2789;
-	private ItemStack field_2782 = ItemStack.EMPTY;
-	private int field_2784;
-	private int field_2796;
-	private Slot field_2802;
-	private long field_2795;
-	private ItemStack field_2785 = ItemStack.EMPTY;
-	private Slot field_2780;
-	private long field_2781;
-	protected final Set<Slot> slots = Sets.<Slot>newHashSet();
-	protected boolean field_2794;
-	private int field_2790;
-	private int field_2778;
+	private Slot touchDragSlotStart;
+	private boolean touchIsRightClickDrag;
+	private ItemStack touchDragStack = ItemStack.EMPTY;
+	private int touchDropX;
+	private int touchDropY;
+	private Slot touchDropOriginSlot;
+	private long touchDropTime;
+	private ItemStack touchDropReturningStack = ItemStack.EMPTY;
+	private Slot touchHoveredSlot;
+	private long touchDropTimer;
+	protected final Set<Slot> cursorDragSlots = Sets.<Slot>newHashSet();
+	protected boolean isCursorDragging;
+	private int heldButtonType;
+	private int heldButtonCode;
 	private boolean field_2798;
 	private int field_2803;
-	private long field_2788;
-	private Slot field_2799;
-	private int field_2786;
+	private long lastButtonClickTime;
+	private Slot lastClickedSlot;
+	private int lastClickedButton;
 	private boolean field_2783;
 	private ItemStack field_2791 = ItemStack.EMPTY;
 
@@ -114,15 +114,15 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 		this.drawForeground(i, j);
 		GuiLighting.enableForItems();
 		PlayerInventory playerInventory = this.client.player.inventory;
-		ItemStack itemStack = this.field_2782.isEmpty() ? playerInventory.getCursorStack() : this.field_2782;
+		ItemStack itemStack = this.touchDragStack.isEmpty() ? playerInventory.getCursorStack() : this.touchDragStack;
 		if (!itemStack.isEmpty()) {
 			int p = 8;
-			int q = this.field_2782.isEmpty() ? 8 : 16;
+			int q = this.touchDragStack.isEmpty() ? 8 : 16;
 			String string = null;
-			if (!this.field_2782.isEmpty() && this.field_2789) {
+			if (!this.touchDragStack.isEmpty() && this.touchIsRightClickDrag) {
 				itemStack = itemStack.copy();
 				itemStack.setAmount(MathHelper.ceil((float)itemStack.getAmount() / 2.0F));
-			} else if (this.field_2794 && this.slots.size() > 1) {
+			} else if (this.isCursorDragging && this.cursorDragSlots.size() > 1) {
 				itemStack = itemStack.copy();
 				itemStack.setAmount(this.field_2803);
 				if (itemStack.isEmpty()) {
@@ -133,18 +133,18 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 			this.drawItem(itemStack, i - k - 8, j - l - q, string);
 		}
 
-		if (!this.field_2785.isEmpty()) {
-			float g = (float)(SystemUtil.getMeasuringTimeMs() - this.field_2795) / 100.0F;
+		if (!this.touchDropReturningStack.isEmpty()) {
+			float g = (float)(SystemUtil.getMeasuringTimeMs() - this.touchDropTime) / 100.0F;
 			if (g >= 1.0F) {
 				g = 1.0F;
-				this.field_2785 = ItemStack.EMPTY;
+				this.touchDropReturningStack = ItemStack.EMPTY;
 			}
 
-			int q = this.field_2802.xPosition - this.field_2784;
-			int r = this.field_2802.yPosition - this.field_2796;
-			int s = this.field_2784 + (int)((float)q * g);
-			int t = this.field_2796 + (int)((float)r * g);
-			this.drawItem(this.field_2785, s, t, null);
+			int q = this.touchDropOriginSlot.xPosition - this.touchDropX;
+			int r = this.touchDropOriginSlot.yPosition - this.touchDropY;
+			int s = this.touchDropX + (int)((float)q * g);
+			int t = this.touchDropY + (int)((float)r * g);
+			this.drawItem(this.touchDropReturningStack, s, t, null);
 		}
 
 		GlStateManager.popMatrix();
@@ -164,7 +164,7 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 		this.zOffset = 200.0F;
 		this.itemRenderer.zOffset = 200.0F;
 		this.itemRenderer.renderGuiItem(itemStack, i, j);
-		this.itemRenderer.renderGuiItemOverlay(this.fontRenderer, itemStack, i, j - (this.field_2782.isEmpty() ? 0 : 8), string);
+		this.itemRenderer.renderGuiItemOverlay(this.fontRenderer, itemStack, i, j - (this.touchDragStack.isEmpty() ? 0 : 8), string);
 		this.zOffset = 0.0F;
 		this.itemRenderer.zOffset = 0.0F;
 	}
@@ -179,28 +179,28 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 		int j = slot.yPosition;
 		ItemStack itemStack = slot.getStack();
 		boolean bl = false;
-		boolean bl2 = slot == this.field_2777 && !this.field_2782.isEmpty() && !this.field_2789;
+		boolean bl2 = slot == this.touchDragSlotStart && !this.touchDragStack.isEmpty() && !this.touchIsRightClickDrag;
 		ItemStack itemStack2 = this.client.player.inventory.getCursorStack();
 		String string = null;
-		if (slot == this.field_2777 && !this.field_2782.isEmpty() && this.field_2789 && !itemStack.isEmpty()) {
+		if (slot == this.touchDragSlotStart && !this.touchDragStack.isEmpty() && this.touchIsRightClickDrag && !itemStack.isEmpty()) {
 			itemStack = itemStack.copy();
 			itemStack.setAmount(itemStack.getAmount() / 2);
-		} else if (this.field_2794 && this.slots.contains(slot) && !itemStack2.isEmpty()) {
-			if (this.slots.size() == 1) {
+		} else if (this.isCursorDragging && this.cursorDragSlots.contains(slot) && !itemStack2.isEmpty()) {
+			if (this.cursorDragSlots.size() == 1) {
 				return;
 			}
 
 			if (Container.canInsertItemIntoSlot(slot, itemStack2, true) && this.container.canInsertIntoSlot(slot)) {
 				itemStack = itemStack2.copy();
 				bl = true;
-				Container.calculateStackSize(this.slots, this.field_2790, itemStack, slot.getStack().isEmpty() ? 0 : slot.getStack().getAmount());
+				Container.calculateStackSize(this.cursorDragSlots, this.heldButtonType, itemStack, slot.getStack().isEmpty() ? 0 : slot.getStack().getAmount());
 				int k = Math.min(itemStack.getMaxAmount(), slot.getMaxStackAmount(itemStack));
 				if (itemStack.getAmount() > k) {
 					string = TextFormat.field_1054.toString() + k;
 					itemStack.setAmount(k);
 				}
 			} else {
-				this.slots.remove(slot);
+				this.cursorDragSlots.remove(slot);
 				this.calculateOffset();
 			}
 		}
@@ -235,17 +235,17 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 
 	private void calculateOffset() {
 		ItemStack itemStack = this.client.player.inventory.getCursorStack();
-		if (!itemStack.isEmpty() && this.field_2794) {
-			if (this.field_2790 == 2) {
+		if (!itemStack.isEmpty() && this.isCursorDragging) {
+			if (this.heldButtonType == 2) {
 				this.field_2803 = itemStack.getMaxAmount();
 			} else {
 				this.field_2803 = itemStack.getAmount();
 
-				for (Slot slot : this.slots) {
+				for (Slot slot : this.cursorDragSlots) {
 					ItemStack itemStack2 = itemStack.copy();
 					ItemStack itemStack3 = slot.getStack();
 					int i = itemStack3.isEmpty() ? 0 : itemStack3.getAmount();
-					Container.calculateStackSize(this.slots, this.field_2790, itemStack2, i);
+					Container.calculateStackSize(this.cursorDragSlots, this.heldButtonType, itemStack2, i);
 					int j = Math.min(itemStack2.getMaxAmount(), slot.getMaxStackAmount(itemStack2));
 					if (itemStack2.getAmount() > j) {
 						itemStack2.setAmount(j);
@@ -276,7 +276,7 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 			boolean bl = this.client.options.keyPickItem.matchesMouse(i);
 			Slot slot = this.getSlotAt(d, e);
 			long l = SystemUtil.getMeasuringTimeMs();
-			this.field_2783 = this.field_2799 == slot && l - this.field_2788 < 250L && this.field_2786 == i;
+			this.field_2783 = this.lastClickedSlot == slot && l - this.lastButtonClickTime < 250L && this.lastClickedButton == i;
 			this.field_2798 = false;
 			if (i == 0 || i == 1 || bl) {
 				int j = this.left;
@@ -299,13 +299,13 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 				if (m != -1) {
 					if (this.client.options.touchscreen) {
 						if (slot != null && slot.hasStack()) {
-							this.field_2777 = slot;
-							this.field_2782 = ItemStack.EMPTY;
-							this.field_2789 = i == 1;
+							this.touchDragSlotStart = slot;
+							this.touchDragStack = ItemStack.EMPTY;
+							this.touchIsRightClickDrag = i == 1;
 						} else {
-							this.field_2777 = null;
+							this.touchDragSlotStart = null;
 						}
-					} else if (!this.field_2794) {
+					} else if (!this.isCursorDragging) {
 						if (this.client.player.inventory.getCursorStack().isEmpty()) {
 							if (this.client.options.keyPickItem.matchesMouse(i)) {
 								this.onMouseClick(slot, m, i, SlotActionType.field_7796);
@@ -328,24 +328,24 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 
 							this.field_2798 = true;
 						} else {
-							this.field_2794 = true;
-							this.field_2778 = i;
-							this.slots.clear();
+							this.isCursorDragging = true;
+							this.heldButtonCode = i;
+							this.cursorDragSlots.clear();
 							if (i == 0) {
-								this.field_2790 = 0;
+								this.heldButtonType = 0;
 							} else if (i == 1) {
-								this.field_2790 = 1;
+								this.heldButtonType = 1;
 							} else if (this.client.options.keyPickItem.matchesMouse(i)) {
-								this.field_2790 = 2;
+								this.heldButtonType = 2;
 							}
 						}
 					}
 				}
 			}
 
-			this.field_2799 = slot;
-			this.field_2788 = l;
-			this.field_2786 = i;
+			this.lastClickedSlot = slot;
+			this.lastButtonClickTime = l;
+			this.lastClickedButton = i;
 			return true;
 		}
 	}
@@ -358,36 +358,36 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 	public boolean mouseDragged(double d, double e, int i, double f, double g) {
 		Slot slot = this.getSlotAt(d, e);
 		ItemStack itemStack = this.client.player.inventory.getCursorStack();
-		if (this.field_2777 != null && this.client.options.touchscreen) {
+		if (this.touchDragSlotStart != null && this.client.options.touchscreen) {
 			if (i == 0 || i == 1) {
-				if (this.field_2782.isEmpty()) {
-					if (slot != this.field_2777 && !this.field_2777.getStack().isEmpty()) {
-						this.field_2782 = this.field_2777.getStack().copy();
+				if (this.touchDragStack.isEmpty()) {
+					if (slot != this.touchDragSlotStart && !this.touchDragSlotStart.getStack().isEmpty()) {
+						this.touchDragStack = this.touchDragSlotStart.getStack().copy();
 					}
-				} else if (this.field_2782.getAmount() > 1 && slot != null && Container.canInsertItemIntoSlot(slot, this.field_2782, false)) {
+				} else if (this.touchDragStack.getAmount() > 1 && slot != null && Container.canInsertItemIntoSlot(slot, this.touchDragStack, false)) {
 					long l = SystemUtil.getMeasuringTimeMs();
-					if (this.field_2780 == slot) {
-						if (l - this.field_2781 > 500L) {
-							this.onMouseClick(this.field_2777, this.field_2777.id, 0, SlotActionType.field_7790);
+					if (this.touchHoveredSlot == slot) {
+						if (l - this.touchDropTimer > 500L) {
+							this.onMouseClick(this.touchDragSlotStart, this.touchDragSlotStart.id, 0, SlotActionType.field_7790);
 							this.onMouseClick(slot, slot.id, 1, SlotActionType.field_7790);
-							this.onMouseClick(this.field_2777, this.field_2777.id, 0, SlotActionType.field_7790);
-							this.field_2781 = l + 750L;
-							this.field_2782.subtractAmount(1);
+							this.onMouseClick(this.touchDragSlotStart, this.touchDragSlotStart.id, 0, SlotActionType.field_7790);
+							this.touchDropTimer = l + 750L;
+							this.touchDragStack.subtractAmount(1);
 						}
 					} else {
-						this.field_2780 = slot;
-						this.field_2781 = l;
+						this.touchHoveredSlot = slot;
+						this.touchDropTimer = l;
 					}
 				}
 			}
-		} else if (this.field_2794
+		} else if (this.isCursorDragging
 			&& slot != null
 			&& !itemStack.isEmpty()
-			&& (itemStack.getAmount() > this.slots.size() || this.field_2790 == 2)
+			&& (itemStack.getAmount() > this.cursorDragSlots.size() || this.heldButtonType == 2)
 			&& Container.canInsertItemIntoSlot(slot, itemStack, true)
 			&& slot.canInsert(itemStack)
 			&& this.container.canInsertIntoSlot(slot)) {
-			this.slots.add(slot);
+			this.cursorDragSlots.add(slot);
 			this.calculateOffset();
 		}
 
@@ -427,11 +427,11 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 			}
 
 			this.field_2783 = false;
-			this.field_2788 = 0L;
+			this.lastButtonClickTime = 0L;
 		} else {
-			if (this.field_2794 && this.field_2778 != i) {
-				this.field_2794 = false;
-				this.slots.clear();
+			if (this.isCursorDragging && this.heldButtonCode != i) {
+				this.isCursorDragging = false;
+				this.cursorDragSlots.clear();
 				this.field_2798 = true;
 				return true;
 			}
@@ -441,45 +441,45 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 				return true;
 			}
 
-			if (this.field_2777 != null && this.client.options.touchscreen) {
+			if (this.touchDragSlotStart != null && this.client.options.touchscreen) {
 				if (i == 0 || i == 1) {
-					if (this.field_2782.isEmpty() && slot != this.field_2777) {
-						this.field_2782 = this.field_2777.getStack();
+					if (this.touchDragStack.isEmpty() && slot != this.touchDragSlotStart) {
+						this.touchDragStack = this.touchDragSlotStart.getStack();
 					}
 
-					boolean bl2 = Container.canInsertItemIntoSlot(slot, this.field_2782, false);
-					if (l != -1 && !this.field_2782.isEmpty() && bl2) {
-						this.onMouseClick(this.field_2777, this.field_2777.id, i, SlotActionType.field_7790);
+					boolean bl2 = Container.canInsertItemIntoSlot(slot, this.touchDragStack, false);
+					if (l != -1 && !this.touchDragStack.isEmpty() && bl2) {
+						this.onMouseClick(this.touchDragSlotStart, this.touchDragSlotStart.id, i, SlotActionType.field_7790);
 						this.onMouseClick(slot, l, 0, SlotActionType.field_7790);
 						if (this.client.player.inventory.getCursorStack().isEmpty()) {
-							this.field_2785 = ItemStack.EMPTY;
+							this.touchDropReturningStack = ItemStack.EMPTY;
 						} else {
-							this.onMouseClick(this.field_2777, this.field_2777.id, i, SlotActionType.field_7790);
-							this.field_2784 = MathHelper.floor(d - (double)j);
-							this.field_2796 = MathHelper.floor(e - (double)k);
-							this.field_2802 = this.field_2777;
-							this.field_2785 = this.field_2782;
-							this.field_2795 = SystemUtil.getMeasuringTimeMs();
+							this.onMouseClick(this.touchDragSlotStart, this.touchDragSlotStart.id, i, SlotActionType.field_7790);
+							this.touchDropX = MathHelper.floor(d - (double)j);
+							this.touchDropY = MathHelper.floor(e - (double)k);
+							this.touchDropOriginSlot = this.touchDragSlotStart;
+							this.touchDropReturningStack = this.touchDragStack;
+							this.touchDropTime = SystemUtil.getMeasuringTimeMs();
 						}
-					} else if (!this.field_2782.isEmpty()) {
-						this.field_2784 = MathHelper.floor(d - (double)j);
-						this.field_2796 = MathHelper.floor(e - (double)k);
-						this.field_2802 = this.field_2777;
-						this.field_2785 = this.field_2782;
-						this.field_2795 = SystemUtil.getMeasuringTimeMs();
+					} else if (!this.touchDragStack.isEmpty()) {
+						this.touchDropX = MathHelper.floor(d - (double)j);
+						this.touchDropY = MathHelper.floor(e - (double)k);
+						this.touchDropOriginSlot = this.touchDragSlotStart;
+						this.touchDropReturningStack = this.touchDragStack;
+						this.touchDropTime = SystemUtil.getMeasuringTimeMs();
 					}
 
-					this.field_2782 = ItemStack.EMPTY;
-					this.field_2777 = null;
+					this.touchDragStack = ItemStack.EMPTY;
+					this.touchDragSlotStart = null;
 				}
-			} else if (this.field_2794 && !this.slots.isEmpty()) {
-				this.onMouseClick(null, -999, Container.packClickData(0, this.field_2790), SlotActionType.field_7789);
+			} else if (this.isCursorDragging && !this.cursorDragSlots.isEmpty()) {
+				this.onMouseClick(null, -999, Container.packClickData(0, this.heldButtonType), SlotActionType.field_7789);
 
-				for (Slot slot2x : this.slots) {
-					this.onMouseClick(slot2x, slot2x.id, Container.packClickData(1, this.field_2790), SlotActionType.field_7789);
+				for (Slot slot2x : this.cursorDragSlots) {
+					this.onMouseClick(slot2x, slot2x.id, Container.packClickData(1, this.heldButtonType), SlotActionType.field_7789);
 				}
 
-				this.onMouseClick(null, -999, Container.packClickData(2, this.field_2790), SlotActionType.field_7789);
+				this.onMouseClick(null, -999, Container.packClickData(2, this.heldButtonType), SlotActionType.field_7789);
 			} else if (!this.client.player.inventory.getCursorStack().isEmpty()) {
 				if (this.client.options.keyPickItem.matchesMouse(i)) {
 					this.onMouseClick(slot, l, i, SlotActionType.field_7796);
@@ -499,10 +499,10 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 		}
 
 		if (this.client.player.inventory.getCursorStack().isEmpty()) {
-			this.field_2788 = 0L;
+			this.lastButtonClickTime = 0L;
 		}
 
-		this.field_2794 = false;
+		this.isCursorDragging = false;
 		return true;
 	}
 

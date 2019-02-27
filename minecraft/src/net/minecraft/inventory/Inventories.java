@@ -1,11 +1,12 @@
-package net.minecraft.util;
+package net.minecraft.inventory;
 
 import java.util.List;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.util.DefaultedList;
 
-public class InventoryUtil {
+public class Inventories {
 	public static ItemStack splitStack(List<ItemStack> list, int i, int j) {
 		return i >= 0 && i < list.size() && !((ItemStack)list.get(i)).isEmpty() && j > 0 ? ((ItemStack)list.get(i)).split(j) : ItemStack.EMPTY;
 	}
@@ -14,11 +15,11 @@ public class InventoryUtil {
 		return i >= 0 && i < list.size() ? (ItemStack)list.set(i, ItemStack.EMPTY) : ItemStack.EMPTY;
 	}
 
-	public static CompoundTag serialize(CompoundTag compoundTag, DefaultedList<ItemStack> defaultedList) {
-		return serialize(compoundTag, defaultedList, true);
+	public static CompoundTag toTag(CompoundTag compoundTag, DefaultedList<ItemStack> defaultedList) {
+		return toTag(compoundTag, defaultedList, true);
 	}
 
-	public static CompoundTag serialize(CompoundTag compoundTag, DefaultedList<ItemStack> defaultedList, boolean bl) {
+	public static CompoundTag toTag(CompoundTag compoundTag, DefaultedList<ItemStack> defaultedList, boolean bl) {
 		ListTag listTag = new ListTag();
 
 		for (int i = 0; i < defaultedList.size(); i++) {
@@ -38,7 +39,7 @@ public class InventoryUtil {
 		return compoundTag;
 	}
 
-	public static void deserialize(CompoundTag compoundTag, DefaultedList<ItemStack> defaultedList) {
+	public static void fromTag(CompoundTag compoundTag, DefaultedList<ItemStack> defaultedList) {
 		ListTag listTag = compoundTag.getList("Items", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {

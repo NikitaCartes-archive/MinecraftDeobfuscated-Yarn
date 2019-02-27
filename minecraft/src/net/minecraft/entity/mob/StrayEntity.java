@@ -7,6 +7,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -44,8 +45,8 @@ public class StrayEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	protected ProjectileEntity method_6996(float f) {
-		ProjectileEntity projectileEntity = super.method_6996(f);
+	protected ProjectileEntity method_6996(ItemStack itemStack, float f) {
+		ProjectileEntity projectileEntity = super.method_6996(itemStack, f);
 		if (projectileEntity instanceof ArrowEntity) {
 			((ArrowEntity)projectileEntity).addEffect(new StatusEffectInstance(StatusEffects.field_5909, 600));
 		}

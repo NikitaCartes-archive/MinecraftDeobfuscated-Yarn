@@ -3,6 +3,7 @@ package net.minecraft.block;
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.VerticalEntityPosition;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -100,6 +101,11 @@ public class SlabBlock extends Block implements Waterloggable {
 	@Override
 	public boolean tryFillWithFluid(IWorld iWorld, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
 		return blockState.get(TYPE) != SlabType.field_12682 ? Waterloggable.super.tryFillWithFluid(iWorld, blockPos, blockState, fluidState) : false;
+	}
+
+	@Override
+	public boolean canFillWithFluid(BlockView blockView, BlockPos blockPos, BlockState blockState, Fluid fluid) {
+		return blockState.get(TYPE) != SlabType.field_12682 ? Waterloggable.super.canFillWithFluid(blockView, blockPos, blockState, fluid) : false;
 	}
 
 	@Override

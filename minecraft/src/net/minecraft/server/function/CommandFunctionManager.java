@@ -141,7 +141,7 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 			Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(PATH_PREFIX_LENGTH, string.length() - EXTENSION_LENGTH));
 			list.add(
 				CompletableFuture.supplyAsync(() -> readLines(resourceManager, identifier), ResourceImpl.RESOURCE_IO_EXECUTOR)
-					.thenApplyAsync(listx -> CommandFunction.create(identifier2, this, listx))
+					.thenApplyAsync(listx -> CommandFunction.create(identifier2, this, listx), this.server.getWorkerExecutor())
 					.handle((commandFunction, throwable) -> this.load(commandFunction, throwable, identifier))
 			);
 		}

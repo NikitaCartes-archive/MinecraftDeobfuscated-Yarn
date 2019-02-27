@@ -482,7 +482,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 
 	static class class_1502 extends FollowTargetGoal<WolfEntity> {
 		public class_1502(LlamaEntity llamaEntity) {
-			super(llamaEntity, WolfEntity.class, 16, false, true, livingEntity -> ((WolfEntity)livingEntity).isTamed());
+			super(llamaEntity, WolfEntity.class, 16, false, true, livingEntity -> !((WolfEntity)livingEntity).isTamed());
 		}
 
 		@Override

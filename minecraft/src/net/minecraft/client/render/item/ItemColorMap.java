@@ -65,7 +65,7 @@ public class ItemColorMap {
 		itemColorMap.register((itemStack, i) -> i > 0 ? -1 : PotionUtil.getColor(itemStack), Items.field_8574, Items.field_8436, Items.field_8150);
 
 		for (SpawnEggItem spawnEggItem : SpawnEggItem.iterator()) {
-			itemColorMap.register((itemStack, i) -> spawnEggItem.method_8016(i), spawnEggItem);
+			itemColorMap.register((itemStack, i) -> spawnEggItem.getColor(i), spawnEggItem);
 		}
 
 		itemColorMap.register(

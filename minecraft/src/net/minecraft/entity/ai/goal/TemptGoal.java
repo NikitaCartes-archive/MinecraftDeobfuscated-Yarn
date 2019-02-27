@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 
 public class TemptGoal extends Goal {
-	private static final class_4051 field_18090 = new class_4051().method_18418(10.0).method_18417().method_18421();
+	private static final class_4051 field_18090 = new class_4051().method_18418(10.0).method_18417().method_18421().method_18423();
 	protected final MobEntityWithAi field_6616;
 	private final double field_6615;
 	private double field_6614;

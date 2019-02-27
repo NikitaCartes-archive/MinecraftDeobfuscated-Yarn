@@ -83,18 +83,18 @@ public class ShapelessRecipe implements CraftingRecipe {
 	public static class Serializer implements RecipeSerializer<ShapelessRecipe> {
 		public ShapelessRecipe method_8142(Identifier identifier, JsonObject jsonObject) {
 			String string = JsonHelper.getString(jsonObject, "group", "");
-			DefaultedList<Ingredient> defaultedList = method_8144(JsonHelper.getArray(jsonObject, "ingredients"));
+			DefaultedList<Ingredient> defaultedList = getIngredients(JsonHelper.getArray(jsonObject, "ingredients"));
 			if (defaultedList.isEmpty()) {
 				throw new JsonParseException("No ingredients for shapeless recipe");
 			} else if (defaultedList.size() > 9) {
 				throw new JsonParseException("Too many ingredients for shapeless recipe");
 			} else {
-				ItemStack itemStack = ShapedRecipe.deserializeItemStack(JsonHelper.getObject(jsonObject, "result"));
+				ItemStack itemStack = ShapedRecipe.getItemStack(JsonHelper.getObject(jsonObject, "result"));
 				return new ShapelessRecipe(identifier, string, itemStack, defaultedList);
 			}
 		}
 
-		private static DefaultedList<Ingredient> method_8144(JsonArray jsonArray) {
+		private static DefaultedList<Ingredient> getIngredients(JsonArray jsonArray) {
 			DefaultedList<Ingredient> defaultedList = DefaultedList.create();
 
 			for (int i = 0; i < jsonArray.size(); i++) {

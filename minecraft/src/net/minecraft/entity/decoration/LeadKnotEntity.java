@@ -98,7 +98,7 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 				.method_18467(MobEntity.class, new BoundingBox(this.x - 7.0, this.y - 7.0, this.z - 7.0, this.x + 7.0, this.y + 7.0, this.z + 7.0));
 
 			for (MobEntity mobEntity : list) {
-				if (mobEntity.isLeashed() && mobEntity.getHoldingEntity() == playerEntity) {
+				if (mobEntity.getHoldingEntity() == playerEntity) {
 					mobEntity.attachLeash(this, true);
 					bl = true;
 				}

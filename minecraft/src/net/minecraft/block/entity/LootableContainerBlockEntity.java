@@ -5,12 +5,12 @@ import javax.annotation.Nullable;
 import net.minecraft.container.Container;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.InventoryUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.loot.LootSupplier;
@@ -86,7 +86,7 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 	@Override
 	public ItemStack takeInvStack(int i, int j) {
 		this.checkLootInteraction(null);
-		ItemStack itemStack = InventoryUtil.splitStack(this.getInvStackList(), i, j);
+		ItemStack itemStack = Inventories.splitStack(this.getInvStackList(), i, j);
 		if (!itemStack.isEmpty()) {
 			this.markDirty();
 		}
@@ -97,7 +97,7 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 	@Override
 	public ItemStack removeInvStack(int i) {
 		this.checkLootInteraction(null);
-		return InventoryUtil.removeStack(this.getInvStackList(), i);
+		return Inventories.removeStack(this.getInvStackList(), i);
 	}
 
 	@Override

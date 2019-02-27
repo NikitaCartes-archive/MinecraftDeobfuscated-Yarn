@@ -9,7 +9,6 @@ import net.minecraft.resource.ResourceManager;
 
 @Environment(EnvType.CLIENT)
 public class NativeImageBackedTexture extends AbstractTexture implements AutoCloseable {
-	@Nullable
 	private NativeImage image;
 
 	public NativeImageBackedTexture(NativeImage nativeImage) {

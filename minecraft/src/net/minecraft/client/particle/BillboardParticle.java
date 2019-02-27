@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public abstract class BillboardParticle extends Particle {
-	protected float field_17867 = 0.1F * (this.random.nextFloat() * 0.5F + 0.5F) * 2.0F;
+	protected float scale = 0.1F * (this.random.nextFloat() * 0.5F + 0.5F) * 2.0F;
 
 	protected BillboardParticle(World world, double d, double e, double f) {
 		super(world, d, e, f);
@@ -39,8 +39,8 @@ public abstract class BillboardParticle extends Particle {
 			new Vec3d((double)(g * l + j * l), (double)(h * l), (double)(i * l + k * l)),
 			new Vec3d((double)(g * l - j * l), (double)(-h * l), (double)(i * l - k * l))
 		};
-		if (this.field_3839 != 0.0F) {
-			float w = MathHelper.lerp(f, this.field_3857, this.field_3839);
+		if (this.angle != 0.0F) {
+			float w = MathHelper.lerp(f, this.prevAngle, this.angle);
 			float x = MathHelper.cos(w * 0.5F);
 			float y = MathHelper.sin(w * 0.5F) * (float)cameraRotation.x;
 			float z = MathHelper.sin(w * 0.5F) * (float)cameraRotation.y;
@@ -77,12 +77,12 @@ public abstract class BillboardParticle extends Particle {
 	}
 
 	public float method_18132(float f) {
-		return this.field_17867;
+		return this.scale;
 	}
 
 	@Override
 	public Particle method_3087(float f) {
-		this.field_17867 *= f;
+		this.scale *= f;
 		return super.method_3087(f);
 	}
 

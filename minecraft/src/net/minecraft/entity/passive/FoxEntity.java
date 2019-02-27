@@ -130,9 +130,7 @@ public class FoxEntity extends AnimalEntity {
 			this, AnimalEntity.class, 10, false, false, livingEntity -> livingEntity instanceof ChickenEntity || livingEntity instanceof RabbitEntity
 		);
 		this.followBabyTurtleGoal = new FollowTargetGoal(this, TurtleEntity.class, 10, false, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER);
-		this.followFishGoal = new FollowTargetGoal(
-			this, FishEntity.class, 20, false, false, livingEntity -> livingEntity instanceof CodEntity || livingEntity instanceof SalmonEntity
-		);
+		this.followFishGoal = new FollowTargetGoal(this, FishEntity.class, 20, false, false, livingEntity -> livingEntity instanceof SchoolingFishEntity);
 		this.goalSelector.add(0, new FoxEntity.FoxSwimGoal());
 		this.goalSelector.add(1, new FoxEntity.StopWanderingGoal());
 		this.goalSelector.add(2, new FoxEntity.EscapeWhenNotAggresiveGoal(2.2));
@@ -169,12 +167,12 @@ public class FoxEntity extends AnimalEntity {
 
 	@Override
 	public void updateMovement() {
-		if (!this.world.isClient) {
+		if (!this.world.isClient && this.method_6034()) {
 			this.eatingTime++;
-			if (this.method_18430(this.getEquippedStack(EquipmentSlot.HAND_MAIN))) {
+			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HAND_MAIN);
+			if (this.method_18430(itemStack)) {
 				if (this.eatingTime > 600) {
-					this.playSound(SoundEvents.field_18060, 1.0F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
-					this.setEquippedStack(EquipmentSlot.HAND_MAIN, ItemStack.EMPTY);
+					itemStack.onItemFinishedUsing(this.world, this);
 					this.eatingTime = 0;
 				} else if (this.eatingTime > 560 && this.random.nextFloat() < 0.1F) {
 					this.playSound(SoundEvents.field_18060, 1.0F, 1.0F);
@@ -485,18 +483,21 @@ public class FoxEntity extends AnimalEntity {
 	@Override
 	public void update() {
 		super.update();
-		if (this.isInsideWater() || this.getTarget() != null || this.world.isThundering()) {
-			this.wakeUp();
-		}
+		if (this.method_6034()) {
+			boolean bl = this.isInsideWater();
+			if (bl || this.getTarget() != null || this.world.isThundering()) {
+				this.wakeUp();
+			}
 
-		if (this.isSleeping()) {
-			this.setSitting(false);
-		}
+			if (bl || this.isSleeping()) {
+				this.setSitting(false);
+			}
 
-		if (this.isWalking() && this.world.random.nextFloat() < 0.2F) {
-			BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
-			BlockState blockState = this.world.getBlockState(blockPos);
-			this.world.playEvent(2001, blockPos, Block.getRawIdFromState(blockState));
+			if (this.isWalking() && this.world.random.nextFloat() < 0.2F) {
+				BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
+				BlockState blockState = this.world.getBlockState(blockPos);
+				this.world.playEvent(2001, blockPos, Block.getRawIdFromState(blockState));
+			}
 		}
 
 		this.lastHeadRollProgress = this.headRollProgress;
@@ -892,24 +893,25 @@ public class FoxEntity extends AnimalEntity {
 		}
 
 		protected void eatSweetBerry() {
-			World world = this.owner.world;
-			BlockState blockState = world.getBlockState(this.targetPos);
-			if (blockState.getBlock() == Blocks.field_16999) {
-				int i = (Integer)blockState.get(SweetBerryBushBlock.AGE);
-				blockState.with(SweetBerryBushBlock.AGE, Integer.valueOf(1));
-				int j = 1 + world.random.nextInt(2) + (i == 3 ? 1 : 0);
-				ItemStack itemStack = FoxEntity.this.getEquippedStack(EquipmentSlot.HAND_MAIN);
-				if (itemStack.isEmpty()) {
-					FoxEntity.this.setEquippedStack(EquipmentSlot.HAND_MAIN, new ItemStack(Items.field_16998));
-					j--;
-				}
+			if (FoxEntity.this.world.getGameRules().getBoolean("mobGriefing")) {
+				BlockState blockState = FoxEntity.this.world.getBlockState(this.targetPos);
+				if (blockState.getBlock() == Blocks.field_16999) {
+					int i = (Integer)blockState.get(SweetBerryBushBlock.AGE);
+					blockState.with(SweetBerryBushBlock.AGE, Integer.valueOf(1));
+					int j = 1 + FoxEntity.this.world.random.nextInt(2) + (i == 3 ? 1 : 0);
+					ItemStack itemStack = FoxEntity.this.getEquippedStack(EquipmentSlot.HAND_MAIN);
+					if (itemStack.isEmpty()) {
+						FoxEntity.this.setEquippedStack(EquipmentSlot.HAND_MAIN, new ItemStack(Items.field_16998));
+						j--;
+					}
 
-				if (j > 0) {
-					Block.dropStack(world, this.targetPos, new ItemStack(Items.field_16998, j));
-				}
+					if (j > 0) {
+						Block.dropStack(FoxEntity.this.world, this.targetPos, new ItemStack(Items.field_16998, j));
+					}
 
-				FoxEntity.this.playSound(SoundEvents.field_17617, 1.0F, 1.0F);
-				world.setBlockState(this.targetPos, blockState.with(SweetBerryBushBlock.AGE, Integer.valueOf(1)), 2);
+					FoxEntity.this.playSound(SoundEvents.field_17617, 1.0F, 1.0F);
+					FoxEntity.this.world.setBlockState(this.targetPos, blockState.with(SweetBerryBushBlock.AGE, Integer.valueOf(1)), 2);
+				}
 			}
 		}
 
@@ -993,6 +995,11 @@ public class FoxEntity extends AnimalEntity {
 		public void start() {
 			super.start();
 			FoxEntity.this.stopActions();
+		}
+
+		@Override
+		public boolean canStart() {
+			return FoxEntity.this.isInsideWater() && FoxEntity.this.method_5861() > 0.25 || FoxEntity.this.isTouchingLava();
 		}
 	}
 

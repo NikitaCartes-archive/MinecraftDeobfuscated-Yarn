@@ -1,8 +1,8 @@
 package net.minecraft.item;
 
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 
 public class GoldenAppleItem extends FoodItem {
@@ -11,10 +11,10 @@ public class GoldenAppleItem extends FoodItem {
 	}
 
 	@Override
-	protected void onConsumed(ItemStack itemStack, World world, PlayerEntity playerEntity) {
+	protected void onConsumed(ItemStack itemStack, World world, LivingEntity livingEntity) {
 		if (!world.isClient) {
-			playerEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5924, 100, 1));
-			playerEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5898, 2400, 0));
+			livingEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5924, 100, 1));
+			livingEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5898, 2400, 0));
 		}
 	}
 }

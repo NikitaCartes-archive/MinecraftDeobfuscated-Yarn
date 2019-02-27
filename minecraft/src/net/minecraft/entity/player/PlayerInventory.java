@@ -7,6 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.network.packet.GuiSlotUpdateS2CPacket;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
@@ -19,7 +20,6 @@ import net.minecraft.tag.Tag;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.DefaultedList;
-import net.minecraft.util.InventoryUtil;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -363,7 +363,7 @@ public class PlayerInventory implements Inventory, Nameable {
 			i -= defaultedList.size();
 		}
 
-		return list != null && !((ItemStack)list.get(i)).isEmpty() ? InventoryUtil.splitStack(list, i, j) : ItemStack.EMPTY;
+		return list != null && !((ItemStack)list.get(i)).isEmpty() ? Inventories.splitStack(list, i, j) : ItemStack.EMPTY;
 	}
 
 	public void removeOne(ItemStack itemStack) {

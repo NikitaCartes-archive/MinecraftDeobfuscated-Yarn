@@ -7,7 +7,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeInputProvider;
 import net.minecraft.util.DefaultedList;
-import net.minecraft.util.InventoryUtil;
 
 public class BasicInventory implements Inventory, RecipeInputProvider {
 	private final int size;
@@ -43,7 +42,7 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 
 	@Override
 	public ItemStack takeInvStack(int i, int j) {
-		ItemStack itemStack = InventoryUtil.splitStack(this.stackList, i, j);
+		ItemStack itemStack = Inventories.splitStack(this.stackList, i, j);
 		if (!itemStack.isEmpty()) {
 			this.markDirty();
 		}

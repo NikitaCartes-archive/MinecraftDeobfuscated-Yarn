@@ -9,8 +9,6 @@ import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_751;
-import net.minecraft.class_766;
 import net.minecraft.client.gui.ingame.ConfirmChatLinkScreen;
 import net.minecraft.client.gui.menu.EndCreditsScreen;
 import net.minecraft.client.gui.menu.LevelSelectScreen;
@@ -34,11 +32,11 @@ import net.minecraft.world.level.storage.LevelStorage;
 
 @Environment(EnvType.CLIENT)
 public class MainMenuScreen extends Screen {
-	public static final class_751 field_17774 = new class_751(new Identifier("textures/gui/title/background/panorama"));
-	private static final Identifier field_17775 = new Identifier("textures/gui/title/background/panorama_overlay.png");
+	public static final CubeMapRenderer panoramaCubeMap = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
+	private static final Identifier panoramaOverlay = new Identifier("textures/gui/title/background/panorama_overlay.png");
 	private final boolean field_17776;
 	private String splashText;
-	private ButtonWidget field_2602;
+	private ButtonWidget buttonOptions;
 	private ButtonWidget buttonResetDemo;
 	private final Object mutex = new Object();
 	public static final String OUTDATED_GL_TEXT = "Please click " + TextFormat.field_1073 + "here" + TextFormat.field_1070 + " for more information.";
@@ -53,20 +51,20 @@ public class MainMenuScreen extends Screen {
 	private String warningLink;
 	private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
 	private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
-	private boolean field_2599;
+	private boolean realmsNotificationsInitialized;
 	private Screen realmsNotificationGui;
-	private int field_2584;
-	private int field_2606;
-	private final class_766 field_2585 = new class_766(field_17774);
-	private boolean field_18222;
-	private long field_17772;
+	private int copyrightTextWidth;
+	private int copyrightTextX;
+	private final RotatingCubeMapRenderer backgroundRenderer = new RotatingCubeMapRenderer(panoramaCubeMap);
+	private boolean doBackgroundFade;
+	private long backgroundFadeStart;
 
 	public MainMenuScreen() {
 		this(false);
 	}
 
 	public MainMenuScreen(boolean bl) {
-		this.field_18222 = bl;
+		this.doBackgroundFade = bl;
 		this.field_17776 = (double)new Random().nextFloat() < 1.0E-4;
 		this.warningTitle = "";
 		if (!GLX.supportsOpenGL2() && !GLX.isNextGen()) {
@@ -91,8 +89,8 @@ public class MainMenuScreen extends Screen {
 		return CompletableFuture.allOf(
 			textureManager.method_18168(MINECRAFT_TITLE_TEXTURE, executor),
 			textureManager.method_18168(EDITION_TITLE_TEXTURE, executor),
-			textureManager.method_18168(field_17775, executor),
-			field_17774.method_18143(textureManager, executor)
+			textureManager.method_18168(panoramaOverlay, executor),
+			panoramaCubeMap.method_18143(textureManager, executor)
 		);
 	}
 
@@ -108,9 +106,9 @@ public class MainMenuScreen extends Screen {
 
 	@Override
 	protected void onInitialized() {
-		this.splashText = this.client.method_18095().get();
-		this.field_2584 = this.fontRenderer.getStringWidth("Copyright Mojang AB. Do not distribute!");
-		this.field_2606 = this.screenWidth - this.field_2584 - 2;
+		this.splashText = this.client.getSplashTextLoader().get();
+		this.copyrightTextWidth = this.fontRenderer.getStringWidth("Copyright Mojang AB. Do not distribute!");
+		this.copyrightTextX = this.screenWidth - this.copyrightTextWidth - 2;
 		int i = 24;
 		int j = this.screenHeight / 4 + 48;
 		if (this.client.isDemo()) {
@@ -119,7 +117,7 @@ public class MainMenuScreen extends Screen {
 			this.initWidgetsNormal(j, 24);
 		}
 
-		this.field_2602 = this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, j + 72 + 12, 98, 20, I18n.translate("menu.options")) {
+		this.buttonOptions = this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, j + 72 + 12, 98, 20, I18n.translate("menu.options")) {
 			@Override
 			public void onPressed(double d, double e) {
 				MainMenuScreen.this.client.openScreen(new SettingsScreen(MainMenuScreen.this, MainMenuScreen.this.client.options));
@@ -151,10 +149,10 @@ public class MainMenuScreen extends Screen {
 		}
 
 		this.client.setConnectedToRealms(false);
-		if (this.client.options.realmsNotifications && !this.field_2599) {
+		if (this.client.options.realmsNotifications && !this.realmsNotificationsInitialized) {
 			RealmsBridge realmsBridge = new RealmsBridge();
 			this.realmsNotificationGui = realmsBridge.getNotificationScreen(this);
-			this.field_2599 = true;
+			this.realmsNotificationsInitialized = true;
 		}
 
 		if (this.areRealmsNotificationsEnabled()) {
@@ -243,22 +241,22 @@ public class MainMenuScreen extends Screen {
 
 	@Override
 	public void draw(int i, int j, float f) {
-		if (this.field_17772 == 0L && this.field_18222) {
-			this.field_17772 = SystemUtil.getMeasuringTimeMs();
+		if (this.backgroundFadeStart == 0L && this.doBackgroundFade) {
+			this.backgroundFadeStart = SystemUtil.getMeasuringTimeMs();
 		}
 
-		float g = this.field_18222 ? (float)(SystemUtil.getMeasuringTimeMs() - this.field_17772) / 1000.0F : 1.0F;
+		float g = this.doBackgroundFade ? (float)(SystemUtil.getMeasuringTimeMs() - this.backgroundFadeStart) / 1000.0F : 1.0F;
 		drawRect(0, 0, this.screenWidth, this.screenHeight, -1);
-		this.field_2585.method_3317(f, MathHelper.clamp(g, 0.0F, 1.0F));
+		this.backgroundRenderer.render(f, MathHelper.clamp(g, 0.0F, 1.0F));
 		int k = 274;
 		int l = this.screenWidth / 2 - 137;
 		int m = 30;
-		this.client.getTextureManager().bindTexture(field_17775);
+		this.client.getTextureManager().bindTexture(panoramaOverlay);
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-		GlStateManager.color4f(1.0F, 1.0F, 1.0F, this.field_18222 ? (float)MathHelper.ceil(MathHelper.clamp(g, 0.0F, 1.0F)) : 1.0F);
+		GlStateManager.color4f(1.0F, 1.0F, 1.0F, this.doBackgroundFade ? (float)MathHelper.ceil(MathHelper.clamp(g, 0.0F, 1.0F)) : 1.0F);
 		drawTexturedRect(0, 0, 0.0F, 0.0F, 16, 128, this.screenWidth, this.screenHeight, 16.0F, 128.0F);
-		float h = this.field_18222 ? MathHelper.clamp(g - 1.0F, 0.0F, 1.0F) : 1.0F;
+		float h = this.doBackgroundFade ? MathHelper.clamp(g - 1.0F, 0.0F, 1.0F) : 1.0F;
 		int n = MathHelper.ceil(h * 255.0F) << 24;
 		if ((n & -67108864) != 0) {
 			this.client.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURE);
@@ -292,9 +290,9 @@ public class MainMenuScreen extends Screen {
 			}
 
 			this.drawString(this.fontRenderer, string, 2, this.screenHeight - 10, 16777215 | n);
-			this.drawString(this.fontRenderer, "Copyright Mojang AB. Do not distribute!", this.field_2606, this.screenHeight - 10, 16777215 | n);
-			if (i > this.field_2606 && i < this.field_2606 + this.field_2584 && j > this.screenHeight - 10 && j < this.screenHeight) {
-				drawRect(this.field_2606, this.screenHeight - 1, this.field_2606 + this.field_2584, this.screenHeight, 16777215 | n);
+			this.drawString(this.fontRenderer, "Copyright Mojang AB. Do not distribute!", this.copyrightTextX, this.screenHeight - 10, 16777215 | n);
+			if (i > this.copyrightTextX && i < this.copyrightTextX + this.copyrightTextWidth && j > this.screenHeight - 10 && j < this.screenHeight) {
+				drawRect(this.copyrightTextX, this.screenHeight - 1, this.copyrightTextX + this.copyrightTextWidth, this.screenHeight, 16777215 | n);
 			}
 
 			if (this.warningTitle != null && !this.warningTitle.isEmpty()) {
@@ -335,9 +333,10 @@ public class MainMenuScreen extends Screen {
 			if (this.areRealmsNotificationsEnabled() && this.realmsNotificationGui.mouseClicked(d, e, i)) {
 				return true;
 			} else {
-				if (d > (double)this.field_2606 && d < (double)(this.field_2606 + this.field_2584) && e > (double)(this.screenHeight - 10) && e < (double)this.screenHeight
-					)
-				 {
+				if (d > (double)this.copyrightTextX
+					&& d < (double)(this.copyrightTextX + this.copyrightTextWidth)
+					&& e > (double)(this.screenHeight - 10)
+					&& e < (double)this.screenHeight) {
 					this.client.openScreen(new EndCreditsScreen(false, Runnables.doNothing()));
 				}
 

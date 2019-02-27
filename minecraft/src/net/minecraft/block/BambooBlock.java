@@ -47,7 +47,7 @@ public class BambooBlock extends Block implements Fertilizable {
 
 	@Override
 	public boolean isTranslucent(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return false;
+		return true;
 	}
 
 	@Override

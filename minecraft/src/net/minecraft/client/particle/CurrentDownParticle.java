@@ -2,8 +2,6 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4000;
-import net.minecraft.class_4001;
 import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.tag.FluidTags;
@@ -23,7 +21,7 @@ public class CurrentDownParticle extends SpriteBillboardParticle {
 		this.velocityY = -0.05;
 		this.velocityZ = 0.0;
 		this.setBoundingBoxSpacing(0.02F, 0.02F);
-		this.field_17867 = this.field_17867 * (this.random.nextFloat() * 0.6F + 0.2F);
+		this.scale = this.scale * (this.random.nextFloat() * 0.6F + 0.2F);
 		this.gravityStrength = 0.002F;
 	}
 
@@ -58,8 +56,8 @@ public class CurrentDownParticle extends SpriteBillboardParticle {
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17890;
 
-		public Factory(class_4001 arg) {
-			this.field_17890 = arg.method_18137(class_4000.field_17837);
+		public Factory(class_4002 arg) {
+			this.field_17890 = arg;
 		}
 
 		public Particle method_3114(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

@@ -73,7 +73,7 @@ public final class ItemStack {
 	@Deprecated
 	private final Item item;
 	private CompoundTag tag;
-	private boolean invalid;
+	private boolean empty;
 	private ItemFrameEntity holdingItemFrame;
 	private CachedBlockPosition lastCheckedCanHarvestBlock;
 	private boolean lastCheckedCanHarvestResult;
@@ -97,8 +97,8 @@ public final class ItemStack {
 	}
 
 	private void updateEmptyFlag() {
-		this.invalid = false;
-		this.invalid = this.isEmpty();
+		this.empty = false;
+		this.empty = this.isEmpty();
 	}
 
 	private ItemStack(CompoundTag compoundTag) {
@@ -142,7 +142,7 @@ public final class ItemStack {
 	}
 
 	public Item getItem() {
-		return this.invalid ? Items.AIR : this.item;
+		return this.empty ? Items.AIR : this.item;
 	}
 
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
@@ -196,7 +196,7 @@ public final class ItemStack {
 	}
 
 	public boolean hasDurability() {
-		if (!this.invalid && this.getItem().getDurability() > 0) {
+		if (!this.empty && this.getItem().getDurability() > 0) {
 			CompoundTag compoundTag = this.getTag();
 			return compoundTag == null || !compoundTag.getBoolean("Unbreakable");
 		} else {
@@ -391,7 +391,7 @@ public final class ItemStack {
 	}
 
 	public boolean hasTag() {
-		return !this.invalid && this.tag != null && !this.tag.isEmpty();
+		return !this.empty && this.tag != null && !this.tag.isEmpty();
 	}
 
 	@Nullable
@@ -734,7 +734,7 @@ public final class ItemStack {
 
 	@Nullable
 	public ItemFrameEntity getHoldingItemFrame() {
-		return this.invalid ? null : this.holdingItemFrame;
+		return this.empty ? null : this.holdingItemFrame;
 	}
 
 	public int getRepairCost() {
@@ -791,7 +791,7 @@ public final class ItemStack {
 		}
 
 		TextComponent textComponent2 = TextFormatter.bracketed(textComponent);
-		if (!this.invalid) {
+		if (!this.empty) {
 			CompoundTag compoundTag = this.toTag(new CompoundTag());
 			textComponent2.applyFormat(this.getRarity().formatting)
 				.modifyStyle(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new StringTextComponent(compoundTag.toString()))));
@@ -875,7 +875,7 @@ public final class ItemStack {
 	}
 
 	public int getAmount() {
-		return this.invalid ? 0 : this.amount;
+		return this.empty ? 0 : this.amount;
 	}
 
 	public void setAmount(int i) {
@@ -892,6 +892,6 @@ public final class ItemStack {
 	}
 
 	public void method_7949(World world, LivingEntity livingEntity, int i) {
-		this.getItem().method_7852(world, livingEntity, this, i);
+		this.getItem().onUsingTick(world, livingEntity, this, i);
 	}
 }

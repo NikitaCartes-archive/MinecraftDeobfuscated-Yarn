@@ -29,7 +29,7 @@ public class EnderPearlItem extends Item {
 		if (!world.isClient) {
 			ThrownEnderpearlEntity thrownEnderpearlEntity = new ThrownEnderpearlEntity(world, playerEntity);
 			thrownEnderpearlEntity.method_16940(itemStack);
-			thrownEnderpearlEntity.calculateVelocity(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 1.5F, 1.0F);
+			thrownEnderpearlEntity.method_7474(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 1.5F, 1.0F);
 			world.spawnEntity(thrownEnderpearlEntity);
 		}
 

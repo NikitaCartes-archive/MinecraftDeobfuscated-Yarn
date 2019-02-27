@@ -41,8 +41,8 @@ public abstract class Particle {
 	protected float colorGreen = 1.0F;
 	protected float colorBlue = 1.0F;
 	protected float colorAlpha = 1.0F;
-	protected float field_3839;
-	protected float field_3857;
+	protected float angle;
+	protected float prevAngle;
 	public static double cameraX;
 	public static double cameraY;
 	public static double cameraZ;
@@ -70,7 +70,7 @@ public abstract class Particle {
 		this.velocityZ = this.velocityZ / (double)k * (double)j * 0.4F;
 	}
 
-	public Particle method_3075(float f) {
+	public Particle move(float f) {
 		this.velocityX *= (double)f;
 		this.velocityY = (this.velocityY - 0.1F) * (double)f + 0.1F;
 		this.velocityZ *= (double)f;

@@ -7,17 +7,17 @@ import net.fabricmc.api.Environment;
 import net.minecraft.util.profiler.Profiler;
 
 @Environment(EnvType.CLIENT)
-public abstract class ResourceSupplier<T> implements ResourceReloadListener {
+public abstract class SupplyingResourceReloadListener<T> implements ResourceReloadListener {
 	@Override
 	public final CompletableFuture<Void> apply(
 		ResourceReloadListener.Helper helper, ResourceManager resourceManager, Profiler profiler, Profiler profiler2, Executor executor, Executor executor2
 	) {
-		return CompletableFuture.supplyAsync(() -> this.apply(resourceManager, profiler), executor)
+		return CompletableFuture.supplyAsync(() -> this.load(resourceManager, profiler), executor)
 			.thenCompose(helper::waitForAll)
-			.thenAcceptAsync(object -> this.accept((T)object, resourceManager, profiler2), executor2);
+			.thenAcceptAsync(object -> this.apply((T)object, resourceManager, profiler2), executor2);
 	}
 
-	protected abstract T apply(ResourceManager resourceManager, Profiler profiler);
+	protected abstract T load(ResourceManager resourceManager, Profiler profiler);
 
-	protected abstract void accept(T object, ResourceManager resourceManager, Profiler profiler);
+	protected abstract void apply(T object, ResourceManager resourceManager, Profiler profiler);
 }

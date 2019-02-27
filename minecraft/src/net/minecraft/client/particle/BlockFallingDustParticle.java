@@ -1,18 +1,14 @@
 package net.minecraft.client.particle;
 
-import com.google.common.collect.Lists;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4000;
-import net.minecraft.class_4001;
 import net.minecraft.class_4002;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FallingBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.particle.BlockStateParticleParameters;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -29,12 +25,12 @@ public class BlockFallingDustParticle extends SpriteBillboardParticle {
 		this.colorGreen = h;
 		this.colorBlue = i;
 		float j = 0.9F;
-		this.field_17867 *= 0.67499995F;
+		this.scale *= 0.67499995F;
 		int k = (int)(32.0 / (Math.random() * 0.8 + 0.2));
 		this.maxAge = (int)Math.max((float)k * 0.9F, 1.0F);
 		this.method_18142(arg);
 		this.field_3809 = ((float)Math.random() - 0.5F) * 0.1F;
-		this.field_3839 = (float)Math.random() * (float) (Math.PI * 2);
+		this.angle = (float)Math.random() * (float) (Math.PI * 2);
 	}
 
 	@Override
@@ -44,7 +40,7 @@ public class BlockFallingDustParticle extends SpriteBillboardParticle {
 
 	@Override
 	public float method_18132(float f) {
-		return this.field_17867 * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
+		return this.scale * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
 	}
 
 	@Override
@@ -56,10 +52,10 @@ public class BlockFallingDustParticle extends SpriteBillboardParticle {
 			this.markDead();
 		} else {
 			this.method_18142(this.field_17808);
-			this.field_3857 = this.field_3839;
-			this.field_3839 = this.field_3839 + (float) Math.PI * this.field_3809 * 2.0F;
+			this.prevAngle = this.angle;
+			this.angle = this.angle + (float) Math.PI * this.field_3809 * 2.0F;
 			if (this.onGround) {
-				this.field_3857 = this.field_3839 = 0.0F;
+				this.prevAngle = this.angle = 0.0F;
 			}
 
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
@@ -72,8 +68,8 @@ public class BlockFallingDustParticle extends SpriteBillboardParticle {
 	public static class Factory implements ParticleFactory<BlockStateParticleParameters> {
 		private final class_4002 field_17809;
 
-		public Factory(class_4001 arg) {
-			this.field_17809 = arg.register(Lists.<Identifier>reverse(class_4000.field_17850));
+		public Factory(class_4002 arg) {
+			this.field_17809 = arg;
 		}
 
 		@Nullable

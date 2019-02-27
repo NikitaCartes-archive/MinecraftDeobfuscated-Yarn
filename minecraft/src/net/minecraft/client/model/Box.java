@@ -7,7 +7,7 @@ import net.minecraft.client.render.BufferBuilder;
 @Environment(EnvType.CLIENT)
 public class Box {
 	private final Vertex[] vertices;
-	private final Polygon[] polygons;
+	private final Quad[] polygons;
 	public final float xMin;
 	public final float yMin;
 	public final float zMin;
@@ -28,7 +28,7 @@ public class Box {
 		this.yMax = g + (float)l;
 		this.zMax = h + (float)m;
 		this.vertices = new Vertex[8];
-		this.polygons = new Polygon[6];
+		this.polygons = new Quad[6];
 		float o = f + (float)k;
 		float p = g + (float)l;
 		float q = h + (float)m;
@@ -60,28 +60,26 @@ public class Box {
 		this.vertices[5] = vertex6;
 		this.vertices[6] = vertex7;
 		this.vertices[7] = vertex8;
-		this.polygons[0] = new Polygon(
+		this.polygons[0] = new Quad(
 			new Vertex[]{vertex6, vertex2, vertex3, vertex7}, i + m + k, j + m, i + m + k + m, j + m + l, cuboid.textureWidth, cuboid.textureHeight
 		);
-		this.polygons[1] = new Polygon(new Vertex[]{vertex, vertex5, vertex8, vertex4}, i, j + m, i + m, j + m + l, cuboid.textureWidth, cuboid.textureHeight);
-		this.polygons[2] = new Polygon(new Vertex[]{vertex6, vertex5, vertex, vertex2}, i + m, j, i + m + k, j + m, cuboid.textureWidth, cuboid.textureHeight);
-		this.polygons[3] = new Polygon(
-			new Vertex[]{vertex3, vertex4, vertex8, vertex7}, i + m + k, j + m, i + m + k + k, j, cuboid.textureWidth, cuboid.textureHeight
-		);
-		this.polygons[4] = new Polygon(new Vertex[]{vertex2, vertex, vertex4, vertex3}, i + m, j + m, i + m + k, j + m + l, cuboid.textureWidth, cuboid.textureHeight);
-		this.polygons[5] = new Polygon(
+		this.polygons[1] = new Quad(new Vertex[]{vertex, vertex5, vertex8, vertex4}, i, j + m, i + m, j + m + l, cuboid.textureWidth, cuboid.textureHeight);
+		this.polygons[2] = new Quad(new Vertex[]{vertex6, vertex5, vertex, vertex2}, i + m, j, i + m + k, j + m, cuboid.textureWidth, cuboid.textureHeight);
+		this.polygons[3] = new Quad(new Vertex[]{vertex3, vertex4, vertex8, vertex7}, i + m + k, j + m, i + m + k + k, j, cuboid.textureWidth, cuboid.textureHeight);
+		this.polygons[4] = new Quad(new Vertex[]{vertex2, vertex, vertex4, vertex3}, i + m, j + m, i + m + k, j + m + l, cuboid.textureWidth, cuboid.textureHeight);
+		this.polygons[5] = new Quad(
 			new Vertex[]{vertex5, vertex6, vertex7, vertex8}, i + m + k + m, j + m, i + m + k + m + k, j + m + l, cuboid.textureWidth, cuboid.textureHeight
 		);
 		if (bl) {
-			for (Polygon polygon : this.polygons) {
-				polygon.flip();
+			for (Quad quad : this.polygons) {
+				quad.flip();
 			}
 		}
 	}
 
 	public void render(BufferBuilder bufferBuilder, float f) {
-		for (Polygon polygon : this.polygons) {
-			polygon.render(bufferBuilder, f);
+		for (Quad quad : this.polygons) {
+			quad.render(bufferBuilder, f);
 		}
 	}
 

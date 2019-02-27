@@ -347,7 +347,7 @@ public class Raid {
 					bl = true;
 				}
 
-				if (member.type == EntityType.ILLAGER_BEAST) {
+				if (member.type == EntityType.RAVAGER) {
 					RaiderEntity raiderEntity2;
 					if (i < 6) {
 						raiderEntity2 = EntityType.PILLAGER.create(this.world);
@@ -636,7 +636,7 @@ public class Raid {
 		EVOKER(EntityType.EVOKER, 10),
 		PILLAGER(EntityType.PILLAGER, 1),
 		WITCH(EntityType.WITCH, 4),
-		RAVAGER(EntityType.ILLAGER_BEAST, 2);
+		RAVAGER(EntityType.RAVAGER, 2);
 
 		private static final Raid.Member[] field_16636 = values();
 		private final EntityType<? extends RaiderEntity> type;

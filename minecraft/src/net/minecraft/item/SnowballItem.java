@@ -28,7 +28,7 @@ public class SnowballItem extends Item {
 		if (!world.isClient) {
 			SnowballEntity snowballEntity = new SnowballEntity(world, playerEntity);
 			snowballEntity.method_16940(itemStack);
-			snowballEntity.calculateVelocity(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 1.5F, 1.0F);
+			snowballEntity.method_7474(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 1.5F, 1.0F);
 			world.spawnEntity(snowballEntity);
 		}
 

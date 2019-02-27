@@ -58,7 +58,7 @@ public class FlowerPotBlock extends Block {
 				ItemStack itemStack2 = new ItemStack(this.content);
 				if (itemStack.isEmpty()) {
 					playerEntity.setStackInHand(hand, itemStack2);
-				} else if (!playerEntity.method_7270(itemStack2)) {
+				} else if (!playerEntity.giveItemStack(itemStack2)) {
 					playerEntity.dropItem(itemStack2, false);
 				}
 

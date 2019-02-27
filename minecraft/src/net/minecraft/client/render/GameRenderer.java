@@ -10,7 +10,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1675;
-import net.minecraft.class_295;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -368,7 +367,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				d /= (double)((1.0F - 500.0F / (g + 500.0F)) * 2.0F + 1.0F);
 			}
 
-			FluidState fluidState = class_295.method_1374(this.client.world, entity, f);
+			FluidState fluidState = CameraHelper.method_1374(this.client.world, entity, f);
 			if (!fluidState.isEmpty()) {
 				d = d * 60.0 / 70.0;
 			}
@@ -782,7 +781,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		this.client.getProfiler().swap("camera");
 		this.method_3185(f);
 		Frustum frustum = GlMatrixFrustum.get();
-		class_295.method_1373(this.client.player, this.client.options.perspective == 2, this.viewDistance, frustum);
+		CameraHelper.update(this.client.player, this.client.options.perspective == 2, this.viewDistance, frustum);
 		this.client.getProfiler().swap("culling");
 		VisibleRegion visibleRegion = new FrustumWithOrigin(frustum);
 		Entity entity = this.client.getCameraEntity();

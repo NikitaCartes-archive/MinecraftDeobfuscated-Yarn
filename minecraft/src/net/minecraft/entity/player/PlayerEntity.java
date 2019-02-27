@@ -64,6 +64,7 @@ import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.AxeItem;
+import net.minecraft.item.BaseBowItem;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -1717,7 +1718,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 	}
 
-	public boolean method_7270(ItemStack itemStack) {
+	public boolean giveItemStack(ItemStack itemStack) {
 		this.onEquipStack(itemStack);
 		return this.inventory.insertStack(itemStack);
 	}
@@ -2005,6 +2006,23 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Override
 	public EntitySize getSize(EntityPose entityPose) {
 		return (EntitySize)SIZES.getOrDefault(entityPose, STANDING_SIZE);
+	}
+
+	@Override
+	public ItemStack method_18808() {
+		ItemStack itemStack = BaseBowItem.method_18815(this, BaseBowItem.field_18282);
+		if (!itemStack.isEmpty()) {
+			return itemStack;
+		} else {
+			for (int i = 0; i < this.inventory.getInvSize(); i++) {
+				ItemStack itemStack2 = this.inventory.getInvStack(i);
+				if (BaseBowItem.field_18282.test(itemStack2)) {
+					return itemStack2;
+				}
+			}
+
+			return this.abilities.creativeMode ? new ItemStack(Items.field_8107) : ItemStack.EMPTY;
+		}
 	}
 
 	public static enum SleepResult {

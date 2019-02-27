@@ -416,6 +416,11 @@ public class SoundEvents {
 	public static final SoundEvent field_14622 = register("block.note_block.pling");
 	public static final SoundEvent field_14708 = register("block.note_block.snare");
 	public static final SoundEvent field_14776 = register("block.note_block.xylophone");
+	public static final SoundEvent field_18308 = register("block.note_block.iron_xylophone");
+	public static final SoundEvent field_18309 = register("block.note_block.cow_bell");
+	public static final SoundEvent field_18310 = register("block.note_block.didgeridoo");
+	public static final SoundEvent field_18311 = register("block.note_block.bit");
+	public static final SoundEvent field_18312 = register("block.note_block.banjo");
 	public static final SoundEvent field_16441 = register("entity.ocelot.hurt");
 	public static final SoundEvent field_16437 = register("entity.ocelot.ambient");
 	public static final SoundEvent field_16442 = register("entity.ocelot.death");
@@ -699,8 +704,12 @@ public class SoundEvents {
 	public static final SoundEvent field_15173 = register("block.lily_pad.place");
 	public static final SoundEvent field_17747 = register("entity.wandering_trader.ambient");
 	public static final SoundEvent field_17748 = register("entity.wandering_trader.death");
+	public static final SoundEvent field_18315 = register("entity.wandering_trader.disappeared");
+	public static final SoundEvent field_18316 = register("entity.wandering_trader.drink_milk");
+	public static final SoundEvent field_18313 = register("entity.wandering_trader.drink_potion");
 	public static final SoundEvent field_17749 = register("entity.wandering_trader.hurt");
 	public static final SoundEvent field_17750 = register("entity.wandering_trader.no");
+	public static final SoundEvent field_18314 = register("entity.wandering_trader.reappeared");
 	public static final SoundEvent field_17751 = register("entity.wandering_trader.trade");
 	public static final SoundEvent field_17752 = register("entity.wandering_trader.yes");
 	public static final SoundEvent field_15237 = register("block.water.ambient");

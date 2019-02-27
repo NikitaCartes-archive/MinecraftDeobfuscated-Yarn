@@ -26,7 +26,7 @@ public class BlockCrackParticle extends SpriteBillboardParticle {
 		this.colorRed = 0.6F;
 		this.colorGreen = 0.6F;
 		this.colorBlue = 0.6F;
-		this.field_17867 /= 2.0F;
+		this.scale /= 2.0F;
 		this.field_17884 = this.random.nextFloat() * 3.0F;
 		this.field_17885 = this.random.nextFloat() * 3.0F;
 	}

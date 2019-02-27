@@ -217,22 +217,21 @@ public class SystemUtil {
 	}
 
 	public static <V> CompletableFuture<List<V>> thenCombine(List<? extends CompletableFuture<? extends V>> list) {
-		return (CompletableFuture<List<V>>)list.stream()
-			.reduce(
-				CompletableFuture.completedFuture(Lists.newArrayList()),
-				(completableFuture, completableFuture2) -> completableFuture2.thenCombine(completableFuture, (object, listx) -> {
-						List<V> list2 = Lists.<V>newArrayListWithCapacity(listx.size() + 1);
-						list2.addAll(listx);
-						list2.add(object);
-						return list2;
-					}),
-				(completableFuture, completableFuture2) -> completableFuture.thenCombine(completableFuture2, (listx, list2) -> {
-						List<V> list3 = Lists.<V>newArrayListWithCapacity(listx.size() + list2.size());
-						list3.addAll(listx);
-						list3.addAll(list2);
-						return list3;
-					})
-			);
+		List<V> list2 = Lists.<V>newArrayListWithCapacity(list.size());
+		CompletableFuture<?>[] completableFutures = new CompletableFuture[list.size()];
+		CompletableFuture<java.lang.Void> completableFuture = new CompletableFuture();
+		list.forEach(completableFuture2 -> {
+			int i = list2.size();
+			list2.add(null);
+			completableFutures[i] = completableFuture2.whenComplete((object, throwable) -> {
+				if (throwable != null) {
+					completableFuture.completeExceptionally(throwable);
+				} else {
+					list2.set(i, object);
+				}
+			});
+		});
+		return CompletableFuture.allOf(completableFutures).applyToEither(completableFuture, void_ -> list2);
 	}
 
 	public static <T> Stream<T> method_17815(Optional<? extends T> optional) {
@@ -247,6 +246,10 @@ public class SystemUtil {
 		}
 
 		return optional;
+	}
+
+	public static Runnable method_18839(Runnable runnable, Supplier<String> supplier) {
+		return runnable;
 	}
 
 	static enum IdentityHashStrategy implements Strategy<Object> {

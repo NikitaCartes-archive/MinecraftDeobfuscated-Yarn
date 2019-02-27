@@ -10,6 +10,7 @@ import net.minecraft.server.world.ChunkTaskPrioritySystem;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.util.Actor;
 import net.minecraft.util.MailboxProcessor;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.LightType;
@@ -58,7 +59,13 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 
 	@Override
 	public void enqueueLightUpdate(BlockPos blockPos) {
-		this.method_17308(blockPos.getX() >> 4, blockPos.getZ() >> 4, ServerLightingProvider.class_3901.field_17262, () -> super.enqueueLightUpdate(blockPos));
+		BlockPos blockPos2 = blockPos.toImmutable();
+		this.method_17308(
+			blockPos.getX() >> 4,
+			blockPos.getZ() >> 4,
+			ServerLightingProvider.class_3901.field_17262,
+			SystemUtil.method_18839(() -> super.enqueueLightUpdate(blockPos2), () -> "checkBlock " + blockPos)
+		);
 	}
 
 	@Override
@@ -68,13 +75,18 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			chunkSectionPos.getZ(),
 			() -> 0,
 			ServerLightingProvider.class_3901.field_17261,
-			() -> super.scheduleChunkLightUpdate(chunkSectionPos, bl)
+			SystemUtil.method_18839(() -> super.scheduleChunkLightUpdate(chunkSectionPos, bl), () -> "updateSectionStatus " + chunkSectionPos + " " + bl)
 		);
 	}
 
 	@Override
 	public void method_15557(ChunkPos chunkPos, boolean bl) {
-		this.method_17308(chunkPos.x, chunkPos.z, ServerLightingProvider.class_3901.field_17261, () -> super.method_15557(chunkPos, bl));
+		this.method_17308(
+			chunkPos.x,
+			chunkPos.z,
+			ServerLightingProvider.class_3901.field_17261,
+			SystemUtil.method_18839(() -> super.method_15557(chunkPos, bl), () -> "suppresLight " + chunkPos + " " + bl)
+		);
 	}
 
 	@Override
@@ -83,7 +95,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			chunkSectionPos.getX(),
 			chunkSectionPos.getZ(),
 			ServerLightingProvider.class_3901.field_17261,
-			() -> super.setSection(lightType, chunkSectionPos, chunkNibbleArray)
+			SystemUtil.method_18839(() -> super.setSection(lightType, chunkSectionPos, chunkNibbleArray), () -> "queueData " + chunkSectionPos)
 		);
 	}
 
@@ -102,7 +114,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 
 	public CompletableFuture<Chunk> light(Chunk chunk, boolean bl) {
 		ChunkPos chunkPos = chunk.getPos();
-		this.method_17308(chunkPos.x, chunkPos.z, ServerLightingProvider.class_3901.field_17261, () -> {
+		this.method_17308(chunkPos.x, chunkPos.z, ServerLightingProvider.class_3901.field_17261, SystemUtil.method_18839(() -> {
 			if (!bl) {
 				super.method_15557(chunkPos, false);
 			}
@@ -121,7 +133,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			}
 
 			chunk.setLightOn(true);
-		});
+		}, () -> "lightChunk " + chunkPos + " " + bl));
 		return CompletableFuture.supplyAsync(
 			() -> chunk, runnable -> this.method_17308(chunkPos.x, chunkPos.z, ServerLightingProvider.class_3901.field_17262, runnable)
 		);

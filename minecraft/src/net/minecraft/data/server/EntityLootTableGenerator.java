@@ -387,7 +387,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 				)
 		);
 		this.method_16368(
-			EntityType.ILLAGER_BEAST,
+			EntityType.RAVAGER,
 			LootSupplier.create()
 				.withPool(
 					LootPool.create()

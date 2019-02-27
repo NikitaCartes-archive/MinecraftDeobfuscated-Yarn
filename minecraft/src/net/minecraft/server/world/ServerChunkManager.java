@@ -257,13 +257,13 @@ public class ServerChunkManager extends ChunkManager {
 		this.world.getProfiler().swap("light");
 		this.lightProvider.tick();
 		this.world.getProfiler().swap("chunks");
-		this.doMobSpawning();
+		this.tickChunks();
 		this.world.getProfiler().swap("unload");
 		this.threadedAnvilChunkStorage.unload(booleanSupplier);
 		this.world.getProfiler().pop();
 	}
 
-	private void doMobSpawning() {
+	private void tickChunks() {
 		long l = this.world.getTime();
 		long m = l - this.lastMobSpawningTime;
 		this.lastMobSpawningTime = l;
@@ -307,7 +307,7 @@ public class ServerChunkManager extends ChunkManager {
 							this.world.getProfiler().pop();
 						}
 
-						this.world.method_18203(worldChunk, j);
+						this.world.tickChunk(worldChunk, j);
 					}
 				}
 			}

@@ -70,7 +70,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		super.onScheduledTick(blockState, world, blockPos, random);
-		if (world.getLightLevel(blockPos.up(), 0) >= 9) {
+		if (world.getLightLevel(blockPos, 0) >= 9) {
 			int i = this.getCropAge(blockState);
 			if (i < this.getCropAgeMaximum()) {
 				float f = method_9830(this, world, blockPos);

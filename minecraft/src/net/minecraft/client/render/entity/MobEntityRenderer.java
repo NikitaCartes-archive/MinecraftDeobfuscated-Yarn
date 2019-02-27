@@ -26,11 +26,9 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 	public boolean method_4068(T mobEntity, VisibleRegion visibleRegion, double d, double e, double f) {
 		if (super.isVisible(mobEntity, visibleRegion, d, e, f)) {
 			return true;
-		} else if (mobEntity.isLeashed() && mobEntity.getHoldingEntity() != null) {
-			Entity entity = mobEntity.getHoldingEntity();
-			return visibleRegion.intersects(entity.method_5830());
 		} else {
-			return false;
+			Entity entity = mobEntity.getHoldingEntity();
+			return entity != null ? visibleRegion.intersects(entity.method_5830()) : false;
 		}
 	}
 

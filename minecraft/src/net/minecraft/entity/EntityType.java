@@ -410,7 +410,7 @@ public class EntityType<T extends Entity> {
 	public static final EntityType<PhantomEntity> PHANTOM = register(
 		"phantom", EntityType.Builder.create(PhantomEntity::new, EntityCategory.field_6302).setSize(0.9F, 0.5F)
 	);
-	public static final EntityType<RavagerEntity> ILLAGER_BEAST = register(
+	public static final EntityType<RavagerEntity> RAVAGER = register(
 		"ravager", EntityType.Builder.create(RavagerEntity::new, EntityCategory.field_6302).setSize(1.95F, 2.2F)
 	);
 	public static final EntityType<LightningEntity> LIGHTNING_BOLT = register(

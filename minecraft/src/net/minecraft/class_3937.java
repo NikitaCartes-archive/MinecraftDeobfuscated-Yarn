@@ -51,39 +51,34 @@ public class class_3937 extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class class_3938 extends class_3937.class_3995 {
-		public class_3938(class_4001 arg) {
-			super(arg);
+	public static class class_3938 implements ParticleFactory<DefaultParticleType> {
+		private final class_4002 field_18290;
+
+		public class_3938(class_4002 arg) {
+			this.field_18290 = arg;
 		}
 
 		public Particle method_17579(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			class_3937 lv = new class_3937(world, d, e, f, g, h, i, false);
 			lv.setColorAlpha(0.9F);
-			lv.method_18140(this.field_17789);
+			lv.method_18140(this.field_18290);
 			return lv;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class class_3939 extends class_3937.class_3995 {
-		public class_3939(class_4001 arg) {
-			super(arg);
+	public static class class_3995 implements ParticleFactory<DefaultParticleType> {
+		private final class_4002 field_17789;
+
+		public class_3995(class_4002 arg) {
+			this.field_17789 = arg;
 		}
 
-		public Particle method_17580(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_18820(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			class_3937 lv = new class_3937(world, d, e, f, g, h, i, true);
 			lv.setColorAlpha(0.95F);
 			lv.method_18140(this.field_17789);
 			return lv;
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	abstract static class class_3995 implements ParticleFactory<DefaultParticleType> {
-		protected final class_4002 field_17789;
-
-		public class_3995(class_4001 arg) {
-			this.field_17789 = arg.register(class_4000.field_17840);
 		}
 	}
 }

@@ -1,11 +1,11 @@
 package net.minecraft.entity.ai.goal;
 
+import net.minecraft.class_1675;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.RangedAttacker;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.Items;
-import net.minecraft.util.Hand;
 
 public class BowAttackGoal<T extends HostileEntity & RangedAttacker> extends Goal {
 	private final T field_6576;
@@ -36,7 +36,7 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttacker> extends Goa
 	}
 
 	protected boolean method_6306() {
-		return !this.field_6576.getMainHandStack().isEmpty() && this.field_6576.getMainHandStack().getItem() == Items.field_8102;
+		return this.field_6576.method_18809(Items.field_8102);
 	}
 
 	@Override
@@ -121,7 +121,7 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttacker> extends Goa
 					}
 				}
 			} else if (--this.field_6574 <= 0 && this.field_6572 >= -60) {
-				this.field_6576.setCurrentHand(Hand.MAIN);
+				this.field_6576.setCurrentHand(class_1675.method_18812(this.field_6576, Items.field_8102));
 			}
 		}
 	}

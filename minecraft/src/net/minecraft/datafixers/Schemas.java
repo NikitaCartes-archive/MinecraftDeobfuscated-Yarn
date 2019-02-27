@@ -7,7 +7,6 @@ import com.mojang.datafixers.DataFixerBuilder;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
 import java.util.Objects;
-import java.util.concurrent.ForkJoinPool;
 import java.util.function.BiFunction;
 import net.minecraft.SharedConstants;
 import net.minecraft.class_1191;
@@ -145,6 +144,7 @@ import net.minecraft.datafixers.schemas.Schema705;
 import net.minecraft.datafixers.schemas.Schema808;
 import net.minecraft.datafixers.schemas.Schema99;
 import net.minecraft.datafixers.schemas.SchemaIdentifierNormalize;
+import net.minecraft.util.SystemUtil;
 
 public class Schemas {
 	private static final BiFunction<Integer, Schema, Schema> empty = Schema::new;
@@ -154,7 +154,7 @@ public class Schemas {
 	private static DataFixer create() {
 		DataFixerBuilder dataFixerBuilder = new DataFixerBuilder(SharedConstants.getGameVersion().getWorldVersion());
 		build(dataFixerBuilder);
-		return dataFixerBuilder.build(ForkJoinPool.commonPool());
+		return dataFixerBuilder.build(SystemUtil.getServerWorkerExecutor());
 	}
 
 	public static DataFixer getFixer() {

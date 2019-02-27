@@ -22,8 +22,8 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class FireworksItem extends Item {
-	public FireworksItem(Item.Settings settings) {
+public class FireworkItem extends Item {
+	public FireworkItem(Item.Settings settings) {
 		super(settings);
 	}
 
@@ -97,9 +97,9 @@ public class FireworksItem extends Item {
 		field_7974(3, "creeper"),
 		field_7970(4, "burst");
 
-		private static final FireworksItem.Type[] TYPES = (FireworksItem.Type[])Arrays.stream(values())
+		private static final FireworkItem.Type[] TYPES = (FireworkItem.Type[])Arrays.stream(values())
 			.sorted(Comparator.comparingInt(type -> type.id))
-			.toArray(FireworksItem.Type[]::new);
+			.toArray(FireworkItem.Type[]::new);
 		private final int id;
 		private final String name;
 
@@ -118,7 +118,7 @@ public class FireworksItem extends Item {
 		}
 
 		@Environment(EnvType.CLIENT)
-		public static FireworksItem.Type fromId(int i) {
+		public static FireworkItem.Type fromId(int i) {
 			return i >= 0 && i < TYPES.length ? TYPES[i] : field_7976;
 		}
 	}

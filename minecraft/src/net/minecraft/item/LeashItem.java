@@ -43,7 +43,7 @@ public class LeashItem extends Item {
 		for (MobEntity mobEntity : world.method_18467(
 			MobEntity.class, new BoundingBox((double)i - 7.0, (double)j - 7.0, (double)k - 7.0, (double)i + 7.0, (double)j + 7.0, (double)k + 7.0)
 		)) {
-			if (mobEntity.isLeashed() && mobEntity.getHoldingEntity() == playerEntity) {
+			if (mobEntity.getHoldingEntity() == playerEntity) {
 				if (leadKnotEntity == null) {
 					leadKnotEntity = LeadKnotEntity.method_6932(world, blockPos);
 				}

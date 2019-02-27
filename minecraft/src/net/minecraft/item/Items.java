@@ -762,7 +762,7 @@ public class Items {
 	);
 	public static final Item field_8745 = register("leather", new Item(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8103 = register(
-		"milk_bucket", new BucketMilkItem(new Item.Settings().recipeRemainder(field_8550).stackSize(1).itemGroup(ItemGroup.MISC))
+		"milk_bucket", new MilkBucketItem(new Item.Settings().recipeRemainder(field_8550).stackSize(1).itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8108 = register(
 		"pufferfish_bucket", new FishBucketItem(EntityType.PUFFERFISH, Fluids.WATER, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC))
@@ -981,7 +981,7 @@ public class Items {
 		"rabbit_spawn_egg", new SpawnEggItem(EntityType.RABBIT, 10051392, 7555121, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8297 = register(
-		"ravager_spawn_egg", new SpawnEggItem(EntityType.ILLAGER_BEAST, 7697520, 5984329, new Item.Settings().itemGroup(ItemGroup.MISC))
+		"ravager_spawn_egg", new SpawnEggItem(EntityType.RAVAGER, 7697520, 5984329, new Item.Settings().itemGroup(ItemGroup.MISC))
 	);
 	public static final Item field_8447 = register(
 		"salmon_spawn_egg", new SpawnEggItem(EntityType.SALMON, 10489616, 951412, new Item.Settings().itemGroup(ItemGroup.MISC))
@@ -1100,7 +1100,7 @@ public class Items {
 	);
 	public static final Item field_8137 = register("nether_star", new NetherStarItem(new Item.Settings().itemGroup(ItemGroup.MATERIALS).rarity(Rarity.field_8907)));
 	public static final Item field_8741 = register("pumpkin_pie", new FoodItem(8, 0.3F, false, new Item.Settings().itemGroup(ItemGroup.FOOD)));
-	public static final Item field_8639 = register("firework_rocket", new FireworksItem(new Item.Settings().itemGroup(ItemGroup.MISC)));
+	public static final Item field_8639 = register("firework_rocket", new FireworkItem(new Item.Settings().itemGroup(ItemGroup.MISC)));
 	public static final Item field_8450 = register("firework_star", new FireworkChargeItem(new Item.Settings().itemGroup(ItemGroup.MISC)));
 	public static final Item field_8598 = register("enchanted_book", new EnchantedBookItem(new Item.Settings().stackSize(1).rarity(Rarity.field_8907)));
 	public static final Item field_8729 = register("nether_brick", new Item(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));

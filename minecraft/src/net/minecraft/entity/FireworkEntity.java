@@ -11,6 +11,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.sortme.Projectile;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -31,7 +32,7 @@ import net.minecraft.world.World;
 		value = EnvType.CLIENT,
 		itf = FlyingItemEntity.class
 	)})
-public class FireworkEntity extends Entity implements FlyingItemEntity {
+public class FireworkEntity extends Entity implements FlyingItemEntity, Projectile {
 	private static final TrackedData<ItemStack> ITEM_STACK = DataTracker.registerData(FireworkEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 	private static final TrackedData<OptionalInt> field_7611 = DataTracker.registerData(FireworkEntity.class, TrackedDataHandlerRegistry.field_17910);
 	private static final TrackedData<Boolean> field_7615 = DataTracker.registerData(FireworkEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -98,23 +99,6 @@ public class FireworkEntity extends Entity implements FlyingItemEntity {
 			this.prevYaw = this.yaw;
 			this.prevPitch = this.pitch;
 		}
-	}
-
-	public void method_7474(Entity entity, float f, float g) {
-		Vec3d vec3d = new Vec3d(
-				(double)(-MathHelper.sin(f * (float) (Math.PI / 180.0)) * MathHelper.cos(entity.pitch * (float) (Math.PI / 180.0))),
-				(double)(-MathHelper.sin(entity.pitch * (float) (Math.PI / 180.0))),
-				(double)(MathHelper.cos(f * (float) (Math.PI / 180.0)) * MathHelper.cos(entity.pitch * (float) (Math.PI / 180.0)))
-			)
-			.normalize()
-			.add(this.random.nextGaussian() * 0.0075F * (double)g, this.random.nextGaussian() * 0.0075F * (double)g, this.random.nextGaussian() * 0.0075F * (double)g);
-		float h = MathHelper.sqrt(squaredHorizontalLength(vec3d));
-		this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
-		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)h) * 180.0F / (float)Math.PI);
-		this.prevYaw = this.yaw;
-		this.prevPitch = this.pitch;
-		this.field_7613 = 0;
-		this.setVelocity(vec3d.add(entity.getVelocity()));
 	}
 
 	@Override
@@ -334,5 +318,38 @@ public class FireworkEntity extends Entity implements FlyingItemEntity {
 	@Override
 	public Packet<?> createSpawnPacket() {
 		return new EntitySpawnS2CPacket(this);
+	}
+
+	@Override
+	public void setVelocity(double d, double e, double f, float g, float h) {
+		float i = MathHelper.sqrt(d * d + e * e + f * f);
+		d /= (double)i;
+		e /= (double)i;
+		f /= (double)i;
+		d += this.random.nextGaussian() * 0.0075F * (double)h;
+		e += this.random.nextGaussian() * 0.0075F * (double)h;
+		f += this.random.nextGaussian() * 0.0075F * (double)h;
+		d *= (double)g;
+		e *= (double)g;
+		f *= (double)g;
+		this.setVelocity(d, e, f);
+	}
+
+	@Override
+	public void method_7474(Entity entity, float f, float g, float h, float i, float j) {
+		Vec3d vec3d = new Vec3d(
+				(double)(-MathHelper.sin(g * (float) (Math.PI / 180.0)) * MathHelper.cos(entity.pitch * (float) (Math.PI / 180.0))),
+				(double)(-MathHelper.sin(entity.pitch * (float) (Math.PI / 180.0))),
+				(double)(MathHelper.cos(g * (float) (Math.PI / 180.0)) * MathHelper.cos(entity.pitch * (float) (Math.PI / 180.0)))
+			)
+			.normalize()
+			.add(this.random.nextGaussian() * 0.0075F * (double)j, this.random.nextGaussian() * 0.0075F * (double)j, this.random.nextGaussian() * 0.0075F * (double)j);
+		float k = MathHelper.sqrt(squaredHorizontalLength(vec3d));
+		this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
+		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)k) * 180.0F / (float)Math.PI);
+		this.prevYaw = this.yaw;
+		this.prevPitch = this.pitch;
+		this.field_7613 = 0;
+		this.setVelocity(vec3d.add(entity.getVelocity()));
 	}
 }

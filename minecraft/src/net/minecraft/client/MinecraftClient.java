@@ -289,7 +289,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 	private SoundLoader soundLoader;
 	private MusicTracker musicTracker;
 	private FontManager fontManager;
-	private SplashTextResourceSupplier field_17763;
+	private SplashTextResourceSupplier splashTextLoader;
 	private final MinecraftSessionService sessionService;
 	private PlayerSkinProvider skinProvider;
 	private final Thread thread = Thread.currentThread();
@@ -460,8 +460,8 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 		this.levelStorage = new LevelStorage(this.runDirectory.toPath().resolve("saves"), this.runDirectory.toPath().resolve("backups"), this.dataFixer);
 		this.soundLoader = new SoundLoader(this.options);
 		this.resourceManager.registerListener(this.soundLoader);
-		this.field_17763 = new SplashTextResourceSupplier();
-		this.resourceManager.registerListener(this.field_17763);
+		this.splashTextLoader = new SplashTextResourceSupplier();
+		this.resourceManager.registerListener(this.splashTextLoader);
 		this.musicTracker = new MusicTracker(this);
 		this.fontManager = new FontManager(this.textureManager, this.forcesUnicodeFont());
 		this.resourceManager.registerListener(this.fontManager.method_18627());
@@ -529,6 +529,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 			this.openScreen(new MainMenuScreen(true));
 		}
 
+		SplashScreen.method_18819(this);
 		this.method_18502(
 			new SplashScreen(
 				this,
@@ -804,7 +805,7 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 			this.worldRenderer.close();
 			this.soundLoader.deinitialize();
 			this.resourcePackContainerManager.close();
-			this.particleManager.close();
+			this.particleManager.method_18829();
 			this.field_18173.close();
 			this.paintingManager.close();
 			SystemUtil.method_18350();
@@ -2110,8 +2111,8 @@ public class MinecraftClient extends ThreadTaskQueue<Runnable> implements Snoope
 		return this.game;
 	}
 
-	public SplashTextResourceSupplier method_18095() {
-		return this.field_17763;
+	public SplashTextResourceSupplier getSplashTextLoader() {
+		return this.splashTextLoader;
 	}
 
 	@Nullable

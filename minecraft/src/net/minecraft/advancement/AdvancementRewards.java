@@ -51,7 +51,7 @@ public class AdvancementRewards {
 
 		for (Identifier identifier : this.loot) {
 			for (ItemStack itemStack : serverPlayerEntity.server.getLootManager().getSupplier(identifier).getDrops(lootContext)) {
-				if (serverPlayerEntity.method_7270(itemStack)) {
+				if (serverPlayerEntity.giveItemStack(itemStack)) {
 					serverPlayerEntity.world
 						.playSound(
 							null,

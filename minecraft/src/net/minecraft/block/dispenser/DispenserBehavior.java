@@ -188,7 +188,7 @@ public interface DispenserBehavior {
 			@Override
 			public ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
 				Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
-				EntityType<?> entityType = ((SpawnEggItem)itemStack.getItem()).method_8015(itemStack.getTag());
+				EntityType<?> entityType = ((SpawnEggItem)itemStack.getItem()).entityTypeFromTag(itemStack.getTag());
 				entityType.spawnFromItemStack(
 					blockPointer.getWorld(), itemStack, null, blockPointer.getBlockPos().offset(direction), SpawnType.field_16470, direction != Direction.UP, false
 				);

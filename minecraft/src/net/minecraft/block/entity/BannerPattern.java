@@ -55,6 +55,7 @@ public enum BannerPattern {
 	MOJANG("mojang", "moj", new ItemStack(Items.field_8367));
 
 	public static final int COUNT = values().length;
+	public static final int field_18283 = COUNT - 4 - 1;
 	private final String name;
 	private final String id;
 	private final String[] recipePattern = new String[3];

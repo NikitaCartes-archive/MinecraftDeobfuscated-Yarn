@@ -2,7 +2,6 @@ package net.minecraft.server.world;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.util.Either;
@@ -19,7 +18,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -80,18 +78,18 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final int field_18239 = 33 + ChunkStatus.getMaxTargetGenerationRadius();
 	private final Long2ObjectLinkedOpenHashMap<ChunkHolder> posToHolder = new Long2ObjectLinkedOpenHashMap<>();
+	private volatile Long2ObjectLinkedOpenHashMap<ChunkHolder> posToHolderCopy = this.posToHolder.clone();
+	private final LongSet field_18307 = new LongOpenHashSet();
 	private final ServerWorld world;
 	private final ServerLightingProvider serverLightingProvider;
 	private final Executor genQueueAdder;
 	private final ChunkGenerator<?> chunkGenerator;
 	private final Supplier<PersistentStateManager> persistentStateManagerFactory;
-	private volatile Long2ObjectLinkedOpenHashMap<ChunkHolder> posToHolderCopy = this.posToHolder.clone();
 	private final LongSet field_17221 = new LongOpenHashSet();
 	private boolean posToHolderCopyOutdated;
 	private final ChunkTaskPrioritySystem chunkTaskPrioritySystem;
 	private final Actor<ChunkTaskPrioritySystem.RunnableMessage<Runnable>> worldgenActor;
 	private final Actor<ChunkTaskPrioritySystem.RunnableMessage<Runnable>> mainActor;
-	private final Queue<Runnable> field_18240 = Queues.<Runnable>newConcurrentLinkedQueue();
 	private final WorldGenerationProgressListener worldGenerationProgressListener;
 	private final ThreadedAnvilChunkStorage.TicketManager ticketManager;
 	private final AtomicInteger totalChunksLoadedCount = new AtomicInteger();
@@ -325,6 +323,11 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 					completableFuture.thenAcceptAsync(chunk -> {
 						if (chunk != null) {
 							this.save(chunk);
+							if (this.field_18307.remove(l) && chunk instanceof WorldChunk) {
+								WorldChunk worldChunk = (WorldChunk)chunk;
+								worldChunk.setLoadedToWorld(false);
+								this.world.method_18764(worldChunk);
+							}
 
 							for (int ix = 0; ix < 16; ix++) {
 								this.serverLightingProvider.scheduleChunkLightUpdate(ChunkSectionPos.from(chunk.getPos(), ix), true);
@@ -336,11 +339,6 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 					}, this.genQueueAdder);
 				}
 			}
-		}
-
-		Runnable runnable;
-		while ((runnable = (Runnable)this.field_18240.poll()) != null) {
-			runnable.run();
 		}
 	}
 
@@ -432,7 +430,7 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 
 				worldChunk.setLevelTypeProvider(() -> ChunkHolder.getLevelType(chunkHolder.getLevel()));
 				worldChunk.loadToWorld();
-				if (!worldChunk.isLoadedToWorld()) {
+				if (this.field_18307.add(chunkPos.toLong())) {
 					worldChunk.setLoadedToWorld(true);
 					this.world.addBlockEntities(worldChunk.getBlockEntityMap().values());
 
@@ -461,16 +459,6 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 				return Either.left(worldChunk);
 			}), runnable -> this.mainActor.method_16901(ChunkTaskPrioritySystem.createRunnableMessage(chunkHolder, () -> this.genQueueAdder.execute(runnable))));
 		return completableFuture2;
-	}
-
-	public void method_18720(ChunkHolder chunkHolder) {
-		chunkHolder.getChunkForStatus(ChunkStatus.FULL).thenAcceptAsync(either -> either.ifLeft(chunk -> {
-				WorldChunk worldChunk = (WorldChunk)chunk;
-				if (worldChunk.isLoadedToWorld()) {
-					worldChunk.setLoadedToWorld(false);
-					this.field_18240.add((Runnable)() -> this.world.method_18764(worldChunk));
-				}
-			}), runnable -> this.mainActor.method_16901(ChunkTaskPrioritySystem.createRunnableMessage(chunkHolder, () -> this.genQueueAdder.execute(runnable))));
 	}
 
 	public int getTotalChunksLoadedCount() {

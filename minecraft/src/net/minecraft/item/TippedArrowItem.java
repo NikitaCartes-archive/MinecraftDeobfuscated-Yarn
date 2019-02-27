@@ -5,9 +5,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.ArrowEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
@@ -25,13 +22,6 @@ public class TippedArrowItem extends ArrowItem {
 	@Override
 	public ItemStack getDefaultStack() {
 		return PotionUtil.setPotion(super.getDefaultStack(), Potions.field_8982);
-	}
-
-	@Override
-	public ProjectileEntity createEntityArrow(World world, ItemStack itemStack, LivingEntity livingEntity) {
-		ArrowEntity arrowEntity = new ArrowEntity(world, livingEntity);
-		arrowEntity.initFromStack(itemStack);
-		return arrowEntity;
 	}
 
 	@Override

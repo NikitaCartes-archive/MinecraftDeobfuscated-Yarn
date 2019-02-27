@@ -35,9 +35,12 @@ public class SplashScreen extends class_4071 {
 		this.field_18219 = bl;
 	}
 
+	public static void method_18819(MinecraftClient minecraftClient) {
+		minecraftClient.getTextureManager().registerTexture(LOGO, new SplashScreen.class_4070());
+	}
+
 	@Override
 	public void draw(int i, int j, float f) {
-		this.client.getTextureManager().registerTexture(LOGO, new SplashScreen.class_4070());
 		int k = this.client.window.getScaledWidth();
 		int l = this.client.window.getScaledHeight();
 		long m = SystemUtil.getMeasuringTimeMs();
@@ -86,6 +89,7 @@ public class SplashScreen extends class_4071 {
 		}
 
 		if (this.field_17771 == -1L && this.reloadMonitor.isApplyStageComplete() && (!this.field_18219 || h >= 2.0F)) {
+			this.reloadMonitor.method_18849();
 			this.field_17771 = SystemUtil.getMeasuringTimeMs();
 			this.field_18218.run();
 			if (this.client.currentScreen != null) {

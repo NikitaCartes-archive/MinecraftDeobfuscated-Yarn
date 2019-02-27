@@ -46,6 +46,7 @@ public class ItemTags {
 	public static final Tag<Item> field_15533 = register("signs");
 	public static final Tag<Item> field_15541 = register("music_discs");
 	public static final Tag<Item> field_17487 = register("coals");
+	public static final Tag<Item> field_18317 = register("arrows");
 
 	public static void setContainer(TagContainer<Item> tagContainer) {
 		container = tagContainer;

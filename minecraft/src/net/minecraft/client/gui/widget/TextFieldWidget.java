@@ -22,7 +22,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class TextFieldWidget extends DrawableHelper implements Drawable, InputListener {
-	private final TextRenderer fontRenderer;
+	private final TextRenderer textRenderer;
 	private int x;
 	private int y;
 	private final int width;
@@ -51,7 +51,7 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, InputLi
 	}
 
 	public TextFieldWidget(TextRenderer textRenderer, int i, int j, int k, int l, @Nullable TextFieldWidget textFieldWidget) {
-		this.fontRenderer = textRenderer;
+		this.textRenderer = textRenderer;
 		this.x = i;
 		this.y = j;
 		this.width = k;
@@ -353,8 +353,8 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, InputLi
 					j -= 4;
 				}
 
-				String string = this.fontRenderer.trimToWidth(this.text.substring(this.field_2103), this.method_1859());
-				this.method_1883(this.fontRenderer.trimToWidth(string, j).length() + this.field_2103);
+				String string = this.textRenderer.trimToWidth(this.text.substring(this.field_2103), this.method_1859());
+				this.method_1883(this.textRenderer.trimToWidth(string, j).length() + this.field_2103);
 				return true;
 			} else {
 				return false;
@@ -373,7 +373,7 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, InputLi
 			int k = this.editable ? this.field_2100 : this.field_2098;
 			int l = this.cursorMax - this.field_2103;
 			int m = this.cursorMin - this.field_2103;
-			String string = this.fontRenderer.trimToWidth(this.text.substring(this.field_2103), this.method_1859());
+			String string = this.textRenderer.trimToWidth(this.text.substring(this.field_2103), this.method_1859());
 			boolean bl = l >= 0 && l <= string.length();
 			boolean bl2 = this.focused && this.focusedTicks / 6 % 2 == 0 && bl;
 			int n = this.hasBorder ? this.x + 4 : this.x;
@@ -385,7 +385,7 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, InputLi
 
 			if (!string.isEmpty()) {
 				String string2 = bl ? string.substring(0, l) : string;
-				p = this.fontRenderer.drawWithShadow((String)this.renderTextProvider.apply(string2, this.field_2103), (float)n, (float)o, k);
+				p = this.textRenderer.drawWithShadow((String)this.renderTextProvider.apply(string2, this.field_2103), (float)n, (float)o, k);
 			}
 
 			boolean bl3 = this.cursorMax < this.text.length() || this.text.length() >= this.getMaxLength();
@@ -398,23 +398,23 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, InputLi
 			}
 
 			if (!string.isEmpty() && bl && l < string.length()) {
-				this.fontRenderer.drawWithShadow((String)this.renderTextProvider.apply(string.substring(l), this.cursorMax), (float)p, (float)o, k);
+				this.textRenderer.drawWithShadow((String)this.renderTextProvider.apply(string.substring(l), this.cursorMax), (float)p, (float)o, k);
 			}
 
 			if (!bl3 && this.suggestion != null) {
-				this.fontRenderer.drawWithShadow(this.suggestion, (float)(q - 1), (float)o, -8355712);
+				this.textRenderer.drawWithShadow(this.suggestion, (float)(q - 1), (float)o, -8355712);
 			}
 
 			if (bl2) {
 				if (bl3) {
 					DrawableHelper.drawRect(q, o - 1, q + 1, o + 1 + 9, -3092272);
 				} else {
-					this.fontRenderer.drawWithShadow("_", (float)q, (float)o, k);
+					this.textRenderer.drawWithShadow("_", (float)q, (float)o, k);
 				}
 			}
 
 			if (m != l) {
-				int r = n + this.fontRenderer.getStringWidth(string.substring(0, m));
+				int r = n + this.textRenderer.getStringWidth(string.substring(0, m));
 				this.method_1886(q, o - 1, r - 1, o + 1 + 9);
 			}
 		}
@@ -522,16 +522,16 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, InputLi
 	public void method_1884(int i) {
 		int j = this.text.length();
 		this.cursorMin = MathHelper.clamp(i, 0, j);
-		if (this.fontRenderer != null) {
+		if (this.textRenderer != null) {
 			if (this.field_2103 > j) {
 				this.field_2103 = j;
 			}
 
 			int k = this.method_1859();
-			String string = this.fontRenderer.trimToWidth(this.text.substring(this.field_2103), k);
+			String string = this.textRenderer.trimToWidth(this.text.substring(this.field_2103), k);
 			int l = string.length() + this.field_2103;
 			if (this.cursorMin == this.field_2103) {
-				this.field_2103 = this.field_2103 - this.fontRenderer.trimToWidth(this.text, k, true).length();
+				this.field_2103 = this.field_2103 - this.textRenderer.trimToWidth(this.text, k, true).length();
 			}
 
 			if (this.cursorMin > l) {
@@ -561,7 +561,7 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, InputLi
 	}
 
 	public int method_1889(int i) {
-		return i > this.text.length() ? this.x : this.x + this.fontRenderer.getStringWidth(this.text.substring(0, i));
+		return i > this.text.length() ? this.x : this.x + this.textRenderer.getStringWidth(this.text.substring(0, i));
 	}
 
 	public void setX(int i) {

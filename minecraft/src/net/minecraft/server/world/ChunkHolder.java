@@ -287,10 +287,6 @@ public class ChunkHolder {
 		ChunkHolder.LevelType levelType2 = getLevelType(this.level);
 		boolean bl3 = levelType.isAfter(ChunkHolder.LevelType.TICKING);
 		boolean bl4 = levelType2.isAfter(ChunkHolder.LevelType.TICKING);
-		if (chunkStatus.isAfter(ChunkStatus.FULL) && !chunkStatus2.isAfter(ChunkStatus.FULL)) {
-			threadedAnvilChunkStorage.method_18720(this);
-		}
-
 		if (bl2) {
 			for (int i = bl ? chunkStatus.getIndex() + 1 : 0; i <= chunkStatus2.getIndex(); i++) {
 				this.getChunk((ChunkStatus)CHUNK_STATUSES.get(i), threadedAnvilChunkStorage);

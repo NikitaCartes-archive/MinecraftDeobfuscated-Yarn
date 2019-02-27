@@ -2,8 +2,6 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4000;
-import net.minecraft.class_4001;
 import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
@@ -23,7 +21,7 @@ public class DamageParticle extends SpriteBillboardParticle {
 		this.colorRed = j;
 		this.colorGreen = j;
 		this.colorBlue = j;
-		this.field_17867 *= 0.75F;
+		this.scale *= 0.75F;
 		this.maxAge = Math.max((int)(6.0 / (Math.random() * 0.8 + 0.6)), 1);
 		this.collidesWithWorld = false;
 		this.update();
@@ -31,7 +29,7 @@ public class DamageParticle extends SpriteBillboardParticle {
 
 	@Override
 	public float method_18132(float f) {
-		return this.field_17867 * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
+		return this.scale * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
 	}
 
 	@Override
@@ -62,26 +60,11 @@ public class DamageParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class CritFactory implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17792;
-
-		public CritFactory(class_4001 arg) {
-			this.field_17792 = arg.method_18137(class_4000.field_17841);
-		}
-
-		public Particle method_3015(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			DamageParticle damageParticle = new DamageParticle(world, d, e, f, g, h, i);
-			damageParticle.method_18140(this.field_17792);
-			return damageParticle;
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
 	public static class DefaultFactory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17790;
 
-		public DefaultFactory(class_4001 arg) {
-			this.field_17790 = arg.method_18137(class_4000.field_17843);
+		public DefaultFactory(class_4002 arg) {
+			this.field_17790 = arg;
 		}
 
 		public Particle method_3013(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -96,8 +79,8 @@ public class DamageParticle extends SpriteBillboardParticle {
 	public static class EnchantedHitFactory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17791;
 
-		public EnchantedHitFactory(class_4001 arg) {
-			this.field_17791 = arg.method_18137(class_4000.field_17842);
+		public EnchantedHitFactory(class_4002 arg) {
+			this.field_17791 = arg;
 		}
 
 		public Particle method_3014(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -105,6 +88,21 @@ public class DamageParticle extends SpriteBillboardParticle {
 			damageParticle.colorRed *= 0.3F;
 			damageParticle.colorGreen *= 0.8F;
 			damageParticle.method_18140(this.field_17791);
+			return damageParticle;
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class class_3939 implements ParticleFactory<DefaultParticleType> {
+		private final class_4002 field_18291;
+
+		public class_3939(class_4002 arg) {
+			this.field_18291 = arg;
+		}
+
+		public Particle method_17580(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+			DamageParticle damageParticle = new DamageParticle(world, d, e, f, g, h, i);
+			damageParticle.method_18140(this.field_18291);
 			return damageParticle;
 		}
 	}

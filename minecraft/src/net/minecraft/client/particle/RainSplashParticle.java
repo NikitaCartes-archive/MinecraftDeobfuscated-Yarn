@@ -2,8 +2,6 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4000;
-import net.minecraft.class_4001;
 import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.BlockPos;
@@ -67,8 +65,8 @@ public class RainSplashParticle extends SpriteBillboardParticle {
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17891;
 
-		public Factory(class_4001 arg) {
-			this.field_17891 = arg.register(class_4000.field_17834);
+		public Factory(class_4002 arg) {
+			this.field_17891 = arg;
 		}
 
 		public Particle method_3116(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

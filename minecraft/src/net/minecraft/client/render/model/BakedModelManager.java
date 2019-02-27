@@ -7,12 +7,12 @@ import net.minecraft.client.render.block.BlockModels;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceSupplier;
+import net.minecraft.resource.SupplyingResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
 @Environment(EnvType.CLIENT)
-public class BakedModelManager extends ResourceSupplier<ModelLoader> {
+public class BakedModelManager extends SupplyingResourceReloadListener<ModelLoader> {
 	private Map<Identifier, BakedModel> modelMap;
 	private final SpriteAtlasTexture spriteAtlas;
 	private final BlockModels blockStateMaps;

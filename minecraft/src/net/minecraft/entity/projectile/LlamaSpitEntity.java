@@ -140,6 +140,10 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 		this.prevPitch = this.pitch;
 	}
 
+	@Override
+	public void method_7474(Entity entity, float f, float g, float h, float i, float j) {
+	}
+
 	public void method_7481(HitResult hitResult) {
 		HitResult.Type type = hitResult.getType();
 		if (type == HitResult.Type.ENTITY && this.owner != null) {

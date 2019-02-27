@@ -1,16 +1,13 @@
 package net.minecraft.client.particle;
 
-import com.google.common.collect.Lists;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4000;
-import net.minecraft.class_4001;
 import net.minecraft.class_4002;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.FireworksItem;
+import net.minecraft.item.FireworkItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.particle.DefaultParticleType;
@@ -19,7 +16,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
@@ -29,8 +25,8 @@ public class FireworksSparkParticle {
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17811;
 
-		public Factory(class_4001 arg) {
-			this.field_17811 = arg.register(Lists.<Identifier>reverse(class_4000.field_17861));
+		public Factory(class_4002 arg) {
+			this.field_17811 = arg;
 		}
 
 		public Particle method_3025(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -46,8 +42,8 @@ public class FireworksSparkParticle {
 	public static class class_3997 implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17810;
 
-		public class_3997(class_4001 arg) {
-			this.field_17810 = arg.method_18137(class_4000.field_17852);
+		public class_3997(class_4002 arg) {
+			this.field_17810 = arg;
 		}
 
 		public Particle method_18121(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -97,7 +93,7 @@ public class FireworksSparkParticle {
 			this.velocityY = h;
 			this.velocityZ = i;
 			this.field_3798 = particleManager;
-			this.field_17867 *= 0.75F;
+			this.scale *= 0.75F;
 			this.maxAge = 48 + this.random.nextInt(12);
 			this.method_18142(arg);
 		}
@@ -183,7 +179,7 @@ public class FireworksSparkParticle {
 				} else {
 					for (int i = 0; i < this.explosions.size(); i++) {
 						CompoundTag compoundTag = this.explosions.getCompoundTag(i);
-						if (FireworksItem.Type.fromId(compoundTag.getByte("Type")) == FireworksItem.Type.field_7977) {
+						if (FireworkItem.Type.fromId(compoundTag.getByte("Type")) == FireworkItem.Type.field_7977) {
 							bl2 = true;
 							break;
 						}
@@ -203,7 +199,7 @@ public class FireworksSparkParticle {
 			if (this.age % 2 == 0 && this.explosions != null && this.age / 2 < this.explosions.size()) {
 				int j = this.age / 2;
 				CompoundTag compoundTag2 = this.explosions.getCompoundTag(j);
-				FireworksItem.Type type = FireworksItem.Type.fromId(compoundTag2.getByte("Type"));
+				FireworkItem.Type type = FireworkItem.Type.fromId(compoundTag2.getByte("Type"));
 				boolean bl3 = compoundTag2.getBoolean("Trail");
 				boolean bl4 = compoundTag2.getBoolean("Flicker");
 				int[] is = compoundTag2.getIntArray("Colors");

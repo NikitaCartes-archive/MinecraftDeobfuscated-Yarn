@@ -35,8 +35,8 @@ public abstract class MobEntityWithAi extends MobEntity {
 	@Override
 	protected void method_5995() {
 		super.method_5995();
-		if (this.isLeashed() && this.getHoldingEntity() != null && this.getHoldingEntity().world == this.world) {
-			Entity entity = this.getHoldingEntity();
+		Entity entity = this.getHoldingEntity();
+		if (entity != null && entity.world == this.world) {
 			this.method_18408(new BlockPos((int)entity.x, (int)entity.y, (int)entity.z), 5);
 			float f = this.distanceTo(entity);
 			if (this instanceof TameableEntity && ((TameableEntity)this).isSitting()) {

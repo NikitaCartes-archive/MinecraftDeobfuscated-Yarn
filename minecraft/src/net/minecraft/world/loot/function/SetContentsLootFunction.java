@@ -9,11 +9,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.InventoryUtil;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.loot.LootSupplier;
 import net.minecraft.world.loot.LootTableReporter;
@@ -39,7 +39,7 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 			this.field_1103
 				.forEach(lootEntry -> lootEntry.expand(lootContext, lootChoice -> lootChoice.drop(LootSupplier.limitedConsumer(defaultedList::add), lootContext)));
 			CompoundTag compoundTag = new CompoundTag();
-			InventoryUtil.serialize(compoundTag, defaultedList);
+			Inventories.toTag(compoundTag, defaultedList);
 			CompoundTag compoundTag2 = itemStack.getOrCreateTag();
 			compoundTag2.put("BlockEntityTag", compoundTag.copyFrom(compoundTag2.getCompound("BlockEntityTag")));
 			return itemStack;

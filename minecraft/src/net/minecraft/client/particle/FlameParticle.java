@@ -2,8 +2,6 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4000;
-import net.minecraft.class_4001;
 import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
@@ -36,7 +34,7 @@ public class FlameParticle extends SpriteBillboardParticle {
 	@Override
 	public float method_18132(float f) {
 		float g = ((float)this.age + f) / (float)this.maxAge;
-		return this.field_17867 * (1.0F - g * g * 0.5F);
+		return this.scale * (1.0F - g * g * 0.5F);
 	}
 
 	@Override
@@ -77,8 +75,8 @@ public class FlameParticle extends SpriteBillboardParticle {
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
 		private final class_4002 field_17812;
 
-		public Factory(class_4001 arg) {
-			this.field_17812 = arg.method_18137(class_4000.field_17851);
+		public Factory(class_4002 arg) {
+			this.field_17812 = arg;
 		}
 
 		public Particle method_3036(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
